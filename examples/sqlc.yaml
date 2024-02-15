@@ -1,0 +1,61 @@
+version: "2"
+plugins:
+- name: ts
+  wasm:
+    url: https://downloads.sqlc.dev/plugin/sqlc-gen-typescript_0.1.3.wasm
+    sha256: 287df8f6cc06377d67ad5ba02c9e0f00c585509881434d15ea8bd9fc751a9368
+sql:
+- schema: "authors/postgresql/schema.sql"
+  queries: "authors/postgresql/query.sql"
+  engine: "postgresql"
+  codegen:
+  - plugin: ts
+    out: node-pg/src/db
+    options:
+      runtime: node
+      driver: pg
+- schema: "authors/postgresql/schema.sql"
+  queries: "authors/postgresql/query.sql"
+  engine: "postgresql"
+  codegen:
+  - plugin: ts
+    out: bun-pg/src/db
+    options:
+      runtime: bun
+      driver: pg
+- schema: "authors/postgresql/schema.sql"
+  queries: "authors/postgresql/query.sql"
+  engine: "postgresql"
+  codegen:
+  - plugin: ts
+    out: node-postgres/src/db
+    options:
+      runtime: node
+      driver: postgres
+- schema: "authors/postgresql/schema.sql"
+  queries: "authors/postgresql/query.sql"
+  engine: "postgresql"
+  codegen:
+  - plugin: ts
+    out: bun-postgres/src/db
+    options:
+      runtime: bun
+      driver: postgres
+- schema: "authors/mysql/schema.sql"
+  queries: "authors/mysql/query.sql"
+  engine: "mysql"
+  codegen:
+  - plugin: ts
+    out: node-mysql2/src/db
+    options:
+      runtime: node
+      driver: mysql2
+- schema: "authors/mysql/schema.sql"
+  queries: "authors/mysql/query.sql"
+  engine: "mysql"
+  codegen:
+  - plugin: ts
+    out: bun-mysql2/src/db
+    options:
+      runtime: bun
+      driver: mysql2
