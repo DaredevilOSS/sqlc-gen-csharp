@@ -6,7 +6,7 @@
 ## Prerequisites
 make sure that the following applications are installed and exposed in your path
 
-* dotnet cli - https://github.com/dotnet/sdk - follow the instructions in the repo
+* dotnet cli - https://github.com/dotnet/sdk - follow the instructions in the repo, currently we supports version `.NET 8.0 (latest)`
 
 
 ## Usage
