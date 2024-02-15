@@ -10,6 +10,8 @@ make sure that the following applications are installed and exposed in your path
 
 
 ## Usage
+you can run the c# project by the terminal using this commnad `dotnet run --project sqlc-gen-csharp/`
+
 
 
 ## Supported engines and drivers
