@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using sqlc_gen_csharp.drivers.abstractions;
+using sqlc_gen_csharp.protobuf;
+using sqlc_gen_csharp.Protobuf;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 using Type = System.Type;
 
@@ -54,6 +55,11 @@ public class MySqlConnector : IDbDriver
             default:
                 throw new NotSupportedException($"Unsupported column type: {columnType}");
         }
+    }
+
+    public IEnumerable<ParameterSyntax> FuncParamsDecl(string iface, IEnumerable<Parameter> parameters)
+    {
+        throw new NotImplementedException();
     }
 
     public CompilationUnitSyntax Preamble(Query[] queries)
@@ -139,6 +145,101 @@ public class MySqlConnector : IDbDriver
                                 ))
                             )
                         )
+                    )
+                )
+            ));
+
+        return methodDeclaration;
+    }
+
+    public MethodDeclarationSyntax ManyDecl(string funcName, string queryName, string argIface, string returnIface,
+        IEnumerable<Parameter> parameters, IEnumerable<Column> columns)
+    {
+        // Assuming FuncParamsDecl is implemented as shown previously
+        var funcParams = FuncParamsDecl(argIface, parameters);
+
+        // Return type is Task<List<ReturnType>>
+        var returnType = GenericName(Identifier("Task"))
+            .WithTypeArgumentList(
+                TypeArgumentList(
+                    SingletonSeparatedList<TypeSyntax>(
+                        GenericName(Identifier("List"))
+                            .WithTypeArgumentList(
+                                TypeArgumentList(
+                                    SingletonSeparatedList<TypeSyntax>(
+                                        IdentifierName(returnIface)))))));
+
+        // Method declaration
+        var methodDeclaration = MethodDeclaration(returnType, Identifier(funcName))
+            .AddModifiers(Token(SyntaxKind.PublicKeyword), Token(SyntaxKind.AsyncKeyword))
+            .WithParameterList(ParameterList(SeparatedList(funcParams)))
+            .WithBody(Block(
+                // Simplified body: In a real scenario, you'd construct the logic to execute the query,
+                // map the results to a list of `returnIface` objects, and return it.
+                // The following is a placeholder to illustrate structure.
+                SingletonList<StatementSyntax>(
+                    ReturnStatement(
+                        InvocationExpression(
+                            MemberAccessExpression(
+                                SyntaxKind.SimpleMemberAccessExpression,
+                                IdentifierName("Task"),
+                                GenericName(Identifier("FromResult"))
+                                    .WithTypeArgumentList(
+                                        TypeArgumentList(
+                                            SingletonSeparatedList<TypeSyntax>(
+                                                PredefinedType(Token(SyntaxKind.StringKeyword)))))),
+                            ArgumentList(SingletonSeparatedList<ArgumentSyntax>(
+                                Argument(
+                                    LiteralExpression(SyntaxKind.StringLiteralExpression,
+                                        Literal("Placeholder for actual implementation"))
+                                )
+                            ))
+                        )
+                    )
+                )
+            ));
+
+        return methodDeclaration;
+    }
+    
+    public MethodDeclarationSyntax OneDecl(string funcName, string queryName, string argIface, string returnIface,
+        IEnumerable<Parameter> parameters, IEnumerable<Column> columns)
+    {
+        // Generating function parameters, potentially including 'args'
+        var funcParams = FuncParamsDecl(argIface, parameters); // FuncParamsDecl should be implemented as before
+
+        // Return type is Task<ReturnType?>
+        var returnType = GenericName(Identifier("Task"))
+            .WithTypeArgumentList(
+                TypeArgumentList(
+                    SingletonSeparatedList<TypeSyntax>(
+                        NullableType(IdentifierName(returnIface)))));
+
+        // Method declaration
+        var methodDeclaration = MethodDeclaration(returnType, Identifier(funcName))
+            .AddModifiers(Token(SyntaxKind.PublicKeyword), Token(SyntaxKind.AsyncKeyword))
+            .WithParameterList(ParameterList(SeparatedList(funcParams)))
+            .WithBody(Block(
+                // Placeholder for method body: In a real scenario, you'd include logic to execute the query
+                // and return a single result or null.
+                // The following statement is a simplification.
+                SingletonList<StatementSyntax>(
+                    ReturnStatement(
+                        InvocationExpression(
+                            MemberAccessExpression(
+                                SyntaxKind.SimpleMemberAccessExpression,
+                                IdentifierName("Task"),
+                                IdentifierName("FromResult")),
+                            ArgumentList(SeparatedList(new[] {
+                                Argument(
+                                    // Assuming a method to convert a database row to returnIface
+                                    InvocationExpression(IdentifierName("ConvertToReturnType"), 
+                                            ArgumentList(SingletonSeparatedList(
+                                                Argument(IdentifierName("row")))))
+                                        .WithLeadingTrivia(Comment("// Convert row to ReturnType instance"))
+                                )
+                            }))
+                        ).WithLeadingTrivia(Comment("// Placeholder for actual database query execution"))
                     )
                 )
             ));

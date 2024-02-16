@@ -3,7 +3,7 @@ using Google.Protobuf;
 using Google.Protobuf.Reflection;
 using ProtoBuf;
 
-namespace sqlc_gen_csharp.drivers.abstractions;
+namespace sqlc_gen_csharp.Protobuf;
 
 public class Identifier : IMessage<Identifier>
 {

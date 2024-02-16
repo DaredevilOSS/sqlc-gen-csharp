@@ -2,8 +2,9 @@ using System;
 using System.Collections.Generic;
 using Google.Protobuf;
 using Google.Protobuf.Reflection;
+using sqlc_gen_csharp.protobuf;
 
-namespace sqlc_gen_csharp.drivers.abstractions;
+namespace sqlc_gen_csharp.Protobuf;
 
 public class Query : IMessage<Query>
 {

@@ -1,5 +1,5 @@
 using System.Text.RegularExpressions;
-using sqlc_gen_csharp.drivers.abstractions;
+using sqlc_gen_csharp.Protobuf;
 
 namespace sqlc_gen_csharp.drivers;
 

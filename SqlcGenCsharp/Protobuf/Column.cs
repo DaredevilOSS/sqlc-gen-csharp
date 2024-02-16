@@ -3,10 +3,7 @@ using Google.Protobuf;
 using Google.Protobuf.Reflection;
 using ProtoBuf;
 
-namespace sqlc_gen_csharp.drivers.abstractions;
-
-// Assuming Identifier is defined elsewhere
-// public class Identifier : IMessage<Identifier> { ... }
+namespace sqlc_gen_csharp.Protobuf;
 
 public class Column : IMessage<Column>
 {
