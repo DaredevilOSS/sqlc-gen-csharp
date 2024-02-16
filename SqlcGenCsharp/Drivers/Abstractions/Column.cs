@@ -11,54 +11,38 @@ namespace sqlc_gen_csharp.drivers.abstractions;
 public class Column : IMessage<Column>
 {
     // Protobuf field attributes might need to be adjusted based on the actual protobuf C# implementation
-    [ProtoMember(1)]
-    public string Name { get; set; } = "";
+    [ProtoMember(1)] public string Name { get; set; } = "";
 
-    [ProtoMember(3)]
-    public bool NotNull { get; set; } = false;
+    [ProtoMember(3)] public bool NotNull { get; set; }
 
-    [ProtoMember(4)]
-    public bool IsArray { get; set; } = false;
+    [ProtoMember(4)] public bool IsArray { get; set; }
 
-    [ProtoMember(5)]
-    public string Comment { get; set; } = "";
+    [ProtoMember(5)] public string Comment { get; set; } = "";
 
-    [ProtoMember(6)]
-    public int Length { get; set; } = 0;
+    [ProtoMember(6)] public int Length { get; set; }
 
-    [ProtoMember(7)]
-    public bool IsNamedParam { get; set; } = false;
+    [ProtoMember(7)] public bool IsNamedParam { get; set; }
 
-    [ProtoMember(8)]
-    public bool IsFuncCall { get; set; } = false;
+    [ProtoMember(8)] public bool IsFuncCall { get; set; }
 
-    [ProtoMember(9)]
-    public string Scope { get; set; } = "";
+    [ProtoMember(9)] public string Scope { get; set; } = "";
 
     // Assuming Identifier is a protobuf message defined elsewhere
-    [ProtoMember(10)]
-    public Identifier Table { get; set; }
+    [ProtoMember(10)] public Identifier Table { get; set; }
 
-    [ProtoMember(11)]
-    public string TableAlias { get; set; } = "";
+    [ProtoMember(11)] public string TableAlias { get; set; } = "";
 
-    [ProtoMember(12)]
-    public Identifier Type { get; set; }
+    [ProtoMember(12)] public Identifier Type { get; set; }
 
-    [ProtoMember(13)]
-    public bool IsSqlcSlice { get; set; } = false;
+    [ProtoMember(13)] public bool IsSqlcSlice { get; set; }
 
-    [ProtoMember(14)]
-    public Identifier EmbedTable { get; set; }
+    [ProtoMember(14)] public Identifier EmbedTable { get; set; }
 
-    [ProtoMember(15)]
-    public string OriginalName { get; set; } = "";
+    [ProtoMember(15)] public string OriginalName { get; set; } = "";
 
-    [ProtoMember(16)]
-    public bool Unsigned { get; set; } = false;
+    [ProtoMember(16)] public bool Unsigned { get; set; }
 
-    [ProtoMember(17)]
-    public int ArrayDims { get; set; } = 0;
+    [ProtoMember(17)] public int ArrayDims { get; set; }
 
     // Constructor, methods for binary and JSON (de)serialization, and equality checks
     // would be implemented based on the specific protobuf library's capabilities and patterns in C#.
@@ -84,6 +68,7 @@ public class Column : IMessage<Column>
     }
 
     public MessageDescriptor Descriptor { get; }
+
     public bool Equals(Column other)
     {
         throw new NotImplementedException();

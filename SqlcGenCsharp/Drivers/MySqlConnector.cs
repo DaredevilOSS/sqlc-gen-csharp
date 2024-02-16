@@ -1,8 +1,9 @@
 using System;
-using Google.Protobuf.WellKnownTypes;
+using System.Collections.Generic;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using sqlc_gen_csharp.drivers.abstractions;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 using Type = System.Type;
 
@@ -14,7 +15,7 @@ public class MySqlConnector : IDbDriver
     {
         if (string.IsNullOrEmpty(columnType))
             return typeof(object);
-        
+
         switch (columnType.ToLower())
         {
             case "bigint":
@@ -55,7 +56,7 @@ public class MySqlConnector : IDbDriver
         }
     }
 
-    public CompilationUnitSyntax Preamble(Any queries)
+    public CompilationUnitSyntax Preamble(Query[] queries)
     {
         // Using directive for MySQL (or similar)
         var usingDirective = UsingDirective(ParseName("MySql.Data.MySqlClient"));
@@ -81,5 +82,67 @@ public class MySqlConnector : IDbDriver
             .NormalizeWhitespace(); // Format the code for readability
 
         return compilationUnit;
+    }
+
+    public IEnumerable<ParameterSyntax> FuncParamsDecl(string iface, IEnumerable<Parameter> parameters)
+    {
+        var funcParams = new List<ParameterSyntax>
+        {
+            Parameter(Identifier("client"))
+                .WithType(IdentifierName("Client"))
+        };
+
+        using var enumerator = parameters.GetEnumerator();
+        if (!string.IsNullOrEmpty(iface) && enumerator.MoveNext())
+            funcParams.Add(
+                Parameter(Identifier("args"))
+                    .WithType(IdentifierName(iface))
+            );
+
+        return funcParams;
+    }
+
+    public MethodDeclarationSyntax ExecDecl(string funcName, string queryName, string argIface,
+        IEnumerable<Parameter> parameters)
+    {
+        // Generating the parameters for the method, potentially including 'args' if specified
+        var funcParams =
+            FuncParamsDecl(argIface, parameters); // Assuming FuncParamsDecl is implemented as shown previously
+
+        // Creating the method declaration
+        var methodDeclaration = MethodDeclaration(
+                GenericName(Identifier("Task"))
+                    .WithTypeArgumentList(TypeArgumentList(
+                        SingletonSeparatedList<TypeSyntax>(PredefinedType(Token(SyntaxKind.VoidKeyword))))),
+                Identifier(funcName))
+            .AddModifiers(Token(SyntaxKind.PublicKeyword), Token(SyntaxKind.AsyncKeyword))
+            .WithParameterList(ParameterList(SeparatedList(funcParams)))
+            .WithBody(Block(
+                // Simplified body; assuming a method call to 'client.query' with parameters.
+                // The actual implementation would involve more detailed Roslyn syntax generation,
+                // depending on how the 'client.query' method is defined and used.
+                SingletonList<StatementSyntax>(
+                    ExpressionStatement(
+                        AwaitExpression(
+                            InvocationExpression(
+                                MemberAccessExpression(
+                                    SyntaxKind.SimpleMemberAccessExpression,
+                                    IdentifierName("client"),
+                                    IdentifierName(
+                                        "QueryAsync") // Assuming a method QueryAsync exists for simplification
+                                ),
+                                ArgumentList(SingletonSeparatedList(
+                                    Argument(
+                                        // Simplified argument; actual implementation would dynamically build this based on 'params'
+                                        IdentifierName("queryParameters") // Placeholder for actual query parameters
+                                    )
+                                ))
+                            )
+                        )
+                    )
+                )
+            ));
+
+        return methodDeclaration;
     }
 }

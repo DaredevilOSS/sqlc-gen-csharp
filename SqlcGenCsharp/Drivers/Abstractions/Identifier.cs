@@ -1,5 +1,5 @@
-using Google.Protobuf;
 using System;
+using Google.Protobuf;
 using Google.Protobuf.Reflection;
 using ProtoBuf;
 
@@ -7,18 +7,10 @@ namespace sqlc_gen_csharp.drivers.abstractions;
 
 public class Identifier : IMessage<Identifier>
 {
-    // Use the ProtoMember attribute to specify field numbers
-    [ProtoMember(1)]
-    public string Catalog { get; set; } = "";
-
-    [ProtoMember(2)]
-    public string Schema { get; set; } = "";
-
-    [ProtoMember(3)]
-    public string Name { get; set; } = "";
-
     // Default parameterless constructor
-    public Identifier() { }
+    public Identifier()
+    {
+    }
 
     // Constructor that could be used for initialization from a partial message
     // Note: The implementation of initializing from a partial message will depend on the specifics of your project
@@ -28,6 +20,13 @@ public class Identifier : IMessage<Identifier>
         Schema = schema;
         Name = name;
     }
+
+    // Use the ProtoMember attribute to specify field numbers
+    [ProtoMember(1)] public string Catalog { get; set; } = "";
+
+    [ProtoMember(2)] public string Schema { get; set; } = "";
+
+    [ProtoMember(3)] public string Name { get; set; } = "";
 
     // Protobuf library in C# handles serialization/deserialization, so explicit methods to handle binary or JSON data 
     // (like fromBinary, fromJson, etc.) are not typically manually defined in the message class.
@@ -49,21 +48,6 @@ public class Identifier : IMessage<Identifier>
         throw new NotImplementedException();
     }
 
-    public override bool Equals(object obj)
-    {
-        if (obj is Identifier other)
-        {
-            return Catalog == other.Catalog && Schema == other.Schema && Name == other.Name;
-        }
-        return false;
-    }
-
-    // Override GetHashCode as well when Equals is overridden
-    public override int GetHashCode()
-    {
-        return HashCode.Combine(Catalog, Schema, Name);
-    }
-
     // Additional methods for (de)serialization or other logic specific to your application
     // would depend on the APIs provided by the protobuf library you're using.
     public void MergeFrom(CodedInputStream input)
@@ -82,4 +66,16 @@ public class Identifier : IMessage<Identifier>
     }
 
     public MessageDescriptor Descriptor { get; }
+
+    public override bool Equals(object obj)
+    {
+        if (obj is Identifier other) return Catalog == other.Catalog && Schema == other.Schema && Name == other.Name;
+        return false;
+    }
+
+    // Override GetHashCode as well when Equals is overridden
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(Catalog, Schema, Name);
+    }
 }

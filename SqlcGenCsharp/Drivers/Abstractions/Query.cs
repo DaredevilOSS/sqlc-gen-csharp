@@ -1,9 +1,9 @@
+using System;
+using System.Collections.Generic;
 using Google.Protobuf;
 using Google.Protobuf.Reflection;
 
 namespace sqlc_gen_csharp.drivers.abstractions;
-
-using System.Collections.Generic;
 
 public class Query : IMessage<Query>
 {
@@ -17,11 +17,11 @@ public class Query : IMessage<Query>
 
     public string Cmd { get; set; } = "";
 
-    public List<Column> Columns { get; set; } = new List<Column>();
+    public List<Column> Columns { get; set; } = new();
 
-    public List<Parameter> Params { get; set; } = new List<Parameter>();
+    public List<Parameter> Params { get; set; } = new();
 
-    public List<string> Comments { get; set; } = new List<string>();
+    public List<string> Comments { get; set; } = new();
 
     public string Filename { get; set; } = "";
 
@@ -32,32 +32,33 @@ public class Query : IMessage<Query>
     // and implement IEquatable<Query> for equality comparison.
     public void MergeFrom(Query message)
     {
-        throw new System.NotImplementedException();
+        throw new NotImplementedException();
     }
 
     public void MergeFrom(CodedInputStream input)
     {
-        throw new System.NotImplementedException();
+        throw new NotImplementedException();
     }
 
     public void WriteTo(CodedOutputStream output)
     {
-        throw new System.NotImplementedException();
+        throw new NotImplementedException();
     }
 
     public int CalculateSize()
     {
-        throw new System.NotImplementedException();
+        throw new NotImplementedException();
     }
 
     public MessageDescriptor Descriptor { get; }
+
     public bool Equals(Query other)
     {
-        throw new System.NotImplementedException();
+        throw new NotImplementedException();
     }
 
     public Query Clone()
     {
-        throw new System.NotImplementedException();
+        throw new NotImplementedException();
     }
 }

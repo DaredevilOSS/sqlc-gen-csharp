@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Generic;
 using System.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
@@ -14,7 +12,7 @@ namespace SourceGeneratorSamples
         public void Execute(GeneratorExecutionContext context)
         {
             // begin creating the source we'll inject into the users compilation
-            StringBuilder sourceBuilder = new StringBuilder(@"
+            var sourceBuilder = new StringBuilder(@"
 using System;
 namespace HelloWorldGenerated
 {
@@ -27,13 +25,10 @@ namespace HelloWorldGenerated
 ");
 
             // using the context, get a list of syntax trees in the users compilation
-            IEnumerable<SyntaxTree> syntaxTrees = context.Compilation.SyntaxTrees;
+            var syntaxTrees = context.Compilation.SyntaxTrees;
 
             // add the filepath of each tree to the class we're building
-            foreach (SyntaxTree tree in syntaxTrees)
-            {
-                sourceBuilder.AppendLine($@"Console.WriteLine(@"" - {tree.FilePath}"");");
-            }
+            foreach (var tree in syntaxTrees) sourceBuilder.AppendLine($@"Console.WriteLine(@"" - {tree.FilePath}"");");
 
             // finish creating the source to inject
             sourceBuilder.Append(@"
