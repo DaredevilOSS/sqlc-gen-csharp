@@ -4,7 +4,7 @@ using sqlc_gen_csharp.protobuf;
 using sqlc_gen_csharp.Protobuf;
 using Type = System.Type;
 
-namespace sqlc_gen_csharp.drivers;
+namespace sqlc_gen_csharp.Drivers;
 
 public interface IDbDriver
 {
