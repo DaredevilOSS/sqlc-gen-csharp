@@ -1,5 +1,6 @@
 .idea/
 .vscode/
+.config/
 
 # User-specific files
 *.suo
