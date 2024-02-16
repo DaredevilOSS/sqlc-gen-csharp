@@ -5,6 +5,8 @@ VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "sqlc-gen-csharp", "sqlc-gen-csharp\sqlc-gen-csharp.csproj", "{649CFB46-68D1-41F8-BD76-FF4B79B16825}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SourceGenerator", "SourceGenerator\SourceGenerator.csproj", "{F24C633C-AB3E-43D3-B960-FABF5DF513C1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -18,5 +20,9 @@ Global
 		{649CFB46-68D1-41F8-BD76-FF4B79B16825}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{649CFB46-68D1-41F8-BD76-FF4B79B16825}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{649CFB46-68D1-41F8-BD76-FF4B79B16825}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F24C633C-AB3E-43D3-B960-FABF5DF513C1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F24C633C-AB3E-43D3-B960-FABF5DF513C1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F24C633C-AB3E-43D3-B960-FABF5DF513C1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F24C633C-AB3E-43D3-B960-FABF5DF513C1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

@@ -1,12 +1,14 @@
 ﻿using System.IO;
 using System;
 
-
-class Program
-{
-    static void Main(string[] args)
+namespace sqlc_gen_csharp {
+ public static class UseHelloWorldGenerator
     {
-        
-        Console.WriteLine("Hello World"); 
+        public static void Main()
+        {
+            // The static call below is generated at build time, and will list the syntax trees used in the compilation
+            HelloWorldGenerated.HelloWorld.SayHello();
+        }
     }
 }
+   
