@@ -7,14 +7,11 @@ namespace sqlc_gen_csharp.Protobuf;
 [ProtoContract]
 public class Enum
 {
-    [ProtoMember(1)]
-    public string Name { get; set; } = "";
+    [ProtoMember(1)] public string Name { get; set; } = "";
 
-    [ProtoMember(2)]
-    public List<string> Vals { get; set; } = new List<string>();
+    [ProtoMember(2)] public List<string> Vals { get; set; } = new();
 
-    [ProtoMember(3)]
-    public string Comment { get; set; } = "";
+    [ProtoMember(3)] public string Comment { get; set; } = "";
 
     // Constructor and additional logic as needed
 }

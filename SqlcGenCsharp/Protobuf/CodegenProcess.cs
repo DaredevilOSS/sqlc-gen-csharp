@@ -6,8 +6,7 @@ namespace sqlc_gen_csharp.Protobuf;
 [ProtoContract]
 public class CodegenProcess
 {
-    [ProtoMember(1)]
-    public string Cmd { get; set; } = "";
+    [ProtoMember(1)] public string Cmd { get; set; } = "";
 
     // Constructor and additional logic as needed
 }
