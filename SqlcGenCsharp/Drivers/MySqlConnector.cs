@@ -228,5 +228,5 @@ public class MySqlConnector : IDbDriver
             ));
 
         return methodDeclaration;
-    }
+    } //fsdf
 }
