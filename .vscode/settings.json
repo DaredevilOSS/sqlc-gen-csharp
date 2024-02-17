@@ -1,0 +1,7 @@
+{
+    "dotnet.defaultSolution": "sqlc-gen-csharp.sln",
+    "workbench.tree.indent": 15,
+    "workbench.colorCustomizations": {
+        "tree.indentGuidesStroke": "#36659a"
+    }
+}
