@@ -1,6 +1,9 @@
 .idea/
+
+# VScode
 .vscode/
 .config/
+!.config/settings.json
 
 # User-specific files
 *.suo

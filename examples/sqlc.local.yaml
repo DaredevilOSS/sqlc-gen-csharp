@@ -5,8 +5,7 @@ plugins:
     url: file://plugin.wasm
 - name: csharp
   wasm:
-    url: https://raw.githubusercontent.com/doron050/sqlc-gen-csharp/main/SqlcGenCsharp/SqlcGenCsharp.wasm
-    sha256: 3e679daa93cf8a079b1ed4ee82bc38e3070cc5d5dba66dae12379e9a61845a87
+    url: file://examples/SqlcGenCsharp.wasm
 sql:
 - schema: "authors/mysql/schema.sql"
   queries: "authors/mysql/query.sql"
