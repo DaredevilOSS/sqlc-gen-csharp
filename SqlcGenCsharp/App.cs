@@ -6,9 +6,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using ProtoBuf;
-using sqlc_gen_csharp.drivers;
-using sqlc_gen_csharp.protobuf;
-using sqlc_gen_csharp.Protobuf;
+using sqlc_gen_csharp.Drivers;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace sqlc_gen_csharp;
@@ -142,6 +140,44 @@ public class App
         }
     }
 
+    public static void WriteOutput(GenerateResponse output)
+    {
+        // Assuming GenerateResponse is a Protobuf-generated class
+        var encodedOutput = output.ToByteArray(); // Convert the Protobuf message to a byte array
+        using (var stdout = Console.OpenStandardOutput())
+        {
+            stdout.Write(encodedOutput, 0, encodedOutput.Length);
+        }
+    }
+
+    public void GenerateCodeAndSave(IEnumerable<Parameter> parameters, string outputPath)
+    {
+        var compilationUnit = CompilationUnit().AddMembers(GenerateClass("GeneratedClass", parameters))
+            .NormalizeWhitespace();
+
+        var code = compilationUnit.ToFullString();
+        File.WriteAllText(outputPath, code);
+    }
+
+    private ClassDeclarationSyntax GenerateClass(string className, IEnumerable<Parameter> parameters)
+    {
+        var classDeclaration = ClassDeclaration(className)
+            .AddModifiers(Token(SyntaxKind.PublicKeyword));
+
+        foreach (var param in parameters)
+        {
+            var property = PropertyDeclaration(IdentifierName(param.Type), Identifier(param.Name))
+                .AddModifiers(Token(SyntaxKind.PublicKeyword))
+                .AddAccessorListAccessors(
+                    AccessorDeclaration(SyntaxKind.GetAccessorDeclaration).WithSemicolonToken(Token(SyntaxKind.SemicolonToken)),
+                    AccessorDeclaration(SyntaxKind.SetAccessorDeclaration).WithSemicolonToken(Token(SyntaxKind.SemicolonToken)));
+
+            classDeclaration = classDeclaration.AddMembers(property);
+        }
+
+        return classDeclaration;
+    }
+    
     public static void Main()
     {
         // The static call below is generated at build time, and will list the syntax trees used in the compilation

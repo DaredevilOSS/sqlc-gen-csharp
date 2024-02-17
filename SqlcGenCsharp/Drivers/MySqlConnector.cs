@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using sqlc_gen_csharp.protobuf;
-using sqlc_gen_csharp.Protobuf;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 using Type = System.Type;
 
@@ -56,12 +56,7 @@ public class MySqlConnector : IDbDriver
                 throw new NotSupportedException($"Unsupported column type: {columnType}");
         }
     }
-
-    public IEnumerable<ParameterSyntax> FuncParamsDecl(string iface, IEnumerable<Parameter> parameters)
-    {
-        throw new NotImplementedException();
-    }
-
+    
     public CompilationUnitSyntax Preamble(Query[] queries)
     {
         // Using directive for MySQL (or similar)
@@ -89,13 +84,30 @@ public class MySqlConnector : IDbDriver
 
         return compilationUnit;
     }
+    
+    public IEnumerable<ParameterSyntax> FuncParamsDecl(string iface, IEnumerable<Parameter> parameters)
+    {
+        var funcParams = new List<ParameterSyntax>
+        {
+            Parameter(Identifier("client")).WithType(IdentifierName("Client"))
+        };
 
+        if (!string.IsNullOrEmpty(iface) && parameters.GetEnumerator().MoveNext())
+        {
+            funcParams.Add(
+                Parameter(Identifier("args")).WithType(IdentifierName(iface))
+            );
+        }
+
+        return funcParams;
+    }
+    
     public MethodDeclarationSyntax ExecDecl(string funcName, string queryName, string argIface,
         IEnumerable<Parameter> parameters)
     {
         // Generating the parameters for the method, potentially including 'args' if specified
         var funcParams =
-            FuncParamsDecl(argIface, parameters); // Assuming FuncParamsDecl is implemented as shown previously
+            FuncParamsDecl(argIface, parameters);
 
         // Creating the method declaration
         var methodDeclaration = MethodDeclaration(
@@ -228,5 +240,40 @@ public class MySqlConnector : IDbDriver
             ));
 
         return methodDeclaration;
+    }
+    
+    public static InterfaceDeclarationSyntax RowDecl(string name, Func<Column, TypeSyntax> ctype,
+        IEnumerable<Column> columns)
+    {
+        var properties = columns.Select((column, i) =>
+            PropertyDeclaration(ctype(column), Identifier(Utils.ColName(i, column)))
+                .AddModifiers(Token(SyntaxKind.PublicKeyword))
+                .WithAccessorList(
+                    AccessorList(
+                        List(new AccessorDeclarationSyntax[]
+                        {
+                            AccessorDeclaration(SyntaxKind.GetAccessorDeclaration).WithSemicolonToken(Token(SyntaxKind.SemicolonToken)),
+                            AccessorDeclaration(SyntaxKind.SetAccessorDeclaration).WithSemicolonToken(Token(SyntaxKind.SemicolonToken))
+                        })
+                    )
+                )
+        ).ToArray();
+
+        var interfaceDeclaration = InterfaceDeclaration(Identifier(name))
+            .AddModifiers(Token(SyntaxKind.PublicKeyword))
+            .AddMembers(properties);
+
+        return interfaceDeclaration;
+    }
+    
+    public static string PrintNodes(IEnumerable<SyntaxNode> nodes)
+    {
+        var stringBuilder = new StringBuilder();
+        foreach (var node in nodes)
+        {
+            stringBuilder.AppendLine(node.NormalizeWhitespace().ToFullString());
+            stringBuilder.AppendLine(); // Adding an extra line for separation, similar to "\n\n"
+        }
+        return stringBuilder.ToString();
     }
 }

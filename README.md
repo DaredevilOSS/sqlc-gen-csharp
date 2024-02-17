@@ -7,11 +7,15 @@
 make sure that the following applications are installed and exposed in your path
 
 * dotnet cli - https://github.com/dotnet/sdk - follow the instructions in the repo, currently we supports version `.NET 8.0 (latest)`
+* protobuf cli - https://grpc.io/docs/protoc-installation/ - follow the instructions in here
 
+## Protobuf
+Defined in protos/ (should be identical to the protocol buffers in sqlc repo).
+Generating C# code from protocol buffer file (TBD):
+`protoc -I=<path-to-project> --csharp_out=<path-to-project> <path-to proto-file>`
 
 ## Usage
 you can run the c# project by the terminal using this commnad `dotnet run --project sqlc-gen-csharp/`
-
 
 ```yaml
 version: '2'

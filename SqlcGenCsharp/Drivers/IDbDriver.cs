@@ -1,7 +1,5 @@
 using System.Collections.Generic;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using sqlc_gen_csharp.protobuf;
-using sqlc_gen_csharp.Protobuf;
 using Type = System.Type;
 
 namespace sqlc_gen_csharp.Drivers;
