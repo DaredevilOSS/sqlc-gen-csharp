@@ -1,0 +1,19 @@
+version: "2"
+plugins:
+- name: ts
+  wasm:
+    url: file://plugin.wasm
+- name: csharp
+  wasm:
+    url: https://raw.githubusercontent.com/doron050/sqlc-gen-csharp/main/SqlcGenCsharp/SqlcGenCsharp.wasm
+    sha256: 3e679daa93cf8a079b1ed4ee82bc38e3070cc5d5dba66dae12379e9a61845a87
+sql:
+- schema: "authors/mysql/schema.sql"
+  queries: "authors/mysql/query.sql"
+  engine: "mysql"
+  codegen:
+  - plugin: csharp
+    out: csharp-mysql
+    options:
+      runtime: net8.0
+      driver: mysql2
