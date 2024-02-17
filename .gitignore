@@ -3,7 +3,7 @@
 # VScode
 .vscode/
 .config/
-!.config/settings.json
+!.vscode/settings.json
 
 # User-specific files
 *.suo
