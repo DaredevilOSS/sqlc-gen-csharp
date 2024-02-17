@@ -169,7 +169,7 @@ public class App
 
         foreach (Parameter param in parameters)
         {
-            var property = PropertyDeclaration(IdentifierName(param.Type), Identifier(param.Name))
+            var property = PropertyDeclaration(IdentifierName(param.Column.Type.Name), Identifier(param.Column.Name))
                 .AddModifiers(Token(SyntaxKind.PublicKeyword))
                 .AddAccessorListAccessors(
                     AccessorDeclaration(SyntaxKind.GetAccessorDeclaration).WithSemicolonToken(Token(SyntaxKind.SemicolonToken)),
