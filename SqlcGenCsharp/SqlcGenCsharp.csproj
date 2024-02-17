@@ -10,6 +10,7 @@
         <ProjectReference Include="../SourceGenerator/SourceGenerator.csproj"
                           OutputItemType="Analyzer"
                           ReferenceOutputAssembly="false"/>
+        <ProjectReference Include="..\CodegenProtobuf\CodegenProtobuf.csproj" />
     </ItemGroup>
 
     <ItemGroup>
