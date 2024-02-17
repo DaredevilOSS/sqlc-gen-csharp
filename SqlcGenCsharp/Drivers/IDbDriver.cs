@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Plugin;
 using Type = System.Type;
 
 namespace sqlc_gen_csharp.Drivers;

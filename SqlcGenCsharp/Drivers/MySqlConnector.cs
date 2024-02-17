@@ -5,6 +5,7 @@ using System.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Plugin;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 using Type = System.Type;
 

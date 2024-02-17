@@ -1,4 +1,5 @@
 using System.Text.RegularExpressions;
+using Plugin;
 
 namespace sqlc_gen_csharp.Drivers;
 

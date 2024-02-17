@@ -2,12 +2,15 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Google.Protobuf;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Plugin;
 using ProtoBuf;
 using sqlc_gen_csharp.Drivers;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
+using File = System.IO.File;
 
 namespace sqlc_gen_csharp;
 
@@ -164,7 +167,7 @@ public class App
         var classDeclaration = ClassDeclaration(className)
             .AddModifiers(Token(SyntaxKind.PublicKeyword));
 
-        foreach (var param in parameters)
+        foreach (Parameter param in parameters)
         {
             var property = PropertyDeclaration(IdentifierName(param.Type), Identifier(param.Name))
                 .AddModifiers(Token(SyntaxKind.PublicKeyword))
