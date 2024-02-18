@@ -58,7 +58,7 @@ public class MySqlConnector : IDbDriver
         }
     }
     
-    public CompilationUnitSyntax Preamble(Query[] queries)
+    public CompilationUnitSyntax Preamble(List<Query> queries)
     {
         // Using directive for MySQL (or similar)
         var usingDirective = UsingDirective(ParseName("MySql.Data.MySqlClient"));
@@ -85,8 +85,8 @@ public class MySqlConnector : IDbDriver
 
         return compilationUnit;
     }
-    
-    public IEnumerable<ParameterSyntax> FuncParamsDecl(string iface, IEnumerable<Parameter> parameters)
+
+    private IEnumerable<ParameterSyntax> FuncParamsDecl(string iface, List<Parameter> parameters)
     {
         var funcParams = new List<ParameterSyntax>
         {
@@ -103,8 +103,8 @@ public class MySqlConnector : IDbDriver
         return funcParams;
     }
     
-    public MethodDeclarationSyntax ExecDecl(string funcName, string queryName, string argIface,
-        IEnumerable<Parameter> parameters)
+    public CompilationUnitSyntax ExecDeclare(string funcName, string queryName, string argIface,
+        List<Parameter> parameters)
     {
         // Generating the parameters for the method, potentially including 'args' if specified
         var funcParams =
@@ -148,7 +148,7 @@ public class MySqlConnector : IDbDriver
     }
 
     public MethodDeclarationSyntax ManyDecl(string funcName, string queryName, string argIface, string returnIface,
-        IEnumerable<Parameter> parameters, IEnumerable<Column> columns)
+        List<Parameter> parameters, List<Column> columns)
     {
         // Assuming FuncParamsDecl is implemented as shown previously
         var funcParams = FuncParamsDecl(argIface, parameters);
@@ -198,7 +198,7 @@ public class MySqlConnector : IDbDriver
     }
 
     public MethodDeclarationSyntax OneDecl(string funcName, string queryName, string argIface, string returnIface,
-        IEnumerable<Parameter> parameters, IEnumerable<Column> columns)
+        List<Parameter> parameters, List<Column> columns)
     {
         // Generating function parameters, potentially including 'args'
         var funcParams = FuncParamsDecl(argIface, parameters); // FuncParamsDecl should be implemented as before
@@ -244,7 +244,7 @@ public class MySqlConnector : IDbDriver
     }
     
     public static InterfaceDeclarationSyntax RowDecl(string name, Func<Column, TypeSyntax> ctype,
-        IEnumerable<Column> columns)
+        List<Column> columns)
     {
         var properties = columns.Select((column, i) =>
             PropertyDeclaration(ctype(column), Identifier(Utils.ColName(i, column)))
