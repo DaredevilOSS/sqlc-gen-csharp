@@ -4,8 +4,8 @@ plugins:
   wasm:
     url: file://plugin.wasm
 - name: csharp
-  wasm:
-    url: file://examples/SqlcGenCsharp.wasm
+  process:
+    cmd: dotnet run --project SqlcGenCsharp/SqlcGenCsharp.csproj
 sql:
 - schema: "authors/mysql/schema.sql"
   queries: "authors/mysql/query.sql"
