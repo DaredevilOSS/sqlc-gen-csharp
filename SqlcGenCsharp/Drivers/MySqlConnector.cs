@@ -13,15 +13,17 @@ namespace sqlc_gen_csharp.Drivers;
 
 public class MySqlConnector : IDbDriver
 {
-    public Type ColumnType(string columnType, bool notNull)
+    public TypeSyntax ColumnType(string columnType, bool notNull)
     {
+        var nullableSuffix = notNull ? string.Empty : "?";
+
         if (string.IsNullOrEmpty(columnType))
-            return typeof(object);
+            return SyntaxFactory.ParseTypeName("object" + nullableSuffix);
 
         switch (columnType.ToLower())
         {
             case "bigint":
-                return typeof(long);
+                return SyntaxFactory.ParseTypeName("long" + nullableSuffix);
             case "binary":
             case "bit":
             case "blob":
@@ -29,7 +31,7 @@ public class MySqlConnector : IDbDriver
             case "mediumblob":
             case "tinyblob":
             case "varbinary":
-                return typeof(byte[]);
+                return SyntaxFactory.ParseTypeName("byte[]" + nullableSuffix);
             case "char":
             case "date":
             case "datetime":
@@ -41,18 +43,19 @@ public class MySqlConnector : IDbDriver
             case "timestamp":
             case "tinytext":
             case "varchar":
-                return typeof(string);
+                return SyntaxFactory.ParseTypeName("string");
             case "double":
             case "float":
-                return typeof(double);
+                return SyntaxFactory.ParseTypeName("double" + nullableSuffix);
             case "int":
             case "mediumint":
             case "smallint":
             case "tinyint":
             case "year":
-                return typeof(int);
+                return SyntaxFactory.ParseTypeName("int" + nullableSuffix);
             case "json":
-                return typeof(object); // or a specific class if JSON structure is known
+                // Assuming JSON is represented as a string or a specific class
+                return SyntaxFactory.ParseTypeName("object" + nullableSuffix);
             default:
                 throw new NotSupportedException($"Unsupported column type: {columnType}");
         }
@@ -86,14 +89,61 @@ public class MySqlConnector : IDbDriver
         return compilationUnit;
     }
 
-    private IEnumerable<ParameterSyntax> FuncParamsDecl(string iface, List<Parameter> parameters)
+    public MethodDeclarationSyntax OneDeclare(string funcName, string queryName, string argIface, string returnIface,
+        IList<Parameter> parameters, IList<Column> columns)
+    {
+        // Generating function parameters, potentially including 'args'
+        var funcParams = FuncParamsDecl(argIface, parameters); // FuncParamsDecl should be implemented as before
+
+        // Return type is Task<ReturnType?>
+        var returnType = GenericName(Identifier("Task"))
+            .WithTypeArgumentList(
+                TypeArgumentList(
+                    SingletonSeparatedList<TypeSyntax>(
+                        NullableType(IdentifierName(returnIface)))));
+
+        // Method declaration
+        var methodDeclaration = MethodDeclaration(returnType, Identifier(funcName))
+            .AddModifiers(Token(SyntaxKind.PublicKeyword), Token(SyntaxKind.AsyncKeyword))
+            .WithParameterList(ParameterList(SeparatedList(funcParams)))
+            .WithBody(Block(
+                // Placeholder for method body: In a real scenario, you'd include logic to execute the query
+                // and return a single result or null.
+                // The following statement is a simplification.
+                SingletonList<StatementSyntax>(
+                    ReturnStatement(
+                        InvocationExpression(
+                            MemberAccessExpression(
+                                SyntaxKind.SimpleMemberAccessExpression,
+                                IdentifierName("Task"),
+                                IdentifierName("FromResult")),
+                            ArgumentList(SeparatedList(new[]
+                            {
+                                Argument(
+                                    // Assuming a method to convert a database row to returnIface
+                                    InvocationExpression(IdentifierName("ConvertToReturnType"),
+                                            ArgumentList(SingletonSeparatedList(
+                                                Argument(IdentifierName("row")))))
+                                        .WithLeadingTrivia(Comment("// Convert row to ReturnType instance"))
+                                )
+                            }))
+                        ).WithLeadingTrivia(Comment("// Placeholder for actual database query execution"))
+                    )
+                )
+            ));
+
+        return methodDeclaration;
+    }
+
+    private IEnumerable<ParameterSyntax> FuncParamsDecl(string iface, IList<Parameter> parameters)
     {
         var funcParams = new List<ParameterSyntax>
         {
             Parameter(Identifier("client")).WithType(IdentifierName("Client"))
         };
 
-        if (!string.IsNullOrEmpty(iface) && parameters.GetEnumerator().MoveNext())
+        using var enumerator = parameters.GetEnumerator();
+        if (!string.IsNullOrEmpty(iface) && enumerator.MoveNext())
         {
             funcParams.Add(
                 Parameter(Identifier("args")).WithType(IdentifierName(iface))
@@ -103,8 +153,8 @@ public class MySqlConnector : IDbDriver
         return funcParams;
     }
     
-    public CompilationUnitSyntax ExecDeclare(string funcName, string queryName, string argIface,
-        List<Parameter> parameters)
+    public MethodDeclarationSyntax ExecDeclare(string funcName, string queryName, string argIface,
+        IList<Parameter> parameters)
     {
         // Generating the parameters for the method, potentially including 'args' if specified
         var funcParams =
@@ -147,8 +197,8 @@ public class MySqlConnector : IDbDriver
         return methodDeclaration;
     }
 
-    public MethodDeclarationSyntax ManyDecl(string funcName, string queryName, string argIface, string returnIface,
-        List<Parameter> parameters, List<Column> columns)
+    public MethodDeclarationSyntax ManyDeclare(string funcName, string queryName, string argIface, string returnIface,
+        IList<Parameter> parameters, IList<Column> columns)
     {
         // Assuming FuncParamsDecl is implemented as shown previously
         var funcParams = FuncParamsDecl(argIface, parameters);
@@ -196,55 +246,9 @@ public class MySqlConnector : IDbDriver
 
         return methodDeclaration;
     }
-
-    public MethodDeclarationSyntax OneDecl(string funcName, string queryName, string argIface, string returnIface,
-        List<Parameter> parameters, List<Column> columns)
-    {
-        // Generating function parameters, potentially including 'args'
-        var funcParams = FuncParamsDecl(argIface, parameters); // FuncParamsDecl should be implemented as before
-
-        // Return type is Task<ReturnType?>
-        var returnType = GenericName(Identifier("Task"))
-            .WithTypeArgumentList(
-                TypeArgumentList(
-                    SingletonSeparatedList<TypeSyntax>(
-                        NullableType(IdentifierName(returnIface)))));
-
-        // Method declaration
-        var methodDeclaration = MethodDeclaration(returnType, Identifier(funcName))
-            .AddModifiers(Token(SyntaxKind.PublicKeyword), Token(SyntaxKind.AsyncKeyword))
-            .WithParameterList(ParameterList(SeparatedList(funcParams)))
-            .WithBody(Block(
-                // Placeholder for method body: In a real scenario, you'd include logic to execute the query
-                // and return a single result or null.
-                // The following statement is a simplification.
-                SingletonList<StatementSyntax>(
-                    ReturnStatement(
-                        InvocationExpression(
-                            MemberAccessExpression(
-                                SyntaxKind.SimpleMemberAccessExpression,
-                                IdentifierName("Task"),
-                                IdentifierName("FromResult")),
-                            ArgumentList(SeparatedList(new[]
-                            {
-                                Argument(
-                                    // Assuming a method to convert a database row to returnIface
-                                    InvocationExpression(IdentifierName("ConvertToReturnType"),
-                                            ArgumentList(SingletonSeparatedList(
-                                                Argument(IdentifierName("row")))))
-                                        .WithLeadingTrivia(Comment("// Convert row to ReturnType instance"))
-                                )
-                            }))
-                        ).WithLeadingTrivia(Comment("// Placeholder for actual database query execution"))
-                    )
-                )
-            ));
-
-        return methodDeclaration;
-    }
     
-    public static InterfaceDeclarationSyntax RowDecl(string name, Func<Column, TypeSyntax> ctype,
-        List<Column> columns)
+    public static InterfaceDeclarationSyntax RowDeclare(string name, Func<Column, TypeSyntax> ctype,
+        IList<Column> columns)
     {
         var properties = columns.Select((column, i) =>
             PropertyDeclaration(ctype(column), Identifier(Utils.ColName(i, column)))
