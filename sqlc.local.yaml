@@ -2,7 +2,7 @@ version: "2"
 plugins:
 - name: csharp
   process:
-    cmd: dotnet run --project SqlcGenCsharp/SqlcGenCsharp.csproj
+    cmd: ls
 sql:
 - schema: "examples/authors/mysql/schema.sql"
   queries: "examples/authors/mysql/query.sql"

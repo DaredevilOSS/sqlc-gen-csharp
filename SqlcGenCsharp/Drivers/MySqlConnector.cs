@@ -248,7 +248,7 @@ public class MySqlConnector : IDbDriver
     }
     
     public static InterfaceDeclarationSyntax RowDeclare(string name, Func<Column, TypeSyntax> ctype,
-        IList<Column> columns)
+        IList<Column?> columns)
     {
         var properties = columns.Select((column, i) =>
             PropertyDeclaration(ctype(column), Identifier(Utils.ColName(i, column)))
