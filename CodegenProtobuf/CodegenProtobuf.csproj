@@ -8,6 +8,7 @@
 
     <ItemGroup>
       <PackageReference Include="Google.Protobuf" Version="3.26.0-rc2" />
+      <PackageReference Include="Grpc.Core.Api" Version="2.61.0" />
     </ItemGroup>
 
 </Project>

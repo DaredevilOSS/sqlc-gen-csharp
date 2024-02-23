@@ -11,21 +11,17 @@ make sure that the following applications are installed and exposed in your path
 
 ## Protobuf
 Defined in protos/ (should be identical to the protocol buffers in sqlc repo).
-Generating C# code from protocol buffer file (TBD):
-`protoc -I=<path-to-project> --csharp_out=<path-to-project> <path-to proto-file>`
+Generating C# code from protocol buffer file:
+```
+make buf-gen
+```
 
 ## Usage
-you can run the c# project by the terminal using this commnad `dotnet run --project sqlc-gen-csharp/`
-
-
+you can run the c# project by the terminal using this commnad `make dotnet-publish`
 Use the following to run sqlc with the csharp code locally
 ```
-export PATH=$PATH:[ADD_PATH_TO_REPO]/sqlc-gen-csharp/SqlcGenCsharp/bin/Release/net8.0/osx-arm64/publish/
-
-sqlc -f sqlc.local.yaml generate
+make sqlc-generate
 ```
-
-
 
 ```yaml
 version: '2'
