@@ -17,6 +17,16 @@ Generating C# code from protocol buffer file (TBD):
 ## Usage
 you can run the c# project by the terminal using this commnad `dotnet run --project sqlc-gen-csharp/`
 
+
+Use the following to run sqlc with the csharp code locally
+```
+export PATH=$PATH:[ADD_PATH_TO_REPO]/sqlc-gen-csharp/SqlcGenCsharp/bin/Release/net8.0/osx-arm64/publish/
+
+sqlc -f sqlc.local.yaml generate
+```
+
+
+
 ```yaml
 version: '2'
 plugins:

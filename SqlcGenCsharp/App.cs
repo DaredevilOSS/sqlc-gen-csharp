@@ -65,7 +65,7 @@ public class App
     {
         System.Console.WriteLine("working plugin");
         // The static call below is generated at build time, and will list the syntax trees used in the compilation
-
+        // System.Environment.Exit(1);
         var generateRequest = ReadInput();
         var generateResponse = CodeGenerator.Generate(generateRequest);
         WriteOutput(generateResponse);
