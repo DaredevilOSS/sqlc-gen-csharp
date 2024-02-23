@@ -68,6 +68,6 @@ public class App
         // System.Environment.Exit(1);
         var generateRequest = ReadInput();
         var generateResponse = CodeGenerator.Generate(generateRequest);
-        WriteOutput(generateResponse);
+        if (generateResponse != null) WriteOutput(generateResponse);
     }
 }

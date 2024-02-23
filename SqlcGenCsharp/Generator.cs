@@ -171,7 +171,7 @@ public static class CodeGenerator
     }
     
     public static InterfaceDeclarationSyntax RowDeclare(string name, Func<Column, TypeSyntax> ctype,
-        IEnumerable<Column> columns)
+        IEnumerable<Column?> columns)
     {
         // Create a list of property signatures based on the columns
         var properties = columns.Select((column, i) =>
