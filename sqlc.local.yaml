@@ -5,14 +5,14 @@ plugins:
     cmd: SqlcGenCsharp/bin/Release/net8.0/osx-arm64/publish/SqlcGenCsharp
 - name: csharp-wasm
   wasm:
-    url: file://SqlcGenCsharp/bin/Debug/net8.0/SqlcGenCsharp.wasm
-    sha256: a21b46768e619aa844605a370e3171d9b8ac7f49486ee6f9bd3641361b4dd0d9
+    url: file:///Users/doroneli/Coding/sqlc-gen-csharp/SqlcGenCsharp/bin/release/net8.0/osx-arm64/SqlcGenCsharp.wasm
+    sha256: 12925f911eb77215b45e226ed96b593d254f34c96953c11be3cd566bf6ab21f1
 sql:
 - schema: "examples/authors/mysql/schema.sql"
   queries: "examples/authors/mysql/query.sql"
   engine: "mysql"
   codegen:
-  - plugin: csharp
+  - plugin: csharp-wasm
     out: csharp-mysql
     options:
       driver: MySqlConnector
