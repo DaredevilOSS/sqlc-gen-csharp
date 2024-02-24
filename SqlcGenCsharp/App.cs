@@ -36,7 +36,6 @@ public class App
         using var writer = new StreamWriter("/tmp/sqlc-gen-csharp.log");
         var generateRequest = ReadInput();
         var generateResponse = CodeGenerator.Generate(generateRequest);
-        if (generateResponse is not null) WriteOutput(generateResponse);
-        if (generateResponse is null) writer.WriteLine("response is null");
+        WriteOutput(generateResponse);
     }
 }
