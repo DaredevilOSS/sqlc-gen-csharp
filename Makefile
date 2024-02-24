@@ -1,5 +1,5 @@
 SHELL 		:= /bin/bash
-PWD := $(shell pwd)
+PWD 		:= $(shell pwd)
 PATH  		:= ${PATH}:${PWD}/dist
 RUNTIME 	:= osx-arm64 # TODO generify
 

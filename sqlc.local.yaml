@@ -2,10 +2,10 @@ version: "2"
 plugins:
 - name: csharp
   process:
-    cmd: SqlcGenCsharp/bin/Release/net8.0/osx-arm64/publish/SqlcGenCsharp
+    cmd: ./dist/SqlcGenCsharp
 - name: csharp-wasm
   wasm:
-    url: file://SqlcGenCsharp/bin/Debug/net8.0/SqlcGenCsharp.wasm
+    url: file://dist/SqlcGenCsharp.wasm
     sha256: a21b46768e619aa844605a370e3171d9b8ac7f49486ee6f9bd3641361b4dd0d9
 sql:
 - schema: "examples/authors/mysql/schema.sql"

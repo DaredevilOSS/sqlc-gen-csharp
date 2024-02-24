@@ -6,8 +6,6 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Plugin;
-using ProtoBuf;
-using sqlc_gen_csharp.Drivers;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 using File = System.IO.File;
 
@@ -23,7 +21,7 @@ public class App
         memoryStream.Position = 0; // Resetting position to the beginning of the stream
 
         // Deserializing from binary data
-        return Serializer.Deserialize<GenerateRequest>(memoryStream);
+        return GenerateRequest.Parser.ParseFrom(memoryStream);
     }
 
     private static void WriteOutput(GenerateResponse output)
