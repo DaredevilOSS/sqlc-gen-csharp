@@ -16,7 +16,7 @@
         <PackageReference Include="Google.Protobuf" Version="3.26.0-rc2" />
         <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.9.0-3.final" />
         <PackageReference Include="protobuf-net" Version="3.2.30" />
-        <PackageReference Include="Wasi.Sdk" Version="0.1.4-preview.10020" />
+        <PackageReference Include="Wasi.Sdk" Version="0.1.4-preview.10020" /> 
     </ItemGroup>
 
 </Project>
