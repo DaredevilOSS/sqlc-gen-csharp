@@ -31,41 +31,12 @@ public class App
         stdout.Write(encodedOutput, 0, encodedOutput.Length);
     }
 
-    public void GenerateCodeAndSave(IEnumerable<Parameter> parameters, string outputPath)
-    {
-        var compilationUnit = CompilationUnit().AddMembers(GenerateClass("GeneratedClass", parameters))
-            .NormalizeWhitespace();
-
-        var code = compilationUnit.ToFullString();
-        File.WriteAllText(outputPath, code);
-    }
-
-    private ClassDeclarationSyntax GenerateClass(string className, IEnumerable<Parameter> parameters)
-    {
-        var classDeclaration = ClassDeclaration(className)
-            .AddModifiers(Token(SyntaxKind.PublicKeyword));
-
-        foreach (var param in parameters)
-        {
-            var property = PropertyDeclaration(IdentifierName(param.Column.Type.Name), Identifier(param.Column.Name))
-                .AddModifiers(Token(SyntaxKind.PublicKeyword))
-                .AddAccessorListAccessors(
-                    AccessorDeclaration(SyntaxKind.GetAccessorDeclaration).WithSemicolonToken(Token(SyntaxKind.SemicolonToken)),
-                    AccessorDeclaration(SyntaxKind.SetAccessorDeclaration).WithSemicolonToken(Token(SyntaxKind.SemicolonToken)));
-
-            classDeclaration = classDeclaration.AddMembers(property);
-        }
-
-        return classDeclaration;
-    }
-    
     public static void Main()
     {
-        System.Console.WriteLine("working plugin");
-        // The static call below is generated at build time, and will list the syntax trees used in the compilation
-        // System.Environment.Exit(1);
+        using var writer = new StreamWriter("/tmp/sqlc-gen-csharp.log");
         var generateRequest = ReadInput();
         var generateResponse = CodeGenerator.Generate(generateRequest);
-        if (generateResponse != null) WriteOutput(generateResponse);
+        if (generateResponse is not null) WriteOutput(generateResponse);
+        if (generateResponse is null) writer.WriteLine("response is null");
     }
 }

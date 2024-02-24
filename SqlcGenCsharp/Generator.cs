@@ -26,7 +26,7 @@ public static class CodeGenerator
         return a;
     }
 
-    public static ByteString CompileToByteArray(CompilationUnitSyntax compilationUnit)
+    private static ByteString CompileToByteArray(CompilationUnitSyntax compilationUnit)
     {
         // Create a syntax tree from the compilation unit
         SyntaxTree syntaxTree = CSharpSyntaxTree.Create(compilationUnit);
@@ -68,15 +68,19 @@ public static class CodeGenerator
             return ByteString.CopyFrom(byteArray);
         }
     }
-    
-    public static GenerateResponse? Generate(GenerateRequest generateRequest)
+
+    private static Options? ParseOptions(GenerateRequest generateRequest)
     {
         if (generateRequest.PluginOptions.Length <= 0) 
             return null;
         var text = Encoding.UTF8.GetString(generateRequest.PluginOptions.ToByteArray());
-        var options = JsonSerializer.Deserialize<Options>(text);
-        if (options?.Driver is null)
-            return null;
+        return JsonSerializer.Deserialize<Options>(text);
+    }
+    
+    public static GenerateResponse? Generate(GenerateRequest generateRequest)
+    {
+        var options = ParseOptions(generateRequest);
+        if (options?.Driver is null) return null;
         
         var dbDriver = CreateNodeGenerator(options.Driver);
         var queryMap = generateRequest.Queries
