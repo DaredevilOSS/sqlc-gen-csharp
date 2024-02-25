@@ -26,7 +26,7 @@ public static class CodeGenerator
         return a;
     }
 
-    public static ByteString CompileToByteArray(CompilationUnitSyntax compilationUnit)
+    private static ByteString CompileToByteArray(CompilationUnitSyntax compilationUnit)
     {
         // Create a syntax tree from the compilation unit
         SyntaxTree syntaxTree = CSharpSyntaxTree.Create(compilationUnit);
@@ -68,17 +68,19 @@ public static class CodeGenerator
             return ByteString.CopyFrom(byteArray);
         }
     }
-    
-    public static GenerateResponse? Generate(GenerateRequest generateRequest)
+
+    private static Options ParseOptions(GenerateRequest generateRequest)
     {
         if (generateRequest.PluginOptions.Length <= 0) 
             return null;
         var text = Encoding.UTF8.GetString(generateRequest.PluginOptions.ToByteArray());
-        var options = JsonSerializer.Deserialize<Options>(text);
-        if (options?.Driver is null)
-            return null;
-        
-        var dbDriver = CreateNodeGenerator(options.Driver);
+        return JsonSerializer.Deserialize<Options>(text) ?? throw new InvalidOperationException();
+    }
+    
+    public static GenerateResponse Generate(GenerateRequest generateRequest)
+    {
+        var options = ParseOptions(generateRequest);
+        var dbDriver = CreateNodeGenerator(options.driver);
         var queryMap = generateRequest.Queries
             .GroupBy(query => query.Filename)
             .ToDictionary(group => group.Key, group => group.ToList());
@@ -169,8 +171,8 @@ public static class CodeGenerator
                 throw new ArgumentException($"unknown driver: {driver}", nameof(driver));
         }
     }
-    
-    public static InterfaceDeclarationSyntax RowDeclare(string name, Func<Column, TypeSyntax> ctype,
+
+    private static InterfaceDeclarationSyntax RowDeclare(string name, Func<Column, TypeSyntax> ctype,
         IEnumerable<Column?> columns)
     {
         // Create a list of property signatures based on the columns

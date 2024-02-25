@@ -6,6 +6,7 @@
         <RootNamespace>sqlc_gen_csharp</RootNamespace>
         <PublishSingleFile>true</PublishSingleFile>
         <SelfContained>true</SelfContained>
+        <Nullable>enable</Nullable>
     </PropertyGroup>
 
     <ItemGroup>
