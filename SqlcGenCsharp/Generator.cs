@@ -46,33 +46,29 @@ public static class CodeGenerator
             options: options);
 
         // Emit the compilation to a memory stream
-        using (var ms = new MemoryStream())
+        using var ms = new MemoryStream();
+        EmitResult result = compilation.Emit(ms);
+
+        if (!result.Success)
         {
-            EmitResult result = compilation.Emit(ms);
-
-            if (!result.Success)
+            // Handle compilation failures
+            // For example, you can log or throw exceptions based on the diagnostics
+            foreach (Diagnostic diagnostic in result.Diagnostics)
             {
-                // Handle compilation failures
-                // For example, you can log or throw exceptions based on the diagnostics
-                foreach (Diagnostic diagnostic in result.Diagnostics)
-                {
-                    // Log or process diagnostic information
-                }
-
-                throw new InvalidOperationException("Compilation failed.");
+                // Log or process diagnostic information
             }
 
-            // Compilation was successful, return the bytes
-            ms.Seek(0, SeekOrigin.Begin);
-            byte[] byteArray = ms.ToArray();
-            return ByteString.CopyFrom(byteArray);
+            throw new InvalidOperationException("Compilation failed.");
         }
+
+        // Compilation was successful, return the bytes
+        ms.Seek(0, SeekOrigin.Begin);
+        byte[] byteArray = ms.ToArray();
+        return ByteString.CopyFrom(byteArray);
     }
 
     private static Options ParseOptions(GenerateRequest generateRequest)
     {
-        if (generateRequest.PluginOptions.Length <= 0) 
-            return null;
         var text = Encoding.UTF8.GetString(generateRequest.PluginOptions.ToByteArray());
         return JsonSerializer.Deserialize<Options>(text) ?? throw new InvalidOperationException();
     }
@@ -94,16 +90,7 @@ public static class CodeGenerator
             // loop over queries
             foreach (Query query in fileQueries.Value)
             {
-                var colMap = new Dictionary<string, int>();
-                var updatedColumns = query.Columns
-                    .Where(column => !string.IsNullOrEmpty(column.Name)) // Filter out columns without a name
-                    .Select(column => {
-                        var count = colMap.GetValueOrDefault(column.Name, 0);
-                        var updatedName = count > 0 ? $"{column.Name}_{count + 1}" : column.Name;
-                        colMap[column.Name] = count + 1; // Update the count for the current name
-                        return new Column { Name = updatedName };
-                    })
-                    .ToList();
+                var updatedColumns = ConstructUpdatedColumns(query);
                 
                 var lowerName = char.ToLower(query.Name[0]) + query.Name.Substring(1);
                 var textName = $"{lowerName}Query";
@@ -111,45 +98,10 @@ public static class CodeGenerator
                     textName,
                     $"-- name: {query.Name} {query.Cmd}\n{query.Text}"
                 );
-                
-                string? argIface = null;
-                string? returnIface = null;
 
-                if (query.Params.Count > 0)
-                {
-                    argIface = $"{query.Name}Args";
-                    // Assuming 'nodes' is a List of some type and 'argsDecl' returns an instance of that type
-                    // 'ctype' and 'query.Params' need to be appropriately defined and passed
-                    // TODO this is pure guess
-                    var unitToAdd = ArgsDeclare(argIface,
-                        (column => dbDriver.ColumnType(column.Type.Name, column.NotNull)), query.Params);
-                    nodes = MergeCompilationUnit(nodes, unitToAdd);
-                }
-
-                if (query.Columns.Count > 0)
-                {
-                    returnIface = $"{query.Name}Row";
-                    // Similarly, assuming 'rowDecl' returns an instance of the type contained in 'nodes'
-                    // 'ctype' and 'query.Columns' need to be appropriately defined and passed
-                    // TODO this is pure guess
-                    var unitToAdd = RowDeclare(returnIface,
-                        column => dbDriver.ColumnType(column.Type.Name, column.NotNull), query.Columns);
-                    nodes = nodes.WithMembers(unitToAdd.Members);
-                    nodes = nodes.NormalizeWhitespace();
-                }
-                
-                switch (query.Cmd)
-                {
-                    case ":exec":
-                        nodes = nodes.AddMembers(dbDriver.ExecDeclare(query.Name, query.Text, argIface, query.Params));
-                        break;
-                    case ":one":
-                        nodes = nodes.AddMembers(dbDriver.OneDeclare(query.Name, query.Text, argIface, returnIface ?? "void", query.Params, query.Columns));
-                        break;
-                    case ":many":
-                        nodes  = nodes.AddMembers(dbDriver.ManyDeclare(query.Name, query.Text, argIface, returnIface ?? "void", query.Params, query.Columns));
-                        break;
-                }
+                (nodes, var argInterface) = AddArgsDeclaration(query, dbDriver, nodes);
+                (nodes, var returnInterface) = AddRowDeclaration(query, dbDriver, nodes);
+                nodes = AddMethodDeclaration(query, nodes, dbDriver, argInterface, returnInterface);
 
                 files.Add(new Plugin.File {
                     Name = fileQueries.Key,
@@ -160,7 +112,60 @@ public static class CodeGenerator
         
         return new GenerateResponse { Files = { files }};
     }
-    
+
+    private static CompilationUnitSyntax AddMethodDeclaration(Query query, CompilationUnitSyntax nodes, IDbDriver dbDriver,
+        string argInterface, string returnInterface)
+    {
+        switch (query.Cmd)
+        {
+            case ":exec":
+                nodes = nodes.AddMembers(dbDriver.ExecDeclare(query.Name, query.Text, argInterface, query.Params));
+                break;
+            case ":one":
+                nodes = nodes.AddMembers(dbDriver.OneDeclare(query.Name, query.Text, argInterface, returnInterface, query.Params, query.Columns));
+                break;
+            case ":many":
+                nodes  = nodes.AddMembers(dbDriver.ManyDeclare(query.Name, query.Text, argInterface, returnInterface, query.Params, query.Columns));
+                break;
+        }
+
+        return nodes;
+    }
+
+    private static (CompilationUnitSyntax, string) AddRowDeclaration(Query query, IDbDriver dbDriver, CompilationUnitSyntax nodes)
+    {
+        if (query.Columns.Count <= 0) return (nodes, String.Empty); // TODO
+        var returnInterface = $"{query.Name}Row";
+        // TODO this is pure guess
+        var unitToAdd = RowDeclare(returnInterface,
+            column => dbDriver.ColumnType(column.Type.Name, column.NotNull), query.Columns);
+        nodes = nodes.WithMembers(unitToAdd.Members);
+        return (nodes.NormalizeWhitespace(), returnInterface);
+    }
+
+    private static (CompilationUnitSyntax, string) AddArgsDeclaration(Query query, IDbDriver dbDriver, CompilationUnitSyntax nodes)
+    {
+        if (query.Params.Count <= 0) return (nodes, String.Empty); // TODO
+        var argInterface = $"{query.Name}Args";
+        var unitToAdd = ArgsDeclare(argInterface,
+            (column => dbDriver.ColumnType(column.Type.Name, column.NotNull)), query.Params);
+        return (MergeCompilationUnit(nodes, unitToAdd), argInterface);
+    }
+
+    private static IList<Column> ConstructUpdatedColumns(Query query)
+    {
+        var colMap = new Dictionary<string, int>();
+        return query.Columns
+            .Where(column => !string.IsNullOrEmpty(column.Name)) // Filter out columns without a name
+            .Select(column => {
+                var count = colMap.GetValueOrDefault(column.Name, 0);
+                var updatedName = count > 0 ? $"{column.Name}_{count + 1}" : column.Name;
+                colMap[column.Name] = count + 1; // Update the count for the current name
+                return new Column { Name = updatedName };
+            })
+            .ToList();
+    }
+
     private static IDbDriver CreateNodeGenerator(string driver)
     {
         switch (driver)

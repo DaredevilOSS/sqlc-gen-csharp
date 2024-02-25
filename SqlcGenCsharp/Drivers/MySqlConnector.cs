@@ -7,7 +7,6 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Plugin;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
-using Type = System.Type;
 
 namespace sqlc_gen_csharp.Drivers;
 
@@ -89,18 +88,18 @@ public class MySqlConnector : IDbDriver
         return compilationUnit;
     }
 
-    public MethodDeclarationSyntax OneDeclare(string funcName, string queryName, string argIface, string returnIface,
+    public MethodDeclarationSyntax OneDeclare(string funcName, string queryName, string argInterface, string returnInterface,
         IList<Parameter> parameters, IList<Column> columns)
     {
         // Generating function parameters, potentially including 'args'
-        var funcParams = FuncParamsDecl(argIface, parameters); // FuncParamsDecl should be implemented as before
+        var funcParams = FuncParamsDecl(argInterface, parameters); // FuncParamsDecl should be implemented as before
 
         // Return type is Task<ReturnType?>
         var returnType = GenericName(Identifier("Task"))
             .WithTypeArgumentList(
                 TypeArgumentList(
                     SingletonSeparatedList<TypeSyntax>(
-                        NullableType(IdentifierName(returnIface)))));
+                        NullableType(IdentifierName(returnInterface)))));
 
         // Method declaration
         var methodDeclaration = MethodDeclaration(returnType, Identifier(funcName))
@@ -135,7 +134,7 @@ public class MySqlConnector : IDbDriver
         return methodDeclaration;
     }
 
-    private IEnumerable<ParameterSyntax> FuncParamsDecl(string iface, IList<Parameter> parameters)
+    private IEnumerable<ParameterSyntax> FuncParamsDecl(string argInterface, IList<Parameter> parameters)
     {
         var funcParams = new List<ParameterSyntax>
         {
@@ -143,10 +142,10 @@ public class MySqlConnector : IDbDriver
         };
 
         using var enumerator = parameters.GetEnumerator();
-        if (!string.IsNullOrEmpty(iface) && enumerator.MoveNext())
+        if (!string.IsNullOrEmpty(argInterface) && enumerator.MoveNext())
         {
             funcParams.Add(
-                Parameter(Identifier("args")).WithType(IdentifierName(iface))
+                Parameter(Identifier("args")).WithType(IdentifierName(argInterface))
             );
         }
 
@@ -197,11 +196,11 @@ public class MySqlConnector : IDbDriver
         return methodDeclaration;
     }
 
-    public MethodDeclarationSyntax ManyDeclare(string funcName, string queryName, string argIface, string returnIface,
+    public MethodDeclarationSyntax ManyDeclare(string funcName, string queryName, string argInterface, string returnInterface,
         IList<Parameter> parameters, IList<Column> columns)
     {
         // Assuming FuncParamsDecl is implemented as shown previously
-        var funcParams = FuncParamsDecl(argIface, parameters);
+        var funcParams = FuncParamsDecl(argInterface, parameters);
 
         // Return type is Task<List<ReturnType>>
         var returnType = GenericName(Identifier("Task"))
@@ -212,7 +211,7 @@ public class MySqlConnector : IDbDriver
                             .WithTypeArgumentList(
                                 TypeArgumentList(
                                     SingletonSeparatedList<TypeSyntax>(
-                                        IdentifierName(returnIface)))))));
+                                        IdentifierName(returnInterface)))))));
 
         // Method declaration
         var methodDeclaration = MethodDeclaration(returnType, Identifier(funcName))
