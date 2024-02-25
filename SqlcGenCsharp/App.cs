@@ -15,12 +15,9 @@ public class App
 {
     private static GenerateRequest ReadInput()
     {
-        // Reading from standard input stream
         using var memoryStream = new MemoryStream();
         Console.OpenStandardInput().CopyTo(memoryStream);
-        memoryStream.Position = 0; // Resetting position to the beginning of the stream
-
-        // Deserializing from binary data
+        memoryStream.Position = 0;
         return GenerateRequest.Parser.ParseFrom(memoryStream);
     }
 
@@ -33,8 +30,10 @@ public class App
 
     public static void Main()
     {
-        using var writer = new StreamWriter("/tmp/sqlc-gen-csharp.log");
+        using var writer = new StreamWriter("/tmp/sqlc-gen-csharp-request.txt");
         var generateRequest = ReadInput();
+        writer.Write(generateRequest);
+        writer.Close();
         var generateResponse = CodeGenerator.Generate(generateRequest);
         WriteOutput(generateResponse);
     }

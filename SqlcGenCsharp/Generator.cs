@@ -72,7 +72,7 @@ public static class CodeGenerator
         var text = Encoding.UTF8.GetString(generateRequest.PluginOptions.ToByteArray());
         return JsonSerializer.Deserialize<Options>(text) ?? throw new InvalidOperationException();
     }
-    
+
     public static GenerateResponse Generate(GenerateRequest generateRequest)
     {
         var options = ParseOptions(generateRequest);
@@ -81,17 +81,17 @@ public static class CodeGenerator
             .GroupBy(query => query.Filename)
             .ToDictionary(group => group.Key, group => group.ToList());
         var files = new List<Plugin.File>();
-        
+
         // loop over dictionary of query files
         foreach (var fileQueries in queryMap)
         {
             var nodes = dbDriver.Preamble(fileQueries.Value);
-            
+
             // loop over queries
             foreach (Query query in fileQueries.Value)
             {
                 var updatedColumns = ConstructUpdatedColumns(query);
-                
+
                 var lowerName = char.ToLower(query.Name[0]) + query.Name.Substring(1);
                 var textName = $"{lowerName}Query";
                 var queryDeclaration = QueryDecl(
@@ -103,17 +103,19 @@ public static class CodeGenerator
                 (nodes, var returnInterface) = AddRowDeclaration(query, dbDriver, nodes);
                 nodes = AddMethodDeclaration(query, nodes, dbDriver, argInterface, returnInterface);
 
-                files.Add(new Plugin.File {
+                files.Add(new Plugin.File
+                {
                     Name = fileQueries.Key,
                     Contents = CompileToByteArray(nodes)
                 });
             }
         }
-        
-        return new GenerateResponse { Files = { files }};
+
+        return new GenerateResponse { Files = { files } };
     }
 
-    private static CompilationUnitSyntax AddMethodDeclaration(Query query, CompilationUnitSyntax nodes, IDbDriver dbDriver,
+    private static CompilationUnitSyntax AddMethodDeclaration(Query query, CompilationUnitSyntax nodes,
+        IDbDriver dbDriver,
         string argInterface, string returnInterface)
     {
         switch (query.Cmd)
@@ -122,17 +124,20 @@ public static class CodeGenerator
                 nodes = nodes.AddMembers(dbDriver.ExecDeclare(query.Name, query.Text, argInterface, query.Params));
                 break;
             case ":one":
-                nodes = nodes.AddMembers(dbDriver.OneDeclare(query.Name, query.Text, argInterface, returnInterface, query.Params, query.Columns));
+                nodes = nodes.AddMembers(dbDriver.OneDeclare(query.Name, query.Text, argInterface, returnInterface,
+                    query.Params, query.Columns));
                 break;
             case ":many":
-                nodes  = nodes.AddMembers(dbDriver.ManyDeclare(query.Name, query.Text, argInterface, returnInterface, query.Params, query.Columns));
+                nodes = nodes.AddMembers(dbDriver.ManyDeclare(query.Name, query.Text, argInterface, returnInterface,
+                    query.Params, query.Columns));
                 break;
         }
 
         return nodes;
     }
 
-    private static (CompilationUnitSyntax, string) AddRowDeclaration(Query query, IDbDriver dbDriver, CompilationUnitSyntax nodes)
+    private static (CompilationUnitSyntax, string) AddRowDeclaration(Query query, IDbDriver dbDriver,
+        CompilationUnitSyntax nodes)
     {
         if (query.Columns.Count <= 0) return (nodes, String.Empty); // TODO
         var returnInterface = $"{query.Name}Row";
@@ -143,21 +148,23 @@ public static class CodeGenerator
         return (nodes.NormalizeWhitespace(), returnInterface);
     }
 
-    private static (CompilationUnitSyntax, string) AddArgsDeclaration(Query query, IDbDriver dbDriver, CompilationUnitSyntax nodes)
+    private static (CompilationUnitSyntax, string) AddArgsDeclaration(Query query, IDbDriver dbDriver,
+        CompilationUnitSyntax nodes)
     {
-        if (query.Params.Count <= 0) return (nodes, String.Empty); // TODO
+        if (query.Params.Count <= 0) return (nodes, String.Empty); // TODO String.Empty?
         var argInterface = $"{query.Name}Args";
-        var unitToAdd = ArgsDeclare(argInterface,
+        var argsDeclaration = ArgsDeclare(argInterface,
             (column => dbDriver.ColumnType(column.Type.Name, column.NotNull)), query.Params);
-        return (MergeCompilationUnit(nodes, unitToAdd), argInterface);
+        return (MergeCompilationUnit(nodes, argsDeclaration), argInterface);
     }
 
-    private static IList<Column> ConstructUpdatedColumns(Query query)
+    private static IEnumerable<Column> ConstructUpdatedColumns(Query query)
     {
         var colMap = new Dictionary<string, int>();
         return query.Columns
             .Where(column => !string.IsNullOrEmpty(column.Name)) // Filter out columns without a name
-            .Select(column => {
+            .Select(column =>
+            {
                 var count = colMap.GetValueOrDefault(column.Name, 0);
                 var updatedName = count > 0 ? $"{column.Name}_{count + 1}" : column.Name;
                 colMap[column.Name] = count + 1; // Update the count for the current name
@@ -177,12 +184,12 @@ public static class CodeGenerator
         }
     }
 
-    private static InterfaceDeclarationSyntax RowDeclare(string name, Func<Column, TypeSyntax> ctype,
-        IEnumerable<Column?> columns)
+    private static InterfaceDeclarationSyntax RowDeclare(string name, Func<Column, TypeSyntax> columnToType,
+        IEnumerable<Column> columns)
     {
         // Create a list of property signatures based on the columns
         var properties = columns.Select((column, i) =>
-            PropertyDeclaration(ctype(column), Identifier(Utils.ColName(i, column)))
+            PropertyDeclaration(columnToType(column), Identifier(Utils.ColName(i, column)))
                 .AddModifiers(Token(SyntaxKind.PublicKeyword))
                 .AddAccessorListAccessors(
                     AccessorDeclaration(SyntaxKind.GetAccessorDeclaration)
@@ -200,7 +207,7 @@ public static class CodeGenerator
         return interfaceDeclaration;
     }
 
-    public static CompilationUnitSyntax QueryDecl(string name, string sql)
+    private static CompilationUnitSyntax QueryDecl(string name, string sql)
     {
         // Create the constant field declaration
         var fieldDeclaration = FieldDeclaration(

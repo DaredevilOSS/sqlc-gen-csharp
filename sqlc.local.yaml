@@ -13,6 +13,6 @@ sql:
   engine: "mysql"
   codegen:
   - plugin: csharp
-    out: fsdfsdfdfsd
+    out: csharp-mysql
     options:
       driver: MySqlConnector
