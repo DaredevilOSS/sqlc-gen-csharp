@@ -5,7 +5,7 @@ namespace sqlc_gen_csharp.Drivers;
 
 public class Utils
 {
-    public static string FieldName(string prefix, int index, Column? column = null)
+    private static string FieldName(string prefix, int index, Column? column = null)
     {
         var name = $"{prefix}_{index}";
         if (column != null) name = column.Name;

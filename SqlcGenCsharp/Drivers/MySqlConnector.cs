@@ -17,12 +17,12 @@ public class MySqlConnector : IDbDriver
         var nullableSuffix = notNull ? string.Empty : "?";
 
         if (string.IsNullOrEmpty(columnType))
-            return SyntaxFactory.ParseTypeName("object" + nullableSuffix);
+            return ParseTypeName("object" + nullableSuffix);
 
         switch (columnType.ToLower())
         {
             case "bigint":
-                return SyntaxFactory.ParseTypeName("long" + nullableSuffix);
+                return ParseTypeName("long" + nullableSuffix);
             case "binary":
             case "bit":
             case "blob":
@@ -30,7 +30,7 @@ public class MySqlConnector : IDbDriver
             case "mediumblob":
             case "tinyblob":
             case "varbinary":
-                return SyntaxFactory.ParseTypeName("byte[]" + nullableSuffix);
+                return ParseTypeName("byte[]" + nullableSuffix);
             case "char":
             case "date":
             case "datetime":
@@ -42,25 +42,25 @@ public class MySqlConnector : IDbDriver
             case "timestamp":
             case "tinytext":
             case "varchar":
-                return SyntaxFactory.ParseTypeName("string");
+                return ParseTypeName("string");
             case "double":
             case "float":
-                return SyntaxFactory.ParseTypeName("double" + nullableSuffix);
+                return ParseTypeName("double" + nullableSuffix);
             case "int":
             case "mediumint":
             case "smallint":
             case "tinyint":
             case "year":
-                return SyntaxFactory.ParseTypeName("int" + nullableSuffix);
+                return ParseTypeName("int" + nullableSuffix);
             case "json":
                 // Assuming JSON is represented as a string or a specific class
-                return SyntaxFactory.ParseTypeName("object" + nullableSuffix);
+                return ParseTypeName("object" + nullableSuffix);
             default:
                 throw new NotSupportedException($"Unsupported column type: {columnType}");
         }
     }
     
-    public CompilationUnitSyntax Preamble(List<Query> queries)
+    public CompilationUnitSyntax Preamble(IEnumerable<Query> queries)
     {
         // Using directive for MySQL (or similar)
         var usingDirective = UsingDirective(ParseName("MySql.Data.MySqlClient"));
@@ -88,8 +88,8 @@ public class MySqlConnector : IDbDriver
         return compilationUnit;
     }
 
-    public MethodDeclarationSyntax OneDeclare(string funcName, string queryName, string argInterface, string returnInterface,
-        IList<Parameter> parameters, IList<Column> columns)
+    public MethodDeclarationSyntax OneDeclare(string funcName, string queryName, string argInterface, 
+        string returnInterface, IEnumerable<Parameter> parameters, IEnumerable<Column> columns)
     {
         // Generating function parameters, potentially including 'args'
         var funcParams = FuncParamsDecl(argInterface, parameters); // FuncParamsDecl should be implemented as before
@@ -107,8 +107,7 @@ public class MySqlConnector : IDbDriver
             .WithParameterList(ParameterList(SeparatedList(funcParams)))
             .WithBody(Block(
                 // Placeholder for method body: In a real scenario, you'd include logic to execute the query
-                // and return a single result or null.
-                // The following statement is a simplification.
+                // and return a single result or null. The following statement is a simplification
                 SingletonList<StatementSyntax>(
                     ReturnStatement(
                         InvocationExpression(
@@ -119,7 +118,6 @@ public class MySqlConnector : IDbDriver
                             ArgumentList(SeparatedList(new[]
                             {
                                 Argument(
-                                    // Assuming a method to convert a database row to returnIface
                                     InvocationExpression(IdentifierName("ConvertToReturnType"),
                                             ArgumentList(SingletonSeparatedList(
                                                 Argument(IdentifierName("row")))))
@@ -134,7 +132,7 @@ public class MySqlConnector : IDbDriver
         return methodDeclaration;
     }
 
-    private IEnumerable<ParameterSyntax> FuncParamsDecl(string argInterface, IList<Parameter> parameters)
+    private IEnumerable<ParameterSyntax> FuncParamsDecl(string argInterface, IEnumerable<Parameter> parameters)
     {
         var funcParams = new List<ParameterSyntax>
         {
@@ -152,12 +150,12 @@ public class MySqlConnector : IDbDriver
         return funcParams;
     }
     
-    public MethodDeclarationSyntax ExecDeclare(string funcName, string queryName, string argIface,
-        IList<Parameter> parameters)
+    public MethodDeclarationSyntax ExecDeclare(string funcName, string queryName, string argInterface,
+        IEnumerable<Parameter> parameters)
     {
         // Generating the parameters for the method, potentially including 'args' if specified
         var funcParams =
-            FuncParamsDecl(argIface, parameters);
+            FuncParamsDecl(argInterface, parameters);
 
         // Creating the method declaration
         var methodDeclaration = MethodDeclaration(
@@ -197,7 +195,7 @@ public class MySqlConnector : IDbDriver
     }
 
     public MethodDeclarationSyntax ManyDeclare(string funcName, string queryName, string argInterface, string returnInterface,
-        IList<Parameter> parameters, IList<Column> columns)
+        IEnumerable<Parameter> parameters, IEnumerable<Column> columns)
     {
         // Assuming FuncParamsDecl is implemented as shown previously
         var funcParams = FuncParamsDecl(argInterface, parameters);
@@ -246,15 +244,15 @@ public class MySqlConnector : IDbDriver
         return methodDeclaration;
     }
     
-    public static InterfaceDeclarationSyntax RowDeclare(string name, Func<Column, TypeSyntax> ctype,
-        IList<Column?> columns)
+    public static InterfaceDeclarationSyntax RowDeclare(string name, Func<Column, TypeSyntax> columnToType,
+        IEnumerable<Column> columns)
     {
         var properties = columns.Select((column, i) =>
-            PropertyDeclaration(ctype(column), Identifier(Utils.ColName(i, column)))
+            PropertyDeclaration(columnToType(column), Identifier(Utils.ColName(i, column)))
                 .AddModifiers(Token(SyntaxKind.PublicKeyword))
                 .WithAccessorList(
                     AccessorList(
-                        List(new AccessorDeclarationSyntax[]
+                        List(new[]
                         {
                             AccessorDeclaration(SyntaxKind.GetAccessorDeclaration).WithSemicolonToken(Token(SyntaxKind.SemicolonToken)),
                             AccessorDeclaration(SyntaxKind.SetAccessorDeclaration).WithSemicolonToken(Token(SyntaxKind.SemicolonToken))

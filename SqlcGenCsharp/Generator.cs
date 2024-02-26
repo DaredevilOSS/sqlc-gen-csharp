@@ -14,276 +14,277 @@ using Plugin;
 using sqlc_gen_csharp.Drivers;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
-namespace sqlc_gen_csharp;
-
-public static class CodeGenerator
+namespace sqlc_gen_csharp
 {
-    private static CompilationUnitSyntax MergeCompilationUnit(CompilationUnitSyntax a, CompilationUnitSyntax b)
+    public static class CodeGenerator
     {
-        a = a.WithUsings(b.Usings);
-        a = a.WithMembers(b.Members);
-        a = a.NormalizeWhitespace();
-        return a;
-    }
-
-    private static ByteString CompileToByteArray(CompilationUnitSyntax compilationUnit)
-    {
-        // Create a syntax tree from the compilation unit
-        SyntaxTree syntaxTree = CSharpSyntaxTree.Create(compilationUnit);
-
-        // Define compilation options
-        CSharpCompilationOptions options = new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary);
-
-        // Create a compilation
-        CSharpCompilation compilation = CSharpCompilation.Create(
-            assemblyName: Path.GetRandomFileName(),
-            syntaxTrees: new[] { syntaxTree },
-            references: new[]
-            {
-                MetadataReference.CreateFromFile(typeof(object).GetTypeInfo().Assembly.Location),
-                MetadataReference.CreateFromFile(typeof(Enumerable).GetTypeInfo().Assembly.Location)
-            },
-            options: options);
-
-        // Emit the compilation to a memory stream
-        using var ms = new MemoryStream();
-        EmitResult result = compilation.Emit(ms);
-
-        if (!result.Success)
+        private static CompilationUnitSyntax MergeCompilationUnit(CompilationUnitSyntax a, CompilationUnitSyntax b)
         {
-            // Handle compilation failures
-            // For example, you can log or throw exceptions based on the diagnostics
-            foreach (Diagnostic diagnostic in result.Diagnostics)
-            {
-                // Log or process diagnostic information
-            }
-
-            throw new InvalidOperationException("Compilation failed.");
+            a = a.WithUsings(b.Usings);
+            a = a.WithMembers(b.Members);
+            a = a.NormalizeWhitespace();
+            return a;
         }
 
-        // Compilation was successful, return the bytes
-        ms.Seek(0, SeekOrigin.Begin);
-        byte[] byteArray = ms.ToArray();
-        return ByteString.CopyFrom(byteArray);
-    }
-
-    private static Options ParseOptions(GenerateRequest generateRequest)
-    {
-        var text = Encoding.UTF8.GetString(generateRequest.PluginOptions.ToByteArray());
-        return JsonSerializer.Deserialize<Options>(text) ?? throw new InvalidOperationException();
-    }
-
-    public static GenerateResponse Generate(GenerateRequest generateRequest)
-    {
-        var options = ParseOptions(generateRequest);
-        var dbDriver = CreateNodeGenerator(options.driver);
-        var queryMap = generateRequest.Queries
-            .GroupBy(query => query.Filename)
-            .ToDictionary(group => group.Key, group => group.ToList());
-        var files = new List<Plugin.File>();
-
-        // loop over dictionary of query files
-        foreach (var fileQueries in queryMap)
+        private static ByteString CompileToByteArray(CompilationUnitSyntax compilationUnit)
         {
-            var nodes = dbDriver.Preamble(fileQueries.Value);
+            // Create a syntax tree from the compilation unit
+            SyntaxTree syntaxTree = CSharpSyntaxTree.Create(compilationUnit);
 
-            // loop over queries
-            foreach (Query query in fileQueries.Value)
-            {
-                var updatedColumns = ConstructUpdatedColumns(query);
+            // Define compilation options
+            CSharpCompilationOptions options = new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary);
 
-                var lowerName = char.ToLower(query.Name[0]) + query.Name.Substring(1);
-                var textName = $"{lowerName}Query";
-                var queryDeclaration = QueryDecl(
-                    textName,
-                    $"-- name: {query.Name} {query.Cmd}\n{query.Text}"
-                );
-
-                (nodes, var argInterface) = AddArgsDeclaration(query, dbDriver, nodes);
-                (nodes, var returnInterface) = AddRowDeclaration(query, dbDriver, nodes);
-                nodes = AddMethodDeclaration(query, nodes, dbDriver, argInterface, returnInterface);
-
-                files.Add(new Plugin.File
+            // Create a compilation
+            CSharpCompilation compilation = CSharpCompilation.Create(
+                assemblyName: Path.GetRandomFileName(),
+                syntaxTrees: new[] { syntaxTree },
+                references: new[]
                 {
-                    Name = fileQueries.Key,
-                    Contents = CompileToByteArray(nodes)
-                });
+                    MetadataReference.CreateFromFile(typeof(object).GetTypeInfo().Assembly.Location),
+                    MetadataReference.CreateFromFile(typeof(Enumerable).GetTypeInfo().Assembly.Location)
+                },
+                options: options);
+
+            // Emit the compilation to a memory stream
+            using var ms = new MemoryStream();
+            EmitResult result = compilation.Emit(ms);
+
+            if (!result.Success)
+            {
+                // Handle compilation failures
+                // For example, you can log or throw exceptions based on the diagnostics
+                foreach (Diagnostic diagnostic in result.Diagnostics)
+                {
+                    // Log or process diagnostic information
+                }
+
+                throw new InvalidOperationException("Compilation failed.");
+            }
+
+            // Compilation was successful, return the bytes
+            ms.Seek(0, SeekOrigin.Begin);
+            byte[] byteArray = ms.ToArray();
+            return ByteString.CopyFrom(byteArray);
+        }
+
+        private static Options ParseOptions(GenerateRequest generateRequest)
+        {
+            var text = Encoding.UTF8.GetString(generateRequest.PluginOptions.ToByteArray());
+            return JsonSerializer.Deserialize<Options>(text) ?? throw new InvalidOperationException();
+        }
+
+        public static GenerateResponse Generate(GenerateRequest generateRequest)
+        {
+            var options = ParseOptions(generateRequest);
+            var dbDriver = CreateNodeGenerator(options.driver);
+            var queryMap = generateRequest.Queries
+                .GroupBy(query => query.Filename)
+                .ToDictionary(group => group.Key, group => group.ToList());
+            var files = new List<Plugin.File>();
+
+            // loop over dictionary of query files
+            foreach (var fileQueries in queryMap)
+            {
+                var nodes = dbDriver.Preamble(fileQueries.Value);
+
+                // loop over queries
+                foreach (Query query in fileQueries.Value)
+                {
+                    var updatedColumns = ConstructUpdatedColumns(query);
+
+                    var lowerName = char.ToLower(query.Name[0]) + query.Name.Substring(1);
+                    var textName = $"{lowerName}Query";
+                    var queryDeclaration = QueryDecl(
+                        textName,
+                        $"-- name: {query.Name} {query.Cmd}\n{query.Text}"
+                    );
+
+                    (nodes, var argInterface) = AddArgsDeclaration(query, dbDriver, nodes);
+                    (nodes, var returnInterface) = AddRowDeclaration(query, dbDriver, nodes);
+                    nodes = AddMethodDeclaration(query, nodes, dbDriver, argInterface, returnInterface);
+
+                    files.Add(new Plugin.File
+                    {
+                        Name = fileQueries.Key,
+                        Contents = CompileToByteArray(nodes)
+                    });
+                }
+            }
+
+            return new GenerateResponse { Files = { files } };
+        }
+
+        private static CompilationUnitSyntax AddMethodDeclaration(Query query, CompilationUnitSyntax nodes,
+            IDbDriver dbDriver,
+            string argInterface, string returnInterface)
+        {
+            switch (query.Cmd)
+            {
+                case ":exec":
+                    nodes = nodes.AddMembers(dbDriver.ExecDeclare(query.Name, query.Text, argInterface, query.Params));
+                    break;
+                case ":one":
+                    nodes = nodes.AddMembers(dbDriver.OneDeclare(query.Name, query.Text, argInterface, returnInterface,
+                        query.Params, query.Columns));
+                    break;
+                case ":many":
+                    nodes = nodes.AddMembers(dbDriver.ManyDeclare(query.Name, query.Text, argInterface, returnInterface,
+                        query.Params, query.Columns));
+                    break;
+            }
+
+            return nodes;
+        }
+
+        private static (CompilationUnitSyntax, string) AddRowDeclaration(Query query, IDbDriver dbDriver,
+            CompilationUnitSyntax nodes)
+        {
+            if (query.Columns.Count <= 0) return (nodes, String.Empty); // TODO
+            var returnInterface = $"{query.Name}Row";
+            // TODO this is pure guess
+            var unitToAdd = RowDeclare(returnInterface,
+                column => dbDriver.ColumnType(column.Type.Name, column.NotNull), query.Columns);
+            nodes = nodes.WithMembers(unitToAdd.Members);
+            return (nodes.NormalizeWhitespace(), returnInterface);
+        }
+
+        private static (CompilationUnitSyntax, string) AddArgsDeclaration(Query query, IDbDriver dbDriver,
+            CompilationUnitSyntax nodes)
+        {
+            if (query.Params.Count <= 0) return (nodes, String.Empty); // TODO String.Empty?
+            var argInterface = $"{query.Name}Args";
+            var argsDeclaration = ArgsDeclare(argInterface,
+                (column => dbDriver.ColumnType(column.Type.Name, column.NotNull)), query.Params);
+            return (MergeCompilationUnit(nodes, argsDeclaration), argInterface);
+        }
+
+        private static IEnumerable<Column> ConstructUpdatedColumns(Query query)
+        {
+            var colMap = new Dictionary<string, int>();
+            return query.Columns
+                .Where(column => !string.IsNullOrEmpty(column.Name)) // Filter out columns without a name
+                .Select(column =>
+                {
+                    var count = colMap.GetValueOrDefault(column.Name, 0);
+                    var updatedName = count > 0 ? $"{column.Name}_{count + 1}" : column.Name;
+                    colMap[column.Name] = count + 1; // Update the count for the current name
+                    return new Column { Name = updatedName };
+                })
+                .ToList();
+        }
+
+        private static IDbDriver CreateNodeGenerator(string driver)
+        {
+            switch (driver)
+            {
+                case "MySqlConnector":
+                    return new MySqlConnector();
+                default:
+                    throw new ArgumentException($"unknown driver: {driver}", nameof(driver));
             }
         }
 
-        return new GenerateResponse { Files = { files } };
-    }
-
-    private static CompilationUnitSyntax AddMethodDeclaration(Query query, CompilationUnitSyntax nodes,
-        IDbDriver dbDriver,
-        string argInterface, string returnInterface)
-    {
-        switch (query.Cmd)
+        private static InterfaceDeclarationSyntax RowDeclare(string name, Func<Column, TypeSyntax> columnToType,
+            IEnumerable<Column> columns)
         {
-            case ":exec":
-                nodes = nodes.AddMembers(dbDriver.ExecDeclare(query.Name, query.Text, argInterface, query.Params));
-                break;
-            case ":one":
-                nodes = nodes.AddMembers(dbDriver.OneDeclare(query.Name, query.Text, argInterface, returnInterface,
-                    query.Params, query.Columns));
-                break;
-            case ":many":
-                nodes = nodes.AddMembers(dbDriver.ManyDeclare(query.Name, query.Text, argInterface, returnInterface,
-                    query.Params, query.Columns));
-                break;
-        }
-
-        return nodes;
-    }
-
-    private static (CompilationUnitSyntax, string) AddRowDeclaration(Query query, IDbDriver dbDriver,
-        CompilationUnitSyntax nodes)
-    {
-        if (query.Columns.Count <= 0) return (nodes, String.Empty); // TODO
-        var returnInterface = $"{query.Name}Row";
-        // TODO this is pure guess
-        var unitToAdd = RowDeclare(returnInterface,
-            column => dbDriver.ColumnType(column.Type.Name, column.NotNull), query.Columns);
-        nodes = nodes.WithMembers(unitToAdd.Members);
-        return (nodes.NormalizeWhitespace(), returnInterface);
-    }
-
-    private static (CompilationUnitSyntax, string) AddArgsDeclaration(Query query, IDbDriver dbDriver,
-        CompilationUnitSyntax nodes)
-    {
-        if (query.Params.Count <= 0) return (nodes, String.Empty); // TODO String.Empty?
-        var argInterface = $"{query.Name}Args";
-        var argsDeclaration = ArgsDeclare(argInterface,
-            (column => dbDriver.ColumnType(column.Type.Name, column.NotNull)), query.Params);
-        return (MergeCompilationUnit(nodes, argsDeclaration), argInterface);
-    }
-
-    private static IEnumerable<Column> ConstructUpdatedColumns(Query query)
-    {
-        var colMap = new Dictionary<string, int>();
-        return query.Columns
-            .Where(column => !string.IsNullOrEmpty(column.Name)) // Filter out columns without a name
-            .Select(column =>
-            {
-                var count = colMap.GetValueOrDefault(column.Name, 0);
-                var updatedName = count > 0 ? $"{column.Name}_{count + 1}" : column.Name;
-                colMap[column.Name] = count + 1; // Update the count for the current name
-                return new Column { Name = updatedName };
-            })
-            .ToList();
-    }
-
-    private static IDbDriver CreateNodeGenerator(string driver)
-    {
-        switch (driver)
-        {
-            case "MySqlConnector":
-                return new MySqlConnector();
-            default:
-                throw new ArgumentException($"unknown driver: {driver}", nameof(driver));
-        }
-    }
-
-    private static InterfaceDeclarationSyntax RowDeclare(string name, Func<Column, TypeSyntax> columnToType,
-        IEnumerable<Column> columns)
-    {
-        // Create a list of property signatures based on the columns
-        var properties = columns.Select((column, i) =>
-            PropertyDeclaration(columnToType(column), Identifier(Utils.ColName(i, column)))
-                .AddModifiers(Token(SyntaxKind.PublicKeyword))
-                .AddAccessorListAccessors(
-                    AccessorDeclaration(SyntaxKind.GetAccessorDeclaration)
-                        .WithSemicolonToken(Token(SyntaxKind.SemicolonToken)),
-                    AccessorDeclaration(SyntaxKind.SetAccessorDeclaration)
-                        .WithSemicolonToken(Token(SyntaxKind.SemicolonToken))
-                )
-        ).ToArray();
-
-        // Create the interface declaration
-        var interfaceDeclaration = InterfaceDeclaration(name)
-            .AddModifiers(Token(SyntaxKind.PublicKeyword)) // Making the interface public
-            .AddMembers(properties); // Adding the properties
-
-        return interfaceDeclaration;
-    }
-
-    private static CompilationUnitSyntax QueryDecl(string name, string sql)
-    {
-        // Create the constant field declaration
-        var fieldDeclaration = FieldDeclaration(
-                VariableDeclaration(
-                        PredefinedType(
-                            Token(SyntaxKind.StringKeyword)
-                        )
+            // Create a list of property signatures based on the columns
+            var properties = columns.Select((column, i) =>
+                PropertyDeclaration(columnToType(column), Identifier(Utils.ColName(i, column)))
+                    .AddModifiers(Token(SyntaxKind.PublicKeyword))
+                    .AddAccessorListAccessors(
+                        AccessorDeclaration(SyntaxKind.GetAccessorDeclaration)
+                            .WithSemicolonToken(Token(SyntaxKind.SemicolonToken)),
+                        AccessorDeclaration(SyntaxKind.SetAccessorDeclaration)
+                            .WithSemicolonToken(Token(SyntaxKind.SemicolonToken))
                     )
-                    .WithVariables(
-                        SingletonSeparatedList(
-                            VariableDeclarator(
-                                    Identifier(name)
-                                )
-                                .WithInitializer(
-                                    EqualsValueClause(
-                                        LiteralExpression(
-                                            SyntaxKind.StringLiteralExpression,
-                                            Literal(sql)
+            ).ToArray();
+
+            // Create the interface declaration
+            var interfaceDeclaration = InterfaceDeclaration(name)
+                .AddModifiers(Token(SyntaxKind.PublicKeyword)) // Making the interface public
+                .AddMembers(properties); // Adding the properties
+
+            return interfaceDeclaration;
+        }
+
+        private static CompilationUnitSyntax QueryDecl(string name, string sql)
+        {
+            // Create the constant field declaration
+            var fieldDeclaration = FieldDeclaration(
+                    VariableDeclaration(
+                            PredefinedType(
+                                Token(SyntaxKind.StringKeyword)
+                            )
+                        )
+                        .WithVariables(
+                            SingletonSeparatedList(
+                                VariableDeclarator(
+                                        Identifier(name)
+                                    )
+                                    .WithInitializer(
+                                        EqualsValueClause(
+                                            LiteralExpression(
+                                                SyntaxKind.StringLiteralExpression,
+                                                Literal(sql)
+                                            )
                                         )
                                     )
-                                )
+                            )
                         )
-                    )
-            )
-            .AddModifiers(Token(SyntaxKind.PublicKeyword), Token(SyntaxKind.ConstKeyword));
+                )
+                .AddModifiers(Token(SyntaxKind.PublicKeyword), Token(SyntaxKind.ConstKeyword));
 
-        // Create a class to contain the constant
-        var classDeclaration = ClassDeclaration("Queries")
-            .AddModifiers(Token(SyntaxKind.PublicKeyword), Token(SyntaxKind.StaticKeyword))
-            .AddMembers(fieldDeclaration);
+            // Create a class to contain the constant
+            var classDeclaration = ClassDeclaration("Queries")
+                .AddModifiers(Token(SyntaxKind.PublicKeyword), Token(SyntaxKind.StaticKeyword))
+                .AddMembers(fieldDeclaration);
 
-        // Create a namespace
-        var namespaceDeclaration = NamespaceDeclaration(IdentifierName("YourNamespace"))
-            .AddMembers(classDeclaration);
+            // Create a namespace
+            var namespaceDeclaration = NamespaceDeclaration(IdentifierName("YourNamespace"))
+                .AddMembers(classDeclaration);
 
-        // Create the compilation unit (root of the syntax tree) and add the namespace
-        var compilationUnit = CompilationUnit()
-            .AddUsings(UsingDirective(IdentifierName("System")))
-            .AddMembers(namespaceDeclaration)
-            .NormalizeWhitespace(); // Format the code for readability
+            // Create the compilation unit (root of the syntax tree) and add the namespace
+            var compilationUnit = CompilationUnit()
+                .AddUsings(UsingDirective(IdentifierName("System")))
+                .AddMembers(namespaceDeclaration)
+                .NormalizeWhitespace(); // Format the code for readability
 
-        return compilationUnit;
-    }
+            return compilationUnit;
+        }
 
-    static CompilationUnitSyntax ArgsDeclare(string name, Func<Column, TypeSyntax> ctype,
-        IEnumerable<Parameter> parameters)
-    {
-        // Create a list of property signatures based on the parameters
-        var properties = parameters.Select((param, i) =>
-            PropertyDeclaration(ctype(param.Column), Identifier(Utils.ArgName(i, param.Column)))
-                .AddModifiers(Token(SyntaxKind
-                    .PublicKeyword)) // Assuming properties in interfaces cannot have accessors
-                .WithAccessorList(AccessorList(List(new[]
-                {
-                    AccessorDeclaration(SyntaxKind.GetAccessorDeclaration)
-                        .WithSemicolonToken(Token(SyntaxKind.SemicolonToken)),
-                    AccessorDeclaration(SyntaxKind.SetAccessorDeclaration)
-                        .WithSemicolonToken(Token(SyntaxKind.SemicolonToken))
-                })))
-        ).ToArray();
+        static CompilationUnitSyntax ArgsDeclare(string name, Func<Column, TypeSyntax> ctype,
+            IEnumerable<Parameter> parameters)
+        {
+            // Create a list of property signatures based on the parameters
+            var properties = parameters.Select((param, i) =>
+                PropertyDeclaration(ctype(param.Column), Identifier(Utils.ArgName(i, param.Column)))
+                    .AddModifiers(Token(SyntaxKind
+                        .PublicKeyword)) // Assuming properties in interfaces cannot have accessors
+                    .WithAccessorList(AccessorList(List(new[]
+                    {
+                        AccessorDeclaration(SyntaxKind.GetAccessorDeclaration)
+                            .WithSemicolonToken(Token(SyntaxKind.SemicolonToken)),
+                        AccessorDeclaration(SyntaxKind.SetAccessorDeclaration)
+                            .WithSemicolonToken(Token(SyntaxKind.SemicolonToken))
+                    })))
+            ).ToArray();
 
-        // Create the interface declaration
-        var interfaceDeclaration = InterfaceDeclaration(name)
-            .AddModifiers(Token(SyntaxKind.PublicKeyword)) // Making the interface public
-            .AddMembers(properties); // Adding the properties
+            // Create the interface declaration
+            var interfaceDeclaration = InterfaceDeclaration(name)
+                .AddModifiers(Token(SyntaxKind.PublicKeyword)) // Making the interface public
+                .AddMembers(properties); // Adding the properties
 
-        // Optionally, wrap the interface in a namespace
-        var namespaceDeclaration = NamespaceDeclaration(IdentifierName("YourNamespace"))
-            .AddMembers(interfaceDeclaration);
+            // Optionally, wrap the interface in a namespace
+            var namespaceDeclaration = NamespaceDeclaration(IdentifierName("YourNamespace"))
+                .AddMembers(interfaceDeclaration);
 
-        // Create the compilation unit (root of the syntax tree) and add the namespace
-        var compilationUnit = CompilationUnit()
-            .AddUsings(UsingDirective(IdentifierName("System")))
-            .AddMembers(namespaceDeclaration)
-            .NormalizeWhitespace(); // Format the code for readability
+            // Create the compilation unit (root of the syntax tree) and add the namespace
+            var compilationUnit = CompilationUnit()
+                .AddUsings(UsingDirective(IdentifierName("System")))
+                .AddMembers(namespaceDeclaration)
+                .NormalizeWhitespace(); // Format the code for readability
 
-        return compilationUnit;
+            return compilationUnit;
+        }
     }
 }
