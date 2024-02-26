@@ -1,13 +1,7 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
 using Google.Protobuf;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Plugin;
-using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
-using File = System.IO.File;
 
 namespace sqlc_gen_csharp;
 
