@@ -1,15 +1,12 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Text;
 using System.Text.Json;
 using Google.Protobuf;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.CodeAnalysis.Emit;
 using Plugin;
 using sqlc_gen_csharp.Drivers;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
@@ -26,45 +23,11 @@ namespace sqlc_gen_csharp
             return a;
         }
 
-        private static ByteString CompileToByteArray(CompilationUnitSyntax compilationUnit)
+        private static ByteString ToByteString(this CompilationUnitSyntax compilationUnit)
         {
-            // Create a syntax tree from the compilation unit
-            SyntaxTree syntaxTree = CSharpSyntaxTree.Create(compilationUnit);
-
-            // Define compilation options
-            CSharpCompilationOptions options = new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary);
-
-            // Create a compilation
-            CSharpCompilation compilation = CSharpCompilation.Create(
-                assemblyName: Path.GetRandomFileName(),
-                syntaxTrees: new[] { syntaxTree },
-                references: new[]
-                {
-                    MetadataReference.CreateFromFile(typeof(object).GetTypeInfo().Assembly.Location),
-                    MetadataReference.CreateFromFile(typeof(Enumerable).GetTypeInfo().Assembly.Location)
-                },
-                options: options);
-
-            // Emit the compilation to a memory stream
-            using var ms = new MemoryStream();
-            EmitResult result = compilation.Emit(ms);
-
-            if (!result.Success)
-            {
-                // Handle compilation failures
-                // For example, you can log or throw exceptions based on the diagnostics
-                foreach (Diagnostic diagnostic in result.Diagnostics)
-                {
-                    // Log or process diagnostic information
-                }
-
-                throw new InvalidOperationException("Compilation failed.");
-            }
-
-            // Compilation was successful, return the bytes
-            ms.Seek(0, SeekOrigin.Begin);
-            byte[] byteArray = ms.ToArray();
-            return ByteString.CopyFrom(byteArray);
+            var syntaxTree = CSharpSyntaxTree.Create(compilationUnit);
+            var sourceText = syntaxTree.GetText().ToString();
+            return ByteString.CopyFromUtf8(sourceText);
         }
 
         private static Options ParseOptions(GenerateRequest generateRequest)
@@ -106,7 +69,7 @@ namespace sqlc_gen_csharp
                     files.Add(new Plugin.File
                     {
                         Name = fileQueries.Key,
-                        Contents = CompileToByteArray(nodes)
+                        Contents = nodes.ToByteString()
                     });
                 }
             }
@@ -283,7 +246,7 @@ namespace sqlc_gen_csharp
                 .AddUsings(UsingDirective(IdentifierName("System")))
                 .AddMembers(namespaceDeclaration)
                 .NormalizeWhitespace(); // Format the code for readability
-
+            
             return compilationUnit;
         }
     }

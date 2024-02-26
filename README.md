@@ -43,9 +43,9 @@ sql:
 ```
 
 ## Supported engines and drivers
-
-- PostgreSQL via [Npgsql](https://www.nuget.org/packages/Npgsql).
+To be true:
 - MySQL via [MySqlConnector](https://www.nuget.org/packages/MySqlConnector).
+- PostgreSQL via [Npgsql](https://www.nuget.org/packages/Npgsql).
 - SqlServer via [sqlclient](https://learn.microsoft.com/en-us/dotnet/framework/data/adonet/data-providers?redirectedfrom=MSDN#net-framework-data-provider-for-sql-server-sqlclient).
 
 ## Getting started
