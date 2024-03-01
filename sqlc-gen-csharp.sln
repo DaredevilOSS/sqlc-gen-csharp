@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodegenProtobuf", "CodegenP
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SourceGenerator", "SourceGenerator\SourceGenerator.csproj", "{7DD46C47-6039-43E0-96D9-27E7C6C9DDCE}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SqlcGenCsharpTest", "SqlcGenCsharpTest\SqlcGenCsharpTest.csproj", "{C2147325-1488-401A-AB86-99C3F2EA2FFF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -30,5 +32,9 @@ Global
 		{7DD46C47-6039-43E0-96D9-27E7C6C9DDCE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7DD46C47-6039-43E0-96D9-27E7C6C9DDCE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7DD46C47-6039-43E0-96D9-27E7C6C9DDCE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C2147325-1488-401A-AB86-99C3F2EA2FFF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C2147325-1488-401A-AB86-99C3F2EA2FFF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C2147325-1488-401A-AB86-99C3F2EA2FFF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C2147325-1488-401A-AB86-99C3F2EA2FFF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

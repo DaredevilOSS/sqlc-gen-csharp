@@ -9,12 +9,10 @@ public static class App
 {
     private static GenerateRequest ReadInput()
     {
-        using (var memoryStream = new MemoryStream())
-        {
-            Console.OpenStandardInput().CopyTo(memoryStream);
-            memoryStream.Position = 0;
-            return GenerateRequest.Parser.ParseFrom(memoryStream);
-        }
+        using var memoryStream = new MemoryStream();
+        Console.OpenStandardInput().CopyTo(memoryStream);
+        memoryStream.Position = 0;
+        return GenerateRequest.Parser.ParseFrom(memoryStream);
     }
 
     private static void WriteOutput(GenerateResponse output)
@@ -24,10 +22,15 @@ public static class App
         stdout.Write(encodedOutput, 0, encodedOutput.Length);
     }
 
-    public static void Main()
+    public static void Run()
     {
         var generateRequest = ReadInput();
         var generateResponse = CodeGenerator.Generate(generateRequest);
         WriteOutput(generateResponse);
+    }
+
+    public static void Main()
+    {
+        Run();
     }
 }
