@@ -11,16 +11,16 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\CodegenProtobuf\CodegenProtobuf.csproj" />
-        <ProjectReference Include="..\SourceGenerator\SourceGenerator.csproj" />
+        <ProjectReference Include="..\CodegenProtobuf\CodegenProtobuf.csproj"/>
+        <ProjectReference Include="..\SourceGenerator\SourceGenerator.csproj"/>
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Google.Protobuf" Version="3.26.0-rc2" />
-        <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.9.0-3.final" PrivateAssets="all" />
-        <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="3.3.4" PrivateAssets="all" />
-        <PackageReference Include="protobuf-net" Version="3.2.30" />
-        <PackageReference Include="Wasi.Sdk" Version="0.1.4-preview.10020" /> 
+        <PackageReference Include="Google.Protobuf" Version="3.26.0-rc2"/>
+        <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.9.0.0" PrivateAssets="all"/>
+        <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="3.3.4" PrivateAssets="all"/>
+        <PackageReference Include="protobuf-net" Version="3.2.30"/>
+        <PackageReference Include="Wasi.Sdk" Version="0.1.4-preview.10020"/>
     </ItemGroup>
 
 </Project>
