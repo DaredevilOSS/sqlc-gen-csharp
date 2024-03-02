@@ -1,0 +1,147 @@
+
+Æ
+2mysqlauthors/mysql/schema.sql"authors/mysql/query.sqlb†
+MySqlConnectorExample/Dbcsharp-local={"driver":"MySqlConnector","project":"MySqlConnectorExample"}"DEBUG*
+./dist/SqlcGenCsharppublic"…public€
+	authors&
+id0ÿÿÿÿÿÿÿÿÿR	authorsbbigint&
+name0ÿÿÿÿÿÿÿÿÿR	authorsbtext#
+bio0ÿÿÿÿÿÿÿÿÿR	authorsbtext÷
+node_mysql_types$
+c_bit0Rnode_mysql_typesbbit5
+	c_tinyint0ÿÿÿÿÿÿÿÿÿRnode_mysql_typesb	tinyint)
+c_bool0Rnode_mysql_typesb	tinyint,
+	c_boolean0Rnode_mysql_typesb	tinyint7
+
+c_smallint0ÿÿÿÿÿÿÿÿÿRnode_mysql_typesb
+smallint9
+c_mediumint0ÿÿÿÿÿÿÿÿÿRnode_mysql_typesb	mediumint-
+c_int0ÿÿÿÿÿÿÿÿÿRnode_mysql_typesbint1
+	c_integer0ÿÿÿÿÿÿÿÿÿRnode_mysql_typesbint3
+c_bigint0ÿÿÿÿÿÿÿÿÿRnode_mysql_typesbbigint8
+c_serial0ÿÿÿÿÿÿÿÿÿRnode_mysql_typesbbigint€,
+	c_decimal0Rnode_mysql_typesb	decimal(
+c_dec0Rnode_mysql_typesb	decimal,
+	c_numeric0Rnode_mysql_typesb	decimal*
+c_fixed0Rnode_mysql_typesb	decimal1
+c_float0ÿÿÿÿÿÿÿÿÿRnode_mysql_typesbfloat3
+c_double0ÿÿÿÿÿÿÿÿÿRnode_mysql_typesbdouble=
+c_double_precision0ÿÿÿÿÿÿÿÿÿRnode_mysql_typesbdouble/
+c_date0ÿÿÿÿÿÿÿÿÿRnode_mysql_typesbdate&
+c_time0
+Rnode_mysql_typesbtime.
+
+c_datetime0Rnode_mysql_typesb
+datetime0
+c_timestamp0Rnode_mysql_typesb	timestamp/
+c_year0ÿÿÿÿÿÿÿÿÿRnode_mysql_typesbyear/
+c_char0ÿÿÿÿÿÿÿÿÿRnode_mysql_typesbchar0
+c_nchar0ÿÿÿÿÿÿÿÿÿRnode_mysql_typesbchar8
+c_national_char0ÿÿÿÿÿÿÿÿÿRnode_mysql_typesbchar,
+	c_varchar0
+Rnode_mysql_typesb	varchar3
+c_binary0ÿÿÿÿÿÿÿÿÿRnode_mysql_typesbbinary0
+c_varbinary0
+Rnode_mysql_typesb	varbinary7
+
+c_tinyblob0ÿÿÿÿÿÿÿÿÿRnode_mysql_typesb
+tinyblob7
+
+c_tinytext0ÿÿÿÿÿÿÿÿÿRnode_mysql_typesb
+tinytext/
+c_blob0ÿÿÿÿÿÿÿÿÿRnode_mysql_typesbblob/
+c_text0ÿÿÿÿÿÿÿÿÿRnode_mysql_typesbtext;
+c_mediumblob0ÿÿÿÿÿÿÿÿÿRnode_mysql_typesb
+mediumblob;
+c_mediumtext0ÿÿÿÿÿÿÿÿÿRnode_mysql_typesb
+mediumtext7
+
+c_longblob0ÿÿÿÿÿÿÿÿÿRnode_mysql_typesb
+longblob7
+
+c_longtext0ÿÿÿÿÿÿÿÿÿRnode_mysql_typesb
+longtext/
+c_json0ÿÿÿÿÿÿÿÿÿRnode_mysql_typesbjsonˆ
+6SELECT id, name, bio FROM authors
+WHERE id = ? LIMIT 1	GetAuthor:one"*
+id0ÿÿÿÿÿÿÿÿÿR	authorsbbigintzid",
+name0ÿÿÿÿÿÿÿÿÿR	authorsbtextzname"(
+bio0ÿÿÿÿÿÿÿÿÿR	authorsbtextzbio*.*
+id0ÿÿÿÿÿÿÿÿÿR	authorsbbigintzid:	query.sqlÔ
+/SELECT id, name, bio FROM authors
+ORDER BY nameListAuthors:many"*
+id0ÿÿÿÿÿÿÿÿÿR	authorsbbigintzid",
+name0ÿÿÿÿÿÿÿÿÿR	authorsbtextzname"(
+bio0ÿÿÿÿÿÿÿÿÿR	authorsbtextzbio:	query.sqlÓ
+6INSERT INTO authors (
+  name, bio
+) VALUES (
+  ?, ? 
+)CreateAuthor:exec*84
+name0ÿÿÿÿÿÿÿÿÿRpublicauthorsbtextzname*40
+bio0ÿÿÿÿÿÿÿÿÿRpublicauthorsbtextzbio:	query.sqlB	authorsr
+ DELETE FROM authors
+WHERE id = ?DeleteAuthor:exec*.*
+id0ÿÿÿÿÿÿÿÿÿR	authorsbbigintzid:	query.sql´
+­SELECT c_bit, c_tinyint, c_bool, c_boolean, c_smallint, c_mediumint, c_int, c_integer, c_bigint, c_serial, c_decimal, c_dec, c_numeric, c_fixed, c_float, c_double, c_double_precision, c_date, c_time, c_datetime, c_timestamp, c_year, c_char, c_nchar, c_national_char, c_varchar, c_binary, c_varbinary, c_tinyblob, c_tinytext, c_blob, c_text, c_mediumblob, c_mediumtext, c_longblob, c_longtext, c_json FROM node_mysql_types
+LIMIT 1Test:one"+
+c_bit0Rnode_mysql_typesbbitzc_bit"@
+	c_tinyint0ÿÿÿÿÿÿÿÿÿRnode_mysql_typesb	tinyintz	c_tinyint"1
+c_bool0Rnode_mysql_typesb	tinyintzc_bool"7
+	c_boolean0Rnode_mysql_typesb	tinyintz	c_boolean"C
+
+c_smallint0ÿÿÿÿÿÿÿÿÿRnode_mysql_typesb
+smallintz
+c_smallint"F
+c_mediumint0ÿÿÿÿÿÿÿÿÿRnode_mysql_typesb	mediumintzc_mediumint"4
+c_int0ÿÿÿÿÿÿÿÿÿRnode_mysql_typesbintzc_int"<
+	c_integer0ÿÿÿÿÿÿÿÿÿRnode_mysql_typesbintz	c_integer"=
+c_bigint0ÿÿÿÿÿÿÿÿÿRnode_mysql_typesbbigintzc_bigint"B
+c_serial0ÿÿÿÿÿÿÿÿÿRnode_mysql_typesbbigintzc_serial€"7
+	c_decimal0Rnode_mysql_typesb	decimalz	c_decimal"/
+c_dec0Rnode_mysql_typesb	decimalzc_dec"7
+	c_numeric0Rnode_mysql_typesb	decimalz	c_numeric"3
+c_fixed0Rnode_mysql_typesb	decimalzc_fixed":
+c_float0ÿÿÿÿÿÿÿÿÿRnode_mysql_typesbfloatzc_float"=
+c_double0ÿÿÿÿÿÿÿÿÿRnode_mysql_typesbdoublezc_double"Q
+c_double_precision0ÿÿÿÿÿÿÿÿÿRnode_mysql_typesbdoublezc_double_precision"7
+c_date0ÿÿÿÿÿÿÿÿÿRnode_mysql_typesbdatezc_date".
+c_time0
+Rnode_mysql_typesbtimezc_time":
+
+c_datetime0Rnode_mysql_typesb
+datetimez
+c_datetime"=
+c_timestamp0Rnode_mysql_typesb	timestampzc_timestamp"7
+c_year0ÿÿÿÿÿÿÿÿÿRnode_mysql_typesbyearzc_year"7
+c_char0ÿÿÿÿÿÿÿÿÿRnode_mysql_typesbcharzc_char"9
+c_nchar0ÿÿÿÿÿÿÿÿÿRnode_mysql_typesbcharzc_nchar"I
+c_national_char0ÿÿÿÿÿÿÿÿÿRnode_mysql_typesbcharzc_national_char"7
+	c_varchar0
+Rnode_mysql_typesb	varcharz	c_varchar"=
+c_binary0ÿÿÿÿÿÿÿÿÿRnode_mysql_typesbbinaryzc_binary"=
+c_varbinary0
+Rnode_mysql_typesb	varbinaryzc_varbinary"C
+
+c_tinyblob0ÿÿÿÿÿÿÿÿÿRnode_mysql_typesb
+tinyblobz
+c_tinyblob"C
+
+c_tinytext0ÿÿÿÿÿÿÿÿÿRnode_mysql_typesb
+tinytextz
+c_tinytext"7
+c_blob0ÿÿÿÿÿÿÿÿÿRnode_mysql_typesbblobzc_blob"7
+c_text0ÿÿÿÿÿÿÿÿÿRnode_mysql_typesbtextzc_text"I
+c_mediumblob0ÿÿÿÿÿÿÿÿÿRnode_mysql_typesb
+mediumblobzc_mediumblob"I
+c_mediumtext0ÿÿÿÿÿÿÿÿÿRnode_mysql_typesb
+mediumtextzc_mediumtext"C
+
+c_longblob0ÿÿÿÿÿÿÿÿÿRnode_mysql_typesb
+longblobz
+c_longblob"C
+
+c_longtext0ÿÿÿÿÿÿÿÿÿRnode_mysql_typesb
+longtextz
+c_longtext"7
+c_json0ÿÿÿÿÿÿÿÿÿRnode_mysql_typesbjsonzc_json:	query.sql"v1.25.0*={"driver":"MySqlConnector","project":"MySqlConnectorExample"}

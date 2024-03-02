@@ -11,7 +11,7 @@ buf-gen:
 	buf generate --template buf.gen.yaml buf.build/sqlc/sqlc --path plugin/
 
 dotnet-publish: buf-gen
-	dotnet publish SqlcGenCsharp --runtime ${RUNTIME} -c release
+	dotnet publish SqlcGenCsharp --runtime ${RUNTIME} -c release --output dist/
 	cp ${RUNTIME_DIR}/SqlcGenCsharp.wasm plugin.wasm
 
 sqlc-generate: dotnet-publish
