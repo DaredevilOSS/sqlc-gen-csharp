@@ -11,10 +11,9 @@ public static class App
     private static void _dumpRequestIfNeeded(GenerateRequest generateRequest)
     {
         if (Environment.GetEnvironmentVariable("DEBUG")!.Length == 0) return;
-        var outputFilePath = $"${typeof(GenerateRequest)}.protobuf";
+        var outputFilePath = $"{typeof(GenerateRequest)}.protobuf";
         using var outputFileStream = File.Create(outputFilePath);
         generateRequest.WriteTo(outputFileStream);
-        outputFileStream.Close();
     }
     
     private static GenerateRequest ReadInput()
