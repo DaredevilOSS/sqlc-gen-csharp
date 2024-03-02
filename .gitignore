@@ -135,5 +135,4 @@ $RECYCLE.BIN/
 .DS_Store
 
 _NCrunch*
-
-dist
+plugin.wasm
