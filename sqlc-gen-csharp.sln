@@ -7,8 +7,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SqlcGenCsharp", "SqlcGenCsh
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodegenProtobuf", "CodegenProtobuf\CodegenProtobuf.csproj", "{E81C60CF-4946-4CEB-B45C-09A936491839}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SourceGenerator", "SourceGenerator\SourceGenerator.csproj", "{7DD46C47-6039-43E0-96D9-27E7C6C9DDCE}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SqlcGenCsharpTest", "SqlcGenCsharpTest\SqlcGenCsharpTest.csproj", "{C2147325-1488-401A-AB86-99C3F2EA2FFF}"
 EndProject
 Global

@@ -12,7 +12,6 @@
 
     <ItemGroup>
         <ProjectReference Include="..\CodegenProtobuf\CodegenProtobuf.csproj"/>
-        <ProjectReference Include="..\SourceGenerator\SourceGenerator.csproj"/>
     </ItemGroup>
 
     <ItemGroup>
