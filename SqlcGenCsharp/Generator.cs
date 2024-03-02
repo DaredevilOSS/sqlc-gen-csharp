@@ -38,43 +38,47 @@ public static class CodeGenerator
 
     public static GenerateResponse Generate(GenerateRequest generateRequest)
     {
-        var options = ParseOptions(generateRequest);
-        var dbDriver = CreateNodeGenerator(options.driver);
-        var queryMap = generateRequest.Queries
-            .GroupBy(query => query.Filename)
-            .ToDictionary(group => group.Key, group => group.ToList());
-        var files = new List<File>();
+        // var options = ParseOptions(generateRequest);
+        // var dbDriver = CreateNodeGenerator(options.driver);
+        // var queryMap = generateRequest.Queries
+        //     .GroupBy(query => query.Filename)
+        //     .ToDictionary(group => group.Key, group => group.ToList());
+        // var files = new List<File>();
+        //
+        // // loop over dictionary of query files
+        // foreach (var fileQueries in queryMap)
+        // {
+        //     var nodes = dbDriver.Preamble(fileQueries.Value);
+        //
+        //     // loop over queries
+        //     foreach (var query in fileQueries.Value)
+        //     {
+        //         var updatedColumns = ConstructUpdatedColumns(query);
+        //
+        //         var lowerName = char.ToLower(query.Name[0]) + query.Name.Substring(1);
+        //         var textName = $"{lowerName}Query";
+        //         var queryDeclaration = QueryDecl(
+        //             textName,
+        //             $"-- name: {query.Name} {query.Cmd}\n{query.Text}"
+        //         );
+        //
+        //         (nodes, var argInterface) = AddArgsDeclaration(query, dbDriver, nodes);
+        //         (nodes, var returnInterface) = AddRowDeclaration(query, dbDriver, nodes);
+        //         nodes = AddMethodDeclaration(query, nodes, dbDriver, argInterface, returnInterface);
+        //
+        //         files.Add(new File
+        //         {
+        //             Name = fileQueries.Key,
+        //             Contents = nodes.ToByteString()
+        //         });
+        //     }
+        // }
 
-        // loop over dictionary of query files
-        foreach (var fileQueries in queryMap)
-        {
-            var nodes = dbDriver.Preamble(fileQueries.Value);
-
-            // loop over queries
-            foreach (var query in fileQueries.Value)
+        return new GenerateResponse { Files =
             {
-                var updatedColumns = ConstructUpdatedColumns(query);
-
-                var lowerName = char.ToLower(query.Name[0]) + query.Name.Substring(1);
-                var textName = $"{lowerName}Query";
-                var queryDeclaration = QueryDecl(
-                    textName,
-                    $"-- name: {query.Name} {query.Cmd}\n{query.Text}"
-                );
-
-                (nodes, var argInterface) = AddArgsDeclaration(query, dbDriver, nodes);
-                (nodes, var returnInterface) = AddRowDeclaration(query, dbDriver, nodes);
-                nodes = AddMethodDeclaration(query, nodes, dbDriver, argInterface, returnInterface);
-
-                files.Add(new File
-                {
-                    Name = fileQueries.Key,
-                    Contents = nodes.ToByteString()
-                });
+                Capacity = 0
             }
-        }
-
-        return new GenerateResponse { Files = { files } };
+        };
     }
 
     private static CompilationUnitSyntax AddMethodDeclaration(Query query, CompilationUnitSyntax nodes,
