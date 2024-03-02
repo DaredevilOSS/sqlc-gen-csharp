@@ -8,11 +8,32 @@ namespace sqlc_gen_csharp;
 
 public static class App
 {
+    private static readonly JsonFormatter JsonFormatter = new(JsonFormatter.Settings.Default.WithIndentation());
+
+    // TODO refactor
+    private static string _createDebugDirectory(string baseDirectory)
+    {
+        var parentDirectory = Directory.GetParent(baseDirectory);
+        var exampleName = parentDirectory?.Name;
+        var examplesDirectory = $"{parentDirectory?.Parent?.FullName}/examples";
+        var debugDirectory = $"{examplesDirectory}/{exampleName}/debug";
+        
+        Directory.CreateDirectory(debugDirectory);
+        return debugDirectory;
+    }
+    
     private static void _dumpRequestIfNeeded(GenerateRequest generateRequest)
     {
         if (Environment.GetEnvironmentVariable("DEBUG")!.Length == 0) return;
-        var outputFilePath = $"{typeof(GenerateRequest)}_{new Random().NextInt64()}.protobuf";
-        using var outputFileStream = File.Create(outputFilePath);
+        var debugDirectory = _createDebugDirectory(generateRequest.Settings.Codegen.Out);
+        
+        var jsonFilePath = $"{debugDirectory}/generate-request.json";
+        using var debugOutputFileStream = File.CreateText(jsonFilePath);
+        var stringRequest = JsonFormatter.Format(generateRequest);
+        debugOutputFileStream.Write(stringRequest);
+        
+        var protoFilePath = $"{debugDirectory}/generate-request.proto";
+        using var outputFileStream = File.Create(protoFilePath);
         generateRequest.WriteTo(outputFileStream);
     }
     

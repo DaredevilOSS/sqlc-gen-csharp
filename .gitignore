@@ -135,7 +135,6 @@ $RECYCLE.BIN/
 .DS_Store
 
 _NCrunch*
-plugin.wasm
-dist/*
 
-*.protobuf
+dist/*
+output/*
