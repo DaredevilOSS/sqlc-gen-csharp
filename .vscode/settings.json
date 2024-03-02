@@ -3,5 +3,6 @@
     "workbench.tree.indent": 15,
     "workbench.colorCustomizations": {
         "tree.indentGuidesStroke": "#36659a"
-    }
+    },
+    "makefile.makefilePath": "makefile"
 }
