@@ -59,7 +59,7 @@ public class MySqlConnector : IDbDriver
                 throw new NotSupportedException($"Unsupported column type: {columnType}");
         }
     }
-    
+
     public CompilationUnitSyntax Preamble(IEnumerable<Query> queries)
     {
         // Using directive for MySQL (or similar)
@@ -88,7 +88,7 @@ public class MySqlConnector : IDbDriver
         return compilationUnit;
     }
 
-    public MethodDeclarationSyntax OneDeclare(string funcName, string queryName, string argInterface, 
+    public MethodDeclarationSyntax OneDeclare(string funcName, string queryName, string argInterface,
         string returnInterface, IEnumerable<Parameter> parameters, IEnumerable<Column> columns)
     {
         // Generating function parameters, potentially including 'args'
@@ -132,24 +132,6 @@ public class MySqlConnector : IDbDriver
         return methodDeclaration;
     }
 
-    private IEnumerable<ParameterSyntax> FuncParamsDecl(string argInterface, IEnumerable<Parameter> parameters)
-    {
-        var funcParams = new List<ParameterSyntax>
-        {
-            Parameter(Identifier("client")).WithType(IdentifierName("Client"))
-        };
-
-        using var enumerator = parameters.GetEnumerator();
-        if (!string.IsNullOrEmpty(argInterface) && enumerator.MoveNext())
-        {
-            funcParams.Add(
-                Parameter(Identifier("args")).WithType(IdentifierName(argInterface))
-            );
-        }
-
-        return funcParams;
-    }
-    
     public MethodDeclarationSyntax ExecDeclare(string funcName, string queryName, string argInterface,
         IEnumerable<Parameter> parameters)
     {
@@ -194,7 +176,8 @@ public class MySqlConnector : IDbDriver
         return methodDeclaration;
     }
 
-    public MethodDeclarationSyntax ManyDeclare(string funcName, string queryName, string argInterface, string returnInterface,
+    public MethodDeclarationSyntax ManyDeclare(string funcName, string queryName, string argInterface,
+        string returnInterface,
         IEnumerable<Parameter> parameters, IEnumerable<Column> columns)
     {
         // Assuming FuncParamsDecl is implemented as shown previously
@@ -243,7 +226,23 @@ public class MySqlConnector : IDbDriver
 
         return methodDeclaration;
     }
-    
+
+    private IEnumerable<ParameterSyntax> FuncParamsDecl(string argInterface, IEnumerable<Parameter> parameters)
+    {
+        var funcParams = new List<ParameterSyntax>
+        {
+            Parameter(Identifier("client")).WithType(IdentifierName("Client"))
+        };
+
+        using var enumerator = parameters.GetEnumerator();
+        if (!string.IsNullOrEmpty(argInterface) && enumerator.MoveNext())
+            funcParams.Add(
+                Parameter(Identifier("args")).WithType(IdentifierName(argInterface))
+            );
+
+        return funcParams;
+    }
+
     public static InterfaceDeclarationSyntax RowDeclare(string name, Func<Column, TypeSyntax> columnToType,
         IEnumerable<Column> columns)
     {
@@ -254,8 +253,10 @@ public class MySqlConnector : IDbDriver
                     AccessorList(
                         List(new[]
                         {
-                            AccessorDeclaration(SyntaxKind.GetAccessorDeclaration).WithSemicolonToken(Token(SyntaxKind.SemicolonToken)),
-                            AccessorDeclaration(SyntaxKind.SetAccessorDeclaration).WithSemicolonToken(Token(SyntaxKind.SemicolonToken))
+                            AccessorDeclaration(SyntaxKind.GetAccessorDeclaration)
+                                .WithSemicolonToken(Token(SyntaxKind.SemicolonToken)),
+                            AccessorDeclaration(SyntaxKind.SetAccessorDeclaration)
+                                .WithSemicolonToken(Token(SyntaxKind.SemicolonToken))
                         })
                     )
                 )
@@ -267,7 +268,7 @@ public class MySqlConnector : IDbDriver
 
         return interfaceDeclaration;
     }
-    
+
     public static string PrintNodes(IEnumerable<SyntaxNode> nodes)
     {
         var stringBuilder = new StringBuilder();
@@ -276,6 +277,7 @@ public class MySqlConnector : IDbDriver
             stringBuilder.AppendLine(node.NormalizeWhitespace().ToFullString());
             stringBuilder.AppendLine(); // Adding an extra line for separation, similar to "\n\n"
         }
+
         return stringBuilder.ToString();
     }
 }

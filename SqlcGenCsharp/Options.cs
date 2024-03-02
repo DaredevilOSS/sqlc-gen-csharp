@@ -1,4 +1,3 @@
-#nullable enable
 namespace sqlc_gen_csharp;
 
 public record Options

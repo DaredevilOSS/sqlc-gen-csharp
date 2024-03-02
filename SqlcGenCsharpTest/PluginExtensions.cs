@@ -11,13 +11,13 @@ public static class PluginExtensions
     {
         return _toStream(generateRequest, memoryStreamManager);
     }
-    
+
     public static MemoryStream ToStream(this GenerateResponse generateResponse,
         RecyclableMemoryStreamManager memoryStreamManager)
     {
         return _toStream(generateResponse, memoryStreamManager);
     }
-    
+
     private static MemoryStream _toStream(IMessage obj, RecyclableMemoryStreamManager memoryStreamManager)
     {
         var stream = memoryStreamManager.GetStream();
@@ -26,7 +26,7 @@ public static class PluginExtensions
 
         return stream;
     }
-    
+
     public static bool ContentEquals(this MemoryStream ms1, MemoryStream ms2)
     {
         if (ms1.Length != ms2.Length)

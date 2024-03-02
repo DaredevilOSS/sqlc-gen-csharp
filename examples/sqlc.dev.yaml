@@ -1,6 +1,6 @@
 version: "2"
 plugins:
-- name: ts
+- name: csharp
   wasm:
     url: file://plugin.wasm
 sql:
@@ -8,26 +8,15 @@ sql:
   queries: "authors/postgresql/query.sql"
   engine: "postgresql"
   codegen:
-  - plugin: ts
-    out: node-pg/src/db
+  - plugin: csharp
+    out: NpgsqlExample/Db
     options:
-      runtime: node
-      driver: pg
-- schema: "authors/postgresql/schema.sql"
-  queries: "authors/postgresql/query.sql"
-  engine: "postgresql"
-  codegen:
-  - plugin: ts
-    out: node-postgres/src/db
-    options:
-      runtime: node
-      driver: postgres
+      driver: Npgsql
 - schema: "authors/mysql/schema.sql"
   queries: "authors/mysql/query.sql"
   engine: "mysql"
   codegen:
-  - plugin: ts
-    out: node-mysql2/src/db
+  - plugin: csharp
+    out: MySqlConnectorExample/Db
     options:
-      runtime: node
-      driver: mysql2
+      driver: MySqlConnector
