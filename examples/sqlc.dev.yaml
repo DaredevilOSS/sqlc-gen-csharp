@@ -4,7 +4,7 @@ plugins:
   env:
     - DEBUG
   wasm:
-    url: file://plugin.wasm
+    url: file://dist/plugin.wasm
     sha256: 9bb77ad7a855d1279162aeee8258308026dc49b570f6b9fbeedb8d80c76c2497
 - name: csharp-local
   env:

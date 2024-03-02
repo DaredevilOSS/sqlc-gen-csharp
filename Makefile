@@ -12,7 +12,7 @@ buf-gen:
 
 dotnet-publish: buf-gen
 	dotnet publish SqlcGenCsharp --runtime ${RUNTIME} -c release --output dist/
-	cp ${RUNTIME_DIR}/SqlcGenCsharp.wasm plugin.wasm
+	cp ${RUNTIME_DIR}/SqlcGenCsharp.wasm dist/plugin.wasm
 
 sqlc-generate: dotnet-publish
 	export DEBUG=TRUE && sqlc -f examples/sqlc.dev.yaml generate
