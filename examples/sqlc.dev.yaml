@@ -1,6 +1,8 @@
 version: "2"
 plugins:
 - name: csharp
+  env:
+    - DEBUG
   wasm:
     url: file://plugin.wasm
     sha256: 9bb77ad7a855d1279162aeee8258308026dc49b570f6b9fbeedb8d80c76c2497
@@ -13,6 +15,7 @@ sql:
     out: NpgsqlExample/Db
     options:
       driver: Npgsql
+      project: NpgsqlExample
 - schema: "authors/mysql/schema.sql"
   queries: "authors/mysql/query.sql"
   engine: "mysql"
@@ -21,3 +24,4 @@ sql:
     out: MySqlConnectorExample/Db
     options:
       driver: MySqlConnector
+      project: MySqlConnectorExample

@@ -2,17 +2,28 @@ using System;
 using System.IO;
 using Google.Protobuf;
 using Plugin;
+using File = System.IO.File;
 
 namespace sqlc_gen_csharp;
 
 public static class App
 {
+    private static void _dumpRequestIfNeeded(GenerateRequest generateRequest)
+    {
+        if (Environment.GetEnvironmentVariable("DEBUG")!.Length <= 0) return;
+        var outputFilePath = $"${typeof(GenerateRequest)}.protobuf";
+        using var outputFileStream = File.Create(outputFilePath);
+        generateRequest.WriteTo(outputFileStream);
+    }
+    
     private static GenerateRequest ReadInput()
     {
         using var memoryStream = new MemoryStream();
         Console.OpenStandardInput().CopyTo(memoryStream);
         memoryStream.Position = 0;
-        return GenerateRequest.Parser.ParseFrom(memoryStream);
+        var generateRequest = GenerateRequest.Parser.ParseFrom(memoryStream);
+        _dumpRequestIfNeeded(generateRequest);
+        return generateRequest;
     }
 
     private static void WriteOutput(GenerateResponse output)
