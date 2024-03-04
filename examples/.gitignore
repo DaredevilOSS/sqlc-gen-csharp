@@ -1,2 +1,2 @@
 *.wasm
-!SqlcGenCsharp.wasm
+**/input/
