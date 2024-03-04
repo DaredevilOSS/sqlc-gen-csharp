@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Plugin;
 
-namespace sqlc_gen_csharp.Drivers;
+namespace SqlcGenCsharp.Drivers;
 
 public interface IDbDriver
 {

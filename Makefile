@@ -10,9 +10,14 @@ PATH  		:= ${PATH}:${PWD}/${RUNTIME_DIR}
 buf-gen:
 	buf generate --template buf.gen.yaml buf.build/sqlc/sqlc --path plugin/
 
-dotnet-publish: buf-gen
+dotnet-build:
+	dotnet build
+
+dotnet-publish: buf-gen dotnet-build
 	dotnet publish SqlcGenCsharp --runtime ${RUNTIME} -c release --output dist/
 	cp ${RUNTIME_DIR}/SqlcGenCsharp.wasm dist/plugin.wasm
 
 sqlc-generate: dotnet-publish
-	export DEBUG=TRUE && sqlc -f examples/sqlc.dev.yaml generate
+	sqlc -f examples/sqlc.dev.yaml generate
+
+test-setup: sqlc-generate

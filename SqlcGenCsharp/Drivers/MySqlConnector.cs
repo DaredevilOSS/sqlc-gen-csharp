@@ -8,7 +8,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Plugin;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
-namespace sqlc_gen_csharp.Drivers;
+namespace SqlcGenCsharp.Drivers;
 
 public class MySqlConnector : IDbDriver
 {

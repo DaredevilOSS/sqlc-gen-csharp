@@ -8,10 +8,10 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Plugin;
-using sqlc_gen_csharp.Drivers;
+using SqlcGenCsharp.Drivers;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
-namespace sqlc_gen_csharp;
+namespace SqlcGenCsharp;
 
 public static class CodeGenerator
 {

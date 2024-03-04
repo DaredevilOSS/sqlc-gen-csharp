@@ -3,7 +3,6 @@
     <PropertyGroup>
         <OutputType>Exe</OutputType>
         <TargetFramework>.net8.0</TargetFramework>
-        <RootNamespace>sqlc_gen_csharp</RootNamespace>
         <PublishSingleFile>true</PublishSingleFile>
         <SelfContained>true</SelfContained>
         <Nullable>enable</Nullable>
@@ -16,7 +15,7 @@
 
     <ItemGroup>
         <PackageReference Include="Google.Protobuf" Version="3.26.0-rc2"/>
-        <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.9.0.0" PrivateAssets="all"/>
+        <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.9.2" PrivateAssets="all"/>
         <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="3.3.4" PrivateAssets="all"/>
         <PackageReference Include="protobuf-net" Version="3.2.30"/>
         <PackageReference Include="Wasi.Sdk" Version="0.1.4-preview.10020"/>

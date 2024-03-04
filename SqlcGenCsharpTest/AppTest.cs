@@ -1,6 +1,6 @@
 using Microsoft.IO;
 using Plugin;
-using sqlc_gen_csharp;
+using SqlcGenCsharp;
 
 namespace SqlcGenCsharpTest;
 
@@ -12,6 +12,7 @@ public class AppTest
     public void SetUp()
     {
         _memoryStreamManager = new RecyclableMemoryStreamManager();
+        Setup.Run();
     }
 
     private RecyclableMemoryStreamManager _memoryStreamManager = null!;
@@ -39,7 +40,7 @@ public class AppTest
             Console.SetIn(inStreamReader);
             Console.SetOut(outStreamWriter);
 
-            App.Run();
+            Runner.Run();
             Assert.Multiple(() =>
             {
                 Assert.That(outStreamWriter.BaseStream.Position, Is.EqualTo(0),
