@@ -1,4 +1,4 @@
-namespace CodeGenerator;
+namespace SqlcGenCsharp;
 
 public record Options
 {

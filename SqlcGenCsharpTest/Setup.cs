@@ -1,6 +1,6 @@
 using System.Diagnostics;
 using Google.Protobuf;
-using ProtobufIO;
+using SqlcGenCsharp;
 using File = System.IO.File;
 
 namespace SqlcGenCsharpTest;
@@ -33,10 +33,10 @@ public static class Setup
     
     public static void RunFromSqlc()
     {
-        var generateRequest = Utils.ReadInput();
+        var generateRequest = ProtobufStreams.ReadInput();
         _directory = _createDirectory(generateRequest.Settings.Codegen.Out);
         _dump(generateRequest, "generate-request");
-        var generateResponse = CodeGenerator.CodeGenerator.Generate(generateRequest);
+        var generateResponse = SqlcGenCsharp.CodeGenerator.Generate(generateRequest);
         _dump(generateResponse, "generate-response");
     }
 

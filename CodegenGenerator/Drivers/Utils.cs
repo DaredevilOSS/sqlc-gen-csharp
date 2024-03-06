@@ -1,9 +1,9 @@
 using System.Text.RegularExpressions;
 using Plugin;
 
-namespace CodeGenerator.Drivers;
+namespace SqlcGenCsharp.Drivers;
 
-public class Utils
+public static class Utils
 {
     private static string FieldName(string prefix, int index, Column? column = null)
     {

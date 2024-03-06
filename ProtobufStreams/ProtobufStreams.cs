@@ -1,9 +1,9 @@
 ﻿using Google.Protobuf;
 using Plugin;
 
-namespace ProtobufIO;
+namespace SqlcGenCsharp;
 
-public static class Utils
+public static class ProtobufStreams
 {
     public static GenerateRequest ReadInput()
     {

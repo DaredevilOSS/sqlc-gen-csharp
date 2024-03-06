@@ -5,14 +5,13 @@
         <TargetFramework>net8.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
-        <AssemblyName>SqlcGenCsharpSetup</AssemblyName>
         <RootNamespace>SqlcGenCsharpSetup</RootNamespace>
+        <PackageId>SqlcGenCsharpTestSetup</PackageId>
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\CodeGenerator\CodeGenerator.csproj" />
-      <ProjectReference Include="..\ProtobufIO\ProtobufIO.csproj" />
-      <ProjectReference Include="..\SqlcGenCsharp\ProtobufIO.csproj" />
+      <ProjectReference Include="..\CodegenGenerator\CodegenGenerator.csproj" />
+      <ProjectReference Include="..\ProtobufStreams\ProtobufStreams.csproj" />
     </ItemGroup>
 
     <ItemGroup>

@@ -5,7 +5,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Plugin;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
-namespace CodeGenerator.Drivers;
+namespace SqlcGenCsharp.Drivers;
 
 public class MySqlConnector : IDbDriver
 {

@@ -1,14 +1,14 @@
 using System.Text;
 using System.Text.Json;
-using CodeGenerator.Drivers;
 using Google.Protobuf;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Plugin;
+using SqlcGenCsharp.Drivers;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
-namespace CodeGenerator;
+namespace SqlcGenCsharp;
 
 public static class CodeGenerator
 {

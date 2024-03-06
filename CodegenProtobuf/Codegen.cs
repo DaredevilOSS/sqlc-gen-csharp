@@ -85,7 +85,7 @@ namespace Plugin {
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
             new pbr::GeneratedClrTypeInfo(typeof(global::Plugin.File), global::Plugin.File.Parser, new[]{ "Name", "Contents" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Plugin.Settings), global::Plugin.Settings.Parser, new[]{ "Version", "Engine", "Schema", "Queries", "CodeGenerator" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Plugin.Settings), global::Plugin.Settings.Parser, new[]{ "Version", "Engine", "Schema", "Queries", "CodegenGenerator" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Plugin.Codegen), global::Plugin.Codegen.Parser, new[]{ "Out", "Plugin", "Options", "Env", "Process", "Wasm" }, null, null, null, new pbr::GeneratedClrTypeInfo[] { new pbr::GeneratedClrTypeInfo(typeof(global::Plugin.Codegen.Types.Process), global::Plugin.Codegen.Types.Process.Parser, new[]{ "Cmd" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Plugin.Codegen.Types.WASM), global::Plugin.Codegen.Types.WASM.Parser, new[]{ "Url", "Sha256" }, null, null, null, null)}),
             new pbr::GeneratedClrTypeInfo(typeof(global::Plugin.Catalog), global::Plugin.Catalog.Parser, new[]{ "Comment", "DefaultSchema", "Name", "Schemas" }, null, null, null, null),
@@ -501,7 +501,7 @@ namespace Plugin {
       queries_.WriteTo(output, _repeated_queries_codec);
       if (codegen_ != null) {
         output.WriteRawTag(98);
-        output.WriteMessage(CodeGenerator);
+        output.WriteMessage(CodegenGenerator);
       }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
@@ -607,9 +607,9 @@ namespace Plugin {
           }
           case 98: {
             if (codegen_ == null) {
-              CodeGenerator = new global::Plugin.CodeGenerator();
+              CodegenGenerator = new global::Plugin.CodegenGenerator();
             }
-            input.ReadMessage(CodeGenerator);
+            input.ReadMessage(CodegenGenerator);
             break;
           }
         }
@@ -975,14 +975,14 @@ namespace Plugin {
           }
           case 42: {
             if (process_ == null) {
-              Process = new global::Plugin.CodeGenerator.Types.Process();
+              Process = new global::Plugin.CodegenGenerator.Types.Process();
             }
             input.ReadMessage(Process);
             break;
           }
           case 50: {
             if (wasm_ == null) {
-              Wasm = new global::Plugin.CodeGenerator.Types.WASM();
+              Wasm = new global::Plugin.CodegenGenerator.Types.WASM();
             }
             input.ReadMessage(Wasm);
             break;
@@ -1038,7 +1038,7 @@ namespace Plugin {
     #endif
 
     #region Nested types
-    /// <summary>Container for nested types declared in the CodeGenerator message type.</summary>
+    /// <summary>Container for nested types declared in the CodegenGenerator message type.</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static partial class Types {
