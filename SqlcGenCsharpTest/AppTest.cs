@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Microsoft.IO;
 using Plugin;
 using SqlcGenCsharp;
@@ -8,11 +9,32 @@ namespace SqlcGenCsharpTest;
 [TestOf(typeof(App))]
 public class AppTest
 {
+    private static void _runTestSetupSqlc()
+    {
+        // var bashCommand = "sqlc -f examples/sqlc.test.yaml generate";
+        const string bashCommand = "sqlc --help";
+        var startInfo = new ProcessStartInfo
+        {
+            FileName = "/bin/bash",
+            Arguments = $"-c \"{bashCommand}\"",
+            RedirectStandardError = true,
+            RedirectStandardOutput = true,
+            UseShellExecute = false,
+            CreateNoWindow = true
+        };
+        
+        using var process = Process.Start(startInfo)!;
+        var output = process.StandardOutput.ReadToEnd();
+        var error = process.StandardError.ReadToEnd();
+        Console.WriteLine($"sqlc output: {output}\nsqlc error: {error}");
+        process.WaitForExit();
+    }
+    
     [SetUp]
     public void SetUp()
     {
         _memoryStreamManager = new RecyclableMemoryStreamManager();
-        Setup.Run();
+        _runTestSetupSqlc();
     }
 
     private RecyclableMemoryStreamManager _memoryStreamManager = null!;
@@ -40,7 +62,7 @@ public class AppTest
             Console.SetIn(inStreamReader);
             Console.SetOut(outStreamWriter);
 
-            Runner.Run();
+            App.Run();
             Assert.Multiple(() =>
             {
                 Assert.That(outStreamWriter.BaseStream.Position, Is.EqualTo(0),

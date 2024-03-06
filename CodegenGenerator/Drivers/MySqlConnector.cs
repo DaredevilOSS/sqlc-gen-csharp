@@ -224,7 +224,7 @@ public class MySqlConnector : IDbDriver
         return methodDeclaration;
     }
 
-    private IEnumerable<ParameterSyntax> FuncParamsDecl(string argInterface, IEnumerable<Parameter> parameters)
+    private static IEnumerable<ParameterSyntax> FuncParamsDecl(string argInterface, IEnumerable<Parameter> parameters)
     {
         var funcParams = new List<ParameterSyntax>
         {

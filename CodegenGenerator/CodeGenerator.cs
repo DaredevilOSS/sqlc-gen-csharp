@@ -33,6 +33,7 @@ public static class CodeGenerator
         return JsonSerializer.Deserialize<Options>(text) ?? throw new InvalidOperationException();
     }
 
+    // TODO once uncommented it fails sqlc miserably with un-being able to import Roslyn lib
     public static GenerateResponse Generate(GenerateRequest generateRequest)
     {
         // var options = ParseOptions(generateRequest);
