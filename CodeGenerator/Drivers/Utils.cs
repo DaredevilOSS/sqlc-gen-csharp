@@ -1,7 +1,7 @@
 using System.Text.RegularExpressions;
 using Plugin;
 
-namespace SqlcGenCsharp.Drivers;
+namespace CodeGenerator.Drivers;
 
 public class Utils
 {

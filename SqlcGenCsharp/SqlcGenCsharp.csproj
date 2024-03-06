@@ -11,6 +11,8 @@
 
     <ItemGroup>
         <ProjectReference Include="..\CodegenProtobuf\CodegenProtobuf.csproj"/>
+        <ProjectReference Include="..\ProtobufIO\ProtobufIO.csproj" />
+        <ProjectReference Include="..\CodeGenerator\CodeGenerator.csproj" />
     </ItemGroup>
 
     <ItemGroup>

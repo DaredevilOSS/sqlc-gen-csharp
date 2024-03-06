@@ -1,9 +1,8 @@
 using System.Diagnostics;
 using Google.Protobuf;
 using ProtobufIO;
-using File = System.IO.File;
 
-namespace SqlcGenCsharpTest;
+namespace SqlcGenCsharpSetup;
 
 public static class Setup
 {

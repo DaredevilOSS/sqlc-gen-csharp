@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -8,7 +5,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Plugin;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
-namespace SqlcGenCsharp.Drivers;
+namespace CodeGenerator.Drivers;
 
 public class MySqlConnector : IDbDriver
 {
