@@ -1,6 +1,7 @@
 using System.Text;
 using System.Text.Json;
 using Google.Protobuf;
+using Google.Protobuf.Collections;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -33,7 +34,25 @@ public static class CodeGenerator
         var text = Encoding.UTF8.GetString(generateRequest.PluginOptions.ToByteArray());
         return JsonSerializer.Deserialize<Options>(text) ?? throw new InvalidOperationException();
     }
-
+    
+    private static string FirstCharToUpper(this string input) =>
+        input switch
+        {
+            null => throw new ArgumentNullException(nameof(input)),
+            "" => throw new ArgumentException($"{nameof(input)} cannot be empty", nameof(input)),
+            _ => string.Concat(input[0].ToString().ToUpper(), input.AsSpan(1))
+        };
+    
+    private static string _queryFilenameToCsharpFilename(string filenameWithExtension)
+    {
+        var filename = Path.GetFileNameWithoutExtension(filenameWithExtension);
+        var extension = Path.GetExtension(filenameWithExtension);
+        return string.Concat(
+            filename.FirstCharToUpper(), 
+            extension[1..].FirstCharToUpper(),
+            ".cs");
+    }
+    
     // TODO once uncommented it fails sqlc miserably with un-being able to import Roslyn lib
     public static GenerateResponse Generate(GenerateRequest generateRequest)
     {
@@ -42,7 +61,7 @@ public static class CodeGenerator
         var queryMap = generateRequest.Queries
             .GroupBy(query => query.Filename)
             .ToDictionary(group => group.Key, group => group.ToList());
-        var files = new List<File>();
+        var files = new RepeatedField<File>();
         
         // loop over dictionary of query files
         foreach (var fileQueries in queryMap)
@@ -67,17 +86,13 @@ public static class CodeGenerator
         
                 files.Add(new File
                 {
-                    Name = fileQueries.Key,
+                    Name = _queryFilenameToCsharpFilename(fileQueries.Key),
                     Contents = nodes.ToByteString()
                 });
+                
             }
         }
-        
-        return new GenerateResponse { Files =
-            {
-                Capacity = 0
-            }
-        };
+        return new GenerateResponse { Files = {files} };
     }
 
     private static CompilationUnitSyntax AddMethodDeclaration(Query query, CompilationUnitSyntax nodes,
