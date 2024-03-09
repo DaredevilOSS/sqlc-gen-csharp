@@ -1,24 +1,20 @@
 # sqlc-gen-csharp
 
-> [!CAUTION]
-> Here be dragons! This plugin is still in early access. Expect breaking changes, missing functionality, and sub-optimal output. Please report all issues and errors. Good luck!
-
 ## Prerequisites
 make sure that the following applications are installed and exposed in your path
 
-* dotnet cli - https://github.com/dotnet/sdk - follow the instructions in the repo, currently we supports version `.NET 8.0 (latest)`
+* Dotnet CLI - https://github.com/dotnet/sdk - follow the instructions in the repo, we use version `.NET 8.0 (latest)`
 * buf build - https://buf.build/docs/installation - follow the instructions in here
 
 ## Protobuf
-Defined in protos/ (should be identical to the protocol buffers in sqlc repo).
+SQLC protobuf are defined in sqlc-dev/sqlc repository.
 Generating C# code from protocol buffer file:
 ```
 make buf-gen
 ```
 
 ## Usage
-you can run the c# project by the terminal using this commnad `make dotnet-publish`
-Use the following to run sqlc with the csharp code locally
+Use the following to run sqlc with the C# code locally:
 ```
 make sqlc-generate
 ```
