@@ -66,7 +66,7 @@ public static class CodeGenerator
         // loop over dictionary of query files
         foreach (var fileQueries in queryMap)
         {
-            var nodes = dbDriver.Preamble(fileQueries.Value);
+            var topDeclarations = dbDriver.Preamble(fileQueries.Value);
         
             // loop over queries
             foreach (var query in fileQueries.Value)
@@ -80,14 +80,26 @@ public static class CodeGenerator
                     $"-- name: {query.Name} {query.Cmd}\n{query.Text}"
                 );
         
-                (nodes, var argInterface) = AddArgsDeclaration(query, dbDriver, nodes);
-                (nodes, var returnInterface) = AddRowDeclaration(query, dbDriver, nodes);
-                nodes = AddMethodDeclaration(query, nodes, dbDriver, argInterface, returnInterface);
+                (var argDecleration, var argInterface) = AddArgsDeclaration(query, dbDriver);
+                (var rowDeclare, var returnInterface) = AddRowDeclaration(query, dbDriver);
+                var methodToAdd = AddMethodDeclaration(query, dbDriver, argInterface, returnInterface);
+
+                // add members to class
+                var newClass = topDeclarations.Item3.AddMembers(methodToAdd);
+                var newNamespace = topDeclarations.Item2.ReplaceNode(topDeclarations.Item3,newClass);
+
+
+                // Compilation unit (root of the syntax tree) with using directives and namespace
+                var compilationUnit = CompilationUnit()
+                    .AddUsings(topDeclarations.Item1)
+                    .AddMembers(newNamespace)
+                    .NormalizeWhitespace(); // Format the code for readability
+
         
                 files.Add(new File
                 {
                     Name = _queryFilenameToCsharpFilename(fileQueries.Key),
-                    Contents = nodes.ToByteString()
+                    Contents = compilationUnit.ToByteString()
                 });
                 
             }
@@ -95,48 +107,50 @@ public static class CodeGenerator
         return new GenerateResponse { Files = {files} };
     }
 
-    private static CompilationUnitSyntax AddMethodDeclaration(Query query, CompilationUnitSyntax nodes,
+    private static MethodDeclarationSyntax AddMethodDeclaration(Query query,
         IDbDriver dbDriver,
         string argInterface, string returnInterface)
     {
+        MethodDeclarationSyntax methodToAdd = null;
         switch (query.Cmd)
         {
             case ":exec":
-                nodes = nodes.AddMembers(dbDriver.ExecDeclare(query.Name, query.Text, argInterface, query.Params));
+                methodToAdd = dbDriver.ExecDeclare(query.Name, query.Text, argInterface, query.Params);
                 break;
             case ":one":
-                nodes = nodes.AddMembers(dbDriver.OneDeclare(query.Name, query.Text, argInterface, returnInterface,
-                    query.Params, query.Columns));
+                methodToAdd = dbDriver.OneDeclare(query.Name, query.Text, argInterface, returnInterface,
+                    query.Params, query.Columns);
                 break;
             case ":many":
-                nodes = nodes.AddMembers(dbDriver.ManyDeclare(query.Name, query.Text, argInterface, returnInterface,
-                    query.Params, query.Columns));
+                methodToAdd = dbDriver.ManyDeclare(query.Name, query.Text, argInterface, returnInterface,
+                    query.Params, query.Columns);
                 break;
         }
 
-        return nodes;
+        return methodToAdd;
     }
 
-    private static (CompilationUnitSyntax, string) AddRowDeclaration(Query query, IDbDriver dbDriver,
-        CompilationUnitSyntax nodes)
+    private static (InterfaceDeclarationSyntax, string) AddRowDeclaration(Query query, IDbDriver dbDriver)
     {
-        if (query.Columns.Count <= 0) return (nodes, string.Empty); // TODO
+        if (query.Columns.Count <= 0) return (null, string.Empty); // TODO
         var returnInterface = $"{query.Name}Row";
         // TODO this is pure guess
         var unitToAdd = RowDeclare(returnInterface,
             column => dbDriver.ColumnType(column.Type.Name, column.NotNull), query.Columns);
-        nodes = nodes.WithMembers(unitToAdd.Members);
-        return (nodes.NormalizeWhitespace(), returnInterface);
+        return (unitToAdd, returnInterface);
+        // nodes = nodes.WithMembers(unitToAdd.Members);
+        // return (nodes.NormalizeWhitespace(), returnInterface);
     }
 
-    private static (CompilationUnitSyntax, string) AddArgsDeclaration(Query query, IDbDriver dbDriver,
-        CompilationUnitSyntax nodes)
+    private static (CompilationUnitSyntax, string) AddArgsDeclaration(Query query, IDbDriver dbDriver)
     {
-        if (query.Params.Count <= 0) return (nodes, string.Empty); // TODO String.Empty?
+        if (query.Params.Count <= 0) return (null, string.Empty); // TODO String.Empty?
         var argInterface = $"{query.Name}Args";
         var argsDeclaration = ArgsDeclare(argInterface,
             column => dbDriver.ColumnType(column.Type.Name, column.NotNull), query.Params);
-        return (MergeCompilationUnit(nodes, argsDeclaration), argInterface);
+        
+        return (argsDeclaration,argInterface);
+        // return (MergeCompilationUnit(nodes, argsDeclaration), argInterface);
     }
 
     private static IEnumerable<Column> ConstructUpdatedColumns(Query query)

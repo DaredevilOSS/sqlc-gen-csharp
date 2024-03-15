@@ -57,7 +57,7 @@ public class MySqlConnector : IDbDriver
         }
     }
 
-    public CompilationUnitSyntax Preamble(IEnumerable<Query> queries)
+    public (UsingDirectiveSyntax, NamespaceDeclarationSyntax, ClassDeclarationSyntax) Preamble(IEnumerable<Query> queries)
     {
         // Using directive for MySQL (or similar)
         var usingDirective = UsingDirective(ParseName("MySql.Data.MySqlClient"));
@@ -76,13 +76,8 @@ public class MySqlConnector : IDbDriver
         var namespaceDeclaration = NamespaceDeclaration(ParseName("GeneratedNamespace"))
             .AddMembers(classDeclaration);
 
-        // Compilation unit (root of the syntax tree) with using directives and namespace
-        var compilationUnit = CompilationUnit()
-            .AddUsings(usingDirective)
-            .AddMembers(namespaceDeclaration)
-            .NormalizeWhitespace(); // Format the code for readability
 
-        return compilationUnit;
+        return (usingDirective,namespaceDeclaration, classDeclaration);
     }
 
     public MethodDeclarationSyntax OneDeclare(string funcName, string queryName, string argInterface,
