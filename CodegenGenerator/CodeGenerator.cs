@@ -66,33 +66,33 @@ public static class CodeGenerator
         // loop over dictionary of query files
         foreach (var fileQueries in queryMap)
         {
-            var topDeclarations = dbDriver.Preamble(fileQueries.Value);
+            var (usingDirective, exportedMethods) = dbDriver.Preamble(fileQueries.Value);
         
             // loop over queries
             foreach (var query in fileQueries.Value)
             {
                 var updatedColumns = ConstructUpdatedColumns(query);
-        
+                
                 var lowerName = char.ToLower(query.Name[0]) + query.Name.Substring(1);
                 var textName = $"{lowerName}Query";
                 var queryDeclaration = QueryDecl(
-                    textName,
-                    $"-- name: {query.Name} {query.Cmd}\n{query.Text}"
+                textName,
+                $"-- name: {query.Name} {query.Cmd}\n{query.Text}"
                 );
-        
-                (var argDecleration, var argInterface) = AddArgsDeclaration(query, dbDriver);
-                (var rowDeclare, var returnInterface) = AddRowDeclaration(query, dbDriver);
-                var methodToAdd = AddMethodDeclaration(query, dbDriver, argInterface, returnInterface);
+                
+                // (var argDecleration, var argInterface) = AddArgsDeclaration(query, dbDriver);
+                // (var rowDeclare, var returnInterface) = AddRowDeclaration(query, dbDriver);
+                // var methodToAdd = AddMethodDeclaration(query, dbDriver, argInterface, returnInterface);
 
                 // add members to class
-                var newClass = topDeclarations.Item3.AddMembers(methodToAdd);
-                var newNamespace = topDeclarations.Item2.ReplaceNode(topDeclarations.Item3,newClass);
+                //var newClass = topDeclarations.Item3.AddMembers(methodToAdd);
+                // var newNamespace = topDeclarations.Item2.ReplaceNode(topDeclarations.Item3,newClass);
 
 
                 // Compilation unit (root of the syntax tree) with using directives and namespace
                 var compilationUnit = CompilationUnit()
-                    .AddUsings(topDeclarations.Item1)
-                    .AddMembers(newNamespace)
+                    .AddUsings(usingDirective)
+                    .AddMembers(exportedMethods)
                     .NormalizeWhitespace(); // Format the code for readability
 
         
@@ -130,17 +130,17 @@ public static class CodeGenerator
         return methodToAdd;
     }
 
-    private static (InterfaceDeclarationSyntax, string) AddRowDeclaration(Query query, IDbDriver dbDriver)
-    {
-        if (query.Columns.Count <= 0) return (null, string.Empty); // TODO
-        var returnInterface = $"{query.Name}Row";
-        // TODO this is pure guess
-        var unitToAdd = RowDeclare(returnInterface,
-            column => dbDriver.ColumnType(column.Type.Name, column.NotNull), query.Columns);
-        return (unitToAdd, returnInterface);
-        // nodes = nodes.WithMembers(unitToAdd.Members);
-        // return (nodes.NormalizeWhitespace(), returnInterface);
-    }
+    // private static (InterfaceDeclarationSyntax, string) AddRowDeclaration(Query query, IDbDriver dbDriver)
+    // {
+    //     if (query.Columns.Count <= 0) return (null, string.Empty); // TODO
+    //     var returnInterface = $"{query.Name}Row";
+    //     // TODO this is pure guess
+    //     var unitToAdd = RowDeclare(returnInterface,
+    //         column => dbDriver.ColumnType(column.Type.Name, column.NotNull), query.Columns);
+    //     return (unitToAdd, returnInterface);
+    //     // nodes = nodes.WithMembers(unitToAdd.Members);
+    //     // return (nodes.NormalizeWhitespace(), returnInterface);
+    // }
 
     private static (CompilationUnitSyntax, string) AddArgsDeclaration(Query query, IDbDriver dbDriver)
     {
@@ -178,28 +178,24 @@ public static class CodeGenerator
                 throw new ArgumentException($"unknown driver: {driver}", nameof(driver));
         }
     }
-
-    private static InterfaceDeclarationSyntax RowDeclare(string name, Func<Column, TypeSyntax> columnToType,
+    
+    private static RecordDeclarationSyntax RowDeclare(string name, Func<Column, TypeSyntax> columnToType,
         IEnumerable<Column> columns)
     {
-        // Create a list of property signatures based on the columns
-        var properties = columns.Select((column, i) =>
-            PropertyDeclaration(columnToType(column), Identifier(Utils.ColName(i, column)))
-                .AddModifiers(Token(SyntaxKind.PublicKeyword))
-                .AddAccessorListAccessors(
-                    AccessorDeclaration(SyntaxKind.GetAccessorDeclaration)
-                        .WithSemicolonToken(Token(SyntaxKind.SemicolonToken)),
-                    AccessorDeclaration(SyntaxKind.SetAccessorDeclaration)
-                        .WithSemicolonToken(Token(SyntaxKind.SemicolonToken))
-                )
-        ).ToArray();
+        var columnsList = columns.ToList();
+        var parameterList = GenerateParameters(columnToType, columnsList);
+        
+        return RecordDeclaration(Token(SyntaxKind.RecordDeclaration), $"{name}Row")
+            .AddModifiers(Token(SyntaxKind.PublicKeyword))
+            .WithParameterList(parameterList);
 
-        // Create the interface declaration
-        var interfaceDeclaration = InterfaceDeclaration(name)
-            .AddModifiers(Token(SyntaxKind.PublicKeyword)) // Making the interface public
-            .AddMembers(properties); // Adding the properties
-
-        return interfaceDeclaration;
+        static ParameterListSyntax GenerateParameters(Func<Column, TypeSyntax> columnToType, IEnumerable<Column> columns)
+        {
+            return ParameterList(SeparatedList(columns
+                .Select(column => Parameter(Identifier(column.Name))
+                    .WithType(columnToType(column))
+                )));
+        }
     }
 
     private static CompilationUnitSyntax QueryDecl(string name, string sql)

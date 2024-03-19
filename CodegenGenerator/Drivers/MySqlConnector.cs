@@ -57,27 +57,21 @@ public class MySqlConnector : IDbDriver
         }
     }
 
-    public (UsingDirectiveSyntax, NamespaceDeclarationSyntax, ClassDeclarationSyntax) Preamble(IEnumerable<Query> queries)
+    private static MethodDeclarationSyntax _getMethodForQuery(Query query)
     {
-        // Using directive for MySQL (or similar)
+        return MethodDeclaration(
+                PredefinedType(Token(ParseTypeName("Task").Kind())), query.Name)
+            .AddModifiers(
+                Token(SyntaxKind.PublicKeyword),
+                Token(SyntaxKind.AsyncKeyword))
+            .WithBody(Block(ParseStatement("var connection = new MySqlConnection();")));
+    }
+    
+    public (UsingDirectiveSyntax, IEnumerable<MethodDeclarationSyntax>) Preamble(IEnumerable<Query> queries)
+    {
         var usingDirective = UsingDirective(ParseName("MySql.Data.MySqlClient"));
-
-        // Class declaration
-        var classDeclaration = ClassDeclaration("DatabaseClient")
-            .AddModifiers(Token(SyntaxKind.PublicKeyword)) // Making the class public
-            .AddMembers(
-                // Example method that represents using a MySQL connection
-                MethodDeclaration(PredefinedType(Token(SyntaxKind.VoidKeyword)), "ConnectToDatabase")
-                    .AddModifiers(Token(SyntaxKind.PublicKeyword)) // Making the method public
-                    .WithBody(Block(ParseStatement("var connection = new MySqlConnection();")))
-            );
-
-        // Namespace declaration
-        var namespaceDeclaration = NamespaceDeclaration(ParseName("GeneratedNamespace"))
-            .AddMembers(classDeclaration);
-
-
-        return (usingDirective,namespaceDeclaration, classDeclaration);
+        var methodDeclarations = queries.Select(selector: _getMethodForQuery);
+        return (usingDirective, methodDeclarations);
     }
 
     public MethodDeclarationSyntax OneDeclare(string funcName, string queryName, string argInterface,
