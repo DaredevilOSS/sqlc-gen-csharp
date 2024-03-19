@@ -1,3 +1,4 @@
+using System.Collections.Immutable;
 using System.Text;
 using System.Text.Json;
 using Google.Protobuf;
@@ -14,6 +15,8 @@ namespace SqlcGenCsharp;
 
 public static class CodeGenerator
 {
+    const string GeneratedNamespacee = "GeneratedNamespace";
+    
     private static CompilationUnitSyntax MergeCompilationUnit(CompilationUnitSyntax a, CompilationUnitSyntax b)
     {
         a = a.WithUsings(b.Usings);
@@ -58,53 +61,56 @@ public static class CodeGenerator
     {
         var options = ParseOptions(generateRequest);
         var dbDriver = CreateNodeGenerator(options.driver);
-        var queryMap = generateRequest.Queries
-            .GroupBy(query => query.Filename)
-            .ToDictionary(group => group.Key, group => group.ToList());
-        var files = new RepeatedField<File>();
-        
-        // loop over dictionary of query files
-        foreach (var fileQueries in queryMap)
+        var fileQueries = GetQueryMap(generateRequest.Queries);
+
+        var outputFiles = new RepeatedField<File>();
+        foreach (var (filename, queries) in fileQueries)
         {
-            var (usingDirective, exportedMethods) = dbDriver.Preamble(fileQueries.Value);
-        
-            // loop over queries
-            foreach (var query in fileQueries.Value)
+            var (usingDb, methodDeclarations) = dbDriver.Preamble(queries);
+            var memberDeclarations = methodDeclarations.Cast<MemberDeclarationSyntax>().ToArray();
+            foreach (var query in queries)
             {
-                var updatedColumns = ConstructUpdatedColumns(query);
-                
-                var lowerName = char.ToLower(query.Name[0]) + query.Name.Substring(1);
-                var textName = $"{lowerName}Query";
-                var queryDeclaration = QueryDecl(
-                textName,
-                $"-- name: {query.Name} {query.Cmd}\n{query.Text}"
-                );
-                
+                // var updatedColumns = ConstructUpdatedColumns(query);
+                // var lowerName = char.ToLower(query.Name[0]) + query.Name.Substring(1);
+                // var textName = $"{lowerName}Query";
+                // var queryDeclaration = QueryDecl(
+                // textName,
+                // $"-- name: {query.Name} {query.Cmd}\n{query.Text}"
+                // );
+
                 // (var argDecleration, var argInterface) = AddArgsDeclaration(query, dbDriver);
                 // (var rowDeclare, var returnInterface) = AddRowDeclaration(query, dbDriver);
                 // var methodToAdd = AddMethodDeclaration(query, dbDriver, argInterface, returnInterface);
-
-                // add members to class
-                //var newClass = topDeclarations.Item3.AddMembers(methodToAdd);
-                // var newNamespace = topDeclarations.Item2.ReplaceNode(topDeclarations.Item3,newClass);
-
-
-                // Compilation unit (root of the syntax tree) with using directives and namespace
-                var compilationUnit = CompilationUnit()
-                    .AddUsings(usingDirective)
-                    .AddMembers(exportedMethods)
-                    .NormalizeWhitespace(); // Format the code for readability
-
-        
-                files.Add(new File
-                {
-                    Name = _queryFilenameToCsharpFilename(fileQueries.Key),
-                    Contents = compilationUnit.ToByteString()
-                });
-                
             }
+
+            var classDeclaration = ClassDeclaration(filename)
+                    .AddModifiers(Token(SyntaxKind.PublicKeyword), Token(SyntaxKind.StaticKeyword))
+                    .AddMembers(memberDeclarations);
+                
+            var namespaceDeclaration = NamespaceDeclaration(IdentifierName(GeneratedNamespacee))
+                .AddMembers(classDeclaration);
+            
+            var compilationUnit = CompilationUnit()
+                .AddUsings(usingDb)
+                .AddMembers(namespaceDeclaration)
+                .NormalizeWhitespace();
+            
+            outputFiles.Add(new File
+            {
+                Name = _queryFilenameToCsharpFilename(filename),
+                Contents = compilationUnit.ToByteString()
+            });
         }
-        return new GenerateResponse { Files = {files} };
+        return new GenerateResponse { Files = {outputFiles} };
+        
+        static ImmutableDictionary<string, Query[]> GetQueryMap(RepeatedField<Query> queries)
+        {
+            return queries
+                .GroupBy(query => query.Filename)
+                .ToImmutableDictionary(
+                    group => group.Key, 
+                    group => group.ToArray());
+        }
     }
 
     private static MethodDeclarationSyntax AddMethodDeclaration(Query query,
@@ -142,16 +148,16 @@ public static class CodeGenerator
     //     // return (nodes.NormalizeWhitespace(), returnInterface);
     // }
 
-    private static (CompilationUnitSyntax, string) AddArgsDeclaration(Query query, IDbDriver dbDriver)
-    {
-        if (query.Params.Count <= 0) return (null, string.Empty); // TODO String.Empty?
-        var argInterface = $"{query.Name}Args";
-        var argsDeclaration = ArgsDeclare(argInterface,
-            column => dbDriver.ColumnType(column.Type.Name, column.NotNull), query.Params);
-        
-        return (argsDeclaration,argInterface);
-        // return (MergeCompilationUnit(nodes, argsDeclaration), argInterface);
-    }
+    // private static (CompilationUnitSyntax, string) AddArgsDeclaration(Query query, IDbDriver dbDriver)
+    // {
+    //     if (query.Params.Count <= 0) return (null, string.Empty); // TODO String.Empty?
+    //     var argInterface = $"{query.Name}Args";
+    //     var argsDeclaration = ArgsDeclare(argInterface,
+    //         column => dbDriver.ColumnType(column.Type.Name, column.NotNull), query.Params);
+    //     
+    //     return (argsDeclaration,argInterface);
+    //     // return (MergeCompilationUnit(nodes, argsDeclaration), argInterface);
+    // }
 
     private static IEnumerable<Column> ConstructUpdatedColumns(Query query)
     {
@@ -243,38 +249,38 @@ public static class CodeGenerator
         return compilationUnit;
     }
 
-    private static CompilationUnitSyntax ArgsDeclare(string name, Func<Column, TypeSyntax> ctype,
-        IEnumerable<Parameter> parameters)
-    {
-        // Create a list of property signatures based on the parameters
-        var properties = parameters.Select((param, i) =>
-            PropertyDeclaration(ctype(param.Column), Identifier(Utils.ArgName(i, param.Column)))
-                .AddModifiers(Token(SyntaxKind
-                    .PublicKeyword)) // Assuming properties in interfaces cannot have accessors
-                .WithAccessorList(AccessorList(List(new[]
-                {
-                    AccessorDeclaration(SyntaxKind.GetAccessorDeclaration)
-                        .WithSemicolonToken(Token(SyntaxKind.SemicolonToken)),
-                    AccessorDeclaration(SyntaxKind.SetAccessorDeclaration)
-                        .WithSemicolonToken(Token(SyntaxKind.SemicolonToken))
-                })))
-        ).ToArray();
-
-        // Create the interface declaration
-        var interfaceDeclaration = InterfaceDeclaration(name)
-            .AddModifiers(Token(SyntaxKind.PublicKeyword)) // Making the interface public
-            .AddMembers(properties); // Adding the properties
-
-        // Optionally, wrap the interface in a namespace
-        var namespaceDeclaration = NamespaceDeclaration(IdentifierName("YourNamespace"))
-            .AddMembers(interfaceDeclaration);
-
-        // Create the compilation unit (root of the syntax tree) and add the namespace
-        var compilationUnit = CompilationUnit()
-            .AddUsings(UsingDirective(IdentifierName("System")))
-            .AddMembers(namespaceDeclaration)
-            .NormalizeWhitespace(); // Format the code for readability
-
-        return compilationUnit;
-    }
+    // private static CompilationUnitSyntax ArgsDeclare(string name, Func<Column, TypeSyntax> ctype,
+    //     IEnumerable<Parameter> parameters)
+    // {
+    //     // Create a list of property signatures based on the parameters
+    //     var properties = parameters.Select((param, i) =>
+    //         PropertyDeclaration(ctype(param.Column), Identifier(Utils.ArgName(i, param.Column)))
+    //             .AddModifiers(Token(SyntaxKind
+    //                 .PublicKeyword)) // Assuming properties in interfaces cannot have accessors
+    //             .WithAccessorList(AccessorList(List(new[]
+    //             {
+    //                 AccessorDeclaration(SyntaxKind.GetAccessorDeclaration)
+    //                     .WithSemicolonToken(Token(SyntaxKind.SemicolonToken)),
+    //                 AccessorDeclaration(SyntaxKind.SetAccessorDeclaration)
+    //                     .WithSemicolonToken(Token(SyntaxKind.SemicolonToken))
+    //             })))
+    //     ).ToArray();
+    //
+    //     // Create the interface declaration
+    //     var interfaceDeclaration = InterfaceDeclaration(name)
+    //         .AddModifiers(Token(SyntaxKind.PublicKeyword)) // Making the interface public
+    //         .AddMembers(properties); // Adding the properties
+    //
+    //     // Optionally, wrap the interface in a namespace
+    //     var namespaceDeclaration = NamespaceDeclaration(IdentifierName("YourNamespace"))
+    //         .AddMembers(interfaceDeclaration);
+    //
+    //     // Create the compilation unit (root of the syntax tree) and add the namespace
+    //     var compilationUnit = CompilationUnit()
+    //         .AddUsings(UsingDirective(IdentifierName("System")))
+    //         .AddMembers(namespaceDeclaration)
+    //         .NormalizeWhitespace(); // Format the code for readability
+    //
+    //     return compilationUnit;
+    // }
 }

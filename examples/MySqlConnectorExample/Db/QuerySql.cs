@@ -2,9 +2,29 @@ using MySql.Data.MySqlClient;
 
 namespace GeneratedNamespace
 {
-    public class DatabaseClient
+    public static class query.sql
     {
-        public void ConnectToDatabase()
+        public async Task GetAuthor()
+        {
+            var connection = new MySqlConnection();
+        }
+
+        public async Task ListAuthors()
+        {
+            var connection = new MySqlConnection();
+        }
+
+        public async Task CreateAuthor()
+        {
+            var connection = new MySqlConnection();
+        }
+
+        public async Task DeleteAuthor()
+        {
+            var connection = new MySqlConnection();
+        }
+
+        public async Task Test()
         {
             var connection = new MySqlConnection();
         }

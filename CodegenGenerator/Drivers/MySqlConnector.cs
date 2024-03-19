@@ -60,17 +60,17 @@ public class MySqlConnector : IDbDriver
     private static MethodDeclarationSyntax _getMethodForQuery(Query query)
     {
         return MethodDeclaration(
-                PredefinedType(Token(ParseTypeName("Task").Kind())), query.Name)
+                IdentifierName("Task"), query.Name)
             .AddModifiers(
                 Token(SyntaxKind.PublicKeyword),
                 Token(SyntaxKind.AsyncKeyword))
             .WithBody(Block(ParseStatement("var connection = new MySqlConnection();")));
     }
     
-    public (UsingDirectiveSyntax, IEnumerable<MethodDeclarationSyntax>) Preamble(IEnumerable<Query> queries)
+    public (UsingDirectiveSyntax, MethodDeclarationSyntax[]) Preamble(Query[] queries)
     {
         var usingDirective = UsingDirective(ParseName("MySql.Data.MySqlClient"));
-        var methodDeclarations = queries.Select(selector: _getMethodForQuery);
+        var methodDeclarations = queries.Select(selector: _getMethodForQuery).ToArray();
         return (usingDirective, methodDeclarations);
     }
 
