@@ -15,7 +15,7 @@ namespace SqlcGenCsharp;
 
 public static class CodeGenerator
 {
-    const string GeneratedNamespace = "GeneratedNamespace";
+    private const string GeneratedNamespace = "GeneratedNamespace";
     
     private static ByteString ToByteString(this CompilationUnitSyntax compilationUnit)
     {
@@ -38,14 +38,11 @@ public static class CodeGenerator
             _ => string.Concat(input[0].ToString().ToUpper(), input.AsSpan(1))
         };
     
-    private static string _queryFilenameToCsharpFilename(string filenameWithExtension)
+    private static string _queryFilenameToClassName(string filenameWithExtension)
     {
-        var filename = Path.GetFileNameWithoutExtension(filenameWithExtension);
-        var extension = Path.GetExtension(filenameWithExtension);
         return string.Concat(
-            filename.FirstCharToUpper(), 
-            extension[1..].FirstCharToUpper(),
-            ".cs");
+            Path.GetFileNameWithoutExtension(filenameWithExtension).FirstCharToUpper(), 
+            Path.GetExtension(filenameWithExtension)[1..].FirstCharToUpper());
     }
     
     public static GenerateResponse Generate(GenerateRequest generateRequest)
@@ -59,9 +56,10 @@ public static class CodeGenerator
         {
             var (usingDb, methodDeclarations) = dbDriver.Preamble(queries);
             var memberDeclarations = methodDeclarations.Cast<MemberDeclarationSyntax>().ToArray();
-            memberDeclarations = _addSupportingMethods(memberDeclarations, queries, dbDriver);
+            memberDeclarations =  memberDeclarations.Concat(_getRecordDeclarations(queries, dbDriver)).ToArray();
 
-            var classDeclaration = ClassDeclaration(filename)
+            var className = _queryFilenameToClassName(filename);
+            var classDeclaration = ClassDeclaration(className)
                     .AddModifiers(Token(SyntaxKind.PublicKeyword), Token(SyntaxKind.StaticKeyword))
                     .AddMembers(memberDeclarations);
                 
@@ -75,7 +73,7 @@ public static class CodeGenerator
             
             outputFiles.Add(new File
             {
-                Name = _queryFilenameToCsharpFilename(filename),
+                Name = $"{className}.cs",
                 Contents = compilationUnit.ToByteString()
             });
         }
@@ -103,24 +101,18 @@ public static class CodeGenerator
         }
     }
 
-    private static MemberDeclarationSyntax[] _addSupportingMethods(MemberDeclarationSyntax[] memberDeclarations, Query[] queries, IDbDriver dbDriver)
+    private static RecordDeclarationSyntax[] _getRecordDeclarations(Query[] queries, IDbDriver dbDriver)
     {
-        var recordDeclarations = ArraySegment<MemberDeclarationSyntax>.Empty;
-        foreach (var query in queries)
-        {
-            var lowerName = char.ToLower(query.Name[0]) + query.Name.Substring(1);
-            var textName = $"{lowerName}Query";
-            var queryDeclaration = QueryDecl(
-                textName,
-                $"-- name: {query.Name} {query.Cmd}\n{query.Text}"
-            );
-
-            var recordDeclaration = GenerateRecordDeclarations(dbDriver, query.Name, query.Columns);
-            recordDeclarations = recordDeclarations.Append(recordDeclaration).ToArray();
-        }
-
-        memberDeclarations = memberDeclarations.Concat(recordDeclarations).ToArray();
-        return memberDeclarations;
+        return queries
+            .Select(query => new
+            {
+                QueryName = query.Name,
+                SqlText = $"-- name: {query.Name} {query.Cmd}\n{query.Text}",
+                RecordDeclaration = GenerateRecordDeclarations(dbDriver, query.Name, query.Columns)
+            })
+            .Where(x => x.RecordDeclaration.ParameterList?.Parameters.Count > 0)
+            .Select(x => x.RecordDeclaration)
+            .ToArray();
     }
 
     private static (CompilationUnitSyntax, string) AddArgsDeclaration(Query query, IDbDriver dbDriver)
@@ -174,6 +166,9 @@ public static class CodeGenerator
 
     private static CompilationUnitSyntax QueryDecl(string name, string sql)
     {
+        var lowerName = char.ToLower(name[0]) + name[1..];
+        var textName = $"{lowerName}Query";
+        
         // Create the constant field declaration
         var fieldDeclaration = FieldDeclaration(
                 VariableDeclaration(
