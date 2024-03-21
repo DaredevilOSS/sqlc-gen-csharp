@@ -7,14 +7,14 @@ public interface IDbDriver
 {
     TypeSyntax ColumnType(string columnType, bool notNull);
 
-    (UsingDirectiveSyntax, MethodDeclarationSyntax[]) Preamble(Query[] queries);
+    (UsingDirectiveSyntax, MemberDeclarationSyntax[]) Preamble(Query[] queries);
 
-    MethodDeclarationSyntax OneDeclare(string name, string text, string argInterface, string returnInterface,
+    MemberDeclarationSyntax OneDeclare(string name, string text, string argInterface, string returnInterface,
         IEnumerable<Parameter> parameters, IEnumerable<Column> columns);
 
-    MethodDeclarationSyntax ManyDeclare(string name, string text, string argInterface, string returnInterface,
+    MemberDeclarationSyntax ManyDeclare(string name, string text, string argInterface, string returnInterface,
         IEnumerable<Parameter> parameters, IEnumerable<Column> columns);
 
-    MethodDeclarationSyntax ExecDeclare(string name, string text, string argInterface,
+    MemberDeclarationSyntax ExecDeclare(string name, string text, string argInterface,
         IEnumerable<Parameter> parameters);
 }

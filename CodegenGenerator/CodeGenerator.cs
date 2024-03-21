@@ -44,6 +44,13 @@ public static class CodeGenerator
             Path.GetFileNameWithoutExtension(filenameWithExtension).FirstCharToUpper(), 
             Path.GetExtension(filenameWithExtension)[1..].FirstCharToUpper());
     }
+
+    private static MemberDeclarationSyntax _getClassDeclaration(string className, MemberDeclarationSyntax[] methodDeclarations)
+    {
+        return ClassDeclaration(className)
+            .AddModifiers(Token(SyntaxKind.PublicKeyword), Token(SyntaxKind.StaticKeyword))
+            .AddMembers(methodDeclarations);
+    }
     
     public static GenerateResponse Generate(GenerateRequest generateRequest)
     {
@@ -55,16 +62,16 @@ public static class CodeGenerator
         foreach (var (filename, queries) in fileQueries)
         {
             var (usingDb, methodDeclarations) = dbDriver.Preamble(queries);
-            var memberDeclarations = methodDeclarations.Cast<MemberDeclarationSyntax>().ToArray();
-            memberDeclarations =  memberDeclarations.Concat(_getRecordDeclarations(queries, dbDriver)).ToArray();
+            var recordDeclarations = _getRecordDeclarations(queries, dbDriver);
 
             var className = _queryFilenameToClassName(filename);
-            var classDeclaration = ClassDeclaration(className)
-                    .AddModifiers(Token(SyntaxKind.PublicKeyword), Token(SyntaxKind.StaticKeyword))
-                    .AddMembers(memberDeclarations);
-                
+            var classDeclaration = _getClassDeclaration(className, methodDeclarations);
+
+            var memberDeclarations = new[] { classDeclaration };
+            memberDeclarations = memberDeclarations.Concat(recordDeclarations).ToArray();
+            
             var namespaceDeclaration = NamespaceDeclaration(IdentifierName(GeneratedNamespace))
-                .AddMembers(classDeclaration);
+                .AddMembers(memberDeclarations);
             
             var compilationUnit = CompilationUnit()
                 .AddUsings(usingDb)
@@ -88,7 +95,7 @@ public static class CodeGenerator
                     group => group.ToArray());
         }
         
-        static MethodDeclarationSyntax AddMethodDeclaration(Query query, IDbDriver dbDriver, 
+        static MemberDeclarationSyntax AddMethodDeclaration(Query query, IDbDriver dbDriver, 
             string argInterface, string returnInterface)
         {
             return query.Cmd switch
@@ -101,7 +108,7 @@ public static class CodeGenerator
         }
     }
 
-    private static RecordDeclarationSyntax[] _getRecordDeclarations(Query[] queries, IDbDriver dbDriver)
+    private static MemberDeclarationSyntax[] _getRecordDeclarations(Query[] queries, IDbDriver dbDriver)
     {
         return queries
             .Select(query => new
@@ -112,6 +119,7 @@ public static class CodeGenerator
             })
             .Where(x => x.RecordDeclaration.ParameterList?.Parameters.Count > 0)
             .Select(x => x.RecordDeclaration)
+            .Cast<MemberDeclarationSyntax>()
             .ToArray();
     }
 

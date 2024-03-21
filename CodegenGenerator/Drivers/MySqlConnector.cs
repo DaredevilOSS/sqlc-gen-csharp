@@ -67,14 +67,14 @@ public class MySqlConnector : IDbDriver
             .WithBody(Block(ParseStatement("var connection = new MySqlConnection();")));
     }
     
-    public (UsingDirectiveSyntax, MethodDeclarationSyntax[]) Preamble(Query[] queries)
+    public (UsingDirectiveSyntax, MemberDeclarationSyntax[]) Preamble(Query[] queries)
     {
-        var usingDirective = UsingDirective(ParseName("MySql.Data.MySqlClient"));
-        var methodDeclarations = queries.Select(selector: _getMethodForQuery).ToArray();
-        return (usingDirective, methodDeclarations);
+        return (
+            UsingDirective(ParseName("MySql.Data.MySqlClient")), 
+            queries.Select(selector: _getMethodForQuery).Cast<MemberDeclarationSyntax>().ToArray());
     }
 
-    public MethodDeclarationSyntax OneDeclare(string funcName, string queryName, string argInterface,
+    public MemberDeclarationSyntax OneDeclare(string funcName, string queryName, string argInterface,
         string returnInterface, IEnumerable<Parameter> parameters, IEnumerable<Column> columns)
     {
         // Generating function parameters, potentially including 'args'
@@ -118,7 +118,7 @@ public class MySqlConnector : IDbDriver
         return methodDeclaration;
     }
 
-    public MethodDeclarationSyntax ExecDeclare(string funcName, string queryName, string argInterface,
+    public MemberDeclarationSyntax ExecDeclare(string funcName, string queryName, string argInterface,
         IEnumerable<Parameter> parameters)
     {
         // Generating the parameters for the method, potentially including 'args' if specified
@@ -162,7 +162,7 @@ public class MySqlConnector : IDbDriver
         return methodDeclaration;
     }
 
-    public MethodDeclarationSyntax ManyDeclare(string funcName, string queryName, string argInterface,
+    public MemberDeclarationSyntax ManyDeclare(string funcName, string queryName, string argInterface,
         string returnInterface,
         IEnumerable<Parameter> parameters, IEnumerable<Column> columns)
     {
