@@ -61,14 +61,14 @@ public static class CodeGenerator
         var outputFiles = new RepeatedField<File>();
         foreach (var (filename, queries) in fileQueries)
         {
-            var (usingDb, methodDeclarations) = dbDriver.Preamble(queries);
-            var recordDeclarations = _getRecordDeclarations(queries, dbDriver);
-
+            var (usingDb, queryMethodsDeclarations) = dbDriver.Preamble(queries);
+            var queriesConstantsDeclarations = _getQueryStringsConstants(queries);
             var className = _queryFilenameToClassName(filename);
-            var classDeclaration = _getClassDeclaration(className, methodDeclarations);
+            var classDeclaration = _getClassDeclaration(className, 
+                queriesConstantsDeclarations.Concat(queryMethodsDeclarations).ToArray());
 
             var memberDeclarations = new[] { classDeclaration };
-            memberDeclarations = memberDeclarations.Concat(recordDeclarations).ToArray();
+            memberDeclarations = memberDeclarations.Concat(_getRecordDeclarations(queries, dbDriver)).ToArray();
             
             var namespaceDeclaration = NamespaceDeclaration(IdentifierName(GeneratedNamespace))
                 .AddMembers(memberDeclarations);
@@ -111,14 +111,34 @@ public static class CodeGenerator
     private static MemberDeclarationSyntax[] _getRecordDeclarations(Query[] queries, IDbDriver dbDriver)
     {
         return queries
-            .Select(query => new
-            {
-                QueryName = query.Name,
-                SqlText = $"-- name: {query.Name} {query.Cmd}\n{query.Text}",
-                RecordDeclaration = GenerateRecordDeclarations(dbDriver, query.Name, query.Columns)
-            })
+            .Select(query => new { RecordDeclaration = GenerateRecordDeclarations(dbDriver, query.Name, query.Columns) })
             .Where(x => x.RecordDeclaration.ParameterList?.Parameters.Count > 0)
             .Select(x => x.RecordDeclaration)
+            .Cast<MemberDeclarationSyntax>()
+            .ToArray();
+    }
+    
+    private static MemberDeclarationSyntax[] _getQueryStringsConstants(Query[] queries)
+    {
+        return queries
+            .Select(query => new
+            {
+                FieldDeclaration = FieldDeclaration(
+                        VariableDeclaration(
+                                PredefinedType(
+                                    Token(SyntaxKind.StringKeyword))
+                            )
+                            .AddVariables(
+                                VariableDeclarator(
+                                        Identifier($"{query.Name}Sql"))
+                                    .WithInitializer(
+                                        EqualsValueClause(
+                                            LiteralExpression(
+                                                SyntaxKind.StringLiteralExpression,
+                                                Literal(query.Text))))))
+                    .AddModifiers(Token(SyntaxKind.PrivateKeyword), Token(SyntaxKind.ConstKeyword))
+            })
+            .Select(x => x.FieldDeclaration)
             .Cast<MemberDeclarationSyntax>()
             .ToArray();
     }
