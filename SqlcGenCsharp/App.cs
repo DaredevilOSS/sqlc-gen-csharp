@@ -10,7 +10,7 @@ public static class App
     public static void Run()
     {
         var generateRequest = ProtobufStreams.ReadInput();
-        var generateResponse = CodeGenerator.Generate(generateRequest);
-        ProtobufStreams.WriteOutput(generateResponse);
+        var codeGenerator = new CodeGenerator(generateRequest);
+        ProtobufStreams.WriteOutput(codeGenerator.GenerateResponse);
     }
 }

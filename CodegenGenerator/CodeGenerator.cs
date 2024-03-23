@@ -13,62 +13,67 @@ using File = Plugin.File;
 
 namespace SqlcGenCsharp;
 
-public static class CodeGenerator
+public class CodeGenerator
 {
     private const string GeneratedNamespace = "GeneratedNamespace";
+    private Options Options { get; }
     
-    private static ByteString ToByteString(this CompilationUnitSyntax compilationUnit)
+    private IDbDriver DbDriver { get; }
+
+    public GenerateResponse GenerateResponse { get; }
+
+    public CodeGenerator(GenerateRequest generateRequest)
     {
-        var syntaxTree = CSharpSyntaxTree.Create(compilationUnit);
-        var sourceText = syntaxTree.GetText().ToString();
-        return ByteString.CopyFromUtf8(sourceText);
+        Options = ParseOptions(generateRequest);
+        var dbDriver = CreateNodeGenerator(Options.driver);
+        DbDriver = dbDriver;
+        GenerateResponse = Generate(generateRequest);
     }
 
-    private static Options ParseOptions(GenerateRequest generateRequest)
+    private Options ParseOptions(GenerateRequest generateRequest)
     {
         var text = Encoding.UTF8.GetString(generateRequest.PluginOptions.ToByteArray());
         return JsonSerializer.Deserialize<Options>(text) ?? throw new InvalidOperationException();
     }
     
-    private static string FirstCharToUpper(this string input) =>
-        input switch
-        {
-            null => throw new ArgumentNullException(nameof(input)),
-            "" => throw new ArgumentException($"{nameof(input)} cannot be empty", nameof(input)),
-            _ => string.Concat(input[0].ToString().ToUpper(), input.AsSpan(1))
-        };
-    
-    private static string _queryFilenameToClassName(string filenameWithExtension)
+    private string QueryFilenameToClassName(string filenameWithExtension)
     {
         return string.Concat(
             Path.GetFileNameWithoutExtension(filenameWithExtension).FirstCharToUpper(), 
             Path.GetExtension(filenameWithExtension)[1..].FirstCharToUpper());
     }
 
-    private static MemberDeclarationSyntax _getClassDeclaration(string className, MemberDeclarationSyntax[] methodDeclarations)
+    private MemberDeclarationSyntax GetClassDeclaration(string className, MemberDeclarationSyntax[] methodDeclarations)
     {
         return ClassDeclaration(className)
             .AddModifiers(Token(SyntaxKind.PublicKeyword), Token(SyntaxKind.StaticKeyword))
             .AddMembers(methodDeclarations);
     }
     
-    public static GenerateResponse Generate(GenerateRequest generateRequest)
+    private ByteString ToByteString(CompilationUnitSyntax compilationUnit)
     {
-        var options = ParseOptions(generateRequest);
-        var dbDriver = CreateNodeGenerator(options.driver);
+        var syntaxTree = CSharpSyntaxTree.Create(compilationUnit);
+        var sourceText = syntaxTree.GetText().ToString();
+        return ByteString.CopyFromUtf8(sourceText);
+    }
+    
+    public GenerateResponse Generate(GenerateRequest generateRequest)
+    {
         var fileQueries = GetQueryMap(generateRequest.Queries);
 
         var outputFiles = new RepeatedField<File>();
         foreach (var (filename, queries) in fileQueries)
         {
-            var (usingDb, queryMethodsDeclarations) = dbDriver.Preamble(queries);
-            var queriesConstantsDeclarations = _getQueryStringsConstants(queries);
-            var className = _queryFilenameToClassName(filename);
-            var classDeclaration = _getClassDeclaration(className, 
+            var (usingDb, queryMethodsDeclarations) = DbDriver.Preamble(queries);
+            var queriesConstantsDeclarations = GetQueryStringsConstants(queries);
+            var className = QueryFilenameToClassName(filename);
+            var classDeclaration = GetClassDeclaration(className, 
                 queriesConstantsDeclarations.Concat(queryMethodsDeclarations).ToArray());
 
+            // var ListArgsInterfaceDeclarations = new[] {  };
+                
             var memberDeclarations = new[] { classDeclaration };
-            memberDeclarations = memberDeclarations.Concat(_getRecordDeclarations(queries, dbDriver)).ToArray();
+            memberDeclarations = memberDeclarations.Concat(ListRowInterfaceDeclarations(queries)).ToArray();
             
             var namespaceDeclaration = NamespaceDeclaration(IdentifierName(GeneratedNamespace))
                 .AddMembers(memberDeclarations);
@@ -81,44 +86,65 @@ public static class CodeGenerator
             outputFiles.Add(new File
             {
                 Name = $"{className}.cs",
-                Contents = compilationUnit.ToByteString()
+                Contents = ToByteString(compilationUnit)
             });
         }
         return new GenerateResponse { Files = {outputFiles} };
-        
-        static ImmutableDictionary<string, Query[]> GetQueryMap(RepeatedField<Query> queries)
-        {
-            return queries
-                .GroupBy(query => query.Filename)
-                .ToImmutableDictionary(
-                    group => group.Key, 
-                    group => group.ToArray());
-        }
-        
-        static MemberDeclarationSyntax AddMethodDeclaration(Query query, IDbDriver dbDriver, 
-            string argInterface, string returnInterface)
-        {
-            return query.Cmd switch
-            {
-                ":exec" => dbDriver.ExecDeclare(query.Name, query.Text, argInterface, query.Params),
-                ":one" => dbDriver.OneDeclare(query.Name, query.Text, argInterface, returnInterface, query.Params, query.Columns),
-                ":many" => dbDriver.ManyDeclare(query.Name, query.Text, argInterface, returnInterface, query.Params, query.Columns),
-                _ => throw new InvalidDataException()
-            };
-        }
-    }
-
-    private static MemberDeclarationSyntax[] _getRecordDeclarations(Query[] queries, IDbDriver dbDriver)
-    {
-        return queries
-            .Select(query => new { RecordDeclaration = GenerateRecordDeclarations(dbDriver, query.Name, query.Columns) })
-            .Where(x => x.RecordDeclaration.ParameterList?.Parameters.Count > 0)
-            .Select(x => x.RecordDeclaration)
-            .Cast<MemberDeclarationSyntax>()
-            .ToArray();
     }
     
-    private static MemberDeclarationSyntax[] _getQueryStringsConstants(Query[] queries)
+    private ImmutableDictionary<string, Query[]> GetQueryMap(RepeatedField<Query> queries)
+    {
+        return queries
+            .GroupBy(query => query.Filename)
+            .ToImmutableDictionary(
+                group => group.Key, 
+                group => group.ToArray());
+    }
+
+    private MemberDeclarationSyntax AddMethodDeclaration(Query query, string argInterface, string returnInterface)
+    {
+        return query.Cmd switch
+        {
+            ":exec" => DbDriver.ExecDeclare(query.Name, query.Text, argInterface, query.Params),
+            ":one" => DbDriver.OneDeclare(query.Name, query.Text, argInterface, returnInterface, query.Params, query.Columns),
+            ":many" => DbDriver.ManyDeclare(query.Name, query.Text, argInterface, returnInterface, query.Params, query.Columns),
+            _ => throw new InvalidDataException()
+        };
+    }
+    
+    private MemberDeclarationSyntax[] ListRowInterfaceDeclarations(Query[] queries)
+    {
+        // TODO: feature flag on whether to generate as C# records or not
+        if (true)
+        {
+            return queries
+                .Select(query => new { RecordDeclaration = GenerateRecordDeclarations(query.Name, 
+                    "row", query.Columns) })
+                .Where(x => x.RecordDeclaration.ParameterList?.Parameters.Count > 0)
+                .Select(x => x.RecordDeclaration)
+                .Cast<MemberDeclarationSyntax>()
+                .ToArray();
+        }
+    }
+    
+    private MemberDeclarationSyntax[] ListArgsInterfaceDeclarations(Query[] queries)
+    {
+        // TODO: feature flag on whether to generate as C# records or not
+        if (true)
+        {
+            return queries
+                .Select(query => new { 
+                    // query.Params.Select()
+                    RecordDeclaration = GenerateRecordDeclarations(query.Name, "args", null) 
+                })
+                .Where(x => x.RecordDeclaration.ParameterList?.Parameters.Count > 0)
+                .Select(x => x.RecordDeclaration)
+                .Cast<MemberDeclarationSyntax>()
+                .ToArray();
+        }
+    }
+    
+    private MemberDeclarationSyntax[] GetQueryStringsConstants(Query[] queries)
     {
         return queries
             .Select(query => new
@@ -143,17 +169,17 @@ public static class CodeGenerator
             .ToArray();
     }
 
-    private static (CompilationUnitSyntax, string) AddArgsDeclaration(Query query, IDbDriver dbDriver)
+    private (CompilationUnitSyntax, string) AddArgsDeclaration(Query query)
     {
         if (query.Params.Count <= 0) return (null, string.Empty)!; // TODO String.Empty?
         var argInterface = $"{query.Name}Args";
         var argsDeclaration = ArgsDeclare(argInterface,
-            column => dbDriver.ColumnType(column.Type.Name, column.NotNull), query.Params);
+            column => DbDriver.ColumnType(column.Type.Name, column.NotNull), query.Params);
         
         return (argsDeclaration,argInterface);
     }
 
-    private static IEnumerable<Column> ConstructUpdatedColumns(Query query)
+    private IEnumerable<Column> ConstructUpdatedColumns(Query query)
     {
         var colMap = new Dictionary<string, int>();
         return query.Columns
@@ -168,31 +194,32 @@ public static class CodeGenerator
             .ToList();
     }
 
-    private static IDbDriver CreateNodeGenerator(string driver)
+    private IDbDriver CreateNodeGenerator(string driver)
     {
-        switch (driver)
+        return driver switch
         {
-            case "MySqlConnector":
-                return new MySqlConnector();
-            default:
-                throw new ArgumentException($"unknown driver: {driver}", nameof(driver));
-        }
+            "MySqlConnector" => new MySqlConnector(),
+            _ => throw new ArgumentException($"unknown driver: {driver}", nameof(driver))
+        };
     }
     
-    private static RecordDeclarationSyntax GenerateRecordDeclarations(IDbDriver dbDriver, string name, 
-        IEnumerable<Column> columns)
+    private RecordDeclarationSyntax GenerateRecordDeclarations(string name, string recordSuffix, IEnumerable<Column> columns)
     {
-        return RecordDeclaration(Token(SyntaxKind.RecordKeyword), $"{name}Row")
+        return RecordDeclaration(Token(SyntaxKind.RecordKeyword), $"{name}{recordSuffix.FirstCharToUpper()}")
             .AddModifiers(Token(SyntaxKind.PublicKeyword))
-            .WithParameterList(
-                ParameterList(SeparatedList(columns
-                    .Select(column => Parameter(Identifier(column.Name))
-                        .WithType(dbDriver.ColumnType(column.Type.Name, column.NotNull))
-                    ))))
+            .WithParameterList(ColumnsToRecordParameters(columns))
             .WithSemicolonToken(Token(SyntaxKind.SemicolonToken));
     }
 
-    private static CompilationUnitSyntax QueryDecl(string name, string sql)
+    private ParameterListSyntax ColumnsToRecordParameters(IEnumerable<Column> columns)
+    {
+        return ParameterList(SeparatedList(columns
+            .Select(column => Parameter(Identifier(column.Name))
+                .WithType(DbDriver.ColumnType(column.Type.Name, column.NotNull))
+            )));
+    }
+
+    private CompilationUnitSyntax QueryDecl(string name, string sql)
     {
         var lowerName = char.ToLower(name[0]) + name[1..];
         var textName = $"{lowerName}Query";
@@ -240,7 +267,7 @@ public static class CodeGenerator
         return compilationUnit;
     }
 
-    private static CompilationUnitSyntax ArgsDeclare(string name, Func<Column, TypeSyntax> ctype,
+    private CompilationUnitSyntax ArgsDeclare(string name, Func<Column, TypeSyntax> ctype,
         IEnumerable<Parameter> parameters)
     {
         // Create a list of property signatures based on the parameters
