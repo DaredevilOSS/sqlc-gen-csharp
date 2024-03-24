@@ -57,7 +57,7 @@ public class MySqlConnector : IDbDriver
         }
     }
 
-    private static MethodDeclarationSyntax _getMethodForQuery(Query query)
+    private static MethodDeclarationSyntax GetMethodForQuery(Query query)
     {
         return MethodDeclaration(
                 IdentifierName("Task"), query.Name)
@@ -67,13 +67,26 @@ public class MySqlConnector : IDbDriver
             .WithBody(Block(ParseStatement("var connection = new MySqlConnection();")));
     }
     
-    public (UsingDirectiveSyntax, MemberDeclarationSyntax[]) Preamble(Query[] queries)
+    public (UsingDirectiveSyntax[], MemberDeclarationSyntax[]) Preamble(Query[] queries)
     {
         return (
-            UsingDirective(ParseName("MySql.Data.MySqlClient")), 
-            queries.Select(selector: _getMethodForQuery).Cast<MemberDeclarationSyntax>().ToArray());
+            [UsingDirective(ParseName("MySql.Data.MySqlClient"))],
+            [
+                FieldDeclaration(
+                        VariableDeclaration(PredefinedType(Token(SyntaxKind.StringKeyword)))
+                            .WithVariables(SingletonSeparatedList<VariableDeclaratorSyntax>(
+                                VariableDeclarator(Identifier("ConnectionString"))
+                                    .WithInitializer(EqualsValueClause(
+                                        LiteralExpression(SyntaxKind.StringLiteralExpression,
+                                            Literal("server=localhost;user=root;database=mydb;port=3306;password=")))))
+                            ))
+                    .WithModifiers(TokenList(
+                        Token(SyntaxKind.PrivateKeyword),
+                        Token(SyntaxKind.ConstKeyword)))
+            ]
+        );
     }
-
+    
     public MemberDeclarationSyntax OneDeclare(string funcName, string queryName, string argInterface,
         string returnInterface, IEnumerable<Parameter> parameters, IEnumerable<Column> columns)
     {
@@ -227,43 +240,5 @@ public class MySqlConnector : IDbDriver
             );
 
         return funcParams;
-    }
-
-    public static InterfaceDeclarationSyntax RowDeclare(string name, Func<Column, TypeSyntax> columnToType,
-        IEnumerable<Column> columns)
-    {
-        var properties = columns.Select((column, i) =>
-            PropertyDeclaration(columnToType(column), Identifier(Utils.ColName(i, column)))
-                .AddModifiers(Token(SyntaxKind.PublicKeyword))
-                .WithAccessorList(
-                    AccessorList(
-                        List(new[]
-                        {
-                            AccessorDeclaration(SyntaxKind.GetAccessorDeclaration)
-                                .WithSemicolonToken(Token(SyntaxKind.SemicolonToken)),
-                            AccessorDeclaration(SyntaxKind.SetAccessorDeclaration)
-                                .WithSemicolonToken(Token(SyntaxKind.SemicolonToken))
-                        })
-                    )
-                )
-        ).ToArray();
-
-        var interfaceDeclaration = InterfaceDeclaration(Identifier(name))
-            .AddModifiers(Token(SyntaxKind.PublicKeyword))
-            .AddMembers(properties);
-
-        return interfaceDeclaration;
-    }
-
-    public static string PrintNodes(IEnumerable<SyntaxNode> nodes)
-    {
-        var stringBuilder = new StringBuilder();
-        foreach (var node in nodes)
-        {
-            stringBuilder.AppendLine(node.NormalizeWhitespace().ToFullString());
-            stringBuilder.AppendLine(); // Adding an extra line for separation, similar to "\n\n"
-        }
-
-        return stringBuilder.ToString();
     }
 }

@@ -7,7 +7,7 @@ public interface IDbDriver
 {
     TypeSyntax ColumnType(string columnType, bool notNull);
 
-    (UsingDirectiveSyntax, MemberDeclarationSyntax[]) Preamble(Query[] queries);
+    (UsingDirectiveSyntax[], MemberDeclarationSyntax[]) Preamble(Query[] queries);
 
     MemberDeclarationSyntax OneDeclare(string name, string text, string argInterface, string returnInterface,
         IEnumerable<Parameter> parameters, IEnumerable<Column> columns);

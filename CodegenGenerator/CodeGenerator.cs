@@ -2,7 +2,6 @@ using System.Collections.Immutable;
 using System.Text;
 using System.Text.Json;
 using Google.Protobuf;
-using Google.Protobuf.Collections;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -17,16 +16,13 @@ public class CodeGenerator
 {
     private const string GeneratedNamespace = "GeneratedNamespace";
     private Options Options { get; }
-    
     private IDbDriver DbDriver { get; }
-
     public GenerateResponse GenerateResponse { get; }
 
     public CodeGenerator(GenerateRequest generateRequest)
     {
         Options = ParseOptions(generateRequest);
-        var dbDriver = CreateNodeGenerator(Options.driver);
-        DbDriver = dbDriver;
+        DbDriver = CreateNodeGenerator(Options.driver);
         GenerateResponse = Generate(generateRequest);
     }
 
@@ -43,7 +39,7 @@ public class CodeGenerator
             Path.GetExtension(filenameWithExtension)[1..].FirstCharToUpper());
     }
 
-    private MemberDeclarationSyntax GetClassDeclaration(string className, MemberDeclarationSyntax[] methodDeclarations)
+    private MemberDeclarationSyntax GetClass(string className, MemberDeclarationSyntax[] methodDeclarations)
     {
         return ClassDeclaration(className)
             .AddModifiers(Token(SyntaxKind.PublicKeyword), Token(SyntaxKind.StaticKeyword))
@@ -56,49 +52,54 @@ public class CodeGenerator
         var sourceText = syntaxTree.GetText().ToString();
         return ByteString.CopyFromUtf8(sourceText);
     }
-    
-    public GenerateResponse Generate(GenerateRequest generateRequest)
-    {
-        var fileQueries = GetQueryMap(generateRequest.Queries);
 
-        var outputFiles = new RepeatedField<File>();
-        foreach (var (filename, queries) in fileQueries)
-        {
-            var (usingDb, queryMethodsDeclarations) = DbDriver.Preamble(queries);
-            var queriesConstantsDeclarations = GetQueryStringsConstants(queries);
-            var className = QueryFilenameToClassName(filename);
-            var classDeclaration = GetClassDeclaration(className, 
-                queriesConstantsDeclarations.Concat(queryMethodsDeclarations).ToArray());
-
-            // var ListArgsInterfaceDeclarations = new[] {  };
-                
-            var memberDeclarations = new[] { classDeclaration };
-            memberDeclarations = memberDeclarations.Concat(ListRowInterfaceDeclarations(queries)).ToArray();
-            
-            var namespaceDeclaration = NamespaceDeclaration(IdentifierName(GeneratedNamespace))
-                .AddMembers(memberDeclarations);
-            
-            var compilationUnit = CompilationUnit()
-                .AddUsings(usingDb)
-                .AddMembers(namespaceDeclaration)
-                .NormalizeWhitespace();
-            
-            outputFiles.Add(new File
-            {
-                Name = $"{className}.cs",
-                Contents = ToByteString(compilationUnit)
-            });
-        }
-        return new GenerateResponse { Files = {outputFiles} };
-    }
-    
-    private ImmutableDictionary<string, Query[]> GetQueryMap(RepeatedField<Query> queries)
+    private GenerateResponse Generate(GenerateRequest generateRequest)
     {
-        return queries
+        var fileQueries = generateRequest.Queries
             .GroupBy(query => query.Filename)
             .ToImmutableDictionary(
                 group => group.Key, 
                 group => group.ToArray());
+        return new GenerateResponse { Files =
+        {
+            fileQueries.Select(fq => GenerateFile(fq.Value, fq.Key))
+        } };
+    }
+
+    private File GenerateFile(Query[] queries, string filename)
+    {
+        var ( usingDb, className, classDeclaration) = GenerateClass(queries, filename);
+        var namespaceDeclaration = NamespaceDeclaration(IdentifierName(GeneratedNamespace))
+            .AddMembers(classDeclaration);
+            
+        var compilationUnit = CompilationUnit()
+            .AddUsings(usingDb)
+            .AddMembers(namespaceDeclaration)
+            .NormalizeWhitespace();
+            
+        return new File
+        {
+            Name = $"{className}.cs",
+            Contents = ToByteString(compilationUnit)
+        };
+    }
+
+    private (UsingDirectiveSyntax[], string, MemberDeclarationSyntax) GenerateClass(Query[] queries, string filename)
+    {
+        var classMembers =  new List<MemberDeclarationSyntax>();
+        var (usingDirectives, initialMembers) = DbDriver.Preamble(queries);
+        classMembers.AddRange(initialMembers);
+        
+        foreach (var query in queries)
+        {
+            var (queryConstantMemberName, queryConstantMemberDeclaration) = GetQueryConstant(query);
+            classMembers.Add(queryConstantMemberDeclaration);
+            var nameToDataclass = GetDataClasses(query);
+            classMembers.AddRange(nameToDataclass.Select(kv => kv.Value));
+        }
+        
+        var className = QueryFilenameToClassName(filename);
+        return (usingDirectives, className, GetClass(className, classMembers.ToArray()));
     }
 
     private MemberDeclarationSyntax AddMethodDeclaration(Query query, string argInterface, string returnInterface)
@@ -111,72 +112,50 @@ public class CodeGenerator
             _ => throw new InvalidDataException()
         };
     }
-    
-    private MemberDeclarationSyntax[] ListRowInterfaceDeclarations(Query[] queries)
-    {
-        // TODO: feature flag on whether to generate as C# records or not
-        if (true)
-        {
-            return queries
-                .Select(query => new { RecordDeclaration = GenerateRecordDeclarations(query.Name, 
-                    "row", query.Columns) })
-                .Where(x => x.RecordDeclaration.ParameterList?.Parameters.Count > 0)
-                .Select(x => x.RecordDeclaration)
-                .Cast<MemberDeclarationSyntax>()
-                .ToArray();
-        }
-    }
-    
-    private MemberDeclarationSyntax[] ListArgsInterfaceDeclarations(Query[] queries)
-    {
-        // TODO: feature flag on whether to generate as C# records or not
-        if (true)
-        {
-            return queries
-                .Select(query => new { 
-                    // query.Params.Select()
-                    RecordDeclaration = GenerateRecordDeclarations(query.Name, "args", null) 
-                })
-                .Where(x => x.RecordDeclaration.ParameterList?.Parameters.Count > 0)
-                .Select(x => x.RecordDeclaration)
-                .Cast<MemberDeclarationSyntax>()
-                .ToArray();
-        }
-    }
-    
-    private MemberDeclarationSyntax[] GetQueryStringsConstants(Query[] queries)
-    {
-        return queries
-            .Select(query => new
-            {
-                FieldDeclaration = FieldDeclaration(
-                        VariableDeclaration(
-                                PredefinedType(
-                                    Token(SyntaxKind.StringKeyword))
-                            )
-                            .AddVariables(
-                                VariableDeclarator(
-                                        Identifier($"{query.Name}Sql"))
-                                    .WithInitializer(
-                                        EqualsValueClause(
-                                            LiteralExpression(
-                                                SyntaxKind.StringLiteralExpression,
-                                                Literal(query.Text))))))
-                    .AddModifiers(Token(SyntaxKind.PrivateKeyword), Token(SyntaxKind.ConstKeyword))
-            })
-            .Select(x => x.FieldDeclaration)
-            .Cast<MemberDeclarationSyntax>()
-            .ToArray();
-    }
 
-    private (CompilationUnitSyntax, string) AddArgsDeclaration(Query query)
+    private Dictionary<ClassMemberType, MemberDeclarationSyntax> GetDataClasses(Query query)
     {
-        if (query.Params.Count <= 0) return (null, string.Empty)!; // TODO String.Empty?
-        var argInterface = $"{query.Name}Args";
-        var argsDeclaration = ArgsDeclare(argInterface,
-            column => DbDriver.ColumnType(column.Type.Name, column.NotNull), query.Params);
+        // TODO add feature-flag for using C# records as data classes or not
+        if (true)
+        {
+            var classMemberTypeToParams = new Dictionary<ClassMemberType, ParameterListSyntax>();
+            if (query.Columns.Count > 0)
+                classMemberTypeToParams[ClassMemberType.Row] = QueryColumnsToRecordParams(query.Columns);
+            if (query.Params.Count > 0)
+                classMemberTypeToParams[ClassMemberType.Args] = QueryParamsToRecordParams(query.Params);
         
-        return (argsDeclaration,argInterface);
+            return classMemberTypeToParams
+                .ToDictionary(
+                    classMemberTypeAndParams => classMemberTypeAndParams.Key,
+                    classMemberTypeAndParams =>
+                    {
+                        MemberDeclarationSyntax recordDeclaration = GenerateRecord(query.Name,
+                            classMemberTypeAndParams.Key, classMemberTypeAndParams.Value);
+                        return recordDeclaration;
+                    }
+                );
+        }
+    }
+    
+    private (string, MemberDeclarationSyntax) GetQueryConstant(Query query)
+    {
+        var identifier = $"{query.Name}{ClassMemberType.Sql.ToRealString()}";
+        return (
+            identifier, 
+            FieldDeclaration(
+                VariableDeclaration(
+                        PredefinedType(
+                            Token(SyntaxKind.StringKeyword))
+                    )
+                    .AddVariables(
+                        VariableDeclarator(
+                                Identifier(identifier))
+                            .WithInitializer(
+                                EqualsValueClause(
+                                    LiteralExpression(
+                                        SyntaxKind.StringLiteralExpression,
+                                        Literal(query.Text))))))
+            .AddModifiers(Token(SyntaxKind.PrivateKeyword), Token(SyntaxKind.ConstKeyword)));
     }
 
     private IEnumerable<Column> ConstructUpdatedColumns(Query query)
@@ -203,102 +182,29 @@ public class CodeGenerator
         };
     }
     
-    private RecordDeclarationSyntax GenerateRecordDeclarations(string name, string recordSuffix, IEnumerable<Column> columns)
+    
+    private RecordDeclarationSyntax GenerateRecord(string name, ClassMemberType classMemberType, 
+        ParameterListSyntax parameterListSyntax)
     {
-        return RecordDeclaration(Token(SyntaxKind.RecordKeyword), $"{name}{recordSuffix.FirstCharToUpper()}")
-            .AddModifiers(Token(SyntaxKind.PublicKeyword))
-            .WithParameterList(ColumnsToRecordParameters(columns))
-            .WithSemicolonToken(Token(SyntaxKind.SemicolonToken));
+        return RecordDeclaration(Token(SyntaxKind.RecordKeyword), $"{name}{classMemberType.ToRealString()}")
+                .AddModifiers(Token(SyntaxKind.PublicKeyword))
+                .WithParameterList(parameterListSyntax)
+                .WithSemicolonToken(Token(SyntaxKind.SemicolonToken));
     }
 
-    private ParameterListSyntax ColumnsToRecordParameters(IEnumerable<Column> columns)
+    private ParameterListSyntax QueryColumnsToRecordParams(IEnumerable<Column> columns)
     {
         return ParameterList(SeparatedList(columns
             .Select(column => Parameter(Identifier(column.Name))
                 .WithType(DbDriver.ColumnType(column.Type.Name, column.NotNull))
             )));
     }
-
-    private CompilationUnitSyntax QueryDecl(string name, string sql)
+    
+    private ParameterListSyntax QueryParamsToRecordParams(IEnumerable<Parameter> parameters)
     {
-        var lowerName = char.ToLower(name[0]) + name[1..];
-        var textName = $"{lowerName}Query";
-        
-        // Create the constant field declaration
-        var fieldDeclaration = FieldDeclaration(
-                VariableDeclaration(
-                        PredefinedType(
-                            Token(SyntaxKind.StringKeyword)
-                        )
-                    )
-                    .WithVariables(
-                        SingletonSeparatedList(
-                            VariableDeclarator(
-                                    Identifier(name)
-                                )
-                                .WithInitializer(
-                                    EqualsValueClause(
-                                        LiteralExpression(
-                                            SyntaxKind.StringLiteralExpression,
-                                            Literal(sql)
-                                        )
-                                    )
-                                )
-                        )
-                    )
-            )
-            .AddModifiers(Token(SyntaxKind.PublicKeyword), Token(SyntaxKind.ConstKeyword));
-
-        // Create a class to contain the constant
-        var classDeclaration = ClassDeclaration("Queries")
-            .AddModifiers(Token(SyntaxKind.PublicKeyword))
-            .AddMembers(fieldDeclaration);
-
-        // Create a namespace
-        var namespaceDeclaration = NamespaceDeclaration(IdentifierName("YourNamespace"))
-            .AddMembers(classDeclaration);
-
-        // Create the compilation unit (root of the syntax tree) and add the namespace
-        var compilationUnit = CompilationUnit()
-            .AddUsings(UsingDirective(IdentifierName("System")))
-            .AddMembers(namespaceDeclaration)
-            .NormalizeWhitespace(); // Format the code for readability
-
-        return compilationUnit;
-    }
-
-    private CompilationUnitSyntax ArgsDeclare(string name, Func<Column, TypeSyntax> ctype,
-        IEnumerable<Parameter> parameters)
-    {
-        // Create a list of property signatures based on the parameters
-        var properties = parameters.Select((param, i) =>
-            PropertyDeclaration(ctype(param.Column), Identifier(Utils.ArgName(i, param.Column)))
-                .AddModifiers(Token(SyntaxKind
-                    .PublicKeyword)) // Assuming properties in interfaces cannot have accessors
-                .WithAccessorList(AccessorList(List(new[]
-                {
-                    AccessorDeclaration(SyntaxKind.GetAccessorDeclaration)
-                        .WithSemicolonToken(Token(SyntaxKind.SemicolonToken)),
-                    AccessorDeclaration(SyntaxKind.SetAccessorDeclaration)
-                        .WithSemicolonToken(Token(SyntaxKind.SemicolonToken))
-                })))
-        ).ToArray();
-    
-        // Create the interface declaration
-        var interfaceDeclaration = InterfaceDeclaration(name)
-            .AddModifiers(Token(SyntaxKind.PublicKeyword)) // Making the interface public
-            .AddMembers(properties); // Adding the properties
-    
-        // Optionally, wrap the interface in a namespace
-        var namespaceDeclaration = NamespaceDeclaration(IdentifierName("YourNamespace"))
-            .AddMembers(interfaceDeclaration);
-    
-        // Create the compilation unit (root of the syntax tree) and add the namespace
-        var compilationUnit = CompilationUnit()
-            .AddUsings(UsingDirective(IdentifierName("System")))
-            .AddMembers(namespaceDeclaration)
-            .NormalizeWhitespace(); // Format the code for readability
-    
-        return compilationUnit;
+        return ParameterList(SeparatedList(parameters
+            .Select(parameter => Parameter(Identifier(parameter.Column.Name))
+                .WithType(DbDriver.ColumnType(parameter.Column.Type.Name, parameter.Column.NotNull))
+            )));
     }
 }
