@@ -60,10 +60,9 @@ public class CodeGenerator
             .ToImmutableDictionary(
                 group => group.Key, 
                 group => group.ToArray());
-        return new GenerateResponse { Files =
-        {
-            fileQueries.Select(fq => GenerateFile(fq.Value, fq.Key))
-        } };
+
+        var files = fileQueries.Select(fq => GenerateFile(fq.Value, fq.Key));
+        return new GenerateResponse { Files = { files } };
     }
 
     private File GenerateFile(Query[] queries, string filename)

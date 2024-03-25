@@ -8,6 +8,9 @@ namespace GeneratedNamespace
         private const string GetAuthorSql = "SELECT id, name, bio FROM authors\nWHERE id = ? LIMIT 1";
         public record GetAuthorRow(long id, string name, string bio);
         public record GetAuthorArgs(long id);
+        private const string GetAuthorByNameSql = "SELECT id, name, bio FROM authors\nWHERE LOWER(name) LIKE LOWER(?) || '%' \nLIMIT 1";
+        public record GetAuthorByNameRow(long id, string name, string bio);
+        public record GetAuthorByNameArgs(string LOWER);
         private const string ListAuthorsSql = "SELECT id, name, bio FROM authors\nORDER BY name";
         public record ListAuthorsRow(long id, string name, string bio);
         private const string CreateAuthorSql = "INSERT INTO authors (\n  name, bio\n) VALUES (\n  ?, ? \n)";
