@@ -85,24 +85,31 @@ public class CodeGenerator
 
     private (UsingDirectiveSyntax[], string, MemberDeclarationSyntax) GenerateClass(Query[] queries, string filename)
     {
-        var classMembers =  new List<MemberDeclarationSyntax>();
-        var (usingDirectives, initialMembers) = DbDriver.Preamble(queries);
-        classMembers.AddRange(initialMembers);
-        
-        foreach (var query in queries)
-        {
-            var (queryConstantMemberName, queryConstantMemberDeclaration) = GetQueryConstant(query);
-            classMembers.Add(queryConstantMemberDeclaration);
-            var nameToDataclass = GetDataClasses(query);
-            classMembers.AddRange(nameToDataclass.Select(kv => kv.Value));
-        }
-        
+        var (usingDirectives, sharedMemberDeclarations) = DbDriver.Preamble(queries);
+        var classMembers = new List<MemberDeclarationSyntax>(sharedMemberDeclarations)
+            .Concat(GetClassQueryMembers(queries));
         var className = QueryFilenameToClassName(filename);
         return (usingDirectives, className, GetClass(className, classMembers.ToArray()));
     }
 
-    private MemberDeclarationSyntax AddMethodDeclaration(Query query, string argInterface, string returnInterface)
+    private MemberDeclarationSyntax[] GetClassQueryMembers(Query[] queries)
     {
+        return queries.SelectMany(query => new[]
+            {
+                GetQueryTextConstant(query),
+                GetQueryColumnsDataclass(query), 
+                GetQueryParamsDataclass(query), 
+                AddMethodDeclaration(query)
+            }
+            .Where(member => member != null)
+            .Cast<MemberDeclarationSyntax>())
+            .ToArray();
+    }
+
+    private MemberDeclarationSyntax AddMethodDeclaration(Query query)
+    {
+        var argInterface = $"{query.Name}{ClassMemberType.Args.ToRealString()}";
+        var returnInterface = $"{query.Name}{ClassMemberType.Row.ToRealString()}";
         return query.Cmd switch
         {
             ":exec" => DbDriver.ExecDeclare(query.Name, query.Text, argInterface, query.Params),
@@ -112,49 +119,44 @@ public class CodeGenerator
         };
     }
 
-    private Dictionary<ClassMemberType, MemberDeclarationSyntax> GetDataClasses(Query query)
+    private MemberDeclarationSyntax? GetQueryColumnsDataclass(Query query)
     {
         // TODO add feature-flag for using C# records as data classes or not
-        if (true)
+        if (query.Columns.Count > 0)
         {
-            var classMemberTypeToParams = new Dictionary<ClassMemberType, ParameterListSyntax>();
-            if (query.Columns.Count > 0)
-                classMemberTypeToParams[ClassMemberType.Row] = QueryColumnsToRecordParams(query.Columns);
-            if (query.Params.Count > 0)
-                classMemberTypeToParams[ClassMemberType.Args] = QueryParamsToRecordParams(query.Params);
-        
-            return classMemberTypeToParams
-                .ToDictionary(
-                    classMemberTypeAndParams => classMemberTypeAndParams.Key,
-                    classMemberTypeAndParams =>
-                    {
-                        MemberDeclarationSyntax recordDeclaration = GenerateRecord(query.Name,
-                            classMemberTypeAndParams.Key, classMemberTypeAndParams.Value);
-                        return recordDeclaration;
-                    }
-                );
+            var recordParameters = QueryColumnsToRecordParams(query.Columns);
+            return GenerateRecord(query.Name, ClassMemberType.Row,  recordParameters);
         }
+        return null;
     }
     
-    private (string, MemberDeclarationSyntax) GetQueryConstant(Query query)
+    private MemberDeclarationSyntax? GetQueryParamsDataclass(Query query)
     {
-        var identifier = $"{query.Name}{ClassMemberType.Sql.ToRealString()}";
-        return (
-            identifier, 
-            FieldDeclaration(
+        // TODO add feature-flag for using C# records as data classes or not
+        if (query.Columns.Count > 0)
+        {
+            var recordParameters = QueryParamsToRecordParams(query.Params);
+            return GenerateRecord(query.Name, ClassMemberType.Args,  recordParameters);
+        }
+        return null;
+    }
+    
+    private MemberDeclarationSyntax GetQueryTextConstant(Query query)
+    {
+        return FieldDeclaration(
                 VariableDeclaration(
                         PredefinedType(
                             Token(SyntaxKind.StringKeyword))
                     )
                     .AddVariables(
                         VariableDeclarator(
-                                Identifier(identifier))
+                                Identifier($"{query.Name}{ClassMemberType.Sql.ToRealString()}"))
                             .WithInitializer(
                                 EqualsValueClause(
                                     LiteralExpression(
                                         SyntaxKind.StringLiteralExpression,
                                         Literal(query.Text))))))
-            .AddModifiers(Token(SyntaxKind.PrivateKeyword), Token(SyntaxKind.ConstKeyword)));
+            .AddModifiers(Token(SyntaxKind.PrivateKeyword), Token(SyntaxKind.ConstKeyword));
     }
 
     private IEnumerable<Column> ConstructUpdatedColumns(Query query)
