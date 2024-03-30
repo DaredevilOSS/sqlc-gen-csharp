@@ -32,23 +32,48 @@ namespace GeneratedNamespace
 
         private const string ListAuthorsSql = "SELECT id, name, bio FROM authors\nORDER BY name";
         public readonly record struct ListAuthorsRow(long Id, string Name, string Bio);
-        public async Task<List<ListAuthorsRow>> ListAuthors()
+        public static async Task<List<ListAuthorsRow>> ListAuthors()
         {
-            return Task.FromResult<string>("Placeholder for actual implementation");
+            await using var connection = new MySqlConnection(ConnectionString);
+            connection.Open();
+            await using var command = new MySqlCommand(ListAuthorsSql, connection);
+            await using var reader = await command.ExecuteReaderAsync();
+            var rows = new List<ListAuthorsRow>();
+            while (await reader.ReadAsync())
+            {
+                rows.Add(
+                    new ListAuthorsRow
+                    {
+                        Id = reader.GetInt64(0), 
+                        Name = reader.GetString(1), 
+                        Bio = reader.GetString(2)
+                    });
+            }
+
+            return rows;
         }
 
         private const string CreateAuthorSql = "INSERT INTO authors (\n  name, bio\n) VALUES (\n  ?, ? \n)";
         public readonly record struct CreateAuthorArgs(string Name, string Bio);
-        public async Task<void> CreateAuthor(CreateAuthorArgs args)
+        public static async Task CreateAuthor(CreateAuthorArgs args)
         {
-            await client.QueryAsync(queryParameters);
+            await using var connection = new MySqlConnection(ConnectionString);
+            connection.Open();
+            await using var command = new MySqlCommand(CreateAuthorSql, connection);
+            command.Parameters.AddWithValue("@name", args.Name);
+            command.Parameters.AddWithValue("@bio", args.Bio);
+            await command.ExecuteScalarAsync();
         }
 
         private const string DeleteAuthorSql = "DELETE FROM authors\nWHERE id = ?";
         public readonly record struct DeleteAuthorArgs(long Id);
-        public async Task<void> DeleteAuthor(DeleteAuthorArgs args)
+        public static async Task DeleteAuthor(DeleteAuthorArgs args)
         {
-            await client.QueryAsync(queryParameters);
+            await using var connection = new MySqlConnection(ConnectionString);
+            connection.Open();
+            await using var command = new MySqlCommand(DeleteAuthorSql, connection);
+            command.Parameters.AddWithValue("@id", args.Id);
+            await command.ExecuteScalarAsync();
         }
 
         private const string TestSql = "SELECT c_bit, c_tinyint, c_bool, c_boolean, c_smallint, c_mediumint, c_int, c_integer, c_bigint, c_serial, c_decimal, c_dec, c_numeric, c_fixed, c_float, c_double, c_double_precision, c_date, c_time, c_datetime, c_timestamp, c_year, c_char, c_nchar, c_national_char, c_varchar, c_binary, c_varbinary, c_tinyblob, c_tinytext, c_blob, c_text, c_mediumblob, c_mediumtext, c_longblob, c_longtext, c_json FROM node_mysql_types\nLIMIT 1";

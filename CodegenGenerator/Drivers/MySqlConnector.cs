@@ -1,3 +1,4 @@
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Plugin;
@@ -142,7 +143,7 @@ public class MySqlConnector : IDbDriver
         );
     }
 
-    public MemberDeclarationSyntax OneDeclare(string funcName, string sqlTextConstant, string argInterface,
+    public MemberDeclarationSyntax OneDeclare(string funcName, string queryTextConstant, string argInterface,
         string returnInterface, IList<Parameter> parameters, IList<Column> columns)
     {
         var funcParams = FuncParamsDecl(argInterface, parameters);
@@ -151,7 +152,6 @@ public class MySqlConnector : IDbDriver
                 TypeArgumentList(
                     SingletonSeparatedList<TypeSyntax>(
                         NullableType(IdentifierName(returnInterface)))));
-
         var methodDeclaration = MethodDeclaration(returnType, Identifier(funcName))
             .AddModifiers(
                 Token(SyntaxKind.PublicKeyword), 
@@ -168,7 +168,7 @@ public class MySqlConnector : IDbDriver
                 {
                     UsingConnectionVar(), 
                     ConnectionOpen(), 
-                    UsingCommandVar(sqlTextConstant)
+                    UsingCommandVar(queryTextConstant)
                 }
                 .Concat(AddParametersToCommand(parameters))
                 .Concat(new[]
@@ -180,24 +180,11 @@ public class MySqlConnector : IDbDriver
                 .ToArray();
             return Block(blockStatements);
         }
-
-        AwaitExpressionSyntax RowFromReaderExists()
-        {
-            return AwaitExpression(
-                InvocationExpression(
-                    MemberAccessExpression(
-                        SyntaxKind.SimpleMemberAccessExpression,
-                        IdentifierName("reader"),
-                        IdentifierName("ReadAsync")
-                    )
-                )
-            );
-        }
         
         IfStatementSyntax GetIfRowExistsStatement()
         {
             return IfStatement(
-                RowFromReaderExists(),
+                AwaitReaderRow(),
                 Block(
                     SingletonList<StatementSyntax>(
                         ReturnStatement(
@@ -218,58 +205,6 @@ public class MySqlConnector : IDbDriver
                                             ))
                                             .Cast<ExpressionSyntax>()
                                             .ToArray())
-                                        // SeparatedList(new ExpressionSyntax[]
-                                        // {
-                                        //     AssignmentExpression(
-                                        //         SyntaxKind.SimpleAssignmentExpression,
-                                        //         IdentifierName("Id"),
-                                        //         InvocationExpression(
-                                        //             MemberAccessExpression(
-                                        //                 SyntaxKind.SimpleMemberAccessExpression,
-                                        //                 IdentifierName("reader"),
-                                        //                 IdentifierName("GetInt32")
-                                        //             )
-                                        //         ).AddArgumentListArguments(Argument(
-                                        //             LiteralExpression(SyntaxKind.NumericLiteralExpression, Literal(0))))
-                                        //     ),
-                                        //     AssignmentExpression(
-                                        //         SyntaxKind.SimpleAssignmentExpression,
-                                        //         IdentifierName("Name"),
-                                        //         InvocationExpression(
-                                        //             MemberAccessExpression(
-                                        //                 SyntaxKind.SimpleMemberAccessExpression,
-                                        //                 IdentifierName("reader"),
-                                        //                 IdentifierName("GetString")
-                                        //             )
-                                        //         ).AddArgumentListArguments(Argument(
-                                        //             LiteralExpression(SyntaxKind.NumericLiteralExpression, Literal(1))))
-                                        //     ),
-                                        //     AssignmentExpression(
-                                        //         SyntaxKind.SimpleAssignmentExpression,
-                                        //         IdentifierName("Bio"),
-                                        //         ConditionalExpression(
-                                        //             InvocationExpression(
-                                        //                 MemberAccessExpression(
-                                        //                     SyntaxKind.SimpleMemberAccessExpression,
-                                        //                     IdentifierName("reader"),
-                                        //                     IdentifierName("IsDBNull")
-                                        //                 )
-                                        //             ).AddArgumentListArguments(Argument(
-                                        //                 LiteralExpression(SyntaxKind.NumericLiteralExpression,
-                                        //                     Literal(2)))),
-                                        //             LiteralExpression(SyntaxKind.NullLiteralExpression),
-                                        //             InvocationExpression(
-                                        //                 MemberAccessExpression(
-                                        //                     SyntaxKind.SimpleMemberAccessExpression,
-                                        //                     IdentifierName("reader"),
-                                        //                     IdentifierName("GetString")
-                                        //                 )
-                                        //             ).AddArgumentListArguments(Argument(
-                                        //                 LiteralExpression(SyntaxKind.NumericLiteralExpression,
-                                        //                     Literal(2))))
-                                        //         )
-                                        //     )
-                                        // })
                                     )
                                 )
                         )
@@ -278,100 +213,179 @@ public class MySqlConnector : IDbDriver
             );
         }
     }
-
-    public MemberDeclarationSyntax ExecDeclare(string funcName, string queryName, string argInterface,
-        IList<Parameter> parameters)
+    
+    private AwaitExpressionSyntax AwaitReaderRow()
     {
-        // Generating the parameters for the method, potentially including 'args' if specified
-        var funcParams =
-            FuncParamsDecl(argInterface, parameters);
-
-        // Creating the method declaration
-        var methodDeclaration = MethodDeclaration(
-                GenericName(Identifier("Task"))
-                    .WithTypeArgumentList(TypeArgumentList(
-                        SingletonSeparatedList<TypeSyntax>(PredefinedType(Token(SyntaxKind.VoidKeyword))))),
-                Identifier(funcName))
-            .AddModifiers(Token(SyntaxKind.PublicKeyword), Token(SyntaxKind.AsyncKeyword))
-            .WithParameterList(ParameterList(SeparatedList(funcParams)))
-            .WithBody(Block(
-                // Simplified body; assuming a method call to 'client.query' with parameters.
-                // The actual implementation would involve more detailed Roslyn syntax generation,
-                // depending on how the 'client.query' method is defined and used.
-                SingletonList<StatementSyntax>(
-                    ExpressionStatement(
-                        AwaitExpression(
-                            InvocationExpression(
-                                MemberAccessExpression(
-                                    SyntaxKind.SimpleMemberAccessExpression,
-                                    IdentifierName("client"),
-                                    IdentifierName(
-                                        "QueryAsync") // Assuming a method QueryAsync exists for simplification
-                                ),
-                                ArgumentList(SingletonSeparatedList(
-                                    Argument(
-                                        // Simplified argument; actual implementation would dynamically build this based on 'params'
-                                        IdentifierName("queryParameters") // Placeholder for actual query parameters
-                                    )
-                                ))
-                            )
-                        )
-                    )
+        return AwaitExpression(
+            InvocationExpression(
+                MemberAccessExpression(
+                    SyntaxKind.SimpleMemberAccessExpression,
+                    IdentifierName(GeneratedMember.Reader.GetNameAsVar()),
+                    IdentifierName("ReadAsync")
                 )
-            ));
-
-        return methodDeclaration;
+            )
+        );
     }
 
-    public MemberDeclarationSyntax ManyDeclare(string funcName, string sqlTextConstant, string argInterface,
-        string returnInterface,
-        IList<Parameter> parameters, IList<Column> columns)
+    public MemberDeclarationSyntax ExecDeclare(string funcName, string queryTextConstant, string argInterface,
+        IList<Parameter> parameters)
     {
-        // Assuming FuncParamsDecl is implemented as shown previously
         var funcParams = FuncParamsDecl(argInterface, parameters);
+        
+        // Creating the method declaration
+        var methodDeclaration = MethodDeclaration(IdentifierName("Task"), Identifier(funcName))
+            .AddModifiers(
+                Token(SyntaxKind.PublicKeyword), 
+                Token(SyntaxKind.StaticKeyword), 
+                Token(SyntaxKind.AsyncKeyword))
+            .WithParameterList(ParameterList(SeparatedList(funcParams)))
+            .WithBody(GetBlock());
 
-        // Return type is Task<List<ReturnType>>
+        return methodDeclaration;
+        
+        BlockSyntax GetBlock()
+        {
+            var blockStatements = new StatementSyntax[]
+                {
+                    UsingConnectionVar(), 
+                    ConnectionOpen(), 
+                    UsingCommandVar(queryTextConstant)
+                }
+                .Concat(AddParametersToCommand(parameters))
+                .Concat(new[]
+                {
+                    UsingExecuteScalarVar()
+                })
+                .ToArray();
+            return Block(blockStatements);
+        }
+    }
+
+    public MemberDeclarationSyntax ManyDeclare(string funcName, string queryTextConstant, string argInterface,
+        string returnInterface, IList<Parameter> parameters, IList<Column> columns)
+    {
+        var funcParams = FuncParamsDecl(argInterface, parameters);
         var returnType = GenericName(Identifier("Task"))
-            .WithTypeArgumentList(
+            .WithTypeArgumentList(                
                 TypeArgumentList(
-                    SingletonSeparatedList<TypeSyntax>(
-                        GenericName(Identifier("List"))
-                            .WithTypeArgumentList(
-                                TypeArgumentList(
-                                    SingletonSeparatedList<TypeSyntax>(
-                                        IdentifierName(returnInterface)))))));
+                SingletonSeparatedList<TypeSyntax>(
+                    GenericName(Identifier("List"))
+                        .WithTypeArgumentList(
+                            TypeArgumentList(
+                                SingletonSeparatedList<TypeSyntax>(IdentifierName(returnInterface))
+                            )
+                        ))));
 
         // Method declaration
         var methodDeclaration = MethodDeclaration(returnType, Identifier(funcName))
-            .AddModifiers(Token(SyntaxKind.PublicKeyword), Token(SyntaxKind.AsyncKeyword))
+            .AddModifiers(
+                Token(SyntaxKind.PublicKeyword), 
+                Token(SyntaxKind.StaticKeyword), 
+                Token(SyntaxKind.AsyncKeyword))
             .WithParameterList(ParameterList(SeparatedList(funcParams)))
-            .WithBody(Block(
-                // Simplified body: In a real scenario, you'd construct the logic to execute the query,
-                // map the results to a list of `returnIface` objects, and return it.
-                // The following is a placeholder to illustrate structure.
-                SingletonList<StatementSyntax>(
-                    ReturnStatement(
-                        InvocationExpression(
-                            MemberAccessExpression(
-                                SyntaxKind.SimpleMemberAccessExpression,
-                                IdentifierName("Task"),
-                                GenericName(Identifier("FromResult"))
-                                    .WithTypeArgumentList(
-                                        TypeArgumentList(
-                                            SingletonSeparatedList<TypeSyntax>(
-                                                PredefinedType(Token(SyntaxKind.StringKeyword)))))),
-                            ArgumentList(SingletonSeparatedList(
-                                Argument(
-                                    LiteralExpression(SyntaxKind.StringLiteralExpression,
-                                        Literal("Placeholder for actual implementation"))
-                                )
-                            ))
-                        )
-                    )
-                )
-            ));
+            .WithBody(GetBlock());
 
         return methodDeclaration;
+        
+        BlockSyntax GetBlock()
+        {
+            var blockStatements = new StatementSyntax[]
+                {
+                    UsingConnectionVar(), 
+                    ConnectionOpen(), 
+                    UsingCommandVar(queryTextConstant)
+                }
+                .Concat(AddParametersToCommand(parameters))
+                .Concat(new[]
+                {
+                    UsingReaderVar(),
+                    DeclareResultRowsVar(),
+                    GetWhileRowExistsStatement(),
+                    ReturnStatement(IdentifierName("rows"))
+                })
+                .ToArray();
+            return Block(blockStatements);
+        }
+        
+        WhileStatementSyntax GetWhileRowExistsStatement()
+        {
+            var initializerExpressions = columns.Select((column, idx) => 
+                AssignmentExpression(
+                    SyntaxKind.SimpleAssignmentExpression,
+                    IdentifierName(column.Name.FirstCharToUpper()),
+                    InvocationExpression(
+                            GetReaderType(column.Type.Name, column.NotNull)
+                        )
+                        .AddArgumentListArguments(
+                            Argument(
+                                LiteralExpression(
+                                    SyntaxKind.NumericLiteralExpression, 
+                                    Literal(idx)
+                                )
+                            )
+                        )
+                )
+            ).Cast<ExpressionSyntax>().ToArray();
+            
+            return WhileStatement(
+                AwaitReaderRow(),
+                Block(
+                    ExpressionStatement(
+                        InvocationExpression(
+                                MemberAccessExpression(
+                                    SyntaxKind.SimpleMemberAccessExpression,
+                                    IdentifierName("rows"),
+                                    IdentifierName("Add")
+                                )
+                            )
+                            .WithArgumentList(
+                                ArgumentList(
+                                    SingletonSeparatedList(
+                                        Argument(
+                                            ObjectCreationExpression(
+                                                    IdentifierName("ListAuthorsRow")
+                                                )
+                                                .WithInitializer(
+                                                    InitializerExpression(
+                                                        SyntaxKind.ObjectInitializerExpression,
+                                                        expressions: SeparatedList(initializerExpressions)
+                                                    )
+                                                )
+                                        )
+                                    )
+                                )
+                            )
+                    )));
+        }
+
+        StatementSyntax DeclareResultRowsVar()
+        {
+            return LocalDeclarationStatement(
+                VariableDeclaration(
+                        IdentifierName("var")
+                    )
+                    .WithVariables(
+                        SingletonSeparatedList(
+                            VariableDeclarator(Identifier("rows"))
+                                .WithInitializer(
+                                    EqualsValueClause(
+                                        ObjectCreationExpression(
+                                                GenericName(Identifier("List"))
+                                                    .WithTypeArgumentList(
+                                                        TypeArgumentList(
+                                                            SingletonSeparatedList<TypeSyntax>(
+                                                                IdentifierName(returnInterface)
+                                                                
+                                                            )
+                                                        )
+                                                    )
+                                            ).WithArgumentList(ArgumentList())
+                                    )
+                                )
+                        )
+                    )
+            );
+        }
     }
 
     private ReturnStatementSyntax ReturnNull()
@@ -437,6 +451,22 @@ public class MySqlConnector : IDbDriver
             .WithUsingKeyword(Token(SyntaxKind.UsingKeyword));
     }
 
+    private StatementSyntax UsingExecuteScalarVar()
+    {
+        return ExpressionStatement(
+            AwaitExpression(
+                InvocationExpression(
+                    MemberAccessExpression(
+                        SyntaxKind.SimpleMemberAccessExpression,
+                        IdentifierName("command"),
+                        IdentifierName("ExecuteScalarAsync")
+                    )
+                )
+            )
+        );
+    }
+
+    
     private static ExpressionStatementSyntax[] AddParametersToCommand(IEnumerable<Parameter> parameters)
     {
         return parameters.Select(
