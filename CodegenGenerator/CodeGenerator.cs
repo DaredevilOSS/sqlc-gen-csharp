@@ -31,13 +31,6 @@ public class CodeGenerator
         var text = Encoding.UTF8.GetString(generateRequest.PluginOptions.ToByteArray());
         return JsonSerializer.Deserialize<Options>(text) ?? throw new InvalidOperationException();
     }
-    
-    private string QueryFilenameToClassName(string filenameWithExtension)
-    {
-        return string.Concat(
-            Path.GetFileNameWithoutExtension(filenameWithExtension).FirstCharToUpper(), 
-            Path.GetExtension(filenameWithExtension)[1..].FirstCharToUpper());
-    }
 
     private MemberDeclarationSyntax GetClass(string className, MemberDeclarationSyntax[] methodDeclarations)
     {
@@ -86,30 +79,43 @@ public class CodeGenerator
     private (UsingDirectiveSyntax[], string, MemberDeclarationSyntax) GenerateClass(Query[] queries, string filename)
     {
         var (usingDirectives, sharedMemberDeclarations) = DbDriver.Preamble(queries);
-        var classMembers = new List<MemberDeclarationSyntax>(sharedMemberDeclarations)
-            .Concat(GetClassQueryMembers(queries));
+        var classMembers = new List<MemberDeclarationSyntax>()
+            .Concat(sharedMemberDeclarations)
+            .Concat(GetClassMembersForAllQueries());
         var className = QueryFilenameToClassName(filename);
         return (usingDirectives, className, GetClass(className, classMembers.ToArray()));
+        
+        IEnumerable<MemberDeclarationSyntax> GetClassMembersForAllQueries()
+        {
+            return queries.SelectMany(GetMembersForSingleQuery).ToArray();
+        }
+        
+        string QueryFilenameToClassName(string filenameWithExtension)
+        {
+            return string.Concat(
+                Path.GetFileNameWithoutExtension(filenameWithExtension).FirstCharToUpper(), 
+                Path.GetExtension(filenameWithExtension)[1..].FirstCharToUpper());
+        }
     }
 
-    private MemberDeclarationSyntax[] GetClassQueryMembers(Query[] queries)
+    private MemberDeclarationSyntax[] GetMembersForSingleQuery(Query query)
     {
-        return queries.SelectMany(query => new[]
-            {
-                GetQueryTextConstant(query),
-                GetQueryColumnsDataclass(query), 
-                GetQueryParamsDataclass(query), 
-                AddMethodDeclaration(query)
-            }
+        return new[]
+        {
+            GetQueryTextConstant(query),
+            GetQueryColumnsDataclass(query),
+            GetQueryParamsDataclass(query),
+            AddMethodDeclaration(query)
+        }
             .Where(member => member != null)
-            .Cast<MemberDeclarationSyntax>())
+            .Cast<MemberDeclarationSyntax>()
             .ToArray();
     }
-
+    
     private MemberDeclarationSyntax AddMethodDeclaration(Query query)
     {
-        var argInterface = $"{query.Name}{ClassMemberType.Args.ToRealString()}";
-        var returnInterface = $"{query.Name}{ClassMemberType.Row.ToRealString()}";
+        var argInterface = GetInterfaceName(ClassMemberType.Args);
+        var returnInterface = GetInterfaceName(ClassMemberType.Row);
         return query.Cmd switch
         {
             ":exec" => DbDriver.ExecDeclare(query.Name, query.Text, argInterface, query.Params),
@@ -117,28 +123,43 @@ public class CodeGenerator
             ":many" => DbDriver.ManyDeclare(query.Name, query.Text, argInterface, returnInterface, query.Params, query.Columns),
             _ => throw new InvalidDataException()
         };
+        
+        string GetInterfaceName(ClassMemberType classMemberType)
+        {
+            return $"{query.Name}{classMemberType.ToRealString()}";
+        }
     }
 
     private MemberDeclarationSyntax? GetQueryColumnsDataclass(Query query)
     {
         // TODO add feature-flag for using C# records as data classes or not
-        if (query.Columns.Count > 0)
+        if (query.Columns.Count <= 0) return null;
+        var recordParameters = QueryColumnsToRecordParams(query.Columns);
+        return GenerateRecord(query.Name, ClassMemberType.Row,  recordParameters);
+        
+        ParameterListSyntax QueryColumnsToRecordParams(IEnumerable<Column> columns)
         {
-            var recordParameters = QueryColumnsToRecordParams(query.Columns);
-            return GenerateRecord(query.Name, ClassMemberType.Row,  recordParameters);
+            return ParameterList(SeparatedList(columns
+                .Select(column => Parameter(Identifier(column.Name))
+                    .WithType(DbDriver.ColumnType(column.Type.Name, column.NotNull))
+                )));
         }
-        return null;
     }
     
     private MemberDeclarationSyntax? GetQueryParamsDataclass(Query query)
     {
         // TODO add feature-flag for using C# records as data classes or not
-        if (query.Columns.Count > 0)
+        if (query.Params.Count <= 0) return null;
+        var recordParameters = QueryParamsToRecordParams(query.Params);
+        return GenerateRecord(query.Name, ClassMemberType.Args,  recordParameters);
+        
+        ParameterListSyntax QueryParamsToRecordParams(IEnumerable<Parameter> parameters)
         {
-            var recordParameters = QueryParamsToRecordParams(query.Params);
-            return GenerateRecord(query.Name, ClassMemberType.Args,  recordParameters);
+            return ParameterList(SeparatedList(parameters
+                .Select(parameter => Parameter(Identifier(parameter.Column.Name))
+                    .WithType(DbDriver.ColumnType(parameter.Column.Type.Name, parameter.Column.NotNull))
+                )));
         }
-        return null;
     }
     
     private MemberDeclarationSyntax GetQueryTextConstant(Query query)
@@ -191,21 +212,5 @@ public class CodeGenerator
                 .AddModifiers(Token(SyntaxKind.PublicKeyword))
                 .WithParameterList(parameterListSyntax)
                 .WithSemicolonToken(Token(SyntaxKind.SemicolonToken));
-    }
-
-    private ParameterListSyntax QueryColumnsToRecordParams(IEnumerable<Column> columns)
-    {
-        return ParameterList(SeparatedList(columns
-            .Select(column => Parameter(Identifier(column.Name))
-                .WithType(DbDriver.ColumnType(column.Type.Name, column.NotNull))
-            )));
-    }
-    
-    private ParameterListSyntax QueryParamsToRecordParams(IEnumerable<Parameter> parameters)
-    {
-        return ParameterList(SeparatedList(parameters
-            .Select(parameter => Parameter(Identifier(parameter.Column.Name))
-                .WithType(DbDriver.ColumnType(parameter.Column.Type.Name, parameter.Column.NotNull))
-            )));
     }
 }

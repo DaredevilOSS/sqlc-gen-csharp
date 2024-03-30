@@ -10,11 +10,11 @@ public interface IDbDriver
     (UsingDirectiveSyntax[], MemberDeclarationSyntax[]) Preamble(Query[] queries);
 
     MemberDeclarationSyntax OneDeclare(string name, string text, string argInterface, string returnInterface,
-        IEnumerable<Parameter> parameters, IEnumerable<Column> columns);
+        IList<Parameter> parameters, IList<Column> columns);
 
     MemberDeclarationSyntax ManyDeclare(string name, string text, string argInterface, string returnInterface,
-        IEnumerable<Parameter> parameters, IEnumerable<Column> columns);
+        IList<Parameter> parameters, IList<Column> columns);
 
     MemberDeclarationSyntax ExecDeclare(string name, string text, string argInterface,
-        IEnumerable<Parameter> parameters);
+        IList<Parameter> parameters);
 }

@@ -2,11 +2,6 @@
 SELECT * FROM authors
 WHERE id = ? LIMIT 1;
 
-/* name: GetAuthorByName :one */
-SELECT id, name FROM authors
-WHERE LOWER(name) LIKE LOWER(?) || '%' 
-LIMIT 1;
-
 /* name: ListAuthors :many */
 SELECT * FROM authors
 ORDER BY name;

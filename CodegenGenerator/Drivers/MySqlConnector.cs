@@ -1,8 +1,8 @@
-using System.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Plugin;
+using static System.String;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace SqlcGenCsharp.Drivers;
@@ -11,9 +11,9 @@ public class MySqlConnector : IDbDriver
 {
     public TypeSyntax ColumnType(string columnType, bool notNull)
     {
-        var nullableSuffix = notNull ? string.Empty : "?";
+        var nullableSuffix = notNull ? Empty : "?";
 
-        if (string.IsNullOrEmpty(columnType))
+        if (IsNullOrEmpty(columnType))
             return ParseTypeName("object" + nullableSuffix);
 
         switch (columnType.ToLower())
@@ -70,11 +70,15 @@ public class MySqlConnector : IDbDriver
     public (UsingDirectiveSyntax[], MemberDeclarationSyntax[]) Preamble(Query[] queries)
     {
         return (
-            [UsingDirective(ParseName("MySql.Data.MySqlClient"))],
+            [
+                UsingDirective(ParseName("System")),
+                UsingDirective(ParseName("System.Threading.Tasks")),
+                UsingDirective(ParseName("MySql.Data.MySqlClient")),
+            ],
             [
                 FieldDeclaration(
                         VariableDeclaration(PredefinedType(Token(SyntaxKind.StringKeyword)))
-                            .WithVariables(SingletonSeparatedList<VariableDeclaratorSyntax>(
+                            .WithVariables(SingletonSeparatedList(
                                 VariableDeclarator(Identifier("ConnectionString"))
                                     .WithInitializer(EqualsValueClause(
                                         LiteralExpression(SyntaxKind.StringLiteralExpression,
@@ -86,53 +90,99 @@ public class MySqlConnector : IDbDriver
             ]
         );
     }
+
+    private LocalDeclarationStatementSyntax UsingConnectionVar()
+    {
+        return LocalDeclarationStatement(VariableDeclaration(IdentifierName("var"))
+            .WithVariables(SingletonSeparatedList(VariableDeclarator(Identifier("connection"))
+                .WithInitializer(EqualsValueClause(ObjectCreationExpression(IdentifierName("MySqlConnection"))
+                    .AddArgumentListArguments(Argument(IdentifierName("connectionString"))))))))
+            .WithUsingKeyword(Token(SyntaxKind.UsingKeyword));
+    }
+
+    private LocalDeclarationStatementSyntax UsingCommandVar()
+    {
+        return LocalDeclarationStatement(
+            VariableDeclaration(IdentifierName("var"))
+                .WithVariables(
+                    SingletonSeparatedList(
+                        VariableDeclarator(Identifier("command"))
+                            .WithInitializer(EqualsValueClause(
+                                ObjectCreationExpression(IdentifierName("MySqlCommand"))
+                                    .AddArgumentListArguments(
+                                        Argument(IdentifierName("getAuthorQuery")),
+                                        Argument(IdentifierName("connection"))
+                                    )
+                            ))
+                    )
+                )
+        ).WithUsingKeyword(Token(SyntaxKind.UsingKeyword));
+    }
     
     public MemberDeclarationSyntax OneDeclare(string funcName, string queryName, string argInterface,
-        string returnInterface, IEnumerable<Parameter> parameters, IEnumerable<Column> columns)
+        string returnInterface, IList<Parameter> parameters, IList<Column> columns)
     {
-        // Generating function parameters, potentially including 'args'
-        var funcParams = FuncParamsDecl(argInterface, parameters); // FuncParamsDecl should be implemented as before
-
-        // Return type is Task<ReturnType?>
+        var funcParams = FuncParamsDecl(argInterface, parameters);
         var returnType = GenericName(Identifier("Task"))
             .WithTypeArgumentList(
                 TypeArgumentList(
                     SingletonSeparatedList<TypeSyntax>(
                         NullableType(IdentifierName(returnInterface)))));
-
-        // Method declaration
+        
         var methodDeclaration = MethodDeclaration(returnType, Identifier(funcName))
             .AddModifiers(Token(SyntaxKind.PublicKeyword), Token(SyntaxKind.AsyncKeyword))
             .WithParameterList(ParameterList(SeparatedList(funcParams)))
-            .WithBody(Block(
-                // Placeholder for method body: In a real scenario, you'd include logic to execute the query
-                // and return a single result or null. The following statement is a simplification
-                SingletonList<StatementSyntax>(
-                    ReturnStatement(
-                        InvocationExpression(
-                            MemberAccessExpression(
-                                SyntaxKind.SimpleMemberAccessExpression,
-                                IdentifierName("Task"),
-                                IdentifierName("FromResult")),
-                            ArgumentList(SeparatedList(new[]
-                            {
-                                Argument(
-                                    InvocationExpression(IdentifierName("ConvertToReturnType"),
-                                            ArgumentList(SingletonSeparatedList(
-                                                Argument(IdentifierName("row")))))
-                                        .WithLeadingTrivia(Comment("// Convert row to ReturnType instance"))
-                                )
-                            }))
-                        ).WithLeadingTrivia(Comment("// Placeholder for actual database query execution"))
-                    )
-                )
-            ));
-
+            .WithBody(GetBlock());
+        
         return methodDeclaration;
+
+        BlockSyntax GetBlock()
+        {
+            var blockStatements = new StatementSyntax[]
+            {
+                UsingConnectionVar(),
+                ConnectionOpen(),
+                UsingCommandVar()
+            };
+            blockStatements = blockStatements.Concat(AddParametersToCommand(parameters)).ToArray();
+            return Block(blockStatements);
+        }
+    }
+
+    private static ExpressionStatementSyntax[] AddParametersToCommand(IList<Parameter> parameters)
+    {
+        return parameters.Select(param 
+            => ExpressionStatement(
+                InvocationExpression(
+                    MemberAccessExpression(
+                        SyntaxKind.SimpleMemberAccessExpression, 
+                        MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, 
+                            IdentifierName("command"), 
+                            IdentifierName("Parameters")), 
+                        IdentifierName("AddWithValue")))
+                    .AddArgumentListArguments(
+                        Argument(
+                            LiteralExpression(
+                                SyntaxKind.StringLiteralExpression, Literal($"@{param.Column.Name}"))), 
+                        Argument(MemberAccessExpression(
+                            SyntaxKind.SimpleMemberAccessExpression, IdentifierName("args"), 
+                            IdentifierName($"{param.Column.Name}")))
+                        )
+                )
+            ).ToArray();
+    }
+
+    private static ExpressionStatementSyntax ConnectionOpen()
+    {
+        return ExpressionStatement(
+            InvocationExpression(MemberAccessExpression(
+                SyntaxKind.SimpleMemberAccessExpression, 
+                IdentifierName("connection"), 
+                IdentifierName("Open"))));
     }
 
     public MemberDeclarationSyntax ExecDeclare(string funcName, string queryName, string argInterface,
-        IEnumerable<Parameter> parameters)
+        IList<Parameter> parameters)
     {
         // Generating the parameters for the method, potentially including 'args' if specified
         var funcParams =
@@ -177,7 +227,7 @@ public class MySqlConnector : IDbDriver
 
     public MemberDeclarationSyntax ManyDeclare(string funcName, string queryName, string argInterface,
         string returnInterface,
-        IEnumerable<Parameter> parameters, IEnumerable<Column> columns)
+        IList<Parameter> parameters, IList<Column> columns)
     {
         // Assuming FuncParamsDecl is implemented as shown previously
         var funcParams = FuncParamsDecl(argInterface, parameters);
@@ -226,19 +276,15 @@ public class MySqlConnector : IDbDriver
         return methodDeclaration;
     }
 
-    private static IEnumerable<ParameterSyntax> FuncParamsDecl(string argInterface, IEnumerable<Parameter> parameters)
+    private static IList<ParameterSyntax> FuncParamsDecl(string argInterface, IList<Parameter> parameters)
     {
         var funcParams = new List<ParameterSyntax>
         {
             Parameter(Identifier("client")).WithType(IdentifierName("Client"))
         };
 
-        using var enumerator = parameters.GetEnumerator();
-        if (!string.IsNullOrEmpty(argInterface) && enumerator.MoveNext())
-            funcParams.Add(
-                Parameter(Identifier("args")).WithType(IdentifierName(argInterface))
-            );
-
+        if (!IsNullOrEmpty(argInterface) && parameters.Any())
+            funcParams.Add(Parameter(Identifier("args")).WithType(IdentifierName(argInterface)));
         return funcParams;
     }
 }
