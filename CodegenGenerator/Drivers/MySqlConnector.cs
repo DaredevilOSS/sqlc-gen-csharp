@@ -56,6 +56,68 @@ public class MySqlConnector : IDbDriver
         }
     }
 
+    private static MemberAccessExpressionSyntax GetReaderType(string columnType, bool notNull)
+    {
+        switch (columnType.ToLower())
+        {
+            case "bigint":
+                return MemberAccessExpression(
+                    SyntaxKind.SimpleMemberAccessExpression,
+                    IdentifierName(GeneratedMember.Reader.GetNameAsVar()),
+                    IdentifierName("GetInt64")
+                );
+            case "binary":
+            case "bit":
+            case "blob":
+            case "longblob":
+            case "mediumblob":
+            case "tinyblob":
+            case "varbinary": 
+                return MemberAccessExpression(
+                    SyntaxKind.SimpleMemberAccessExpression,
+                    IdentifierName(GeneratedMember.Reader.GetNameAsVar()),
+                    IdentifierName("GetBytes")
+                );
+            case "char":
+            case "date":
+            case "datetime":
+            case "decimal":
+            case "longtext":
+            case "mediumtext":
+            case "text":
+            case "time":
+            case "timestamp":
+            case "tinytext":
+            case "varchar":
+            case "json":
+                return MemberAccessExpression(
+                    SyntaxKind.SimpleMemberAccessExpression,
+                    IdentifierName(GeneratedMember.Reader.GetNameAsVar()),
+                    IdentifierName("GetString")
+                );
+            case "double":
+            case "float":
+                return MemberAccessExpression(
+                    SyntaxKind.SimpleMemberAccessExpression,
+                    IdentifierName(GeneratedMember.Reader.GetNameAsVar()),
+                    IdentifierName("GetDouble")
+                );
+            case "int":
+            case "mediumint":
+            case "smallint":
+            case "tinyint":
+            case "year":
+                return MemberAccessExpression(
+                    SyntaxKind.SimpleMemberAccessExpression,
+                    IdentifierName(GeneratedMember.Reader.GetNameAsVar()),
+                    IdentifierName("GetInt32")
+                );
+            default:
+                throw new NotSupportedException($"Unsupported column type: {columnType}");
+        }
+    }
+
+    
     public (UsingDirectiveSyntax[], MemberDeclarationSyntax[]) Preamble(Query[] queries)
     {
         return (
@@ -91,7 +153,10 @@ public class MySqlConnector : IDbDriver
                         NullableType(IdentifierName(returnInterface)))));
 
         var methodDeclaration = MethodDeclaration(returnType, Identifier(funcName))
-            .AddModifiers(Token(SyntaxKind.PublicKeyword), Token(SyntaxKind.AsyncKeyword))
+            .AddModifiers(
+                Token(SyntaxKind.PublicKeyword), 
+                Token(SyntaxKind.StaticKeyword), 
+                Token(SyntaxKind.AsyncKeyword))
             .WithParameterList(ParameterList(SeparatedList(funcParams)))
             .WithBody(GetBlock());
 
@@ -140,58 +205,71 @@ public class MySqlConnector : IDbDriver
                                 .WithInitializer(
                                     InitializerExpression(
                                         SyntaxKind.ObjectInitializerExpression,
-                                        SeparatedList(new ExpressionSyntax[]
-                                        {
-                                            AssignmentExpression(
-                                                SyntaxKind.SimpleAssignmentExpression,
-                                                IdentifierName("Id"),
+                                        SeparatedList(columns.Select((column, idx) => 
+                                                AssignmentExpression(
+                                                    SyntaxKind.SimpleAssignmentExpression,
+                                                IdentifierName(column.Name.FirstCharToUpper()),
                                                 InvocationExpression(
-                                                    MemberAccessExpression(
-                                                        SyntaxKind.SimpleMemberAccessExpression,
-                                                        IdentifierName("reader"),
-                                                        IdentifierName("GetInt32")
-                                                    )
+                                                    GetReaderType(column.Type.Name, column.NotNull)
                                                 ).AddArgumentListArguments(Argument(
-                                                    LiteralExpression(SyntaxKind.NumericLiteralExpression, Literal(0))))
-                                            ),
-                                            AssignmentExpression(
-                                                SyntaxKind.SimpleAssignmentExpression,
-                                                IdentifierName("Name"),
-                                                InvocationExpression(
-                                                    MemberAccessExpression(
-                                                        SyntaxKind.SimpleMemberAccessExpression,
-                                                        IdentifierName("reader"),
-                                                        IdentifierName("GetString")
-                                                    )
-                                                ).AddArgumentListArguments(Argument(
-                                                    LiteralExpression(SyntaxKind.NumericLiteralExpression, Literal(1))))
-                                            ),
-                                            AssignmentExpression(
-                                                SyntaxKind.SimpleAssignmentExpression,
-                                                IdentifierName("Bio"),
-                                                ConditionalExpression(
-                                                    InvocationExpression(
-                                                        MemberAccessExpression(
-                                                            SyntaxKind.SimpleMemberAccessExpression,
-                                                            IdentifierName("reader"),
-                                                            IdentifierName("IsDBNull")
-                                                        )
-                                                    ).AddArgumentListArguments(Argument(
-                                                        LiteralExpression(SyntaxKind.NumericLiteralExpression,
-                                                            Literal(2)))),
-                                                    LiteralExpression(SyntaxKind.NullLiteralExpression),
-                                                    InvocationExpression(
-                                                        MemberAccessExpression(
-                                                            SyntaxKind.SimpleMemberAccessExpression,
-                                                            IdentifierName("reader"),
-                                                            IdentifierName("GetString")
-                                                        )
-                                                    ).AddArgumentListArguments(Argument(
-                                                        LiteralExpression(SyntaxKind.NumericLiteralExpression,
-                                                            Literal(2))))
-                                                )
-                                            )
-                                        })
+                                                    LiteralExpression(
+                                                        SyntaxKind.NumericLiteralExpression, 
+                                                        Literal(idx))))
+                                            ))
+                                            .Cast<ExpressionSyntax>()
+                                            .ToArray())
+                                        // SeparatedList(new ExpressionSyntax[]
+                                        // {
+                                        //     AssignmentExpression(
+                                        //         SyntaxKind.SimpleAssignmentExpression,
+                                        //         IdentifierName("Id"),
+                                        //         InvocationExpression(
+                                        //             MemberAccessExpression(
+                                        //                 SyntaxKind.SimpleMemberAccessExpression,
+                                        //                 IdentifierName("reader"),
+                                        //                 IdentifierName("GetInt32")
+                                        //             )
+                                        //         ).AddArgumentListArguments(Argument(
+                                        //             LiteralExpression(SyntaxKind.NumericLiteralExpression, Literal(0))))
+                                        //     ),
+                                        //     AssignmentExpression(
+                                        //         SyntaxKind.SimpleAssignmentExpression,
+                                        //         IdentifierName("Name"),
+                                        //         InvocationExpression(
+                                        //             MemberAccessExpression(
+                                        //                 SyntaxKind.SimpleMemberAccessExpression,
+                                        //                 IdentifierName("reader"),
+                                        //                 IdentifierName("GetString")
+                                        //             )
+                                        //         ).AddArgumentListArguments(Argument(
+                                        //             LiteralExpression(SyntaxKind.NumericLiteralExpression, Literal(1))))
+                                        //     ),
+                                        //     AssignmentExpression(
+                                        //         SyntaxKind.SimpleAssignmentExpression,
+                                        //         IdentifierName("Bio"),
+                                        //         ConditionalExpression(
+                                        //             InvocationExpression(
+                                        //                 MemberAccessExpression(
+                                        //                     SyntaxKind.SimpleMemberAccessExpression,
+                                        //                     IdentifierName("reader"),
+                                        //                     IdentifierName("IsDBNull")
+                                        //                 )
+                                        //             ).AddArgumentListArguments(Argument(
+                                        //                 LiteralExpression(SyntaxKind.NumericLiteralExpression,
+                                        //                     Literal(2)))),
+                                        //             LiteralExpression(SyntaxKind.NullLiteralExpression),
+                                        //             InvocationExpression(
+                                        //                 MemberAccessExpression(
+                                        //                     SyntaxKind.SimpleMemberAccessExpression,
+                                        //                     IdentifierName("reader"),
+                                        //                     IdentifierName("GetString")
+                                        //                 )
+                                        //             ).AddArgumentListArguments(Argument(
+                                        //                 LiteralExpression(SyntaxKind.NumericLiteralExpression,
+                                        //                     Literal(2))))
+                                        //         )
+                                        //     )
+                                        // })
                                     )
                                 )
                         )
@@ -391,7 +469,7 @@ public class MySqlConnector : IDbDriver
                 IdentifierName("Open"))));
     }
 
-    private static IList<ParameterSyntax> FuncParamsDecl(string argInterface, IList<Parameter> parameters)
+    private static IEnumerable<ParameterSyntax> FuncParamsDecl(string argInterface, IList<Parameter> parameters)
     {
         return new List<ParameterSyntax>(
             !IsNullOrEmpty(argInterface) && parameters.Any()

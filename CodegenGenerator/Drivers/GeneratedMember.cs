@@ -2,8 +2,9 @@ namespace SqlcGenCsharp.Drivers;
 
 public enum GeneratedMember
 {
-    ConnectionString, // string const
-    Connection // Connection variable
+    ConnectionString,
+    Connection,
+    Reader
 }
 
 public static class GeneratedMembersExtensions

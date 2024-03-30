@@ -193,7 +193,7 @@ public class CodeGenerator
             .ToList();
     }
 
-    private IDbDriver CreateNodeGenerator(string driver)
+    private static IDbDriver CreateNodeGenerator(string driver)
     {
         return driver switch
         {
@@ -206,7 +206,9 @@ public class CodeGenerator
     private RecordDeclarationSyntax GenerateRecord(string name, ClassMemberType classMemberType, 
         ParameterListSyntax parameterListSyntax)
     {
-        return RecordDeclaration(Token(SyntaxKind.StructKeyword), $"{name}{classMemberType.ToRealString()}")
+        return RecordDeclaration(
+                Token(SyntaxKind.StructKeyword), 
+                $"{name}{classMemberType.ToRealString()}")
                 .AddModifiers(
                     Token(SyntaxKind.PublicKeyword),
                     Token(SyntaxKind.ReadOnlyKeyword),
