@@ -15,6 +15,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProtobufStreams", "Protobuf
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodegenGenerator", "CodegenGenerator\CodegenGenerator.csproj", "{C657B177-23BE-4B9B-B4A5-A281AFC81C06}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MySqlConnectorExample", "MySqlConnectorExample\MySqlConnectorExample.csproj", "{6406B659-77CF-4978-ABD3-BFBB2CBFFCA3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -52,5 +54,9 @@ Global
 		{C657B177-23BE-4B9B-B4A5-A281AFC81C06}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C657B177-23BE-4B9B-B4A5-A281AFC81C06}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C657B177-23BE-4B9B-B4A5-A281AFC81C06}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6406B659-77CF-4978-ABD3-BFBB2CBFFCA3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6406B659-77CF-4978-ABD3-BFBB2CBFFCA3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6406B659-77CF-4978-ABD3-BFBB2CBFFCA3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6406B659-77CF-4978-ABD3-BFBB2CBFFCA3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

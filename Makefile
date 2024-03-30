@@ -18,6 +18,6 @@ dotnet-publish: buf-gen dotnet-build
 	# cp ${RUNTIME_DIR}/SqlcGenCsharp.wasm dist/plugin.wasm
 
 sqlc-generate: dotnet-publish
-	sqlc -f examples/sqlc.dev.yaml generate
+	sqlc -f sqlc.dev.yaml generate
 
 test-setup: sqlc-generate

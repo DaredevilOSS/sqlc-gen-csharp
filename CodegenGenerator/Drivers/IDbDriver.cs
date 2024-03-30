@@ -9,10 +9,10 @@ public interface IDbDriver
 
     (UsingDirectiveSyntax[], MemberDeclarationSyntax[]) Preamble(Query[] queries);
 
-    MemberDeclarationSyntax OneDeclare(string name, string text, string argInterface, string returnInterface,
+    MemberDeclarationSyntax OneDeclare(string name, string sqlTextConstant, string argInterface, string returnInterface,
         IList<Parameter> parameters, IList<Column> columns);
 
-    MemberDeclarationSyntax ManyDeclare(string name, string text, string argInterface, string returnInterface,
+    MemberDeclarationSyntax ManyDeclare(string name, string sqlTextConstant, string argInterface, string returnInterface,
         IList<Parameter> parameters, IList<Column> columns);
 
     MemberDeclarationSyntax ExecDeclare(string name, string text, string argInterface,
