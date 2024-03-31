@@ -5,7 +5,7 @@ namespace SqlcGenCsharp.Drivers;
 
 public interface IDbDriver
 {
-    TypeSyntax ColumnType(string columnType, bool notNull);
+    string ColumnType(string columnType, bool notNull);
 
     (UsingDirectiveSyntax[], MemberDeclarationSyntax[]) Preamble(Query[] queries);
 

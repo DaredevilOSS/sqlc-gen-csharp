@@ -7,6 +7,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Plugin;
 using SqlcGenCsharp.Drivers;
+using SqlcGenCsharp.Drivers.MySqlConnector;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 using File = Plugin.File;
 
@@ -146,7 +147,7 @@ public class CodeGenerator
     {
         return ParameterList(SeparatedList(columns
             .Select(column => Parameter(Identifier(column.Name.FirstCharToUpper()))
-                .WithType(DbDriver.ColumnType(column.Type.Name, column.NotNull))
+                .WithType(ParseTypeName(DbDriver.ColumnType(column.Type.Name, column.NotNull)))
             )));
     }
 
@@ -210,7 +211,7 @@ public class CodeGenerator
     {
         return driver switch
         {
-            "MySqlConnector" => new MySqlConnector(),
+            "MySqlConnector" => new Driver(),
             _ => throw new ArgumentException($"unknown driver: {driver}", nameof(driver))
         };
     }

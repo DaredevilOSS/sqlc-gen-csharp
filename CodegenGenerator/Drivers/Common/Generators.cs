@@ -1,24 +1,16 @@
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Plugin;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
-namespace SqlcGenCsharp.Drivers;
+namespace SqlcGenCsharp.Drivers.Common;
 
-public static class CommonGenerators
+public static class Generators
 {
-    public static ExpressionStatementSyntax ConnectionOpen()
+    public static ExpressionSyntax NullExpression()
     {
-        return ExpressionStatement(
-            InvocationExpression(MemberAccessExpression(
-                SyntaxKind.SimpleMemberAccessExpression,
-                IdentifierName("connection"),
-                IdentifierName("Open"))));
-    }
-
-    public static ReturnStatementSyntax ReturnNull()
-    {
-        return ReturnStatement(LiteralExpression(SyntaxKind.NullLiteralExpression));
+        return LiteralExpression(SyntaxKind.NullLiteralExpression);
     }
 
     public static SyntaxToken[] GetQueryMethodsTokens()
@@ -31,7 +23,7 @@ public static class CommonGenerators
         ];
     }
 
-    public static StatementSyntax DeclareResultRowsVar(string returnInterface)
+    public static StatementSyntax DeclareResultRowsVar(IdentifierNameSyntax identifier)
     {
         return LocalDeclarationStatement(
             VariableDeclaration(
@@ -45,11 +37,7 @@ public static class CommonGenerators
                                     ObjectCreationExpression(
                                         GenericName(Identifier("List"))
                                             .WithTypeArgumentList(
-                                                TypeArgumentList(
-                                                    SingletonSeparatedList<TypeSyntax>(
-                                                        IdentifierName(returnInterface)
-                                                    )
-                                                )
+                                                identifier.GetGenericListOf()
                                             )
                                     ).WithArgumentList(ArgumentList())
                                 )
@@ -59,9 +47,9 @@ public static class CommonGenerators
         );
     }
 
-    public static StatementSyntax ReturnRowsVar()
+    public static ReturnStatementSyntax Return(this IdentifierNameSyntax me)
     {
-        return ReturnStatement(IdentifierName("rows"));
+        return ReturnStatement(me);
     }
 
     public static LocalDeclarationStatementSyntax WithAwaitUsing(this LocalDeclarationStatementSyntax me)
@@ -71,10 +59,19 @@ public static class CommonGenerators
             .WithUsingKeyword(Token(SyntaxKind.UsingKeyword));
     }
 
-    public static TypeArgumentListSyntax GetGenericListOfInputType(string inputInterface)
+    public static TypeArgumentListSyntax GetGenericListOf(this IdentifierNameSyntax me)
     {
         return TypeArgumentList(
             SingletonSeparatedList<TypeSyntax>(
-                NullableType(IdentifierName(inputInterface))));
+                NullableType(me)));
+    }
+    
+    public static ExpressionSyntax ColumnAssignment(ExpressionSyntax assignmentValue, Column column)
+    {
+        return AssignmentExpression(
+            SyntaxKind.SimpleAssignmentExpression,
+            IdentifierName(column.Name.FirstCharToUpper()),
+            assignmentValue
+        );
     }
 }

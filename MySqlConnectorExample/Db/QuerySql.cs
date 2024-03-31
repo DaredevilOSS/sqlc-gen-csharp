@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using System.Data.Common;
 using MySqlConnector;
 
 namespace GeneratedNamespace
@@ -7,6 +8,28 @@ namespace GeneratedNamespace
     public static class QuerySql
     {
         private const string ConnectionString = "server=localhost;user=root;database=mydb;port=3306;password=";
+        private static byte[] GetBytes(DbDataReader reader, int ordinal)
+        {
+            {
+                const int bufferSize = 100000;
+                ArgumentNullException.ThrowIfNull(reader);
+                var buffer = new byte[bufferSize];
+                var(bytesRead, offset) = (0, 0);
+                while (bytesRead < bufferSize)
+                {
+                    var read = (int)reader.GetBytes(ordinal, bufferSize + bytesRead, buffer, offset, bufferSize - bytesRead);
+                    if (read == 0)
+                        break;
+                    bytesRead += read;
+                    offset += read;
+                }
+
+                if (bytesRead < bufferSize)
+                    Array.Resize(ref buffer, bytesRead);
+                return buffer;
+            }
+        }
+
         private const string GetAuthorSql = "SELECT id, name, bio FROM authors\nWHERE id = @id LIMIT 1";
         public readonly record struct GetAuthorRow(long Id, string Name, string Bio);
         public readonly record struct GetAuthorArgs(long Id);
@@ -23,7 +46,7 @@ namespace GeneratedNamespace
                 {
                     Id = reader.GetInt64(0),
                     Name = reader.GetString(1),
-                    Bio = reader.GetString(2)
+                    Bio = reader.IsDBNull(2) ? null : reader.GetString(2)
                 };
             }
 
@@ -38,10 +61,10 @@ namespace GeneratedNamespace
             connection.Open();
             await using var command = new MySqlCommand(ListAuthorsSql, connection);
             await using var reader = await command.ExecuteReaderAsync();
-            var rows = new List<ListAuthorsRow>();
+            var rows = new List<ListAuthorsRow?>();
             while (await reader.ReadAsync())
             {
-                rows.Add(new ListAuthorsRow { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.GetString(2) });
+                rows.Add(new ListAuthorsRow { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2) });
             }
 
             return rows;
@@ -82,43 +105,43 @@ namespace GeneratedNamespace
             {
                 return new TestRow
                 {
-                    C_bit = reader.GetBytes(0),
-                    C_tinyint = reader.GetInt32(1),
-                    C_bool = reader.GetInt32(2),
-                    C_boolean = reader.GetInt32(3),
-                    C_smallint = reader.GetInt32(4),
-                    C_mediumint = reader.GetInt32(5),
-                    C_int = reader.GetInt32(6),
-                    C_integer = reader.GetInt32(7),
-                    C_bigint = reader.GetInt64(8),
+                    C_bit = reader.IsDBNull(0) ? null : reader.GetBytes(0, 0, "bytes[]", 0, 0),
+                    C_tinyint = reader.IsDBNull(1) ? null : reader.GetInt32(1),
+                    C_bool = reader.IsDBNull(2) ? null : reader.GetInt32(2),
+                    C_boolean = reader.IsDBNull(3) ? null : reader.GetInt32(3),
+                    C_smallint = reader.IsDBNull(4) ? null : reader.GetInt32(4),
+                    C_mediumint = reader.IsDBNull(5) ? null : reader.GetInt32(5),
+                    C_int = reader.IsDBNull(6) ? null : reader.GetInt32(6),
+                    C_integer = reader.IsDBNull(7) ? null : reader.GetInt32(7),
+                    C_bigint = reader.IsDBNull(8) ? null : reader.GetInt64(8),
                     C_serial = reader.GetInt64(9),
-                    C_decimal = reader.GetString(10),
-                    C_dec = reader.GetString(11),
-                    C_numeric = reader.GetString(12),
-                    C_fixed = reader.GetString(13),
-                    C_float = reader.GetDouble(14),
-                    C_double = reader.GetDouble(15),
-                    C_double_precision = reader.GetDouble(16),
-                    C_date = reader.GetString(17),
-                    C_time = reader.GetString(18),
-                    C_datetime = reader.GetString(19),
-                    C_timestamp = reader.GetString(20),
-                    C_year = reader.GetInt32(21),
-                    C_char = reader.GetString(22),
-                    C_nchar = reader.GetString(23),
-                    C_national_char = reader.GetString(24),
-                    C_varchar = reader.GetString(25),
-                    C_binary = reader.GetBytes(26),
-                    C_varbinary = reader.GetBytes(27),
-                    C_tinyblob = reader.GetBytes(28),
-                    C_tinytext = reader.GetString(29),
-                    C_blob = reader.GetBytes(30),
-                    C_text = reader.GetString(31),
-                    C_mediumblob = reader.GetBytes(32),
-                    C_mediumtext = reader.GetString(33),
-                    C_longblob = reader.GetBytes(34),
-                    C_longtext = reader.GetString(35),
-                    C_json = reader.GetString(36)
+                    C_decimal = reader.IsDBNull(10) ? null : reader.GetDecimal(10),
+                    C_dec = reader.IsDBNull(11) ? null : reader.GetDecimal(11),
+                    C_numeric = reader.IsDBNull(12) ? null : reader.GetDecimal(12),
+                    C_fixed = reader.IsDBNull(13) ? null : reader.GetDecimal(13),
+                    C_float = reader.IsDBNull(14) ? null : reader.GetDouble(14),
+                    C_double = reader.IsDBNull(15) ? null : reader.GetDouble(15),
+                    C_double_precision = reader.IsDBNull(16) ? null : reader.GetDouble(16),
+                    C_date = reader.IsDBNull(17) ? null : reader.GetString(17),
+                    C_time = reader.IsDBNull(18) ? null : reader.GetString(18),
+                    C_datetime = reader.IsDBNull(19) ? null : reader.GetString(19),
+                    C_timestamp = reader.IsDBNull(20) ? null : reader.GetString(20),
+                    C_year = reader.IsDBNull(21) ? null : reader.GetInt32(21),
+                    C_char = reader.IsDBNull(22) ? null : reader.GetString(22),
+                    C_nchar = reader.IsDBNull(23) ? null : reader.GetString(23),
+                    C_national_char = reader.IsDBNull(24) ? null : reader.GetString(24),
+                    C_varchar = reader.IsDBNull(25) ? null : reader.GetString(25),
+                    C_binary = reader.IsDBNull(26) ? null : reader.GetBytes(26, 0, "bytes[]", 26, 26),
+                    C_varbinary = reader.IsDBNull(27) ? null : reader.GetBytes(27, 0, "bytes[]", 27, 27),
+                    C_tinyblob = reader.IsDBNull(28) ? null : reader.GetBytes(28, 0, "bytes[]", 28, 28),
+                    C_tinytext = reader.IsDBNull(29) ? null : reader.GetString(29),
+                    C_blob = reader.IsDBNull(30) ? null : reader.GetBytes(30, 0, "bytes[]", 30, 30),
+                    C_text = reader.IsDBNull(31) ? null : reader.GetString(31),
+                    C_mediumblob = reader.IsDBNull(32) ? null : reader.GetBytes(32, 0, "bytes[]", 32, 32),
+                    C_mediumtext = reader.IsDBNull(33) ? null : reader.GetString(33),
+                    C_longblob = reader.IsDBNull(34) ? null : reader.GetBytes(34, 0, "bytes[]", 34, 34),
+                    C_longtext = reader.IsDBNull(35) ? null : reader.GetString(35),
+                    C_json = reader.IsDBNull(36) ? null : reader.GetString(36)
                 };
             }
 
