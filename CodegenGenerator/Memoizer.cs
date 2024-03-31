@@ -3,15 +3,15 @@ namespace SqlcGenCsharp;
 public static class Memoizer
 {
     /// <summary>
-    /// Memoizes provided function. Function should provide deterministic results.
-    /// For the same input it should return the same result.
-    /// Memoized function for the specific input will be called once, further calls will use cache.
+    ///     Memoizes provided function. Function should provide deterministic results.
+    ///     For the same input it should return the same result.
+    ///     Memoized function for the specific input will be called once, further calls will use cache.
     /// </summary>
     /// <param name="func">function to be memoized</param>
     /// <typeparam name="TInput">Type of the function input value</typeparam>
     /// <typeparam name="TResult">Type of the function result</typeparam>
     /// <returns></returns>
-    public static Func<TInput, TResult> Memoize<TInput, TResult>(this Func<TInput, TResult> func) 
+    public static Func<TInput, TResult> Memoize<TInput, TResult>(this Func<TInput, TResult> func)
         where TInput : notnull
     {
         // create cache ("memo")
@@ -27,7 +27,7 @@ public static class Memoizer
 
             // if no, call function
             var result = func(input);
-                
+
             // cache the result
             memo.Add(input, result);
 

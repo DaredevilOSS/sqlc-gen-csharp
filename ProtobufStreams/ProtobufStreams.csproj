@@ -8,11 +8,11 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\CodegenProtobuf\CodegenProtobuf.csproj" />
+        <ProjectReference Include="..\CodegenProtobuf\CodegenProtobuf.csproj"/>
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="Microsoft.IO.RecyclableMemoryStream" Version="3.0.0" />
+        <PackageReference Include="Microsoft.IO.RecyclableMemoryStream" Version="3.0.0"/>
     </ItemGroup>
 
 </Project>

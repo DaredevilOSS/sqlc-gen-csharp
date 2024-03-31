@@ -9,6 +9,13 @@ namespace SqlcGenCsharpTest;
 [TestOf(typeof(App))]
 public class AppTest
 {
+    [SetUp]
+    public void SetUp()
+    {
+        _memoryStreamManager = new RecyclableMemoryStreamManager();
+        _runTestSetupSqlc();
+    }
+
     private static void _runTestSetupSqlc()
     {
         // var bashCommand = "sqlc -f examples/sqlc.test.yaml generate";
@@ -22,19 +29,12 @@ public class AppTest
             UseShellExecute = false,
             CreateNoWindow = true
         };
-        
+
         using var process = Process.Start(startInfo)!;
         var output = process.StandardOutput.ReadToEnd();
         var error = process.StandardError.ReadToEnd();
         Console.WriteLine($"sqlc output: {output}\nsqlc error: {error}");
         process.WaitForExit();
-    }
-    
-    [SetUp]
-    public void SetUp()
-    {
-        _memoryStreamManager = new RecyclableMemoryStreamManager();
-        _runTestSetupSqlc();
     }
 
     private RecyclableMemoryStreamManager _memoryStreamManager = null!;

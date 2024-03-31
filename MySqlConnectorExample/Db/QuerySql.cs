@@ -7,7 +7,7 @@ namespace GeneratedNamespace
     public static class QuerySql
     {
         private const string ConnectionString = "server=localhost;user=root;database=mydb;port=3306;password=";
-        private const string GetAuthorSql = "SELECT id, name, bio FROM authors\nWHERE id = ? LIMIT 1";
+        private const string GetAuthorSql = "SELECT id, name, bio FROM authors\nWHERE id = @id LIMIT 1";
         public readonly record struct GetAuthorRow(long Id, string Name, string Bio);
         public readonly record struct GetAuthorArgs(long Id);
         public static async Task<GetAuthorRow?> GetAuthor(GetAuthorArgs args)
@@ -41,19 +41,13 @@ namespace GeneratedNamespace
             var rows = new List<ListAuthorsRow>();
             while (await reader.ReadAsync())
             {
-                rows.Add(
-                    new ListAuthorsRow
-                    {
-                        Id = reader.GetInt64(0), 
-                        Name = reader.GetString(1), 
-                        Bio = reader.GetString(2)
-                    });
+                rows.Add(new ListAuthorsRow { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.GetString(2) });
             }
 
             return rows;
         }
 
-        private const string CreateAuthorSql = "INSERT INTO authors (\n  name, bio\n) VALUES (\n  ?, ? \n)";
+        private const string CreateAuthorSql = "INSERT INTO authors (\n  name, bio\n) VALUES (\n  @name, @name \n)";
         public readonly record struct CreateAuthorArgs(string Name, string Bio);
         public static async Task CreateAuthor(CreateAuthorArgs args)
         {
@@ -65,7 +59,7 @@ namespace GeneratedNamespace
             await command.ExecuteScalarAsync();
         }
 
-        private const string DeleteAuthorSql = "DELETE FROM authors\nWHERE id = ?";
+        private const string DeleteAuthorSql = "DELETE FROM authors\nWHERE id = @id";
         public readonly record struct DeleteAuthorArgs(long Id);
         public static async Task DeleteAuthor(DeleteAuthorArgs args)
         {

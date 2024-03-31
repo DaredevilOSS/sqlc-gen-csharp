@@ -21,7 +21,7 @@ public static class ClassMemberTypeExtensions
             _ => throw new ArgumentOutOfRangeException(nameof(me), me, null)
         };
     }
-    
+
     public static int GetClassMemberOrder(this ClassMemberType me)
     {
         return me switch

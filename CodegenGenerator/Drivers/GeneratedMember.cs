@@ -15,7 +15,7 @@ public static class GeneratedMembersExtensions
         getVariableName = getVariableName.Memoize();
         return getVariableName(me);
     }
-    
+
     public static string GetNameAsVar(this GeneratedMember me)
     {
         Func<GeneratedMember, string> getVariableName = _ => me.ToString().FirstCharToLower();

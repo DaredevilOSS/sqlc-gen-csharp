@@ -8,12 +8,12 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="Google.Protobuf" Version="3.26.0-rc2" />
-      <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.9.2" />
+        <PackageReference Include="Google.Protobuf" Version="3.26.0-rc2"/>
+        <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.9.2"/>
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\CodegenProtobuf\CodegenProtobuf.csproj" />
+        <ProjectReference Include="..\CodegenProtobuf\CodegenProtobuf.csproj"/>
     </ItemGroup>
 
 </Project>

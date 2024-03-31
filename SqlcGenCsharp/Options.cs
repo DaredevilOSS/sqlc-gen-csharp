@@ -1,4 +1,5 @@
 // ReSharper disable InconsistentNaming
+
 namespace SqlcGenCsharp;
 
 public record Options

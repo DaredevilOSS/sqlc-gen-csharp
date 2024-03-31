@@ -6,7 +6,7 @@ public static class App
     {
         Run();
     }
-    
+
     public static void Run()
     {
         var generateRequest = ProtobufStreams.ReadInput();

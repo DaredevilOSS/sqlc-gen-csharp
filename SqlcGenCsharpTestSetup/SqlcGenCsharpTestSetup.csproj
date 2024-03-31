@@ -11,18 +11,18 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\CodegenGenerator\CodegenGenerator.csproj" />
-      <ProjectReference Include="..\ProtobufStreams\ProtobufStreams.csproj" />
+        <ProjectReference Include="..\CodegenGenerator\CodegenGenerator.csproj"/>
+        <ProjectReference Include="..\ProtobufStreams\ProtobufStreams.csproj"/>
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="Google.Protobuf" Version="3.26.0-rc2" />
+        <PackageReference Include="Google.Protobuf" Version="3.26.0-rc2"/>
     </ItemGroup>
 
     <ItemGroup>
-      <Reference Include="System.Diagnostics.Process">
-        <HintPath>..\..\..\..\..\usr\local\share\dotnet\shared\Microsoft.NETCore.App\8.0.2\System.Diagnostics.Process.dll</HintPath>
-      </Reference>
+        <Reference Include="System.Diagnostics.Process">
+            <HintPath>..\..\..\..\..\usr\local\share\dotnet\shared\Microsoft.NETCore.App\8.0.2\System.Diagnostics.Process.dll</HintPath>
+        </Reference>
     </ItemGroup>
 
 </Project>
