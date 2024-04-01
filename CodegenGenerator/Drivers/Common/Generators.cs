@@ -13,9 +13,9 @@ public static class Generators
         return LiteralExpression(SyntaxKind.NullLiteralExpression);
     }
 
-    public static SyntaxToken[] GetQueryMethodsTokens()
+    public static SyntaxToken[] GetSyntaxTokens()
     {
-        return
+        return 
         [
             Token(SyntaxKind.PublicKeyword),
             Token(SyntaxKind.StaticKeyword),
