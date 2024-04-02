@@ -1,30 +1,60 @@
-using System.Data.Common;
-using System.Text.RegularExpressions;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Plugin;
-
+using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
+using static System.String;
 namespace SqlcGenCsharp.Drivers;
 
-public static partial class Utils
+public static class Utils
 {
-    private static string FieldName(string prefix, int index, Column? column = null)
+    public static ExpressionSyntax NullExpression()
     {
-        var name = $"{prefix}_{index}";
-        if (column != null) name = column.Name;
-
-        return MyRegex().Replace(
-            name.ToLower(), m => m.Value.ToUpper().Replace("_", ""));
+        return LiteralExpression(SyntaxKind.NullLiteralExpression);
     }
 
-    public static string ArgName(int index, Column? column = null)
+    public static MethodDeclarationSyntax WithPublicStaticAsyncModifiers(this MethodDeclarationSyntax me)
     {
-        return FieldName("arg", index, column);
+        return me.AddModifiers(
+        [
+            Token(SyntaxKind.PublicKeyword),
+            Token(SyntaxKind.StaticKeyword),
+            Token(SyntaxKind.AsyncKeyword)
+        ]);
     }
 
-    public static string ColName(int index, Column? column = null)
+    public static StatementSyntax DeclareResultRowsVar(string identifier)
     {
-        return FieldName("col", index, column);
+        return LocalDeclarationStatement(
+            VariableDeclaration(
+                    IdentifierName("var")
+                )
+                .WithVariables(
+                    SingletonSeparatedList(
+                        VariableDeclarator(Identifier("rows"))
+                            .WithInitializer(
+                                EqualsValueClause(
+                                    ObjectCreationExpression(ParseTypeName($"List<{identifier}>")
+                                    ).WithArgumentList(ArgumentList())
+                                )
+                            )
+                    )
+                )
+        );
     }
 
-    [GeneratedRegex("(_[a-z])")]
-    private static partial Regex MyRegex();
+    public static LocalDeclarationStatementSyntax WithAwaitUsing(this LocalDeclarationStatementSyntax me)
+    {
+        return me
+            .WithAwaitKeyword(Token(SyntaxKind.AwaitKeyword))
+            .WithUsingKeyword(Token(SyntaxKind.UsingKeyword));
+    }
+    
+    public static ExpressionSyntax AssignToColumn(ExpressionSyntax me, Column column)
+    {
+        return AssignmentExpression(
+            SyntaxKind.SimpleAssignmentExpression,
+            IdentifierName(column.Name.FirstCharToUpper()),
+            me
+        );
+    }
 }

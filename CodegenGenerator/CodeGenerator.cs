@@ -83,14 +83,9 @@ public class CodeGenerator
         var (usingDirectives, sharedMemberDeclarations) = DbDriver.Preamble(queries);
         var classMembers = new List<MemberDeclarationSyntax>()
             .Concat(sharedMemberDeclarations)
-            .Concat(GetClassMembersForAllQueries());
+            .Concat(queries.SelectMany(GetMembersForSingleQuery));
         var className = QueryFilenameToClassName(filename);
         return (usingDirectives, className, GetClass(className, classMembers.ToArray()));
-
-        IEnumerable<MemberDeclarationSyntax> GetClassMembersForAllQueries()
-        {
-            return queries.SelectMany(GetMembersForSingleQuery).ToArray();
-        }
 
         string QueryFilenameToClassName(string filenameWithExtension)
         {
@@ -119,6 +114,7 @@ public class CodeGenerator
         var queryTextConstant = GetInterfaceName(ClassMemberType.Sql);
         var argInterface = GetInterfaceName(ClassMemberType.Args);
         var returnInterface = GetInterfaceName(ClassMemberType.Row);
+        
         return query.Cmd switch
         {
             ":exec" => DbDriver.ExecDeclare(query.Name, queryTextConstant, argInterface, query.Params),
@@ -154,17 +150,14 @@ public class CodeGenerator
     private MemberDeclarationSyntax? GetQueryParamsDataclass(Query query)
     {
         // TODO add feature-flag for using C# records as data classes or not
+        DebugHelper.Append($"query {query.Name} params dataclass?");
         if (query.Params.Count <= 0) return null;
-        var recordParameters = QueryColumnsToRecordParams(QueryParamsToQueryColumns());
+        var recordParameters = QueryColumnsToRecordParams(query.Params.Select(p => p.Column));;
+        DebugHelper.Append($"query {query.Name} params dataclass created!");
         return GenerateRecord(query.Name, ClassMemberType.Args, recordParameters);
-
-        IEnumerable<Column> QueryParamsToQueryColumns()
-        {
-            return query.Params.Select(p => p.Column).ToArray();
-        }
     }
 
-    private MemberDeclarationSyntax GetQueryTextConstant(Query query)
+    private static MemberDeclarationSyntax GetQueryTextConstant(Query query)
     {
         return FieldDeclaration(
                 VariableDeclaration(
@@ -217,7 +210,7 @@ public class CodeGenerator
     }
 
 
-    private RecordDeclarationSyntax GenerateRecord(string name, ClassMemberType classMemberType,
+    private static RecordDeclarationSyntax GenerateRecord(string name, ClassMemberType classMemberType,
         ParameterListSyntax parameterListSyntax)
     {
         return RecordDeclaration(

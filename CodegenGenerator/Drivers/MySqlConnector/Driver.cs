@@ -1,29 +1,64 @@
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Plugin;
-using static System.String;
 using SqlcGenCsharp.Drivers.Common;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
+using static System.String;
 
 namespace SqlcGenCsharp.Drivers.MySqlConnector;
 
 public class Driver : IDbDriver
 {
-    public static ParameterListSyntax FuncParamsDecl(string argInterface, IList<Parameter> parameters)
+    public string ColumnType(string mysqlColumnType, bool notNull)
     {
-        return ParameterList(
-            SeparatedList(
-                new List<ParameterSyntax>(
-                    !IsNullOrEmpty(argInterface) && parameters.Any()
-                        ? new[] { Parameter(Identifier("args")).WithType(IdentifierName(argInterface)) }
-                        : Enumerable.Empty<ParameterSyntax>())));
-    }
-    
-    public string ColumnType(string columnType, bool notNull)
-    {
-        return Types.GetLocalType(columnType, notNull);
+        var nullableSuffix = notNull ? Empty : "?";
+
+        if (IsNullOrEmpty(mysqlColumnType))
+            return "object" + nullableSuffix;
+
+        switch (mysqlColumnType.ToLower())
+        {
+            case "bigint":
+                return "long" + nullableSuffix;
+            case "binary":
+            case "bit":
+            case "blob":
+            case "longblob":
+            case "mediumblob":
+            case "tinyblob":
+            case "varbinary":
+                return "byte[]" + nullableSuffix;
+            case "char":
+            case "date":
+            case "datetime":
+            case "decimal":
+            case "longtext":
+            case "mediumtext":
+            case "text":
+            case "time":
+            case "timestamp":
+            case "tinytext":
+            case "varchar":
+                return "string";
+            case "double":
+            case "float":
+                return "double" + nullableSuffix;
+            case "int":
+            case "mediumint":
+            case "smallint":
+            case "tinyint":
+            case "year":
+                return "int" + nullableSuffix;
+            case "json":
+                // Assuming JSON is represented as a string or a specific class
+                return "object" + nullableSuffix;
+            default:
+                throw new NotSupportedException($"Unsupported column type: {mysqlColumnType}");
+        }
     }
 
+
+    // TODO add ExecLastId handling
     public (UsingDirectiveSyntax[], MemberDeclarationSyntax[]) Preamble(Query[] queries)
     {
         return (
@@ -32,90 +67,121 @@ public class Driver : IDbDriver
         );
     }
 
-    public ParameterListSyntax Params(string argInterface, IEnumerable<Parameter> parameters)
-    {
-        return ParameterList(
-            SeparatedList(
-                new List<ParameterSyntax>(
-                    !IsNullOrEmpty(argInterface) && parameters.Any()
-                        ? new[] { Parameter(Identifier("args")).WithType(IdentifierName(argInterface)) }
-                        : Enumerable.Empty<ParameterSyntax>())));
-    }
-    
     public MemberDeclarationSyntax OneDeclare(string funcName, string queryTextConstant, string argInterface,
         string returnInterface, IList<Parameter> parameters, IList<Column> columns)
     {
-        return MethodDeclaration(
-                GenericName(Identifier("Task"))
-                    .WithTypeArgumentList(IdentifierName(returnInterface).GetGenericListOf()),
-                Identifier(funcName))
-            .AddModifiers(Generators.GetSyntaxTokens())
-            .WithParameterList(Params(argInterface, parameters))
+        return MethodDeclaration(IdentifierName($"Task<{returnInterface}?>"), funcName)
+            .WithPublicStaticAsyncModifiers()
+            .WithParameterList(ParseParameterList(GetParameterListAsString(argInterface, parameters)))
             .WithBody(Block(
                 Array.Empty<StatementSyntax>()
                     .Concat(EstablishConnection())
                     .Concat(PrepareSqlCommand(queryTextConstant, parameters))
-                    .Concat(ExecuteAndReturn(returnInterface, columns))));
+                    .Concat(ExecuteAndReturnOne(returnInterface, columns))));
+    }
+
+    private ExpressionSyntax GetReader(Column column, int ordinal)
+    {
+        if (!column.NotNull)
+            return ConditionalExpression(
+                GetReadNullCondition(ordinal),
+                GetEmptyOrNullExpression(ColumnType(column.Type.Name, column.NotNull)),
+                GetNullSafeColumnReader(column, ordinal)
+            );
+        return GetNullSafeColumnReader(column, ordinal);
+    }
+
+    private static ExpressionSyntax GetEmptyValueForColumn(string localColumnType)
+    {
+        switch (localColumnType.ToLower())
+        {
+            case "string":
+                return ParseExpression("String.Empty");
+            default:
+                throw new NotSupportedException($"Unsupported column type: {localColumnType}");
+        }
+    }
+
+    private static ExpressionSyntax GetReadNullCondition(int ordinal)
+    {
+        return InvocationExpression(
+            MemberAccessExpression(
+                SyntaxKind.SimpleMemberAccessExpression,
+                IdentifierName("reader"),
+                IdentifierName("IsDBNull")
+            )
+        ).AddArgumentListArguments(
+            Argument(LiteralExpression(SyntaxKind.NumericLiteralExpression, Literal(ordinal))));
+    }
+    
+    private static ExpressionSyntax GetEmptyOrNullExpression(string localType)
+    {
+        return localType == "string" 
+            ? GetEmptyValueForColumn(localType)
+            : Utils.NullExpression();
+    }
+    
+    private static ExpressionSyntax GetNullSafeColumnReader(Column column, int ordinal)
+    {
+        switch (column.Type.Name.ToLower())
+        {
+            case "bigint":
+                return ParseExpression($"reader.GetInt64({ordinal})");
+            case "binary":
+            case "bit":
+            case "blob":
+            case "longblob":
+            case "mediumblob":
+            case "tinyblob":
+            case "varbinary":
+                return ParseExpression($"GetBytes(reader, {ordinal})");
+            case "char":
+            case "date":
+            case "datetime":
+            case "decimal":
+            case "longtext":
+            case "mediumtext":
+            case "text":
+            case "time":
+            case "timestamp":
+            case "tinytext":
+            case "varchar":
+            case "json":
+                return ParseExpression($"reader.GetString({ordinal})");
+            case "double":
+            case "float":
+                return ParseExpression($"reader.GetDouble({ordinal})");
+            case "int":
+            case "mediumint":
+            case "smallint":
+            case "tinyint":
+            case "year":
+                return ParseExpression($"reader.GetInt32({ordinal})");
+            default:
+                throw new NotSupportedException($"Unsupported column type: {column.Type.Name}");
+        }
     }
     
     public MemberDeclarationSyntax ExecDeclare(string funcName, string queryTextConstant, string argInterface,
         IList<Parameter> parameters)
     {
         var methodDeclaration = MethodDeclaration(IdentifierName("Task"), Identifier(funcName))
-            .AddModifiers(Generators.GetSyntaxTokens())
-            .WithParameterList(FuncParamsDecl(argInterface, parameters))
-            .WithBody(GetBlock());
-
+            .WithPublicStaticAsyncModifiers()
+            .WithParameterList(ParseParameterList(GetParameterListAsString(argInterface, parameters)))
+            .WithBody(Block(
+                Array.Empty<StatementSyntax>()
+                    .Concat(EstablishConnection())
+                    .Concat(PrepareSqlCommand(queryTextConstant, parameters))
+                    .Concat(ExecuteScalarAndReturn())));
         return methodDeclaration;
-
-        BlockSyntax GetBlock()
-        {
-            var blockStatements = new StatementSyntax[]{}
-                .Concat(EstablishConnection())
-                .Concat(PrepareSqlCommand(queryTextConstant, parameters))
-                .Concat(new[]
-                {
-                    UsingExecuteScalarVar()
-                })
-                .ToArray();
-            return Block(blockStatements);
-        }
-
-        StatementSyntax UsingExecuteScalarVar()
-        {
-            return ExpressionStatement(
-                AwaitExpression(
-                    InvocationExpression(
-                        MemberAccessExpression(
-                            SyntaxKind.SimpleMemberAccessExpression,
-                            IdentifierName("command"),
-                            IdentifierName("ExecuteScalarAsync")
-                        )
-                    )
-                )
-            );
-        }
     }
 
     public MemberDeclarationSyntax ManyDeclare(string funcName, string queryTextConstant, string argInterface,
         string returnInterface, IList<Parameter> parameters, IList<Column> columns)
     {
-        var funcParams = FuncParamsDecl(argInterface, parameters);
-        var returnType = GenericName(Identifier("Task"))
-            .WithTypeArgumentList(
-                TypeArgumentList(
-                    SingletonSeparatedList<TypeSyntax>(
-                        GenericName(Identifier("List"))
-                            .WithTypeArgumentList(
-                                TypeArgumentList(
-                                    SingletonSeparatedList<TypeSyntax>(IdentifierName(returnInterface))
-                                )
-                            ))));
-
-        // Method declaration
-        var methodDeclaration = MethodDeclaration(returnType, Identifier(funcName))
-            .AddModifiers(Generators.GetSyntaxTokens())
-            .WithParameterList(funcParams)
+        var methodDeclaration = MethodDeclaration(IdentifierName($"Task<List<{returnInterface}>>"), Identifier(funcName))
+            .WithPublicStaticAsyncModifiers()
+            .WithParameterList(ParseParameterList(GetParameterListAsString(argInterface, parameters)))
             .WithBody(GetBlock());
 
         return methodDeclaration;
@@ -127,10 +193,10 @@ public class Driver : IDbDriver
                 .Concat(PrepareSqlCommand(queryTextConstant, parameters))
                 .Concat(new[]
                 {
-                    UsingReaderVar(),
-                    Generators.DeclareResultRowsVar(IdentifierName(returnInterface)),
+                    UsingDataReader(),
+                    Utils.DeclareResultRowsVar(returnInterface),
                     GetWhileRowExistsStatement(),
-                    IdentifierName(Variables.Rows.GetNameAsVar()).Return()
+                    ReturnStatement(IdentifierName(Variables.Rows.GetNameAsVar()))
                 })
                 .ToArray();
             return Block(blockStatements);
@@ -159,7 +225,9 @@ public class Driver : IDbDriver
                                                 .WithInitializer(
                                                     InitializerExpression(
                                                         SyntaxKind.ObjectInitializerExpression,
-                                                        SeparatedList(Types.GetColumnsAssignments(columns))
+                                                        SeparatedList(columns.Select((column, idx) =>
+                                                            Utils.AssignToColumn(GetReader(column, idx), column)
+                                                        ))
                                                     )
                                                 )
                                         )
@@ -169,9 +237,31 @@ public class Driver : IDbDriver
                     )));
         }
     }
-    
-    
-    public IEnumerable<StatementSyntax> EstablishConnection()
+
+    private static string GetParameterListAsString(string argInterface, IList<Parameter> parameters)
+    {
+        return "(" + (IsNullOrEmpty(argInterface) || !parameters.Any() ? Empty : $"{argInterface} args") + ")";
+    }
+
+    private static IEnumerable<StatementSyntax> ExecuteScalarAndReturn()
+    {
+        return 
+        [
+            ExpressionStatement(
+                AwaitExpression(
+                    InvocationExpression(
+                        MemberAccessExpression(
+                            SyntaxKind.SimpleMemberAccessExpression,
+                            IdentifierName("command"),
+                            IdentifierName("ExecuteScalarAsync")
+                        )
+                    )
+                )
+            )
+        ];
+    }
+
+    private static IEnumerable<StatementSyntax> EstablishConnection()
     {
         return
         [
@@ -193,8 +283,7 @@ public class Driver : IDbDriver
         ];
     }
 
-
-    public IEnumerable<StatementSyntax> PrepareSqlCommand(string sqlTextConstant, IEnumerable<Parameter> parameters)
+    private static IEnumerable<StatementSyntax> PrepareSqlCommand(string sqlTextConstant, IEnumerable<Parameter> parameters)
     {
         return new StatementSyntax[]
             {
@@ -237,66 +326,35 @@ public class Driver : IDbDriver
             .ToArray();
     }
 
-    IEnumerable<StatementSyntax> IDbDriver.ExecuteAndReturn(string returnInterface, IList<Column> columns)
-    {
-        return ExecuteAndReturn(returnInterface, columns);
-    }
-    
-    
-    private static IfStatementSyntax GetIfRowExistsStatement(string returnInterface, IList<Column> columns)
-    {
-        return IfStatement(
-            Common.AwaitReaderRow(),
-            Block(
-                SingletonList<StatementSyntax>(
-                    ReturnStatement(
-                        ObjectCreationExpression(IdentifierName(returnInterface))
-                            .WithInitializer(
-                                InitializerExpression(
-                                    SyntaxKind.ObjectInitializerExpression,
-                                    SeparatedList(Types.GetColumnsAssignments(columns)
-                                        .ToArray())
-                                )
-                            )
-                    )
-                )
-            )
-        );
-    }
-
-    public IEnumerable<StatementSyntax> ExecuteAndReturn(string returnInterface, IList<Column> columns)
+    private IEnumerable<StatementSyntax> ExecuteAndReturnOne(string returnInterface, IList<Column> columns)
     {
         return
         [
-            UsingReaderVar(),
-            GetIfRowExistsStatement(returnInterface, columns),
-            ReturnStatement(Generators.NullExpression())
+            UsingDataReader(),
+            IfStatement(
+                AwaitReaderRow(),
+                ReturnSingleRow(returnInterface, columns)
+            ),
+            ReturnStatement(Utils.NullExpression())
         ];
     }
 
-    
-    private static IfStatementSyntax GetIfRowExistsStatement(string returnInterface, IList<Column> columns)
+    private StatementSyntax ReturnSingleRow(string returnInterface, IEnumerable<Column> columns)
     {
-        return IfStatement(
-            Common.AwaitReaderRow(),
-            Block(
-                SingletonList<StatementSyntax>(
-                    ReturnStatement(
-                        ObjectCreationExpression(IdentifierName(returnInterface))
-                            .WithInitializer(
-                                InitializerExpression(
-                                    SyntaxKind.ObjectInitializerExpression,
-                                    SeparatedList(Types.GetColumnsAssignments(columns)
-                                        .ToArray())
-                                )
-                            )
+        return ReturnStatement(
+            ObjectCreationExpression(IdentifierName(returnInterface))
+                .WithInitializer(
+                    InitializerExpression(
+                        SyntaxKind.ObjectInitializerExpression,
+                        SeparatedList(columns.Select((column, idx) =>
+                                Utils.AssignToColumn(GetReader(column, idx), column))
+                            .ToArray())
                     )
                 )
-            )
         );
     }
-    
-    protected static StatementSyntax UsingReaderVar()
+
+    private static StatementSyntax UsingDataReader()
     {
         return LocalDeclarationStatement(
                 VariableDeclaration(IdentifierName("var"))
@@ -318,7 +376,8 @@ public class Driver : IDbDriver
             .WithAwaitUsing();
     }
 
-    AwaitExpressionSyntax AwaitReaderRow()
+
+    private static AwaitExpressionSyntax AwaitReaderRow()
     {
         return AwaitExpression(
             InvocationExpression(

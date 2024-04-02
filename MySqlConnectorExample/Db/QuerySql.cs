@@ -41,15 +41,12 @@ namespace GeneratedNamespace
             command.Parameters.AddWithValue("@id", args.Id);
             await using var reader = await command.ExecuteReaderAsync();
             if (await reader.ReadAsync())
-            {
                 return new GetAuthorRow
                 {
                     Id = reader.GetInt64(0),
                     Name = reader.GetString(1),
-                    Bio = reader.IsDBNull(2) ? null : reader.GetString(2)
+                    Bio = reader.IsDBNull(2) ? String.Empty : reader.GetString(2)
                 };
-            }
-
             return null;
         }
 
@@ -61,10 +58,10 @@ namespace GeneratedNamespace
             connection.Open();
             await using var command = new MySqlCommand(ListAuthorsSql, connection);
             await using var reader = await command.ExecuteReaderAsync();
-            var rows = new List<ListAuthorsRow?>();
+            var rows = new List<ListAuthorsRow>();
             while (await reader.ReadAsync())
             {
-                rows.Add(new ListAuthorsRow { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2) });
+                rows.Add(new ListAuthorsRow { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? String.Empty : reader.GetString(2) });
             }
 
             return rows;
@@ -102,10 +99,9 @@ namespace GeneratedNamespace
             await using var command = new MySqlCommand(TestSql, connection);
             await using var reader = await command.ExecuteReaderAsync();
             if (await reader.ReadAsync())
-            {
                 return new TestRow
                 {
-                    C_bit = reader.IsDBNull(0) ? null : reader.GetBytes(0, 0, "bytes[]", 0, 0),
+                    C_bit = reader.IsDBNull(0) ? null : GetBytes(reader, 0),
                     C_tinyint = reader.IsDBNull(1) ? null : reader.GetInt32(1),
                     C_bool = reader.IsDBNull(2) ? null : reader.GetInt32(2),
                     C_boolean = reader.IsDBNull(3) ? null : reader.GetInt32(3),
@@ -115,36 +111,34 @@ namespace GeneratedNamespace
                     C_integer = reader.IsDBNull(7) ? null : reader.GetInt32(7),
                     C_bigint = reader.IsDBNull(8) ? null : reader.GetInt64(8),
                     C_serial = reader.GetInt64(9),
-                    C_decimal = reader.IsDBNull(10) ? null : reader.GetDecimal(10),
-                    C_dec = reader.IsDBNull(11) ? null : reader.GetDecimal(11),
-                    C_numeric = reader.IsDBNull(12) ? null : reader.GetDecimal(12),
-                    C_fixed = reader.IsDBNull(13) ? null : reader.GetDecimal(13),
+                    C_decimal = reader.IsDBNull(10) ? String.Empty : reader.GetString(10),
+                    C_dec = reader.IsDBNull(11) ? String.Empty : reader.GetString(11),
+                    C_numeric = reader.IsDBNull(12) ? String.Empty : reader.GetString(12),
+                    C_fixed = reader.IsDBNull(13) ? String.Empty : reader.GetString(13),
                     C_float = reader.IsDBNull(14) ? null : reader.GetDouble(14),
                     C_double = reader.IsDBNull(15) ? null : reader.GetDouble(15),
                     C_double_precision = reader.IsDBNull(16) ? null : reader.GetDouble(16),
-                    C_date = reader.IsDBNull(17) ? null : reader.GetString(17),
-                    C_time = reader.IsDBNull(18) ? null : reader.GetString(18),
-                    C_datetime = reader.IsDBNull(19) ? null : reader.GetString(19),
-                    C_timestamp = reader.IsDBNull(20) ? null : reader.GetString(20),
+                    C_date = reader.IsDBNull(17) ? String.Empty : reader.GetString(17),
+                    C_time = reader.IsDBNull(18) ? String.Empty : reader.GetString(18),
+                    C_datetime = reader.IsDBNull(19) ? String.Empty : reader.GetString(19),
+                    C_timestamp = reader.IsDBNull(20) ? String.Empty : reader.GetString(20),
                     C_year = reader.IsDBNull(21) ? null : reader.GetInt32(21),
-                    C_char = reader.IsDBNull(22) ? null : reader.GetString(22),
-                    C_nchar = reader.IsDBNull(23) ? null : reader.GetString(23),
-                    C_national_char = reader.IsDBNull(24) ? null : reader.GetString(24),
-                    C_varchar = reader.IsDBNull(25) ? null : reader.GetString(25),
-                    C_binary = reader.IsDBNull(26) ? null : reader.GetBytes(26, 0, "bytes[]", 26, 26),
-                    C_varbinary = reader.IsDBNull(27) ? null : reader.GetBytes(27, 0, "bytes[]", 27, 27),
-                    C_tinyblob = reader.IsDBNull(28) ? null : reader.GetBytes(28, 0, "bytes[]", 28, 28),
-                    C_tinytext = reader.IsDBNull(29) ? null : reader.GetString(29),
-                    C_blob = reader.IsDBNull(30) ? null : reader.GetBytes(30, 0, "bytes[]", 30, 30),
-                    C_text = reader.IsDBNull(31) ? null : reader.GetString(31),
-                    C_mediumblob = reader.IsDBNull(32) ? null : reader.GetBytes(32, 0, "bytes[]", 32, 32),
-                    C_mediumtext = reader.IsDBNull(33) ? null : reader.GetString(33),
-                    C_longblob = reader.IsDBNull(34) ? null : reader.GetBytes(34, 0, "bytes[]", 34, 34),
-                    C_longtext = reader.IsDBNull(35) ? null : reader.GetString(35),
+                    C_char = reader.IsDBNull(22) ? String.Empty : reader.GetString(22),
+                    C_nchar = reader.IsDBNull(23) ? String.Empty : reader.GetString(23),
+                    C_national_char = reader.IsDBNull(24) ? String.Empty : reader.GetString(24),
+                    C_varchar = reader.IsDBNull(25) ? String.Empty : reader.GetString(25),
+                    C_binary = reader.IsDBNull(26) ? null : GetBytes(reader, 26),
+                    C_varbinary = reader.IsDBNull(27) ? null : GetBytes(reader, 27),
+                    C_tinyblob = reader.IsDBNull(28) ? null : GetBytes(reader, 28),
+                    C_tinytext = reader.IsDBNull(29) ? String.Empty : reader.GetString(29),
+                    C_blob = reader.IsDBNull(30) ? null : GetBytes(reader, 30),
+                    C_text = reader.IsDBNull(31) ? String.Empty : reader.GetString(31),
+                    C_mediumblob = reader.IsDBNull(32) ? null : GetBytes(reader, 32),
+                    C_mediumtext = reader.IsDBNull(33) ? String.Empty : reader.GetString(33),
+                    C_longblob = reader.IsDBNull(34) ? null : GetBytes(reader, 34),
+                    C_longtext = reader.IsDBNull(35) ? String.Empty : reader.GetString(35),
                     C_json = reader.IsDBNull(36) ? null : reader.GetString(36)
                 };
-            }
-
             return null;
         }
     }

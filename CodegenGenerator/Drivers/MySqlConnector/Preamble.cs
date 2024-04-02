@@ -79,7 +79,6 @@ internal static class PreambleMembers
             .AddParameterListParameters(
                 Parameter(Identifier("reader")).WithType(ParseTypeName("DbDataReader")),
                 Parameter(Identifier("ordinal")).WithType(PredefinedType(Token(SyntaxKind.IntKeyword))))
-            .AddBodyStatements(ParseStatement(getBytesMethodCode).NormalizeWhitespace(elasticTrivia:true))
-            .NormalizeWhitespace();
+            .AddBodyStatements(ParseStatement(getBytesMethodCode).NormalizeWhitespace());
     }
 }
