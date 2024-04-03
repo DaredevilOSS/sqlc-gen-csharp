@@ -12,8 +12,6 @@ internal static class PreambleMembers
     {
         return
         [
-            UsingDirective(ParseName("System")),
-            UsingDirective(ParseName("System.Threading.Tasks")),
             UsingDirective(ParseName("System.Data.Common")),
             UsingDirective(ParseName("MySqlConnector"))
         ];
@@ -33,7 +31,7 @@ internal static class PreambleMembers
         return FieldDeclaration(
                 VariableDeclaration(PredefinedType(Token(SyntaxKind.StringKeyword)))
                     .WithVariables(SingletonSeparatedList(
-                        VariableDeclarator(Identifier(Variables.ConnectionString.GetNameAsConst()))
+                        VariableDeclarator(Identifier(Variable.ConnectionString.Name()))
                             .WithInitializer(EqualsValueClause(
                                 LiteralExpression(SyntaxKind.StringLiteralExpression,
                                     Literal("server=localhost;user=root;database=mydb;port=3306;password=")))))
@@ -76,9 +74,7 @@ internal static class PreambleMembers
 
         return MethodDeclaration(ParseTypeName("byte[]"), "GetBytes")
             .WithModifiers(TokenList(Token(SyntaxKind.PrivateKeyword), Token(SyntaxKind.StaticKeyword)))
-            .AddParameterListParameters(
-                Parameter(Identifier("reader")).WithType(ParseTypeName("DbDataReader")),
-                Parameter(Identifier("ordinal")).WithType(PredefinedType(Token(SyntaxKind.IntKeyword))))
+            .WithParameterList(ParseParameterList("(DbDataReader reader, int ordinal)"))
             .AddBodyStatements(ParseStatement(getBytesMethodCode).NormalizeWhitespace());
     }
 }
