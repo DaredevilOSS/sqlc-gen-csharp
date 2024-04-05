@@ -1,4 +1,3 @@
-using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Plugin;
@@ -57,10 +56,8 @@ public class Driver : IDbDriver
                 throw new NotSupportedException($"Unsupported column type: {mysqlColumnType}");
         }
     }
-
-
-    // TODO add ExecLastId handling
-    public (UsingDirectiveSyntax[], MemberDeclarationSyntax[]) Preamble(Query[] queries)
+    
+    public (UsingDirectiveSyntax[], MemberDeclarationSyntax[]) Preamble(string className, Query[] queries)
     {
         return (
             PreambleMembers.GetUsingDirectives(),
@@ -72,7 +69,7 @@ public class Driver : IDbDriver
         string returnInterface, IList<Parameter> parameters, IList<Column> columns)
     {
         return MethodDeclaration(IdentifierName($"Task<{returnInterface}?>"), funcName)
-            .WithPublicStaticAsync()
+            .WithPublicAsync()
             .WithParameterList(ParseParameterList(GetParameterListAsString(argInterface, parameters)))
             .WithBody(GetMethodBody());
 
@@ -167,7 +164,7 @@ public class Driver : IDbDriver
         IList<Parameter> parameters)
     {
         var methodDeclaration = MethodDeclaration(IdentifierName("Task"), Identifier(funcName))
-            .WithPublicStaticAsync()
+            .WithPublicAsync()
             .WithParameterList(ParseParameterList(GetParameterListAsString(argInterface, parameters)))
             .WithBody(Block(
                 Array.Empty<StatementSyntax>()
@@ -181,7 +178,7 @@ public class Driver : IDbDriver
         string returnInterface, IList<Parameter> parameters, IList<Column> columns)
     {
         var methodDeclaration = MethodDeclaration(IdentifierName($"Task<List<{returnInterface}>>"), Identifier(funcName))
-            .WithPublicStaticAsync()
+            .WithPublicAsync()
             .WithParameterList(ParseParameterList(GetParameterListAsString(argInterface, parameters)))
             .WithBody(GetMethodBody());
 

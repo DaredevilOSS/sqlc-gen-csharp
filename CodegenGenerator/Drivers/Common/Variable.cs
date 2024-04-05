@@ -16,7 +16,6 @@ public static class VariablesExtensions
         switch (me)
         {
             case Variable.ConnectionString:
-                return me.ToString().FirstCharToUpper();
             case Variable.Connection:
             case Variable.Command:
             case Variable.Reader:
