@@ -9,10 +9,10 @@ public class DbTests
     [Test]
     public async Task EntireFlow()
     {
-        var connectionString = "server=mysqldb;database=tests";
+        var connectionString = "server=127.0.0.1;database=tests;user=root;password=root";
         var querySql = new QuerySql(connectionString);
         await querySql.CreateAuthor(new QuerySql.CreateAuthorArgs(
-            "Bojack Horseman", "Back in the 90s I was in a very famous TV show"));
+            "Bojack Horseman", "Back in the 90s he was in a very famous TV show"));
         var authorRows = await querySql.ListAuthors();
         Assert.That(authorRows.Count == 1);
         Assert.That(authorRows[0] is { Name: "Bojack Horseman" });
