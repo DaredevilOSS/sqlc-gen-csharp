@@ -9,7 +9,7 @@ public class DbTests
     [Test]
     public async Task EntireFlow()
     {
-        var connectionString = "server=127.0.0.1;database=tests;user=root;password=root";
+        var connectionString = "server=127.0.0.1;database=tests;user=root";
         var querySql = new QuerySql(connectionString);
         await querySql.CreateAuthor(new QuerySql.CreateAuthorArgs(
             "Bojack Horseman", "Back in the 90s he was in a very famous TV show"));

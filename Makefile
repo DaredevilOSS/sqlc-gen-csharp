@@ -20,4 +20,8 @@ dotnet-publish: buf-gen dotnet-build
 sqlc-generate: dotnet-publish
 	sqlc -f sqlc.dev.yaml generate
 
-test-setup: sqlc-generate
+dotnet-test:
+	docker-compose down && docker-compose up --wait -d
+	docker exec -it mysqldb /bin/bash -c "mysql -h localhost --database tests < /var/db/schema.sql"
+	dotnet test
+	docker-compose down

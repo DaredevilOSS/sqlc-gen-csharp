@@ -2,11 +2,17 @@ version: '3.8'
 
 services:
   mysqldb:
+    container_name: mysqldb
     image: mysql:8.3.0
     restart: always
     ports:
       - "3306:3306"
     environment:
       MYSQL_DATABASE: tests
-      MYSQL_ROOT_PASSWORD: root
-#      MYSQL_ALLOW_EMPTY_PASSWORD: true
+      MYSQL_ALLOW_EMPTY_PASSWORD: true
+    volumes:
+      - ./examples/authors/mysql/schema.sql:/var/db/schema.sql
+    healthcheck:
+      test: [ "CMD", "mysqladmin" ,"ping", "-h", "127.0.0.1" ]
+      timeout: 1s
+      retries: 10
