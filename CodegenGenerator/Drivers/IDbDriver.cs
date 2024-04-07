@@ -7,16 +7,19 @@ public interface IDbDriver
 {
     string ColumnType(string columnType, bool notNull);
     
-    (UsingDirectiveSyntax[], MemberDeclarationSyntax[]) Preamble(string className, Query[] queries);
+    (UsingDirectiveSyntax[], MemberDeclarationSyntax[]) Preamble(string className);
 
     MemberDeclarationSyntax OneDeclare(string name, string sqlTextConstant, 
         string argInterface, string returnInterface,
         IList<Parameter> parameters, IList<Column> columns);
 
-    MemberDeclarationSyntax ManyDeclare(string name, string sqlTextConstant, 
+    MemberDeclarationSyntax ManyDeclare(string funcName, string sqlTextConstant, 
         string argInterface, string returnInterface, 
-        IList<Parameter> parameters, IList<Column> columns);
+        IList<Parameter> parameters, IEnumerable<Column> columns);
 
-    MemberDeclarationSyntax ExecDeclare(string name, string text, string argInterface,
+    MemberDeclarationSyntax ExecDeclare(string funcName, string text, string argInterface,
         IList<Parameter> parameters);
+    
+    MemberDeclarationSyntax ExecLastIdDeclare(string funcName, string queryTextConstant, 
+        string argInterface, string returnInterface, IList<Parameter> parameters, IList<Column> columns);
 }

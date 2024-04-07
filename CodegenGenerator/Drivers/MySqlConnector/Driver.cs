@@ -57,7 +57,7 @@ public class Driver : IDbDriver
         }
     }
     
-    public (UsingDirectiveSyntax[], MemberDeclarationSyntax[]) Preamble(string className, Query[] queries)
+    public (UsingDirectiveSyntax[], MemberDeclarationSyntax[]) Preamble(string className)
     {
         return (
             PreambleMembers.GetUsingDirectives(),
@@ -170,12 +170,27 @@ public class Driver : IDbDriver
                 Array.Empty<StatementSyntax>()
                     .Concat(EstablishConnection())
                     .Concat(PrepareSqlCommand(queryTextConstant, parameters))
-                    .Concat(ExecuteScalarAndReturn())));
+                    .Append(ParseStatement($"await {Variable.Command.Name()}.ExecuteScalarAsync();"))));
+        return methodDeclaration;
+    }
+
+    public MemberDeclarationSyntax ExecLastIdDeclare(string funcName, string queryTextConstant, string argInterface,
+        string returnInterface, IList<Parameter> parameters, IList<Column> columns)
+    {
+        var methodDeclaration = MethodDeclaration(IdentifierName("Task<long>"), Identifier(funcName))
+            .WithPublicAsync()
+            .WithParameterList(ParseParameterList(GetParameterListAsString(argInterface, parameters)))
+            .WithBody(Block(
+                Array.Empty<StatementSyntax>()
+                    .Concat(EstablishConnection())
+                    .Concat(PrepareSqlCommand(queryTextConstant, parameters))
+                    .Append(ParseStatement($"await {Variable.Command.Name()}.ExecuteNonQueryAsync();"))
+                    .Append(ParseStatement($"return {Variable.Command.Name()}.LastInsertedId;"))));
         return methodDeclaration;
     }
 
     public MemberDeclarationSyntax ManyDeclare(string funcName, string queryTextConstant, string argInterface,
-        string returnInterface, IList<Parameter> parameters, IList<Column> columns)
+        string returnInterface, IList<Parameter> parameters, IEnumerable<Column> columns)
     {
         var methodDeclaration = MethodDeclaration(IdentifierName($"Task<List<{returnInterface}>>"), Identifier(funcName))
             .WithPublicAsync()
@@ -239,17 +254,7 @@ public class Driver : IDbDriver
     {
         return 
         [
-            ExpressionStatement(
-                AwaitExpression(
-                    InvocationExpression(
-                        MemberAccessExpression(
-                            SyntaxKind.SimpleMemberAccessExpression,
-                            IdentifierName("command"),
-                            IdentifierName("ExecuteScalarAsync")
-                        )
-                    )
-                )
-            )
+            ParseStatement($"await {Variable.Command.Name()}.ExecuteScalarAsync();")
         ];
     }
 

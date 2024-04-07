@@ -13,6 +13,13 @@ INSERT INTO authors (
   ?, ? 
 );
 
+/* name: CreateAuthorReturnId :execlastid */
+INSERT INTO authors (
+    name, bio
+) VALUES (
+    ?, ?
+);
+
 /* name: DeleteAuthor :exec */
 DELETE FROM authors
 WHERE id = ?;
