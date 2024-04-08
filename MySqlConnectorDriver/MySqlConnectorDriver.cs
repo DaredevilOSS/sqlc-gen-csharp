@@ -11,7 +11,7 @@ public class MySqlConnectorDriver : IDbDriver
         return mysqlColumnType.MySqlTypeToCsharpType(notNull);
     }
 
-    public (UsingDirectiveSyntax[], MemberDeclarationSyntax[]) Preamble(string className)
+    public (UsingDirectiveSyntax[], MemberDeclarationSyntax[]) Preamble()
     {
         return (
             PreambleGen.GetUsingDirectives(),

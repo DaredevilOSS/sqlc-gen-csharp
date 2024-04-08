@@ -91,7 +91,7 @@ public partial class CodeGenerator
     private (UsingDirectiveSyntax[], string, MemberDeclarationSyntax) GenerateClass(Query[] queries, string filename)
     {
         var className = QueryFilenameToClassName(filename);
-        var (usingDirectives, sharedMemberDeclarations) = DbDriver.Preamble(className);
+        var (usingDirectives, sharedMemberDeclarations) = DbDriver.Preamble();
         var perQueryMembers = queries.SelectMany(GetMembersForSingleQuery).ToArray();
         return (usingDirectives, className, GetClassDeclaration());
 
@@ -130,9 +130,9 @@ public partial class CodeGenerator
 
     private MemberDeclarationSyntax AddMethodDeclaration(Query query)
     {
-        var queryTextConstant = GetInterfaceName(ClassMemberType.Sql);
-        var argInterface = GetInterfaceName(ClassMemberType.Args);
-        var returnInterface = GetInterfaceName(ClassMemberType.Row);
+        var queryTextConstant = GetInterfaceName(ClassMember.Sql);
+        var argInterface = GetInterfaceName(ClassMember.Args);
+        var returnInterface = GetInterfaceName(ClassMember.Row);
 
         return query.Cmd switch
         {
@@ -146,7 +146,7 @@ public partial class CodeGenerator
             _ => throw new InvalidDataException()
         };
 
-        string GetInterfaceName(ClassMemberType classMemberType)
+        string GetInterfaceName(ClassMember classMemberType)
         {
             return $"{query.Name}{classMemberType.Name()}";
         }
@@ -157,7 +157,7 @@ public partial class CodeGenerator
         // TODO add feature-flag for using C# records as data classes or not
         if (query.Columns.Count <= 0) return null;
         var recordParameters = QueryColumnsToRecordParams(query.Columns);
-        return GenerateRecord(query.Name, ClassMemberType.Row, recordParameters);
+        return GenerateRecord(query.Name, ClassMember.Row, recordParameters);
     }
 
     private ParameterListSyntax QueryColumnsToRecordParams(IEnumerable<Column> columns)
@@ -175,19 +175,19 @@ public partial class CodeGenerator
         if (query.Params.Count <= 0) return null;
         var recordParameters = QueryColumnsToRecordParams(query.Params.Select(p => p.Column));
         DebugHelper.Append($"query {query.Name} params dataclass created!");
-        return GenerateRecord(query.Name, ClassMemberType.Args, recordParameters);
+        return GenerateRecord(query.Name, ClassMember.Args, recordParameters);
     }
 
     private static MemberDeclarationSyntax GetQueryTextConstant(Query query)
     {
         return ParseMemberDeclaration(
-                $"private const string {query.Name}{ClassMemberType.Sql.Name()} = \"{TransformQuery()}\";")!
+                $"private const string {query.Name}{ClassMember.Sql.Name()} = \"{TransformQuery()}\";")!
             .AppendNewLine();
 
         string TransformQuery()
         {
             var counter = 0;
-            return QueryParameterRegex().Replace(query.Text, m => "@" + query.Params[counter++].Column.Name);
+            return QueryParameterRegex().Replace(query.Text, _ => "@" + query.Params[counter++].Column.Name);
         }
     }
 
@@ -216,12 +216,12 @@ public partial class CodeGenerator
         };
     }
 
-    private static RecordDeclarationSyntax GenerateRecord(string name, ClassMemberType classMemberType,
+    private static RecordDeclarationSyntax GenerateRecord(string name, ClassMember classMember,
         ParameterListSyntax parameterListSyntax)
     {
         return RecordDeclaration(
                 Token(SyntaxKind.StructKeyword),
-                $"{name}{classMemberType.Name()}")
+                $"{name}{classMember.Name()}")
             .AddModifiers(
                 Token(SyntaxKind.PublicKeyword),
                 Token(SyntaxKind.ReadOnlyKeyword),
