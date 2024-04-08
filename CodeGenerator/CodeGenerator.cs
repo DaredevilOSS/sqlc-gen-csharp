@@ -187,7 +187,7 @@ public partial class CodeGenerator
         string TransformQuery()
         {
             var counter = 0;
-            return MyRegex().Replace(query.Text, m => "@" + query.Params[counter++].Column.Name);
+            return QueryParameterRegex().Replace(query.Text, m => "@" + query.Params[counter++].Column.Name);
         }
     }
 
@@ -232,5 +232,5 @@ public partial class CodeGenerator
     }
 
     [GeneratedRegex(@"\?")]
-    private static partial Regex MyRegex();
+    private static partial Regex QueryParameterRegex();
 }

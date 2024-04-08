@@ -3,9 +3,9 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
-namespace SqlcGenCsharp.Drivers.MySqlConnector;
+namespace SqlcGenCsharp.Drivers;
 
-internal static class PreambleMembers
+internal static class PreambleGen
 {
     public static UsingDirectiveSyntax[] GetUsingDirectives()
     {
