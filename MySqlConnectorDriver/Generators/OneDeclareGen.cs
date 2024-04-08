@@ -3,9 +3,9 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Plugin;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
-namespace SqlcGenCsharp.Drivers;
+namespace SqlcGenCsharp.Drivers.Generators;
 
-public static class OneDeclareGen
+internal static class OneDeclareGen
 {
     public static MemberDeclarationSyntax Generate(string funcName, string queryTextConstant, string argInterface,
         string returnInterface, IList<Parameter> parameters, IList<Column> columns)

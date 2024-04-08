@@ -2,7 +2,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-namespace SqlcGenCsharp;
+namespace SqlcGenCsharp.Drivers;
 
 public static class MemberDeclarationExtensions
 {

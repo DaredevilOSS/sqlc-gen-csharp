@@ -3,7 +3,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
-namespace SqlcGenCsharp.Drivers;
+namespace SqlcGenCsharp.Drivers.Generators;
 
 internal static class PreambleGen
 {
@@ -29,7 +29,8 @@ internal static class PreambleGen
     {
         // TODO move to RESOURCES file
         // TODO fix function is nested within another block unnecessarily
-        const string getBytesMethodCode = """
+        const string getBytesMethod = """
+                                          private static byte[] GetBytes(IDataRecord reader, int ordinal)
                                           {
                                               const int bufferSize = 100000;
                                               ArgumentNullException.ThrowIfNull(reader);
@@ -56,9 +57,6 @@ internal static class PreambleGen
                                           }
                                           """;
 
-        return MethodDeclaration(ParseTypeName("byte[]"), "GetBytes")
-            .WithModifiers(TokenList(Token(SyntaxKind.PrivateKeyword), Token(SyntaxKind.StaticKeyword)))
-            .WithParameterList(ParseParameterList("(IDataRecord reader, int ordinal)"))
-            .AddBodyStatements(ParseStatement(getBytesMethodCode).NormalizeWhitespace());
+        return ParseMemberDeclaration(getBytesMethod)!.AppendNewLine();
     }
 }

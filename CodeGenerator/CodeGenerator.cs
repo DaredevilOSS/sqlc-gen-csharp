@@ -70,8 +70,8 @@ public partial class CodeGenerator
 
     private File GenerateFile(string namespaceName, Query[] queries, string filename)
     {
-        var (usingDb, className, classDeclaration) = GenerateClass(queries, filename);
         var namespaceDeclaration = FileScopedNamespaceDeclaration(IdentifierName(namespaceName));
+        var (usingDb, className, classDeclaration) = GenerateClass(queries, filename);
         var root = CompilationUnit()
             .AddUsings(usingDb)
             .AddMembers(namespaceDeclaration, classDeclaration)

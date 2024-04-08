@@ -4,7 +4,7 @@ using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace SqlcGenCsharp.Drivers.Generators;
 
-public static class ManyDeclareGen
+internal static class ManyDeclareGen
 {
     public static MemberDeclarationSyntax Generate(string funcName, string queryTextConstant, string argInterface,
         string returnInterface, IList<Parameter> parameters, IEnumerable<Column> columns)
