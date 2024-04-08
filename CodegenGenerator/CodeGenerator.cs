@@ -15,6 +15,12 @@ using File = Plugin.File;
 
 namespace SqlcGenCsharp;
 
+public record Options
+{
+    // ReSharper disable once InconsistentNaming
+    public required string driver { get; init; }
+}
+
 public partial class CodeGenerator
 {
     public CodeGenerator(GenerateRequest generateRequest)
@@ -144,7 +150,7 @@ public partial class CodeGenerator
 
         string GetInterfaceName(ClassMemberType classMemberType)
         {
-            return $"{query.Name}{classMemberType.ToRealString()}";
+            return $"{query.Name}{classMemberType.Name()}";
         }
     }
 
@@ -177,7 +183,8 @@ public partial class CodeGenerator
     private static MemberDeclarationSyntax GetQueryTextConstant(Query query)
     {
         return ParseMemberDeclaration(
-            $"private const string {query.Name}{ClassMemberType.Sql.ToRealString()} = \"{TransformQuery()}\";")!;
+            $"private const string {query.Name}{ClassMemberType.Sql.Name()} = \"{TransformQuery()}\";")!
+            .AppendNewLine();
         
         string TransformQuery()
         {
@@ -217,7 +224,7 @@ public partial class CodeGenerator
     {
         return RecordDeclaration(
                 Token(SyntaxKind.StructKeyword),
-                $"{name}{classMemberType.ToRealString()}")
+                $"{name}{classMemberType.Name()}")
             .AddModifiers(
                 Token(SyntaxKind.PublicKeyword),
                 Token(SyntaxKind.ReadOnlyKeyword),
