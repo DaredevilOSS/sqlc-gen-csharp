@@ -7,13 +7,13 @@ RUNTIME_DIR := SqlcGenCsharp/bin/Release/net8.0/${RUNTIME}
 
 PATH  		:= ${PATH}:${PWD}/${RUNTIME_DIR}
 
-buf-gen:
+protobuf-generate:
 	buf generate --template buf.gen.yaml buf.build/sqlc/sqlc --path plugin/
 
 dotnet-build:
 	dotnet build
 
-dotnet-publish: buf-gen dotnet-build
+dotnet-publish: protobuf-generate dotnet-build
 	dotnet publish SqlcGenCsharp --runtime ${RUNTIME} -c release --output dist/
 	# cp ${RUNTIME_DIR}/SqlcGenCsharp.wasm dist/plugin.wasm
 
@@ -24,11 +24,12 @@ test-setup: test-teardown
 	docker-compose up --wait -d
 	docker exec -it mysqldb /bin/bash -c "mysql -h localhost --database tests < /var/db/schema.sql"
 
-dotnet-test-internal:
+just-dotnet-test:
 	dotnet test
 
-dotnet-test: test-setup dotnet-test-internal test-teardown
+dotnet-test: test-setup just-dotnet-test test-teardown
 
 test-teardown:
 	docker-compose down
-	
+
+generate-and-test: sqlc-generate dotnet-test

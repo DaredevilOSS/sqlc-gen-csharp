@@ -10,7 +10,6 @@
 
     <ItemGroup>
         <ProjectReference Include="..\CodegenProtobuf\CodegenProtobuf.csproj"/>
-        <ProjectReference Include="..\ProtobufStreams\ProtobufStreams.csproj"/>
         <ProjectReference Include="..\CodeGenerator\CodeGenerator.csproj"/>
     </ItemGroup>
 
