@@ -1,10 +1,11 @@
-using static System.String;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Plugin;
+using SqlcGenCsharp.Drivers;
+using static System.String;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
-namespace SqlcGenCsharp.Drivers;
+namespace SqlcGenCsharp.NpgsqlDriver;
 
 public static class Types
 {
@@ -17,7 +18,7 @@ public static class Types
 
         switch (me.ToLower())
         {
-            case "bigint":
+            case "bigserial":
                 return "long" + nullableSuffix;
             case "binary":
             case "bit":
@@ -83,7 +84,7 @@ public static class Types
     {
         switch (column.Type.Name.ToLower())
         {
-            case "bigint":
+            case "bigserial":
                 return ParseExpression($"reader.GetInt64({ordinal})");
             case "binary":
             case "bit":

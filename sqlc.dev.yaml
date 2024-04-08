@@ -12,15 +12,15 @@ plugins:
   process:
     cmd: ./dist/SqlcGenCsharp
 sql:
-#- schema: "authors/postgresql/schema.sql"
-#  queries: "authors/postgresql/query.sql"
-#  engine: "postgresql"
-#  codegen:
-#  - plugin: csharp-local
-#    out: NpgsqlExample/Db
-#    options:
-#      driver: Npgsql
-#      project: NpgsqlExample
+- schema: "examples/authors/postgresql/schema.sql"
+  queries: "examples/authors/postgresql/query.sql"
+  engine: "postgresql"
+  codegen:
+  - plugin: csharp-local
+    out: NpgsqlExample/Db
+    options:
+      driver: Npgsql
+      project: NpgsqlExample
 - schema: "examples/authors/mysql/schema.sql"
   queries: "examples/authors/mysql/query.sql"
   engine: "mysql"

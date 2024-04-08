@@ -171,24 +171,16 @@ public partial class CodeGenerator
     private MemberDeclarationSyntax? GetQueryParamsDataclass(Query query)
     {
         // TODO add feature-flag for using C# records as data classes or not
-        DebugHelper.Append($"query {query.Name} params dataclass?");
         if (query.Params.Count <= 0) return null;
         var recordParameters = QueryColumnsToRecordParams(query.Params.Select(p => p.Column));
-        DebugHelper.Append($"query {query.Name} params dataclass created!");
         return GenerateRecord(query.Name, ClassMember.Args, recordParameters);
     }
 
-    private static MemberDeclarationSyntax GetQueryTextConstant(Query query)
+    private MemberDeclarationSyntax GetQueryTextConstant(Query query)
     {
         return ParseMemberDeclaration(
-                $"private const string {query.Name}{ClassMember.Sql.Name()} = \"{TransformQuery()}\";")!
+                $"private const string {query.Name}{ClassMember.Sql.Name()} = \"{DbDriver.TransformQuery(query)}\";")!
             .AppendNewLine();
-
-        string TransformQuery()
-        {
-            var counter = 0;
-            return QueryParameterRegex().Replace(query.Text, _ => "@" + query.Params[counter++].Column.Name);
-        }
     }
 
     // TODO find out if needed?
@@ -211,7 +203,8 @@ public partial class CodeGenerator
     {
         return driver switch
         {
-            "MySqlConnector" => new MySqlConnectorDriver(),
+            "MySqlConnector" => new MySqlConnectorDriver.Driver(),
+            "Npgsql" => new NpgsqlDriver.Driver(),
             _ => throw new ArgumentException($"unknown driver: {driver}", nameof(driver))
         };
     }

@@ -4,7 +4,7 @@
         <TargetFramework>net8.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
-        <RootNamespace>SqlcGenCsharp.Drivers</RootNamespace>
+        <RootNamespace>SqlcGenCsharp.MySqlConnectorDriver</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>

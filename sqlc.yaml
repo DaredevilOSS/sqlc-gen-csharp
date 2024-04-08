@@ -5,16 +5,16 @@ plugins:
     url: https://raw.githubusercontent.com/doron050/sqlc-gen-csharp/main/SqlcGenCsharp/SqlcGenCsharp.wasm
     sha256: 3e679daa93cf8a079b1ed4ee82bc38e3070cc5d5dba66dae12379e9a61845a87
 sql:
-- schema: "authors/postgresql/schema.sql"
-  queries: "authors/postgresql/query.sql"
+- schema: "examples/authors/postgresql/schema.sql"
+  queries: "examples/authors/postgresql/query.sql"
   engine: "postgresql"
   codegen:
   - plugin: csharp
     out: NpgsqlExample/Db
     options:
       driver: Npgsql
-- schema: "authors/mysql/schema.sql"
-  queries: "authors/mysql/query.sql"
+- schema: "examples/authors/mysql/schema.sql"
+  queries: "examples/authors/mysql/query.sql"
   engine: "mysql"
   codegen:
   - plugin: csharp

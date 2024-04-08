@@ -1,15 +1,15 @@
 using MySqlConnectorExample.Db;
 using NUnit.Framework;
 
-namespace MySqlConnectorExample;
+namespace SqlcGenCsharpTests;
 
 [TestFixture]
-public class DbTests
+public class FlowTests
 {
     [Test]
     public async Task EntireFlow()
     {
-        var connectionString = "server=127.0.0.1;database=tests;user=root";
+        const string connectionString = "server=127.0.0.1;database=tests;user=root";
         var querySql = new QuerySql(connectionString);
 
         // test CreateAuthorReturnId works

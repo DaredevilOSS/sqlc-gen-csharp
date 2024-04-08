@@ -1,10 +1,11 @@
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Plugin;
+using SqlcGenCsharp.Drivers;
 using static System.String;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
-namespace SqlcGenCsharp.Drivers;
+namespace SqlcGenCsharp.NpgsqlDriver;
 
 public static class Utils
 {
@@ -24,8 +25,7 @@ public static class Utils
         [
             ParseStatement(
                 $"await using var {Variable.Connection.Name()} = " +
-                $"new MySqlConnection({Variable.ConnectionString.Name()});"),
-            ParseStatement($"{Variable.Connection.Name()}.Open();")
+                $"NpgsqlDataSource.Create({Variable.ConnectionString.Name()});")
         ];
     }
     
@@ -36,7 +36,7 @@ public static class Utils
         {
             ParseStatement(
                 $"await using var {Variable.Command.Name()} = " +
-                $"new MySqlCommand({sqlTextConstant}, {Variable.Connection.Name()});")
+                $"{Variable.Connection.Name()}.CreateCommand({sqlTextConstant});")
         }.Concat(
             parameters.Select(param => ParseStatement(
                 $"{Variable.Command.Name()}.Parameters.AddWithValue(\"@{param.Column.Name}\", " +
