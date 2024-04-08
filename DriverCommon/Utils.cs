@@ -2,7 +2,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
-namespace SqlcGenCsharp.Drivers;
+namespace SqlcGenCsharp;
 
 public static class Utils
 {

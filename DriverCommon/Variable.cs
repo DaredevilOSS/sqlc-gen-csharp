@@ -1,4 +1,4 @@
-namespace SqlcGenCsharp.Drivers.Common;
+namespace SqlcGenCsharp;
 
 public enum Variable
 {

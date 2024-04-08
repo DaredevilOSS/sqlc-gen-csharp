@@ -7,7 +7,7 @@ namespace SqlcGenCsharp.Drivers.MySqlConnector;
 
 internal static class PreambleMembers
 {
-     public static UsingDirectiveSyntax[] GetUsingDirectives()
+    public static UsingDirectiveSyntax[] GetUsingDirectives()
     {
         return
         [
@@ -15,7 +15,7 @@ internal static class PreambleMembers
             UsingDirective(ParseName("MySqlConnector"))
         ];
     }
-    
+
     public static MemberDeclarationSyntax[] GetClassMembers()
     {
         // TODO in TypeScript plugin a special handling for ExecLastId in this corresponding code - figure out why)
