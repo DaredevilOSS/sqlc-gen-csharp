@@ -1,7 +1,6 @@
 using System.Collections.Immutable;
 using System.Text;
 using System.Text.Json;
-using System.Text.RegularExpressions;
 using Google.Protobuf;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -21,7 +20,7 @@ public record Options
 
 public partial class CodeGenerator
 {
-    private static readonly char[] Separator = { '/' };
+    private static readonly char[] Separator = ['/'];
 
     public CodeGenerator(GenerateRequest generateRequest)
     {
@@ -64,7 +63,7 @@ public partial class CodeGenerator
         {
             var parts = generateRequest.Settings.Codegen.Out
                 .Split(Separator, StringSplitOptions.RemoveEmptyEntries);
-            return (parts.Length > 0 ? parts[0] : "GeneratedNamespace") + ".Db";
+            return parts.Length > 0 ? parts[0] : "GeneratedNamespace";
         }
     }
 
@@ -223,7 +222,4 @@ public partial class CodeGenerator
             .WithParameterList(parameterListSyntax)
             .WithSemicolonToken(Token(SyntaxKind.SemicolonToken));
     }
-
-    [GeneratedRegex(@"\?")]
-    private static partial Regex QueryParameterRegex();
 }

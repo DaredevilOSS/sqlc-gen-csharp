@@ -17,7 +17,7 @@ sql:
   engine: "postgresql"
   codegen:
   - plugin: csharp-local
-    out: NpgsqlExample/Db
+    out: NpgsqlExample
     options:
       driver: Npgsql
       project: NpgsqlExample
@@ -26,7 +26,7 @@ sql:
   engine: "mysql"
   codegen:
   - plugin: csharp-local
-    out: MySqlConnectorExample/Db
+    out: MySqlConnectorExample
     options:
       driver: MySqlConnector
       project: MySqlConnectorExample
