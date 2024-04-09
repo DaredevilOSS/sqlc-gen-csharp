@@ -17,3 +17,7 @@ RETURNING *;
 -- name: DeleteAuthor :exec
 DELETE FROM authors
 WHERE id = $1;
+
+/* name: Test :one */
+SELECT * FROM node_postgres_types
+LIMIT 1;

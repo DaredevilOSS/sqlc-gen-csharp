@@ -22,15 +22,11 @@ CREATE TABLE node_mysql_types (
   c_float FLOAT,
   c_double DOUBLE,
   c_double_precision DOUBLE PRECISION,
-
-  /* 11.2 Date and Time Data Types */
   c_date DATE,
   c_time TIME,
   c_datetime DATETIME,
   c_timestamp TIMESTAMP,
   c_year YEAR,
-
-  /* 11.3.1 String Data Type Syntax */
   c_char CHAR,
   c_nchar NCHAR,
   c_national_char NATIONAL CHAR,

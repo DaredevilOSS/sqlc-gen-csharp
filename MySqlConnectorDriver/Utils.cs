@@ -1,6 +1,7 @@
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Plugin;
+using SqlcGenCsharp.MySqlConnectorDriver;
 using static System.String;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 

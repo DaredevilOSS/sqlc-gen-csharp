@@ -9,7 +9,7 @@ namespace SqlcGenCsharp.NpgsqlDriver;
 
 public static class Types
 {
-    public static string MySqlTypeToCsharpType(this string me, bool notNull)
+    public static string PostgreSqlTypeToCsharpType(this string me, bool notNull)
     {
         var nullableSuffix = notNull ? Empty : "?";
 
@@ -18,40 +18,35 @@ public static class Types
 
         switch (me.ToLower())
         {
+            case "serial":
             case "bigserial":
                 return "long" + nullableSuffix;
-            case "binary":
             case "bit":
-            case "blob":
-            case "longblob":
-            case "mediumblob":
-            case "tinyblob":
-            case "varbinary":
+            case "bytea":
                 return "byte[]" + nullableSuffix;
             case "char":
-            case "date":
-            case "datetime":
-            case "decimal":
-            case "longtext":
-            case "mediumtext":
+            case "bpchar":
+            case "varchar":
             case "text":
+            case "date":
             case "time":
             case "timestamp":
-            case "tinytext":
-            case "varchar":
                 return "string";
-            case "double":
-            case "float":
-                return "double" + nullableSuffix;
-            case "int":
-            case "mediumint":
-            case "smallint":
-            case "tinyint":
-            case "year":
+            case "decimal":
+                return "decimal" + nullableSuffix;
+            case "numeric":
+            case "float4":
+            case "float8":
+                return "float" + nullableSuffix;
+            case "int2":
+            case "int4":
+            case "int8":
                 return "int" + nullableSuffix;
             case "json":
-                // Assuming JSON is represented as a string or a specific class
                 return "object" + nullableSuffix;
+            case "bool":
+            case "boolean":
+                return "bool" + nullableSuffix;
             default:
                 throw new NotSupportedException($"Unsupported column type: {me}");
         }
@@ -62,7 +57,7 @@ public static class Types
         if (!me.NotNull)
             return ConditionalExpression(
                 GetReadNullCondition(ordinal),
-                GetEmptyOrNullExpression(me.Type.Name.MySqlTypeToCsharpType(me.NotNull)),
+                GetEmptyOrNullExpression(me.Type.Name.PostgreSqlTypeToCsharpType(me.NotNull)),
                 GetNullSafeColumnReader(me, ordinal)
             );
         return GetNullSafeColumnReader(me, ordinal);
@@ -84,10 +79,12 @@ public static class Types
     {
         switch (column.Type.Name.ToLower())
         {
+            case "serial":
             case "bigserial":
                 return ParseExpression($"reader.GetInt64({ordinal})");
             case "binary":
             case "bit":
+            case "bytea":
             case "blob":
             case "longblob":
             case "mediumblob":
@@ -97,10 +94,10 @@ public static class Types
             case "char":
             case "date":
             case "datetime":
-            case "decimal":
             case "longtext":
             case "mediumtext":
             case "text":
+            case "bpchar":
             case "time":
             case "timestamp":
             case "tinytext":
@@ -108,9 +105,20 @@ public static class Types
             case "json":
                 return ParseExpression($"reader.GetString({ordinal})");
             case "double":
-            case "float":
                 return ParseExpression($"reader.GetDouble({ordinal})");
+            case "numeric":
+            case "float4":
+            case "float8":
+                return ParseExpression($"reader.GetFloat({ordinal})");
+            case "decimal":
+                return ParseExpression($"reader.GetDecimal({ordinal})");
+            case "bool":
+            case "boolean":
+                return ParseExpression($"reader.GetBoolean({ordinal})");
             case "int":
+            case "int2":
+            case "int4":
+            case "int8":
             case "mediumint":
             case "smallint":
             case "tinyint":

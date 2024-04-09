@@ -11,7 +11,7 @@ public partial class Driver : IDbDriver
 {
     public string ColumnType(string mysqlColumnType, bool notNull)
     {
-        return mysqlColumnType.MySqlTypeToCsharpType(notNull);
+        return mysqlColumnType.PostgreSqlTypeToCsharpType(notNull);
     }
 
     public string TransformQuery(Query query)

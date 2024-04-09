@@ -1,10 +1,11 @@
-using static System.String;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Plugin;
+using SqlcGenCsharp.Drivers;
+using static System.String;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
-namespace SqlcGenCsharp.Drivers;
+namespace SqlcGenCsharp.MySqlConnectorDriver;
 
 public static class Types
 {
