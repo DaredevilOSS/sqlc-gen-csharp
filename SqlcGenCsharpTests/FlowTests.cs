@@ -5,9 +5,8 @@ namespace SqlcGenCsharpTests;
 [TestFixture]
 public class FlowTests()
 {
-    private const string ConnectionString = "server=127.0.0.1;database=tests;user=root";
-    private MySqlConnectorExample.QuerySql MysqlQuerySql { get; } = new(ConnectionString);
-    private NpgsqlExample.QuerySql PostgresQuerySql { get; } = new(ConnectionString);
+    private MySqlConnectorExample.QuerySql MysqlQuerySql { get; } = new("server=127.0.0.1;database=tests;user=root");
+    private NpgsqlExample.QuerySql PostgresQuerySql { get; } = new("server=postgres-db;database=tests;user=root");
 
     [Test]
     public async Task TestFlow()
@@ -17,11 +16,11 @@ public class FlowTests()
         {
             switch (query)
             {
-                case MySqlConnectorExample.QuerySql mysql:
-                    await TestFlowOnMySql(new MySqlConnectorExample.QuerySql(ConnectionString));
+                case MySqlConnectorExample.QuerySql:
+                    await TestFlowOnMySql(MysqlQuerySql);
                     break;
                 // case NpgsqlExample.QuerySql postgres:
-                //     await TestFlowOnMyPostgres(new NpgsqlExample.QuerySql(ConnectionString));
+                //     await TestFlowOnMyPostgres(new NpgsqlExample.QuerySql(PostgresQuerySql));
                 //     break;
             }
         }
