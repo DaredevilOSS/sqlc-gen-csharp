@@ -1,4 +1,7 @@
-﻿namespace SqlcGenCsharp;
+﻿using System;
+using System.IO;
+
+namespace SqlcGenCsharp;
 
 public static class DebugHelper
 {

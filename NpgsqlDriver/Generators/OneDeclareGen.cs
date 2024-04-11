@@ -1,9 +1,12 @@
+using System.Collections.Generic;
+using System.Linq;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Plugin;
+using SqlcGenCsharp.Drivers;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
-namespace SqlcGenCsharp.Drivers.Generators;
+namespace SqlcGenCsharp.NpgsqlDriver.Generators;
 
 internal static class OneDeclareGen
 {
@@ -39,7 +42,7 @@ internal static class OneDeclareGen
         ];
     }
     
-    private static StatementSyntax ReturnSingleRow(String returnInterface, IEnumerable<Column> columns)
+    private static StatementSyntax ReturnSingleRow(string returnInterface, IEnumerable<Column> columns)
     {
         return ReturnStatement(
             ObjectCreationExpression(IdentifierName(returnInterface))

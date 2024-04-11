@@ -1,18 +1,31 @@
 version: '3.8'
 
 services:
+  plugin-tests:
+    build: .
+    container_name: plugin-tests
+    env_file:
+      - .env
+    command: sleep 5 && dotnet test SqlcGenCsharpTests || exit 1
+    volumes:
+      - .:/SqlcGenCsharp
+    depends_on:
+      mysqldb:
+        condition: service_healthy
+  
   mysqldb:
     container_name: mysqldb
     image: mysql:8.3.0
     restart: always
     ports:
       - "3306:3306"
+    command: mysql -h 127.0.0.1 --database=tests < /var/db/schema.sql
+    volumes:
+      - ./examples/authors/mysql/schema.sql:/var/db/schema.sqlZ
     environment:
       MYSQL_DATABASE: tests
       MYSQL_ALLOW_EMPTY_PASSWORD: true
-    volumes:
-      - ./examples/authors/mysql/schema.sql:/var/db/schema.sql
     healthcheck:
       test: [ "CMD", "mysqladmin" ,"ping", "-h", "127.0.0.1" ]
       timeout: 1s
-      retries: 10
+      retries: 20

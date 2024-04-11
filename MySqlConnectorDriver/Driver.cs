@@ -1,8 +1,9 @@
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Plugin;
 using SqlcGenCsharp.Drivers;
-using SqlcGenCsharp.Drivers.Generators;
+using SqlcGenCsharp.MySqlConnectorDriver.Generators;
 
 namespace SqlcGenCsharp.MySqlConnectorDriver;
 

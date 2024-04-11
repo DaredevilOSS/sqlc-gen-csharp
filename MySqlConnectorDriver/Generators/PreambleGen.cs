@@ -1,7 +1,8 @@
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using SqlcGenCsharp.Drivers;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
-namespace SqlcGenCsharp.Drivers.Generators;
+namespace SqlcGenCsharp.MySqlConnectorDriver.Generators;
 
 internal static class PreambleGen
 {
@@ -9,7 +10,10 @@ internal static class PreambleGen
     {
         return
         [
+            UsingDirective(ParseName("System")),
+            UsingDirective(ParseName("System.Collections.Generic")),
             UsingDirective(ParseName("System.Data")),
+            UsingDirective(ParseName("System.Threading.Tasks")),
             UsingDirective(ParseName("MySqlConnector"))
         ];
     }

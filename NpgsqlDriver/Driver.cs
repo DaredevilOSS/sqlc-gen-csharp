@@ -1,13 +1,13 @@
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Plugin;
 using SqlcGenCsharp.Drivers;
-using SqlcGenCsharp.Drivers.Generators;
 using SqlcGenCsharp.NpgsqlDriver.Generators;
 
 namespace SqlcGenCsharp.NpgsqlDriver;
 
-public partial class Driver : IDbDriver
+public class Driver : IDbDriver
 {
     public string ColumnType(string mysqlColumnType, bool notNull)
     {

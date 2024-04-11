@@ -10,7 +10,10 @@ internal static class PreambleGen
     {
         return
         [
+            UsingDirective(ParseName("System")),
+            UsingDirective(ParseName("System.Collections.Generic")),
             UsingDirective(ParseName("System.Data")),
+            UsingDirective(ParseName("System.Threading.Tasks")),
             UsingDirective(ParseName("Npgsql"))
         ];
     }
