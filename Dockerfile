@@ -1,13 +1,9 @@
-# Use the official Microsoft .NET SDK image to build the solution
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build-env
 
-# Set the working directory inside the container
 WORKDIR /app
-
-# Copy the csproj and restore any dependencies (via NuGet)
 COPY *.sln .
 
-# copying only project files
+# copying only project files - TODO this and below sections
 COPY DebugHelper/*.csproj ./DebugHelper/
 COPY CodegenProtobuf/*.csproj ./CodegenProtobuf/
 COPY DriverCommon/*.csproj ./DriverCommon/

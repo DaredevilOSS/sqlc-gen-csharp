@@ -20,8 +20,8 @@ sqlc-generate: dotnet-publish
 dotnet-test-local: # TODO have work via IDE
 	source .env && dotnet test
 
-dotnet-test:
-	trap 'docker-compose down --volumes' EXIT; 
-	docker-compose up --wait --detach --force-recreate --remove-orphans
+dotnet-test: 
+	bash -c \
+		"trap 'docker-compose down' EXIT; docker-compose up --build --wait --detach --force-recreate --remove-orphans"
 
 generate-and-test: sqlc-generate dotnet-test

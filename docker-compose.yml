@@ -1,16 +1,16 @@
 services:
-#  plugin-tests:
-#    container_name: plugin-tests
-#    build: .
-#    restart: on-failure
-#    env_file:
-#      - .env
-#    command: dotnet test SqlcGenCsharpTests || exit 1
-#    volumes:
-#      - .:/SqlcGenCsharp
-#    depends_on:
-#      mysqldb:
-#        condition: service_healthy
+  plugin-tests:
+    container_name: plugin-tests
+    build: .
+    restart: on-failure
+    env_file:
+      - .env
+    command: dotnet test SqlcGenCsharpTests || exit 1
+    volumes:
+      - .:/SqlcGenCsharp
+    depends_on:
+      mysqldb:
+        condition: service_healthy
         
   mysqldb:
     container_name: mysqldb
@@ -22,7 +22,6 @@ services:
       MYSQL_DATABASE: tests
       MYSQL_ALLOW_EMPTY_PASSWORD: true
     healthcheck:
-      test: ["CMD", "mysqladmin" ,"ping", "-h", "127.0.0.1"]
+      test: "mysqladmin ping -h 127.0.0.1"
       timeout: 20s
       retries: 10
-  
