@@ -5,11 +5,11 @@ services:
     restart: on-failure
     env_file:
       - .env
-    command: dotnet test SqlcGenCsharpTests || exit 1
-    volumes:
-      - .:/SqlcGenCsharp
+    command: "dotnet test"
     depends_on:
       mysqldb:
+        condition: service_healthy
+      postgresdb:
         condition: service_healthy
         
   mysqldb:
@@ -23,5 +23,20 @@ services:
       MYSQL_ALLOW_EMPTY_PASSWORD: true
     healthcheck:
       test: "mysqladmin ping -h 127.0.0.1"
+      timeout: 20s
+      retries: 10
+      
+  postgresdb:
+    container_name: postgresdb
+    build: examples/authors/postgresql
+    restart: always
+    ports:
+      - "8080:8080"
+    environment:
+      POSTGRES_DB: tests
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: pass
+    healthcheck:
+      test: "pg_isready -d tests"
       timeout: 20s
       retries: 10

@@ -17,11 +17,7 @@ dotnet-publish: protobuf-generate dotnet-build
 sqlc-generate: dotnet-publish
 	sqlc -f sqlc.dev.yaml generate
 
-dotnet-test-local: # TODO have work via IDE
-	source .env && dotnet test
+run-tests: 
+	./run_tests.sh
 
-dotnet-test: 
-	bash -c \
-		"trap 'docker-compose down' EXIT; docker-compose up --build --wait --detach --force-recreate --remove-orphans"
-
-generate-and-test: sqlc-generate dotnet-test
+generate-and-test: sqlc-generate run-tests
