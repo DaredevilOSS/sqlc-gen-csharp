@@ -7,18 +7,19 @@ using NUnit.Framework;
 namespace SqlcGenCsharpTests;
 
 [TestFixture]
-public class PostgresTests
+public class PostgresTests: IDriverTester
 {
+    private static string ConnectionStringEnv => "POSTGRES_CONNECTION_STRING";
     private NpgsqlExample.QuerySql PostgresQuerySql { get; } = 
-        new (Environment.GetEnvironmentVariable("POSTGRES_CONNECTION_STRING")!);
+        new(connectionString: Environment.GetEnvironmentVariable(ConnectionStringEnv)!);
 
     [Test]
     public async Task TestFlow()
     {
-        await TestFlowOnMyPostgres(PostgresQuerySql);
+        await TestFlowOnPostgres(PostgresQuerySql);
     }
     
-    private static async Task TestFlowOnMyPostgres(NpgsqlExample.QuerySql querySql)
+    private static async Task TestFlowOnPostgres(NpgsqlExample.QuerySql querySql)
     {
         // test CreateAuthorReturnId works
         var createdBojackAuthor = await querySql.CreateAuthor(new NpgsqlExample.QuerySql.CreateAuthorArgs

@@ -7,10 +7,11 @@ using NUnit.Framework;
 namespace SqlcGenCsharpTests;
 
 [TestFixture]
-public class MySqlTests
+public class MySqlTests: IDriverTester
 {
-    private MySqlConnectorExample.QuerySql MysqlQuerySql { get; } =
-        new(Environment.GetEnvironmentVariable("MYSQL_CONNECTION_STRING")!);
+    private static string ConnectionStringEnv => "MYSQL_CONNECTION_STRING";
+    private MySqlConnectorExample.QuerySql MysqlQuerySql { get; } = 
+        new(connectionString: Environment.GetEnvironmentVariable(ConnectionStringEnv)!);
 
     [Test]
     public async Task TestFlow()
