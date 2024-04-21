@@ -1,6 +1,6 @@
 services:
   plugin-tests:
-    container_name: plugin-tests
+    container_name: ${TESTS_CONTAINER_NAME}
     build: .
     restart: on-failure
     env_file:
