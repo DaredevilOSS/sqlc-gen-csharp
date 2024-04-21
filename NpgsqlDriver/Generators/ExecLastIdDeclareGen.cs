@@ -15,7 +15,8 @@ internal static class ExecLastIdDeclareGen
     {
         var methodDeclaration = MethodDeclaration(IdentifierName("Task<long>"), Identifier(funcName))
             .WithPublicAsync()
-            .WithParameterList(ParseParameterList(NpgsqlDriver.Utils.GetParameterListAsString(argInterface, parameters)))
+            .WithParameterList(
+                ParseParameterList(NpgsqlDriver.Utils.GetParameterListAsString(argInterface, parameters)))
             .WithBody(Block(
                 Array.Empty<StatementSyntax>()
                     .Concat(NpgsqlDriver.Utils.EstablishConnection())

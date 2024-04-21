@@ -2,7 +2,7 @@ SHELL 		:= /bin/bash
 PWD 		:= $(shell pwd)
 
 # TODO automate
-RUNTIME_DIR := SqlcGenCsharp/obj/Release/.net8.0/osx-arm64/
+RUNTIME_DIR := SqlcGenCsharp/bin/Release/.net8.0/osx-arm64/
 PATH  		:= ${PATH}:${PWD}/${RUNTIME_DIR}
 
 protobuf-generate:
@@ -15,8 +15,7 @@ dotnet-publish: protobuf-generate dotnet-build
 	dotnet publish SqlcGenCsharp -c release --output dist/
 
 dotnet-publish-with-wasm: dotnet-publish
-	rm -f dist/plugin.wasm
-	cp ${RUNTIME_DIR}/dotnet-wasi-sdk/SqlcGenCsharp.wasm dist/plugin.wasm
+	cp ${RUNTIME_DIR}/SqlcGenCsharp.wasm dist/plugin.wasm
 
 sqlc-generate-from-exe: dotnet-publish
 	sqlc -f sqlc.process.yaml generate

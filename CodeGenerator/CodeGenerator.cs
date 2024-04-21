@@ -30,6 +30,7 @@ public partial class CodeGenerator
     {
         Options = ParseOptions(generateRequest);
         DbDriver = CreateNodeGenerator(Options.driver);
+        DebugHelper.Instance.Append("generating response");
         GenerateResponse = Generate(generateRequest);
     }
 

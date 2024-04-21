@@ -20,8 +20,8 @@ internal static class ManyDeclareGen
 
         return methodDeclaration;
     }
-    
-    private static BlockSyntax GetMethodBody(string queryTextConstant, string returnInterface, 
+
+    private static BlockSyntax GetMethodBody(string queryTextConstant, string returnInterface,
         IEnumerable<Column> columns, IEnumerable<Parameter> parameters)
     {
         return Block(new[]

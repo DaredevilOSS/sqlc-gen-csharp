@@ -7,10 +7,11 @@ using NUnit.Framework;
 namespace SqlcGenCsharpTests;
 
 [TestFixture]
-public class MySqlTester: IDriverTester
+public class MySqlTester : IDriverTester
 {
     private static string ConnectionStringEnv => "MYSQL_CONNECTION_STRING";
-    private MySqlConnectorExample.QuerySql MysqlQuerySql { get; } = 
+
+    private MySqlConnectorExample.QuerySql MysqlQuerySql { get; } =
         new(connectionString: Environment.GetEnvironmentVariable(ConnectionStringEnv)!);
 
     [Test]
@@ -18,7 +19,7 @@ public class MySqlTester: IDriverTester
     {
         await TestFlowOnMySql(MysqlQuerySql);
     }
-    
+
     private static async Task TestFlowOnMySql(MySqlConnectorExample.QuerySql querySql)
     {
         // test CreateAuthorReturnId works

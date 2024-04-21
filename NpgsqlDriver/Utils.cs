@@ -15,12 +15,12 @@ public static class Utils
     {
         return "(" + (IsNullOrEmpty(argInterface) || !parameters.Any() ? Empty : $"{argInterface} args") + ")";
     }
-    
+
     public static ExpressionSyntax AwaitReaderRow()
     {
         return ParseExpression($"await {Variable.Reader.Name()}.ReadAsync()");
     }
-    
+
     public static IEnumerable<StatementSyntax> EstablishConnection()
     {
         return
@@ -30,7 +30,7 @@ public static class Utils
                 $"NpgsqlDataSource.Create({Variable.ConnectionString.Name()});")
         ];
     }
-    
+
     public static IEnumerable<StatementSyntax> PrepareSqlCommand(string sqlTextConstant,
         IEnumerable<Parameter> parameters)
     {
@@ -45,7 +45,7 @@ public static class Utils
                 $"args.{param.Column.Name.FirstCharToUpper()});"))
         );
     }
-    
+
     public static StatementSyntax UsingDataReader()
     {
         return ParseStatement(

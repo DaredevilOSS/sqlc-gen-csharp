@@ -52,7 +52,7 @@ public static class Types
                 throw new NotSupportedException($"Unsupported column type: {me}");
         }
     }
-    
+
     public static ExpressionSyntax GetReadExpression(this Column me, int ordinal)
     {
         if (!me.NotNull)
@@ -63,7 +63,7 @@ public static class Types
             );
         return GetNullSafeColumnReader(me, ordinal);
     }
-    
+
     private static ExpressionSyntax GetReadNullCondition(int ordinal)
     {
         return ParseExpression($"{Variable.Reader.Name()}.IsDBNull({ordinal})");
@@ -129,7 +129,7 @@ public static class Types
                 throw new NotSupportedException($"Unsupported column type: {column.Type.Name}");
         }
     }
-    
+
     private static ExpressionSyntax GetEmptyValueForColumn(string localColumnType)
     {
         switch (localColumnType.ToLower())

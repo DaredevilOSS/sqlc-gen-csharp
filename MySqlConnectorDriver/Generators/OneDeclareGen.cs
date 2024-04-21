@@ -28,7 +28,7 @@ internal static class OneDeclareGen
             }.SelectMany(x => x));
         }
     }
-    
+
     private static IEnumerable<StatementSyntax> ExecuteAndReturnOne(string returnInterface, IEnumerable<Column> columns)
     {
         return
@@ -41,7 +41,7 @@ internal static class OneDeclareGen
             ReturnStatement(LiteralExpression(SyntaxKind.NullLiteralExpression))
         ];
     }
-    
+
     private static StatementSyntax ReturnSingleRow(string returnInterface, IEnumerable<Column> columns)
     {
         return ReturnStatement(

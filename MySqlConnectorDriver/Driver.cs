@@ -52,7 +52,7 @@ public partial class Driver : IDbDriver
     {
         return ManyDeclareGen.Generate(funcName, queryTextConstant, argInterface, returnInterface, parameters, columns);
     }
-    
+
     [GeneratedRegex(@"\?")]
     private static partial Regex MyRegex();
 }
