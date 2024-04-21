@@ -6,5 +6,5 @@ namespace SqlcGenCsharpTests;
 public interface IDriverTester
 {
     [Test]
-    public Task TestFlow();
+    public Task TestFlowOnDriver();
 }

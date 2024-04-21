@@ -3,12 +3,6 @@ plugins:
 - name: csharp
   env:
     - DEBUG
-  wasm:
-    url: file://dist/plugin.wasm
-    sha256: 9bb77ad7a855d1279162aeee8258308026dc49b570f6b9fbeedb8d80c76c2497
-- name: csharp-local
-  env:
-    - DEBUG
   process:
     cmd: ./dist/SqlcGenCsharp
 sql:
@@ -16,7 +10,7 @@ sql:
   queries: "examples/authors/postgresql/query.sql"
   engine: "postgresql"
   codegen:
-  - plugin: csharp-local
+  - plugin: csharp
     out: NpgsqlExample
     options:
       driver: Npgsql
@@ -25,7 +19,7 @@ sql:
   queries: "examples/authors/mysql/query.sql"
   engine: "mysql"
   codegen:
-  - plugin: csharp-local
+  - plugin: csharp
     out: MySqlConnectorExample
     options:
       driver: MySqlConnector

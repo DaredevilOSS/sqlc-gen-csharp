@@ -7,67 +7,66 @@ using NUnit.Framework;
 namespace SqlcGenCsharpTests;
 
 [TestFixture]
-public class PostgresTests: IDriverTester
+public class MySqlTester: IDriverTester
 {
-    private static string ConnectionStringEnv => "POSTGRES_CONNECTION_STRING";
-    private NpgsqlExample.QuerySql PostgresQuerySql { get; } = 
+    private static string ConnectionStringEnv => "MYSQL_CONNECTION_STRING";
+    private MySqlConnectorExample.QuerySql MysqlQuerySql { get; } = 
         new(connectionString: Environment.GetEnvironmentVariable(ConnectionStringEnv)!);
 
     [Test]
-    public async Task TestFlow()
+    public async Task TestFlowOnDriver()
     {
-        await TestFlowOnPostgres(PostgresQuerySql);
+        await TestFlowOnMySql(MysqlQuerySql);
     }
     
-    private static async Task TestFlowOnPostgres(NpgsqlExample.QuerySql querySql)
+    private static async Task TestFlowOnMySql(MySqlConnectorExample.QuerySql querySql)
     {
         // test CreateAuthorReturnId works
-        var createdBojackAuthor = await querySql.CreateAuthor(new NpgsqlExample.QuerySql.CreateAuthorArgs
+        var insertedId = await querySql.CreateAuthorReturnId(new MySqlConnectorExample.QuerySql.CreateAuthorReturnIdArgs
         {
             Name = "Bojack Horseman",
             Bio = "Back in the 90s he was in a very famous TV show"
         });
-        Assert.That(createdBojackAuthor is { Name: "Bojack Horseman" });
-    
+
         // test GetAuthor works
-        var singleAuthor = await querySql.GetAuthor(
-            new NpgsqlExample.QuerySql.GetAuthorArgs(createdBojackAuthor!.Value.Id));
+        var singleAuthor = await querySql.GetAuthor(new MySqlConnectorExample.QuerySql.GetAuthorArgs(insertedId));
         Assert.That(singleAuthor is { Name: "Bojack Horseman" });
-    
-        // test ListAuthors works
-        await querySql.CreateAuthor(new NpgsqlExample.QuerySql.CreateAuthorArgs
+
+        // test CreateAuthor works
+        await querySql.CreateAuthor(new MySqlConnectorExample.QuerySql.CreateAuthorArgs
         {
             Name = "Dr. Seuss",
             Bio = "You'll miss the best things if you keep your eyes shut"
         });
+
+        // test ListAuthors works
         var authors = await querySql.ListAuthors();
         Assert.That(authors.SequenceEqual(
-            new List<NpgsqlExample.QuerySql.ListAuthorsRow>
+            new List<MySqlConnectorExample.QuerySql.ListAuthorsRow>
             {
                 new()
                 {
-                    Id = createdBojackAuthor.Value.Id,
-                    Name = createdBojackAuthor.Value.Name,
-                    Bio = createdBojackAuthor.Value.Bio
+                    Id = insertedId,
+                    Name = "Bojack Horseman",
+                    Bio = "Back in the 90s he was in a very famous TV show"
                 },
                 new()
                 {
-                    Id = createdBojackAuthor.Value.Id + 1,
+                    Id = insertedId + 1,
                     Name = "Dr. Seuss",
                     Bio = "You'll miss the best things if you keep your eyes shut"
                 }
             }));
-    
+
         // test DeleteAuthor works
-        await querySql.DeleteAuthor(
-            new NpgsqlExample.QuerySql.DeleteAuthorArgs(createdBojackAuthor.Value.Id));
+        await querySql.DeleteAuthor(new MySqlConnectorExample.QuerySql.DeleteAuthorArgs(insertedId));
         var authorRows = await querySql.ListAuthors();
         Assert.That(authorRows.SequenceEqual(
-            new List<NpgsqlExample.QuerySql.ListAuthorsRow>
+            new List<MySqlConnectorExample.QuerySql.ListAuthorsRow>
             {
                 new()
                 {
-                    Id = createdBojackAuthor.Value.Id + 1,
+                    Id = insertedId + 1,
                     Name = "Dr. Seuss",
                     Bio = "You'll miss the best things if you keep your eyes shut"
                 }

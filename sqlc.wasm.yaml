@@ -1,0 +1,25 @@
+version: "2"
+plugins:
+- name: csharp
+  wasm:
+    url: file://dist/plugin.wasm
+    sha256: 9bb77ad7a855d1279162aeee8258308026dc49b570f6b9fbeedb8d80c76c2497
+sql:
+  - schema: "examples/authors/postgresql/schema.sql"
+    queries: "examples/authors/postgresql/query.sql"
+    engine: "postgresql"
+    codegen:
+      - plugin: csharp
+        out: NpgsqlExample
+        options:
+          driver: Npgsql
+          project: NpgsqlExample
+  - schema: "examples/authors/mysql/schema.sql"
+    queries: "examples/authors/mysql/query.sql"
+    engine: "mysql"
+    codegen:
+      - plugin: csharp
+        out: MySqlConnectorExample
+        options:
+          driver: MySqlConnector
+          project: MySqlConnectorExample

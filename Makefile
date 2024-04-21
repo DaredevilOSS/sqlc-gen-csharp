@@ -12,12 +12,19 @@ dotnet-build:
 
 dotnet-publish: protobuf-generate dotnet-build
 	dotnet publish SqlcGenCsharp -c release --output dist/
-	# cp ${RUNTIME_DIR}/SqlcGenCsharp.wasm dist/plugin.wasm
 
-sqlc-generate: dotnet-publish
-	sqlc -f sqlc.dev.yaml generate
+dotnet-publish-with-wasm: dotnet-publish
+	cp ${RUNTIME_DIR}/SqlcGenCsharp.wasm dist/plugin.wasm
 
-run-tests: 
+sqlc-generate-from-exe: dotnet-publish
+	sqlc -f sqlc.process.yaml generate
+
+sqlc-generate-from-wasm: dotnet-publish-with-wasm
+	sqlc -f sqlc.wasm.yaml generate
+
+run-tests:
 	./run_tests.sh
 
-generate-and-test: sqlc-generate run-tests
+test-process-plugin: sqlc-generate-from-exe run-tests
+
+test-wasm-plugin: sqlc-generate-from-wasm run-tests
