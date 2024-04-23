@@ -22,9 +22,9 @@ public record Options
     public required string driver { get; init; }
 }
 
-public partial class CodeGenerator
+public class CodeGenerator
 {
-    private static readonly char[] Separator = ['/'];
+    private static readonly char[] Separator = {'/'};
 
     public CodeGenerator(GenerateRequest generateRequest)
     {

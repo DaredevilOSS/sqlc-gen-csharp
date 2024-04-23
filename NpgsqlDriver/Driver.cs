@@ -22,7 +22,6 @@ public class Driver : IDbDriver
             var currentParameter = query.Params[i];
             queryText = Regex.Replace(queryText, $@"\$\s*{i + 1}",
                 $"@{currentParameter.Column.Name.FirstCharToLower()}");
-            DebugHelper.Instance.Append($"\n{queryText}");
         }
 
         return queryText;

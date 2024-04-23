@@ -23,12 +23,12 @@ public static class Utils
 
     public static IEnumerable<StatementSyntax> EstablishConnection()
     {
-        return
-        [
+        return new[]
+        {
             ParseStatement(
                 $"await using var {Variable.Connection.Name()} = " +
                 $"NpgsqlDataSource.Create({Variable.ConnectionString.Name()});")
-        ];
+        };
     }
 
     public static IEnumerable<StatementSyntax> PrepareSqlCommand(string sqlTextConstant,

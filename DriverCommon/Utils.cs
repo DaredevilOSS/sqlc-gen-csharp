@@ -8,11 +8,7 @@ public static class Utils
 {
     public static MethodDeclarationSyntax WithPublicAsync(this MethodDeclarationSyntax me)
     {
-        return me.AddModifiers(
-        [
-            Token(SyntaxKind.PublicKeyword),
-            Token(SyntaxKind.AsyncKeyword)
-        ]);
+        return me.AddModifiers(Token(SyntaxKind.PublicKeyword), Token(SyntaxKind.AsyncKeyword));
     }
 
     public static ExpressionSyntax AssignTo(this ExpressionSyntax assignmentValue, string assignmentVar)

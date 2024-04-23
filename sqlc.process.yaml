@@ -4,7 +4,7 @@ plugins:
   env:
     - DEBUG
   process:
-    cmd: ./dist/SqlcGenCsharp
+    cmd: ./dist/SqlcGenCsharpProcess
 sql:
 - schema: "examples/authors/postgresql/schema.sql"
   queries: "examples/authors/postgresql/query.sql"

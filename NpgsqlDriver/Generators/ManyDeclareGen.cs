@@ -28,12 +28,13 @@ internal static class ManyDeclareGen
         {
             Utils.EstablishConnection(),
             Utils.PrepareSqlCommand(queryTextConstant, parameters),
-            [
+            new [] 
+            {
                 Utils.UsingDataReader(),
                 ParseStatement($"var {Variable.Rows.Name()} = new List<{returnInterface}>();"),
                 GetWhileStatement(returnInterface, columns),
                 ReturnStatement(IdentifierName(Variable.Rows.Name()))
-            ]
+            }
         }.SelectMany(x => x));
     }
 

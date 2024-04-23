@@ -14,6 +14,8 @@ COPY MySqlConnectorDriver/*.csproj ./MySqlConnectorDriver/
 COPY NpgsqlExample/*.csproj ./NpgsqlExample/
 COPY NpgsqlDriver/*.csproj ./NpgsqlDriver/
 COPY SqlcGenCsharp/*.csproj ./SqlcGenCsharp/
+COPY SqlcGenCsharpProcess/*.csproj ./SqlcGenCsharpProcess/
+#COPY SqlcGenCsharpWasm/*.csproj ./SqlcGenCsharpWasm/
 COPY SqlcGenCsharpTests/*.csproj ./SqlcGenCsharpTests/
 
 # copying the rest of the files
@@ -27,6 +29,8 @@ COPY MySqlConnectorDriver/ ./MySqlConnectorDriver/
 COPY NpgsqlExample/ ./NpgsqlExample/
 COPY NpgsqlDriver/ ./NpgsqlDriver/
 COPY SqlcGenCsharp/ ./SqlcGenCsharp/
+COPY SqlcGenCsharpProcess/ ./SqlcGenCsharpProcess/
+#COPY SqlcGenCsharpWasm/ ./SqlcGenCsharpWasm/
 COPY SqlcGenCsharpTests/ ./SqlcGenCsharpTests/
 
 RUN dotnet restore

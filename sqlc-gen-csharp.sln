@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SqlcGenCsharp", "SqlcGenCsharp\SqlcGenCsharp.csproj", "{649CFB46-68D1-41F8-BD76-FF4B79B16825}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SqlcGenCsharpProcess", "SqlcGenCsharpProcess\SqlcGenCsharpProcess.csproj", "{649CFB46-68D1-41F8-BD76-FF4B79B16825}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodegenProtobuf", "CodegenProtobuf\CodegenProtobuf.csproj", "{E81C60CF-4946-4CEB-B45C-09A936491839}"
 EndProject
@@ -24,6 +24,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NpgsqlDriver", "NpgsqlDriver\NpgsqlDriver.csproj", "{B6150440-4409-4B64-8A07-4A7D9B92FB09}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NpgsqlExample", "NpgsqlExample\NpgsqlExample.csproj", "{86C6A2E3-C58C-4891-9B7B-296C36020185}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SqlcGenCsharpWasm", "SqlcGenCsharpWasm\SqlcGenCsharpWasm.csproj", "{D3095033-1C96-42D9-AE44-3D4F1B24CB51}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SqlcGenCsharp", "SqlcGenCsharp\SqlcGenCsharp.csproj", "{B83D6813-3B06-4E23-B2FC-47078CB90B83}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -78,5 +82,12 @@ Global
 		{86C6A2E3-C58C-4891-9B7B-296C36020185}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{86C6A2E3-C58C-4891-9B7B-296C36020185}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{86C6A2E3-C58C-4891-9B7B-296C36020185}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D3095033-1C96-42D9-AE44-3D4F1B24CB51}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D3095033-1C96-42D9-AE44-3D4F1B24CB51}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D3095033-1C96-42D9-AE44-3D4F1B24CB51}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B83D6813-3B06-4E23-B2FC-47078CB90B83}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B83D6813-3B06-4E23-B2FC-47078CB90B83}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B83D6813-3B06-4E23-B2FC-47078CB90B83}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B83D6813-3B06-4E23-B2FC-47078CB90B83}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

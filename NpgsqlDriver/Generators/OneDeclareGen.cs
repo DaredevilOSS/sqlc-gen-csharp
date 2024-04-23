@@ -32,15 +32,16 @@ internal static class OneDeclareGen
 
     private static IEnumerable<StatementSyntax> ExecuteAndReturnOne(string returnInterface, IEnumerable<Column> columns)
     {
-        return
-        [
-            NpgsqlDriver.Utils.UsingDataReader(),
+        return new []
+        {
+            
+            Utils.UsingDataReader(),
             IfStatement(
-                NpgsqlDriver.Utils.AwaitReaderRow(),
+                Utils.AwaitReaderRow(),
                 ReturnSingleRow(returnInterface, columns)
             ),
             ReturnStatement(LiteralExpression(SyntaxKind.NullLiteralExpression))
-        ];
+        };
     }
 
     private static StatementSyntax ReturnSingleRow(string returnInterface, IEnumerable<Column> columns)

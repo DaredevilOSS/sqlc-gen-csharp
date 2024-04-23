@@ -8,22 +8,19 @@ internal static class PreambleGen
 {
     public static UsingDirectiveSyntax[] GetUsingDirectives()
     {
-        return
-        [
+        return new[]
+        {
             UsingDirective(ParseName("System")),
             UsingDirective(ParseName("System.Collections.Generic")),
             UsingDirective(ParseName("System.Data")),
             UsingDirective(ParseName("System.Threading.Tasks")),
             UsingDirective(ParseName("Npgsql"))
-        ];
+        };
     }
 
     public static MemberDeclarationSyntax[] GetClassMembers()
     {
-        return
-        [
-            GetGetBytesWrapperMethod()
-        ];
+        return new[] { GetGetBytesWrapperMethod() };
     }
 
     private static MemberDeclarationSyntax GetGetBytesWrapperMethod()

@@ -23,13 +23,13 @@ public static class Utils
 
     public static IEnumerable<StatementSyntax> EstablishConnection()
     {
-        return
-        [
+        return new []
+        {
             ParseStatement(
                 $"await using var {Variable.Connection.Name()} = " +
                 $"new MySqlConnection({Variable.ConnectionString.Name()});"),
             ParseStatement($"{Variable.Connection.Name()}.Open();")
-        ];
+        };
     }
 
     public static IEnumerable<StatementSyntax> PrepareSqlCommand(string sqlTextConstant,

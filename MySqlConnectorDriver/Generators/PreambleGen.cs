@@ -8,23 +8,22 @@ internal static class PreambleGen
 {
     public static UsingDirectiveSyntax[] GetUsingDirectives()
     {
-        return
-        [
+        return new[]
+        {
             UsingDirective(ParseName("System")),
             UsingDirective(ParseName("System.Collections.Generic")),
             UsingDirective(ParseName("System.Data")),
             UsingDirective(ParseName("System.Threading.Tasks")),
             UsingDirective(ParseName("MySqlConnector"))
-        ];
+        };
     }
 
     public static MemberDeclarationSyntax[] GetClassMembers()
     {
-        // TODO in TypeScript plugin a special handling for ExecLastId in this corresponding code - figure out why)
-        return
-        [
+        return new []
+        {
             GetGetBytesWrapperMethod()
-        ];
+        };
     }
 
     private static MemberDeclarationSyntax GetGetBytesWrapperMethod()

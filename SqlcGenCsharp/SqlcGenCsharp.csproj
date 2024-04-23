@@ -1,23 +1,20 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <OutputType>Exe</OutputType>
         <TargetFramework>net8.0</TargetFramework>
-        <PublishSingleFile>true</PublishSingleFile>
-        <SelfContained>true</SelfContained>
-        <LangVersion>default</LangVersion>
-        <RuntimeIdentifiers>osx-arm64;linux-x64</RuntimeIdentifiers>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <RootNamespace>SqlcGenCsharp</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\CodegenProtobuf\CodegenProtobuf.csproj"/>
-        <ProjectReference Include="..\CodeGenerator\CodeGenerator.csproj"/>
+        <ProjectReference Include="..\CodegenProtobuf\CodegenProtobuf.csproj" />
+        <ProjectReference Include="..\CodeGenerator\CodeGenerator.csproj" />
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Google.Protobuf" Version="3.26.0-rc2"/>
-        <PackageReference Include="protobuf-net" Version="3.2.30"/>
-        <PackageReference Include="Wasi.Sdk" Version="0.1.4-preview.10020"/>
+        <PackageReference Include="Google.Protobuf" Version="3.26.0-rc2" />
+        <PackageReference Include="protobuf-net" Version="3.2.30" />
     </ItemGroup>
-
+    
 </Project>
