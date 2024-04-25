@@ -5,7 +5,6 @@
     <RuntimeIdentifier>wasi-wasm</RuntimeIdentifier>
     <PublishTrimmed>true</PublishTrimmed>
     <WasmSingleFileBundle>true</WasmSingleFileBundle>
-    <UseBlazorWebAssembly>true</UseBlazorWebAssembly>
   </PropertyGroup>
 
   <ItemGroup>
