@@ -33,6 +33,12 @@ public class MySqlTester : IDriverTester
         var singleAuthor = await querySql.GetAuthor(new MySqlConnectorExample.QuerySql.GetAuthorArgs(insertedId));
         Assert.That(singleAuthor is { Name: "Bojack Horseman" });
 
+        // test UpdateAuthor works
+        await querySql.UpdateAuthor(new MySqlConnectorExample.QuerySql.UpdateAuthorArgs
+        {
+            Bio = ""
+        });
+        
         // test CreateAuthor works
         await querySql.CreateAuthor(new MySqlConnectorExample.QuerySql.CreateAuthorArgs
         {

@@ -8,7 +8,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\CodegenProtobuf\CodegenProtobuf.csproj" />
         <ProjectReference Include="..\CodeGenerator\CodeGenerator.csproj" />
     </ItemGroup>
 

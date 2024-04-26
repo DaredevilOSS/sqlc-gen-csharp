@@ -17,7 +17,7 @@ run-tests:
 dotnet-build-process:
 	dotnet build SqlcGenCsharpProcess -c Release
 
-dotnet-publish-process: protobuf-generate dotnet-build-process
+dotnet-publish-process: dotnet-build-process
 	dotnet publish SqlcGenCsharpProcess -c release --output dist/
 
 sqlc-generate-process: dotnet-publish-process
@@ -27,12 +27,12 @@ test-process-plugin: sqlc-generate-process run-tests
 
 # WASM type plugin
 dotnet-build-wasm:
-	dotnet build SqlcGenCsharpWasm -c Release
+	dotnet build SqlcGenCsharpWasm --no-restore -c Release
 
 dotnet-publish-wasm: dotnet-build-wasm
 	dotnet publish SqlcGenCsharpWasm -c release --output dist/ && cp ${WASM_FILE} dist/plugin.wasm
 
-sqlc-generate-from-wasm: dotnet-publish-wasm
+sqlc-generate-wasm: dotnet-publish-wasm
 	sqlc -f sqlc.wasm.yaml generate
 
-test-wasm-plugin: sqlc-generate-from-wasm run-tests
+test-wasm-plugin: sqlc-generate-wasm run-tests

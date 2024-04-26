@@ -12,7 +12,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\CodegenProtobuf\CodegenProtobuf.csproj"/>
+        <ProjectReference Include="..\SqlcProtobuf\SqlcProtobuf.csproj" />
         <ProjectReference Include="..\DebugHelper\DebugHelper.csproj"/>
         <ProjectReference Include="..\DriverCommon\DriverCommon.csproj"/>
         <ProjectReference Include="..\MySqlConnectorDriver\MySqlConnectorDriver.csproj"/>

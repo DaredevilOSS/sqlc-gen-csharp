@@ -1,7 +1,6 @@
 using System;
 using System.IO;
 using Google.Protobuf;
-using Plugin;
 
 namespace SqlcGenCsharp;
 

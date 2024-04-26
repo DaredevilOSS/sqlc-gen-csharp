@@ -5,7 +5,7 @@ COPY *.sln .
 
 # copying only project files - TODO this and below sections
 COPY DebugHelper/*.csproj ./DebugHelper/
-COPY CodegenProtobuf/*.csproj ./CodegenProtobuf/
+COPY SqlcProtobuf/*.csproj ./SqlcProtobuf/
 COPY DriverCommon/*.csproj ./DriverCommon/
 COPY CodeGenerator/*.csproj ./CodeGenerator/
 COPY StringExtensions/*.csproj ./StringExtensions/
@@ -15,12 +15,12 @@ COPY NpgsqlExample/*.csproj ./NpgsqlExample/
 COPY NpgsqlDriver/*.csproj ./NpgsqlDriver/
 COPY SqlcGenCsharp/*.csproj ./SqlcGenCsharp/
 COPY SqlcGenCsharpProcess/*.csproj ./SqlcGenCsharpProcess/
-#COPY SqlcGenCsharpWasm/*.csproj ./SqlcGenCsharpWasm/
+COPY SqlcGenCsharpWasm/*.csproj ./SqlcGenCsharpWasm/
 COPY SqlcGenCsharpTests/*.csproj ./SqlcGenCsharpTests/
 
 # copying the rest of the files
 COPY DebugHelper/ ./DebugHelper/
-COPY CodegenProtobuf/ ./CodegenProtobuf/
+COPY SqlcProtobuf/ ./SqlcProtobuf/
 COPY DriverCommon/ ./DriverCommon/
 COPY CodeGenerator/ ./CodeGenerator/
 COPY StringExtensions/ ./StringExtensions/
@@ -30,7 +30,7 @@ COPY NpgsqlExample/ ./NpgsqlExample/
 COPY NpgsqlDriver/ ./NpgsqlDriver/
 COPY SqlcGenCsharp/ ./SqlcGenCsharp/
 COPY SqlcGenCsharpProcess/ ./SqlcGenCsharpProcess/
-#COPY SqlcGenCsharpWasm/ ./SqlcGenCsharpWasm/
+COPY SqlcGenCsharpWasm/ ./SqlcGenCsharpWasm/
 COPY SqlcGenCsharpTests/ ./SqlcGenCsharpTests/
 
 RUN dotnet restore

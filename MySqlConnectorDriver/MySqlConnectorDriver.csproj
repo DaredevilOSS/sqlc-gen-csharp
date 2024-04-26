@@ -7,7 +7,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\CodegenProtobuf\CodegenProtobuf.csproj"/>
         <ProjectReference Include="..\DebugHelper\DebugHelper.csproj"/>
         <ProjectReference Include="..\DriverCommon\DriverCommon.csproj"/>
     </ItemGroup>

@@ -13,6 +13,11 @@ INSERT INTO authors (
   ?, ? 
 );
 
+/* name: UpdateAuthor :exec */
+UPDATE authors 
+SET bio = ?
+WHERE id = ?;
+
 /* name: CreateAuthorReturnId :execlastid */
 INSERT INTO authors (
     name, bio

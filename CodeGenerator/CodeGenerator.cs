@@ -24,7 +24,7 @@ public record Options
 
 public class CodeGenerator
 {
-    private static readonly char[] Separator = {'/'};
+    private static readonly char[] Separator = ['/'];
 
     public CodeGenerator(GenerateRequest generateRequest)
     {
@@ -185,22 +185,6 @@ public class CodeGenerator
         return ParseMemberDeclaration(
                 $"private const string {query.Name}{ClassMember.Sql.Name()} = \"{DbDriver.TransformQuery(query)}\";")!
             .AppendNewLine();
-    }
-
-    // TODO find out if needed?
-    private IEnumerable<Column> ConstructUpdatedColumns(Query query)
-    {
-        var colMap = new Dictionary<string, int>();
-        return query.Columns
-            .Where(column => !string.IsNullOrEmpty(column.Name)) // Filter out columns without a name
-            .Select(column =>
-            {
-                var count = colMap.GetValueOrDefault(column.Name, 0);
-                var updatedName = count > 0 ? $"{column.Name}_{count + 1}" : column.Name;
-                colMap[column.Name] = count + 1; // Update the count for the current name
-                return new Column { Name = updatedName };
-            })
-            .ToList();
     }
 
     private static IDbDriver CreateNodeGenerator(string driver)
