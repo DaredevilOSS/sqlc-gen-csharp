@@ -3,7 +3,7 @@
     <TargetFramework>net8.0</TargetFramework>
     <RootNamespace>SqlcGenCsharp</RootNamespace>
     <RuntimeIdentifier>wasi-wasm</RuntimeIdentifier>
-    <PublishTrimmed>true</PublishTrimmed>
+    <OutputType>Exe</OutputType>
     <WasmSingleFileBundle>true</WasmSingleFileBundle>
   </PropertyGroup>
 
