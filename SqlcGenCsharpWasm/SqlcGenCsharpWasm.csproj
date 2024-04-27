@@ -4,6 +4,7 @@
     <RootNamespace>SqlcGenCsharp</RootNamespace>
     <RuntimeIdentifier>wasi-wasm</RuntimeIdentifier>
     <OutputType>Exe</OutputType>
+    <JsonSerializerIsReflectionEnabledByDefault>true</JsonSerializerIsReflectionEnabledByDefault>
     <WasmSingleFileBundle>true</WasmSingleFileBundle>
   </PropertyGroup>
 

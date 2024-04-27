@@ -9,8 +9,8 @@ public static class PluginRunner
 {
     public static void Run()
     {
-        DebugHelper.Instance.Append("starting");
         var generateRequest = ReadInput();
+        DebugHelper.Instance.Append("starting");
         var codeGenerator = new CodeGenerator(generateRequest);
         WriteOutput(codeGenerator.GenerateResponse);
     }

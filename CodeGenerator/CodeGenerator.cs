@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Text.Json;
 using Google.Protobuf;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -16,20 +14,14 @@ using File = Plugin.File;
 
 namespace SqlcGenCsharp;
 
-public record Options
-{
-    // ReSharper disable once InconsistentNaming
-    public required string driver { get; init; }
-}
-
 public class CodeGenerator
 {
     private static readonly char[] Separator = ['/'];
 
     public CodeGenerator(GenerateRequest generateRequest)
     {
-        Options = ParseOptions(generateRequest);
-        DbDriver = CreateNodeGenerator(Options.driver);
+        Options = OptionsParser.Parse(generateRequest);
+        DbDriver = CreateNodeGenerator(Options.Driver!);
         DebugHelper.Instance.Append("generating response");
         GenerateResponse = Generate(generateRequest);
     }
@@ -37,12 +29,6 @@ public class CodeGenerator
     private Options Options { get; }
     private IDbDriver DbDriver { get; }
     public GenerateResponse GenerateResponse { get; }
-
-    private static Options ParseOptions(GenerateRequest generateRequest)
-    {
-        var text = Encoding.UTF8.GetString(generateRequest.PluginOptions.ToByteArray());
-        return JsonSerializer.Deserialize<Options>(text) ?? throw new InvalidOperationException();
-    }
 
     private static ByteString ToByteString(CompilationUnitSyntax compilationUnit)
     {
