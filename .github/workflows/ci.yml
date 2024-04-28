@@ -1,4 +1,4 @@
-name: Photo Transformer Workflow
+name: SQLC C# Plugin CI
 
 on:
   push:
@@ -23,5 +23,8 @@ jobs:
         uses: actions/setup-dotnet@v3
         with:
           dotnet-version: ${{ matrix.dotnet-version }}
-      - name: test plugin process
+      - name: Test generated code (.exe)
         run: make test-process-plugin
+      - name: Test generated code (.wasm)
+        run: make test-wasm-plugin
+
