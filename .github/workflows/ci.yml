@@ -1,4 +1,4 @@
-name: SQLC C# Plugin CI
+name: CI
 
 on:
   push:
@@ -27,4 +27,3 @@ jobs:
         run: make test-process-plugin
       - name: Test generated code (.wasm)
         run: make test-wasm-plugin
-
