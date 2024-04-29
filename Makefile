@@ -14,7 +14,7 @@ run-tests:
 
 # process type plugin
 dotnet-build-process:
-	dotnet build --no-restore SqlcGenCsharpProcess -c Release
+	dotnet build SqlcGenCsharpProcess -c Release
 
 dotnet-publish-process: dotnet-build-process
 	dotnet publish SqlcGenCsharpProcess -c release --output dist/
@@ -29,7 +29,7 @@ update-wasm-plugin:
 	./scripts/update_wasm_plugin.sh
 
 dotnet-publish-wasm:
-	dotnet publish SqlcGenCsharpWasm -c release --output dist/ --no-restore
+	dotnet publish SqlcGenCsharpWasm -c release --output dist/
 
 sqlc-generate-wasm: dotnet-publish-wasm update-wasm-plugin
 	SQLCCACHE=./; sqlc -f sqlc.wasm.yaml generate
