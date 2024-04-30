@@ -28,7 +28,13 @@ jobs:
       - uses: sqlc-dev/setup-sqlc@v4
         with:
           sqlc-version: '1.25.0'
-      - name: Test generated code (.exe)
-        run: make test-process-plugin
-      - name: Test generated code (.wasm)
-        run: make test-wasm-plugin
+      - uses: hoverkraft-tech/compose-action@v1.5.1
+        with:
+         services: |
+           plugin-tests
+           mysqldb
+           postgresdb
+      # - name: Test generated code (.exe)
+      #   run: make test-process-plugin-ci
+      # - name: Test generated code (.wasm)
+      #   run: make test-wasm-plugin
