@@ -34,6 +34,8 @@ jobs:
          services: |
            mysqldb
            postgresdb
+      - name: set env
+        run: source .env
       - name: test dotnet output project
         run: dotnet test
       # - name: Test generated code (.exe)
