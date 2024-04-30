@@ -32,9 +32,10 @@ jobs:
       - uses: hoverkraft-tech/compose-action@v1.5.1
         with:
          services: |
-           plugin-tests
            mysqldb
            postgresdb
+      - name: test dotnet output project
+        run: dotnet test
       # - name: Test generated code (.exe)
       #   run: make test-process-plugin-ci
       # - name: Test generated code (.wasm)
