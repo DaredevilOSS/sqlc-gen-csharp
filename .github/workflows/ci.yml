@@ -23,6 +23,8 @@ jobs:
         uses: actions/setup-dotnet@v3
         with:
           dotnet-version: ${{ matrix.dotnet-version }}
+      - name: install wasm workload
+        run: dotnet workload install wasi-experimental
       - name: Test generated code (.exe)
         run: make test-process-plugin
       - name: Test generated code (.wasm)
