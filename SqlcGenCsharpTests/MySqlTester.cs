@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using MySqlConnectorExample;
 using NUnit.Framework;
 
 namespace SqlcGenCsharpTests;
@@ -11,8 +12,8 @@ public class MySqlTester : IDriverTester
 {
     private static string ConnectionStringEnv => "MYSQL_CONNECTION_STRING";
 
-    private MySqlConnectorExample.QuerySql MysqlQuerySql { get; } =
-        new(connectionString: Environment.GetEnvironmentVariable(ConnectionStringEnv)!);
+    private QuerySql MysqlQuerySql { get; } =
+        new(Environment.GetEnvironmentVariable(ConnectionStringEnv)!);
 
     [Test]
     public async Task TestFlowOnDriver()
@@ -20,27 +21,27 @@ public class MySqlTester : IDriverTester
         await TestFlowOnMySql(MysqlQuerySql);
     }
 
-    private static async Task TestFlowOnMySql(MySqlConnectorExample.QuerySql querySql)
+    private static async Task TestFlowOnMySql(QuerySql querySql)
     {
         // test CreateAuthorReturnId works
-        var insertedId = await querySql.CreateAuthorReturnId(new MySqlConnectorExample.QuerySql.CreateAuthorReturnIdArgs
+        var insertedId = await querySql.CreateAuthorReturnId(new QuerySql.CreateAuthorReturnIdArgs
         {
             Name = "Bojack Horseman",
             Bio = "Back in the 90s he was in a very famous TV show"
         });
 
         // test GetAuthor works
-        var singleAuthor = await querySql.GetAuthor(new MySqlConnectorExample.QuerySql.GetAuthorArgs(insertedId));
+        var singleAuthor = await querySql.GetAuthor(new QuerySql.GetAuthorArgs(insertedId));
         Assert.That(singleAuthor is { Name: "Bojack Horseman" });
 
         // test UpdateAuthor works
-        await querySql.UpdateAuthor(new MySqlConnectorExample.QuerySql.UpdateAuthorArgs
+        await querySql.UpdateAuthor(new QuerySql.UpdateAuthorArgs
         {
             Bio = ""
         });
-        
+
         // test CreateAuthor works
-        await querySql.CreateAuthor(new MySqlConnectorExample.QuerySql.CreateAuthorArgs
+        await querySql.CreateAuthor(new QuerySql.CreateAuthorArgs
         {
             Name = "Dr. Seuss",
             Bio = "You'll miss the best things if you keep your eyes shut"
@@ -49,7 +50,7 @@ public class MySqlTester : IDriverTester
         // test ListAuthors works
         var authors = await querySql.ListAuthors();
         Assert.That(authors.SequenceEqual(
-            new List<MySqlConnectorExample.QuerySql.ListAuthorsRow>
+            new List<QuerySql.ListAuthorsRow>
             {
                 new()
                 {
@@ -66,10 +67,10 @@ public class MySqlTester : IDriverTester
             }));
 
         // test DeleteAuthor works
-        await querySql.DeleteAuthor(new MySqlConnectorExample.QuerySql.DeleteAuthorArgs(insertedId));
+        await querySql.DeleteAuthor(new QuerySql.DeleteAuthorArgs(insertedId));
         var authorRows = await querySql.ListAuthors();
         Assert.That(authorRows.SequenceEqual(
-            new List<MySqlConnectorExample.QuerySql.ListAuthorsRow>
+            new List<QuerySql.ListAuthorsRow>
             {
                 new()
                 {

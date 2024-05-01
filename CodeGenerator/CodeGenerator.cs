@@ -21,13 +21,18 @@ public class CodeGenerator
     public CodeGenerator(GenerateRequest generateRequest)
     {
         Options = OptionsParser.Parse(generateRequest);
-        DbDriver = CreateNodeGenerator(Options.Driver!);
+        DbDriver = Options.InstantiateDriver();
+        DataClasses = new DataClasses(DbDriver);
+        
+        // TODO move tout of constructor
         DebugHelper.Instance.Append("generating response");
         GenerateResponse = Generate(generateRequest);
     }
 
-    private Options Options { get; }
+    private ValidOptions Options { get; }
     private IDbDriver DbDriver { get; }
+    
+    private DataClasses DataClasses { get; }
     public GenerateResponse GenerateResponse { get; }
 
     private static ByteString ToByteString(CompilationUnitSyntax compilationUnit)
@@ -144,26 +149,15 @@ public class CodeGenerator
 
     private MemberDeclarationSyntax? GetQueryColumnsDataclass(Query query)
     {
-        // TODO add feature-flag for using C# records as data classes or not
         if (query.Columns.Count <= 0) return null;
-        var recordParameters = QueryColumnsToRecordParams(query.Columns);
-        return GenerateRecord(query.Name, ClassMember.Row, recordParameters);
-    }
-
-    private ParameterListSyntax QueryColumnsToRecordParams(IEnumerable<Column> columns)
-    {
-        return ParameterList(SeparatedList(columns
-            .Select(column => Parameter(Identifier(column.Name.FirstCharToUpper()))
-                .WithType(ParseTypeName(DbDriver.ColumnType(column.Type.Name, column.NotNull)))
-            )));
+        return DataClasses.Generate(query.Name, ClassMember.Row, query.Columns, Options);
     }
 
     private MemberDeclarationSyntax? GetQueryParamsDataclass(Query query)
     {
-        // TODO add feature-flag for using C# records as data classes or not
         if (query.Params.Count <= 0) return null;
-        var recordParameters = QueryColumnsToRecordParams(query.Params.Select(p => p.Column));
-        return GenerateRecord(query.Name, ClassMember.Args, recordParameters);
+        var columns = query.Params.Select(p => p.Column);
+        return DataClasses.Generate(query.Name, ClassMember.Args, columns, Options);
     }
 
     private MemberDeclarationSyntax GetQueryTextConstant(Query query)
@@ -171,30 +165,5 @@ public class CodeGenerator
         return ParseMemberDeclaration(
                 $"private const string {query.Name}{ClassMember.Sql.Name()} = \"{DbDriver.TransformQuery(query)}\";")!
             .AppendNewLine();
-    }
-
-    private static IDbDriver CreateNodeGenerator(string driver)
-    {
-        return driver switch
-        {
-            "MySqlConnector" => new MySqlConnectorDriver.Driver(),
-            "Npgsql" => new NpgsqlDriver.Driver(),
-            _ => throw new ArgumentException($"unknown driver: {driver}", nameof(driver))
-        };
-    }
-
-    private static RecordDeclarationSyntax GenerateRecord(string name, ClassMember classMember,
-        ParameterListSyntax parameterListSyntax)
-    {
-        return RecordDeclaration(
-                Token(SyntaxKind.StructKeyword),
-                $"{name}{classMember.Name()}")
-            .AddModifiers(
-                Token(SyntaxKind.PublicKeyword),
-                Token(SyntaxKind.ReadOnlyKeyword),
-                Token(SyntaxKind.RecordKeyword)
-            )
-            .WithParameterList(parameterListSyntax)
-            .WithSemicolonToken(Token(SyntaxKind.SemicolonToken));
     }
 }

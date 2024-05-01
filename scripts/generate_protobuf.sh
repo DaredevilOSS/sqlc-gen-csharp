@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -ex
+set -e
 
 wget -q --spider http://google.com
 if [ $? -eq 0 ]; then

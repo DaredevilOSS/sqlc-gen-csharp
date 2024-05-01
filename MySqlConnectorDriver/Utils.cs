@@ -23,7 +23,7 @@ public static class Utils
 
     public static IEnumerable<StatementSyntax> EstablishConnection()
     {
-        return new []
+        return new[]
         {
             ParseStatement(
                 $"await using var {Variable.Connection.Name()} = " +

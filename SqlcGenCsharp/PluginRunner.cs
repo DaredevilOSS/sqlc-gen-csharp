@@ -1,9 +1,7 @@
-﻿namespace SqlcGenCsharp;
-
-using System;
-using System.IO;
-using Google.Protobuf;
+﻿using Google.Protobuf;
 using Plugin;
+
+namespace SqlcGenCsharp;
 
 public static class PluginRunner
 {

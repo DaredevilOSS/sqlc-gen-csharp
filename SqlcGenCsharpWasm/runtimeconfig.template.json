@@ -1,10 +1,10 @@
 {
-    "wasmHostProperties": {
-        "perHostConfig": [
-            {
-                "name": "wasmtime",
-                "Host": "wasmtime"
-            }
-        ]
-    }
+  "wasmHostProperties": {
+    "perHostConfig": [
+      {
+        "name": "wasmtime",
+        "Host": "wasmtime"
+      }
+    ]
+  }
 }

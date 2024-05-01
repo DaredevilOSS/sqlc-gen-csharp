@@ -31,15 +31,15 @@ internal static class OneDeclareGen
 
     private static IEnumerable<StatementSyntax> ExecuteAndReturnOne(string returnInterface, IEnumerable<Column> columns)
     {
-        return new []
-            {
+        return new[]
+        {
             Utils.UsingDataReader(),
             IfStatement(
                 Utils.AwaitReaderRow(),
                 ReturnSingleRow(returnInterface, columns)
             ),
             ReturnStatement(LiteralExpression(SyntaxKind.NullLiteralExpression))
-            };
+        };
     }
 
     private static StatementSyntax ReturnSingleRow(string returnInterface, IEnumerable<Column> columns)

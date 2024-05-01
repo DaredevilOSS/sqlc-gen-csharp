@@ -20,7 +20,7 @@ internal static class PreambleGen
 
     public static MemberDeclarationSyntax[] GetClassMembers()
     {
-        return new []
+        return new[]
         {
             GetGetBytesWrapperMethod()
         };

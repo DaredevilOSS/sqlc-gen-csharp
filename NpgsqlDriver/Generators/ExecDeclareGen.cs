@@ -16,11 +16,11 @@ internal static class ExecDeclareGen
         var methodDeclaration = MethodDeclaration(IdentifierName("Task"), Identifier(funcName))
             .WithPublicAsync()
             .WithParameterList(
-                ParseParameterList(NpgsqlDriver.Utils.GetParameterListAsString(argInterface, parameters)))
+                ParseParameterList(Utils.GetParameterListAsString(argInterface, parameters)))
             .WithBody(Block(
                 Array.Empty<StatementSyntax>()
-                    .Concat(NpgsqlDriver.Utils.EstablishConnection())
-                    .Concat(NpgsqlDriver.Utils.PrepareSqlCommand(queryTextConstant, parameters))
+                    .Concat(Utils.EstablishConnection())
+                    .Concat(Utils.PrepareSqlCommand(queryTextConstant, parameters))
                     .Append(ParseStatement($"await {Variable.Command.Name()}.ExecuteScalarAsync();"))));
         return methodDeclaration;
     }

@@ -16,15 +16,15 @@ internal static class OneDeclareGen
         return MethodDeclaration(IdentifierName($"Task<{returnInterface}?>"), funcName)
             .WithPublicAsync()
             .WithParameterList(
-                ParseParameterList(NpgsqlDriver.Utils.GetParameterListAsString(argInterface, parameters)))
+                ParseParameterList(Utils.GetParameterListAsString(argInterface, parameters)))
             .WithBody(GetMethodBody());
 
         BlockSyntax GetMethodBody()
         {
             return Block(new[]
             {
-                NpgsqlDriver.Utils.EstablishConnection(),
-                NpgsqlDriver.Utils.PrepareSqlCommand(queryTextConstant, parameters),
+                Utils.EstablishConnection(),
+                Utils.PrepareSqlCommand(queryTextConstant, parameters),
                 ExecuteAndReturnOne(returnInterface, columns)
             }.SelectMany(x => x));
         }
@@ -32,9 +32,8 @@ internal static class OneDeclareGen
 
     private static IEnumerable<StatementSyntax> ExecuteAndReturnOne(string returnInterface, IEnumerable<Column> columns)
     {
-        return new []
+        return new[]
         {
-            
             Utils.UsingDataReader(),
             IfStatement(
                 Utils.AwaitReaderRow(),
@@ -48,6 +47,6 @@ internal static class OneDeclareGen
     {
         return ReturnStatement(
             ObjectCreationExpression(IdentifierName(returnInterface))
-                .WithInitializer(NpgsqlDriver.Utils.GetRecordInitExpression(columns)));
+                .WithInitializer(Utils.GetRecordInitExpression(columns)));
     }
 }

@@ -1,14 +1,14 @@
 <Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
-    <RootNamespace>SqlcGenCsharp</RootNamespace>
-    <RuntimeIdentifier>wasi-wasm</RuntimeIdentifier>
-    <OutputType>Exe</OutputType>
-    <JsonSerializerIsReflectionEnabledByDefault>true</JsonSerializerIsReflectionEnabledByDefault>
-    <WasmSingleFileBundle>true</WasmSingleFileBundle>
-  </PropertyGroup>
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <RootNamespace>SqlcGenCsharp</RootNamespace>
+        <RuntimeIdentifier>wasi-wasm</RuntimeIdentifier>
+        <OutputType>Exe</OutputType>
+        <JsonSerializerIsReflectionEnabledByDefault>true</JsonSerializerIsReflectionEnabledByDefault>
+        <WasmSingleFileBundle>true</WasmSingleFileBundle>
+    </PropertyGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\SqlcGenCsharp\SqlcGenCsharp.csproj" />
-  </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\SqlcGenCsharp\SqlcGenCsharp.csproj"/>
+    </ItemGroup>
 </Project>

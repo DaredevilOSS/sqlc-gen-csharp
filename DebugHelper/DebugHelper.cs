@@ -7,10 +7,7 @@ public sealed class DebugHelper
 {
     private const string DebugFile = "debug.log";
     private static DebugHelper? _instance;
-    
-    private StreamWriter? Writer { get; }
-    private bool Enabled { get; }
-    
+
     private DebugHelper()
     {
         try
@@ -25,7 +22,10 @@ public sealed class DebugHelper
             Enabled = false;
         }
     }
-    
+
+    private StreamWriter? Writer { get; }
+    private bool Enabled { get; }
+
     public static DebugHelper Instance => _instance ??= new DebugHelper();
 
     public void Append(string message)
