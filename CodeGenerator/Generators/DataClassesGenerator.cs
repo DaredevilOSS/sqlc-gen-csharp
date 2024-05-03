@@ -6,9 +6,9 @@ using Plugin;
 using SqlcGenCsharp.Drivers;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
-namespace SqlcGenCsharp;
+namespace SqlcGenCsharp.Generators;
 
-public class DataClasses(IDbDriver dbDriver)
+public class DataClassesGenerator(IDbDriver dbDriver)
 {
     private IDbDriver DbDriver { get; } = dbDriver;
 
@@ -58,8 +58,9 @@ public class DataClasses(IDbDriver dbDriver)
                 {
                     var propertyType = DbDriver.ColumnType(c.Type.Name, c.NotNull);
                     return ParseMemberDeclaration(
-                        $"public {propertyType} {c.Name.FirstCharToUpper()} {{ get; set; }}")!;
+                        $"public required {propertyType} {c.Name.FirstCharToUpper()} {{ get; init; }}");
                 })
+                .Cast<MemberDeclarationSyntax>()
                 .ToArray();
         }
     }

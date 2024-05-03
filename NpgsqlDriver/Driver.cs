@@ -31,7 +31,7 @@ public class Driver : IDbDriver
     {
         return (
             PreambleGen.GetUsingDirectives(),
-            PreambleGen.GetClassMembers()
+            []
         );
     }
 

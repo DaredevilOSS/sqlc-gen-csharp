@@ -12,8 +12,9 @@ namespace SqlcGenCsharp;
 internal class Options
 {
     [JsonPropertyName("driver")] public required string DriverName { get; init; }
-
     [JsonPropertyName("minimalCsharp")] public double MinimalCsharp { get; init; } = -1.0;
+    
+    [JsonPropertyName("filePerQuery")] public bool FilePerQuery { get; init; }
 }
 
 public static class OptionsParser
@@ -22,7 +23,7 @@ public static class OptionsParser
     {
         var text = Encoding.UTF8.GetString(generateRequest.PluginOptions.ToByteArray());
         var rawOptions = JsonSerializer.Deserialize<Options>(text) ?? throw new InvalidOperationException();
-        return new ValidOptions(rawOptions.DriverName, rawOptions.MinimalCsharp);
+        return new ValidOptions(rawOptions.DriverName, rawOptions.MinimalCsharp, rawOptions.FilePerQuery);
     }
 }
 
@@ -34,16 +35,18 @@ public enum DriverName
 
 public class ValidOptions
 {
-    public ValidOptions(string driverName, double minimalCsharp)
+    public ValidOptions(string driverName, double minimalCsharp, bool filePerQuery)
     {
         Enum.TryParse(driverName, true, out DriverName outDriverName);
         DriverName = outDriverName;
         MinimalCsharp = minimalCsharp <= 0 ? 10.0 : minimalCsharp;
+        FilePerQuery = filePerQuery;
     }
 
     private DriverName DriverName { get; }
 
     public double MinimalCsharp { get; }
+    public bool FilePerQuery { get; }
 
     public IDbDriver InstantiateDriver()
     {
