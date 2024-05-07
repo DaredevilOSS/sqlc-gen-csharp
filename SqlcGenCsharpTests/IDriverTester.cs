@@ -1,20 +1,19 @@
 using System.Threading.Tasks;
-using NUnit.Framework;
 
 namespace SqlcGenCsharpTests;
 
-public abstract class DriverTester
+public interface IDriverTester
 {
-    protected async Task TestFlow()
+    async Task TestFlow()
     {
         var firstInsertedId = await CreateFirstAuthorAndTest();
         await CreateSecondAuthorAndTest();
         await DeleteFirstAuthorAndTest(firstInsertedId);
     }
 
-    protected abstract Task<long> CreateFirstAuthorAndTest();
+    protected Task<long> CreateFirstAuthorAndTest();
 
-    protected abstract Task CreateSecondAuthorAndTest();
+    protected Task CreateSecondAuthorAndTest();
 
-    protected abstract Task DeleteFirstAuthorAndTest(long idToDelete);
+    protected Task DeleteFirstAuthorAndTest(long idToDelete);
 }

@@ -6,18 +6,14 @@ using NUnit.Framework.Legacy;
 
 namespace SqlcGenCsharpTests;
 
-[TestFixture]
-public class MySqlTester : DriverTester
+public class MySqlTester : IDriverTester
 {
     private static string ConnectionStringEnv => "MYSQL_CONNECTION_STRING";
 
     private QuerySql QuerySql { get; } =
         new(Environment.GetEnvironmentVariable(ConnectionStringEnv)!);
     
-    [Test]
-    public async Task TestFlowOnDriver() { await TestFlow(); }
-    
-    protected override async Task<long> CreateFirstAuthorAndTest()
+    public async Task<long> CreateFirstAuthorAndTest()
     {
         var createAuthorReturnIdArgs = new QuerySql.CreateAuthorReturnIdArgs
         {
@@ -35,7 +31,7 @@ public class MySqlTester : DriverTester
         return insertedId;
     }
 
-    protected override async Task CreateSecondAuthorAndTest()
+    public async Task CreateSecondAuthorAndTest()
     {
         var createAuthorArgs = new QuerySql.CreateAuthorArgs
         {
@@ -57,7 +53,7 @@ public class MySqlTester : DriverTester
         ClassicAssert.AreEqual(2, actualAuthors.Count);
     }
 
-    protected override async Task DeleteFirstAuthorAndTest(long idToDelete)
+    public async Task DeleteFirstAuthorAndTest(long idToDelete)
     {
         var deleteAuthorArgs = new QuerySql.DeleteAuthorArgs
         {

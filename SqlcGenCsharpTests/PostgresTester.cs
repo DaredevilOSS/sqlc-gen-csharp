@@ -6,18 +6,14 @@ using NUnit.Framework.Legacy;
 
 namespace SqlcGenCsharpTests;
 
-[TestFixture]
-public class PostgresTester : DriverTester
+public class PostgresTester : IDriverTester
 {
     private static string ConnectionStringEnv => "POSTGRES_CONNECTION_STRING";
 
     private QuerySql QuerySql { get; } =
         new(Environment.GetEnvironmentVariable(ConnectionStringEnv)!);
 
-    [Test]
-    public async Task TestFlowOnDriver() { await TestFlow(); }
-
-    protected override async Task<long> CreateFirstAuthorAndTest()
+    public async Task<long> CreateFirstAuthorAndTest()
     {
         var bojackCreateAuthorArgs = new QuerySql.CreateAuthorArgs
         {
@@ -44,7 +40,7 @@ public class PostgresTester : DriverTester
         return bojackInsertedId;
     }
 
-    protected override async Task CreateSecondAuthorAndTest()
+    public async Task CreateSecondAuthorAndTest()
     {
         var createAuthorArgs = new QuerySql.CreateAuthorArgs
         {
@@ -66,7 +62,7 @@ public class PostgresTester : DriverTester
         ClassicAssert.AreEqual(2, authors.Count);
     }
 
-    protected override async Task DeleteFirstAuthorAndTest(long idToDelete)
+    public async Task DeleteFirstAuthorAndTest(long idToDelete)
     {
         var deleteAuthorArgs = new QuerySql.DeleteAuthorArgs
         {
