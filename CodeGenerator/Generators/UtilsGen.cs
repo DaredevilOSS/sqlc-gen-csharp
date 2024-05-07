@@ -8,11 +8,11 @@ using File = Plugin.File;
 
 namespace SqlcGenCsharp.Generators;
 
-public static class UtilsGenerator
+internal class UtilsGen
 {
     private const string ClassName = "Utils";
     
-    public static File GenerateFile(string namespaceName)
+    public File GenerateFile(string namespaceName)
     {
         var namespaceDeclaration = FileScopedNamespaceDeclaration(IdentifierName(namespaceName));
         var classDeclaration = GetUtilsClass();
@@ -24,7 +24,7 @@ public static class UtilsGenerator
 
         return new File
         {
-            Name = $"Utils.cs",
+            Name = $"{ClassName}.cs",
             Contents = root.ToByteString()
         };
     }
@@ -41,8 +41,8 @@ public static class UtilsGenerator
     {
         // TODO move to RESOURCES file
         // TODO fix function is nested within another block unnecessarily
-        const string utilsClass = """
-                                  public static class Utils
+        var utilsClassDeclaration = """
+                                  public static class #UtilsClassName#
                                   {                                                            
                                       public static byte[] GetBytes(IDataRecord reader, int ordinal)
                                       {
@@ -71,7 +71,9 @@ public static class UtilsGenerator
                                       }
                                   }
                                   """;
-        ;
-        return ParseMemberDeclaration(utilsClass)!.AppendNewLine();
+        
+        // TODO should be string interpolation - in multiline?
+        utilsClassDeclaration = utilsClassDeclaration.Replace("#UtilsClassName#", ClassName);
+        return ParseMemberDeclaration(utilsClassDeclaration)!.AppendNewLine();
     }
 }

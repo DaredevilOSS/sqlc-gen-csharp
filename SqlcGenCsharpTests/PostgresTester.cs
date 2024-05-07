@@ -2,68 +2,83 @@ using System;
 using System.Threading.Tasks;
 using NpgsqlExample;
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace SqlcGenCsharpTests;
 
 [TestFixture]
-public class PostgresTester : IDriverTester
+public class PostgresTester : DriverTester
 {
     private static string ConnectionStringEnv => "POSTGRES_CONNECTION_STRING";
 
-    private QuerySql PostgresQuerySql { get; } =
+    private QuerySql QuerySql { get; } =
         new(Environment.GetEnvironmentVariable(ConnectionStringEnv)!);
 
     [Test]
-    public async Task TestFlowOnDriver()
-    {
-        await TestFlowOnPostgres(PostgresQuerySql);
-    }
+    public async Task TestFlowOnDriver() { await TestFlow(); }
 
-    private static async Task TestFlowOnPostgres(QuerySql querySql)
+    protected override async Task<long> CreateFirstAuthorAndTest()
     {
-        // test CreateAuthorReturnId works
-        var createdBojackAuthor = await querySql.CreateAuthor(new QuerySql.CreateAuthorArgs
+        var bojackCreateAuthorArgs = new QuerySql.CreateAuthorArgs
         {
             Name = Consts.BojackAuthor,
             Bio = Consts.BojackTheme
+        };
+        var createdBojackAuthor = await QuerySql.CreateAuthor(bojackCreateAuthorArgs);
+        Assert.That(createdBojackAuthor is
+        {
+            Name: Consts.BojackAuthor,
+            Bio: Consts.BojackTheme
         });
-        Assert.That(createdBojackAuthor is { Name: Consts.BojackAuthor });
+        var bojackInsertedId = createdBojackAuthor!.Value.Id;
+        var getAuthorArgs = new QuerySql.GetAuthorArgs
+        {
+            Id = bojackInsertedId
+        };
+        var singleAuthor = await QuerySql.GetAuthor(getAuthorArgs);
+        Assert.That(singleAuthor is
+        {
+            Name: Consts.BojackAuthor,
+            Bio: Consts.BojackTheme
+        });
+        return bojackInsertedId;
+    }
 
-        // test GetAuthor works
-        var singleAuthor = await querySql.GetAuthor(
-            new QuerySql.GetAuthorArgs(createdBojackAuthor!.Value.Id));
-        Assert.That(singleAuthor is { Name: Consts.BojackAuthor });
-
-        // test ListAuthors works
-        await querySql.CreateAuthor(new QuerySql.CreateAuthorArgs
+    protected override async Task CreateSecondAuthorAndTest()
+    {
+        var createAuthorArgs = new QuerySql.CreateAuthorArgs
         {
             Name = Consts.DrSeussAuthor,
             Bio = Consts.DrSeussQuote
+        };
+        await QuerySql.CreateAuthor(createAuthorArgs);
+        var authors = await QuerySql.ListAuthors();
+        Assert.That(authors[0] is
+        {
+            Name: Consts.BojackAuthor,
+            Bio: Consts.BojackTheme
         });
-        var authors = await querySql.ListAuthors();
-        Assert.That(
-            authors[0] is
-            {
-                Name: Consts.BojackAuthor,
-                Bio: Consts.BojackTheme
-            }
-            && authors[1] is
-            {
-                Name: Consts.DrSeussAuthor,
-                Bio: Consts.DrSeussQuote
-            }
-            && authors.Count == 2);
+        Assert.That(authors[1] is
+        {
+            Name: Consts.DrSeussAuthor,
+            Bio: Consts.DrSeussQuote
+        });
+        ClassicAssert.AreEqual(2, authors.Count);
+    }
 
-        // test DeleteAuthor works
-        await querySql.DeleteAuthor(
-            new QuerySql.DeleteAuthorArgs(createdBojackAuthor.Value.Id));
-        var authorRows = await querySql.ListAuthors();
-        Assert.That(
-            authorRows[0] is
-            {
-                Name: Consts.DrSeussAuthor,
-                Bio: Consts.DrSeussQuote
-            }
-            && authors.Count == 1);
+    protected override async Task DeleteFirstAuthorAndTest(long idToDelete)
+    {
+        var deleteAuthorArgs = new QuerySql.DeleteAuthorArgs
+        {
+            Id = idToDelete
+        };
+        await QuerySql.DeleteAuthor(deleteAuthorArgs);
+        var authorRows = await QuerySql.ListAuthors();
+        Assert.That(authorRows[0] is
+        {
+            Name: Consts.DrSeussAuthor,
+            Bio: Consts.DrSeussQuote
+        });
+        ClassicAssert.AreEqual(1, authorRows.Count);
     }
 }

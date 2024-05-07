@@ -3,8 +3,18 @@ using NUnit.Framework;
 
 namespace SqlcGenCsharpTests;
 
-public interface IDriverTester
+public abstract class DriverTester
 {
-    [Test]
-    public Task TestFlowOnDriver();
+    protected async Task TestFlow()
+    {
+        var firstInsertedId = await CreateFirstAuthorAndTest();
+        await CreateSecondAuthorAndTest();
+        await DeleteFirstAuthorAndTest(firstInsertedId);
+    }
+
+    protected abstract Task<long> CreateFirstAuthorAndTest();
+
+    protected abstract Task CreateSecondAuthorAndTest();
+
+    protected abstract Task DeleteFirstAuthorAndTest(long idToDelete);
 }

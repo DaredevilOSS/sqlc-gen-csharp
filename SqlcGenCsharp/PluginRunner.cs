@@ -10,7 +10,8 @@ public static class PluginRunner
         var generateRequest = ReadInput();
         DebugHelper.Instance.Append("starting");
         var codeGenerator = new CodeGenerator(generateRequest);
-        WriteOutput(codeGenerator.GenerateResponse);
+        var generateResponse = codeGenerator.Generate(generateRequest);
+        WriteOutput(generateResponse);
     }
 
     private static GenerateRequest ReadInput()

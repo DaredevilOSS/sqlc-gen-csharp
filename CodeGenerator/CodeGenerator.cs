@@ -28,26 +28,24 @@ public class CodeGenerator
     {
         Options = OptionsParser.Parse(generateRequest);
         DbDriver = Options.InstantiateDriver();
-        DataClassesGenerator = new DataClassesGenerator(DbDriver);
-
-        // TODO move out of constructor
-        DebugHelper.Instance.Append("generating response");
-        GenerateResponse = Generate(generateRequest);
+        UtilsGen = new UtilsGen();
+        DataClassesGen = new DataClassesGen(DbDriver);
     }
 
     private ValidOptions Options { get; }
     private IDbDriver DbDriver { get; }
 
-    private DataClassesGenerator DataClassesGenerator { get; }
-    public GenerateResponse GenerateResponse { get; }
+    private DataClassesGen DataClassesGen { get; }
+    
+    private UtilsGen UtilsGen { get; }
 
-    private GenerateResponse Generate(GenerateRequest generateRequest)
+    public GenerateResponse Generate(GenerateRequest generateRequest)
     {
         var namespaceName = GenerateNamespace();
         var fileQueries = GetFileQueries();
         var files = fileQueries
             .Select(fq => GenerateFile(namespaceName, fq.Value, fq.Key))
-            .Append(UtilsGenerator.GenerateFile(namespaceName))
+            .Append(UtilsGen.GenerateFile(namespaceName))
             .ToList();
         return new GenerateResponse { Files = { files } };
 
@@ -60,13 +58,14 @@ public class CodeGenerator
 
         Dictionary<string, Query[]> GetFileQueries()
         {
-            var groupedQueries = Options.FilePerQuery
-                ? generateRequest.Queries.GroupBy(query => QueryNameToClassName(query.Name))
-                : generateRequest.Queries.GroupBy(query => QueryFilenameToClassName(query.Filename));
-
-            return groupedQueries.ToDictionary(
-                group => group.Key,
-                group => group.ToArray());
+            return generateRequest.Queries
+                .GroupBy(query => 
+                    Options.FilePerQuery 
+                        ? $"{query.Name}Query" 
+                        : QueryFilenameToClassName(query.Filename))
+                .ToDictionary(
+                    group => group.Key,
+                    group => group.ToArray());
         }
         
         string QueryFilenameToClassName(string filenameWithExtension)
@@ -75,14 +74,9 @@ public class CodeGenerator
                 Path.GetFileNameWithoutExtension(filenameWithExtension).FirstCharToUpper(),
                 Path.GetExtension(filenameWithExtension)[1..].FirstCharToUpper());
         }
-        
-        string QueryNameToClassName(string queryName)
-        {
-            return $"{queryName}Query";
-        }
     }
 
-    private File GenerateFile(string namespaceName, Query[] queries, string className)
+    private File GenerateFile(string namespaceName, IEnumerable<Query> queries, string className)
     {
         var namespaceDeclaration = FileScopedNamespaceDeclaration(IdentifierName(namespaceName));
         var (usingDirectives, classDeclaration) = GenerateClass(queries, className);
@@ -108,7 +102,7 @@ public class CodeGenerator
                 current.AddCommentOnTop($"// ReSharper disable {resharperDisable}"));
     }
 
-    private (UsingDirectiveSyntax[], MemberDeclarationSyntax) GenerateClass(Query[] queries, string className)
+    private (UsingDirectiveSyntax[], MemberDeclarationSyntax) GenerateClass(IEnumerable<Query> queries, string className)
     {
         var (usingDirectives, sharedMemberDeclarations) = DbDriver.Preamble();
         var perQueryMembers = queries.SelectMany(GetMembersForSingleQuery).ToArray();
@@ -140,6 +134,27 @@ public class CodeGenerator
             .ToArray();
     }
 
+    private MemberDeclarationSyntax? GetQueryColumnsDataclass(Query query)
+    {
+        return query.Columns.Count <= 0 
+            ? null 
+            : DataClassesGen.Generate(query.Name, ClassMember.Row, query.Columns, Options);
+    }
+
+    private MemberDeclarationSyntax? GetQueryParamsDataclass(Query query)
+    {
+        if (query.Params.Count <= 0) return null;
+        var columns = query.Params.Select(p => p.Column);
+        return DataClassesGen.Generate(query.Name, ClassMember.Args, columns, Options);
+    }
+
+    private MemberDeclarationSyntax GetQueryTextConstant(Query query)
+    {
+        return ParseMemberDeclaration(
+                $"private const string {query.Name}{ClassMember.Sql.Name()} = \"{DbDriver.TransformQuery(query)}\";")!
+            .AppendNewLine();
+    }
+    
     private MemberDeclarationSyntax AddMethodDeclaration(Query query)
     {
         var queryTextConstant = GetInterfaceName(ClassMember.Sql);
@@ -162,25 +177,5 @@ public class CodeGenerator
         {
             return $"{query.Name}{classMemberType.Name()}";
         }
-    }
-
-    private MemberDeclarationSyntax? GetQueryColumnsDataclass(Query query)
-    {
-        if (query.Columns.Count <= 0) return null;
-        return DataClassesGenerator.Generate(query.Name, ClassMember.Row, query.Columns, Options);
-    }
-
-    private MemberDeclarationSyntax? GetQueryParamsDataclass(Query query)
-    {
-        if (query.Params.Count <= 0) return null;
-        var columns = query.Params.Select(p => p.Column);
-        return DataClassesGenerator.Generate(query.Name, ClassMember.Args, columns, Options);
-    }
-
-    private MemberDeclarationSyntax GetQueryTextConstant(Query query)
-    {
-        return ParseMemberDeclaration(
-                $"private const string {query.Name}{ClassMember.Sql.Name()} = \"{DbDriver.TransformQuery(query)}\";")!
-            .AppendNewLine();
     }
 }
