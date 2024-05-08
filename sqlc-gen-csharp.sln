@@ -29,6 +29,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SqlcGenCsharp", "SqlcGenCsh
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SqlcProtobuf", "SqlcProtobuf\SqlcProtobuf.csproj", "{F9634820-EDE9-4DB0-9801-C32AD492D4E7}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ListExtensions", "ListExtensions\ListExtensions.csproj", "{12ACA4A1-80E3-453C-8D7F-ABF46EBC9E28}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -89,5 +91,9 @@ Global
 		{F9634820-EDE9-4DB0-9801-C32AD492D4E7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F9634820-EDE9-4DB0-9801-C32AD492D4E7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F9634820-EDE9-4DB0-9801-C32AD492D4E7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{12ACA4A1-80E3-453C-8D7F-ABF46EBC9E28}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{12ACA4A1-80E3-453C-8D7F-ABF46EBC9E28}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{12ACA4A1-80E3-453C-8D7F-ABF46EBC9E28}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{12ACA4A1-80E3-453C-8D7F-ABF46EBC9E28}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

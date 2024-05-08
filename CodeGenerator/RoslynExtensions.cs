@@ -7,7 +7,7 @@ using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace SqlcGenCsharp;
 
-public static class Extensions
+public static class RoslynExtensions
 {
     public static CompilationUnitSyntax AddCommentOnTop(this CompilationUnitSyntax me, string comment)
     {

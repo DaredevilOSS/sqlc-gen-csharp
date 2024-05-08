@@ -12,9 +12,13 @@ namespace SqlcGenCsharp;
 internal class Options
 {
     [JsonPropertyName("driver")] public required string DriverName { get; init; }
-    [JsonPropertyName("minimalCsharp")] public double MinimalCsharp { get; init; } = -1.0;
-    
-    [JsonPropertyName("filePerQuery")] public bool FilePerQuery { get; init; }
+
+    [JsonPropertyName("generateCsproj")]
+    public bool GenerateCsproj { get; init; } = true; // generating .csproj files by default
+
+    [JsonPropertyName("minimalCsharp")] public double MinimalCsharp { get; init; } = 10.0;
+
+    [JsonPropertyName("filePerQuery")] public bool FilePerQuery { get; init; } // generating single file by default
 }
 
 public static class OptionsParser
@@ -23,7 +27,8 @@ public static class OptionsParser
     {
         var text = Encoding.UTF8.GetString(generateRequest.PluginOptions.ToByteArray());
         var rawOptions = JsonSerializer.Deserialize<Options>(text) ?? throw new InvalidOperationException();
-        return new ValidOptions(rawOptions.DriverName, rawOptions.MinimalCsharp, rawOptions.FilePerQuery);
+        return new ValidOptions(rawOptions.DriverName, rawOptions.MinimalCsharp, rawOptions.FilePerQuery,
+            rawOptions.GenerateCsproj);
     }
 }
 
@@ -35,18 +40,21 @@ public enum DriverName
 
 public class ValidOptions
 {
-    public ValidOptions(string driverName, double minimalCsharp, bool filePerQuery)
+    public ValidOptions(string driverName, double minimalCsharp, bool filePerQuery, bool generateCsproj)
     {
         Enum.TryParse(driverName, true, out DriverName outDriverName);
         DriverName = outDriverName;
-        MinimalCsharp = minimalCsharp <= 0 ? 10.0 : minimalCsharp;
+        MinimalCsharp = minimalCsharp;
         FilePerQuery = filePerQuery;
+        GenerateCsproj = generateCsproj;
     }
 
     private DriverName DriverName { get; }
 
     public double MinimalCsharp { get; }
     public bool FilePerQuery { get; }
+    
+    public bool GenerateCsproj { get; }
 
     public IDbDriver InstantiateDriver()
     {

@@ -9,6 +9,7 @@ COPY SqlcProtobuf/*.csproj ./SqlcProtobuf/
 COPY DriverCommon/*.csproj ./DriverCommon/
 COPY CodeGenerator/*.csproj ./CodeGenerator/
 COPY StringExtensions/*.csproj ./StringExtensions/
+COPY ListExtensions/*.csproj ./ListExtensions/
 COPY MySqlConnectorExample/*.csproj ./MySqlConnectorExample/
 COPY MySqlConnectorDriver/*.csproj ./MySqlConnectorDriver/
 COPY NpgsqlExample/*.csproj ./NpgsqlExample/
@@ -24,6 +25,7 @@ COPY SqlcProtobuf/ ./SqlcProtobuf/
 COPY DriverCommon/ ./DriverCommon/
 COPY CodeGenerator/ ./CodeGenerator/
 COPY StringExtensions/ ./StringExtensions/
+COPY ListExtensions/ ./ListExtensions/
 COPY MySqlConnectorExample/ ./MySqlConnectorExample/
 COPY MySqlConnectorDriver/ ./MySqlConnectorDriver/
 COPY NpgsqlExample/ ./NpgsqlExample/

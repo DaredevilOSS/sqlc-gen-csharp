@@ -14,7 +14,8 @@ sql:
     out: NpgsqlExample
     options:
       driver: Npgsql
-      minimalCsharp: 10.0
+#      generateCsproj: false
+#      minimalCsharp: 7.0
 #      filePerQuery: true
 - schema: "examples/authors/mysql/schema.sql"
   queries: "examples/authors/mysql/query.sql"
@@ -24,5 +25,6 @@ sql:
     out: MySqlConnectorExample
     options:
       driver: MySqlConnector
-      minimalCsharp: 7.0
+#      generateCsproj: false
+#      minimalCsharp: 7.0
 #      filePerQuery: true

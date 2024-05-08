@@ -26,54 +26,65 @@ public class CodeGenerator
 
     public CodeGenerator(GenerateRequest generateRequest)
     {
-        Options = OptionsParser.Parse(generateRequest);
+        GenerateRequest = generateRequest;
+        Options = OptionsParser.Parse(GenerateRequest);
+        NamespaceName = GenerateNamespace(GenerateRequest);
         DbDriver = Options.InstantiateDriver();
-        UtilsGen = new UtilsGen();
+        
+        // initialize file generators
+        CsprojGen = new CsprojGen(GenerateRequest.Settings.Codegen.Out, GenerateRequest.Settings.Engine);
+        UtilsGen = new UtilsGen(NamespaceName);
         DataClassesGen = new DataClassesGen(DbDriver);
     }
+
+    private GenerateRequest GenerateRequest { get; }
+
+    private string NamespaceName { get; }
 
     private ValidOptions Options { get; }
     private IDbDriver DbDriver { get; }
 
     private DataClassesGen DataClassesGen { get; }
-    
+
     private UtilsGen UtilsGen { get; }
 
-    public GenerateResponse Generate(GenerateRequest generateRequest)
+    private CsprojGen CsprojGen { get; }
+
+    public GenerateResponse Generate()
     {
-        var namespaceName = GenerateNamespace();
         var fileQueries = GetFileQueries();
         var files = fileQueries
-            .Select(fq => GenerateFile(namespaceName, fq.Value, fq.Key))
-            .Append(UtilsGen.GenerateFile(namespaceName))
-            .ToList();
-        return new GenerateResponse { Files = { files } };
+            .Select(fq => GenerateFile(NamespaceName, fq.Value, fq.Key))
+            .Append(UtilsGen.GenerateFile())
+            .AppendIf(CsprojGen.GenerateFile(), Options.GenerateCsproj);
 
-        string GenerateNamespace()
-        {
-            var parts = generateRequest.Settings.Codegen.Out
-                .Split(Separator, StringSplitOptions.RemoveEmptyEntries);
-            return parts.Length > 0 ? parts[0] : "GeneratedNamespace";
-        }
+        return new GenerateResponse { Files = { files } };
 
         Dictionary<string, Query[]> GetFileQueries()
         {
-            return generateRequest.Queries
-                .GroupBy(query => 
-                    Options.FilePerQuery 
-                        ? $"{query.Name}Query" 
+            return GenerateRequest.Queries
+                .GroupBy(query =>
+                    Options.FilePerQuery
+                        ? $"{query.Name}Query"
                         : QueryFilenameToClassName(query.Filename))
                 .ToDictionary(
                     group => group.Key,
                     group => group.ToArray());
         }
-        
+
         string QueryFilenameToClassName(string filenameWithExtension)
         {
             return string.Concat(
                 Path.GetFileNameWithoutExtension(filenameWithExtension).FirstCharToUpper(),
                 Path.GetExtension(filenameWithExtension)[1..].FirstCharToUpper());
         }
+    }
+
+    private string GenerateNamespace(GenerateRequest generateRequest)
+    {
+        var parts = generateRequest.Settings.Codegen.Out
+            .Split(Separator, StringSplitOptions.RemoveEmptyEntries);
+        return parts.Length > 0 ? parts[0] : "GeneratedNamespace";
     }
 
     private File GenerateFile(string namespaceName, IEnumerable<Query> queries, string className)
@@ -102,7 +113,8 @@ public class CodeGenerator
                 current.AddCommentOnTop($"// ReSharper disable {resharperDisable}"));
     }
 
-    private (UsingDirectiveSyntax[], MemberDeclarationSyntax) GenerateClass(IEnumerable<Query> queries, string className)
+    private (UsingDirectiveSyntax[], MemberDeclarationSyntax) GenerateClass(IEnumerable<Query> queries,
+        string className)
     {
         var (usingDirectives, sharedMemberDeclarations) = DbDriver.Preamble();
         var perQueryMembers = queries.SelectMany(GetMembersForSingleQuery).ToArray();
@@ -136,8 +148,8 @@ public class CodeGenerator
 
     private MemberDeclarationSyntax? GetQueryColumnsDataclass(Query query)
     {
-        return query.Columns.Count <= 0 
-            ? null 
+        return query.Columns.Count <= 0
+            ? null
             : DataClassesGen.Generate(query.Name, ClassMember.Row, query.Columns, Options);
     }
 
@@ -154,7 +166,7 @@ public class CodeGenerator
                 $"private const string {query.Name}{ClassMember.Sql.Name()} = \"{DbDriver.TransformQuery(query)}\";")!
             .AppendNewLine();
     }
-    
+
     private MemberDeclarationSyntax AddMethodDeclaration(Query query)
     {
         var queryTextConstant = GetInterfaceName(ClassMember.Sql);

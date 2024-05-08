@@ -8,11 +8,11 @@ using File = Plugin.File;
 
 namespace SqlcGenCsharp.Generators;
 
-internal class UtilsGen
+internal class UtilsGen(string namespaceName)
 {
     private const string ClassName = "Utils";
     
-    public File GenerateFile(string namespaceName)
+    public File GenerateFile()
     {
         var namespaceDeclaration = FileScopedNamespaceDeclaration(IdentifierName(namespaceName));
         var classDeclaration = GetUtilsClass();

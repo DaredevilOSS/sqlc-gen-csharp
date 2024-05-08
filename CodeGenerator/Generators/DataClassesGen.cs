@@ -8,7 +8,7 @@ using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace SqlcGenCsharp.Generators;
 
-public class DataClassesGen(IDbDriver dbDriver)
+internal class DataClassesGen(IDbDriver dbDriver)
 {
     private IDbDriver DbDriver { get; } = dbDriver;
 
