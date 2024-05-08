@@ -15,8 +15,7 @@ internal class DataClassesGen(IDbDriver dbDriver)
     public MemberDeclarationSyntax Generate(string name, ClassMember classMember, IEnumerable<Column> columns, 
         ValidOptions validOptions)
     {
-        // TODO logic should be part of a feature matrix
-        if (validOptions.MinimalCsharp >= 9.0)
+        if (validOptions.DotnetFramework == DotnetFramework.Dotnet80)
             return GenerateAsRecord(name, classMember, columns);
         return GenerateAsCLass(name, classMember, columns);
     }

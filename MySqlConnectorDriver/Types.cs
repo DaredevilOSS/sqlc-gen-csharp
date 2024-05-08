@@ -124,12 +124,10 @@ public static class Types
 
     private static ExpressionSyntax GetEmptyValueForColumn(string localColumnType)
     {
-        switch (localColumnType.ToLower())
+        return localColumnType.ToLower() switch
         {
-            case "string":
-                return ParseExpression("string.Empty");
-            default:
-                throw new NotSupportedException($"Unsupported column type: {localColumnType}");
-        }
+            "string" => ParseExpression("string.Empty"),
+            _ => throw new NotSupportedException($"Unsupported column type: {localColumnType}")
+        };
     }
 }
