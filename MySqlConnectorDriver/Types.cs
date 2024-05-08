@@ -58,15 +58,15 @@ public static class Types
         }
     }
 
-    public static ExpressionSyntax GetReadExpression(this Column me, int ordinal)
+    public static ExpressionSyntax GetColumnReadExpression(Column column, int ordinal)
     {
-        if (!me.NotNull)
+        if (!column.NotNull)
             return ConditionalExpression(
                 GetReadNullCondition(ordinal),
-                GetEmptyOrNullExpression(me.Type.Name.MySqlTypeToCsharpType(me.NotNull)),
-                GetNullSafeColumnReader(me, ordinal)
+                GetEmptyOrNullExpression(column.Type.Name.MySqlTypeToCsharpType(column.NotNull)),
+                GetNullSafeColumnReader(column, ordinal)
             );
-        return GetNullSafeColumnReader(me, ordinal);
+        return GetNullSafeColumnReader(column, ordinal);
     }
 
     private static ExpressionSyntax GetReadNullCondition(int ordinal)

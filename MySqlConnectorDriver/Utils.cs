@@ -58,7 +58,7 @@ public static class Utils
         return InitializerExpression(
             SyntaxKind.ObjectInitializerExpression,
             SeparatedList(columns.Select((column, ordinal) =>
-                column.GetReadExpression(ordinal).AssignTo(column.Name.FirstCharToUpper())
+                Types.GetColumnReadExpression(column, ordinal).AssignToVariable(column.Name.FirstCharToUpper())
             ))
         );
     }
