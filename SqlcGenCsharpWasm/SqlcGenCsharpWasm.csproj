@@ -1,14 +1,21 @@
 <Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
-    <RootNamespace>SqlcGenCsharp</RootNamespace>
-    <RuntimeIdentifier>wasi-wasm</RuntimeIdentifier>
-    <OutputType>Exe</OutputType>
-    <JsonSerializerIsReflectionEnabledByDefault>true</JsonSerializerIsReflectionEnabledByDefault>
-    <WasmSingleFileBundle>true</WasmSingleFileBundle>
-  </PropertyGroup>
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <RootNamespace>SqlcGenCsharp</RootNamespace>
+        <OutputType>Exe</OutputType>
+        <RuntimeIdentifier>wasi-wasm</RuntimeIdentifier>
+        <JsonSerializerIsReflectionEnabledByDefault>true</JsonSerializerIsReflectionEnabledByDefault>
+        
+<!--    WASM related config to reduce file size - currently not very successfully:-->
+        <WasmSingleFileBundle>true</WasmSingleFileBundle>
+        <PublishTrimmed>true</PublishTrimmed>
+        <EventSourceSupport>false</EventSourceSupport>
+        <UseSystemResourceKeys>true</UseSystemResourceKeys>
+        <EnableUnsafeUTF7Encoding>false</EnableUnsafeUTF7Encoding>
+        <DebuggerSupport>false</DebuggerSupport>
+    </PropertyGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\SqlcGenCsharp\SqlcGenCsharp.csproj" />
-  </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\SqlcGenCsharp\SqlcGenCsharp.csproj"/>
+    </ItemGroup>
 </Project>

@@ -28,7 +28,7 @@ internal static class ManyDeclareGen
         {
             Utils.EstablishConnection(),
             Utils.PrepareSqlCommand(queryTextConstant, parameters),
-            new [] 
+            new[]
             {
                 Utils.UsingDataReader(),
                 ParseStatement($"var {Variable.Rows.Name()} = new List<{returnInterface}>();"),

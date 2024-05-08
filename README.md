@@ -3,57 +3,61 @@
 ## Prerequisites
 make sure that the following applications are installed and exposed in your path
 
-* Dotnet CLI - https://github.com/dotnet/sdk - follow the instructions in the repo, we use version `.NET 8.0 (latest)`
-* buf build - https://buf.build/docs/installation - follow the instructions in here
+Follow the instructions in each of these:
+* Dotnet CLI - [Dotnet Installation](https://github.com/dotnet/sdk) - use version `.NET 8.0 (latest)`
+* buf build - [Buf Build](https://buf.build/docs/installation)
+* WASM related - [WASM libs](https://www.strathweb.com/2023/09/dotnet-wasi-applications-in-net-8-0/)
 
 ## Protobuf
 SQLC protobuf are defined in sqlc-dev/sqlc repository.
-Generating C# code from protocol buffer file:
+Generating C# code from protocol buffer files:
 ```
-make buf-gen
-```
-
-## Usage
-Use the following to run sqlc with the C# code locally:
-```
-make sqlc-generate
+make protobuf-generate
 ```
 
+## Generating code
+SQLC utilizes our process / WASM plugin to generate code
+```
+make sqlc-generate-process
+make sqlc-generate-wasm
+```
+
+## Testing generated code
+Testing the SQLC generated code via a predefined flow:
+```
+make test-process-plugin
+make test-wasm-plugin
+```
+
+## Supported SQL Engines
+- MySQL via [MySqlConnector](https://www.nuget.org/packages/MySqlConnector) package - [MySqlConnectorDriver](MySqlConnectorDriver/MySqlConnectorDriver.csproj)
+- PostgreSQL via [Npgsql](https://www.nuget.org/packages/Npgsql) package - [NpgsqlDriver](NpgsqlDriver/NpgsqlDriver.csproj)
+
+## Configuration
+Options available for plugin:
 ```yaml
-version: '2'
+version: "2"
 plugins:
-- name: csharp
-  wasm:
-    url: https://downloads.sqlc.dev/plugin/sqlc-gen-csharp_0.1.3.wasm
-    sha256: 287df8f6cc06377d67ad5ba02c9e0f00c585509881434d15ea8bd9fc751a9368
+  - name: csharp
+    env:
+      - DEBUG
+    process:
+      cmd: ./dist/SqlcGenCsharpProcess
 sql:
-- schema: "schema.sql"
-  queries: "query.sql"
-  engine: postgresql
-  codegen:
-  - out: src/authors
-    plugin: csharp
-    options:
-      runtime: dotnet
-      driver: postgres
+  - schema: "examples/authors/postgresql/schema.sql"
+    queries: "examples/authors/postgresql/query.sql"
+    engine: "postgresql"
+    codegen:
+      - plugin: csharp
+        out: NpgsqlExample
+        options:
+          driver: Npgsql
+          minimalCsharp: 7.0
+          filePerQuery: true
+          generateCsproj: false
 ```
 
-## Supported engines and drivers
-To be true:
-- MySQL via [MySqlConnector](https://www.nuget.org/packages/MySqlConnector).
-- PostgreSQL via [Npgsql](https://www.nuget.org/packages/Npgsql).
-- SqlServer via [sqlclient](https://learn.microsoft.com/en-us/dotnet/framework/data/adonet/data-providers?redirectedfrom=MSDN#net-framework-data-provider-for-sql-server-sqlclient).
-
-## Getting started
-
-
-### Setting up
-
-
-### Schema and queries
-
-
-### Generating code
-
-
-### Using generated code
+## Examples & Tests
+The below examples in here are automatically tested:
+- [MySqlConnectorExample](MySqlConnectorExample/MySqlConnectorExample.csproj)
+- [NpgsqlExample](NpgsqlExample/NpgsqlExample.csproj)

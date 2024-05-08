@@ -91,7 +91,7 @@ public static class Types
             case "mediumblob":
             case "tinyblob":
             case "varbinary":
-                return ParseExpression($"GetBytes(reader, {ordinal})");
+                return ParseExpression($"Utils.GetBytes(reader, {ordinal})");
             case "char":
             case "date":
             case "datetime":

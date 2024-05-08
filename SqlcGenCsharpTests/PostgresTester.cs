@@ -1,77 +1,80 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
+using NpgsqlExample;
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace SqlcGenCsharpTests;
 
-[TestFixture]
 public class PostgresTester : IDriverTester
 {
     private static string ConnectionStringEnv => "POSTGRES_CONNECTION_STRING";
 
-    private NpgsqlExample.QuerySql PostgresQuerySql { get; } =
-        new(connectionString: Environment.GetEnvironmentVariable(ConnectionStringEnv)!);
+    private QuerySql QuerySql { get; } =
+        new(Environment.GetEnvironmentVariable(ConnectionStringEnv)!);
 
-    [Test]
-    public async Task TestFlowOnDriver()
+    public async Task<long> CreateFirstAuthorAndTest()
     {
-        await TestFlowOnPostgres(PostgresQuerySql);
+        var bojackCreateAuthorArgs = new QuerySql.CreateAuthorArgs
+        {
+            Name = Consts.BojackAuthor,
+            Bio = Consts.BojackTheme
+        };
+        var createdBojackAuthor = await QuerySql.CreateAuthor(bojackCreateAuthorArgs);
+        Assert.That(createdBojackAuthor is
+        {
+            Name: Consts.BojackAuthor,
+            Bio: Consts.BojackTheme
+        });
+        var bojackInsertedId = createdBojackAuthor!.Value.Id;
+        var getAuthorArgs = new QuerySql.GetAuthorArgs
+        {
+            Id = bojackInsertedId
+        };
+        var singleAuthor = await QuerySql.GetAuthor(getAuthorArgs);
+        Assert.That(singleAuthor is
+        {
+            Name: Consts.BojackAuthor,
+            Bio: Consts.BojackTheme
+        });
+        return bojackInsertedId;
     }
 
-    private static async Task TestFlowOnPostgres(NpgsqlExample.QuerySql querySql)
+    public async Task CreateSecondAuthorAndTest()
     {
-        // test CreateAuthorReturnId works
-        var createdBojackAuthor = await querySql.CreateAuthor(new NpgsqlExample.QuerySql.CreateAuthorArgs
+        var createAuthorArgs = new QuerySql.CreateAuthorArgs
         {
-            Name = "Bojack Horseman",
-            Bio = "Back in the 90s he was in a very famous TV show"
-        });
-        Assert.That(createdBojackAuthor is { Name: "Bojack Horseman" });
-
-        // test GetAuthor works
-        var singleAuthor = await querySql.GetAuthor(
-            new NpgsqlExample.QuerySql.GetAuthorArgs(createdBojackAuthor!.Value.Id));
-        Assert.That(singleAuthor is { Name: "Bojack Horseman" });
-
-        // test ListAuthors works
-        await querySql.CreateAuthor(new NpgsqlExample.QuerySql.CreateAuthorArgs
+            Name = Consts.DrSeussAuthor,
+            Bio = Consts.DrSeussQuote
+        };
+        await QuerySql.CreateAuthor(createAuthorArgs);
+        var authors = await QuerySql.ListAuthors();
+        Assert.That(authors[0] is
         {
-            Name = "Dr. Seuss",
-            Bio = "You'll miss the best things if you keep your eyes shut"
+            Name: Consts.BojackAuthor,
+            Bio: Consts.BojackTheme
         });
-        var authors = await querySql.ListAuthors();
-        Assert.That(authors.SequenceEqual(
-            new List<NpgsqlExample.QuerySql.ListAuthorsRow>
-            {
-                new()
-                {
-                    Id = createdBojackAuthor.Value.Id,
-                    Name = createdBojackAuthor.Value.Name,
-                    Bio = createdBojackAuthor.Value.Bio
-                },
-                new()
-                {
-                    Id = createdBojackAuthor.Value.Id + 1,
-                    Name = "Dr. Seuss",
-                    Bio = "You'll miss the best things if you keep your eyes shut"
-                }
-            }));
+        Assert.That(authors[1] is
+        {
+            Name: Consts.DrSeussAuthor,
+            Bio: Consts.DrSeussQuote
+        });
+        ClassicAssert.AreEqual(2, authors.Count);
+    }
 
-        // test DeleteAuthor works
-        await querySql.DeleteAuthor(
-            new NpgsqlExample.QuerySql.DeleteAuthorArgs(createdBojackAuthor.Value.Id));
-        var authorRows = await querySql.ListAuthors();
-        Assert.That(authorRows.SequenceEqual(
-            new List<NpgsqlExample.QuerySql.ListAuthorsRow>
-            {
-                new()
-                {
-                    Id = createdBojackAuthor.Value.Id + 1,
-                    Name = "Dr. Seuss",
-                    Bio = "You'll miss the best things if you keep your eyes shut"
-                }
-            }));
+    public async Task DeleteFirstAuthorAndTest(long idToDelete)
+    {
+        var deleteAuthorArgs = new QuerySql.DeleteAuthorArgs
+        {
+            Id = idToDelete
+        };
+        await QuerySql.DeleteAuthor(deleteAuthorArgs);
+        var authorRows = await QuerySql.ListAuthors();
+        Assert.That(authorRows[0] is
+        {
+            Name: Consts.DrSeussAuthor,
+            Bio: Consts.DrSeussQuote
+        });
+        ClassicAssert.AreEqual(1, authorRows.Count);
     }
 }

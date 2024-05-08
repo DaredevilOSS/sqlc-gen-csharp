@@ -12,7 +12,7 @@
 
 
     <ItemGroup>
-        <ProjectReference Include="..\SqlcProtobuf\SqlcProtobuf.csproj" />
+        <ProjectReference Include="..\SqlcProtobuf\SqlcProtobuf.csproj"/>
         <ProjectReference Include="..\StringExtensions\StringExtensions.csproj"/>
     </ItemGroup>
 

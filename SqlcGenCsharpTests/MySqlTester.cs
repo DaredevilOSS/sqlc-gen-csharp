@@ -1,82 +1,71 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
+using MySqlConnectorExample;
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace SqlcGenCsharpTests;
 
-[TestFixture]
 public class MySqlTester : IDriverTester
 {
     private static string ConnectionStringEnv => "MYSQL_CONNECTION_STRING";
 
-    private MySqlConnectorExample.QuerySql MysqlQuerySql { get; } =
-        new(connectionString: Environment.GetEnvironmentVariable(ConnectionStringEnv)!);
-
-    [Test]
-    public async Task TestFlowOnDriver()
+    private QuerySql QuerySql { get; } =
+        new(Environment.GetEnvironmentVariable(ConnectionStringEnv)!);
+    
+    public async Task<long> CreateFirstAuthorAndTest()
     {
-        await TestFlowOnMySql(MysqlQuerySql);
+        var createAuthorReturnIdArgs = new QuerySql.CreateAuthorReturnIdArgs
+        {
+            Name = Consts.BojackAuthor,
+            Bio = Consts.BojackTheme
+        };
+        var insertedId = await QuerySql.CreateAuthorReturnId(createAuthorReturnIdArgs);
+        var getBojackAuthorArgs = new QuerySql.GetAuthorArgs { Id = insertedId };
+        var bojackAuthor = await QuerySql.GetAuthor(getBojackAuthorArgs);
+        Assert.That(bojackAuthor is
+        {
+            Name: Consts.BojackAuthor,
+            Bio: Consts.BojackTheme
+        });
+        return insertedId;
     }
 
-    private static async Task TestFlowOnMySql(MySqlConnectorExample.QuerySql querySql)
+    public async Task CreateSecondAuthorAndTest()
     {
-        // test CreateAuthorReturnId works
-        var insertedId = await querySql.CreateAuthorReturnId(new MySqlConnectorExample.QuerySql.CreateAuthorReturnIdArgs
+        var createAuthorArgs = new QuerySql.CreateAuthorArgs
         {
-            Name = "Bojack Horseman",
-            Bio = "Back in the 90s he was in a very famous TV show"
-        });
-
-        // test GetAuthor works
-        var singleAuthor = await querySql.GetAuthor(new MySqlConnectorExample.QuerySql.GetAuthorArgs(insertedId));
-        Assert.That(singleAuthor is { Name: "Bojack Horseman" });
-
-        // test UpdateAuthor works
-        await querySql.UpdateAuthor(new MySqlConnectorExample.QuerySql.UpdateAuthorArgs
+            Name = Consts.DrSeussAuthor,
+            Bio = Consts.DrSeussQuote
+        };
+        await QuerySql.CreateAuthor(createAuthorArgs);
+        var actualAuthors = await QuerySql.ListAuthors();
+        Assert.That(actualAuthors[0] is
         {
-            Bio = ""
+            Name: Consts.BojackAuthor,
+            Bio: Consts.BojackTheme
         });
-        
-        // test CreateAuthor works
-        await querySql.CreateAuthor(new MySqlConnectorExample.QuerySql.CreateAuthorArgs
+        Assert.That(actualAuthors[1] is
         {
-            Name = "Dr. Seuss",
-            Bio = "You'll miss the best things if you keep your eyes shut"
+            Name: Consts.DrSeussAuthor,
+            Bio: Consts.DrSeussQuote
         });
+        ClassicAssert.AreEqual(2, actualAuthors.Count);
+    }
 
-        // test ListAuthors works
-        var authors = await querySql.ListAuthors();
-        Assert.That(authors.SequenceEqual(
-            new List<MySqlConnectorExample.QuerySql.ListAuthorsRow>
-            {
-                new()
-                {
-                    Id = insertedId,
-                    Name = "Bojack Horseman",
-                    Bio = "Back in the 90s he was in a very famous TV show"
-                },
-                new()
-                {
-                    Id = insertedId + 1,
-                    Name = "Dr. Seuss",
-                    Bio = "You'll miss the best things if you keep your eyes shut"
-                }
-            }));
-
-        // test DeleteAuthor works
-        await querySql.DeleteAuthor(new MySqlConnectorExample.QuerySql.DeleteAuthorArgs(insertedId));
-        var authorRows = await querySql.ListAuthors();
-        Assert.That(authorRows.SequenceEqual(
-            new List<MySqlConnectorExample.QuerySql.ListAuthorsRow>
-            {
-                new()
-                {
-                    Id = insertedId + 1,
-                    Name = "Dr. Seuss",
-                    Bio = "You'll miss the best things if you keep your eyes shut"
-                }
-            }));
+    public async Task DeleteFirstAuthorAndTest(long idToDelete)
+    {
+        var deleteAuthorArgs = new QuerySql.DeleteAuthorArgs
+        {
+            Id = idToDelete
+        };
+        await QuerySql.DeleteAuthor(deleteAuthorArgs);
+        var authorRows = await QuerySql.ListAuthors();
+        Assert.That(authorRows[0] is
+        {
+            Name: Consts.DrSeussAuthor,
+            Bio: Consts.DrSeussQuote
+        });
+        ClassicAssert.AreEqual(1, authorRows.Count);
     }
 }

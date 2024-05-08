@@ -1,9 +1,7 @@
-﻿namespace SqlcGenCsharp;
-
-using System;
-using System.IO;
-using Google.Protobuf;
+﻿using Google.Protobuf;
 using Plugin;
+
+namespace SqlcGenCsharp;
 
 public static class PluginRunner
 {
@@ -12,7 +10,8 @@ public static class PluginRunner
         var generateRequest = ReadInput();
         DebugHelper.Instance.Append("starting");
         var codeGenerator = new CodeGenerator(generateRequest);
-        WriteOutput(codeGenerator.GenerateResponse);
+        var generateResponse = codeGenerator.Generate();
+        WriteOutput(generateResponse);
     }
 
     private static GenerateRequest ReadInput()
