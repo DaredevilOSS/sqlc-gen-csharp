@@ -28,11 +28,11 @@ sqlc-generate-process: dotnet-publish-process
 test-process-plugin: sqlc-generate-process dockerfile-generate run-tests
 
 # WASM type plugin
-update-wasm-plugin:
-	./scripts/update_wasm_plugin.sh
-
 dotnet-publish-wasm: protobuf-generate
 	dotnet publish SqlcGenCsharpWasm -c release --output dist/
+
+update-wasm-plugin:
+	./scripts/update_wasm_plugin.sh
 
 sqlc-generate-wasm: dotnet-publish-wasm update-wasm-plugin
 	SQLCCACHE=./; sqlc -f sqlc.wasm.yaml generate
