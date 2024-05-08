@@ -5,6 +5,9 @@ PWD 		:= $(shell pwd)
 RUNTIME_DIR := SqlcGenCsharp/bin/Release/.net8.0/osx-arm64/
 PATH  		:= ${PATH}:${PWD}/${RUNTIME_DIR}
 
+dockerfile-generate:
+	./scripts/generate_dockerfile.sh
+
 protobuf-generate:
 	./scripts/generate_protobuf.sh
 
@@ -22,7 +25,7 @@ dotnet-publish-process: dotnet-build-process
 sqlc-generate-process: dotnet-publish-process
 	sqlc -f sqlc.process.yaml generate
 
-test-process-plugin: sqlc-generate-process run-tests
+test-process-plugin: sqlc-generate-process dockerfile-generate run-tests
 
 # WASM type plugin
 update-wasm-plugin:
@@ -34,4 +37,4 @@ dotnet-publish-wasm: protobuf-generate
 sqlc-generate-wasm: dotnet-publish-wasm update-wasm-plugin
 	SQLCCACHE=./; sqlc -f sqlc.wasm.yaml generate
 
-test-wasm-plugin: sqlc-generate-wasm run-tests
+test-wasm-plugin: sqlc-generate-wasm dockerfile-generate run-tests
