@@ -48,10 +48,22 @@ jobs:
            plugin-tests
       - name: Dotenv Action
         uses: falti/dotenv-action@v1.1.2
+      # - name: test dotnet output project
+      #   run: |
+      #     tests_container_id=$(docker ps -aqf "name=plugin-tests")
+      #     tests_exit_code=$(docker wait "plugin-tests")
+      #     docker logs --timestamps "${tests_container_id}"
+      #     exit "${tests_exit_code}"
+      #   shell: bash
+      # - name: test dotnet output project
+      #   run: |
+      #     tests_container_id=$(docker ps -aqf "name=plugin-tests")
+      #     tests_exit_code=$(docker wait "plugin-tests")
+      #     docker logs --timestamps "${tests_container_id}"
+      #     exit "${tests_exit_code}"
+      #   shell: bash
       - name: test dotnet output project
         run: |
-          tests_container_id=$(docker ps -aqf "name=plugin-tests")
-          tests_exit_code=$(docker wait "plugin-tests")
-          docker logs --timestamps "${tests_container_id}"
-          exit "${tests_exit_code}"
+           chmod +x ./scripts/run_tests.sh
+           ./scripts/run_tests.sh
         shell: bash
