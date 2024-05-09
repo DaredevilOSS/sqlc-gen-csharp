@@ -38,7 +38,11 @@ jobs:
       - name: Dotenv Action  
         uses: falti/dotenv-action@v1.1.2
       - name: test dotnet output project
-        run: docker wait "plugin-tests"
+        run: |
+          tests_container_id=$(docker ps -aqf "name=plugin-tests")
+          echo "${tests_container_id}"
+          docker wait "plugin-tests"
+        shell: bash
       # - name: Test generated code (.exe)
       #   run: make test-process-plugin-ci
       # - name: Test generated code (.wasm)
