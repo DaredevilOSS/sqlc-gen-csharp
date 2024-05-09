@@ -1,0 +1,93 @@
+name: CI
+defaults:
+  run:
+    shell: bash
+
+on:
+  push:
+    branches: [ "main", "improve-ci" ]
+  pull_request:
+    paths:
+      - "!**.md"
+
+jobs:
+  # build:
+  #   runs-on: ${{ matrix.os }}
+  #   strategy:
+  #     matrix:
+  #       os: [ ubuntu-latest ]
+  #       # os: [ ubuntu-latest, macos-latest ]
+  #       architecture: [ "x64", "arm64" ]
+  #       dotnet-version: [ '8.0.x' ]
+  #   steps:
+
+  test:
+    runs-on: ${{ matrix.os }}
+    # needs: [ "build" ]
+    if: ${{ always() }}
+    strategy:
+      matrix:
+        os: [ ubuntu-latest ]
+        # os: [ ubuntu-latest, macos-latest ]
+        architecture: [ "x64", "arm64" ]
+        dotnet-version: [ '8.0.x' ]
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup dotnet ${{ matrix.dotnet-version }}
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: ${{ matrix.dotnet-version }}
+      - name: install wasm workload
+        run: dotnet workload install wasi-experimental
+      - name: Download WASI-SDK
+        uses: actions/download-artifact@v4
+        with:
+          name: wasi-sdk-v21
+          path: wasi-sdk
+      - name: dotnet build
+        run: |
+          # dowload wasm
+          wget https://github.com/WebAssembly/wasi-sdk/releases/download/wasi-sdk-22/wasi-sdk-22.0-linux.tar.gz
+          tar xvf wasi-sdk-22.0-linux.tar.gz
+
+          # run dotnet publish (build + publish)
+          WASI_SDK_PATH="./wasi-sdk-22.0-linux" dotnet publish SqlcGenCsharpWasm -c release --output dist/
+          
+      - uses: sqlc-dev/setup-sqlc@v4
+        with:
+          sqlc-version: '1.25.0'
+      - name: run update sha256 for builded wasm
+        shell: bash
+        run: |
+         chmod +x ./scripts/update_wasm_plugin.sh
+         ./scripts/update_wasm_plugin.sh
+      - name: run sqlc with generated wasm plugin
+        run: sqlc -f sqlc.wasm.yaml generate
+      - uses: hoverkraft-tech/compose-action@v1.5.1
+        with:
+         services: |
+           mysqldb
+           postgresdb
+           plugin-tests
+      - name: Dotenv Action
+        uses: falti/dotenv-action@v1.1.2
+      # - name: test dotnet output project
+      #   run: |
+      #     tests_container_id=$(docker ps -aqf "name=plugin-tests")
+      #     tests_exit_code=$(docker wait "plugin-tests")
+      #     docker logs --timestamps "${tests_container_id}"
+      #     exit "${tests_exit_code}"
+      #   shell: bash
+      # - name: test dotnet output project
+      #   run: |
+      #     tests_container_id=$(docker ps -aqf "name=plugin-tests")
+      #     tests_exit_code=$(docker wait "plugin-tests")
+      #     docker logs --timestamps "${tests_container_id}"
+      #     exit "${tests_exit_code}"
+      #   shell: bash
+      - name: test dotnet output project
+        run: |
+           chmod +x ./scripts/run_tests.sh
+           ./scripts/run_tests.sh
+        shell: bash
