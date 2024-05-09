@@ -1,37 +1,23 @@
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Plugin;
 using SqlcGenCsharp.Drivers;
-using static System.String;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace SqlcGenCsharp.MySqlConnectorDriver;
 
 public static class Utils
 {
-    public static string GetParameterListAsString(string argInterface, IEnumerable<Parameter> parameters)
-    {
-        return "(" + (IsNullOrEmpty(argInterface) || !parameters.Any() ? Empty : $"{argInterface} args") + ")";
-    }
-
-    public static ExpressionSyntax AwaitReaderRow()
-    {
-        return ParseExpression($"await {Variable.Reader.Name()}.ReadAsync()");
-    }
-
     public static IEnumerable<StatementSyntax> EstablishConnection()
     {
         return new[]
         {
-            ParseStatement(
-                $"await using var {Variable.Connection.Name()} = " +
-                $"new MySqlConnection({Variable.ConnectionString.Name()});"),
+            ParseStatement($"await using var {Variable.Connection.Name()} = new MySqlConnection({Variable.ConnectionString.Name()});"),
             ParseStatement($"{Variable.Connection.Name()}.Open();")
         };
     }
-
+    
     public static IEnumerable<StatementSyntax> PrepareSqlCommand(string sqlTextConstant,
         IEnumerable<Parameter> parameters)
     {
@@ -44,22 +30,6 @@ public static class Utils
             parameters.Select(param => ParseStatement(
                 $"{Variable.Command.Name()}.Parameters.AddWithValue(\"@{param.Column.Name}\", " +
                 $"args.{param.Column.Name.FirstCharToUpper()});"))
-        );
-    }
-
-    public static StatementSyntax UsingDataReader()
-    {
-        return ParseStatement(
-            $"await using var {Variable.Reader.Name()} = await {Variable.Command.Name()}.ExecuteReaderAsync();");
-    }
-
-    public static InitializerExpressionSyntax GetRecordInitExpression(IEnumerable<Column> columns)
-    {
-        return InitializerExpression(
-            SyntaxKind.ObjectInitializerExpression,
-            SeparatedList(columns.Select((column, ordinal) =>
-                Types.GetColumnReadExpression(column, ordinal).AssignToVariable(column.Name.FirstCharToUpper())
-            ))
         );
     }
 }

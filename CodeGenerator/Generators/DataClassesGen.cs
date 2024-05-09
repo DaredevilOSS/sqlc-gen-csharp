@@ -15,8 +15,7 @@ internal class DataClassesGen(IDbDriver dbDriver)
     public MemberDeclarationSyntax Generate(string name, ClassMember classMember, IEnumerable<Column> columns, 
         ValidOptions validOptions)
     {
-        // TODO logic should be part of a feature matrix
-        if (validOptions.MinimalCsharp >= 9.0)
+        if (validOptions.DotnetFramework == DotnetFramework.Dotnet80)
             return GenerateAsRecord(name, classMember, columns);
         return GenerateAsCLass(name, classMember, columns);
     }
@@ -39,7 +38,7 @@ internal class DataClassesGen(IDbDriver dbDriver)
         {
             return ParameterList(SeparatedList(columns
                 .Select(column => Parameter(Identifier(column.Name.FirstCharToUpper()))
-                    .WithType(ParseTypeName(DbDriver.ColumnType(column.Type.Name, column.NotNull)))
+                    .WithType(ParseTypeName(DbDriver.GetColumnType(column)))
                 )));
         }
     }
@@ -56,7 +55,7 @@ internal class DataClassesGen(IDbDriver dbDriver)
         {
             return columns.Select(c =>
                 {
-                    var propertyType = DbDriver.ColumnType(c.Type.Name, c.NotNull);
+                    var propertyType = DbDriver.GetColumnType(c);
                     return ParseMemberDeclaration(
                         $"public required {propertyType} {c.Name.FirstCharToUpper()} {{ get; init; }}");
                 })
