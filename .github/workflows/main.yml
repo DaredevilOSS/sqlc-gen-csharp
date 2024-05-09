@@ -36,14 +36,14 @@ jobs:
         if: runner.os == 'Linux'
         run: |
           wget https://github.com/WebAssembly/wasi-sdk/releases/download/wasi-sdk-22/wasi-sdk-22.0-linux.tar.gz
-          tar xf wasi-sdk-22.0-linux.tar.gz
+          tar xf wasi-sdk-22.0-linux.tar.gz wasi-sdk-22.0
           chmod -R 755 wasi-sdk-22.0
   
       - name: Download WASI SDK on Windows
         if: runner.os == 'Windows'
         run: |
-          curl -LO https://github.com/WebAssembly/wasi-sdk/releases/download/wasi-sdk-22/wasi-sdk-22.0-linux.tar.gz
-          tar xf wasi-sdk-22.0-linux.tar.gz
+          curl -LO https://github.com/WebAssembly/wasi-sdk/releases/download/wasi-sdk-22/wasi-sdk-22.0.m-mingw.tar.gz
+          tar xf wasi-sdk-22.0.m-mingw.tar.gz wasi-sdk-22.0
           chmod -R 755 wasi-sdk-22.0
       - name: dotnet publish and build
         run: WASI_SDK_PATH="$(pwd)/wasi-sdk-22.0" dotnet publish SqlcGenCsharpWasm -c release
