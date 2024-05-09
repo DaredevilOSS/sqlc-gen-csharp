@@ -23,7 +23,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Load .env file
-        uses: xom9ikk/dotenv@v2
+        uses: xom9ikk/dotenv@v2.3.0
+        with:
+          load-mode: strict
       - name: Setup dotnet ${{ matrix.dotnet-version }}  
         uses: actions/setup-dotnet@v3
         with:
