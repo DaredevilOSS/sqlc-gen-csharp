@@ -7,6 +7,7 @@ if [ "$GITHUB_ACTIONS" = "true" ]; then
 else
     SOURCE_WASM_FILE="SqlcGenCsharpWasm/bin/Release/net8.0/wasi-wasm/AppBundle/SqlcGenCsharpWasm.wasm"
 fi
+mkdir -p dist
 cp "${SOURCE_WASM_FILE}" dist/plugin.wasm
 echo "WASM filesize:" && du -sh dist/plugin.wasm
 
