@@ -41,10 +41,9 @@ jobs:
       - name: install wasm workload
         run: dotnet workload install wasi-experimental
       - name: dotnet build
-        
         run: |
-          WASI_SDK_PATH="./wasi-sdk-21.0"
-          dotnet publish SqlcGenCsharpWasm -c release --output dist/
+          chmod +x ./wasi-sdk-21.0/**
+          WASI_SDK_PATH="./wasi-sdk-21.0" dotnet publish SqlcGenCsharpWasm -c release --output dist/
           
       - uses: sqlc-dev/setup-sqlc@v4
         with:
