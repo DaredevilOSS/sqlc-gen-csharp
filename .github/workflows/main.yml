@@ -47,7 +47,7 @@ jobs:
           chmod 755 wasi-sdk-22.0
       - name: dotnet build
         run: |
-          ls -la wasi-sdk-22.0
+          ls -la wasi-sdk-22.0/bin/
 
           # run dotnet publish (build + publish)
           WASI_SDK_PATH="wasi-sdk-22.0" dotnet publish SqlcGenCsharpWasm -c release --output dist/
