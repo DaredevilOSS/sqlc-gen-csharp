@@ -1,9 +1,11 @@
 #!/usr/bin/env bash
 
 if [ "$GITHUB_ACTIONS" = "true" ]; then
+    echo "Running in Github Actions"
     tests_container_id=$(docker ps -aqf "name=${TESTS_CONTAINER_NAME}")
     tests_exit_code=$(docker wait "${TESTS_CONTAINER_NAME}")
 else
+    echo "Running in local"
     set -ex
 
     destroy() { docker-compose down --volumes; }
