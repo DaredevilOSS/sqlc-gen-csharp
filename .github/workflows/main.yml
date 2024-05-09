@@ -40,16 +40,13 @@ jobs:
           dotnet-version: ${{ matrix.dotnet-version }}
       - name: install wasm workload
         run: dotnet workload install wasi-experimental
-      - name: dotnet build
+      - name: download wasi-sdk
         run: |
-          # dowload wasm
           wget https://github.com/WebAssembly/wasi-sdk/releases/download/wasi-sdk-22/wasi-sdk-22.0-linux.tar.gz
           tar xvf wasi-sdk-22.0-linux.tar.gz
-          # ls -la
-
           chmod -R 755 ./wasi-sdk-22.0-linux
-          chmod 777 ./wasi-sdk-22.0-linux/bin
-          chmod 777 ./wasi-sdk-22.0-linux/bin/clang
+      - name: dotnet build
+        run: |
           ls -la wasi-sdk-22.0-linux
 
           # run dotnet publish (build + publish)
