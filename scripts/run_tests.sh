@@ -4,6 +4,7 @@ if [ "$GITHUB_ACTIONS" = "true" ]; then
     echo "Running in Github Actions"
     tests_container_id=$(docker ps -aqf "name=plugin-tests")
     tests_exit_code=$(docker wait "plugin-tests")
+    docker logs --timestamps "${tests_container_id}"
 else
     echo "Running in local"
     set -ex
@@ -18,5 +19,6 @@ else
 
     # by container_id since the container is dead
     docker logs --timestamps "${tests_container_id}" > tests.log && cat tests.log
-    exit "${tests_exit_code}"
 fi
+
+exit "${tests_exit_code}"
