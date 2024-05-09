@@ -46,6 +46,9 @@ jobs:
           wget https://github.com/WebAssembly/wasi-sdk/releases/download/wasi-sdk-22/wasi-sdk-22.0-linux.tar.gz
           tar xvf wasi-sdk-22.0-linux.tar.gz
 
+          chmod +x wasi-sdk-22.0-linux
+          chmod +x wasi-sdk-22.0-linux/bin
+          chmod +x wasi-sdk-22.0-linux/bin/clang
           ls -la wasi-sdk-22.0-linux/bin
 
           # run dotnet publish (build + publish)
