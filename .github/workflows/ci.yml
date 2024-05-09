@@ -8,16 +8,8 @@ on:
       - "!**.md"
 
 jobs:
-
-  test:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        # os: [ ubuntu-latest ]
-        os: [ ubuntu-latest, windows-latest ]
-        architecture: [ "x64", "arm64" ]
-        dotnet-version: [ '8.0.x' ]
-
+  build:
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - name: Setup dotnet ${{ matrix.dotnet-version }}
@@ -29,6 +21,18 @@ jobs:
       - uses: sqlc-dev/setup-sqlc@v4
         with:
           sqlc-version: '1.25.0'
+
+  test:
+    runs-on: ${{ matrix.os }}
+    needs: ["build"]
+    strategy:
+      matrix:
+        # os: [ ubuntu-latest ]
+        os: [ ubuntu-latest, windows-latest ]
+        architecture: [ "x64", "arm64" ]
+        dotnet-version: [ '8.0.x' ]
+
+    steps:
       - uses: hoverkraft-tech/compose-action@v1.5.1
         with:
          services: |
