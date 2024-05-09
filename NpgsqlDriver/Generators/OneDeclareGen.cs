@@ -8,10 +8,10 @@ using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace SqlcGenCsharp.NpgsqlDriver.Generators;
 
-internal static class OneDeclareGen
+public class OneDeclareGen(IDbDriver dbDriver)
 {
-    public static MemberDeclarationSyntax Generate(string funcName, string queryTextConstant, string argInterface,
-        string returnInterface, IList<Parameter> parameters, IEnumerable<Column> columns, IDbDriver dbDriver)
+    public MemberDeclarationSyntax Generate(string funcName, string queryTextConstant, string argInterface,
+        string returnInterface, IList<Parameter> parameters, IEnumerable<Column> columns)
     {
         return MethodDeclaration(IdentifierName($"Task<{returnInterface}?>"), funcName)
             .WithPublicAsync()
@@ -25,26 +25,25 @@ internal static class OneDeclareGen
             {
                 Utils.EstablishConnection(),
                 Utils.PrepareSqlCommand(queryTextConstant, parameters),
-                ExecuteAndReturnOne(returnInterface, columns, dbDriver)
+                ExecuteAndReturnOne(returnInterface, columns)
             }.SelectMany(x => x));
         }
     }
 
-    private static IEnumerable<StatementSyntax> ExecuteAndReturnOne(string returnInterface, IEnumerable<Column> columns,
-        IDbDriver dbDriver)
+    private IEnumerable<StatementSyntax> ExecuteAndReturnOne(string returnInterface, IEnumerable<Column> columns)
     {
         return new[]
         {
             CommonExpressions.UsingDataReader(),
             IfStatement(
                 CommonExpressions.AwaitReaderRow(),
-                ReturnSingleRow(returnInterface, columns, dbDriver)
+                ReturnSingleRow(returnInterface, columns)
             ),
             ReturnStatement(LiteralExpression(SyntaxKind.NullLiteralExpression))
         };
     }
 
-    private static StatementSyntax ReturnSingleRow(string returnInterface, IEnumerable<Column> columns, IDbDriver dbDriver)
+    private StatementSyntax ReturnSingleRow(string returnInterface, IEnumerable<Column> columns)
     {
         return ReturnStatement(
             ObjectCreationExpression(IdentifierName(returnInterface))

@@ -1,11 +1,12 @@
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using SqlcGenCsharp.Drivers;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace SqlcGenCsharp.NpgsqlDriver.Generators;
 
-internal static class PreambleGen
+public class PreambleGen(IDbDriver dbDriver)
 {
-    public static UsingDirectiveSyntax[] GetUsingDirectives()
+    public UsingDirectiveSyntax[] GetUsingDirectives()
     {
         return
         [

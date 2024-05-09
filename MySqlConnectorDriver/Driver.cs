@@ -12,9 +12,28 @@ namespace SqlcGenCsharp.MySqlConnectorDriver;
 
 public partial class Driver : IDbDriver
 {
+    private PreambleGen PreambleGen { get;  }
+
+    private OneDeclareGen OneDeclareGen { get;  }
+
+    private ManyDeclareGen ManyDeclareGen { get;  }
+    
+    private ExecDeclareGen ExecDeclareGen { get;  }
+    
+    private ExecLastIdDeclareGen ExecLastIdDeclareGen { get; }
+
+    public Driver()
+    {
+        PreambleGen = new PreambleGen(this);
+        OneDeclareGen = new OneDeclareGen(this);
+        ManyDeclareGen = new ManyDeclareGen(this);
+        ExecDeclareGen = new ExecDeclareGen(this);
+        ExecLastIdDeclareGen = new ExecLastIdDeclareGen(this);
+    }
+    
     public string ColumnType(Column column)
     {
-        var nullableSuffix = column.NotNull ? string.Empty : "?";
+        var nullableSuffix = column.NotNull ? Empty : "?";
         if (IsNullOrEmpty(column.Type.Name))
             return "object" + nullableSuffix;
 
@@ -117,7 +136,7 @@ public partial class Driver : IDbDriver
     public MemberDeclarationSyntax OneDeclare(string funcName, string queryTextConstant, string argInterface,
         string returnInterface, IList<Parameter> parameters, IList<Column> columns)
     {
-        return OneDeclareGen.Generate(funcName, queryTextConstant, argInterface, returnInterface, parameters, columns, this);
+        return OneDeclareGen.Generate(funcName, queryTextConstant, argInterface, returnInterface, parameters, columns);
     }
 
     public MemberDeclarationSyntax ExecDeclare(string funcName, string queryTextConstant, string argInterface,
@@ -129,15 +148,13 @@ public partial class Driver : IDbDriver
     public MemberDeclarationSyntax ExecLastIdDeclare(string funcName, string queryTextConstant, string argInterface,
         string returnInterface, IList<Parameter> parameters, IList<Column> columns)
     {
-        return ExecLastIdDeclareGen.Generate(funcName, queryTextConstant, argInterface, returnInterface, parameters,
-            columns);
+        return ExecLastIdDeclareGen.Generate(funcName, queryTextConstant, argInterface, parameters);
     }
 
     public MemberDeclarationSyntax ManyDeclare(string funcName, string queryTextConstant, string argInterface,
         string returnInterface, IList<Parameter> parameters, IEnumerable<Column> columns)
     {
-        return ManyDeclareGen.Generate(funcName, queryTextConstant, argInterface, returnInterface, parameters, columns, 
-            this);
+        return ManyDeclareGen.Generate(funcName, queryTextConstant, argInterface, returnInterface, parameters, columns);
     }
 
     [GeneratedRegex(@"\?")]

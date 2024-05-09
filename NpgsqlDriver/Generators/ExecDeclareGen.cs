@@ -8,9 +8,9 @@ using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace SqlcGenCsharp.NpgsqlDriver.Generators;
 
-internal static class ExecDeclareGen
+public class ExecDeclareGen(IDbDriver dbDriver)
 {
-    public static MemberDeclarationSyntax Generate(string funcName, string queryTextConstant, string argInterface,
+    public MemberDeclarationSyntax Generate(string funcName, string queryTextConstant, string argInterface,
         IList<Parameter> parameters)
     {
         var methodDeclaration = MethodDeclaration(IdentifierName("Task"), Identifier(funcName))

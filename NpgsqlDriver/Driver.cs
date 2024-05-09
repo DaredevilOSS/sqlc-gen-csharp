@@ -12,6 +12,25 @@ namespace SqlcGenCsharp.NpgsqlDriver;
 
 public class Driver : IDbDriver
 {
+    private PreambleGen PreambleGen { get;  }
+
+    private OneDeclareGen OneDeclareGen { get;  }
+
+    private ManyDeclareGen ManyDeclareGen { get;  }
+    
+    private ExecDeclareGen ExecDeclareGen { get;  }
+    
+    private ExecLastIdDeclareGen ExecLastIdDeclareGen { get; }
+    
+    public Driver()
+    {
+        PreambleGen = new PreambleGen(this);
+        OneDeclareGen = new OneDeclareGen(this);
+        ManyDeclareGen = new ManyDeclareGen(this);
+        ExecDeclareGen = new ExecDeclareGen(this);
+        ExecLastIdDeclareGen = new ExecLastIdDeclareGen(this);
+    }
+    
     public string ColumnType(Column column)
     {
         var nullableSuffix = column.NotNull ? string.Empty : "?";
@@ -132,7 +151,7 @@ public class Driver : IDbDriver
     public MemberDeclarationSyntax OneDeclare(string funcName, string queryTextConstant, string argInterface,
         string returnInterface, IList<Parameter> parameters, IList<Column> columns)
     {
-        return OneDeclareGen.Generate(funcName, queryTextConstant, argInterface, returnInterface, parameters, columns, this);
+        return OneDeclareGen.Generate(funcName, queryTextConstant, argInterface, returnInterface, parameters, columns);
     }
 
     public MemberDeclarationSyntax ExecDeclare(string funcName, string queryTextConstant, string argInterface,
@@ -151,7 +170,6 @@ public class Driver : IDbDriver
     public MemberDeclarationSyntax ManyDeclare(string funcName, string queryTextConstant, string argInterface,
         string returnInterface, IList<Parameter> parameters, IEnumerable<Column> columns)
     {
-        return ManyDeclareGen.Generate(funcName, queryTextConstant, argInterface, returnInterface, parameters, columns,
-            this);
+        return ManyDeclareGen.Generate(funcName, queryTextConstant, argInterface, returnInterface, parameters, columns);
     }
 }

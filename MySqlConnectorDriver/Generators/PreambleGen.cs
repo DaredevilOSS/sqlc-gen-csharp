@@ -1,11 +1,12 @@
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using SqlcGenCsharp.Drivers;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace SqlcGenCsharp.MySqlConnectorDriver.Generators;
 
-internal static class PreambleGen
+internal class PreambleGen(IDbDriver dbDriver)
 {
-    public static UsingDirectiveSyntax[] GetUsingDirectives()
+    public UsingDirectiveSyntax[] GetUsingDirectives()
     {
         return
         [
