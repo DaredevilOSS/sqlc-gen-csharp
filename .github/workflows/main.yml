@@ -47,9 +47,9 @@ jobs:
           tar xvf wasi-sdk-22.0-linux.tar.gz
           ls -la
 
-          chmod +x wasi-sdk-22.0-linux
-          chmod +x wasi-sdk-22.0-linux/bin
-          chmod +x wasi-sdk-22.0-linux/bin/clang
+          chmod 777 wasi-sdk-22.0-linux
+          chmod 777 wasi-sdk-22.0-linux/bin
+          chmod 777 wasi-sdk-22.0-linux/bin/clang
           ls -la wasi-sdk-22.0-linux/bin
 
           # run dotnet publish (build + publish)
