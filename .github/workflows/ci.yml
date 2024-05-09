@@ -10,6 +10,9 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        os: [ ubuntu-latest, windows-latest ]
     steps:
       - uses: actions/checkout@v4
       - name: Setup dotnet ${{ matrix.dotnet-version }}
@@ -24,7 +27,7 @@ jobs:
 
   test:
     runs-on: ${{ matrix.os }}
-    needs: ["build"]
+    needs: [ "build" ]
     strategy:
       matrix:
         # os: [ ubuntu-latest ]
