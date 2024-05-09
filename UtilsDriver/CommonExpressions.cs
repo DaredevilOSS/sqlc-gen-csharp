@@ -44,10 +44,10 @@ public static class CommonExpressions
         if (!column.NotNull)
             return ConditionalExpression(
                 GetReadNullCondition(ordinal),
-                GetEmptyOrNullExpression(dbDriver.ColumnType(column)),
-                dbDriver.ColumnReader(column, ordinal)
+                GetEmptyOrNullExpression(dbDriver.GetColumnType(column)),
+                dbDriver.GetColumnReader(column, ordinal)
             );
-        return dbDriver.ColumnReader(column, ordinal);
+        return dbDriver.GetColumnReader(column, ordinal);
     }
     
     private static ExpressionSyntax GetEmptyOrNullExpression(string localType)

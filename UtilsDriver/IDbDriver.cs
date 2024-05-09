@@ -6,11 +6,11 @@ namespace SqlcGenCsharp.Drivers;
 
 public interface IDbDriver
 {
-    string ColumnType(Column column);
+    string GetColumnType(Column column);
     
-    ExpressionSyntax ColumnReader(Column column, int ordinal);
+    ExpressionSyntax GetColumnReader(Column column, int ordinal);
 
-    string TransformQuery(Query query);
+    string TransformQueryText(Query query);
 
     (UsingDirectiveSyntax[], MemberDeclarationSyntax[]) Preamble();
 

@@ -31,7 +31,7 @@ public partial class Driver : IDbDriver
         ExecLastIdDeclareGen = new ExecLastIdDeclareGen(this);
     }
     
-    public string ColumnType(Column column)
+    public string GetColumnType(Column column)
     {
         var nullableSuffix = column.NotNull ? Empty : "?";
         if (IsNullOrEmpty(column.Type.Name))
@@ -78,7 +78,7 @@ public partial class Driver : IDbDriver
         }
     }
 
-    public ExpressionSyntax ColumnReader(Column column, int ordinal)
+    public ExpressionSyntax GetColumnReader(Column column, int ordinal)
     {
         switch (column.Type.Name.ToLower())
         {
@@ -119,7 +119,7 @@ public partial class Driver : IDbDriver
         }
     }
     
-    public string TransformQuery(Query query)
+    public string TransformQueryText(Query query)
     {
         var counter = 0;
         return MyRegex().Replace(query.Text, _ => "@" + query.Params[counter++].Column.Name);

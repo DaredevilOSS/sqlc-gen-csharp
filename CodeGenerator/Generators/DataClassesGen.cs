@@ -38,7 +38,7 @@ internal class DataClassesGen(IDbDriver dbDriver)
         {
             return ParameterList(SeparatedList(columns
                 .Select(column => Parameter(Identifier(column.Name.FirstCharToUpper()))
-                    .WithType(ParseTypeName(DbDriver.ColumnType(column)))
+                    .WithType(ParseTypeName(DbDriver.GetColumnType(column)))
                 )));
         }
     }
@@ -55,7 +55,7 @@ internal class DataClassesGen(IDbDriver dbDriver)
         {
             return columns.Select(c =>
                 {
-                    var propertyType = DbDriver.ColumnType(c);
+                    var propertyType = DbDriver.GetColumnType(c);
                     return ParseMemberDeclaration(
                         $"public required {propertyType} {c.Name.FirstCharToUpper()} {{ get; init; }}");
                 })
