@@ -2,6 +2,7 @@
 
 if [ "$GITHUB_ACTIONS" = "true" ]; then
     echo "Running in Github Actions"
+    echo "script TESTS_CONTAINER_NAME is ${TESTS_CONTAINER_NAME}"
     tests_container_id=$(docker ps -aqf "name=plugin-tests")
     tests_exit_code=$(docker wait "plugin-tests")
     docker logs --timestamps "${tests_container_id}"
