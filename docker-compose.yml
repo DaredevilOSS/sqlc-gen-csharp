@@ -13,7 +13,6 @@ services:
         condition: service_healthy
         
   mysqldb:
-    network_mode: host
     container_name: mysqldb
     build: examples/authors/mysql
     restart: always
@@ -28,7 +27,6 @@ services:
       retries: 10
       
   postgresdb:
-    network_mode: host
     container_name: postgresdb
     build: examples/authors/postgresql
     restart: always
