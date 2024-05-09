@@ -37,9 +37,18 @@ jobs:
           dotnet-version: ${{ matrix.dotnet-version }}
       - name: install wasm workload
         run: dotnet workload install wasi-experimental
+      - name: dotnet build
+        run: dotnet publish SqlcGenCsharpWasm -c release --output dist/
       - uses: sqlc-dev/setup-sqlc@v4
         with:
           sqlc-version: '1.25.0'
+      - name: run update sha256 for builded wasm
+        shell: bash
+        run: |
+         chmod +x ./scripts/update_wasm_plugin.sh
+         ./scripts/update_wasm_plugin.sh
+      - name: run sqlc with generated wasm plugin
+        run: sqlc -f sqlc.wasm.yaml generate
       - uses: hoverkraft-tech/compose-action@v1.5.1
         with:
          services: |
