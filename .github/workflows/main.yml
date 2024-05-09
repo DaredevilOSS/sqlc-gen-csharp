@@ -44,9 +44,11 @@ jobs:
         run: |
           wget https://github.com/WebAssembly/wasi-sdk/releases/download/wasi-sdk-22/wasi-sdk-22.0-linux.tar.gz
           tar xf wasi-sdk-22.0-linux.tar.gz
+          ls -la | wasi
           chmod 755 wasi-sdk-22.0
           chmod 755 wasi-sdk-22.0/bin
           chmod 777 wasi-sdk-22.0/bin/clang
+          ls -la | wasi
       - name: dotnet build
         run: |
           ls -la wasi-sdk-22.0/bin/
