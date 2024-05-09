@@ -1,16 +1,16 @@
 services:
-  # plugin-tests:
-  #   container_name: ${TESTS_CONTAINER_NAME}
-  #   build: .
-  #   restart: on-failure
-  #   env_file:
-  #     - .env
-  #   command: "dotnet test"
-  #   depends_on:
-  #     mysqldb:
-  #       condition: service_healthy
-  #     postgresdb:
-  #       condition: service_healthy
+  plugin-tests:
+    container_name: ${TESTS_CONTAINER_NAME}
+    build: .
+    restart: on-failure
+    env_file:
+      - .env
+    command: "dotnet test"
+    depends_on:
+      mysqldb:
+        condition: service_healthy
+      postgresdb:
+        condition: service_healthy
         
   mysqldb:
     network_mode: host

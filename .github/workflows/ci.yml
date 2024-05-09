@@ -34,6 +34,7 @@ jobs:
          services: |
            mysqldb
            postgresdb
+           plugin-tests
       - name: Dotenv Action  
         uses: falti/dotenv-action@v1.1.2
       - name: test dotnet output project
