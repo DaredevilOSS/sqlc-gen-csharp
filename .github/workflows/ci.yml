@@ -43,6 +43,7 @@ jobs:
       - name: dotnet build
         run: |
           chmod +x ./wasi-sdk-21.0/**
+          chmod +x ./wasi-sdk-21.0/bin/clang
           WASI_SDK_PATH="./wasi-sdk-21.0" dotnet publish SqlcGenCsharpWasm -c release --output dist/
           
       - uses: sqlc-dev/setup-sqlc@v4
