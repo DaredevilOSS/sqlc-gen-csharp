@@ -12,8 +12,8 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        # os: [ ubuntu-latest ]
-        os: [ ubuntu-latest, macos-latest ]
+        os: [ ubuntu-latest ]
+        # os: [ ubuntu-latest, macos-latest ]
         architecture: [ "x64", "arm64" ]
         dotnet-version: [ '8.0.x' ]
     steps:
@@ -33,8 +33,8 @@ jobs:
     needs: [ "build" ]
     strategy:
       matrix:
-        # os: [ ubuntu-latest ]
-        os: [ ubuntu-latest, macos-latest ]
+        os: [ ubuntu-latest ]
+        # os: [ ubuntu-latest, macos-latest ]
         architecture: [ "x64", "arm64" ]
         dotnet-version: [ '8.0.x' ]
 
@@ -45,7 +45,7 @@ jobs:
            mysqldb
            postgresdb
            plugin-tests
-      - name: Dotenv Action  
+      - name: Dotenv Action
         uses: falti/dotenv-action@v1.1.2
       - name: test dotnet output project
         run: |
