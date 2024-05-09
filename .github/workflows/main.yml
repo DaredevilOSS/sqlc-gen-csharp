@@ -44,18 +44,13 @@ jobs:
         run: |
           wget https://github.com/WebAssembly/wasi-sdk/releases/download/wasi-sdk-22/wasi-sdk-22.0-linux.tar.gz
           tar xf wasi-sdk-22.0-linux.tar.gz
-          ls -la | grep "wasi"
           chmod 755 wasi-sdk-22.0
           chmod 755 wasi-sdk-22.0/bin
           chmod 777 wasi-sdk-22.0/bin/clang
-          ls -la | grep "wasi"
-      - name: dotnet build
+      - name: dotnet publish and build
         run: |
-          ls -la wasi-sdk-22.0/bin/
-
-          # run dotnet publish (build + publish)
-          WASI_SDK_PATH="wasi-sdk-22.0" dotnet publish SqlcGenCsharpWasm -c release --output dist/
-          
+          WASI_SDK_PATH="$(pwd)/wasi-sdk-22.0"; dotnet publish SqlcGenCsharpWasm -c release --output dist/
+        
       - uses: sqlc-dev/setup-sqlc@v4
         with:
           sqlc-version: '1.25.0'
