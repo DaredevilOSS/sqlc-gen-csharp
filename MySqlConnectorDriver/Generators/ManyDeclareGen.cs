@@ -10,19 +10,19 @@ namespace SqlcGenCsharp.MySqlConnectorDriver.Generators;
 internal static class ManyDeclareGen
 {
     public static MemberDeclarationSyntax Generate(string funcName, string queryTextConstant, string argInterface,
-        string returnInterface, IList<Parameter> parameters, IEnumerable<Column> columns)
+        string returnInterface, IList<Parameter> parameters, IEnumerable<Column> columns, IDbDriver dbDriver)
     {
         var methodDeclaration =
             MethodDeclaration(IdentifierName($"Task<List<{returnInterface}>>"), Identifier(funcName))
                 .WithPublicAsync()
-                .WithParameterList(ParseParameterList(Utils.GetParameterListAsString(argInterface, parameters)))
-                .WithBody(GetMethodBody(queryTextConstant, returnInterface, columns, parameters));
+                .WithParameterList(ParseParameterList(CommonExpressions.GetParameterListAsString(argInterface, parameters)))
+                .WithBody(GetMethodBody(queryTextConstant, returnInterface, columns, parameters, dbDriver));
 
         return methodDeclaration;
     }
 
     private static BlockSyntax GetMethodBody(string queryTextConstant, string returnInterface,
-        IEnumerable<Column> columns, IEnumerable<Parameter> parameters)
+        IEnumerable<Column> columns, IEnumerable<Parameter> parameters, IDbDriver dbDriver)
     {
         return Block(new[]
         {
@@ -30,18 +30,19 @@ internal static class ManyDeclareGen
             Utils.PrepareSqlCommand(queryTextConstant, parameters),
             new[]
             {
-                Utils.UsingDataReader(),
+                CommonExpressions.UsingDataReader(),
                 ParseStatement($"var {Variable.Rows.Name()} = new List<{returnInterface}>();"),
-                GetWhileStatement(returnInterface, columns),
+                GetWhileStatement(returnInterface, columns, dbDriver),
                 ReturnStatement(IdentifierName(Variable.Rows.Name()))
             }
         }.SelectMany(x => x));
     }
 
-    private static StatementSyntax GetWhileStatement(string returnInterface, IEnumerable<Column> columns)
+    private static StatementSyntax GetWhileStatement(string returnInterface, IEnumerable<Column> columns, 
+        IDbDriver dbDriver)
     {
         return WhileStatement(
-            Utils.AwaitReaderRow(),
+            CommonExpressions.AwaitReaderRow(),
             Block(
                 ExpressionStatement(
                     InvocationExpression(ParseExpression($"{Variable.Rows.Name()}.Add"))
@@ -49,7 +50,7 @@ internal static class ManyDeclareGen
                             ArgumentList(
                                 SingletonSeparatedList(
                                     Argument(ObjectCreationExpression(IdentifierName(returnInterface))
-                                        .WithInitializer(Utils.GetRecordInitExpression(columns))
+                                        .WithInitializer(CommonExpressions.GetRecordInitExpression(columns, dbDriver))
                                     )
                                 )
                             )

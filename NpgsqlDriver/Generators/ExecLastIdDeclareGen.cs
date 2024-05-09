@@ -16,7 +16,7 @@ internal static class ExecLastIdDeclareGen
         var methodDeclaration = MethodDeclaration(IdentifierName("Task<long>"), Identifier(funcName))
             .WithPublicAsync()
             .WithParameterList(
-                ParseParameterList(Utils.GetParameterListAsString(argInterface, parameters)))
+                ParseParameterList(CommonExpressions.GetParameterListAsString(argInterface, parameters)))
             .WithBody(Block(
                 Array.Empty<StatementSyntax>()
                     .Concat(Utils.EstablishConnection())

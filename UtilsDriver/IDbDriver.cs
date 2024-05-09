@@ -6,7 +6,9 @@ namespace SqlcGenCsharp.Drivers;
 
 public interface IDbDriver
 {
-    string ColumnType(string columnType, bool notNull);
+    string ColumnType(Column column);
+    
+    ExpressionSyntax ColumnReader(Column column, int ordinal);
 
     string TransformQuery(Query query);
 

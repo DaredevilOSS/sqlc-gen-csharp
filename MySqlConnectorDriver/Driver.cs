@@ -1,7 +1,10 @@
+using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Plugin;
+using static System.String;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 using SqlcGenCsharp.Drivers;
 using SqlcGenCsharp.MySqlConnectorDriver.Generators;
 
@@ -9,11 +12,94 @@ namespace SqlcGenCsharp.MySqlConnectorDriver;
 
 public partial class Driver : IDbDriver
 {
-    public string ColumnType(string mysqlColumnType, bool notNull)
+    public string ColumnType(Column column)
     {
-        return mysqlColumnType.MySqlTypeToCsharpType(notNull);
+        var nullableSuffix = column.NotNull ? string.Empty : "?";
+        if (IsNullOrEmpty(column.Type.Name))
+            return "object" + nullableSuffix;
+
+        switch (column.Type.Name.ToLower())
+        {
+            case "bigint":
+                return "long" + nullableSuffix;
+            case "binary":
+            case "bit":
+            case "blob":
+            case "longblob":
+            case "mediumblob":
+            case "tinyblob":
+            case "varbinary":
+                return "byte[]" + nullableSuffix;
+            case "char":
+            case "date":
+            case "datetime":
+            case "decimal":
+            case "longtext":
+            case "mediumtext":
+            case "text":
+            case "time":
+            case "timestamp":
+            case "tinytext":
+            case "varchar":
+                return "string";
+            case "double":
+            case "float":
+                return "double" + nullableSuffix;
+            case "int":
+            case "mediumint":
+            case "smallint":
+            case "tinyint":
+            case "year":
+                return "int" + nullableSuffix;
+            case "json":
+                // Assuming JSON is represented as a string or a specific class
+                return "object" + nullableSuffix;
+            default:
+                throw new NotSupportedException($"Unsupported column type: {column.Type.Name}");
+        }
     }
 
+    public ExpressionSyntax ColumnReader(Column column, int ordinal)
+    {
+        switch (column.Type.Name.ToLower())
+        {
+            case "bigint":
+                return ParseExpression($"reader.GetInt64({ordinal})");
+            case "binary":
+            case "bit":
+            case "blob":
+            case "longblob":
+            case "mediumblob":
+            case "tinyblob":
+            case "varbinary":
+                return ParseExpression($"Utils.GetBytes(reader, {ordinal})");
+            case "char":
+            case "date":
+            case "datetime":
+            case "decimal":
+            case "longtext":
+            case "mediumtext":
+            case "text":
+            case "time":
+            case "timestamp":
+            case "tinytext":
+            case "varchar":
+            case "json":
+                return ParseExpression($"reader.GetString({ordinal})");
+            case "double":
+            case "float":
+                return ParseExpression($"reader.GetDouble({ordinal})");
+            case "int":
+            case "mediumint":
+            case "smallint":
+            case "tinyint":
+            case "year":
+                return ParseExpression($"reader.GetInt32({ordinal})");
+            default:
+                throw new NotSupportedException($"Unsupported column type: {column.Type.Name}");
+        }
+    }
+    
     public string TransformQuery(Query query)
     {
         var counter = 0;
@@ -31,7 +117,7 @@ public partial class Driver : IDbDriver
     public MemberDeclarationSyntax OneDeclare(string funcName, string queryTextConstant, string argInterface,
         string returnInterface, IList<Parameter> parameters, IList<Column> columns)
     {
-        return OneDeclareGen.Generate(funcName, queryTextConstant, argInterface, returnInterface, parameters, columns);
+        return OneDeclareGen.Generate(funcName, queryTextConstant, argInterface, returnInterface, parameters, columns, this);
     }
 
     public MemberDeclarationSyntax ExecDeclare(string funcName, string queryTextConstant, string argInterface,
@@ -50,7 +136,8 @@ public partial class Driver : IDbDriver
     public MemberDeclarationSyntax ManyDeclare(string funcName, string queryTextConstant, string argInterface,
         string returnInterface, IList<Parameter> parameters, IEnumerable<Column> columns)
     {
-        return ManyDeclareGen.Generate(funcName, queryTextConstant, argInterface, returnInterface, parameters, columns);
+        return ManyDeclareGen.Generate(funcName, queryTextConstant, argInterface, returnInterface, parameters, columns, 
+            this);
     }
 
     [GeneratedRegex(@"\?")]

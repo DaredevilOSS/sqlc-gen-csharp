@@ -11,12 +11,12 @@ namespace SqlcGenCsharp.NpgsqlDriver.Generators;
 internal static class OneDeclareGen
 {
     public static MemberDeclarationSyntax Generate(string funcName, string queryTextConstant, string argInterface,
-        string returnInterface, IList<Parameter> parameters, IList<Column> columns)
+        string returnInterface, IList<Parameter> parameters, IEnumerable<Column> columns, IDbDriver dbDriver)
     {
         return MethodDeclaration(IdentifierName($"Task<{returnInterface}?>"), funcName)
             .WithPublicAsync()
             .WithParameterList(
-                ParseParameterList(Utils.GetParameterListAsString(argInterface, parameters)))
+                ParseParameterList(CommonExpressions.GetParameterListAsString(argInterface, parameters)))
             .WithBody(GetMethodBody());
 
         BlockSyntax GetMethodBody()
@@ -25,28 +25,29 @@ internal static class OneDeclareGen
             {
                 Utils.EstablishConnection(),
                 Utils.PrepareSqlCommand(queryTextConstant, parameters),
-                ExecuteAndReturnOne(returnInterface, columns)
+                ExecuteAndReturnOne(returnInterface, columns, dbDriver)
             }.SelectMany(x => x));
         }
     }
 
-    private static IEnumerable<StatementSyntax> ExecuteAndReturnOne(string returnInterface, IEnumerable<Column> columns)
+    private static IEnumerable<StatementSyntax> ExecuteAndReturnOne(string returnInterface, IEnumerable<Column> columns,
+        IDbDriver dbDriver)
     {
         return new[]
         {
-            Utils.UsingDataReader(),
+            CommonExpressions.UsingDataReader(),
             IfStatement(
-                Utils.AwaitReaderRow(),
-                ReturnSingleRow(returnInterface, columns)
+                CommonExpressions.AwaitReaderRow(),
+                ReturnSingleRow(returnInterface, columns, dbDriver)
             ),
             ReturnStatement(LiteralExpression(SyntaxKind.NullLiteralExpression))
         };
     }
 
-    private static StatementSyntax ReturnSingleRow(string returnInterface, IEnumerable<Column> columns)
+    private static StatementSyntax ReturnSingleRow(string returnInterface, IEnumerable<Column> columns, IDbDriver dbDriver)
     {
         return ReturnStatement(
             ObjectCreationExpression(IdentifierName(returnInterface))
-                .WithInitializer(Utils.GetRecordInitExpression(columns)));
+                .WithInitializer(CommonExpressions.GetRecordInitExpression(columns, dbDriver)));
     }
 }
