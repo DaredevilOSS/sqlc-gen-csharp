@@ -57,8 +57,9 @@ jobs:
       - name: run update sha256 for builded wasm
         shell: bash
         run: |
-         chmod +x ./scripts/update_wasm_plugin.sh
-         ./scripts/update_wasm_plugin.sh
+          ls -la SqlcGenCsharpWasm/bin/Release/net8.0/
+          chmod +x ./scripts/update_wasm_plugin.sh
+          ./scripts/update_wasm_plugin.sh
       - name: run sqlc with generated wasm plugin
         run: sqlc -f sqlc.wasm.yaml generate
       - uses: hoverkraft-tech/compose-action@v1.5.1
