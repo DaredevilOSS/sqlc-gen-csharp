@@ -11,7 +11,7 @@ else
 fi
 echo "WASM_FILE = ${WASM_FILE}"
 mkdir -p dist
-cp "${SOURCE_WASM_FILE}" dist/plugin.wasm
+cp "${WASM_FILE}" dist/plugin.wasm
 echo "WASM filesize:" && du -sh dist/plugin.wasm
 
 PLUGIN_SHA=$(shasum -a 256 dist/plugin.wasm | awk '{ print $1 }')
