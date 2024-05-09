@@ -42,4 +42,5 @@ jobs:
           tests_container_id=$(docker ps -aqf "name=plugin-tests")
           tests_exit_code=$(docker wait "plugin-tests")
           docker logs --timestamps "${tests_container_id}"
+          exit "${tests_exit_code}"
         shell: bash
