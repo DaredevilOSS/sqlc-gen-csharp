@@ -3,6 +3,8 @@
 if [ "$GITHUB_ACTIONS" = "true" ]; then
     echo "Running in Github Actions"
     echo "the value of TESTS_CONTAINER_NAME is $TESTS_CONTAINER_NAME"
+    export TESTS_CONTAINER_NAME="$1"
+    
     tests_container_id=$(docker ps -aqf "name=${TESTS_CONTAINER_NAME}")
     tests_exit_code=$(docker wait "${TESTS_CONTAINER_NAME}")
 else

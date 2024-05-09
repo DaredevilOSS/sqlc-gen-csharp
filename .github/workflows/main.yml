@@ -87,5 +87,5 @@ jobs:
       - name: test dotnet output project
         run: |
            chmod +x ./scripts/run_tests.sh
-           ./scripts/run_tests.sh
+           ./scripts/run_tests.sh ${{ github.env.TESTS_CONTAINER_NAME }}
         shell: bash
