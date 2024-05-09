@@ -56,6 +56,5 @@ jobs:
       - name: test dotnet output project
         run: |
            chmod +x ./scripts/run_tests.sh
-           echo "job TESTS_CONTAINER_NAME is ${TESTS_CONTAINER_NAME}"
            ./scripts/run_tests.sh
         shell: bash
