@@ -8,15 +8,15 @@ using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace SqlcGenCsharp.NpgsqlDriver.Generators;
 
-internal static class ExecLastIdDeclareGen
+public class ExecLastIdDeclareGen(IDbDriver dbDriver)
 {
-    public static MemberDeclarationSyntax Generate(string funcName, string queryTextConstant, string argInterface,
+    public MemberDeclarationSyntax Generate(string funcName, string queryTextConstant, string argInterface,
         string returnInterface, IList<Parameter> parameters, IList<Column> columns)
     {
         var methodDeclaration = MethodDeclaration(IdentifierName("Task<long>"), Identifier(funcName))
             .WithPublicAsync()
             .WithParameterList(
-                ParseParameterList(Utils.GetParameterListAsString(argInterface, parameters)))
+                ParseParameterList(CommonExpressions.GetParameterListAsString(argInterface, parameters)))
             .WithBody(Block(
                 Array.Empty<StatementSyntax>()
                     .Concat(Utils.EstablishConnection())

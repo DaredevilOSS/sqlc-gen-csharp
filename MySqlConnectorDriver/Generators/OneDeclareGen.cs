@@ -8,14 +8,14 @@ using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace SqlcGenCsharp.MySqlConnectorDriver.Generators;
 
-internal static class OneDeclareGen
+internal class OneDeclareGen(IDbDriver dbDriver)
 {
-    public static MemberDeclarationSyntax Generate(string funcName, string queryTextConstant, string argInterface,
+    public MemberDeclarationSyntax Generate(string funcName, string queryTextConstant, string argInterface,
         string returnInterface, IList<Parameter> parameters, IList<Column> columns)
     {
         return MethodDeclaration(IdentifierName($"Task<{returnInterface}?>"), funcName)
             .WithPublicAsync()
-            .WithParameterList(ParseParameterList(Utils.GetParameterListAsString(argInterface, parameters)))
+            .WithParameterList(ParseParameterList(CommonExpressions.GetParameterListAsString(argInterface, parameters)))
             .WithBody(GetMethodBody());
 
         BlockSyntax GetMethodBody()
@@ -29,23 +29,23 @@ internal static class OneDeclareGen
         }
     }
 
-    private static IEnumerable<StatementSyntax> ExecuteAndReturnOne(string returnInterface, IEnumerable<Column> columns)
+    private IEnumerable<StatementSyntax> ExecuteAndReturnOne(string returnInterface, IEnumerable<Column> columns)
     {
         return new[]
         {
-            Utils.UsingDataReader(),
+            CommonExpressions.UsingDataReader(),
             IfStatement(
-                Utils.AwaitReaderRow(),
+                CommonExpressions.AwaitReaderRow(),
                 ReturnSingleRow(returnInterface, columns)
             ),
             ReturnStatement(LiteralExpression(SyntaxKind.NullLiteralExpression))
         };
     }
 
-    private static StatementSyntax ReturnSingleRow(string returnInterface, IEnumerable<Column> columns)
+    private StatementSyntax ReturnSingleRow(string returnInterface, IEnumerable<Column> columns)
     {
         return ReturnStatement(
             ObjectCreationExpression(IdentifierName(returnInterface))
-                .WithInitializer(Utils.GetRecordInitExpression(columns)));
+                .WithInitializer(CommonExpressions.GetRecordInitExpression(columns, dbDriver)));
     }
 }
