@@ -47,7 +47,7 @@ jobs:
           tar -tf wasi-sdk-22.0-linux.tar.gz  # This will list the contents of the tar archive without actually extracting it
           echo "Successfully listed archive contents"
           ls -la | grep "wasi"
-          chmod -R 755 ./wasi-sdk-22.0-linux
+          ls -la wasi-sdk-22.0-linux
       - name: dotnet build
         run: |
           ls -la wasi-sdk-22.0-linux
