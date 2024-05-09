@@ -11,24 +11,12 @@ on:
       - "!**.md"
 
 jobs:
-  # build:
-  #   runs-on: ${{ matrix.os }}
-  #   strategy:
-  #     matrix:
-  #       os: [ ubuntu-latest ]
-  #       # os: [ ubuntu-latest, macos-latest ]
-  #       architecture: [ "x64", "arm64" ]
-  #       dotnet-version: [ '8.0.x' ]
-  #   steps:
-
   test:
     runs-on: ${{ matrix.os }}
-    # needs: [ "build" ]
     if: ${{ always() }}
     strategy:
       matrix:
         os: [ ubuntu-latest ]
-        # os: [ ubuntu-latest, macos-latest ]
         architecture: [ "x64", "arm64" ]
         dotnet-version: [ '8.0.x' ]
 
@@ -44,20 +32,17 @@ jobs:
         run: |
           wget https://github.com/WebAssembly/wasi-sdk/releases/download/wasi-sdk-22/wasi-sdk-22.0-linux.tar.gz
           tar xf wasi-sdk-22.0-linux.tar.gz
-          chmod 755 wasi-sdk-22.0
-          chmod 755 wasi-sdk-22.0/bin
-          chmod 777 wasi-sdk-22.0/bin/clang
+          chmod -R 755 wasi-sdk-22.0
+          # chmod 755 wasi-sdk-22.0/bin
+          # chmod 777 wasi-sdk-22.0/bin/clang
       - name: dotnet publish and build
-        run: |
-          WASI_SDK_PATH="$(pwd)/wasi-sdk-22.0" dotnet publish SqlcGenCsharpWasm -c release
-        
+        run: WASI_SDK_PATH="$(pwd)/wasi-sdk-22.0" dotnet publish SqlcGenCsharpWasm -c release
       - uses: sqlc-dev/setup-sqlc@v4
         with:
           sqlc-version: '1.25.0'
       - name: run update sha256 for builded wasm
         shell: bash
         run: |
-          ls -la SqlcGenCsharpWasm/obj/release/net8.0/wasi-wasm/wasm/for-publish/SqlcGenCsharpWasm.wasm
           chmod +x ./scripts/update_wasm_plugin.sh
           ./scripts/update_wasm_plugin.sh
       - name: run sqlc with generated wasm plugin
@@ -70,25 +55,8 @@ jobs:
            plugin-tests
       - name: Dotenv Action
         uses: falti/dotenv-action@v1.1.2
-      # - name: test dotnet output project
-      #   run: |
-      #     tests_container_id=$(docker ps -aqf "name=plugin-tests")
-      #     tests_exit_code=$(docker wait "plugin-tests")
-      #     docker logs --timestamps "${tests_container_id}"
-      #     exit "${tests_exit_code}"
-      #   shell: bash
-      # - name: test dotnet output project
-      #   run: |
-      #     tests_container_id=$(docker ps -aqf "name=plugin-tests")
-      #     tests_exit_code=$(docker wait "plugin-tests")
-      #     docker logs --timestamps "${tests_container_id}"
-      #     exit "${tests_exit_code}"
-      #   shell: bash
       - name: test dotnet output project
         run: |
            chmod +x ./scripts/run_tests.sh
-           echo "TESTS_CONTAINER_NAME is ${{ github.env.TESTS_CONTAINER_NAME }}"
-           ./scripts/run_tests.sh ${{ github.env.TESTS_CONTAINER_NAME }}
-        env:
-          TESTS_CONTAINER_NAME: ${{ github.env.TESTS_CONTAINER_NAME }}
+           ./scripts/run_tests.sh
         shell: bash
