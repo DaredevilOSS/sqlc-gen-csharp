@@ -8,14 +8,26 @@ on:
       - "!**.md"
 
 jobs:
-  build:
+  # build:
+  #   runs-on: ${{ matrix.os }}
+  #   strategy:
+  #     matrix:
+  #       os: [ ubuntu-latest ]
+  #       # os: [ ubuntu-latest, macos-latest ]
+  #       architecture: [ "x64", "arm64" ]
+  #       dotnet-version: [ '8.0.x' ]
+  #   steps:
+
+  test:
     runs-on: ${{ matrix.os }}
+    # needs: [ "build" ]
     strategy:
       matrix:
         os: [ ubuntu-latest ]
         # os: [ ubuntu-latest, macos-latest ]
         architecture: [ "x64", "arm64" ]
         dotnet-version: [ '8.0.x' ]
+
     steps:
       - uses: actions/checkout@v4
       - name: Setup dotnet ${{ matrix.dotnet-version }}
@@ -27,18 +39,6 @@ jobs:
       - uses: sqlc-dev/setup-sqlc@v4
         with:
           sqlc-version: '1.25.0'
-
-  test:
-    runs-on: ${{ matrix.os }}
-    needs: [ "build" ]
-    strategy:
-      matrix:
-        os: [ ubuntu-latest ]
-        # os: [ ubuntu-latest, macos-latest ]
-        architecture: [ "x64", "arm64" ]
-        dotnet-version: [ '8.0.x' ]
-
-    steps:
       - uses: hoverkraft-tech/compose-action@v1.5.1
         with:
          services: |
@@ -48,6 +48,7 @@ jobs:
       - name: Dotenv Action
         uses: falti/dotenv-action@v1.1.2
       - name: test dotnet output project
+        if: ${{ always() }}
         run: |
           tests_container_id=$(docker ps -aqf "name=plugin-tests")
           tests_exit_code=$(docker wait "plugin-tests")
