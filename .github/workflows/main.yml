@@ -87,5 +87,8 @@ jobs:
       - name: test dotnet output project
         run: |
            chmod +x ./scripts/run_tests.sh
+           echo "TESTS_CONTAINER_NAME is ${{ github.env.TESTS_CONTAINER_NAME }}"
            ./scripts/run_tests.sh ${{ github.env.TESTS_CONTAINER_NAME }}
+        env:
+          TESTS_CONTAINER_NAME: ${{ github.env.TESTS_CONTAINER_NAME }}
         shell: bash
