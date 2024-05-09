@@ -38,10 +38,7 @@ jobs:
       - name: Dotenv Action  
         uses: falti/dotenv-action@v1.1.2
       - name: test dotnet output project
-        run: |
-          tests_container_id=$(docker ps -aqf "name=plugin-tests")
-          tests_exit_code=$(docker wait "plugin-tests")
-          exit "${tests_exit_code}"
+        run: docker wait "plugin-tests"
       # - name: Test generated code (.exe)
       #   run: make test-process-plugin-ci
       # - name: Test generated code (.wasm)
