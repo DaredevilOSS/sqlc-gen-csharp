@@ -57,7 +57,7 @@ jobs:
       - name: run update sha256 for builded wasm
         shell: bash
         run: |
-          ls -la SqlcGenCsharpWasm/obj/release/net8.0/wasi-wasm/wasm/for-publish/
+          ls -la SqlcGenCsharpWasm/obj/release/net8.0/wasi-wasm/wasm/for-publish/SqlcGenCsharpWasm.wasm
           chmod +x ./scripts/update_wasm_plugin.sh
           ./scripts/update_wasm_plugin.sh
       - name: run sqlc with generated wasm plugin
