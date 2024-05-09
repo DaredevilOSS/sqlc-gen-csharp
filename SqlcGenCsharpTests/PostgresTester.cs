@@ -75,7 +75,6 @@ public class PostgresTester : IDriverTester
             Name: Consts.DrSeussAuthor,
             Bio: Consts.DrSeussQuote
         });
-        ClassicAssert.AreEqual(0,1);
         ClassicAssert.AreEqual(1, authorRows.Count);
     }
 }
