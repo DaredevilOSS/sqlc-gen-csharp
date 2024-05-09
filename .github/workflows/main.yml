@@ -50,10 +50,10 @@ jobs:
           chmod 777 wasi-sdk-22.0-linux
           chmod 777 wasi-sdk-22.0-linux/bin
           chmod 777 wasi-sdk-22.0-linux/bin/clang
-          ls -la wasi-sdk-22.0-linux/bin
+          ls -la wasi-sdk-22.0-linux
 
           # run dotnet publish (build + publish)
-          WASI_SDK_PATH="./wasi-sdk-22.0-linux" dotnet publish SqlcGenCsharpWasm -c release --output dist/
+          WASI_SDK_PATH="wasi-sdk-22.0-linux/" dotnet publish SqlcGenCsharpWasm -c release --output dist/
           
       - uses: sqlc-dev/setup-sqlc@v4
         with:
