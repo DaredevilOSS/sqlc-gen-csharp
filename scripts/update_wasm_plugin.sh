@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 
-set -e
-
 if [ "$GITHUB_ACTIONS" = "true" ]; then
     WASM_FILE="${SOURCE_WASM_FILE_UBUNTU}"
     # need to install yq here for all operation systems
 else
+    set -e
+
     source .env
     WASM_FILE="${SOURCE_WASM_FILE}"
 fi
