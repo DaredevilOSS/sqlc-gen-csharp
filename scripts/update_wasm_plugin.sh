@@ -3,9 +3,9 @@
 set -e
 
 if [ "$GITHUB_ACTIONS" = "true" ]; then
-    SOURCE_WASM_FILE="SqlcGenCsharpWasm/obj/release/net8.0/wasi-wasm/wasm/for-publish/SqlcGenCsharpWasm.wasm"
+    SOURCE_WASM_FILE="${SOURCE_WASM_FILE_UBUNTU}"
 else
-    SOURCE_WASM_FILE="SqlcGenCsharpWasm/bin/Release/net8.0/wasi-wasm/AppBundle/SqlcGenCsharpWasm.wasm"
+    SOURCE_WASM_FILE="${SOURCE_WASM_FILE}"
 fi
 mkdir -p dist
 cp "${SOURCE_WASM_FILE}" dist/plugin.wasm
