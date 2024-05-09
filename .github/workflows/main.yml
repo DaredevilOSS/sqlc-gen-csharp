@@ -40,19 +40,11 @@ jobs:
           dotnet-version: ${{ matrix.dotnet-version }}
       - name: install wasm workload
         run: dotnet workload install wasi-experimental
-      - name: Download WASI-SDK
-        uses: actions/download-artifact@v4
-        with:
-          name: wasi-sdk-v21
-          path: wasi-sdk
       - name: dotnet build
         run: |
-          # dowload wasm
-          wget https://github.com/WebAssembly/wasi-sdk/releases/download/wasi-sdk-22/wasi-sdk-22.0-linux.tar.gz
-          tar xvf wasi-sdk-22.0-linux.tar.gz
-
-          # run dotnet publish (build + publish)
-          WASI_SDK_PATH="./wasi-sdk-22.0-linux" dotnet publish SqlcGenCsharpWasm -c release --output dist/
+          chmod +x ./wasi-sdk-21.0/**
+          chmod +x ./wasi-sdk-21.0/bin/clang
+          WASI_SDK_PATH="./wasi-sdk-21.0" dotnet publish SqlcGenCsharpWasm -c release --output dist/
           
       - uses: sqlc-dev/setup-sqlc@v4
         with:
