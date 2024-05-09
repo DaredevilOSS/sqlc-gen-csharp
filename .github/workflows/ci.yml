@@ -40,8 +40,9 @@ jobs:
       - name: test dotnet output project
         run: |
           tests_container_id=$(docker ps -aqf "name=plugin-tests")
-          echo "${tests_container_id}"
-          docker wait "plugin-tests"
+          tests_exit_code=$(docker wait "plugin-tests")
+          docker logs --timestamps "${tests_container_id}"
+          
         shell: bash
       # - name: Test generated code (.exe)
       #   run: make test-process-plugin-ci
