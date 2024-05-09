@@ -13,8 +13,8 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ ubuntu-latest ]
-        # os: [ ubuntu-latest, macos-latest, windows-latest ]
+        # os: [ ubuntu-latest ]
+        os: [ ubuntu-latest, macos-latest, windows-latest ]
         architecture: [ "x64", "arm64" ]
         dotnet-version: [ '8.0.x' ]
 
@@ -42,9 +42,4 @@ jobs:
           tests_container_id=$(docker ps -aqf "name=plugin-tests")
           tests_exit_code=$(docker wait "plugin-tests")
           docker logs --timestamps "${tests_container_id}"
-          
         shell: bash
-      # - name: Test generated code (.exe)
-      #   run: make test-process-plugin-ci
-      # - name: Test generated code (.wasm)
-      #   run: make test-wasm-plugin
