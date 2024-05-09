@@ -22,7 +22,9 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      - name: Setup dotnet ${{ matrix.dotnet-version }}
+      - name: Load .env file
+        uses: xom9ikk/dotenv@v2
+      - name: Setup dotnet ${{ matrix.dotnet-version }}  
         uses: actions/setup-dotnet@v3
         with:
           dotnet-version: ${{ matrix.dotnet-version }}
@@ -50,8 +52,6 @@ jobs:
            mysqldb
            postgresdb
            plugin-tests
-      - name: Load .env file
-        uses: xom9ikk/dotenv@v2
       - name: test dotnet output project
         run: |
            chmod +x ./scripts/run_tests.sh
