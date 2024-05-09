@@ -40,11 +40,6 @@ jobs:
           dotnet-version: ${{ matrix.dotnet-version }}
       - name: install wasm workload
         run: dotnet workload install wasi-experimental
-      - name: Download WASI-SDK
-        uses: actions/download-artifact@v4
-        with:
-          name: wasi-sdk-v21
-          path: wasi-sdk
       - name: dotnet build
         run: |
           # dowload wasm
