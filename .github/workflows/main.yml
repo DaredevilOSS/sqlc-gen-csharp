@@ -5,11 +5,7 @@ defaults:
 
 on:
   push:
-<<<<<<< HEAD
     branches: [ "main", "improve-ci", "add-tests-to-ci-2" ]
-=======
-    branches: [ "main", "improve-ci" ]
->>>>>>> be87784c863d383f0a41b2a54c105bc155c5d6fc
   pull_request:
     paths:
       - "!**.md"
