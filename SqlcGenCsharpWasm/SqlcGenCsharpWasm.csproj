@@ -5,8 +5,8 @@
         <OutputType>Exe</OutputType>
         <RuntimeIdentifier>wasi-wasm</RuntimeIdentifier>
         <JsonSerializerIsReflectionEnabledByDefault>true</JsonSerializerIsReflectionEnabledByDefault>
-        
-<!--    WASM related config to reduce file size - currently not very successfully:-->
+
+        <!--    WASM related config to reduce file size - currently not very successfully:-->
         <WasmSingleFileBundle>true</WasmSingleFileBundle>
         <PublishTrimmed>true</PublishTrimmed>
         <EventSourceSupport>false</EventSourceSupport>

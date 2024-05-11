@@ -11,7 +11,7 @@ public class DriversTest
         IDriverTester tester = new MySqlTester();
         await tester.TestFlow();
     }
-    
+
     [Test]
     public async Task TestFlowOnPostgres()
     {

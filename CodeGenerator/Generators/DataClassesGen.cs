@@ -8,19 +8,17 @@ using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace SqlcGenCsharp.Generators;
 
-internal class DataClassesGen(IDbDriver dbDriver)
+internal class DataClassesGen(DbDriver dbDriver)
 {
-    private IDbDriver DbDriver { get; } = dbDriver;
-
-    public MemberDeclarationSyntax Generate(string name, ClassMember classMember, IEnumerable<Column> columns, 
-        ValidOptions validOptions)
+    public MemberDeclarationSyntax Generate(string name, ClassMember classMember, IEnumerable<Column> columns,
+        Options options)
     {
-        if (validOptions.DotnetFramework == DotnetFramework.Dotnet80)
+        if (options.DotnetFramework == DotnetFramework.Dotnet80)
             return GenerateAsRecord(name, classMember, columns);
         return GenerateAsCLass(name, classMember, columns);
     }
-    
-    private RecordDeclarationSyntax GenerateAsRecord(string name, ClassMember classMember, 
+
+    private RecordDeclarationSyntax GenerateAsRecord(string name, ClassMember classMember,
         IEnumerable<Column> columns)
     {
         return RecordDeclaration(
@@ -33,12 +31,12 @@ internal class DataClassesGen(IDbDriver dbDriver)
             )
             .WithParameterList(ColumnsToParameterList())
             .WithSemicolonToken(Token(SyntaxKind.SemicolonToken));
-        
+
         ParameterListSyntax ColumnsToParameterList()
         {
             return ParameterList(SeparatedList(columns
                 .Select(column => Parameter(Identifier(column.Name.FirstCharToUpper()))
-                    .WithType(ParseTypeName(DbDriver.GetColumnType(column)))
+                    .WithType(ParseTypeName(dbDriver.GetColumnType(column)))
                 )));
         }
     }
@@ -50,14 +48,14 @@ internal class DataClassesGen(IDbDriver dbDriver)
             .AddModifiers(Token(SyntaxKind.PublicKeyword))
             .AddMembers(ColumnsToProperties())
             .WithSemicolonToken(Token(SyntaxKind.SemicolonToken));
-        
+
         MemberDeclarationSyntax[] ColumnsToProperties()
         {
-            return columns.Select(c =>
+            return columns.Select(column =>
                 {
-                    var propertyType = DbDriver.GetColumnType(c);
+                    var propertyType = dbDriver.GetColumnType(column);
                     return ParseMemberDeclaration(
-                        $"public required {propertyType} {c.Name.FirstCharToUpper()} {{ get; init; }}");
+                        $"public {propertyType} {column.Name.FirstCharToUpper()} {{ get; set; }}");
                 })
                 .Cast<MemberDeclarationSyntax>()
                 .ToArray();

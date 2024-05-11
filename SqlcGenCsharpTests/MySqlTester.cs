@@ -12,7 +12,7 @@ public class MySqlTester : IDriverTester
 
     private QuerySql QuerySql { get; } =
         new(Environment.GetEnvironmentVariable(ConnectionStringEnv)!);
-    
+
     public async Task<long> CreateFirstAuthorAndTest()
     {
         var createAuthorReturnIdArgs = new QuerySql.CreateAuthorReturnIdArgs

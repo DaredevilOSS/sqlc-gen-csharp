@@ -12,14 +12,10 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\PluginOptions\PluginOptions.csproj"/>
         <ProjectReference Include="..\SqlcProtobuf\SqlcProtobuf.csproj"/>
         <ProjectReference Include="..\DebugHelper\DebugHelper.csproj"/>
-        <ProjectReference Include="..\UtilsDriver\UtilsDriver.csproj"/>
         <ProjectReference Include="..\RoslynExtensions\RoslynExtensions.csproj"/>
         <ProjectReference Include="..\ListExtensions\ListExtensions.csproj"/>
-        <ProjectReference Include="..\MySqlConnectorDriver\MySqlConnectorDriver.csproj"/>
-        <ProjectReference Include="..\NpgsqlDriver\NpgsqlDriver.csproj"/>
     </ItemGroup>
 
 </Project>

@@ -8,7 +8,8 @@ public static class Utils
     public static byte[] GetBytes(IDataRecord reader, int ordinal)
     {
         const int bufferSize = 100000;
-        ArgumentNullException.ThrowIfNull(reader);
+        if (reader is null)
+            throw new ArgumentNullException(nameof(reader));
         var buffer = new byte[bufferSize];
         var(bytesRead, offset) = (0, 0);
         while (bytesRead < bufferSize)
