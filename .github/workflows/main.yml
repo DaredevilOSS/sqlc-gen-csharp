@@ -5,7 +5,7 @@ defaults:
 
 on:
   push:
-    branches: [ "main", "improve-ci", "add-tests-to-ci-2" ]
+    branches: [ "*" ]
   pull_request:
     paths:
       - "!**.md"
