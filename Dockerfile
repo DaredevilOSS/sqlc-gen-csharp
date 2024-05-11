@@ -11,6 +11,7 @@ COPY MySqlConnectorDriver/*.csproj ./MySqlConnectorDriver/
 COPY MySqlConnectorExample/*.csproj ./MySqlConnectorExample/
 COPY NpgsqlDriver/*.csproj ./NpgsqlDriver/
 COPY NpgsqlExample/*.csproj ./NpgsqlExample/
+COPY PluginOptions/*.csproj ./PluginOptions/
 COPY RoslynExtensions/*.csproj ./RoslynExtensions/
 COPY SqlcGenCsharp/*.csproj ./SqlcGenCsharp/
 COPY SqlcGenCsharpProcess/*.csproj ./SqlcGenCsharpProcess/
@@ -27,6 +28,7 @@ COPY MySqlConnectorDriver/ ./MySqlConnectorDriver/
 COPY MySqlConnectorExample/ ./MySqlConnectorExample/
 COPY NpgsqlDriver/ ./NpgsqlDriver/
 COPY NpgsqlExample/ ./NpgsqlExample/
+COPY PluginOptions/ ./PluginOptions/
 COPY RoslynExtensions/ ./RoslynExtensions/
 COPY SqlcGenCsharp/ ./SqlcGenCsharp/
 COPY SqlcGenCsharpProcess/ ./SqlcGenCsharpProcess/

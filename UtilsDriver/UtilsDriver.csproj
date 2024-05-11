@@ -10,11 +10,11 @@
         <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.9.2"/>
     </ItemGroup>
 
-
     <ItemGroup>
         <ProjectReference Include="..\SqlcProtobuf\SqlcProtobuf.csproj"/>
         <ProjectReference Include="..\StringExtensions\StringExtensions.csproj"/>
         <ProjectReference Include="..\RoslynExtensions\RoslynExtensions.csproj"/>
+        <ProjectReference Include="..\PluginOptions\PluginOptions.csproj"/>
     </ItemGroup>
 
 </Project>

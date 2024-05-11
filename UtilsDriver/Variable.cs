@@ -6,7 +6,7 @@ public enum Variable
     Connection,
     Reader,
     Command,
-    Rows
+    Result
 }
 
 public static class VariablesExtensions

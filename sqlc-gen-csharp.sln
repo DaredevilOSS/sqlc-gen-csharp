@@ -33,6 +33,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DebugHelper", "DebugHelper\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeGenerator", "CodeGenerator\CodeGenerator.csproj", "{B0F7D8EC-BFFC-42E7-8B34-12CC34B863B0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PluginOptions", "PluginOptions\PluginOptions.csproj", "{ABD93C33-BEBE-4DE9-9ABF-430DAC1A938C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -101,5 +103,9 @@ Global
 		{B0F7D8EC-BFFC-42E7-8B34-12CC34B863B0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B0F7D8EC-BFFC-42E7-8B34-12CC34B863B0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B0F7D8EC-BFFC-42E7-8B34-12CC34B863B0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ABD93C33-BEBE-4DE9-9ABF-430DAC1A938C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ABD93C33-BEBE-4DE9-9ABF-430DAC1A938C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ABD93C33-BEBE-4DE9-9ABF-430DAC1A938C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ABD93C33-BEBE-4DE9-9ABF-430DAC1A938C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

@@ -1,85 +1,122 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
-using static System.String;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Plugin;
 using SqlcGenCsharp.Drivers;
-using SqlcGenCsharp.NpgsqlDriver.Generators;
+using SqlcGenCsharp.Drivers.Generators;
+using static System.String;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace SqlcGenCsharp.NpgsqlDriver;
 
-public class Driver : IDbDriver
+public class Driver : DbDriver
 {
-    private PreambleGen PreambleGen { get;  }
-
-    private OneDeclareGen OneDeclareGen { get;  }
-
-    private ManyDeclareGen ManyDeclareGen { get;  }
-    
-    private ExecDeclareGen ExecDeclareGen { get;  }
-    
-    private ExecLastIdDeclareGen ExecLastIdDeclareGen { get; }
-    
-    public Driver()
+    public Driver(DotnetFramework dotnetFramework) : base(dotnetFramework)
     {
-        PreambleGen = new PreambleGen(this);
+        CommonGen = new CommonGen(this);
         OneDeclareGen = new OneDeclareGen(this);
         ManyDeclareGen = new ManyDeclareGen(this);
         ExecDeclareGen = new ExecDeclareGen(this);
         ExecLastIdDeclareGen = new ExecLastIdDeclareGen(this);
     }
-    
-    public string GetColumnType(Column column)
-    {
-        var nullableSuffix = column.NotNull ? string.Empty : "?";
-        if (IsNullOrEmpty(column.Type.Name))
-            return "object" + nullableSuffix;
 
-        switch (column.Type.Name.ToLower())
+    private CommonGen CommonGen { get; }
+
+    private OneDeclareGen OneDeclareGen { get; }
+
+    private ManyDeclareGen ManyDeclareGen { get; }
+
+    private ExecDeclareGen ExecDeclareGen { get; }
+
+    private ExecLastIdDeclareGen ExecLastIdDeclareGen { get; }
+
+    public override UsingDirectiveSyntax[] GetUsingDirectives()
+    {
+        return
+        [
+            UsingDirective(ParseName("System.Collections.Generic")),
+            UsingDirective(ParseName("System.Threading.Tasks")),
+            UsingDirective(ParseName("Npgsql"))
+        ];
+    }
+
+    public override string GetColumnType(Column column)
+    {
+        var csharpType = IsNullOrEmpty(column.Type.Name) ? "object" : GetTypeWithoutNullableSuffix();
+        return AddNullableSuffix(csharpType, column.NotNull);
+
+        string GetTypeWithoutNullableSuffix()
         {
-            case "serial":
-            case "bigserial":
-                return "long" + nullableSuffix;
-            case "bit":
-            case "bytea":
-                return "byte[]" + nullableSuffix;
-            case "char":
-            case "bpchar":
-            case "varchar":
-            case "text":
-            case "date":
-            case "time":
-            case "timestamp":
-                return "string";
-            case "decimal":
-                return "decimal" + nullableSuffix;
-            case "numeric":
-            case "float4":
-            case "float8":
-                return "float" + nullableSuffix;
-            case "int2":
-            case "int4":
-            case "int8":
-                return "int" + nullableSuffix;
-            case "json":
-                return "object" + nullableSuffix;
-            case "bool":
-            case "boolean":
-                return "bool" + nullableSuffix;
-            default:
-                throw new NotSupportedException($"Unsupported column type: {column.Type.Name}");
+            switch (column.Type.Name.ToLower())
+            {
+                case "serial":
+                case "bigserial":
+                    return "long";
+                case "bit":
+                case "bytea":
+                    return "byte[]";
+                case "char":
+                case "bpchar":
+                case "varchar":
+                case "text":
+                case "date":
+                case "time":
+                case "timestamp":
+                    return "string";
+                case "decimal":
+                    return "decimal";
+                case "numeric":
+                case "float4":
+                case "float8":
+                    return "float";
+                case "int2":
+                case "int4":
+                case "int8":
+                    return "int";
+                case "json":
+                    return "object";
+                case "bool":
+                case "boolean":
+                    return "bool";
+                default:
+                    throw new NotSupportedException($"Unsupported column type: {column.Type.Name}");
+            }
         }
     }
 
-    public ExpressionSyntax GetColumnReader(Column column, int ordinal)
+    public override IEnumerable<StatementSyntax> EstablishConnection()
+    {
+        return new[]
+        {
+            ParseStatement(
+                $"{CommonGen.AddAwaitIfSupported()}using var {Variable.Connection.Name()} = NpgsqlDataSource.Create({Variable.ConnectionString.Name()});")
+        };
+    }
+
+    public override IEnumerable<StatementSyntax> PrepareSqlCommand(string sqlTextConstant,
+        IEnumerable<Parameter> parameters)
+    {
+        return new[]
+        {
+            ParseStatement(
+                $"{CommonGen.AddAwaitIfSupported()} using var {Variable.Command.Name()} = " +
+                $"{Variable.Connection.Name()}.CreateCommand({sqlTextConstant});")
+        }.Concat(
+            parameters.Select(param => ParseStatement(
+                $"{Variable.Command.Name()}.Parameters.AddWithValue(\"@{param.Column.Name}\", " +
+                $"args.{param.Column.Name.FirstCharToUpper()});"))
+        );
+    }
+
+    public override string GetColumnReader(Column column, int ordinal)
     {
         switch (column.Type.Name.ToLower())
         {
             case "serial":
             case "bigserial":
-                return ParseExpression($"reader.GetInt64({ordinal})");
+                return $"reader.GetInt64({ordinal})";
             case "binary":
             case "bit":
             case "bytea":
@@ -88,7 +125,7 @@ public class Driver : IDbDriver
             case "mediumblob":
             case "tinyblob":
             case "varbinary":
-                return ParseExpression($"Utils.GetBytes(reader, {ordinal})");
+                return $"Utils.GetBytes({Variable.Reader.Name()}, {ordinal})";
             case "char":
             case "date":
             case "datetime":
@@ -101,18 +138,18 @@ public class Driver : IDbDriver
             case "tinytext":
             case "varchar":
             case "json":
-                return ParseExpression($"reader.GetString({ordinal})");
+                return $"reader.GetString({ordinal})";
             case "double":
-                return ParseExpression($"reader.GetDouble({ordinal})");
+                return $"reader.GetDouble({ordinal})";
             case "numeric":
             case "float4":
             case "float8":
-                return ParseExpression($"reader.GetFloat({ordinal})");
+                return $"reader.GetFloat({ordinal})";
             case "decimal":
-                return ParseExpression($"reader.GetDecimal({ordinal})");
+                return $"reader.GetDecimal({ordinal})";
             case "bool":
             case "boolean":
-                return ParseExpression($"reader.GetBoolean({ordinal})");
+                return $"reader.GetBoolean({ordinal})";
             case "int":
             case "int2":
             case "int4":
@@ -121,13 +158,13 @@ public class Driver : IDbDriver
             case "smallint":
             case "tinyint":
             case "year":
-                return ParseExpression($"reader.GetInt32({ordinal})");
+                return $"reader.GetInt32({ordinal})";
             default:
                 throw new NotSupportedException($"Unsupported column type: {column.Type.Name}");
         }
     }
 
-    public string TransformQueryText(Query query)
+    public override string TransformQueryText(Query query)
     {
         var queryText = query.Text;
         for (var i = 0; i < query.Params.Count; i++)
@@ -140,34 +177,25 @@ public class Driver : IDbDriver
         return queryText;
     }
 
-    public (UsingDirectiveSyntax[], MemberDeclarationSyntax[]) Preamble()
-    {
-        return (
-            PreambleGen.GetUsingDirectives(),
-            []
-        );
-    }
-
-    public MemberDeclarationSyntax OneDeclare(string funcName, string queryTextConstant, string argInterface,
+    public override MemberDeclarationSyntax OneDeclare(string funcName, string queryTextConstant, string argInterface,
         string returnInterface, IList<Parameter> parameters, IList<Column> columns)
     {
         return OneDeclareGen.Generate(funcName, queryTextConstant, argInterface, returnInterface, parameters, columns);
     }
 
-    public MemberDeclarationSyntax ExecDeclare(string funcName, string queryTextConstant, string argInterface,
+    public override MemberDeclarationSyntax ExecDeclare(string funcName, string queryTextConstant, string argInterface,
         IList<Parameter> parameters)
     {
         return ExecDeclareGen.Generate(funcName, queryTextConstant, argInterface, parameters);
     }
 
-    public MemberDeclarationSyntax ExecLastIdDeclare(string funcName, string queryTextConstant, string argInterface,
-        string returnInterface, IList<Parameter> parameters, IList<Column> columns)
+    public override MemberDeclarationSyntax ExecLastIdDeclare(string funcName, string queryTextConstant,
+        string argInterface, IList<Parameter> parameters)
     {
-        return ExecLastIdDeclareGen.Generate(funcName, queryTextConstant, argInterface, returnInterface, parameters,
-            columns);
+        return ExecLastIdDeclareGen.Generate(funcName, queryTextConstant, argInterface, parameters);
     }
 
-    public MemberDeclarationSyntax ManyDeclare(string funcName, string queryTextConstant, string argInterface,
+    public override MemberDeclarationSyntax ManyDeclare(string funcName, string queryTextConstant, string argInterface,
         string returnInterface, IList<Parameter> parameters, IEnumerable<Column> columns)
     {
         return ManyDeclareGen.Generate(funcName, queryTextConstant, argInterface, returnInterface, parameters, columns);
