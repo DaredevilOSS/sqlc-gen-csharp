@@ -10,7 +10,7 @@ internal class RawOptions
     public bool GenerateCsproj { get; init; } = true; // generating .csproj files by default
 
     [JsonPropertyName("targetFramework")]
-    public string TargetFramework { get; init; } = DotnetFramework.Dotnet80.StandardName();
+    public string TargetFramework { get; init; } = DotnetFramework.Dotnet80.ToName();
 
     [JsonPropertyName("filePerQuery")] public bool FilePerQuery { get; init; } // generating single file by default
 }

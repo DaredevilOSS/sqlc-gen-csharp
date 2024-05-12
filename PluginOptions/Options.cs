@@ -23,7 +23,7 @@ public class Options
         DriverName = outDriverName;
         FilePerQuery = rawOptions.FilePerQuery;
         GenerateCsproj = rawOptions.GenerateCsproj;
-        DotnetFramework = DotnetFrameworkExtensions.ParseStandardName(rawOptions.TargetFramework);
+        DotnetFramework = DotnetFrameworkExtensions.ParseName(rawOptions.TargetFramework);
     }
 
     public DriverName DriverName { get; }

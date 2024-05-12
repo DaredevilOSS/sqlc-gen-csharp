@@ -28,7 +28,7 @@ public class ExecDeclareGen(DbDriver dbDriver)
         var commandParameters = CommonGen.GetCommandParameters(parameters);
         var executeScalar = $"await {Variable.Command.Name()}.ExecuteScalarAsync();";
 
-        return dbDriver.DotnetFramework.UsingStatementEnabled()
+        return dbDriver.DotnetFramework.LatestDotnetSupported()
             ? GetWithUsingAsStatement()
             : GetWithUsingAsBlock();
 
