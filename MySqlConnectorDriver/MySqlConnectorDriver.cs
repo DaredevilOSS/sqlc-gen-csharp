@@ -11,17 +11,8 @@ using OneDeclareGen = SqlcGenCsharp.Drivers.Generators.OneDeclareGen;
 
 namespace SqlcGenCsharp.MySqlConnectorDriver;
 
-public partial class Driver(DotnetFramework dotnetFramework) : DbDriver(dotnetFramework)
+public partial class MySqlConnectorDriver(DotnetFramework dotnetFramework) : DbDriver(dotnetFramework)
 {
-    public override string[] EstablishConnection()
-    {
-        return
-        [
-            $"var {Variable.Connection.Name()} = new MySqlConnection({Variable.ConnectionString.Name()})",
-            $"{Variable.Connection.Name()}.Open()"
-        ];
-    }
-
     public override UsingDirectiveSyntax[] GetUsingDirectives()
     {
         return
@@ -29,6 +20,15 @@ public partial class Driver(DotnetFramework dotnetFramework) : DbDriver(dotnetFr
             UsingDirective(ParseName("System.Collections.Generic")),
             UsingDirective(ParseName("System.Threading.Tasks")),
             UsingDirective(ParseName("MySqlConnector"))
+        ];
+    }
+    
+    public override string[] EstablishConnection()
+    {
+        return
+        [
+            $"var {Variable.Connection.Name()} = new MySqlConnection({Variable.ConnectionString.Name()})",
+            $"{Variable.Connection.Name()}.Open()"
         ];
     }
 

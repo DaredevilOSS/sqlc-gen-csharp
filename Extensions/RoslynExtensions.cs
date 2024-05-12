@@ -29,18 +29,4 @@ public static class RoslynExtensions
         var sourceText = syntaxTree.GetText().ToString();
         return ByteString.CopyFromUtf8(sourceText);
     }
-
-    public static MethodDeclarationSyntax WithPublicAsync(this MethodDeclarationSyntax me)
-    {
-        return me.AddModifiers(Token(SyntaxKind.PublicKeyword), Token(SyntaxKind.AsyncKeyword));
-    }
-
-    public static ExpressionSyntax AssignToVariable(this ExpressionSyntax assignmentValue, string assignmentVar)
-    {
-        return AssignmentExpression(
-            SyntaxKind.SimpleAssignmentExpression,
-            IdentifierName(assignmentVar),
-            assignmentValue
-        );
-    }
 }

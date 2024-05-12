@@ -8,16 +8,16 @@ namespace SqlcGenCsharp.Drivers.Generators;
 public class ExecLastIdDeclareGen(DbDriver dbDriver)
 {
     private CommonGen CommonGen { get; } = new(dbDriver);
-    
+
     public MemberDeclarationSyntax Generate(string funcName, string queryTextConstant, string argInterface,
         IList<Parameter> parameters)
     {
         return ParseMemberDeclaration($$"""
-           public async Task<long> {{funcName}}({{CommonGen.GetParameterListAsString(argInterface, parameters)}})
-           {
-               {{GetMethodBody(queryTextConstant, parameters)}}
-           }
-           """)!;
+                                        public async Task<long> {{funcName}}({{CommonGen.GetParameterListAsString(argInterface, parameters)}})
+                                        {
+                                            {{GetMethodBody(queryTextConstant, parameters)}}
+                                        }
+                                        """)!;
     }
 
     private string GetMethodBody(string queryTextConstant, IEnumerable<Parameter> parameters)
@@ -35,33 +35,33 @@ public class ExecLastIdDeclareGen(DbDriver dbDriver)
         string GetWithUsingAsStatement()
         {
             return $$"""
-             {
-                 await using {{establishConnection[0]}};
-                 {{connectionOpen}}
-                 await using {{createSqlCommand}};
-                 {{string.Join("\n", commandParameters)}}
-                 {{string.Join("\n", executeScalarAndReturnCreated)}}
-             }
-             """;
+                     {
+                         await using {{establishConnection[0]}};
+                         {{connectionOpen}}
+                         await using {{createSqlCommand}};
+                         {{string.Join("\n", commandParameters)}}
+                         {{string.Join("\n", executeScalarAndReturnCreated)}}
+                     }
+                     """;
         }
 
         string GetWithUsingAsBlock()
         {
             return $$"""
-             {
-                 using ({{establishConnection[0]}})
-                 {
-                     {{connectionOpen}}
-                     using ({{createSqlCommand}})
                      {
-                         {{string.Join("\n", commandParameters)}}
-                         {{string.Join("\n", executeScalarAndReturnCreated)}}
+                         using ({{establishConnection[0]}})
+                         {
+                             {{connectionOpen}}
+                             using ({{createSqlCommand}})
+                             {
+                                {{commandParameters.JoinByNewLine()}}
+                                {{executeScalarAndReturnCreated.JoinByNewLine()}}
+                             }
+                         }
                      }
-                 }
-             }
-             """;
+                     """;
         }
-        
+
         IEnumerable<string> ExecuteScalarAndReturnCreated()
         {
             return new[]

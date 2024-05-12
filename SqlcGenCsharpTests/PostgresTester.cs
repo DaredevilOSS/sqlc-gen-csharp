@@ -6,13 +6,13 @@ using NUnit.Framework.Legacy;
 
 namespace SqlcGenCsharpTests;
 
-public class PostgresTester : IDriverTester
+public class PostgresTester : ISqlDriverTester
 {
     private static string ConnectionStringEnv => "POSTGRES_CONNECTION_STRING";
 
     private QuerySql QuerySql { get; } =
         new(Environment.GetEnvironmentVariable(ConnectionStringEnv)!);
-    
+
     public async Task<long> CreateFirstAuthorAndTest()
     {
         var bojackCreateAuthorArgs = new QuerySql.CreateAuthorArgs

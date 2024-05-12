@@ -7,7 +7,6 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Plugin;
 using SqlcGenCsharp.Drivers;
 using SqlcGenCsharp.Generators;
-using SqlcGenCsharp.MySqlConnectorDriver;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 using File = Plugin.File;
 
@@ -58,8 +57,8 @@ public class CodeGenerator
     {
         return Options.DriverName switch
         {
-            DriverName.MySqlConnector => new Driver(Options.DotnetFramework),
-            DriverName.Npgsql => new NpgsqlDriver.Driver(Options.DotnetFramework),
+            DriverName.MySqlConnector => new MySqlConnectorDriver.MySqlConnectorDriver(Options.DotnetFramework),
+            DriverName.Npgsql => new NpgsqlDriver.NpgsqlDriver(Options.DotnetFramework),
             _ => throw new ArgumentException($"unknown driver: {Options.DriverName}")
         };
     }

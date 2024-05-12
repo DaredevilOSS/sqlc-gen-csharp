@@ -6,7 +6,7 @@ using NUnit.Framework.Legacy;
 
 namespace SqlcGenCsharpTests;
 
-public class MySqlTester : IDriverTester
+public class MySqlTester : ISqlDriverTester
 {
     private static string ConnectionStringEnv => "MYSQL_CONNECTION_STRING";
 

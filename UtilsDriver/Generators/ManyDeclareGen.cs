@@ -15,14 +15,14 @@ public class ManyDeclareGen(DbDriver dbDriver)
     {
         var returnType = $"Task<List<{returnInterface}>>";
         return ParseMemberDeclaration($$"""
-            public async {{returnType}} {{funcName}}({{CommonGen.GetParameterListAsString(argInterface, parameters)}})
-            {
-                {{GetMethodBody(queryTextConstant, returnInterface, columns, parameters)}}
-            }
-            """)!;
+                                        public async {{returnType}} {{funcName}}({{CommonGen.GetParameterListAsString(argInterface, parameters)}})
+                                        {
+                                            {{GetMethodBody(queryTextConstant, returnInterface, columns, parameters)}}
+                                        }
+                                        """)!;
     }
 
-    private string GetMethodBody(string queryTextConstant, string returnInterface, IEnumerable<Column> columns, 
+    private string GetMethodBody(string queryTextConstant, string returnInterface, IEnumerable<Column> columns,
         IEnumerable<Parameter> parameters)
     {
         var establishConnection = dbDriver.EstablishConnection();
@@ -32,12 +32,12 @@ public class ManyDeclareGen(DbDriver dbDriver)
         var initDataReader = CommonGen.InitDataReader();
         var awaitReaderRow = CommonGen.AwaitReaderRow();
         var readWhileExists = $$"""
-            while ({{awaitReaderRow}})
-            {
-                {{Variable.Result.Name()}}.Add({{CommonGen.InstantiateDataclass(columns, returnInterface)}});
-            }
-            """;
-        
+                                while ({{awaitReaderRow}})
+                                {
+                                    {{Variable.Result.Name()}}.Add({{CommonGen.InstantiateDataclass(columns, returnInterface)}});
+                                }
+                                """;
+
         return dbDriver.DotnetFramework.UsingStatementEnabled()
             ? GetWithUsingAsStatement()
             : GetWithUsingAsBlock();
@@ -45,39 +45,40 @@ public class ManyDeclareGen(DbDriver dbDriver)
         string GetWithUsingAsStatement()
         {
             return $$"""
-             {
-                 await using {{establishConnection[0]}};
-                 {{connectionOpen}}
-                 await using {{createSqlCommand}};
-                 {{string.Join("\n", commandParameters)}}
-                 {{initDataReader}};
-                 var {{Variable.Result.Name()}} = new List<{{returnInterface}}>();
-                 {{readWhileExists}}
-                 return {{Variable.Result.Name()}};
-             }
-             """;   
+                     {
+                         await using {{establishConnection[0]}};
+                         {{connectionOpen}}
+                         await using {{createSqlCommand}};
+                         {{string.Join("\n", commandParameters)}}
+                         {{commandParameters.JoinByNewLine()}}
+                         {{initDataReader}};
+                         var {{Variable.Result.Name()}} = new List<{{returnInterface}}>();
+                         {{readWhileExists}}
+                         return {{Variable.Result.Name()}};
+                     }
+                     """;
         }
 
         string GetWithUsingAsBlock()
         {
             return $$"""
-             {
-                 using ({{establishConnection[0]}})
-                 {
-                     {{connectionOpen}}
-                     using ({{createSqlCommand}})
                      {
-                         {{string.Join("\n", commandParameters)}}
-                         using ({{initDataReader}})
+                         using ({{establishConnection[0]}})
                          {
-                             var {{Variable.Result.Name()}} = new List<{{returnInterface}}>();
-                             {{readWhileExists}}
-                             return {{Variable.Result.Name()}};
+                             {{connectionOpen}}
+                             using ({{createSqlCommand}})
+                             {
+                                 {{string.Join("\n", commandParameters)}}
+                                 using ({{initDataReader}})
+                                 {
+                                     var {{Variable.Result.Name()}} = new List<{{returnInterface}}>();
+                                     {{readWhileExists}}
+                                     return {{Variable.Result.Name()}};
+                                 }
+                             }
                          }
                      }
-                 }
-             }
-             """;   
+                     """;
         }
     }
 }
