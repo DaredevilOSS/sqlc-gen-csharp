@@ -13,7 +13,6 @@
 
     <ItemGroup>
         <ProjectReference Include="..\GeneratedProtobuf\GeneratedProtobuf.csproj" />
-        <ProjectReference Include="..\DebugHelper\DebugHelper.csproj"/>
     </ItemGroup>
 
 </Project>

@@ -7,7 +7,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\DebugHelper\DebugHelper.csproj"/>
         <ProjectReference Include="..\Extensions\Extensions.csproj"/>
         <ProjectReference Include="..\PluginOptions\PluginOptions.csproj"/>
     </ItemGroup>
