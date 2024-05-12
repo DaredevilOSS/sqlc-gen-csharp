@@ -133,7 +133,7 @@ public class CodeGenerator
     private ClassDeclarationSyntax GetClassDeclaration(string className,
         IEnumerable<MemberDeclarationSyntax> classMembers)
     {
-        var classDeclaration = (ClassDeclarationSyntax)(Options.DotnetFramework == DotnetFramework.Dotnet80
+        var classDeclaration = (ClassDeclarationSyntax)(Options.DotnetFramework == DotnetFramework.DotnetStandard21
             ? GetWithPrimaryConstructor()
             : GetWithRegularConstructor());
         return classDeclaration.AddMembers(classMembers.ToArray());

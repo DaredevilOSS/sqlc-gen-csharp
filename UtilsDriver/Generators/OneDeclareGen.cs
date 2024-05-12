@@ -14,8 +14,9 @@ public class OneDeclareGen(DbDriver dbDriver)
         string returnInterface, IList<Parameter> parameters, IEnumerable<Column> columns)
     {
         var returnType = $"Task<{dbDriver.AddNullableSuffix(returnInterface, false)}>";
+        var parametersStr = CommonGen.GetParameterListAsString(argInterface, parameters);
         return ParseMemberDeclaration($$"""
-                                        public async {{returnType}} {{funcName}}({{CommonGen.GetParameterListAsString(argInterface, parameters)}})
+                                        public async {{returnType}} {{funcName}}({{parametersStr}})
                                         {
                                             {{GetMethodBody(queryTextConstant, returnInterface, columns, parameters)}}
                                         }
@@ -33,7 +34,7 @@ public class OneDeclareGen(DbDriver dbDriver)
         var awaitReaderRow = CommonGen.AwaitReaderRow();
         var returnDataclass = CommonGen.InstantiateDataclass(columns, returnInterface);
 
-        return dbDriver.DotnetFramework.UsingStatementEnabled()
+        return dbDriver.DotnetFramework.LatestDotnetSupported()
             ? GetWithUsingAsStatement()
             : GetWithUsingAsBlock();
 

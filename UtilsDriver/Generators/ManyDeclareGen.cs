@@ -38,7 +38,7 @@ public class ManyDeclareGen(DbDriver dbDriver)
                                 }
                                 """;
 
-        return dbDriver.DotnetFramework.UsingStatementEnabled()
+        return dbDriver.DotnetFramework.LatestDotnetSupported()
             ? GetWithUsingAsStatement()
             : GetWithUsingAsBlock();
 

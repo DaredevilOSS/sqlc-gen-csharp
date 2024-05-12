@@ -130,7 +130,7 @@ public partial class MySqlConnectorDriver(DotnetFramework dotnetFramework) : DbD
     public override string TransformQueryText(Query query)
     {
         var counter = 0;
-        return MyRegex().Replace(query.Text, _ => "@" + query.Params[counter++].Column.Name);
+        return QueryParamRegex().Replace(query.Text, _ => "@" + query.Params[counter++].Column.Name);
     }
 
     public override MemberDeclarationSyntax OneDeclare(string funcName, string queryTextConstant, string argInterface,
@@ -160,5 +160,5 @@ public partial class MySqlConnectorDriver(DotnetFramework dotnetFramework) : DbD
     }
 
     [GeneratedRegex(@"\?")]
-    private static partial Regex MyRegex();
+    private static partial Regex QueryParamRegex();
 }

@@ -28,7 +28,7 @@ public class ExecLastIdDeclareGen(DbDriver dbDriver)
         var commandParameters = CommonGen.GetCommandParameters(parameters);
         var executeScalarAndReturnCreated = ExecuteScalarAndReturnCreated();
 
-        return dbDriver.DotnetFramework.UsingStatementEnabled()
+        return dbDriver.DotnetFramework.LatestDotnetSupported()
             ? GetWithUsingAsStatement()
             : GetWithUsingAsBlock();
 

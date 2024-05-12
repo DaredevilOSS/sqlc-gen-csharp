@@ -12,7 +12,7 @@ public abstract class DbDriver(DotnetFramework dotnetFramework)
     {
         if (notNull) return csharpType;
         if (Utils.IsCsharpPrimitive(csharpType)) return $"{csharpType}?";
-        return DotnetFramework.NullableEnabled() ? $"{csharpType}?" : csharpType;
+        return DotnetFramework.LatestDotnetSupported() ? $"{csharpType}?" : csharpType;
     }
 
     public abstract UsingDirectiveSyntax[] GetUsingDirectives();

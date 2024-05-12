@@ -55,13 +55,13 @@ public class CommonGen(DbDriver dbDriver)
             var csharpType = dbDriver.GetColumnType(column);
             if (csharpType == "string")
                 return "string.Empty";
-            return !dbDriver.DotnetFramework.NullableEnabled() && Utils.IsCsharpPrimitive(csharpType)
+            return !dbDriver.DotnetFramework.LatestDotnetSupported() && Utils.IsCsharpPrimitive(csharpType)
                 ? $"({csharpType}) null"
                 : "null";
         }
     }
 
-    public IEnumerable<string> GetCommandParameters(IEnumerable<Parameter> parameters)
+    public static IEnumerable<string> GetCommandParameters(IEnumerable<Parameter> parameters)
     {
         return parameters.Select(param =>
             $"{Variable.Command.Name()}.Parameters.AddWithValue(\"@{param.Column.Name}\", " +
