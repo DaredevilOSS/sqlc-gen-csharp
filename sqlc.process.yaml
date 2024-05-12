@@ -14,7 +14,7 @@ sql:
     out: NpgsqlExample
     options:
       driver: Npgsql
-#      targetFramework: netstandard2.0c
+#      targetFramework: netstandard2.0
 #      generateCsproj: false
 #      filePerQuery: true
 - schema: "examples/authors/mysql/schema.sql"

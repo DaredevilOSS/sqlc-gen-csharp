@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Plugin;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
@@ -8,32 +7,59 @@ namespace SqlcGenCsharp.Drivers.Generators;
 
 public class ExecDeclareGen(DbDriver dbDriver)
 {
+    private CommonGen CommonGen { get; } = new(dbDriver);
+    
     public MemberDeclarationSyntax Generate(string funcName, string queryTextConstant, string argInterface,
         IList<Parameter> parameters)
     {
-        var methodDeclaration = MethodDeclaration(IdentifierName("Task"), Identifier(funcName))
-            .WithPublicAsync()
-            .WithParameterList(ParseParameterList(CommonGen.GetParameterListAsString(argInterface, parameters)))
-            .WithBody(GetMethodBody(queryTextConstant, parameters));
-        return methodDeclaration;
+        return ParseMemberDeclaration($$"""
+            public async Task {{funcName}}({{CommonGen.GetParameterListAsString(argInterface, parameters)}})
+            {
+                {{GetMethodBody(queryTextConstant, parameters)}}
+            }
+            """)!;
     }
 
-    private BlockSyntax GetMethodBody(string queryTextConstant, IEnumerable<Parameter> parameters)
+    private string GetMethodBody(string queryTextConstant, IEnumerable<Parameter> parameters)
     {
-        return Block(new[]
-            {
-                dbDriver.EstablishConnection(),
-                dbDriver.PrepareSqlCommand(queryTextConstant, parameters),
-                ExecuteScalar()
-            }
-            .SelectMany(x => x));
+        var establishConnection = dbDriver.EstablishConnection();
+        var connectionOpen = establishConnection.Length == 2 ? establishConnection[1] + ";" : string.Empty;
+        var createSqlCommand = dbDriver.CreateSqlCommand(queryTextConstant);
+        var commandParameters = CommonGen.GetCommandParameters(parameters);
+        var executeScalar = $"await {Variable.Command.Name()}.ExecuteScalarAsync();";
 
-        IEnumerable<StatementSyntax> ExecuteScalar()
+        return dbDriver.DotnetFramework.UsingStatementEnabled()
+            ? GetWithUsingAsStatement()
+            : GetWithUsingAsBlock();
+
+        string GetWithUsingAsStatement()
         {
-            return new[]
-            {
-                ParseStatement($"await {Variable.Command.Name()}.ExecuteScalarAsync();")
-            };
+            return $$"""
+             {
+                 await using {{establishConnection[0]}};
+                 {{connectionOpen}}
+                 await using {{createSqlCommand}};
+                 {{string.Join("\n", commandParameters)}}
+                 {{executeScalar}}
+             }
+             """;
+        }
+
+        string GetWithUsingAsBlock()
+        {
+            return $$"""
+             {
+                 using ({{establishConnection[0]}})
+                 {
+                     {{connectionOpen}}
+                     using ({{createSqlCommand}})
+                     {
+                         {{string.Join("\n", commandParameters)}}
+                         {{executeScalar}}
+                     }
+                 }
+             }
+             """;
         }
     }
 }

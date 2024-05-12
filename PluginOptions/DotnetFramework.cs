@@ -33,4 +33,9 @@ public static class DotnetFrameworkExtensions
     {
         return me == DotnetFramework.Dotnet80;
     }
+    
+    public static bool UsingStatementEnabled(this DotnetFramework me)
+    {
+        return me == DotnetFramework.Dotnet80;
+    }
 }

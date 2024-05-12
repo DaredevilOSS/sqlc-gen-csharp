@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text.RegularExpressions;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Plugin;
@@ -12,35 +11,15 @@ using OneDeclareGen = SqlcGenCsharp.Drivers.Generators.OneDeclareGen;
 
 namespace SqlcGenCsharp.MySqlConnectorDriver;
 
-public partial class Driver : DbDriver
+public partial class Driver(DotnetFramework dotnetFramework) : DbDriver(dotnetFramework)
 {
-    public Driver(DotnetFramework dotnetFramework) : base(dotnetFramework)
+    public override string[] EstablishConnection()
     {
-        CommonGen = new CommonGen(this);
-        OneDeclareGen = new OneDeclareGen(this);
-        ManyDeclareGen = new ManyDeclareGen(this);
-        ExecDeclareGen = new ExecDeclareGen(this);
-        ExecLastIdDeclareGen = new ExecLastIdDeclareGen(this);
-    }
-
-    private CommonGen CommonGen { get; }
-
-    private OneDeclareGen OneDeclareGen { get; }
-
-    private ManyDeclareGen ManyDeclareGen { get; }
-
-    private ExecDeclareGen ExecDeclareGen { get; }
-
-    private ExecLastIdDeclareGen ExecLastIdDeclareGen { get; }
-
-    public override IEnumerable<StatementSyntax> EstablishConnection()
-    {
-        return new[]
-        {
-            ParseStatement(
-                $"{CommonGen.AddAwaitIfSupported()}using var {Variable.Connection.Name()} = new MySqlConnection({Variable.ConnectionString.Name()});"),
-            ParseStatement($"{Variable.Connection.Name()}.Open();")
-        };
+        return
+        [
+            $"var {Variable.Connection.Name()} = new MySqlConnection({Variable.ConnectionString.Name()})",
+            $"{Variable.Connection.Name()}.Open()"
+        ];
     }
 
     public override UsingDirectiveSyntax[] GetUsingDirectives()
@@ -53,19 +32,9 @@ public partial class Driver : DbDriver
         ];
     }
 
-    public override IEnumerable<StatementSyntax> PrepareSqlCommand(string sqlTextConstant,
-        IEnumerable<Parameter> parameters)
+    public override string CreateSqlCommand(string sqlTextConstant)
     {
-        return new[]
-        {
-            ParseStatement(
-                $"{CommonGen.AddAwaitIfSupported()}using var {Variable.Command.Name()} = " +
-                $"new MySqlCommand({sqlTextConstant}, {Variable.Connection.Name()});")
-        }.Concat(
-            parameters.Select(param => ParseStatement(
-                $"{Variable.Command.Name()}.Parameters.AddWithValue(\"@{param.Column.Name}\", " +
-                $"args.{param.Column.Name.FirstCharToUpper()});"))
-        );
+        return $"var {Variable.Command.Name()} = new MySqlCommand({sqlTextConstant}, {Variable.Connection.Name()})";
     }
 
     public override string GetColumnType(Column column)
@@ -167,25 +136,27 @@ public partial class Driver : DbDriver
     public override MemberDeclarationSyntax OneDeclare(string funcName, string queryTextConstant, string argInterface,
         string returnInterface, IList<Parameter> parameters, IList<Column> columns)
     {
-        return OneDeclareGen.Generate(funcName, queryTextConstant, argInterface, returnInterface, parameters, columns);
+        return new OneDeclareGen(this).Generate(funcName, queryTextConstant, argInterface, returnInterface,
+            parameters, columns);
     }
 
     public override MemberDeclarationSyntax ExecDeclare(string funcName, string queryTextConstant, string argInterface,
         IList<Parameter> parameters)
     {
-        return ExecDeclareGen.Generate(funcName, queryTextConstant, argInterface, parameters);
+        return new ExecDeclareGen(this).Generate(funcName, queryTextConstant, argInterface, parameters);
     }
 
     public override MemberDeclarationSyntax ExecLastIdDeclare(string funcName, string queryTextConstant,
         string argInterface, IList<Parameter> parameters)
     {
-        return ExecLastIdDeclareGen.Generate(funcName, queryTextConstant, argInterface, parameters);
+        return new ExecLastIdDeclareGen(this).Generate(funcName, queryTextConstant, argInterface, parameters);
     }
 
     public override MemberDeclarationSyntax ManyDeclare(string funcName, string queryTextConstant, string argInterface,
         string returnInterface, IList<Parameter> parameters, IEnumerable<Column> columns)
     {
-        return ManyDeclareGen.Generate(funcName, queryTextConstant, argInterface, returnInterface, parameters, columns);
+        return new ManyDeclareGen(this).Generate(funcName, queryTextConstant, argInterface, returnInterface, parameters,
+            columns);
     }
 
     [GeneratedRegex(@"\?")]
