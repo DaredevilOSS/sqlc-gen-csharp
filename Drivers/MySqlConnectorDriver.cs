@@ -1,38 +1,35 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Plugin;
-using SqlcGenCsharp.Drivers;
 using SqlcGenCsharp.Drivers.Generators;
 using static System.String;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
+using OneDeclareGen = SqlcGenCsharp.Drivers.Generators.OneDeclareGen;
 
-namespace SqlcGenCsharp.NpgsqlDriver;
+namespace SqlcGenCsharp.Drivers;
 
-public class NpgsqlDriver(DotnetFramework dotnetFramework) : DbDriver(dotnetFramework)
+public partial class MySqlConnectorDriver(DotnetFramework dotnetFramework) : DbDriver(dotnetFramework)
 {
     public override UsingDirectiveSyntax[] GetUsingDirectives()
     {
-        return
-        [
-            UsingDirective(ParseName("System.Collections.Generic")),
-            UsingDirective(ParseName("System.Threading.Tasks")),
-            UsingDirective(ParseName("Npgsql"))
-        ];
+        return base.GetUsingDirectives()
+            .Append(UsingDirective(ParseName("MySqlConnector")))
+            .ToArray();
     }
     
-    public override string[] EstablishConnection()
+    public override (string, string) EstablishConnection()
     {
-        return
-        [
-            $"var {Variable.Connection.Name()} = NpgsqlDataSource.Create({Variable.ConnectionString.Name()})"
-        ];
+        return (
+            $"var {Variable.Connection.Name()} = new MySqlConnection({Variable.ConnectionString.Name()})",
+            $"{Variable.Connection.Name()}.Open()");
     }
 
     public override string CreateSqlCommand(string sqlTextConstant)
     {
-        return $"var {Variable.Command.Name()} = {Variable.Connection.Name()}.CreateCommand({sqlTextConstant})";
+        return $"var {Variable.Command.Name()} = new MySqlCommand({sqlTextConstant}, {Variable.Connection.Name()})";
     }
 
     public override string GetColumnType(Column column)
@@ -44,35 +41,40 @@ public class NpgsqlDriver(DotnetFramework dotnetFramework) : DbDriver(dotnetFram
         {
             switch (column.Type.Name.ToLower())
             {
-                case "serial":
-                case "bigserial":
+                case "bigint":
                     return "long";
+                case "binary":
                 case "bit":
-                case "bytea":
+                case "blob":
+                case "longblob":
+                case "mediumblob":
+                case "tinyblob":
+                case "varbinary":
                     return "byte[]";
                 case "char":
-                case "bpchar":
-                case "varchar":
-                case "text":
                 case "date":
+                case "datetime":
+                case "decimal":
+                case "longtext":
+                case "mediumtext":
+                case "text":
                 case "time":
                 case "timestamp":
+                case "tinytext":
+                case "varchar":
                     return "string";
-                case "decimal":
-                    return "decimal";
-                case "numeric":
-                case "float4":
-                case "float8":
-                    return "float";
-                case "int2":
-                case "int4":
-                case "int8":
+                case "double":
+                case "float":
+                    return "double";
+                case "int":
+                case "mediumint":
+                case "smallint":
+                case "tinyint":
+                case "year":
                     return "int";
                 case "json":
+                    // Assuming JSON is represented as a string or a specific class
                     return "object";
-                case "bool":
-                case "boolean":
-                    return "bool";
                 default:
                     throw new NotSupportedException($"Unsupported column type: {column.Type.Name}");
             }
@@ -83,25 +85,23 @@ public class NpgsqlDriver(DotnetFramework dotnetFramework) : DbDriver(dotnetFram
     {
         switch (column.Type.Name.ToLower())
         {
-            case "serial":
-            case "bigserial":
+            case "bigint":
                 return $"reader.GetInt64({ordinal})";
             case "binary":
             case "bit":
-            case "bytea":
             case "blob":
             case "longblob":
             case "mediumblob":
             case "tinyblob":
             case "varbinary":
-                return $"Utils.GetBytes({Variable.Reader.Name()}, {ordinal})";
+                return $"Utils.GetBytes(reader, {ordinal})";
             case "char":
             case "date":
             case "datetime":
+            case "decimal":
             case "longtext":
             case "mediumtext":
             case "text":
-            case "bpchar":
             case "time":
             case "timestamp":
             case "tinytext":
@@ -109,20 +109,9 @@ public class NpgsqlDriver(DotnetFramework dotnetFramework) : DbDriver(dotnetFram
             case "json":
                 return $"reader.GetString({ordinal})";
             case "double":
+            case "float":
                 return $"reader.GetDouble({ordinal})";
-            case "numeric":
-            case "float4":
-            case "float8":
-                return $"reader.GetFloat({ordinal})";
-            case "decimal":
-                return $"reader.GetDecimal({ordinal})";
-            case "bool":
-            case "boolean":
-                return $"reader.GetBoolean({ordinal})";
             case "int":
-            case "int2":
-            case "int4":
-            case "int8":
             case "mediumint":
             case "smallint":
             case "tinyint":
@@ -135,22 +124,15 @@ public class NpgsqlDriver(DotnetFramework dotnetFramework) : DbDriver(dotnetFram
 
     public override string TransformQueryText(Query query)
     {
-        var queryText = query.Text;
-        for (var i = 0; i < query.Params.Count; i++)
-        {
-            var currentParameter = query.Params[i];
-            queryText = Regex.Replace(queryText, $@"\$\s*{i + 1}",
-                $"@{currentParameter.Column.Name.FirstCharToLower()}");
-        }
-
-        return queryText;
+        var counter = 0;
+        return QueryParamRegex().Replace(query.Text, _ => "@" + query.Params[counter++].Column.Name);
     }
 
     public override MemberDeclarationSyntax OneDeclare(string funcName, string queryTextConstant, string argInterface,
         string returnInterface, IList<Parameter> parameters, IList<Column> columns)
     {
-        return new OneDeclareGen(this).Generate(funcName, queryTextConstant, argInterface, returnInterface, parameters,
-            columns);
+        return new OneDeclareGen(this).Generate(funcName, queryTextConstant, argInterface, returnInterface,
+            parameters, columns);
     }
 
     public override MemberDeclarationSyntax ExecDeclare(string funcName, string queryTextConstant, string argInterface,
@@ -171,4 +153,7 @@ public class NpgsqlDriver(DotnetFramework dotnetFramework) : DbDriver(dotnetFram
         return new ManyDeclareGen(this).Generate(funcName, queryTextConstant, argInterface, returnInterface, parameters,
             columns);
     }
+
+    [GeneratedRegex(@"\?")]
+    private static partial Regex QueryParamRegex();
 }

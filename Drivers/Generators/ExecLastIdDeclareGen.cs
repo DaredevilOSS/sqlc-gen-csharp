@@ -7,8 +7,6 @@ namespace SqlcGenCsharp.Drivers.Generators;
 
 public class ExecLastIdDeclareGen(DbDriver dbDriver)
 {
-    private CommonGen CommonGen { get; } = new(dbDriver);
-
     public MemberDeclarationSyntax Generate(string funcName, string queryTextConstant, string argInterface,
         IList<Parameter> parameters)
     {
@@ -22,8 +20,7 @@ public class ExecLastIdDeclareGen(DbDriver dbDriver)
 
     private string GetMethodBody(string queryTextConstant, IEnumerable<Parameter> parameters)
     {
-        var establishConnection = dbDriver.EstablishConnection();
-        var connectionOpen = establishConnection.Length == 2 ? establishConnection[1] + ";" : string.Empty;
+        var (establishConnection, connectionOpen) = dbDriver.EstablishConnection();
         var createSqlCommand = dbDriver.CreateSqlCommand(queryTextConstant);
         var commandParameters = CommonGen.GetCommandParameters(parameters);
         var executeScalarAndReturnCreated = ExecuteScalarAndReturnCreated();
@@ -36,11 +33,11 @@ public class ExecLastIdDeclareGen(DbDriver dbDriver)
         {
             return $$"""
                      {
-                         await using {{establishConnection[0]}};
-                         {{connectionOpen}}
+                         await using {{establishConnection}};
+                         {{connectionOpen}};
                          await using {{createSqlCommand}};
-                         {{string.Join("\n", commandParameters)}}
-                         {{string.Join("\n", executeScalarAndReturnCreated)}}
+                         {{commandParameters.JoinByNewLine()}}
+                         {{executeScalarAndReturnCreated.JoinByNewLine()}}
                      }
                      """;
         }
@@ -49,9 +46,9 @@ public class ExecLastIdDeclareGen(DbDriver dbDriver)
         {
             return $$"""
                      {
-                         using ({{establishConnection[0]}})
+                         using ({{establishConnection}})
                          {
-                             {{connectionOpen}}
+                             {{connectionOpen}};
                              using ({{createSqlCommand}})
                              {
                                 {{commandParameters.JoinByNewLine()}}

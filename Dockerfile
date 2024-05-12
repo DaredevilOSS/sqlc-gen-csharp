@@ -6,32 +6,28 @@ COPY *.sln .
 
 COPY CodeGenerator/*.csproj ./CodeGenerator/
 COPY DebugHelper/*.csproj ./DebugHelper/
+COPY Drivers/*.csproj ./Drivers/
 COPY Extensions/*.csproj ./Extensions/
-COPY MySqlConnectorDriver/*.csproj ./MySqlConnectorDriver/
+COPY GeneratedProtobuf/*.csproj ./GeneratedProtobuf/
 COPY MySqlConnectorExample/*.csproj ./MySqlConnectorExample/
-COPY NpgsqlDriver/*.csproj ./NpgsqlDriver/
 COPY NpgsqlExample/*.csproj ./NpgsqlExample/
 COPY PluginOptions/*.csproj ./PluginOptions/
 COPY SqlcGenCsharp/*.csproj ./SqlcGenCsharp/
 COPY SqlcGenCsharpProcess/*.csproj ./SqlcGenCsharpProcess/
 COPY SqlcGenCsharpTests/*.csproj ./SqlcGenCsharpTests/
 COPY SqlcGenCsharpWasm/*.csproj ./SqlcGenCsharpWasm/
-COPY SqlcProtobuf/*.csproj ./SqlcProtobuf/
-COPY UtilsDriver/*.csproj ./UtilsDriver/
 
 COPY CodeGenerator/ ./CodeGenerator/
 COPY DebugHelper/ ./DebugHelper/
+COPY Drivers/ ./Drivers/
 COPY Extensions/ ./Extensions/
-COPY MySqlConnectorDriver/ ./MySqlConnectorDriver/
+COPY GeneratedProtobuf/ ./GeneratedProtobuf/
 COPY MySqlConnectorExample/ ./MySqlConnectorExample/
-COPY NpgsqlDriver/ ./NpgsqlDriver/
 COPY NpgsqlExample/ ./NpgsqlExample/
 COPY PluginOptions/ ./PluginOptions/
 COPY SqlcGenCsharp/ ./SqlcGenCsharp/
 COPY SqlcGenCsharpProcess/ ./SqlcGenCsharpProcess/
 COPY SqlcGenCsharpTests/ ./SqlcGenCsharpTests/
 COPY SqlcGenCsharpWasm/ ./SqlcGenCsharpWasm/
-COPY SqlcProtobuf/ ./SqlcProtobuf/
-COPY UtilsDriver/ ./UtilsDriver/
 
 RUN dotnet restore

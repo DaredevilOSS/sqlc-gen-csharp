@@ -6,37 +6,32 @@ using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace SqlcGenCsharp.Drivers.Generators;
 
-public class ManyDeclareGen(DbDriver dbDriver)
+public class OneDeclareGen(DbDriver dbDriver)
 {
     private CommonGen CommonGen { get; } = new(dbDriver);
 
     public MemberDeclarationSyntax Generate(string funcName, string queryTextConstant, string argInterface,
         string returnInterface, IList<Parameter> parameters, IEnumerable<Column> columns)
     {
-        var returnType = $"Task<List<{returnInterface}>>";
+        var returnType = $"Task<{dbDriver.AddNullableSuffix(returnInterface, false)}>";
+        var parametersStr = CommonGen.GetParameterListAsString(argInterface, parameters);
         return ParseMemberDeclaration($$"""
-                                        public async {{returnType}} {{funcName}}({{CommonGen.GetParameterListAsString(argInterface, parameters)}})
+                                        public async {{returnType}} {{funcName}}({{parametersStr}})
                                         {
                                             {{GetMethodBody(queryTextConstant, returnInterface, columns, parameters)}}
                                         }
                                         """)!;
     }
 
-    private string GetMethodBody(string queryTextConstant, string returnInterface, IEnumerable<Column> columns,
-        IEnumerable<Parameter> parameters)
+    private string GetMethodBody(string queryTextConstant, string returnInterface,
+        IEnumerable<Column> columns, IEnumerable<Parameter> parameters)
     {
-        var establishConnection = dbDriver.EstablishConnection();
-        var connectionOpen = establishConnection.Length == 2 ? establishConnection[1] + ";" : string.Empty;
+        var (establishConnection, connectionOpen) = dbDriver.EstablishConnection();
         var createSqlCommand = dbDriver.CreateSqlCommand(queryTextConstant);
         var commandParameters = CommonGen.GetCommandParameters(parameters);
         var initDataReader = CommonGen.InitDataReader();
         var awaitReaderRow = CommonGen.AwaitReaderRow();
-        var readWhileExists = $$"""
-                                while ({{awaitReaderRow}})
-                                {
-                                    {{Variable.Result.Name()}}.Add({{CommonGen.InstantiateDataclass(columns, returnInterface)}});
-                                }
-                                """;
+        var returnDataclass = CommonGen.InstantiateDataclass(columns, returnInterface);
 
         return dbDriver.DotnetFramework.LatestDotnetSupported()
             ? GetWithUsingAsStatement()
@@ -46,15 +41,16 @@ public class ManyDeclareGen(DbDriver dbDriver)
         {
             return $$"""
                      {
-                         await using {{establishConnection[0]}};
-                         {{connectionOpen}}
+                         await using {{establishConnection}};
+                         {{connectionOpen}};
                          await using {{createSqlCommand}};
-                         {{string.Join("\n", commandParameters)}}
                          {{commandParameters.JoinByNewLine()}}
                          {{initDataReader}};
-                         var {{Variable.Result.Name()}} = new List<{{returnInterface}}>();
-                         {{readWhileExists}}
-                         return {{Variable.Result.Name()}};
+                         if ({{awaitReaderRow}})
+                         {
+                             return {{returnDataclass}};
+                         }
+                         return null;
                      }
                      """;
         }
@@ -63,20 +59,22 @@ public class ManyDeclareGen(DbDriver dbDriver)
         {
             return $$"""
                      {
-                         using ({{establishConnection[0]}})
+                         using ({{establishConnection}})
                          {
-                             {{connectionOpen}}
+                             {{connectionOpen}};
                              using ({{createSqlCommand}})
                              {
-                                 {{string.Join("\n", commandParameters)}}
+                                {{commandParameters.JoinByNewLine()}}
                                  using ({{initDataReader}})
                                  {
-                                     var {{Variable.Result.Name()}} = new List<{{returnInterface}}>();
-                                     {{readWhileExists}}
-                                     return {{Variable.Result.Name()}};
+                                     if ({{awaitReaderRow}})
+                                     {
+                                         return {{returnDataclass}};
+                                     }
                                  }
                              }
                          }
+                         return null;
                      }
                      """;
         }
