@@ -5,7 +5,6 @@ WORKDIR /app
 COPY *.sln .
 
 COPY CodeGenerator/*.csproj ./CodeGenerator/
-COPY DebugHelper/*.csproj ./DebugHelper/
 COPY Drivers/*.csproj ./Drivers/
 COPY Extensions/*.csproj ./Extensions/
 COPY GeneratedProtobuf/*.csproj ./GeneratedProtobuf/
@@ -18,7 +17,6 @@ COPY SqlcGenCsharpTests/*.csproj ./SqlcGenCsharpTests/
 COPY SqlcGenCsharpWasm/*.csproj ./SqlcGenCsharpWasm/
 
 COPY CodeGenerator/ ./CodeGenerator/
-COPY DebugHelper/ ./DebugHelper/
 COPY Drivers/ ./Drivers/
 COPY Extensions/ ./Extensions/
 COPY GeneratedProtobuf/ ./GeneratedProtobuf/
