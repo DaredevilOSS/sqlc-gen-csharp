@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Plugin;
+using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace SqlcGenCsharp.Drivers;
 
@@ -8,22 +9,29 @@ public abstract class DbDriver(DotnetFramework dotnetFramework)
 {
     public DotnetFramework DotnetFramework { get; } = dotnetFramework;
 
+    public virtual UsingDirectiveSyntax[] GetUsingDirectives()
+    {
+        return
+        [
+            UsingDirective(ParseName("System.Collections.Generic")),
+            UsingDirective(ParseName("System.Threading.Tasks"))
+        ];
+    }
+    
     public string AddNullableSuffix(string csharpType, bool notNull)
     {
         if (notNull) return csharpType;
         if (Utils.IsCsharpPrimitive(csharpType)) return $"{csharpType}?";
         return DotnetFramework.LatestDotnetSupported() ? $"{csharpType}?" : csharpType;
     }
-
-    public abstract UsingDirectiveSyntax[] GetUsingDirectives();
-
+    
     public abstract string GetColumnType(Column column);
 
     public abstract string GetColumnReader(Column column, int ordinal);
 
     public abstract string TransformQueryText(Query query);
 
-    public abstract string[] EstablishConnection();
+    public abstract (string, string) EstablishConnection();
 
     public abstract string CreateSqlCommand(string sqlTextConstant);
 

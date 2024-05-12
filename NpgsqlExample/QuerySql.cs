@@ -33,6 +33,7 @@ namespace NpgsqlExample
             {
                 using (var connection = NpgsqlDataSource.Create(connectionString))
                 {
+                    ;
                     using (var command = connection.CreateCommand(GetAuthorSql))
                     {
                         command.Parameters.AddWithValue("@id", args.Id);
@@ -67,6 +68,7 @@ namespace NpgsqlExample
             {
                 using (var connection = NpgsqlDataSource.Create(connectionString))
                 {
+                    ;
                     using (var command = connection.CreateCommand(ListAuthorsSql))
                     {
                         using (var reader = await command.ExecuteReaderAsync())
@@ -101,6 +103,7 @@ namespace NpgsqlExample
             {
                 using (var connection = NpgsqlDataSource.Create(connectionString))
                 {
+                    ;
                     using (var command = connection.CreateCommand(CreateAuthorSql))
                     {
                         command.Parameters.AddWithValue("@name", args.Name);
@@ -134,6 +137,7 @@ namespace NpgsqlExample
             {
                 using (var connection = NpgsqlDataSource.Create(connectionString))
                 {
+                    ;
                     using (var command = connection.CreateCommand(DeleteAuthorSql))
                     {
                         command.Parameters.AddWithValue("@id", args.Id);
@@ -170,6 +174,7 @@ namespace NpgsqlExample
             {
                 using (var connection = NpgsqlDataSource.Create(connectionString))
                 {
+                    ;
                     using (var command = connection.CreateCommand(TestSql))
                     {
                         using (var reader = await command.ExecuteReaderAsync())

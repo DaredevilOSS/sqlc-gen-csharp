@@ -3,12 +3,12 @@
     <PropertyGroup>
         <TargetFramework>net8.0</TargetFramework>
         <Nullable>enable</Nullable>
-        <RootNamespace>SqlcGenCsharp.NpgsqlDriver</RootNamespace>
+        <RootNamespace>SqlcGenCsharp.Drivers</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>
         <ProjectReference Include="..\DebugHelper\DebugHelper.csproj"/>
-        <ProjectReference Include="..\UtilsDriver\UtilsDriver.csproj"/>
+        <ProjectReference Include="..\Extensions\Extensions.csproj"/>
         <ProjectReference Include="..\PluginOptions\PluginOptions.csproj"/>
     </ItemGroup>
 

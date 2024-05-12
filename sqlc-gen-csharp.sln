@@ -7,15 +7,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SqlcGenCsharpProcess", "Sql
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MySqlConnectorExample", "MySqlConnectorExample\MySqlConnectorExample.csproj", "{6406B659-77CF-4978-ABD3-BFBB2CBFFCA3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UtilsDriver", "UtilsDriver\UtilsDriver.csproj", "{79E7A33D-D0CA-4D5E-9E0A-94B7BE7CAA78}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Extensions", "Extensions\Extensions.csproj", "{FCE3B072-0B96-47D2-959C-111B5BC1D292}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MySqlConnectorDriver", "MySqlConnectorDriver\MySqlConnectorDriver.csproj", "{6C698DAA-5151-4241-B07E-3435A717ABFB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Drivers", "Drivers\Drivers.csproj", "{6C698DAA-5151-4241-B07E-3435A717ABFB}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SqlcGenCsharpTests", "SqlcGenCsharpTests\SqlcGenCsharpTests.csproj", "{3675F864-9CD2-49C0-9754-56E490F15DF0}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NpgsqlDriver", "NpgsqlDriver\NpgsqlDriver.csproj", "{B6150440-4409-4B64-8A07-4A7D9B92FB09}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NpgsqlExample", "NpgsqlExample\NpgsqlExample.csproj", "{86C6A2E3-C58C-4891-9B7B-296C36020185}"
 EndProject
@@ -23,7 +19,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SqlcGenCsharpWasm", "SqlcGe
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SqlcGenCsharp", "SqlcGenCsharp\SqlcGenCsharp.csproj", "{B83D6813-3B06-4E23-B2FC-47078CB90B83}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SqlcProtobuf", "SqlcProtobuf\SqlcProtobuf.csproj", "{F9634820-EDE9-4DB0-9801-C32AD492D4E7}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GeneratedProtobuf", "GeneratedProtobuf\GeneratedProtobuf.csproj", "{F9634820-EDE9-4DB0-9801-C32AD492D4E7}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DebugHelper", "DebugHelper\DebugHelper.csproj", "{664214D1-538C-4CB1-B4D1-F6A9717AA034}"
 EndProject
@@ -48,10 +44,6 @@ Global
 		{6406B659-77CF-4978-ABD3-BFBB2CBFFCA3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6406B659-77CF-4978-ABD3-BFBB2CBFFCA3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6406B659-77CF-4978-ABD3-BFBB2CBFFCA3}.Release|Any CPU.Build.0 = Release|Any CPU
-		{79E7A33D-D0CA-4D5E-9E0A-94B7BE7CAA78}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{79E7A33D-D0CA-4D5E-9E0A-94B7BE7CAA78}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{79E7A33D-D0CA-4D5E-9E0A-94B7BE7CAA78}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{79E7A33D-D0CA-4D5E-9E0A-94B7BE7CAA78}.Release|Any CPU.Build.0 = Release|Any CPU
 		{FCE3B072-0B96-47D2-959C-111B5BC1D292}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{FCE3B072-0B96-47D2-959C-111B5BC1D292}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FCE3B072-0B96-47D2-959C-111B5BC1D292}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -64,10 +56,6 @@ Global
 		{3675F864-9CD2-49C0-9754-56E490F15DF0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3675F864-9CD2-49C0-9754-56E490F15DF0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3675F864-9CD2-49C0-9754-56E490F15DF0}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B6150440-4409-4B64-8A07-4A7D9B92FB09}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B6150440-4409-4B64-8A07-4A7D9B92FB09}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B6150440-4409-4B64-8A07-4A7D9B92FB09}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B6150440-4409-4B64-8A07-4A7D9B92FB09}.Release|Any CPU.Build.0 = Release|Any CPU
 		{86C6A2E3-C58C-4891-9B7B-296C36020185}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{86C6A2E3-C58C-4891-9B7B-296C36020185}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{86C6A2E3-C58C-4891-9B7B-296C36020185}.Release|Any CPU.ActiveCfg = Release|Any CPU
