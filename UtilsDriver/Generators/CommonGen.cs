@@ -1,36 +1,27 @@
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Plugin;
-using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace SqlcGenCsharp.Drivers.Generators;
 
 public class CommonGen(DbDriver dbDriver)
 {
-    public string AddAwaitIfSupported()
+    public static string AwaitReaderRow()
     {
-        return dbDriver.DotnetFramework == DotnetFramework.Dotnet80 ? "await " : string.Empty;
-    }
-
-    public static ExpressionSyntax AwaitReaderRow()
-    {
-        return ParseExpression($"await {Variable.Reader.Name()}.ReadAsync()");
+        return $"await {Variable.Reader.Name()}.ReadAsync()";
     }
 
     public static string GetParameterListAsString(string argInterface, IEnumerable<Parameter> parameters)
     {
-        return "(" + (string.IsNullOrEmpty(argInterface) || !parameters.Any() ? string.Empty : $"{argInterface} args") +
-               ")";
+        return $"{(string.IsNullOrEmpty(argInterface) || !parameters.Any() ? string.Empty : $"{argInterface} args")}";
     }
 
-    public StatementSyntax UsingDataReader()
+    public static string InitDataReader()
     {
-        return ParseStatement(
-            $"{AddAwaitIfSupported()}using var {Variable.Reader.Name()} = await {Variable.Command.Name()}.ExecuteReaderAsync();");
+        return $"var {Variable.Reader.Name()} = await {Variable.Command.Name()}.ExecuteReaderAsync()";
     }
 
-    public ExpressionSyntax InstantiateDataclass(IEnumerable<Column> columns, string returnInterface)
+    public string InstantiateDataclass(IEnumerable<Column> columns, string returnInterface)
     {
         var columnsInit = columns
             .Select((column, ordinal) =>
@@ -41,12 +32,12 @@ public class CommonGen(DbDriver dbDriver)
                 return $"{column.Name.FirstCharToUpper()} = {readExpression}";
             });
 
-        return ParseExpression($$"""
-                                 new {{returnInterface}}
-                                 {
-                                     {{string.Join(",\n", columnsInit)}}
-                                 }
-                                 """);
+        return $$"""
+            new {{returnInterface}}
+            {
+                {{string.Join(",\n", columnsInit)}}
+            }
+            """;
 
         string GetNullableReadExpression(Column column, int ordinal)
         {
@@ -68,5 +59,12 @@ public class CommonGen(DbDriver dbDriver)
                 ? $"({csharpType}) null"
                 : "null";
         }
+    }
+
+    public IEnumerable<string> GetCommandParameters(IEnumerable<Parameter> parameters)
+    {
+        return parameters.Select(param =>
+            $"{Variable.Command.Name()}.Parameters.AddWithValue(\"@{param.Column.Name}\", " +
+            $"args.{param.Column.Name.FirstCharToUpper()});");
     }
 }

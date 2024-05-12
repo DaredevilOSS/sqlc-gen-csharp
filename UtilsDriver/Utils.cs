@@ -6,7 +6,7 @@ public static class Utils
 {
     public static bool IsCsharpPrimitive(string csharpType)
     {
-        var csharpPrimitives = new HashSet<string> { "long", "double", "int" };
+        var csharpPrimitives = new HashSet<string> { "long", "double", "int", "float", "bool" };
         return csharpPrimitives.Contains(csharpType.Replace("?", ""));
     }
 }

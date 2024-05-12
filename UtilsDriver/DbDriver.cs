@@ -23,10 +23,9 @@ public abstract class DbDriver(DotnetFramework dotnetFramework)
 
     public abstract string TransformQueryText(Query query);
 
-    public abstract IEnumerable<StatementSyntax> EstablishConnection();
+    public abstract string[] EstablishConnection();
 
-    public abstract IEnumerable<StatementSyntax> PrepareSqlCommand(string sqlTextConstant,
-        IEnumerable<Parameter> parameters);
+    public abstract string CreateSqlCommand(string sqlTextConstant);
 
     public abstract MemberDeclarationSyntax OneDeclare(string name, string sqlTextConstant, string argInterface,
         string returnInterface, IList<Parameter> parameters, IList<Column> columns);

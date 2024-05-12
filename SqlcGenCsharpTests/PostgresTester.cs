@@ -12,7 +12,7 @@ public class PostgresTester : IDriverTester
 
     private QuerySql QuerySql { get; } =
         new(Environment.GetEnvironmentVariable(ConnectionStringEnv)!);
-
+    
     public async Task<long> CreateFirstAuthorAndTest()
     {
         var bojackCreateAuthorArgs = new QuerySql.CreateAuthorArgs
@@ -26,7 +26,8 @@ public class PostgresTester : IDriverTester
             Name: Consts.BojackAuthor,
             Bio: Consts.BojackTheme
         });
-        var bojackInsertedId = createdBojackAuthor!.Value.Id;
+        var bojackInsertedId = GetId(createdBojackAuthor);
+
         var getAuthorArgs = new QuerySql.GetAuthorArgs
         {
             Id = bojackInsertedId
@@ -38,6 +39,18 @@ public class PostgresTester : IDriverTester
             Bio: Consts.BojackTheme
         });
         return bojackInsertedId;
+
+        long GetId(QuerySql.CreateAuthorRow? createdAuthorRow)
+        {
+            var type = typeof(QuerySql.CreateAuthorRow);
+            var valueProperty = type.GetProperty("Value");
+            var idProperty = type.GetProperty("Id");
+
+            if (valueProperty == null)
+                return (long)(idProperty?.GetValue(createdAuthorRow) ?? throw new InvalidOperationException());
+            var value = valueProperty.GetValue(createdAuthorRow);
+            return (long)(idProperty?.GetValue(value) ?? throw new InvalidOperationException());
+        }
     }
 
     public async Task CreateSecondAuthorAndTest()
