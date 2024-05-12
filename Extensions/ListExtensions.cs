@@ -6,4 +6,9 @@ public static class ListExtensions
     {
         return condition ? me.Append(item) : me;
     }
+
+    public static string JoinByNewLine(this IEnumerable<string> me)
+    {
+        return string.Join("\n", me);
+    }
 }

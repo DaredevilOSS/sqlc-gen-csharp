@@ -9,7 +9,6 @@
     <ItemGroup>
         <ProjectReference Include="..\DebugHelper\DebugHelper.csproj"/>
         <ProjectReference Include="..\UtilsDriver\UtilsDriver.csproj"/>
-        <ProjectReference Include="..\RoslynExtensions\RoslynExtensions.csproj"/>
         <ProjectReference Include="..\PluginOptions\PluginOptions.csproj"/>
     </ItemGroup>
 

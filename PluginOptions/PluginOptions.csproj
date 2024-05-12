@@ -14,8 +14,6 @@
     <ItemGroup>
         <ProjectReference Include="..\SqlcProtobuf\SqlcProtobuf.csproj"/>
         <ProjectReference Include="..\DebugHelper\DebugHelper.csproj"/>
-        <ProjectReference Include="..\RoslynExtensions\RoslynExtensions.csproj"/>
-        <ProjectReference Include="..\ListExtensions\ListExtensions.csproj"/>
     </ItemGroup>
 
 </Project>

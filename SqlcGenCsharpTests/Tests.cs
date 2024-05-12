@@ -3,19 +3,19 @@ using NUnit.Framework;
 
 namespace SqlcGenCsharpTests;
 
-public class DriversTest
+public class Tests
 {
     [Test]
     public async Task TestFlowOnMySql()
     {
-        IDriverTester tester = new MySqlTester();
+        ISqlDriverTester tester = new MySqlTester();
         await tester.TestFlow();
     }
 
     [Test]
     public async Task TestFlowOnPostgres()
     {
-        IDriverTester tester = new PostgresTester();
+        ISqlDriverTester tester = new PostgresTester();
         await tester.TestFlow();
     }
 }

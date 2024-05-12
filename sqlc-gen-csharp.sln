@@ -9,7 +9,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MySqlConnectorExample", "My
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UtilsDriver", "UtilsDriver\UtilsDriver.csproj", "{79E7A33D-D0CA-4D5E-9E0A-94B7BE7CAA78}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StringExtensions", "StringExtensions\StringExtensions.csproj", "{FCE3B072-0B96-47D2-959C-111B5BC1D292}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Extensions", "Extensions\Extensions.csproj", "{FCE3B072-0B96-47D2-959C-111B5BC1D292}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MySqlConnectorDriver", "MySqlConnectorDriver\MySqlConnectorDriver.csproj", "{6C698DAA-5151-4241-B07E-3435A717ABFB}"
 EndProject
@@ -24,10 +24,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SqlcGenCsharp", "SqlcGenCsharp\SqlcGenCsharp.csproj", "{B83D6813-3B06-4E23-B2FC-47078CB90B83}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SqlcProtobuf", "SqlcProtobuf\SqlcProtobuf.csproj", "{F9634820-EDE9-4DB0-9801-C32AD492D4E7}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ListExtensions", "ListExtensions\ListExtensions.csproj", "{12ACA4A1-80E3-453C-8D7F-ABF46EBC9E28}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RoslynExtensions", "RoslynExtensions\RoslynExtensions.csproj", "{69ACB976-6B00-4DEE-9245-47564AD1360F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DebugHelper", "DebugHelper\DebugHelper.csproj", "{664214D1-538C-4CB1-B4D1-F6A9717AA034}"
 EndProject
@@ -87,14 +83,6 @@ Global
 		{F9634820-EDE9-4DB0-9801-C32AD492D4E7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F9634820-EDE9-4DB0-9801-C32AD492D4E7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F9634820-EDE9-4DB0-9801-C32AD492D4E7}.Release|Any CPU.Build.0 = Release|Any CPU
-		{12ACA4A1-80E3-453C-8D7F-ABF46EBC9E28}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{12ACA4A1-80E3-453C-8D7F-ABF46EBC9E28}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{12ACA4A1-80E3-453C-8D7F-ABF46EBC9E28}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{12ACA4A1-80E3-453C-8D7F-ABF46EBC9E28}.Release|Any CPU.Build.0 = Release|Any CPU
-		{69ACB976-6B00-4DEE-9245-47564AD1360F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{69ACB976-6B00-4DEE-9245-47564AD1360F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{69ACB976-6B00-4DEE-9245-47564AD1360F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{69ACB976-6B00-4DEE-9245-47564AD1360F}.Release|Any CPU.Build.0 = Release|Any CPU
 		{664214D1-538C-4CB1-B4D1-F6A9717AA034}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{664214D1-538C-4CB1-B4D1-F6A9717AA034}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{664214D1-538C-4CB1-B4D1-F6A9717AA034}.Release|Any CPU.ActiveCfg = Release|Any CPU

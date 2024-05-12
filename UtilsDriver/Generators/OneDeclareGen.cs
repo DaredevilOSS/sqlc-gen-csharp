@@ -15,11 +15,11 @@ public class OneDeclareGen(DbDriver dbDriver)
     {
         var returnType = $"Task<{dbDriver.AddNullableSuffix(returnInterface, false)}>";
         return ParseMemberDeclaration($$"""
-            public async {{returnType}} {{funcName}}({{CommonGen.GetParameterListAsString(argInterface, parameters)}})
-            {
-                {{GetMethodBody(queryTextConstant, returnInterface, columns, parameters)}}
-            }
-            """)!;
+                                        public async {{returnType}} {{funcName}}({{CommonGen.GetParameterListAsString(argInterface, parameters)}})
+                                        {
+                                            {{GetMethodBody(queryTextConstant, returnInterface, columns, parameters)}}
+                                        }
+                                        """)!;
     }
 
     private string GetMethodBody(string queryTextConstant, string returnInterface,
@@ -40,43 +40,43 @@ public class OneDeclareGen(DbDriver dbDriver)
         string GetWithUsingAsStatement()
         {
             return $$"""
-             {
-                 await using {{establishConnection[0]}};
-                 {{connectionOpen}}
-                 await using {{createSqlCommand}};
-                 {{string.Join("\n", commandParameters)}}
-                 {{initDataReader}};
-                 if ({{awaitReaderRow}})
-                 {
-                     return {{returnDataclass}};
-                 }
-                 return null;
-             }
-             """;
+                     {
+                         await using {{establishConnection[0]}};
+                         {{connectionOpen}}
+                         await using {{createSqlCommand}};
+                         {{commandParameters.JoinByNewLine()}}
+                         {{initDataReader}};
+                         if ({{awaitReaderRow}})
+                         {
+                             return {{returnDataclass}};
+                         }
+                         return null;
+                     }
+                     """;
         }
 
         string GetWithUsingAsBlock()
         {
             return $$"""
-             {
-                 using ({{establishConnection[0]}})
-                 {
-                     {{connectionOpen}}
-                     using ({{createSqlCommand}})
                      {
-                        {{string.Join("\n", commandParameters)}}
-                         using ({{initDataReader}})
+                         using ({{establishConnection[0]}})
                          {
-                             if ({{awaitReaderRow}})
+                             {{connectionOpen}}
+                             using ({{createSqlCommand}})
                              {
-                                 return {{returnDataclass}};
+                                {{string.Join("\n", commandParameters)}}
+                                 using ({{initDataReader}})
+                                 {
+                                     if ({{awaitReaderRow}})
+                                     {
+                                         return {{returnDataclass}};
+                                     }
+                                 }
                              }
                          }
+                         return null;
                      }
-                 }
-                 return null;
-             }
-             """;
+                     """;
         }
     }
 }

@@ -2,7 +2,7 @@ using System.Threading.Tasks;
 
 namespace SqlcGenCsharpTests;
 
-public interface IDriverTester
+public interface ISqlDriverTester
 {
     async Task TestFlow()
     {

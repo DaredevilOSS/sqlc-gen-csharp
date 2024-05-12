@@ -10,7 +10,7 @@ using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace SqlcGenCsharp.NpgsqlDriver;
 
-public class Driver(DotnetFramework dotnetFramework) : DbDriver(dotnetFramework)
+public class NpgsqlDriver(DotnetFramework dotnetFramework) : DbDriver(dotnetFramework)
 {
     public override UsingDirectiveSyntax[] GetUsingDirectives()
     {
@@ -20,6 +20,19 @@ public class Driver(DotnetFramework dotnetFramework) : DbDriver(dotnetFramework)
             UsingDirective(ParseName("System.Threading.Tasks")),
             UsingDirective(ParseName("Npgsql"))
         ];
+    }
+    
+    public override string[] EstablishConnection()
+    {
+        return
+        [
+            $"var {Variable.Connection.Name()} = NpgsqlDataSource.Create({Variable.ConnectionString.Name()})"
+        ];
+    }
+
+    public override string CreateSqlCommand(string sqlTextConstant)
+    {
+        return $"var {Variable.Command.Name()} = {Variable.Connection.Name()}.CreateCommand({sqlTextConstant})";
     }
 
     public override string GetColumnType(Column column)
@@ -64,19 +77,6 @@ public class Driver(DotnetFramework dotnetFramework) : DbDriver(dotnetFramework)
                     throw new NotSupportedException($"Unsupported column type: {column.Type.Name}");
             }
         }
-    }
-
-    public override string[] EstablishConnection()
-    {
-        return
-        [
-            $"var {Variable.Connection.Name()} = NpgsqlDataSource.Create({Variable.ConnectionString.Name()})"
-        ];
-    }
-
-    public override string CreateSqlCommand(string sqlTextConstant)
-    {
-        return $"var {Variable.Command.Name()} = {Variable.Connection.Name()}.CreateCommand({sqlTextConstant})";
     }
 
     public override string GetColumnReader(Column column, int ordinal)

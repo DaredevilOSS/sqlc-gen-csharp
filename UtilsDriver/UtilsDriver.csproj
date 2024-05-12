@@ -12,8 +12,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\SqlcProtobuf\SqlcProtobuf.csproj"/>
-        <ProjectReference Include="..\StringExtensions\StringExtensions.csproj"/>
-        <ProjectReference Include="..\RoslynExtensions\RoslynExtensions.csproj"/>
+        <ProjectReference Include="..\Extensions\Extensions.csproj"/>
         <ProjectReference Include="..\PluginOptions\PluginOptions.csproj"/>
     </ItemGroup>
 

@@ -33,11 +33,11 @@ public class CommonGen(DbDriver dbDriver)
             });
 
         return $$"""
-            new {{returnInterface}}
-            {
-                {{string.Join(",\n", columnsInit)}}
-            }
-            """;
+                 new {{returnInterface}}
+                 {
+                     {{string.Join(",\n", columnsInit)}}
+                 }
+                 """;
 
         string GetNullableReadExpression(Column column, int ordinal)
         {

@@ -8,16 +8,16 @@ namespace SqlcGenCsharp.Drivers.Generators;
 public class ExecDeclareGen(DbDriver dbDriver)
 {
     private CommonGen CommonGen { get; } = new(dbDriver);
-    
+
     public MemberDeclarationSyntax Generate(string funcName, string queryTextConstant, string argInterface,
         IList<Parameter> parameters)
     {
         return ParseMemberDeclaration($$"""
-            public async Task {{funcName}}({{CommonGen.GetParameterListAsString(argInterface, parameters)}})
-            {
-                {{GetMethodBody(queryTextConstant, parameters)}}
-            }
-            """)!;
+                                        public async Task {{funcName}}({{CommonGen.GetParameterListAsString(argInterface, parameters)}})
+                                        {
+                                            {{GetMethodBody(queryTextConstant, parameters)}}
+                                        }
+                                        """)!;
     }
 
     private string GetMethodBody(string queryTextConstant, IEnumerable<Parameter> parameters)
@@ -35,31 +35,31 @@ public class ExecDeclareGen(DbDriver dbDriver)
         string GetWithUsingAsStatement()
         {
             return $$"""
-             {
-                 await using {{establishConnection[0]}};
-                 {{connectionOpen}}
-                 await using {{createSqlCommand}};
-                 {{string.Join("\n", commandParameters)}}
-                 {{executeScalar}}
-             }
-             """;
+                     {
+                         await using {{establishConnection[0]}};
+                         {{connectionOpen}}
+                         await using {{createSqlCommand}};
+                         {{commandParameters.JoinByNewLine()}}
+                         {{executeScalar}}
+                     }
+                     """;
         }
 
         string GetWithUsingAsBlock()
         {
             return $$"""
-             {
-                 using ({{establishConnection[0]}})
-                 {
-                     {{connectionOpen}}
-                     using ({{createSqlCommand}})
                      {
-                         {{string.Join("\n", commandParameters)}}
-                         {{executeScalar}}
+                         using ({{establishConnection[0]}})
+                         {
+                             {{connectionOpen}}
+                             using ({{createSqlCommand}})
+                             {
+                                 {{string.Join("\n", commandParameters)}}
+                                 {{executeScalar}}
+                             }
+                         }
                      }
-                 }
-             }
-             """;
+                     """;
         }
     }
 }
