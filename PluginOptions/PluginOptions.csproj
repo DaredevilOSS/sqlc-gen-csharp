@@ -12,7 +12,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\GeneratedProtobuf\GeneratedProtobuf.csproj" />
+        <ProjectReference Include="..\GeneratedProtobuf\GeneratedProtobuf.csproj"/>
     </ItemGroup>
 
 </Project>

@@ -13,8 +13,8 @@
 
     <ItemGroup>
         <ProjectReference Include="..\PluginOptions\PluginOptions.csproj"/>
-        <ProjectReference Include="..\GeneratedProtobuf\GeneratedProtobuf.csproj" />
-        <ProjectReference Include="..\Drivers\Drivers.csproj" />
+        <ProjectReference Include="..\GeneratedProtobuf\GeneratedProtobuf.csproj"/>
+        <ProjectReference Include="..\Drivers\Drivers.csproj"/>
     </ItemGroup>
 
 </Project>
