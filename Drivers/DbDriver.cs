@@ -17,14 +17,14 @@ public abstract class DbDriver(DotnetFramework dotnetFramework)
             UsingDirective(ParseName("System.Threading.Tasks"))
         ];
     }
-    
+
     public string AddNullableSuffix(string csharpType, bool notNull)
     {
         if (notNull) return csharpType;
         if (Utils.IsCsharpPrimitive(csharpType)) return $"{csharpType}?";
         return DotnetFramework.LatestDotnetSupported() ? $"{csharpType}?" : csharpType;
     }
-    
+
     public abstract string GetColumnType(Column column);
 
     public abstract string GetColumnReader(Column column, int ordinal);

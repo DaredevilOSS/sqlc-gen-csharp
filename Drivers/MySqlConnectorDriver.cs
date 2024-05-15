@@ -19,7 +19,7 @@ public partial class MySqlConnectorDriver(DotnetFramework dotnetFramework) : DbD
             .Append(UsingDirective(ParseName("MySqlConnector")))
             .ToArray();
     }
-    
+
     public override (string, string) EstablishConnection()
     {
         return (

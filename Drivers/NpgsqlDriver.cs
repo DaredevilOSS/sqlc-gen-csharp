@@ -17,7 +17,7 @@ public class NpgsqlDriver(DotnetFramework dotnetFramework) : DbDriver(dotnetFram
             .Append(UsingDirective(ParseName("Npgsql")))
             .ToArray();
     }
-    
+
     public override (string, string) EstablishConnection()
     {
         return (

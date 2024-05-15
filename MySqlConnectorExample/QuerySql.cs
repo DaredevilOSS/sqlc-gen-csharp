@@ -2,6 +2,7 @@
 // ReSharper disable NotAccessedPositionalProperty.Global
 // ReSharper disable UnusedAutoPropertyAccessor.Global
 // ReSharper disable InconsistentNaming
+
 namespace MySqlConnectorExample
 {
     using System.Collections.Generic;
@@ -17,17 +18,20 @@ namespace MySqlConnectorExample
 
         private string connectionString { get; }
 
-        private const string GetAuthorSql = "SELECT id, name, bio FROM authors WHERE  id  =  @id  LIMIT  1  ";  
+        private const string GetAuthorSql = "SELECT id, name, bio FROM authors WHERE  id  =  @id  LIMIT  1  ";
+
         public class GetAuthorRow
         {
             public long Id { get; set; }
             public string Name { get; set; }
             public string Bio { get; set; }
         };
+
         public class GetAuthorArgs
         {
             public long Id { get; set; }
         };
+
         public async Task<GetAuthorRow> GetAuthor(GetAuthorArgs args)
         {
             {
@@ -40,14 +44,12 @@ namespace MySqlConnectorExample
                         using (var reader = await command.ExecuteReaderAsync())
                         {
                             if (await reader.ReadAsync())
-                            {
                                 return new GetAuthorRow
                                 {
                                     Id = reader.GetInt64(0),
                                     Name = reader.GetString(1),
                                     Bio = reader.IsDBNull(2) ? string.Empty : reader.GetString(2)
                                 };
-                            }
                         }
                     }
                 }
@@ -56,13 +58,15 @@ namespace MySqlConnectorExample
             }
         }
 
-        private const string ListAuthorsSql = "SELECT id, name, bio FROM authors ORDER  BY  name  ";  
+        private const string ListAuthorsSql = "SELECT id, name, bio FROM authors ORDER  BY  name  ";
+
         public class ListAuthorsRow
         {
             public long Id { get; set; }
             public string Name { get; set; }
             public string Bio { get; set; }
         };
+
         public async Task<List<ListAuthorsRow>> ListAuthors()
         {
             {
@@ -75,9 +79,11 @@ namespace MySqlConnectorExample
                         {
                             var result = new List<ListAuthorsRow>();
                             while (await reader.ReadAsync())
-                            {
-                                result.Add(new ListAuthorsRow { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? string.Empty : reader.GetString(2) });
-                            }
+                                result.Add(new ListAuthorsRow
+                                {
+                                    Id = reader.GetInt64(0), Name = reader.GetString(1),
+                                    Bio = reader.IsDBNull(2) ? string.Empty : reader.GetString(2)
+                                });
 
                             return result;
                         }
@@ -86,12 +92,14 @@ namespace MySqlConnectorExample
             }
         }
 
-        private const string CreateAuthorSql = "INSERT INTO authors ( name , bio ) VALUES ( @name, @bio ) "; 
+        private const string CreateAuthorSql = "INSERT INTO authors ( name , bio ) VALUES ( @name, @bio ) ";
+
         public class CreateAuthorArgs
         {
             public string Name { get; set; }
             public string Bio { get; set; }
         };
+
         public async Task CreateAuthor(CreateAuthorArgs args)
         {
             {
@@ -108,12 +116,14 @@ namespace MySqlConnectorExample
             }
         }
 
-        private const string UpdateAuthorSql = "UPDATE authors  SET  bio  =  @bio  WHERE  id  =  @id  ";  
+        private const string UpdateAuthorSql = "UPDATE authors  SET  bio  =  @bio  WHERE  id  =  @id  ";
+
         public class UpdateAuthorArgs
         {
             public string Bio { get; set; }
             public long Id { get; set; }
         };
+
         public async Task UpdateAuthor(UpdateAuthorArgs args)
         {
             {
@@ -130,12 +140,14 @@ namespace MySqlConnectorExample
             }
         }
 
-        private const string CreateAuthorReturnIdSql = "INSERT INTO authors ( name , bio ) VALUES ( @name, @bio ) "; 
+        private const string CreateAuthorReturnIdSql = "INSERT INTO authors ( name , bio ) VALUES ( @name, @bio ) ";
+
         public class CreateAuthorReturnIdArgs
         {
             public string Name { get; set; }
             public string Bio { get; set; }
         };
+
         public async Task<long> CreateAuthorReturnId(CreateAuthorReturnIdArgs args)
         {
             {
@@ -153,11 +165,13 @@ namespace MySqlConnectorExample
             }
         }
 
-        private const string DeleteAuthorSql = "DELETE FROM authors WHERE  id  =  @id  ";  
+        private const string DeleteAuthorSql = "DELETE FROM authors WHERE  id  =  @id  ";
+
         public class DeleteAuthorArgs
         {
             public long Id { get; set; }
         };
+
         public async Task DeleteAuthor(DeleteAuthorArgs args)
         {
             {
@@ -173,7 +187,9 @@ namespace MySqlConnectorExample
             }
         }
 
-        private const string TestSql = "SELECT c_bit, c_tinyint, c_bool, c_boolean, c_smallint, c_mediumint, c_int, c_integer, c_bigint, c_serial, c_decimal, c_dec, c_numeric, c_fixed, c_float, c_double, c_double_precision, c_date, c_time, c_datetime, c_timestamp, c_year, c_char, c_nchar, c_national_char, c_varchar, c_binary, c_varbinary, c_tinyblob, c_tinytext, c_blob, c_text, c_mediumblob, c_mediumtext, c_longblob, c_longtext, c_json FROM node_mysql_types LIMIT  1  ";  
+        private const string TestSql =
+            "SELECT c_bit, c_tinyint, c_bool, c_boolean, c_smallint, c_mediumint, c_int, c_integer, c_bigint, c_serial, c_decimal, c_dec, c_numeric, c_fixed, c_float, c_double, c_double_precision, c_date, c_time, c_datetime, c_timestamp, c_year, c_char, c_nchar, c_national_char, c_varchar, c_binary, c_varbinary, c_tinyblob, c_tinytext, c_blob, c_text, c_mediumblob, c_mediumtext, c_longblob, c_longtext, c_json FROM node_mysql_types LIMIT  1  ";
+
         public class TestRow
         {
             public byte[] C_bit { get; set; }
@@ -214,6 +230,7 @@ namespace MySqlConnectorExample
             public string C_longtext { get; set; }
             public object C_json { get; set; }
         };
+
         public async Task<TestRow> Test()
         {
             {
@@ -225,31 +242,30 @@ namespace MySqlConnectorExample
                         using (var reader = await command.ExecuteReaderAsync())
                         {
                             if (await reader.ReadAsync())
-                            {
                                 return new TestRow
                                 {
                                     C_bit = reader.IsDBNull(0) ? null : Utils.GetBytes(reader, 0),
-                                    C_tinyint = reader.IsDBNull(1) ? (int? )null : reader.GetInt32(1),
-                                    C_bool = reader.IsDBNull(2) ? (int? )null : reader.GetInt32(2),
-                                    C_boolean = reader.IsDBNull(3) ? (int? )null : reader.GetInt32(3),
-                                    C_smallint = reader.IsDBNull(4) ? (int? )null : reader.GetInt32(4),
-                                    C_mediumint = reader.IsDBNull(5) ? (int? )null : reader.GetInt32(5),
-                                    C_int = reader.IsDBNull(6) ? (int? )null : reader.GetInt32(6),
-                                    C_integer = reader.IsDBNull(7) ? (int? )null : reader.GetInt32(7),
-                                    C_bigint = reader.IsDBNull(8) ? (long? )null : reader.GetInt64(8),
+                                    C_tinyint = reader.IsDBNull(1) ? (int?)null : reader.GetInt32(1),
+                                    C_bool = reader.IsDBNull(2) ? (int?)null : reader.GetInt32(2),
+                                    C_boolean = reader.IsDBNull(3) ? (int?)null : reader.GetInt32(3),
+                                    C_smallint = reader.IsDBNull(4) ? (int?)null : reader.GetInt32(4),
+                                    C_mediumint = reader.IsDBNull(5) ? (int?)null : reader.GetInt32(5),
+                                    C_int = reader.IsDBNull(6) ? (int?)null : reader.GetInt32(6),
+                                    C_integer = reader.IsDBNull(7) ? (int?)null : reader.GetInt32(7),
+                                    C_bigint = reader.IsDBNull(8) ? (long?)null : reader.GetInt64(8),
                                     C_serial = reader.GetInt64(9),
                                     C_decimal = reader.IsDBNull(10) ? string.Empty : reader.GetString(10),
                                     C_dec = reader.IsDBNull(11) ? string.Empty : reader.GetString(11),
                                     C_numeric = reader.IsDBNull(12) ? string.Empty : reader.GetString(12),
                                     C_fixed = reader.IsDBNull(13) ? string.Empty : reader.GetString(13),
-                                    C_float = reader.IsDBNull(14) ? (double? )null : reader.GetDouble(14),
-                                    C_double = reader.IsDBNull(15) ? (double? )null : reader.GetDouble(15),
-                                    C_double_precision = reader.IsDBNull(16) ? (double? )null : reader.GetDouble(16),
+                                    C_float = reader.IsDBNull(14) ? (double?)null : reader.GetDouble(14),
+                                    C_double = reader.IsDBNull(15) ? (double?)null : reader.GetDouble(15),
+                                    C_double_precision = reader.IsDBNull(16) ? (double?)null : reader.GetDouble(16),
                                     C_date = reader.IsDBNull(17) ? string.Empty : reader.GetString(17),
                                     C_time = reader.IsDBNull(18) ? string.Empty : reader.GetString(18),
                                     C_datetime = reader.IsDBNull(19) ? string.Empty : reader.GetString(19),
                                     C_timestamp = reader.IsDBNull(20) ? string.Empty : reader.GetString(20),
-                                    C_year = reader.IsDBNull(21) ? (int? )null : reader.GetInt32(21),
+                                    C_year = reader.IsDBNull(21) ? (int?)null : reader.GetInt32(21),
                                     C_char = reader.IsDBNull(22) ? string.Empty : reader.GetString(22),
                                     C_nchar = reader.IsDBNull(23) ? string.Empty : reader.GetString(23),
                                     C_national_char = reader.IsDBNull(24) ? string.Empty : reader.GetString(24),
@@ -266,7 +282,6 @@ namespace MySqlConnectorExample
                                     C_longtext = reader.IsDBNull(35) ? string.Empty : reader.GetString(35),
                                     C_json = reader.IsDBNull(36) ? null : reader.GetString(36)
                                 };
-                            }
                         }
                     }
                 }
