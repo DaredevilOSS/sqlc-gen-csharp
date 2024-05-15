@@ -3,7 +3,7 @@ plugins:
   - name: csharp
     wasm:
       url: file://dist/plugin.wasm
-      sha256: 39f9368db269fbd8c786fa4da89a71be0f27bac1a3429eec2f98ce14aca8c9ef
+      sha256: b4d5451ff1cfa49157408215674ba65838c0f3566bb5bd19d14ac9ecc62ab065
 sql:
   - schema: "examples/authors/postgresql/schema.sql"
     queries: "examples/authors/postgresql/query.sql"
@@ -13,7 +13,9 @@ sql:
         out: NpgsqlExample
         options:
           driver: Npgsql
-          project: NpgsqlExample
+          #      targetFramework: netstandard2.0
+          #      generateCsproj: false
+          #      filePerQuery: true
   - schema: "examples/authors/mysql/schema.sql"
     queries: "examples/authors/mysql/query.sql"
     engine: "mysql"
@@ -22,4 +24,6 @@ sql:
         out: MySqlConnectorExample
         options:
           driver: MySqlConnector
-          project: MySqlConnectorExample
+          #      targetFramework: netstandard2.0
+          #      generateCsproj: false
+          #      filePerQuery: true
