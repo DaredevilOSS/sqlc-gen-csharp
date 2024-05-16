@@ -1,10 +1,6 @@
 SHELL 		:= /bin/bash
 PWD 		:= $(shell pwd)
 
-# TODO automate
-RUNTIME_DIR := SqlcGenCsharp/bin/Release/.net8.0/osx-arm64/
-PATH  		:= ${PATH}:${PWD}/${RUNTIME_DIR}
-
 dockerfile-generate:
 	./scripts/generate_dockerfile.sh
 
