@@ -1,8 +1,6 @@
 version: "2"
 plugins:
 - name: csharp
-  env:
-    - DEBUG
   process:
     cmd: ./dist/SqlcGenCsharpProcess
 sql:
