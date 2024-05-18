@@ -1,6 +1,6 @@
-using System.Collections.Generic;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Plugin;
+using System.Collections.Generic;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace SqlcGenCsharp.Drivers;

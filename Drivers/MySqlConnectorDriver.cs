@@ -1,12 +1,12 @@
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Plugin;
+using SqlcGenCsharp.Drivers.Generators;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Plugin;
-using SqlcGenCsharp.Drivers.Generators;
-using static System.String;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
+using static System.String;
 using OneDeclareGen = SqlcGenCsharp.Drivers.Generators.OneDeclareGen;
 
 namespace SqlcGenCsharp.Drivers;
