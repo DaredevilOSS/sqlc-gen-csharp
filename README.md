@@ -34,9 +34,9 @@ sql:
 ### Options Documentation
 | Option     | Possible values | Info |
 |------------|---------------------------|-|
-| targetFramework | default: `net8.0`<br/>vaults: `netstandard2.0`, `netstandard2.1`, `net8.0` |Decide the right target framework for your generated code, meaning the generated code will be syntactically compiled with your chosen framework.<br/>For more information and help deciding the right value, refer to the [Microsoft .NET Standard documentation](https://learn.microsoft.com/en-us/dotnet/standard/net-standard?tabs=net-standard-1-0). |
+| targetFramework | default: `net8.0`<br/>vaults: `netstandard2.0`, `netstandard2.1`, `net8.0` |Decide on the right target framework for your generated code, meaning the generated code will be compiled to the specified runtime.<br/>For more information and help deciding on the right value, refer to the [Microsoft .NET Standard documentation](https://learn.microsoft.com/en-us/dotnet/standard/net-standard?tabs=net-standard-1-0). |
 | generateCsproj      | default: `true`<br/>values: `false`,`true`  | This option is designed to assist you with the integration of SQLC and csharp by generating a `.csproj` file. This converts the generated output to a dynamic link library (DLL), simply a project that you can easily incorporate into your build process.  |
-| filePerQuery | default: `false`<br/>values: `false`,`true` | This option allows users control over the `.sql` files distribution logic to generate `.cs` files, the default is one file for schemas and one file for queries.<br/>Setting to `true` will separate the single file to files for every query you wrote in your `.sql` file |
+| filePerQuery | default: `false`<br/>values: `false`,`true` | This option allows users control on which `.cs` files to generate, when false it's one file per `.sql` SQLC query file, and when true it's one file per query. |
 
 
 
