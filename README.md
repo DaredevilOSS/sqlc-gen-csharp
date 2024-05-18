@@ -39,6 +39,9 @@ sql:
 | filePerQuery | default: `false`<br/>values: `false`,`true` | This option allows users control on which `.cs` files to generate, when false it's one file per `.sql` SQLC query file, and when true it's one file per query. |
 
 
+## Supported SQL Engines
+- MySQL via [MySqlConnector](https://www.nuget.org/packages/MySqlConnector) package - [MySqlConnectorDriver](MySqlConnectorDriver/MySqlConnectorDriver.csproj)
+- PostgreSQL via [Npgsql](https://www.nuget.org/packages/Npgsql) package - [NpgsqlDriver](NpgsqlDriver/NpgsqlDriver.csproj)
 
 
 ## Examples & Tests
@@ -46,10 +49,6 @@ The below examples in here are automatically tested:
 - [MySqlConnectorExample](MySqlConnectorExample/MySqlConnectorExample.csproj)
 - [NpgsqlExample](NpgsqlExample/NpgsqlExample.csproj)
 
-
-## Supported SQL Engines
-- MySQL via [MySqlConnector](https://www.nuget.org/packages/MySqlConnector) package - [MySqlConnectorDriver](MySqlConnectorDriver/MySqlConnectorDriver.csproj)
-- PostgreSQL via [Npgsql](https://www.nuget.org/packages/Npgsql) package - [NpgsqlDriver](NpgsqlDriver/NpgsqlDriver.csproj)
 
 
 <br/>
