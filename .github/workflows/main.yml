@@ -61,6 +61,11 @@ jobs:
            mysqldb
            postgresdb
            plugin-tests
+      - name: validate and delete the source control examples 
+        run: |
+          echo "doron"
+          rm -rf ./MySqlConnectorExample/
+          rm -rf ./NpgsqlExample/
       - name: test dotnet output project
         run: |
            chmod +x ./scripts/run_tests.sh
