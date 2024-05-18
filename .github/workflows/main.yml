@@ -1,11 +1,11 @@
-name: CI
+name: Main
 defaults:
   run:
     shell: bash
 
 on:
   push:
-    branches: [ "*" ]
+    branches: [ "main" ]
   pull_request:
     paths:
       - "!**.md"
