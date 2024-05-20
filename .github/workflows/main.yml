@@ -27,11 +27,11 @@ jobs:
         with:
           dotnet-version: "8.0.x"
 
-      - name: Run linter
-        uses: wearerequired/lint-action@v2
+      - name: .NET Lint
+        uses: zyactions/dotnet-lint@v1
         with:
-          dotnet_format: true
-          continue_on_error: false
+          implicit-restore: true
+          workspace: sqlc-gen-csharp.sln
           exclude: |
             GeneratedProtobuf
             MySqlConnectorExample
