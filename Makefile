@@ -1,9 +1,15 @@
 SHELL 		:= /bin/bash
 PWD 		:= $(shell pwd)
+        
+dotnet-format:
+	dotnet format \
+		--exclude GeneratedProtobuf \
+		--exclude MySqlConnectorExample \
+		--exclude NpgsqlExample
 
 dockerfile-generate:
 	./scripts/generate_dockerfile.sh
-
+        
 protobuf-generate:
 	./scripts/generate_protobuf.sh
 
@@ -12,7 +18,7 @@ run-tests:
 	./scripts/run_tests.sh
 
 # process type plugin
-dotnet-build-process: protobuf-generate
+dotnet-build-process: protobuf-generate dotnet-format
 	dotnet build SqlcGenCsharpProcess -c Release
 
 dotnet-publish-process: dotnet-build-process

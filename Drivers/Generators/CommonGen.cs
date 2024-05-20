@@ -1,6 +1,6 @@
+using Plugin;
 using System.Collections.Generic;
 using System.Linq;
-using Plugin;
 
 namespace SqlcGenCsharp.Drivers.Generators;
 

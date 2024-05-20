@@ -1,5 +1,5 @@
-using System;
 using Google.Protobuf;
+using System;
 using File = Plugin.File;
 
 
@@ -45,9 +45,9 @@ internal class CsprojGen(string projectName, Options options)
     {
         return driverName switch
         {
-            DriverName.Npgsql => "8.0.2",
+            DriverName.Npgsql => "8.0.3",
             DriverName.MySqlConnector => "2.3.6",
-            _ => throw new NotSupportedException($"Unsupported driver: {driverName}")
+            _ => throw new NotSupportedException($"unsupported driver: {driverName}")
         };
     }
 }

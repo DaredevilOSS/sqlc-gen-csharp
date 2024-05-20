@@ -8,9 +8,8 @@ public static class PluginRunner
     public static void Run()
     {
         var generateRequest = ReadInput();
-        var codeGenerator = new CodeGenerator(generateRequest);
-        var generateResponse = codeGenerator.Generate();
-        WriteOutput(generateResponse);
+        var generateResponse = new CodeGenerator().Generate(generateRequest);
+        WriteOutput(generateResponse.Result);
     }
 
     private static GenerateRequest ReadInput()

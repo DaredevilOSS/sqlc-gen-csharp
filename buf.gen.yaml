@@ -1,6 +1,4 @@
 version: v1
 plugins:
-  - plugin: buf.build/grpc/csharp:v1.62.0
-    out: SqlcProtobuf
   - plugin: buf.build/protocolbuffers/csharp
-    out: SqlcProtobuf
+    out: GeneratedProtobuf

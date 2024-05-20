@@ -1,7 +1,7 @@
+using Plugin;
 using System;
 using System.Text;
 using System.Text.Json;
-using Plugin;
 using Enum = System.Enum;
 
 namespace SqlcGenCsharp;
