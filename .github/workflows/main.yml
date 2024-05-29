@@ -53,13 +53,16 @@ jobs:
         uses: xom9ikk/dotenv@v2.3.0
         with:
           load-mode: strict
-      - name: Setup dotnet ${{ matrix.dotnet-version }}  
+          
+      - name: Setup Dotnet ${{ matrix.dotnet-version }}  
         uses: actions/setup-dotnet@v3
         with:
           dotnet-version: ${{ matrix.dotnet-version }}
-      - name: install wasm workload
+          
+      - name: install Wasi workload
         run: dotnet workload install wasi-experimental
-      - name: Download WASI SDK on Ubuntu
+        
+      - name: Download Wasi SDK on Ubuntu
         if: runner.os == 'Linux'
         run: |
           wget https://github.com/WebAssembly/wasi-sdk/releases/download/wasi-sdk-22/wasi-sdk-22.0-linux.tar.gz
@@ -71,24 +74,31 @@ jobs:
       #     curl -LO https://github.com/WebAssembly/wasi-sdk/releases/download/wasi-sdk-22/wasi-sdk-22.0.m-mingw.tar.gz
       #     tar xf wasi-sdk-22.0.m-mingw.tar.gz -C wasi-sdk-22.0
       #     chmod -R 755 wasi-sdk-22.0
-      - name: dotnet publish and build
-        run: WASI_SDK_PATH="$(pwd)/wasi-sdk-22.0" dotnet publish SqlcGenCsharpWasm -c release
+      
+      - name: Dotnet Wasm Publish
+        run: |
+          WASI_SDK_PATH="$(pwd)/wasi-sdk-22.0" dotnet publish SqlcGenCsharpWasm -c release
+          ./scripts/wasm/copy_to_dist.sh 
+          ./scripts/wasm/update_sha.sh
+          
       - uses: sqlc-dev/setup-sqlc@v4
         with:
           sqlc-version: '1.25.0'
-      - name: run update sha256 for builded wasm
-        run: |
-          chmod +x ./scripts/update_wasm_plugin.sh
-          ./scripts/update_wasm_plugin.sh
-      - name: run sqlc with generated wasm plugin
+          
+      - name: Verify pushed generated code is up to date
+        run: sqlc -f sqlc.wasm.yaml diff
+        
+      - name: Sqlc generate using Wasm plugin
         run: sqlc -f sqlc.wasm.yaml generate
+        
       - uses: hoverkraft-tech/compose-action@v1.5.1
         with:
          services: |
            mysqldb
            postgresdb
            plugin-tests
-      - name: test dotnet output project
+           
+      - name: Test generated code
         run: |
            chmod +x ./scripts/run_tests.sh
            ./scripts/run_tests.sh
