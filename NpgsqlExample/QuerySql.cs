@@ -8,15 +8,8 @@ namespace NpgsqlExample
     using System.Threading.Tasks;
     using Npgsql;
 
-    public class QuerySql
+    public class QuerySql(string connectionString)
     {
-        public QuerySql(string connectionString)
-        {
-            this.connectionString = connectionString;
-        }
-
-        private string connectionString { get; }
-
         private const string GetAuthorSql = "SELECT id, name, bio FROM authors WHERE  id  =  @id  LIMIT  1  ";  
         public readonly record struct GetAuthorRow(long Id, string Name, string? Bio);
         public readonly record struct GetAuthorArgs(long Id);
