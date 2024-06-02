@@ -39,5 +39,6 @@ update-wasm-plugin:
 
 sqlc-generate-wasm: dotnet-publish-wasm update-wasm-plugin
 	SQLCCACHE=./; sqlc -f sqlc.wasm.yaml generate
+	yq -i ".plugins[0].wasm.sha256 = \"SHA_TO_REPLACE\"" sqlc.wasm.yaml
 
 test-wasm-plugin: sqlc-generate-wasm dockerfile-generate run-tests
