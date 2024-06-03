@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SqlcGenCsharpProcess", "SqlcGenCsharpProcess\SqlcGenCsharpProcess.csproj", "{649CFB46-68D1-41F8-BD76-FF4B79B16825}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProcessRunner", "ProcessRunner\ProcessRunner.csproj", "{649CFB46-68D1-41F8-BD76-FF4B79B16825}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MySqlConnectorExample", "MySqlConnectorExample\MySqlConnectorExample.csproj", "{6406B659-77CF-4978-ABD3-BFBB2CBFFCA3}"
 EndProject
@@ -15,7 +15,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SqlcGenCsharpTests", "SqlcG
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NpgsqlExample", "NpgsqlExample\NpgsqlExample.csproj", "{86C6A2E3-C58C-4891-9B7B-296C36020185}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SqlcGenCsharpWasm", "SqlcGenCsharpWasm\SqlcGenCsharpWasm.csproj", "{D3095033-1C96-42D9-AE44-3D4F1B24CB51}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WasmRunner", "WasmRunner\WasmRunner.csproj", "{D3095033-1C96-42D9-AE44-3D4F1B24CB51}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SqlcGenCsharp", "SqlcGenCsharp\SqlcGenCsharp.csproj", "{B83D6813-3B06-4E23-B2FC-47078CB90B83}"
 EndProject

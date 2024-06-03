@@ -11,10 +11,10 @@ COPY GeneratedProtobuf/*.csproj ./GeneratedProtobuf/
 COPY MySqlConnectorExample/*.csproj ./MySqlConnectorExample/
 COPY NpgsqlExample/*.csproj ./NpgsqlExample/
 COPY PluginOptions/*.csproj ./PluginOptions/
+COPY ProcessRunner/*.csproj ./ProcessRunner/
 COPY SqlcGenCsharp/*.csproj ./SqlcGenCsharp/
-COPY SqlcGenCsharpProcess/*.csproj ./SqlcGenCsharpProcess/
 COPY SqlcGenCsharpTests/*.csproj ./SqlcGenCsharpTests/
-COPY SqlcGenCsharpWasm/*.csproj ./SqlcGenCsharpWasm/
+COPY WasmRunner/*.csproj ./WasmRunner/
 
 COPY CodeGenerator/ ./CodeGenerator/
 COPY Drivers/ ./Drivers/
@@ -23,9 +23,9 @@ COPY GeneratedProtobuf/ ./GeneratedProtobuf/
 COPY MySqlConnectorExample/ ./MySqlConnectorExample/
 COPY NpgsqlExample/ ./NpgsqlExample/
 COPY PluginOptions/ ./PluginOptions/
+COPY ProcessRunner/ ./ProcessRunner/
 COPY SqlcGenCsharp/ ./SqlcGenCsharp/
-COPY SqlcGenCsharpProcess/ ./SqlcGenCsharpProcess/
 COPY SqlcGenCsharpTests/ ./SqlcGenCsharpTests/
-COPY SqlcGenCsharpWasm/ ./SqlcGenCsharpWasm/
+COPY WasmRunner/ ./WasmRunner/
 
 RUN dotnet restore

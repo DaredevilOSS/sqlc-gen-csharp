@@ -77,7 +77,7 @@ jobs:
       
       - name: Dotnet Wasm Publish
         run: |
-          WASI_SDK_PATH="$(pwd)/wasi-sdk-22.0" dotnet publish SqlcGenCsharpWasm -c release
+          WASI_SDK_PATH="$(pwd)/wasi-sdk-22.0" dotnet publish WasmRunner -c release
           ./scripts/wasm/copy_to_dist.sh 
           ./scripts/wasm/update_sha.sh
           
@@ -85,8 +85,13 @@ jobs:
         with:
           sqlc-version: '1.25.0'
           
-      - name: Verify pushed generated code is up to date
+      - name: Verify pushed generated code is synced
         run: sqlc -f sqlc.wasm.yaml diff
+        
+      - name: Verify pushed Dockerfile is synced
+        run: |
+          ./scripts/generate_dockerfile.sh /tmp/Dockerfile
+          diff /tmp/Dockerfile Dockerfile
         
       - name: Sqlc generate using Wasm plugin
         run: sqlc -f sqlc.wasm.yaml generate
