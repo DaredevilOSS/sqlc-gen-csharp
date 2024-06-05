@@ -8,7 +8,7 @@ dotnet-format:
 		--exclude NpgsqlExample
 
 dockerfile-generate:
-	./scripts/generate_dockerfile.sh
+	./scripts/generate_dockerfile.sh Dockerfile
         
 protobuf-generate:
 	./scripts/generate_protobuf.sh
