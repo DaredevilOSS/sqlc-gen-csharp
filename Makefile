@@ -31,7 +31,7 @@ test-process-plugin: sqlc-generate-process dockerfile-generate run-tests
 
 # WASM type plugin
 dotnet-publish-wasm: protobuf-generate
-	dotnet publish SqlcGenCsharpWasm -c release --output dist/
+	dotnet publish WasmRunner -c release --output dist/
 	./scripts/wasm/copy_to_dist.sh
 
 update-wasm-plugin:
