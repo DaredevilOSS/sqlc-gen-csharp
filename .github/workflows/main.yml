@@ -3,6 +3,9 @@ defaults:
   run:
     shell: bash
 
+permissions:
+  contents: write
+
 on:
   push:
     branches: [ "main" ]
@@ -13,7 +16,6 @@ on:
       - "!**.md"
 
 jobs:
-  
   lint:
     name: Lint
     runs-on: ubuntu-latest
@@ -107,4 +109,104 @@ jobs:
         run: |
            chmod +x ./scripts/run_tests.sh
            ./scripts/run_tests.sh
-        shell: bash
+      - name: upload wasm plugin as artifact
+        uses: actions/upload-artifact@v2
+        if: github.ref == 'refs/heads/add-automatic-release' && contains(github.event.head_commit.message, '[release]')
+        with:
+          name: wasm-file
+          path: dist/plugin.wasm
+
+  release:
+    name: Release test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/add-automatic-release' && contains(github.event.head_commit.message, '[release]')
+    needs: [ci]
+    steps:
+      - name: Check out Git repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # fetches all history for all tags and branches
+      - uses: actions/download-artifact@v2
+        with:
+          name: wasm-file
+      - name: Bump version and create new tag
+        id: bump_version
+        run: |
+          echo "Extract the last tag version"
+          LAST_TAG=$(git describe --tags $(git rev-list --tags --max-count=1))
+          echo "Last tag version: $LAST_TAG"
+          LATEST_COMMIT_MSG=$(git log -1 --pretty=%B)
+
+          # Initialize the default version bump type to patch
+          BUMP_TYPE="patch"
+
+          # Check the latest commit message for [major] or [minor]
+          if [[ $LATEST_COMMIT_MSG == *"[major]"* ]]; then
+            BUMP_TYPE="major"
+          elif [[ $LATEST_COMMIT_MSG == *"[minor]"* ]]; then
+            BUMP_TYPE="minor"
+          fi
+
+          # Bump the version based on the type
+          case $BUMP_TYPE in
+            "major")
+              NEW_TAG=$(echo $LAST_TAG | awk -F. '{OFS="."; $1="v" substr($1,2)+1; $2="0"; $3="0"; print}')
+              ;;
+            "minor")
+              NEW_TAG=$(echo $LAST_TAG | awk -F. '{OFS="."; $2=$2+1; $3="0"; print}')
+              ;;
+            "patch")
+              NEW_TAG=$(echo $LAST_TAG | awk -F. '{OFS="."; $3=$3+1; print}')
+              ;;
+          esac
+
+          echo "New tag version: $NEW_TAG"
+          echo "NEW_TAG=$NEW_TAG" >> $GITHUB_ENV
+
+          # Create a new tag
+          git tag $NEW_TAG
+          git push origin $NEW_TAG
+
+      - name: Calculate sha256
+        run: |
+          SHA256_HASH=$(sha256sum plugin.wasm | awk '{ print $1 }')
+          echo "SHA256_HASH=$SHA256_HASH" >> $GITHUB_ENV
+          echo "The calculated sha256 is $SHA256_HASH"
+      - name: create relaese draft
+        run: |
+          NEW_TAG=${{ env.NEW_TAG }}
+          SHA256_HASH=${{ env.SHA256_HASH }}
+
+          # Define the release notes template
+          RELEASE_NOTES=$(cat <<EOF
+          ## Release version $NEW_TAG
+          Release sha256 is \`$SHA256_HASH\`
+
+          ## Configuration example
+          \`\`\`yaml
+          version: '2'
+          plugins:
+          - name: csharp
+            wasm:
+              url: https://github.com/DaredevilOSS/sqlc-gen-csharp/releases/download/$NEW_TAG/sqlc-gen-csharp.wasm
+              sha256: $SHA256_HASH
+          \`\`\`
+          ## Changelog 
+          * ADD CHANGES HERE...
+
+          ## Contributors
+          * @doron050 @SockworkOrange
+          Anyone who wishes to contribute to the next releases is invited :)
+          EOF
+          )
+
+          # change file name to convention
+          mv plugin.wasm sqlc-gen-csharp.wasm
+
+          # Create a draft release
+          gh release create $NEW_TAG sqlc-gen-csharp.wasm \
+          --draft \
+          --title "$NEW_TAG" \
+          --notes "$RELEASE_NOTES"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
