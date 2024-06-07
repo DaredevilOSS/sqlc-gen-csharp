@@ -36,7 +36,7 @@ sql:
 ### Options Documentation
 | Option     | Possible values | Info |
 |------------|---------------------------|-|
-| targetFramework | default: `net8.0`<br/>vaults: `netstandard2.0`, `netstandard2.1`, `net8.0` |Decide on the right target framework for your generated code, meaning the generated code will be compiled to the specified runtime.<br/>For more information and help deciding on the right value, refer to the [Microsoft .NET Standard documentation](https://learn.microsoft.com/en-us/dotnet/standard/net-standard?tabs=net-standard-1-0). |
+| targetFramework | default: `net8.0`<br/>values: `netstandard2.0`, `netstandard2.1`, `net8.0` |Decide on the right target framework for your generated code, meaning the generated code will be compiled to the specified runtime.<br/>For more information and help deciding on the right value, refer to the [Microsoft .NET Standard documentation](https://learn.microsoft.com/en-us/dotnet/standard/net-standard?tabs=net-standard-1-0). |
 | generateCsproj      | default: `true`<br/>values: `false`,`true`  | This option is designed to assist you with the integration of SQLC and csharp by generating a `.csproj` file. This converts the generated output to a dynamic link library (DLL), simply a project that you can easily incorporate into your build process.  |
 | filePerQuery | default: `false`<br/>values: `false`,`true` | This option allows users control on which `.cs` files to generate, when false it's one file per `.sql` SQLC query file, and when true it's one file per query. |
 
@@ -94,7 +94,7 @@ The release flow in this repo follows the semver conventions, building tag as `v
 * In order to create a release you need to add `[release]` somewhere in your commit message when merging to master
 
 ### Version bumping (build on tags)
-**The default behavior is to bump the `patch` in the last version**, by adding `[release]` to your commit message the release script will create a new tag with `v[major].[minor].[patch]+1`.
+**By default, the release script will bump the patch version.**, by adding `[release]` to your commit message the release script will create a new tag with `v[major].[minor].[patch]+1`.
 * Bump `minor` version by adding `[minor]` to your commit message resulting in a new tag with `v[major].[minor]+1.0`<br/>
 * Bump `major` version by adding `[major]` to your commit message resulting in a new tag with `v[major]+1.0.0`
 
