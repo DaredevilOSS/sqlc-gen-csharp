@@ -93,7 +93,7 @@ The release flow in this repo follows the semver conventions, building tag as `v
 
 * In order to create a release you need to add `[release]` somewhere in your commit message when merging to master
 
-### Version bumping (build on tags)
+### Version bumping (built on tags)
 **By default, the release script will bump the patch version.**, by adding `[release]` to your commit message the release script will create a new tag with `v[major].[minor].[patch]+1`.
 * Bump `minor` version by adding `[minor]` to your commit message resulting in a new tag with `v[major].[minor]+1.0`<br/>
 * Bump `major` version by adding `[major]` to your commit message resulting in a new tag with `v[major]+1.0.0`
