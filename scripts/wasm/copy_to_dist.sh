@@ -3,10 +3,11 @@
 set -e
 source .env
 
-if [ "${GITHUB_ACTIONS}" = "true" ]; then
+RUNNER_OS=$(uname -s)
+if [ "${RUNNER_OS}" == "Darwin" ]; then
+    WASM_FILE="${SOURCE_WASM_FILE_MACOS}"
+elif [ "${RUNNER_OS}" == "Linux" ]; then
     WASM_FILE="${SOURCE_WASM_FILE_UBUNTU}"
-else
-    WASM_FILE="${SOURCE_WASM_FILE}"
 fi
 
 echo "WASM_FILE = ${WASM_FILE}"

@@ -19,8 +19,8 @@ services:
     ports:
       - "3306:3306"
     environment:
-      MYSQL_DATABASE: tests
-      MYSQL_ALLOW_EMPTY_PASSWORD: true
+      MYSQL_DATABASE: "tests"
+      MYSQL_ALLOW_EMPTY_PASSWORD: "true"
     healthcheck:
       test: "mysqladmin ping -h 127.0.0.1"
       timeout: 20s
