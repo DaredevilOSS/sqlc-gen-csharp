@@ -11,7 +11,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Extensions", "Extensions\Ex
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Drivers", "Drivers\Drivers.csproj", "{6C698DAA-5151-4241-B07E-3435A717ABFB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SqlcGenCsharpTests", "SqlcGenCsharpTests\SqlcGenCsharpTests.csproj", "{3675F864-9CD2-49C0-9754-56E490F15DF0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EndToEndTests", "EndToEndTests\EndToEndTests.csproj", "{3675F864-9CD2-49C0-9754-56E490F15DF0}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NpgsqlExample", "NpgsqlExample\NpgsqlExample.csproj", "{86C6A2E3-C58C-4891-9B7B-296C36020185}"
 EndProject
