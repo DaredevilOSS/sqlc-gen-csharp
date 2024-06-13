@@ -135,3 +135,5 @@ _NCrunch*
 dist/*
 output/*
 docker-upload/*
+
+plugin.wasm
