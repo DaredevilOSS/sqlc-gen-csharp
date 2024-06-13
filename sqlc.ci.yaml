@@ -13,9 +13,9 @@ sql:
         out: NpgsqlExample
         options:
           driver: Npgsql
-          filePerQuery: BOOL_TO_REPLACE
-          #      targetFramework: netstandard2.0
-          #      generateCsproj: true
+          filePerQuery: false
+          targetFramework: net8.0
+          generateCsproj: true
   - schema: "examples/authors/mysql/schema.sql"
     queries: "examples/authors/mysql/query.sql"
     engine: "mysql"
@@ -24,6 +24,6 @@ sql:
         out: MySqlConnectorExample
         options:
           driver: MySqlConnector
-          filePerQuery: BOOL_TO_REPLACE
-          #      targetFramework: netstandard2.0
-          #      generateCsproj: true
+          filePerQuery: false
+          targetFramework: net8.0
+          generateCsproj: true

@@ -32,13 +32,12 @@ test-process-plugin: sqlc-generate-process dockerfile-generate run-tests
 # WASM type plugin
 dotnet-publish-wasm: protobuf-generate
 	dotnet publish WasmRunner -c release --output dist/
-	./scripts/wasm/copy_to_dist.sh
+	./scripts/wasm/copy_plugin_to.sh dist
 
 update-wasm-plugin:
-	./scripts/wasm/update_sha.sh
+	./scripts/wasm/update_sha.sh sqlc.ci.yaml
 
 sqlc-generate-wasm: dotnet-publish-wasm update-wasm-plugin
-	SQLCCACHE=./; sqlc -f sqlc.wasm.yaml generate
-	yq -i ".plugins[0].wasm.sha256 = \"SHA_TO_REPLACE\"" sqlc.wasm.yaml
+	SQLCCACHE=./; sqlc -f sqlc.ci.yaml generate
 
-test-wasm-plugin: sqlc-generate-wasm dockerfile-generate run-tests
+test-wasm-plugin: sqlc-generate-wasm update-wasm-plugin dockerfile-generate run-tests
