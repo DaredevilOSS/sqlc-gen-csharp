@@ -19,10 +19,10 @@ run-tests:
 
 # process type plugin
 dotnet-build-process: protobuf-generate dotnet-format
-	dotnet build SqlcGenCsharpProcess -c Release
+	dotnet build ProcessRunner -c Release
 
 dotnet-publish-process: dotnet-build-process
-	dotnet publish SqlcGenCsharpProcess -c release --output dist/
+	dotnet publish ProcessRunner -c release --output dist/
 
 sqlc-generate-process: dotnet-publish-process
 	sqlc -f sqlc.process.yaml generate
