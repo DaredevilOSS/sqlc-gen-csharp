@@ -11,6 +11,35 @@ namespace SqlcGenCsharp.Drivers;
 
 public class NpgsqlDriver(DotnetFramework dotnetFramework) : DbDriver(dotnetFramework)
 {
+    protected override List<(string, Func<int, string>, HashSet<string>)> GetColumnMapping()
+    {
+        return
+        [
+            ("long", ordinal => $"reader.GetInt64({ordinal})", ["serial", "bigserial"]),
+            ("byte[]", ordinal => $"Utils.GetBytes(reader, {ordinal})",
+                ["binary", "bit", "bytea", "blob", "longblob", "mediumblob", "tinyblob", "varbinary"]),
+            ("string", ordinal => $"reader.GetString({ordinal})",
+            [
+                "char",
+                "date",
+                "datetime",
+                "longtext",
+                "mediumtext",
+                "text",
+                "bpchar",
+                "time",
+                "timestamp",
+                "tinytext",
+                "varchar"
+            ]),
+            ("object", ordinal => $"reader.GetString({ordinal})", ["json"]),
+            ("int", ordinal => $"reader.GetInt32({ordinal})", ["int2", "int4", "int8"]),
+            ("float", ordinal => $"reader.GetFloat({ordinal})", ["numeric", "float4", "float8"]),
+            ("decimal", ordinal => $"reader.GetDecimal({ordinal})", ["decimal"]),
+            ("bool", ordinal => $"reader.GetBoolean({ordinal})", ["bool", "boolean"])
+        ];
+    }
+
     public override UsingDirectiveSyntax[] GetUsingDirectives()
     {
         return base.GetUsingDirectives()
@@ -28,104 +57,6 @@ public class NpgsqlDriver(DotnetFramework dotnetFramework) : DbDriver(dotnetFram
     public override string CreateSqlCommand(string sqlTextConstant)
     {
         return $"var {Variable.Command.Name()} = {Variable.Connection.Name()}.CreateCommand({sqlTextConstant})";
-    }
-
-    public override string GetColumnType(Column column)
-    {
-        var csharpType = string.IsNullOrEmpty(column.Type.Name) ? "object" : GetTypeWithoutNullableSuffix();
-        return AddNullableSuffix(csharpType, column.NotNull);
-
-        string GetTypeWithoutNullableSuffix()
-        {
-            switch (column.Type.Name.ToLower())
-            {
-                case "serial":
-                case "bigserial":
-                    return "long";
-                case "bit":
-                case "bytea":
-                    return "byte[]";
-                case "char":
-                case "bpchar":
-                case "varchar":
-                case "text":
-                case "date":
-                case "time":
-                case "timestamp":
-                    return "string";
-                case "decimal":
-                    return "decimal";
-                case "numeric":
-                case "float4":
-                case "float8":
-                    return "float";
-                case "int2":
-                case "int4":
-                case "int8":
-                    return "int";
-                case "json":
-                    return "object";
-                case "bool":
-                case "boolean":
-                    return "bool";
-                default:
-                    throw new NotSupportedException($"Unsupported column type: {column.Type.Name}");
-            }
-        }
-    }
-
-    public override string GetColumnReader(Column column, int ordinal)
-    {
-        switch (column.Type.Name.ToLower())
-        {
-            case "serial":
-            case "bigserial":
-                return $"reader.GetInt64({ordinal})";
-            case "binary":
-            case "bit":
-            case "bytea":
-            case "blob":
-            case "longblob":
-            case "mediumblob":
-            case "tinyblob":
-            case "varbinary":
-                return $"Utils.GetBytes({Variable.Reader.Name()}, {ordinal})";
-            case "char":
-            case "date":
-            case "datetime":
-            case "longtext":
-            case "mediumtext":
-            case "text":
-            case "bpchar":
-            case "time":
-            case "timestamp":
-            case "tinytext":
-            case "varchar":
-            case "json":
-                return $"reader.GetString({ordinal})";
-            case "double":
-                return $"reader.GetDouble({ordinal})";
-            case "numeric":
-            case "float4":
-            case "float8":
-                return $"reader.GetFloat({ordinal})";
-            case "decimal":
-                return $"reader.GetDecimal({ordinal})";
-            case "bool":
-            case "boolean":
-                return $"reader.GetBoolean({ordinal})";
-            case "int":
-            case "int2":
-            case "int4":
-            case "int8":
-            case "mediumint":
-            case "smallint":
-            case "tinyint":
-            case "year":
-                return $"reader.GetInt32({ordinal})";
-            default:
-                throw new NotSupportedException($"Unsupported column type: {column.Type.Name}");
-        }
     }
 
     public override string TransformQueryText(Query query)

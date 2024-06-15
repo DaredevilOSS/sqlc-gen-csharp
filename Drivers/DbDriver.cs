@@ -1,7 +1,9 @@
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Plugin;
+using System;
 using System.Collections.Generic;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
+using static System.String;
 
 namespace SqlcGenCsharp.Drivers;
 
@@ -18,6 +20,8 @@ public abstract class DbDriver(DotnetFramework dotnetFramework)
         ];
     }
 
+    protected abstract List<(string, Func<int, string>, HashSet<string>)> GetColumnMapping();
+
     public string AddNullableSuffix(string csharpType, bool notNull)
     {
         if (notNull) return csharpType;
@@ -25,10 +29,33 @@ public abstract class DbDriver(DotnetFramework dotnetFramework)
         return DotnetFramework.LatestDotnetSupported() ? $"{csharpType}?" : csharpType;
     }
 
-    public abstract string GetColumnType(Column column);
+    public string GetColumnType(Column column)
+    {
+        var columnCsharpType = IsNullOrEmpty(column.Type.Name) ? "object" : GetTypeWithoutNullableSuffix();
+        return AddNullableSuffix(columnCsharpType, column.NotNull);
 
-    public abstract string GetColumnReader(Column column, int ordinal);
+        string GetTypeWithoutNullableSuffix()
+        {
+            var columnType = column.Type.Name.ToLower();
+            foreach (var (csharpType, _, dbTypes) in GetColumnMapping())
+            {
+                if (dbTypes.Contains(columnType))
+                    return csharpType;
+            }
+            throw new NotSupportedException($"Unsupported column type: {column.Type.Name}");
+        }
+    }
 
+    public string GetColumnReader(Column column, int ordinal)
+    {
+        var columnType = column.Type.Name.ToLower();
+        foreach (var (_, getDataReader, dbTypes) in GetColumnMapping())
+        {
+            if (dbTypes.Contains(columnType))
+                return getDataReader(ordinal);
+        }
+        throw new NotSupportedException($"Unsupported column type: {column.Type.Name}");
+    }
     public abstract string TransformQueryText(Query query);
 
     public abstract (string, string) EstablishConnection();

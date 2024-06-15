@@ -6,13 +6,51 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
-using static System.String;
 using OneDeclareGen = SqlcGenCsharp.Drivers.Generators.OneDeclareGen;
 
 namespace SqlcGenCsharp.Drivers;
 
 public partial class MySqlConnectorDriver(DotnetFramework dotnetFramework) : DbDriver(dotnetFramework)
 {
+    protected override List<(string, Func<int, string>, HashSet<string>)> GetColumnMapping()
+    {
+        return
+        [
+            ("long", ordinal => $"reader.GetInt64({ordinal})", ["bigint"]),
+            ("byte[]", ordinal => $"Utils.GetBytes(reader, {ordinal})", [
+                "binary",
+                "bit",
+                "blob",
+                "longblob",
+                "mediumblob",
+                "tinyblob",
+                "varbinary"
+            ]),
+            ("string", ordinal => $"reader.GetString({ordinal})", [
+                "char",
+                "date",
+                "datetime",
+                "decimal",
+                "longtext",
+                "mediumtext",
+                "text",
+                "time",
+                "timestamp",
+                "tinytext",
+                "varchar"
+            ]),
+            ("int", ordinal => $"reader.GetInt32({ordinal})", [
+                "int",
+                "mediumint",
+                "smallint",
+                "tinyint",
+                "year"
+            ]),
+            ("double", ordinal => $"reader.GetDouble({ordinal})", ["double", "float"]),
+            ("object", ordinal => $"reader.GetString({ordinal})", ["json"])
+        ];
+    }
+
     public override UsingDirectiveSyntax[] GetUsingDirectives()
     {
         return base.GetUsingDirectives()
@@ -30,96 +68,6 @@ public partial class MySqlConnectorDriver(DotnetFramework dotnetFramework) : DbD
     public override string CreateSqlCommand(string sqlTextConstant)
     {
         return $"var {Variable.Command.Name()} = new MySqlCommand({sqlTextConstant}, {Variable.Connection.Name()})";
-    }
-
-    public override string GetColumnType(Column column)
-    {
-        var csharpType = IsNullOrEmpty(column.Type.Name) ? "object" : GetTypeWithoutNullableSuffix();
-        return AddNullableSuffix(csharpType, column.NotNull);
-
-        string GetTypeWithoutNullableSuffix()
-        {
-            switch (column.Type.Name.ToLower())
-            {
-                case "bigint":
-                    return "long";
-                case "binary":
-                case "bit":
-                case "blob":
-                case "longblob":
-                case "mediumblob":
-                case "tinyblob":
-                case "varbinary":
-                    return "byte[]";
-                case "char":
-                case "date":
-                case "datetime":
-                case "decimal":
-                case "longtext":
-                case "mediumtext":
-                case "text":
-                case "time":
-                case "timestamp":
-                case "tinytext":
-                case "varchar":
-                    return "string";
-                case "double":
-                case "float":
-                    return "double";
-                case "int":
-                case "mediumint":
-                case "smallint":
-                case "tinyint":
-                case "year":
-                    return "int";
-                case "json":
-                    // Assuming JSON is represented as a string or a specific class
-                    return "object";
-                default:
-                    throw new NotSupportedException($"Unsupported column type: {column.Type.Name}");
-            }
-        }
-    }
-
-    public override string GetColumnReader(Column column, int ordinal)
-    {
-        switch (column.Type.Name.ToLower())
-        {
-            case "bigint":
-                return $"reader.GetInt64({ordinal})";
-            case "binary":
-            case "bit":
-            case "blob":
-            case "longblob":
-            case "mediumblob":
-            case "tinyblob":
-            case "varbinary":
-                return $"Utils.GetBytes(reader, {ordinal})";
-            case "char":
-            case "date":
-            case "datetime":
-            case "decimal":
-            case "longtext":
-            case "mediumtext":
-            case "text":
-            case "time":
-            case "timestamp":
-            case "tinytext":
-            case "varchar":
-            case "json":
-                return $"reader.GetString({ordinal})";
-            case "double":
-            case "float":
-                return $"reader.GetDouble({ordinal})";
-            case "int":
-            case "mediumint":
-            case "smallint":
-            case "tinyint":
-            case "year":
-                return $"reader.GetInt32({ordinal})";
-            default:
-                throw new NotSupportedException($"Unsupported column type: {column.Type.Name}");
-        }
     }
 
     public override string TransformQueryText(Query query)
