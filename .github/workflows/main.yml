@@ -101,6 +101,7 @@ jobs:
     strategy:
       matrix:
         file-per-query: [ 'true', 'false' ]
+        generate-csproj: [ 'true', 'false' ]
 
     steps:
       - uses: actions/checkout@v4
@@ -121,17 +122,19 @@ jobs:
       - name: Updating configuration
         env:
           FILE_PER_QUERY: ${{ matrix.file-per-query }}
+          GENERATE_CSPROJ: ${{ matrix.generate-csproj }}
         run: |
           ./scripts/wasm/update_sha.sh sqlc.ci.yaml
-          ./scripts/update_config.sh sqlc.ci.yaml $FILE_PER_QUERY
+          ./scripts/update_config.sh sqlc.ci.yaml $FILE_PER_QUERY $GENERATE_CSPROJ
 
       - name: Sqlc generate using Wasm plugin
         env:
           FILE_PER_QUERY: ${{ matrix.file-per-query }}
+          GENERATE_CSPROJ: ${{ matrix.generate-csproj }}
         run: |
           rm MySqlConnectorExample/*.cs NpgsqlExample/*.cs
           sqlc -f sqlc.ci.yaml generate
-          ./scripts/run_codegen_tests.sh $FILE_PER_QUERY
+          ./scripts/run_codegen_tests.sh $FILE_PER_QUERY $GENERATE_CSPROJ
           
   end2end-tests:
     name: End-to-End Tests
