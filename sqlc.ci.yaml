@@ -12,7 +12,6 @@ sql:
       - plugin: csharp
         out: NpgsqlExample
         options:
-          # default config for CI end2end tests
           driver: Npgsql
           filePerQuery: false
           targetFramework: net8.0
@@ -24,7 +23,6 @@ sql:
       - plugin: csharp
         out: MySqlConnectorExample
         options:
-          # default config for CI end2end tests
           driver: MySqlConnector
           filePerQuery: false
           targetFramework: net8.0

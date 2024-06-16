@@ -5,6 +5,7 @@ defaults:
 
 permissions:
   contents: write
+  pull-requests: write
 
 on:
   push:
@@ -120,10 +121,10 @@ jobs:
           sqlc-version: '1.25.0'
 
       - name: Updating plugin sha
-        run: ./scripts/wasm/update_sha.sh sqlc.ci.yaml
+        run: ./scripts/wasm/update_sha.sh ${SQLC_CI_FILE}
 
       - name: Codegen Test
-        run: ./scripts/run_codegen_test.sh sqlc.ci.yaml \
+        run: ./scripts/tests/run_codegen.sh ${SQLC_CI_FILE} \
           ${{ matrix.file-per-query }} ${{ matrix.generate-csproj }} ${{ matrix.target-framework }}
           
       - uses: actions/setup-dotnet@v4
@@ -146,10 +147,15 @@ jobs:
         with:
           sqlc-version: '1.25.0'
           
+      - name: Load .env file
+        uses: xom9ikk/dotenv@v2.3.0
+        with:
+          load-mode: strict
+          
       - name: Verify pushed generated code is synced
         run: |
-          ./scripts/wasm/update_sha.sh sqlc.ci.yaml
-          sqlc -f sqlc.ci.yaml diff
+          ./scripts/wasm/update_sha.sh ${SQLC_CI_FILE}
+          sqlc -f ${SQLC_CI_FILE} diff
         
       - name: Docker compose
         uses: hoverkraft-tech/compose-action@v1.5.1
@@ -158,14 +164,9 @@ jobs:
             mysqldb
             postgresdb
             plugin-tests
-
-      - name: Load .env file
-        uses: xom9ikk/dotenv@v2.3.0
-        with:
-          load-mode: strict
           
-      - name: Run tests
-        run: ./scripts/run_end2end_tests.sh
+      - name: End-to-End Tests
+        run: ./scripts/tests/run_end2end.sh
         
   release:
     name: Release
@@ -176,7 +177,7 @@ jobs:
       - name: Check out Git repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0 # fetches all history for all tags and branches
+          fetch-depth: 0
           
       - uses: actions/download-artifact@v2
         with:
@@ -227,6 +228,8 @@ jobs:
           echo "The calculated sha256 is $SHA256_HASH"
       
       - name: Create release draft
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           LATEST_TAG=${{ env.LATEST_TAG }}
           NEW_TAG=${{ env.NEW_TAG }}
@@ -254,7 +257,6 @@ jobs:
 
           ## Contributors
           * @doron050 @SockworkOrange
-          Anyone who wishes to contribute to the next releases is invited :)
           EOF
           )
 
@@ -266,5 +268,3 @@ jobs:
           --draft \
           --title "$NEW_TAG" \
           --notes "$RELEASE_NOTES"
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -8,14 +8,14 @@ public class Tests
     [Test]
     public async Task TestFlowOnMySql()
     {
-        ISqlDriverTester tester = new MySqlTester();
+        ISqlDriverTester tester = new MySqlConnectorTester();
         await tester.TestFlow();
     }
 
     [Test]
     public async Task TestFlowOnPostgres()
     {
-        ISqlDriverTester tester = new PostgresTester();
+        ISqlDriverTester tester = new NpgsqlTester();
         await tester.TestFlow();
     }
 }
