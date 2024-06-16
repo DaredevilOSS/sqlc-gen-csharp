@@ -25,7 +25,7 @@ dotnet-publish-process: dotnet-build-process
 	dotnet publish ProcessRunner -c release --output dist/
 
 sqlc-generate-process: dotnet-publish-process
-	sqlc -f sqlc.process.yaml generate
+	sqlc -f sqlc.local.yaml generate
 
 test-process-plugin: sqlc-generate-process dockerfile-generate run-tests
 

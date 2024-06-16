@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProcessRunner", "ProcessRunner\ProcessRunner.csproj", "{649CFB46-68D1-41F8-BD76-FF4B79B16825}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LocalRunner", "LocalRunner\LocalRunner.csproj", "{649CFB46-68D1-41F8-BD76-FF4B79B16825}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MySqlConnectorExample", "MySqlConnectorExample\MySqlConnectorExample.csproj", "{6406B659-77CF-4978-ABD3-BFBB2CBFFCA3}"
 EndProject

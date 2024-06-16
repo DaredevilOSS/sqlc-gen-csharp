@@ -9,10 +9,10 @@ COPY Drivers/*.csproj ./Drivers/
 COPY EndToEndTests/*.csproj ./EndToEndTests/
 COPY Extensions/*.csproj ./Extensions/
 COPY GeneratedProtobuf/*.csproj ./GeneratedProtobuf/
+COPY LocalRunner/*.csproj ./LocalRunner/
 COPY MySqlConnectorExample/*.csproj ./MySqlConnectorExample/
 COPY NpgsqlExample/*.csproj ./NpgsqlExample/
 COPY PluginOptions/*.csproj ./PluginOptions/
-COPY ProcessRunner/*.csproj ./ProcessRunner/
 COPY SqlcGenCsharp/*.csproj ./SqlcGenCsharp/
 COPY WasmRunner/*.csproj ./WasmRunner/
 
@@ -21,10 +21,10 @@ COPY Drivers/ ./Drivers/
 COPY EndToEndTests/ ./EndToEndTests/
 COPY Extensions/ ./Extensions/
 COPY GeneratedProtobuf/ ./GeneratedProtobuf/
+COPY LocalRunner/ ./LocalRunner/
 COPY MySqlConnectorExample/ ./MySqlConnectorExample/
 COPY NpgsqlExample/ ./NpgsqlExample/
 COPY PluginOptions/ ./PluginOptions/
-COPY ProcessRunner/ ./ProcessRunner/
 COPY SqlcGenCsharp/ ./SqlcGenCsharp/
 COPY WasmRunner/ ./WasmRunner/
 
