@@ -123,9 +123,8 @@ jobs:
         run: ./scripts/wasm/update_sha.sh sqlc.ci.yaml
 
       - name: Codegen Test
-        run: |
-          ./scripts/run_codegen_test.sh sqlc.ci.yaml \
-              ${{ matrix.file-per-query }} ${{ matrix.generate-csproj }} ${{ matrix.target-framework }}
+        run: ./scripts/run_codegen_test.sh sqlc.ci.yaml \
+          ${{ matrix.file-per-query }} ${{ matrix.generate-csproj }} ${{ matrix.target-framework }}
           
       - uses: actions/setup-dotnet@v4
         with:
@@ -186,7 +185,7 @@ jobs:
       - name: Bump version and create new tag
         id: bump_version
         run: |
-          set -ex
+          set -e
           echo "Extract the latest tag version"
           LATEST_TAG=$(git describe --tags $(git rev-list --tags --max-count=1))
           echo "LATEST_TAG=$LATEST_TAG" >> $GITHUB_ENV

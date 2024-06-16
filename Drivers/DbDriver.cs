@@ -25,7 +25,7 @@ public abstract class DbDriver(DotnetFramework dotnetFramework)
     public string AddNullableSuffix(string csharpType, bool notNull)
     {
         if (notNull) return csharpType;
-        if (Utils.IsCsharpPrimitive(csharpType)) return $"{csharpType}?";
+        if (IsCsharpPrimitive(csharpType)) return $"{csharpType}?";
         return DotnetFramework.LatestDotnetSupported() ? $"{csharpType}?" : csharpType;
     }
 
@@ -73,4 +73,10 @@ public abstract class DbDriver(DotnetFramework dotnetFramework)
 
     public abstract MemberDeclarationSyntax ExecLastIdDeclare(string funcName, string queryTextConstant,
         string argInterface, IList<Parameter> parameters);
+
+    public static bool IsCsharpPrimitive(string csharpType)
+    {
+        var csharpPrimitives = new HashSet<string> { "long", "double", "int", "float", "bool" };
+        return csharpPrimitives.Contains(csharpType.Replace("?", ""));
+    }
 }
