@@ -45,17 +45,7 @@ sql:
 - MySQL via [MySqlConnector](https://www.nuget.org/packages/MySqlConnector) package - [MySqlConnectorDriver](MySqlConnectorDriver/MySqlConnectorDriver.csproj)
 - PostgreSQL via [Npgsql](https://www.nuget.org/packages/Npgsql) package - [NpgsqlDriver](NpgsqlDriver/NpgsqlDriver.csproj)
 
-
-## Examples & Tests
-The below examples in here are automatically tested:
-- [MySqlConnectorExample](MySqlConnectorExample/MySqlConnectorExample.csproj)
-- [NpgsqlExample](NpgsqlExample/NpgsqlExample.csproj)
-
-
-
-<br/>
-<br/>
-<br/>
+## [Generated Code Examples](docs/Examples.md)
 
 # Contributing
 ## Local plugin development
