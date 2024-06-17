@@ -1,0 +1,40 @@
+name: Docs
+defaults:
+  run:
+    shell: bash
+    
+permissions:
+  contents: write
+  pull-requests: write
+
+on:
+  push:
+    branches: ["main"]
+    paths:
+      - "sqlc.ci.yaml"
+      - "examples/**"
+      - "*Tests/**"
+      - "*Example/**"
+      - "Drivers/**"
+    
+jobs:
+  generate-and-push-docs:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Updating Examples doc
+        run: ./scripts/docs/generate_examples.sh docs/Examples.md
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v6
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          title: update auto-generated docs
+          commit-message: update docs
+          branch: update-docs
+          branch-suffix: timestamp
+          delete-branch: true

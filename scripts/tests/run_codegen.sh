@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 
 set -e
+source .env
 
-declare -a examples=("MySqlConnectorExample" "NpgsqlExample")
+mapfile -t examples < <(dotnet sln list | grep Example | xargs -n 1 dirname) # TODO standardize across scripts
 
 config_file=$1
 file_per_query=$2

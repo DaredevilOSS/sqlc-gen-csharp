@@ -1,4 +1,4 @@
-using NpgsqlExample;
+using MySqlConnectorExample;
 using NUnit.Framework;
 using NUnit.Framework.Legacy;
 using System;
@@ -6,51 +6,29 @@ using System.Threading.Tasks;
 
 namespace SqlcGenCsharpTests;
 
-public class PostgresTester : ISqlDriverTester
+public class MySqlConnectorTester : ISqlDriverTester
 {
-    private static string ConnectionStringEnv => "POSTGRES_CONNECTION_STRING";
+    private static string ConnectionStringEnv => "MYSQL_CONNECTION_STRING";
 
     private QuerySql QuerySql { get; } =
         new(Environment.GetEnvironmentVariable(ConnectionStringEnv)!);
 
     public async Task<long> CreateFirstAuthorAndTest()
     {
-        var bojackCreateAuthorArgs = new QuerySql.CreateAuthorArgs
+        var createAuthorReturnIdArgs = new QuerySql.CreateAuthorReturnIdArgs
         {
             Name = Consts.BojackAuthor,
             Bio = Consts.BojackTheme
         };
-        var createdBojackAuthor = await QuerySql.CreateAuthor(bojackCreateAuthorArgs);
-        Assert.That(createdBojackAuthor is
+        var insertedId = await QuerySql.CreateAuthorReturnId(createAuthorReturnIdArgs);
+        var getBojackAuthorArgs = new QuerySql.GetAuthorArgs { Id = insertedId };
+        var bojackAuthor = await QuerySql.GetAuthor(getBojackAuthorArgs);
+        Assert.That(bojackAuthor is
         {
             Name: Consts.BojackAuthor,
             Bio: Consts.BojackTheme
         });
-        var bojackInsertedId = GetId(createdBojackAuthor);
-
-        var getAuthorArgs = new QuerySql.GetAuthorArgs
-        {
-            Id = bojackInsertedId
-        };
-        var singleAuthor = await QuerySql.GetAuthor(getAuthorArgs);
-        Assert.That(singleAuthor is
-        {
-            Name: Consts.BojackAuthor,
-            Bio: Consts.BojackTheme
-        });
-        return bojackInsertedId;
-
-        long GetId(QuerySql.CreateAuthorRow? createdAuthorRow)
-        {
-            var type = typeof(QuerySql.CreateAuthorRow);
-            var valueProperty = type.GetProperty("Value");
-            var idProperty = type.GetProperty("Id");
-
-            if (valueProperty == null)
-                return (long)(idProperty?.GetValue(createdAuthorRow) ?? throw new InvalidOperationException());
-            var value = valueProperty.GetValue(createdAuthorRow);
-            return (long)(idProperty?.GetValue(value) ?? throw new InvalidOperationException());
-        }
+        return insertedId;
     }
 
     public async Task CreateSecondAuthorAndTest()
@@ -61,18 +39,18 @@ public class PostgresTester : ISqlDriverTester
             Bio = Consts.DrSeussQuote
         };
         await QuerySql.CreateAuthor(createAuthorArgs);
-        var authors = await QuerySql.ListAuthors();
-        Assert.That(authors[0] is
+        var actualAuthors = await QuerySql.ListAuthors();
+        Assert.That(actualAuthors[0] is
         {
             Name: Consts.BojackAuthor,
             Bio: Consts.BojackTheme
         });
-        Assert.That(authors[1] is
+        Assert.That(actualAuthors[1] is
         {
             Name: Consts.DrSeussAuthor,
             Bio: Consts.DrSeussQuote
         });
-        ClassicAssert.AreEqual(2, authors.Count);
+        ClassicAssert.AreEqual(2, actualAuthors.Count);
     }
 
     public async Task DeleteFirstAuthorAndTest(long idToDelete)
