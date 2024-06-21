@@ -2,7 +2,7 @@ version: "2"
 plugins:
 - name: csharp
   process:
-    cmd: ./dist/ProcessRunner
+    cmd: ./dist/LocalRunner
 sql:
 - schema: "examples/authors/postgresql/schema.sql"
   queries: "examples/authors/postgresql/query.sql"
