@@ -2,6 +2,19 @@
 
 # sqlc-gen-csharp
 ## Usage
+
+### Supported SQL Engines
+- MySQL via [MySqlConnector](https://www.nuget.org/packages/MySqlConnector) package - [MySqlConnectorDriver](MySqlConnectorDriver/MySqlConnectorDriver.csproj)
+- PostgreSQL via [Npgsql](https://www.nuget.org/packages/Npgsql) package - [NpgsqlDriver](NpgsqlDriver/NpgsqlDriver.csproj)
+
+### Options
+| Option          | Possible values                                                            | Optional | Info                                                                                                                                                                                                                                                                                                                                      |
+|-----------------|----------------------------------------------------------------------------|----------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| driver          | <br/>values: `MySqlConnector`,`Npgsql`                                     | No       | Choosing the driver to use - refer to the [above](#supported-sql-engines) section on supported SQL engines.                                                                                                                                                                                                                               |
+| targetFramework | default: `net8.0`<br/>values: `netstandard2.0`, `netstandard2.1`, `net8.0` | Yes      | Determines the target framework for your generated code, meaning the generated code will be compiled to the specified runtime.<br/>For more information and help deciding on the right value, refer to the [Microsoft .NET Standard documentation](https://learn.microsoft.com/en-us/dotnet/standard/net-standard?tabs=net-standard-1-0). |
+| generateCsproj  | default: `true`<br/>values: `false`,`true`                                 | Yes      | Assists you with the integration of SQLC and csharp by generating a `.csproj` file. This converts the generated output to a .dll, a project that you can easily incorporate into your build process.                                                                                                                               |
+| filePerQuery    | default: `false`<br/>values: `false`,`true`                                | Yes      | This option allows users control on which `.cs` files to generate, when false it's one file per `.sql` SQLC query file, and when true it's one file per query.                                                                                                                                                                            |
+
 ### Configuration
 ```yaml
 version: "2"
@@ -33,29 +46,8 @@ sql:
         options:
           driver: MySqlConnector
 ```
-### Options Documentation
-| Option     | Possible values | Info |
-|------------|---------------------------|-|
-| targetFramework | default: `net8.0`<br/>values: `netstandard2.0`, `netstandard2.1`, `net8.0` |Decide on the right target framework for your generated code, meaning the generated code will be compiled to the specified runtime.<br/>For more information and help deciding on the right value, refer to the [Microsoft .NET Standard documentation](https://learn.microsoft.com/en-us/dotnet/standard/net-standard?tabs=net-standard-1-0). |
-| generateCsproj      | default: `true`<br/>values: `false`,`true`  | This option is designed to assist you with the integration of SQLC and csharp by generating a `.csproj` file. This converts the generated output to a dynamic link library (DLL), simply a project that you can easily incorporate into your build process.  |
-| filePerQuery | default: `false`<br/>values: `false`,`true` | This option allows users control on which `.cs` files to generate, when false it's one file per `.sql` SQLC query file, and when true it's one file per query. |
 
-
-## Supported SQL Engines
-- MySQL via [MySqlConnector](https://www.nuget.org/packages/MySqlConnector) package - [MySqlConnectorDriver](MySqlConnectorDriver/MySqlConnectorDriver.csproj)
-- PostgreSQL via [Npgsql](https://www.nuget.org/packages/Npgsql) package - [NpgsqlDriver](NpgsqlDriver/NpgsqlDriver.csproj)
-
-
-## Examples & Tests
-The below examples in here are automatically tested:
-- [MySqlConnectorExample](MySqlConnectorExample/MySqlConnectorExample.csproj)
-- [NpgsqlExample](NpgsqlExample/NpgsqlExample.csproj)
-
-
-
-<br/>
-<br/>
-<br/>
+## [Generated Code Examples](docs/Examples.md)
 
 # Contributing
 ## Local plugin development
