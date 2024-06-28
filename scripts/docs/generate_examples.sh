@@ -13,7 +13,7 @@ for ((i = 0 ; i < "${examples_cnt}" ; i++ )); do
     query_files=$(yq ".sql[${i}].queries" sqlc.ci.yaml)
     
     project_name=$(yq ".sql[${i}].codegen[0].out" sqlc.ci.yaml)
-    test_class_name="${project_name/Example/"Tester"}"  
+    test_class_name="${project_name/Example/"Tester"}" # replace "Example" with "Tester" in project_name
     examples_doc+="
 ## Engine \`${engine_name}\`: [${project_name}](../${project_name})
 
