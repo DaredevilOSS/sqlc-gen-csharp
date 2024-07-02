@@ -47,7 +47,7 @@ sql:
           driver: MySqlConnector
 ```
 
-## [Generated Code Examples](docs/Examples.md)
+### [Generated Code Examples](docs/Examples.md)
 
 # Contributing
 ## Local plugin development
