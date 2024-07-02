@@ -1,4 +1,4 @@
-[![CI](https://github.com/DaredevilOSS/sqlc-gen-csharp/actions/workflows/main.yml/badge.svg?branch=main)](https://github.com/DaredevilOSS/sqlc-gen-csharp/actions/workflows/main.yml)
+[![CI](https://github.com/DaredevilOSS/sqlc-gen-csharp/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/DaredevilOSS/sqlc-gen-ruby/actions/workflows/ci.yml)
 
 # sqlc-gen-csharp
 ## Usage
