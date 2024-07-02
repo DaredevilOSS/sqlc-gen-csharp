@@ -56,6 +56,7 @@ public abstract class DbDriver(DotnetFramework dotnetFramework)
         }
         throw new NotSupportedException($"Unsupported column type: {column.Type.Name}");
     }
+
     public abstract string TransformQueryText(Query query);
 
     public abstract (string, string) EstablishConnection();
