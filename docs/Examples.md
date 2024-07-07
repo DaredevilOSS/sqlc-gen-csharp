@@ -6,7 +6,6 @@
 ### Config
 ```yaml
 driver: Npgsql
-filePerQuery: false
 targetFramework: net8.0
 generateCsproj: true
 ```
@@ -18,7 +17,6 @@ generateCsproj: true
 ### Config
 ```yaml
 driver: MySqlConnector
-filePerQuery: false
 targetFramework: net8.0
 generateCsproj: true
 ```
