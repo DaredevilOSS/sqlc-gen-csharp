@@ -21,7 +21,6 @@ public class Options
 
         Enum.TryParse(rawOptions.DriverName, true, out DriverName outDriverName);
         DriverName = outDriverName;
-        FilePerQuery = rawOptions.FilePerQuery;
         GenerateCsproj = rawOptions.GenerateCsproj;
         DotnetFramework = DotnetFrameworkExtensions.ParseName(rawOptions.TargetFramework);
     }
@@ -29,8 +28,6 @@ public class Options
     public DriverName DriverName { get; }
 
     public DotnetFramework DotnetFramework { get; }
-
-    public bool FilePerQuery { get; }
 
     public bool GenerateCsproj { get; }
 }
