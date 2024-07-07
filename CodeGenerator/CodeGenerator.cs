@@ -112,10 +112,7 @@ public class CodeGenerator
         Dictionary<string, Query[]> GetFileQueries()
         {
             return generateRequest.Queries
-                .GroupBy(query =>
-                    Options.FilePerQuery
-                        ? $"{query.Name}Query"
-                        : QueryFilenameToClassName(query.Filename))
+                .GroupBy(query => QueryFilenameToClassName(query.Filename))
                 .ToDictionary(
                     group => group.Key,
                     group => group.ToArray());
