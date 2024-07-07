@@ -12,9 +12,6 @@ sql:
     out: NpgsqlExample
     options:
       driver: Npgsql
-#      targetFramework: netstandard2.0
-#      generateCsproj: true
-#      filePerQuery: false
 - schema: "examples/authors/mysql/schema.sql"
   queries: "examples/authors/mysql/query.sql"
   engine: "mysql"
@@ -23,6 +20,3 @@ sql:
     out: MySqlConnectorExample
     options:
       driver: MySqlConnector
-#      targetFramework: netstandard2.0,netsandard2.1,net8.0
-#      generateCsproj: true
-#      filePerQuery: false
