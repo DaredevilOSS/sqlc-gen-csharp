@@ -96,7 +96,6 @@ jobs:
     needs: [build]
     strategy:
       matrix:
-        file-per-query: [ 'true', 'false' ]
         generate-csproj: [ 'true', 'false' ]
         target-framework: [ 'net8.0', 'netstandard2.0', 'netstandard2.1' ]
 
@@ -120,8 +119,7 @@ jobs:
         run: ./scripts/wasm/update_sha.sh ${SQLC_CI_FILE}
 
       - name: Codegen Test
-        run: ./scripts/tests/run_codegen.sh ${SQLC_CI_FILE} \
-          ${{ matrix.file-per-query }} ${{ matrix.generate-csproj }} ${{ matrix.target-framework }}
+        run: ./scripts/tests/run_codegen.sh ${SQLC_CI_FILE} ${{ matrix.generate-csproj }} ${{ matrix.target-framework }}
           
       - uses: actions/setup-dotnet@v4
         with:
