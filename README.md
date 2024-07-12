@@ -6,7 +6,7 @@
 ### Options
 | Option          | Possible values                                                            | Optional | Info                                                                                                                                                                                                                                                                                                                                      |
 |-----------------|----------------------------------------------------------------------------|----------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| driver          | <br/>values: `MySqlConnector`,`Npgsql`                                     | No       | Choosing the driver to use - refer to the [above](#supported-sql-engines) section on supported SQL engines.                                                                                                                                                                                                                               |
+| driver          | values: `MySqlConnector`,`Npgsql`                                          | No       | Choosing the driver to use - refer to the [above](#supported-sql-engines) section on supported SQL engines.                                                                                                                                                                                                                               |
 | targetFramework | default: `net8.0`<br/>values: `netstandard2.0`, `netstandard2.1`, `net8.0` | Yes      | Determines the target framework for your generated code, meaning the generated code will be compiled to the specified runtime.<br/>For more information and help deciding on the right value, refer to the [Microsoft .NET Standard documentation](https://learn.microsoft.com/en-us/dotnet/standard/net-standard?tabs=net-standard-1-0). |
 | generateCsproj  | default: `true`<br/>values: `false`,`true`                                 | Yes      | Assists you with the integration of SQLC and csharp by generating a `.csproj` file. This converts the generated output to a .dll, a project that you can easily incorporate into your build process.                                                                                                                               |
 
@@ -17,7 +17,7 @@ plugins:
 - name: csharp
   wasm:
     url: https://github.com/DaredevilOSS/sqlc-gen-csharp/releases/download/v0.10.0/sqlc-gen-csharp.wasm
-    sha256: 613ae249a541ab95c97b362bd1b0b572970edcad5eb2a11806a52d3f95e0f65f
+    sha256: ${RELEASE_SHA}
 sql:
   # PostgreSQL Example
   - schema: "examples/authors/postgresql/schema.sql"
@@ -30,7 +30,6 @@ sql:
           driver: Npgsql
           targetFramework: net8.0
           generateCsproj: true
-          filePerQuery: false
   # MySQL Example
   - schema: "examples/authors/mysql/schema.sql"
     queries: "examples/authors/mysql/query.sql"
@@ -40,6 +39,8 @@ sql:
         out: MySqlConnectorExample
         options:
           driver: MySqlConnector
+          targetFramework: net8.0
+          generateCsproj: true
 ```
 
 ### [Generated Code Examples](docs/Examples.md)
