@@ -5,6 +5,8 @@ public enum Variable
     ConnectionString,
     Connection,
     Reader,
+    Row,
+    Writer,
     Command,
     Result
 }

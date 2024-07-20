@@ -12,6 +12,8 @@ sql:
     out: NpgsqlExample
     options:
       driver: Npgsql
+      targetFramework: net8.0
+      generateCsproj: true
 - schema: "examples/authors/mysql/schema.sql"
   queries: "examples/authors/mysql/query.sql"
   engine: "mysql"
@@ -20,3 +22,5 @@ sql:
     out: MySqlConnectorExample
     options:
       driver: MySqlConnector
+      targetFramework: net8.0
+      generateCsproj: true

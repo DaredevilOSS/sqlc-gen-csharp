@@ -15,7 +15,7 @@ protobuf-generate:
 
 # tests are run against generated code - can be generated either via a "process" or "wasm" SQLC plugins
 run-tests:
-	./scripts/run_tests.sh
+	./scripts/tests/run_end2end.sh
 
 # process type plugin
 dotnet-build-process: protobuf-generate dotnet-format

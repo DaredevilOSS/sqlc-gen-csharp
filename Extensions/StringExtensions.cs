@@ -21,4 +21,9 @@ public static class StringExtensions
             _ => string.Concat(input[0].ToString().ToLower(), input.AsSpan(1))
         };
     }
+
+    public static string AppendSemicolonUnlessEmpty(this string input)
+    {
+        return input == string.Empty ? "" : $"{input};";
+    }
 }

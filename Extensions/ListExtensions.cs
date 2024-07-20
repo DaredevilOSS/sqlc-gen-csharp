@@ -16,4 +16,9 @@ public static class ListExtensions
     {
         return string.Join("\n", me);
     }
+
+    public static string JoinByComma(this IEnumerable<string> me)
+    {
+        return string.Join(", ", me);
+    }
 }

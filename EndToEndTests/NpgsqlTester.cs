@@ -2,29 +2,32 @@ using NpgsqlExample;
 using NUnit.Framework;
 using NUnit.Framework.Legacy;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace SqlcGenCsharpTests;
 
-public class NpgsqlTester : ISqlDriverTester
+public class NpgsqlTester : SqlDriverTester
 {
+    private static readonly Random Randomizer = new();
+
     private static string ConnectionStringEnv => "POSTGRES_CONNECTION_STRING";
 
     private QuerySql QuerySql { get; } =
         new(Environment.GetEnvironmentVariable(ConnectionStringEnv)!);
 
-    public async Task<long> CreateFirstAuthorAndTest()
+    protected override async Task<long> CreateFirstAuthorAndTest()
     {
         var bojackCreateAuthorArgs = new QuerySql.CreateAuthorArgs
         {
-            Name = Consts.BojackAuthor,
-            Bio = Consts.BojackTheme
+            Name = DataGenerator.BojackAuthor,
+            Bio = DataGenerator.BojackTheme
         };
         var createdBojackAuthor = await QuerySql.CreateAuthor(bojackCreateAuthorArgs);
         Assert.That(createdBojackAuthor is
         {
-            Name: Consts.BojackAuthor,
-            Bio: Consts.BojackTheme
+            Name: DataGenerator.BojackAuthor,
+            Bio: DataGenerator.BojackTheme
         });
         var bojackInsertedId = GetId(createdBojackAuthor);
 
@@ -35,8 +38,8 @@ public class NpgsqlTester : ISqlDriverTester
         var singleAuthor = await QuerySql.GetAuthor(getAuthorArgs);
         Assert.That(singleAuthor is
         {
-            Name: Consts.BojackAuthor,
-            Bio: Consts.BojackTheme
+            Name: DataGenerator.BojackAuthor,
+            Bio: DataGenerator.BojackTheme
         });
         return bojackInsertedId;
 
@@ -53,29 +56,29 @@ public class NpgsqlTester : ISqlDriverTester
         }
     }
 
-    public async Task CreateSecondAuthorAndTest()
+    protected override async Task CreateSecondAuthorAndTest()
     {
         var createAuthorArgs = new QuerySql.CreateAuthorArgs
         {
-            Name = Consts.DrSeussAuthor,
-            Bio = Consts.DrSeussQuote
+            Name = DataGenerator.DrSeussAuthor,
+            Bio = DataGenerator.DrSeussQuote
         };
         await QuerySql.CreateAuthor(createAuthorArgs);
         var authors = await QuerySql.ListAuthors();
         Assert.That(authors[0] is
         {
-            Name: Consts.BojackAuthor,
-            Bio: Consts.BojackTheme
+            Name: DataGenerator.BojackAuthor,
+            Bio: DataGenerator.BojackTheme
         });
         Assert.That(authors[1] is
         {
-            Name: Consts.DrSeussAuthor,
-            Bio: Consts.DrSeussQuote
+            Name: DataGenerator.DrSeussAuthor,
+            Bio: DataGenerator.DrSeussQuote
         });
         ClassicAssert.AreEqual(2, authors.Count);
     }
 
-    public async Task DeleteFirstAuthorAndTest(long idToDelete)
+    protected override async Task DeleteFirstAuthorAndTest(long idToDelete)
     {
         var deleteAuthorArgs = new QuerySql.DeleteAuthorArgs
         {
@@ -85,9 +88,30 @@ public class NpgsqlTester : ISqlDriverTester
         var authorRows = await QuerySql.ListAuthors();
         Assert.That(authorRows[0] is
         {
-            Name: Consts.DrSeussAuthor,
-            Bio: Consts.DrSeussQuote
+            Name: DataGenerator.DrSeussAuthor,
+            Bio: DataGenerator.DrSeussQuote
         });
         ClassicAssert.AreEqual(1, authorRows.Count);
+    }
+
+    public async Task TestCopyFlow()
+    {
+        const int batchSize = 100;
+        var beforeCountRows = QuerySql.ListAuthors().Result.Count;
+        var createAuthorBatchArgs = Enumerable.Range(0, batchSize)
+            .Select(_ => GenerateRandom())
+            .ToList();
+        await QuerySql.CreateAuthorBatch(createAuthorBatchArgs);
+        var afterCountRows = QuerySql.ListAuthors().Result.Count;
+        ClassicAssert.AreEqual(beforeCountRows + batchSize, afterCountRows);
+
+        QuerySql.CreateAuthorBatchArgs GenerateRandom()
+        {
+            return new QuerySql.CreateAuthorBatchArgs
+            {
+                Name = $"Author-{Randomizer.Next()}",
+                Bio = $"Bio-{Randomizer.Next()}"
+            };
+        }
     }
 }

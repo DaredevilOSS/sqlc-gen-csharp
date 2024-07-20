@@ -6,54 +6,54 @@ using System.Threading.Tasks;
 
 namespace SqlcGenCsharpTests;
 
-public class MySqlConnectorTester : ISqlDriverTester
+public class MySqlConnectorTester : SqlDriverTester
 {
     private static string ConnectionStringEnv => "MYSQL_CONNECTION_STRING";
 
     private QuerySql QuerySql { get; } =
         new(Environment.GetEnvironmentVariable(ConnectionStringEnv)!);
 
-    public async Task<long> CreateFirstAuthorAndTest()
+    protected override async Task<long> CreateFirstAuthorAndTest()
     {
         var createAuthorReturnIdArgs = new QuerySql.CreateAuthorReturnIdArgs
         {
-            Name = Consts.BojackAuthor,
-            Bio = Consts.BojackTheme
+            Name = DataGenerator.BojackAuthor,
+            Bio = DataGenerator.BojackTheme
         };
         var insertedId = await QuerySql.CreateAuthorReturnId(createAuthorReturnIdArgs);
         var getBojackAuthorArgs = new QuerySql.GetAuthorArgs { Id = insertedId };
         var bojackAuthor = await QuerySql.GetAuthor(getBojackAuthorArgs);
         Assert.That(bojackAuthor is
         {
-            Name: Consts.BojackAuthor,
-            Bio: Consts.BojackTheme
+            Name: DataGenerator.BojackAuthor,
+            Bio: DataGenerator.BojackTheme
         });
         return insertedId;
     }
 
-    public async Task CreateSecondAuthorAndTest()
+    protected override async Task CreateSecondAuthorAndTest()
     {
         var createAuthorArgs = new QuerySql.CreateAuthorArgs
         {
-            Name = Consts.DrSeussAuthor,
-            Bio = Consts.DrSeussQuote
+            Name = DataGenerator.DrSeussAuthor,
+            Bio = DataGenerator.DrSeussQuote
         };
         await QuerySql.CreateAuthor(createAuthorArgs);
         var actualAuthors = await QuerySql.ListAuthors();
         Assert.That(actualAuthors[0] is
         {
-            Name: Consts.BojackAuthor,
-            Bio: Consts.BojackTheme
+            Name: DataGenerator.BojackAuthor,
+            Bio: DataGenerator.BojackTheme
         });
         Assert.That(actualAuthors[1] is
         {
-            Name: Consts.DrSeussAuthor,
-            Bio: Consts.DrSeussQuote
+            Name: DataGenerator.DrSeussAuthor,
+            Bio: DataGenerator.DrSeussQuote
         });
         ClassicAssert.AreEqual(2, actualAuthors.Count);
     }
 
-    public async Task DeleteFirstAuthorAndTest(long idToDelete)
+    protected override async Task DeleteFirstAuthorAndTest(long idToDelete)
     {
         var deleteAuthorArgs = new QuerySql.DeleteAuthorArgs
         {
@@ -63,8 +63,8 @@ public class MySqlConnectorTester : ISqlDriverTester
         var authorRows = await QuerySql.ListAuthors();
         Assert.That(authorRows[0] is
         {
-            Name: Consts.DrSeussAuthor,
-            Bio: Consts.DrSeussQuote
+            Name: DataGenerator.DrSeussAuthor,
+            Bio: DataGenerator.DrSeussQuote
         });
         ClassicAssert.AreEqual(1, authorRows.Count);
     }

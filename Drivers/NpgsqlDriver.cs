@@ -47,11 +47,14 @@ public class NpgsqlDriver(DotnetFramework dotnetFramework) : DbDriver(dotnetFram
             .ToArray();
     }
 
-    public override (string, string) EstablishConnection()
+    public override (string, string) EstablishConnection(bool isCopyCommand = false)
     {
-        return (
-            $"var {Variable.Connection.Name()} = NpgsqlDataSource.Create({Variable.ConnectionString.Name()})",
-            string.Empty);
+        if (isCopyCommand)
+            return (
+                $"var ds = NpgsqlDataSource.Create({Variable.ConnectionString.Name()})",
+                $"var {Variable.Connection.Name()} = ds.CreateConnection()"
+            );
+        return ($"var {Variable.Connection.Name()} = NpgsqlDataSource.Create({Variable.ConnectionString.Name()})", "");
     }
 
     public override string CreateSqlCommand(string sqlTextConstant)
@@ -61,6 +64,9 @@ public class NpgsqlDriver(DotnetFramework dotnetFramework) : DbDriver(dotnetFram
 
     public override string TransformQueryText(Query query)
     {
+        if (query.Cmd == ":copyfrom")
+            return GetCopyCommand();
+
         var queryText = query.Text;
         for (var i = 0; i < query.Params.Count; i++)
         {
@@ -68,8 +74,13 @@ public class NpgsqlDriver(DotnetFramework dotnetFramework) : DbDriver(dotnetFram
             queryText = Regex.Replace(queryText, $@"\$\s*{i + 1}",
                 $"@{currentParameter.Column.Name.FirstCharToLower()}");
         }
-
         return queryText;
+
+        string GetCopyCommand()
+        {
+            var copyParams = query.Params.Select(p => p.Column.Name).JoinByComma();
+            return $"COPY {query.InsertIntoTable.Name} ({copyParams}) FROM STDIN (FORMAT BINARY)";
+        }
     }
 
     public override MemberDeclarationSyntax OneDeclare(string funcName, string queryTextConstant, string argInterface,
@@ -85,16 +96,16 @@ public class NpgsqlDriver(DotnetFramework dotnetFramework) : DbDriver(dotnetFram
         return new ExecDeclareGen(this).Generate(funcName, queryTextConstant, argInterface, parameters);
     }
 
-    public override MemberDeclarationSyntax ExecLastIdDeclare(string funcName, string queryTextConstant,
-        string argInterface, IList<Parameter> parameters)
-    {
-        return new ExecLastIdDeclareGen(this).Generate(funcName, queryTextConstant, argInterface, parameters);
-    }
-
     public override MemberDeclarationSyntax ManyDeclare(string funcName, string queryTextConstant, string argInterface,
         string returnInterface, IList<Parameter> parameters, IEnumerable<Column> columns)
     {
         return new ManyDeclareGen(this).Generate(funcName, queryTextConstant, argInterface, returnInterface, parameters,
             columns);
+    }
+
+    public MemberDeclarationSyntax CopyFromDeclare(string funcName, string queryTextConstant, string argInterface,
+        IList<Parameter> parameters)
+    {
+        return new CopyFromDeclareGen(this).Generate(funcName, queryTextConstant, argInterface, parameters);
     }
 }
