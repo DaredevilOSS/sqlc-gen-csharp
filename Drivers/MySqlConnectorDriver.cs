@@ -58,7 +58,7 @@ public partial class MySqlConnectorDriver(DotnetFramework dotnetFramework) : DbD
             .ToArray();
     }
 
-    public override (string, string) EstablishConnection()
+    public override (string, string) EstablishConnection(bool isCopyCommand = false)
     {
         return (
             $"var {Variable.Connection.Name()} = new MySqlConnection({Variable.ConnectionString.Name()})",
@@ -89,7 +89,7 @@ public partial class MySqlConnectorDriver(DotnetFramework dotnetFramework) : DbD
         return new ExecDeclareGen(this).Generate(funcName, queryTextConstant, argInterface, parameters);
     }
 
-    public override MemberDeclarationSyntax ExecLastIdDeclare(string funcName, string queryTextConstant,
+    public MemberDeclarationSyntax ExecLastIdDeclare(string funcName, string queryTextConstant,
         string argInterface, IList<Parameter> parameters)
     {
         return new ExecLastIdDeclareGen(this).Generate(funcName, queryTextConstant, argInterface, parameters);

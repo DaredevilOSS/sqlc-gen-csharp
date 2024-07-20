@@ -9,14 +9,13 @@ using Npgsql;
 namespace NpgsqlExample;
 public class QuerySql(string connectionString)
 {
-    private const string GetAuthorSql = "SELECT id, name, bio FROM authors WHERE  id  =  @id  LIMIT  1  ";  
+    private const string GetAuthorSql = "SELECT id, name, bio FROM authors WHERE id = @id LIMIT 1";
     public readonly record struct GetAuthorRow(long Id, string Name, string? Bio);
     public readonly record struct GetAuthorArgs(long Id);
     public async Task<GetAuthorRow?> GetAuthor(GetAuthorArgs args)
     {
         {
             await using var connection = NpgsqlDataSource.Create(connectionString);
-            ;
             await using var command = connection.CreateCommand(GetAuthorSql);
             command.Parameters.AddWithValue("@id", args.Id);
             var reader = await command.ExecuteReaderAsync();
@@ -34,13 +33,12 @@ public class QuerySql(string connectionString)
         }
     }
 
-    private const string ListAuthorsSql = "SELECT id, name, bio FROM authors ORDER  BY  name  ";  
+    private const string ListAuthorsSql = "SELECT id, name, bio FROM authors ORDER BY name";
     public readonly record struct ListAuthorsRow(long Id, string Name, string? Bio);
     public async Task<List<ListAuthorsRow>> ListAuthors()
     {
         {
             await using var connection = NpgsqlDataSource.Create(connectionString);
-            ;
             await using var command = connection.CreateCommand(ListAuthorsSql);
             var reader = await command.ExecuteReaderAsync();
             var result = new List<ListAuthorsRow>();
@@ -53,14 +51,13 @@ public class QuerySql(string connectionString)
         }
     }
 
-    private const string CreateAuthorSql = "INSERT INTO authors ( name , bio ) VALUES ( @name, @bio ) RETURNING  id, name, bio ";  
+    private const string CreateAuthorSql = "INSERT INTO authors (name, bio) VALUES (@name, @bio) RETURNING id, name, bio";
     public readonly record struct CreateAuthorRow(long Id, string Name, string? Bio);
     public readonly record struct CreateAuthorArgs(string Name, string? Bio);
     public async Task<CreateAuthorRow?> CreateAuthor(CreateAuthorArgs args)
     {
         {
             await using var connection = NpgsqlDataSource.Create(connectionString);
-            ;
             await using var command = connection.CreateCommand(CreateAuthorSql);
             command.Parameters.AddWithValue("@name", args.Name);
             command.Parameters.AddWithValue("@bio", args.Bio);
@@ -79,26 +76,45 @@ public class QuerySql(string connectionString)
         }
     }
 
-    private const string DeleteAuthorSql = "DELETE FROM authors WHERE  id  =  @id  ";  
+    private const string DeleteAuthorSql = "DELETE FROM authors WHERE id = @id";
     public readonly record struct DeleteAuthorArgs(long Id);
     public async Task DeleteAuthor(DeleteAuthorArgs args)
     {
         {
             await using var connection = NpgsqlDataSource.Create(connectionString);
-            ;
             await using var command = connection.CreateCommand(DeleteAuthorSql);
             command.Parameters.AddWithValue("@id", args.Id);
             await command.ExecuteScalarAsync();
         }
     }
 
-    private const string TestSql = "SELECT c_bit, c_smallint, c_boolean, c_integer, c_bigint, c_serial, c_decimal, c_numeric, c_real, c_double_precision, c_date, c_time, c_timestamp, c_char, c_varchar, c_bytea, c_text, c_json FROM node_postgres_types LIMIT  1  ";  
+    private const string CreateAuthorBatchSql = "COPY authors (name, bio) FROM STDIN (FORMAT BINARY)";
+    public readonly record struct CreateAuthorBatchArgs(string Name, string? Bio);
+    public async Task CreateAuthorBatch(List<CreateAuthorBatchArgs> args)
+    {
+        {
+            await using var ds = NpgsqlDataSource.Create(connectionString);
+            var connection = ds.CreateConnection();
+            await connection.OpenAsync();
+            await using var writer = await connection.BeginBinaryImportAsync(CreateAuthorBatchSql);
+            foreach (var row in args)
+            {
+                await writer.StartRowAsync();
+                await writer.WriteAsync(row.Name);
+                await writer.WriteAsync(row.Bio);
+            }
+
+            await writer.CompleteAsync();
+            await connection.CloseAsync();
+        }
+    }
+
+    private const string TestSql = "SELECT c_bit, c_smallint, c_boolean, c_integer, c_bigint, c_serial, c_decimal, c_numeric, c_real, c_double_precision, c_date, c_time, c_timestamp, c_char, c_varchar, c_bytea, c_text, c_json FROM node_postgres_types LIMIT 1";
     public readonly record struct TestRow(byte[]? C_bit, int? C_smallint, bool? C_boolean, int? C_integer, int? C_bigint, long? C_serial, float? C_decimal, float? C_numeric, float? C_real, float? C_double_precision, string? C_date, string? C_time, string? C_timestamp, string? C_char, string? C_varchar, byte[]? C_bytea, string? C_text, object? C_json);
     public async Task<TestRow?> Test()
     {
         {
             await using var connection = NpgsqlDataSource.Create(connectionString);
-            ;
             await using var command = connection.CreateCommand(TestSql);
             var reader = await command.ExecuteReaderAsync();
             if (await reader.ReadAsync())

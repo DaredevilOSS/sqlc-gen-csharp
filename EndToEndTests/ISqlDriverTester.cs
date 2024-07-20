@@ -2,18 +2,18 @@ using System.Threading.Tasks;
 
 namespace SqlcGenCsharpTests;
 
-public interface ISqlDriverTester
+public abstract class SqlDriverTester
 {
-    async Task TestFlow()
+    public async Task TestBasicFlow()
     {
         var firstInsertedId = await CreateFirstAuthorAndTest();
         await CreateSecondAuthorAndTest();
         await DeleteFirstAuthorAndTest(firstInsertedId);
     }
 
-    protected Task<long> CreateFirstAuthorAndTest();
+    protected abstract Task<long> CreateFirstAuthorAndTest();
 
-    protected Task CreateSecondAuthorAndTest();
+    protected abstract Task CreateSecondAuthorAndTest();
 
-    protected Task DeleteFirstAuthorAndTest(long idToDelete);
+    protected abstract Task DeleteFirstAuthorAndTest(long idToDelete);
 }

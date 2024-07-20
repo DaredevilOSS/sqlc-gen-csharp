@@ -238,7 +238,10 @@ public class CodeGenerator
                 query.Params, query.Columns),
             ":many" => DbDriver.ManyDeclare(query.Name, queryTextConstant, argInterface, returnInterface,
                 query.Params, query.Columns),
-            ":execlastid" => DbDriver.ExecLastIdDeclare(query.Name, queryTextConstant, argInterface, query.Params),
+            ":execlastid" => ((MySqlConnectorDriver)DbDriver)
+                .ExecLastIdDeclare(query.Name, queryTextConstant, argInterface, query.Params),
+            ":copyfrom" => ((NpgsqlDriver)DbDriver)
+                .CopyFromDeclare(query.Name, queryTextConstant, argInterface, query.Params),
             _ => throw new InvalidDataException()
         };
 

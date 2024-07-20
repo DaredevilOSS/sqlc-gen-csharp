@@ -13,10 +13,10 @@ public class ManyDeclareGen(DbDriver dbDriver)
     public MemberDeclarationSyntax Generate(string funcName, string queryTextConstant, string argInterface,
         string returnInterface, IList<Parameter> parameters, IEnumerable<Column> columns)
     {
-        var parameterList = CommonGen.GetParameterListAsString(argInterface, parameters);
+        var parametersStr = CommonGen.GetParameterListAsString(argInterface, parameters);
         var returnType = $"Task<List<{returnInterface}>>";
         return ParseMemberDeclaration($$"""
-                                        public async {{returnType}} {{funcName}}({{parameterList}})
+                                        public async {{returnType}} {{funcName}}({{parametersStr}})
                                         {
                                             {{GetMethodBody(queryTextConstant, returnInterface, columns, parameters)}}
                                         }
@@ -48,7 +48,7 @@ public class ManyDeclareGen(DbDriver dbDriver)
             return $$"""
                      {
                          await using {{establishConnection}};
-                         {{connectionOpen}};
+                         {{connectionOpen.AppendSemicolonUnlessEmpty()}}
                          await using {{createSqlCommand}};
                          {{commandParameters.JoinByNewLine()}}
                          {{initDataReader}};
@@ -65,7 +65,7 @@ public class ManyDeclareGen(DbDriver dbDriver)
                      {
                          using ({{establishConnection}})
                          {
-                             {{connectionOpen}};
+                             {{connectionOpen.AppendSemicolonUnlessEmpty()}}
                              using ({{createSqlCommand}})
                              {
                                  {{commandParameters.JoinByNewLine()}}

@@ -42,7 +42,7 @@ public class OneDeclareGen(DbDriver dbDriver)
             return $$"""
                      {
                          await using {{establishConnection}};
-                         {{connectionOpen}};
+                         {{connectionOpen.AppendSemicolonUnlessEmpty()}}
                          await using {{createSqlCommand}};
                          {{commandParameters.JoinByNewLine()}}
                          {{initDataReader}};
@@ -61,7 +61,7 @@ public class OneDeclareGen(DbDriver dbDriver)
                      {
                          using ({{establishConnection}})
                          {
-                             {{connectionOpen}};
+                             {{connectionOpen.AppendSemicolonUnlessEmpty()}}
                              using ({{createSqlCommand}})
                              {
                                 {{commandParameters.JoinByNewLine()}}

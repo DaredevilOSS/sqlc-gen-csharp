@@ -10,8 +10,9 @@ public class ExecLastIdDeclareGen(DbDriver dbDriver)
     public MemberDeclarationSyntax Generate(string funcName, string queryTextConstant, string argInterface,
         IList<Parameter> parameters)
     {
+        var parametersStr = CommonGen.GetParameterListAsString(argInterface, parameters);
         return ParseMemberDeclaration($$"""
-                                        public async Task<long> {{funcName}}({{CommonGen.GetParameterListAsString(argInterface, parameters)}})
+                                        public async Task<long> {{funcName}}({{parametersStr}})
                                         {
                                             {{GetMethodBody(queryTextConstant, parameters)}}
                                         }
@@ -34,7 +35,7 @@ public class ExecLastIdDeclareGen(DbDriver dbDriver)
             return $$"""
                      {
                          await using {{establishConnection}};
-                         {{connectionOpen}};
+                         {{connectionOpen.AppendSemicolonUnlessEmpty()}}
                          await using {{createSqlCommand}};
                          {{commandParameters.JoinByNewLine()}}
                          {{executeScalarAndReturnCreated.JoinByNewLine()}}
@@ -48,7 +49,7 @@ public class ExecLastIdDeclareGen(DbDriver dbDriver)
                      {
                          using ({{establishConnection}})
                          {
-                             {{connectionOpen}};
+                             {{connectionOpen.AppendSemicolonUnlessEmpty()}}
                              using ({{createSqlCommand}})
                              {
                                 {{commandParameters.JoinByNewLine()}}
