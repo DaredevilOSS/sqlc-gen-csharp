@@ -11,14 +11,14 @@ public class OneDeclareGen(DbDriver dbDriver)
     private CommonGen CommonGen { get; } = new(dbDriver);
 
     public MemberDeclarationSyntax Generate(string funcName, string queryTextConstant, string argInterface,
-        string returnInterface, IList<Parameter> parameters, IEnumerable<Column> columns)
+        string returnInterface, Query query)
     {
         var returnType = $"Task<{dbDriver.AddNullableSuffix(returnInterface, false)}>";
-        var parametersStr = CommonGen.GetParameterListAsString(argInterface, parameters);
+        var parametersStr = CommonGen.GetParameterListAsString(argInterface, query.Params);
         return ParseMemberDeclaration($$"""
                                         public async {{returnType}} {{funcName}}({{parametersStr}})
                                         {
-                                            {{GetMethodBody(queryTextConstant, returnInterface, columns, parameters)}}
+                                            {{GetMethodBody(queryTextConstant, returnInterface, query.Columns, query.Params)}}
                                         }
                                         """)!;
     }

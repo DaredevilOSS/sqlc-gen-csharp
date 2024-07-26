@@ -8,13 +8,13 @@ namespace SqlcGenCsharp.Drivers.Generators;
 public class ExecDeclareGen(DbDriver dbDriver)
 {
     public MemberDeclarationSyntax Generate(string funcName, string queryTextConstant, string argInterface,
-        IList<Parameter> parameters)
+        Query query)
     {
-        var parametersStr = CommonGen.GetParameterListAsString(argInterface, parameters);
+        var parametersStr = CommonGen.GetParameterListAsString(argInterface, query.Params);
         return ParseMemberDeclaration($$"""
                                         public async Task {{funcName}}({{parametersStr}})
                                         {
-                                            {{GetMethodBody(queryTextConstant, parameters)}}
+                                            {{GetMethodBody(queryTextConstant, query.Params)}}
                                         }
                                         """)!;
     }

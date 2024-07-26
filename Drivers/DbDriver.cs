@@ -64,13 +64,12 @@ public abstract class DbDriver(DotnetFramework dotnetFramework)
     public abstract string CreateSqlCommand(string sqlTextConstant);
 
     public abstract MemberDeclarationSyntax OneDeclare(string name, string sqlTextConstant, string argInterface,
-        string returnInterface, IList<Parameter> parameters, IList<Column> columns);
+        string returnInterface, Query query);
 
     public abstract MemberDeclarationSyntax ManyDeclare(string funcName, string sqlTextConstant, string argInterface,
-        string returnInterface, IList<Parameter> parameters, IEnumerable<Column> columns);
+        string returnInterface, Query query);
 
-    public abstract MemberDeclarationSyntax ExecDeclare(string funcName, string text, string argInterface,
-        IList<Parameter> parameters);
+    public abstract MemberDeclarationSyntax ExecDeclare(string funcName, string text, string argInterface, Query query);
 
     public static bool IsCsharpPrimitive(string csharpType)
     {

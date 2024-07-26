@@ -11,27 +11,26 @@ public class ManyDeclareGen(DbDriver dbDriver)
     private CommonGen CommonGen { get; } = new(dbDriver);
 
     public MemberDeclarationSyntax Generate(string funcName, string queryTextConstant, string argInterface,
-        string returnInterface, IList<Parameter> parameters, IEnumerable<Column> columns)
+        string returnInterface, Query query)
     {
-        var parametersStr = CommonGen.GetParameterListAsString(argInterface, parameters);
+        var parametersStr = CommonGen.GetParameterListAsString(argInterface, query.Params);
         var returnType = $"Task<List<{returnInterface}>>";
         return ParseMemberDeclaration($$"""
                                         public async {{returnType}} {{funcName}}({{parametersStr}})
                                         {
-                                            {{GetMethodBody(queryTextConstant, returnInterface, columns, parameters)}}
+                                            {{GetMethodBody(queryTextConstant, returnInterface, query)}}
                                         }
                                         """)!;
     }
 
-    private string GetMethodBody(string queryTextConstant, string returnInterface, IEnumerable<Column> columns,
-        IEnumerable<Parameter> parameters)
+    private string GetMethodBody(string queryTextConstant, string returnInterface, Query query)
     {
         var (establishConnection, connectionOpen) = dbDriver.EstablishConnection();
         var createSqlCommand = dbDriver.CreateSqlCommand(queryTextConstant);
-        var commandParameters = CommonGen.GetCommandParameters(parameters);
+        var commandParameters = CommonGen.GetCommandParameters(query.Params);
         var initDataReader = CommonGen.InitDataReader();
         var awaitReaderRow = CommonGen.AwaitReaderRow();
-        var dataclassInit = CommonGen.InstantiateDataclass(columns, returnInterface);
+        var dataclassInit = CommonGen.InstantiateDataclass(query.Columns, returnInterface);
         var readWhileExists = $$"""
                                 while ({{awaitReaderRow}})
                                 {
