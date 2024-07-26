@@ -9,7 +9,7 @@ using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace SqlcGenCsharp.Drivers;
 
-public class NpgsqlDriver(DotnetFramework dotnetFramework) : DbDriver(dotnetFramework)
+public class NpgsqlDriver(DotnetFramework dotnetFramework) : DbDriver(dotnetFramework), ICopyFrom
 {
     protected override List<(string, Func<int, string>, HashSet<string>)> GetColumnMapping()
     {
@@ -47,9 +47,9 @@ public class NpgsqlDriver(DotnetFramework dotnetFramework) : DbDriver(dotnetFram
             .ToArray();
     }
 
-    public override (string, string) EstablishConnection(bool isCopyCommand = false)
+    public override (string, string) EstablishConnection(Query query)
     {
-        if (isCopyCommand)
+        if (query.Cmd == ":copyfrom")
             return (
                 $"var ds = NpgsqlDataSource.Create({Variable.ConnectionString.Name()})",
                 $"var {Variable.Connection.Name()} = ds.CreateConnection()"
@@ -83,26 +83,84 @@ public class NpgsqlDriver(DotnetFramework dotnetFramework) : DbDriver(dotnetFram
         }
     }
 
-    public override MemberDeclarationSyntax OneDeclare(string funcName, string queryTextConstant, string argInterface,
+    public override MemberDeclarationSyntax OneDeclare(string queryTextConstant, string argInterface,
         string returnInterface, Query query)
     {
-        return new OneDeclareGen(this).Generate(funcName, queryTextConstant, argInterface, returnInterface, query);
+        return new OneDeclareGen(this).Generate(queryTextConstant, argInterface, returnInterface, query);
     }
 
-    public override MemberDeclarationSyntax ExecDeclare(string funcName, string queryTextConstant, string argInterface,
-        Query query)
+    public override MemberDeclarationSyntax ExecDeclare(string queryTextConstant, string argInterface, Query query)
     {
-        return new ExecDeclareGen(this).Generate(funcName, queryTextConstant, argInterface, query);
+        return new ExecDeclareGen(this).Generate(queryTextConstant, argInterface, query);
     }
 
-    public override MemberDeclarationSyntax ManyDeclare(string funcName, string queryTextConstant, string argInterface,
+    public override MemberDeclarationSyntax ManyDeclare(string queryTextConstant, string argInterface,
         string returnInterface, Query query)
     {
-        return new ManyDeclareGen(this).Generate(funcName, queryTextConstant, argInterface, returnInterface, query);
+        return new ManyDeclareGen(this).Generate(queryTextConstant, argInterface, returnInterface, query);
     }
 
-    public MemberDeclarationSyntax CopyFromDeclare(string funcName, string queryTextConstant, string argInterface, Query query)
+    public MemberDeclarationSyntax CopyFromDeclare(string queryTextConstant, string argInterface, Query query)
     {
-        return new CopyFromDeclareGen(this).Generate(funcName, queryTextConstant, argInterface, query);
+        var (establishConnection, connectionOpen) = EstablishConnection(query);
+        var beginBinaryImport = $"{Variable.Connection.Name()}.BeginBinaryImportAsync({queryTextConstant}";
+        var methodBody = DotnetFramework.LatestDotnetSupported() ? GetAsModernDotnet() : GetAsLegacyDotnet();
+
+        return ParseMemberDeclaration($$"""
+                                        public async Task {{query.Name}}(List<{{argInterface}}> args)
+                                        {
+                                            {{methodBody}}
+                                        }
+                                        """)!;
+
+        string GetAsModernDotnet()
+        {
+            var addRowsToCopyCommand = AddRowsToCopyCommand();
+            return $$"""
+                     {
+                         await using {{establishConnection}};
+                         {{connectionOpen.AppendSemicolonUnlessEmpty()}}
+                         await {{Variable.Connection.Name()}}.OpenAsync();
+                         await using var {{Variable.Writer.Name()}} = await {{beginBinaryImport}});
+                         {{addRowsToCopyCommand}}
+                         await {{Variable.Writer.Name()}}.CompleteAsync();
+                         await {{Variable.Connection.Name()}}.CloseAsync();
+                     }
+                     """;
+        }
+
+        string GetAsLegacyDotnet()
+        {
+            var addRowsToCopyCommand = AddRowsToCopyCommand();
+            return $$"""
+                     {
+                         using ({{establishConnection}})
+                         {
+                             {{connectionOpen.AppendSemicolonUnlessEmpty()}}
+                             await {{Variable.Connection.Name()}}.OpenAsync();
+                             using (var {{Variable.Writer.Name()}} = await {{beginBinaryImport}}))
+                             {
+                                {{addRowsToCopyCommand}}
+                                await {{Variable.Writer.Name()}}.CompleteAsync();
+                             }
+                             await {{Variable.Connection.Name()}}.CloseAsync();
+                         }
+                     }
+                     """;
+        }
+
+        string AddRowsToCopyCommand()
+        {
+            var constructRow = new List<string>()
+                    .Append($"await {Variable.Writer.Name()}.StartRowAsync();")
+                    .Concat(query.Params.Select(p => $"await {Variable.Writer.Name()}.WriteAsync({Variable.Row.Name()}.{p.Column.Name.FirstCharToUpper()});"))
+                    .JoinByNewLine();
+            return $$"""
+                   foreach (var {{Variable.Row.Name()}} in args) 
+                   {
+                        {{constructRow}}
+                   }
+                   """;
+        }
     }
 }

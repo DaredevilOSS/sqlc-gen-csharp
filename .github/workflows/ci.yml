@@ -102,13 +102,9 @@ jobs:
           path: dist/plugin.wasm
           
   codegen-tests:
-    name: Codegen Test
+    name: Codegen Tests
     runs-on: ubuntu-latest
     needs: [build]
-    strategy:
-      matrix:
-        generate-csproj: [ 'true', 'false' ]
-        target-framework: [ 'net8.0', 'netstandard2.0', 'netstandard2.1' ]
 
     steps:
       - uses: actions/checkout@v4
@@ -129,12 +125,8 @@ jobs:
       - name: Updating plugin sha
         run: ./scripts/wasm/update_sha.sh ${SQLC_CI_FILE}
 
-      - name: Codegen Test
-        run: ./scripts/tests/run_codegen.sh ${SQLC_CI_FILE} ${{ matrix.generate-csproj }} ${{ matrix.target-framework }}
-          
-      - uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: ${{ matrix.target-framework == 'net8.0' && '8.0.x' || '3.1.x' }}
+      - name: Codegen Tests against matrix of configurations
+        run: ./scripts/tests/run_codegen_matrix.sh ${SQLC_CI_FILE}
         
   end2end-tests:
     name: End-to-End Tests

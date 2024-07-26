@@ -13,8 +13,7 @@ dockerfile-generate:
 protobuf-generate:
 	./scripts/generate_protobuf.sh
 
-# tests are run against generated code - can be generated either via a "process" or "wasm" SQLC plugins
-run-tests:
+run-end2end-tests:
 	./scripts/tests/run_end2end.sh
 
 # process type plugin
@@ -24,10 +23,13 @@ dotnet-build-process: protobuf-generate dotnet-format
 dotnet-publish-process: dotnet-build-process
 	dotnet publish LocalRunner -c release --output dist/
 
+run-codegen-tests-process:
+	./scripts/tests/run_codegen_matrix.sh sqlc.local.yaml
+
 sqlc-generate-process: dotnet-publish-process
 	sqlc -f sqlc.local.yaml generate
 
-test-process-plugin: sqlc-generate-process dockerfile-generate run-tests
+test-process-plugin: sqlc-generate-process dockerfile-generate run-codegen-tests-process run-end2end-tests
 
 # WASM type plugin
 dotnet-publish-wasm: protobuf-generate
@@ -40,4 +42,7 @@ update-wasm-plugin:
 sqlc-generate-wasm: dotnet-publish-wasm update-wasm-plugin
 	SQLCCACHE=./; sqlc -f sqlc.ci.yaml generate
 
-test-wasm-plugin: sqlc-generate-wasm update-wasm-plugin dockerfile-generate run-tests
+run-codegen-tests-wasm:
+	./scripts/tests/run_codegen_matrix.sh sqlc.ci.yaml
+
+test-wasm-plugin: sqlc-generate-wasm update-wasm-plugin dockerfile-generate run-codegen-tests-wasm run-end2end-tests

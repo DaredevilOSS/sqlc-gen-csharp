@@ -1,6 +1,5 @@
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Plugin;
-using System.Collections.Generic;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 
@@ -10,28 +9,27 @@ public class OneDeclareGen(DbDriver dbDriver)
 {
     private CommonGen CommonGen { get; } = new(dbDriver);
 
-    public MemberDeclarationSyntax Generate(string funcName, string queryTextConstant, string argInterface,
+    public MemberDeclarationSyntax Generate(string queryTextConstant, string argInterface,
         string returnInterface, Query query)
     {
         var returnType = $"Task<{dbDriver.AddNullableSuffix(returnInterface, false)}>";
         var parametersStr = CommonGen.GetParameterListAsString(argInterface, query.Params);
         return ParseMemberDeclaration($$"""
-                                        public async {{returnType}} {{funcName}}({{parametersStr}})
+                                        public async {{returnType}} {{query.Name}}({{parametersStr}})
                                         {
-                                            {{GetMethodBody(queryTextConstant, returnInterface, query.Columns, query.Params)}}
+                                            {{GetMethodBody(queryTextConstant, returnInterface, query)}}
                                         }
                                         """)!;
     }
 
-    private string GetMethodBody(string queryTextConstant, string returnInterface,
-        IEnumerable<Column> columns, IEnumerable<Parameter> parameters)
+    private string GetMethodBody(string queryTextConstant, string returnInterface, Query query)
     {
-        var (establishConnection, connectionOpen) = dbDriver.EstablishConnection();
+        var (establishConnection, connectionOpen) = dbDriver.EstablishConnection(query);
         var createSqlCommand = dbDriver.CreateSqlCommand(queryTextConstant);
-        var commandParameters = CommonGen.GetCommandParameters(parameters);
+        var commandParameters = CommonGen.GetCommandParameters(query.Params);
         var initDataReader = CommonGen.InitDataReader();
         var awaitReaderRow = CommonGen.AwaitReaderRow();
-        var returnDataclass = CommonGen.InstantiateDataclass(columns, returnInterface);
+        var returnDataclass = CommonGen.InstantiateDataclass(query.Columns, returnInterface);
 
         return dbDriver.DotnetFramework.LatestDotnetSupported()
             ? GetWithUsingAsStatement()
