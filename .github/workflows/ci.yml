@@ -47,7 +47,7 @@ jobs:
     needs: [lint]
     strategy:
       matrix:
-        os: [ 'ubuntu-latest' ]
+        os: [ 'ubuntu-latest', 'windows-latest' ]
         architecture: [ 'x64', 'arm64' ]
 
     steps:
@@ -72,19 +72,30 @@ jobs:
           tar xf wasi-sdk-22.0-linux.tar.gz
           chmod -R 755 wasi-sdk-22.0
   
-      #  name: Download WASI SDK on Windows
-      #   run: |
-      #     curl -LO https://github.com/WebAssembly/wasi-sdk/releases/download/wasi-sdk-22/wasi-sdk-22.0.m-mingw.tar.gz
-      #     tar xf wasi-sdk-22.0.m-mingw.tar.gz -C wasi-sdk-22.0
-      #     chmod -R 755 wasi-sdk-22.0
+      - name: Download WASI SDK on Windows
+        if: runner.os == 'Windows'
+        shell: bash
+        run: |
+          set -e
+          curl -LO https://github.com/WebAssembly/wasi-sdk/releases/download/wasi-sdk-22/wasi-sdk-22.0.m-mingw.tar.gz
+          tar xf wasi-sdk-22.0.m-mingw.tar.gz
+          mv wasi-sdk-22.0+m wasi-sdk-22.0 
+          chmod -R 755 wasi-sdk-22.0
+          
+      - name: Add clang path to $PATH env
+        shell: bash
+        if: runner.os == 'Windows'
+        run: echo "PATH=$PATH:C:\msys64\mingw64\bin" >> $GITHUB_ENV
       
       - name: Dotnet Wasm Publish
+        shell: bash
         run: |
+          set -e
           WASI_SDK_PATH="$(pwd)/wasi-sdk-22.0" dotnet publish WasmRunner -c release
           ./scripts/wasm/copy_plugin_to.sh dist
           
       - name: upload wasm plugin as artifact
-        if: matrix.architecture == 'arm64' # this needs to happen once across matrix
+        if: matrix.architecture == 'arm64' && runner.os == 'Linux' # this needs to happen once across matrix
         uses: actions/upload-artifact@v4
         with:
           name: wasm-file
