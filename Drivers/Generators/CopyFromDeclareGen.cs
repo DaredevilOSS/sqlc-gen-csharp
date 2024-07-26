@@ -8,18 +8,17 @@ namespace SqlcGenCsharp.Drivers.Generators;
 
 public class CopyFromDeclareGen(DbDriver dbDriver)
 {
-    public MemberDeclarationSyntax Generate(string funcName, string queryTextConstant, string argInterface,
-        IList<Parameter> parameters)
+    public MemberDeclarationSyntax Generate(string funcName, string queryTextConstant, string argInterface, Query query)
     {
         return ParseMemberDeclaration($$"""
                                         public async Task {{funcName}}(List<{{argInterface}}> args)
                                         {
-                                            {{GetMethodBody(queryTextConstant, parameters)}}
+                                            {{GetMethodBody(queryTextConstant, query)}}
                                         }
                                         """)!;
     }
 
-    private string GetMethodBody(string queryTextConstant, IEnumerable<Parameter> parameters)
+    private string GetMethodBody(string queryTextConstant, Query query)
     {
         var (establishConnection, connectionOpen) = dbDriver.EstablishConnection(true);
         var beginBinaryImport = $"{Variable.Connection.Name()}.BeginBinaryImportAsync({queryTextConstant}";
@@ -68,8 +67,7 @@ public class CopyFromDeclareGen(DbDriver dbDriver)
         {
             var constructRow = new List<string>()
                     .Append($"await {Variable.Writer.Name()}.StartRowAsync();")
-                    .Concat(parameters
-                        .Select(p =>
+                    .Concat(query.Params.Select(p =>
                             $"await {Variable.Writer.Name()}.WriteAsync({Variable.Row.Name()}.{p.Column.Name.FirstCharToUpper()});"))
                     .JoinByNewLine();
             return $$"""

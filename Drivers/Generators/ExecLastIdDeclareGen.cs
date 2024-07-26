@@ -7,23 +7,22 @@ namespace SqlcGenCsharp.Drivers.Generators;
 
 public class ExecLastIdDeclareGen(DbDriver dbDriver)
 {
-    public MemberDeclarationSyntax Generate(string funcName, string queryTextConstant, string argInterface,
-        IList<Parameter> parameters)
+    public MemberDeclarationSyntax Generate(string funcName, string queryTextConstant, string argInterface, Query query)
     {
-        var parametersStr = CommonGen.GetParameterListAsString(argInterface, parameters);
+        var parametersStr = CommonGen.GetParameterListAsString(argInterface, query.Params);
         return ParseMemberDeclaration($$"""
                                         public async Task<long> {{funcName}}({{parametersStr}})
                                         {
-                                            {{GetMethodBody(queryTextConstant, parameters)}}
+                                            {{GetMethodBody(queryTextConstant, query)}}
                                         }
                                         """)!;
     }
 
-    private string GetMethodBody(string queryTextConstant, IEnumerable<Parameter> parameters)
+    private string GetMethodBody(string queryTextConstant, Query query)
     {
         var (establishConnection, connectionOpen) = dbDriver.EstablishConnection();
         var createSqlCommand = dbDriver.CreateSqlCommand(queryTextConstant);
-        var commandParameters = CommonGen.GetCommandParameters(parameters);
+        var commandParameters = CommonGen.GetCommandParameters(query.Params);
         var executeScalarAndReturnCreated = ExecuteScalarAndReturnCreated();
 
         return dbDriver.DotnetFramework.LatestDotnetSupported()

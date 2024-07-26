@@ -233,15 +233,13 @@ public class CodeGenerator
 
         return query.Cmd switch
         {
-            ":exec" => DbDriver.ExecDeclare(query.Name, queryTextConstant, argInterface, query.Params),
-            ":one" => DbDriver.OneDeclare(query.Name, queryTextConstant, argInterface, returnInterface,
-                query.Params, query.Columns),
-            ":many" => DbDriver.ManyDeclare(query.Name, queryTextConstant, argInterface, returnInterface,
-                query.Params, query.Columns),
+            ":exec" => DbDriver.ExecDeclare(query.Name, queryTextConstant, argInterface, query),
+            ":one" => DbDriver.OneDeclare(query.Name, queryTextConstant, argInterface, returnInterface, query),
+            ":many" => DbDriver.ManyDeclare(query.Name, queryTextConstant, argInterface, returnInterface, query),
             ":execlastid" => ((MySqlConnectorDriver)DbDriver)
-                .ExecLastIdDeclare(query.Name, queryTextConstant, argInterface, query.Params),
+                .ExecLastIdDeclare(query.Name, queryTextConstant, argInterface, query),
             ":copyfrom" => ((NpgsqlDriver)DbDriver)
-                .CopyFromDeclare(query.Name, queryTextConstant, argInterface, query.Params),
+                .CopyFromDeclare(query.Name, queryTextConstant, argInterface, query),
             _ => throw new InvalidDataException()
         };
 

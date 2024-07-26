@@ -84,28 +84,25 @@ public class NpgsqlDriver(DotnetFramework dotnetFramework) : DbDriver(dotnetFram
     }
 
     public override MemberDeclarationSyntax OneDeclare(string funcName, string queryTextConstant, string argInterface,
-        string returnInterface, IList<Parameter> parameters, IList<Column> columns)
+        string returnInterface, Query query)
     {
-        return new OneDeclareGen(this).Generate(funcName, queryTextConstant, argInterface, returnInterface, parameters,
-            columns);
+        return new OneDeclareGen(this).Generate(funcName, queryTextConstant, argInterface, returnInterface, query);
     }
 
     public override MemberDeclarationSyntax ExecDeclare(string funcName, string queryTextConstant, string argInterface,
-        IList<Parameter> parameters)
+        Query query)
     {
-        return new ExecDeclareGen(this).Generate(funcName, queryTextConstant, argInterface, parameters);
+        return new ExecDeclareGen(this).Generate(funcName, queryTextConstant, argInterface, query);
     }
 
     public override MemberDeclarationSyntax ManyDeclare(string funcName, string queryTextConstant, string argInterface,
-        string returnInterface, IList<Parameter> parameters, IEnumerable<Column> columns)
+        string returnInterface, Query query)
     {
-        return new ManyDeclareGen(this).Generate(funcName, queryTextConstant, argInterface, returnInterface, parameters,
-            columns);
+        return new ManyDeclareGen(this).Generate(funcName, queryTextConstant, argInterface, returnInterface, query);
     }
 
-    public MemberDeclarationSyntax CopyFromDeclare(string funcName, string queryTextConstant, string argInterface,
-        IList<Parameter> parameters)
+    public MemberDeclarationSyntax CopyFromDeclare(string funcName, string queryTextConstant, string argInterface, Query query)
     {
-        return new CopyFromDeclareGen(this).Generate(funcName, queryTextConstant, argInterface, parameters);
+        return new CopyFromDeclareGen(this).Generate(funcName, queryTextConstant, argInterface, query);
     }
 }
