@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 
-set -ex
-source .env
+set -e
 
 mapfile -t examples < <(dotnet sln list | grep Example | xargs -n 1 dirname) # TODO standardize across scripts
 
@@ -15,14 +14,23 @@ generated_files_cleanup() {
     echo "Deleting .cs files in ${example_dir}"
     find "${example_dir}/" -type f -name "*.cs" -exec rm -f {} \;
     if [ "${generate_csproj}" = "true" ]; then
-      echo "Deleting .csproj file" && rm "${example_dir}/${example_dir}.csproj"
+      echo "Deleting .csproj file" && mv "${example_dir}/${example_dir}.csproj" "/tmp/${example_dir}.csproj"
+    fi
+  done
+}
+
+generated_files_restore() {
+  for example_dir in "${examples[@]}"
+  do
+    if [ "${generate_csproj}" = "true" ]; then
+      echo "Restoring .csproj file" && mv "/tmp/${example_dir}.csproj" "${example_dir}/${example_dir}.csproj"
     fi
   done
 }
 
 change_config() {
   for ((i=0; i<${#examples[@]}; i++)); do
-    echo "Changing configuration for project ${example_dir}" 
+    echo "Changing configuration for project ${examples[i]}" 
     yq -i "
       .sql[${i}].codegen[0].options.generateCsproj = ${generate_csproj} |
       .sql[${i}].codegen[0].options.targetFramework = \"${target_framework}\"
@@ -65,3 +73,4 @@ for test_function in "${test_functions[@]}"; do
   fi
   echo "Test ${test_function} passed"
 done
+generated_files_restore

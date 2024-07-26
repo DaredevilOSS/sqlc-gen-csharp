@@ -59,17 +59,17 @@ public abstract class DbDriver(DotnetFramework dotnetFramework)
 
     public abstract string TransformQueryText(Query query);
 
-    public abstract (string, string) EstablishConnection(bool isCopyCommand = false); // TODO fix codesmell - should act upon the query object
+    public abstract (string, string) EstablishConnection(Query query);
 
     public abstract string CreateSqlCommand(string sqlTextConstant);
 
-    public abstract MemberDeclarationSyntax OneDeclare(string name, string sqlTextConstant, string argInterface,
+    public abstract MemberDeclarationSyntax OneDeclare(string sqlTextConstant, string argInterface,
         string returnInterface, Query query);
 
-    public abstract MemberDeclarationSyntax ManyDeclare(string funcName, string sqlTextConstant, string argInterface,
+    public abstract MemberDeclarationSyntax ManyDeclare(string sqlTextConstant, string argInterface,
         string returnInterface, Query query);
 
-    public abstract MemberDeclarationSyntax ExecDeclare(string funcName, string text, string argInterface, Query query);
+    public abstract MemberDeclarationSyntax ExecDeclare(string text, string argInterface, Query query);
 
     public static bool IsCsharpPrimitive(string csharpType)
     {

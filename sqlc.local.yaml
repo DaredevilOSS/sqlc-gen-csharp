@@ -1,26 +1,26 @@
 version: "2"
 plugins:
-- name: csharp
-  process:
-    cmd: ./dist/LocalRunner
+  - name: csharp
+    process:
+      cmd: ./dist/LocalRunner
 sql:
-- schema: "examples/authors/postgresql/schema.sql"
-  queries: "examples/authors/postgresql/query.sql"
-  engine: "postgresql"
-  codegen:
-  - plugin: csharp
-    out: NpgsqlExample
-    options:
-      driver: Npgsql
-      targetFramework: net8.0
-      generateCsproj: true
-- schema: "examples/authors/mysql/schema.sql"
-  queries: "examples/authors/mysql/query.sql"
-  engine: "mysql"
-  codegen:
-  - plugin: csharp
-    out: MySqlConnectorExample
-    options:
-      driver: MySqlConnector
-      targetFramework: net8.0
-      generateCsproj: true
+  - schema: "examples/authors/postgresql/schema.sql"
+    queries: "examples/authors/postgresql/query.sql"
+    engine: "postgresql"
+    codegen:
+      - plugin: csharp
+        out: NpgsqlExample
+        options:
+          driver: Npgsql
+          targetFramework: net8.0
+          generateCsproj: true
+  - schema: "examples/authors/mysql/schema.sql"
+    queries: "examples/authors/mysql/query.sql"
+    engine: "mysql"
+    codegen:
+      - plugin: csharp
+        out: MySqlConnectorExample
+        options:
+          driver: MySqlConnector
+          targetFramework: net8.0
+          generateCsproj: true

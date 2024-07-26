@@ -10,7 +10,7 @@ using OneDeclareGen = SqlcGenCsharp.Drivers.Generators.OneDeclareGen;
 
 namespace SqlcGenCsharp.Drivers;
 
-public partial class MySqlConnectorDriver(DotnetFramework dotnetFramework) : DbDriver(dotnetFramework)
+public partial class MySqlConnectorDriver(DotnetFramework dotnetFramework) : DbDriver(dotnetFramework), IExecLastId
 {
     protected override List<(string, Func<int, string>, HashSet<string>)> GetColumnMapping()
     {
@@ -58,7 +58,7 @@ public partial class MySqlConnectorDriver(DotnetFramework dotnetFramework) : DbD
             .ToArray();
     }
 
-    public override (string, string) EstablishConnection(bool isCopyCommand = false)
+    public override (string, string) EstablishConnection(Query query)
     {
         return (
             $"var {Variable.Connection.Name()} = new MySqlConnection({Variable.ConnectionString.Name()})",
@@ -76,28 +76,79 @@ public partial class MySqlConnectorDriver(DotnetFramework dotnetFramework) : DbD
         return QueryParamRegex().Replace(query.Text, _ => "@" + query.Params[counter++].Column.Name);
     }
 
-    public override MemberDeclarationSyntax OneDeclare(string funcName, string queryTextConstant, string argInterface,
+    public override MemberDeclarationSyntax OneDeclare(string queryTextConstant, string argInterface,
         string returnInterface, Query query)
     {
-        return new OneDeclareGen(this).Generate(funcName, queryTextConstant, argInterface, returnInterface, query);
+        return new OneDeclareGen(this).Generate(queryTextConstant, argInterface, returnInterface, query);
     }
 
-    public override MemberDeclarationSyntax ExecDeclare(string funcName, string queryTextConstant, string argInterface,
-        Query query)
+    public override MemberDeclarationSyntax ExecDeclare(string queryTextConstant, string argInterface, Query query)
     {
-        return new ExecDeclareGen(this).Generate(funcName, queryTextConstant, argInterface, query);
+        return new ExecDeclareGen(this).Generate(queryTextConstant, argInterface, query);
     }
 
-    public MemberDeclarationSyntax ExecLastIdDeclare(string funcName, string queryTextConstant,
-        string argInterface, Query query)
+    public MemberDeclarationSyntax ExecLastIdDeclare(string queryTextConstant, string argInterface, Query query)
     {
-        return new ExecLastIdDeclareGen(this).Generate(funcName, queryTextConstant, argInterface, query);
+        var parametersStr = CommonGen.GetParameterListAsString(argInterface, query.Params);
+        var (establishConnection, connectionOpen) = EstablishConnection(query);
+        var createSqlCommand = CreateSqlCommand(queryTextConstant);
+        var commandParameters = CommonGen.GetCommandParameters(query.Params);
+        var executeScalarAndReturnCreated = ExecuteScalarAndReturnCreated();
+        var methodBody = DotnetFramework.LatestDotnetSupported()
+            ? GetWithUsingAsStatement()
+            : GetWithUsingAsBlock();
+
+        return ParseMemberDeclaration($$"""
+                                        public async Task<long> {{query.Name}}({{parametersStr}})
+                                        {
+                                            {{methodBody}}
+                                        }
+                                        """)!;
+
+        string GetWithUsingAsStatement()
+        {
+            return $$"""
+                     {
+                         await using {{establishConnection}};
+                         {{connectionOpen.AppendSemicolonUnlessEmpty()}}
+                         await using {{createSqlCommand}};
+                         {{commandParameters.JoinByNewLine()}}
+                         {{executeScalarAndReturnCreated.JoinByNewLine()}}
+                     }
+                     """;
+        }
+
+        string GetWithUsingAsBlock()
+        {
+            return $$"""
+                     {
+                         using ({{establishConnection}})
+                         {
+                             {{connectionOpen.AppendSemicolonUnlessEmpty()}}
+                             using ({{createSqlCommand}})
+                             {
+                                {{commandParameters.JoinByNewLine()}}
+                                {{executeScalarAndReturnCreated.JoinByNewLine()}}
+                             }
+                         }
+                     }
+                     """;
+        }
+
+        IEnumerable<string> ExecuteScalarAndReturnCreated()
+        {
+            return new[]
+            {
+                $"await {Variable.Command.Name()}.ExecuteNonQueryAsync();",
+                $"return {Variable.Command.Name()}.LastInsertedId;"
+            };
+        }
     }
 
-    public override MemberDeclarationSyntax ManyDeclare(string funcName, string queryTextConstant, string argInterface,
+    public override MemberDeclarationSyntax ManyDeclare(string queryTextConstant, string argInterface,
         string returnInterface, Query query)
     {
-        return new ManyDeclareGen(this).Generate(funcName, queryTextConstant, argInterface, returnInterface, query);
+        return new ManyDeclareGen(this).Generate(queryTextConstant, argInterface, returnInterface, query);
     }
 
     [GeneratedRegex(@"\?")]

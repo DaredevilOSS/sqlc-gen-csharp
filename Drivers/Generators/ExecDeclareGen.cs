@@ -1,29 +1,27 @@
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Plugin;
-using System.Collections.Generic;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace SqlcGenCsharp.Drivers.Generators;
 
 public class ExecDeclareGen(DbDriver dbDriver)
 {
-    public MemberDeclarationSyntax Generate(string funcName, string queryTextConstant, string argInterface,
-        Query query)
+    public MemberDeclarationSyntax Generate(string queryTextConstant, string argInterface, Query query)
     {
         var parametersStr = CommonGen.GetParameterListAsString(argInterface, query.Params);
         return ParseMemberDeclaration($$"""
-                                        public async Task {{funcName}}({{parametersStr}})
+                                        public async Task {{query.Name}}({{parametersStr}})
                                         {
-                                            {{GetMethodBody(queryTextConstant, query.Params)}}
+                                            {{GetMethodBody(queryTextConstant, query)}}
                                         }
                                         """)!;
     }
 
-    private string GetMethodBody(string queryTextConstant, IEnumerable<Parameter> parameters)
+    private string GetMethodBody(string queryTextConstant, Query query)
     {
-        var (establishConnection, connectionOpen) = dbDriver.EstablishConnection();
+        var (establishConnection, connectionOpen) = dbDriver.EstablishConnection(query);
         var createSqlCommand = dbDriver.CreateSqlCommand(queryTextConstant);
-        var commandParameters = CommonGen.GetCommandParameters(parameters);
+        var commandParameters = CommonGen.GetCommandParameters(query.Params);
         var executeScalar = $"await {Variable.Command.Name()}.ExecuteScalarAsync();";
 
         return dbDriver.DotnetFramework.LatestDotnetSupported()

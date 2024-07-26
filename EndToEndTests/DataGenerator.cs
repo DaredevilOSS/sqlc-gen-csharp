@@ -1,6 +1,3 @@
-using NpgsqlExample;
-using System;
-
 namespace SqlcGenCsharpTests;
 
 public static class DataGenerator
