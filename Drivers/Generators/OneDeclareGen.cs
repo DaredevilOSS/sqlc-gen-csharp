@@ -31,11 +31,9 @@ public class OneDeclareGen(DbDriver dbDriver)
         var awaitReaderRow = CommonGen.AwaitReaderRow();
         var returnDataclass = CommonGen.InstantiateDataclass(query.Columns, returnInterface);
 
-        return dbDriver.DotnetFramework.LatestDotnetSupported()
-            ? GetWithUsingAsStatement()
-            : GetWithUsingAsBlock();
+        return dbDriver.DotnetFramework.LatestDotnetSupported() ? Get() : GetAsLegacy();
 
-        string GetWithUsingAsStatement()
+        string Get()
         {
             return $$"""
                      {
@@ -53,7 +51,7 @@ public class OneDeclareGen(DbDriver dbDriver)
                      """;
         }
 
-        string GetWithUsingAsBlock()
+        string GetAsLegacy()
         {
             return $$"""
                      {
