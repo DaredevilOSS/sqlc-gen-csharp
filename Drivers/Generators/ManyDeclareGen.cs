@@ -35,12 +35,9 @@ public class ManyDeclareGen(DbDriver dbDriver)
                                     {{Variable.Result.Name()}}.Add({{dataclassInit}});
                                 }
                                 """;
+        return dbDriver.DotnetFramework.LatestDotnetSupported() ? Get() : GetAsLegacy();
 
-        return dbDriver.DotnetFramework.LatestDotnetSupported()
-            ? GetWithUsingAsStatement()
-            : GetWithUsingAsBlock();
-
-        string GetWithUsingAsStatement()
+        string Get()
         {
             return $$"""
                      {
@@ -56,7 +53,7 @@ public class ManyDeclareGen(DbDriver dbDriver)
                      """;
         }
 
-        string GetWithUsingAsBlock()
+        string GetAsLegacy()
         {
             return $$"""
                      {
