@@ -3,7 +3,7 @@ plugins:
   - name: csharp
     wasm:
       url: file://dist/plugin.wasm
-      sha256: SHA_TO_REPLACE
+      sha256: f8c8534bf0577a3655fd5a56b2c5547388d3fdde54de1a1b01a9d093de3ef71b
 sql:
   - schema: "examples/authors/postgresql/schema.sql"
     queries: "examples/authors/postgresql/query.sql"
@@ -23,5 +23,15 @@ sql:
         out: MySqlConnectorExample
         options:
           driver: MySqlConnector
+          targetFramework: net8.0
+          generateCsproj: true
+  - schema: "examples/authors/sqlite/schema.sql"
+    queries: "examples/authors/sqlite/query.sql"
+    engine: "sqlite"
+    codegen:
+      - plugin: csharp
+        out: SqliteExample
+        options:
+          driver: Sqlite
           targetFramework: net8.0
           generateCsproj: true

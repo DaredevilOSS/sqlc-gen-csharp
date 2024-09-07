@@ -24,3 +24,13 @@ sql:
           driver: MySqlConnector
           targetFramework: net8.0
           generateCsproj: true
+  - schema: "examples/authors/sqlite/schema.sql"
+    queries: "examples/authors/sqlite/query.sql"
+    engine: "sqlite"
+    codegen:
+      - plugin: csharp
+        out: SqliteExample
+        options:
+          driver: Sqlite
+          targetFramework: net8.0
+          generateCsproj: true

@@ -5,7 +5,8 @@ dotnet-format:
 	dotnet format \
 		--exclude GeneratedProtobuf \
 		--exclude MySqlConnectorExample \
-		--exclude NpgsqlExample
+		--exclude NpgsqlExample \
+		--exclude SqliteExample
 
 dockerfile-generate:
 	./scripts/generate_dockerfile.sh Dockerfile

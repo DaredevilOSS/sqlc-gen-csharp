@@ -14,6 +14,7 @@ COPY MySqlConnectorExample/*.csproj ./MySqlConnectorExample/
 COPY NpgsqlExample/*.csproj ./NpgsqlExample/
 COPY PluginOptions/*.csproj ./PluginOptions/
 COPY SqlcGenCsharp/*.csproj ./SqlcGenCsharp/
+COPY SqliteExample/*.csproj ./SqliteExample/
 COPY WasmRunner/*.csproj ./WasmRunner/
 
 COPY CodeGenerator/ ./CodeGenerator/
@@ -26,6 +27,7 @@ COPY MySqlConnectorExample/ ./MySqlConnectorExample/
 COPY NpgsqlExample/ ./NpgsqlExample/
 COPY PluginOptions/ ./PluginOptions/
 COPY SqlcGenCsharp/ ./SqlcGenCsharp/
+COPY SqliteExample/ ./SqliteExample/
 COPY WasmRunner/ ./WasmRunner/
 
 RUN dotnet restore

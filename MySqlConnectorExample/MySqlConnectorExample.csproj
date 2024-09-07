@@ -6,12 +6,12 @@
 
     <PropertyGroup>
         <TargetFramework>net8.0</TargetFramework>
-<Nullable>enable</Nullable>
         <OutputType>Library</OutputType>
+        <Nullable>enable</Nullable>
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="MySqlConnector" Version="2.3.6"/>
+        <PackageReference Include="MySqlConnector" Version="2.3.7"/>
     </ItemGroup>
 
 </Project>

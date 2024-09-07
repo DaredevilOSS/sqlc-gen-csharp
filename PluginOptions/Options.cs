@@ -9,7 +9,22 @@ namespace SqlcGenCsharp;
 public enum DriverName
 {
     MySqlConnector,
-    Npgsql
+    Npgsql,
+    Sqlite
+}
+
+public static class DriverNameExtensions
+{
+    public static (string, string) GetNameAndVersion(this DriverName me)
+    {
+        return me switch
+        {
+            DriverName.Npgsql => ("Npgsql", "8.0.3"),
+            DriverName.MySqlConnector => ("MySqlConnector", "2.3.7"),
+            DriverName.Sqlite => ("System.Data.SQLite", "1.0.118"),
+            _ => throw new NotSupportedException($"unsupported driver: {me}")
+        };
+    }
 }
 
 public class Options
