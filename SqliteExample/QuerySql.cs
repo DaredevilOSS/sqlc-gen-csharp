@@ -2,153 +2,98 @@
 // ReSharper disable NotAccessedPositionalProperty.Global
 // ReSharper disable UnusedAutoPropertyAccessor.Global
 // ReSharper disable InconsistentNaming
-namespace SqliteExample
+
+using Microsoft.Data.Sqlite;
+using System.Collections.Generic;
+using System.Data.SQLite;
+using System.Threading.Tasks;
+
+namespace SqliteExample;
+public class QuerySql(string connectionString)
 {
-    using System.Collections.Generic;
-    using System.Threading.Tasks;
-    using System.Data.SQLite;
-
-    public class QuerySql
+    private const string GetAuthorSql = "SELECT id, name, bio FROM authors WHERE  id  =  ? LIMIT  1  ";
+    public readonly record struct GetAuthorRow(int Id, string Name, string? Bio);
+    public readonly record struct GetAuthorArgs(int Id);
+    public async Task<GetAuthorRow?> GetAuthor(GetAuthorArgs args)
     {
-        public QuerySql(string connectionString)
         {
-            this.connectionString = connectionString;
-        }
-
-        private string connectionString { get; }
-
-        private const string GetAuthorSql = "SELECT id, name, bio FROM authors WHERE  id  =  ? LIMIT  1  ";  
-        public class GetAuthorRow
-        {
-            public int Id { get; set; }
-            public string Name { get; set; }
-            public string Bio { get; set; }
-        };
-        public class GetAuthorArgs
-        {
-            public int Id { get; set; }
-        };
-        public async Task<GetAuthorRow> GetAuthor(GetAuthorArgs args)
-        {
+            await using var connection = new SqliteConnection(connectionString);
+            connection.Open();
+            await using var command = new SQLiteCommand(GetAuthorSql, connection);
+            command.Parameters.AddWithValue("@id", args.Id);
+            var reader = await command.ExecuteReaderAsync();
+            if (await reader.ReadAsync())
             {
-                using (var connection = new SQLiteConnection(connectionString))
+                return new GetAuthorRow
                 {
-                    connection.Open();
-                    using (var command = new SQLiteCommand(GetAuthorSql, connection))
-                    {
-                        command.Parameters.AddWithValue("@id", args.Id);
-                        using (var reader = await command.ExecuteReaderAsync())
-                        {
-                            if (await reader.ReadAsync())
-                            {
-                                return new GetAuthorRow
-                                {
-                                    Id = reader.GetInt32(0),
-                                    Name = reader.GetString(1),
-                                    Bio = reader.IsDBNull(2) ? string.Empty : reader.GetString(2)
-                                };
-                            }
-                        }
-                    }
-                }
-
-                return null;
+                    Id = reader.GetInt32(0),
+                    Name = reader.GetString(1),
+                    Bio = reader.IsDBNull(2) ? null : reader.GetString(2)
+                };
             }
+
+            return null;
         }
+    }
 
-        private const string ListAuthorsSql = "SELECT id, name, bio FROM authors ORDER  BY  name  ";  
-        public class ListAuthorsRow
+    private const string ListAuthorsSql = "SELECT id, name, bio FROM authors ORDER  BY  name  ";
+    public readonly record struct ListAuthorsRow(int Id, string Name, string? Bio);
+    public async Task<List<ListAuthorsRow>> ListAuthors()
+    {
         {
-            public int Id { get; set; }
-            public string Name { get; set; }
-            public string Bio { get; set; }
-        };
-        public async Task<List<ListAuthorsRow>> ListAuthors()
-        {
+            await using var connection = new SQLiteConnection(connectionString);
+            connection.Open();
+            await using var command = new SQLiteCommand(ListAuthorsSql, connection);
+            var reader = await command.ExecuteReaderAsync();
+            var result = new List<ListAuthorsRow>();
+            while (await reader.ReadAsync())
             {
-                using (var connection = new SQLiteConnection(connectionString))
-                {
-                    connection.Open();
-                    using (var command = new SQLiteCommand(ListAuthorsSql, connection))
-                    {
-                        using (var reader = await command.ExecuteReaderAsync())
-                        {
-                            var result = new List<ListAuthorsRow>();
-                            while (await reader.ReadAsync())
-                            {
-                                result.Add(new ListAuthorsRow { Id = reader.GetInt32(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? string.Empty : reader.GetString(2) });
-                            }
-
-                            return result;
-                        }
-                    }
-                }
+                result.Add(new ListAuthorsRow { Id = reader.GetInt32(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2) });
             }
+
+            return result;
         }
+    }
 
-        private const string CreateAuthorSql = "INSERT INTO authors ( name , bio ) VALUES ( ?,  ? ) "; 
-        public class CreateAuthorArgs
+    private const string CreateAuthorSql = "INSERT INTO authors ( name , bio ) VALUES ( ?,  ? ) ";
+    public readonly record struct CreateAuthorArgs(string Name, string? Bio);
+    public async Task CreateAuthor(CreateAuthorArgs args)
+    {
         {
-            public string Name { get; set; }
-            public string Bio { get; set; }
-        };
-        public async Task CreateAuthor(CreateAuthorArgs args)
-        {
-            {
-                using (var connection = new SQLiteConnection(connectionString))
-                {
-                    connection.Open();
-                    using (var command = new SQLiteCommand(CreateAuthorSql, connection))
-                    {
-                        command.Parameters.AddWithValue("@name", args.Name);
-                        command.Parameters.AddWithValue("@bio", args.Bio);
-                        await command.ExecuteScalarAsync();
-                    }
-                }
-            }
+            await using var connection = new SQLiteConnection(connectionString);
+            connection.Open();
+            await using var command = new SQLiteCommand(CreateAuthorSql, connection);
+            command.Parameters.AddWithValue("@name", args.Name);
+            command.Parameters.AddWithValue("@bio", args.Bio);
+            await command.ExecuteScalarAsync();
         }
+    }
 
-        private const string CreateAuthorReturnIdSql = "INSERT INTO authors ( name , bio ) VALUES ( ?,  ? ) "; 
-        public class CreateAuthorReturnIdArgs
+    private const string CreateAuthorReturnIdSql = "INSERT INTO authors ( name , bio ) VALUES ( ?,  ? ) ";
+    public readonly record struct CreateAuthorReturnIdArgs(string Name, string? Bio);
+    public async Task<long> CreateAuthorReturnId(CreateAuthorReturnIdArgs args)
+    {
         {
-            public string Name { get; set; }
-            public string Bio { get; set; }
-        };
-        public async Task<long> CreateAuthorReturnId(CreateAuthorReturnIdArgs args)
-        {
-            {
-                using (var connection = new SQLiteConnection(connectionString))
-                {
-                    connection.Open();
-                    using (var command = new SQLiteCommand(CreateAuthorReturnIdSql, connection))
-                    {
-                        command.Parameters.AddWithValue("@name", args.Name);
-                        command.Parameters.AddWithValue("@bio", args.Bio);
-                        await command.ExecuteNonQueryAsync();
-                        return connection.LastInsertRowId;
-                    }
-                }
-            }
+            await using var connection = new SQLiteConnection(connectionString);
+            connection.Open();
+            await using var command = new SQLiteCommand(CreateAuthorReturnIdSql, connection);
+            command.Parameters.AddWithValue("@name", args.Name);
+            command.Parameters.AddWithValue("@bio", args.Bio);
+            await command.ExecuteNonQueryAsync();
+            return connection.LastInsertRowId;
         }
+    }
 
-        private const string DeleteAuthorSql = "DELETE FROM authors WHERE  id  =  ? ";  
-        public class DeleteAuthorArgs
+    private const string DeleteAuthorSql = "DELETE FROM authors WHERE  id  =  ? ";
+    public readonly record struct DeleteAuthorArgs(int Id);
+    public async Task DeleteAuthor(DeleteAuthorArgs args)
+    {
         {
-            public int Id { get; set; }
-        };
-        public async Task DeleteAuthor(DeleteAuthorArgs args)
-        {
-            {
-                using (var connection = new SQLiteConnection(connectionString))
-                {
-                    connection.Open();
-                    using (var command = new SQLiteCommand(DeleteAuthorSql, connection))
-                    {
-                        command.Parameters.AddWithValue("@id", args.Id);
-                        await command.ExecuteScalarAsync();
-                    }
-                }
-            }
+            await using var connection = new SQLiteConnection(connectionString);
+            connection.Open();
+            await using var command = new SQLiteCommand(DeleteAuthorSql, connection);
+            command.Parameters.AddWithValue("@id", args.Id);
+            await command.ExecuteScalarAsync();
         }
     }
 }

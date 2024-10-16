@@ -21,7 +21,7 @@ public static class DriverNameExtensions
         {
             DriverName.Npgsql => ("Npgsql", "8.0.3"),
             DriverName.MySqlConnector => ("MySqlConnector", "2.3.7"),
-            DriverName.Sqlite => ("System.Data.SQLite", "1.0.118"),
+            DriverName.Sqlite => ("Microsoft.Data.Sqlite", "8.0.8"),
             _ => throw new NotSupportedException($"unsupported driver: {me}")
         };
     }

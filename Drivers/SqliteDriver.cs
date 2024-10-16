@@ -25,14 +25,14 @@ public class SqliteDriver(DotnetFramework dotnetFramework) : DbDriver(dotnetFram
     public override UsingDirectiveSyntax[] GetUsingDirectives()
     {
         return base.GetUsingDirectives()
-            .Append(UsingDirective(ParseName("System.Data.SQLite")))
+            .Append(UsingDirective(ParseName("Microsoft.Data.Sqlite")))
             .ToArray();
     }
 
-    public override (string, string) EstablishConnection(Query query)
+    public override GenExpression[] EstablishConnection(Query query)
     {
         return (
-            $"var {Variable.Connection.Name()} = new SQLiteConnection({Variable.ConnectionString.Name()})",
+            $"var {Variable.Connection.Name()} = new SqliteConnection({Variable.ConnectionString.Name()})",
             $"{Variable.Connection.Name()}.Open()"
         );
     }

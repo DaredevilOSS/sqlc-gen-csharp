@@ -19,4 +19,11 @@ public class Tests
         await tester.TestBasicFlow();
         await tester.TestCopyFlow();
     }
+
+    [Test]
+    public async Task TestFlowOnSqlite()
+    {
+        var tester = new SqliteTester();
+        await tester.TestBasicFlow();
+    }
 }

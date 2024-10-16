@@ -59,7 +59,7 @@ public abstract class DbDriver(DotnetFramework dotnetFramework)
 
     public abstract string TransformQueryText(Query query);
 
-    public abstract (string, string) EstablishConnection(Query query);
+    public abstract GenExpression[] EstablishConnection(Query query);
 
     public abstract string CreateSqlCommand(string sqlTextConstant);
 

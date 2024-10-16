@@ -58,11 +58,15 @@ public partial class MySqlConnectorDriver(DotnetFramework dotnetFramework) : DbD
             .ToArray();
     }
 
-    public override (string, string) EstablishConnection(Query query)
+    public override GenExpression[] EstablishConnection(Query query)
     {
-        return (
-            $"var {Variable.Connection.Name()} = new MySqlConnection({Variable.ConnectionString.Name()})",
-            $"{Variable.Connection.Name()}.Open()");
+        return
+        [
+            new GenExpression(
+                $"var {Variable.Connection.Name()} = new MySqlConnection({Variable.ConnectionString.Name()})",
+                true, true),
+            new GenExpression($"{Variable.Connection.Name()}.Open()", false, false)
+        ];
     }
 
     public override string CreateSqlCommand(string sqlTextConstant)
@@ -90,7 +94,7 @@ public partial class MySqlConnectorDriver(DotnetFramework dotnetFramework) : DbD
     public MemberDeclarationSyntax ExecLastIdDeclare(string queryTextConstant, string argInterface, Query query)
     {
         var parametersStr = CommonGen.GetParameterListAsString(argInterface, query.Params);
-        var (establishConnection, connectionOpen) = EstablishConnection(query);
+        var establishConnection = EstablishConnection(query);
         var createSqlCommand = CreateSqlCommand(queryTextConstant);
         var commandParameters = CommonGen.GetCommandParameters(query.Params);
         var executeScalarAndReturnCreated = ExecuteScalarAndReturnCreated();
@@ -109,8 +113,10 @@ public partial class MySqlConnectorDriver(DotnetFramework dotnetFramework) : DbD
         {
             return $$"""
                      {
-                         await using {{establishConnection}};
-                         {{connectionOpen.AppendSemicolonUnlessEmpty()}}
+                         {{string.Join(
+                             Environment.NewLine,
+                             establishConnection.Select(obj => obj.Generate())
+                         )}}
                          await using {{createSqlCommand}};
                          {{commandParameters.JoinByNewLine()}}
                          {{executeScalarAndReturnCreated.JoinByNewLine()}}

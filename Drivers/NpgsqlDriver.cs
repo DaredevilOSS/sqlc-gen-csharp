@@ -47,14 +47,19 @@ public class NpgsqlDriver(DotnetFramework dotnetFramework) : DbDriver(dotnetFram
             .ToArray();
     }
 
-    public override (string, string) EstablishConnection(Query query)
+    public override string[] EstablishConnection(Query query)
     {
         if (query.Cmd == ":copyfrom")
-            return (
+        {
+            return
+            [
                 $"var ds = NpgsqlDataSource.Create({Variable.ConnectionString.Name()})",
                 $"var {Variable.Connection.Name()} = ds.CreateConnection()"
-            );
-        return ($"var {Variable.Connection.Name()} = NpgsqlDataSource.Create({Variable.ConnectionString.Name()})", "");
+            ];
+        }
+        return [
+            $"var {Variable.Connection.Name()} = NpgsqlDataSource.Create({Variable.ConnectionString.Name()})"
+        ];
     }
 
     public override string CreateSqlCommand(string sqlTextConstant)
@@ -102,7 +107,7 @@ public class NpgsqlDriver(DotnetFramework dotnetFramework) : DbDriver(dotnetFram
 
     public MemberDeclarationSyntax CopyFromDeclare(string queryTextConstant, string argInterface, Query query)
     {
-        var (establishConnection, connectionOpen) = EstablishConnection(query);
+        var establishConnection = EstablishConnection(query);
         var beginBinaryImport = $"{Variable.Connection.Name()}.BeginBinaryImportAsync({queryTextConstant}";
         var methodBody = DotnetFramework.LatestDotnetSupported() ? GetAsModernDotnet() : GetAsLegacyDotnet();
 
