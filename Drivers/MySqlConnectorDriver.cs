@@ -113,10 +113,7 @@ public partial class MySqlConnectorDriver(DotnetFramework dotnetFramework) : DbD
         {
             return $$"""
                      {
-                         {{string.Join(
-                             Environment.NewLine,
-                             establishConnection.Select(obj => obj.Generate())
-                         )}}
+                         await using {{establishConnection}};
                          await using {{createSqlCommand}};
                          {{commandParameters.JoinByNewLine()}}
                          {{executeScalarAndReturnCreated.JoinByNewLine()}}
@@ -130,7 +127,6 @@ public partial class MySqlConnectorDriver(DotnetFramework dotnetFramework) : DbD
                      {
                          using ({{establishConnection}})
                          {
-                             {{connectionOpen.AppendSemicolonUnlessEmpty()}}
                              using ({{createSqlCommand}})
                              {
                                 {{commandParameters.JoinByNewLine()}}

@@ -12,19 +12,19 @@ public class GenExpression(string expression, bool isAsync, bool isResource)
 
     public string Generate(DotnetFramework dotnetFramework, GenExpression[] expressions)
     {
-        if (dotnetFramework.LatestDotnetSupported())
+        if (!dotnetFramework.LatestDotnetSupported())
         {
-            var generatedExpressions = string.Join(
-                Environment.NewLine,
-                expressions.Select(e => e.Generate(dotnetFramework))
-            );
-            return $"{Generate(dotnetFramework)}\n{generatedExpressions}";
+            return "";
         }
 
-        return "";
+        var generatedExpressions = string.Join(
+            Environment.NewLine,
+            expressions.Select(e => e.Generate(dotnetFramework))
+        );
+        return $"{Generate(dotnetFramework)}\n{generatedExpressions}";
     }
-    
-    private string Generate(DotnetFramework dotnetFramework)
+
+    public string Generate(DotnetFramework dotnetFramework)
     {
         return dotnetFramework.LatestDotnetSupported() ? AsStatement() : "";
     }

@@ -31,10 +31,12 @@ public class SqliteDriver(DotnetFramework dotnetFramework) : DbDriver(dotnetFram
 
     public override GenExpression[] EstablishConnection(Query query)
     {
-        return (
-            $"var {Variable.Connection.Name()} = new SqliteConnection({Variable.ConnectionString.Name()})",
-            $"{Variable.Connection.Name()}.Open()"
-        );
+        return [
+            new GenExpression(
+                $"var {Variable.Connection.Name()} = new MySqlConnection({Variable.ConnectionString.Name()})",
+                true, true),
+            new GenExpression($"{Variable.Connection.Name()}.Open()", false, false)
+        ];
     }
 
     public override string CreateSqlCommand(string sqlTextConstant)
@@ -74,7 +76,7 @@ public class SqliteDriver(DotnetFramework dotnetFramework) : DbDriver(dotnetFram
     public MemberDeclarationSyntax ExecLastIdDeclare(string queryTextConstant, string argInterface, Query query)
     {
         var parametersStr = CommonGen.GetParameterListAsString(argInterface, query.Params);
-        var (establishConnection, connectionOpen) = EstablishConnection(query);
+        var establishConnection = EstablishConnection(query);
         var createSqlCommand = CreateSqlCommand(queryTextConstant);
         var commandParameters = CommonGen.GetCommandParameters(query.Params);
         var executeScalarAndReturnCreated = ExecuteScalarAndReturnCreated();
@@ -94,7 +96,6 @@ public class SqliteDriver(DotnetFramework dotnetFramework) : DbDriver(dotnetFram
             return $$"""
                      {
                          await using {{establishConnection}};
-                         {{connectionOpen.AppendSemicolonUnlessEmpty()}}
                          await using {{createSqlCommand}};
                          {{commandParameters.JoinByNewLine()}}
                          {{executeScalarAndReturnCreated.JoinByNewLine()}}
@@ -108,7 +109,6 @@ public class SqliteDriver(DotnetFramework dotnetFramework) : DbDriver(dotnetFram
                      {
                          using ({{establishConnection}})
                          {
-                             {{connectionOpen.AppendSemicolonUnlessEmpty()}}
                              using ({{createSqlCommand}})
                              {
                                 {{commandParameters.JoinByNewLine()}}

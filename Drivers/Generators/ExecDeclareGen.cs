@@ -1,5 +1,6 @@
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Plugin;
+using System.Linq;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace SqlcGenCsharp.Drivers.Generators;
@@ -19,7 +20,7 @@ public class ExecDeclareGen(DbDriver dbDriver)
 
     private string GetMethodBody(string queryTextConstant, Query query)
     {
-        var (establishConnection, connectionOpen) = dbDriver.EstablishConnection(query);
+        var establishConnection = dbDriver.EstablishConnection(query);
         var createSqlCommand = dbDriver.CreateSqlCommand(queryTextConstant);
         var commandParameters = CommonGen.GetCommandParameters(query.Params);
         var executeScalar = $"await {Variable.Command.Name()}.ExecuteScalarAsync();";
@@ -29,8 +30,7 @@ public class ExecDeclareGen(DbDriver dbDriver)
         {
             return $$"""
                      {
-                         await using {{establishConnection}};
-                         {{connectionOpen.AppendSemicolonUnlessEmpty()}}
+                         {{establishConnection[0].Generate(dbDriver.DotnetFramework, establishConnection.Skip(1).ToArray())}}
                          await using {{createSqlCommand}};
                          {{commandParameters.JoinByNewLine()}}
                          {{executeScalar}}
@@ -44,7 +44,6 @@ public class ExecDeclareGen(DbDriver dbDriver)
                      {
                          using ({{establishConnection}})
                          {
-                             {{connectionOpen.AppendSemicolonUnlessEmpty()}}
                              using ({{createSqlCommand}})
                              {
                                  {{commandParameters.JoinByNewLine()}}

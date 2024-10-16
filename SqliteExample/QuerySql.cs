@@ -2,23 +2,20 @@
 // ReSharper disable NotAccessedPositionalProperty.Global
 // ReSharper disable UnusedAutoPropertyAccessor.Global
 // ReSharper disable InconsistentNaming
-
-using Microsoft.Data.Sqlite;
 using System.Collections.Generic;
-using System.Data.SQLite;
 using System.Threading.Tasks;
+using Microsoft.Data.Sqlite;
 
 namespace SqliteExample;
 public class QuerySql(string connectionString)
 {
-    private const string GetAuthorSql = "SELECT id, name, bio FROM authors WHERE  id  =  ? LIMIT  1  ";
+    private const string GetAuthorSql = "SELECT id, name, bio FROM authors WHERE  id  =  ? LIMIT  1  ";  
     public readonly record struct GetAuthorRow(int Id, string Name, string? Bio);
     public readonly record struct GetAuthorArgs(int Id);
     public async Task<GetAuthorRow?> GetAuthor(GetAuthorArgs args)
     {
         {
-            await using var connection = new SqliteConnection(connectionString);
-            connection.Open();
+            await using SqlcGenCsharp.Drivers.GenExpression[];
             await using var command = new SQLiteCommand(GetAuthorSql, connection);
             command.Parameters.AddWithValue("@id", args.Id);
             var reader = await command.ExecuteReaderAsync();
@@ -36,14 +33,12 @@ public class QuerySql(string connectionString)
         }
     }
 
-    private const string ListAuthorsSql = "SELECT id, name, bio FROM authors ORDER  BY  name  ";
+    private const string ListAuthorsSql = "SELECT id, name, bio FROM authors ORDER  BY  name  ";  
     public readonly record struct ListAuthorsRow(int Id, string Name, string? Bio);
     public async Task<List<ListAuthorsRow>> ListAuthors()
     {
         {
-            await using var connection = new SQLiteConnection(connectionString);
-            connection.Open();
-            await using var command = new SQLiteCommand(ListAuthorsSql, connection);
+            await using var connection = new MySqlConnection(connectionString)connection.Open()await using var command = new SQLiteCommand(ListAuthorsSql, connection);
             var reader = await command.ExecuteReaderAsync();
             var result = new List<ListAuthorsRow>();
             while (await reader.ReadAsync())
@@ -55,27 +50,24 @@ public class QuerySql(string connectionString)
         }
     }
 
-    private const string CreateAuthorSql = "INSERT INTO authors ( name , bio ) VALUES ( ?,  ? ) ";
+    private const string CreateAuthorSql = "INSERT INTO authors ( name , bio ) VALUES ( ?,  ? ) "; 
     public readonly record struct CreateAuthorArgs(string Name, string? Bio);
     public async Task CreateAuthor(CreateAuthorArgs args)
     {
         {
-            await using var connection = new SQLiteConnection(connectionString);
-            connection.Open();
-            await using var command = new SQLiteCommand(CreateAuthorSql, connection);
+            await using var connection = new MySqlConnection(connectionString)connection.Open()await using var command = new SQLiteCommand(CreateAuthorSql, connection);
             command.Parameters.AddWithValue("@name", args.Name);
             command.Parameters.AddWithValue("@bio", args.Bio);
             await command.ExecuteScalarAsync();
         }
     }
 
-    private const string CreateAuthorReturnIdSql = "INSERT INTO authors ( name , bio ) VALUES ( ?,  ? ) ";
+    private const string CreateAuthorReturnIdSql = "INSERT INTO authors ( name , bio ) VALUES ( ?,  ? ) "; 
     public readonly record struct CreateAuthorReturnIdArgs(string Name, string? Bio);
     public async Task<long> CreateAuthorReturnId(CreateAuthorReturnIdArgs args)
     {
         {
-            await using var connection = new SQLiteConnection(connectionString);
-            connection.Open();
+            await using SqlcGenCsharp.Drivers.GenExpression[];
             await using var command = new SQLiteCommand(CreateAuthorReturnIdSql, connection);
             command.Parameters.AddWithValue("@name", args.Name);
             command.Parameters.AddWithValue("@bio", args.Bio);
@@ -84,14 +76,12 @@ public class QuerySql(string connectionString)
         }
     }
 
-    private const string DeleteAuthorSql = "DELETE FROM authors WHERE  id  =  ? ";
+    private const string DeleteAuthorSql = "DELETE FROM authors WHERE  id  =  ? ";  
     public readonly record struct DeleteAuthorArgs(int Id);
     public async Task DeleteAuthor(DeleteAuthorArgs args)
     {
         {
-            await using var connection = new SQLiteConnection(connectionString);
-            connection.Open();
-            await using var command = new SQLiteCommand(DeleteAuthorSql, connection);
+            await using var connection = new MySqlConnection(connectionString)connection.Open()await using var command = new SQLiteCommand(DeleteAuthorSql, connection);
             command.Parameters.AddWithValue("@id", args.Id);
             await command.ExecuteScalarAsync();
         }

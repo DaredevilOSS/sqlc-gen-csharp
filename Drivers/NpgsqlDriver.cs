@@ -47,18 +47,18 @@ public class NpgsqlDriver(DotnetFramework dotnetFramework) : DbDriver(dotnetFram
             .ToArray();
     }
 
-    public override string[] EstablishConnection(Query query)
+    public override GenExpression[] EstablishConnection(Query query)
     {
         if (query.Cmd == ":copyfrom")
         {
             return
             [
-                $"var ds = NpgsqlDataSource.Create({Variable.ConnectionString.Name()})",
-                $"var {Variable.Connection.Name()} = ds.CreateConnection()"
+                new GenExpression($"var ds = NpgsqlDataSource.Create({Variable.ConnectionString.Name()})", true, true),
+                new GenExpression($"var {Variable.Connection.Name()} = ds.CreateConnection()", true, true),
             ];
         }
         return [
-            $"var {Variable.Connection.Name()} = NpgsqlDataSource.Create({Variable.ConnectionString.Name()})"
+            new GenExpression($"var {Variable.Connection.Name()} = NpgsqlDataSource.Create({Variable.ConnectionString.Name()})", true, true)
         ];
     }
 
@@ -124,7 +124,6 @@ public class NpgsqlDriver(DotnetFramework dotnetFramework) : DbDriver(dotnetFram
             return $$"""
                      {
                          await using {{establishConnection}};
-                         {{connectionOpen.AppendSemicolonUnlessEmpty()}}
                          await {{Variable.Connection.Name()}}.OpenAsync();
                          await using var {{Variable.Writer.Name()}} = await {{beginBinaryImport}});
                          {{addRowsToCopyCommand}}
@@ -141,7 +140,6 @@ public class NpgsqlDriver(DotnetFramework dotnetFramework) : DbDriver(dotnetFram
                      {
                          using ({{establishConnection}})
                          {
-                             {{connectionOpen.AppendSemicolonUnlessEmpty()}}
                              await {{Variable.Connection.Name()}}.OpenAsync();
                              using (var {{Variable.Writer.Name()}} = await {{beginBinaryImport}}))
                              {

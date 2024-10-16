@@ -2,9 +2,9 @@
 // ReSharper disable NotAccessedPositionalProperty.Global
 // ReSharper disable UnusedAutoPropertyAccessor.Global
 // ReSharper disable InconsistentNaming
-using Npgsql;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Npgsql;
 
 namespace NpgsqlExample;
 public class QuerySql(string connectionString)
@@ -15,7 +15,7 @@ public class QuerySql(string connectionString)
     public async Task<GetAuthorRow?> GetAuthor(GetAuthorArgs args)
     {
         {
-            await using var connection = NpgsqlDataSource.Create(connectionString);
+            await using SqlcGenCsharp.Drivers.GenExpression[];
             await using var command = connection.CreateCommand(GetAuthorSql);
             command.Parameters.AddWithValue("@id", args.Id);
             var reader = await command.ExecuteReaderAsync();
@@ -38,8 +38,7 @@ public class QuerySql(string connectionString)
     public async Task<List<ListAuthorsRow>> ListAuthors()
     {
         {
-            await using var connection = NpgsqlDataSource.Create(connectionString);
-            await using var command = connection.CreateCommand(ListAuthorsSql);
+            await using var connection = NpgsqlDataSource.Create(connectionString)await using var command = connection.CreateCommand(ListAuthorsSql);
             var reader = await command.ExecuteReaderAsync();
             var result = new List<ListAuthorsRow>();
             while (await reader.ReadAsync())
@@ -57,7 +56,7 @@ public class QuerySql(string connectionString)
     public async Task<CreateAuthorRow?> CreateAuthor(CreateAuthorArgs args)
     {
         {
-            await using var connection = NpgsqlDataSource.Create(connectionString);
+            await using SqlcGenCsharp.Drivers.GenExpression[];
             await using var command = connection.CreateCommand(CreateAuthorSql);
             command.Parameters.AddWithValue("@name", args.Name);
             command.Parameters.AddWithValue("@bio", args.Bio);
@@ -81,8 +80,7 @@ public class QuerySql(string connectionString)
     public async Task DeleteAuthor(DeleteAuthorArgs args)
     {
         {
-            await using var connection = NpgsqlDataSource.Create(connectionString);
-            await using var command = connection.CreateCommand(DeleteAuthorSql);
+            await using var connection = NpgsqlDataSource.Create(connectionString)await using var command = connection.CreateCommand(DeleteAuthorSql);
             command.Parameters.AddWithValue("@id", args.Id);
             await command.ExecuteScalarAsync();
         }
@@ -93,8 +91,7 @@ public class QuerySql(string connectionString)
     public async Task CreateAuthorBatch(List<CreateAuthorBatchArgs> args)
     {
         {
-            await using var ds = NpgsqlDataSource.Create(connectionString);
-            var connection = ds.CreateConnection();
+            await using SqlcGenCsharp.Drivers.GenExpression[];
             await connection.OpenAsync();
             await using var writer = await connection.BeginBinaryImportAsync(CreateAuthorBatchSql);
             foreach (var row in args)
@@ -114,7 +111,7 @@ public class QuerySql(string connectionString)
     public async Task<TestRow?> Test()
     {
         {
-            await using var connection = NpgsqlDataSource.Create(connectionString);
+            await using SqlcGenCsharp.Drivers.GenExpression[];
             await using var command = connection.CreateCommand(TestSql);
             var reader = await command.ExecuteReaderAsync();
             if (await reader.ReadAsync())

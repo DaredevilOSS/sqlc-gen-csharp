@@ -1,5 +1,6 @@
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Plugin;
+using System.Linq;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 
@@ -24,7 +25,7 @@ public class OneDeclareGen(DbDriver dbDriver)
 
     private string GetMethodBody(string queryTextConstant, string returnInterface, Query query)
     {
-        var (establishConnection, connectionOpen) = dbDriver.EstablishConnection(query);
+        var establishConnection = dbDriver.EstablishConnection(query);
         var createSqlCommand = dbDriver.CreateSqlCommand(queryTextConstant);
         var commandParameters = CommonGen.GetCommandParameters(query.Params);
         var initDataReader = CommonGen.InitDataReader();
@@ -38,7 +39,6 @@ public class OneDeclareGen(DbDriver dbDriver)
             return $$"""
                      {
                          await using {{establishConnection}};
-                         {{connectionOpen.AppendSemicolonUnlessEmpty()}}
                          await using {{createSqlCommand}};
                          {{commandParameters.JoinByNewLine()}}
                          {{initDataReader}};
@@ -57,7 +57,6 @@ public class OneDeclareGen(DbDriver dbDriver)
                      {
                          using ({{establishConnection}})
                          {
-                             {{connectionOpen.AppendSemicolonUnlessEmpty()}}
                              using ({{createSqlCommand}})
                              {
                                 {{commandParameters.JoinByNewLine()}}
