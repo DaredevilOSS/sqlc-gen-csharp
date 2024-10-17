@@ -21,3 +21,14 @@ targetFramework: net8.0
 generateCsproj: true
 ```
 
+## Engine `sqlite`: [SqliteExample](../SqliteExample)
+
+### [Schema](../examples/authors/sqlite/schema.sql) | [Queries](../examples/authors/sqlite/query.sql) | [End2End Test](../EndToEndTests/SqliteTester.cs)
+
+### Config
+```yaml
+driver: Sqlite
+targetFramework: net8.0
+generateCsproj: true
+```
+
