@@ -6,12 +6,6 @@ using Enum = System.Enum;
 
 namespace SqlcGenCsharp;
 
-public enum DriverName
-{
-    MySqlConnector,
-    Npgsql
-}
-
 public class Options
 {
     public Options(GenerateRequest generateRequest)

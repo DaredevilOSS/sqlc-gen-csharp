@@ -14,3 +14,9 @@ sql:
   engine: "mysql"
   database:
     managed: true
+- name: sqlite
+  schema: "sqlite/schema.sql"
+  queries: "sqlite/query.sql"
+  engine: "sqlite"
+  database:
+    managed: true

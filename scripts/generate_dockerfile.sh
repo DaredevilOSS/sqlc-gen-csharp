@@ -21,3 +21,10 @@ for project in $projects; do
 done
 echo "" >> "$filename"
 echo "RUN dotnet restore" >> "$filename"
+
+cat <<EOF >> "$filename"
+
+RUN apt-get update && apt-get install -y sqlite3
+COPY examples/authors/sqlite/schema.sql sqlite_schema.sql
+RUN sqlite3 plugin.db < sqlite_schema.sql
+EOF
