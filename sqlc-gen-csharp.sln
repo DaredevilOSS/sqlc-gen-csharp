@@ -25,6 +25,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeGenerator", "CodeGenera
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PluginOptions", "PluginOptions\PluginOptions.csproj", "{ABD93C33-BEBE-4DE9-9ABF-430DAC1A938C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SqliteExample", "SqliteExample\SqliteExample.csproj", "{B45CE2A9-1429-4C16-B0F6-BEC669C7715C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -77,5 +79,9 @@ Global
 		{ABD93C33-BEBE-4DE9-9ABF-430DAC1A938C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{ABD93C33-BEBE-4DE9-9ABF-430DAC1A938C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{ABD93C33-BEBE-4DE9-9ABF-430DAC1A938C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B45CE2A9-1429-4C16-B0F6-BEC669C7715C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B45CE2A9-1429-4C16-B0F6-BEC669C7715C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B45CE2A9-1429-4C16-B0F6-BEC669C7715C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B45CE2A9-1429-4C16-B0F6-BEC669C7715C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

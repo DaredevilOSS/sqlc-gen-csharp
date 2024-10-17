@@ -14,6 +14,7 @@ COPY MySqlConnectorExample/*.csproj ./MySqlConnectorExample/
 COPY NpgsqlExample/*.csproj ./NpgsqlExample/
 COPY PluginOptions/*.csproj ./PluginOptions/
 COPY SqlcGenCsharp/*.csproj ./SqlcGenCsharp/
+COPY SqliteExample/*.csproj ./SqliteExample/
 COPY WasmRunner/*.csproj ./WasmRunner/
 
 COPY CodeGenerator/ ./CodeGenerator/
@@ -26,6 +27,11 @@ COPY MySqlConnectorExample/ ./MySqlConnectorExample/
 COPY NpgsqlExample/ ./NpgsqlExample/
 COPY PluginOptions/ ./PluginOptions/
 COPY SqlcGenCsharp/ ./SqlcGenCsharp/
+COPY SqliteExample/ ./SqliteExample/
 COPY WasmRunner/ ./WasmRunner/
 
 RUN dotnet restore
+
+RUN apt-get update && apt-get install -y sqlite3
+COPY examples/authors/sqlite/schema.sql sqlite_schema.sql
+RUN sqlite3 plugin.db < sqlite_schema.sql

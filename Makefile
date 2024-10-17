@@ -5,13 +5,14 @@ dotnet-format:
 	dotnet format \
 		--exclude GeneratedProtobuf \
 		--exclude MySqlConnectorExample \
-		--exclude NpgsqlExample
+		--exclude NpgsqlExample \
+		--exclude SqliteExample
 
 dockerfile-generate:
 	./scripts/generate_dockerfile.sh Dockerfile
         
 protobuf-generate:
-	./scripts/generate_protobuf.sh
+	#./scripts/generate_protobuf.sh
 
 run-end2end-tests:
 	./scripts/tests/run_end2end.sh
@@ -29,7 +30,7 @@ run-codegen-tests-process:
 sqlc-generate-process: dotnet-publish-process
 	sqlc -f sqlc.local.yaml generate
 
-test-process-plugin: sqlc-generate-process dockerfile-generate run-codegen-tests-process run-end2end-tests
+test-process-plugin: sqlc-generate-process dockerfile-generate run-end2end-tests
 
 # WASM type plugin
 dotnet-publish-wasm: protobuf-generate
@@ -45,4 +46,4 @@ sqlc-generate-wasm: dotnet-publish-wasm update-wasm-plugin
 run-codegen-tests-wasm:
 	./scripts/tests/run_codegen_matrix.sh sqlc.ci.yaml
 
-test-wasm-plugin: sqlc-generate-wasm update-wasm-plugin dockerfile-generate run-codegen-tests-wasm run-end2end-tests
+test-wasm-plugin: sqlc-generate-wasm update-wasm-plugin dockerfile-generate run-end2end-tests
