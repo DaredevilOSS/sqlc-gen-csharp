@@ -30,8 +30,7 @@ for x in $generate_csproj; do
     for y in $target_framework; do
         echo "Running with generate-csproj=$x, target-framework=$y"
         ./scripts/tests/run_codegen.sh "${config_file}" "$x" "$y"
-        echo "Finished combination"
-        echo "-------------------"
+        echo "---Finished [generate-csproj=$x, target-framework=$y]---"
     done
 done
 
