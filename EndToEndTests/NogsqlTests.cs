@@ -7,16 +7,22 @@ using System.Threading.Tasks;
 
 namespace SqlcGenCsharpTests;
 
-public class NpgsqlTester : SqlDriverTester
+public class NogsqlTests
 {
     private static readonly Random Randomizer = new();
 
     private static string ConnectionStringEnv => "POSTGRES_CONNECTION_STRING";
 
-    private QuerySql QuerySql { get; } =
-        new(Environment.GetEnvironmentVariable(ConnectionStringEnv)!);
+    private QuerySql QuerySql { get; } = new(Environment.GetEnvironmentVariable(ConnectionStringEnv)!);
 
-    protected override async Task<long> CreateFirstAuthorAndTest()
+    [TearDown]
+    public async Task EmptyTestsTable()
+    {
+        await QuerySql.TruncateAuthors();
+    }
+
+    [Test]
+    public async Task TestBasicFlow()
     {
         var bojackCreateAuthorArgs = new QuerySql.CreateAuthorArgs
         {
@@ -41,7 +47,39 @@ public class NpgsqlTester : SqlDriverTester
             Name: DataGenerator.BojackAuthor,
             Bio: DataGenerator.BojackTheme
         });
-        return bojackInsertedId;
+
+        var createAuthorArgs = new QuerySql.CreateAuthorArgs
+        {
+            Name = DataGenerator.DrSeussAuthor,
+            Bio = DataGenerator.DrSeussQuote
+        };
+        await QuerySql.CreateAuthor(createAuthorArgs);
+        var authors = await QuerySql.ListAuthors();
+        ClassicAssert.AreEqual(2, authors.Count);
+        Assert.That(authors[0] is
+        {
+            Name: DataGenerator.BojackAuthor,
+            Bio: DataGenerator.BojackTheme
+        });
+        Assert.That(authors[1] is
+        {
+            Name: DataGenerator.DrSeussAuthor,
+            Bio: DataGenerator.DrSeussQuote
+        });
+
+        var deleteAuthorArgs = new QuerySql.DeleteAuthorArgs
+        {
+            Id = bojackInsertedId
+        };
+        await QuerySql.DeleteAuthor(deleteAuthorArgs);
+        var authorRows = await QuerySql.ListAuthors();
+        Assert.That(authorRows[0] is
+        {
+            Name: DataGenerator.DrSeussAuthor,
+            Bio: DataGenerator.DrSeussQuote
+        });
+        ClassicAssert.AreEqual(1, authorRows.Count);
+        return;
 
         long GetId(QuerySql.CreateAuthorRow? createdAuthorRow)
         {
@@ -56,44 +94,26 @@ public class NpgsqlTester : SqlDriverTester
         }
     }
 
-    protected override async Task CreateSecondAuthorAndTest()
+    [Test]
+    public async Task TestExecRowsFlow()
     {
-        var createAuthorArgs = new QuerySql.CreateAuthorArgs
+        var bojackCreateAuthorArgs = new QuerySql.CreateAuthorArgs
         {
-            Name = DataGenerator.DrSeussAuthor,
-            Bio = DataGenerator.DrSeussQuote
+            Name = DataGenerator.GenericAuthor,
+            Bio = DataGenerator.GenericQuote1
         };
-        await QuerySql.CreateAuthor(createAuthorArgs);
-        var authors = await QuerySql.ListAuthors();
-        Assert.That(authors[0] is
+        await QuerySql.CreateAuthor(bojackCreateAuthorArgs);
+        await QuerySql.CreateAuthor(bojackCreateAuthorArgs);
+
+        var updateAuthorsArgs = new QuerySql.UpdateAuthorsArgs
         {
-            Name: DataGenerator.BojackAuthor,
-            Bio: DataGenerator.BojackTheme
-        });
-        Assert.That(authors[1] is
-        {
-            Name: DataGenerator.DrSeussAuthor,
-            Bio: DataGenerator.DrSeussQuote
-        });
-        ClassicAssert.AreEqual(2, authors.Count);
+            Bio = DataGenerator.GenericQuote2
+        };
+        var affectedRows = await QuerySql.UpdateAuthors(updateAuthorsArgs);
+        ClassicAssert.AreEqual(2, affectedRows);
     }
 
-    protected override async Task DeleteFirstAuthorAndTest(long idToDelete)
-    {
-        var deleteAuthorArgs = new QuerySql.DeleteAuthorArgs
-        {
-            Id = idToDelete
-        };
-        await QuerySql.DeleteAuthor(deleteAuthorArgs);
-        var authorRows = await QuerySql.ListAuthors();
-        Assert.That(authorRows[0] is
-        {
-            Name: DataGenerator.DrSeussAuthor,
-            Bio: DataGenerator.DrSeussQuote
-        });
-        ClassicAssert.AreEqual(1, authorRows.Count);
-    }
-
+    [Test]
     public async Task TestCopyFlow()
     {
         const int batchSize = 100;

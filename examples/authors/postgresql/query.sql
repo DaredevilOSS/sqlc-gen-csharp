@@ -10,8 +10,16 @@ INSERT INTO authors (name, bio) VALUES ($1, $2) RETURNING *;
 -- name: DeleteAuthor :exec
 DELETE FROM authors WHERE id = $1;
 
+-- name: TruncateAuthors :exec
+TRUNCATE TABLE authors;
+
 -- name: CreateAuthorBatch :copyfrom
 INSERT INTO authors (name, bio) VALUES ($1, $2);
 
-/* name: Test :one */
+-- name: UpdateAuthors :execrows
+UPDATE authors 
+   SET bio = $1
+ WHERE bio IS NOT NULL;
+
+-- name: Test :one
 SELECT * FROM node_postgres_types LIMIT 1;

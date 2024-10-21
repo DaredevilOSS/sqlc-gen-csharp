@@ -145,6 +145,7 @@ public partial class MySqlConnectorDriver(DotnetFramework dotnetFramework) : DbD
         }
     }
 
+
     public override MemberDeclarationSyntax ManyDeclare(string queryTextConstant, string argInterface,
         string returnInterface, Query query)
     {

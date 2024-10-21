@@ -239,7 +239,8 @@ public class CodeGenerator
             ":many" => DbDriver.ManyDeclare(queryTextConstant, argInterface, returnInterface, query),
             ":execlastid" => ((IExecLastId)DbDriver).ExecLastIdDeclare(queryTextConstant, argInterface, query),
             ":copyfrom" => ((ICopyFrom)DbDriver).CopyFromDeclare(queryTextConstant, argInterface, query),
-            _ => throw new InvalidDataException()
+            ":execrows" => ((IExecRows)DbDriver).ExecRowsDeclare(queryTextConstant, argInterface, query),
+            _ => throw new NotImplementedException($"{query.Cmd} is not implemented")
         };
 
         string GetInterfaceName(ClassMember classMemberType)
