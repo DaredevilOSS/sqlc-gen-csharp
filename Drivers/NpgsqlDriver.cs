@@ -9,15 +9,23 @@ using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace SqlcGenCsharp.Drivers;
 
-public class NpgsqlDriver(DotnetFramework dotnetFramework) : DbDriver(dotnetFramework), ICopyFrom
+public class NpgsqlDriver(DotnetFramework dotnetFramework) : DbDriver(dotnetFramework), ICopyFrom, IExecRows
 {
     protected override List<(string, Func<int, string>, HashSet<string>)> GetColumnMapping()
     {
         return
         [
             ("long", ordinal => $"reader.GetInt64({ordinal})", ["serial", "bigserial"]),
-            ("byte[]", ordinal => $"Utils.GetBytes(reader, {ordinal})",
-                ["binary", "bit", "bytea", "blob", "longblob", "mediumblob", "tinyblob", "varbinary"]),
+            ("byte[]", ordinal => $"Utils.GetBytes(reader, {ordinal})", [
+                "binary",
+                "bit",
+                "bytea",
+                "blob",
+                "longblob",
+                "mediumblob",
+                "tinyblob",
+                "varbinary"
+            ]),
             ("string", ordinal => $"reader.GetString({ordinal})",
             [
                 "char",
@@ -30,13 +38,26 @@ public class NpgsqlDriver(DotnetFramework dotnetFramework) : DbDriver(dotnetFram
                 "time",
                 "timestamp",
                 "tinytext",
-                "varchar"
+                "varchar",
+                "pg_catalog.varchar"
             ]),
             ("object", ordinal => $"reader.GetString({ordinal})", ["json"]),
-            ("int", ordinal => $"reader.GetInt32({ordinal})", ["int2", "int4", "int8"]),
+            ("int", ordinal => $"reader.GetInt32({ordinal})", [
+                "integer",
+                "int2",
+                "int4",
+                "int8",
+                "pg_catalog.int2",
+                "pg_catalog.int4",
+                "pg_catalog.int8"
+            ]),
             ("float", ordinal => $"reader.GetFloat({ordinal})", ["numeric", "float4", "float8"]),
             ("decimal", ordinal => $"reader.GetDecimal({ordinal})", ["decimal"]),
-            ("bool", ordinal => $"reader.GetBoolean({ordinal})", ["bool", "boolean"])
+            ("bool", ordinal => $"reader.GetBoolean({ordinal})", [
+                "bool",
+                "boolean",
+                "pg_catalog.bool"
+            ])
         ];
     }
 
@@ -161,6 +182,63 @@ public class NpgsqlDriver(DotnetFramework dotnetFramework) : DbDriver(dotnetFram
                         {{constructRow}}
                    }
                    """;
+        }
+    }
+
+    public MemberDeclarationSyntax ExecRowsDeclare(string queryTextConstant, string argInterface, Query query)
+    {
+        var parametersStr = CommonGen.GetParameterListAsString(argInterface, query.Params);
+        var (establishConnection, connectionOpen) = EstablishConnection(query);
+        var createSqlCommand = CreateSqlCommand(queryTextConstant);
+        var commandParameters = CommonGen.GetCommandParameters(query.Params);
+        var executeScalarAndReturnCreated = ExecuteScalarAndReturnCreated();
+        var methodBody = DotnetFramework.LatestDotnetSupported()
+            ? GetWithUsingAsStatement()
+            : GetWithUsingAsBlock();
+
+        return ParseMemberDeclaration($$"""
+                                        public async Task<long> {{query.Name}}({{parametersStr}})
+                                        {
+                                            {{methodBody}}
+                                        }
+                                        """)!;
+
+        string GetWithUsingAsStatement()
+        {
+            return $$"""
+                     {
+                         await using {{establishConnection}};
+                         {{connectionOpen.AppendSemicolonUnlessEmpty()}}
+                         await using {{createSqlCommand}};
+                         {{commandParameters.JoinByNewLine()}}
+                         {{executeScalarAndReturnCreated.JoinByNewLine()}}
+                     }
+                     """;
+        }
+
+        string GetWithUsingAsBlock()
+        {
+            return $$"""
+                     {
+                         using ({{establishConnection}})
+                         {
+                             {{connectionOpen.AppendSemicolonUnlessEmpty()}}
+                             using ({{createSqlCommand}})
+                             {
+                                {{commandParameters.JoinByNewLine()}}
+                                {{executeScalarAndReturnCreated.JoinByNewLine()}}
+                             }
+                         }
+                     }
+                     """;
+        }
+
+        IEnumerable<string> ExecuteScalarAndReturnCreated()
+        {
+            return new[]
+            {
+                $"return await {Variable.Command.Name()}.ExecuteNonQueryAsync();",
+            };
         }
     }
 }

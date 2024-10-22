@@ -88,6 +88,16 @@ public class QuerySql(string connectionString)
         }
     }
 
+    private const string TruncateAuthorsSql = "TRUNCATE TABLE authors";
+    public async Task TruncateAuthors()
+    {
+        {
+            await using var connection = NpgsqlDataSource.Create(connectionString);
+            await using var command = connection.CreateCommand(TruncateAuthorsSql);
+            await command.ExecuteScalarAsync();
+        }
+    }
+
     private const string CreateAuthorBatchSql = "COPY authors (name, bio) FROM STDIN (FORMAT BINARY)";
     public readonly record struct CreateAuthorBatchArgs(string Name, string? Bio);
     public async Task CreateAuthorBatch(List<CreateAuthorBatchArgs> args)
@@ -109,8 +119,20 @@ public class QuerySql(string connectionString)
         }
     }
 
-    private const string TestSql = "SELECT c_bit, c_smallint, c_boolean, c_integer, c_bigint, c_serial, c_decimal, c_numeric, c_real, c_double_precision, c_date, c_time, c_timestamp, c_char, c_varchar, c_bytea, c_text, c_json FROM node_postgres_types LIMIT 1";
-    public readonly record struct TestRow(byte[]? C_bit, int? C_smallint, bool? C_boolean, int? C_integer, int? C_bigint, long? C_serial, float? C_decimal, float? C_numeric, float? C_real, float? C_double_precision, string? C_date, string? C_time, string? C_timestamp, string? C_char, string? C_varchar, byte[]? C_bytea, string? C_text, object? C_json);
+    private const string UpdateAuthorsSql = "UPDATE authors  SET  bio  =  @bio  WHERE  bio  IS  NOT  NULL  ";  
+    public readonly record struct UpdateAuthorsArgs(string? Bio);
+    public async Task<long> UpdateAuthors(UpdateAuthorsArgs args)
+    {
+        {
+            await using var connection = NpgsqlDataSource.Create(connectionString);
+            await using var command = connection.CreateCommand(UpdateAuthorsSql);
+            command.Parameters.AddWithValue("@bio", args.Bio);
+            return await command.ExecuteNonQueryAsync();
+        }
+    }
+
+    private const string TestSql = "SELECT c_bit, c_smallint, c_boolean, c_integer, c_bigint, c_serial, c_decimal, c_numeric, c_real, c_double_precision, c_date, c_time, c_timestamp, c_char, c_varchar, c_character_varying, c_bytea, c_text, c_json FROM node_postgres_types LIMIT 1";
+    public readonly record struct TestRow(byte[]? C_bit, int? C_smallint, bool? C_boolean, int? C_integer, int? C_bigint, long? C_serial, float? C_decimal, float? C_numeric, float? C_real, float? C_double_precision, string? C_date, string? C_time, string? C_timestamp, string? C_char, string? C_varchar, string? C_character_varying, byte[]? C_bytea, string? C_text, object? C_json);
     public async Task<TestRow?> Test()
     {
         {
@@ -136,9 +158,10 @@ public class QuerySql(string connectionString)
                     C_timestamp = reader.IsDBNull(12) ? null : reader.GetString(12),
                     C_char = reader.IsDBNull(13) ? null : reader.GetString(13),
                     C_varchar = reader.IsDBNull(14) ? null : reader.GetString(14),
-                    C_bytea = reader.IsDBNull(15) ? null : Utils.GetBytes(reader, 15),
-                    C_text = reader.IsDBNull(16) ? null : reader.GetString(16),
-                    C_json = reader.IsDBNull(17) ? null : reader.GetString(17)
+                    C_character_varying = reader.IsDBNull(15) ? null : reader.GetString(15),
+                    C_bytea = reader.IsDBNull(16) ? null : Utils.GetBytes(reader, 16),
+                    C_text = reader.IsDBNull(17) ? null : reader.GetString(17),
+                    C_json = reader.IsDBNull(18) ? null : reader.GetString(18)
                 };
             }
 
