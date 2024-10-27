@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SqlcGenCsharpTests;
 
-public class NogsqlTests
+public class NpgsqlTests
 {
     private static readonly Random Randomizer = new();
 
@@ -22,76 +22,81 @@ public class NogsqlTests
     }
 
     [Test]
-    public async Task TestBasicFlow()
+    public async Task TestCreateAndListAuthors()
     {
-        var bojackCreateAuthorArgs = new QuerySql.CreateAuthorArgs
+        await QuerySql.CreateAuthor(new QuerySql.CreateAuthorArgs
         {
             Name = DataGenerator.BojackAuthor,
             Bio = DataGenerator.BojackTheme
-        };
-        var createdBojackAuthor = await QuerySql.CreateAuthor(bojackCreateAuthorArgs);
-        Assert.That(createdBojackAuthor is
-        {
-            Name: DataGenerator.BojackAuthor,
-            Bio: DataGenerator.BojackTheme
         });
-        var bojackInsertedId = GetId(createdBojackAuthor);
-
-        var getAuthorArgs = new QuerySql.GetAuthorArgs
-        {
-            Id = bojackInsertedId
-        };
-        var singleAuthor = await QuerySql.GetAuthor(getAuthorArgs);
-        Assert.That(singleAuthor is
-        {
-            Name: DataGenerator.BojackAuthor,
-            Bio: DataGenerator.BojackTheme
-        });
-
-        var createAuthorArgs = new QuerySql.CreateAuthorArgs
+        await QuerySql.CreateAuthor(new QuerySql.CreateAuthorArgs
         {
             Name = DataGenerator.DrSeussAuthor,
             Bio = DataGenerator.DrSeussQuote
-        };
-        await QuerySql.CreateAuthor(createAuthorArgs);
-        var authors = await QuerySql.ListAuthors();
-        ClassicAssert.AreEqual(2, authors.Count);
-        Assert.That(authors[0] is
+        });
+
+        var actualAuthors = await QuerySql.ListAuthors();
+        ClassicAssert.AreEqual(2, actualAuthors.Count);
+        Assert.That(actualAuthors is [
+        {
+            Name: DataGenerator.BojackAuthor,
+            Bio: DataGenerator.BojackTheme
+        },
+        {
+            Name: DataGenerator.DrSeussAuthor,
+            Bio: DataGenerator.DrSeussQuote
+        }
+        ]);
+    }
+
+    [Test]
+    public async Task TestGetAuthor()
+    {
+        await QuerySql.CreateAuthor(new QuerySql.CreateAuthorArgs
+        {
+            Name = DataGenerator.BojackAuthor,
+            Bio = DataGenerator.BojackTheme
+        });
+        await QuerySql.CreateAuthor(new QuerySql.CreateAuthorArgs
+        {
+            Name = DataGenerator.DrSeussAuthor,
+            Bio = DataGenerator.DrSeussQuote
+        });
+
+        var actualAuthor = await QuerySql.GetAuthor(new QuerySql.GetAuthorArgs
+        {
+            Name = DataGenerator.BojackAuthor
+        });
+        ClassicAssert.IsTrue(actualAuthor.HasValue);
+        Assert.That(actualAuthor!.Value is
         {
             Name: DataGenerator.BojackAuthor,
             Bio: DataGenerator.BojackTheme
         });
-        Assert.That(authors[1] is
+    }
+
+    [Test]
+    public async Task TestDeleteAuthor()
+    {
+        await QuerySql.CreateAuthor(new QuerySql.CreateAuthorArgs
         {
-            Name: DataGenerator.DrSeussAuthor,
-            Bio: DataGenerator.DrSeussQuote
+            Name = DataGenerator.BojackAuthor,
+            Bio = DataGenerator.BojackTheme
+        });
+        await QuerySql.CreateAuthor(new QuerySql.CreateAuthorArgs
+        {
+            Name = DataGenerator.DrSeussAuthor,
+            Bio = DataGenerator.DrSeussQuote
         });
 
-        var deleteAuthorArgs = new QuerySql.DeleteAuthorArgs
-        {
-            Id = bojackInsertedId
-        };
-        await QuerySql.DeleteAuthor(deleteAuthorArgs);
+        await QuerySql.DeleteAuthor(new QuerySql.DeleteAuthorArgs { Name = DataGenerator.BojackAuthor });
         var authorRows = await QuerySql.ListAuthors();
+        ClassicAssert.AreEqual(1, authorRows.Count);
         Assert.That(authorRows[0] is
         {
             Name: DataGenerator.DrSeussAuthor,
             Bio: DataGenerator.DrSeussQuote
         });
-        ClassicAssert.AreEqual(1, authorRows.Count);
-        return;
-
-        long GetId(QuerySql.CreateAuthorRow? createdAuthorRow)
-        {
-            var type = typeof(QuerySql.CreateAuthorRow);
-            var valueProperty = type.GetProperty("Value");
-            var idProperty = type.GetProperty("Id");
-
-            if (valueProperty == null)
-                return (long)(idProperty?.GetValue(createdAuthorRow) ?? throw new InvalidOperationException());
-            var value = valueProperty.GetValue(createdAuthorRow);
-            return (long)(idProperty?.GetValue(value) ?? throw new InvalidOperationException());
-        }
     }
 
     [Test]

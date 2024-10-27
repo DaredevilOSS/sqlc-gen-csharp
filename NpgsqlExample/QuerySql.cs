@@ -9,15 +9,15 @@ using Npgsql;
 namespace NpgsqlExample;
 public class QuerySql(string connectionString)
 {
-    private const string GetAuthorSql = "SELECT id, name, bio FROM authors WHERE id = @id LIMIT 1";
+    private const string GetAuthorSql = "SELECT id, name, bio FROM authors WHERE name = @name LIMIT 1";
     public readonly record struct GetAuthorRow(long Id, string Name, string? Bio);
-    public readonly record struct GetAuthorArgs(long Id);
+    public readonly record struct GetAuthorArgs(string Name);
     public async Task<GetAuthorRow?> GetAuthor(GetAuthorArgs args)
     {
         {
             await using var connection = NpgsqlDataSource.Create(connectionString);
             await using var command = connection.CreateCommand(GetAuthorSql);
-            command.Parameters.AddWithValue("@id", args.Id);
+            command.Parameters.AddWithValue("@name", args.Name);
             var reader = await command.ExecuteReaderAsync();
             if (await reader.ReadAsync())
             {
@@ -76,14 +76,14 @@ public class QuerySql(string connectionString)
         }
     }
 
-    private const string DeleteAuthorSql = "DELETE FROM authors WHERE id = @id";
-    public readonly record struct DeleteAuthorArgs(long Id);
+    private const string DeleteAuthorSql = "DELETE FROM authors WHERE name = @name";
+    public readonly record struct DeleteAuthorArgs(string Name);
     public async Task DeleteAuthor(DeleteAuthorArgs args)
     {
         {
             await using var connection = NpgsqlDataSource.Create(connectionString);
             await using var command = connection.CreateCommand(DeleteAuthorSql);
-            command.Parameters.AddWithValue("@id", args.Id);
+            command.Parameters.AddWithValue("@name", args.Name);
             await command.ExecuteScalarAsync();
         }
     }
