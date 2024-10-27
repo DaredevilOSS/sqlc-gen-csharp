@@ -12,53 +12,87 @@ public class MySqlConnectorTests
 
     private QuerySql QuerySql { get; } = new(Environment.GetEnvironmentVariable(ConnectionStringEnv)!);
 
-    [Test]
-    public async Task TestBasicFlow()
+    [TearDown]
+    public async Task EmptyTestsTable()
     {
-        var createAuthorReturnIdArgs = new QuerySql.CreateAuthorReturnIdArgs
+        await QuerySql.TruncateAuthors();
+    }
+
+    [Test]
+    public async Task TestCreateAndListAuthors()
+    {
+        await QuerySql.CreateAuthor(new QuerySql.CreateAuthorArgs
         {
             Name = DataGenerator.BojackAuthor,
             Bio = DataGenerator.BojackTheme
-        };
-        var insertedId = await QuerySql.CreateAuthorReturnId(createAuthorReturnIdArgs);
-        var getBojackAuthorArgs = new QuerySql.GetAuthorArgs { Id = insertedId };
-        var bojackAuthor = await QuerySql.GetAuthor(getBojackAuthorArgs);
-        Assert.That(bojackAuthor is
-        {
-            Name: DataGenerator.BojackAuthor,
-            Bio: DataGenerator.BojackTheme
         });
-
-        var createAuthorArgs = new QuerySql.CreateAuthorArgs
+        await QuerySql.CreateAuthor(new QuerySql.CreateAuthorArgs
         {
             Name = DataGenerator.DrSeussAuthor,
             Bio = DataGenerator.DrSeussQuote
-        };
-        await QuerySql.CreateAuthor(createAuthorArgs);
+        });
+
         var actualAuthors = await QuerySql.ListAuthors();
-        Assert.That(actualAuthors[0] is
+        ClassicAssert.AreEqual(2, actualAuthors.Count);
+        Assert.That(actualAuthors is [
+        {
+            Name: DataGenerator.BojackAuthor,
+            Bio: DataGenerator.BojackTheme
+        },
+        {
+            Name: DataGenerator.DrSeussAuthor,
+            Bio: DataGenerator.DrSeussQuote
+        }
+        ]);
+    }
+
+    [Test]
+    public async Task TestGetAuthor()
+    {
+        await QuerySql.CreateAuthor(new QuerySql.CreateAuthorArgs
+        {
+            Name = DataGenerator.BojackAuthor,
+            Bio = DataGenerator.BojackTheme
+        });
+        await QuerySql.CreateAuthor(new QuerySql.CreateAuthorArgs
+        {
+            Name = DataGenerator.DrSeussAuthor,
+            Bio = DataGenerator.DrSeussQuote
+        });
+
+        var actualAuthor = await QuerySql.GetAuthor(new QuerySql.GetAuthorArgs
+        {
+            Name = DataGenerator.BojackAuthor
+        });
+        ClassicAssert.IsTrue(actualAuthor.HasValue);
+        Assert.That(actualAuthor!.Value is
         {
             Name: DataGenerator.BojackAuthor,
             Bio: DataGenerator.BojackTheme
         });
-        Assert.That(actualAuthors[1] is
-        {
-            Name: DataGenerator.DrSeussAuthor,
-            Bio: DataGenerator.DrSeussQuote
-        });
-        ClassicAssert.AreEqual(2, actualAuthors.Count);
+    }
 
-        var deleteAuthorArgs = new QuerySql.DeleteAuthorArgs
+    [Test]
+    public async Task TestDeleteAuthor()
+    {
+        await QuerySql.CreateAuthor(new QuerySql.CreateAuthorArgs
         {
-            Id = insertedId
-        };
-        await QuerySql.DeleteAuthor(deleteAuthorArgs);
+            Name = DataGenerator.BojackAuthor,
+            Bio = DataGenerator.BojackTheme
+        });
+        await QuerySql.CreateAuthor(new QuerySql.CreateAuthorArgs
+        {
+            Name = DataGenerator.DrSeussAuthor,
+            Bio = DataGenerator.DrSeussQuote
+        });
+
+        await QuerySql.DeleteAuthor(new QuerySql.DeleteAuthorArgs { Name = DataGenerator.BojackAuthor });
         var authorRows = await QuerySql.ListAuthors();
+        ClassicAssert.AreEqual(1, authorRows.Count);
         Assert.That(authorRows[0] is
         {
             Name: DataGenerator.DrSeussAuthor,
             Bio: DataGenerator.DrSeussQuote
         });
-        ClassicAssert.AreEqual(1, authorRows.Count);
     }
 }

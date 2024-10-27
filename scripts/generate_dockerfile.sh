@@ -19,8 +19,8 @@ echo "" >> "$filename"
 for project in $projects; do
     echo "COPY $project/ ./$project/" >> "$filename"
 done
-echo "" >> "$filename"
-echo "RUN dotnet restore" >> "$filename"
+
+printf "\nRUN dotnet restore\n" >> "$filename"
 
 cat <<EOF >> "$filename"
 

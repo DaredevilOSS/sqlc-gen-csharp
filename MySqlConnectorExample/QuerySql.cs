@@ -9,16 +9,16 @@ using MySqlConnector;
 namespace MySqlConnectorExample;
 public class QuerySql(string connectionString)
 {
-    private const string GetAuthorSql = "SELECT id, name, bio FROM authors WHERE  id  =  @id  LIMIT  1  ";  
+    private const string GetAuthorSql = "SELECT id, name, bio FROM authors WHERE name = @name LIMIT 1";
     public readonly record struct GetAuthorRow(long Id, string Name, string? Bio);
-    public readonly record struct GetAuthorArgs(long Id);
+    public readonly record struct GetAuthorArgs(string Name);
     public async Task<GetAuthorRow?> GetAuthor(GetAuthorArgs args)
     {
         {
             await using var connection = new MySqlConnection(connectionString);
             connection.Open();
             await using var command = new MySqlCommand(GetAuthorSql, connection);
-            command.Parameters.AddWithValue("@id", args.Id);
+            command.Parameters.AddWithValue("@name", args.Name);
             var reader = await command.ExecuteReaderAsync();
             if (await reader.ReadAsync())
             {
@@ -34,7 +34,7 @@ public class QuerySql(string connectionString)
         }
     }
 
-    private const string ListAuthorsSql = "SELECT id, name, bio FROM authors ORDER  BY  name  ";  
+    private const string ListAuthorsSql = "SELECT id, name, bio FROM authors ORDER BY name";
     public readonly record struct ListAuthorsRow(long Id, string Name, string? Bio);
     public async Task<List<ListAuthorsRow>> ListAuthors()
     {
@@ -53,7 +53,7 @@ public class QuerySql(string connectionString)
         }
     }
 
-    private const string CreateAuthorSql = "INSERT INTO authors ( name , bio ) VALUES ( @name, @bio ) "; 
+    private const string CreateAuthorSql = "INSERT INTO authors (name, bio) VALUES (@name, @bio)";
     public readonly record struct CreateAuthorArgs(string Name, string? Bio);
     public async Task CreateAuthor(CreateAuthorArgs args)
     {
@@ -67,7 +67,7 @@ public class QuerySql(string connectionString)
         }
     }
 
-    private const string UpdateAuthorSql = "UPDATE authors  SET  bio  =  @bio  WHERE  id  =  @id  ";  
+    private const string UpdateAuthorSql = "UPDATE authors SET bio = @bio WHERE id = @id";
     public readonly record struct UpdateAuthorArgs(string? Bio, long Id);
     public async Task UpdateAuthor(UpdateAuthorArgs args)
     {
@@ -81,7 +81,7 @@ public class QuerySql(string connectionString)
         }
     }
 
-    private const string CreateAuthorReturnIdSql = "INSERT INTO authors ( name , bio ) VALUES ( @name, @bio ) "; 
+    private const string CreateAuthorReturnIdSql = "INSERT INTO authors (name, bio) VALUES (@name, @bio)";
     public readonly record struct CreateAuthorReturnIdArgs(string Name, string? Bio);
     public async Task<long> CreateAuthorReturnId(CreateAuthorReturnIdArgs args)
     {
@@ -96,20 +96,31 @@ public class QuerySql(string connectionString)
         }
     }
 
-    private const string DeleteAuthorSql = "DELETE FROM authors WHERE  id  =  @id  ";  
-    public readonly record struct DeleteAuthorArgs(long Id);
+    private const string DeleteAuthorSql = "DELETE FROM authors WHERE name = @name";
+    public readonly record struct DeleteAuthorArgs(string Name);
     public async Task DeleteAuthor(DeleteAuthorArgs args)
     {
         {
             await using var connection = new MySqlConnection(connectionString);
             connection.Open();
             await using var command = new MySqlCommand(DeleteAuthorSql, connection);
-            command.Parameters.AddWithValue("@id", args.Id);
+            command.Parameters.AddWithValue("@name", args.Name);
             await command.ExecuteScalarAsync();
         }
     }
 
-    private const string TestSql = "SELECT c_bit, c_tinyint, c_bool, c_boolean, c_smallint, c_mediumint, c_int, c_integer, c_bigint, c_serial, c_decimal, c_dec, c_numeric, c_fixed, c_float, c_double, c_double_precision, c_date, c_time, c_datetime, c_timestamp, c_year, c_char, c_nchar, c_national_char, c_varchar, c_binary, c_varbinary, c_tinyblob, c_tinytext, c_blob, c_text, c_mediumblob, c_mediumtext, c_longblob, c_longtext, c_json FROM node_mysql_types LIMIT  1  ";  
+    private const string TruncateAuthorsSql = "TRUNCATE TABLE authors";
+    public async Task TruncateAuthors()
+    {
+        {
+            await using var connection = new MySqlConnection(connectionString);
+            connection.Open();
+            await using var command = new MySqlCommand(TruncateAuthorsSql, connection);
+            await command.ExecuteScalarAsync();
+        }
+    }
+
+    private const string TestSql = "SELECT c_bit, c_tinyint, c_bool, c_boolean, c_smallint, c_mediumint, c_int, c_integer, c_bigint, c_serial, c_decimal, c_dec, c_numeric, c_fixed, c_float, c_double, c_double_precision, c_date, c_time, c_datetime, c_timestamp, c_year, c_char, c_nchar, c_national_char, c_varchar, c_binary, c_varbinary, c_tinyblob, c_tinytext, c_blob, c_text, c_mediumblob, c_mediumtext, c_longblob, c_longtext, c_json FROM node_mysql_types LIMIT 1";
     public readonly record struct TestRow(byte[]? C_bit, int? C_tinyint, int? C_bool, int? C_boolean, int? C_smallint, int? C_mediumint, int? C_int, int? C_integer, long? C_bigint, long C_serial, string? C_decimal, string? C_dec, string? C_numeric, string? C_fixed, double? C_float, double? C_double, double? C_double_precision, string? C_date, string? C_time, string? C_datetime, string? C_timestamp, int? C_year, string? C_char, string? C_nchar, string? C_national_char, string? C_varchar, byte[]? C_binary, byte[]? C_varbinary, byte[]? C_tinyblob, string? C_tinytext, byte[]? C_blob, string? C_text, byte[]? C_mediumblob, string? C_mediumtext, byte[]? C_longblob, string? C_longtext, object? C_json);
     public async Task<TestRow?> Test()
     {

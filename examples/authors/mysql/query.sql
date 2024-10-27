@@ -1,34 +1,23 @@
 /* name: GetAuthor :one */
-SELECT * FROM authors
-WHERE id = ? LIMIT 1;
+SELECT * FROM authors WHERE name = ? LIMIT 1;
 
 /* name: ListAuthors :many */
-SELECT * FROM authors
-ORDER BY name;
+SELECT * FROM authors ORDER BY name;
 
 /* name: CreateAuthor :exec */
-INSERT INTO authors (
-  name, bio
-) VALUES (
-  ?, ? 
-);
+INSERT INTO authors (name, bio) VALUES (?, ?);
 
 /* name: UpdateAuthor :exec */
-UPDATE authors 
-SET bio = ?
-WHERE id = ?;
+UPDATE authors SET bio = ? WHERE id = ?;
 
 /* name: CreateAuthorReturnId :execlastid */
-INSERT INTO authors (
-    name, bio
-) VALUES (
-    ?, ?
-);
+INSERT INTO authors (name, bio) VALUES (?, ?);
 
 /* name: DeleteAuthor :exec */
-DELETE FROM authors
-WHERE id = ?;
+DELETE FROM authors WHERE name = ?;
+
+-- name: TruncateAuthors :exec
+TRUNCATE TABLE authors;
 
 /* name: Test :one */
-SELECT * FROM node_mysql_types
-LIMIT 1;
+SELECT * FROM node_mysql_types LIMIT 1;

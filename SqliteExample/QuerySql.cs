@@ -10,16 +10,16 @@ using System;
 namespace SqliteExample;
 public class QuerySql(string connectionString)
 {
-    private const string GetAuthorSql = "SELECT id, name, bio FROM authors WHERE  id  =  @id  LIMIT  1  ";  
+    private const string GetAuthorSql = "SELECT id, name, bio FROM authors WHERE name = @name LIMIT 1";
     public readonly record struct GetAuthorRow(int Id, string Name, string? Bio);
-    public readonly record struct GetAuthorArgs(int Id);
+    public readonly record struct GetAuthorArgs(string Name);
     public async Task<GetAuthorRow?> GetAuthor(GetAuthorArgs args)
     {
         {
             await using var connection = new SqliteConnection(connectionString);
             connection.Open();
             await using var command = new SqliteCommand(GetAuthorSql, connection);
-            command.Parameters.AddWithValue("@id", args.Id);
+            command.Parameters.AddWithValue("@name", args.Name);
             var reader = await command.ExecuteReaderAsync();
             if (await reader.ReadAsync())
             {
@@ -35,7 +35,7 @@ public class QuerySql(string connectionString)
         }
     }
 
-    private const string ListAuthorsSql = "SELECT id, name, bio FROM authors ORDER  BY  name  ";  
+    private const string ListAuthorsSql = "SELECT id, name, bio FROM authors ORDER BY name";
     public readonly record struct ListAuthorsRow(int Id, string Name, string? Bio);
     public async Task<List<ListAuthorsRow>> ListAuthors()
     {
@@ -54,7 +54,7 @@ public class QuerySql(string connectionString)
         }
     }
 
-    private const string CreateAuthorSql = "INSERT INTO authors ( name , bio ) VALUES ( @name, @bio ) "; 
+    private const string CreateAuthorSql = "INSERT INTO authors (name, bio) VALUES (@name, @bio)";
     public readonly record struct CreateAuthorArgs(string Name, string? Bio);
     public async Task CreateAuthor(CreateAuthorArgs args)
     {
@@ -68,15 +68,26 @@ public class QuerySql(string connectionString)
         }
     }
 
-    private const string DeleteAuthorSql = "DELETE FROM authors WHERE  id  =  @id  ";  
-    public readonly record struct DeleteAuthorArgs(int Id);
+    private const string DeleteAuthorSql = "DELETE FROM authors WHERE name = @name";
+    public readonly record struct DeleteAuthorArgs(string Name);
     public async Task DeleteAuthor(DeleteAuthorArgs args)
     {
         {
             await using var connection = new SqliteConnection(connectionString);
             connection.Open();
             await using var command = new SqliteCommand(DeleteAuthorSql, connection);
-            command.Parameters.AddWithValue("@id", args.Id);
+            command.Parameters.AddWithValue("@name", args.Name);
+            await command.ExecuteScalarAsync();
+        }
+    }
+
+    private const string DeleteAllAuthorsSql = "DELETE FROM authors";
+    public async Task DeleteAllAuthors()
+    {
+        {
+            await using var connection = new SqliteConnection(connectionString);
+            connection.Open();
+            await using var command = new SqliteCommand(DeleteAllAuthorsSql, connection);
             await command.ExecuteScalarAsync();
         }
     }
