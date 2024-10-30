@@ -68,14 +68,19 @@ public class NpgsqlDriver(DotnetFramework dotnetFramework) : DbDriver(dotnetFram
             .ToArray();
     }
 
-    public override (string, string) EstablishConnection(Query query)
+    public override ConnectionGenCommands EstablishConnection(Query query)
     {
         if (query.Cmd == ":copyfrom")
-            return (
+        {
+            return new ConnectionGenCommands(
                 $"var ds = NpgsqlDataSource.Create({Variable.ConnectionString.Name()})",
                 $"var {Variable.Connection.Name()} = ds.CreateConnection()"
             );
-        return ($"var {Variable.Connection.Name()} = NpgsqlDataSource.Create({Variable.ConnectionString.Name()})", "");
+        }
+        return new ConnectionGenCommands(
+            $"var {Variable.Connection.Name()} = NpgsqlDataSource.Create({Variable.ConnectionString.Name()})",
+            ""
+        );
     }
 
     public override string CreateSqlCommand(string sqlTextConstant)

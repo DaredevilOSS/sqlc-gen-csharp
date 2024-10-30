@@ -58,11 +58,12 @@ public partial class MySqlConnectorDriver(DotnetFramework dotnetFramework) : DbD
             .ToArray();
     }
 
-    public override (string, string) EstablishConnection(Query query)
+    public override ConnectionGenCommands EstablishConnection(Query query)
     {
-        return (
+        return new ConnectionGenCommands(
             $"var {Variable.Connection.Name()} = new MySqlConnection({Variable.ConnectionString.Name()})",
-            $"{Variable.Connection.Name()}.Open()");
+            $"{Variable.Connection.Name()}.Open()"
+        );
     }
 
     public override string CreateSqlCommand(string sqlTextConstant)
