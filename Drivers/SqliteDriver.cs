@@ -30,9 +30,9 @@ public partial class SqliteDriver(DotnetFramework dotnetFramework) : DbDriver(do
             .ToArray();
     }
 
-    public override (string, string) EstablishConnection(Query query)
+    public override ConnectionGenCommands EstablishConnection(Query query)
     {
-        return (
+        return new ConnectionGenCommands(
             $"var {Variable.Connection.Name()} = new SqliteConnection({Variable.ConnectionString.Name()})",
             $"{Variable.Connection.Name()}.Open()"
         );
