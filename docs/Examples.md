@@ -8,6 +8,7 @@
 driver: Npgsql
 targetFramework: net8.0
 generateCsproj: true
+namespaceName: NpgsqlExampleGen
 ```
 
 ## Engine `mysql`: [MySqlConnectorExample](../MySqlConnectorExample)
@@ -19,6 +20,7 @@ generateCsproj: true
 driver: MySqlConnector
 targetFramework: net8.0
 generateCsproj: true
+namespaceName: MySqlConnectorExampleGen
 ```
 
 ## Engine `sqlite`: [SqliteExample](../SqliteExample)
@@ -30,5 +32,6 @@ generateCsproj: true
 driver: Sqlite
 targetFramework: net8.0
 generateCsproj: true
+namespaceName: SqliteExampleGen
 ```
 
