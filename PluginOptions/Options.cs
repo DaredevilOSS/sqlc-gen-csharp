@@ -16,6 +16,7 @@ public class Options
         Enum.TryParse(rawOptions.DriverName, true, out DriverName outDriverName);
         DriverName = outDriverName;
         GenerateCsproj = rawOptions.GenerateCsproj;
+        NamespaceName = rawOptions.NamespaceName;
         DotnetFramework = DotnetFrameworkExtensions.ParseName(rawOptions.TargetFramework);
     }
 
@@ -24,4 +25,7 @@ public class Options
     public DotnetFramework DotnetFramework { get; }
 
     public bool GenerateCsproj { get; }
+
+
+    public string NamespaceName { get; }
 }

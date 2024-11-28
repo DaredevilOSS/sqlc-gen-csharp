@@ -15,8 +15,6 @@ namespace SqlcGenCsharp;
 
 public class CodeGenerator
 {
-    private static readonly char[] Separator = ['/'];
-
     private static readonly string[] ResharperDisables =
     [
         "InconsistentNaming",
@@ -34,13 +32,13 @@ public class CodeGenerator
 
     private void InitGenerators(GenerateRequest generateRequest)
     {
+        var projectName = new DirectoryInfo(generateRequest.Settings.Codegen.Out).Name;
         Options = new Options(generateRequest);
-        NamespaceName = GenerateNamespace(generateRequest);
+        NamespaceName = Options.NamespaceName == string.Empty ? projectName : Options.NamespaceName;
         DbDriver = InstantiateDriver();
 
         // initialize file generators
-        var projectName = new DirectoryInfo(generateRequest.Settings.Codegen.Out).Name;
-        CsprojGen = new CsprojGen(projectName, Options);
+        CsprojGen = new CsprojGen(projectName, NamespaceName, Options);
         RootGen = new RootGen(Options);
         UtilsGen = new UtilsGen(NamespaceName, Options);
         DataClassesGen = new DataClassesGen(DbDriver);
@@ -125,13 +123,6 @@ public class CodeGenerator
                 Path.GetFileNameWithoutExtension(filenameWithExtension).FirstCharToUpper(),
                 Path.GetExtension(filenameWithExtension)[1..].FirstCharToUpper());
         }
-    }
-
-    private string GenerateNamespace(GenerateRequest generateRequest)
-    {
-        var parts = generateRequest.Settings.Codegen.Out
-            .Split(Separator, StringSplitOptions.RemoveEmptyEntries);
-        return parts.Length > 0 ? parts[0] : "GeneratedNamespace";
     }
 
     private File GenerateFile(IEnumerable<Query> queries, string className)

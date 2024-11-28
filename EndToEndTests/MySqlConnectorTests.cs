@@ -1,4 +1,4 @@
-using MySqlConnectorExample;
+using MySqlConnectorExampleGen;
 using NUnit.Framework;
 using NUnit.Framework.Legacy;
 using System;

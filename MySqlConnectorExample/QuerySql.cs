@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using MySqlConnector;
 
-namespace MySqlConnectorExample;
+namespace MySqlConnectorExampleGen;
 public class QuerySql(string connectionString)
 {
     private const string GetAuthorSql = "SELECT id, name, bio FROM authors WHERE name = @name LIMIT 1";

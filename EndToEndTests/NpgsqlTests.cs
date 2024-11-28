@@ -1,4 +1,4 @@
-using NpgsqlExample;
+using NpgsqlExampleGen;
 using NUnit.Framework;
 using NUnit.Framework.Legacy;
 using System;
