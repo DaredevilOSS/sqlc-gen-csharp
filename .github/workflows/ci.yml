@@ -48,7 +48,7 @@ jobs:
     needs: [lint]
     strategy:
       matrix:
-        os: [ 'ubuntu-latest', 'windows-latest' ]
+        os: [ 'ubuntu-latest', 'windows-latest', 'macos-latest' ]
         architecture: [ 'x64', 'arm64' ]
 
     steps:
@@ -62,50 +62,68 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '8.0.x'
+
+      - name: Dotnet Build
+        run: dotnet build
           
+  publish:
+    name: Publish WASM
+    needs: [build]
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Load .env file
+        uses: xom9ikk/dotenv@v2.3.0
+        with:
+          load-mode: strict
+
+      - name: Setup Dotnet
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
       - name: install Wasi workload
         run: dotnet workload install wasi-experimental
-        
+
       - name: Download Wasi SDK on Ubuntu
-        if: runner.os == 'Linux'
         run: |
           wget https://github.com/WebAssembly/wasi-sdk/releases/download/wasi-sdk-22/wasi-sdk-22.0-linux.tar.gz
           tar xf wasi-sdk-22.0-linux.tar.gz
           chmod -R 755 wasi-sdk-22.0
-  
-      - name: Download WASI SDK on Windows
-        if: runner.os == 'Windows'
-        shell: bash
-        run: |
-          set -e
-          curl -LO https://github.com/WebAssembly/wasi-sdk/releases/download/wasi-sdk-22/wasi-sdk-22.0.m-mingw.tar.gz
-          tar xf wasi-sdk-22.0.m-mingw.tar.gz
-          mv wasi-sdk-22.0+m wasi-sdk-22.0 
-          chmod -R 755 wasi-sdk-22.0
-          
-      - name: Add clang path to $PATH env
-        shell: bash
-        if: runner.os == 'Windows'
-        run: echo "PATH=$PATH:C:\msys64\mingw64\bin" >> $GITHUB_ENV
-      
+
+# TODO remove below?
+#      - name: Download WASI SDK on Windows
+#        if: runner.os == 'Windows'
+#        shell: bash
+#        run: |
+#          set -e
+#          curl -LO https://github.com/WebAssembly/wasi-sdk/releases/download/wasi-sdk-22/wasi-sdk-22.0.m-mingw.tar.gz
+#          tar xf wasi-sdk-22.0.m-mingw.tar.gz
+#          mv wasi-sdk-22.0+m wasi-sdk-22.0 
+#          chmod -R 755 wasi-sdk-22.0
+#
+#      - name: Add clang path to $PATH env
+#        shell: bash
+#        if: runner.os == 'Windows'
+#        run: echo "PATH=$PATH:C:\msys64\mingw64\bin" >> $GITHUB_ENV
+
       - name: Dotnet Wasm Publish
         shell: bash
         run: |
           set -e
           WASI_SDK_PATH="$(pwd)/wasi-sdk-22.0" dotnet publish WasmRunner -c release
           ./scripts/wasm/copy_plugin_to.sh dist
-          
+
       - name: upload wasm plugin as artifact
-        if: matrix.architecture == 'arm64' && runner.os == 'Linux' # this needs to happen once across matrix
         uses: actions/upload-artifact@v4
         with:
           name: wasm-file
           path: dist/plugin.wasm
-          
   codegen-tests:
     name: Codegen Tests
     runs-on: ubuntu-latest
-    needs: [build]
+    needs: [publish]
 
     steps:
       - uses: actions/checkout@v4
