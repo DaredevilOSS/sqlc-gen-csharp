@@ -39,7 +39,8 @@ public class CodeGenerator
         DbDriver = InstantiateDriver();
 
         // initialize file generators
-        CsprojGen = new CsprojGen(generateRequest.Settings.Codegen.Out, Options);
+        var projectName = new DirectoryInfo(generateRequest.Settings.Codegen.Out).Name;
+        CsprojGen = new CsprojGen(projectName, Options);
         RootGen = new RootGen(Options);
         UtilsGen = new UtilsGen(NamespaceName, Options);
         DataClassesGen = new DataClassesGen(DbDriver);
