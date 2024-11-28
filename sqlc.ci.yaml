@@ -15,6 +15,7 @@ sql:
           driver: Npgsql
           targetFramework: net8.0
           generateCsproj: true
+          namespaceName: NpgsqlExampleGen
   - schema: "examples/authors/mysql/schema.sql"
     queries: "examples/authors/mysql/query.sql"
     engine: "mysql"
@@ -25,6 +26,7 @@ sql:
           driver: MySqlConnector
           targetFramework: net8.0
           generateCsproj: true
+          namespaceName: MySqlConnectorExampleGen
   - schema: "examples/authors/sqlite/schema.sql"
     queries: "examples/authors/sqlite/query.sql"
     engine: "sqlite"
@@ -35,3 +37,4 @@ sql:
           driver: Sqlite
           targetFramework: net8.0
           generateCsproj: true
+          namespaceName: SqliteExampleGen

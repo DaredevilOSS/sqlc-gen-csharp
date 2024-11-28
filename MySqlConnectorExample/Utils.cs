@@ -2,7 +2,7 @@
 using System;
 using System.Data;
 
-namespace MySqlConnectorExample;
+namespace MySqlConnectorExampleGen;
 public static class Utils
 {
     public static byte[] GetBytes(IDataRecord reader, int ordinal)

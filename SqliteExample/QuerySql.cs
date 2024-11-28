@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.Data.Sqlite;
 using System;
 
-namespace SqliteExample;
+namespace SqliteExampleGen;
 public class QuerySql(string connectionString)
 {
     private const string GetAuthorSql = "SELECT id, name, bio FROM authors WHERE name = @name LIMIT 1";

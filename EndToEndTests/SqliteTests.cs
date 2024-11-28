@@ -1,6 +1,6 @@
 using NUnit.Framework;
 using NUnit.Framework.Legacy;
-using SqliteExample;
+using SqliteExampleGen;
 using System;
 using System.Threading.Tasks;
 

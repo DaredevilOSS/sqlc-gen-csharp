@@ -12,4 +12,7 @@ internal class RawOptions
 
     [JsonPropertyName("targetFramework")]
     public string TargetFramework { get; init; } = DotnetFramework.Dotnet80.ToName();
+
+    [JsonPropertyName("namespaceName")]
+    public string NamespaceName { get; init; } = string.Empty;
 }
