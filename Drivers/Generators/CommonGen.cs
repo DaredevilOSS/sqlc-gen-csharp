@@ -55,7 +55,7 @@ public class CommonGen(DbDriver dbDriver)
             var csharpType = dbDriver.GetColumnType(column);
             if (csharpType == "string")
                 return "string.Empty";
-            return !dbDriver.DotnetFramework.LatestDotnetSupported() && DbDriver.IsCsharpPrimitive(csharpType)
+            return !dbDriver.DotnetFramework.LatestDotnetSupported() && dbDriver.IsCsharpPrimitive(csharpType)
                 ? $"({csharpType}) null"
                 : "null";
         }

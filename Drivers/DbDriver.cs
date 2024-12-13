@@ -13,12 +13,15 @@ public abstract class DbDriver(DotnetFramework dotnetFramework)
 {
     public DotnetFramework DotnetFramework { get; } = dotnetFramework;
 
+    private HashSet<string> CsharpPrimitives { get; } = ["long", "double", "int", "float", "bool", "DateTime"];
+
     public virtual UsingDirectiveSyntax[] GetUsingDirectives()
     {
         return
         [
             UsingDirective(ParseName("System.Collections.Generic")),
-            UsingDirective(ParseName("System.Threading.Tasks"))
+            UsingDirective(ParseName("System.Threading.Tasks")),
+            UsingDirective(ParseName("System"))
         ];
     }
 
@@ -73,9 +76,8 @@ public abstract class DbDriver(DotnetFramework dotnetFramework)
 
     public abstract MemberDeclarationSyntax ExecDeclare(string text, string argInterface, Query query);
 
-    public static bool IsCsharpPrimitive(string csharpType)
+    public bool IsCsharpPrimitive(string csharpType)
     {
-        var csharpPrimitives = new HashSet<string> { "long", "double", "int", "float", "bool" };
-        return csharpPrimitives.Contains(csharpType.Replace("?", ""));
+        return CsharpPrimitives.Contains(csharpType.Replace("?", ""));
     }
 }
