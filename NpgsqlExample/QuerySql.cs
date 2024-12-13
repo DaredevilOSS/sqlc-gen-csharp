@@ -4,13 +4,14 @@
 // ReSharper disable InconsistentNaming
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System;
 using Npgsql;
 
 namespace NpgsqlExampleGen;
 public class QuerySql(string connectionString)
 {
-    private const string GetAuthorSql = "SELECT id, name, bio FROM authors WHERE name = @name LIMIT 1";
-    public readonly record struct GetAuthorRow(long Id, string Name, string? Bio);
+    private const string GetAuthorSql = "SELECT id, name, bio, created FROM authors WHERE name = @name LIMIT 1";
+    public readonly record struct GetAuthorRow(long Id, string Name, string? Bio, DateTime Created);
     public readonly record struct GetAuthorArgs(string Name);
     public async Task<GetAuthorRow?> GetAuthor(GetAuthorArgs args)
     {
@@ -25,7 +26,8 @@ public class QuerySql(string connectionString)
                 {
                     Id = reader.GetInt64(0),
                     Name = reader.GetString(1),
-                    Bio = reader.IsDBNull(2) ? null : reader.GetString(2)
+                    Bio = reader.IsDBNull(2) ? null : reader.GetString(2),
+                    Created = reader.GetDateTime(3)
                 };
             }
 
@@ -33,8 +35,8 @@ public class QuerySql(string connectionString)
         }
     }
 
-    private const string ListAuthorsSql = "SELECT id, name, bio FROM authors ORDER BY name";
-    public readonly record struct ListAuthorsRow(long Id, string Name, string? Bio);
+    private const string ListAuthorsSql = "SELECT id, name, bio, created FROM authors ORDER BY name";
+    public readonly record struct ListAuthorsRow(long Id, string Name, string? Bio, DateTime Created);
     public async Task<List<ListAuthorsRow>> ListAuthors()
     {
         {
@@ -44,15 +46,15 @@ public class QuerySql(string connectionString)
             var result = new List<ListAuthorsRow>();
             while (await reader.ReadAsync())
             {
-                result.Add(new ListAuthorsRow { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2) });
+                result.Add(new ListAuthorsRow { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2), Created = reader.GetDateTime(3) });
             }
 
             return result;
         }
     }
 
-    private const string CreateAuthorSql = "INSERT INTO authors (name, bio) VALUES (@name, @bio) RETURNING id, name, bio";
-    public readonly record struct CreateAuthorRow(long Id, string Name, string? Bio);
+    private const string CreateAuthorSql = "INSERT INTO authors (name, bio) VALUES (@name, @bio) RETURNING id, name, bio, created";
+    public readonly record struct CreateAuthorRow(long Id, string Name, string? Bio, DateTime Created);
     public readonly record struct CreateAuthorArgs(string Name, string? Bio);
     public async Task<CreateAuthorRow?> CreateAuthor(CreateAuthorArgs args)
     {
@@ -68,7 +70,8 @@ public class QuerySql(string connectionString)
                 {
                     Id = reader.GetInt64(0),
                     Name = reader.GetString(1),
-                    Bio = reader.IsDBNull(2) ? null : reader.GetString(2)
+                    Bio = reader.IsDBNull(2) ? null : reader.GetString(2),
+                    Created = reader.GetDateTime(3)
                 };
             }
 
@@ -132,7 +135,7 @@ public class QuerySql(string connectionString)
     }
 
     private const string TestSql = "SELECT c_bit, c_smallint, c_boolean, c_integer, c_bigint, c_serial, c_decimal, c_numeric, c_real, c_double_precision, c_date, c_time, c_timestamp, c_char, c_varchar, c_character_varying, c_bytea, c_text, c_json FROM node_postgres_types LIMIT 1";
-    public readonly record struct TestRow(byte[]? C_bit, int? C_smallint, bool? C_boolean, int? C_integer, int? C_bigint, long? C_serial, float? C_decimal, float? C_numeric, float? C_real, float? C_double_precision, string? C_date, string? C_time, string? C_timestamp, string? C_char, string? C_varchar, string? C_character_varying, byte[]? C_bytea, string? C_text, object? C_json);
+    public readonly record struct TestRow(byte[]? C_bit, int? C_smallint, bool? C_boolean, int? C_integer, int? C_bigint, long? C_serial, float? C_decimal, float? C_numeric, float? C_real, float? C_double_precision, DateTime? C_date, string? C_time, DateTime? C_timestamp, string? C_char, string? C_varchar, string? C_character_varying, byte[]? C_bytea, string? C_text, object? C_json);
     public async Task<TestRow?> Test()
     {
         {
@@ -153,9 +156,9 @@ public class QuerySql(string connectionString)
                     C_numeric = reader.IsDBNull(7) ? null : reader.GetFloat(7),
                     C_real = reader.IsDBNull(8) ? null : reader.GetFloat(8),
                     C_double_precision = reader.IsDBNull(9) ? null : reader.GetFloat(9),
-                    C_date = reader.IsDBNull(10) ? null : reader.GetString(10),
+                    C_date = reader.IsDBNull(10) ? null : reader.GetDateTime(10),
                     C_time = reader.IsDBNull(11) ? null : reader.GetString(11),
-                    C_timestamp = reader.IsDBNull(12) ? null : reader.GetString(12),
+                    C_timestamp = reader.IsDBNull(12) ? null : reader.GetDateTime(12),
                     C_char = reader.IsDBNull(13) ? null : reader.GetString(13),
                     C_varchar = reader.IsDBNull(14) ? null : reader.GetString(14),
                     C_character_varying = reader.IsDBNull(15) ? null : reader.GetString(15),

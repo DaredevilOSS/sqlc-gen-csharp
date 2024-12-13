@@ -29,17 +29,20 @@ public class NpgsqlDriver(DotnetFramework dotnetFramework) : DbDriver(dotnetFram
             ("string", ordinal => $"reader.GetString({ordinal})",
             [
                 "char",
-                "date",
-                "datetime",
+
                 "longtext",
                 "mediumtext",
                 "text",
                 "bpchar",
                 "time",
-                "timestamp",
                 "tinytext",
                 "varchar",
                 "pg_catalog.varchar"
+            ]),
+            ("DateTime", ordinal => $"reader.GetDateTime({ordinal})", [
+                "date",
+                "datetime",
+                "timestamp"
             ]),
             ("object", ordinal => $"reader.GetString({ordinal})", ["json"]),
             ("int", ordinal => $"reader.GetInt32({ordinal})", [
