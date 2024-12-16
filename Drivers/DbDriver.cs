@@ -2,6 +2,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Plugin;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 using static System.String;
 
@@ -9,17 +10,20 @@ namespace SqlcGenCsharp.Drivers;
 
 public record ConnectionGenCommands(string EstablishConnection, string ConnectionOpen);
 
-public abstract class DbDriver(DotnetFramework dotnetFramework)
+public abstract class DbDriver(DotnetFramework dotnetFramework, bool useDapper)
 {
+    public bool UseDapper { get; } = useDapper;
     public DotnetFramework DotnetFramework { get; } = dotnetFramework;
 
     public virtual UsingDirectiveSyntax[] GetUsingDirectives()
     {
+        var usingDirectives = new List<UsingDirectiveSyntax>();
+        if (UseDapper) usingDirectives.Add(UsingDirective(ParseName("Dapper")));
         return
-        [
+        usingDirectives.Concat([
             UsingDirective(ParseName("System.Collections.Generic")),
             UsingDirective(ParseName("System.Threading.Tasks"))
-        ];
+        ]).ToArray();
     }
 
     protected abstract List<(string, Func<int, string>, HashSet<string>)> GetColumnMapping();
@@ -61,7 +65,7 @@ public abstract class DbDriver(DotnetFramework dotnetFramework)
 
     public abstract string TransformQueryText(Query query);
 
-    public abstract ConnectionGenCommands EstablishConnection(Query query);
+    public abstract ConnectionGenCommands EstablishConnection(Query query, bool UseDapper = false);
 
     public abstract string CreateSqlCommand(string sqlTextConstant);
 

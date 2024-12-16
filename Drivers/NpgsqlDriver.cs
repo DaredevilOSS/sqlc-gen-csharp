@@ -9,7 +9,7 @@ using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace SqlcGenCsharp.Drivers;
 
-public class NpgsqlDriver(DotnetFramework dotnetFramework) : DbDriver(dotnetFramework), ICopyFrom, IExecRows
+public class NpgsqlDriver(DotnetFramework dotnetFramework, bool useDapper) : DbDriver(dotnetFramework, useDapper), ICopyFrom, IExecRows
 {
     protected override List<(string, Func<int, string>, HashSet<string>)> GetColumnMapping()
     {
@@ -68,7 +68,7 @@ public class NpgsqlDriver(DotnetFramework dotnetFramework) : DbDriver(dotnetFram
             .ToArray();
     }
 
-    public override ConnectionGenCommands EstablishConnection(Query query)
+    public override ConnectionGenCommands EstablishConnection(Query query, bool UseDapper = false)
     {
         if (query.Cmd == ":copyfrom")
         {
@@ -77,6 +77,14 @@ public class NpgsqlDriver(DotnetFramework dotnetFramework) : DbDriver(dotnetFram
                 $"var {Variable.Connection.Name()} = ds.CreateConnection()"
             );
         }
+        if (UseDapper)
+        {
+            return new ConnectionGenCommands(
+            $"var {Variable.Connection.Name()} = new NpgsqlConnection({Variable.ConnectionString.Name()})",
+            ""
+        );
+        }
+
         return new ConnectionGenCommands(
             $"var {Variable.Connection.Name()} = NpgsqlDataSource.Create({Variable.ConnectionString.Name()})",
             ""
@@ -112,7 +120,7 @@ public class NpgsqlDriver(DotnetFramework dotnetFramework) : DbDriver(dotnetFram
     public override MemberDeclarationSyntax OneDeclare(string queryTextConstant, string argInterface,
         string returnInterface, Query query)
     {
-        return new OneDeclareGen(this).Generate(queryTextConstant, argInterface, returnInterface, query);
+        return new OneDeclareGen(this).Generate(queryTextConstant, argInterface, returnInterface, query, UseDapper);
     }
 
     public override MemberDeclarationSyntax ExecDeclare(string queryTextConstant, string argInterface, Query query)

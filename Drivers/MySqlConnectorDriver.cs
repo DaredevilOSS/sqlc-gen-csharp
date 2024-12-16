@@ -10,7 +10,7 @@ using OneDeclareGen = SqlcGenCsharp.Drivers.Generators.OneDeclareGen;
 
 namespace SqlcGenCsharp.Drivers;
 
-public partial class MySqlConnectorDriver(DotnetFramework dotnetFramework) : DbDriver(dotnetFramework), IExecLastId
+public partial class MySqlConnectorDriver(DotnetFramework dotnetFramework, bool useDapper) : DbDriver(dotnetFramework, useDapper), IExecLastId
 {
     protected override List<(string, Func<int, string>, HashSet<string>)> GetColumnMapping()
     {
@@ -58,7 +58,7 @@ public partial class MySqlConnectorDriver(DotnetFramework dotnetFramework) : DbD
             .ToArray();
     }
 
-    public override ConnectionGenCommands EstablishConnection(Query query)
+    public override ConnectionGenCommands EstablishConnection(Query query, bool UseDapper = false)
     {
         return new ConnectionGenCommands(
             $"var {Variable.Connection.Name()} = new MySqlConnection({Variable.ConnectionString.Name()})",

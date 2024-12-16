@@ -2,6 +2,7 @@
 // ReSharper disable NotAccessedPositionalProperty.Global
 // ReSharper disable UnusedAutoPropertyAccessor.Global
 // ReSharper disable InconsistentNaming
+using Dapper;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Data.Sqlite;

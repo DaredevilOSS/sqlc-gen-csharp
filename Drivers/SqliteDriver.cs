@@ -9,7 +9,7 @@ using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace SqlcGenCsharp.Drivers;
 
-public partial class SqliteDriver(DotnetFramework dotnetFramework) : DbDriver(dotnetFramework)
+public partial class SqliteDriver(DotnetFramework dotnetFramework, bool useDapper) : DbDriver(dotnetFramework, useDapper)
 {
     protected override List<(string, Func<int, string>, HashSet<string>)> GetColumnMapping()
     {
@@ -30,7 +30,7 @@ public partial class SqliteDriver(DotnetFramework dotnetFramework) : DbDriver(do
             .ToArray();
     }
 
-    public override ConnectionGenCommands EstablishConnection(Query query)
+    public override ConnectionGenCommands EstablishConnection(Query query, bool UseDapper = false)
     {
         return new ConnectionGenCommands(
             $"var {Variable.Connection.Name()} = new SqliteConnection({Variable.ConnectionString.Name()})",
