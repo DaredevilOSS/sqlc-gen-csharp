@@ -1,7 +1,8 @@
 CREATE TABLE authors (
-  id   BIGINT PRIMARY KEY AUTO_INCREMENT,
-  name text      NOT NULL,
-  bio  text
+  id      BIGINT    PRIMARY KEY AUTO_INCREMENT,
+  name    TEXT      NOT NULL,
+  bio     TEXT,
+  created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE node_mysql_types (

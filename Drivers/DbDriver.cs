@@ -1,8 +1,8 @@
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Plugin;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Plugin;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 using static System.String;
 
@@ -15,29 +15,41 @@ public abstract class DbDriver(DotnetFramework dotnetFramework, bool useDapper)
     public bool UseDapper { get; } = useDapper;
     public DotnetFramework DotnetFramework { get; } = dotnetFramework;
 
+    private HashSet<string> CsharpPrimitives { get; } =
+        ["long", "double", "int", "float", "bool", "DateTime"];
+
     public virtual UsingDirectiveSyntax[] GetUsingDirectives()
     {
         var usingDirectives = new List<UsingDirectiveSyntax>();
-        if (UseDapper) usingDirectives.Add(UsingDirective(ParseName("Dapper")));
-        return
-        usingDirectives.Concat([
-            UsingDirective(ParseName("System.Collections.Generic")),
-            UsingDirective(ParseName("System.Threading.Tasks"))
-        ]).ToArray();
+        if (UseDapper)
+            usingDirectives.Add(UsingDirective(ParseName("Dapper")));
+        return usingDirectives
+            .Concat(
+                [
+                    UsingDirective(ParseName("System.Collections.Generic")),
+                    UsingDirective(ParseName("System.Threading.Tasks")),
+                    UsingDirective(ParseName("System"))
+                ]
+            )
+            .ToArray();
     }
 
     protected abstract List<(string, Func<int, string>, HashSet<string>)> GetColumnMapping();
 
     public string AddNullableSuffix(string csharpType, bool notNull)
     {
-        if (notNull) return csharpType;
-        if (IsCsharpPrimitive(csharpType)) return $"{csharpType}?";
+        if (notNull)
+            return csharpType;
+        if (IsCsharpPrimitive(csharpType))
+            return $"{csharpType}?";
         return DotnetFramework.LatestDotnetSupported() ? $"{csharpType}?" : csharpType;
     }
 
     public string GetColumnType(Column column)
     {
-        var columnCsharpType = IsNullOrEmpty(column.Type.Name) ? "object" : GetTypeWithoutNullableSuffix();
+        var columnCsharpType = IsNullOrEmpty(column.Type.Name)
+            ? "object"
+            : GetTypeWithoutNullableSuffix();
         return AddNullableSuffix(columnCsharpType, column.NotNull);
 
         string GetTypeWithoutNullableSuffix()
@@ -69,17 +81,28 @@ public abstract class DbDriver(DotnetFramework dotnetFramework, bool useDapper)
 
     public abstract string CreateSqlCommand(string sqlTextConstant);
 
-    public abstract MemberDeclarationSyntax OneDeclare(string sqlTextConstant, string argInterface,
-        string returnInterface, Query query);
+    public abstract MemberDeclarationSyntax OneDeclare(
+        string sqlTextConstant,
+        string argInterface,
+        string returnInterface,
+        Query query
+    );
 
-    public abstract MemberDeclarationSyntax ManyDeclare(string sqlTextConstant, string argInterface,
-        string returnInterface, Query query);
+    public abstract MemberDeclarationSyntax ManyDeclare(
+        string sqlTextConstant,
+        string argInterface,
+        string returnInterface,
+        Query query
+    );
 
-    public abstract MemberDeclarationSyntax ExecDeclare(string text, string argInterface, Query query);
+    public abstract MemberDeclarationSyntax ExecDeclare(
+        string text,
+        string argInterface,
+        Query query
+    );
 
-    public static bool IsCsharpPrimitive(string csharpType)
+    public bool IsCsharpPrimitive(string csharpType)
     {
-        var csharpPrimitives = new HashSet<string> { "long", "double", "int", "float", "bool" };
-        return csharpPrimitives.Contains(csharpType.Replace("?", ""));
+        return CsharpPrimitives.Contains(csharpType.Replace("?", ""));
     }
 }

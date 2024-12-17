@@ -1,7 +1,8 @@
 CREATE TABLE authors (
-    id   BIGSERIAL PRIMARY KEY,
-    name text      NOT NULL,
-    bio  text
+    id      BIGSERIAL PRIMARY KEY,
+    name    TEXT      NOT NULL,
+    bio     TEXT,
+    created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE node_postgres_types (

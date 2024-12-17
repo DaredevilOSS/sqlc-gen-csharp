@@ -44,6 +44,11 @@ public class MySqlConnectorTests
             Bio: DataGenerator.DrSeussQuote
         }
         ]);
+
+        foreach (var a in actualAuthors)
+        {
+            Assert.That(a.Created >= DateTime.Now.Subtract(TimeSpan.FromSeconds(30)) && a.Created < DateTime.Now);
+        }
     }
 
     [Test]

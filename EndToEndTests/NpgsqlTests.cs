@@ -1,9 +1,9 @@
-using NpgsqlExampleGen;
-using NUnit.Framework;
-using NUnit.Framework.Legacy;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using NpgsqlExampleGen;
+using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace SqlcGenCsharpTests;
 
@@ -13,7 +13,8 @@ public class NpgsqlTests
 
     private static string ConnectionStringEnv => "POSTGRES_CONNECTION_STRING";
 
-    private QuerySql QuerySql { get; } = new(Environment.GetEnvironmentVariable(ConnectionStringEnv)!);
+    private QuerySql QuerySql { get; } =
+        new(Environment.GetEnvironmentVariable(ConnectionStringEnv)!);
 
     [TearDown]
     public async Task EmptyTestsTable()
@@ -44,10 +45,18 @@ public class NpgsqlTests
         Assert.That(
             actualAuthors
                 is [
-                { Name: DataGenerator.BojackAuthor, Bio: DataGenerator.BojackTheme },
-                { Name: DataGenerator.DrSeussAuthor, Bio: DataGenerator.DrSeussQuote }
+                    { Name: DataGenerator.BojackAuthor, Bio: DataGenerator.BojackTheme },
+                    { Name: DataGenerator.DrSeussAuthor, Bio: DataGenerator.DrSeussQuote }
                 ]
         );
+
+        foreach (var a in actualAuthors)
+        {
+            Assert.That(
+                a.Created >= DateTime.Now.Subtract(TimeSpan.FromSeconds(30))
+                    && a.Created < DateTime.Now
+            );
+        }
     }
 
     [Test]

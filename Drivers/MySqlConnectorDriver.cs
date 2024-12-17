@@ -28,16 +28,18 @@ public partial class MySqlConnectorDriver(DotnetFramework dotnetFramework, bool 
             ]),
             ("string", ordinal => $"reader.GetString({ordinal})", [
                 "char",
-                "date",
-                "datetime",
                 "decimal",
                 "longtext",
                 "mediumtext",
                 "text",
                 "time",
-                "timestamp",
                 "tinytext",
                 "varchar"
+            ]),
+            ("DateTime", ordinal => $"reader.GetDateTime({ordinal})", [
+                "date",
+                "datetime",
+                "timestamp"
             ]),
             ("int", ordinal => $"reader.GetInt32({ordinal})", [
                 "int",
