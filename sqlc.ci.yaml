@@ -3,7 +3,7 @@ plugins:
   - name: csharp
     wasm:
       url: file://dist/plugin.wasm
-      sha256: ba41f86341b3ea269bd408fc8bc14cb5f3ce1ef54e7de75c303ee90631373b09
+      sha256: SHA_TO_REPLACE
 sql:
   - schema: "examples/authors/postgresql/schema.sql"
     queries: "examples/authors/postgresql/query.sql"
@@ -16,6 +16,18 @@ sql:
           targetFramework: net8.0
           generateCsproj: true
           namespaceName: NpgsqlExampleGen
+  - schema: "examples/authors/postgresql_dapper/schema.sql"
+    queries: "examples/authors/postgresql_dapper/query.sql"
+    engine: "postgresql"
+    codegen:
+      - plugin: csharp
+        out: NpgsqlDapperExample
+        options:
+          driver: Npgsql
+          useDapper: true
+          targetFramework: net8.0
+          generateCsproj: true
+          namespaceName: NpgsqlDapperExampleGen
   - schema: "examples/authors/mysql/schema.sql"
     queries: "examples/authors/mysql/query.sql"
     engine: "mysql"
