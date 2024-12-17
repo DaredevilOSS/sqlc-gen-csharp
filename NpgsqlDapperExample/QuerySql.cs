@@ -5,6 +5,7 @@
 using Dapper;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System;
 using Npgsql;
 
 namespace NpgsqlDapperExampleGen;
@@ -140,9 +141,9 @@ public class QuerySql(string connectionString)
         public float? C_numeric { get; set; }
         public float? C_real { get; set; }
         public float? C_double_precision { get; set; }
-        public string? C_date { get; set; }
+        public DateTime? C_date { get; set; }
         public string? C_time { get; set; }
-        public string? C_timestamp { get; set; }
+        public DateTime? C_timestamp { get; set; }
         public string? C_char { get; set; }
         public string? C_varchar { get; set; }
         public string? C_character_varying { get; set; }
