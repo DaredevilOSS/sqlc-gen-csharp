@@ -11,6 +11,7 @@ COPY Extensions/*.csproj ./Extensions/
 COPY GeneratedProtobuf/*.csproj ./GeneratedProtobuf/
 COPY LocalRunner/*.csproj ./LocalRunner/
 COPY MySqlConnectorExample/*.csproj ./MySqlConnectorExample/
+COPY NpgsqlDapperExample/*.csproj ./NpgsqlDapperExample/
 COPY NpgsqlExample/*.csproj ./NpgsqlExample/
 COPY PluginOptions/*.csproj ./PluginOptions/
 COPY SqlcGenCsharp/*.csproj ./SqlcGenCsharp/
@@ -24,6 +25,7 @@ COPY Extensions/ ./Extensions/
 COPY GeneratedProtobuf/ ./GeneratedProtobuf/
 COPY LocalRunner/ ./LocalRunner/
 COPY MySqlConnectorExample/ ./MySqlConnectorExample/
+COPY NpgsqlDapperExample/ ./NpgsqlDapperExample/
 COPY NpgsqlExample/ ./NpgsqlExample/
 COPY PluginOptions/ ./PluginOptions/
 COPY SqlcGenCsharp/ ./SqlcGenCsharp/

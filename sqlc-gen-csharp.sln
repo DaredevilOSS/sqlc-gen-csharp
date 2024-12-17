@@ -27,6 +27,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PluginOptions", "PluginOpti
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SqliteExample", "SqliteExample\SqliteExample.csproj", "{B45CE2A9-1429-4C16-B0F6-BEC669C7715C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NpgsqlDapperExample", "NpgsqlDapperExample\NpgsqlDapperExample.csproj", "{99F33AD5-DF1A-460D-A006-558CAE841536}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -83,5 +85,9 @@ Global
 		{B45CE2A9-1429-4C16-B0F6-BEC669C7715C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B45CE2A9-1429-4C16-B0F6-BEC669C7715C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B45CE2A9-1429-4C16-B0F6-BEC669C7715C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{99F33AD5-DF1A-460D-A006-558CAE841536}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{99F33AD5-DF1A-460D-A006-558CAE841536}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{99F33AD5-DF1A-460D-A006-558CAE841536}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{99F33AD5-DF1A-460D-A006-558CAE841536}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

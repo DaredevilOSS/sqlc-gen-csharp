@@ -6,24 +6,41 @@ namespace SqlcGenCsharp.Drivers.Generators;
 
 public class ExecDeclareGen(DbDriver dbDriver)
 {
-    public MemberDeclarationSyntax Generate(string queryTextConstant, string argInterface, Query query)
+    public MemberDeclarationSyntax Generate(string queryTextConstant, string argInterface, Query query, bool useDapper = false)
     {
         var parametersStr = CommonGen.GetParameterListAsString(argInterface, query.Params);
         return ParseMemberDeclaration($$"""
                                         public async Task {{query.Name}}({{parametersStr}})
                                         {
-                                            {{GetMethodBody(queryTextConstant, query)}}
+                                            {{GetMethodBody(queryTextConstant, query, useDapper)}}
                                         }
                                         """)!;
     }
 
-    private string GetMethodBody(string queryTextConstant, Query query)
+    private string GetMethodBody(string queryTextConstant, Query query, bool useDapper)
     {
-        var (establishConnection, connectionOpen) = dbDriver.EstablishConnection(query);
+        var (establishConnection, connectionOpen) = dbDriver.EstablishConnection(query, useDapper);
         var createSqlCommand = dbDriver.CreateSqlCommand(queryTextConstant);
         var commandParameters = CommonGen.GetCommandParameters(query.Params);
         var executeScalar = $"await {Variable.Command.Name()}.ExecuteScalarAsync();";
+
+        if (useDapper)
+        {
+            return GetAsDapper();
+        }
+
         return dbDriver.DotnetFramework.LatestDotnetSupported() ? Get() : GetAsLegacy();
+
+        string GetAsDapper()
+        {
+            var argsParams = query.Params.Count > 0 ? $", args" : "";
+            return $$"""
+                        using ({{establishConnection}})
+                        {
+                            await connection.ExecuteAsync({{queryTextConstant}}{{argsParams}});
+                        }
+                     """;
+        }
 
         string Get()
         {

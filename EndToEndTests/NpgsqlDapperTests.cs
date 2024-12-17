@@ -1,4 +1,4 @@
-using NpgsqlExampleGen;
+using NpgsqlDapperExampleGen;
 using NUnit.Framework;
 using NUnit.Framework.Legacy;
 using System;
@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SqlcGenCsharpTests;
 
-public class NpgsqlTests
+public class NpgsqlDapperTests
 {
     private static readonly Random Randomizer = new();
 
@@ -71,6 +71,8 @@ public class NpgsqlTests
         var actualAuthor = await QuerySql.GetAuthor(
             new QuerySql.GetAuthorArgs { Name = DataGenerator.BojackAuthor }
         );
+        System.Console.WriteLine("running real dapper test");
+        Console.WriteLine("test doron" + actualAuthor);
         ClassicAssert.IsNotNull(actualAuthor);
         Assert.That(
             actualAuthor is { Name: DataGenerator.BojackAuthor, Bio: DataGenerator.BojackTheme }

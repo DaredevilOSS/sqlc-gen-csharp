@@ -6,6 +6,7 @@ dotnet-format:
 		--exclude GeneratedProtobuf \
 		--exclude MySqlConnectorExample \
 		--exclude NpgsqlExample \
+		--exclude NpgsqlDapperExample \
 		--exclude SqliteExample
 
 dockerfile-generate:

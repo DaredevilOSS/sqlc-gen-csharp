@@ -22,7 +22,7 @@ internal class CsprojGen(string projectName, string namespaceName, Options optio
         var nullableProperty = options.DotnetFramework.LatestDotnetSupported() ? "<Nullable>enable</Nullable>" : "";
         // TODO: extract version to user input
         var additionalProperty = options.useDapper
-            ? "<PackageReference Include=\"Dapper\" Version=\"2.0.123\"/>"
+            ? "\n        <PackageReference Include=\"Dapper\" Version=\"2.0.123\"/>"
             : "";
 
 
@@ -41,8 +41,7 @@ internal class CsprojGen(string projectName, string namespaceName, Options optio
                     </PropertyGroup>
                 
                     <ItemGroup>
-                        <PackageReference Include="{options.DriverName.ToName()}" Version="{GetPackageVersion(options.DriverName)}"/>
-                        {additionalProperty}
+                        <PackageReference Include="{options.DriverName.ToName()}" Version="{GetPackageVersion(options.DriverName)}"/>{additionalProperty}
                     </ItemGroup>
 
                 </Project>

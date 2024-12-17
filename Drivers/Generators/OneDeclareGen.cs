@@ -23,16 +23,16 @@ public class OneDeclareGen(DbDriver dbDriver)
                                         """)!;
     }
 
-    private string GetMethodBody(string queryTextConstant, string returnInterface, Query query, bool UseDapper)
+    private string GetMethodBody(string queryTextConstant, string returnInterface, Query query, bool useDapper)
     {
-        var (establishConnection, connectionOpen) = dbDriver.EstablishConnection(query, UseDapper);
+        var (establishConnection, connectionOpen) = dbDriver.EstablishConnection(query, useDapper);
         var createSqlCommand = dbDriver.CreateSqlCommand(queryTextConstant);
         var commandParameters = CommonGen.GetCommandParameters(query.Params);
         var initDataReader = CommonGen.InitDataReader();
         var awaitReaderRow = CommonGen.AwaitReaderRow();
         var returnDataclass = CommonGen.InstantiateDataclass(query.Columns, returnInterface);
 
-        if (UseDapper)
+        if (useDapper)
         {
             return GetAsDapper();
         }
@@ -40,15 +40,13 @@ public class OneDeclareGen(DbDriver dbDriver)
         return dbDriver.DotnetFramework.LatestDotnetSupported() ? Get() : GetAsLegacy();
         string GetAsDapper()
         {
-            var argsSection = query.Params.Count > 0 ? query.Params.Select(p => p.Column.Name + "=args." + p.Column.Name.FirstCharToUpper()).JoinByComma() : "";
-            var argsParams = query.Params.Count > 0 ? $", new {{ {argsSection} }}" : "";
+            var argsParams = query.Params.Count > 0 ? $", args" : "";
             return $$"""
                         using ({{establishConnection}})
                         {
-                            await connection.OpenAsync();
-                            var author = await connection.QueryFirstOrDefaultAsync<{{dbDriver.AddNullableSuffix(returnInterface, false)}}>(
+                            var result = await connection.QueryFirstOrDefaultAsync<{{dbDriver.AddNullableSuffix(returnInterface, false)}}>(
                             {{queryTextConstant}}{{argsParams}});
-                            return author;
+                            return result;
                         }
                      """;
         }

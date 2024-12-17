@@ -125,13 +125,13 @@ public class NpgsqlDriver(DotnetFramework dotnetFramework, bool useDapper) : DbD
 
     public override MemberDeclarationSyntax ExecDeclare(string queryTextConstant, string argInterface, Query query)
     {
-        return new ExecDeclareGen(this).Generate(queryTextConstant, argInterface, query);
+        return new ExecDeclareGen(this).Generate(queryTextConstant, argInterface, query, UseDapper);
     }
 
     public override MemberDeclarationSyntax ManyDeclare(string queryTextConstant, string argInterface,
         string returnInterface, Query query)
     {
-        return new ManyDeclareGen(this).Generate(queryTextConstant, argInterface, returnInterface, query);
+        return new ManyDeclareGen(this).Generate(queryTextConstant, argInterface, returnInterface, query, UseDapper);
     }
 
     public MemberDeclarationSyntax CopyFromDeclare(string queryTextConstant, string argInterface, Query query)
@@ -201,13 +201,19 @@ public class NpgsqlDriver(DotnetFramework dotnetFramework, bool useDapper) : DbD
     public MemberDeclarationSyntax ExecRowsDeclare(string queryTextConstant, string argInterface, Query query)
     {
         var parametersStr = CommonGen.GetParameterListAsString(argInterface, query.Params);
-        var (establishConnection, connectionOpen) = EstablishConnection(query);
+        var (establishConnection, connectionOpen) = EstablishConnection(query, UseDapper);
         var createSqlCommand = CreateSqlCommand(queryTextConstant);
         var commandParameters = CommonGen.GetCommandParameters(query.Params);
         var executeScalarAndReturnCreated = ExecuteScalarAndReturnCreated();
+
+
+
         var methodBody = DotnetFramework.LatestDotnetSupported()
             ? GetWithUsingAsStatement()
             : GetWithUsingAsBlock();
+
+        if (UseDapper)
+            methodBody = GetAsDapper();
 
         return ParseMemberDeclaration($$"""
                                         public async Task<long> {{query.Name}}({{parametersStr}})
@@ -215,6 +221,17 @@ public class NpgsqlDriver(DotnetFramework dotnetFramework, bool useDapper) : DbD
                                             {{methodBody}}
                                         }
                                         """)!;
+
+        string GetAsDapper()
+        {
+            var argsParams = query.Params.Count > 0 ? $", args" : "";
+            return $$"""
+                        using ({{establishConnection}})
+                        {
+                            return await connection.ExecuteAsync({{queryTextConstant}}{{argsParams}});
+                        }
+                     """;
+        }
 
         string GetWithUsingAsStatement()
         {

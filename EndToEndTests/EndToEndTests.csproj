@@ -17,6 +17,7 @@
     <ItemGroup>
         <ProjectReference Include="..\MySqlConnectorExample\MySqlConnectorExample.csproj"/>
         <ProjectReference Include="..\NpgsqlExample\NpgsqlExample.csproj"/>
+        <ProjectReference Include="..\NpgsqlDapperExample\NpgsqlDapperExample.csproj"/>
         <ProjectReference Include="..\SqliteExample\SqliteExample.csproj" />
     </ItemGroup>
 
