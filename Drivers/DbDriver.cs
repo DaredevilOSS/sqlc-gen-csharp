@@ -1,8 +1,8 @@
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Plugin;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Plugin;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 using static System.String;
 

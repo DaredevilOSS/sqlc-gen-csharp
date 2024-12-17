@@ -1,9 +1,9 @@
-using System;
-using System.Linq;
-using System.Threading.Tasks;
 using NpgsqlExampleGen;
 using NUnit.Framework;
 using NUnit.Framework.Legacy;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace SqlcGenCsharpTests;
 
@@ -45,8 +45,8 @@ public class NpgsqlTests
         Assert.That(
             actualAuthors
                 is [
-                    { Name: DataGenerator.BojackAuthor, Bio: DataGenerator.BojackTheme },
-                    { Name: DataGenerator.DrSeussAuthor, Bio: DataGenerator.DrSeussQuote }
+                { Name: DataGenerator.BojackAuthor, Bio: DataGenerator.BojackTheme },
+                { Name: DataGenerator.DrSeussAuthor, Bio: DataGenerator.DrSeussQuote }
                 ]
         );
 
