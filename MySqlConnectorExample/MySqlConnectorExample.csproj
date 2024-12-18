@@ -8,7 +8,7 @@
         <TargetFramework>net8.0</TargetFramework>
         <RootNamespace>MySqlConnectorExampleGen</RootNamespace>
         <OutputType>Library</OutputType>
-<Nullable>enable</Nullable>
+        <Nullable>enable</Nullable>
     </PropertyGroup>
 
     <ItemGroup>
