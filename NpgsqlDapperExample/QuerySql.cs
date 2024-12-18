@@ -11,12 +11,13 @@ using Npgsql;
 namespace NpgsqlDapperExampleGen;
 public class QuerySql(string connectionString)
 {
-    private const string GetAuthorSql = "SELECT id, name, bio FROM authors WHERE name = @name LIMIT 1";
+    private const string GetAuthorSql = "SELECT id, name, bio, created FROM authors WHERE name = @name LIMIT 1";
     public class GetAuthorRow
     {
         public long Id { get; set; }
         public string Name { get; set; }
         public string? Bio { get; set; }
+        public DateTime Created { get; set; }
     };
     public class GetAuthorArgs
     {
@@ -31,12 +32,13 @@ public class QuerySql(string connectionString)
         }
     }
 
-    private const string ListAuthorsSql = "SELECT id, name, bio FROM authors ORDER BY name";
+    private const string ListAuthorsSql = "SELECT id, name, bio, created FROM authors ORDER BY name";
     public class ListAuthorsRow
     {
         public long Id { get; set; }
         public string Name { get; set; }
         public string? Bio { get; set; }
+        public DateTime Created { get; set; }
     };
     public async Task<List<ListAuthorsRow>> ListAuthors()
     {
@@ -47,12 +49,13 @@ public class QuerySql(string connectionString)
         }
     }
 
-    private const string CreateAuthorSql = "INSERT INTO authors (name, bio) VALUES (@name, @bio) RETURNING id, name, bio";
+    private const string CreateAuthorSql = "INSERT INTO authors (name, bio) VALUES (@name, @bio) RETURNING id, name, bio, created";
     public class CreateAuthorRow
     {
         public long Id { get; set; }
         public string Name { get; set; }
         public string? Bio { get; set; }
+        public DateTime Created { get; set; }
     };
     public class CreateAuthorArgs
     {

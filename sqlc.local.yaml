@@ -15,8 +15,8 @@ sql:
           targetFramework: net8.0
           generateCsproj: true
           namespaceName: NpgsqlExampleGen
-  - schema: "examples/authors/postgresql_dapper/schema.sql"
-    queries: "examples/authors/postgresql_dapper/query.sql"
+  - schema: "examples/authors/postgresql/schema.sql"
+    queries: "examples/authors/postgresql/query.sql"
     engine: "postgresql"
     codegen:
       - plugin: csharp
