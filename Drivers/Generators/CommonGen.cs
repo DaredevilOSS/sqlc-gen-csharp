@@ -61,10 +61,15 @@ public class CommonGen(DbDriver dbDriver)
         }
     }
 
-    public static IEnumerable<string> GetCommandParameters(IEnumerable<Parameter> parameters)
+    public IEnumerable<string> GetCommandParameters(IEnumerable<Parameter> parameters)
     {
-        return parameters.Select(param =>
-            $"{Variable.Command.Name()}.Parameters.AddWithValue(\"@{param.Column.Name}\", " +
-            $"args.{param.Column.Name.FirstCharToUpper()});");
+        return parameters.Select(p =>
+        {
+            var varName = Variable.Command.Name();
+            var columnName = p.Column.Name;
+            var param = p.Column.Name.FirstCharToUpper();
+            var nullCheck = dbDriver.DotnetFramework.LatestDotnetSupported() && !p.Column.NotNull ? "!" : "";
+            return $"{varName}.Parameters.AddWithValue(\"@{columnName}\", args.{param}{nullCheck});";
+        });
     }
 }

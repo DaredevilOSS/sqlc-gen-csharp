@@ -12,46 +12,49 @@ namespace SqlcGenCsharp.Drivers;
 
 public partial class MySqlConnectorDriver(DotnetFramework dotnetFramework) : DbDriver(dotnetFramework), IExecLastId
 {
-    protected override List<(string, Func<int, string>, HashSet<string>)> GetColumnMapping()
-    {
-        return
-        [
-            ("long", ordinal => $"reader.GetInt64({ordinal})", ["bigint"]),
-            ("byte[]", ordinal => $"Utils.GetBytes(reader, {ordinal})", [
-                "binary",
-                "bit",
-                "blob",
-                "longblob",
-                "mediumblob",
-                "tinyblob",
-                "varbinary"
-            ]),
-            ("string", ordinal => $"reader.GetString({ordinal})", [
-                "char",
-                "decimal",
-                "longtext",
-                "mediumtext",
-                "text",
-                "time",
-                "tinytext",
-                "varchar"
-            ]),
-            ("DateTime", ordinal => $"reader.GetDateTime({ordinal})", [
-                "date",
-                "datetime",
-                "timestamp"
-            ]),
-            ("int", ordinal => $"reader.GetInt32({ordinal})", [
-                "int",
-                "mediumint",
-                "smallint",
-                "tinyint",
-                "year"
-            ]),
-            ("double", ordinal => $"reader.GetDouble({ordinal})", ["double", "float"]),
-            ("object", ordinal => $"reader.GetString({ordinal})", ["json"])
-        ];
-    }
+    protected override List<ColumnMapping> ColumnMappings { get; } =
+    [
+        new("long", ordinal => $"reader.GetInt64({ordinal})",
+            new Dictionary<string, string?> { { "bigint", null } }),
+        new("byte[]", ordinal => $"Utils.GetBytes(reader, {ordinal})",
+            new Dictionary<string, string?>
+            {
+                { "binary", null },
+                { "bit", null },
+                { "blob", null },
+                { "longblob", null },
+                { "mediumblob", null },
+                { "tinyblob", null },
+                { "varbinary", null }
+            }),
+        new("string", ordinal => $"reader.GetString({ordinal})",
+            new Dictionary<string, string?>
+            {
+                { "char", null },
+                { "decimal", null },
+                { "longtext", null },
+                { "mediumtext", null },
+                { "text", null },
+                { "time", null },
+                { "tinytext", null },
+                { "varchar", null }
+            }),
+        new("DateTime", ordinal => $"reader.GetDateTime({ordinal})",
+            new Dictionary<string, string?> { { "date", null }, { "datetime", null }, { "timestamp", null } }),
+        new("int", ordinal => $"reader.GetInt32({ordinal})",
+            new Dictionary<string, string?>
+            {
+                { "int", null },
+                { "mediumint", null },
+                { "smallint", null },
+                { "tinyint", null },
+                { "year", null }
+            }),
+        new("double", ordinal => $"reader.GetDouble({ordinal})",
+            new Dictionary<string, string?> { { "double", null }, { "float", null } }),
+        new("object", ordinal => $"reader.GetString({ordinal})",
+            new Dictionary<string, string?> { { "json", null } })
+    ];
 
     public override UsingDirectiveSyntax[] GetUsingDirectives()
     {
@@ -92,60 +95,7 @@ public partial class MySqlConnectorDriver(DotnetFramework dotnetFramework) : DbD
 
     public MemberDeclarationSyntax ExecLastIdDeclare(string queryTextConstant, string argInterface, Query query)
     {
-        var parametersStr = CommonGen.GetParameterListAsString(argInterface, query.Params);
-        var (establishConnection, connectionOpen) = EstablishConnection(query);
-        var createSqlCommand = CreateSqlCommand(queryTextConstant);
-        var commandParameters = CommonGen.GetCommandParameters(query.Params);
-        var executeScalarAndReturnCreated = ExecuteScalarAndReturnCreated();
-        var methodBody = DotnetFramework.LatestDotnetSupported()
-            ? GetWithUsingAsStatement()
-            : GetWithUsingAsBlock();
-
-        return ParseMemberDeclaration($$"""
-                                        public async Task<long> {{query.Name}}({{parametersStr}})
-                                        {
-                                            {{methodBody}}
-                                        }
-                                        """)!;
-
-        string GetWithUsingAsStatement()
-        {
-            return $$"""
-                     {
-                         await using {{establishConnection}};
-                         {{connectionOpen.AppendSemicolonUnlessEmpty()}}
-                         await using {{createSqlCommand}};
-                         {{commandParameters.JoinByNewLine()}}
-                         {{executeScalarAndReturnCreated.JoinByNewLine()}}
-                     }
-                     """;
-        }
-
-        string GetWithUsingAsBlock()
-        {
-            return $$"""
-                     {
-                         using ({{establishConnection}})
-                         {
-                             {{connectionOpen.AppendSemicolonUnlessEmpty()}}
-                             using ({{createSqlCommand}})
-                             {
-                                {{commandParameters.JoinByNewLine()}}
-                                {{executeScalarAndReturnCreated.JoinByNewLine()}}
-                             }
-                         }
-                     }
-                     """;
-        }
-
-        IEnumerable<string> ExecuteScalarAndReturnCreated()
-        {
-            return new[]
-            {
-                $"await {Variable.Command.Name()}.ExecuteNonQueryAsync();",
-                $"return {Variable.Command.Name()}.LastInsertedId;"
-            };
-        }
+        return new ExecLastIdDeclareGen(this).Generate(queryTextConstant, argInterface, query);
     }
 
 

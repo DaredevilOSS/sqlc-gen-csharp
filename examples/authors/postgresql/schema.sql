@@ -5,6 +5,13 @@ CREATE TABLE authors (
     created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE TABLE copy_tests (
+    c_int       INTEGER   NOT NULL,
+    c_varchar   VARCHAR   NOT NULL,
+    c_date      DATE      NOT NULL,
+    c_timestamp TIMESTAMP NOT NULL
+);
+
 CREATE TABLE node_postgres_types (
     c_bit BIT(1),
     c_smallint SMALLINT,

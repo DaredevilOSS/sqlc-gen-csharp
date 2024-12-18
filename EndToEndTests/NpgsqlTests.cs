@@ -127,20 +127,22 @@ public class NpgsqlTests
     public async Task TestCopyFlow()
     {
         const int batchSize = 100;
-        var beforeCountRows = QuerySql.ListAuthors().Result.Count;
         var createAuthorBatchArgs = Enumerable.Range(0, batchSize)
             .Select(_ => GenerateRandom())
             .ToList();
-        await QuerySql.CreateAuthorBatch(createAuthorBatchArgs);
-        var afterCountRows = QuerySql.ListAuthors().Result.Count;
-        ClassicAssert.AreEqual(beforeCountRows + batchSize, afterCountRows);
+        await QuerySql.CopyToTests(createAuthorBatchArgs);
+        var countRows = QuerySql.CountCopyRows().Result!.Value.Cnt;
+        ClassicAssert.AreEqual(batchSize, countRows);
+        return;
 
-        QuerySql.CreateAuthorBatchArgs GenerateRandom()
+        QuerySql.CopyToTestsArgs GenerateRandom()
         {
-            return new QuerySql.CreateAuthorBatchArgs
+            return new QuerySql.CopyToTestsArgs
             {
-                Name = $"Author-{Randomizer.Next()}",
-                Bio = $"Bio-{Randomizer.Next()}"
+                C_varchar = Randomizer.Next().ToString(),
+                C_int = Randomizer.Next(),
+                C_date = DateTime.Now.Subtract(TimeSpan.FromMilliseconds(Randomizer.Next())),
+                C_timestamp = DateTime.Now.Subtract(TimeSpan.FromMilliseconds(Randomizer.Next()))
             };
         }
     }
