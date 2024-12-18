@@ -2,9 +2,9 @@
 // ReSharper disable NotAccessedPositionalProperty.Global
 // ReSharper disable UnusedAutoPropertyAccessor.Global
 // ReSharper disable InconsistentNaming
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using System;
 using MySqlConnector;
 
 namespace MySqlConnectorExampleGen;

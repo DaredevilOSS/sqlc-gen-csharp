@@ -2,10 +2,10 @@
 // ReSharper disable NotAccessedPositionalProperty.Global
 // ReSharper disable UnusedAutoPropertyAccessor.Global
 // ReSharper disable InconsistentNaming
-using Dapper;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using System;
+using Dapper;
 using Npgsql;
 
 namespace NpgsqlDapperExampleGen;

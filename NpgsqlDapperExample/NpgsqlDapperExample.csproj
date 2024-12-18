@@ -8,12 +8,12 @@
         <TargetFramework>net8.0</TargetFramework>
         <RootNamespace>NpgsqlDapperExampleGen</RootNamespace>
         <OutputType>Library</OutputType>
-        <Nullable>enable</Nullable>
+<Nullable>enable</Nullable>
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Npgsql" Version="8.0.3"/>
-        <PackageReference Include="Dapper" Version="2.0.123"/>
-    </ItemGroup>
+    <PackageReference Include="Npgsql" Version="8.0.3"/>
+    <PackageReference Include="Dapper" Version="2.0.123"/>
+</ItemGroup>
 
 </Project>
