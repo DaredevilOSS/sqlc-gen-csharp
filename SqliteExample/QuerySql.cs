@@ -2,11 +2,11 @@
 // ReSharper disable NotAccessedPositionalProperty.Global
 // ReSharper disable UnusedAutoPropertyAccessor.Global
 // ReSharper disable InconsistentNaming
-using Microsoft.Data.Sqlite;
-using System;
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System;
+using Microsoft.Data.Sqlite;
+using System;
 
 namespace SqliteExampleGen;
 public class QuerySql(string connectionString)

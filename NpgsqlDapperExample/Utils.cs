@@ -11,7 +11,7 @@ public static class Utils
         if (reader is null)
             throw new ArgumentNullException(nameof(reader));
         var buffer = new byte[bufferSize];
-        var (bytesRead, offset) = (0, 0);
+        var(bytesRead, offset) = (0, 0);
         while (bytesRead < bufferSize)
         {
             var read = (int)reader.GetBytes(ordinal, bufferSize + bytesRead, buffer, offset, bufferSize - bytesRead);

@@ -3,10 +3,10 @@
 // ReSharper disable UnusedAutoPropertyAccessor.Global
 // ReSharper disable InconsistentNaming
 using Dapper;
-using Npgsql;
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System;
+using Npgsql;
 
 namespace NpgsqlDapperExampleGen;
 public class QuerySql(string connectionString)
@@ -115,7 +115,7 @@ public class QuerySql(string connectionString)
         }
     }
 
-    private const string UpdateAuthorsSql = "UPDATE authors  SET  bio  =  @bio  WHERE  bio  IS  NOT  NULL  ";
+    private const string UpdateAuthorsSql = "UPDATE authors  SET  bio  =  @bio  WHERE  bio  IS  NOT  NULL  ";  
     public class UpdateAuthorsArgs
     {
         public string? Bio { get; set; }
