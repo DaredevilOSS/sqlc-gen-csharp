@@ -209,8 +209,6 @@ public class NpgsqlDriver(DotnetFramework dotnetFramework, bool useDapper) : DbD
         var commandParameters = CommonGen.GetCommandParameters(query.Params);
         var executeScalarAndReturnCreated = ExecuteScalarAndReturnCreated();
 
-
-
         var methodBody = DotnetFramework.LatestDotnetSupported()
             ? GetWithUsingAsStatement()
             : GetWithUsingAsBlock();
