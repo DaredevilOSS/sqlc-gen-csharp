@@ -6,25 +6,25 @@ namespace SqlcGenCsharp.Drivers.Generators;
 
 public class ExecDeclareGen(DbDriver dbDriver)
 {
-    public MemberDeclarationSyntax Generate(string queryTextConstant, string argInterface, Query query, bool useDapper = false)
+    public MemberDeclarationSyntax Generate(string queryTextConstant, string argInterface, Query query)
     {
         var parametersStr = CommonGen.GetParameterListAsString(argInterface, query.Params);
         return ParseMemberDeclaration($$"""
                                         public async Task {{query.Name}}({{parametersStr}})
                                         {
-                                            {{GetMethodBody(queryTextConstant, query, useDapper)}}
+                                            {{GetMethodBody(queryTextConstant, query)}}
                                         }
                                         """)!;
     }
 
-    private string GetMethodBody(string queryTextConstant, Query query, bool useDapper)
+    private string GetMethodBody(string queryTextConstant, Query query)
     {
-        var (establishConnection, connectionOpen) = dbDriver.EstablishConnection(query, useDapper);
+        var (establishConnection, connectionOpen) = dbDriver.EstablishConnection(query);
         var createSqlCommand = dbDriver.CreateSqlCommand(queryTextConstant);
         var commandParameters = CommonGen.GetCommandParameters(query.Params);
         var executeScalar = $"await {Variable.Command.Name()}.ExecuteScalarAsync();";
 
-        if (useDapper)
+        if (dbDriver.UseDapper)
         {
             return GetAsDapper();
         }

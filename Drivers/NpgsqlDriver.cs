@@ -71,7 +71,7 @@ public class NpgsqlDriver(DotnetFramework dotnetFramework, bool useDapper) : DbD
             .ToArray();
     }
 
-    public override ConnectionGenCommands EstablishConnection(Query query, bool UseDapper = false)
+    public override ConnectionGenCommands EstablishConnection(Query query)
     {
         if (query.Cmd == ":copyfrom")
         {
@@ -123,18 +123,18 @@ public class NpgsqlDriver(DotnetFramework dotnetFramework, bool useDapper) : DbD
     public override MemberDeclarationSyntax OneDeclare(string queryTextConstant, string argInterface,
         string returnInterface, Query query)
     {
-        return new OneDeclareGen(this).Generate(queryTextConstant, argInterface, returnInterface, query, UseDapper);
+        return new OneDeclareGen(this).Generate(queryTextConstant, argInterface, returnInterface, query);
     }
 
     public override MemberDeclarationSyntax ExecDeclare(string queryTextConstant, string argInterface, Query query)
     {
-        return new ExecDeclareGen(this).Generate(queryTextConstant, argInterface, query, UseDapper);
+        return new ExecDeclareGen(this).Generate(queryTextConstant, argInterface, query);
     }
 
     public override MemberDeclarationSyntax ManyDeclare(string queryTextConstant, string argInterface,
         string returnInterface, Query query)
     {
-        return new ManyDeclareGen(this).Generate(queryTextConstant, argInterface, returnInterface, query, UseDapper);
+        return new ManyDeclareGen(this).Generate(queryTextConstant, argInterface, returnInterface, query);
     }
 
     public MemberDeclarationSyntax CopyFromDeclare(string queryTextConstant, string argInterface, Query query)
@@ -204,7 +204,7 @@ public class NpgsqlDriver(DotnetFramework dotnetFramework, bool useDapper) : DbD
     public MemberDeclarationSyntax ExecRowsDeclare(string queryTextConstant, string argInterface, Query query)
     {
         var parametersStr = CommonGen.GetParameterListAsString(argInterface, query.Params);
-        var (establishConnection, connectionOpen) = EstablishConnection(query, UseDapper);
+        var (establishConnection, connectionOpen) = EstablishConnection(query);
         var createSqlCommand = CreateSqlCommand(queryTextConstant);
         var commandParameters = CommonGen.GetCommandParameters(query.Params);
         var executeScalarAndReturnCreated = ExecuteScalarAndReturnCreated();

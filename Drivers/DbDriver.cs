@@ -2,7 +2,6 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Plugin;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 using static System.String;
 
@@ -71,7 +70,7 @@ public abstract class DbDriver(DotnetFramework dotnetFramework, bool useDapper)
 
     public abstract string TransformQueryText(Query query);
 
-    public abstract ConnectionGenCommands EstablishConnection(Query query, bool UseDapper = false);
+    public abstract ConnectionGenCommands EstablishConnection(Query query);
 
     public abstract string CreateSqlCommand(string sqlTextConstant);
 

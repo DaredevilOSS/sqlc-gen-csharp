@@ -60,7 +60,7 @@ public partial class MySqlConnectorDriver(DotnetFramework dotnetFramework, bool 
             .ToArray();
     }
 
-    public override ConnectionGenCommands EstablishConnection(Query query, bool UseDapper = false)
+    public override ConnectionGenCommands EstablishConnection(Query query)
     {
         return new ConnectionGenCommands(
             $"var {Variable.Connection.Name()} = new MySqlConnection({Variable.ConnectionString.Name()})",

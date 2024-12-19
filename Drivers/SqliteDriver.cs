@@ -30,7 +30,7 @@ public partial class SqliteDriver(DotnetFramework dotnetFramework, bool useDappe
             .ToArray();
     }
 
-    public override ConnectionGenCommands EstablishConnection(Query query, bool UseDapper = false)
+    public override ConnectionGenCommands EstablishConnection(Query query)
     {
         return new ConnectionGenCommands(
             $"var {Variable.Connection.Name()} = new SqliteConnection({Variable.ConnectionString.Name()})",
