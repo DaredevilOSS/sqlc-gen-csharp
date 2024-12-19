@@ -1,33 +1,33 @@
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Plugin;
+using System.Collections.Generic;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace SqlcGenCsharp.Drivers.Generators;
 
-public class ExecDeclareGen(DbDriver dbDriver)
+public class ExecRowsDeclareGen(DbDriver dbDriver)
 {
     private CommonGen CommonGen { get; } = new(dbDriver);
 
     public MemberDeclarationSyntax Generate(string queryTextConstant, string argInterface, Query query)
     {
         var parametersStr = CommonGen.GetParameterListAsString(argInterface, query.Params);
-        return ParseMemberDeclaration($$"""
-                                        public async Task {{query.Name}}({{parametersStr}})
-                                        {
-                                            {{GetMethodBody(queryTextConstant, query)}}
-                                        }
-                                        """)!;
-    }
-
-    private string GetMethodBody(string queryTextConstant, Query query)
-    {
         var (establishConnection, connectionOpen) = dbDriver.EstablishConnection(query);
         var createSqlCommand = dbDriver.CreateSqlCommand(queryTextConstant);
         var commandParameters = CommonGen.GetCommandParameters(query.Params);
-        var executeScalar = $"await {Variable.Command.Name()}.ExecuteScalarAsync();";
-        return dbDriver.DotnetFramework.LatestDotnetSupported() ? Get() : GetAsLegacy();
+        var executeScalarAndReturnCreated = ExecuteScalarAndReturnCreated();
+        var methodBody = dbDriver.DotnetFramework.LatestDotnetSupported()
+            ? GetWithUsingAsStatement()
+            : GetWithUsingAsBlock();
 
-        string Get()
+        return ParseMemberDeclaration($$"""
+                                        public async Task<long> {{query.Name}}({{parametersStr}})
+                                        {
+                                            {{methodBody}}
+                                        }
+                                        """)!;
+
+        string GetWithUsingAsStatement()
         {
             return $$"""
                      {
@@ -35,12 +35,12 @@ public class ExecDeclareGen(DbDriver dbDriver)
                          {{connectionOpen.AppendSemicolonUnlessEmpty()}}
                          await using {{createSqlCommand}};
                          {{commandParameters.JoinByNewLine()}}
-                         {{executeScalar}}
+                         {{executeScalarAndReturnCreated.JoinByNewLine()}}
                      }
                      """;
         }
 
-        string GetAsLegacy()
+        string GetWithUsingAsBlock()
         {
             return $$"""
                      {
@@ -49,12 +49,17 @@ public class ExecDeclareGen(DbDriver dbDriver)
                              {{connectionOpen.AppendSemicolonUnlessEmpty()}}
                              using ({{createSqlCommand}})
                              {
-                                 {{commandParameters.JoinByNewLine()}}
-                                 {{executeScalar}}
+                                {{commandParameters.JoinByNewLine()}}
+                                {{executeScalarAndReturnCreated.JoinByNewLine()}}
                              }
                          }
                      }
                      """;
+        }
+
+        IEnumerable<string> ExecuteScalarAndReturnCreated()
+        {
+            return [$"return await {Variable.Command.Name()}.ExecuteNonQueryAsync();"];
         }
     }
 }

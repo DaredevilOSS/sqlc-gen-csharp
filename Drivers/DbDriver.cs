@@ -2,6 +2,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Plugin;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 using static System.String;
 
@@ -15,6 +16,8 @@ public abstract class DbDriver(DotnetFramework dotnetFramework)
 
     private HashSet<string> CsharpPrimitives { get; } = ["long", "double", "int", "float", "bool", "DateTime"];
 
+    protected abstract List<ColumnMapping> ColumnMappings { get; }
+
     public virtual UsingDirectiveSyntax[] GetUsingDirectives()
     {
         return
@@ -24,8 +27,6 @@ public abstract class DbDriver(DotnetFramework dotnetFramework)
             UsingDirective(ParseName("System"))
         ];
     }
-
-    protected abstract List<(string, Func<int, string>, HashSet<string>)> GetColumnMapping();
 
     public string AddNullableSuffix(string csharpType, bool notNull)
     {
@@ -42,10 +43,10 @@ public abstract class DbDriver(DotnetFramework dotnetFramework)
         string GetTypeWithoutNullableSuffix()
         {
             var columnType = column.Type.Name.ToLower();
-            foreach (var (csharpType, _, dbTypes) in GetColumnMapping())
+            foreach (var columnMapping in ColumnMappings
+                         .Where(columnMapping => columnMapping.DbTypes.ContainsKey(columnType)))
             {
-                if (dbTypes.Contains(columnType))
-                    return csharpType;
+                return columnMapping.CsharpType;
             }
             throw new NotSupportedException($"Unsupported column type: {column.Type.Name}");
         }
@@ -54,11 +55,23 @@ public abstract class DbDriver(DotnetFramework dotnetFramework)
     public string GetColumnReader(Column column, int ordinal)
     {
         var columnType = column.Type.Name.ToLower();
-        foreach (var (_, getDataReader, dbTypes) in GetColumnMapping())
+        foreach (var columnMapping in ColumnMappings
+                     .Where(columnMapping => columnMapping.DbTypes.ContainsKey(columnType)))
         {
-            if (dbTypes.Contains(columnType))
-                return getDataReader(ordinal);
+            return columnMapping.ReaderFn(ordinal);
         }
+        throw new NotSupportedException($"Unsupported column type: {column.Type.Name}");
+    }
+
+    public string? GetColumnDbTypeOverride(Column column)
+    {
+        var columnType = column.Type.Name.ToLower();
+        foreach (var columnMapping in ColumnMappings)
+        {
+            if (columnMapping.DbTypes.TryGetValue(columnType, out var dbTypeOverride))
+                return dbTypeOverride;
+        }
+
         throw new NotSupportedException($"Unsupported column type: {column.Type.Name}");
     }
 
