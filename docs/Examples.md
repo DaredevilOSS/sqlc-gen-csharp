@@ -11,6 +11,19 @@ generateCsproj: true
 namespaceName: NpgsqlExampleGen
 ```
 
+## Engine `postgresql`: [NpgsqlDapperExample](../NpgsqlDapperExample)
+
+### [Schema](../examples/authors/postgresql/schema.sql) | [Queries](../examples/authors/postgresql/query.sql) | [End2End Test](../EndToEndTests/NpgsqlDapperTester.cs)
+
+### Config
+```yaml
+driver: Npgsql
+useDapper: true
+targetFramework: net8.0
+generateCsproj: true
+namespaceName: NpgsqlDapperExampleGen
+```
+
 ## Engine `mysql`: [MySqlConnectorExample](../MySqlConnectorExample)
 
 ### [Schema](../examples/authors/mysql/schema.sql) | [Queries](../examples/authors/mysql/query.sql) | [End2End Test](../EndToEndTests/MySqlConnectorTester.cs)
