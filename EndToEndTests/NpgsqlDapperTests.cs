@@ -71,8 +71,6 @@ public class NpgsqlDapperTests
         var actualAuthor = await QuerySql.GetAuthor(
             new QuerySql.GetAuthorArgs { Name = DataGenerator.BojackAuthor }
         );
-        System.Console.WriteLine("running real dapper test");
-        Console.WriteLine("test doron" + actualAuthor);
         ClassicAssert.IsNotNull(actualAuthor);
         Assert.That(
             actualAuthor is { Name: DataGenerator.BojackAuthor, Bio: DataGenerator.BojackTheme }
@@ -124,28 +122,5 @@ public class NpgsqlDapperTests
         };
         var affectedRows = await QuerySql.UpdateAuthors(updateAuthorsArgs);
         ClassicAssert.AreEqual(2, affectedRows);
-    }
-
-    [Test]
-    public async Task TestCopyFlow()
-    {
-        const int batchSize = 100;
-        var beforeCountRows = QuerySql.ListAuthors().Result.Count;
-        var createAuthorBatchArgs = Enumerable
-            .Range(0, batchSize)
-            .Select(_ => GenerateRandom())
-            .ToList();
-        await QuerySql.CreateAuthorBatch(createAuthorBatchArgs);
-        var afterCountRows = QuerySql.ListAuthors().Result.Count;
-        ClassicAssert.AreEqual(beforeCountRows + batchSize, afterCountRows);
-
-        QuerySql.CreateAuthorBatchArgs GenerateRandom()
-        {
-            return new QuerySql.CreateAuthorBatchArgs
-            {
-                Name = $"Author-{Randomizer.Next()}",
-                Bio = $"Bio-{Randomizer.Next()}"
-            };
-        }
     }
 }

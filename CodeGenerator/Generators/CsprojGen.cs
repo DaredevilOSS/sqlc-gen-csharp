@@ -34,7 +34,7 @@ internal class CsprojGen(string projectName, string namespaceName, Options optio
                         <OutputType>Library</OutputType>{optinalNullableProperty}
                     </PropertyGroup>
                 
-                    {getItemGroup()}
+                {getItemGroup()}
 
                 </Project>
                 """;
@@ -45,16 +45,16 @@ internal class CsprojGen(string projectName, string namespaceName, Options optio
             {
                 // TODO: extract version to user input
                 return $"""
-                    <ItemGroup>
-                        <PackageReference Include="{options.DriverName.ToName()}" Version="{GetPackageVersion(options.DriverName)}"/>
-                        <PackageReference Include="Dapper" Version="2.0.123"/>
-                    </ItemGroup>
-                    """;
+                           <ItemGroup>
+                               <PackageReference Include="{options.DriverName.ToName()}" Version="{GetPackageVersion(options.DriverName)}"/>
+                               <PackageReference Include="Dapper" Version="2.0.123"/>
+                           </ItemGroup>
+                       """;
             }
             return $"""
-                    <ItemGroup>
-                        <PackageReference Include="{options.DriverName.ToName()}" Version="{GetPackageVersion(options.DriverName)}"/>
-                    </ItemGroup>
+                        <ItemGroup>
+                            <PackageReference Include="{options.DriverName.ToName()}" Version="{GetPackageVersion(options.DriverName)}"/>
+                        </ItemGroup>
                     """;
         }
     }
