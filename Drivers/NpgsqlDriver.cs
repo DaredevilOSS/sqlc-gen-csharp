@@ -1,7 +1,6 @@
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Plugin;
 using SqlcGenCsharp.Drivers.Generators;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -9,65 +8,76 @@ using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace SqlcGenCsharp.Drivers;
 
-public class NpgsqlDriver(DotnetFramework dotnetFramework, bool useDapper) : DbDriver(dotnetFramework, useDapper), ICopyFrom, IExecRows
+public class NpgsqlDriver : DbDriver, ICopyFrom, IExecRows
 {
-    protected override List<(string, Func<int, string>, HashSet<string>)> GetColumnMapping()
+    public NpgsqlDriver(DotnetFramework dotnetFramework, bool useDapper) : base(dotnetFramework, useDapper)
     {
-        return
-        [
-            ("long", ordinal => $"reader.GetInt64({ordinal})", ["serial", "bigserial"]),
-            ("byte[]", ordinal => $"Utils.GetBytes(reader, {ordinal})", [
-                "binary",
-                "bit",
-                "bytea",
-                "blob",
-                "longblob",
-                "mediumblob",
-                "tinyblob",
-                "varbinary"
-            ]),
-            ("string", ordinal => $"reader.GetString({ordinal})",
-            [
-                "char",
-
-                "longtext",
-                "mediumtext",
-                "text",
-                "bpchar",
-                "time",
-                "tinytext",
-                "varchar",
-                "pg_catalog.varchar"
-            ]),
-            ("DateTime", ordinal => $"reader.GetDateTime({ordinal})", [
-                "date",
-                "datetime",
-                "timestamp"
-            ]),
-            ("object", ordinal => $"reader.GetString({ordinal})", ["json"]),
-            ("int", ordinal => $"reader.GetInt32({ordinal})", [
-                "integer",
-                "int2",
-                "int4",
-                "int8",
-                "pg_catalog.int2",
-                "pg_catalog.int4",
-                "pg_catalog.int8"
-            ]),
-            ("float", ordinal => $"reader.GetFloat({ordinal})", ["numeric", "float4", "float8"]),
-            ("decimal", ordinal => $"reader.GetDecimal({ordinal})", ["decimal"]),
-            ("bool", ordinal => $"reader.GetBoolean({ordinal})", [
-                "bool",
-                "boolean",
-                "pg_catalog.bool"
-            ])
-        ];
+        foreach (var columnMapping in ColumnMappings)
+        {
+            foreach (var dbType in columnMapping.DbTypes.ToList())
+            {
+                var dbTypeToAdd = $"pg_catalog.{dbType.Key}";
+                columnMapping.DbTypes.Add(dbTypeToAdd, dbType.Value);
+            }
+        }
     }
+
+    protected sealed override List<ColumnMapping> ColumnMappings { get; } =
+    [
+        new("long", ordinal => $"reader.GetInt64({ordinal})",
+            new Dictionary<string, string?> { { "int8", null }, { "bigint", null }, { "bigserial", null } }),
+        new("byte[]", ordinal => $"Utils.GetBytes(reader, {ordinal})",
+            new Dictionary<string, string?>
+            {
+                { "binary", null },
+                { "bit", null },
+                { "bytea", null },
+                { "blob", null },
+                { "longblob", null },
+                { "mediumblob", null },
+                { "tinyblob", null },
+                { "varbinary", null }
+            }),
+        new("string", ordinal => $"reader.GetString({ordinal})",
+            new Dictionary<string, string?>
+            {
+                { "longtext", null },
+                { "mediumtext", null },
+                { "text", null },
+                { "bpchar", null },
+                { "time", null },
+                { "tinytext", null },
+                { "varchar", "NpgsqlDbType.Varchar" }
+            }),
+        new("DateTime", ordinal => $"reader.GetDateTime({ordinal})",
+            new Dictionary<string, string?>
+            {
+                { "date", "NpgsqlDbType.Date" }, { "timestamp", "NpgsqlDbType.Timestamp" },
+            }),
+        new("object", ordinal => $"reader.GetString({ordinal})",
+            new Dictionary<string, string?> { { "json", null } }),
+        new("int", ordinal => $"reader.GetInt32({ordinal})",
+            new Dictionary<string, string?>
+            {
+                { "integer", "NpgsqlDbType.Integer" },
+                { "int", "NpgsqlDbType.Integer" },
+                { "int2", null },
+                { "int4", "NpgsqlDbType.Integer" },
+                { "serial", null }
+            }),
+        new("float", ordinal => $"reader.GetFloat({ordinal})",
+            new Dictionary<string, string?> { { "numeric", null }, { "float4", null }, { "float8", null } }),
+        new("decimal", ordinal => $"reader.GetDecimal({ordinal})",
+            new Dictionary<string, string?> { { "decimal", null } }),
+        new("bool", ordinal => $"reader.GetBoolean({ordinal})",
+            new Dictionary<string, string?> { { "bool", null }, { "boolean", null } })
+    ];
 
     public override UsingDirectiveSyntax[] GetUsingDirectives()
     {
         return base.GetUsingDirectives()
             .Append(UsingDirective(ParseName("Npgsql")))
+            .Append(UsingDirective(ParseName("NpgsqlTypes")))
             .ToArray();
     }
 
@@ -80,6 +90,7 @@ public class NpgsqlDriver(DotnetFramework dotnetFramework, bool useDapper) : DbD
                 $"var {Variable.Connection.Name()} = ds.CreateConnection()"
             );
         }
+
         if (UseDapper)
         {
             return new ConnectionGenCommands(
@@ -111,6 +122,7 @@ public class NpgsqlDriver(DotnetFramework dotnetFramework, bool useDapper) : DbD
             queryText = Regex.Replace(queryText, $@"\$\s*{i + 1}",
                 $"@{currentParameter.Column.Name.FirstCharToLower()}");
         }
+
         return queryText;
 
         string GetCopyCommand()
@@ -139,137 +151,11 @@ public class NpgsqlDriver(DotnetFramework dotnetFramework, bool useDapper) : DbD
 
     public MemberDeclarationSyntax CopyFromDeclare(string queryTextConstant, string argInterface, Query query)
     {
-        var (establishConnection, connectionOpen) = EstablishConnection(query);
-        var beginBinaryImport = $"{Variable.Connection.Name()}.BeginBinaryImportAsync({queryTextConstant}";
-        var methodBody = DotnetFramework.LatestDotnetSupported() ? GetAsModernDotnet() : GetAsLegacyDotnet();
-
-        return ParseMemberDeclaration($$"""
-                                        public async Task {{query.Name}}(List<{{argInterface}}> args)
-                                        {
-                                            {{methodBody}}
-                                        }
-                                        """)!;
-
-        string GetAsModernDotnet()
-        {
-            var addRowsToCopyCommand = AddRowsToCopyCommand();
-            return $$"""
-                     {
-                         await using {{establishConnection}};
-                         {{connectionOpen.AppendSemicolonUnlessEmpty()}}
-                         await {{Variable.Connection.Name()}}.OpenAsync();
-                         await using var {{Variable.Writer.Name()}} = await {{beginBinaryImport}});
-                         {{addRowsToCopyCommand}}
-                         await {{Variable.Writer.Name()}}.CompleteAsync();
-                         await {{Variable.Connection.Name()}}.CloseAsync();
-                     }
-                     """;
-        }
-
-        string GetAsLegacyDotnet()
-        {
-            var addRowsToCopyCommand = AddRowsToCopyCommand();
-            return $$"""
-                     {
-                         using ({{establishConnection}})
-                         {
-                             {{connectionOpen.AppendSemicolonUnlessEmpty()}}
-                             await {{Variable.Connection.Name()}}.OpenAsync();
-                             using (var {{Variable.Writer.Name()}} = await {{beginBinaryImport}}))
-                             {
-                                {{addRowsToCopyCommand}}
-                                await {{Variable.Writer.Name()}}.CompleteAsync();
-                             }
-                             await {{Variable.Connection.Name()}}.CloseAsync();
-                         }
-                     }
-                     """;
-        }
-
-        string AddRowsToCopyCommand()
-        {
-            var constructRow = new List<string>()
-                    .Append($"await {Variable.Writer.Name()}.StartRowAsync();")
-                    .Concat(query.Params.Select(p => $"await {Variable.Writer.Name()}.WriteAsync({Variable.Row.Name()}.{p.Column.Name.FirstCharToUpper()});"))
-                    .JoinByNewLine();
-            return $$"""
-                   foreach (var {{Variable.Row.Name()}} in args) 
-                   {
-                        {{constructRow}}
-                   }
-                   """;
-        }
+        return new CopyFromDeclareGen(this).Generate(queryTextConstant, argInterface, query);
     }
 
     public MemberDeclarationSyntax ExecRowsDeclare(string queryTextConstant, string argInterface, Query query)
     {
-        var parametersStr = CommonGen.GetParameterListAsString(argInterface, query.Params);
-        var (establishConnection, connectionOpen) = EstablishConnection(query);
-        var createSqlCommand = CreateSqlCommand(queryTextConstant);
-        var commandParameters = CommonGen.GetCommandParameters(query.Params);
-        var executeScalarAndReturnCreated = ExecuteScalarAndReturnCreated();
-
-        var methodBody = DotnetFramework.LatestDotnetSupported()
-            ? GetWithUsingAsStatement()
-            : GetWithUsingAsBlock();
-
-        if (UseDapper)
-            methodBody = GetAsDapper();
-
-        return ParseMemberDeclaration($$"""
-                                        public async Task<long> {{query.Name}}({{parametersStr}})
-                                        {
-                                            {{methodBody}}
-                                        }
-                                        """)!;
-
-        string GetAsDapper()
-        {
-            var argsParams = query.Params.Count > 0 ? $", args" : "";
-            return $$"""
-                        using ({{establishConnection}})
-                        {
-                            return await connection.ExecuteAsync({{queryTextConstant}}{{argsParams}});
-                        }
-                     """;
-        }
-
-        string GetWithUsingAsStatement()
-        {
-            return $$"""
-                     {
-                         await using {{establishConnection}};
-                         {{connectionOpen.AppendSemicolonUnlessEmpty()}}
-                         await using {{createSqlCommand}};
-                         {{commandParameters.JoinByNewLine()}}
-                         {{executeScalarAndReturnCreated.JoinByNewLine()}}
-                     }
-                     """;
-        }
-
-        string GetWithUsingAsBlock()
-        {
-            return $$"""
-                     {
-                         using ({{establishConnection}})
-                         {
-                             {{connectionOpen.AppendSemicolonUnlessEmpty()}}
-                             using ({{createSqlCommand}})
-                             {
-                                {{commandParameters.JoinByNewLine()}}
-                                {{executeScalarAndReturnCreated.JoinByNewLine()}}
-                             }
-                         }
-                     }
-                     """;
-        }
-
-        IEnumerable<string> ExecuteScalarAndReturnCreated()
-        {
-            return new[]
-            {
-                $"return await {Variable.Command.Name()}.ExecuteNonQueryAsync();",
-            };
-        }
+        return new ExecRowsDeclareGen(this).Generate(queryTextConstant, argInterface, query);
     }
 }

@@ -1,7 +1,6 @@
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Plugin;
 using SqlcGenCsharp.Drivers.Generators;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -11,22 +10,33 @@ namespace SqlcGenCsharp.Drivers;
 
 public partial class SqliteDriver(DotnetFramework dotnetFramework, bool useDapper) : DbDriver(dotnetFramework, useDapper)
 {
-    protected override List<(string, Func<int, string>, HashSet<string>)> GetColumnMapping()
-    {
-        return
-        [
-            ("byte[]", ordinal => $"Utils.GetBytes(reader, {ordinal})", ["blob"]),
-            ("string", ordinal => $"reader.GetString({ordinal})", ["text"]),
-            ("int", ordinal => $"reader.GetInt32({ordinal})", ["integer"]),
-            ("float", ordinal => $"reader.GetFloat({ordinal})", ["real"]),
-        ];
-    }
+    protected override List<ColumnMapping> ColumnMappings { get; } = [
+        new("byte[]", ordinal => $"Utils.GetBytes(reader, {ordinal})",
+            new Dictionary<string, string?>
+            {
+                {"blob", null}
+            }),
+        new("string", ordinal => $"reader.GetString({ordinal})",
+            new Dictionary<string, string?>
+            {
+                {"text", null}
+            }),
+        new("int", ordinal => $"reader.GetInt32({ordinal})",
+            new Dictionary<string, string?>{
+            {
+                "integer", null
+            }}),
+        new("float", ordinal => $"reader.GetFloat({ordinal})",
+            new Dictionary<string, string?>
+            {
+                {"real", null}
+            }),
+    ];
 
     public override UsingDirectiveSyntax[] GetUsingDirectives()
     {
         return base.GetUsingDirectives()
             .Append(UsingDirective(ParseName("Microsoft.Data.Sqlite")))
-            .Append(UsingDirective(ParseName("System")))
             .ToArray();
     }
 

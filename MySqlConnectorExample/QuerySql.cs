@@ -64,7 +64,7 @@ public class QuerySql(string connectionString)
             connection.Open();
             await using var command = new MySqlCommand(CreateAuthorSql, connection);
             command.Parameters.AddWithValue("@name", args.Name);
-            command.Parameters.AddWithValue("@bio", args.Bio);
+            command.Parameters.AddWithValue("@bio", args.Bio!);
             await command.ExecuteScalarAsync();
         }
     }
@@ -77,7 +77,7 @@ public class QuerySql(string connectionString)
             await using var connection = new MySqlConnection(connectionString);
             connection.Open();
             await using var command = new MySqlCommand(UpdateAuthorSql, connection);
-            command.Parameters.AddWithValue("@bio", args.Bio);
+            command.Parameters.AddWithValue("@bio", args.Bio!);
             command.Parameters.AddWithValue("@id", args.Id);
             await command.ExecuteScalarAsync();
         }
@@ -92,7 +92,7 @@ public class QuerySql(string connectionString)
             connection.Open();
             await using var command = new MySqlCommand(CreateAuthorReturnIdSql, connection);
             command.Parameters.AddWithValue("@name", args.Name);
-            command.Parameters.AddWithValue("@bio", args.Bio);
+            command.Parameters.AddWithValue("@bio", args.Bio!);
             await command.ExecuteNonQueryAsync();
             return command.LastInsertedId;
         }

@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Dapper;
 using Npgsql;
+using NpgsqlTypes;
 
 namespace NpgsqlDapperExampleGen;
 public class QuerySql(string connectionString)
@@ -93,31 +94,6 @@ public class QuerySql(string connectionString)
         }
     }
 
-    private const string CreateAuthorBatchSql = "COPY authors (name, bio) FROM STDIN (FORMAT BINARY)";
-    public class CreateAuthorBatchArgs
-    {
-        public string Name { get; set; }
-        public string? Bio { get; set; }
-    };
-    public async Task CreateAuthorBatch(List<CreateAuthorBatchArgs> args)
-    {
-        {
-            await using var ds = NpgsqlDataSource.Create(connectionString);
-            var connection = ds.CreateConnection();
-            await connection.OpenAsync();
-            await using var writer = await connection.BeginBinaryImportAsync(CreateAuthorBatchSql);
-            foreach (var row in args)
-            {
-                await writer.StartRowAsync();
-                await writer.WriteAsync(row.Name);
-                await writer.WriteAsync(row.Bio);
-            }
-
-            await writer.CompleteAsync();
-            await connection.CloseAsync();
-        }
-    }
-
     private const string UpdateAuthorsSql = "UPDATE authors  SET  bio  =  @bio  WHERE  bio  IS  NOT  NULL  ";  
     public class UpdateAuthorsArgs
     {
@@ -131,6 +107,49 @@ public class QuerySql(string connectionString)
         }
     }
 
+    private const string CopyToTestsSql = "COPY copy_tests (c_int, c_varchar, c_date, c_timestamp) FROM STDIN (FORMAT BINARY)";
+    public class CopyToTestsArgs
+    {
+        public int C_int { get; set; }
+        public string C_varchar { get; set; }
+        public DateTime C_date { get; set; }
+        public DateTime C_timestamp { get; set; }
+    };
+    public async Task CopyToTests(List<CopyToTestsArgs> args)
+    {
+        {
+            await using var ds = NpgsqlDataSource.Create(connectionString);
+            var connection = ds.CreateConnection();
+            await connection.OpenAsync();
+            await using var writer = await connection.BeginBinaryImportAsync(CopyToTestsSql);
+            foreach (var row in args)
+            {
+                await writer.StartRowAsync();
+                await writer.WriteAsync(row.C_int, NpgsqlDbType.Integer);
+                await writer.WriteAsync(row.C_varchar, NpgsqlDbType.Varchar);
+                await writer.WriteAsync(row.C_date, NpgsqlDbType.Date);
+                await writer.WriteAsync(row.C_timestamp, NpgsqlDbType.Timestamp);
+            }
+
+            await writer.CompleteAsync();
+            await connection.CloseAsync();
+        }
+    }
+
+    private const string CountCopyRowsSql = "SELECT COUNT(1) AS cnt FROM copy_tests";
+    public class CountCopyRowsRow
+    {
+        public long Cnt { get; set; }
+    };
+    public async Task<CountCopyRowsRow?> CountCopyRows()
+    {
+        using (var connection = new NpgsqlConnection(connectionString))
+        {
+            var result = await connection.QueryFirstOrDefaultAsync<CountCopyRowsRow?>(CountCopyRowsSql);
+            return result;
+        }
+    }
+
     private const string TestSql = "SELECT c_bit, c_smallint, c_boolean, c_integer, c_bigint, c_serial, c_decimal, c_numeric, c_real, c_double_precision, c_date, c_time, c_timestamp, c_char, c_varchar, c_character_varying, c_bytea, c_text, c_json FROM node_postgres_types LIMIT 1";
     public class TestRow
     {
@@ -138,8 +157,8 @@ public class QuerySql(string connectionString)
         public int? C_smallint { get; set; }
         public bool? C_boolean { get; set; }
         public int? C_integer { get; set; }
-        public int? C_bigint { get; set; }
-        public long? C_serial { get; set; }
+        public long? C_bigint { get; set; }
+        public int? C_serial { get; set; }
         public float? C_decimal { get; set; }
         public float? C_numeric { get; set; }
         public float? C_real { get; set; }

@@ -1,50 +1,34 @@
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Plugin;
+using System.Collections.Generic;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace SqlcGenCsharp.Drivers.Generators;
 
-public class ExecDeclareGen(DbDriver dbDriver)
+public class ExecLastIdDeclareGen(DbDriver dbDriver)
 {
     private CommonGen CommonGen { get; } = new(dbDriver);
+
 
     public MemberDeclarationSyntax Generate(string queryTextConstant, string argInterface, Query query)
     {
         var parametersStr = CommonGen.GetParameterListAsString(argInterface, query.Params);
-        return ParseMemberDeclaration($$"""
-                                        public async Task {{query.Name}}({{parametersStr}})
-                                        {
-                                            {{GetMethodBody(queryTextConstant, query)}}
-                                        }
-                                        """)!;
-    }
-
-    private string GetMethodBody(string queryTextConstant, Query query)
-    {
         var (establishConnection, connectionOpen) = dbDriver.EstablishConnection(query);
         var createSqlCommand = dbDriver.CreateSqlCommand(queryTextConstant);
         var commandParameters = CommonGen.GetCommandParameters(query.Params);
-        var executeScalar = $"await {Variable.Command.Name()}.ExecuteScalarAsync();";
+        var executeScalarAndReturnCreated = ExecuteScalarAndReturnCreated();
+        var methodBody = dbDriver.DotnetFramework.LatestDotnetSupported()
+            ? GetWithUsingAsStatement()
+            : GetWithUsingAsBlock();
 
-        if (dbDriver.UseDapper)
-        {
-            return GetAsDapper();
-        }
+        return ParseMemberDeclaration($$"""
+                                        public async Task<long> {{query.Name}}({{parametersStr}})
+                                        {
+                                            {{methodBody}}
+                                        }
+                                        """)!;
 
-        return dbDriver.DotnetFramework.LatestDotnetSupported() ? Get() : GetAsLegacy();
-
-        string GetAsDapper()
-        {
-            var argsParams = query.Params.Count > 0 ? $", args" : "";
-            return $$"""
-                        using ({{establishConnection}})
-                        {
-                            await connection.ExecuteAsync({{queryTextConstant}}{{argsParams}});
-                        }
-                     """;
-        }
-
-        string Get()
+        string GetWithUsingAsStatement()
         {
             return $$"""
                      {
@@ -52,12 +36,12 @@ public class ExecDeclareGen(DbDriver dbDriver)
                          {{connectionOpen.AppendSemicolonUnlessEmpty()}}
                          await using {{createSqlCommand}};
                          {{commandParameters.JoinByNewLine()}}
-                         {{executeScalar}}
+                         {{executeScalarAndReturnCreated.JoinByNewLine()}}
                      }
                      """;
         }
 
-        string GetAsLegacy()
+        string GetWithUsingAsBlock()
         {
             return $$"""
                      {
@@ -66,12 +50,21 @@ public class ExecDeclareGen(DbDriver dbDriver)
                              {{connectionOpen.AppendSemicolonUnlessEmpty()}}
                              using ({{createSqlCommand}})
                              {
-                                 {{commandParameters.JoinByNewLine()}}
-                                 {{executeScalar}}
+                                {{commandParameters.JoinByNewLine()}}
+                                {{executeScalarAndReturnCreated.JoinByNewLine()}}
                              }
                          }
                      }
                      """;
+        }
+
+        IEnumerable<string> ExecuteScalarAndReturnCreated()
+        {
+            return
+            [
+                $"await {Variable.Command.Name()}.ExecuteNonQueryAsync();",
+                $"return {Variable.Command.Name()}.LastInsertedId;"
+            ];
         }
     }
 }

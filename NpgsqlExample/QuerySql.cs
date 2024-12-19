@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Npgsql;
+using NpgsqlTypes;
 
 namespace NpgsqlExampleGen;
 public class QuerySql(string connectionString)
@@ -62,7 +63,7 @@ public class QuerySql(string connectionString)
             await using var connection = NpgsqlDataSource.Create(connectionString);
             await using var command = connection.CreateCommand(CreateAuthorSql);
             command.Parameters.AddWithValue("@name", args.Name);
-            command.Parameters.AddWithValue("@bio", args.Bio);
+            command.Parameters.AddWithValue("@bio", args.Bio!);
             var reader = await command.ExecuteReaderAsync();
             if (await reader.ReadAsync())
             {
@@ -101,27 +102,6 @@ public class QuerySql(string connectionString)
         }
     }
 
-    private const string CreateAuthorBatchSql = "COPY authors (name, bio) FROM STDIN (FORMAT BINARY)";
-    public readonly record struct CreateAuthorBatchArgs(string Name, string? Bio);
-    public async Task CreateAuthorBatch(List<CreateAuthorBatchArgs> args)
-    {
-        {
-            await using var ds = NpgsqlDataSource.Create(connectionString);
-            var connection = ds.CreateConnection();
-            await connection.OpenAsync();
-            await using var writer = await connection.BeginBinaryImportAsync(CreateAuthorBatchSql);
-            foreach (var row in args)
-            {
-                await writer.StartRowAsync();
-                await writer.WriteAsync(row.Name);
-                await writer.WriteAsync(row.Bio);
-            }
-
-            await writer.CompleteAsync();
-            await connection.CloseAsync();
-        }
-    }
-
     private const string UpdateAuthorsSql = "UPDATE authors  SET  bio  =  @bio  WHERE  bio  IS  NOT  NULL  ";  
     public readonly record struct UpdateAuthorsArgs(string? Bio);
     public async Task<long> UpdateAuthors(UpdateAuthorsArgs args)
@@ -129,13 +109,56 @@ public class QuerySql(string connectionString)
         {
             await using var connection = NpgsqlDataSource.Create(connectionString);
             await using var command = connection.CreateCommand(UpdateAuthorsSql);
-            command.Parameters.AddWithValue("@bio", args.Bio);
+            command.Parameters.AddWithValue("@bio", args.Bio!);
             return await command.ExecuteNonQueryAsync();
         }
     }
 
+    private const string CopyToTestsSql = "COPY copy_tests (c_int, c_varchar, c_date, c_timestamp) FROM STDIN (FORMAT BINARY)";
+    public readonly record struct CopyToTestsArgs(int C_int, string C_varchar, DateTime C_date, DateTime C_timestamp);
+    public async Task CopyToTests(List<CopyToTestsArgs> args)
+    {
+        {
+            await using var ds = NpgsqlDataSource.Create(connectionString);
+            var connection = ds.CreateConnection();
+            await connection.OpenAsync();
+            await using var writer = await connection.BeginBinaryImportAsync(CopyToTestsSql);
+            foreach (var row in args)
+            {
+                await writer.StartRowAsync();
+                await writer.WriteAsync(row.C_int, NpgsqlDbType.Integer);
+                await writer.WriteAsync(row.C_varchar, NpgsqlDbType.Varchar);
+                await writer.WriteAsync(row.C_date, NpgsqlDbType.Date);
+                await writer.WriteAsync(row.C_timestamp, NpgsqlDbType.Timestamp);
+            }
+
+            await writer.CompleteAsync();
+            await connection.CloseAsync();
+        }
+    }
+
+    private const string CountCopyRowsSql = "SELECT COUNT(1) AS cnt FROM copy_tests";
+    public readonly record struct CountCopyRowsRow(long Cnt);
+    public async Task<CountCopyRowsRow?> CountCopyRows()
+    {
+        {
+            await using var connection = NpgsqlDataSource.Create(connectionString);
+            await using var command = connection.CreateCommand(CountCopyRowsSql);
+            var reader = await command.ExecuteReaderAsync();
+            if (await reader.ReadAsync())
+            {
+                return new CountCopyRowsRow
+                {
+                    Cnt = reader.GetInt64(0)
+                };
+            }
+
+            return null;
+        }
+    }
+
     private const string TestSql = "SELECT c_bit, c_smallint, c_boolean, c_integer, c_bigint, c_serial, c_decimal, c_numeric, c_real, c_double_precision, c_date, c_time, c_timestamp, c_char, c_varchar, c_character_varying, c_bytea, c_text, c_json FROM node_postgres_types LIMIT 1";
-    public readonly record struct TestRow(byte[]? C_bit, int? C_smallint, bool? C_boolean, int? C_integer, int? C_bigint, long? C_serial, float? C_decimal, float? C_numeric, float? C_real, float? C_double_precision, DateTime? C_date, string? C_time, DateTime? C_timestamp, string? C_char, string? C_varchar, string? C_character_varying, byte[]? C_bytea, string? C_text, object? C_json);
+    public readonly record struct TestRow(byte[]? C_bit, int? C_smallint, bool? C_boolean, int? C_integer, long? C_bigint, int? C_serial, float? C_decimal, float? C_numeric, float? C_real, float? C_double_precision, DateTime? C_date, string? C_time, DateTime? C_timestamp, string? C_char, string? C_varchar, string? C_character_varying, byte[]? C_bytea, string? C_text, object? C_json);
     public async Task<TestRow?> Test()
     {
         {
@@ -150,8 +173,8 @@ public class QuerySql(string connectionString)
                     C_smallint = reader.IsDBNull(1) ? null : reader.GetInt32(1),
                     C_boolean = reader.IsDBNull(2) ? null : reader.GetBoolean(2),
                     C_integer = reader.IsDBNull(3) ? null : reader.GetInt32(3),
-                    C_bigint = reader.IsDBNull(4) ? null : reader.GetInt32(4),
-                    C_serial = reader.IsDBNull(5) ? null : reader.GetInt64(5),
+                    C_bigint = reader.IsDBNull(4) ? null : reader.GetInt64(4),
+                    C_serial = reader.IsDBNull(5) ? null : reader.GetInt32(5),
                     C_decimal = reader.IsDBNull(6) ? null : reader.GetFloat(6),
                     C_numeric = reader.IsDBNull(7) ? null : reader.GetFloat(7),
                     C_real = reader.IsDBNull(8) ? null : reader.GetFloat(8),

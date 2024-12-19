@@ -6,7 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Data.Sqlite;
-using System;
 
 namespace SqliteExampleGen;
 public class QuerySql(string connectionString)
@@ -64,7 +63,7 @@ public class QuerySql(string connectionString)
             connection.Open();
             await using var command = new SqliteCommand(CreateAuthorSql, connection);
             command.Parameters.AddWithValue("@name", args.Name);
-            command.Parameters.AddWithValue("@bio", args.Bio);
+            command.Parameters.AddWithValue("@bio", args.Bio!);
             await command.ExecuteScalarAsync();
         }
     }
