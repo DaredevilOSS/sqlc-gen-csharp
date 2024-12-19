@@ -10,7 +10,7 @@ namespace SqlcGenCsharp.Drivers;
 
 public class NpgsqlDriver : DbDriver, ICopyFrom, IExecRows
 {
-    public NpgsqlDriver(DotnetFramework dotnetFramework) : base(dotnetFramework)
+    public NpgsqlDriver(DotnetFramework dotnetFramework, bool useDapper) : base(dotnetFramework, useDapper)
     {
         foreach (var columnMapping in ColumnMappings)
         {
@@ -89,6 +89,14 @@ public class NpgsqlDriver : DbDriver, ICopyFrom, IExecRows
                 $"var ds = NpgsqlDataSource.Create({Variable.ConnectionString.Name()})",
                 $"var {Variable.Connection.Name()} = ds.CreateConnection()"
             );
+        }
+
+        if (UseDapper)
+        {
+            return new ConnectionGenCommands(
+            $"var {Variable.Connection.Name()} = new NpgsqlConnection({Variable.ConnectionString.Name()})",
+            ""
+        );
         }
 
         return new ConnectionGenCommands(

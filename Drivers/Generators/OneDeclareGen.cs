@@ -9,8 +9,7 @@ public class OneDeclareGen(DbDriver dbDriver)
 {
     private CommonGen CommonGen { get; } = new(dbDriver);
 
-    public MemberDeclarationSyntax Generate(string queryTextConstant, string argInterface,
-        string returnInterface, Query query)
+    public MemberDeclarationSyntax Generate(string queryTextConstant, string argInterface, string returnInterface, Query query)
     {
         var returnType = $"Task<{dbDriver.AddNullableSuffix(returnInterface, false)}>";
         var parametersStr = CommonGen.GetParameterListAsString(argInterface, query.Params);
@@ -31,8 +30,24 @@ public class OneDeclareGen(DbDriver dbDriver)
         var awaitReaderRow = CommonGen.AwaitReaderRow();
         var returnDataclass = CommonGen.InstantiateDataclass(query.Columns, returnInterface);
 
-        return dbDriver.DotnetFramework.LatestDotnetSupported() ? Get() : GetAsLegacy();
+        if (dbDriver.UseDapper)
+        {
+            return GetAsDapper();
+        }
 
+        return dbDriver.DotnetFramework.LatestDotnetSupported() ? Get() : GetAsLegacy();
+        string GetAsDapper()
+        {
+            var argsParams = query.Params.Count > 0 ? $", args" : "";
+            return $$"""
+                        using ({{establishConnection}})
+                        {
+                            var result = await connection.QueryFirstOrDefaultAsync<{{dbDriver.AddNullableSuffix(returnInterface, false)}}>(
+                            {{queryTextConstant}}{{argsParams}});
+                            return result;
+                        }
+                     """;
+        }
         string Get()
         {
             return $$"""

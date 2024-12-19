@@ -10,8 +10,9 @@ namespace SqlcGenCsharp.Drivers;
 
 public record ConnectionGenCommands(string EstablishConnection, string ConnectionOpen);
 
-public abstract class DbDriver(DotnetFramework dotnetFramework)
+public abstract class DbDriver(DotnetFramework dotnetFramework, bool useDapper)
 {
+    public bool UseDapper { get; } = useDapper;
     public DotnetFramework DotnetFramework { get; } = dotnetFramework;
 
     private HashSet<string> CsharpPrimitives { get; } = ["long", "double", "int", "float", "bool", "DateTime"];
@@ -20,12 +21,17 @@ public abstract class DbDriver(DotnetFramework dotnetFramework)
 
     public virtual UsingDirectiveSyntax[] GetUsingDirectives()
     {
-        return
-        [
+        var usingDirectives = new List<UsingDirectiveSyntax>
+        {
+            UsingDirective(ParseName("System")),
             UsingDirective(ParseName("System.Collections.Generic")),
-            UsingDirective(ParseName("System.Threading.Tasks")),
-            UsingDirective(ParseName("System"))
-        ];
+            UsingDirective(ParseName("System.Threading.Tasks"))
+        };
+
+        if (UseDapper)
+            usingDirectives.Add(UsingDirective(ParseName("Dapper")));
+
+        return usingDirectives.ToArray();
     }
 
     public string AddNullableSuffix(string csharpType, bool notNull)
@@ -81,11 +87,9 @@ public abstract class DbDriver(DotnetFramework dotnetFramework)
 
     public abstract string CreateSqlCommand(string sqlTextConstant);
 
-    public abstract MemberDeclarationSyntax OneDeclare(string sqlTextConstant, string argInterface,
-        string returnInterface, Query query);
+    public abstract MemberDeclarationSyntax OneDeclare(string sqlTextConstant, string argInterface, string returnInterface, Query query);
 
-    public abstract MemberDeclarationSyntax ManyDeclare(string sqlTextConstant, string argInterface,
-        string returnInterface, Query query);
+    public abstract MemberDeclarationSyntax ManyDeclare(string sqlTextConstant, string argInterface, string returnInterface, Query query);
 
     public abstract MemberDeclarationSyntax ExecDeclare(string text, string argInterface, Query query);
 

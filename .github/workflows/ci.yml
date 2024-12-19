@@ -35,6 +35,7 @@ jobs:
             GeneratedProtobuf
             MySqlConnectorExample
             NpgsqlExample
+            NpgsqlDapperExample
             SqliteExample
             
       - name: Verify pushed Dockerfile is synced

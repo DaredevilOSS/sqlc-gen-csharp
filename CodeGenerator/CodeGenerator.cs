@@ -90,9 +90,9 @@ public class CodeGenerator
     {
         return Options.DriverName switch
         {
-            DriverName.MySqlConnector => new MySqlConnectorDriver(Options.DotnetFramework),
-            DriverName.Npgsql => new NpgsqlDriver(Options.DotnetFramework),
-            DriverName.Sqlite => new SqliteDriver(Options.DotnetFramework),
+            DriverName.MySqlConnector => new MySqlConnectorDriver(Options.DotnetFramework, Options.useDapper),
+            DriverName.Npgsql => new NpgsqlDriver(Options.DotnetFramework, Options.useDapper),
+            DriverName.Sqlite => new SqliteDriver(Options.DotnetFramework, Options.useDapper),
             _ => throw new ArgumentException($"unknown driver: {Options.DriverName}")
         };
     }

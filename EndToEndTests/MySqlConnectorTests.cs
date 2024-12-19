@@ -69,8 +69,8 @@ public class MySqlConnectorTests
         {
             Name = DataGenerator.BojackAuthor
         });
-        ClassicAssert.IsTrue(actualAuthor.HasValue);
-        Assert.That(actualAuthor!.Value is
+        ClassicAssert.IsNotNull(actualAuthor);
+        Assert.That(actualAuthor is
         {
             Name: DataGenerator.BojackAuthor,
             Bio: DataGenerator.BojackTheme

@@ -20,12 +20,26 @@ public class ExecRowsDeclareGen(DbDriver dbDriver)
             ? GetWithUsingAsStatement()
             : GetWithUsingAsBlock();
 
+        if (dbDriver.UseDapper)
+            methodBody = GetAsDapper();
+
         return ParseMemberDeclaration($$"""
                                         public async Task<long> {{query.Name}}({{parametersStr}})
                                         {
                                             {{methodBody}}
                                         }
                                         """)!;
+
+        string GetAsDapper()
+        {
+            var argsParams = query.Params.Count > 0 ? $", args" : "";
+            return $$"""
+                        using ({{establishConnection}})
+                        {
+                            return await connection.ExecuteAsync({{queryTextConstant}}{{argsParams}});
+                        }
+                     """;
+        }
 
         string GetWithUsingAsStatement()
         {

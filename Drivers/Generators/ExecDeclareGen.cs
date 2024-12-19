@@ -25,7 +25,24 @@ public class ExecDeclareGen(DbDriver dbDriver)
         var createSqlCommand = dbDriver.CreateSqlCommand(queryTextConstant);
         var commandParameters = CommonGen.GetCommandParameters(query.Params);
         var executeScalar = $"await {Variable.Command.Name()}.ExecuteScalarAsync();";
+
+        if (dbDriver.UseDapper)
+        {
+            return GetAsDapper();
+        }
+
         return dbDriver.DotnetFramework.LatestDotnetSupported() ? Get() : GetAsLegacy();
+
+        string GetAsDapper()
+        {
+            var argsParams = query.Params.Count > 0 ? $", args" : "";
+            return $$"""
+                        using ({{establishConnection}})
+                        {
+                            await connection.ExecuteAsync({{queryTextConstant}}{{argsParams}});
+                        }
+                     """;
+        }
 
         string Get()
         {

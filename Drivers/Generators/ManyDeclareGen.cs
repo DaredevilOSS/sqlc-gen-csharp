@@ -35,7 +35,25 @@ public class ManyDeclareGen(DbDriver dbDriver)
                                     {{Variable.Result.Name()}}.Add({{dataclassInit}});
                                 }
                                 """;
+
+        if (dbDriver.UseDapper)
+        {
+            return GetAsDapper();
+        }
+
         return dbDriver.DotnetFramework.LatestDotnetSupported() ? Get() : GetAsLegacy();
+        string GetAsDapper()
+        {
+            var argsParams = query.Params.Count > 0 ? $", args" : "";
+            return $$"""
+                        using ({{establishConnection}})
+                        {
+                            var results = await connection.QueryAsync<{{dbDriver.AddNullableSuffix(returnInterface, true)}}>(
+                            {{queryTextConstant}}{{argsParams}});
+                            return results.AsList();
+                        }
+                     """;
+        }
 
         string Get()
         {

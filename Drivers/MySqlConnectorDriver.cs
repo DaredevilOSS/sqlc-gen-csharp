@@ -10,7 +10,7 @@ using OneDeclareGen = SqlcGenCsharp.Drivers.Generators.OneDeclareGen;
 
 namespace SqlcGenCsharp.Drivers;
 
-public partial class MySqlConnectorDriver(DotnetFramework dotnetFramework) : DbDriver(dotnetFramework), IExecLastId
+public partial class MySqlConnectorDriver(DotnetFramework dotnetFramework, bool useDapper) : DbDriver(dotnetFramework, useDapper), IExecLastId
 {
     protected override List<ColumnMapping> ColumnMappings { get; } =
     [

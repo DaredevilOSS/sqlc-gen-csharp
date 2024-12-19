@@ -15,4 +15,7 @@ internal class RawOptions
 
     [JsonPropertyName("namespaceName")]
     public string NamespaceName { get; init; } = string.Empty;
+
+    [JsonPropertyName("useDapper")]
+    public bool UseDapper { get; init; } = false;
 }

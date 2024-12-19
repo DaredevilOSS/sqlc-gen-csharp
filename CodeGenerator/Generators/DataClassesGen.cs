@@ -13,7 +13,7 @@ internal class DataClassesGen(DbDriver dbDriver)
     public MemberDeclarationSyntax Generate(string name, ClassMember classMember, IEnumerable<Column> columns,
         Options options)
     {
-        if (options.DotnetFramework.LatestDotnetSupported())
+        if (options.DotnetFramework.LatestDotnetSupported() && !options.useDapper)
             return GenerateAsRecord(name, classMember, columns);
         return GenerateAsCLass(name, classMember, columns);
     }
