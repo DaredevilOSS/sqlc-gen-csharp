@@ -1,5 +1,6 @@
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Plugin;
+using System.Linq;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 
@@ -38,7 +39,7 @@ public class OneDeclareGen(DbDriver dbDriver)
         return dbDriver.DotnetFramework.LatestDotnetSupported() ? Get() : GetAsLegacy();
         string GetAsDapper()
         {
-            var argsParams = query.Params.Count > 0 ? $", args" : "";
+            var argsParams = query.Params.Count > 0 ? ", new { " + string.Join(", ", query.Params.Select(p => p.Column.Name + "=args." + p.Column.Name.FirstCharToUpper() + "")) + "}" : "";
             return $$"""
                         using ({{establishConnection}})
                         {

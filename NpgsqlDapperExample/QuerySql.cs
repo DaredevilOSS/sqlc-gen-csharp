@@ -28,7 +28,7 @@ public class QuerySql(string connectionString)
     {
         using (var connection = new NpgsqlConnection(connectionString))
         {
-            var result = await connection.QueryFirstOrDefaultAsync<GetAuthorRow?>(GetAuthorSql, args);
+            var result = await connection.QueryFirstOrDefaultAsync<GetAuthorRow?>(GetAuthorSql, new { name = args.Name });
             return result;
         }
     }
@@ -67,7 +67,7 @@ public class QuerySql(string connectionString)
     {
         using (var connection = new NpgsqlConnection(connectionString))
         {
-            var result = await connection.QueryFirstOrDefaultAsync<CreateAuthorRow?>(CreateAuthorSql, args);
+            var result = await connection.QueryFirstOrDefaultAsync<CreateAuthorRow?>(CreateAuthorSql, new { name = args.Name, bio = args.Bio });
             return result;
         }
     }
@@ -81,7 +81,7 @@ public class QuerySql(string connectionString)
     {
         using (var connection = new NpgsqlConnection(connectionString))
         {
-            await connection.ExecuteAsync(DeleteAuthorSql, args);
+            await connection.ExecuteAsync(DeleteAuthorSql, new { name = args.Name });
         }
     }
 
@@ -103,7 +103,7 @@ public class QuerySql(string connectionString)
     {
         using (var connection = new NpgsqlConnection(connectionString))
         {
-            return await connection.ExecuteAsync(UpdateAuthorsSql, args);
+            return await connection.ExecuteAsync(UpdateAuthorsSql, new { bio = args.Bio });
         }
     }
 

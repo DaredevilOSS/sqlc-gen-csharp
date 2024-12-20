@@ -1,6 +1,7 @@
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Plugin;
 using System.Collections.Generic;
+using System.Linq;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace SqlcGenCsharp.Drivers.Generators;
@@ -32,7 +33,7 @@ public class ExecRowsDeclareGen(DbDriver dbDriver)
 
         string GetAsDapper()
         {
-            var argsParams = query.Params.Count > 0 ? $", args" : "";
+            var argsParams = query.Params.Count > 0 ? ", new { " + string.Join(", ", query.Params.Select(p => p.Column.Name + "=args." + p.Column.Name.FirstCharToUpper() + "")) + "}" : "";
             return $$"""
                         using ({{establishConnection}})
                         {

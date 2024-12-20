@@ -10,11 +10,13 @@ COPY EndToEndTests/*.csproj ./EndToEndTests/
 COPY Extensions/*.csproj ./Extensions/
 COPY GeneratedProtobuf/*.csproj ./GeneratedProtobuf/
 COPY LocalRunner/*.csproj ./LocalRunner/
+COPY MySqlConnectorDapperExample/*.csproj ./MySqlConnectorDapperExample/
 COPY MySqlConnectorExample/*.csproj ./MySqlConnectorExample/
 COPY NpgsqlDapperExample/*.csproj ./NpgsqlDapperExample/
 COPY NpgsqlExample/*.csproj ./NpgsqlExample/
 COPY PluginOptions/*.csproj ./PluginOptions/
 COPY SqlcGenCsharp/*.csproj ./SqlcGenCsharp/
+COPY SqliteDapperExample/*.csproj ./SqliteDapperExample/
 COPY SqliteExample/*.csproj ./SqliteExample/
 COPY WasmRunner/*.csproj ./WasmRunner/
 
@@ -24,11 +26,13 @@ COPY EndToEndTests/ ./EndToEndTests/
 COPY Extensions/ ./Extensions/
 COPY GeneratedProtobuf/ ./GeneratedProtobuf/
 COPY LocalRunner/ ./LocalRunner/
+COPY MySqlConnectorDapperExample/ ./MySqlConnectorDapperExample/
 COPY MySqlConnectorExample/ ./MySqlConnectorExample/
 COPY NpgsqlDapperExample/ ./NpgsqlDapperExample/
 COPY NpgsqlExample/ ./NpgsqlExample/
 COPY PluginOptions/ ./PluginOptions/
 COPY SqlcGenCsharp/ ./SqlcGenCsharp/
+COPY SqliteDapperExample/ ./SqliteDapperExample/
 COPY SqliteExample/ ./SqliteExample/
 COPY WasmRunner/ ./WasmRunner/
 
