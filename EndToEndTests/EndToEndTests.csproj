@@ -19,6 +19,7 @@
         <ProjectReference Include="..\NpgsqlExample\NpgsqlExample.csproj"/>
         <ProjectReference Include="..\NpgsqlDapperExample\NpgsqlDapperExample.csproj"/>
         <ProjectReference Include="..\SqliteExample\SqliteExample.csproj" />
+        <ProjectReference Include="..\SqliteDapperExample\SqliteDapperExample.csproj" />
     </ItemGroup>
 
 </Project>

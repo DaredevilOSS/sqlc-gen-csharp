@@ -37,6 +37,7 @@ jobs:
             NpgsqlExample
             NpgsqlDapperExample
             SqliteExample
+            SqliteDapperExample
             
       - name: Verify pushed Dockerfile is synced
         run: |

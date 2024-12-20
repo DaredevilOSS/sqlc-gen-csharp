@@ -15,6 +15,7 @@ COPY NpgsqlDapperExample/*.csproj ./NpgsqlDapperExample/
 COPY NpgsqlExample/*.csproj ./NpgsqlExample/
 COPY PluginOptions/*.csproj ./PluginOptions/
 COPY SqlcGenCsharp/*.csproj ./SqlcGenCsharp/
+COPY SqliteDapperExample/*.csproj ./SqliteDapperExample/
 COPY SqliteExample/*.csproj ./SqliteExample/
 COPY WasmRunner/*.csproj ./WasmRunner/
 
@@ -29,6 +30,7 @@ COPY NpgsqlDapperExample/ ./NpgsqlDapperExample/
 COPY NpgsqlExample/ ./NpgsqlExample/
 COPY PluginOptions/ ./PluginOptions/
 COPY SqlcGenCsharp/ ./SqlcGenCsharp/
+COPY SqliteDapperExample/ ./SqliteDapperExample/
 COPY SqliteExample/ ./SqliteExample/
 COPY WasmRunner/ ./WasmRunner/
 

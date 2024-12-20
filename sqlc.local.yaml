@@ -49,3 +49,15 @@ sql:
           targetFramework: net8.0
           generateCsproj: true
           namespaceName: SqliteExampleGen
+  - schema: "examples/authors/sqlite/schema.sql"
+    queries: "examples/authors/sqlite/query.sql"
+    engine: "sqlite"
+    codegen:
+      - plugin: csharp
+        out: SqliteDapperExample
+        options:
+          driver: Sqlite
+          useDapper: true
+          targetFramework: net8.0
+          generateCsproj: true
+          namespaceName: SqliteDapperExampleGen
