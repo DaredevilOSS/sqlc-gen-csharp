@@ -10,6 +10,7 @@ COPY EndToEndTests/*.csproj ./EndToEndTests/
 COPY Extensions/*.csproj ./Extensions/
 COPY GeneratedProtobuf/*.csproj ./GeneratedProtobuf/
 COPY LocalRunner/*.csproj ./LocalRunner/
+COPY MySqlConnectorDapperExample/*.csproj ./MySqlConnectorDapperExample/
 COPY MySqlConnectorExample/*.csproj ./MySqlConnectorExample/
 COPY NpgsqlDapperExample/*.csproj ./NpgsqlDapperExample/
 COPY NpgsqlExample/*.csproj ./NpgsqlExample/
@@ -25,6 +26,7 @@ COPY EndToEndTests/ ./EndToEndTests/
 COPY Extensions/ ./Extensions/
 COPY GeneratedProtobuf/ ./GeneratedProtobuf/
 COPY LocalRunner/ ./LocalRunner/
+COPY MySqlConnectorDapperExample/ ./MySqlConnectorDapperExample/
 COPY MySqlConnectorExample/ ./MySqlConnectorExample/
 COPY NpgsqlDapperExample/ ./NpgsqlDapperExample/
 COPY NpgsqlExample/ ./NpgsqlExample/

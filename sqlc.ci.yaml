@@ -39,6 +39,18 @@ sql:
           targetFramework: net8.0
           generateCsproj: true
           namespaceName: MySqlConnectorExampleGen
+  - schema: "examples/authors/mysql/schema.sql"
+    queries: "examples/authors/mysql/query.sql"
+    engine: "mysql"
+    codegen:
+      - plugin: csharp
+        out: MySqlConnectorDapperExample
+        options:
+          driver: MySqlConnector
+          useDapper: true
+          targetFramework: net8.0
+          generateCsproj: true
+          namespaceName: MySqlConnectorDapperExampleGen
   - schema: "examples/authors/sqlite/schema.sql"
     queries: "examples/authors/sqlite/query.sql"
     engine: "sqlite"
