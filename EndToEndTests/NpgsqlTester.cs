@@ -13,13 +13,13 @@ public class NpgsqlTests
 
     private static string ConnectionStringEnv => "POSTGRES_CONNECTION_STRING";
 
-    private QuerySql QuerySql { get; } =
-        new(Environment.GetEnvironmentVariable(ConnectionStringEnv)!);
+    private QuerySql QuerySql { get; } = new(Environment.GetEnvironmentVariable(ConnectionStringEnv)!);
 
     [TearDown]
-    public async Task EmptyTestsTable()
+    public async Task EmptyTestsTables()
     {
         await QuerySql.TruncateAuthors();
+        await QuerySql.TruncateCopyToTests();
     }
 
     [Test]
@@ -149,10 +149,10 @@ public class NpgsqlTests
         {
             return new QuerySql.CopyToTestsArgs
             {
-                C_varchar = Randomizer.Next().ToString(),
-                C_int = Randomizer.Next(),
-                C_date = DateTime.Now.Subtract(TimeSpan.FromMilliseconds(Randomizer.Next())),
-                C_timestamp = DateTime.Now.Subtract(TimeSpan.FromMilliseconds(Randomizer.Next()))
+                CVarchar = Randomizer.Next().ToString(),
+                CInt = Randomizer.Next(),
+                CDate = DateTime.Now.Subtract(TimeSpan.FromMilliseconds(Randomizer.Next())),
+                CTimestamp = DateTime.Now.Subtract(TimeSpan.FromMilliseconds(Randomizer.Next()))
             };
         }
     }

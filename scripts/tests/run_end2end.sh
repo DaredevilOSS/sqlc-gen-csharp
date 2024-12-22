@@ -1,10 +1,15 @@
 #!/usr/bin/env bash
 
+set -ex
+
 if [ "$GITHUB_ACTIONS" = "true" ]; then
     echo "Running in Github Actions"
-    tests_container_id=$(docker ps -aqf "name=${TESTS_CONTAINER_NAME}")
-    tests_exit_code=$(docker wait "${TESTS_CONTAINER_NAME}")
-    docker logs --timestamps "${tests_container_id}"
+    core_tests_id=$(docker ps -aqf "name=${TESTS_DOTNET_CORE_CONTAINER}")
+    core_exit_code=$(docker wait "${TESTS_DOTNET_CORE_CONTAINER}")
+    docker logs --timestamps "${core_tests_id}"
+    framework_tests_id=$(docker ps -aqf "name=${TESTS_DOTNET_FRAMEWORK_CONTAINER}")
+    framework_exit_code=$(docker wait "${TESTS_DOTNET_FRAMEWORK_CONTAINER}")
+    docker logs --timestamps "${framework_tests_id}"
 else
     echo "Running in local"
     set -ex
@@ -14,11 +19,19 @@ else
 
     source .env
     docker-compose up --detach --build --force-recreate --remove-orphans
-    tests_container_id=$(docker ps -aqf "name=${TESTS_CONTAINER_NAME}")
-    tests_exit_code=$(docker wait "${TESTS_CONTAINER_NAME}")
+    
+    core_tests_id=$(docker ps -aqf "name=${TESTS_DOTNET_CORE_CONTAINER}")
+    core_exit_code=$(docker wait "${TESTS_DOTNET_CORE_CONTAINER}")
+    if [ "${core_exit_code}" -ne 0 ]; then
+      docker logs --timestamps "${core_tests_id}"
+      exit "${core_exit_code}"
+    fi
+    
+    framework_tests_id=$(docker ps -aqf "name=${TESTS_DOTNET_FRAMEWORK_CONTAINER}")
+    framework_exit_code=$(docker wait "${TESTS_DOTNET_FRAMEWORK_CONTAINER}")
 
-    # by container_id since the container is dead
-    docker logs --timestamps "${tests_container_id}" > tests.log && cat tests.log
+    if [ "${framework_exit_code}" -ne 0 ]; then
+      docker logs --timestamps "${framework_tests_id}" > tests.log
+      exit "${framework_exit_code}"
+    fi
 fi
-
-exit "${tests_exit_code}"

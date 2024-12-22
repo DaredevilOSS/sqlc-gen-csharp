@@ -18,6 +18,9 @@ UPDATE authors
    SET bio = $1
  WHERE bio IS NOT NULL;
 
+-- name: TruncateCopyToTests :exec
+TRUNCATE TABLE copy_tests;
+
 -- name: CopyToTests :copyfrom
 INSERT INTO copy_tests (c_int, c_varchar, c_date, c_timestamp)
 VALUES ($1, $2, $3, $4);

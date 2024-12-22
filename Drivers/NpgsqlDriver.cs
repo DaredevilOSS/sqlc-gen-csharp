@@ -81,33 +81,29 @@ public class NpgsqlDriver : DbDriver, ICopyFrom, IExecRows
             .ToArray();
     }
 
+    // TODO different operations require different types of connections - improve code and docs to make it clearer
     public override ConnectionGenCommands EstablishConnection(Query query)
     {
+        var connectionStringField = GetConnectionStringField();
         if (query.Cmd == ":copyfrom")
-        {
             return new ConnectionGenCommands(
-                $"var ds = NpgsqlDataSource.Create({Variable.ConnectionString.Name()})",
-                $"var {Variable.Connection.Name()} = ds.CreateConnection()"
+                $"var ds = NpgsqlDataSource.Create({connectionStringField})",
+                $"var {Variable.Connection.AsVarName()} = ds.CreateConnection()"
             );
-        }
-
         if (Options.UseDapper)
-        {
             return new ConnectionGenCommands(
-            $"var {Variable.Connection.Name()} = new NpgsqlConnection({Variable.ConnectionString.Name()})",
-            ""
-        );
-        }
-
+                $"var {Variable.Connection.AsVarName()} = new NpgsqlConnection({connectionStringField})",
+                ""
+            );
         return new ConnectionGenCommands(
-            $"var {Variable.Connection.Name()} = NpgsqlDataSource.Create({Variable.ConnectionString.Name()})",
+            $"var {Variable.Connection.AsVarName()} = NpgsqlDataSource.Create({connectionStringField})",
             ""
         );
     }
 
     public override string CreateSqlCommand(string sqlTextConstant)
     {
-        return $"var {Variable.Command.Name()} = {Variable.Connection.Name()}.CreateCommand({sqlTextConstant})";
+        return $"var {Variable.Command.AsVarName()} = {Variable.Connection.AsVarName()}.CreateCommand({sqlTextConstant})";
     }
 
     public override string TransformQueryText(Query query)
@@ -120,7 +116,7 @@ public class NpgsqlDriver : DbDriver, ICopyFrom, IExecRows
         {
             var currentParameter = query.Params[i];
             queryText = Regex.Replace(queryText, $@"\$\s*{i + 1}",
-                $"@{currentParameter.Column.Name.FirstCharToLower()}");
+                $"@{currentParameter.Column.Name.ToCamelCase()}");
         }
 
         return queryText;

@@ -69,8 +69,8 @@ public class ExecLastIdDeclareGen(DbDriver dbDriver)
         {
             return
             [
-                $"await {Variable.Command.Name()}.ExecuteNonQueryAsync();",
-                $"return {Variable.Command.Name()}.LastInsertedId;"
+                $"await {Variable.Command.AsVarName()}.ExecuteNonQueryAsync();",
+                $"return {Variable.Command.AsVarName()}.LastInsertedId;"
             ];
         }
     }

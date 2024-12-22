@@ -35,15 +35,18 @@ jobs:
             GeneratedProtobuf
             MySqlConnectorExample
             MySqlConnectorDapperExample
+            MySqlConnectorDapperLegacyExample
             NpgsqlExample
             NpgsqlDapperExample
+            NpgsqlDapperLegacyExample
             SqliteExample
             SqliteDapperExample
+            SqliteDapperLegacyExample
             
       - name: Verify pushed Dockerfile is synced
         run: |
-          ./scripts/generate_dockerfile.sh /tmp/Dockerfile
-          diff /tmp/Dockerfile Dockerfile
+          ./scripts/generate_core_dockerfile.sh
+          ./scripts/generate_framework_dockerfile.sh
   
   build:
     name: Build
@@ -164,11 +167,6 @@ jobs:
         
       - name: Docker compose
         uses: hoverkraft-tech/compose-action@v1.5.1
-        with:
-          services: |
-            mysqldb
-            postgresdb
-            plugin-tests
-          
+
       - name: End-to-End Tests
         run: ./scripts/tests/run_end2end.sh

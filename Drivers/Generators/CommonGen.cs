@@ -8,7 +8,7 @@ public class CommonGen(DbDriver dbDriver)
 {
     public static string AwaitReaderRow()
     {
-        return $"await {Variable.Reader.Name()}.ReadAsync()";
+        return $"await {Variable.Reader.AsVarName()}.ReadAsync()";
     }
 
     public static string GetParameterListAsString(string argInterface, IEnumerable<Parameter> parameters)
@@ -18,7 +18,7 @@ public class CommonGen(DbDriver dbDriver)
 
     public static string InitDataReader()
     {
-        return $"var {Variable.Reader.Name()} = await {Variable.Command.Name()}.ExecuteReaderAsync()";
+        return $"var {Variable.Reader.AsVarName()} = await {Variable.Command.AsVarName()}.ExecuteReaderAsync()";
     }
 
     public string InstantiateDataclass(IEnumerable<Column> columns, string returnInterface)
@@ -29,7 +29,7 @@ public class CommonGen(DbDriver dbDriver)
                 var readExpression = column.NotNull
                     ? dbDriver.GetColumnReader(column, ordinal)
                     : GetNullableReadExpression(column, ordinal);
-                return $"{column.Name.FirstCharToUpper()} = {readExpression}";
+                return $"{column.Name.ToPascalCase()} = {readExpression}";
             });
 
         return $$"""
@@ -47,7 +47,7 @@ public class CommonGen(DbDriver dbDriver)
 
         string CheckNullExpression(int ordinal)
         {
-            return $"{Variable.Reader.Name()}.IsDBNull({ordinal})";
+            return $"{Variable.Reader.AsVarName()}.IsDBNull({ordinal})";
         }
 
         string GetNullExpression(Column column)
@@ -65,9 +65,9 @@ public class CommonGen(DbDriver dbDriver)
     {
         return parameters.Select(p =>
         {
-            var varName = Variable.Command.Name();
+            var varName = Variable.Command.AsVarName();
             var columnName = p.Column.Name;
-            var param = p.Column.Name.FirstCharToUpper();
+            var param = p.Column.Name.ToPascalCase();
             var nullCheck = dbDriver.Options.DotnetFramework.LatestDotnetSupported() && !p.Column.NotNull ? "!" : "";
             return $"{varName}.Parameters.AddWithValue(\"@{columnName}\", args.{param}{nullCheck});";
         }).ToList();

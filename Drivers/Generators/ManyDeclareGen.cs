@@ -33,7 +33,7 @@ public class ManyDeclareGen(DbDriver dbDriver)
         var readWhileExists = $$"""
                                 while ({{awaitReaderRow}})
                                 {
-                                    {{Variable.Result.Name()}}.Add({{dataclassInit}});
+                                    {{Variable.Result.AsVarName()}}.Add({{dataclassInit}});
                                 }
                                 """;
 
@@ -45,7 +45,7 @@ public class ManyDeclareGen(DbDriver dbDriver)
 
         string GetAsDapper()
         {
-            var argsParams = query.Params.Count > 0 ? ", new { " + string.Join(", ", query.Params.Select(p => p.Column.Name + "=args." + p.Column.Name.FirstCharToUpper() + "")) + "}" : "";
+            var argsParams = query.Params.Count > 0 ? ", new { " + string.Join(", ", query.Params.Select(p => p.Column.Name + "=args." + p.Column.Name.ToPascalCase() + "")) + "}" : "";
             return $$"""
                         using ({{establishConnection}})
                         {
@@ -65,9 +65,9 @@ public class ManyDeclareGen(DbDriver dbDriver)
                          await using {{createSqlCommand}};
                          {{commandParameters.JoinByNewLine()}}
                          {{initDataReader}};
-                         var {{Variable.Result.Name()}} = new List<{{returnInterface}}>();
+                         var {{Variable.Result.AsVarName()}} = new List<{{returnInterface}}>();
                          {{readWhileExists}}
-                         return {{Variable.Result.Name()}};
+                         return {{Variable.Result.AsVarName()}};
                      }
                      """;
         }
@@ -84,9 +84,9 @@ public class ManyDeclareGen(DbDriver dbDriver)
                                  {{commandParameters.JoinByNewLine()}}
                                  using ({{initDataReader}})
                                  {
-                                     var {{Variable.Result.Name()}} = new List<{{returnInterface}}>();
+                                     var {{Variable.Result.AsVarName()}} = new List<{{returnInterface}}>();
                                      {{readWhileExists}}
-                                     return {{Variable.Result.Name()}};
+                                     return {{Variable.Result.AsVarName()}};
                                  }
                              }
                          }
