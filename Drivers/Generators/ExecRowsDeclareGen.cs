@@ -13,23 +13,27 @@ public class ExecRowsDeclareGen(DbDriver dbDriver)
     public MemberDeclarationSyntax Generate(string queryTextConstant, string argInterface, Query query)
     {
         var parametersStr = CommonGen.GetParameterListAsString(argInterface, query.Params);
-        var (establishConnection, connectionOpen) = dbDriver.EstablishConnection(query);
-        var createSqlCommand = dbDriver.CreateSqlCommand(queryTextConstant);
-        var commandParameters = CommonGen.GetCommandParameters(query.Params);
-        var executeScalarAndReturnCreated = ExecuteScalarAndReturnCreated();
-        var methodBody = dbDriver.DotnetFramework.LatestDotnetSupported()
-            ? GetWithUsingAsStatement()
-            : GetWithUsingAsBlock();
-
-        if (dbDriver.UseDapper)
-            methodBody = GetAsDapper();
 
         return ParseMemberDeclaration($$"""
                                         public async Task<long> {{query.Name}}({{parametersStr}})
                                         {
-                                            {{methodBody}}
+                                            {{GetMethodBody(queryTextConstant, query)}}
                                         }
                                         """)!;
+    }
+
+    private string GetMethodBody(string queryTextConstant, Query query)
+    {
+        var (establishConnection, connectionOpen) = dbDriver.EstablishConnection(query);
+        var createSqlCommand = dbDriver.CreateSqlCommand(queryTextConstant);
+        var commandParameters = CommonGen.GetCommandParameters(query.Params);
+        var executeScalarAndReturnCreated = ExecuteScalarAndReturnCreated();
+
+        if (dbDriver.Options.UseDapper)
+            return GetAsDapper();
+        if (dbDriver.Options.DotnetFramework.LatestDotnetSupported())
+            return GetAsLatest();
+        return GetAsLegacy();
 
         string GetAsDapper()
         {
@@ -42,7 +46,7 @@ public class ExecRowsDeclareGen(DbDriver dbDriver)
                      """;
         }
 
-        string GetWithUsingAsStatement()
+        string GetAsLatest()
         {
             return $$"""
                      {
@@ -55,7 +59,7 @@ public class ExecRowsDeclareGen(DbDriver dbDriver)
                      """;
         }
 
-        string GetWithUsingAsBlock()
+        string GetAsLegacy()
         {
             return $$"""
                      {

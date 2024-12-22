@@ -37,12 +37,12 @@ public class ManyDeclareGen(DbDriver dbDriver)
                                 }
                                 """;
 
-        if (dbDriver.UseDapper)
-        {
+        if (dbDriver.Options.UseDapper)
             return GetAsDapper();
-        }
+        if (dbDriver.Options.DotnetFramework.LatestDotnetSupported())
+            return GetAsLatest();
+        return GetAsLegacy();
 
-        return dbDriver.DotnetFramework.LatestDotnetSupported() ? Get() : GetAsLegacy();
         string GetAsDapper()
         {
             var argsParams = query.Params.Count > 0 ? ", new { " + string.Join(", ", query.Params.Select(p => p.Column.Name + "=args." + p.Column.Name.FirstCharToUpper() + "")) + "}" : "";
@@ -56,7 +56,7 @@ public class ManyDeclareGen(DbDriver dbDriver)
                      """;
         }
 
-        string Get()
+        string GetAsLatest()
         {
             return $$"""
                      {
