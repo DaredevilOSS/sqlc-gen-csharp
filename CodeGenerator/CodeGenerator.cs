@@ -17,7 +17,6 @@ public class CodeGenerator
 {
     private static readonly string[] ResharperDisables =
     [
-        "InconsistentNaming",
         "UnusedAutoPropertyAccessor.Global",
         "NotAccessedPositionalProperty.Global"
     ];
@@ -120,8 +119,8 @@ public class CodeGenerator
         string QueryFilenameToClassName(string filenameWithExtension)
         {
             return string.Concat(
-                Path.GetFileNameWithoutExtension(filenameWithExtension).FirstCharToUpper(),
-                Path.GetExtension(filenameWithExtension)[1..].FirstCharToUpper());
+                Path.GetFileNameWithoutExtension(filenameWithExtension).ToPascalCase(),
+                Path.GetExtension(filenameWithExtension)[1..].ToPascalCase());
         }
     }
 
@@ -166,7 +165,7 @@ public class CodeGenerator
         MemberDeclarationSyntax GetWithPrimaryConstructor()
         {
             return ParseMemberDeclaration(
-                    $"class {className}(string {Variable.ConnectionString.Name()})" + "{}")!
+                    $"class {className}(string {Variable.ConnectionString.AsVarName()})" + "{}")!
                 .AddModifiers(Token(SyntaxKind.PublicKeyword));
         }
 
@@ -176,11 +175,11 @@ public class CodeGenerator
                     $$"""
                       class {{className}}
                       {
-                          public {{className}}(string {{Variable.ConnectionString.Name()}})
+                          public {{className}}(string {{Variable.ConnectionString.AsVarName()}})
                           {
-                              this.{{Variable.ConnectionString.Name()}} = {{Variable.ConnectionString.Name()}};
+                              this.{{Variable.ConnectionString.AsPropertyName()}} = {{Variable.ConnectionString.AsVarName()}};
                           }
-                          private string {{Variable.ConnectionString.Name()}} { get; }
+                          private string {{Variable.ConnectionString.AsPropertyName()}} { get; }
                       }
                       """)!
                 .AddModifiers(Token(SyntaxKind.PublicKeyword));
@@ -206,7 +205,7 @@ public class CodeGenerator
     private MemberDeclarationSyntax? GetQueryParamsDataclass(Query query)
     {
         if (query.Params.Count <= 0) return null;
-        var columns = query.Params.Select(p => p.Column);
+        var columns = query.Params.Select(p => p.Column).ToList();
         return DataClassesGen.Generate(query.Name, ClassMember.Args, columns, Options);
     }
 

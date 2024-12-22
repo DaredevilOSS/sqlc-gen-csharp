@@ -6,11 +6,16 @@ using System.Threading.Tasks;
 
 namespace SqlcGenCsharpTests;
 
-public class SqliteTests
+public class SqliteTester
 {
-    private static string ConnectionStringEnv => "SQLITE_CONNECTION_STRING";
+    private QuerySql QuerySql { get; set; }
 
-    private QuerySql QuerySql { get; } = new(Environment.GetEnvironmentVariable(ConnectionStringEnv)!);
+    [OneTimeSetUp]
+    public void SetUp()
+    {
+        var connectionString = Environment.GetEnvironmentVariable(GlobalSetup.SqliteConnectionStringEnv);
+        QuerySql = new QuerySql(connectionString!);
+    }
 
     [TearDown]
     public async Task EmptyTestsTable()

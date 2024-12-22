@@ -1,17 +1,22 @@
 using NUnit.Framework;
 using NUnit.Framework.Legacy;
-using SqliteDapperExampleGen;
+using SqliteExampleGen;
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace SqlcGenCsharpTests;
 
-public class SqliteDapperTests
+public class SqliteDapperTester
 {
-    private static string ConnectionStringEnv => "SQLITE_CONNECTION_STRING";
+    private QuerySql QuerySql { get; set; }
 
-    private QuerySql QuerySql { get; } = new(Environment.GetEnvironmentVariable(ConnectionStringEnv)!);
-    // private QuerySql QuerySql { get; } = new("Data Source=/Users/doroneli/Coding/sqlc-gen-csharp/test.db;");
+    [OneTimeSetUp]
+    public void SetUp()
+    {
+        var connectionString = Environment.GetEnvironmentVariable(GlobalSetup.SqliteConnectionStringEnv);
+        QuerySql = new QuerySql(connectionString!);
+    }
 
     [TearDown]
     public async Task EmptyTestsTable()

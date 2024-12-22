@@ -13,8 +13,13 @@ public enum Variable
 
 public static class VariablesExtensions
 {
-    public static string Name(this Variable me)
+    public static string AsVarName(this Variable me)
     {
-        return me.ToString().FirstCharToLower();
+        return me.ToString().ToCamelCase();
+    }
+
+    public static string AsPropertyName(this Variable me)
+    {
+        return me.ToString().ToPascalCase();
     }
 }

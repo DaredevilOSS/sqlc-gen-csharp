@@ -33,6 +33,20 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SqliteDapperExample", "Sqli
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MySqlConnectorDapperExample", "MySqlConnectorDapperExample\MySqlConnectorDapperExample.csproj", "{F97991F7-12EC-4F53-9165-076AAADAB43B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MySqlConnectorDapperLegacyExample", "MySqlConnectorDapperLegacyExample\MySqlConnectorDapperLegacyExample.csproj", "{167818C0-D57F-4673-B733-3DE919BE5689}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NpgsqlDapperLegacyExample", "NpgsqlDapperLegacyExample\NpgsqlDapperLegacyExample.csproj", "{80E45E5A-391B-4850-B1D2-9897D370498A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SqliteDapperLegacyExample", "SqliteDapperLegacyExample\SqliteDapperLegacyExample.csproj", "{AA15E40D-63F2-433A-A90B-3DBC60AD4084}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LegacyEndToEndTests", "LegacyEndToEndTests\LegacyEndToEndTests.csproj", "{7409C5C4-61B4-4219-930B-9FC9CD5C91A8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NpgsqlLegacyExample", "NpgsqlLegacyExample\NpgsqlLegacyExample.csproj", "{E0BCD142-3458-4A77-B1CA-F3FCF4A21152}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MySqlConnectorLegacyExample", "MySqlConnectorLegacyExample\MySqlConnectorLegacyExample.csproj", "{4E87E665-A44E-4556-83B1-23305DF0F1E7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SqliteLegacyExample", "SqliteLegacyExample\SqliteLegacyExample.csproj", "{FED19BAD-3608-4C17-AB0C-ABC39B96AB5D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -101,5 +115,33 @@ Global
 		{F97991F7-12EC-4F53-9165-076AAADAB43B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F97991F7-12EC-4F53-9165-076AAADAB43B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F97991F7-12EC-4F53-9165-076AAADAB43B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{167818C0-D57F-4673-B733-3DE919BE5689}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{167818C0-D57F-4673-B733-3DE919BE5689}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{167818C0-D57F-4673-B733-3DE919BE5689}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{167818C0-D57F-4673-B733-3DE919BE5689}.Release|Any CPU.Build.0 = Release|Any CPU
+		{80E45E5A-391B-4850-B1D2-9897D370498A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{80E45E5A-391B-4850-B1D2-9897D370498A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{80E45E5A-391B-4850-B1D2-9897D370498A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{80E45E5A-391B-4850-B1D2-9897D370498A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AA15E40D-63F2-433A-A90B-3DBC60AD4084}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AA15E40D-63F2-433A-A90B-3DBC60AD4084}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AA15E40D-63F2-433A-A90B-3DBC60AD4084}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AA15E40D-63F2-433A-A90B-3DBC60AD4084}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7409C5C4-61B4-4219-930B-9FC9CD5C91A8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7409C5C4-61B4-4219-930B-9FC9CD5C91A8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7409C5C4-61B4-4219-930B-9FC9CD5C91A8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7409C5C4-61B4-4219-930B-9FC9CD5C91A8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E0BCD142-3458-4A77-B1CA-F3FCF4A21152}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E0BCD142-3458-4A77-B1CA-F3FCF4A21152}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E0BCD142-3458-4A77-B1CA-F3FCF4A21152}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E0BCD142-3458-4A77-B1CA-F3FCF4A21152}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4E87E665-A44E-4556-83B1-23305DF0F1E7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4E87E665-A44E-4556-83B1-23305DF0F1E7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4E87E665-A44E-4556-83B1-23305DF0F1E7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4E87E665-A44E-4556-83B1-23305DF0F1E7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FED19BAD-3608-4C17-AB0C-ABC39B96AB5D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FED19BAD-3608-4C17-AB0C-ABC39B96AB5D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FED19BAD-3608-4C17-AB0C-ABC39B96AB5D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FED19BAD-3608-4C17-AB0C-ABC39B96AB5D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

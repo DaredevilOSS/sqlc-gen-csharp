@@ -66,14 +66,14 @@ public partial class MySqlConnectorDriver(Options options) : DbDriver(options), 
     public override ConnectionGenCommands EstablishConnection(Query query)
     {
         return new ConnectionGenCommands(
-            $"var {Variable.Connection.Name()} = new MySqlConnection({Variable.ConnectionString.Name()})",
-            $"{Variable.Connection.Name()}.Open()"
+            $"var {Variable.Connection.AsVarName()} = new MySqlConnection({GetConnectionStringField()})",
+            $"{Variable.Connection.AsVarName()}.Open()"
         );
     }
 
     public override string CreateSqlCommand(string sqlTextConstant)
     {
-        return $"var {Variable.Command.Name()} = new MySqlCommand({sqlTextConstant}, {Variable.Connection.Name()})";
+        return $"var {Variable.Command.AsVarName()} = new MySqlCommand({sqlTextConstant}, {Variable.Connection.AsVarName()})";
     }
 
     public override string TransformQueryText(Query query)

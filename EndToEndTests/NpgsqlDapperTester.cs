@@ -2,18 +2,20 @@ using NpgsqlDapperExampleGen;
 using NUnit.Framework;
 using NUnit.Framework.Legacy;
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace SqlcGenCsharpTests;
 
-public class NpgsqlDapperTests
+public class NpgsqlDapperTester
 {
-    private static readonly Random Randomizer = new();
+    private QuerySql QuerySql { get; set; }
 
-    private static string ConnectionStringEnv => "POSTGRES_CONNECTION_STRING";
-
-    private QuerySql QuerySql { get; } = new(Environment.GetEnvironmentVariable(ConnectionStringEnv)!);
+    [OneTimeSetUp]
+    public void SetUp()
+    {
+        var connectionString = Environment.GetEnvironmentVariable(GlobalSetup.PostgresConnectionStringEnv);
+        QuerySql = new QuerySql(connectionString!);
+    }
 
     [TearDown]
     public async Task EmptyTestsTable()
@@ -42,11 +44,10 @@ public class NpgsqlDapperTests
         var actualAuthors = await QuerySql.ListAuthors();
         ClassicAssert.AreEqual(2, actualAuthors.Count);
         Assert.That(
-            actualAuthors
-                is [
-                { Name: DataGenerator.BojackAuthor, Bio: DataGenerator.BojackTheme },
-                { Name: DataGenerator.DrSeussAuthor, Bio: DataGenerator.DrSeussQuote }
-                ]
+            actualAuthors is [
+            { Name: DataGenerator.BojackAuthor, Bio: DataGenerator.BojackTheme },
+            { Name: DataGenerator.DrSeussAuthor, Bio: DataGenerator.DrSeussQuote }
+            ]
         );
     }
 
