@@ -10,10 +10,9 @@ namespace SqlcGenCsharp.Drivers;
 
 public record ConnectionGenCommands(string EstablishConnection, string ConnectionOpen);
 
-public abstract class DbDriver(DotnetFramework dotnetFramework, bool useDapper)
+public abstract class DbDriver(Options options)
 {
-    public bool UseDapper { get; } = useDapper;
-    public DotnetFramework DotnetFramework { get; } = dotnetFramework;
+    public Options Options { get; } = options;
 
     private HashSet<string> CsharpPrimitives { get; } = ["long", "double", "int", "float", "bool", "DateTime"];
 
@@ -28,7 +27,7 @@ public abstract class DbDriver(DotnetFramework dotnetFramework, bool useDapper)
             UsingDirective(ParseName("System.Threading.Tasks"))
         };
 
-        if (UseDapper)
+        if (Options.UseDapper)
             usingDirectives.Add(UsingDirective(ParseName("Dapper")));
 
         return usingDirectives.ToArray();
@@ -38,7 +37,7 @@ public abstract class DbDriver(DotnetFramework dotnetFramework, bool useDapper)
     {
         if (notNull) return csharpType;
         if (IsCsharpPrimitive(csharpType)) return $"{csharpType}?";
-        return DotnetFramework.LatestDotnetSupported() ? $"{csharpType}?" : csharpType;
+        return Options.DotnetFramework.LatestDotnetSupported() ? $"{csharpType}?" : csharpType;
     }
 
     public string GetColumnType(Column column)

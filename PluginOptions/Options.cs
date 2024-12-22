@@ -16,7 +16,7 @@ public class Options
         Enum.TryParse(rawOptions.DriverName, true, out DriverName outDriverName);
         DriverName = outDriverName;
         GenerateCsproj = rawOptions.GenerateCsproj;
-        useDapper = rawOptions.UseDapper;
+        UseDapper = rawOptions.UseDapper;
         NamespaceName = rawOptions.NamespaceName;
         DotnetFramework = DotnetFrameworkExtensions.ParseName(rawOptions.TargetFramework);
     }
@@ -26,7 +26,8 @@ public class Options
     public DotnetFramework DotnetFramework { get; }
 
     public bool GenerateCsproj { get; }
-    public bool useDapper { get; }
+
+    public bool UseDapper { get; }
 
     public string NamespaceName { get; }
 }

@@ -41,7 +41,7 @@ internal class CsprojGen(string projectName, string namespaceName, Options optio
 
         string getItemGroup()
         {
-            if (options.useDapper)
+            if (options.UseDapper)
             {
                 // TODO: extract version to user input
                 return $"""

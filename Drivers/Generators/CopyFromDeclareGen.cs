@@ -10,43 +10,58 @@ public class CopyFromDeclareGen(DbDriver dbDriver)
 {
     public MemberDeclarationSyntax Generate(string queryTextConstant, string argInterface, Query query)
     {
-        var (establishConnection, connectionOpen) = dbDriver.EstablishConnection(query);
-        var beginBinaryImport = $"{Variable.Connection.Name()}.BeginBinaryImportAsync({queryTextConstant}";
-        var addRowsToCopyCommand = AddRowsToCopyCommand(query);
-        var methodBody = dbDriver.DotnetFramework.LatestDotnetSupported() ?
-            $$"""
-              {
-                  await using {{establishConnection}};
-                  {{connectionOpen.AppendSemicolonUnlessEmpty()}}
-                  await {{Variable.Connection.Name()}}.OpenAsync();
-                  await using var {{Variable.Writer.Name()}} = await {{beginBinaryImport}});
-                  {{addRowsToCopyCommand}}
-                  await {{Variable.Writer.Name()}}.CompleteAsync();
-                  await {{Variable.Connection.Name()}}.CloseAsync();
-              }
-              """ :
-            $$"""
-              {
-                  using ({{establishConnection}})
-                  {
-                      {{connectionOpen.AppendSemicolonUnlessEmpty()}}
-                      await {{Variable.Connection.Name()}}.OpenAsync();
-                      using (var {{Variable.Writer.Name()}} = await {{beginBinaryImport}}))
-                      {
-                         {{addRowsToCopyCommand}}
-                         await {{Variable.Writer.Name()}}.CompleteAsync();
-                      }
-                      await {{Variable.Connection.Name()}}.CloseAsync();
-                  }
-              }
-              """;
-
         return ParseMemberDeclaration($$"""
                                         public async Task {{query.Name}}(List<{{argInterface}}> args)
                                         {
-                                            {{methodBody}}
+                                            {{GetMethodBody(queryTextConstant, query)}}
                                         }
                                         """)!;
+    }
+
+
+    private string GetMethodBody(string queryTextConstant, Query query)
+    {
+        var (establishConnection, connectionOpen) = dbDriver.EstablishConnection(query);
+        var beginBinaryImport = $"{Variable.Connection.Name()}.BeginBinaryImportAsync({queryTextConstant}";
+        var addRowsToCopyCommand = AddRowsToCopyCommand(query);
+
+        if (dbDriver.Options.DotnetFramework.LatestDotnetSupported())
+            return GetAsLatest();
+        return GetAsLegacy();
+
+        string GetAsLatest()
+        {
+            return $$"""
+                     {
+                         await using {{establishConnection}};
+                         {{connectionOpen.AppendSemicolonUnlessEmpty()}}
+                         await {{Variable.Connection.Name()}}.OpenAsync();
+                         await using var {{Variable.Writer.Name()}} = await {{beginBinaryImport}});
+                         {{addRowsToCopyCommand}}
+                         await {{Variable.Writer.Name()}}.CompleteAsync();
+                         await {{Variable.Connection.Name()}}.CloseAsync();
+                     }
+                     """;
+        }
+
+        string GetAsLegacy()
+        {
+            return $$"""
+                     {
+                         using ({{establishConnection}})
+                         {
+                             {{connectionOpen.AppendSemicolonUnlessEmpty()}}
+                             await {{Variable.Connection.Name()}}.OpenAsync();
+                             using (var {{Variable.Writer.Name()}} = await {{beginBinaryImport}}))
+                             {
+                                {{addRowsToCopyCommand}}
+                                await {{Variable.Writer.Name()}}.CompleteAsync();
+                             }
+                             await {{Variable.Connection.Name()}}.CloseAsync();
+                         }
+                     }
+                     """;
+        }
     }
 
     private string AddRowsToCopyCommand(Query query)

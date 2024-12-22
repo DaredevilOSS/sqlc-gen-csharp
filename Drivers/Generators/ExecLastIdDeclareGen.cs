@@ -1,6 +1,7 @@
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Plugin;
 using System.Collections.Generic;
+using System.Linq;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace SqlcGenCsharp.Drivers.Generators;
@@ -9,26 +10,32 @@ public class ExecLastIdDeclareGen(DbDriver dbDriver)
 {
     private CommonGen CommonGen { get; } = new(dbDriver);
 
-
     public MemberDeclarationSyntax Generate(string queryTextConstant, string argInterface, Query query)
     {
         var parametersStr = CommonGen.GetParameterListAsString(argInterface, query.Params);
-        var (establishConnection, connectionOpen) = dbDriver.EstablishConnection(query);
-        var createSqlCommand = dbDriver.CreateSqlCommand(queryTextConstant);
-        var commandParameters = CommonGen.GetCommandParameters(query.Params);
-        var executeScalarAndReturnCreated = ExecuteScalarAndReturnCreated();
-        var methodBody = dbDriver.DotnetFramework.LatestDotnetSupported()
-            ? GetWithUsingAsStatement()
-            : GetWithUsingAsBlock();
+
 
         return ParseMemberDeclaration($$"""
                                         public async Task<long> {{query.Name}}({{parametersStr}})
                                         {
-                                            {{methodBody}}
+                                            {{GetMethodBody(queryTextConstant, query)}}
                                         }
                                         """)!;
+    }
 
-        string GetWithUsingAsStatement()
+
+    private string GetMethodBody(string queryTextConstant, Query query)
+    {
+        var (establishConnection, connectionOpen) = dbDriver.EstablishConnection(query);
+        var createSqlCommand = dbDriver.CreateSqlCommand(queryTextConstant);
+        var commandParameters = CommonGen.GetCommandParameters(query.Params).ToList();
+        var executeScalarAndReturnCreated = ExecuteScalarAndReturnCreated();
+
+        if (dbDriver.Options.DotnetFramework.LatestDotnetSupported())
+            return GetAsLatest();
+        return GetAsLegacy();
+
+        string GetAsLatest()
         {
             return $$"""
                      {
@@ -41,7 +48,7 @@ public class ExecLastIdDeclareGen(DbDriver dbDriver)
                      """;
         }
 
-        string GetWithUsingAsBlock()
+        string GetAsLegacy()
         {
             return $$"""
                      {

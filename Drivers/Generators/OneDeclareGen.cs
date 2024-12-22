@@ -31,12 +31,12 @@ public class OneDeclareGen(DbDriver dbDriver)
         var awaitReaderRow = CommonGen.AwaitReaderRow();
         var returnDataclass = CommonGen.InstantiateDataclass(query.Columns, returnInterface);
 
-        if (dbDriver.UseDapper)
-        {
+        if (dbDriver.Options.UseDapper)
             return GetAsDapper();
-        }
+        if (dbDriver.Options.DotnetFramework.LatestDotnetSupported())
+            return GetAsLatest();
+        return GetAsLegacy();
 
-        return dbDriver.DotnetFramework.LatestDotnetSupported() ? Get() : GetAsLegacy();
         string GetAsDapper()
         {
             var argsParams = query.Params.Count > 0 ? ", new { " + string.Join(", ", query.Params.Select(p => p.Column.Name + "=args." + p.Column.Name.FirstCharToUpper() + "")) + "}" : "";
@@ -49,7 +49,8 @@ public class OneDeclareGen(DbDriver dbDriver)
                         }
                      """;
         }
-        string Get()
+
+        string GetAsLatest()
         {
             return $$"""
                      {

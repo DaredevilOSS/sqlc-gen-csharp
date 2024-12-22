@@ -27,12 +27,11 @@ public class ExecDeclareGen(DbDriver dbDriver)
         var commandParameters = CommonGen.GetCommandParameters(query.Params);
         var executeScalar = $"await {Variable.Command.Name()}.ExecuteScalarAsync();";
 
-        if (dbDriver.UseDapper)
-        {
+        if (dbDriver.Options.UseDapper)
             return GetAsDapper();
-        }
-
-        return dbDriver.DotnetFramework.LatestDotnetSupported() ? Get() : GetAsLegacy();
+        if (dbDriver.Options.DotnetFramework.LatestDotnetSupported())
+            return GetAsLatest();
+        return GetAsLegacy();
 
         string GetAsDapper()
         {
@@ -45,7 +44,7 @@ public class ExecDeclareGen(DbDriver dbDriver)
                      """;
         }
 
-        string Get()
+        string GetAsLatest()
         {
             return $$"""
                      {
