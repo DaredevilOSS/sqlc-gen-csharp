@@ -1,6 +1,7 @@
 # <p align="center">sqlc-gen-csharp</p>
 <p align="center"><img src="https://github.com/DaredevilOSS/sqlc-gen-csharp/actions/workflows/ci.yml/badge.svg?branch=main" alt="CI"></p>
 
+
 sqlc-gen-csharp is a .NET SQLC plugin global tool that generates strongly-typed SQL queries and corosponding code for various databases and C# target frameworks. It wrriten to work with the popular [sqlc](https://github.com/kyleconroy/sqlc) tool, which is written in golang and targets Go, Java, JavaScript, Kotlin, Python, Ruby, Rust, Swift, and TypeScript.
 
 ## Usage
