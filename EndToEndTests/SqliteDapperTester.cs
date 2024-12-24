@@ -1,6 +1,6 @@
 using NUnit.Framework;
 using NUnit.Framework.Legacy;
-using SqliteDapperExampleGen;
+using SqliteExampleGen;
 using System;
 using System.Threading.Tasks;
 
@@ -11,7 +11,7 @@ public class SqliteDapperTests
     private static string ConnectionStringEnv => "SQLITE_CONNECTION_STRING";
 
     private QuerySql QuerySql { get; } = new(Environment.GetEnvironmentVariable(ConnectionStringEnv)!);
-    // private QuerySql QuerySql { get; } = new("Data Source=/Users/doroneli/Coding/sqlc-gen-csharp/test.db;");
+
 
     [TearDown]
     public async Task EmptyTestsTable()

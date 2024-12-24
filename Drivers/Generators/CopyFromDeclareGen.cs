@@ -22,7 +22,7 @@ public class CopyFromDeclareGen(DbDriver dbDriver)
     private string GetMethodBody(string queryTextConstant, Query query)
     {
         var (establishConnection, connectionOpen) = dbDriver.EstablishConnection(query);
-        var beginBinaryImport = $"{Variable.Connection.Name()}.BeginBinaryImportAsync({queryTextConstant}";
+        var beginBinaryImport = $"{Variable.Connection.AsVarName()}.BeginBinaryImportAsync({queryTextConstant}";
         var addRowsToCopyCommand = AddRowsToCopyCommand(query);
 
         if (dbDriver.Options.DotnetFramework.LatestDotnetSupported())
@@ -35,11 +35,11 @@ public class CopyFromDeclareGen(DbDriver dbDriver)
                      {
                          await using {{establishConnection}};
                          {{connectionOpen.AppendSemicolonUnlessEmpty()}}
-                         await {{Variable.Connection.Name()}}.OpenAsync();
-                         await using var {{Variable.Writer.Name()}} = await {{beginBinaryImport}});
+                         await {{Variable.Connection.AsVarName()}}.OpenAsync();
+                         await using var {{Variable.Writer.AsVarName()}} = await {{beginBinaryImport}});
                          {{addRowsToCopyCommand}}
-                         await {{Variable.Writer.Name()}}.CompleteAsync();
-                         await {{Variable.Connection.Name()}}.CloseAsync();
+                         await {{Variable.Writer.AsVarName()}}.CompleteAsync();
+                         await {{Variable.Connection.AsVarName()}}.CloseAsync();
                      }
                      """;
         }
@@ -51,13 +51,13 @@ public class CopyFromDeclareGen(DbDriver dbDriver)
                          using ({{establishConnection}})
                          {
                              {{connectionOpen.AppendSemicolonUnlessEmpty()}}
-                             await {{Variable.Connection.Name()}}.OpenAsync();
-                             using (var {{Variable.Writer.Name()}} = await {{beginBinaryImport}}))
+                             await {{Variable.Connection.AsVarName()}}.OpenAsync();
+                             using (var {{Variable.Writer.AsVarName()}} = await {{beginBinaryImport}}))
                              {
                                 {{addRowsToCopyCommand}}
-                                await {{Variable.Writer.Name()}}.CompleteAsync();
+                                await {{Variable.Writer.AsVarName()}}.CompleteAsync();
                              }
-                             await {{Variable.Connection.Name()}}.CloseAsync();
+                             await {{Variable.Connection.AsVarName()}}.CloseAsync();
                          }
                      }
                      """;
@@ -67,20 +67,20 @@ public class CopyFromDeclareGen(DbDriver dbDriver)
     private string AddRowsToCopyCommand(Query query)
     {
         var constructRow = new List<string>()
-            .Append($"await {Variable.Writer.Name()}.StartRowAsync();")
+            .Append($"await {Variable.Writer.AsVarName()}.StartRowAsync();")
             .Concat(query.Params
                 .Select(p =>
                 {
                     var typeOverride = dbDriver.GetColumnDbTypeOverride(p.Column);
                     var partialStmt =
-                        $"await {Variable.Writer.Name()}.WriteAsync({Variable.Row.Name()}.{p.Column.Name.FirstCharToUpper()}";
+                        $"await {Variable.Writer.AsVarName()}.WriteAsync({Variable.Row.AsVarName()}.{p.Column.Name.ToPascalCase()}";
                     return typeOverride is null
                         ? $"{partialStmt});"
                         : $"{partialStmt}, {typeOverride});";
                 }))
             .JoinByNewLine();
         return $$"""
-                 foreach (var {{Variable.Row.Name()}} in args) 
+                 foreach (var {{Variable.Row.AsVarName()}} in args) 
                  {
                       {{constructRow}}
                  }

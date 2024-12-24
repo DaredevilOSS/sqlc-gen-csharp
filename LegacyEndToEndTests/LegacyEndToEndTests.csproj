@@ -1,0 +1,20 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net462</TargetFramework>
+        <RootNamespace>SqlcGenCsharpTests</RootNamespace>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.9.0"/>
+        <PackageReference Include="NUnit" Version="4.3.1" />
+        <PackageReference Include="NUnit3TestAdapter" Version="4.5.0"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\MySqlConnectorDapperLegacyExample\MySqlConnectorDapperLegacyExample.csproj"/>
+        <ProjectReference Include="..\NpgsqlDapperLegacyExample\NpgsqlDapperLegacyExample.csproj"/>
+        <ProjectReference Include="..\SqliteDapperLegacyExample\SqliteDapperLegacyExample.csproj" />
+    </ItemGroup>
+
+</Project>

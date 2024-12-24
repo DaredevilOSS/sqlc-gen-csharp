@@ -2,7 +2,6 @@ using NpgsqlDapperExampleGen;
 using NUnit.Framework;
 using NUnit.Framework.Legacy;
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace SqlcGenCsharpTests;

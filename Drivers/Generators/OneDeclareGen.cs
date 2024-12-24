@@ -39,7 +39,7 @@ public class OneDeclareGen(DbDriver dbDriver)
 
         string GetAsDapper()
         {
-            var argsParams = query.Params.Count > 0 ? ", new { " + string.Join(", ", query.Params.Select(p => p.Column.Name + "=args." + p.Column.Name.FirstCharToUpper() + "")) + "}" : "";
+            var argsParams = query.Params.Count > 0 ? ", new { " + string.Join(", ", query.Params.Select(p => p.Column.Name + "=args." + p.Column.Name.ToPascalCase() + "")) + "}" : "";
             return $$"""
                         using ({{establishConnection}})
                         {

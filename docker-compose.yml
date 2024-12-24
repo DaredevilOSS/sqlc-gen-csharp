@@ -1,16 +1,35 @@
 services:
-  plugin-tests:
-    container_name: ${TESTS_CONTAINER_NAME}
-    build: .
+  plugin-tests-dotnet-core:
+    container_name: ${TESTS_DOTNET_CORE_CONTAINER}
+    build:
+      context: .
+      dockerfile: dotnet_core.Dockerfile
     restart: on-failure
     env_file:
       - .env
-    command: "dotnet test"
+    command: "dotnet test EndToEndTests/EndToEndTests.csproj"
     depends_on:
       mysqldb:
         condition: service_healthy
       postgresdb:
         condition: service_healthy
+        
+  plugin-tests-dotnet-framework:
+    container_name: ${TESTS_DOTNET_FRAMEWORK_CONTAINER}
+    build:
+      context: .
+      dockerfile: dotnet_framework.Dockerfile
+    restart: on-failure
+    env_file:
+      - .env
+    command: "dotnet test LegacyEndToEndTests/LegacyEndToEndTests.csproj"
+    depends_on:
+      mysqldb:
+        condition: service_healthy
+      postgresdb:
+        condition: service_healthy
+      plugin-tests-dotnet-core: # verifying the tests data operations won't conflict
+        condition: service_completed_successfully
         
   mysqldb:
     container_name: mysqldb

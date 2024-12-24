@@ -4,6 +4,7 @@ plugins:
     process:
       cmd: ./dist/LocalRunner
 sql:
+  # PostgresSQL
   - schema: "examples/authors/postgresql/schema.sql"
     queries: "examples/authors/postgresql/query.sql"
     engine: "postgresql"
@@ -27,6 +28,20 @@ sql:
           targetFramework: net8.0
           generateCsproj: true
           namespaceName: NpgsqlDapperExampleGen
+  - schema: "examples/authors/postgresql/schema.sql"
+    queries: "examples/authors/postgresql/query.sql"
+    engine: "postgresql"
+    codegen:
+      - plugin: csharp
+        out: NpgsqlDapperLegacyExample
+        options:
+          driver: Npgsql
+          useDapper: true
+          targetFramework: netstandard2.0
+          generateCsproj: true
+          namespaceName: NpgsqlDapperLegacyExampleGen
+  
+  # MySQL
   - schema: "examples/authors/mysql/schema.sql"
     queries: "examples/authors/mysql/query.sql"
     engine: "mysql"
@@ -50,6 +65,20 @@ sql:
           targetFramework: net8.0
           generateCsproj: true
           namespaceName: MySqlConnectorDapperExampleGen
+  - schema: "examples/authors/mysql/schema.sql"
+    queries: "examples/authors/mysql/query.sql"
+    engine: "mysql"
+    codegen:
+      - plugin: csharp
+        out: MySqlConnectorDapperLegacyExample
+        options:
+          driver: MySqlConnector
+          useDapper: true
+          targetFramework: netstandard2.0
+          generateCsproj: true
+          namespaceName: MySqlConnectorDapperLegacyExampleGen
+  
+  # Sqlite
   - schema: "examples/authors/sqlite/schema.sql"
     queries: "examples/authors/sqlite/query.sql"
     engine: "sqlite"
@@ -73,3 +102,15 @@ sql:
           targetFramework: net8.0
           generateCsproj: true
           namespaceName: SqliteDapperExampleGen
+  - schema: "examples/authors/sqlite/schema.sql"
+    queries: "examples/authors/sqlite/query.sql"
+    engine: "sqlite"
+    codegen:
+      - plugin: csharp
+        out: SqliteDapperLegacyExample
+        options:
+          driver: Sqlite
+          useDapper: true
+          targetFramework: netstandard2.0
+          generateCsproj: true
+          namespaceName: SqliteDapperLegacyExampleGen
