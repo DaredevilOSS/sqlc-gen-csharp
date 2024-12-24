@@ -2,7 +2,7 @@
 <p align="center"><img src="https://github.com/DaredevilOSS/sqlc-gen-csharp/actions/workflows/ci.yml/badge.svg?branch=main" alt="CI"></p>
 
 
-sqlc-gen-csharp is a .NET SQLC plugin global tool that generates strongly-typed SQL queries and corosponding code for various databases and C# target frameworks. It wrriten to work with the popular [sqlc](https://github.com/kyleconroy/sqlc) tool, which is written in golang and targets Go, Java, JavaScript, Kotlin, Python, Ruby, Rust, Swift, and TypeScript.
+sqlc-gen-csharp is a .Net plugin for [sqlc](https://github.com/sqlc-dev/sqlc).<br/> It leverages the SQLC plugin system to generate type-safe C# code for SQL queries, supporting  PostgresSQL, MySQL & SQLite via the corresponding driver or suitable Dapper abstraction.
 
 ## Usage
 
@@ -13,7 +13,7 @@ sqlc-gen-csharp is a .NET SQLC plugin global tool that generates strongly-typed 
 | targetFramework | default: `net8.0`<br/>values: `netstandard2.0`, `netstandard2.1`, `net8.0` | Yes      | Determines the target framework for your generated code, meaning the generated code will be compiled to the specified runtime.<br/>For more information and help deciding on the right value, refer to the [Microsoft .NET Standard documentation](https://learn.microsoft.com/en-us/dotnet/standard/net-standard?tabs=net-standard-1-0). |
 | generateCsproj  | default: `true`<br/>values: `false`,`true`                                 | Yes      | Assists you with the integration of SQLC and csharp by generating a `.csproj` file. This converts the generated output to a .dll, a project that you can easily incorporate into your build process.                                                                                                                                      |
 | namespaceName   | default: the generated project name                                        | Yes      | Allows you to override the namespace name to be different than the project name                                                                                                                                                                                                                                                           |
-| useDapper   | default: `false`<br/>values: `false`,`true`            | Yes      | Enables Dapper as the ORM of choice for your generated code. When enabled, the generated code will use Dapper to execute SQL queries and map results to objects. For more information, refer to the [Dapper documentation](https://github.com/DapperLib/Dapper). |
+| useDapper   | default: `false`<br/>values: `false`,`true`            | Yes      | Enables Dapper as a thin wrapper for the generated code. For more information, please refer to the [Dapper documentation](https://github.com/DapperLib/Dapper). |
 
 ### Configuration
 ```yaml
