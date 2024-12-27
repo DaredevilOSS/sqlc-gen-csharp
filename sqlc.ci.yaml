@@ -6,8 +6,8 @@ plugins:
       sha256: SHA_TO_REPLACE
 sql:
   # PostgresSQL
-  - schema: "examples/authors/postgresql/schema.sql"
-    queries: "examples/authors/postgresql/query.sql"
+  - schema: "examples/config/postgresql/schema.sql"
+    queries: "examples/config/postgresql/query.sql"
     engine: "postgresql"
     codegen:
       - plugin: csharp
@@ -18,8 +18,8 @@ sql:
           targetFramework: net8.0
           generateCsproj: true
           namespaceName: NpgsqlExampleGen
-  - schema: "examples/authors/postgresql/schema.sql"
-    queries: "examples/authors/postgresql/query.sql"
+  - schema: "examples/config/postgresql/schema.sql"
+    queries: "examples/config/postgresql/query.sql"
     engine: "postgresql"
     codegen:
       - plugin: csharp
@@ -30,8 +30,8 @@ sql:
           targetFramework: net8.0
           generateCsproj: true
           namespaceName: NpgsqlDapperExampleGen
-  - schema: "examples/authors/postgresql/schema.sql"
-    queries: "examples/authors/postgresql/query.sql"
+  - schema: "examples/config/postgresql/schema.sql"
+    queries: "examples/config/postgresql/query.sql"
     engine: "postgresql"
     codegen:
       - plugin: csharp
@@ -42,8 +42,8 @@ sql:
           targetFramework: netstandard2.0
           generateCsproj: true
           namespaceName: NpgsqlLegacyExampleGen
-  - schema: "examples/authors/postgresql/schema.sql"
-    queries: "examples/authors/postgresql/query.sql"
+  - schema: "examples/config/postgresql/schema.sql"
+    queries: "examples/config/postgresql/query.sql"
     engine: "postgresql"
     codegen:
       - plugin: csharp
@@ -56,8 +56,8 @@ sql:
           namespaceName: NpgsqlDapperLegacyExampleGen
           
   # MySQL
-  - schema: "examples/authors/mysql/schema.sql"
-    queries: "examples/authors/mysql/query.sql"
+  - schema: "examples/config/mysql/schema.sql"
+    queries: "examples/config/mysql/query.sql"
     engine: "mysql"
     codegen:
       - plugin: csharp
@@ -68,8 +68,8 @@ sql:
           targetFramework: net8.0
           generateCsproj: true
           namespaceName: MySqlConnectorExampleGen
-  - schema: "examples/authors/mysql/schema.sql"
-    queries: "examples/authors/mysql/query.sql"
+  - schema: "examples/config/mysql/schema.sql"
+    queries: "examples/config/mysql/query.sql"
     engine: "mysql"
     codegen:
       - plugin: csharp
@@ -80,8 +80,8 @@ sql:
           targetFramework: net8.0
           generateCsproj: true
           namespaceName: MySqlConnectorDapperExampleGen
-  - schema: "examples/authors/mysql/schema.sql"
-    queries: "examples/authors/mysql/query.sql"
+  - schema: "examples/config/mysql/schema.sql"
+    queries: "examples/config/mysql/query.sql"
     engine: "mysql"
     codegen:
       - plugin: csharp
@@ -92,8 +92,8 @@ sql:
           targetFramework: netstandard2.0
           generateCsproj: true
           namespaceName: MySqlConnectorLegacyExampleGen
-  - schema: "examples/authors/mysql/schema.sql"
-    queries: "examples/authors/mysql/query.sql"
+  - schema: "examples/config/mysql/schema.sql"
+    queries: "examples/config/mysql/query.sql"
     engine: "mysql"
     codegen:
       - plugin: csharp
@@ -106,8 +106,8 @@ sql:
           namespaceName: MySqlConnectorDapperLegacyExampleGen
           
   # Sqlite
-  - schema: "examples/authors/sqlite/schema.sql"
-    queries: "examples/authors/sqlite/query.sql"
+  - schema: "examples/config/sqlite/schema.sql"
+    queries: "examples/config/sqlite/query.sql"
     engine: "sqlite"
     codegen:
       - plugin: csharp
@@ -118,8 +118,8 @@ sql:
           targetFramework: net8.0
           generateCsproj: true
           namespaceName: SqliteExampleGen
-  - schema: "examples/authors/sqlite/schema.sql"
-    queries: "examples/authors/sqlite/query.sql"
+  - schema: "examples/config/sqlite/schema.sql"
+    queries: "examples/config/sqlite/query.sql"
     engine: "sqlite"
     codegen:
       - plugin: csharp
@@ -130,8 +130,8 @@ sql:
           targetFramework: net8.0
           generateCsproj: true
           namespaceName: SqliteDapperExampleGen
-  - schema: "examples/authors/sqlite/schema.sql"
-    queries: "examples/authors/sqlite/query.sql"
+  - schema: "examples/config/sqlite/schema.sql"
+    queries: "examples/config/sqlite/query.sql"
     engine: "sqlite"
     codegen:
       - plugin: csharp
@@ -142,8 +142,8 @@ sql:
           targetFramework: netstandard2.0
           generateCsproj: true
           namespaceName: SqliteLegacyExampleGen
-  - schema: "examples/authors/sqlite/schema.sql"
-    queries: "examples/authors/sqlite/query.sql"
+  - schema: "examples/config/sqlite/schema.sql"
+    queries: "examples/config/sqlite/query.sql"
     engine: "sqlite"
     codegen:
       - plugin: csharp

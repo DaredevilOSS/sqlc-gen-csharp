@@ -173,7 +173,7 @@ jobs:
           $env:Path += ";C:\Program Files\MySQL\MySQL Server 8.0\bin"
           [Environment]::SetEnvironmentVariable("Path", $env:Path, "Machine")
           mysql -u root -e "CREATE DATABASE tests;"
-          mysql -u root tests --execute="source examples/authors/mysql/schema.sql"    
+          mysql -u root tests --execute="source examples/config/mysql/schema.sql"    
 
       - name: Install & Start PostgreSQL
         shell: powershell
@@ -185,7 +185,7 @@ jobs:
           $env:Path += ";C:\Program Files\PostgreSQL\17\bin"
           $env:PGPASSWORD = "pass"
           psql -U postgres -c "CREATE DATABASE tests;"
-          psql -U postgres -d tests -f "examples/authors/postgresql/schema.sql"
+          psql -U postgres -d tests -f "examples/config/postgresql/schema.sql"
       
       - name: Setup Visual Studio for .NET Framework
         uses: microsoft/setup-msbuild@v1

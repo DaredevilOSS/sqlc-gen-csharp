@@ -25,27 +25,32 @@ plugins:
     sha256: ${RELEASE_SHA}
 sql:
   # PostgreSQL Example
-  - schema: "examples/authors/postgresql/schema.sql"
-    queries: "examples/authors/postgresql/query.sql"
+  - schema: "examples/config/postgresql/schema.sql"
+    queries: "examples/config/postgresql/query.sql"
     engine: "postgresql"
     codegen:
       - plugin: csharp
         out: NpgsqlExample
         options:
           driver: Npgsql
-          targetFramework: net8.0
-          generateCsproj: true
   # MySQL Example
-  - schema: "examples/authors/mysql/schema.sql"
-    queries: "examples/authors/mysql/query.sql"
+  - schema: "examples/config/mysql/schema.sql"
+    queries: "examples/config/mysql/query.sql"
     engine: "mysql"
     codegen:
       - plugin: csharp
         out: MySqlConnectorExample
         options:
           driver: MySqlConnector
-          targetFramework: net8.0
-          generateCsproj: true
+  # Sqlite Example
+  - schema: "examples/config/sqlite/schema.sql"
+    queries: "examples/config/sqlite/query.sql"
+    engine: "sqlite"
+    codegen:
+      - plugin: csharp
+        out: SqliteExample
+        options:
+          driver: Sqlite
 ```
 
 ### [Generated Code Examples](docs/Examples.md)
