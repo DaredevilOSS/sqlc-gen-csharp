@@ -10,7 +10,7 @@
         <Content Include="../.env">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </Content>
-        <Content Include="../examples/authors/sqlite/schema.sql">
+        <Content Include="../examples/config/sqlite/schema.sql">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
             <TargetPath>sqlite.schema.sql</TargetPath>
         </Content>
