@@ -1,7 +1,7 @@
 # Examples
-## Engine `postgresql`: [examples/NpgsqlExample](../examples/NpgsqlExample)
+## Engine `postgresql`: [NpgsqlExample](../examples/NpgsqlExample)
 
-### [Schema](../examples/authors/postgresql/schema.sql) | [Queries](../examples/authors/postgresql/query.sql) | [End2End Test](../EndToEndTests/examples/examples/NpgsqlTester.cs)
+### [Schema](../examples/config/postgresql/schema.sql) | [Queries](../examples/config/postgresql/query.sql) | [End2End Test](../EndToEndTests/NpgsqlTester.cs)
 
 ### Config
 ```yaml
@@ -12,9 +12,9 @@ generateCsproj: true
 namespaceName: NpgsqlExampleGen
 ```
 
-## Engine `postgresql`: [examples/NpgsqlDapperExample](../examples/NpgsqlDapperExample)
+## Engine `postgresql`: [NpgsqlDapperExample](../examples/NpgsqlDapperExample)
 
-### [Schema](../examples/authors/postgresql/schema.sql) | [Queries](../examples/authors/postgresql/query.sql) | [End2End Test](../EndToEndTests/examples/examples/NpgsqlDapperTester.cs)
+### [Schema](../examples/config/postgresql/schema.sql) | [Queries](../examples/config/postgresql/query.sql) | [End2End Test](../EndToEndTests/NpgsqlDapperTester.cs)
 
 ### Config
 ```yaml
@@ -25,9 +25,9 @@ generateCsproj: true
 namespaceName: NpgsqlDapperExampleGen
 ```
 
-## Engine `postgresql`: [examples/NpgsqlLegacyExample](../examples/NpgsqlLegacyExample)
+## Engine `postgresql`: [NpgsqlLegacyExample](../examples/NpgsqlLegacyExample)
 
-### [Schema](../examples/authors/postgresql/schema.sql) | [Queries](../examples/authors/postgresql/query.sql) | [End2End Test](../EndToEndTests/examples/examples/NpgsqlLegacyTester.cs)
+### [Schema](../examples/config/postgresql/schema.sql) | [Queries](../examples/config/postgresql/query.sql) | [End2End Test](../EndToEndTests/NpgsqlLegacyTester.cs)
 
 ### Config
 ```yaml
@@ -38,9 +38,9 @@ generateCsproj: true
 namespaceName: NpgsqlLegacyExampleGen
 ```
 
-## Engine `postgresql`: [examples/NpgsqlDapperLegacyExample](../examples/NpgsqlDapperLegacyExample)
+## Engine `postgresql`: [NpgsqlDapperLegacyExample](../examples/NpgsqlDapperLegacyExample)
 
-### [Schema](../examples/authors/postgresql/schema.sql) | [Queries](../examples/authors/postgresql/query.sql) | [End2End Test](../EndToEndTests/examples/examples/NpgsqlDapperLegacyTester.cs)
+### [Schema](../examples/config/postgresql/schema.sql) | [Queries](../examples/config/postgresql/query.sql) | [End2End Test](../EndToEndTests/NpgsqlDapperLegacyTester.cs)
 
 ### Config
 ```yaml
@@ -51,9 +51,9 @@ generateCsproj: true
 namespaceName: NpgsqlDapperLegacyExampleGen
 ```
 
-## Engine `mysql`: [examples/MySqlConnectorExample](../examples/MySqlConnectorExample)
+## Engine `mysql`: [MySqlConnectorExample](../examples/MySqlConnectorExample)
 
-### [Schema](../examples/authors/mysql/schema.sql) | [Queries](../examples/authors/mysql/query.sql) | [End2End Test](../EndToEndTests/examples/examples/MySqlConnectorTester.cs)
+### [Schema](../examples/config/mysql/schema.sql) | [Queries](../examples/config/mysql/query.sql) | [End2End Test](../EndToEndTests/MySqlConnectorTester.cs)
 
 ### Config
 ```yaml
@@ -64,9 +64,9 @@ generateCsproj: true
 namespaceName: MySqlConnectorExampleGen
 ```
 
-## Engine `mysql`: [examples/MySqlConnectorDapperExample](../examples/MySqlConnectorDapperExample)
+## Engine `mysql`: [MySqlConnectorDapperExample](../examples/MySqlConnectorDapperExample)
 
-### [Schema](../examples/authors/mysql/schema.sql) | [Queries](../examples/authors/mysql/query.sql) | [End2End Test](../EndToEndTests/examples/examples/MySqlConnectorDapperTester.cs)
+### [Schema](../examples/config/mysql/schema.sql) | [Queries](../examples/config/mysql/query.sql) | [End2End Test](../EndToEndTests/MySqlConnectorDapperTester.cs)
 
 ### Config
 ```yaml
@@ -77,9 +77,9 @@ generateCsproj: true
 namespaceName: MySqlConnectorDapperExampleGen
 ```
 
-## Engine `mysql`: [examples/MySqlConnectorLegacyExample](../examples/MySqlConnectorLegacyExample)
+## Engine `mysql`: [MySqlConnectorLegacyExample](../examples/MySqlConnectorLegacyExample)
 
-### [Schema](../examples/authors/mysql/schema.sql) | [Queries](../examples/authors/mysql/query.sql) | [End2End Test](../EndToEndTests/examples/examples/MySqlConnectorLegacyTester.cs)
+### [Schema](../examples/config/mysql/schema.sql) | [Queries](../examples/config/mysql/query.sql) | [End2End Test](../EndToEndTests/MySqlConnectorLegacyTester.cs)
 
 ### Config
 ```yaml
@@ -90,9 +90,9 @@ generateCsproj: true
 namespaceName: MySqlConnectorLegacyExampleGen
 ```
 
-## Engine `mysql`: [examples/MySqlConnectorDapperLegacyExample](../examples/MySqlConnectorDapperLegacyExample)
+## Engine `mysql`: [MySqlConnectorDapperLegacyExample](../examples/MySqlConnectorDapperLegacyExample)
 
-### [Schema](../examples/authors/mysql/schema.sql) | [Queries](../examples/authors/mysql/query.sql) | [End2End Test](../EndToEndTests/examples/examples/MySqlConnectorDapperLegacyTester.cs)
+### [Schema](../examples/config/mysql/schema.sql) | [Queries](../examples/config/mysql/query.sql) | [End2End Test](../EndToEndTests/MySqlConnectorDapperLegacyTester.cs)
 
 ### Config
 ```yaml
@@ -103,9 +103,9 @@ generateCsproj: true
 namespaceName: MySqlConnectorDapperLegacyExampleGen
 ```
 
-## Engine `sqlite`: [examples/SqliteExample](../examples/SqliteExample)
+## Engine `sqlite`: [SqliteExample](../examples/SqliteExample)
 
-### [Schema](../examples/authors/sqlite/schema.sql) | [Queries](../examples/authors/sqlite/query.sql) | [End2End Test](../EndToEndTests/examples/examples/SqliteTester.cs)
+### [Schema](../examples/config/sqlite/schema.sql) | [Queries](../examples/config/sqlite/query.sql) | [End2End Test](../EndToEndTests/SqliteTester.cs)
 
 ### Config
 ```yaml
@@ -116,9 +116,9 @@ generateCsproj: true
 namespaceName: SqliteExampleGen
 ```
 
-## Engine `sqlite`: [examples/SqliteDapperExample](../examples/SqliteDapperExample)
+## Engine `sqlite`: [SqliteDapperExample](../examples/SqliteDapperExample)
 
-### [Schema](../examples/authors/sqlite/schema.sql) | [Queries](../examples/authors/sqlite/query.sql) | [End2End Test](../EndToEndTests/examples/examples/SqliteDapperTester.cs)
+### [Schema](../examples/config/sqlite/schema.sql) | [Queries](../examples/config/sqlite/query.sql) | [End2End Test](../EndToEndTests/SqliteDapperTester.cs)
 
 ### Config
 ```yaml
@@ -129,9 +129,9 @@ generateCsproj: true
 namespaceName: SqliteDapperExampleGen
 ```
 
-## Engine `sqlite`: [examples/SqliteLegacyExample](../examples/SqliteLegacyExample)
+## Engine `sqlite`: [SqliteLegacyExample](../examples/SqliteLegacyExample)
 
-### [Schema](../examples/authors/sqlite/schema.sql) | [Queries](../examples/authors/sqlite/query.sql) | [End2End Test](../EndToEndTests/examples/examples/SqliteLegacyTester.cs)
+### [Schema](../examples/config/sqlite/schema.sql) | [Queries](../examples/config/sqlite/query.sql) | [End2End Test](../EndToEndTests/SqliteLegacyTester.cs)
 
 ### Config
 ```yaml
@@ -142,9 +142,9 @@ generateCsproj: true
 namespaceName: SqliteLegacyExampleGen
 ```
 
-## Engine `sqlite`: [examples/SqliteDapperLegacyExample](../examples/SqliteDapperLegacyExample)
+## Engine `sqlite`: [SqliteDapperLegacyExample](../examples/SqliteDapperLegacyExample)
 
-### [Schema](../examples/authors/sqlite/schema.sql) | [Queries](../examples/authors/sqlite/query.sql) | [End2End Test](../EndToEndTests/examples/examples/SqliteDapperLegacyTester.cs)
+### [Schema](../examples/config/sqlite/schema.sql) | [Queries](../examples/config/sqlite/query.sql) | [End2End Test](../EndToEndTests/SqliteDapperLegacyTester.cs)
 
 ### Config
 ```yaml
