@@ -8,14 +8,12 @@ namespace SqlcGenCsharpTests;
 
 public class MySqlConnectorDapperTester
 {
-    private static string ConnectionStringEnv => "MYSQL_CONNECTION_STRING";
-
     private QuerySql QuerySql { get; set; }
 
     [OneTimeSetUp]
     public void SetUp()
     {
-        var connectionString = Environment.GetEnvironmentVariable(ConnectionStringEnv);
+        var connectionString = Environment.GetEnvironmentVariable(GlobalSetup.MySqlConnectionStringEnv);
         QuerySql = new QuerySql(connectionString!);
     }
 

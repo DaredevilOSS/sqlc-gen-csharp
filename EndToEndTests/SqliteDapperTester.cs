@@ -1,8 +1,7 @@
 using NUnit.Framework;
 using NUnit.Framework.Legacy;
-using SqliteExampleGen;
+using SqliteDapperExampleGen;
 using System;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace SqlcGenCsharpTests;

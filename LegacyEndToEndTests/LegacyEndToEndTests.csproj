@@ -24,12 +24,12 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\MySqlConnectorLegacyExample\MySqlConnectorLegacyExample.csproj"/>
-        <ProjectReference Include="..\MySqlConnectorDapperLegacyExample\MySqlConnectorDapperLegacyExample.csproj"/>
-        <ProjectReference Include="..\NpgsqlLegacyExample\NpgsqlLegacyExample.csproj" />
-        <ProjectReference Include="..\NpgsqlDapperLegacyExample\NpgsqlDapperLegacyExample.csproj"/>
-        <ProjectReference Include="..\SqliteLegacyExample\SqliteLegacyExample.csproj" />
-        <ProjectReference Include="..\SqliteDapperLegacyExample\SqliteDapperLegacyExample.csproj" />
+        <ProjectReference Include="..\examples\MySqlConnectorDapperLegacyExample\MySqlConnectorDapperLegacyExample.csproj" />
+        <ProjectReference Include="..\examples\MySqlConnectorLegacyExample\MySqlConnectorLegacyExample.csproj" />
+        <ProjectReference Include="..\examples\NpgsqlDapperLegacyExample\NpgsqlDapperLegacyExample.csproj" />
+        <ProjectReference Include="..\examples\NpgsqlLegacyExample\NpgsqlLegacyExample.csproj" />
+        <ProjectReference Include="..\examples\SqliteDapperLegacyExample\SqliteDapperLegacyExample.csproj" />
+        <ProjectReference Include="..\examples\SqliteLegacyExample\SqliteLegacyExample.csproj" />
     </ItemGroup>
 
 </Project>

@@ -10,8 +10,6 @@ namespace SqlcGenCsharp.Generators;
 
 internal class DataClassesGen(DbDriver dbDriver)
 {
-    private HashSet<string> CsharpPrimitives { get; } = ["long", "double", "int", "float", "bool"];
-
     public MemberDeclarationSyntax Generate(string name, ClassMember classMember, IList<Column> columns, Options options)
     {
         if (options.DotnetFramework.LatestDotnetSupported() && !options.UseDapper)

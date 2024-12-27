@@ -31,13 +31,14 @@ public class CodeGenerator
 
     private void InitGenerators(GenerateRequest generateRequest)
     {
-        var projectName = new DirectoryInfo(generateRequest.Settings.Codegen.Out).Name;
+        var outputDirectory = generateRequest.Settings.Codegen.Out;
+        var projectName = new DirectoryInfo(outputDirectory).Name;
         Options = new Options(generateRequest);
         NamespaceName = Options.NamespaceName == string.Empty ? projectName : Options.NamespaceName;
         DbDriver = InstantiateDriver();
 
         // initialize file generators
-        CsprojGen = new CsprojGen(projectName, NamespaceName, Options);
+        CsprojGen = new CsprojGen(outputDirectory, projectName, NamespaceName, Options);
         RootGen = new RootGen(Options);
         UtilsGen = new UtilsGen(NamespaceName, Options);
         DataClassesGen = new DataClassesGen(DbDriver);

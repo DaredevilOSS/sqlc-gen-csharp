@@ -4,18 +4,7 @@ PWD 		:= $(shell pwd)
 dotnet-format:
 	dotnet format \
 		--exclude GeneratedProtobuf \
-		--exclude MySqlConnectorExample \
-		--exclude MySqlConnectorDapperExample \
-		--exclude MySqlConnectorLegacyExample \
-		--exclude MySqlConnectorDapperLegacyExample \
-		--exclude NpgsqlExample \
-		--exclude NpgsqlDapperExample \
-		--exclude NpgsqlLegacyExample \
-		--exclude NpgsqlDapperLegacyExample \
-		--exclude SqliteExample \
-		--exclude SqliteDapperExample \
-		--exclude SqliteLegacyExample \
-		--exclude SqliteDapperLegacyExample
+		--exclude examples
         
 protobuf-generate:
 	#./scripts/generate_protobuf.sh

@@ -10,7 +10,7 @@ sql:
     engine: "postgresql"
     codegen:
       - plugin: csharp
-        out: NpgsqlExample
+        out: examples/NpgsqlExample
         options:
           driver: Npgsql
           useDapper: false
@@ -22,7 +22,7 @@ sql:
     engine: "postgresql"
     codegen:
       - plugin: csharp
-        out: NpgsqlDapperExample
+        out: examples/NpgsqlDapperExample
         options:
           driver: Npgsql
           useDapper: true
@@ -34,7 +34,7 @@ sql:
     engine: "postgresql"
     codegen:
       - plugin: csharp
-        out: NpgsqlLegacyExample
+        out: examples/NpgsqlLegacyExample
         options:
           driver: Npgsql
           useDapper: false
@@ -46,7 +46,7 @@ sql:
     engine: "postgresql"
     codegen:
       - plugin: csharp
-        out: NpgsqlDapperLegacyExample
+        out: examples/NpgsqlDapperLegacyExample
         options:
           driver: Npgsql
           useDapper: true
@@ -60,7 +60,7 @@ sql:
     engine: "mysql"
     codegen:
       - plugin: csharp
-        out: MySqlConnectorExample
+        out: examples/MySqlConnectorExample
         options:
           driver: MySqlConnector
           useDapper: false
@@ -72,7 +72,7 @@ sql:
     engine: "mysql"
     codegen:
       - plugin: csharp
-        out: MySqlConnectorDapperExample
+        out: examples/MySqlConnectorDapperExample
         options:
           driver: MySqlConnector
           useDapper: true
@@ -84,7 +84,7 @@ sql:
     engine: "mysql"
     codegen:
       - plugin: csharp
-        out: MySqlConnectorLegacyExample
+        out: examples/MySqlConnectorLegacyExample
         options:
           driver: MySqlConnector
           useDapper: false
@@ -96,7 +96,7 @@ sql:
     engine: "mysql"
     codegen:
       - plugin: csharp
-        out: MySqlConnectorDapperLegacyExample
+        out: examples/MySqlConnectorDapperLegacyExample
         options:
           driver: MySqlConnector
           useDapper: true
@@ -110,7 +110,7 @@ sql:
     engine: "sqlite"
     codegen:
       - plugin: csharp
-        out: SqliteExample
+        out: examples/SqliteExample
         options:
           driver: Sqlite
           useDapper: false
@@ -122,7 +122,7 @@ sql:
     engine: "sqlite"
     codegen:
       - plugin: csharp
-        out: SqliteDapperExample
+        out: examples/SqliteDapperExample
         options:
           driver: Sqlite
           useDapper: true
@@ -134,7 +134,7 @@ sql:
     engine: "sqlite"
     codegen:
       - plugin: csharp
-        out: SqliteLegacyExample
+        out: examples/SqliteLegacyExample
         options:
           driver: Sqlite
           useDapper: false
@@ -146,7 +146,7 @@ sql:
     engine: "sqlite"
     codegen:
       - plugin: csharp
-        out: SqliteDapperLegacyExample
+        out: examples/SqliteDapperLegacyExample
         options:
           driver: Sqlite
           useDapper: true

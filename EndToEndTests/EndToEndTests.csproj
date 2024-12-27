@@ -25,12 +25,12 @@
     </ItemGroup>
     
     <ItemGroup>
-        <ProjectReference Include="..\MySqlConnectorExample\MySqlConnectorExample.csproj" />
-        <ProjectReference Include="..\MySqlConnectorDapperExample\MySqlConnectorDapperExample.csproj" />
-        <ProjectReference Include="..\NpgsqlExample\NpgsqlExample.csproj" />
-        <ProjectReference Include="..\NpgsqlDapperExample\NpgsqlDapperExample.csproj" />
-        <ProjectReference Include="..\SqliteExample\SqliteExample.csproj" />
-        <ProjectReference Include="..\SqliteDapperExample\SqliteDapperExample.csproj" />
+      <ProjectReference Include="..\examples\MySqlConnectorDapperExample\MySqlConnectorDapperExample.csproj" />
+      <ProjectReference Include="..\examples\MySqlConnectorExample\MySqlConnectorExample.csproj" />
+      <ProjectReference Include="..\examples\NpgsqlDapperExample\NpgsqlDapperExample.csproj" />
+      <ProjectReference Include="..\examples\NpgsqlExample\NpgsqlExample.csproj" />
+      <ProjectReference Include="..\examples\SqliteDapperExample\SqliteDapperExample.csproj" />
+      <ProjectReference Include="..\examples\SqliteExample\SqliteExample.csproj" />
     </ItemGroup>
 
 </Project>

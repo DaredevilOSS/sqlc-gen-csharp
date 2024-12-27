@@ -92,7 +92,6 @@ public abstract class DbDriver(Options options)
 
     public abstract MemberDeclarationSyntax ExecDeclare(string text, string argInterface, Query query);
 
-    // TODO refactor and rename + the related CsharpPrimitives set
     public bool IsCsharpPrimitive(string csharpType)
     {
         return CsharpPrimitives.Contains(csharpType.Replace("?", ""));
