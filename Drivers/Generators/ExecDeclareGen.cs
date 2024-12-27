@@ -25,7 +25,7 @@ public class ExecDeclareGen(DbDriver dbDriver)
         var (establishConnection, connectionOpen) = dbDriver.EstablishConnection(query);
         var createSqlCommand = dbDriver.CreateSqlCommand(queryTextConstant);
         var commandParameters = CommonGen.GetCommandParameters(query.Params);
-        var executeScalar = $"await {Variable.Command.Name()}.ExecuteScalarAsync();";
+        var executeScalar = $"await {Variable.Command.AsVarName()}.ExecuteScalarAsync();";
 
         if (dbDriver.Options.UseDapper)
             return GetAsDapper();
@@ -35,7 +35,7 @@ public class ExecDeclareGen(DbDriver dbDriver)
 
         string GetAsDapper()
         {
-            var argsParams = query.Params.Count > 0 ? ", new { " + string.Join(", ", query.Params.Select(p => p.Column.Name + "=args." + p.Column.Name.FirstCharToUpper() + "")) + "}" : "";
+            var argsParams = query.Params.Count > 0 ? ", new { " + string.Join(", ", query.Params.Select(p => p.Column.Name + "=args." + p.Column.Name.ToPascalCase() + "")) + "}" : "";
             return $$"""
                         using ({{establishConnection}})
                         {

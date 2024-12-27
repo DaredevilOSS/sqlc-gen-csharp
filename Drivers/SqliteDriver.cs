@@ -43,21 +43,21 @@ public partial class SqliteDriver(Options options) : DbDriver(options)
     public override ConnectionGenCommands EstablishConnection(Query query)
     {
         return new ConnectionGenCommands(
-            $"var {Variable.Connection.Name()} = new SqliteConnection({Variable.ConnectionString.Name()})",
-            $"{Variable.Connection.Name()}.Open()"
+            $"var {Variable.Connection.AsVarName()} = new SqliteConnection({GetConnectionStringField()})",
+            $"{Variable.Connection.AsVarName()}.Open()"
         );
     }
 
     public override string CreateSqlCommand(string sqlTextConstant)
     {
-        return $"var {Variable.Command.Name()} = new SqliteCommand({sqlTextConstant}, {Variable.Connection.Name()})";
+        return $"var {Variable.Command.AsVarName()} = new SqliteCommand({sqlTextConstant}, {Variable.Connection.AsVarName()})";
     }
 
     public override string TransformQueryText(Query query)
     {
         return query.Params
             .Aggregate(query.Text, (current, currentParameter) => BindParameterRegex()
-            .Replace(current, $"@{currentParameter.Column.Name.FirstCharToLower()}", 1));
+            .Replace(current, $"@{currentParameter.Column.Name.ToCamelCase()}", 1));
     }
 
     public override MemberDeclarationSyntax OneDeclare(string queryTextConstant, string argInterface,

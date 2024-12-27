@@ -37,7 +37,7 @@ public class ExecRowsDeclareGen(DbDriver dbDriver)
 
         string GetAsDapper()
         {
-            var argsParams = query.Params.Count > 0 ? ", new { " + string.Join(", ", query.Params.Select(p => p.Column.Name + "=args." + p.Column.Name.FirstCharToUpper() + "")) + "}" : "";
+            var argsParams = query.Params.Count > 0 ? ", new { " + string.Join(", ", query.Params.Select(p => p.Column.Name + "=args." + p.Column.Name.ToPascalCase() + "")) + "}" : "";
             return $$"""
                         using ({{establishConnection}})
                         {
@@ -78,7 +78,7 @@ public class ExecRowsDeclareGen(DbDriver dbDriver)
 
         IEnumerable<string> ExecuteScalarAndReturnCreated()
         {
-            return [$"return await {Variable.Command.Name()}.ExecuteNonQueryAsync();"];
+            return [$"return await {Variable.Command.AsVarName()}.ExecuteNonQueryAsync();"];
         }
     }
 }

@@ -10,16 +10,14 @@ namespace SqlcGenCsharp.Generators;
 
 internal class DataClassesGen(DbDriver dbDriver)
 {
-    public MemberDeclarationSyntax Generate(string name, ClassMember classMember, IEnumerable<Column> columns,
-        Options options)
+    public MemberDeclarationSyntax Generate(string name, ClassMember classMember, IList<Column> columns, Options options)
     {
         if (options.DotnetFramework.LatestDotnetSupported() && !options.UseDapper)
             return GenerateAsRecord(name, classMember, columns);
         return GenerateAsCLass(name, classMember, columns);
     }
 
-    private RecordDeclarationSyntax GenerateAsRecord(string name, ClassMember classMember,
-        IEnumerable<Column> columns)
+    private RecordDeclarationSyntax GenerateAsRecord(string name, ClassMember classMember, IList<Column> columns)
     {
         return RecordDeclaration(
                 Token(SyntaxKind.StructKeyword),
@@ -35,16 +33,16 @@ internal class DataClassesGen(DbDriver dbDriver)
         ParameterListSyntax ColumnsToParameterList()
         {
             return ParameterList(SeparatedList(columns
-                .Select(column => Parameter(Identifier(column.Name.FirstCharToUpper()))
+                .Select(column => Parameter(Identifier(column.Name.ToPascalCase()))
                     .WithType(ParseTypeName(dbDriver.GetColumnType(column)))
                 )));
         }
     }
 
-    private ClassDeclarationSyntax GenerateAsCLass(string name, ClassMember classMember,
-        IEnumerable<Column> columns)
+    private ClassDeclarationSyntax GenerateAsCLass(string name, ClassMember classMember, IList<Column> columns)
     {
-        return ClassDeclaration($"{name}{classMember.Name()}")
+        var className = $"{name}{classMember.Name()}";
+        return ClassDeclaration(className)
             .AddModifiers(Token(SyntaxKind.PublicKeyword))
             .AddMembers(ColumnsToProperties())
             .WithSemicolonToken(Token(SyntaxKind.SemicolonToken));
@@ -55,7 +53,7 @@ internal class DataClassesGen(DbDriver dbDriver)
                 {
                     var propertyType = dbDriver.GetColumnType(column);
                     return ParseMemberDeclaration(
-                        $"public {propertyType} {column.Name.FirstCharToUpper()} {{ get; set; }}");
+                        $"public {propertyType} {column.Name.ToPascalCase()} {{ get; set; }}");
                 })
                 .Cast<MemberDeclarationSyntax>()
                 .ToArray();

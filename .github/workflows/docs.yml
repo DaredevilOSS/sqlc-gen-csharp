@@ -14,7 +14,6 @@ on:
       - "sqlc.ci.yaml"
       - "examples/**"
       - "*Tests/**"
-      - "*Example/**"
       - "Drivers/**"
     
 jobs:

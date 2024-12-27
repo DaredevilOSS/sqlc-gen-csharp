@@ -96,4 +96,11 @@ public abstract class DbDriver(Options options)
     {
         return CsharpPrimitives.Contains(csharpType.Replace("?", ""));
     }
+
+    protected string GetConnectionStringField()
+    {
+        return Options.DotnetFramework.LatestDotnetSupported()
+            ? Variable.ConnectionString.AsVarName()
+            : Variable.ConnectionString.AsPropertyName();
+    }
 }

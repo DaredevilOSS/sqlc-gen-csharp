@@ -1,17 +1,5 @@
 services:
-  plugin-tests:
-    container_name: ${TESTS_CONTAINER_NAME}
-    build: .
-    restart: on-failure
-    env_file:
-      - .env
-    command: "dotnet test"
-    depends_on:
-      mysqldb:
-        condition: service_healthy
-      postgresdb:
-        condition: service_healthy
-        
+
   mysqldb:
     container_name: mysqldb
     build: examples/authors/mysql
@@ -31,10 +19,10 @@ services:
     build: examples/authors/postgresql
     restart: always
     ports:
-      - "8080:8080"
+      - "5432:5432"
     environment:
       POSTGRES_DB: tests
-      POSTGRES_USER: user
+      POSTGRES_USER: postgres
       POSTGRES_PASSWORD: pass
     healthcheck:
       test: "pg_isready -d tests"
