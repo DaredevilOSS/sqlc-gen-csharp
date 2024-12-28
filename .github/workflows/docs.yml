@@ -9,14 +9,14 @@ permissions:
 
 on:
   push:
-    branches: [ "main", "fix-generated-docs" ]
+    branches: [ "main", "fix-generated-docs-v2" ]
     paths:
       - "sqlc.ci.yaml"
       - "docs/**"
       - "examples/**"
       - "*Tests/**"
       - "Drivers/**"
-      - ".github/workflows"
+      - ".github/workflows/**"
   release:
     types: [ published ]
     

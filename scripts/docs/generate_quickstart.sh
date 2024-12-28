@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -e
+set -ex
 
 doc_file="docs/$1"
 plugin_version=$(git tag | sort --version-sort | tail -n1)
