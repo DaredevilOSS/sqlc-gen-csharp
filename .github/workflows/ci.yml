@@ -68,7 +68,7 @@ jobs:
         run: |
           wget https://github.com/WebAssembly/wasi-sdk/releases/download/wasi-sdk-${{ env.WASI_SDK_VERSION }}/${{ env.WASI_SDK_FILENAME }}
           tar xf ${{ env.WASI_SDK_FILENAME }}
-          chmod -R 755 ${{ env.WASI_SDK_FOLDER_NAME }}
+          chmod -R 755 ${{ env.WASI_SDK_FILENAME }}
 
       - name: Dotnet Wasm Publish
         shell: bash
