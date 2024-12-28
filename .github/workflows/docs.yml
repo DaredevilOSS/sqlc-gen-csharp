@@ -9,13 +9,14 @@ permissions:
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "main", "fix-generated-docs-v2" ]
     paths:
       - "sqlc.ci.yaml"
       - "docs/**"
       - "examples/**"
       - "*Tests/**"
       - "Drivers/**"
+      - ".github/workflows/**"
   release:
     types: [ published ]
     
@@ -26,7 +27,9 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-          
+        with:
+          fetch-depth: 0
+      
       - name: Updating docs
         run: |
           ./scripts/docs/generate_quickstart.sh 02_Quickstart.md

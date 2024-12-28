@@ -1,11 +1,13 @@
 #!/usr/bin/env bash
 
-set -e
+set -ex
 
 doc_file="docs/$1"
 plugin_version=$(git tag | sort --version-sort | tail -n1)
+echo "plugin version: ${plugin_version}"
 plugin_url="https://github.com/DaredevilOSS/sqlc-gen-csharp/releases/download/${plugin_version}/sqlc-gen-csharp.wasm"
 release_sha=$(curl -s "${plugin_url}" | shasum -a 256 | awk '{ print $1 }')
+echo "release sha: ${release_sha}"
     
 contents="[comment]: <> (do not edit - CI auto-generated)
 # Quickstart
