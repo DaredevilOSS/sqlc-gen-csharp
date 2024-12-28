@@ -1,8 +1,8 @@
 using Plugin;
 using System;
+using System.Collections.Generic;
 using System.Text;
 using System.Text.Json;
-using Enum = System.Enum;
 
 namespace SqlcGenCsharp;
 
@@ -13,21 +13,33 @@ public class Options
         var text = Encoding.UTF8.GetString(generateRequest.PluginOptions.ToByteArray());
         var rawOptions = JsonSerializer.Deserialize<RawOptions>(text) ?? throw new InvalidOperationException();
 
-        Enum.TryParse(rawOptions.DriverName, true, out DriverName outDriverName);
-        DriverName = outDriverName;
+        var driverName = EngineMapping[generateRequest.Settings.Engine];
+        DriverName = driverName;
+        OverrideDriverVersion = rawOptions.OverrideDriverVersion;
         GenerateCsproj = rawOptions.GenerateCsproj;
         UseDapper = rawOptions.UseDapper;
+        OverrideDapperVersion = rawOptions.OverrideDapperVersion;
         NamespaceName = rawOptions.NamespaceName;
         DotnetFramework = DotnetFrameworkExtensions.ParseName(rawOptions.TargetFramework);
     }
 
     public DriverName DriverName { get; }
 
+    public string OverrideDriverVersion { get; }
+
     public DotnetFramework DotnetFramework { get; }
 
     public bool GenerateCsproj { get; }
 
     public bool UseDapper { get; }
+    public string OverrideDapperVersion { get; }
 
     public string NamespaceName { get; }
+
+    private static readonly Dictionary<string, DriverName> EngineMapping = new()
+    {
+        { "mysql", DriverName.MySqlConnector },
+        { "postgresql", DriverName.Npgsql },
+        { "sqlite", DriverName.Sqlite }
+    };
 }

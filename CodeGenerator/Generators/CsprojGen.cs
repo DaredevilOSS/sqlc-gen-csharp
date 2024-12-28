@@ -7,6 +7,10 @@ namespace SqlcGenCsharp.Generators;
 
 internal class CsprojGen(string outputDirectory, string projectName, string namespaceName, Options options)
 {
+    private const string DefaultDapperVersion = "2.1.35";
+    private const string DefaultNpsqlVersion = "8.0.3";
+    private const string DefaultMysqlConnectorVersion = "2.3.6";
+    private const string DefaultSqliteVersion = "8.0.10";
     public File GenerateFile()
     {
         var csprojContents = GetFileContents();
@@ -34,39 +38,46 @@ internal class CsprojGen(string outputDirectory, string projectName, string name
                         <OutputType>Library</OutputType>{optionalNullableProperty}
                     </PropertyGroup>
                 
-                {GetItemGroup()}
+                {GetPackageReferences()}
 
                 </Project>
                 """;
 
-        string GetItemGroup()
+        string GetPackageReferences()
         {
+            var driverVersion = GetDriverVersion(options);
             if (options.UseDapper)
-            {
-                // TODO: extract version to user input
                 return $"""
                            <ItemGroup>
-                               <PackageReference Include="{options.DriverName.ToName()}" Version="{GetPackageVersion(options.DriverName)}"/>
-                               <PackageReference Include="Dapper" Version="2.0.123"/>
+                               <PackageReference Include="{options.DriverName.ToName()}" Version="{driverVersion}"/>
+                               <PackageReference Include="Dapper" Version="{GetDapperVersion(options)}"/>
                            </ItemGroup>
                        """;
-            }
             return $"""
                         <ItemGroup>
-                            <PackageReference Include="{options.DriverName.ToName()}" Version="{GetPackageVersion(options.DriverName)}"/>
+                            <PackageReference Include="{options.DriverName.ToName()}" Version="{driverVersion}"/>
                         </ItemGroup>
                     """;
         }
     }
 
-    private static string GetPackageVersion(DriverName driverName)
+    private static string GetDriverVersion(Options options)
     {
-        return driverName switch
-        {
-            DriverName.Npgsql => "8.0.3",
-            DriverName.MySqlConnector => "2.3.6",
-            DriverName.Sqlite => "8.0.10",
-            _ => throw new NotSupportedException($"unsupported driver: {driverName}")
-        };
+        if (string.IsNullOrEmpty(options.OverrideDriverVersion))
+            return options.DriverName switch
+            {
+                DriverName.Npgsql => DefaultNpsqlVersion,
+                DriverName.MySqlConnector => DefaultMysqlConnectorVersion,
+                DriverName.Sqlite => DefaultSqliteVersion,
+                _ => throw new NotSupportedException($"unsupported driver: {options.DriverName}")
+            };
+        return options.OverrideDriverVersion;
+    }
+
+    private static string GetDapperVersion(Options options)
+    {
+        return string.IsNullOrEmpty(options.OverrideDapperVersion)
+            ? DefaultDapperVersion
+            : options.OverrideDapperVersion;
     }
 }

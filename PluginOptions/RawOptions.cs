@@ -4,8 +4,8 @@ namespace SqlcGenCsharp;
 
 internal class RawOptions
 {
-    [JsonPropertyName("driver")]
-    public required string DriverName { get; init; }
+    [JsonPropertyName("overrideDriverVersion")]
+    public string OverrideDriverVersion { get; init; } = string.Empty;
 
     [JsonPropertyName("generateCsproj")]
     public bool GenerateCsproj { get; init; } = true; // generating .csproj files by default
@@ -18,4 +18,7 @@ internal class RawOptions
 
     [JsonPropertyName("useDapper")]
     public bool UseDapper { get; init; } = false;
+
+    [JsonPropertyName("overrideDapperVersion")]
+    public string OverrideDapperVersion { get; init; } = string.Empty;
 }
