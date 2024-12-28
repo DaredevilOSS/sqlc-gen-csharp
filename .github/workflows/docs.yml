@@ -25,7 +25,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Updating Examples doc
-        run: ./scripts/docs/generate_examples.sh docs/Examples.md
+        run: ./scripts/generate_example_docs.sh docs/Examples.md
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v6

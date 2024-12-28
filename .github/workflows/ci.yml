@@ -129,7 +129,7 @@ jobs:
         uses: hoverkraft-tech/compose-action@v1.5.1
 
       - name: End-to-End Tests
-        run: ./scripts/tests/run_end2end.sh
+        run: ./scripts/run_end2end_tests.sh
         
   legacy-end2end-tests: 
     # As this can run only on Windows machines, these tests should run only in CI
