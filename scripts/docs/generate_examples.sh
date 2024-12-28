@@ -12,12 +12,21 @@ for ((i = 0 ; i < "${examples_cnt}" ; i++ )); do
     schema_file=$(yq ".sql[${i}].schema" sqlc.ci.yaml)
     query_files=$(yq ".sql[${i}].queries" sqlc.ci.yaml)
     output_directory=$(yq ".sql[${i}].codegen[0].out" sqlc.ci.yaml)
+    
     project_name="${output_directory/examples\//}"
-    test_class_name="${project_name/Example/"Tester"}" # replace "Example" with "Tester" in project_name
+    if [[ "$project_name" == *"Legacy"* ]]; then
+      test_project="LegacyEndToEndTests"
+      test_class_name="${project_name/Example/"Tester"}"
+      test_class_name="${test_class_name/Legacy/""}"
+    else
+      test_project="EndToEndTests"
+      test_class_name="${project_name/Example/"Tester"}"
+    fi
+    
     examples_doc+="
 ## Engine \`${engine_name}\`: [${project_name}](../${output_directory})
 
-### [Schema](../${schema_file}) | [Queries](../${query_files}) | [End2End Test](../EndToEndTests/${test_class_name}.cs)
+### [Schema](../${schema_file}) | [Queries](../${query_files}) | [End2End Test](../${test_project}/${test_class_name}.cs)
 
 ### Config
 \`\`\`yaml
