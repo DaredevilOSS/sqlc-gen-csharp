@@ -6,8 +6,6 @@ defaults:
 env:
   SQLC_VERSION: 1.27.0
   WASI_SDK_VERSION: 25
-  WASI_SDK_FODLER_NAME: wasi-sdk-${WASI_SDK_VERSION}.0
-  WASI_SDK_FILENAME: ${WASI_SDK_FODLER_NAME}-x86_64-linux.tar.gz
 
 on:
   push:
@@ -61,17 +59,22 @@ jobs:
       - name: install Wasi workload
         run: dotnet workload install wasi-experimental
 
+      - name: Setup Derived Variables
+        run: |
+          echo "WASI_SDK_FOLDER_NAME=wasi-sdk-${{ env.WASI_SDK_VERSION }}.0" >> $GITHUB_ENV
+          echo "WASI_SDK_FILENAME=wasi-sdk-${{ env.WASI_SDK_VERSION }}.0-x86_64-linux.tar.gz" >> $GITHUB_ENV
+
       - name: Download Wasi SDK
         run: |
-          wget https://github.com/WebAssembly/wasi-sdk/releases/download/wasi-sdk-${WASI_SDK_VERSION}/${WASI_SDK_FILENAME}
-          tar xf ${WASI_SDK_FILENAME}
-          chmod -R 755 ${WASI_SDK_FODLER_NAME}
+          wget https://github.com/WebAssembly/wasi-sdk/releases/download/wasi-sdk-${{ env.WASI_SDK_VERSION }}/${{ env.WASI_SDK_FILENAME }}
+          tar xf ${{ env.WASI_SDK_FILENAME }}
+          chmod -R 755 ${{ env.WASI_SDK_FOLDER_NAME }}
 
       - name: Dotnet Wasm Publish
         shell: bash
         run: |
           set -e
-          WASI_SDK_PATH="$(pwd)/${WASI_SDK_FODLER_NAME}" dotnet publish WasmRunner -c release
+          WASI_SDK_PATH="$(pwd)/${{ env.WASI_SDK_FOLDER_NAME }}" dotnet publish WasmRunner -c release
           ./scripts/wasm/copy_plugin_to.sh dist
 
       - name: upload wasm plugin as artifact
@@ -100,7 +103,7 @@ jobs:
 
        - uses: sqlc-dev/setup-sqlc@v4
          with:
-           sqlc-version: '${SQLC_VERSION}'
+           sqlc-version: '${{ env.SQLC_VERSION }}'
 
        - name: Updating plugin sha
          run: ./scripts/wasm/update_sha.sh sqlc.ci.yaml
@@ -124,7 +127,7 @@ jobs:
 
       - uses: sqlc-dev/setup-sqlc@v4
         with:
-          sqlc-version: '${SQLC_VERSION}'
+          sqlc-version: '${{ env.SQLC_VERSION }}'
 
       - name: Load .env file
         uses: xom9ikk/dotenv@v2.3.0
@@ -152,7 +155,7 @@ jobs:
           
       - uses: sqlc-dev/setup-sqlc@v4
         with:
-          sqlc-version: '${SQLC_VERSION}'
+          sqlc-version: '${{ env.SQLC_VERSION }}'
           
       - name: Load .env file
         uses: xom9ikk/dotenv@v2.3.0
