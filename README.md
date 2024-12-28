@@ -9,7 +9,6 @@ sqlc-gen-csharp is a .Net plugin for [sqlc](https://github.com/sqlc-dev/sqlc).<b
 ### Options
 | Option          | Possible values                                                            | Optional | Info                                                                                                                                                                                                                                                                                                                                      |
 |-----------------|----------------------------------------------------------------------------|----------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| driver          | values: `MySqlConnector`,`Npgsql`, `Sqlite`                                | No       | Choosing the driver to use - refer to the [examples](docs/Examples.md) to see the supported SQL engines and their drivers                                                                                                                                                                                                                 |
 | targetFramework | default: `net8.0`<br/>values: `netstandard2.0`, `netstandard2.1`, `net8.0` | Yes      | Determines the target framework for your generated code, meaning the generated code will be compiled to the specified runtime.<br/>For more information and help deciding on the right value, refer to the [Microsoft .NET Standard documentation](https://learn.microsoft.com/en-us/dotnet/standard/net-standard?tabs=net-standard-1-0). |
 | generateCsproj  | default: `true`<br/>values: `false`,`true`                                 | Yes      | Assists you with the integration of SQLC and csharp by generating a `.csproj` file. This converts the generated output to a .dll, a project that you can easily incorporate into your build process.                                                                                                                                      |
 | namespaceName   | default: the generated project name                                        | Yes      | Allows you to override the namespace name to be different than the project name                                                                                                                                                                                                                                                           |
@@ -31,8 +30,6 @@ sql:
     codegen:
       - plugin: csharp
         out: NpgsqlExample
-        options:
-          driver: Npgsql
   # MySQL Example
   - schema: "examples/config/mysql/schema.sql"
     queries: "examples/config/mysql/query.sql"
@@ -40,8 +37,6 @@ sql:
     codegen:
       - plugin: csharp
         out: MySqlConnectorExample
-        options:
-          driver: MySqlConnector
   # Sqlite Example
   - schema: "examples/config/sqlite/schema.sql"
     queries: "examples/config/sqlite/query.sql"
@@ -49,8 +44,6 @@ sql:
     codegen:
       - plugin: csharp
         out: SqliteExample
-        options:
-          driver: Sqlite
 ```
 
 ### [Generated Code Examples](docs/Examples.md)

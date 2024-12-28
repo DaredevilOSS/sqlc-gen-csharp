@@ -1,5 +1,6 @@
 using Plugin;
 using System;
+using System.Collections.Generic;
 using System.Text;
 using System.Text.Json;
 using Enum = System.Enum;
@@ -13,7 +14,8 @@ public class Options
         var text = Encoding.UTF8.GetString(generateRequest.PluginOptions.ToByteArray());
         var rawOptions = JsonSerializer.Deserialize<RawOptions>(text) ?? throw new InvalidOperationException();
 
-        Enum.TryParse(rawOptions.DriverName, true, out DriverName outDriverName);
+        var driverName = EngineMapping[generateRequest.Settings.Engine];
+        Enum.TryParse(driverName, true, out DriverName outDriverName);
         DriverName = outDriverName;
         GenerateCsproj = rawOptions.GenerateCsproj;
         UseDapper = rawOptions.UseDapper;
@@ -30,4 +32,11 @@ public class Options
     public bool UseDapper { get; }
 
     public string NamespaceName { get; }
+
+    private static readonly Dictionary<string, string> EngineMapping = new()
+    {
+        { "mysql", DriverName.MySqlConnector.ToString() },
+        { "postgresql", DriverName.Npgsql.ToString() },
+        { "sqlite", DriverName.Sqlite.ToString() }
+    };
 }
