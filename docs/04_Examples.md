@@ -5,7 +5,6 @@
 
 ### Config
 ```yaml
-driver: Npgsql
 useDapper: false
 targetFramework: net8.0
 generateCsproj: true
@@ -18,7 +17,6 @@ namespaceName: NpgsqlExampleGen
 
 ### Config
 ```yaml
-driver: Npgsql
 useDapper: true
 targetFramework: net8.0
 generateCsproj: true
@@ -27,11 +25,10 @@ namespaceName: NpgsqlDapperExampleGen
 
 ## Engine `postgresql`: [NpgsqlLegacyExample](../examples/NpgsqlLegacyExample)
 
-### [Schema](../examples/config/postgresql/schema.sql) | [Queries](../examples/config/postgresql/query.sql) | [End2End Test](../EndToEndTests/NpgsqlLegacyTester.cs)
+### [Schema](../examples/config/postgresql/schema.sql) | [Queries](../examples/config/postgresql/query.sql) | [End2End Test](../LegacyEndToEndTests/NpgsqlTester.cs)
 
 ### Config
 ```yaml
-driver: Npgsql
 useDapper: false
 targetFramework: netstandard2.0
 generateCsproj: true
@@ -40,11 +37,10 @@ namespaceName: NpgsqlLegacyExampleGen
 
 ## Engine `postgresql`: [NpgsqlDapperLegacyExample](../examples/NpgsqlDapperLegacyExample)
 
-### [Schema](../examples/config/postgresql/schema.sql) | [Queries](../examples/config/postgresql/query.sql) | [End2End Test](../EndToEndTests/NpgsqlDapperLegacyTester.cs)
+### [Schema](../examples/config/postgresql/schema.sql) | [Queries](../examples/config/postgresql/query.sql) | [End2End Test](../LegacyEndToEndTests/NpgsqlDapperTester.cs)
 
 ### Config
 ```yaml
-driver: Npgsql
 useDapper: true
 targetFramework: netstandard2.0
 generateCsproj: true
@@ -57,7 +53,6 @@ namespaceName: NpgsqlDapperLegacyExampleGen
 
 ### Config
 ```yaml
-driver: MySqlConnector
 useDapper: false
 targetFramework: net8.0
 generateCsproj: true
@@ -70,7 +65,6 @@ namespaceName: MySqlConnectorExampleGen
 
 ### Config
 ```yaml
-driver: MySqlConnector
 useDapper: true
 targetFramework: net8.0
 generateCsproj: true
@@ -79,11 +73,10 @@ namespaceName: MySqlConnectorDapperExampleGen
 
 ## Engine `mysql`: [MySqlConnectorLegacyExample](../examples/MySqlConnectorLegacyExample)
 
-### [Schema](../examples/config/mysql/schema.sql) | [Queries](../examples/config/mysql/query.sql) | [End2End Test](../EndToEndTests/MySqlConnectorLegacyTester.cs)
+### [Schema](../examples/config/mysql/schema.sql) | [Queries](../examples/config/mysql/query.sql) | [End2End Test](../LegacyEndToEndTests/MySqlConnectorTester.cs)
 
 ### Config
 ```yaml
-driver: MySqlConnector
 useDapper: false
 targetFramework: netstandard2.0
 generateCsproj: true
@@ -92,11 +85,10 @@ namespaceName: MySqlConnectorLegacyExampleGen
 
 ## Engine `mysql`: [MySqlConnectorDapperLegacyExample](../examples/MySqlConnectorDapperLegacyExample)
 
-### [Schema](../examples/config/mysql/schema.sql) | [Queries](../examples/config/mysql/query.sql) | [End2End Test](../EndToEndTests/MySqlConnectorDapperLegacyTester.cs)
+### [Schema](../examples/config/mysql/schema.sql) | [Queries](../examples/config/mysql/query.sql) | [End2End Test](../LegacyEndToEndTests/MySqlConnectorDapperTester.cs)
 
 ### Config
 ```yaml
-driver: MySqlConnector
 useDapper: true
 targetFramework: netstandard2.0
 generateCsproj: true
@@ -109,7 +101,6 @@ namespaceName: MySqlConnectorDapperLegacyExampleGen
 
 ### Config
 ```yaml
-driver: Sqlite
 useDapper: false
 targetFramework: net8.0
 generateCsproj: true
@@ -122,7 +113,6 @@ namespaceName: SqliteExampleGen
 
 ### Config
 ```yaml
-driver: Sqlite
 useDapper: true
 targetFramework: net8.0
 generateCsproj: true
@@ -131,11 +121,10 @@ namespaceName: SqliteDapperExampleGen
 
 ## Engine `sqlite`: [SqliteLegacyExample](../examples/SqliteLegacyExample)
 
-### [Schema](../examples/config/sqlite/schema.sql) | [Queries](../examples/config/sqlite/query.sql) | [End2End Test](../EndToEndTests/SqliteLegacyTester.cs)
+### [Schema](../examples/config/sqlite/schema.sql) | [Queries](../examples/config/sqlite/query.sql) | [End2End Test](../LegacyEndToEndTests/SqliteTester.cs)
 
 ### Config
 ```yaml
-driver: Sqlite
 useDapper: false
 targetFramework: netstandard2.0
 generateCsproj: true
@@ -144,11 +133,10 @@ namespaceName: SqliteLegacyExampleGen
 
 ## Engine `sqlite`: [SqliteDapperLegacyExample](../examples/SqliteDapperLegacyExample)
 
-### [Schema](../examples/config/sqlite/schema.sql) | [Queries](../examples/config/sqlite/query.sql) | [End2End Test](../EndToEndTests/SqliteDapperLegacyTester.cs)
+### [Schema](../examples/config/sqlite/schema.sql) | [Queries](../examples/config/sqlite/query.sql) | [End2End Test](../LegacyEndToEndTests/SqliteDapperTester.cs)
 
 ### Config
 ```yaml
-driver: Sqlite
 useDapper: true
 targetFramework: netstandard2.0
 generateCsproj: true

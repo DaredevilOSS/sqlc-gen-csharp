@@ -9,12 +9,15 @@ permissions:
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "main", "fix-readme-quickstart" ]
     paths:
       - "sqlc.ci.yaml"
+      - "docs/**"
       - "examples/**"
       - "*Tests/**"
       - "Drivers/**"
+  release:
+    types: [ published ]
     
 jobs:
   generate-and-push-docs:
@@ -24,8 +27,15 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Updating Examples doc
-        run: ./scripts/generate_example_docs.sh docs/Examples.md
+      - uses: r-lib/actions/setup-pandoc@v1
+        with:
+          pandoc-version: '2.7.3'
+          
+      - name: Updating docs
+        run: |
+          ./scripts/docs/generate_quickstart.sh 02_Quickstart.md
+          ./scripts/docs/generate_examples.sh 04_Examples.md
+          pandoc docs/*.md > README.md
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v6
