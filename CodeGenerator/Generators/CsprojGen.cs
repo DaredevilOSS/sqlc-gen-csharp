@@ -63,9 +63,10 @@ internal class CsprojGen(string outputDirectory, string projectName, string name
         }
     }
 
-    private static string GetPackageVersion(Options options,bool isDapper = false)
+    private static string GetPackageVersion(Options options, bool isDapper = false)
     {
-        if (isDapper) {
+        if (isDapper)
+        {
             if (options.OverrideDapperVersion != string.Empty)
                 return options.OverrideDapperVersion;
 
