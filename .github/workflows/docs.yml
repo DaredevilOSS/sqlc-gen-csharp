@@ -9,7 +9,7 @@ permissions:
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "main", "fix-generated-docs" ]
     paths:
       - "sqlc.ci.yaml"
       - "docs/**"
