@@ -3,6 +3,12 @@ defaults:
   run:
     shell: bash
 
+env:
+  SQLC_VERSION: 1.27.0
+  WASI_SDK_VERSION: 25
+  WASI_SDK_FILENAME: wasi-sdk-${WASI_SDK_VERSION}.0-x86_64-linux.tar.gz
+  WASI_SDK_FODLER_NAME: wasi-sdk-${WASI_SDK_VERSION}.0
+
 on:
   push:
     branches: [ "main" ]
@@ -16,11 +22,6 @@ jobs:
   lint:
     name: Lint
     runs-on: ubuntu-latest
-    env:
-      SQLC_VERSION: 1.27.0
-      WASI_SDK_VERSION: 25
-      WASI_SDK_FILENAME: wasi-sdk-${WASI_SDK_VERSION}.0-x86_64-linux.tar.gz
-      WASI_SDK_FODLER_NAME: wasi-sdk-${WASI_SDK_VERSION}.0
 
     steps:
       - name: Check out Git repository
