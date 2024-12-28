@@ -7,6 +7,10 @@ namespace SqlcGenCsharp.Generators;
 
 internal class CsprojGen(string outputDirectory, string projectName, string namespaceName, Options options)
 {
+    private const string DUPPER_VERSION = "2.1.35";
+    private const string NPSQL_VERSION = "8.0.3";
+    private const string MYSQLCONNECTOR_VERSION = "2.3.6";
+    private const string SQLITE_VERSION = "8.0.10";
     public File GenerateFile()
     {
         var csprojContents = GetFileContents();
@@ -46,27 +50,37 @@ internal class CsprojGen(string outputDirectory, string projectName, string name
                 // TODO: extract version to user input
                 return $"""
                            <ItemGroup>
-                               <PackageReference Include="{options.DriverName.ToName()}" Version="{GetPackageVersion(options.DriverName)}"/>
-                               <PackageReference Include="Dapper" Version="2.0.123"/>
+                               <PackageReference Include="{options.DriverName.ToName()}" Version="{GetPackageVersion(options)}"/>
+                               <PackageReference Include="Dapper" Version="{GetPackageVersion(options, true)}"/>
                            </ItemGroup>
                        """;
             }
             return $"""
                         <ItemGroup>
-                            <PackageReference Include="{options.DriverName.ToName()}" Version="{GetPackageVersion(options.DriverName)}"/>
+                            <PackageReference Include="{options.DriverName.ToName()}" Version="{GetPackageVersion(options)}"/>
                         </ItemGroup>
                     """;
         }
     }
 
-    private static string GetPackageVersion(DriverName driverName)
+    private static string GetPackageVersion(Options options,bool isDapper = false)
     {
-        return driverName switch
+        if (isDapper) {
+            if (options.OverrideDapperVersion != string.Empty)
+                return options.OverrideDapperVersion;
+
+            return DUPPER_VERSION;
+        }
+
+        if (options.OverrideDriverVersion != string.Empty)
+            return options.OverrideDriverVersion;
+
+        return options.DriverName switch
         {
-            DriverName.Npgsql => "8.0.3",
-            DriverName.MySqlConnector => "2.3.6",
-            DriverName.Sqlite => "8.0.10",
-            _ => throw new NotSupportedException($"unsupported driver: {driverName}")
+            DriverName.Npgsql => NPSQL_VERSION,
+            DriverName.MySqlConnector => MYSQLCONNECTOR_VERSION,
+            DriverName.Sqlite => SQLITE_VERSION,
+            _ => throw new NotSupportedException($"unsupported driver: {options.DriverName}")
         };
     }
 }
