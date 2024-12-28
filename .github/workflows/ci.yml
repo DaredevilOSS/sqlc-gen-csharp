@@ -16,6 +16,11 @@ jobs:
   lint:
     name: Lint
     runs-on: ubuntu-latest
+    env:
+      SQLC_VERSION: 1.27.0
+      WASI_SDK_VERSION: 25
+      WASI_SDK_FILENAME: wasi-sdk-${WASI_SDK_VERSION}.0-x86_64-linux.tar.gz
+      WASI_SDK_FODLER_NAME: wasi-sdk-${WASI_SDK_VERSION}.0
 
     steps:
       - name: Check out Git repository
@@ -57,15 +62,15 @@ jobs:
 
       - name: Download Wasi SDK
         run: |
-          wget https://github.com/WebAssembly/wasi-sdk/releases/download/wasi-sdk-22/wasi-sdk-22.0-linux.tar.gz
-          tar xf wasi-sdk-22.0-linux.tar.gz
-          chmod -R 755 wasi-sdk-22.0
+          wget https://github.com/WebAssembly/wasi-sdk/releases/download/wasi-sdk-${WASI_SDK_VERSION}/${WASI_SDK_FILENAME}
+          tar xf ${WASI_SDK_FILENAME}
+          chmod -R 755 ${WASI_SDK_FODLER_NAME}
 
       - name: Dotnet Wasm Publish
         shell: bash
         run: |
           set -e
-          WASI_SDK_PATH="$(pwd)/wasi-sdk-22.0" dotnet publish WasmRunner -c release
+          WASI_SDK_PATH="$(pwd)/${WASI_SDK_FODLER_NAME}" dotnet publish WasmRunner -c release
           ./scripts/wasm/copy_plugin_to.sh dist
 
       - name: upload wasm plugin as artifact
@@ -94,7 +99,7 @@ jobs:
 
        - uses: sqlc-dev/setup-sqlc@v4
          with:
-           sqlc-version: '1.27.0'
+           sqlc-version: '${SQLC_VERSION}'
 
        - name: Updating plugin sha
          run: ./scripts/wasm/update_sha.sh sqlc.ci.yaml
@@ -118,7 +123,7 @@ jobs:
 
       - uses: sqlc-dev/setup-sqlc@v4
         with:
-          sqlc-version: '1.27.0'
+          sqlc-version: '${SQLC_VERSION}'
 
       - name: Load .env file
         uses: xom9ikk/dotenv@v2.3.0
