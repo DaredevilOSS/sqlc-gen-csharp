@@ -2,10 +2,10 @@
 
 set -e
 
-doc_file=$1
+doc_file="docs/$1"
 
 examples_cnt=$(yq ".sql | length" sqlc.ci.yaml)
-examples_doc="# Examples"
+contents="# Examples"
 
 for ((i = 0 ; i < "${examples_cnt}" ; i++ )); do 
     engine_name=$(yq ".sql[${i}].engine" sqlc.ci.yaml)
@@ -23,7 +23,7 @@ for ((i = 0 ; i < "${examples_cnt}" ; i++ )); do
       test_class_name="${project_name/Example/"Tester"}"
     fi
     
-    examples_doc+="
+    contents+="
 ## Engine \`${engine_name}\`: [${project_name}](../${output_directory})
 
 ### [Schema](../${schema_file}) | [Queries](../${query_files}) | [End2End Test](../${test_project}/${test_class_name}.cs)
@@ -35,4 +35,4 @@ $(yq ".sql[${i}].codegen[${0}].options" sqlc.ci.yaml)
 "
 done
 
-echo "${examples_doc}" > "${doc_file}"
+echo "${contents}" > "${doc_file}"
