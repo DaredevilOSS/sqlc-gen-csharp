@@ -94,7 +94,7 @@ jobs:
 
        - uses: sqlc-dev/setup-sqlc@v4
          with:
-           sqlc-version: '1.25.0'
+           sqlc-version: '1.27.0'
 
        - name: Updating plugin sha
          run: ./scripts/wasm/update_sha.sh sqlc.ci.yaml
@@ -118,7 +118,7 @@ jobs:
 
       - uses: sqlc-dev/setup-sqlc@v4
         with:
-          sqlc-version: '1.25.0'
+          sqlc-version: '1.27.0'
 
       - name: Load .env file
         uses: xom9ikk/dotenv@v2.3.0
@@ -146,7 +146,7 @@ jobs:
           
       - uses: sqlc-dev/setup-sqlc@v4
         with:
-          sqlc-version: '1.25.0'
+          sqlc-version: '1.27.0'
           
       - name: Load .env file
         uses: xom9ikk/dotenv@v2.3.0
