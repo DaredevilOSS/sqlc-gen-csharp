@@ -3,6 +3,10 @@ defaults:
   run:
     shell: bash
 
+env:
+  SQLC_VERSION: 1.27.0
+  WASI_SDK_VERSION: 22
+
 on:
   push:
     branches: [ "main" ]
@@ -55,17 +59,22 @@ jobs:
       - name: install Wasi workload
         run: dotnet workload install wasi-experimental
 
+      - name: Setup Derived Variables
+        run: |
+          echo "WASI_SDK_FOLDER_NAME=wasi-sdk-${{ env.WASI_SDK_VERSION }}.0" >> $GITHUB_ENV
+          echo "WASI_SDK_FILENAME=wasi-sdk-${{ env.WASI_SDK_VERSION }}.0-linux.tar.gz" >> $GITHUB_ENV
+
       - name: Download Wasi SDK
         run: |
-          wget https://github.com/WebAssembly/wasi-sdk/releases/download/wasi-sdk-22/wasi-sdk-22.0-linux.tar.gz
-          tar xf wasi-sdk-22.0-linux.tar.gz
-          chmod -R 755 wasi-sdk-22.0
+          wget https://github.com/WebAssembly/wasi-sdk/releases/download/wasi-sdk-${{ env.WASI_SDK_VERSION }}/${{ env.WASI_SDK_FILENAME }}
+          tar xf ${{ env.WASI_SDK_FILENAME }}
+          chmod -R 755 ${{ env.WASI_SDK_FILENAME }}
 
       - name: Dotnet Wasm Publish
         shell: bash
         run: |
           set -e
-          WASI_SDK_PATH="$(pwd)/wasi-sdk-22.0" dotnet publish WasmRunner -c release
+          WASI_SDK_PATH="$(pwd)/${{ env.WASI_SDK_FOLDER_NAME }}" dotnet publish WasmRunner -c release
           ./scripts/wasm/copy_plugin_to.sh dist
 
       - name: upload wasm plugin as artifact
@@ -94,7 +103,7 @@ jobs:
 
        - uses: sqlc-dev/setup-sqlc@v4
          with:
-           sqlc-version: '1.25.0'
+           sqlc-version: '${{ env.SQLC_VERSION }}'
 
        - name: Updating plugin sha
          run: ./scripts/wasm/update_sha.sh sqlc.ci.yaml
@@ -118,7 +127,7 @@ jobs:
 
       - uses: sqlc-dev/setup-sqlc@v4
         with:
-          sqlc-version: '1.25.0'
+          sqlc-version: '${{ env.SQLC_VERSION }}'
 
       - name: Load .env file
         uses: xom9ikk/dotenv@v2.3.0
@@ -146,7 +155,7 @@ jobs:
           
       - uses: sqlc-dev/setup-sqlc@v4
         with:
-          sqlc-version: '1.25.0'
+          sqlc-version: '${{ env.SQLC_VERSION }}'
           
       - name: Load .env file
         uses: xom9ikk/dotenv@v2.3.0
