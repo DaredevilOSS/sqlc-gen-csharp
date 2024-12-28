@@ -73,11 +73,11 @@ internal class CsprojGen(string outputDirectory, string projectName, string name
             };
         return options.OverrideDriverVersion;
     }
-    
+
     private static string GetDapperVersion(Options options)
     {
-        return string.IsNullOrEmpty(options.OverrideDapperVersion) 
-            ? DefaultDapperVersion 
+        return string.IsNullOrEmpty(options.OverrideDapperVersion)
+            ? DefaultDapperVersion
             : options.OverrideDapperVersion;
     }
 }
