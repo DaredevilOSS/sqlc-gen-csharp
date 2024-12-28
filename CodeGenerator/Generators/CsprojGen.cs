@@ -47,7 +47,6 @@ internal class CsprojGen(string outputDirectory, string projectName, string name
         {
             if (options.UseDapper)
             {
-                // TODO: extract version to user input
                 return $"""
                            <ItemGroup>
                                <PackageReference Include="{options.DriverName.ToName()}" Version="{GetPackageVersion(options)}"/>
@@ -65,7 +64,6 @@ internal class CsprojGen(string outputDirectory, string projectName, string name
 
     private static string GetPackageVersion(Options options, bool isDapper = false)
     {
-
         if (isDapper) return string.IsNullOrEmpty(options.OverrideDapperVersion) ? DefaultDapperVersion : options.OverrideDapperVersion;
 
         if (string.IsNullOrEmpty(options.OverrideDriverVersion))
