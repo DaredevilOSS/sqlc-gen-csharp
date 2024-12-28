@@ -12,7 +12,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="MySqlConnector" Version="2.3.6"/>
+        <PackageReference Include="MySqlConnector" Version="2.4.0"/>
         <PackageReference Include="Dapper" Version="2.1.35"/>
     </ItemGroup>
 
