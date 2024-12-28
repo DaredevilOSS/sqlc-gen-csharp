@@ -16,6 +16,7 @@ on:
       - "examples/**"
       - "*Tests/**"
       - "Drivers/**"
+      - ".github/workflows"
   release:
     types: [ published ]
     
