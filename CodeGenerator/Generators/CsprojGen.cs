@@ -38,34 +38,31 @@ internal class CsprojGen(string outputDirectory, string projectName, string name
                         <OutputType>Library</OutputType>{optionalNullableProperty}
                     </PropertyGroup>
                 
-                {GetItemGroup()}
+                {GetPackageReferences()}
 
                 </Project>
                 """;
 
-        string GetItemGroup()
+        string GetPackageReferences()
         {
+            var driverVersion = GetDriverVersion(options);
             if (options.UseDapper)
-            {
                 return $"""
                            <ItemGroup>
-                               <PackageReference Include="{options.DriverName.ToName()}" Version="{GetPackageVersion(options)}"/>
-                               <PackageReference Include="Dapper" Version="{GetPackageVersion(options, true)}"/>
+                               <PackageReference Include="{options.DriverName.ToName()}" Version="{driverVersion}"/>
+                               <PackageReference Include="Dapper" Version="{GetDapperVersion(options)}"/>
                            </ItemGroup>
                        """;
-            }
             return $"""
                         <ItemGroup>
-                            <PackageReference Include="{options.DriverName.ToName()}" Version="{GetPackageVersion(options)}"/>
+                            <PackageReference Include="{options.DriverName.ToName()}" Version="{driverVersion}"/>
                         </ItemGroup>
                     """;
         }
     }
 
-    private static string GetPackageVersion(Options options, bool isDapper = false)
+    private static string GetDriverVersion(Options options)
     {
-        if (isDapper) return string.IsNullOrEmpty(options.OverrideDapperVersion) ? DefaultDapperVersion : options.OverrideDapperVersion;
-
         if (string.IsNullOrEmpty(options.OverrideDriverVersion))
             return options.DriverName switch
             {
@@ -74,7 +71,13 @@ internal class CsprojGen(string outputDirectory, string projectName, string name
                 DriverName.Sqlite => DefaultSqliteVersion,
                 _ => throw new NotSupportedException($"unsupported driver: {options.DriverName}")
             };
-
         return options.OverrideDriverVersion;
+    }
+    
+    private static string GetDapperVersion(Options options)
+    {
+        return string.IsNullOrEmpty(options.OverrideDapperVersion) 
+            ? DefaultDapperVersion 
+            : options.OverrideDapperVersion;
     }
 }
