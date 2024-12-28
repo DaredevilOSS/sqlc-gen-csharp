@@ -5,7 +5,8 @@ set -e
 doc_file="docs/$1"
 
 examples_cnt=$(yq ".sql | length" sqlc.ci.yaml)
-contents="# Examples"
+contents="[comment]: <> (do not edit - CI auto-generated)
+# Examples"
 
 for ((i = 0 ; i < "${examples_cnt}" ; i++ )); do 
     engine_name=$(yq ".sql[${i}].engine" sqlc.ci.yaml)
@@ -24,7 +25,7 @@ for ((i = 0 ; i < "${examples_cnt}" ; i++ )); do
     fi
     
     contents+="
-## Engine \`${engine_name}\`: [${project_name}](../${output_directory})
+## Engine \`${engine_name}\`: [../${project_name}](${output_directory})
 
 ### [Schema](../${schema_file}) | [Queries](../${query_files}) | [End2End Test](../${test_project}/${test_class_name}.cs)
 
