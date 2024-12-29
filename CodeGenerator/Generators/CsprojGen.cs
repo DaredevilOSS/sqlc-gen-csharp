@@ -11,7 +11,7 @@ internal class CsprojGen(string outputDirectory, string projectName, string name
     private const string DefaultNpgsqlVersion = "8.0.6";
     private const string DefaultMysqlConnectorVersion = "2.4.0";
     private const string DefaultSqliteVersion = "9.0.0";
-    
+
     public File GenerateFile()
     {
         var csprojContents = GetFileContents();
