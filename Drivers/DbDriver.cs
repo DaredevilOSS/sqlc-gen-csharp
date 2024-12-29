@@ -14,7 +14,7 @@ public abstract class DbDriver(Options options)
 {
     public Options Options { get; } = options;
 
-    private HashSet<string> CsharpPrimitives { get; } = ["long", "double", "int", "float", "bool", "DateTime"];
+    private HashSet<string> NullableTypesInAllRuntimes { get; } = ["long", "double", "int", "float", "bool", "DateTime"];
 
     protected abstract List<ColumnMapping> ColumnMappings { get; }
 
@@ -36,7 +36,7 @@ public abstract class DbDriver(Options options)
     public string AddNullableSuffix(string csharpType, bool notNull)
     {
         if (notNull) return csharpType;
-        if (IsCsharpPrimitive(csharpType)) return $"{csharpType}?";
+        if (IsTypeNullableForAllRuntimes(csharpType)) return $"{csharpType}?";
         return Options.DotnetFramework.LatestDotnetSupported() ? $"{csharpType}?" : csharpType;
     }
 
@@ -92,9 +92,9 @@ public abstract class DbDriver(Options options)
 
     public abstract MemberDeclarationSyntax ExecDeclare(string text, string argInterface, Query query);
 
-    public bool IsCsharpPrimitive(string csharpType)
+    public bool IsTypeNullableForAllRuntimes(string csharpType)
     {
-        return CsharpPrimitives.Contains(csharpType.Replace("?", ""));
+        return NullableTypesInAllRuntimes.Contains(csharpType.Replace("?", ""));
     }
 
     protected string GetConnectionStringField()

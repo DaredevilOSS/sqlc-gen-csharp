@@ -8,9 +8,10 @@ namespace SqlcGenCsharp.Generators;
 internal class CsprojGen(string outputDirectory, string projectName, string namespaceName, Options options)
 {
     private const string DefaultDapperVersion = "2.1.35";
-    private const string DefaultNpsqlVersion = "8.0.6";
+    private const string DefaultNpgsqlVersion = "8.0.6";
     private const string DefaultMysqlConnectorVersion = "2.4.0";
     private const string DefaultSqliteVersion = "9.0.0";
+    
     public File GenerateFile()
     {
         var csprojContents = GetFileContents();
@@ -66,7 +67,7 @@ internal class CsprojGen(string outputDirectory, string projectName, string name
         if (string.IsNullOrEmpty(options.OverrideDriverVersion))
             return options.DriverName switch
             {
-                DriverName.Npgsql => DefaultNpsqlVersion,
+                DriverName.Npgsql => DefaultNpgsqlVersion,
                 DriverName.MySqlConnector => DefaultMysqlConnectorVersion,
                 DriverName.Sqlite => DefaultSqliteVersion,
                 _ => throw new NotSupportedException($"unsupported driver: {options.DriverName}")
