@@ -181,17 +181,23 @@ jobs:
           mysql -u root -e "CREATE DATABASE tests;"
           mysql -u root tests --execute="source examples/config/mysql/schema.sql"    
 
-      - name: Install & Start PostgreSQL
-        shell: powershell
-        run: choco install postgresql17 --no-progress --version=17.2.0 -y --params "/Password:pass" --params-global
-      
+      - uses: ikalnytskyi/action-setup-postgres@v7
+        with:
+          username: postgres
+          password: pass
+          database: tests
+          port: 5432
+          postgres-version: "15"
+        id: postgres
+
       - name: Init PostgresSQL Schema
         shell: powershell
         run: |
-          $env:Path += ";C:\Program Files\PostgreSQL\17\bin"
-          $env:PGPASSWORD = "pass"
-          psql -U postgres -c "CREATE DATABASE tests;"
-          psql -U postgres -d tests -f "examples/config/postgresql/schema.sql"
+          psql -U 'postgres' -c 'CREATE DATABASE tests;'
+          psql -U 'postgres' -f 'examples/config/postgresql/schema.sql'
+        env:
+          PGSERVICE: postgres
+          PGPASSWORD: pass
       
       - name: Setup Visual Studio for .NET Framework
         uses: microsoft/setup-msbuild@v1
