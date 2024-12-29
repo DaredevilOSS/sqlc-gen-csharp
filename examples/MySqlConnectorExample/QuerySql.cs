@@ -121,6 +121,19 @@ public class QuerySql(string connectionString)
         }
     }
 
+    private const string UpdateAuthorsSql = "UPDATE authors SET  bio  =  @bio  WHERE  bio  IS  NOT  NULL  ";  
+    public readonly record struct UpdateAuthorsArgs(string? Bio);
+    public async Task<long> UpdateAuthors(UpdateAuthorsArgs args)
+    {
+        {
+            await using var connection = new MySqlConnection(connectionString);
+            connection.Open();
+            await using var command = new MySqlCommand(UpdateAuthorsSql, connection);
+            command.Parameters.AddWithValue("@bio", args.Bio!);
+            return await command.ExecuteNonQueryAsync();
+        }
+    }
+
     private const string TestSql = "SELECT c_bit, c_tinyint, c_bool, c_boolean, c_smallint, c_mediumint, c_int, c_integer, c_bigint, c_serial, c_decimal, c_dec, c_numeric, c_fixed, c_float, c_double, c_double_precision, c_date, c_time, c_datetime, c_timestamp, c_year, c_char, c_nchar, c_national_char, c_varchar, c_binary, c_varbinary, c_tinyblob, c_tinytext, c_blob, c_text, c_mediumblob, c_mediumtext, c_longblob, c_longtext, c_json FROM node_mysql_types LIMIT 1";
     public readonly record struct TestRow(byte[]? CBit, int? CTinyint, int? CBool, int? CBoolean, int? CSmallint, int? CMediumint, int? CInt, int? CInteger, long? CBigint, long CSerial, string? CDecimal, string? CDec, string? CNumeric, string? CFixed, double? CFloat, double? CDouble, double? CDoublePrecision, DateTime? CDate, string? CTime, DateTime? CDatetime, DateTime? CTimestamp, int? CYear, string? CChar, string? CNchar, string? CNationalChar, string? CVarchar, byte[]? CBinary, byte[]? CVarbinary, byte[]? CTinyblob, string? CTinytext, byte[]? CBlob, string? CText, byte[]? CMediumblob, string? CMediumtext, byte[]? CLongblob, string? CLongtext, object? CJson);
     public async Task<TestRow?> Test()

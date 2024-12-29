@@ -105,4 +105,23 @@ public class MySqlConnectorDapperTester
             Bio: DataGenerator.DrSeussQuote
         });
     }
+
+    [Test]
+    public async Task TestExecRowsFlow()
+    {
+        var bojackCreateAuthorArgs = new QuerySql.CreateAuthorArgs
+        {
+            Name = DataGenerator.GenericAuthor,
+            Bio = DataGenerator.GenericQuote1
+        };
+        await QuerySql.CreateAuthor(bojackCreateAuthorArgs);
+        await QuerySql.CreateAuthor(bojackCreateAuthorArgs);
+
+        var updateAuthorsArgs = new QuerySql.UpdateAuthorsArgs
+        {
+            Bio = DataGenerator.GenericQuote2
+        };
+        var affectedRows = await QuerySql.UpdateAuthors(updateAuthorsArgs);
+        ClassicAssert.AreEqual(2, affectedRows);
+    }
 }
