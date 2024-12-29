@@ -41,6 +41,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
+          base: ${{ github.head_ref }}
           title: update auto-generated docs
           commit-message: update docs
           branch: update-docs
