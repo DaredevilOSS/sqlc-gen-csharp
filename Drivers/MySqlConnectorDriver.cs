@@ -10,7 +10,7 @@ using OneDeclareGen = SqlcGenCsharp.Drivers.Generators.OneDeclareGen;
 
 namespace SqlcGenCsharp.Drivers;
 
-public partial class MySqlConnectorDriver(Options options) : DbDriver(options), IExecLastId
+public partial class MySqlConnectorDriver(Options options) : DbDriver(options), IExecLastId, IExecRows
 {
     protected override List<ColumnMapping> ColumnMappings { get; } =
     [
@@ -107,4 +107,9 @@ public partial class MySqlConnectorDriver(Options options) : DbDriver(options), 
 
     [GeneratedRegex(@"\?")]
     private static partial Regex QueryParamRegex();
+
+    public MemberDeclarationSyntax ExecRowsDeclare(string queryTextConstant, string argInterface, Query query)
+    {
+        return new ExecRowsDeclareGen(this).Generate(queryTextConstant, argInterface, query);
+    }
 }
