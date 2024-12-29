@@ -1,5 +1,4 @@
 # Contributing
-
 ## Local plugin development
 ### Prerequisites
 Make sure that the following applications are installed and added to your path.

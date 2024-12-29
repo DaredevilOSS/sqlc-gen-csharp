@@ -2,9 +2,7 @@ SHELL 		:= /bin/bash
 PWD 		:= $(shell pwd)
         
 dotnet-format:
-	dotnet format \
-		--exclude GeneratedProtobuf \
-		--exclude examples
+	dotnet format --exclude GeneratedProtobuf --exclude examples
         
 protobuf-generate:
 	#./scripts/generate_protobuf.sh
