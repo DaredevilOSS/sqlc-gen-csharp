@@ -46,6 +46,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+        
       - name: Load .env file
         uses: xom9ikk/dotenv@v2.3.0
         with:
@@ -178,26 +179,23 @@ jobs:
         run: |
           $env:Path += ";C:\Program Files\MySQL\MySQL Server 8.0\bin"
           [Environment]::SetEnvironmentVariable("Path", $env:Path, "Machine")
-          mysql -u root -e "CREATE DATABASE tests;"
-          mysql -u root tests --execute="source examples/config/mysql/schema.sql"    
+          mysql -u root -e "CREATE DATABASE $Env:TESTS_DB;"
+          mysql -u root $Env:TESTS_DB --execute="source examples/config/mysql/schema.sql"    
 
       - uses: ikalnytskyi/action-setup-postgres@v7
         with:
-          username: postgres
-          password: pass
-          database: tests
-          port: 5432
-          postgres-version: "15"
+          username: ${{ env.POSTGRES_USER }}
+          password: ${{ env.POSTGRES_PASSWORD }}
+          database: ${{ env.TESTS_DB }}
+          postgres-version: "16"
         id: postgres
 
       - name: Init PostgresSQL Schema
         shell: powershell
-        run: |
-          psql -U 'postgres' -c 'CREATE DATABASE tests;'
-          psql -U 'postgres' -f 'examples/config/postgresql/schema.sql'
+        run: psql -U $Env:POSTGRES_USER -f 'examples/config/postgresql/schema.sql'
         env:
-          PGSERVICE: postgres
-          PGPASSWORD: pass
+          PGSERVICE: ${{ steps.postgres.outputs.service-name }}
+          PGPASSWORD: ${{ env.POSTGRES_PASSWORD }}
       
       - name: Setup Visual Studio for .NET Framework
         uses: microsoft/setup-msbuild@v1
