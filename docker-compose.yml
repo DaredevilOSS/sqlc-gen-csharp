@@ -7,7 +7,7 @@ services:
     ports:
       - "3306:3306"
     environment:
-      MYSQL_DATABASE: tests
+      MYSQL_DATABASE: ${TESTS_DB}
       MYSQL_ALLOW_EMPTY_PASSWORD: true
     healthcheck:
       test: "mysqladmin ping -h 127.0.0.1"
@@ -21,9 +21,9 @@ services:
     ports:
       - "5432:5432"
     environment:
-      POSTGRES_DB: tests
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: pass
+      POSTGRES_DB: ${TESTS_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     healthcheck:
       test: "pg_isready -d tests"
       timeout: 20s
