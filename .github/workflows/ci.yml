@@ -198,17 +198,29 @@ jobs:
           }
           
           $postgres_job = Start-Job -ScriptBlock {
-            Invoke-WebRequest `
-              -Uri 'https://api.github.com/repos/ikalnytskyi/action-setup-postgres/tarball/v7' `
-              -OutFile 'setup-postgres.tar.gz'
-            tar -xf setup-postgres.tar.gz
-            $actionPath = Get-ChildItem -Directory | Where-Object { $_.Name -match 'ikalnytskyi-action-setup-postgres' } | Select-Object -First 1
-            $scriptPath = Join-Path $actionPath.FullName 'action.ps1'
-            pwsh -File $scriptPath `
-              -Username $Env:POSTGRES_USER `
-              -Password $Env:POSTGRES_PASSWORD `
-              -Database $Env:TESTS_DB `
-              -PostgresVersion "16"
+          Invoke-WebRequest `
+            -Uri 'https://api.github.com/repos/ikalnytskyi/action-setup-postgres/tarball/v7' `
+            -OutFile 'setup-postgres.tar.gz'
+
+          tar -xf setup-postgres.tar.gz
+
+          # Debug extracted contents
+          Get-ChildItem -Recurse -Path . | Out-String | Write-Host
+
+          $actionPath = Get-ChildItem -Recurse -Directory | Where-Object { $_.Name -match 'ikalnytskyi-action-setup-postgres' } | Select-Object -First 1
+          if ($actionPath) {
+              $scriptPath = Join-Path $actionPath.FullName 'action.ps1'
+              if (Test-Path $scriptPath) {
+                  pwsh -File $scriptPath `
+                    -Username $Env:POSTGRES_USER `
+                    -Password $Env:POSTGRES_PASSWORD `
+                    -Database $Env:TESTS_DB `
+                    -PostgresVersion "16"
+              } else {
+                  Write-Host "Error: $scriptPath not found"
+              }
+          } else {
+              Write-Host "Error: Action path not found"
           }
 
           $restore_job = Start-Job -ScriptBlock { 
