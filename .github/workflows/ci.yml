@@ -113,7 +113,7 @@ jobs:
          run: |
            ./scripts/wasm/update_sha.sh sqlc.ci.yaml
            sqlc -f sqlc.ci.yaml diff
-     
+           
   end2end-tests:
     name: End-to-End Tests
     runs-on: ubuntu-latest
@@ -125,6 +125,9 @@ jobs:
         with:
           name: wasm-file
           path: dist
+          
+      - name: Unit Tests
+        run:  dotnet test SqlcGenCsharpTests
 
       - uses: sqlc-dev/setup-sqlc@v4
         with:

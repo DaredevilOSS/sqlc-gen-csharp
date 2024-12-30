@@ -49,6 +49,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SqliteDapperExample", "exam
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SqliteExample", "examples\SqliteExample\SqliteExample.csproj", "{0A345279-6E13-4E7E-B1A0-E1E6ABDAE06F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SqlcGenCsharpTests", "SqlcGenCsharpTests\SqlcGenCsharpTests.csproj", "{9FD3C47C-88A5-4C4A-A807-1E36114CBB38}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -149,6 +151,10 @@ Global
 		{0A345279-6E13-4E7E-B1A0-E1E6ABDAE06F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0A345279-6E13-4E7E-B1A0-E1E6ABDAE06F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0A345279-6E13-4E7E-B1A0-E1E6ABDAE06F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9FD3C47C-88A5-4C4A-A807-1E36114CBB38}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9FD3C47C-88A5-4C4A-A807-1E36114CBB38}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9FD3C47C-88A5-4C4A-A807-1E36114CBB38}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9FD3C47C-88A5-4C4A-A807-1E36114CBB38}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{096086A5-433C-4682-AF0E-1A42A9EC19B5} = {9404C766-3491-4959-A575-D6015FFB7AE6}
