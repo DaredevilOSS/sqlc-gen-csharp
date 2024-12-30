@@ -181,20 +181,14 @@ jobs:
           [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072
           iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
 
-      - uses: ikalnytskyi/action-setup-postgres@v7
-        with:
-          username: ${{ env.POSTGRES_USER }}
-          password: ${{ env.POSTGRES_PASSWORD }}
-          database: ${{ env.TESTS_DB }}
-          postgres-version: "16"
-        id: postgres
+      # - uses: ikalnytskyi/action-setup-postgres@v7
+      #   with:
+      #     username: ${{ env.POSTGRES_USER }}
+      #     password: ${{ env.POSTGRES_PASSWORD }}
+      #     database: ${{ env.TESTS_DB }}
+      #     postgres-version: "16"
+      #   id: postgres
         
-      - name: Init PostgresSQL Schema
-        shell: powershell
-        run: psql -U $Env:POSTGRES_USER -f 'examples/config/postgresql/schema.sql'
-        env:
-          PGSERVICE: ${{ steps.postgres.outputs.service-name }}
-          PGPASSWORD: ${{ env.POSTGRES_PASSWORD }}
           
       - name: Install MySQL and restore test projects in parallel
         shell: pwsh
@@ -202,6 +196,21 @@ jobs:
           $mysql_job = Start-Job -ScriptBlock { 
             choco install mysql --no-progress --version=8.0.31 -y --params "/serviceName:MySQL" 
           }
+          
+          $postgres_job = Start-Job -ScriptBlock {
+            Invoke-WebRequest `
+              -Uri 'https://api.github.com/repos/ikalnytskyi/action-setup-postgres/tarball/v7' `
+              -OutFile 'setup-postgres.tar.gz'
+            tar -xf setup-postgres.tar.gz
+            $actionPath = Get-ChildItem -Directory | Where-Object { $_.Name -match 'ikalnytskyi-action-setup-postgres' } | Select-Object -First 1
+            $scriptPath = Join-Path $actionPath.FullName 'action.ps1'
+            pwsh -File $scriptPath `
+              -Username $Env:POSTGRES_USER `
+              -Password $Env:POSTGRES_PASSWORD `
+              -Database $Env:TESTS_DB `
+              -PostgresVersion "16"
+          }
+
           $restore_job = Start-Job -ScriptBlock { 
             Get-ChildItem -Path examples -Recurse -Filter *.csproj |
               Where-Object { $_.FullName -like '*Legacy*' } |
@@ -213,6 +222,7 @@ jobs:
           Wait-Job -Job $mysql_job, $restore_job
           Receive-Job -Job $mysql_job
           Receive-Job -Job $restore_job
+          Receive-Job -Job $postgres_job
           
       - name: Init MySQL Schema
         shell: powershell
@@ -220,7 +230,14 @@ jobs:
           $env:Path += ";C:\Program Files\MySQL\MySQL Server 8.0\bin"
           [Environment]::SetEnvironmentVariable("Path", $env:Path, "Machine")
           mysql -u root -e "CREATE DATABASE $Env:TESTS_DB;"
-          mysql -u root $Env:TESTS_DB --execute="source examples/config/mysql/schema.sql"    
+          mysql -u root $Env:TESTS_DB --execute="source examples/config/mysql/schema.sql" 
+      
+      - name: Init PostgresSQL Schema
+        shell: powershell
+        run: psql -U $Env:POSTGRES_USER -f 'examples/config/postgresql/schema.sql'
+        env:
+          PGSERVICE: ${{ steps.postgres.outputs.service-name }}
+          PGPASSWORD: ${{ env.POSTGRES_PASSWORD }}
 
       - name: End-to-End Tests
         shell: powershell
