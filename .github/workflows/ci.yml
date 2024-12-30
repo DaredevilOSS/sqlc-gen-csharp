@@ -198,30 +198,47 @@ jobs:
           }
           
           $postgres_job = Start-Job -ScriptBlock {
-            Invoke-WebRequest `
-              -Uri 'https://api.github.com/repos/ikalnytskyi/action-setup-postgres/tarball/v7' `
-              -OutFile 'setup-postgres.tar.gz'
+          try {
+              # Pass environment variables to the job context
+              $env:POSTGRES_USER = $using:env:POSTGRES_USER
+              $env:POSTGRES_PASSWORD = $using:env:POSTGRES_PASSWORD
+              $env:TESTS_DB = $using:env:TESTS_DB
 
-            tar -xf setup-postgres.tar.gz
+              Write-Host "Downloading PostgreSQL setup action..."
+              Invoke-WebRequest `
+                  -Uri 'https://api.github.com/repos/ikalnytskyi/action-setup-postgres/tarball/v7' `
+                  -OutFile 'setup-postgres.tar.gz'
 
-            # Debug extracted contents
-            Get-ChildItem -Recurse -Path . | Out-String | Write-Host
+              Write-Host "Extracting setup files..."
+              tar -xf setup-postgres.tar.gz
 
-            $actionPath = Get-ChildItem -Recurse -Directory | Where-Object { $_.Name -match 'ikalnytskyi-action-setup-postgres' } | Select-Object -First 1
-            if ($actionPath) {
-                $scriptPath = Join-Path $actionPath.FullName 'action.ps1'
-                if (Test-Path $scriptPath) {
-                    pwsh -File $scriptPath `
-                      -Username $Env:POSTGRES_USER `
-                      -Password $Env:POSTGRES_PASSWORD `
-                      -Database $Env:TESTS_DB `
-                      -PostgresVersion "16"
-                } else {
-                    Write-Host "Error: $scriptPath not found"
-                }
-            } else {
-                Write-Host "Error: Action path not found"
-            }
+              # Find the action directory
+              $actionPath = Get-ChildItem -Recurse -Directory | 
+                  Where-Object { $_.Name -match 'ikalnytskyi-action-setup-postgres' } | 
+                  Select-Object -First 1
+
+              if (-not $actionPath) {
+                  throw "Could not find action directory"
+              }
+
+              $scriptPath = Join-Path $actionPath.FullName 'action.ps1'
+              if (-not (Test-Path $scriptPath)) {
+                  throw "Setup script not found at: $scriptPath"
+              }
+
+              Write-Host "Running PostgreSQL setup script..."
+              pwsh -File $scriptPath `
+                  -Username $env:POSTGRES_USER `
+                  -Password $env:POSTGRES_PASSWORD `
+                  -Database $env:TESTS_DB `
+                  -PostgresVersion "16"
+
+              Write-Host "PostgreSQL setup completed successfully"
+              }
+              catch {
+                  Write-Host "Error setting up PostgreSQL: $_"
+                  throw
+              }
           }
 
           $restore_job = Start-Job -ScriptBlock { 
