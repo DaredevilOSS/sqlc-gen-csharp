@@ -111,28 +111,6 @@ namespace MySqlConnectorLegacyExampleGen
             }
         }
 
-        private const string UpdateAuthorSql = "UPDATE authors SET bio = @bio WHERE id = @id";
-        public class UpdateAuthorArgs
-        {
-            public string Bio { get; set; }
-            public long Id { get; set; }
-        };
-        public async Task UpdateAuthor(UpdateAuthorArgs args)
-        {
-            {
-                using (var connection = new MySqlConnection(ConnectionString))
-                {
-                    connection.Open();
-                    using (var command = new MySqlCommand(UpdateAuthorSql, connection))
-                    {
-                        command.Parameters.AddWithValue("@bio", args.Bio);
-                        command.Parameters.AddWithValue("@id", args.Id);
-                        await command.ExecuteScalarAsync();
-                    }
-                }
-            }
-        }
-
         private const string CreateAuthorReturnIdSql = "INSERT INTO authors (name, bio) VALUES (@name, @bio)";
         public class CreateAuthorReturnIdArgs
         {

@@ -8,7 +8,7 @@ using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace SqlcGenCsharp.Drivers;
 
-public partial class SqliteDriver(Options options) : DbDriver(options), IExecRows
+public partial class SqliteDriver(Options options) : DbDriver(options), IOne, IMany, IExec, IExecRows
 {
     protected override List<ColumnMapping> ColumnMappings { get; } = [
         new("byte[]", ordinal => $"Utils.GetBytes(reader, {ordinal})",

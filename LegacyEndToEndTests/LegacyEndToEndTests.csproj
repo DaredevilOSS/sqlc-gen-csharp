@@ -24,6 +24,7 @@
     </ItemGroup>
 
     <ItemGroup>
+        <ProjectReference Include="..\EndToEndCommon\EndToEndCommon.csproj" />
         <ProjectReference Include="..\examples\MySqlConnectorDapperLegacyExample\MySqlConnectorDapperLegacyExample.csproj" />
         <ProjectReference Include="..\examples\MySqlConnectorLegacyExample\MySqlConnectorLegacyExample.csproj" />
         <ProjectReference Include="..\examples\NpgsqlDapperLegacyExample\NpgsqlDapperLegacyExample.csproj" />

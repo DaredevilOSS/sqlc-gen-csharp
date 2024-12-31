@@ -68,20 +68,6 @@ public class QuerySql(string connectionString)
         }
     }
 
-    private const string UpdateAuthorSql = "UPDATE authors SET bio = @bio WHERE id = @id";
-    public readonly record struct UpdateAuthorArgs(string? Bio, long Id);
-    public async Task UpdateAuthor(UpdateAuthorArgs args)
-    {
-        {
-            await using var connection = new MySqlConnection(connectionString);
-            connection.Open();
-            await using var command = new MySqlCommand(UpdateAuthorSql, connection);
-            command.Parameters.AddWithValue("@bio", args.Bio!);
-            command.Parameters.AddWithValue("@id", args.Id);
-            await command.ExecuteScalarAsync();
-        }
-    }
-
     private const string CreateAuthorReturnIdSql = "INSERT INTO authors (name, bio) VALUES (@name, @bio)";
     public readonly record struct CreateAuthorReturnIdArgs(string Name, string? Bio);
     public async Task<long> CreateAuthorReturnId(CreateAuthorReturnIdArgs args)

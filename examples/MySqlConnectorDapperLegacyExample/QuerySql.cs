@@ -70,20 +70,6 @@ namespace MySqlConnectorDapperLegacyExampleGen
             }
         }
 
-        private const string UpdateAuthorSql = "UPDATE authors SET bio = @bio WHERE id = @id";
-        public class UpdateAuthorArgs
-        {
-            public string Bio { get; set; }
-            public long Id { get; set; }
-        };
-        public async Task UpdateAuthor(UpdateAuthorArgs args)
-        {
-            using (var connection = new MySqlConnection(ConnectionString))
-            {
-                await connection.ExecuteAsync(UpdateAuthorSql, new { bio = args.Bio, id = args.Id });
-            }
-        }
-
         private const string CreateAuthorReturnIdSql = "INSERT INTO authors (name, bio) VALUES (@name, @bio)";
         public class CreateAuthorReturnIdArgs
         {

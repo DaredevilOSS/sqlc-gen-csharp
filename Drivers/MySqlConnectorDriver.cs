@@ -1,7 +1,6 @@
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Plugin;
 using SqlcGenCsharp.Drivers.Generators;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -10,7 +9,7 @@ using OneDeclareGen = SqlcGenCsharp.Drivers.Generators.OneDeclareGen;
 
 namespace SqlcGenCsharp.Drivers;
 
-public partial class MySqlConnectorDriver(Options options) : DbDriver(options), IExecLastId, IExecRows
+public partial class MySqlConnectorDriver(Options options) : DbDriver(options), IOne, IMany, IExec, IExecLastId, IExecRows
 {
     protected override List<ColumnMapping> ColumnMappings { get; } =
     [
