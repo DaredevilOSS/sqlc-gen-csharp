@@ -278,17 +278,19 @@ jobs:
 
             # Step 7: Setup PostgreSQL Service Connection Parameters
             $pgServiceConf = @"
-            [${env:INPUTS_USERNAME}]
-            host=localhost
-            port=${env:INPUTS_PORT}
-            user=${env:INPUTS_USERNAME}
-            password=${env:INPUTS_PASSWORD}
-            dbname=${env:INPUTS_DATABASE}"@
+          [${env:INPUTS_USERNAME}]
+          host=localhost
+          port=${env:INPUTS_PORT}
+          user=${env:INPUTS_USERNAME}
+          password=${env:INPUTS_PASSWORD}
+          dbname=${env:INPUTS_DATABASE}
+          "@
 
             if ($env:INPUTS_SSL -eq "true") {
                 $pgServiceConf += @"
-                sslmode=verify-ca
-                sslrootcert=$pgData\server.crt"@
+          sslmode=verify-ca
+          sslrootcert=$pgData\server.crt
+          "@
             }
 
             Set-Content -Path "$pgData\pg_service.conf" -Value $pgServiceConf
