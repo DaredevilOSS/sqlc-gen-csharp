@@ -67,6 +67,19 @@ public class QuerySql(string connectionString)
         }
     }
 
+    private const string UpdateAuthorsSql = "UPDATE authors  SET  bio  =  @bio  WHERE  bio  IS  NOT  NULL  ";  
+    public readonly record struct UpdateAuthorsArgs(string? Bio);
+    public async Task<long> UpdateAuthors(UpdateAuthorsArgs args)
+    {
+        {
+            await using var connection = new SqliteConnection(connectionString);
+            connection.Open();
+            await using var command = new SqliteCommand(UpdateAuthorsSql, connection);
+            command.Parameters.AddWithValue("@bio", args.Bio!);
+            return await command.ExecuteNonQueryAsync();
+        }
+    }
+
     private const string DeleteAuthorSql = "DELETE FROM authors WHERE name = @name";
     public readonly record struct DeleteAuthorArgs(string Name);
     public async Task DeleteAuthor(DeleteAuthorArgs args)

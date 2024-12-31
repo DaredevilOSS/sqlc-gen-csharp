@@ -8,7 +8,7 @@ using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace SqlcGenCsharp.Drivers;
 
-public partial class SqliteDriver(Options options) : DbDriver(options)
+public partial class SqliteDriver(Options options) : DbDriver(options), IExecRows
 {
     protected override List<ColumnMapping> ColumnMappings { get; } = [
         new("byte[]", ordinal => $"Utils.GetBytes(reader, {ordinal})",
@@ -79,4 +79,9 @@ public partial class SqliteDriver(Options options) : DbDriver(options)
 
     [GeneratedRegex(@"\?")]
     private static partial Regex BindParameterRegex();
+
+    public MemberDeclarationSyntax ExecRowsDeclare(string queryTextConstant, string argInterface, Query query)
+    {
+        return new ExecRowsDeclareGen(this).Generate(queryTextConstant, argInterface, query);
+    }
 }
