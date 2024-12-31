@@ -310,7 +310,7 @@ jobs:
             msbuild.exe ./LegacyEndToEndTests/LegacyEndToEndTests.csproj -p:Configuration=Release -p:FrameworkVersion=v4.7.2
           }
 
-          Wait-Job -Job $mysql_job, $restore_job
+          Wait-Job -Job $mysql_job, $restore_job $postgres_job
           Receive-Job -Job $mysql_job
           Receive-Job -Job $restore_job
           Receive-Job -Job $postgres_job
