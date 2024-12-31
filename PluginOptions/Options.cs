@@ -13,8 +13,7 @@ public class Options
         var text = Encoding.UTF8.GetString(generateRequest.PluginOptions.ToByteArray());
         var rawOptions = JsonSerializer.Deserialize<RawOptions>(text) ?? throw new InvalidOperationException();
 
-        var driverName = EngineMapping[generateRequest.Settings.Engine];
-        DriverName = driverName;
+        DriverName = EngineToDriverMapping[generateRequest.Settings.Engine];
         OverrideDriverVersion = rawOptions.OverrideDriverVersion;
         GenerateCsproj = rawOptions.GenerateCsproj;
         UseDapper = rawOptions.UseDapper;
@@ -36,7 +35,7 @@ public class Options
 
     public string NamespaceName { get; }
 
-    private static readonly Dictionary<string, DriverName> EngineMapping = new()
+    private static readonly Dictionary<string, DriverName> EngineToDriverMapping = new()
     {
         { "mysql", DriverName.MySqlConnector },
         { "postgresql", DriverName.Npgsql },
