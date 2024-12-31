@@ -283,14 +283,12 @@ jobs:
             port=${env:INPUTS_PORT}
             user=${env:INPUTS_USERNAME}
             password=${env:INPUTS_PASSWORD}
-            dbname=${env:INPUTS_DATABASE}
-            "@
+            dbname=${env:INPUTS_DATABASE}"@
 
             if ($env:INPUTS_SSL -eq "true") {
                 $pgServiceConf += @"
                 sslmode=verify-ca
-                sslrootcert=$pgData\server.crt
-                "@
+                sslrootcert=$pgData\server.crt"@
             }
 
             Set-Content -Path "$pgData\pg_service.conf" -Value $pgServiceConf
