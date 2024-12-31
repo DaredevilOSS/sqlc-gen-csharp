@@ -192,75 +192,116 @@ jobs:
           
       - name: Install MySQL and restore test projects in parallel
         shell: pwsh
+        env:
+          INPUTS_POSTGRES_VERSION: 16
+          INPUTS_PASSWORD: ${{ env.POSTGRES_PASSWORD }}
+          INPUTS_USERNAME: ${{ env.POSTGRES_USER }}
+          INPUTS_PORT: 5432
+          INPUTS_SSL: false
+          INPUTS_DATABASE: ${{ env.TESTS_DB }}
         run: |
           $mysql_job = Start-Job -ScriptBlock { 
             choco install mysql --no-progress --version=8.0.31 -y --params "/serviceName:MySQL" 
           }
           
           $postgres_job = Start-Job -ScriptBlock {
-              try {
-                  # Pass environment variables to the job context
-                  $env:POSTGRES_USER = $using:env:POSTGRES_USER
-                  $env:POSTGRES_PASSWORD = $using:env:POSTGRES_PASSWORD
-                  $env:TESTS_DB = $using:env:TESTS_DB
+            # Step 1: Validate PostgreSQL Version
+            $validVersions = @("14", "15", "16", "17")
+            if ($validVersions -notcontains $env:INPUTS_POSTGRES_VERSION) {
+                Write-Output "::error::postgres-version must be one of: 14, 15, 16, 17."
+                exit 1
+            }
 
-                  Write-Host "Downloading PostgreSQL setup action..."
-                  Invoke-WebRequest `
-                      -Uri 'https://api.github.com/repos/ikalnytskyi/action-setup-postgres/tarball/v7' `
-                      -OutFile 'setup-postgres.tar.gz'
+            # Step 2: Clear Potential Conflicting PostgreSQL Environment Variables
+            $envVars = @("PGROOT", "PGDATA", "PGBIN", "PGUSER", "PGPASSWORD")
+            foreach ($name in $envVars) {
+                Add-Content -Path $env:GITHUB_ENV -Value "$name="
+            }
 
-                  Write-Host "Extracting setup files..."
-                  tar -xf setup-postgres.tar.gz
+            # Step 3: Install PostgreSQL using Chocolatey
+            choco install postgresql$($env:INPUTS_POSTGRES_VERSION) `
+                --params "/Password:$($env:INPUTS_PASSWORD)" `
+                --ia "--enable-components server,commandlinetools --extract-only 1" `
+                --no-progress
 
-                  Write-Host "Current directory contents:"
-                  Get-ChildItem | Format-Table -AutoSize
+            # Step 4: Configure Paths
+            $pgConfigPath = "$env:PROGRAMFILES\PostgreSQL\$($env:INPUTS_POSTGRES_VERSION)\bin\pg_config.exe"
+            $pgBindir = & $pgConfigPath --bindir
+            $pgLibdir = & $pgConfigPath --libdir
+            Add-Content -Path $env:GITHUB_PATH -Value $pgBindir
+            Add-Content -Path $env:GITHUB_ENV -Value "PQ_LIB_DIR=$pgLibdir"
 
-                  # Find all directories that might match
-                  Write-Host "Searching for action directory..."
-                  $possibleDirs = Get-ChildItem -Directory -Recurse | Where-Object { $_.Name -match 'ikalnytskyi-action-setup-postgres' }
-                  
-                  Write-Host "Found directories:"
-                  $possibleDirs | Format-Table FullName -AutoSize
+            # Step 5: Initialize Database
+            $pgData = "$env:RUNNER_TEMP\pgdata"
+            $pwFile = "$env:RUNNER_TEMP\pwfile"
+            $defaultEncoding = "UTF-8"
+            $defaultLocale = "en_US.$defaultEncoding"
 
-                  # Look for action.ps1 in each directory
-                  $scriptPath = $null
-                  foreach ($dir in $possibleDirs) {
-                      $testPath = Join-Path $dir.FullName 'action.ps1'
-                      Write-Host "Checking for script at: $testPath"
-                      if (Test-Path $testPath) {
-                          $scriptPath = $testPath
-                          break
-                      }
-                  }
+            # Adjust locale for Windows Server 2019
+            if ((Get-WmiObject -Class Win32_OperatingSystem).Caption -match "2019") {
+                $defaultLocale = $defaultLocale -replace "\..*", "" -replace "_", "-"
+            }
 
-                  if (-not $scriptPath) {
-                      Write-Host "Looking in current directory:"
-                      Get-ChildItem -Recurse | Format-Table FullName -AutoSize
-                      
-                      # Try finding it directly
-                      $scriptPath = Get-ChildItem -Recurse -Filter 'action.ps1' | Select-Object -First 1 -ExpandProperty FullName
-                  }
+            # Write the password to a file
+            Set-Content -Path $pwFile -Value $env:INPUTS_PASSWORD
 
-                  if (-not $scriptPath) {
-                      throw "Could not find action.ps1 script in any directory"
-                  }
+            # Initialize PostgreSQL database cluster
+            & "$pgBindir\initdb.exe" `
+                --pgdata="$pgData" `
+                --username=$env:INPUTS_USERNAME `
+                --pwfile="$pwFile" `
+                --auth="scram-sha-256" `
+                --encoding="$defaultEncoding" `
+                --locale="$defaultLocale" `
+                --no-instructions
 
-                  Write-Host "Found script at: $scriptPath"
-                  Write-Host "Running PostgreSQL setup script..."
-                  
-                  & pwsh -File $scriptPath `
-                      -Username $env:POSTGRES_USER `
-                      -Password $env:POSTGRES_PASSWORD `
-                      -Database $env:TESTS_DB `
-                      -PostgresVersion "16"
+            # Update PostgreSQL configuration
+            Add-Content -Path "$pgData\postgresql.conf" -Value "unix_socket_directories = ''"
+            Add-Content -Path "$pgData\postgresql.conf" -Value "port = $($env:INPUTS_PORT)"
 
-                  Write-Host "PostgreSQL setup completed successfully"
-              }
-              catch {
-                  Write-Host "Error setting up PostgreSQL: $_"
-                  Write-Host "Stack trace: $($_.ScriptStackTrace)"
-                  throw
-              }
+            # Enable SSL if required
+            if ($env:INPUTS_SSL -eq "true") {
+                $crtFile = "$pgData\server.crt"
+                $keyFile = "$pgData\server.key"
+                $msys2ArgExcl = "/CN"
+                $env:MSYS2_ARG_CONV_EXCL = $msys2ArgExcl
+
+                & openssl req -new -x509 -days 365 -nodes -text -subj "/CN=localhost" `
+                    -out $crtFile -keyout $keyFile
+                icacls $keyFile /inheritance:r /grant:r "SYSTEM:F"
+                icacls $crtFile /inheritance:r /grant:r "SYSTEM:F"
+                Add-Content -Path "$pgData\postgresql.conf" -Value "ssl = on"
+            }
+
+            # Step 6: Start PostgreSQL
+            & "$pgBindir\pg_ctl.exe" start --pgdata="$pgData"
+
+            # Step 7: Setup PostgreSQL Service Connection Parameters
+            $pgServiceConf = @"
+            [${env:INPUTS_USERNAME}]
+            host=localhost
+            port=${env:INPUTS_PORT}
+            user=${env:INPUTS_USERNAME}
+            password=${env:INPUTS_PASSWORD}
+            dbname=${env:INPUTS_DATABASE}
+            "@
+
+            if ($env:INPUTS_SSL -eq "true") {
+                $pgServiceConf += @"
+            sslmode=verify-ca
+            sslrootcert=$pgData\server.crt
+            "@
+            }
+
+            Set-Content -Path "$pgData\pg_service.conf" -Value $pgServiceConf
+            Add-Content -Path $env:GITHUB_ENV -Value "PGSERVICEFILE=$pgData\pg_service.conf"
+
+            # Step 8: Create Database if Needed
+            if ($env:INPUTS_DATABASE -ne "postgres") {
+                & "$pgBindir\createdb.exe" -O $env:INPUTS_USERNAME $env:INPUTS_DATABASE
+            }
+
+            Write-Output "PostgreSQL setup and initialization complete."
           }
 
           $restore_job = Start-Job -ScriptBlock { 
@@ -286,9 +327,9 @@ jobs:
       
       - name: Init PostgresSQL Schema
         shell: powershell
-        run: psql -U $Env:POSTGRES_USER -f 'examples/config/postgresql/schema.sql'
+        run: psql -U $Env:POSTGRES_USER -h localhost -f 'examples/config/postgresql/schema.sql'
         env:
-          PGSERVICE: ${{ steps.postgres.outputs.service-name }}
+          POSTGRES_USER: ${{ env.POSTGRES_USER }}
           PGPASSWORD: ${{ env.POSTGRES_PASSWORD }}
 
       - name: End-to-End Tests
