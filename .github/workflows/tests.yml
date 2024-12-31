@@ -1,0 +1,42 @@
+name: .Net Core Tests
+defaults:
+  run:
+    shell: bash
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "*" ]
+    paths:
+      - "**"
+      - "!**.md"
+
+jobs:
+  unit-tests:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+      
+    steps:
+      - uses: actions/checkout@v4
+  
+      - name: Run Tests
+        run: dotnet test SqlcGenCsharpTests
+    
+  end2end-tests:
+    name: End-to-End Tests
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Load .env file
+        uses: xom9ikk/dotenv@v2.3.0
+        with:
+          load-mode: strict
+
+      - name: Docker compose
+        uses: hoverkraft-tech/compose-action@v1.5.1
+
+      - name: Run Tests
+        run: ./scripts/run_end2end_tests.sh

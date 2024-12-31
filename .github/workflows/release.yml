@@ -9,7 +9,7 @@ permissions:
 
 on:
   workflow_run: 
-    workflows: [CI]
+    workflows: [Build]
     types: [completed]
     branches: [main]
 
