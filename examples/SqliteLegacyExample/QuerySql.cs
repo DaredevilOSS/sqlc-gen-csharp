@@ -108,6 +108,26 @@ namespace SqliteLegacyExampleGen
             }
         }
 
+        private const string UpdateAuthorsSql = "UPDATE authors  SET  bio  =  @bio  WHERE  bio  IS  NOT  NULL  ";  
+        public class UpdateAuthorsArgs
+        {
+            public string Bio { get; set; }
+        };
+        public async Task<long> UpdateAuthors(UpdateAuthorsArgs args)
+        {
+            {
+                using (var connection = new SqliteConnection(ConnectionString))
+                {
+                    connection.Open();
+                    using (var command = new SqliteCommand(UpdateAuthorsSql, connection))
+                    {
+                        command.Parameters.AddWithValue("@bio", args.Bio);
+                        return await command.ExecuteNonQueryAsync();
+                    }
+                }
+            }
+        }
+
         private const string DeleteAuthorSql = "DELETE FROM authors WHERE name = @name";
         public class DeleteAuthorArgs
         {

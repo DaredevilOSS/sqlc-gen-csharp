@@ -60,6 +60,19 @@ public class QuerySql(string connectionString)
         }
     }
 
+    private const string UpdateAuthorsSql = "UPDATE authors  SET  bio  =  @bio  WHERE  bio  IS  NOT  NULL  ";  
+    public class UpdateAuthorsArgs
+    {
+        public string? Bio { get; set; }
+    };
+    public async Task<long> UpdateAuthors(UpdateAuthorsArgs args)
+    {
+        using (var connection = new SqliteConnection(connectionString))
+        {
+            return await connection.ExecuteAsync(UpdateAuthorsSql, new { bio = args.Bio });
+        }
+    }
+
     private const string DeleteAuthorSql = "DELETE FROM authors WHERE name = @name";
     public class DeleteAuthorArgs
     {
