@@ -28,4 +28,9 @@
         <Using Include="NUnit.Framework"/>
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\CodeGenerator\CodeGenerator.csproj" />
+      <ProjectReference Include="..\GeneratedProtobuf\GeneratedProtobuf.csproj" />
+    </ItemGroup>
+
 </Project>
