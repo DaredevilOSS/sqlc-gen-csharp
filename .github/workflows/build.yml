@@ -77,7 +77,8 @@ jobs:
         shell: bash
         run: |
           set -e
-          echo ${{ env.WASI_SDK_PATH }}
+          ls ${{ env.WASI_SDK_PATH }}
+          
           dotnet publish WasmRunner -c release
           ./scripts/wasm/copy_plugin_to.sh dist
 
