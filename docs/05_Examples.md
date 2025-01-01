@@ -5,6 +5,7 @@
 
 ### Config
 ```yaml
+driver: Npgsql
 useDapper: false
 targetFramework: net8.0
 generateCsproj: true
