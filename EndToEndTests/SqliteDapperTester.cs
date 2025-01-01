@@ -6,17 +6,10 @@ using System.Threading.Tasks;
 
 namespace SqlcGenCsharpTests;
 
-public class SqliteDapperTester
+public class SqliteDapperTester : IOneTester, IManyTester, IExecTester, IExecRowsTester
 {
-    private QuerySql QuerySql { get; set; }
-
-    [OneTimeSetUp]
-    public void SetUp()
-    {
-        var connectionString = Environment.GetEnvironmentVariable(GlobalSetup.SqliteConnectionStringEnv);
-        QuerySql = new QuerySql(connectionString!);
-    }
-
+    private QuerySql QuerySql { get; } = new(
+        Environment.GetEnvironmentVariable(EndToEndCommon.SqliteConnectionStringEnv)!);
     [TearDown]
     public async Task EmptyTestsTable()
     {
@@ -24,34 +17,7 @@ public class SqliteDapperTester
     }
 
     [Test]
-    public async Task TestCreateAndListAuthors()
-    {
-        await QuerySql.CreateAuthor(new QuerySql.CreateAuthorArgs
-        {
-            Name = DataGenerator.BojackAuthor,
-            Bio = DataGenerator.BojackTheme
-        });
-        await QuerySql.CreateAuthor(new QuerySql.CreateAuthorArgs
-        {
-            Name = DataGenerator.DrSeussAuthor,
-            Bio = DataGenerator.DrSeussQuote
-        });
-
-        var actualAuthors = await QuerySql.ListAuthors();
-        Assert.That(actualAuthors is [
-        {
-            Name: DataGenerator.BojackAuthor,
-            Bio: DataGenerator.BojackTheme
-        },
-        {
-            Name: DataGenerator.DrSeussAuthor,
-            Bio: DataGenerator.DrSeussQuote
-        }
-        ]);
-    }
-
-    [Test]
-    public async Task TestGetAuthor()
+    public async Task TestOne()
     {
         await QuerySql.CreateAuthor(new QuerySql.CreateAuthorArgs
         {
@@ -68,6 +34,7 @@ public class SqliteDapperTester
         {
             Name = DataGenerator.BojackAuthor
         });
+        ClassicAssert.IsNotNull(actualAuthor);
         Assert.That(actualAuthor is
         {
             Name: DataGenerator.BojackAuthor,
@@ -76,7 +43,35 @@ public class SqliteDapperTester
     }
 
     [Test]
-    public async Task TestDeleteAuthor()
+    public async Task TestMany()
+    {
+        await QuerySql.CreateAuthor(new QuerySql.CreateAuthorArgs
+        {
+            Name = DataGenerator.BojackAuthor,
+            Bio = DataGenerator.BojackTheme
+        });
+        await QuerySql.CreateAuthor(new QuerySql.CreateAuthorArgs
+        {
+            Name = DataGenerator.DrSeussAuthor,
+            Bio = DataGenerator.DrSeussQuote
+        });
+
+        var actualAuthors = await QuerySql.ListAuthors();
+        ClassicAssert.AreEqual(2, actualAuthors.Count);
+        Assert.That(actualAuthors is [
+        {
+            Name: DataGenerator.BojackAuthor,
+            Bio: DataGenerator.BojackTheme
+        },
+        {
+            Name: DataGenerator.DrSeussAuthor,
+            Bio: DataGenerator.DrSeussQuote
+        }
+        ]);
+    }
+
+    [Test]
+    public async Task TestExec()
     {
         await QuerySql.CreateAuthor(new QuerySql.CreateAuthorArgs
         {
@@ -102,7 +97,7 @@ public class SqliteDapperTester
     }
 
     [Test]
-    public async Task TestExecRowsFlow()
+    public async Task TestExecRows()
     {
         var bojackCreateAuthorArgs = new QuerySql.CreateAuthorArgs
         {

@@ -8,7 +8,7 @@ using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace SqlcGenCsharp.Drivers;
 
-public class NpgsqlDriver : DbDriver, ICopyFrom, IExecRows
+public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, ICopyFrom, IExecRows
 {
     public NpgsqlDriver(Options options) : base(options)
     {

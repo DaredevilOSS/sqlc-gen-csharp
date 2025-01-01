@@ -7,18 +7,12 @@ using System.Threading.Tasks;
 
 namespace SqlcGenCsharpTests;
 
-public class NpgsqlTester
+public class NpgsqlTester : IOneTester, IManyTester, IExecTester, IExecRowsTester, ICopyFromTester
 {
     private static readonly Random Randomizer = new();
 
-    private QuerySql QuerySql { get; set; }
-
-    [OneTimeSetUp]
-    public void SetUp()
-    {
-        var connectionString = Environment.GetEnvironmentVariable(GlobalSetup.PostgresConnectionStringEnv);
-        QuerySql = new QuerySql(connectionString!);
-    }
+    private QuerySql QuerySql { get; } = new(
+        Environment.GetEnvironmentVariable(EndToEndCommon.PostgresConnectionStringEnv)!);
 
     [TearDown]
     public async Task EmptyTestsTables()
@@ -28,99 +22,87 @@ public class NpgsqlTester
     }
 
     [Test]
-    public async Task TestCreateAndListAuthors()
+    public async Task TestOne()
     {
-        await QuerySql.CreateAuthor(
-            new QuerySql.CreateAuthorArgs
-            {
-                Name = DataGenerator.BojackAuthor,
-                Bio = DataGenerator.BojackTheme
-            }
-        );
-        await QuerySql.CreateAuthor(
-            new QuerySql.CreateAuthorArgs
-            {
-                Name = DataGenerator.DrSeussAuthor,
-                Bio = DataGenerator.DrSeussQuote
-            }
-        );
+        await QuerySql.CreateAuthor(new QuerySql.CreateAuthorArgs
+        {
+            Name = DataGenerator.BojackAuthor,
+            Bio = DataGenerator.BojackTheme
+        });
+        await QuerySql.CreateAuthor(new QuerySql.CreateAuthorArgs
+        {
+            Name = DataGenerator.DrSeussAuthor,
+            Bio = DataGenerator.DrSeussQuote
+        });
+
+        var actualAuthor = await QuerySql.GetAuthor(new QuerySql.GetAuthorArgs
+        {
+            Name = DataGenerator.BojackAuthor
+        });
+        ClassicAssert.IsNotNull(actualAuthor);
+        Assert.That(actualAuthor is
+        {
+            Name: DataGenerator.BojackAuthor,
+            Bio: DataGenerator.BojackTheme
+        });
+    }
+
+    [Test]
+    public async Task TestMany()
+    {
+        await QuerySql.CreateAuthor(new QuerySql.CreateAuthorArgs
+        {
+            Name = DataGenerator.BojackAuthor,
+            Bio = DataGenerator.BojackTheme
+        });
+        await QuerySql.CreateAuthor(new QuerySql.CreateAuthorArgs
+        {
+            Name = DataGenerator.DrSeussAuthor,
+            Bio = DataGenerator.DrSeussQuote
+        });
 
         var actualAuthors = await QuerySql.ListAuthors();
         ClassicAssert.AreEqual(2, actualAuthors.Count);
-        Assert.That(
-            actualAuthors
-                is [
-                { Name: DataGenerator.BojackAuthor, Bio: DataGenerator.BojackTheme },
-                { Name: DataGenerator.DrSeussAuthor, Bio: DataGenerator.DrSeussQuote }
-                ]
-        );
-
-        // foreach (var a in actualAuthors)
-        // {
-        //     Assert.That(
-        //         a.Created >= DateTime.Now.Subtract(TimeSpan.FromSeconds(30))
-        //             && a.Created < DateTime.Now
-        //     );
-        // }
+        Assert.That(actualAuthors is [
+        {
+            Name: DataGenerator.BojackAuthor,
+            Bio: DataGenerator.BojackTheme
+        },
+        {
+            Name: DataGenerator.DrSeussAuthor,
+            Bio: DataGenerator.DrSeussQuote
+        }
+        ]);
     }
 
     [Test]
-    public async Task TestGetAuthor()
+    public async Task TestExec()
     {
-        await QuerySql.CreateAuthor(
-            new QuerySql.CreateAuthorArgs
-            {
-                Name = DataGenerator.BojackAuthor,
-                Bio = DataGenerator.BojackTheme
-            }
-        );
-        await QuerySql.CreateAuthor(
-            new QuerySql.CreateAuthorArgs
-            {
-                Name = DataGenerator.DrSeussAuthor,
-                Bio = DataGenerator.DrSeussQuote
-            }
-        );
+        await QuerySql.CreateAuthor(new QuerySql.CreateAuthorArgs
+        {
+            Name = DataGenerator.BojackAuthor,
+            Bio = DataGenerator.BojackTheme
+        });
+        await QuerySql.CreateAuthor(new QuerySql.CreateAuthorArgs
+        {
+            Name = DataGenerator.DrSeussAuthor,
+            Bio = DataGenerator.DrSeussQuote
+        });
 
-        var actualAuthor = await QuerySql.GetAuthor(
-            new QuerySql.GetAuthorArgs { Name = DataGenerator.BojackAuthor }
-        );
-        ClassicAssert.IsNotNull(actualAuthor);
-        Assert.That(
-            actualAuthor is { Name: DataGenerator.BojackAuthor, Bio: DataGenerator.BojackTheme }
-        );
-    }
+        var deleteAuthorArgs = new QuerySql.DeleteAuthorArgs { Name = DataGenerator.BojackAuthor };
+        await QuerySql.DeleteAuthor(deleteAuthorArgs);
 
-    [Test]
-    public async Task TestDeleteAuthor()
-    {
-        await QuerySql.CreateAuthor(
-            new QuerySql.CreateAuthorArgs
-            {
-                Name = DataGenerator.BojackAuthor,
-                Bio = DataGenerator.BojackTheme
-            }
-        );
-        await QuerySql.CreateAuthor(
-            new QuerySql.CreateAuthorArgs
-            {
-                Name = DataGenerator.DrSeussAuthor,
-                Bio = DataGenerator.DrSeussQuote
-            }
-        );
-
-        await QuerySql.DeleteAuthor(
-            new QuerySql.DeleteAuthorArgs { Name = DataGenerator.BojackAuthor }
-        );
         var authorRows = await QuerySql.ListAuthors();
         ClassicAssert.AreEqual(1, authorRows.Count);
-        Assert.That(
-            authorRows[0] is { Name: DataGenerator.DrSeussAuthor, Bio: DataGenerator.DrSeussQuote }
-        );
+        Assert.That(authorRows[0] is
+        {
+            Name: DataGenerator.DrSeussAuthor,
+            Bio: DataGenerator.DrSeussQuote
+        });
     }
 
     [Test]
-    public async Task TestExecRowsFlow()
+    public async Task TestExecRows()
     {
         var bojackCreateAuthorArgs = new QuerySql.CreateAuthorArgs
         {
@@ -139,7 +121,7 @@ public class NpgsqlTester
     }
 
     [Test]
-    public async Task TestCopyFlow()
+    public async Task TestCopyFrom()
     {
         const int batchSize = 100;
         var createAuthorBatchArgs = Enumerable.Range(0, batchSize)

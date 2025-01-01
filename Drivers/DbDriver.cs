@@ -86,9 +86,11 @@ public abstract class DbDriver(Options options)
 
     public abstract string CreateSqlCommand(string sqlTextConstant);
 
-    public abstract MemberDeclarationSyntax OneDeclare(string sqlTextConstant, string argInterface, string returnInterface, Query query);
+    public abstract MemberDeclarationSyntax OneDeclare(string sqlTextConstant, string argInterface,
+        string returnInterface, Query query);
 
-    public abstract MemberDeclarationSyntax ManyDeclare(string sqlTextConstant, string argInterface, string returnInterface, Query query);
+    public abstract MemberDeclarationSyntax ManyDeclare(string sqlTextConstant, string argInterface,
+        string returnInterface, Query query);
 
     public abstract MemberDeclarationSyntax ExecDeclare(string text, string argInterface, Query query);
 

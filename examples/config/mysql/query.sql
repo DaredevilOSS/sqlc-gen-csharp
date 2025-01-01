@@ -7,9 +7,6 @@ SELECT * FROM authors ORDER BY name;
 -- name: CreateAuthor :exec
 INSERT INTO authors (name, bio) VALUES (?, ?);
 
--- name: UpdateAuthor :exec
-UPDATE authors SET bio = ? WHERE id = ?;
-
 -- name: CreateAuthorReturnId :execlastid
 INSERT INTO authors (name, bio) VALUES (?, ?);
 

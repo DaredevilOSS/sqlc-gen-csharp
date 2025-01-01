@@ -8,9 +8,10 @@ using System.Threading.Tasks;
 
 namespace SqlcGenCsharpTests
 {
-    public class MySqlConnectorTester
+    public class MySqlConnectorTester : IOneTester, IManyTester, IExecTester, IExecRowsTester
     {
-        private QuerySql QuerySql { get; } = new QuerySql(Environment.GetEnvironmentVariable(GlobalSetup.MySqlConnectionStringEnv));
+        private QuerySql QuerySql { get; } = new QuerySql(
+            Environment.GetEnvironmentVariable(EndToEndCommon.MySqlConnectionStringEnv));
 
         [TearDown]
         public async Task EmptyTestsTable()
@@ -19,7 +20,33 @@ namespace SqlcGenCsharpTests
         }
 
         [Test]
-        public async Task TestCreateAndListAuthors()
+        public async Task TestOne()
+        {
+            await QuerySql.CreateAuthor(new QuerySql.CreateAuthorArgs
+            {
+                Name = DataGenerator.BojackAuthor,
+                Bio = DataGenerator.BojackTheme
+            });
+            await QuerySql.CreateAuthor(new QuerySql.CreateAuthorArgs
+            {
+                Name = DataGenerator.DrSeussAuthor,
+                Bio = DataGenerator.DrSeussQuote
+            });
+
+            var actual = await QuerySql.GetAuthor(new QuerySql.GetAuthorArgs
+            {
+                Name = DataGenerator.BojackAuthor
+            });
+            var expected = new QuerySql.GetAuthorRow
+            {
+                Name = DataGenerator.BojackAuthor,
+                Bio = DataGenerator.BojackTheme
+            };
+            Assert.That(Equals(expected, actual));
+        }
+
+        [Test]
+        public async Task TestMany()
         {
             await QuerySql.CreateAuthor(new QuerySql.CreateAuthorArgs
             {
@@ -43,34 +70,7 @@ namespace SqlcGenCsharpTests
         }
 
         [Test]
-        public async Task TestGetAuthor()
-        {
-            await QuerySql.CreateAuthor(new QuerySql.CreateAuthorArgs
-            {
-                Name = DataGenerator.BojackAuthor,
-                Bio = DataGenerator.BojackTheme
-            });
-            await QuerySql.CreateAuthor(new QuerySql.CreateAuthorArgs
-            {
-                Name = DataGenerator.DrSeussAuthor,
-                Bio = DataGenerator.DrSeussQuote
-            });
-
-            var actual = await QuerySql.GetAuthor(new QuerySql.GetAuthorArgs
-            {
-                Name = DataGenerator.BojackAuthor
-            });
-            ClassicAssert.IsNotNull(actual);
-            var expected = new QuerySql.GetAuthorRow
-            {
-                Name = DataGenerator.BojackAuthor,
-                Bio = DataGenerator.BojackTheme
-            };
-            Assert.That(Equals(expected, actual));
-        }
-
-        [Test]
-        public async Task TestDeleteAuthor()
+        public async Task TestExec()
         {
             await QuerySql.CreateAuthor(new QuerySql.CreateAuthorArgs
             {
@@ -89,7 +89,7 @@ namespace SqlcGenCsharpTests
         }
 
         [Test]
-        public async Task TestExecRowsFlow()
+        public async Task TestExecRows()
         {
             var bojackCreateAuthorArgs = new QuerySql.CreateAuthorArgs
             {

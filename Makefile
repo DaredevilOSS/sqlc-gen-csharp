@@ -5,8 +5,11 @@ dotnet-format:
 	dotnet format --exclude GeneratedProtobuf --exclude examples
         
 protobuf-generate:
-	#./scripts/generate_protobuf.sh
+	./scripts/generate_protobuf.sh
 
+unit-tests:
+	dotnet test SqlcGenCsharpTests
+    
 run-end2end-tests:
 	./scripts/run_end2end_tests.sh
 
@@ -20,7 +23,7 @@ dotnet-publish-process: dotnet-build-process
 sqlc-generate-process: dotnet-publish-process
 	sqlc -f sqlc.local.yaml generate
 
-test-process-plugin: sqlc-generate-process run-end2end-tests
+test-process-plugin: unit-tests sqlc-generate-process run-end2end-tests
 
 # WASM type plugin
 dotnet-publish-wasm: protobuf-generate
@@ -33,4 +36,4 @@ update-wasm-plugin:
 sqlc-generate-wasm: dotnet-publish-wasm update-wasm-plugin
 	SQLCCACHE=./; sqlc -f sqlc.ci.yaml generate
 
-test-wasm-plugin: sqlc-generate-wasm update-wasm-plugin run-end2end-tests
+test-wasm-plugin: unit-tests sqlc-generate-wasm update-wasm-plugin run-end2end-tests
