@@ -11,22 +11,27 @@
 
 ## Query Annotations
 Basic functionality - same for all databases:
-`:one`          - returns 0...1 records
-`:many`         - returns 0...n records
-`:exec`         - DML / DDL that does not return anything
-`:execrows`     - returns number of affected rows by DML
+- `:one`          - returns 0...1 records
+- `:many`         - returns 0...n records
+- `:exec`         - DML / DDL that does not return anything
+- `:execrows`     - returns number of affected rows by DML
 
 Advanced functionality - varies between databases:
-`:execlastid`   - INSERT with returned last inserted id
-`:copyfrom`     - batch insert, implementation varies greatly
+- `:execlastid`   - INSERT with returned last inserted id
+- `:copyfrom`     - batch insert, implementation varies greatly
+<br/>
 
-| Annotation  | PostgresSQL | MySQL | SQLite | Dapper  |
-|-------------|-------------|-------|--------|---------|
-| :one        | ✅          | ✅    | ✅     | ✅     |
-| :many       | ✅          | ✅    | ✅     | ✅     |
-| :exec       | ✅          | ✅    | ✅     | ✅     |
-| :execrows   | ✅          | ✅    | ✅     | ✅     |
-| :execlastid | ❌          | ✅    | ❌     | ❌     |
-| :copyfrom   | ✅          | ❌    | ❌     | ❌     |
+| Annotation  | PostgresSQL | MySQL | SQLite |
+|-------------|-------------|-------|--------|
+| :one        | ✅          | ✅    | ✅     |
+| :many       | ✅          | ✅    | ✅     |
+| :exec       | ✅          | ✅    | ✅     |
+| :execrows   | ✅          | ✅    | ✅     |
+| :execlastid | ❌          | ✅    | ❌     |
+| :copyfrom   | ✅          | ❌    | 🚫     |
+
+- ✅ means the feature is fully supported.
+- 🚫 means the database does not support the feature.
+- ❌ means the feature is not supported by the plugin (but could be supported by the database).
 
 More info can be found in [here](https://docs.sqlc.dev/en/latest/reference/query-annotations.html).

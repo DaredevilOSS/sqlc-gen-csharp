@@ -45,9 +45,9 @@ public static class ExamplesDocGen
         var optionsStr = optionsWriter.ToString().Trim().TrimEnd('.');
 
         return $"""
-                ## Engine `{item["engine"]}`: [{projectName}](/{outputDirectory})
+                ## Engine `{item["engine"]}`: [{projectName}]({outputDirectory})
 
-                ### [Schema](/{item["schema"]}) | [Queries](/{queryFiles}) | [End2End Test](/{testProject}/{testClassName}.cs)
+                ### [Schema]({item["schema"]}) | [Queries]({queryFiles}) | [End2End Test]({testProject}/{testClassName}.cs)
 
                 ### Config
                 ```yaml
