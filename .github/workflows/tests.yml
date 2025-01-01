@@ -12,6 +12,10 @@ on:
       - "**"
       - "!**.md"
 
+
+env:
+  DOTNET_VERSION: "9.0.x"
+
 jobs:
   unit-tests:
     name: Unit Tests
@@ -19,6 +23,11 @@ jobs:
       
     steps:
       - uses: actions/checkout@v4
+      
+      - name: Setup Dotnet
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
   
       - name: Run Tests
         run: dotnet test SqlcGenCsharpTests
@@ -33,7 +42,7 @@ jobs:
       - name: Setup Dotnet
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '9.0.x'
+          dotnet-version: ${{ env.DOTNET_VERSION }}
 
       - name: Load .env file
         uses: xom9ikk/dotenv@v2.3.0
