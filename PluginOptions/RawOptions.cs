@@ -11,7 +11,7 @@ internal class RawOptions
     public bool GenerateCsproj { get; init; } = true; // generating .csproj files by default
 
     [JsonPropertyName("targetFramework")]
-    public string TargetFramework { get; init; } = DotnetFramework.Dotnet80.ToName();
+    public string TargetFramework { get; init; } = DotnetFramework.Dotnet90.ToName();
 
     [JsonPropertyName("namespaceName")]
     public string NamespaceName { get; init; } = string.Empty;

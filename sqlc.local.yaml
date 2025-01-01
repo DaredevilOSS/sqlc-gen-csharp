@@ -14,7 +14,7 @@ sql:
         options:
           driver: Npgsql
           useDapper: false
-          targetFramework: net8.0
+          targetFramework: net9.0
           generateCsproj: true
           namespaceName: NpgsqlExampleGen
   - schema: "examples/config/postgresql/schema.sql"
@@ -25,7 +25,7 @@ sql:
         out: examples/NpgsqlDapperExample
         options:
           useDapper: true
-          targetFramework: net8.0
+          targetFramework: net9.0
           generateCsproj: true
           namespaceName: NpgsqlDapperExampleGen
   - schema: "examples/config/postgresql/schema.sql"
@@ -60,7 +60,7 @@ sql:
         out: examples/MySqlConnectorExample
         options:
           useDapper: false
-          targetFramework: net8.0
+          targetFramework: net9.0
           generateCsproj: true
           namespaceName: MySqlConnectorExampleGen
   - schema: "examples/config/mysql/schema.sql"
@@ -71,7 +71,7 @@ sql:
         out: examples/MySqlConnectorDapperExample
         options:
           useDapper: true
-          targetFramework: net8.0
+          targetFramework: net9.0
           generateCsproj: true
           namespaceName: MySqlConnectorDapperExampleGen
   - schema: "examples/config/mysql/schema.sql"
@@ -106,7 +106,7 @@ sql:
         out: examples/SqliteExample
         options:
           useDapper: false
-          targetFramework: net8.0
+          targetFramework: net9.0
           generateCsproj: true
           namespaceName: SqliteExampleGen
   - schema: "examples/config/sqlite/schema.sql"
@@ -117,7 +117,7 @@ sql:
         out: examples/SqliteDapperExample
         options:
           useDapper: true
-          targetFramework: net8.0
+          targetFramework: net9.0
           generateCsproj: true
           namespaceName: SqliteDapperExampleGen
   - schema: "examples/config/sqlite/schema.sql"
