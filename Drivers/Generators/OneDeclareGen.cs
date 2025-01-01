@@ -53,42 +53,38 @@ public class OneDeclareGen(DbDriver dbDriver)
         string GetAsLatest()
         {
             return $$"""
+                     await using {{establishConnection}};
+                     {{connectionOpen.AppendSemicolonUnlessEmpty()}}
+                     await using {{createSqlCommand}};
+                     {{commandParameters.JoinByNewLine()}}
+                     {{initDataReader}};
+                     if ({{awaitReaderRow}})
                      {
-                         await using {{establishConnection}};
-                         {{connectionOpen.AppendSemicolonUnlessEmpty()}}
-                         await using {{createSqlCommand}};
-                         {{commandParameters.JoinByNewLine()}}
-                         {{initDataReader}};
-                         if ({{awaitReaderRow}})
-                         {
-                             return {{returnDataclass}};
-                         }
-                         return null;
+                         return {{returnDataclass}};
                      }
+                     return null;
                      """;
         }
 
         string GetAsLegacy()
         {
             return $$"""
+                     using ({{establishConnection}})
                      {
-                         using ({{establishConnection}})
+                         {{connectionOpen.AppendSemicolonUnlessEmpty()}}
+                         using ({{createSqlCommand}})
                          {
-                             {{connectionOpen.AppendSemicolonUnlessEmpty()}}
-                             using ({{createSqlCommand}})
+                            {{commandParameters.JoinByNewLine()}}
+                             using ({{initDataReader}})
                              {
-                                {{commandParameters.JoinByNewLine()}}
-                                 using ({{initDataReader}})
+                                 if ({{awaitReaderRow}})
                                  {
-                                     if ({{awaitReaderRow}})
-                                     {
-                                         return {{returnDataclass}};
-                                     }
+                                     return {{returnDataclass}};
                                  }
                              }
                          }
-                         return null;
                      }
+                     return null;
                      """;
         }
     }

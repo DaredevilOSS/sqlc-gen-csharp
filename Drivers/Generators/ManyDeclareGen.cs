@@ -59,35 +59,31 @@ public class ManyDeclareGen(DbDriver dbDriver)
         string GetAsLatest()
         {
             return $$"""
-                     {
-                         await using {{establishConnection}};
-                         {{connectionOpen.AppendSemicolonUnlessEmpty()}}
-                         await using {{createSqlCommand}};
-                         {{commandParameters.JoinByNewLine()}}
-                         {{initDataReader}};
-                         var {{Variable.Result.AsVarName()}} = new List<{{returnInterface}}>();
-                         {{readWhileExists}}
-                         return {{Variable.Result.AsVarName()}};
-                     }
+                     await using {{establishConnection}};
+                     {{connectionOpen.AppendSemicolonUnlessEmpty()}}
+                     await using {{createSqlCommand}};
+                     {{commandParameters.JoinByNewLine()}}
+                     {{initDataReader}};
+                     var {{Variable.Result.AsVarName()}} = new List<{{returnInterface}}>();
+                     {{readWhileExists}}
+                     return {{Variable.Result.AsVarName()}};
                      """;
         }
 
         string GetAsLegacy()
         {
             return $$"""
+                     using ({{establishConnection}})
                      {
-                         using ({{establishConnection}})
+                         {{connectionOpen.AppendSemicolonUnlessEmpty()}}
+                         using ({{createSqlCommand}})
                          {
-                             {{connectionOpen.AppendSemicolonUnlessEmpty()}}
-                             using ({{createSqlCommand}})
+                             {{commandParameters.JoinByNewLine()}}
+                             using ({{initDataReader}})
                              {
-                                 {{commandParameters.JoinByNewLine()}}
-                                 using ({{initDataReader}})
-                                 {
-                                     var {{Variable.Result.AsVarName()}} = new List<{{returnInterface}}>();
-                                     {{readWhileExists}}
-                                     return {{Variable.Result.AsVarName()}};
-                                 }
+                                 var {{Variable.Result.AsVarName()}} = new List<{{returnInterface}}>();
+                                 {{readWhileExists}}
+                                 return {{Variable.Result.AsVarName()}};
                              }
                          }
                      }

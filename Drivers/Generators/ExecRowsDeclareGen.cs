@@ -48,29 +48,25 @@ public class ExecRowsDeclareGen(DbDriver dbDriver)
 
         string GetAsLatest()
         {
-            return $$"""
-                     {
-                         await using {{establishConnection}};
-                         {{connectionOpen.AppendSemicolonUnlessEmpty()}}
-                         await using {{createSqlCommand}};
-                         {{commandParameters.JoinByNewLine()}}
-                         {{executeScalarAndReturnCreated.JoinByNewLine()}}
-                     }
+            return $"""
+                     await using {establishConnection};
+                     {connectionOpen.AppendSemicolonUnlessEmpty()}
+                     await using {createSqlCommand};
+                     {commandParameters.JoinByNewLine()}
+                     {executeScalarAndReturnCreated.JoinByNewLine()}
                      """;
         }
 
         string GetAsLegacy()
         {
             return $$"""
+                     using ({{establishConnection}})
                      {
-                         using ({{establishConnection}})
+                         {{connectionOpen.AppendSemicolonUnlessEmpty()}}
+                         using ({{createSqlCommand}})
                          {
-                             {{connectionOpen.AppendSemicolonUnlessEmpty()}}
-                             using ({{createSqlCommand}})
-                             {
-                                {{commandParameters.JoinByNewLine()}}
-                                {{executeScalarAndReturnCreated.JoinByNewLine()}}
-                             }
+                            {{commandParameters.JoinByNewLine()}}
+                            {{executeScalarAndReturnCreated.JoinByNewLine()}}
                          }
                      }
                      """;

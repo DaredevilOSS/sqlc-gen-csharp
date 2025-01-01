@@ -31,6 +31,7 @@ public class Options
     public bool GenerateCsproj { get; }
 
     public bool UseDapper { get; }
+
     public string OverrideDapperVersion { get; }
 
     public string NamespaceName { get; }

@@ -14,93 +14,81 @@ public class QuerySql(string connectionString)
     public readonly record struct GetAuthorArgs(string Name);
     public async Task<GetAuthorRow?> GetAuthor(GetAuthorArgs args)
     {
+        await using var connection = new SqliteConnection(connectionString);
+        connection.Open();
+        await using var command = new SqliteCommand(GetAuthorSql, connection);
+        command.Parameters.AddWithValue("@name", args.Name);
+        var reader = await command.ExecuteReaderAsync();
+        if (await reader.ReadAsync())
         {
-            await using var connection = new SqliteConnection(connectionString);
-            connection.Open();
-            await using var command = new SqliteCommand(GetAuthorSql, connection);
-            command.Parameters.AddWithValue("@name", args.Name);
-            var reader = await command.ExecuteReaderAsync();
-            if (await reader.ReadAsync())
+            return new GetAuthorRow
             {
-                return new GetAuthorRow
-                {
-                    Id = reader.GetInt32(0),
-                    Name = reader.GetString(1),
-                    Bio = reader.IsDBNull(2) ? null : reader.GetString(2)
-                };
-            }
-
-            return null;
+                Id = reader.GetInt32(0),
+                Name = reader.GetString(1),
+                Bio = reader.IsDBNull(2) ? null : reader.GetString(2)
+            };
         }
+
+        return null;
     }
 
     private const string ListAuthorsSql = "SELECT id, name, bio FROM authors ORDER BY name";
     public readonly record struct ListAuthorsRow(int Id, string Name, string? Bio);
     public async Task<List<ListAuthorsRow>> ListAuthors()
     {
+        await using var connection = new SqliteConnection(connectionString);
+        connection.Open();
+        await using var command = new SqliteCommand(ListAuthorsSql, connection);
+        var reader = await command.ExecuteReaderAsync();
+        var result = new List<ListAuthorsRow>();
+        while (await reader.ReadAsync())
         {
-            await using var connection = new SqliteConnection(connectionString);
-            connection.Open();
-            await using var command = new SqliteCommand(ListAuthorsSql, connection);
-            var reader = await command.ExecuteReaderAsync();
-            var result = new List<ListAuthorsRow>();
-            while (await reader.ReadAsync())
-            {
-                result.Add(new ListAuthorsRow { Id = reader.GetInt32(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2) });
-            }
-
-            return result;
+            result.Add(new ListAuthorsRow { Id = reader.GetInt32(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2) });
         }
+
+        return result;
     }
 
     private const string CreateAuthorSql = "INSERT INTO authors (name, bio) VALUES (@name, @bio)";
     public readonly record struct CreateAuthorArgs(string Name, string? Bio);
     public async Task CreateAuthor(CreateAuthorArgs args)
     {
-        {
-            await using var connection = new SqliteConnection(connectionString);
-            connection.Open();
-            await using var command = new SqliteCommand(CreateAuthorSql, connection);
-            command.Parameters.AddWithValue("@name", args.Name);
-            command.Parameters.AddWithValue("@bio", args.Bio!);
-            await command.ExecuteScalarAsync();
-        }
+        await using var connection = new SqliteConnection(connectionString);
+        connection.Open();
+        await using var command = new SqliteCommand(CreateAuthorSql, connection);
+        command.Parameters.AddWithValue("@name", args.Name);
+        command.Parameters.AddWithValue("@bio", args.Bio!);
+        await command.ExecuteScalarAsync();
     }
 
     private const string UpdateAuthorsSql = "UPDATE authors  SET  bio  =  @bio  WHERE  bio  IS  NOT  NULL  ";  
     public readonly record struct UpdateAuthorsArgs(string? Bio);
     public async Task<long> UpdateAuthors(UpdateAuthorsArgs args)
     {
-        {
-            await using var connection = new SqliteConnection(connectionString);
-            connection.Open();
-            await using var command = new SqliteCommand(UpdateAuthorsSql, connection);
-            command.Parameters.AddWithValue("@bio", args.Bio!);
-            return await command.ExecuteNonQueryAsync();
-        }
+        await using var connection = new SqliteConnection(connectionString);
+        connection.Open();
+        await using var command = new SqliteCommand(UpdateAuthorsSql, connection);
+        command.Parameters.AddWithValue("@bio", args.Bio!);
+        return await command.ExecuteNonQueryAsync();
     }
 
     private const string DeleteAuthorSql = "DELETE FROM authors WHERE name = @name";
     public readonly record struct DeleteAuthorArgs(string Name);
     public async Task DeleteAuthor(DeleteAuthorArgs args)
     {
-        {
-            await using var connection = new SqliteConnection(connectionString);
-            connection.Open();
-            await using var command = new SqliteCommand(DeleteAuthorSql, connection);
-            command.Parameters.AddWithValue("@name", args.Name);
-            await command.ExecuteScalarAsync();
-        }
+        await using var connection = new SqliteConnection(connectionString);
+        connection.Open();
+        await using var command = new SqliteCommand(DeleteAuthorSql, connection);
+        command.Parameters.AddWithValue("@name", args.Name);
+        await command.ExecuteScalarAsync();
     }
 
     private const string DeleteAllAuthorsSql = "DELETE FROM authors";
     public async Task DeleteAllAuthors()
     {
-        {
-            await using var connection = new SqliteConnection(connectionString);
-            connection.Open();
-            await using var command = new SqliteCommand(DeleteAllAuthorsSql, connection);
-            await command.ExecuteScalarAsync();
-        }
+        await using var connection = new SqliteConnection(connectionString);
+        connection.Open();
+        await using var command = new SqliteCommand(DeleteAllAuthorsSql, connection);
+        await command.ExecuteScalarAsync();
     }
 }

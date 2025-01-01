@@ -70,15 +70,13 @@ public class QuerySql(string connectionString)
     };
     public async Task<long> CreateAuthorReturnId(CreateAuthorReturnIdArgs args)
     {
-        {
-            await using var connection = new MySqlConnection(connectionString);
-            connection.Open();
-            await using var command = new MySqlCommand(CreateAuthorReturnIdSql, connection);
-            command.Parameters.AddWithValue("@name", args.Name);
-            command.Parameters.AddWithValue("@bio", args.Bio!);
-            await command.ExecuteNonQueryAsync();
-            return command.LastInsertedId;
-        }
+        await using var connection = new MySqlConnection(connectionString);
+        connection.Open();
+        await using var command = new MySqlCommand(CreateAuthorReturnIdSql, connection);
+        command.Parameters.AddWithValue("@name", args.Name);
+        command.Parameters.AddWithValue("@bio", args.Bio!);
+        await command.ExecuteNonQueryAsync();
+        return command.LastInsertedId;
     }
 
     private const string DeleteAuthorSql = "DELETE FROM authors WHERE name = @name";

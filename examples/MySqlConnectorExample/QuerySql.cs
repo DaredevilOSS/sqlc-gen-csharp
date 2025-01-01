@@ -14,166 +14,150 @@ public class QuerySql(string connectionString)
     public readonly record struct GetAuthorArgs(string Name);
     public async Task<GetAuthorRow?> GetAuthor(GetAuthorArgs args)
     {
+        await using var connection = new MySqlConnection(connectionString);
+        connection.Open();
+        await using var command = new MySqlCommand(GetAuthorSql, connection);
+        command.Parameters.AddWithValue("@name", args.Name);
+        var reader = await command.ExecuteReaderAsync();
+        if (await reader.ReadAsync())
         {
-            await using var connection = new MySqlConnection(connectionString);
-            connection.Open();
-            await using var command = new MySqlCommand(GetAuthorSql, connection);
-            command.Parameters.AddWithValue("@name", args.Name);
-            var reader = await command.ExecuteReaderAsync();
-            if (await reader.ReadAsync())
+            return new GetAuthorRow
             {
-                return new GetAuthorRow
-                {
-                    Id = reader.GetInt64(0),
-                    Name = reader.GetString(1),
-                    Bio = reader.IsDBNull(2) ? null : reader.GetString(2),
-                    Created = reader.GetDateTime(3)
-                };
-            }
-
-            return null;
+                Id = reader.GetInt64(0),
+                Name = reader.GetString(1),
+                Bio = reader.IsDBNull(2) ? null : reader.GetString(2),
+                Created = reader.GetDateTime(3)
+            };
         }
+
+        return null;
     }
 
     private const string ListAuthorsSql = "SELECT id, name, bio, created FROM authors ORDER BY name";
     public readonly record struct ListAuthorsRow(long Id, string Name, string? Bio, DateTime Created);
     public async Task<List<ListAuthorsRow>> ListAuthors()
     {
+        await using var connection = new MySqlConnection(connectionString);
+        connection.Open();
+        await using var command = new MySqlCommand(ListAuthorsSql, connection);
+        var reader = await command.ExecuteReaderAsync();
+        var result = new List<ListAuthorsRow>();
+        while (await reader.ReadAsync())
         {
-            await using var connection = new MySqlConnection(connectionString);
-            connection.Open();
-            await using var command = new MySqlCommand(ListAuthorsSql, connection);
-            var reader = await command.ExecuteReaderAsync();
-            var result = new List<ListAuthorsRow>();
-            while (await reader.ReadAsync())
-            {
-                result.Add(new ListAuthorsRow { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2), Created = reader.GetDateTime(3) });
-            }
-
-            return result;
+            result.Add(new ListAuthorsRow { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2), Created = reader.GetDateTime(3) });
         }
+
+        return result;
     }
 
     private const string CreateAuthorSql = "INSERT INTO authors (name, bio) VALUES (@name, @bio)";
     public readonly record struct CreateAuthorArgs(string Name, string? Bio);
     public async Task CreateAuthor(CreateAuthorArgs args)
     {
-        {
-            await using var connection = new MySqlConnection(connectionString);
-            connection.Open();
-            await using var command = new MySqlCommand(CreateAuthorSql, connection);
-            command.Parameters.AddWithValue("@name", args.Name);
-            command.Parameters.AddWithValue("@bio", args.Bio!);
-            await command.ExecuteScalarAsync();
-        }
+        await using var connection = new MySqlConnection(connectionString);
+        connection.Open();
+        await using var command = new MySqlCommand(CreateAuthorSql, connection);
+        command.Parameters.AddWithValue("@name", args.Name);
+        command.Parameters.AddWithValue("@bio", args.Bio!);
+        await command.ExecuteScalarAsync();
     }
 
     private const string CreateAuthorReturnIdSql = "INSERT INTO authors (name, bio) VALUES (@name, @bio)";
     public readonly record struct CreateAuthorReturnIdArgs(string Name, string? Bio);
     public async Task<long> CreateAuthorReturnId(CreateAuthorReturnIdArgs args)
     {
-        {
-            await using var connection = new MySqlConnection(connectionString);
-            connection.Open();
-            await using var command = new MySqlCommand(CreateAuthorReturnIdSql, connection);
-            command.Parameters.AddWithValue("@name", args.Name);
-            command.Parameters.AddWithValue("@bio", args.Bio!);
-            await command.ExecuteNonQueryAsync();
-            return command.LastInsertedId;
-        }
+        await using var connection = new MySqlConnection(connectionString);
+        connection.Open();
+        await using var command = new MySqlCommand(CreateAuthorReturnIdSql, connection);
+        command.Parameters.AddWithValue("@name", args.Name);
+        command.Parameters.AddWithValue("@bio", args.Bio!);
+        await command.ExecuteNonQueryAsync();
+        return command.LastInsertedId;
     }
 
     private const string DeleteAuthorSql = "DELETE FROM authors WHERE name = @name";
     public readonly record struct DeleteAuthorArgs(string Name);
     public async Task DeleteAuthor(DeleteAuthorArgs args)
     {
-        {
-            await using var connection = new MySqlConnection(connectionString);
-            connection.Open();
-            await using var command = new MySqlCommand(DeleteAuthorSql, connection);
-            command.Parameters.AddWithValue("@name", args.Name);
-            await command.ExecuteScalarAsync();
-        }
+        await using var connection = new MySqlConnection(connectionString);
+        connection.Open();
+        await using var command = new MySqlCommand(DeleteAuthorSql, connection);
+        command.Parameters.AddWithValue("@name", args.Name);
+        await command.ExecuteScalarAsync();
     }
 
     private const string TruncateAuthorsSql = "TRUNCATE TABLE authors";
     public async Task TruncateAuthors()
     {
-        {
-            await using var connection = new MySqlConnection(connectionString);
-            connection.Open();
-            await using var command = new MySqlCommand(TruncateAuthorsSql, connection);
-            await command.ExecuteScalarAsync();
-        }
+        await using var connection = new MySqlConnection(connectionString);
+        connection.Open();
+        await using var command = new MySqlCommand(TruncateAuthorsSql, connection);
+        await command.ExecuteScalarAsync();
     }
 
     private const string UpdateAuthorsSql = "UPDATE authors SET  bio  =  @bio  WHERE  bio  IS  NOT  NULL  ";  
     public readonly record struct UpdateAuthorsArgs(string? Bio);
     public async Task<long> UpdateAuthors(UpdateAuthorsArgs args)
     {
-        {
-            await using var connection = new MySqlConnection(connectionString);
-            connection.Open();
-            await using var command = new MySqlCommand(UpdateAuthorsSql, connection);
-            command.Parameters.AddWithValue("@bio", args.Bio!);
-            return await command.ExecuteNonQueryAsync();
-        }
+        await using var connection = new MySqlConnection(connectionString);
+        connection.Open();
+        await using var command = new MySqlCommand(UpdateAuthorsSql, connection);
+        command.Parameters.AddWithValue("@bio", args.Bio!);
+        return await command.ExecuteNonQueryAsync();
     }
 
     private const string TestSql = "SELECT c_bit, c_tinyint, c_bool, c_boolean, c_smallint, c_mediumint, c_int, c_integer, c_bigint, c_serial, c_decimal, c_dec, c_numeric, c_fixed, c_float, c_double, c_double_precision, c_date, c_time, c_datetime, c_timestamp, c_year, c_char, c_nchar, c_national_char, c_varchar, c_binary, c_varbinary, c_tinyblob, c_tinytext, c_blob, c_text, c_mediumblob, c_mediumtext, c_longblob, c_longtext, c_json FROM node_mysql_types LIMIT 1";
     public readonly record struct TestRow(byte[]? CBit, int? CTinyint, int? CBool, int? CBoolean, int? CSmallint, int? CMediumint, int? CInt, int? CInteger, long? CBigint, long CSerial, string? CDecimal, string? CDec, string? CNumeric, string? CFixed, double? CFloat, double? CDouble, double? CDoublePrecision, DateTime? CDate, string? CTime, DateTime? CDatetime, DateTime? CTimestamp, int? CYear, string? CChar, string? CNchar, string? CNationalChar, string? CVarchar, byte[]? CBinary, byte[]? CVarbinary, byte[]? CTinyblob, string? CTinytext, byte[]? CBlob, string? CText, byte[]? CMediumblob, string? CMediumtext, byte[]? CLongblob, string? CLongtext, object? CJson);
     public async Task<TestRow?> Test()
     {
+        await using var connection = new MySqlConnection(connectionString);
+        connection.Open();
+        await using var command = new MySqlCommand(TestSql, connection);
+        var reader = await command.ExecuteReaderAsync();
+        if (await reader.ReadAsync())
         {
-            await using var connection = new MySqlConnection(connectionString);
-            connection.Open();
-            await using var command = new MySqlCommand(TestSql, connection);
-            var reader = await command.ExecuteReaderAsync();
-            if (await reader.ReadAsync())
+            return new TestRow
             {
-                return new TestRow
-                {
-                    CBit = reader.IsDBNull(0) ? null : Utils.GetBytes(reader, 0),
-                    CTinyint = reader.IsDBNull(1) ? null : reader.GetInt32(1),
-                    CBool = reader.IsDBNull(2) ? null : reader.GetInt32(2),
-                    CBoolean = reader.IsDBNull(3) ? null : reader.GetInt32(3),
-                    CSmallint = reader.IsDBNull(4) ? null : reader.GetInt32(4),
-                    CMediumint = reader.IsDBNull(5) ? null : reader.GetInt32(5),
-                    CInt = reader.IsDBNull(6) ? null : reader.GetInt32(6),
-                    CInteger = reader.IsDBNull(7) ? null : reader.GetInt32(7),
-                    CBigint = reader.IsDBNull(8) ? null : reader.GetInt64(8),
-                    CSerial = reader.GetInt64(9),
-                    CDecimal = reader.IsDBNull(10) ? null : reader.GetString(10),
-                    CDec = reader.IsDBNull(11) ? null : reader.GetString(11),
-                    CNumeric = reader.IsDBNull(12) ? null : reader.GetString(12),
-                    CFixed = reader.IsDBNull(13) ? null : reader.GetString(13),
-                    CFloat = reader.IsDBNull(14) ? null : reader.GetDouble(14),
-                    CDouble = reader.IsDBNull(15) ? null : reader.GetDouble(15),
-                    CDoublePrecision = reader.IsDBNull(16) ? null : reader.GetDouble(16),
-                    CDate = reader.IsDBNull(17) ? null : reader.GetDateTime(17),
-                    CTime = reader.IsDBNull(18) ? null : reader.GetString(18),
-                    CDatetime = reader.IsDBNull(19) ? null : reader.GetDateTime(19),
-                    CTimestamp = reader.IsDBNull(20) ? null : reader.GetDateTime(20),
-                    CYear = reader.IsDBNull(21) ? null : reader.GetInt32(21),
-                    CChar = reader.IsDBNull(22) ? null : reader.GetString(22),
-                    CNchar = reader.IsDBNull(23) ? null : reader.GetString(23),
-                    CNationalChar = reader.IsDBNull(24) ? null : reader.GetString(24),
-                    CVarchar = reader.IsDBNull(25) ? null : reader.GetString(25),
-                    CBinary = reader.IsDBNull(26) ? null : Utils.GetBytes(reader, 26),
-                    CVarbinary = reader.IsDBNull(27) ? null : Utils.GetBytes(reader, 27),
-                    CTinyblob = reader.IsDBNull(28) ? null : Utils.GetBytes(reader, 28),
-                    CTinytext = reader.IsDBNull(29) ? null : reader.GetString(29),
-                    CBlob = reader.IsDBNull(30) ? null : Utils.GetBytes(reader, 30),
-                    CText = reader.IsDBNull(31) ? null : reader.GetString(31),
-                    CMediumblob = reader.IsDBNull(32) ? null : Utils.GetBytes(reader, 32),
-                    CMediumtext = reader.IsDBNull(33) ? null : reader.GetString(33),
-                    CLongblob = reader.IsDBNull(34) ? null : Utils.GetBytes(reader, 34),
-                    CLongtext = reader.IsDBNull(35) ? null : reader.GetString(35),
-                    CJson = reader.IsDBNull(36) ? null : reader.GetString(36)
-                };
-            }
-
-            return null;
+                CBit = reader.IsDBNull(0) ? null : Utils.GetBytes(reader, 0),
+                CTinyint = reader.IsDBNull(1) ? null : reader.GetInt32(1),
+                CBool = reader.IsDBNull(2) ? null : reader.GetInt32(2),
+                CBoolean = reader.IsDBNull(3) ? null : reader.GetInt32(3),
+                CSmallint = reader.IsDBNull(4) ? null : reader.GetInt32(4),
+                CMediumint = reader.IsDBNull(5) ? null : reader.GetInt32(5),
+                CInt = reader.IsDBNull(6) ? null : reader.GetInt32(6),
+                CInteger = reader.IsDBNull(7) ? null : reader.GetInt32(7),
+                CBigint = reader.IsDBNull(8) ? null : reader.GetInt64(8),
+                CSerial = reader.GetInt64(9),
+                CDecimal = reader.IsDBNull(10) ? null : reader.GetString(10),
+                CDec = reader.IsDBNull(11) ? null : reader.GetString(11),
+                CNumeric = reader.IsDBNull(12) ? null : reader.GetString(12),
+                CFixed = reader.IsDBNull(13) ? null : reader.GetString(13),
+                CFloat = reader.IsDBNull(14) ? null : reader.GetDouble(14),
+                CDouble = reader.IsDBNull(15) ? null : reader.GetDouble(15),
+                CDoublePrecision = reader.IsDBNull(16) ? null : reader.GetDouble(16),
+                CDate = reader.IsDBNull(17) ? null : reader.GetDateTime(17),
+                CTime = reader.IsDBNull(18) ? null : reader.GetString(18),
+                CDatetime = reader.IsDBNull(19) ? null : reader.GetDateTime(19),
+                CTimestamp = reader.IsDBNull(20) ? null : reader.GetDateTime(20),
+                CYear = reader.IsDBNull(21) ? null : reader.GetInt32(21),
+                CChar = reader.IsDBNull(22) ? null : reader.GetString(22),
+                CNchar = reader.IsDBNull(23) ? null : reader.GetString(23),
+                CNationalChar = reader.IsDBNull(24) ? null : reader.GetString(24),
+                CVarchar = reader.IsDBNull(25) ? null : reader.GetString(25),
+                CBinary = reader.IsDBNull(26) ? null : Utils.GetBytes(reader, 26),
+                CVarbinary = reader.IsDBNull(27) ? null : Utils.GetBytes(reader, 27),
+                CTinyblob = reader.IsDBNull(28) ? null : Utils.GetBytes(reader, 28),
+                CTinytext = reader.IsDBNull(29) ? null : reader.GetString(29),
+                CBlob = reader.IsDBNull(30) ? null : Utils.GetBytes(reader, 30),
+                CText = reader.IsDBNull(31) ? null : reader.GetString(31),
+                CMediumblob = reader.IsDBNull(32) ? null : Utils.GetBytes(reader, 32),
+                CMediumtext = reader.IsDBNull(33) ? null : reader.GetString(33),
+                CLongblob = reader.IsDBNull(34) ? null : Utils.GetBytes(reader, 34),
+                CLongtext = reader.IsDBNull(35) ? null : reader.GetString(35),
+                CJson = reader.IsDBNull(36) ? null : reader.GetString(36)
+            };
         }
+
+        return null;
     }
 }
