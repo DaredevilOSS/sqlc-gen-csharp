@@ -12,7 +12,6 @@ sql:
       - plugin: csharp
         out: examples/NpgsqlExample
         options:
-          driver: Npgsql
           useDapper: false
           targetFramework: net9.0
           generateCsproj: true
