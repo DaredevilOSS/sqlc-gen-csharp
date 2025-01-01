@@ -65,7 +65,7 @@ jobs:
         run: |
           echo "WASI_SDK_FOLDER_NAME=wasi-sdk-${{ env.WASI_SDK_VERSION }}.0" >> $GITHUB_ENV
           echo "WASI_SDK_FILENAME=wasi-sdk-${{ env.WASI_SDK_VERSION }}.0-linux.tar.gz" >> $GITHUB_ENV
-          echo "WASI_SDK_PATH=wasi-sdk-"$(pwd)/${{ env.WASI_SDK_FOLDER_NAME }}" >> $GITHUB_ENV
+          echo "WASI_SDK_PATH=$(pwd)/${{ env.WASI_SDK_FOLDER_NAME }}" >> $GITHUB_ENV
 
       - name: Download Wasi SDK
         run: |
