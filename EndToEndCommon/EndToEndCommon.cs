@@ -17,6 +17,7 @@ namespace SqlcGenCsharpTests
 
         public static void SetUp()
         {
+            Console.WriteLine("");
             if (File.Exists(EnvFile))
                 DotEnv.Load(options: new DotEnvOptions(envFilePaths: new[] { EnvFile }));
             RemoveExistingSqliteDb();

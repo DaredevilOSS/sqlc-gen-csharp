@@ -78,17 +78,15 @@ namespace MySqlConnectorDapperLegacyExampleGen
         };
         public async Task<long> CreateAuthorReturnId(CreateAuthorReturnIdArgs args)
         {
+            using (var connection = new MySqlConnection(ConnectionString))
             {
-                using (var connection = new MySqlConnection(ConnectionString))
+                connection.Open();
+                using (var command = new MySqlCommand(CreateAuthorReturnIdSql, connection))
                 {
-                    connection.Open();
-                    using (var command = new MySqlCommand(CreateAuthorReturnIdSql, connection))
-                    {
-                        command.Parameters.AddWithValue("@name", args.Name);
-                        command.Parameters.AddWithValue("@bio", args.Bio);
-                        await command.ExecuteNonQueryAsync();
-                        return command.LastInsertedId;
-                    }
+                    command.Parameters.AddWithValue("@name", args.Name);
+                    command.Parameters.AddWithValue("@bio", args.Bio);
+                    await command.ExecuteNonQueryAsync();
+                    return command.LastInsertedId;
                 }
             }
         }

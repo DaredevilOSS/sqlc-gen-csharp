@@ -125,23 +125,21 @@ public class QuerySql(string connectionString)
     };
     public async Task CopyToTests(List<CopyToTestsArgs> args)
     {
+        await using var ds = NpgsqlDataSource.Create(connectionString);
+        var connection = ds.CreateConnection();
+        await connection.OpenAsync();
+        await using var writer = await connection.BeginBinaryImportAsync(CopyToTestsSql);
+        foreach (var row in args)
         {
-            await using var ds = NpgsqlDataSource.Create(connectionString);
-            var connection = ds.CreateConnection();
-            await connection.OpenAsync();
-            await using var writer = await connection.BeginBinaryImportAsync(CopyToTestsSql);
-            foreach (var row in args)
-            {
-                await writer.StartRowAsync();
-                await writer.WriteAsync(row.CInt, NpgsqlDbType.Integer);
-                await writer.WriteAsync(row.CVarchar, NpgsqlDbType.Varchar);
-                await writer.WriteAsync(row.CDate, NpgsqlDbType.Date);
-                await writer.WriteAsync(row.CTimestamp, NpgsqlDbType.Timestamp);
-            }
-
-            await writer.CompleteAsync();
-            await connection.CloseAsync();
+            await writer.StartRowAsync();
+            await writer.WriteAsync(row.CInt, NpgsqlDbType.Integer);
+            await writer.WriteAsync(row.CVarchar, NpgsqlDbType.Varchar);
+            await writer.WriteAsync(row.CDate, NpgsqlDbType.Date);
+            await writer.WriteAsync(row.CTimestamp, NpgsqlDbType.Timestamp);
         }
+
+        await writer.CompleteAsync();
+        await connection.CloseAsync();
     }
 
     private const string CountCopyRowsSql = "SELECT COUNT(1) AS cnt FROM copy_tests";
