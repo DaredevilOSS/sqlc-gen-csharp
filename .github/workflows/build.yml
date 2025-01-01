@@ -30,6 +30,9 @@ jobs:
         with:
           dotnet-version: "9.0.x"
 
+      - name: Restore dependencies
+        run: dotnet build sqlc-gen-csharp.sln
+
       - name: .NET Lint
         uses: zyactions/dotnet-lint@v1
         with:
