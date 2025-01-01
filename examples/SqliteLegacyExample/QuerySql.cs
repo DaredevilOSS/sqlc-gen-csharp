@@ -30,30 +30,28 @@ namespace SqliteLegacyExampleGen
         };
         public async Task<GetAuthorRow> GetAuthor(GetAuthorArgs args)
         {
+            using (var connection = new SqliteConnection(ConnectionString))
             {
-                using (var connection = new SqliteConnection(ConnectionString))
+                connection.Open();
+                using (var command = new SqliteCommand(GetAuthorSql, connection))
                 {
-                    connection.Open();
-                    using (var command = new SqliteCommand(GetAuthorSql, connection))
+                    command.Parameters.AddWithValue("@name", args.Name);
+                    using (var reader = await command.ExecuteReaderAsync())
                     {
-                        command.Parameters.AddWithValue("@name", args.Name);
-                        using (var reader = await command.ExecuteReaderAsync())
+                        if (await reader.ReadAsync())
                         {
-                            if (await reader.ReadAsync())
+                            return new GetAuthorRow
                             {
-                                return new GetAuthorRow
-                                {
-                                    Id = reader.GetInt32(0),
-                                    Name = reader.GetString(1),
-                                    Bio = reader.IsDBNull(2) ? string.Empty : reader.GetString(2)
-                                };
-                            }
+                                Id = reader.GetInt32(0),
+                                Name = reader.GetString(1),
+                                Bio = reader.IsDBNull(2) ? string.Empty : reader.GetString(2)
+                            };
                         }
                     }
                 }
-
-                return null;
             }
+
+            return null;
         }
 
         private const string ListAuthorsSql = "SELECT id, name, bio FROM authors ORDER BY name";
@@ -65,22 +63,20 @@ namespace SqliteLegacyExampleGen
         };
         public async Task<List<ListAuthorsRow>> ListAuthors()
         {
+            using (var connection = new SqliteConnection(ConnectionString))
             {
-                using (var connection = new SqliteConnection(ConnectionString))
+                connection.Open();
+                using (var command = new SqliteCommand(ListAuthorsSql, connection))
                 {
-                    connection.Open();
-                    using (var command = new SqliteCommand(ListAuthorsSql, connection))
+                    using (var reader = await command.ExecuteReaderAsync())
                     {
-                        using (var reader = await command.ExecuteReaderAsync())
+                        var result = new List<ListAuthorsRow>();
+                        while (await reader.ReadAsync())
                         {
-                            var result = new List<ListAuthorsRow>();
-                            while (await reader.ReadAsync())
-                            {
-                                result.Add(new ListAuthorsRow { Id = reader.GetInt32(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? string.Empty : reader.GetString(2) });
-                            }
-
-                            return result;
+                            result.Add(new ListAuthorsRow { Id = reader.GetInt32(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? string.Empty : reader.GetString(2) });
                         }
+
+                        return result;
                     }
                 }
             }
@@ -94,16 +90,14 @@ namespace SqliteLegacyExampleGen
         };
         public async Task CreateAuthor(CreateAuthorArgs args)
         {
+            using (var connection = new SqliteConnection(ConnectionString))
             {
-                using (var connection = new SqliteConnection(ConnectionString))
+                connection.Open();
+                using (var command = new SqliteCommand(CreateAuthorSql, connection))
                 {
-                    connection.Open();
-                    using (var command = new SqliteCommand(CreateAuthorSql, connection))
-                    {
-                        command.Parameters.AddWithValue("@name", args.Name);
-                        command.Parameters.AddWithValue("@bio", args.Bio);
-                        await command.ExecuteScalarAsync();
-                    }
+                    command.Parameters.AddWithValue("@name", args.Name);
+                    command.Parameters.AddWithValue("@bio", args.Bio);
+                    await command.ExecuteScalarAsync();
                 }
             }
         }
@@ -115,15 +109,13 @@ namespace SqliteLegacyExampleGen
         };
         public async Task<long> UpdateAuthors(UpdateAuthorsArgs args)
         {
+            using (var connection = new SqliteConnection(ConnectionString))
             {
-                using (var connection = new SqliteConnection(ConnectionString))
+                connection.Open();
+                using (var command = new SqliteCommand(UpdateAuthorsSql, connection))
                 {
-                    connection.Open();
-                    using (var command = new SqliteCommand(UpdateAuthorsSql, connection))
-                    {
-                        command.Parameters.AddWithValue("@bio", args.Bio);
-                        return await command.ExecuteNonQueryAsync();
-                    }
+                    command.Parameters.AddWithValue("@bio", args.Bio);
+                    return await command.ExecuteNonQueryAsync();
                 }
             }
         }
@@ -135,15 +127,13 @@ namespace SqliteLegacyExampleGen
         };
         public async Task DeleteAuthor(DeleteAuthorArgs args)
         {
+            using (var connection = new SqliteConnection(ConnectionString))
             {
-                using (var connection = new SqliteConnection(ConnectionString))
+                connection.Open();
+                using (var command = new SqliteCommand(DeleteAuthorSql, connection))
                 {
-                    connection.Open();
-                    using (var command = new SqliteCommand(DeleteAuthorSql, connection))
-                    {
-                        command.Parameters.AddWithValue("@name", args.Name);
-                        await command.ExecuteScalarAsync();
-                    }
+                    command.Parameters.AddWithValue("@name", args.Name);
+                    await command.ExecuteScalarAsync();
                 }
             }
         }
@@ -151,14 +141,12 @@ namespace SqliteLegacyExampleGen
         private const string DeleteAllAuthorsSql = "DELETE FROM authors";
         public async Task DeleteAllAuthors()
         {
+            using (var connection = new SqliteConnection(ConnectionString))
             {
-                using (var connection = new SqliteConnection(ConnectionString))
+                connection.Open();
+                using (var command = new SqliteCommand(DeleteAllAuthorsSql, connection))
                 {
-                    connection.Open();
-                    using (var command = new SqliteCommand(DeleteAllAuthorsSql, connection))
-                    {
-                        await command.ExecuteScalarAsync();
-                    }
+                    await command.ExecuteScalarAsync();
                 }
             }
         }

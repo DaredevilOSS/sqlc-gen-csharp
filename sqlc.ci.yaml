@@ -13,6 +13,7 @@ sql:
       - plugin: csharp
         out: examples/NpgsqlExample
         options:
+          driver: Npgsql
           useDapper: false
           targetFramework: net9.0
           generateCsproj: true
@@ -50,7 +51,7 @@ sql:
           targetFramework: netstandard2.0
           generateCsproj: true
           namespaceName: NpgsqlDapperLegacyExampleGen
-          
+  
   # MySQL
   - schema: "examples/config/mysql/schema.sql"
     queries: "examples/config/mysql/query.sql"
@@ -96,7 +97,7 @@ sql:
           targetFramework: netstandard2.0
           generateCsproj: true
           namespaceName: MySqlConnectorDapperLegacyExampleGen
-          
+  
   # Sqlite
   - schema: "examples/config/sqlite/schema.sql"
     queries: "examples/config/sqlite/query.sql"
@@ -142,3 +143,4 @@ sql:
           targetFramework: netstandard2.0
           generateCsproj: true
           namespaceName: SqliteDapperLegacyExampleGen
+

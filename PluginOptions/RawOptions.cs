@@ -17,7 +17,7 @@ internal class RawOptions
     public string NamespaceName { get; init; } = string.Empty;
 
     [JsonPropertyName("useDapper")]
-    public bool UseDapper { get; init; } = false;
+    public bool UseDapper { get; init; }
 
     [JsonPropertyName("overrideDapperVersion")]
     public string OverrideDapperVersion { get; init; } = string.Empty;

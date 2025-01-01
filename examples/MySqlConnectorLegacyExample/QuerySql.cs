@@ -31,31 +31,29 @@ namespace MySqlConnectorLegacyExampleGen
         };
         public async Task<GetAuthorRow> GetAuthor(GetAuthorArgs args)
         {
+            using (var connection = new MySqlConnection(ConnectionString))
             {
-                using (var connection = new MySqlConnection(ConnectionString))
+                connection.Open();
+                using (var command = new MySqlCommand(GetAuthorSql, connection))
                 {
-                    connection.Open();
-                    using (var command = new MySqlCommand(GetAuthorSql, connection))
+                    command.Parameters.AddWithValue("@name", args.Name);
+                    using (var reader = await command.ExecuteReaderAsync())
                     {
-                        command.Parameters.AddWithValue("@name", args.Name);
-                        using (var reader = await command.ExecuteReaderAsync())
+                        if (await reader.ReadAsync())
                         {
-                            if (await reader.ReadAsync())
+                            return new GetAuthorRow
                             {
-                                return new GetAuthorRow
-                                {
-                                    Id = reader.GetInt64(0),
-                                    Name = reader.GetString(1),
-                                    Bio = reader.IsDBNull(2) ? string.Empty : reader.GetString(2),
-                                    Created = reader.GetDateTime(3)
-                                };
-                            }
+                                Id = reader.GetInt64(0),
+                                Name = reader.GetString(1),
+                                Bio = reader.IsDBNull(2) ? string.Empty : reader.GetString(2),
+                                Created = reader.GetDateTime(3)
+                            };
                         }
                     }
                 }
-
-                return null;
             }
+
+            return null;
         }
 
         private const string ListAuthorsSql = "SELECT id, name, bio, created FROM authors ORDER BY name";
@@ -68,22 +66,20 @@ namespace MySqlConnectorLegacyExampleGen
         };
         public async Task<List<ListAuthorsRow>> ListAuthors()
         {
+            using (var connection = new MySqlConnection(ConnectionString))
             {
-                using (var connection = new MySqlConnection(ConnectionString))
+                connection.Open();
+                using (var command = new MySqlCommand(ListAuthorsSql, connection))
                 {
-                    connection.Open();
-                    using (var command = new MySqlCommand(ListAuthorsSql, connection))
+                    using (var reader = await command.ExecuteReaderAsync())
                     {
-                        using (var reader = await command.ExecuteReaderAsync())
+                        var result = new List<ListAuthorsRow>();
+                        while (await reader.ReadAsync())
                         {
-                            var result = new List<ListAuthorsRow>();
-                            while (await reader.ReadAsync())
-                            {
-                                result.Add(new ListAuthorsRow { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? string.Empty : reader.GetString(2), Created = reader.GetDateTime(3) });
-                            }
-
-                            return result;
+                            result.Add(new ListAuthorsRow { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? string.Empty : reader.GetString(2), Created = reader.GetDateTime(3) });
                         }
+
+                        return result;
                     }
                 }
             }
@@ -97,16 +93,14 @@ namespace MySqlConnectorLegacyExampleGen
         };
         public async Task CreateAuthor(CreateAuthorArgs args)
         {
+            using (var connection = new MySqlConnection(ConnectionString))
             {
-                using (var connection = new MySqlConnection(ConnectionString))
+                connection.Open();
+                using (var command = new MySqlCommand(CreateAuthorSql, connection))
                 {
-                    connection.Open();
-                    using (var command = new MySqlCommand(CreateAuthorSql, connection))
-                    {
-                        command.Parameters.AddWithValue("@name", args.Name);
-                        command.Parameters.AddWithValue("@bio", args.Bio);
-                        await command.ExecuteScalarAsync();
-                    }
+                    command.Parameters.AddWithValue("@name", args.Name);
+                    command.Parameters.AddWithValue("@bio", args.Bio);
+                    await command.ExecuteScalarAsync();
                 }
             }
         }
@@ -119,17 +113,15 @@ namespace MySqlConnectorLegacyExampleGen
         };
         public async Task<long> CreateAuthorReturnId(CreateAuthorReturnIdArgs args)
         {
+            using (var connection = new MySqlConnection(ConnectionString))
             {
-                using (var connection = new MySqlConnection(ConnectionString))
+                connection.Open();
+                using (var command = new MySqlCommand(CreateAuthorReturnIdSql, connection))
                 {
-                    connection.Open();
-                    using (var command = new MySqlCommand(CreateAuthorReturnIdSql, connection))
-                    {
-                        command.Parameters.AddWithValue("@name", args.Name);
-                        command.Parameters.AddWithValue("@bio", args.Bio);
-                        await command.ExecuteNonQueryAsync();
-                        return command.LastInsertedId;
-                    }
+                    command.Parameters.AddWithValue("@name", args.Name);
+                    command.Parameters.AddWithValue("@bio", args.Bio);
+                    await command.ExecuteNonQueryAsync();
+                    return command.LastInsertedId;
                 }
             }
         }
@@ -141,15 +133,13 @@ namespace MySqlConnectorLegacyExampleGen
         };
         public async Task DeleteAuthor(DeleteAuthorArgs args)
         {
+            using (var connection = new MySqlConnection(ConnectionString))
             {
-                using (var connection = new MySqlConnection(ConnectionString))
+                connection.Open();
+                using (var command = new MySqlCommand(DeleteAuthorSql, connection))
                 {
-                    connection.Open();
-                    using (var command = new MySqlCommand(DeleteAuthorSql, connection))
-                    {
-                        command.Parameters.AddWithValue("@name", args.Name);
-                        await command.ExecuteScalarAsync();
-                    }
+                    command.Parameters.AddWithValue("@name", args.Name);
+                    await command.ExecuteScalarAsync();
                 }
             }
         }
@@ -157,14 +147,12 @@ namespace MySqlConnectorLegacyExampleGen
         private const string TruncateAuthorsSql = "TRUNCATE TABLE authors";
         public async Task TruncateAuthors()
         {
+            using (var connection = new MySqlConnection(ConnectionString))
             {
-                using (var connection = new MySqlConnection(ConnectionString))
+                connection.Open();
+                using (var command = new MySqlCommand(TruncateAuthorsSql, connection))
                 {
-                    connection.Open();
-                    using (var command = new MySqlCommand(TruncateAuthorsSql, connection))
-                    {
-                        await command.ExecuteScalarAsync();
-                    }
+                    await command.ExecuteScalarAsync();
                 }
             }
         }
@@ -176,15 +164,13 @@ namespace MySqlConnectorLegacyExampleGen
         };
         public async Task<long> UpdateAuthors(UpdateAuthorsArgs args)
         {
+            using (var connection = new MySqlConnection(ConnectionString))
             {
-                using (var connection = new MySqlConnection(ConnectionString))
+                connection.Open();
+                using (var command = new MySqlCommand(UpdateAuthorsSql, connection))
                 {
-                    connection.Open();
-                    using (var command = new MySqlCommand(UpdateAuthorsSql, connection))
-                    {
-                        command.Parameters.AddWithValue("@bio", args.Bio);
-                        return await command.ExecuteNonQueryAsync();
-                    }
+                    command.Parameters.AddWithValue("@bio", args.Bio);
+                    return await command.ExecuteNonQueryAsync();
                 }
             }
         }
@@ -232,63 +218,61 @@ namespace MySqlConnectorLegacyExampleGen
         };
         public async Task<TestRow> Test()
         {
+            using (var connection = new MySqlConnection(ConnectionString))
             {
-                using (var connection = new MySqlConnection(ConnectionString))
+                connection.Open();
+                using (var command = new MySqlCommand(TestSql, connection))
                 {
-                    connection.Open();
-                    using (var command = new MySqlCommand(TestSql, connection))
+                    using (var reader = await command.ExecuteReaderAsync())
                     {
-                        using (var reader = await command.ExecuteReaderAsync())
+                        if (await reader.ReadAsync())
                         {
-                            if (await reader.ReadAsync())
+                            return new TestRow
                             {
-                                return new TestRow
-                                {
-                                    CBit = reader.IsDBNull(0) ? null : Utils.GetBytes(reader, 0),
-                                    CTinyint = reader.IsDBNull(1) ? (int? )null : reader.GetInt32(1),
-                                    CBool = reader.IsDBNull(2) ? (int? )null : reader.GetInt32(2),
-                                    CBoolean = reader.IsDBNull(3) ? (int? )null : reader.GetInt32(3),
-                                    CSmallint = reader.IsDBNull(4) ? (int? )null : reader.GetInt32(4),
-                                    CMediumint = reader.IsDBNull(5) ? (int? )null : reader.GetInt32(5),
-                                    CInt = reader.IsDBNull(6) ? (int? )null : reader.GetInt32(6),
-                                    CInteger = reader.IsDBNull(7) ? (int? )null : reader.GetInt32(7),
-                                    CBigint = reader.IsDBNull(8) ? (long? )null : reader.GetInt64(8),
-                                    CSerial = reader.GetInt64(9),
-                                    CDecimal = reader.IsDBNull(10) ? string.Empty : reader.GetString(10),
-                                    CDec = reader.IsDBNull(11) ? string.Empty : reader.GetString(11),
-                                    CNumeric = reader.IsDBNull(12) ? string.Empty : reader.GetString(12),
-                                    CFixed = reader.IsDBNull(13) ? string.Empty : reader.GetString(13),
-                                    CFloat = reader.IsDBNull(14) ? (double? )null : reader.GetDouble(14),
-                                    CDouble = reader.IsDBNull(15) ? (double? )null : reader.GetDouble(15),
-                                    CDoublePrecision = reader.IsDBNull(16) ? (double? )null : reader.GetDouble(16),
-                                    CDate = reader.IsDBNull(17) ? (DateTime? )null : reader.GetDateTime(17),
-                                    CTime = reader.IsDBNull(18) ? string.Empty : reader.GetString(18),
-                                    CDatetime = reader.IsDBNull(19) ? (DateTime? )null : reader.GetDateTime(19),
-                                    CTimestamp = reader.IsDBNull(20) ? (DateTime? )null : reader.GetDateTime(20),
-                                    CYear = reader.IsDBNull(21) ? (int? )null : reader.GetInt32(21),
-                                    CChar = reader.IsDBNull(22) ? string.Empty : reader.GetString(22),
-                                    CNchar = reader.IsDBNull(23) ? string.Empty : reader.GetString(23),
-                                    CNationalChar = reader.IsDBNull(24) ? string.Empty : reader.GetString(24),
-                                    CVarchar = reader.IsDBNull(25) ? string.Empty : reader.GetString(25),
-                                    CBinary = reader.IsDBNull(26) ? null : Utils.GetBytes(reader, 26),
-                                    CVarbinary = reader.IsDBNull(27) ? null : Utils.GetBytes(reader, 27),
-                                    CTinyblob = reader.IsDBNull(28) ? null : Utils.GetBytes(reader, 28),
-                                    CTinytext = reader.IsDBNull(29) ? string.Empty : reader.GetString(29),
-                                    CBlob = reader.IsDBNull(30) ? null : Utils.GetBytes(reader, 30),
-                                    CText = reader.IsDBNull(31) ? string.Empty : reader.GetString(31),
-                                    CMediumblob = reader.IsDBNull(32) ? null : Utils.GetBytes(reader, 32),
-                                    CMediumtext = reader.IsDBNull(33) ? string.Empty : reader.GetString(33),
-                                    CLongblob = reader.IsDBNull(34) ? null : Utils.GetBytes(reader, 34),
-                                    CLongtext = reader.IsDBNull(35) ? string.Empty : reader.GetString(35),
-                                    CJson = reader.IsDBNull(36) ? null : reader.GetString(36)
-                                };
-                            }
+                                CBit = reader.IsDBNull(0) ? null : Utils.GetBytes(reader, 0),
+                                CTinyint = reader.IsDBNull(1) ? (int? )null : reader.GetInt32(1),
+                                CBool = reader.IsDBNull(2) ? (int? )null : reader.GetInt32(2),
+                                CBoolean = reader.IsDBNull(3) ? (int? )null : reader.GetInt32(3),
+                                CSmallint = reader.IsDBNull(4) ? (int? )null : reader.GetInt32(4),
+                                CMediumint = reader.IsDBNull(5) ? (int? )null : reader.GetInt32(5),
+                                CInt = reader.IsDBNull(6) ? (int? )null : reader.GetInt32(6),
+                                CInteger = reader.IsDBNull(7) ? (int? )null : reader.GetInt32(7),
+                                CBigint = reader.IsDBNull(8) ? (long? )null : reader.GetInt64(8),
+                                CSerial = reader.GetInt64(9),
+                                CDecimal = reader.IsDBNull(10) ? string.Empty : reader.GetString(10),
+                                CDec = reader.IsDBNull(11) ? string.Empty : reader.GetString(11),
+                                CNumeric = reader.IsDBNull(12) ? string.Empty : reader.GetString(12),
+                                CFixed = reader.IsDBNull(13) ? string.Empty : reader.GetString(13),
+                                CFloat = reader.IsDBNull(14) ? (double? )null : reader.GetDouble(14),
+                                CDouble = reader.IsDBNull(15) ? (double? )null : reader.GetDouble(15),
+                                CDoublePrecision = reader.IsDBNull(16) ? (double? )null : reader.GetDouble(16),
+                                CDate = reader.IsDBNull(17) ? (DateTime? )null : reader.GetDateTime(17),
+                                CTime = reader.IsDBNull(18) ? string.Empty : reader.GetString(18),
+                                CDatetime = reader.IsDBNull(19) ? (DateTime? )null : reader.GetDateTime(19),
+                                CTimestamp = reader.IsDBNull(20) ? (DateTime? )null : reader.GetDateTime(20),
+                                CYear = reader.IsDBNull(21) ? (int? )null : reader.GetInt32(21),
+                                CChar = reader.IsDBNull(22) ? string.Empty : reader.GetString(22),
+                                CNchar = reader.IsDBNull(23) ? string.Empty : reader.GetString(23),
+                                CNationalChar = reader.IsDBNull(24) ? string.Empty : reader.GetString(24),
+                                CVarchar = reader.IsDBNull(25) ? string.Empty : reader.GetString(25),
+                                CBinary = reader.IsDBNull(26) ? null : Utils.GetBytes(reader, 26),
+                                CVarbinary = reader.IsDBNull(27) ? null : Utils.GetBytes(reader, 27),
+                                CTinyblob = reader.IsDBNull(28) ? null : Utils.GetBytes(reader, 28),
+                                CTinytext = reader.IsDBNull(29) ? string.Empty : reader.GetString(29),
+                                CBlob = reader.IsDBNull(30) ? null : Utils.GetBytes(reader, 30),
+                                CText = reader.IsDBNull(31) ? string.Empty : reader.GetString(31),
+                                CMediumblob = reader.IsDBNull(32) ? null : Utils.GetBytes(reader, 32),
+                                CMediumtext = reader.IsDBNull(33) ? string.Empty : reader.GetString(33),
+                                CLongblob = reader.IsDBNull(34) ? null : Utils.GetBytes(reader, 34),
+                                CLongtext = reader.IsDBNull(35) ? string.Empty : reader.GetString(35),
+                                CJson = reader.IsDBNull(36) ? null : reader.GetString(36)
+                            };
                         }
                     }
                 }
-
-                return null;
             }
+
+            return null;
         }
     }
 }

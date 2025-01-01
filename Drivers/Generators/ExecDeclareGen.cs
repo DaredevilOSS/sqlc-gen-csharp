@@ -47,28 +47,24 @@ public class ExecDeclareGen(DbDriver dbDriver)
         string GetAsLatest()
         {
             return $$"""
-                     {
-                         await using {{establishConnection}};
-                         {{connectionOpen.AppendSemicolonUnlessEmpty()}}
-                         await using {{createSqlCommand}};
-                         {{commandParameters.JoinByNewLine()}}
-                         {{executeScalar}}
-                     }
+                     await using {{establishConnection}};
+                     {{connectionOpen.AppendSemicolonUnlessEmpty()}}
+                     await using {{createSqlCommand}};
+                     {{commandParameters.JoinByNewLine()}}
+                     {{executeScalar}}
                      """;
         }
 
         string GetAsLegacy()
         {
             return $$"""
+                     using ({{establishConnection}})
                      {
-                         using ({{establishConnection}})
+                         {{connectionOpen.AppendSemicolonUnlessEmpty()}}
+                         using ({{createSqlCommand}})
                          {
-                             {{connectionOpen.AppendSemicolonUnlessEmpty()}}
-                             using ({{createSqlCommand}})
-                             {
-                                 {{commandParameters.JoinByNewLine()}}
-                                 {{executeScalar}}
-                             }
+                             {{commandParameters.JoinByNewLine()}}
+                             {{executeScalar}}
                          }
                      }
                      """;

@@ -133,27 +133,25 @@ namespace NpgsqlDapperLegacyExampleGen
         };
         public async Task CopyToTests(List<CopyToTestsArgs> args)
         {
+            using (var ds = NpgsqlDataSource.Create(ConnectionString))
             {
-                using (var ds = NpgsqlDataSource.Create(ConnectionString))
+                var connection = ds.CreateConnection();
+                await connection.OpenAsync();
+                using (var writer = await connection.BeginBinaryImportAsync(CopyToTestsSql))
                 {
-                    var connection = ds.CreateConnection();
-                    await connection.OpenAsync();
-                    using (var writer = await connection.BeginBinaryImportAsync(CopyToTestsSql))
+                    foreach (var row in args)
                     {
-                        foreach (var row in args)
-                        {
-                            await writer.StartRowAsync();
-                            await writer.WriteAsync(row.CInt, NpgsqlDbType.Integer);
-                            await writer.WriteAsync(row.CVarchar, NpgsqlDbType.Varchar);
-                            await writer.WriteAsync(row.CDate, NpgsqlDbType.Date);
-                            await writer.WriteAsync(row.CTimestamp, NpgsqlDbType.Timestamp);
-                        }
-
-                        await writer.CompleteAsync();
+                        await writer.StartRowAsync();
+                        await writer.WriteAsync(row.CInt, NpgsqlDbType.Integer);
+                        await writer.WriteAsync(row.CVarchar, NpgsqlDbType.Varchar);
+                        await writer.WriteAsync(row.CDate, NpgsqlDbType.Date);
+                        await writer.WriteAsync(row.CTimestamp, NpgsqlDbType.Timestamp);
                     }
 
-                    await connection.CloseAsync();
+                    await writer.CompleteAsync();
                 }
+
+                await connection.CloseAsync();
             }
         }
 
