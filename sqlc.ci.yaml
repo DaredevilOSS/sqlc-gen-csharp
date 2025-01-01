@@ -13,7 +13,6 @@ sql:
       - plugin: csharp
         out: examples/NpgsqlExample
         options:
-          driver: Npgsql
           useDapper: false
           targetFramework: net8.0
           generateCsproj: true
@@ -143,4 +142,3 @@ sql:
           targetFramework: netstandard2.0
           generateCsproj: true
           namespaceName: SqliteDapperLegacyExampleGen
-
