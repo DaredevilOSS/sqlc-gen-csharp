@@ -76,6 +76,7 @@ jobs:
         shell: bash
         run: |
           set -e
+          echo "$($(pwd)/${{ env.WASI_SDK_FOLDER_NAME }})"
           WASI_SDK_PATH="$(pwd)/${{ env.WASI_SDK_FOLDER_NAME }}" dotnet publish WasmRunner -c release
           ./scripts/wasm/copy_plugin_to.sh dist
 
