@@ -3,6 +3,9 @@ defaults:
   run:
     shell: bash
 
+env:
+  DOTNET_VERSION: '8.0.x'
+
 on:
   push:
     branches: [ "main" ]
@@ -29,6 +32,11 @@ jobs:
     
     steps:
       - uses: actions/checkout@v4
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
 
       - name: Load .env file
         uses: xom9ikk/dotenv@v2.3.0
