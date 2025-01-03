@@ -114,7 +114,7 @@ jobs:
             }
 
             Write-Host "PostgreSQL setup complete."
-            Write-Host "Connection String: postgresql://$Username:$Password@localhost:$Port/$Database"
+            # Write-Host "Connection String: postgresql://$Username:$Password@localhost:$Port/$Database"
 
             # choco install postgresql16 -y --no-progress --version 16.0.0 `
             #   --install-arguments "--enable-components server,commandlinetools" `
