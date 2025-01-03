@@ -41,26 +41,72 @@ jobs:
           [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072
           iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
 
-      - uses: ikalnytskyi/action-setup-postgres@v7
-        with:
-          username: ${{ env.POSTGRES_USER }}
-          password: ${{ env.POSTGRES_PASSWORD }}
-          database: ${{ env.TESTS_DB }}
-          postgres-version: "16"
-        id: postgres
+      # - uses: ikalnytskyi/action-setup-postgres@v7
+      #   with:
+      #     username: ${{ env.POSTGRES_USER }}
+      #     password: ${{ env.POSTGRES_PASSWORD }}
+      #     database: ${{ env.TESTS_DB }}
+      #     postgres-version: "16"
+      #   id: postgres
         
-      - name: Init PostgresSQL Schema
-        shell: powershell
-        run: psql -U $Env:POSTGRES_USER -f 'examples/config/postgresql/schema.sql'
-        env:
-          PGSERVICE: ${{ steps.postgres.outputs.service-name }}
-          PGPASSWORD: ${{ env.POSTGRES_PASSWORD }}
+      # - name: Init PostgresSQL Schema
+      #   shell: powershell
+      #   run: psql -U $Env:POSTGRES_USER -f 'examples/config/postgresql/schema.sql'
+      #   env:
+      #     PGSERVICE: ${{ steps.postgres.outputs.service-name }}
+      #     PGPASSWORD: ${{ env.POSTGRES_PASSWORD }}
           
       - name: Install MySQL and restore test projects in parallel
         shell: pwsh
         run: |
           $mysqlJob = Start-Job -ScriptBlock { 
             choco install mysql --no-progress --version=8.0.31 -y --params "/serviceName:MySQL" 
+            return $LASTEXITCODE
+          }
+
+          $PostgresJob = Start-Job -ScriptBlock {
+            choco install postgresql16 -y --no-progress --version 16.0.0 `
+              --install-arguments "--enable-components server,commandlinetools --extract-only 1" `
+              --package-parameters "/Password:pass" `
+              --params-global
+
+            $PG_BINDIR = & "$env:PROGRAMFILES/PostgreSQL/16/bin/pg_config.exe" --bindir
+            $PG_LIBDIR = & "$env:PROGRAMFILES/PostgreSQL/16/bin/pg_config.exe" --libdir
+
+            Add-Content -Path $env:GITHUB_PATH -Value $PG_BINDIR
+            Set-Content -Path $env:GITHUB_ENV -Value "PQ_LIB_DIR=$PG_LIBDIR"
+
+            $PGDATA = "$env:RUNNER_TEMP/pgdata"
+            $PWFILE = "$env:RUNNER_TEMP/pwfile"
+            $DEFAULT_ENCODING = "UTF-8"
+            $DEFAULT_LOCALE = $env:DEFAULT_LOCALE -replace "\.", "" -replace "_", "-"
+
+            Set-Content -Path $PWFILE -Value $env:POSTGRES_PASSWORD
+
+            & initdb `
+              --pgdata="$PGDATA" `
+              --username="$env:POSTGRES_USER" `
+              --pwfile="$PWFILE" `
+              --auth="scram-sha-256" `
+              --encoding="$DEFAULT_ENCODING" `
+              --locale="$DEFAULT_LOCALE" `
+              --no-instructions
+
+            Add-Content -Path "$PGDATA/postgresql.conf" -Value "unix_socket_directories = ''"
+            Add-Content -Path "$PGDATA/postgresql.conf" -Value "port = 5432"
+
+            & pg_ctl start --pgdata="$PGDATA"
+
+            @"
+            [${env:POSTGRES_USER}]
+            host=localhost
+            port=5432
+            user=${env:POSTGRES_USER}
+            password=${env:POSTGRES_PASSWORD}
+            dbname=${env:TESTS_DB}
+            "@ | Set-Content -Path "$PGDATA/pg_service.conf"
+
+            & createdb -O "$env:POSTGRES_USER" "$env:TESTS_DB"
             return $LASTEXITCODE
           }
           
@@ -79,6 +125,13 @@ jobs:
           if ($mysqlExitCode -ne 0) {
             Write-Error "MySQL install failed with exit code: $mysqlExitCode"
             return $mysqlExitCode
+          }
+          
+          $postgresOutput = Receive-Job -Job $PostgresJob -Wait
+          $postgressExitCode = @($postgresOutput)[-1]
+          if ($postgressExitCode -ne 0) {
+            Write-Error "Postgres install failed with exit code: $postgressExitCode"
+            return $postgressExitCode
           }
 
           $restoreOutput = Receive-Job -Job $restoreJob -Wait
