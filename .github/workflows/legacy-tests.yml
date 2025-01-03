@@ -66,53 +66,15 @@ jobs:
 
           $PostgresJob = Start-Job -ScriptBlock {
             choco install postgresql16 -y --no-progress --version 16.0.0 `
-              --install-arguments "--enable-components server,commandlinetools --extract-only 1" `
+              --install-arguments "--enable-components server,commandlinetools" `
               --package-parameters "/Password:pass" `
               --params-global
 
             $env:Path += ";C:\Program Files\PostgreSQL\16\bin"
             $env:PGPASSWORD = "pass"
 
-            $PG_BINDIR = & "$env:PROGRAMFILES/PostgreSQL/16/bin/pg_config.exe" --bindir
-            $PG_LIBDIR = & "$env:PROGRAMFILES/PostgreSQL/16/bin/pg_config.exe" --libdir
-
-            Add-Content -Path $env:GITHUB_PATH -Value $PG_BINDIR
-            Set-Content -Path $env:GITHUB_ENV -Value "PQ_LIB_DIR=${PG_LIBDIR}"
-
-            $PGDATA = "$env:RUNNER_TEMP/pgdata"
-            $PWFILE = "$env:RUNNER_TEMP/pwfile"
-            $DEFAULT_ENCODING = "UTF-8"
-            $DEFAULT_LOCALE = $env:DEFAULT_LOCALE -replace "\.", "" -replace "_", "-"
-
-            Set-Content -Path $PWFILE -Value $env:POSTGRES_PASSWORD
-
-            & initdb `
-              --pgdata="$PGDATA" `
-              --username="$env:POSTGRES_USER" `
-              --pwfile="$PWFILE" `
-              --auth="scram-sha-256" `
-              --encoding="$DEFAULT_ENCODING" `
-              --locale="$DEFAULT_LOCALE" `
-              --no-instructions
-
-            Add-Content -Path "$PGDATA/postgresql.conf" -Value "unix_socket_directories = ''"
-            Add-Content -Path "$PGDATA/postgresql.conf" -Value "port = 5432"
-
-            & pg_ctl start --pgdata="$PGDATA"
-
-            $pgServiceConf = @"
-          [${env:POSTGRES_USER}]
-          host=localhost
-          port=5432
-          user=${env:POSTGRES_USER}
-          password=${env:POSTGRES_PASSWORD}
-          dbname=${env:TESTS_DB}
-          "@
-            Set-Content -Path "$PGDATA/pg_service.conf" -Value $pgServiceConf
-
-            & createdb -O "$env:POSTGRES_USER" "$env:TESTS_DB"
-
-            & psql -U postgres -d tests -f "examples/config/postgresql/schema.sql"
+            psql -U postgres -c "CREATE DATABASE tests;"
+            psql -U postgres -d tests -f "examples/config/postgresql/schema.sql"
             return $LASTEXITCODE
           }
           
