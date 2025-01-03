@@ -74,7 +74,7 @@ jobs:
             $PG_LIBDIR = & "$env:PROGRAMFILES/PostgreSQL/16/bin/pg_config.exe" --libdir
 
             Add-Content -Path $env:GITHUB_PATH -Value $PG_BINDIR
-            Set-Content -Path $env:GITHUB_ENV -Value "PQ_LIB_DIR=$PG_LIBDIR"
+            Set-Content -Path $env:GITHUB_ENV -Value "PQ_LIB_DIR=${PG_LIBDIR}"
 
             $PGDATA = "$env:RUNNER_TEMP/pgdata"
             $PWFILE = "$env:RUNNER_TEMP/pwfile"
