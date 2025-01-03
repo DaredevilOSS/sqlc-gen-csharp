@@ -86,7 +86,8 @@ jobs:
 
             # Initialize database
             Write-Host "Initializing PostgreSQL cluster..."
-            New-Item -ItemType Directory -Force -Path $PgData | Out-Null
+            $PwFile = Join-Path -Path $PgData -ChildPath "pwfile"
+            New-Item -ItemType Directory -Force -Path $PwFile | Out-Null
             $InitDbCommand = "$PostgresPath\bin\initdb.exe"
             & $InitDbCommand `
                 --pgdata="$PgData" `
