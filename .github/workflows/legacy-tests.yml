@@ -65,16 +65,67 @@ jobs:
           }
 
           $PostgresJob = Start-Job -ScriptBlock {
-            choco install postgresql16 -y --no-progress --version 16.0.0 `
-              --install-arguments "--enable-components server,commandlinetools" `
-              --package-parameters "/Password:pass" `
-              --params-global
+            # Parameters
+            param(
+                [string]$Username = "postgres",
+                [string]$Password = "postgres",
+                [string]$Database = "postgres",
+                [int]$Port = 5432,
+                [string]$PostgresVersion = "17"
+            )
 
-            $env:Path += ";C:\Program Files\PostgreSQL\16\bin"
-            $env:PGPASSWORD = "pass"
+            # Install PostgreSQL
+            Write-Host "Installing PostgreSQL version $PostgresVersion..."
+            choco install postgresql$PostgresVersion `
+                --params "/Password:$Password" `
+                --ia "--enable-components server,commandlinetools --extract-only 1" `
+                --no-progress -y
 
-            psql -U postgres -c "CREATE DATABASE tests;"
-            psql -U postgres -d tests -f "examples/config/postgresql/schema.sql"
+            $PostgresPath = "$env:ProgramFiles\PostgreSQL\$PostgresVersion"
+            $PgData = "$env:TEMP\pgdata"
+
+            # Initialize database
+            Write-Host "Initializing PostgreSQL cluster..."
+            New-Item -ItemType Directory -Force -Path $PgData | Out-Null
+            $InitDbCommand = "$PostgresPath\bin\initdb.exe"
+            & $InitDbCommand `
+                --pgdata="$PgData" `
+                --username="$Username" `
+                --pwfile="$PgData\pwfile" `
+                --auth="scram-sha-256" `
+                --encoding="UTF-8" `
+                --locale="English_United States.1252" | Out-Null
+
+            # Configure PostgreSQL
+            Write-Host "Configuring PostgreSQL..."
+            Add-Content "$PgData\postgresql.conf" "port = $Port"
+            Add-Content "$PgData\postgresql.conf" "unix_socket_directories = ''"
+
+            # Start PostgreSQL
+            Write-Host "Starting PostgreSQL..."
+            $PgCtlCommand = "$PostgresPath\bin\pg_ctl.exe"
+            & $PgCtlCommand start --pgdata="$PgData" | Out-Null
+
+            # Create database
+            Write-Host "Creating database $Database..."
+            if ($Database -ne "postgres") {
+                $CreatedbCommand = "$PostgresPath\bin\createdb.exe"
+                & $CreatedbCommand -U "$Username" "$Database" | Out-Null
+            }
+
+            Write-Host "PostgreSQL setup complete."
+            Write-Host "Connection String: postgresql://$Username:$Password@localhost:$Port/$Database"
+
+            # choco install postgresql16 -y --no-progress --version 16.0.0 `
+            #   --install-arguments "--enable-components server,commandlinetools" `
+            #   --package-parameters "/Password:pass" `
+            #   --params-global
+
+            # $env:Path += ";C:\Program Files\PostgreSQL\16\bin"
+            # $env:PGPASSWORD = "pass"
+
+            # psql -U postgres -c "CREATE DATABASE tests;"
+            # psql -U postgres -d tests -f "examples/config/postgresql/schema.sql"
             return $LASTEXITCODE
           }
           
