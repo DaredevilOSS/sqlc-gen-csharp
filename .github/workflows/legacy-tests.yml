@@ -111,6 +111,8 @@ jobs:
             Set-Content -Path "$PGDATA/pg_service.conf" -Value $pgServiceConf
 
             & createdb -O "$env:POSTGRES_USER" "$env:TESTS_DB"
+
+            & psql -U postgres -d tests -f "examples/config/postgresql/schema.sql"
             return $LASTEXITCODE
           }
           
