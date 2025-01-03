@@ -97,14 +97,15 @@ jobs:
 
             & pg_ctl start --pgdata="$PGDATA"
 
-            @"
-          [${env:POSTGRES_USER}]
-          host=localhost
-          port=5432
-          user=${env:POSTGRES_USER}
-          password=${env:POSTGRES_PASSWORD}
-          dbname=${env:TESTS_DB}
-            "@ | Set-Content -Path "$PGDATA/pg_service.conf"
+            $pgServiceConf = @"
+            [${env:POSTGRES_USER}]
+            host=localhost
+            port=5432
+            user=${env:POSTGRES_USER}
+            password=${env:POSTGRES_PASSWORD}
+            dbname=${env:TESTS_DB}
+            "@
+            Set-Content -Path "$PGDATA/pg_service.conf" -Value $pgServiceConf
 
             & createdb -O "$env:POSTGRES_USER" "$env:TESTS_DB"
             return $LASTEXITCODE
