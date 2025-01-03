@@ -70,6 +70,9 @@ jobs:
               --package-parameters "/Password:pass" `
               --params-global
 
+            $env:Path += ";C:\Program Files\PostgreSQL\16\bin"
+            $env:PGPASSWORD = "pass"
+
             $PG_BINDIR = & "$env:PROGRAMFILES/PostgreSQL/16/bin/pg_config.exe" --bindir
             $PG_LIBDIR = & "$env:PROGRAMFILES/PostgreSQL/16/bin/pg_config.exe" --libdir
 
