@@ -60,7 +60,7 @@ jobs:
         shell: pwsh
         run: |
           $mysqlJob = Start-Job -ScriptBlock { 
-            choco install mysql --no-progress --version=8.0.31 -y --params "/serviceName:MySQL" 
+            choco install mysql --no-progress --ignore-lock --version=8.0.31 -y --params "/serviceName:MySQL" 
             return $LASTEXITCODE
           }
 
@@ -79,7 +79,7 @@ jobs:
             choco install postgresql$PostgresVersion `
                 --params "/Password:$Password" `
                 --ia "--enable-components server,commandlinetools --extract-only 1" `
-                --no-progress -y
+                --no-progress --ignore-lock -y
 
             $PostgresPath = "$env:ProgramFiles\PostgreSQL\$PostgresVersion"
             $PgData = "$env:TEMP\pgdata"
@@ -88,6 +88,13 @@ jobs:
             Write-Host "Initializing PostgreSQL cluster..."
             $PwFile = Join-Path -Path $PgData -ChildPath "pwfile"
             New-Item -ItemType Directory -Force -Path $PwFile | Out-Null
+            
+            # Set permissions to ensure the file is accessible
+            $Acl = Get-Acl $PwFile
+            $AccessRule = New-Object System.Security.AccessControl.FileSystemAccessRule("Everyone", "Read", "Allow")
+            $Acl.AddAccessRule($AccessRule)
+            Set-Acl -Path $PwFile -AclObject $Acl
+            
             $InitDbCommand = "$PostgresPath\bin\initdb.exe"
             & $InitDbCommand `
                 --pgdata="$PgData" `
