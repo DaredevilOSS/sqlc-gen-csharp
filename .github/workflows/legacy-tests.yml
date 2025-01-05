@@ -56,39 +56,44 @@ jobs:
           PGSERVICE: ${{ steps.postgres.outputs.service-name }}
           PGPASSWORD: ${{ env.POSTGRES_PASSWORD }}
           
-      - name: Install MySQL and restore test projects in parallel
-        shell: pwsh
-        run: |
-          $mysqlJob = Start-Job -ScriptBlock { 
-            choco install mysql --no-progress --version=8.0.31 -y --params "/serviceName:MySQL" 
-            return $LASTEXITCODE
-          }
-          
-          $restoreJob = Start-Job -ScriptBlock { 
-            Get-ChildItem -Path examples -Recurse -Filter *.csproj |
-              Where-Object { $_.FullName -like '*Legacy*' } |
-              ForEach-Object { nuget restore $_.FullName }
-            nuget restore ./EndToEndCommon/EndToEndCommon.csproj
-            nuget restore ./LegacyEndToEndTests/LegacyEndToEndTests.csproj
-            msbuild.exe ./LegacyEndToEndTests/LegacyEndToEndTests.csproj -p:Configuration=Release -p:FrameworkVersion=v4.7.2
-            return $LASTEXITCODE
-          }
-
-          Wait-Job -Job $mysqlJob, $restoreJob
-          
-          $mysqlOutput = Receive-Job -Job $mysqlJob
-          $mysqlExitCode = @($mysqlOutput)[-1]
-          if ($mysqlExitCode -ne 0) {
-            Write-Error "MySQL install failed with exit code: $mysqlExitCode"
-            return $mysqlExitCode
-          }
-
-          $restoreOutput = Receive-Job -Job $restoreJob
-          $restoreExitCode = @($restoreOutput)[-1]
-          if ($restoreExitCode -ne 0) {
-            Write-Error "Restore/build failed with exit code: $restoreExitCode"
-            return $restoreExitCode
-          }
+      - uses: nick-fields/retry@v3
+        name: Install MySQL and restore test projects in parallel (with retry)
+        with:
+          retry_on: error
+          max_attempts: 2
+          timeout_minutes: 7
+          shell: pwsh
+          command: |
+            $mysqlJob = Start-Job -ScriptBlock { 
+              choco install mysql --no-progress --version=8.0.31 -y --params "/serviceName:MySQL" 
+              return $LASTEXITCODE
+            }
+            
+            $restoreJob = Start-Job -ScriptBlock { 
+              Get-ChildItem -Path examples -Recurse -Filter *.csproj |
+                Where-Object { $_.FullName -like '*Legacy*' } |
+                ForEach-Object { nuget restore $_.FullName }
+              nuget restore ./EndToEndCommon/EndToEndCommon.csproj
+              nuget restore ./LegacyEndToEndTests/LegacyEndToEndTests.csproj
+              msbuild.exe ./LegacyEndToEndTests/LegacyEndToEndTests.csproj -p:Configuration=Release -p:FrameworkVersion=v4.7.2
+              return $LASTEXITCODE
+            }
+  
+            Wait-Job -Job $mysqlJob, $restoreJob
+            
+            $mysqlOutput = Receive-Job -Job $mysqlJob
+            $mysqlExitCode = @($mysqlOutput)[-1]
+            if ($mysqlExitCode -ne 0) {
+              Write-Error "MySQL install failed with exit code: $mysqlExitCode"
+              return $mysqlExitCode
+            }
+  
+            $restoreOutput = Receive-Job -Job $restoreJob
+            $restoreExitCode = @($restoreOutput)[-1]
+            if ($restoreExitCode -ne 0) {
+              Write-Error "Restore/build failed with exit code: $restoreExitCode"
+              return $restoreExitCode
+            }
           
       - name: Init MySQL Schema
         shell: powershell
