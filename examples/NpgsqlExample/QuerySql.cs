@@ -73,6 +73,42 @@ public class QuerySql(string connectionString)
         return null;
     }
 
+    private const string CreateAuthorReturnIdSql = "INSERT INTO authors (name, bio) VALUES (@name, @bio) RETURNING id";
+    public readonly record struct CreateAuthorReturnIdRow(long Id);
+    public readonly record struct CreateAuthorReturnIdArgs(string Name, string? Bio);
+    public async Task<long> CreateAuthorReturnId(CreateAuthorReturnIdArgs args)
+    {
+        await using var connection = NpgsqlDataSource.Create(connectionString);
+        await using var command = connection.CreateCommand(CreateAuthorReturnIdSql);
+        command.Parameters.AddWithValue("@name", args.Name);
+        command.Parameters.AddWithValue("@bio", args.Bio!);
+        var result = await command.ExecuteScalarAsync();
+        return (long)(result ?? -1);
+    }
+
+    private const string GetAuthorByIdSql = "SELECT id, name, bio, created FROM authors WHERE id = @id LIMIT 1";
+    public readonly record struct GetAuthorByIdRow(long Id, string Name, string? Bio, DateTime Created);
+    public readonly record struct GetAuthorByIdArgs(long Id);
+    public async Task<GetAuthorByIdRow?> GetAuthorById(GetAuthorByIdArgs args)
+    {
+        await using var connection = NpgsqlDataSource.Create(connectionString);
+        await using var command = connection.CreateCommand(GetAuthorByIdSql);
+        command.Parameters.AddWithValue("@id", args.Id);
+        var reader = await command.ExecuteReaderAsync();
+        if (await reader.ReadAsync())
+        {
+            return new GetAuthorByIdRow
+            {
+                Id = reader.GetInt64(0),
+                Name = reader.GetString(1),
+                Bio = reader.IsDBNull(2) ? null : reader.GetString(2),
+                Created = reader.GetDateTime(3)
+            };
+        }
+
+        return null;
+    }
+
     private const string DeleteAuthorSql = "DELETE FROM authors WHERE name = @name";
     public readonly record struct DeleteAuthorArgs(string Name);
     public async Task DeleteAuthor(DeleteAuthorArgs args)

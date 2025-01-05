@@ -27,9 +27,10 @@ public class ExecLastIdDeclareGen(DbDriver dbDriver)
     private string GetMethodBody(string queryTextConstant, Query query)
     {
         var (establishConnection, connectionOpen) = dbDriver.EstablishConnection(query);
+        connectionOpen = connectionOpen.AppendSemicolonUnlessEmpty();
         var createSqlCommand = dbDriver.CreateSqlCommand(queryTextConstant);
-        var commandParameters = CommonGen.GetCommandParameters(query.Params).ToList();
-        var executeScalarAndReturnCreated = ExecuteScalarAndReturnCreated();
+        var commandParameters = CommonGen.GetCommandParameters(query.Params).JoinByNewLine();
+        var returnLastId = ((IExecLastId)dbDriver).GetLastIdStatement().JoinByNewLine();
 
         if (dbDriver.Options.DotnetFramework.LatestDotnetSupported())
             return GetAsLatest();
@@ -39,10 +40,10 @@ public class ExecLastIdDeclareGen(DbDriver dbDriver)
         {
             return $"""
                      await using {establishConnection};
-                     {connectionOpen.AppendSemicolonUnlessEmpty()}
+                     {connectionOpen}
                      await using {createSqlCommand};
-                     {commandParameters.JoinByNewLine()}
-                     {executeScalarAndReturnCreated.JoinByNewLine()}
+                     {commandParameters}
+                     {returnLastId}
                      """;
         }
 
@@ -51,23 +52,14 @@ public class ExecLastIdDeclareGen(DbDriver dbDriver)
             return $$"""
                      using ({{establishConnection}})
                      {
-                         {{connectionOpen.AppendSemicolonUnlessEmpty()}}
+                         {{connectionOpen}}
                          using ({{createSqlCommand}})
                          {
-                            {{commandParameters.JoinByNewLine()}}
-                            {{executeScalarAndReturnCreated.JoinByNewLine()}}
+                            {{commandParameters}}
+                            {{returnLastId}}
                          }
                      }
                      """;
-        }
-
-        IEnumerable<string> ExecuteScalarAndReturnCreated()
-        {
-            return
-            [
-                $"await {Variable.Command.AsVarName()}.ExecuteNonQueryAsync();",
-                $"return {Variable.Command.AsVarName()}.LastInsertedId;"
-            ];
         }
     }
 }

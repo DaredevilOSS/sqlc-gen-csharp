@@ -79,6 +79,27 @@ public class QuerySql(string connectionString)
         return command.LastInsertedId;
     }
 
+    private const string GetAuthorByIdSql = "SELECT id, name, bio, created FROM authors WHERE id = @id LIMIT 1";
+    public class GetAuthorByIdRow
+    {
+        public long Id { get; set; }
+        public string Name { get; set; }
+        public string? Bio { get; set; }
+        public DateTime Created { get; set; }
+    };
+    public class GetAuthorByIdArgs
+    {
+        public long Id { get; set; }
+    };
+    public async Task<GetAuthorByIdRow?> GetAuthorById(GetAuthorByIdArgs args)
+    {
+        using (var connection = new MySqlConnection(connectionString))
+        {
+            var result = await connection.QueryFirstOrDefaultAsync<GetAuthorByIdRow?>(GetAuthorByIdSql, new { id = args.Id });
+            return result;
+        }
+    }
+
     private const string DeleteAuthorSql = "DELETE FROM authors WHERE name = @name";
     public class DeleteAuthorArgs
     {

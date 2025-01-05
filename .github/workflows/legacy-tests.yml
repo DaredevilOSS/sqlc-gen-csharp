@@ -74,14 +74,16 @@ jobs:
             return $LASTEXITCODE
           }
 
-          $mysqlOutput = Receive-Job -Job $mysqlJob -Wait
+          Wait-Job -Job $mysqlJob, $restoreJob
+          
+          $mysqlOutput = Receive-Job -Job $mysqlJob
           $mysqlExitCode = @($mysqlOutput)[-1]
           if ($mysqlExitCode -ne 0) {
             Write-Error "MySQL install failed with exit code: $mysqlExitCode"
             return $mysqlExitCode
           }
 
-          $restoreOutput = Receive-Job -Job $restoreJob -Wait
+          $restoreOutput = Receive-Job -Job $restoreJob
           $restoreExitCode = @($restoreOutput)[-1]
           if ($restoreExitCode -ne 0) {
             Write-Error "Restore/build failed with exit code: $restoreExitCode"

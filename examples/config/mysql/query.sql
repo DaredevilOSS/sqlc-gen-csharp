@@ -10,6 +10,9 @@ INSERT INTO authors (name, bio) VALUES (?, ?);
 -- name: CreateAuthorReturnId :execlastid
 INSERT INTO authors (name, bio) VALUES (?, ?);
 
+-- name: GetAuthorById :one
+SELECT * FROM authors WHERE id = ? LIMIT 1;
+
 -- name: DeleteAuthor :exec
 DELETE FROM authors WHERE name = ?;
 

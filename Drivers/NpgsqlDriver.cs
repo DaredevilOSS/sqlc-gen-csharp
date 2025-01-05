@@ -8,7 +8,7 @@ using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace SqlcGenCsharp.Drivers;
 
-public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, ICopyFrom, IExecRows
+public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, ICopyFrom, IExecRows, IExecLastId
 {
     public NpgsqlDriver(Options options) : base(options)
     {
@@ -90,7 +90,7 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, ICopyFrom, IExecRows
                 $"var ds = NpgsqlDataSource.Create({connectionStringField})",
                 $"var {Variable.Connection.AsVarName()} = ds.CreateConnection()"
             );
-        if (Options.UseDapper)
+        if (Options.UseDapper && query.Cmd != ":execlastid") // TODO simplify
             return new ConnectionGenCommands(
                 $"var {Variable.Connection.AsVarName()} = new NpgsqlConnection({connectionStringField})",
                 ""
@@ -153,5 +153,19 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, ICopyFrom, IExecRows
     public MemberDeclarationSyntax ExecRowsDeclare(string queryTextConstant, string argInterface, Query query)
     {
         return new ExecRowsDeclareGen(this).Generate(queryTextConstant, argInterface, query);
+    }
+
+    public MemberDeclarationSyntax ExecLastIdDeclare(string queryTextConstant, string argInterface, Query query)
+    {
+        return new ExecLastIdDeclareGen(this).Generate(queryTextConstant, argInterface, query);
+    }
+
+    public string[] GetLastIdStatement()
+    {
+        return
+        [
+            $"var {Variable.Result.AsVarName()} = await {Variable.Command.AsVarName()}.ExecuteScalarAsync();",
+            $"return (long)({Variable.Result.AsVarName()} ?? -1);"
+        ];
     }
 }

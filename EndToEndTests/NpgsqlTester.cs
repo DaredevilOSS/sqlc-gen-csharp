@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SqlcGenCsharpTests;
 
-public class NpgsqlTester : IOneTester, IManyTester, IExecTester, IExecRowsTester, ICopyFromTester
+public class NpgsqlTester : IOneTester, IManyTester, IExecTester, IExecRowsTester, IExecLastIdTester, ICopyFromTester
 {
     private static readonly Random Randomizer = new();
 
@@ -142,5 +142,25 @@ public class NpgsqlTester : IOneTester, IManyTester, IExecTester, IExecRowsTeste
                 CTimestamp = DateTime.Now.Subtract(TimeSpan.FromMilliseconds(Randomizer.Next()))
             };
         }
+    }
+
+    public async Task TestExecLastId()
+    {
+        var bojackCreateAuthorArgs = new QuerySql.CreateAuthorReturnIdArgs
+        {
+            Name = DataGenerator.GenericAuthor,
+            Bio = DataGenerator.GenericQuote1
+        };
+        var insertedId = await QuerySql.CreateAuthorReturnId(bojackCreateAuthorArgs);
+
+        var actual = await QuerySql.GetAuthorById(new QuerySql.GetAuthorByIdArgs
+        {
+            Id = insertedId
+        });
+        Assert.That(actual is
+        {
+            Name: DataGenerator.GenericAuthor,
+            Bio: DataGenerator.GenericQuote1
+        });
     }
 }
