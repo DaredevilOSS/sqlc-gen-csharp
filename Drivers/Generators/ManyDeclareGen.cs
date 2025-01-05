@@ -36,12 +36,7 @@ public class ManyDeclareGen(DbDriver dbDriver)
                                     {{Variable.Result.AsVarName()}}.Add({{dataclassInit}});
                                 }
                                 """;
-
-        if (dbDriver.Options.UseDapper)
-            return GetAsDapper();
-        if (dbDriver.Options.DotnetFramework.LatestDotnetSupported())
-            return GetAsLatest();
-        return GetAsLegacy();
+        return dbDriver.Options.UseDapper ? GetAsDapper() : GetAsDriver();
 
         string GetAsDapper()
         {
@@ -56,21 +51,7 @@ public class ManyDeclareGen(DbDriver dbDriver)
                      """;
         }
 
-        string GetAsLatest()
-        {
-            return $$"""
-                     await using {{establishConnection}};
-                     {{connectionOpen.AppendSemicolonUnlessEmpty()}}
-                     await using {{createSqlCommand}};
-                     {{commandParameters.JoinByNewLine()}}
-                     {{initDataReader}};
-                     var {{Variable.Result.AsVarName()}} = new List<{{returnInterface}}>();
-                     {{readWhileExists}}
-                     return {{Variable.Result.AsVarName()}};
-                     """;
-        }
-
-        string GetAsLegacy()
+        string GetAsDriver()
         {
             return $$"""
                      using ({{establishConnection}})

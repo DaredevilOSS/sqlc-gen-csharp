@@ -30,12 +30,7 @@ public class OneDeclareGen(DbDriver dbDriver)
         var initDataReader = CommonGen.InitDataReader();
         var awaitReaderRow = CommonGen.AwaitReaderRow();
         var returnDataclass = CommonGen.InstantiateDataclass(query.Columns, returnInterface);
-
-        if (dbDriver.Options.UseDapper)
-            return GetAsDapper();
-        if (dbDriver.Options.DotnetFramework.LatestDotnetSupported())
-            return GetAsLatest();
-        return GetAsLegacy();
+        return dbDriver.Options.UseDapper ? GetAsDapper() : GetAsDriver();
 
         string GetAsDapper()
         {
@@ -50,23 +45,7 @@ public class OneDeclareGen(DbDriver dbDriver)
                      """;
         }
 
-        string GetAsLatest()
-        {
-            return $$"""
-                     await using {{establishConnection}};
-                     {{connectionOpen.AppendSemicolonUnlessEmpty()}}
-                     await using {{createSqlCommand}};
-                     {{commandParameters.JoinByNewLine()}}
-                     {{initDataReader}};
-                     if ({{awaitReaderRow}})
-                     {
-                         return {{returnDataclass}};
-                     }
-                     return null;
-                     """;
-        }
-
-        string GetAsLegacy()
+        string GetAsDriver()
         {
             return $$"""
                      using ({{establishConnection}})

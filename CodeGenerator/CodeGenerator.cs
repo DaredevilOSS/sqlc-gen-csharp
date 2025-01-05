@@ -18,7 +18,9 @@ public class CodeGenerator
     private static readonly string[] ResharperDisables =
     [
         "UnusedAutoPropertyAccessor.Global",
-        "NotAccessedPositionalProperty.Global"
+        "NotAccessedPositionalProperty.Global",
+        "ConvertToUsingDeclaration",
+        "UseAwaitUsing"
     ];
 
     private string? _namespaceName;

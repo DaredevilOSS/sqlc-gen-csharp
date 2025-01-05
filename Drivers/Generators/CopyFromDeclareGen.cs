@@ -24,40 +24,19 @@ public class CopyFromDeclareGen(DbDriver dbDriver)
         var (establishConnection, connectionOpen) = dbDriver.EstablishConnection(query);
         var beginBinaryImport = $"{Variable.Connection.AsVarName()}.BeginBinaryImportAsync({queryTextConstant}";
         var addRowsToCopyCommand = AddRowsToCopyCommand(query);
-
-        if (dbDriver.Options.DotnetFramework.LatestDotnetSupported())
-            return GetAsLatest();
-        return GetAsLegacy();
-
-        string GetAsLatest()
-        {
-            return $"""
-                     await using {establishConnection};
-                     {connectionOpen.AppendSemicolonUnlessEmpty()}
-                     await {Variable.Connection.AsVarName()}.OpenAsync();
-                     await using var {Variable.Writer.AsVarName()} = await {beginBinaryImport});
-                     {addRowsToCopyCommand}
-                     await {Variable.Writer.AsVarName()}.CompleteAsync();
-                     await {Variable.Connection.AsVarName()}.CloseAsync();
-                     """;
-        }
-
-        string GetAsLegacy()
-        {
-            return $$"""
-                     using ({{establishConnection}})
+        return $$"""
+                 using ({{establishConnection}})
+                 {
+                     {{connectionOpen.AppendSemicolonUnlessEmpty()}}
+                     await {{Variable.Connection.AsVarName()}}.OpenAsync();
+                     using (var {{Variable.Writer.AsVarName()}} = await {{beginBinaryImport}}))
                      {
-                         {{connectionOpen.AppendSemicolonUnlessEmpty()}}
-                         await {{Variable.Connection.AsVarName()}}.OpenAsync();
-                         using (var {{Variable.Writer.AsVarName()}} = await {{beginBinaryImport}}))
-                         {
-                            {{addRowsToCopyCommand}}
-                            await {{Variable.Writer.AsVarName()}}.CompleteAsync();
-                         }
-                         await {{Variable.Connection.AsVarName()}}.CloseAsync();
+                        {{addRowsToCopyCommand}}
+                        await {{Variable.Writer.AsVarName()}}.CompleteAsync();
                      }
-                     """;
-        }
+                     await {{Variable.Connection.AsVarName()}}.CloseAsync();
+                 }
+                 """;
     }
 
     private string AddRowsToCopyCommand(Query query)
