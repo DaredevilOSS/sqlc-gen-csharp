@@ -20,7 +20,7 @@ namespace MySqlConnectorDapperLegacyExampleGen
 
         private string ConnectionString { get; }
 
-        private const string GetAuthorSql = "SELECT id, name, bio, created FROM authors WHERE name = @name LIMIT 1";
+        private const string GetAuthorSql = "SELECT id, name, bio, created FROM authors WHERE name = @name LIMIT 1; SELECT LAST_INSERT_ID()";
         public class GetAuthorRow
         {
             public long Id { get; set; }
@@ -41,7 +41,7 @@ namespace MySqlConnectorDapperLegacyExampleGen
             }
         }
 
-        private const string ListAuthorsSql = "SELECT id, name, bio, created FROM authors ORDER BY name";
+        private const string ListAuthorsSql = "SELECT id, name, bio, created FROM authors ORDER BY name; SELECT LAST_INSERT_ID()";
         public class ListAuthorsRow
         {
             public long Id { get; set; }
@@ -58,7 +58,7 @@ namespace MySqlConnectorDapperLegacyExampleGen
             }
         }
 
-        private const string CreateAuthorSql = "INSERT INTO authors (name, bio) VALUES (@name, @bio)";
+        private const string CreateAuthorSql = "INSERT INTO authors (name, bio) VALUES (@name, @bio); SELECT LAST_INSERT_ID()";
         public class CreateAuthorArgs
         {
             public string Name { get; set; }
@@ -72,7 +72,7 @@ namespace MySqlConnectorDapperLegacyExampleGen
             }
         }
 
-        private const string CreateAuthorReturnIdSql = "INSERT INTO authors (name, bio) VALUES (@name, @bio)";
+        private const string CreateAuthorReturnIdSql = "INSERT INTO authors (name, bio) VALUES (@name, @bio); SELECT LAST_INSERT_ID()";
         public class CreateAuthorReturnIdArgs
         {
             public string Name { get; set; }
@@ -82,18 +82,11 @@ namespace MySqlConnectorDapperLegacyExampleGen
         {
             using (var connection = new MySqlConnection(ConnectionString))
             {
-                connection.Open();
-                using (var command = new MySqlCommand(CreateAuthorReturnIdSql, connection))
-                {
-                    command.Parameters.AddWithValue("@name", args.Name);
-                    command.Parameters.AddWithValue("@bio", args.Bio);
-                    await command.ExecuteNonQueryAsync();
-                    return command.LastInsertedId;
-                }
+                return await connection.QuerySingleAsync<long>(CreateAuthorReturnIdSql, new { name = args.Name, bio = args.Bio });
             }
         }
 
-        private const string GetAuthorByIdSql = "SELECT id, name, bio, created FROM authors WHERE id = @id LIMIT 1";
+        private const string GetAuthorByIdSql = "SELECT id, name, bio, created FROM authors WHERE id = @id LIMIT 1; SELECT LAST_INSERT_ID()";
         public class GetAuthorByIdRow
         {
             public long Id { get; set; }
@@ -114,7 +107,7 @@ namespace MySqlConnectorDapperLegacyExampleGen
             }
         }
 
-        private const string DeleteAuthorSql = "DELETE FROM authors WHERE name = @name";
+        private const string DeleteAuthorSql = "DELETE FROM authors WHERE name = @name; SELECT LAST_INSERT_ID()";
         public class DeleteAuthorArgs
         {
             public string Name { get; set; }
@@ -127,7 +120,7 @@ namespace MySqlConnectorDapperLegacyExampleGen
             }
         }
 
-        private const string TruncateAuthorsSql = "TRUNCATE TABLE authors";
+        private const string TruncateAuthorsSql = "TRUNCATE TABLE authors; SELECT LAST_INSERT_ID()";
         public async Task TruncateAuthors()
         {
             using (var connection = new MySqlConnection(ConnectionString))
@@ -136,7 +129,7 @@ namespace MySqlConnectorDapperLegacyExampleGen
             }
         }
 
-        private const string UpdateAuthorsSql = "UPDATE authors SET  bio  =  @bio  WHERE  bio  IS  NOT  NULL  ";  
+        private const string UpdateAuthorsSql = "UPDATE authors SET  bio  =  @bio  WHERE  bio  IS  NOT  NULL ; SELECT  LAST_INSERT_ID ( ) "; 
         public class UpdateAuthorsArgs
         {
             public string Bio { get; set; }
@@ -149,7 +142,7 @@ namespace MySqlConnectorDapperLegacyExampleGen
             }
         }
 
-        private const string TestSql = "SELECT c_bit, c_tinyint, c_bool, c_boolean, c_smallint, c_mediumint, c_int, c_integer, c_bigint, c_serial, c_decimal, c_dec, c_numeric, c_fixed, c_float, c_double, c_double_precision, c_date, c_time, c_datetime, c_timestamp, c_year, c_char, c_nchar, c_national_char, c_varchar, c_binary, c_varbinary, c_tinyblob, c_tinytext, c_blob, c_text, c_mediumblob, c_mediumtext, c_longblob, c_longtext, c_json FROM node_mysql_types LIMIT 1";
+        private const string TestSql = "SELECT c_bit, c_tinyint, c_bool, c_boolean, c_smallint, c_mediumint, c_int, c_integer, c_bigint, c_serial, c_decimal, c_dec, c_numeric, c_fixed, c_float, c_double, c_double_precision, c_date, c_time, c_datetime, c_timestamp, c_year, c_char, c_nchar, c_national_char, c_varchar, c_binary, c_varbinary, c_tinyblob, c_tinytext, c_blob, c_text, c_mediumblob, c_mediumtext, c_longblob, c_longtext, c_json FROM node_mysql_types LIMIT 1; SELECT LAST_INSERT_ID()";
         public class TestRow
         {
             public byte[] CBit { get; set; }

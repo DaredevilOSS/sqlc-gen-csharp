@@ -90,7 +90,7 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, ICopyFrom, IExecRows, 
                 $"var ds = NpgsqlDataSource.Create({connectionStringField})",
                 $"var {Variable.Connection.AsVarName()} = ds.CreateConnection()"
             );
-        if (Options.UseDapper && query.Cmd != ":execlastid") // TODO simplify
+        if (Options.UseDapper)
             return new ConnectionGenCommands(
                 $"var {Variable.Connection.AsVarName()} = new NpgsqlConnection({connectionStringField})",
                 ""

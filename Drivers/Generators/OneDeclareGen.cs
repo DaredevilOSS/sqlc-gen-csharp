@@ -13,7 +13,7 @@ public class OneDeclareGen(DbDriver dbDriver)
     public MemberDeclarationSyntax Generate(string queryTextConstant, string argInterface, string returnInterface, Query query)
     {
         var returnType = $"Task<{dbDriver.AddNullableSuffix(returnInterface, false)}>";
-        var parametersStr = CommonGen.GetParameterListAsString(argInterface, query.Params);
+        var parametersStr = CommonGen.GetMethodParameterList(argInterface, query.Params);
         return ParseMemberDeclaration($$"""
                                         public async {{returnType}} {{query.Name}}({{parametersStr}})
                                         {
@@ -25,21 +25,17 @@ public class OneDeclareGen(DbDriver dbDriver)
     private string GetMethodBody(string queryTextConstant, string returnInterface, Query query)
     {
         var (establishConnection, connectionOpen) = dbDriver.EstablishConnection(query);
-        var createSqlCommand = dbDriver.CreateSqlCommand(queryTextConstant);
-        var commandParameters = CommonGen.GetCommandParameters(query.Params);
-        var initDataReader = CommonGen.InitDataReader();
-        var awaitReaderRow = CommonGen.AwaitReaderRow();
-        var returnDataclass = CommonGen.InstantiateDataclass(query.Columns, returnInterface);
         return dbDriver.Options.UseDapper ? GetAsDapper() : GetAsDriver();
 
         string GetAsDapper()
         {
-            var argsParams = query.Params.Count > 0 ? ", new { " + string.Join(", ", query.Params.Select(p => p.Column.Name + "=args." + p.Column.Name.ToPascalCase() + "")) + "}" : "";
+            var args = CommonGen.GetParameterListForDapper(query.Params);
+            var returnType = dbDriver.AddNullableSuffix(returnInterface, false);
             return $$"""
                         using ({{establishConnection}})
                         {
-                            var result = await connection.QueryFirstOrDefaultAsync<{{dbDriver.AddNullableSuffix(returnInterface, false)}}>(
-                            {{queryTextConstant}}{{argsParams}});
+                            var result = await connection.QueryFirstOrDefaultAsync<{{returnType}}>(
+                            {{queryTextConstant}}{{args}});
                             return result;
                         }
                      """;
@@ -47,6 +43,11 @@ public class OneDeclareGen(DbDriver dbDriver)
 
         string GetAsDriver()
         {
+            var createSqlCommand = dbDriver.CreateSqlCommand(queryTextConstant);
+            var commandParameters = CommonGen.GetCommandParameters(query.Params);
+            var initDataReader = CommonGen.InitDataReader();
+            var awaitReaderRow = CommonGen.AwaitReaderRow();
+            var returnDataclass = CommonGen.InstantiateDataclass(query.Columns, returnInterface);
             return $$"""
                      using ({{establishConnection}})
                      {

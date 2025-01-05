@@ -8,7 +8,8 @@ public enum Variable
     Row,
     Writer,
     Command,
-    Result
+    Result,
+    Args
 }
 
 public static class VariablesExtensions

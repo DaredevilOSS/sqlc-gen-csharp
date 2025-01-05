@@ -12,8 +12,7 @@ public class ExecRowsDeclareGen(DbDriver dbDriver)
 
     public MemberDeclarationSyntax Generate(string queryTextConstant, string argInterface, Query query)
     {
-        var parametersStr = CommonGen.GetParameterListAsString(argInterface, query.Params);
-
+        var parametersStr = CommonGen.GetMethodParameterList(argInterface, query.Params);
         return ParseMemberDeclaration($$"""
                                         public async Task<long> {{query.Name}}({{parametersStr}})
                                         {
@@ -25,24 +24,23 @@ public class ExecRowsDeclareGen(DbDriver dbDriver)
     private string GetMethodBody(string queryTextConstant, Query query)
     {
         var (establishConnection, connectionOpen) = dbDriver.EstablishConnection(query);
-        var createSqlCommand = dbDriver.CreateSqlCommand(queryTextConstant);
-        var commandParameters = CommonGen.GetCommandParameters(query.Params);
-        var executeScalarAndReturnCreated = ExecuteScalarAndReturnCreated();
         return dbDriver.Options.UseDapper ? GetAsDapper() : GetAsDriver();
 
         string GetAsDapper()
         {
-            var argsParams = query.Params.Count > 0 ? ", new { " + string.Join(", ", query.Params.Select(p => p.Column.Name + "=args." + p.Column.Name.ToPascalCase() + "")) + "}" : "";
+            var args = CommonGen.GetParameterListForDapper(query.Params);
             return $$"""
                         using ({{establishConnection}})
                         {
-                            return await connection.ExecuteAsync({{queryTextConstant}}{{argsParams}});
+                            return await connection.ExecuteAsync({{queryTextConstant}}{{args}});
                         }
                      """;
         }
 
         string GetAsDriver()
         {
+            var createSqlCommand = dbDriver.CreateSqlCommand(queryTextConstant);
+            var commandParameters = CommonGen.GetCommandParameters(query.Params);
             return $$"""
                      using ({{establishConnection}})
                      {
@@ -50,15 +48,10 @@ public class ExecRowsDeclareGen(DbDriver dbDriver)
                          using ({{createSqlCommand}})
                          {
                             {{commandParameters.JoinByNewLine()}}
-                            {{executeScalarAndReturnCreated.JoinByNewLine()}}
+                            return await {{Variable.Command.AsVarName()}}.ExecuteNonQueryAsync();
                          }
                      }
                      """;
-        }
-
-        IEnumerable<string> ExecuteScalarAndReturnCreated()
-        {
-            return [$"return await {Variable.Command.AsVarName()}.ExecuteNonQueryAsync();"];
         }
     }
 }

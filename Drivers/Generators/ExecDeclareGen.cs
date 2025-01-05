@@ -11,7 +11,7 @@ public class ExecDeclareGen(DbDriver dbDriver)
 
     public MemberDeclarationSyntax Generate(string queryTextConstant, string argInterface, Query query)
     {
-        var parametersStr = CommonGen.GetParameterListAsString(argInterface, query.Params);
+        var parametersStr = CommonGen.GetMethodParameterList(argInterface, query.Params);
         return ParseMemberDeclaration($$"""
                                         public async Task {{query.Name}}({{parametersStr}})
                                         {
@@ -23,24 +23,24 @@ public class ExecDeclareGen(DbDriver dbDriver)
     private string GetMethodBody(string queryTextConstant, Query query)
     {
         var (establishConnection, connectionOpen) = dbDriver.EstablishConnection(query);
-        var createSqlCommand = dbDriver.CreateSqlCommand(queryTextConstant);
-        var commandParameters = CommonGen.GetCommandParameters(query.Params);
-        var executeScalar = $"await {Variable.Command.AsVarName()}.ExecuteScalarAsync();";
         return dbDriver.Options.UseDapper ? GetAsDapper() : GetAsDriver();
 
         string GetAsDapper()
         {
-            var argsParams = query.Params.Count > 0 ? ", new { " + string.Join(", ", query.Params.Select(p => p.Column.Name + "=args." + p.Column.Name.ToPascalCase() + "")) + "}" : "";
+            var args = CommonGen.GetParameterListForDapper(query.Params);
             return $$"""
                         using ({{establishConnection}})
                         {
-                            await connection.ExecuteAsync({{queryTextConstant}}{{argsParams}});
+                            await connection.ExecuteAsync({{queryTextConstant}}{{args}});
                         }
                      """;
         }
 
         string GetAsDriver()
         {
+            var commandParameters = CommonGen.GetCommandParameters(query.Params);
+            var createSqlCommand = dbDriver.CreateSqlCommand(queryTextConstant);
+            var executeScalar = $"await {Variable.Command.AsVarName()}.ExecuteScalarAsync();";
             return $$"""
                      using ({{establishConnection}})
                      {

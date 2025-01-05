@@ -93,15 +93,9 @@ namespace NpgsqlDapperLegacyExampleGen
         };
         public async Task<long> CreateAuthorReturnId(CreateAuthorReturnIdArgs args)
         {
-            using (var connection = NpgsqlDataSource.Create(ConnectionString))
+            using (var connection = new NpgsqlConnection(ConnectionString))
             {
-                using (var command = connection.CreateCommand(CreateAuthorReturnIdSql))
-                {
-                    command.Parameters.AddWithValue("@name", args.Name);
-                    command.Parameters.AddWithValue("@bio", args.Bio);
-                    var result = await command.ExecuteScalarAsync();
-                    return (long)(result ?? -1);
-                }
+                return await connection.QuerySingleAsync<long>(CreateAuthorReturnIdSql, new { name = args.Name, bio = args.Bio });
             }
         }
 

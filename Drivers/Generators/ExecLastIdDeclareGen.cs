@@ -12,9 +12,7 @@ public class ExecLastIdDeclareGen(DbDriver dbDriver)
 
     public MemberDeclarationSyntax Generate(string queryTextConstant, string argInterface, Query query)
     {
-        var parametersStr = CommonGen.GetParameterListAsString(argInterface, query.Params);
-
-
+        var parametersStr = CommonGen.GetMethodParameterList(argInterface, query.Params);
         return ParseMemberDeclaration($$"""
                                         public async Task<long> {{query.Name}}({{parametersStr}})
                                         {
@@ -28,19 +26,35 @@ public class ExecLastIdDeclareGen(DbDriver dbDriver)
     {
         var (establishConnection, connectionOpen) = dbDriver.EstablishConnection(query);
         connectionOpen = connectionOpen.AppendSemicolonUnlessEmpty();
-        var createSqlCommand = dbDriver.CreateSqlCommand(queryTextConstant);
-        var commandParameters = CommonGen.GetCommandParameters(query.Params).JoinByNewLine();
-        var returnLastId = ((IExecLastId)dbDriver).GetLastIdStatement().JoinByNewLine();
-        return $$"""
-                 using ({{establishConnection}})
-                 {
-                     {{connectionOpen}}
-                     using ({{createSqlCommand}})
+        return dbDriver.Options.UseDapper ? GetAsDapper() : GetAsDriver();
+
+        string GetAsDapper()
+        {
+            var args = CommonGen.GetParameterListForDapper(query.Params);
+            return $$"""
+                     using ({{establishConnection}})
                      {
-                        {{commandParameters}}
-                        {{returnLastId}}
+                        return await connection.QuerySingleAsync<long>({{queryTextConstant}}{{args}});
                      }
-                 }
-                 """;
+                     """;
+        }
+
+        string GetAsDriver()
+        {
+            var createSqlCommand = dbDriver.CreateSqlCommand(queryTextConstant);
+            var commandParameters = CommonGen.GetCommandParameters(query.Params).JoinByNewLine();
+            var returnLastId = ((IExecLastId)dbDriver).GetLastIdStatement().JoinByNewLine();
+            return $$"""
+                     using ({{establishConnection}})
+                     {
+                         {{connectionOpen}}
+                         using ({{createSqlCommand}})
+                         {
+                            {{commandParameters}}
+                            {{returnLastId}}
+                         }
+                     }
+                     """;
+        }
     }
 }
