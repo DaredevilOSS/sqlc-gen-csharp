@@ -31,35 +31,16 @@ public class ExecLastIdDeclareGen(DbDriver dbDriver)
         var createSqlCommand = dbDriver.CreateSqlCommand(queryTextConstant);
         var commandParameters = CommonGen.GetCommandParameters(query.Params).JoinByNewLine();
         var returnLastId = ((IExecLastId)dbDriver).GetLastIdStatement().JoinByNewLine();
-
-        if (dbDriver.Options.DotnetFramework.LatestDotnetSupported())
-            return GetAsLatest();
-        return GetAsLegacy();
-
-        string GetAsLatest()
-        {
-            return $"""
-                     await using {establishConnection};
-                     {connectionOpen}
-                     await using {createSqlCommand};
-                     {commandParameters}
-                     {returnLastId}
-                     """;
-        }
-
-        string GetAsLegacy()
-        {
-            return $$"""
-                     using ({{establishConnection}})
+        return $$"""
+                 using ({{establishConnection}})
+                 {
+                     {{connectionOpen}}
+                     using ({{createSqlCommand}})
                      {
-                         {{connectionOpen}}
-                         using ({{createSqlCommand}})
-                         {
-                            {{commandParameters}}
-                            {{returnLastId}}
-                         }
+                        {{commandParameters}}
+                        {{returnLastId}}
                      }
-                     """;
-        }
+                 }
+                 """;
     }
 }
