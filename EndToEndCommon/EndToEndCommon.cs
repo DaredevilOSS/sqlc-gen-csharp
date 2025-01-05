@@ -36,8 +36,16 @@ namespace SqlcGenCsharpTests
 
             var dbFilename = SqliteFilenameRegex.Match(connectionString).Groups[1].Value;
             Console.WriteLine($"Removing sqlite db from {dbFilename}");
-            if (File.Exists(dbFilename))
+            if (!File.Exists(dbFilename)) return;
+
+            try
+            {
                 File.Delete(dbFilename);
+            }
+            catch (Exception)
+            {
+                // ignored
+            }
         }
         private static void InitSqliteDb()
         {

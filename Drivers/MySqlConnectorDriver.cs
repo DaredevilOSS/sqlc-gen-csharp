@@ -9,7 +9,7 @@ using OneDeclareGen = SqlcGenCsharp.Drivers.Generators.OneDeclareGen;
 
 namespace SqlcGenCsharp.Drivers;
 
-public partial class MySqlConnectorDriver(Options options) : DbDriver(options), IOne, IMany, IExec, IExecLastId, IExecRows
+public partial class MySqlConnectorDriver(Options options) : DbDriver(options), IOne, IMany, IExec, IExecRows, IExecLastId
 {
     protected override List<ColumnMapping> ColumnMappings { get; } =
     [
@@ -95,6 +95,15 @@ public partial class MySqlConnectorDriver(Options options) : DbDriver(options), 
     public MemberDeclarationSyntax ExecLastIdDeclare(string queryTextConstant, string argInterface, Query query)
     {
         return new ExecLastIdDeclareGen(this).Generate(queryTextConstant, argInterface, query);
+    }
+
+    public string[] GetLastIdStatement()
+    {
+        return
+        [
+            $"await {Variable.Command.AsVarName()}.ExecuteNonQueryAsync();",
+            $"return {Variable.Command.AsVarName()}.LastInsertedId;"
+        ];
     }
 
 

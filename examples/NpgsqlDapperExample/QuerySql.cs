@@ -71,6 +71,47 @@ public class QuerySql(string connectionString)
         }
     }
 
+    private const string CreateAuthorReturnIdSql = "INSERT INTO authors (name, bio) VALUES (@name, @bio) RETURNING id";
+    public class CreateAuthorReturnIdRow
+    {
+        public long Id { get; set; }
+    };
+    public class CreateAuthorReturnIdArgs
+    {
+        public string Name { get; set; }
+        public string? Bio { get; set; }
+    };
+    public async Task<long> CreateAuthorReturnId(CreateAuthorReturnIdArgs args)
+    {
+        await using var connection = NpgsqlDataSource.Create(connectionString);
+        await using var command = connection.CreateCommand(CreateAuthorReturnIdSql);
+        command.Parameters.AddWithValue("@name", args.Name);
+        command.Parameters.AddWithValue("@bio", args.Bio!);
+        var result = await command.ExecuteScalarAsync();
+        return (long)(result ?? -1);
+    }
+
+    private const string GetAuthorByIdSql = "SELECT id, name, bio, created FROM authors WHERE id = @id LIMIT 1";
+    public class GetAuthorByIdRow
+    {
+        public long Id { get; set; }
+        public string Name { get; set; }
+        public string? Bio { get; set; }
+        public DateTime Created { get; set; }
+    };
+    public class GetAuthorByIdArgs
+    {
+        public long Id { get; set; }
+    };
+    public async Task<GetAuthorByIdRow?> GetAuthorById(GetAuthorByIdArgs args)
+    {
+        using (var connection = new NpgsqlConnection(connectionString))
+        {
+            var result = await connection.QueryFirstOrDefaultAsync<GetAuthorByIdRow?>(GetAuthorByIdSql, new { id = args.Id });
+            return result;
+        }
+    }
+
     private const string DeleteAuthorSql = "DELETE FROM authors WHERE name = @name";
     public class DeleteAuthorArgs
     {

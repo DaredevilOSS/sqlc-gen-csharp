@@ -22,6 +22,12 @@ namespace SqlcGenCsharpTests
         Task TestExecRows();
     }
 
+    public interface IExecLastIdTester
+    {
+        Task TestExecLastId();
+    }
+
+
     public interface ICopyFromTester
     {
         Task TestCopyFrom();
