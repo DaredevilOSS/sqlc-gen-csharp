@@ -61,6 +61,7 @@ jobs:
         with:
           retry_on: error
           max_attempts: 2
+          timeout_minutes: 7
           shell: pwsh
           command: |
             $mysqlJob = Start-Job -ScriptBlock { 
