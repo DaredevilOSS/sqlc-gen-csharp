@@ -105,4 +105,23 @@ public abstract class DbDriver(Options options)
             ? Variable.ConnectionString.AsVarName()
             : Variable.ConnectionString.AsPropertyName();
     }
+
+    public string GetIdColumnType()
+    {
+        return options.DriverName switch
+        {
+            DriverName.Sqlite => "int",
+            _ => "long"
+        };
+    }
+
+    public virtual string[] GetLastIdStatement()
+    {
+        var convertFunc = GetIdColumnType() == "int" ? "ToInt32" : "ToInt64";
+        return
+        [
+            $"var {Variable.Result.AsVarName()} = await {Variable.Command.AsVarName()}.ExecuteScalarAsync();",
+            $"return Convert.{convertFunc}({Variable.Result.AsVarName()});"
+        ];
+    }
 }

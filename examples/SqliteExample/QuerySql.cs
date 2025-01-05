@@ -79,6 +79,53 @@ public class QuerySql(string connectionString)
         }
     }
 
+    private const string CreateAuthorReturnIdSql = "INSERT INTO authors (name, bio) VALUES (@name, @bio) RETURNING id";
+    public readonly record struct CreateAuthorReturnIdRow(int Id);
+    public readonly record struct CreateAuthorReturnIdArgs(string Name, string? Bio);
+    public async Task<int> CreateAuthorReturnId(CreateAuthorReturnIdArgs args)
+    {
+        using (var connection = new SqliteConnection(connectionString))
+        {
+            connection.Open();
+            using (var command = new SqliteCommand(CreateAuthorReturnIdSql, connection))
+            {
+                command.Parameters.AddWithValue("@name", args.Name);
+                command.Parameters.AddWithValue("@bio", args.Bio!);
+                var result = await command.ExecuteScalarAsync();
+                return Convert.ToInt32(result);
+            }
+        }
+    }
+
+    private const string GetAuthorByIdSql = "SELECT id, name, bio FROM authors WHERE id = @id LIMIT 1";
+    public readonly record struct GetAuthorByIdRow(int Id, string Name, string? Bio);
+    public readonly record struct GetAuthorByIdArgs(int Id);
+    public async Task<GetAuthorByIdRow?> GetAuthorById(GetAuthorByIdArgs args)
+    {
+        using (var connection = new SqliteConnection(connectionString))
+        {
+            connection.Open();
+            using (var command = new SqliteCommand(GetAuthorByIdSql, connection))
+            {
+                command.Parameters.AddWithValue("@id", args.Id);
+                using (var reader = await command.ExecuteReaderAsync())
+                {
+                    if (await reader.ReadAsync())
+                    {
+                        return new GetAuthorByIdRow
+                        {
+                            Id = reader.GetInt32(0),
+                            Name = reader.GetString(1),
+                            Bio = reader.IsDBNull(2) ? null : reader.GetString(2)
+                        };
+                    }
+                }
+            }
+        }
+
+        return null;
+    }
+
     private const string UpdateAuthorsSql = "UPDATE authors  SET  bio  =  @bio  WHERE  bio  IS  NOT  NULL  ";  
     public readonly record struct UpdateAuthorsArgs(string? Bio);
     public async Task<long> UpdateAuthors(UpdateAuthorsArgs args)

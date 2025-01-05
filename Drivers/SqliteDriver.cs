@@ -1,6 +1,7 @@
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Plugin;
 using SqlcGenCsharp.Drivers.Generators;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -8,7 +9,7 @@ using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace SqlcGenCsharp.Drivers;
 
-public partial class SqliteDriver(Options options) : DbDriver(options), IOne, IMany, IExec, IExecRows
+public partial class SqliteDriver(Options options) : DbDriver(options), IOne, IMany, IExec, IExecRows, IExecLastId
 {
     protected override List<ColumnMapping> ColumnMappings { get; } = [
         new("byte[]", ordinal => $"Utils.GetBytes(reader, {ordinal})",
@@ -83,5 +84,10 @@ public partial class SqliteDriver(Options options) : DbDriver(options), IOne, IM
     public MemberDeclarationSyntax ExecRowsDeclare(string queryTextConstant, string argInterface, Query query)
     {
         return new ExecRowsDeclareGen(this).Generate(queryTextConstant, argInterface, query);
+    }
+
+    public MemberDeclarationSyntax ExecLastIdDeclare(string queryTextConstant, string argInterface, Query query)
+    {
+        return new ExecLastIdDeclareGen(this).Generate(queryTextConstant, argInterface, query);
     }
 }

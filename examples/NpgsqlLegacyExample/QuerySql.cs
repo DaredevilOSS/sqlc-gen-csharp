@@ -145,7 +145,7 @@ namespace NpgsqlLegacyExampleGen
                     command.Parameters.AddWithValue("@name", args.Name);
                     command.Parameters.AddWithValue("@bio", args.Bio);
                     var result = await command.ExecuteScalarAsync();
-                    return (long)(result ?? -1);
+                    return Convert.ToInt64(result);
                 }
             }
         }
