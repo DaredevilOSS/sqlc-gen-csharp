@@ -11,9 +11,20 @@ public class CommonGen(DbDriver dbDriver)
         return $"await {Variable.Reader.AsVarName()}.ReadAsync()";
     }
 
-    public static string GetParameterListAsString(string argInterface, IEnumerable<Parameter> parameters)
+    public static string GetMethodParameterList(string argInterface, IEnumerable<Parameter> parameters)
     {
-        return $"{(string.IsNullOrEmpty(argInterface) || !parameters.Any() ? string.Empty : $"{argInterface} args")}";
+        return $"{(string.IsNullOrEmpty(argInterface) || !parameters.Any()
+            ? string.Empty
+            : $"{argInterface} {Variable.Args.AsVarName()}")}";
+    }
+
+    public static string GetParameterListForDapper(IList<Parameter> parameters)
+    {
+        var parametersStr = parameters
+            .Select(p => p.Column.Name + "=args." + p.Column.Name.ToPascalCase() + "");
+        return parameters.Count > 0
+            ? ", new { " + string.Join(", ", parametersStr) + "}"
+            : string.Empty;
     }
 
     public static string InitDataReader()

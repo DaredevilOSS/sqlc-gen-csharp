@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SqlcGenCsharpTests;
 
-public class MySqlConnectorDapperTester : IOneTester, IManyTester, IExecTester, IExecRowsTester
+public class MySqlConnectorDapperTester : IOneTester, IManyTester, IExecTester, IExecRowsTester, IExecLastIdTester
 {
     private QuerySql QuerySql { get; } = new(
         Environment.GetEnvironmentVariable(EndToEndCommon.MySqlConnectionStringEnv)!);
@@ -114,5 +114,27 @@ public class MySqlConnectorDapperTester : IOneTester, IManyTester, IExecTester, 
         };
         var affectedRows = await QuerySql.UpdateAuthors(updateAuthorsArgs);
         ClassicAssert.AreEqual(2, affectedRows);
+    }
+
+    [Test]
+    public async Task TestExecLastId()
+    {
+        var bojackCreateAuthorArgs = new QuerySql.CreateAuthorReturnIdArgs
+        {
+            Name = DataGenerator.GenericAuthor,
+            Bio = DataGenerator.GenericQuote1
+        };
+        var insertedId = await QuerySql.CreateAuthorReturnId(bojackCreateAuthorArgs);
+
+        var getAuthorByIdArgs = new QuerySql.GetAuthorByIdArgs
+        {
+            Id = insertedId
+        };
+        var actual = await QuerySql.GetAuthorById(getAuthorByIdArgs);
+        Assert.That(actual is
+        {
+            Name: DataGenerator.GenericAuthor,
+            Bio: DataGenerator.GenericQuote1
+        });
     }
 }

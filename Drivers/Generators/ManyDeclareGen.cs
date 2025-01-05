@@ -12,7 +12,7 @@ public class ManyDeclareGen(DbDriver dbDriver)
 
     public MemberDeclarationSyntax Generate(string queryTextConstant, string argInterface, string returnInterface, Query query)
     {
-        var parametersStr = CommonGen.GetParameterListAsString(argInterface, query.Params);
+        var parametersStr = CommonGen.GetMethodParameterList(argInterface, query.Params);
         var returnType = $"Task<List<{returnInterface}>>";
         return ParseMemberDeclaration($$"""
                                         public async {{returnType}} {{query.Name}}({{parametersStr}})
@@ -25,27 +25,16 @@ public class ManyDeclareGen(DbDriver dbDriver)
     private string GetMethodBody(string queryTextConstant, string returnInterface, Query query)
     {
         var (establishConnection, connectionOpen) = dbDriver.EstablishConnection(query);
-        var createSqlCommand = dbDriver.CreateSqlCommand(queryTextConstant);
-        var commandParameters = CommonGen.GetCommandParameters(query.Params);
-        var initDataReader = CommonGen.InitDataReader();
-        var awaitReaderRow = CommonGen.AwaitReaderRow();
-        var dataclassInit = CommonGen.InstantiateDataclass(query.Columns, returnInterface);
-        var readWhileExists = $$"""
-                                while ({{awaitReaderRow}})
-                                {
-                                    {{Variable.Result.AsVarName()}}.Add({{dataclassInit}});
-                                }
-                                """;
         return dbDriver.Options.UseDapper ? GetAsDapper() : GetAsDriver();
 
         string GetAsDapper()
         {
-            var argsParams = query.Params.Count > 0 ? ", new { " + string.Join(", ", query.Params.Select(p => p.Column.Name + "=args." + p.Column.Name.ToPascalCase() + "")) + "}" : "";
+            var args = CommonGen.GetParameterListForDapper(query.Params);
+            var returnType = dbDriver.AddNullableSuffix(returnInterface, true);
             return $$"""
                         using ({{establishConnection}})
                         {
-                            var results = await connection.QueryAsync<{{dbDriver.AddNullableSuffix(returnInterface, true)}}>(
-                            {{queryTextConstant}}{{argsParams}});
+                            var results = await connection.QueryAsync<{{returnType}}>({{queryTextConstant}}{{args}});
                             return results.AsList();
                         }
                      """;
@@ -53,6 +42,17 @@ public class ManyDeclareGen(DbDriver dbDriver)
 
         string GetAsDriver()
         {
+            var createSqlCommand = dbDriver.CreateSqlCommand(queryTextConstant);
+            var commandParameters = CommonGen.GetCommandParameters(query.Params);
+            var initDataReader = CommonGen.InitDataReader();
+            var awaitReaderRow = CommonGen.AwaitReaderRow();
+            var dataclassInit = CommonGen.InstantiateDataclass(query.Columns, returnInterface);
+            var readWhileExists = $$"""
+                                    while ({{awaitReaderRow}})
+                                    {
+                                        {{Variable.Result.AsVarName()}}.Add({{dataclassInit}});
+                                    }
+                                    """;
             return $$"""
                      using ({{establishConnection}})
                      {

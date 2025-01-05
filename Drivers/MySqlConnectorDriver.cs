@@ -78,7 +78,8 @@ public partial class MySqlConnectorDriver(Options options) : DbDriver(options), 
     public override string TransformQueryText(Query query)
     {
         var counter = 0;
-        return QueryParamRegex().Replace(query.Text, _ => "@" + query.Params[counter++].Column.Name);
+        var queryText = options.UseDapper ? $"{query.Text}; SELECT LAST_INSERT_ID()" : query.Text;
+        return QueryParamRegex().Replace(queryText, _ => "@" + query.Params[counter++].Column.Name);
     }
 
     public override MemberDeclarationSyntax OneDeclare(string queryTextConstant, string argInterface,
