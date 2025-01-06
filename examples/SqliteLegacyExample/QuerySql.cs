@@ -104,6 +104,68 @@ namespace SqliteLegacyExampleGen
             }
         }
 
+        private const string CreateAuthorReturnIdSql = "INSERT INTO authors (name, bio) VALUES (@name, @bio) RETURNING id";
+        public class CreateAuthorReturnIdRow
+        {
+            public int Id { get; set; }
+        };
+        public class CreateAuthorReturnIdArgs
+        {
+            public string Name { get; set; }
+            public string Bio { get; set; }
+        };
+        public async Task<int> CreateAuthorReturnId(CreateAuthorReturnIdArgs args)
+        {
+            using (var connection = new SqliteConnection(ConnectionString))
+            {
+                connection.Open();
+                using (var command = new SqliteCommand(CreateAuthorReturnIdSql, connection))
+                {
+                    command.Parameters.AddWithValue("@name", args.Name);
+                    command.Parameters.AddWithValue("@bio", args.Bio);
+                    var result = await command.ExecuteScalarAsync();
+                    return Convert.ToInt32(result);
+                }
+            }
+        }
+
+        private const string GetAuthorByIdSql = "SELECT id, name, bio FROM authors WHERE id = @id LIMIT 1";
+        public class GetAuthorByIdRow
+        {
+            public int Id { get; set; }
+            public string Name { get; set; }
+            public string Bio { get; set; }
+        };
+        public class GetAuthorByIdArgs
+        {
+            public int Id { get; set; }
+        };
+        public async Task<GetAuthorByIdRow> GetAuthorById(GetAuthorByIdArgs args)
+        {
+            using (var connection = new SqliteConnection(ConnectionString))
+            {
+                connection.Open();
+                using (var command = new SqliteCommand(GetAuthorByIdSql, connection))
+                {
+                    command.Parameters.AddWithValue("@id", args.Id);
+                    using (var reader = await command.ExecuteReaderAsync())
+                    {
+                        if (await reader.ReadAsync())
+                        {
+                            return new GetAuthorByIdRow
+                            {
+                                Id = reader.GetInt32(0),
+                                Name = reader.GetString(1),
+                                Bio = reader.IsDBNull(2) ? string.Empty : reader.GetString(2)
+                            };
+                        }
+                    }
+                }
+            }
+
+            return null;
+        }
+
         private const string UpdateAuthorsSql = "UPDATE authors  SET  bio  =  @bio  WHERE  bio  IS  NOT  NULL  ";  
         public class UpdateAuthorsArgs
         {

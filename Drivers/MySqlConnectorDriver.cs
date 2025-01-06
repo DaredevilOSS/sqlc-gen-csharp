@@ -78,7 +78,7 @@ public partial class MySqlConnectorDriver(Options options) : DbDriver(options), 
     public override string TransformQueryText(Query query)
     {
         var counter = 0;
-        var queryText = options.UseDapper ? $"{query.Text}; SELECT LAST_INSERT_ID()" : query.Text;
+        var queryText = Options.UseDapper ? $"{query.Text}; SELECT LAST_INSERT_ID()" : query.Text;
         return QueryParamRegex().Replace(queryText, _ => "@" + query.Params[counter++].Column.Name);
     }
 
@@ -98,7 +98,7 @@ public partial class MySqlConnectorDriver(Options options) : DbDriver(options), 
         return new ExecLastIdDeclareGen(this).Generate(queryTextConstant, argInterface, query);
     }
 
-    public string[] GetLastIdStatement()
+    public override string[] GetLastIdStatement()
     {
         return
         [
@@ -106,7 +106,6 @@ public partial class MySqlConnectorDriver(Options options) : DbDriver(options), 
             $"return {Variable.Command.AsVarName()}.LastInsertedId;"
         ];
     }
-
 
     public override MemberDeclarationSyntax ManyDeclare(string queryTextConstant, string argInterface,
         string returnInterface, Query query)

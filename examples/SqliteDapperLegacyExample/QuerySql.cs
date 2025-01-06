@@ -70,6 +70,44 @@ namespace SqliteDapperLegacyExampleGen
             }
         }
 
+        private const string CreateAuthorReturnIdSql = "INSERT INTO authors (name, bio) VALUES (@name, @bio) RETURNING id";
+        public class CreateAuthorReturnIdRow
+        {
+            public int Id { get; set; }
+        };
+        public class CreateAuthorReturnIdArgs
+        {
+            public string Name { get; set; }
+            public string Bio { get; set; }
+        };
+        public async Task<int> CreateAuthorReturnId(CreateAuthorReturnIdArgs args)
+        {
+            using (var connection = new SqliteConnection(ConnectionString))
+            {
+                return await connection.QuerySingleAsync<int>(CreateAuthorReturnIdSql, new { name = args.Name, bio = args.Bio });
+            }
+        }
+
+        private const string GetAuthorByIdSql = "SELECT id, name, bio FROM authors WHERE id = @id LIMIT 1";
+        public class GetAuthorByIdRow
+        {
+            public int Id { get; set; }
+            public string Name { get; set; }
+            public string Bio { get; set; }
+        };
+        public class GetAuthorByIdArgs
+        {
+            public int Id { get; set; }
+        };
+        public async Task<GetAuthorByIdRow> GetAuthorById(GetAuthorByIdArgs args)
+        {
+            using (var connection = new SqliteConnection(ConnectionString))
+            {
+                var result = await connection.QueryFirstOrDefaultAsync<GetAuthorByIdRow>(GetAuthorByIdSql, new { id = args.Id });
+                return result;
+            }
+        }
+
         private const string UpdateAuthorsSql = "UPDATE authors  SET  bio  =  @bio  WHERE  bio  IS  NOT  NULL  ";  
         public class UpdateAuthorsArgs
         {

@@ -1,5 +1,6 @@
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Plugin;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
@@ -14,13 +15,12 @@ public class ExecLastIdDeclareGen(DbDriver dbDriver)
     {
         var parametersStr = CommonGen.GetMethodParameterList(argInterface, query.Params);
         return ParseMemberDeclaration($$"""
-                                        public async Task<long> {{query.Name}}({{parametersStr}})
+                                        public async Task<{{dbDriver.GetIdColumnType()}}> {{query.Name}}({{parametersStr}})
                                         {
                                             {{GetMethodBody(queryTextConstant, query)}}
                                         }
                                         """)!;
     }
-
 
     private string GetMethodBody(string queryTextConstant, Query query)
     {
@@ -34,7 +34,7 @@ public class ExecLastIdDeclareGen(DbDriver dbDriver)
             return $$"""
                      using ({{establishConnection}})
                      {
-                        return await connection.QuerySingleAsync<long>({{queryTextConstant}}{{args}});
+                        return await connection.QuerySingleAsync<{{dbDriver.GetIdColumnType()}}>({{queryTextConstant}}{{args}});
                      }
                      """;
         }

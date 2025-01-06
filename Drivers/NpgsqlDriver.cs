@@ -159,13 +159,4 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, ICopyFrom, IExecRows, 
     {
         return new ExecLastIdDeclareGen(this).Generate(queryTextConstant, argInterface, query);
     }
-
-    public string[] GetLastIdStatement()
-    {
-        return
-        [
-            $"var {Variable.Result.AsVarName()} = await {Variable.Command.AsVarName()}.ExecuteScalarAsync();",
-            $"return (long)({Variable.Result.AsVarName()} ?? -1);"
-        ];
-    }
 }
