@@ -81,7 +81,8 @@ public class NpgsqlTester : IOneTester, IManyTester, IExecTester, IExecRowsTeste
         await QuerySql.CreateAuthor(new QuerySql.CreateAuthorArgs
         {
             Name = DataGenerator.BojackAuthor,
-            Bio = DataGenerator.BojackTheme
+            Bio = DataGenerator.BojackTheme,
+
         });
         await QuerySql.CreateAuthor(new QuerySql.CreateAuthorArgs
         {
@@ -143,7 +144,7 @@ public class NpgsqlTester : IOneTester, IManyTester, IExecTester, IExecRowsTeste
             };
         }
     }
-
+    [Test]
     public async Task TestExecLastId()
     {
         var bojackCreateAuthorArgs = new QuerySql.CreateAuthorReturnIdArgs
@@ -161,6 +162,58 @@ public class NpgsqlTester : IOneTester, IManyTester, IExecTester, IExecRowsTeste
         {
             Name: DataGenerator.GenericAuthor,
             Bio: DataGenerator.GenericQuote1
+        });
+    }
+
+    [Test]
+    public async Task TestNodePostgresType()
+    {
+        var nodePostgresTypeArgs = new QuerySql.InsertNodePostgresTypeArgs
+        {
+            CBigint = 1,
+            CBytea = [1],
+            CReal = 1.0f,
+            CNumeric = 1,
+            CSerial = 1,
+            CSmallint = 1,
+            CDecimal = 1,
+            CDate = DateTime.Now,
+            CTime = "DateTime-string",
+            CTimestamp = DateTime.Now,
+            CBit = [1],
+            CBoolean = true,
+            CChar = "a",
+            CDoublePrecision = (float?)1.0,
+            CInteger = 1,
+            CJson = "{}",
+            CText = "ab",
+            CVarchar = "abc",
+            CCharacterVarying = "abcd",
+            CTextArray = ["a", "b"]
+        };
+        var insertedId = await QuerySql.InsertNodePostgresType(nodePostgresTypeArgs);
+
+        var actual = await QuerySql.GetNodePostgresType(new QuerySql.GetNodePostgresTypeArgs
+        {
+            Id = insertedId
+        });
+        Assert.That(actual is
+        {
+            CBigint: 1,
+            CReal: 1.0f,
+            CSerial: 1,
+            CNumeric: 1,
+            CDecimal: 1,
+            CSmallint: 1,
+            CBit: [1],
+            CBoolean: true,
+            CChar: "a",
+            CDoublePrecision: (float?)1.0,
+            CInteger: 1,
+            CJson: "{}",
+            CText: "ab",
+            CVarchar: "abc",
+            CTextArray: ["a", "b"]
         });
     }
 }

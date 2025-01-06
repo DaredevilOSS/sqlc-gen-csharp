@@ -34,5 +34,9 @@ VALUES ($1, $2, $3, $4);
 -- name: CountCopyRows :one
 SELECT COUNT(1) AS cnt FROM copy_tests;
 
--- name: Test :one
-SELECT * FROM node_postgres_types LIMIT 1;
+-- name: InsertNodePostgresType :execlastid
+INSERT INTO node_postgres_types (c_bit, c_smallint, c_boolean, c_integer, c_bigint, c_serial, c_decimal, c_numeric, c_real, c_double_precision, c_date, c_time, c_timestamp, c_char, c_varchar, c_character_varying, c_bytea, c_text, c_json, c_text_array)
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20) RETURNING id;
+
+-- name: GetNodePostgresType :one
+SELECT * FROM node_postgres_types WHERE id = $1 LIMIT 1;

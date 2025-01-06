@@ -210,8 +210,12 @@ namespace NpgsqlDapperLegacyExampleGen
             }
         }
 
-        private const string TestSql = "SELECT c_bit, c_smallint, c_boolean, c_integer, c_bigint, c_serial, c_decimal, c_numeric, c_real, c_double_precision, c_date, c_time, c_timestamp, c_char, c_varchar, c_character_varying, c_bytea, c_text, c_json FROM node_postgres_types LIMIT 1";
-        public class TestRow
+        private const string InsertNodePostgresTypeSql = "INSERT INTO node_postgres_types (c_bit, c_smallint, c_boolean, c_integer, c_bigint, c_serial, c_decimal, c_numeric, c_real, c_double_precision, c_date, c_time, c_timestamp, c_char, c_varchar, c_character_varying, c_bytea, c_text, c_json, c_text_array) VALUES ( @c_bit , @c_smallint, @c_boolean, @c_integer, @c_bigint, @c_serial, @c_decimal, @c_numeric, @c_real, @c_bit0, @c_bit1, @c_bit2, @c_bit3, @c_bit4, @c_bit5, @c_bit6, @c_bit7, @c_bit8, @c_bit9, @c_smallint0 ) RETURNING  id  "; 
+        public class InsertNodePostgresTypeRow
+        {
+            public long Id { get; set; }
+        };
+        public class InsertNodePostgresTypeArgs
         {
             public byte[] CBit { get; set; }
             public int? CSmallint { get; set; }
@@ -232,12 +236,50 @@ namespace NpgsqlDapperLegacyExampleGen
             public byte[] CBytea { get; set; }
             public string CText { get; set; }
             public object CJson { get; set; }
+            public string[] CTextArray { get; set; }
         };
-        public async Task<TestRow> Test()
+        public async Task<long> InsertNodePostgresType(InsertNodePostgresTypeArgs args)
         {
             using (var connection = new NpgsqlConnection(ConnectionString))
             {
-                var result = await connection.QueryFirstOrDefaultAsync<TestRow>(TestSql);
+                return await connection.QuerySingleAsync<long>(InsertNodePostgresTypeSql, new { c_bit = args.CBit, c_smallint = args.CSmallint, c_boolean = args.CBoolean, c_integer = args.CInteger, c_bigint = args.CBigint, c_serial = args.CSerial, c_decimal = args.CDecimal, c_numeric = args.CNumeric, c_real = args.CReal, c_double_precision = args.CDoublePrecision, c_date = args.CDate, c_time = args.CTime, c_timestamp = args.CTimestamp, c_char = args.CChar, c_varchar = args.CVarchar, c_character_varying = args.CCharacterVarying, c_bytea = args.CBytea, c_text = args.CText, c_json = args.CJson, c_text_array = args.CTextArray });
+            }
+        }
+
+        private const string GetNodePostgresTypeSql = "SELECT id, c_bit, c_smallint, c_boolean, c_integer, c_bigint, c_serial, c_decimal, c_numeric, c_real, c_double_precision, c_date, c_time, c_timestamp, c_char, c_varchar, c_character_varying, c_bytea, c_text, c_json, c_text_array FROM node_postgres_types WHERE id = @id LIMIT 1";
+        public class GetNodePostgresTypeRow
+        {
+            public long Id { get; set; }
+            public byte[] CBit { get; set; }
+            public int? CSmallint { get; set; }
+            public bool? CBoolean { get; set; }
+            public int? CInteger { get; set; }
+            public long? CBigint { get; set; }
+            public int? CSerial { get; set; }
+            public float? CDecimal { get; set; }
+            public float? CNumeric { get; set; }
+            public float? CReal { get; set; }
+            public float? CDoublePrecision { get; set; }
+            public DateTime? CDate { get; set; }
+            public string CTime { get; set; }
+            public DateTime? CTimestamp { get; set; }
+            public string CChar { get; set; }
+            public string CVarchar { get; set; }
+            public string CCharacterVarying { get; set; }
+            public byte[] CBytea { get; set; }
+            public string CText { get; set; }
+            public object CJson { get; set; }
+            public string[] CTextArray { get; set; }
+        };
+        public class GetNodePostgresTypeArgs
+        {
+            public long Id { get; set; }
+        };
+        public async Task<GetNodePostgresTypeRow> GetNodePostgresType(GetNodePostgresTypeArgs args)
+        {
+            using (var connection = new NpgsqlConnection(ConnectionString))
+            {
+                var result = await connection.QueryFirstOrDefaultAsync<GetNodePostgresTypeRow>(GetNodePostgresTypeSql, new { id = args.Id });
                 return result;
             }
         }

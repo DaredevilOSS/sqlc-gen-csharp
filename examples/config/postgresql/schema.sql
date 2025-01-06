@@ -13,6 +13,7 @@ CREATE TABLE copy_tests (
 );
 
 CREATE TABLE node_postgres_types (
+    id BIGSERIAL PRIMARY KEY,
     c_bit BIT(1),
     c_smallint SMALLINT,
     c_boolean BOOLEAN,
@@ -35,5 +36,8 @@ CREATE TABLE node_postgres_types (
     c_character_varying CHARACTER VARYING(10),
     c_bytea BYTEA,
     c_text TEXT,
-    c_json JSON
+    c_json JSON,
+
+    /* Array Data Types */
+    c_text_array TEXT[]
 );

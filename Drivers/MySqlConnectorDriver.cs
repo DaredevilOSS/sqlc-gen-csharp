@@ -13,9 +13,9 @@ public partial class MySqlConnectorDriver(Options options) : DbDriver(options), 
 {
     protected override List<ColumnMapping> ColumnMappings { get; } =
     [
-        new("long", ordinal => $"reader.GetInt64({ordinal})",
-            new Dictionary<string, string?> { { "bigint", null } }),
-        new("byte[]", ordinal => $"Utils.GetBytes(reader, {ordinal})",
+        new("long",
+            new Dictionary<string, string?> { { "bigint", null } }, ordinal => $"reader.GetInt64({ordinal})"),
+        new("byte[]",
             new Dictionary<string, string?>
             {
                 { "binary", null },
@@ -25,8 +25,8 @@ public partial class MySqlConnectorDriver(Options options) : DbDriver(options), 
                 { "mediumblob", null },
                 { "tinyblob", null },
                 { "varbinary", null }
-            }),
-        new("string", ordinal => $"reader.GetString({ordinal})",
+            }, ordinal => $"Utils.GetBytes(reader, {ordinal})"),
+        new("string",
             new Dictionary<string, string?>
             {
                 { "char", null },
@@ -37,10 +37,10 @@ public partial class MySqlConnectorDriver(Options options) : DbDriver(options), 
                 { "time", null },
                 { "tinytext", null },
                 { "varchar", null }
-            }),
-        new("DateTime", ordinal => $"reader.GetDateTime({ordinal})",
-            new Dictionary<string, string?> { { "date", null }, { "datetime", null }, { "timestamp", null } }),
-        new("int", ordinal => $"reader.GetInt32({ordinal})",
+            }, ordinal => $"reader.GetString({ordinal})"),
+        new("DateTime",
+            new Dictionary<string, string?> { { "date", null }, { "datetime", null }, { "timestamp", null } }, ordinal => $"reader.GetDateTime({ordinal})"),
+        new("int",
             new Dictionary<string, string?>
             {
                 { "int", null },
@@ -48,11 +48,11 @@ public partial class MySqlConnectorDriver(Options options) : DbDriver(options), 
                 { "smallint", null },
                 { "tinyint", null },
                 { "year", null }
-            }),
-        new("double", ordinal => $"reader.GetDouble({ordinal})",
-            new Dictionary<string, string?> { { "double", null }, { "float", null } }),
-        new("object", ordinal => $"reader.GetString({ordinal})",
-            new Dictionary<string, string?> { { "json", null } })
+            }, ordinal => $"reader.GetInt32({ordinal})"),
+        new("double",
+            new Dictionary<string, string?> { { "double", null }, { "float", null } }, ordinal => $"reader.GetDouble({ordinal})"),
+        new("object",
+            new Dictionary<string, string?> { { "json", null } }, ordinal => $"reader.GetString({ordinal})")
     ];
 
     public override UsingDirectiveSyntax[] GetUsingDirectives()
