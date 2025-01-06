@@ -18,36 +18,13 @@ on:
       - "!**.md"
 
 jobs:
-  lint:
-    name: Lint
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Check out Git repository
-        uses: actions/checkout@v4
-
-      - name: Set up .NET
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: ${{ env.DOTNET_VERSION }}
-
-      - name: .NET Lint
-        uses: zyactions/dotnet-lint@v1
-        with:
-          implicit-restore: true
-          workspace: sqlc-gen-csharp.sln
-          exclude: |
-            GeneratedProtobuf
-            examples
-
   build-wasm:
     name: Build (WASM)
-    needs: [lint]
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v4
-        
+
       - name: Load .env file
         uses: xom9ikk/dotenv@v2.3.0
         with:
@@ -84,7 +61,29 @@ jobs:
         with:
           name: wasm-file
           path: dist/plugin.wasm
-          
+  lint:
+    name: Lint
+    needs: [build-wasm]
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out Git repository
+        uses: actions/checkout@v4
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: .NET Lint
+        uses: zyactions/dotnet-lint@v1
+        with:
+          implicit-restore: true
+          workspace: sqlc-gen-csharp.sln
+          exclude: |
+            GeneratedProtobuf
+            examples
+
   codegen-tests:
      name: Codegen Tests
      runs-on: ubuntu-latest
