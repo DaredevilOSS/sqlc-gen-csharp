@@ -12,8 +12,8 @@ version: "2"
 plugins:
 - name: csharp
   wasm:
-    url: https://github.com/DaredevilOSS/sqlc-gen-csharp/releases/download/v0.13.1/sqlc-gen-csharp.wasm
-    sha256: 4fcd5ac76ceecb81702fc94eb813b83ab18aedb93972d3250cf583506af06756
+    url: https://github.com/DaredevilOSS/sqlc-gen-csharp/releases/download/v0.13.2/sqlc-gen-csharp.wasm
+    sha256: dd5126d7e5fcc3667820ce5073fb74921bed027669b9d9caa949e2c998e1f675
 sql:
   # For PostgresSQL
   - schema: schema.sql
@@ -66,7 +66,7 @@ Advanced functionality - varies between databases:
 | :many       | ✅          | ✅    | ✅     |
 | :exec       | ✅          | ✅    | ✅     |
 | :execrows   | ✅          | ✅    | ✅     |
-| :execlastid | ✅          | ✅    | ❌     |
+| :execlastid | ✅          | ✅    | ✅     |
 | :copyfrom   | ✅          | ❌    | 🚫     |
 
 - ✅ means the feature is fully supported.
