@@ -317,7 +317,7 @@ namespace NpgsqlLegacyExampleGen
             return null;
         }
 
-        private const string InsertNodePostgresTypeSql = "INSERT INTO node_postgres_types (c_smallint, c_boolean, c_integer, c_bigint, c_serial, c_decimal, c_numeric, c_real, c_double_precision, c_date, c_timestamp, c_char, c_varchar, c_character_varying, c_text, c_text_array) VALUES ( @c_smallint , @c_boolean, @c_integer, @c_bigint, @c_serial, @c_decimal, @c_numeric, @c_real, @c_double_precision, @c_date, @c_timestamp, @c_char, @c_varchar, @c_character_varying, @c_text, @c_text_array ) RETURNING  id  "; 
+        private const string InsertNodePostgresTypeSql = "INSERT INTO node_postgres_types (c_smallint, c_boolean, c_integer, c_bigint, c_serial, c_decimal, c_numeric, c_real, c_date, c_timestamp, c_char, c_varchar, c_character_varying, c_text, c_text_array) VALUES ( @c_smallint , @c_boolean, @c_integer, @c_bigint, @c_serial, @c_decimal, @c_numeric, @c_real, @c_date, @c_timestamp, @c_char, @c_varchar, @c_character_varying, @c_text, @c_text_array ) RETURNING  id  "; 
         public class InsertNodePostgresTypeRow
         {
             public long Id { get; set; }
@@ -332,7 +332,6 @@ namespace NpgsqlLegacyExampleGen
             public float? CDecimal { get; set; }
             public float? CNumeric { get; set; }
             public float? CReal { get; set; }
-            public float? CDoublePrecision { get; set; }
             public DateTime? CDate { get; set; }
             public DateTime? CTimestamp { get; set; }
             public string CChar { get; set; }
@@ -355,7 +354,6 @@ namespace NpgsqlLegacyExampleGen
                     command.Parameters.AddWithValue("@c_decimal", args.CDecimal);
                     command.Parameters.AddWithValue("@c_numeric", args.CNumeric);
                     command.Parameters.AddWithValue("@c_real", args.CReal);
-                    command.Parameters.AddWithValue("@c_double_precision", args.CDoublePrecision);
                     command.Parameters.AddWithValue("@c_date", args.CDate);
                     command.Parameters.AddWithValue("@c_timestamp", args.CTimestamp);
                     command.Parameters.AddWithValue("@c_char", args.CChar);
@@ -369,7 +367,7 @@ namespace NpgsqlLegacyExampleGen
             }
         }
 
-        private const string GetNodePostgresTypeSql = "SELECT c_smallint, c_boolean, c_integer, c_bigint, c_serial, c_decimal, c_numeric, c_real, c_double_precision, c_date, c_timestamp, c_char, c_varchar, c_character_varying, c_text, c_text_array FROM node_postgres_types WHERE id = @id LIMIT 1";
+        private const string GetNodePostgresTypeSql = "SELECT c_smallint, c_boolean, c_integer, c_bigint, c_serial, c_decimal, c_numeric, c_real, c_date, c_timestamp, c_char, c_varchar, c_character_varying, c_text, c_text_array FROM node_postgres_types WHERE id = @id LIMIT 1";
         public class GetNodePostgresTypeRow
         {
             public int? CSmallint { get; set; }
@@ -380,7 +378,6 @@ namespace NpgsqlLegacyExampleGen
             public float? CDecimal { get; set; }
             public float? CNumeric { get; set; }
             public float? CReal { get; set; }
-            public float? CDoublePrecision { get; set; }
             public DateTime? CDate { get; set; }
             public DateTime? CTimestamp { get; set; }
             public string CChar { get; set; }
@@ -414,14 +411,13 @@ namespace NpgsqlLegacyExampleGen
                                 CDecimal = reader.IsDBNull(5) ? (float? )null : reader.GetFloat(5),
                                 CNumeric = reader.IsDBNull(6) ? (float? )null : reader.GetFloat(6),
                                 CReal = reader.IsDBNull(7) ? (float? )null : reader.GetFloat(7),
-                                CDoublePrecision = reader.IsDBNull(8) ? (float? )null : reader.GetFloat(8),
-                                CDate = reader.IsDBNull(9) ? (DateTime? )null : reader.GetDateTime(9),
-                                CTimestamp = reader.IsDBNull(10) ? (DateTime? )null : reader.GetDateTime(10),
-                                CChar = reader.IsDBNull(11) ? string.Empty : reader.GetString(11),
-                                CVarchar = reader.IsDBNull(12) ? string.Empty : reader.GetString(12),
-                                CCharacterVarying = reader.IsDBNull(13) ? string.Empty : reader.GetString(13),
-                                CText = reader.IsDBNull(14) ? string.Empty : reader.GetString(14),
-                                CTextArray = reader.IsDBNull(15) ? null : reader.GetFieldValue<string[]>(15)
+                                CDate = reader.IsDBNull(8) ? (DateTime? )null : reader.GetDateTime(8),
+                                CTimestamp = reader.IsDBNull(9) ? (DateTime? )null : reader.GetDateTime(9),
+                                CChar = reader.IsDBNull(10) ? string.Empty : reader.GetString(10),
+                                CVarchar = reader.IsDBNull(11) ? string.Empty : reader.GetString(11),
+                                CCharacterVarying = reader.IsDBNull(12) ? string.Empty : reader.GetString(12),
+                                CText = reader.IsDBNull(13) ? string.Empty : reader.GetString(13),
+                                CTextArray = reader.IsDBNull(14) ? null : reader.GetFieldValue<string[]>(14)
                             };
                         }
                     }

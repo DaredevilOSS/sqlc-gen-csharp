@@ -220,7 +220,7 @@ namespace NpgsqlDapperLegacyExampleGen
             }
         }
 
-        private const string InsertNodePostgresTypeSql = "INSERT INTO node_postgres_types (c_smallint, c_boolean, c_integer, c_bigint, c_serial, c_decimal, c_numeric, c_real, c_double_precision, c_date, c_timestamp, c_char, c_varchar, c_character_varying, c_text, c_text_array) VALUES ( @c_smallint , @c_boolean, @c_integer, @c_bigint, @c_serial, @c_decimal, @c_numeric, @c_real, @c_double_precision, @c_date, @c_timestamp, @c_char, @c_varchar, @c_character_varying, @c_text, @c_text_array ) RETURNING  id  "; 
+        private const string InsertNodePostgresTypeSql = "INSERT INTO node_postgres_types (c_smallint, c_boolean, c_integer, c_bigint, c_serial, c_decimal, c_numeric, c_real, c_date, c_timestamp, c_char, c_varchar, c_character_varying, c_text, c_text_array) VALUES ( @c_smallint , @c_boolean, @c_integer, @c_bigint, @c_serial, @c_decimal, @c_numeric, @c_real, @c_date, @c_timestamp, @c_char, @c_varchar, @c_character_varying, @c_text, @c_text_array ) RETURNING  id  "; 
         public class InsertNodePostgresTypeRow
         {
             public long Id { get; set; }
@@ -235,7 +235,6 @@ namespace NpgsqlDapperLegacyExampleGen
             public float? CDecimal { get; set; }
             public float? CNumeric { get; set; }
             public float? CReal { get; set; }
-            public float? CDoublePrecision { get; set; }
             public DateTime? CDate { get; set; }
             public DateTime? CTimestamp { get; set; }
             public string CChar { get; set; }
@@ -248,11 +247,11 @@ namespace NpgsqlDapperLegacyExampleGen
         {
             using (var connection = new NpgsqlConnection(ConnectionString))
             {
-                return await connection.QuerySingleAsync<long>(InsertNodePostgresTypeSql, new { c_smallint = args.CSmallint, c_boolean = args.CBoolean, c_integer = args.CInteger, c_bigint = args.CBigint, c_serial = args.CSerial, c_decimal = args.CDecimal, c_numeric = args.CNumeric, c_real = args.CReal, c_double_precision = args.CDoublePrecision, c_date = args.CDate, c_timestamp = args.CTimestamp, c_char = args.CChar, c_varchar = args.CVarchar, c_character_varying = args.CCharacterVarying, c_text = args.CText, c_text_array = args.CTextArray });
+                return await connection.QuerySingleAsync<long>(InsertNodePostgresTypeSql, new { c_smallint = args.CSmallint, c_boolean = args.CBoolean, c_integer = args.CInteger, c_bigint = args.CBigint, c_serial = args.CSerial, c_decimal = args.CDecimal, c_numeric = args.CNumeric, c_real = args.CReal, c_date = args.CDate, c_timestamp = args.CTimestamp, c_char = args.CChar, c_varchar = args.CVarchar, c_character_varying = args.CCharacterVarying, c_text = args.CText, c_text_array = args.CTextArray });
             }
         }
 
-        private const string GetNodePostgresTypeSql = "SELECT c_smallint, c_boolean, c_integer, c_bigint, c_serial, c_decimal, c_numeric, c_real, c_double_precision, c_date, c_timestamp, c_char, c_varchar, c_character_varying, c_text, c_text_array FROM node_postgres_types WHERE id = @id LIMIT 1";
+        private const string GetNodePostgresTypeSql = "SELECT c_smallint, c_boolean, c_integer, c_bigint, c_serial, c_decimal, c_numeric, c_real, c_date, c_timestamp, c_char, c_varchar, c_character_varying, c_text, c_text_array FROM node_postgres_types WHERE id = @id LIMIT 1";
         public class GetNodePostgresTypeRow
         {
             public int? CSmallint { get; set; }
@@ -263,7 +262,6 @@ namespace NpgsqlDapperLegacyExampleGen
             public float? CDecimal { get; set; }
             public float? CNumeric { get; set; }
             public float? CReal { get; set; }
-            public float? CDoublePrecision { get; set; }
             public DateTime? CDate { get; set; }
             public DateTime? CTimestamp { get; set; }
             public string CChar { get; set; }
