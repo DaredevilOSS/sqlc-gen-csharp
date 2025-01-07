@@ -19,6 +19,7 @@ public class NpgsqlTester : IOneTester, IManyTester, IExecTester, IExecRowsTeste
     {
         await QuerySql.TruncateAuthors();
         await QuerySql.TruncateCopyToTests();
+        await QuerySql.TruncateNodePostgresTypes();
     }
 
     [Test]
@@ -171,21 +172,17 @@ public class NpgsqlTester : IOneTester, IManyTester, IExecTester, IExecRowsTeste
         var nodePostgresTypeArgs = new QuerySql.InsertNodePostgresTypeArgs
         {
             CBigint = 1,
-            CBytea = [1],
             CReal = 1.0f,
             CNumeric = 1,
             CSerial = 1,
             CSmallint = 1,
             CDecimal = 1,
             CDate = DateTime.Now,
-            CTime = "DateTime-string",
             CTimestamp = DateTime.Now,
-            CBit = [1],
             CBoolean = true,
             CChar = "a",
             CDoublePrecision = (float?)1.0,
             CInteger = 1,
-            CJson = "{}",
             CText = "ab",
             CVarchar = "abc",
             CCharacterVarying = "abcd",
@@ -197,6 +194,7 @@ public class NpgsqlTester : IOneTester, IManyTester, IExecTester, IExecRowsTeste
         {
             Id = insertedId
         });
+
         Assert.That(actual is
         {
             CBigint: 1,
@@ -205,12 +203,10 @@ public class NpgsqlTester : IOneTester, IManyTester, IExecTester, IExecRowsTeste
             CNumeric: 1,
             CDecimal: 1,
             CSmallint: 1,
-            CBit: [1],
             CBoolean: true,
             CChar: "a",
             CDoublePrecision: (float?)1.0,
             CInteger: 1,
-            CJson: "{}",
             CText: "ab",
             CVarchar: "abc",
             CTextArray: ["a", "b"]

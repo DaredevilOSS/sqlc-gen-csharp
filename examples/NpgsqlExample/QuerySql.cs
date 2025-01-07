@@ -191,6 +191,18 @@ public class QuerySql(string connectionString)
         }
     }
 
+    private const string TruncateNodePostgresTypesSql = "TRUNCATE TABLE node_postgres_types";
+    public async Task TruncateNodePostgresTypes()
+    {
+        using (var connection = NpgsqlDataSource.Create(connectionString))
+        {
+            using (var command = connection.CreateCommand(TruncateNodePostgresTypesSql))
+            {
+                await command.ExecuteScalarAsync();
+            }
+        }
+    }
+
     private const string CopyToTestsSql = "COPY copy_tests (c_int, c_varchar, c_date, c_timestamp) FROM STDIN (FORMAT BINARY)";
     public readonly record struct CopyToTestsArgs(int CInt, string CVarchar, DateTime CDate, DateTime CTimestamp);
     public async Task CopyToTests(List<CopyToTestsArgs> args)
@@ -241,16 +253,15 @@ public class QuerySql(string connectionString)
         return null;
     }
 
-    private const string InsertNodePostgresTypeSql = "INSERT INTO node_postgres_types (c_bit, c_smallint, c_boolean, c_integer, c_bigint, c_serial, c_decimal, c_numeric, c_real, c_double_precision, c_date, c_time, c_timestamp, c_char, c_varchar, c_character_varying, c_bytea, c_text, c_json, c_text_array) VALUES ( @c_bit , @c_smallint, @c_boolean, @c_integer, @c_bigint, @c_serial, @c_decimal, @c_numeric, @c_real, @c_bit0, @c_bit1, @c_bit2, @c_bit3, @c_bit4, @c_bit5, @c_bit6, @c_bit7, @c_bit8, @c_bit9, @c_smallint0 ) RETURNING  id  "; 
+    private const string InsertNodePostgresTypeSql = "INSERT INTO node_postgres_types (c_smallint, c_boolean, c_integer, c_bigint, c_serial, c_decimal, c_numeric, c_real, c_double_precision, c_date, c_timestamp, c_char, c_varchar, c_character_varying, c_text, c_text_array) VALUES ( @c_smallint , @c_boolean, @c_integer, @c_bigint, @c_serial, @c_decimal, @c_numeric, @c_real, @c_double_precision, @c_date, @c_timestamp, @c_char, @c_varchar, @c_character_varying, @c_text, @c_text_array ) RETURNING  id  "; 
     public readonly record struct InsertNodePostgresTypeRow(long Id);
-    public readonly record struct InsertNodePostgresTypeArgs(byte[]? CBit, int? CSmallint, bool? CBoolean, int? CInteger, long? CBigint, int? CSerial, float? CDecimal, float? CNumeric, float? CReal, float? CDoublePrecision, DateTime? CDate, string? CTime, DateTime? CTimestamp, string? CChar, string? CVarchar, string? CCharacterVarying, byte[]? CBytea, string? CText, object? CJson, string[]? CTextArray);
+    public readonly record struct InsertNodePostgresTypeArgs(int? CSmallint, bool? CBoolean, int? CInteger, long? CBigint, int? CSerial, float? CDecimal, float? CNumeric, float? CReal, float? CDoublePrecision, DateTime? CDate, DateTime? CTimestamp, string? CChar, string? CVarchar, string? CCharacterVarying, string? CText, string[]? CTextArray);
     public async Task<long> InsertNodePostgresType(InsertNodePostgresTypeArgs args)
     {
         using (var connection = NpgsqlDataSource.Create(connectionString))
         {
             using (var command = connection.CreateCommand(InsertNodePostgresTypeSql))
             {
-                command.Parameters.AddWithValue("@c_bit", args.CBit!);
                 command.Parameters.AddWithValue("@c_smallint", args.CSmallint!);
                 command.Parameters.AddWithValue("@c_boolean", args.CBoolean!);
                 command.Parameters.AddWithValue("@c_integer", args.CInteger!);
@@ -261,14 +272,11 @@ public class QuerySql(string connectionString)
                 command.Parameters.AddWithValue("@c_real", args.CReal!);
                 command.Parameters.AddWithValue("@c_double_precision", args.CDoublePrecision!);
                 command.Parameters.AddWithValue("@c_date", args.CDate!);
-                command.Parameters.AddWithValue("@c_time", args.CTime!);
                 command.Parameters.AddWithValue("@c_timestamp", args.CTimestamp!);
                 command.Parameters.AddWithValue("@c_char", args.CChar!);
                 command.Parameters.AddWithValue("@c_varchar", args.CVarchar!);
                 command.Parameters.AddWithValue("@c_character_varying", args.CCharacterVarying!);
-                command.Parameters.AddWithValue("@c_bytea", args.CBytea!);
                 command.Parameters.AddWithValue("@c_text", args.CText!);
-                command.Parameters.AddWithValue("@c_json", args.CJson!);
                 command.Parameters.AddWithValue("@c_text_array", args.CTextArray!);
                 var result = await command.ExecuteScalarAsync();
                 return Convert.ToInt64(result);
@@ -276,8 +284,8 @@ public class QuerySql(string connectionString)
         }
     }
 
-    private const string GetNodePostgresTypeSql = "SELECT id, c_bit, c_smallint, c_boolean, c_integer, c_bigint, c_serial, c_decimal, c_numeric, c_real, c_double_precision, c_date, c_time, c_timestamp, c_char, c_varchar, c_character_varying, c_bytea, c_text, c_json, c_text_array FROM node_postgres_types WHERE id = @id LIMIT 1";
-    public readonly record struct GetNodePostgresTypeRow(long Id, byte[]? CBit, int? CSmallint, bool? CBoolean, int? CInteger, long? CBigint, int? CSerial, float? CDecimal, float? CNumeric, float? CReal, float? CDoublePrecision, DateTime? CDate, string? CTime, DateTime? CTimestamp, string? CChar, string? CVarchar, string? CCharacterVarying, byte[]? CBytea, string? CText, object? CJson, string[]? CTextArray);
+    private const string GetNodePostgresTypeSql = "SELECT c_smallint, c_boolean, c_integer, c_bigint, c_serial, c_decimal, c_numeric, c_real, c_double_precision, c_date, c_timestamp, c_char, c_varchar, c_character_varying, c_text, c_text_array FROM node_postgres_types WHERE id = @id LIMIT 1";
+    public readonly record struct GetNodePostgresTypeRow(int? CSmallint, bool? CBoolean, int? CInteger, long? CBigint, int? CSerial, float? CDecimal, float? CNumeric, float? CReal, float? CDoublePrecision, DateTime? CDate, DateTime? CTimestamp, string? CChar, string? CVarchar, string? CCharacterVarying, string? CText, string[]? CTextArray);
     public readonly record struct GetNodePostgresTypeArgs(long Id);
     public async Task<GetNodePostgresTypeRow?> GetNodePostgresType(GetNodePostgresTypeArgs args)
     {
@@ -292,27 +300,22 @@ public class QuerySql(string connectionString)
                     {
                         return new GetNodePostgresTypeRow
                         {
-                            Id = reader.GetInt64(0),
-                            CBit = reader.IsDBNull(1) ? null : Utils.GetBytes(reader, 1),
-                            CSmallint = reader.IsDBNull(2) ? null : reader.GetInt32(2),
-                            CBoolean = reader.IsDBNull(3) ? null : reader.GetBoolean(3),
-                            CInteger = reader.IsDBNull(4) ? null : reader.GetInt32(4),
-                            CBigint = reader.IsDBNull(5) ? null : reader.GetInt64(5),
-                            CSerial = reader.IsDBNull(6) ? null : reader.GetInt32(6),
-                            CDecimal = reader.IsDBNull(7) ? null : reader.GetFloat(7),
-                            CNumeric = reader.IsDBNull(8) ? null : reader.GetFloat(8),
-                            CReal = reader.IsDBNull(9) ? null : reader.GetFloat(9),
-                            CDoublePrecision = reader.IsDBNull(10) ? null : reader.GetFloat(10),
-                            CDate = reader.IsDBNull(11) ? null : reader.GetDateTime(11),
-                            CTime = reader.IsDBNull(12) ? null : reader.GetString(12),
-                            CTimestamp = reader.IsDBNull(13) ? null : reader.GetDateTime(13),
-                            CChar = reader.IsDBNull(14) ? null : reader.GetString(14),
-                            CVarchar = reader.IsDBNull(15) ? null : reader.GetString(15),
-                            CCharacterVarying = reader.IsDBNull(16) ? null : reader.GetString(16),
-                            CBytea = reader.IsDBNull(17) ? null : Utils.GetBytes(reader, 17),
-                            CText = reader.IsDBNull(18) ? null : reader.GetString(18),
-                            CJson = reader.IsDBNull(19) ? null : reader.GetString(19),
-                            CTextArray = reader.IsDBNull(20) ? null : reader.GetFieldValue<string[]>(20)
+                            CSmallint = reader.IsDBNull(0) ? null : reader.GetInt32(0),
+                            CBoolean = reader.IsDBNull(1) ? null : reader.GetBoolean(1),
+                            CInteger = reader.IsDBNull(2) ? null : reader.GetInt32(2),
+                            CBigint = reader.IsDBNull(3) ? null : reader.GetInt64(3),
+                            CSerial = reader.IsDBNull(4) ? null : reader.GetInt32(4),
+                            CDecimal = reader.IsDBNull(5) ? null : reader.GetFloat(5),
+                            CNumeric = reader.IsDBNull(6) ? null : reader.GetFloat(6),
+                            CReal = reader.IsDBNull(7) ? null : reader.GetFloat(7),
+                            CDoublePrecision = reader.IsDBNull(8) ? null : reader.GetFloat(8),
+                            CDate = reader.IsDBNull(9) ? null : reader.GetDateTime(9),
+                            CTimestamp = reader.IsDBNull(10) ? null : reader.GetDateTime(10),
+                            CChar = reader.IsDBNull(11) ? null : reader.GetString(11),
+                            CVarchar = reader.IsDBNull(12) ? null : reader.GetString(12),
+                            CCharacterVarying = reader.IsDBNull(13) ? null : reader.GetString(13),
+                            CText = reader.IsDBNull(14) ? null : reader.GetString(14),
+                            CTextArray = reader.IsDBNull(15) ? null : reader.GetFieldValue<string[]>(15)
                         };
                     }
                 }

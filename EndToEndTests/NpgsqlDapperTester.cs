@@ -1,3 +1,4 @@
+using Newtonsoft.Json;
 using NpgsqlDapperExampleGen;
 using NUnit.Framework;
 using NUnit.Framework.Legacy;
@@ -15,6 +16,7 @@ public class NpgsqlDapperTester : IOneTester, IManyTester, IExecTester, IExecRow
     public async Task EmptyTestsTable()
     {
         await QuerySql.TruncateAuthors();
+        await QuerySql.TruncateNodePostgresTypes();
     }
 
     [Test]
@@ -136,5 +138,51 @@ public class NpgsqlDapperTester : IOneTester, IManyTester, IExecTester, IExecRow
             Name: DataGenerator.GenericAuthor,
             Bio: DataGenerator.GenericQuote1
         });
+    }
+
+    [Test]
+    public async Task TestNodePostgresType()
+    {
+        var nodePostgresTypeArgs = new QuerySql.InsertNodePostgresTypeArgs
+        {
+            CBigint = 1,
+            CReal = 1.0f,
+            CNumeric = 1,
+            CSerial = 1,
+            CSmallint = 1,
+            CDecimal = 1,
+            CDate = DateTime.Now,
+            CTimestamp = DateTime.Now,
+            CBoolean = true,
+            CChar = "a",
+            CDoublePrecision = (float?)1.0,
+            CInteger = 1,
+            CText = "ab",
+            CVarchar = "abc",
+            CCharacterVarying = "abcd",
+            CTextArray = ["a", "b"]
+        };
+        var insertedId = await QuerySql.InsertNodePostgresType(nodePostgresTypeArgs);
+
+        var actual = await QuerySql.GetNodePostgresType(new QuerySql.GetNodePostgresTypeArgs
+        {
+            Id = insertedId
+        });
+        System.Console.WriteLine("insertedId: " + insertedId + ", Actual: " + JsonConvert.SerializeObject(actual));
+        Assert.That(actual, Is.AssignableTo<object>().And
+            .Property("CBigint").EqualTo(1).And
+            .Property("CReal").EqualTo(1.0f).And
+            .Property("CSerial").EqualTo(1).And
+            .Property("CNumeric").EqualTo(1).And
+            .Property("CDecimal").EqualTo(1).And
+            .Property("CSmallint").EqualTo(1).And
+            .Property("CBoolean").EqualTo(true).And
+            .Property("CChar").EqualTo("a").And
+            .Property("CDoublePrecision").EqualTo((float?)1.0).And
+            .Property("CInteger").EqualTo(1).And
+            .Property("CText").EqualTo("ab").And
+            .Property("CVarchar").EqualTo("abc").And
+            .Property("CCharacterVarying").EqualTo("abcd").And
+            .Property("CTextArray").EqualTo(new[] { "a", "b" }));
     }
 }

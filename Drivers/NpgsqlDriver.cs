@@ -114,11 +114,13 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, ICopyFrom, IExecRows, 
         if (query.Cmd == ":copyfrom")
             return GetCopyCommand();
 
+
         var queryText = query.Text;
         for (var i = 0; i < query.Params.Count; i++)
         {
             var currentParameter = query.Params[i];
-            queryText = Regex.Replace(queryText, $@"\$\s*{i + 1}",
+            // queryText = queryText.Replace($"${i + 1}", $"@{currentParameter.Column.Name}");
+            queryText = Regex.Replace(queryText, $@"\$\s*{i + 1}\b",
                 $"@{currentParameter.Column.Name}");
         }
 
