@@ -188,6 +188,7 @@ namespace SqlcGenCsharpTests
             });
 
             ClassicAssert.IsNotNull(actual);
+
             Assert.That(Equals(actual, new GetNodePostgresTypeRow
             {
                 CBigint = 1,
@@ -207,6 +208,40 @@ namespace SqlcGenCsharpTests
 
         private static bool Equals(GetNodePostgresTypeRow x, GetNodePostgresTypeRow y)
         {
+            Console.WriteLine("Comparing GetNodePostgresTypeRow objects:");
+            Console.WriteLine("x:");
+            Console.WriteLine("  CSmallint: " + x.CSmallint);
+            Console.WriteLine("  CBoolean: " + x.CBoolean);
+            Console.WriteLine("  CInteger: " + x.CInteger);
+            Console.WriteLine("  CBigint: " + x.CBigint);
+            Console.WriteLine("  CSerial: " + x.CSerial);
+            Console.WriteLine("  CDecimal: " + x.CDecimal);
+            Console.WriteLine("  CNumeric: " + x.CNumeric);
+            Console.WriteLine("  CReal: " + x.CReal);
+            Console.WriteLine("  CDate: " + x.CDate);
+            Console.WriteLine("  CTimestamp: " + x.CTimestamp);
+            Console.WriteLine("  CChar: " + x.CChar);
+            Console.WriteLine("  CVarchar: " + x.CVarchar);
+            Console.WriteLine("  CCharacterVarying: " + x.CCharacterVarying);
+            Console.WriteLine("  CText: " + x.CText);
+            Console.WriteLine("  CTextArray: " + string.Join(", ", x.CTextArray));
+
+            Console.WriteLine("y:");
+            Console.WriteLine("  CSmallint: " + y.CSmallint);
+            Console.WriteLine("  CBoolean: " + y.CBoolean);
+            Console.WriteLine("  CInteger: " + y.CInteger);
+            Console.WriteLine("  CBigint: " + y.CBigint);
+            Console.WriteLine("  CSerial: " + y.CSerial);
+            Console.WriteLine("  CDecimal: " + y.CDecimal);
+            Console.WriteLine("  CNumeric: " + y.CNumeric);
+            Console.WriteLine("  CReal: " + y.CReal);
+            Console.WriteLine("  CDate: " + y.CDate);
+            Console.WriteLine("  CTimestamp: " + y.CTimestamp);
+            Console.WriteLine("  CChar: " + y.CChar);
+            Console.WriteLine("  CVarchar: " + y.CVarchar);
+            Console.WriteLine("  CCharacterVarying: " + y.CCharacterVarying);
+            Console.WriteLine("  CText: " + y.CText);
+            Console.WriteLine("  CTextArray: " + string.Join(", ", y.CTextArray));
             return x.CSmallint.Equals(y.CSmallint) &&
                 x.CBoolean.Equals(y.CBoolean) &&
                 x.CInteger.Equals(y.CInteger) &&
