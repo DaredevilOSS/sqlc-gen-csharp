@@ -9,6 +9,8 @@ services:
     environment:
       MYSQL_DATABASE: ${TESTS_DB}
       MYSQL_ALLOW_EMPTY_PASSWORD: true
+    command:
+      - '--local-infile=1'
     healthcheck:
       test: "mysqladmin ping -h 127.0.0.1"
       timeout: 20s

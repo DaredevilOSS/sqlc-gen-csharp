@@ -2,14 +2,17 @@ namespace SqlcGenCsharp.Drivers;
 
 public enum Variable
 {
+    Config,
     ConnectionString,
     Connection,
     Reader,
     Row,
     Writer,
+    CsvWriter,
     Command,
     Result,
-    Args
+    Args,
+    Loader
 }
 
 public static class VariablesExtensions

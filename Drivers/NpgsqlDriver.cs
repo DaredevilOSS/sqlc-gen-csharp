@@ -8,7 +8,7 @@ using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace SqlcGenCsharp.Drivers;
 
-public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, ICopyFrom, IExecRows, IExecLastId
+public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId, ICopyFrom
 {
     public NpgsqlDriver(Options options) : base(options)
     {
@@ -145,11 +145,6 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, ICopyFrom, IExecRows, 
         return new ManyDeclareGen(this).Generate(queryTextConstant, argInterface, returnInterface, query);
     }
 
-    public MemberDeclarationSyntax CopyFromDeclare(string queryTextConstant, string argInterface, Query query)
-    {
-        return new CopyFromDeclareGen(this).Generate(queryTextConstant, argInterface, query);
-    }
-
     public MemberDeclarationSyntax ExecRowsDeclare(string queryTextConstant, string argInterface, Query query)
     {
         return new ExecRowsDeclareGen(this).Generate(queryTextConstant, argInterface, query);
@@ -158,5 +153,53 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, ICopyFrom, IExecRows, 
     public MemberDeclarationSyntax ExecLastIdDeclare(string queryTextConstant, string argInterface, Query query)
     {
         return new ExecLastIdDeclareGen(this).Generate(queryTextConstant, argInterface, query);
+    }
+
+    public MemberDeclarationSyntax CopyFromDeclare(string queryTextConstant, string argInterface, Query query)
+    {
+        return new CopyFromDeclareGen(this).Generate(queryTextConstant, argInterface, query);
+    }
+
+    public string GetCopyFromImpl(Query query, string queryTextConstant)
+    {
+        var (establishConnection, connectionOpen) = EstablishConnection(query);
+        var beginBinaryImport = $"{Variable.Connection.AsVarName()}.BeginBinaryImportAsync({queryTextConstant}";
+        var addRowsToCopyCommand = AddRowsToCopyCommand();
+        return $$"""
+                 using ({{establishConnection}})
+                 {
+                     {{connectionOpen.AppendSemicolonUnlessEmpty()}}
+                     await {{Variable.Connection.AsVarName()}}.OpenAsync();
+                     using (var {{Variable.Writer.AsVarName()}} = await {{beginBinaryImport}}))
+                     {
+                        {{addRowsToCopyCommand}}
+                        await {{Variable.Writer.AsVarName()}}.CompleteAsync();
+                     }
+                     await {{Variable.Connection.AsVarName()}}.CloseAsync();
+                 }
+                 """;
+
+        string AddRowsToCopyCommand()
+        {
+            var constructRow = new List<string>()
+                .Append($"await {Variable.Writer.AsVarName()}.StartRowAsync();")
+                .Concat(query.Params
+                    .Select(p =>
+                    {
+                        var typeOverride = GetColumnDbTypeOverride(p.Column);
+                        var partialStmt =
+                            $"await {Variable.Writer.AsVarName()}.WriteAsync({Variable.Row.AsVarName()}.{p.Column.Name.ToPascalCase()}";
+                        return typeOverride is null
+                            ? $"{partialStmt});"
+                            : $"{partialStmt}, {typeOverride});";
+                    }))
+                .JoinByNewLine();
+            return $$"""
+                     foreach (var {{Variable.Row.AsVarName()}} in args) 
+                     {
+                          {{constructRow}}
+                     }
+                     """;
+        }
     }
 }
