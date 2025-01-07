@@ -179,23 +179,22 @@ namespace SqlcGenCsharpTests
             }));
         }
 
-        private static bool Equals(QuerySql.GetNodePostgresTypeRow x, QuerySql.GetNodePostgresTypeRow y)
+        private static bool Equals(GetNodePostgresTypeRow x, GetNodePostgresTypeRow y)
         {
-            return x.CSmallint == y.CSmallint &&
-                x.CBoolean == y.CBoolean &&
-                x.CInteger == y.CInteger &&
-                x.CBigint == y.CBigint &&
-                x.CSerial == y.CSerial &&
-                x.CDecimal == y.CDecimal &&
-                x.CNumeric == y.CNumeric &&
-                x.CReal == y.CReal &&
-                // x.CDoublePrecision == y.CDoublePrecision &&
-                // x.CDate == y.CDate &&
-                // x.CTimestamp == y.CTimestamp &&
-                x.CChar == y.CChar &&
-                x.CVarchar == y.CVarchar &&
-                x.CCharacterVarying == y.CCharacterVarying &&
-                x.CText == y.CText &&
+            return x.CSmallint.Equals(y.CSmallint) &&
+                x.CBoolean.Equals(y.CBoolean) &&
+                x.CInteger.Equals(y.CInteger) &&
+                x.CBigint.Equals(y.CBigint) &&
+                x.CSerial.Equals(y.CSerial) &&
+                x.CDecimal.Equals(y.CDecimal) &&
+                x.CNumeric.Equals(y.CNumeric) &&
+                x.CReal.Equals(y.CReal) &&
+                x.CDate.Equals(y.CDate) &&
+                x.CTimestamp.Equals(y.CTimestamp) &&
+                x.CChar.Equals(y.CChar) &&
+                x.CVarchar.Equals(y.CVarchar) &&
+                x.CCharacterVarying.Equals(y.CCharacterVarying) &&
+                x.CText.Equals(y.CText) &&
                 x.CTextArray.SequenceEqual(y.CTextArray);
         }
 
