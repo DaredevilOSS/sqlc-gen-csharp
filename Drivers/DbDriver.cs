@@ -110,9 +110,7 @@ public abstract class DbDriver(Options options)
 
     protected string GetConnectionStringField()
     {
-        return Options.DotnetFramework.LatestDotnetSupported()
-            ? Variable.ConnectionString.AsVarName()
-            : Variable.ConnectionString.AsPropertyName();
+        return Variable.ConnectionString.AsPropertyName();
     }
 
     public string GetIdColumnType()

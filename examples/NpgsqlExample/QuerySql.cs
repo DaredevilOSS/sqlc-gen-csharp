@@ -10,14 +10,21 @@ using Npgsql;
 using NpgsqlTypes;
 
 namespace NpgsqlExampleGen;
-public class QuerySql(string connectionString)
+public class QuerySql
 {
+    public QuerySql(string connectionString)
+    {
+        this.ConnectionString = connectionString;
+    }
+
+    private string ConnectionString { get; }
+
     private const string GetAuthorSql = "SELECT id, name, bio, created FROM authors WHERE name = @name LIMIT 1";
     public readonly record struct GetAuthorRow(long Id, string Name, string? Bio, DateTime Created);
     public readonly record struct GetAuthorArgs(string Name);
     public async Task<GetAuthorRow?> GetAuthor(GetAuthorArgs args)
     {
-        using (var connection = NpgsqlDataSource.Create(connectionString))
+        using (var connection = NpgsqlDataSource.Create(ConnectionString))
         {
             using (var command = connection.CreateCommand(GetAuthorSql))
             {
@@ -45,7 +52,7 @@ public class QuerySql(string connectionString)
     public readonly record struct ListAuthorsRow(long Id, string Name, string? Bio, DateTime Created);
     public async Task<List<ListAuthorsRow>> ListAuthors()
     {
-        using (var connection = NpgsqlDataSource.Create(connectionString))
+        using (var connection = NpgsqlDataSource.Create(ConnectionString))
         {
             using (var command = connection.CreateCommand(ListAuthorsSql))
             {
@@ -68,7 +75,7 @@ public class QuerySql(string connectionString)
     public readonly record struct CreateAuthorArgs(string Name, string? Bio);
     public async Task<CreateAuthorRow?> CreateAuthor(CreateAuthorArgs args)
     {
-        using (var connection = NpgsqlDataSource.Create(connectionString))
+        using (var connection = NpgsqlDataSource.Create(ConnectionString))
         {
             using (var command = connection.CreateCommand(CreateAuthorSql))
             {
@@ -98,7 +105,7 @@ public class QuerySql(string connectionString)
     public readonly record struct CreateAuthorReturnIdArgs(string Name, string? Bio);
     public async Task<long> CreateAuthorReturnId(CreateAuthorReturnIdArgs args)
     {
-        using (var connection = NpgsqlDataSource.Create(connectionString))
+        using (var connection = NpgsqlDataSource.Create(ConnectionString))
         {
             using (var command = connection.CreateCommand(CreateAuthorReturnIdSql))
             {
@@ -115,7 +122,7 @@ public class QuerySql(string connectionString)
     public readonly record struct GetAuthorByIdArgs(long Id);
     public async Task<GetAuthorByIdRow?> GetAuthorById(GetAuthorByIdArgs args)
     {
-        using (var connection = NpgsqlDataSource.Create(connectionString))
+        using (var connection = NpgsqlDataSource.Create(ConnectionString))
         {
             using (var command = connection.CreateCommand(GetAuthorByIdSql))
             {
@@ -143,7 +150,7 @@ public class QuerySql(string connectionString)
     public readonly record struct DeleteAuthorArgs(string Name);
     public async Task DeleteAuthor(DeleteAuthorArgs args)
     {
-        using (var connection = NpgsqlDataSource.Create(connectionString))
+        using (var connection = NpgsqlDataSource.Create(ConnectionString))
         {
             using (var command = connection.CreateCommand(DeleteAuthorSql))
             {
@@ -156,7 +163,7 @@ public class QuerySql(string connectionString)
     private const string TruncateAuthorsSql = "TRUNCATE TABLE authors";
     public async Task TruncateAuthors()
     {
-        using (var connection = NpgsqlDataSource.Create(connectionString))
+        using (var connection = NpgsqlDataSource.Create(ConnectionString))
         {
             using (var command = connection.CreateCommand(TruncateAuthorsSql))
             {
@@ -169,7 +176,7 @@ public class QuerySql(string connectionString)
     public readonly record struct UpdateAuthorsArgs(string? Bio);
     public async Task<long> UpdateAuthors(UpdateAuthorsArgs args)
     {
-        using (var connection = NpgsqlDataSource.Create(connectionString))
+        using (var connection = NpgsqlDataSource.Create(ConnectionString))
         {
             using (var command = connection.CreateCommand(UpdateAuthorsSql))
             {
@@ -182,7 +189,7 @@ public class QuerySql(string connectionString)
     private const string TruncateCopyToTestsSql = "TRUNCATE TABLE copy_tests";
     public async Task TruncateCopyToTests()
     {
-        using (var connection = NpgsqlDataSource.Create(connectionString))
+        using (var connection = NpgsqlDataSource.Create(ConnectionString))
         {
             using (var command = connection.CreateCommand(TruncateCopyToTestsSql))
             {
@@ -194,7 +201,7 @@ public class QuerySql(string connectionString)
     private const string TruncateNodePostgresTypesSql = "TRUNCATE TABLE node_postgres_types";
     public async Task TruncateNodePostgresTypes()
     {
-        using (var connection = NpgsqlDataSource.Create(connectionString))
+        using (var connection = NpgsqlDataSource.Create(ConnectionString))
         {
             using (var command = connection.CreateCommand(TruncateNodePostgresTypesSql))
             {
@@ -207,7 +214,7 @@ public class QuerySql(string connectionString)
     public readonly record struct CopyToTestsArgs(int CInt, string CVarchar, DateTime CDate, DateTime CTimestamp);
     public async Task CopyToTests(List<CopyToTestsArgs> args)
     {
-        using (var ds = NpgsqlDataSource.Create(connectionString))
+        using (var ds = NpgsqlDataSource.Create(ConnectionString))
         {
             var connection = ds.CreateConnection();
             await connection.OpenAsync();
@@ -233,7 +240,7 @@ public class QuerySql(string connectionString)
     public readonly record struct CountCopyRowsRow(long Cnt);
     public async Task<CountCopyRowsRow?> CountCopyRows()
     {
-        using (var connection = NpgsqlDataSource.Create(connectionString))
+        using (var connection = NpgsqlDataSource.Create(ConnectionString))
         {
             using (var command = connection.CreateCommand(CountCopyRowsSql))
             {
@@ -258,7 +265,7 @@ public class QuerySql(string connectionString)
     public readonly record struct InsertNodePostgresTypeArgs(int? CSmallint, bool? CBoolean, int? CInteger, long? CBigint, int? CSerial, float? CDecimal, float? CNumeric, float? CReal, float? CDoublePrecision, DateTime? CDate, DateTime? CTimestamp, string? CChar, string? CVarchar, string? CCharacterVarying, string? CText, string[]? CTextArray);
     public async Task<long> InsertNodePostgresType(InsertNodePostgresTypeArgs args)
     {
-        using (var connection = NpgsqlDataSource.Create(connectionString))
+        using (var connection = NpgsqlDataSource.Create(ConnectionString))
         {
             using (var command = connection.CreateCommand(InsertNodePostgresTypeSql))
             {
@@ -289,7 +296,7 @@ public class QuerySql(string connectionString)
     public readonly record struct GetNodePostgresTypeArgs(long Id);
     public async Task<GetNodePostgresTypeRow?> GetNodePostgresType(GetNodePostgresTypeArgs args)
     {
-        using (var connection = NpgsqlDataSource.Create(connectionString))
+        using (var connection = NpgsqlDataSource.Create(ConnectionString))
         {
             using (var command = connection.CreateCommand(GetNodePostgresTypeSql))
             {

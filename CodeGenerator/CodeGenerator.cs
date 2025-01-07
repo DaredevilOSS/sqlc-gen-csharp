@@ -160,66 +160,21 @@ public class CodeGenerator
     private ClassDeclarationSyntax GetClassDeclaration(string className,
         IEnumerable<MemberDeclarationSyntax> classMembers)
     {
-        var classDeclaration = (ClassDeclarationSyntax)(Options.DotnetFramework.LatestDotnetSupported()
-            ? GetWithPrimaryConstructor()
-            : GetWithRegularConstructor());
+        var optionalDapperConfig = Options.UseDapper ? Environment.NewLine + "        Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;" : "";
+        var classDeclaration = (ClassDeclarationSyntax)ParseMemberDeclaration(
+                    $$"""
+                      class {{className}}
+                      {
+                          public {{className}}(string {{Variable.ConnectionString.AsVarName()}})
+                          {
+                              this.{{Variable.ConnectionString.AsPropertyName()}} = {{Variable.ConnectionString.AsVarName()}};{{optionalDapperConfig}}
+                          }
+                          private string {{Variable.ConnectionString.AsPropertyName()}} { get; }
+                      }
+                      """)!
+                .AddModifiers(Token(SyntaxKind.PublicKeyword));
+
         return classDeclaration.AddMembers(classMembers.ToArray());
-
-        MemberDeclarationSyntax GetWithPrimaryConstructor()
-        {
-            if (Options.UseDapper)
-            {
-                return ParseMemberDeclaration(
-                    $$"""
-                      class {{className}}
-                      {
-                          public {{className}}(string {{Variable.ConnectionString.AsVarName()}})
-                          {
-                              Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
-                              this.{{Variable.ConnectionString.AsVarName()}} = {{Variable.ConnectionString.AsVarName()}};
-                          }
-                          private string {{Variable.ConnectionString.AsVarName()}} { get; }
-                      }
-                      """)!
-                    .AddModifiers(Token(SyntaxKind.PublicKeyword));
-            }
-            return ParseMemberDeclaration(
-                    $"class {className}(string {Variable.ConnectionString.AsVarName()})" + "{}")!
-                .AddModifiers(Token(SyntaxKind.PublicKeyword));
-        }
-
-        MemberDeclarationSyntax GetWithRegularConstructor()
-        {
-            if (Options.UseDapper)
-            {
-                return ParseMemberDeclaration(
-                    $$"""
-                      class {{className}}
-                      {
-                          public {{className}}(string {{Variable.ConnectionString.AsVarName()}})
-                          {
-                              Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
-                              this.{{Variable.ConnectionString.AsPropertyName()}} = {{Variable.ConnectionString.AsVarName()}};
-                          }
-                          private string {{Variable.ConnectionString.AsPropertyName()}} { get; }
-                      }
-                      """)!
-                    .AddModifiers(Token(SyntaxKind.PublicKeyword));
-            }
-
-            return ParseMemberDeclaration(
-                    $$"""
-                      class {{className}}
-                      {
-                          public {{className}}(string {{Variable.ConnectionString.AsVarName()}})
-                          {
-                              this.{{Variable.ConnectionString.AsPropertyName()}} = {{Variable.ConnectionString.AsVarName()}};
-                          }
-                          private string {{Variable.ConnectionString.AsPropertyName()}} { get; }
-                      }
-                      """)!
-                .AddModifiers(Token(SyntaxKind.PublicKeyword));
-        }
     }
 
     private IEnumerable<MemberDeclarationSyntax> GetMembersForSingleQuery(Query query)

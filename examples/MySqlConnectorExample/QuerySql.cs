@@ -9,14 +9,21 @@ using System.Threading.Tasks;
 using MySqlConnector;
 
 namespace MySqlConnectorExampleGen;
-public class QuerySql(string connectionString)
+public class QuerySql
 {
+    public QuerySql(string connectionString)
+    {
+        this.ConnectionString = connectionString;
+    }
+
+    private string ConnectionString { get; }
+
     private const string GetAuthorSql = "SELECT id, name, bio, created FROM authors WHERE name = @name LIMIT 1";
     public readonly record struct GetAuthorRow(long Id, string Name, string? Bio, DateTime Created);
     public readonly record struct GetAuthorArgs(string Name);
     public async Task<GetAuthorRow?> GetAuthor(GetAuthorArgs args)
     {
-        using (var connection = new MySqlConnection(connectionString))
+        using (var connection = new MySqlConnection(ConnectionString))
         {
             connection.Open();
             using (var command = new MySqlCommand(GetAuthorSql, connection))
@@ -45,7 +52,7 @@ public class QuerySql(string connectionString)
     public readonly record struct ListAuthorsRow(long Id, string Name, string? Bio, DateTime Created);
     public async Task<List<ListAuthorsRow>> ListAuthors()
     {
-        using (var connection = new MySqlConnection(connectionString))
+        using (var connection = new MySqlConnection(ConnectionString))
         {
             connection.Open();
             using (var command = new MySqlCommand(ListAuthorsSql, connection))
@@ -68,7 +75,7 @@ public class QuerySql(string connectionString)
     public readonly record struct CreateAuthorArgs(string Name, string? Bio);
     public async Task CreateAuthor(CreateAuthorArgs args)
     {
-        using (var connection = new MySqlConnection(connectionString))
+        using (var connection = new MySqlConnection(ConnectionString))
         {
             connection.Open();
             using (var command = new MySqlCommand(CreateAuthorSql, connection))
@@ -84,7 +91,7 @@ public class QuerySql(string connectionString)
     public readonly record struct CreateAuthorReturnIdArgs(string Name, string? Bio);
     public async Task<long> CreateAuthorReturnId(CreateAuthorReturnIdArgs args)
     {
-        using (var connection = new MySqlConnection(connectionString))
+        using (var connection = new MySqlConnection(ConnectionString))
         {
             connection.Open();
             using (var command = new MySqlCommand(CreateAuthorReturnIdSql, connection))
@@ -102,7 +109,7 @@ public class QuerySql(string connectionString)
     public readonly record struct GetAuthorByIdArgs(long Id);
     public async Task<GetAuthorByIdRow?> GetAuthorById(GetAuthorByIdArgs args)
     {
-        using (var connection = new MySqlConnection(connectionString))
+        using (var connection = new MySqlConnection(ConnectionString))
         {
             connection.Open();
             using (var command = new MySqlCommand(GetAuthorByIdSql, connection))
@@ -131,7 +138,7 @@ public class QuerySql(string connectionString)
     public readonly record struct DeleteAuthorArgs(string Name);
     public async Task DeleteAuthor(DeleteAuthorArgs args)
     {
-        using (var connection = new MySqlConnection(connectionString))
+        using (var connection = new MySqlConnection(ConnectionString))
         {
             connection.Open();
             using (var command = new MySqlCommand(DeleteAuthorSql, connection))
@@ -145,7 +152,7 @@ public class QuerySql(string connectionString)
     private const string TruncateAuthorsSql = "TRUNCATE TABLE authors";
     public async Task TruncateAuthors()
     {
-        using (var connection = new MySqlConnection(connectionString))
+        using (var connection = new MySqlConnection(ConnectionString))
         {
             connection.Open();
             using (var command = new MySqlCommand(TruncateAuthorsSql, connection))
@@ -159,7 +166,7 @@ public class QuerySql(string connectionString)
     public readonly record struct UpdateAuthorsArgs(string? Bio);
     public async Task<long> UpdateAuthors(UpdateAuthorsArgs args)
     {
-        using (var connection = new MySqlConnection(connectionString))
+        using (var connection = new MySqlConnection(ConnectionString))
         {
             connection.Open();
             using (var command = new MySqlCommand(UpdateAuthorsSql, connection))
@@ -174,7 +181,7 @@ public class QuerySql(string connectionString)
     public readonly record struct TestRow(byte[]? CBit, int? CTinyint, int? CBool, int? CBoolean, int? CSmallint, int? CMediumint, int? CInt, int? CInteger, long? CBigint, long CSerial, string? CDecimal, string? CDec, string? CNumeric, string? CFixed, double? CFloat, double? CDouble, double? CDoublePrecision, DateTime? CDate, string? CTime, DateTime? CDatetime, DateTime? CTimestamp, int? CYear, string? CChar, string? CNchar, string? CNationalChar, string? CVarchar, byte[]? CBinary, byte[]? CVarbinary, byte[]? CTinyblob, string? CTinytext, byte[]? CBlob, string? CText, byte[]? CMediumblob, string? CMediumtext, byte[]? CLongblob, string? CLongtext, object? CJson);
     public async Task<TestRow?> Test()
     {
-        using (var connection = new MySqlConnection(connectionString))
+        using (var connection = new MySqlConnection(ConnectionString))
         {
             connection.Open();
             using (var command = new MySqlCommand(TestSql, connection))

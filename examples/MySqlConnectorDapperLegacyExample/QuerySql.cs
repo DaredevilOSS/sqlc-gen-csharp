@@ -15,8 +15,8 @@ namespace MySqlConnectorDapperLegacyExampleGen
     {
         public QuerySql(string connectionString)
         {
-            Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
             this.ConnectionString = connectionString;
+            Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
         }
 
         private string ConnectionString { get; }
