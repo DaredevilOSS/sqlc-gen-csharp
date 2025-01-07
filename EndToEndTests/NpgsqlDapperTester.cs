@@ -159,7 +159,8 @@ public class NpgsqlDapperTester : IOneTester, IManyTester, IExecTester, IExecRow
             CText = "ab",
             CVarchar = "abc",
             CCharacterVarying = "abcd",
-            CTextArray = ["a", "b"]
+            CTextArray = ["a", "b"],
+            CIntegerArray = [1, 2]
         };
         var insertedId = await QuerySql.InsertNodePostgresType(nodePostgresTypeArgs);
 
@@ -167,7 +168,6 @@ public class NpgsqlDapperTester : IOneTester, IManyTester, IExecTester, IExecRow
         {
             Id = insertedId
         });
-        // System.Console.WriteLine("insertedId: " + insertedId + ", Actual: " + JsonConvert.SerializeObject(actual));
         Assert.That(actual is
         {
             CBigint: 1,
@@ -181,7 +181,8 @@ public class NpgsqlDapperTester : IOneTester, IManyTester, IExecTester, IExecRow
             CInteger: 1,
             CText: "ab",
             CVarchar: "abc",
-            CTextArray: ["a", "b"]
+            CTextArray: ["a", "b"],
+            CIntegerArray: [1, 2]
         });
     }
 }

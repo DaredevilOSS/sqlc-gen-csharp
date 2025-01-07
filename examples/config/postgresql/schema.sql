@@ -39,5 +39,6 @@ CREATE TABLE node_postgres_types (
     c_json JSON,
 
     /* Array Data Types */
-    c_text_array TEXT[]
+    c_text_array TEXT[],
+    c_integer_array INTEGER[]
 );

@@ -219,7 +219,7 @@ public class QuerySql
         }
     }
 
-    private const string InsertNodePostgresTypeSql = "INSERT INTO node_postgres_types (c_smallint, c_boolean, c_integer, c_bigint, c_serial, c_decimal, c_numeric, c_real, c_date, c_timestamp, c_char, c_varchar, c_character_varying, c_text, c_text_array) VALUES ( @c_smallint , @c_boolean, @c_integer, @c_bigint, @c_serial, @c_decimal, @c_numeric, @c_real, @c_date, @c_timestamp, @c_char, @c_varchar, @c_character_varying, @c_text, @c_text_array ) RETURNING  id  "; 
+    private const string InsertNodePostgresTypeSql = "INSERT INTO node_postgres_types (c_smallint, c_boolean, c_integer, c_bigint, c_serial, c_decimal, c_numeric, c_real, c_date, c_timestamp, c_char, c_varchar, c_character_varying, c_text, c_text_array, c_integer_array) VALUES ( @c_smallint , @c_boolean, @c_integer, @c_bigint, @c_serial, @c_decimal, @c_numeric, @c_real, @c_date, @c_timestamp, @c_char, @c_varchar, @c_character_varying, @c_text, @c_text_array, @c_integer_array ) RETURNING  id  "; 
     public class InsertNodePostgresTypeRow
     {
         public long Id { get; set; }
@@ -241,16 +241,17 @@ public class QuerySql
         public string? CCharacterVarying { get; set; }
         public string? CText { get; set; }
         public string[]? CTextArray { get; set; }
+        public int[]? CIntegerArray { get; set; }
     };
     public async Task<long> InsertNodePostgresType(InsertNodePostgresTypeArgs args)
     {
         using (var connection = new NpgsqlConnection(ConnectionString))
         {
-            return await connection.QuerySingleAsync<long>(InsertNodePostgresTypeSql, new { c_smallint = args.CSmallint, c_boolean = args.CBoolean, c_integer = args.CInteger, c_bigint = args.CBigint, c_serial = args.CSerial, c_decimal = args.CDecimal, c_numeric = args.CNumeric, c_real = args.CReal, c_date = args.CDate, c_timestamp = args.CTimestamp, c_char = args.CChar, c_varchar = args.CVarchar, c_character_varying = args.CCharacterVarying, c_text = args.CText, c_text_array = args.CTextArray });
+            return await connection.QuerySingleAsync<long>(InsertNodePostgresTypeSql, new { c_smallint = args.CSmallint, c_boolean = args.CBoolean, c_integer = args.CInteger, c_bigint = args.CBigint, c_serial = args.CSerial, c_decimal = args.CDecimal, c_numeric = args.CNumeric, c_real = args.CReal, c_date = args.CDate, c_timestamp = args.CTimestamp, c_char = args.CChar, c_varchar = args.CVarchar, c_character_varying = args.CCharacterVarying, c_text = args.CText, c_text_array = args.CTextArray, c_integer_array = args.CIntegerArray });
         }
     }
 
-    private const string GetNodePostgresTypeSql = "SELECT c_smallint, c_boolean, c_integer, c_bigint, c_serial, c_decimal, c_numeric, c_real, c_date, c_timestamp, c_char, c_varchar, c_character_varying, c_text, c_text_array FROM node_postgres_types WHERE id = @id LIMIT 1";
+    private const string GetNodePostgresTypeSql = "SELECT c_smallint, c_boolean, c_integer, c_bigint, c_serial, c_decimal, c_numeric, c_real, c_date, c_timestamp, c_char, c_varchar, c_character_varying, c_text, c_text_array, c_integer_array FROM node_postgres_types WHERE id = @id LIMIT 1";
     public class GetNodePostgresTypeRow
     {
         public int? CSmallint { get; set; }
@@ -268,6 +269,7 @@ public class QuerySql
         public string? CCharacterVarying { get; set; }
         public string? CText { get; set; }
         public string[]? CTextArray { get; set; }
+        public int[]? CIntegerArray { get; set; }
     };
     public class GetNodePostgresTypeArgs
     {

@@ -317,7 +317,7 @@ namespace NpgsqlLegacyExampleGen
             return null;
         }
 
-        private const string InsertNodePostgresTypeSql = "INSERT INTO node_postgres_types (c_smallint, c_boolean, c_integer, c_bigint, c_serial, c_decimal, c_numeric, c_real, c_date, c_timestamp, c_char, c_varchar, c_character_varying, c_text, c_text_array) VALUES ( @c_smallint , @c_boolean, @c_integer, @c_bigint, @c_serial, @c_decimal, @c_numeric, @c_real, @c_date, @c_timestamp, @c_char, @c_varchar, @c_character_varying, @c_text, @c_text_array ) RETURNING  id  "; 
+        private const string InsertNodePostgresTypeSql = "INSERT INTO node_postgres_types (c_smallint, c_boolean, c_integer, c_bigint, c_serial, c_decimal, c_numeric, c_real, c_date, c_timestamp, c_char, c_varchar, c_character_varying, c_text, c_text_array, c_integer_array) VALUES ( @c_smallint , @c_boolean, @c_integer, @c_bigint, @c_serial, @c_decimal, @c_numeric, @c_real, @c_date, @c_timestamp, @c_char, @c_varchar, @c_character_varying, @c_text, @c_text_array, @c_integer_array ) RETURNING  id  "; 
         public class InsertNodePostgresTypeRow
         {
             public long Id { get; set; }
@@ -339,6 +339,7 @@ namespace NpgsqlLegacyExampleGen
             public string CCharacterVarying { get; set; }
             public string CText { get; set; }
             public string[] CTextArray { get; set; }
+            public int[] CIntegerArray { get; set; }
         };
         public async Task<long> InsertNodePostgresType(InsertNodePostgresTypeArgs args)
         {
@@ -361,13 +362,14 @@ namespace NpgsqlLegacyExampleGen
                     command.Parameters.AddWithValue("@c_character_varying", args.CCharacterVarying);
                     command.Parameters.AddWithValue("@c_text", args.CText);
                     command.Parameters.AddWithValue("@c_text_array", args.CTextArray);
+                    command.Parameters.AddWithValue("@c_integer_array", args.CIntegerArray);
                     var result = await command.ExecuteScalarAsync();
                     return Convert.ToInt64(result);
                 }
             }
         }
 
-        private const string GetNodePostgresTypeSql = "SELECT c_smallint, c_boolean, c_integer, c_bigint, c_serial, c_decimal, c_numeric, c_real, c_date, c_timestamp, c_char, c_varchar, c_character_varying, c_text, c_text_array FROM node_postgres_types WHERE id = @id LIMIT 1";
+        private const string GetNodePostgresTypeSql = "SELECT c_smallint, c_boolean, c_integer, c_bigint, c_serial, c_decimal, c_numeric, c_real, c_date, c_timestamp, c_char, c_varchar, c_character_varying, c_text, c_text_array, c_integer_array FROM node_postgres_types WHERE id = @id LIMIT 1";
         public class GetNodePostgresTypeRow
         {
             public int? CSmallint { get; set; }
@@ -385,6 +387,7 @@ namespace NpgsqlLegacyExampleGen
             public string CCharacterVarying { get; set; }
             public string CText { get; set; }
             public string[] CTextArray { get; set; }
+            public int[] CIntegerArray { get; set; }
         };
         public class GetNodePostgresTypeArgs
         {
@@ -417,7 +420,8 @@ namespace NpgsqlLegacyExampleGen
                                 CVarchar = reader.IsDBNull(11) ? string.Empty : reader.GetString(11),
                                 CCharacterVarying = reader.IsDBNull(12) ? string.Empty : reader.GetString(12),
                                 CText = reader.IsDBNull(13) ? string.Empty : reader.GetString(13),
-                                CTextArray = reader.IsDBNull(14) ? null : reader.GetFieldValue<string[]>(14)
+                                CTextArray = reader.IsDBNull(14) ? null : reader.GetFieldValue<string[]>(14),
+                                CIntegerArray = reader.IsDBNull(15) ? null : reader.GetFieldValue<int[]>(15)
                             };
                         }
                     }

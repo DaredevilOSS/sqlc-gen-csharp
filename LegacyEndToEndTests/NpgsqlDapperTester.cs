@@ -152,7 +152,8 @@ namespace SqlcGenCsharpTests
                 CText = "ab",
                 CVarchar = "abc",
                 CCharacterVarying = "abcd",
-                CTextArray = new string[] { "a", "b" }
+                CTextArray = new string[] { "a", "b" },
+                CIntegerArray = new int[] { 1, 2 }
             };
             var insertedId = await QuerySql.InsertNodePostgresType(nodePostgresTypeArgs);
 
@@ -176,7 +177,8 @@ namespace SqlcGenCsharpTests
                 CText = "ab",
                 CVarchar = "abc",
                 CCharacterVarying = "abcd",
-                CTextArray = new string[] { "a", "b" }
+                CTextArray = new string[] { "a", "b" },
+                CIntegerArray = new int[] { 1, 2 }
             }));
         }
 
@@ -195,7 +197,8 @@ namespace SqlcGenCsharpTests
                 x.CVarchar.Equals(y.CVarchar) &&
                 x.CCharacterVarying.Equals(y.CCharacterVarying) &&
                 x.CText.Equals(y.CText) &&
-                x.CTextArray.SequenceEqual(y.CTextArray);
+                x.CTextArray.SequenceEqual(y.CTextArray) &&
+                x.CIntegerArray.SequenceEqual(y.CIntegerArray);
         }
 
         private static bool Equals(QuerySql.GetAuthorRow x, QuerySql.GetAuthorRow y)

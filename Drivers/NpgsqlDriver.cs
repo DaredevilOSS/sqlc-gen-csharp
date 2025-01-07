@@ -66,7 +66,8 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, ICopyFrom, IExecRows, 
                 { "int2", null },
                 { "int4", "NpgsqlDbType.Integer" },
                 { "serial", null }
-            }, ordinal => $"reader.GetInt32({ordinal})"),
+            }, ordinal => $"reader.GetInt32({ordinal})",
+               ordinal => $"reader.GetFieldValue<int[]>({ordinal})"),
         new("float",
             new Dictionary<string, string?> { { "numeric", null }, { "float4", null }, { "float8", null } }
             , ordinal => $"reader.GetFloat({ordinal})"),

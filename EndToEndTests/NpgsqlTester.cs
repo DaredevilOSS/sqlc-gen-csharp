@@ -185,7 +185,8 @@ public class NpgsqlTester : IOneTester, IManyTester, IExecTester, IExecRowsTeste
             CText = "ab",
             CVarchar = "abc",
             CCharacterVarying = "abcd",
-            CTextArray = ["a", "b"]
+            CTextArray = ["a", "b"],
+            CIntegerArray = [1, 2]
         };
         var insertedId = await QuerySql.InsertNodePostgresType(nodePostgresTypeArgs);
 
@@ -207,7 +208,8 @@ public class NpgsqlTester : IOneTester, IManyTester, IExecTester, IExecRowsTeste
             CInteger: 1,
             CText: "ab",
             CVarchar: "abc",
-            CTextArray: ["a", "b"]
+            CTextArray: ["a", "b"],
+            CIntegerArray: [1, 2]
         });
     }
 }
