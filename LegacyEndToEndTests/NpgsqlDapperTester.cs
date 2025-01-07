@@ -133,53 +133,53 @@ namespace SqlcGenCsharpTests
         }
 
         public async Task TestNodePostgresType()
-    {
-        var nodePostgresTypeArgs = new QuerySql.InsertNodePostgresTypeArgs
         {
-            CBigint = 1,
-            CReal = 1.0f,
-            CNumeric = 1,
-            CSerial = 1,
-            CSmallint = 1,
-            CDecimal = 1,
-            CDate = DateTime.Now,
-            CTimestamp = DateTime.Now,
-            CBoolean = true,
-            CChar = "a",
-            CDoublePrecision = (float?)1.0,
-            CInteger = 1,
-            CText = "ab",
-            CVarchar = "abc",
-            CCharacterVarying = "abcd",
-            CTextArray = new string[]{"a", "b"}
-        };
-        var insertedId = await QuerySql.InsertNodePostgresType(nodePostgresTypeArgs);
+            var nodePostgresTypeArgs = new QuerySql.InsertNodePostgresTypeArgs
+            {
+                CBigint = 1,
+                CReal = 1.0f,
+                CNumeric = 1,
+                CSerial = 1,
+                CSmallint = 1,
+                CDecimal = 1,
+                CDate = DateTime.Now,
+                CTimestamp = DateTime.Now,
+                CBoolean = true,
+                CChar = "a",
+                CDoublePrecision = (float?)1.0,
+                CInteger = 1,
+                CText = "ab",
+                CVarchar = "abc",
+                CCharacterVarying = "abcd",
+                CTextArray = new string[] { "a", "b" }
+            };
+            var insertedId = await QuerySql.InsertNodePostgresType(nodePostgresTypeArgs);
 
-        var actual = await QuerySql.GetNodePostgresType(new QuerySql.GetNodePostgresTypeArgs
-        {
-            Id = insertedId
-        });
+            var actual = await QuerySql.GetNodePostgresType(new QuerySql.GetNodePostgresTypeArgs
+            {
+                Id = insertedId
+            });
 
-        ClassicAssert.IsNotNull(actual);
-        Assert.That(Equals(actual, new GetNodePostgresTypeRow
-        {
-            CBigint = 1,
-            CReal = 1.0f,
-            CSerial = 1,
-            CNumeric = 1,
-            CDecimal = 1,
-            CSmallint = 1,
-            CBoolean = true,
-            CChar = "a",
-            CDoublePrecision = (float?)1.0,
-            CInteger = 1,
-            CText = "ab",
-            CVarchar = "abc",
-            CTextArray = new string[] { "a", "b" }
-        }));
-    }
+            ClassicAssert.IsNotNull(actual);
+            Assert.That(Equals(actual, new GetNodePostgresTypeRow
+            {
+                CBigint = 1,
+                CReal = 1.0f,
+                CSerial = 1,
+                CNumeric = 1,
+                CDecimal = 1,
+                CSmallint = 1,
+                CBoolean = true,
+                CChar = "a",
+                CDoublePrecision = (float?)1.0,
+                CInteger = 1,
+                CText = "ab",
+                CVarchar = "abc",
+                CTextArray = new string[] { "a", "b" }
+            }));
+        }
 
-    private static bool Equals(GetNodePostgresTypeRow x, GetNodePostgresTypeRow y)
+        private static bool Equals(GetNodePostgresTypeRow x, GetNodePostgresTypeRow y)
         {
             return x.CSmallint == y.CSmallint &&
                 x.CBoolean == y.CBoolean &&
