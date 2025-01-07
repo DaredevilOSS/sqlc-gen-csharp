@@ -11,8 +11,16 @@ using Npgsql;
 using NpgsqlTypes;
 
 namespace NpgsqlDapperExampleGen;
-public class QuerySql(string connectionString)
+public class QuerySql
 {
+    public QuerySql(string connectionString)
+    {
+        Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
+        this.connectionString = connectionString;
+    }
+
+    private string connectionString { get; }
+
     private const string GetAuthorSql = "SELECT id, name, bio, created FROM authors WHERE name = @name LIMIT 1";
     public class GetAuthorRow
     {

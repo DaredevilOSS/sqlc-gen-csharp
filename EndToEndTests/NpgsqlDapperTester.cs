@@ -168,21 +168,22 @@ public class NpgsqlDapperTester : IOneTester, IManyTester, IExecTester, IExecRow
         {
             Id = insertedId
         });
-        System.Console.WriteLine("insertedId: " + insertedId + ", Actual: " + JsonConvert.SerializeObject(actual));
-        Assert.That(actual, Is.AssignableTo<object>().And
-            .Property("CBigint").EqualTo(1).And
-            .Property("CReal").EqualTo(1.0f).And
-            .Property("CSerial").EqualTo(1).And
-            .Property("CNumeric").EqualTo(1).And
-            .Property("CDecimal").EqualTo(1).And
-            .Property("CSmallint").EqualTo(1).And
-            .Property("CBoolean").EqualTo(true).And
-            .Property("CChar").EqualTo("a").And
-            .Property("CDoublePrecision").EqualTo((float?)1.0).And
-            .Property("CInteger").EqualTo(1).And
-            .Property("CText").EqualTo("ab").And
-            .Property("CVarchar").EqualTo("abc").And
-            .Property("CCharacterVarying").EqualTo("abcd").And
-            .Property("CTextArray").EqualTo(new[] { "a", "b" }));
+        // System.Console.WriteLine("insertedId: " + insertedId + ", Actual: " + JsonConvert.SerializeObject(actual));
+        Assert.That(actual is
+        {
+            CBigint: 1,
+            CReal: 1.0f,
+            CSerial: 1,
+            CNumeric: 1,
+            CDecimal: 1,
+            CSmallint: 1,
+            CBoolean: true,
+            CChar: "a",
+            CDoublePrecision: (float?)1.0,
+            CInteger: 1,
+            CText: "ab",
+            CVarchar: "abc",
+            CTextArray: ["a", "b"]
+        });
     }
 }

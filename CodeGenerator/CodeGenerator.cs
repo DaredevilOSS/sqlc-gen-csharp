@@ -167,6 +167,22 @@ public class CodeGenerator
 
         MemberDeclarationSyntax GetWithPrimaryConstructor()
         {
+            if (Options.UseDapper)
+            {
+                return ParseMemberDeclaration(
+                    $$"""
+                      class {{className}}
+                      {
+                          public {{className}}(string {{Variable.ConnectionString.AsVarName()}})
+                          {
+                              Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
+                              this.{{Variable.ConnectionString.AsVarName()}} = {{Variable.ConnectionString.AsVarName()}};
+                          }
+                          private string {{Variable.ConnectionString.AsVarName()}} { get; }
+                      }
+                      """)!
+                    .AddModifiers(Token(SyntaxKind.PublicKeyword));
+            }
             return ParseMemberDeclaration(
                     $"class {className}(string {Variable.ConnectionString.AsVarName()})" + "{}")!
                 .AddModifiers(Token(SyntaxKind.PublicKeyword));
@@ -174,6 +190,23 @@ public class CodeGenerator
 
         MemberDeclarationSyntax GetWithRegularConstructor()
         {
+            if (Options.UseDapper)
+            {
+                return ParseMemberDeclaration(
+                    $$"""
+                      class {{className}}
+                      {
+                          public {{className}}(string {{Variable.ConnectionString.AsVarName()}})
+                          {
+                              Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
+                              this.{{Variable.ConnectionString.AsPropertyName()}} = {{Variable.ConnectionString.AsVarName()}};
+                          }
+                          private string {{Variable.ConnectionString.AsPropertyName()}} { get; }
+                      }
+                      """)!
+                    .AddModifiers(Token(SyntaxKind.PublicKeyword));
+            }
+
             return ParseMemberDeclaration(
                     $$"""
                       class {{className}}
