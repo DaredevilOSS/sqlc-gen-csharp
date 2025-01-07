@@ -18,6 +18,7 @@ namespace SqlcGenCsharpTests
         public async Task EmptyTestsTable()
         {
             await QuerySql.TruncateAuthors();
+            await QuerySql.TruncateNodePostgresTypes();
         }
 
         [Test]
@@ -132,6 +133,7 @@ namespace SqlcGenCsharpTests
             Assert.That(Equals(expected, actual));
         }
 
+        [Test]
         public async Task TestNodePostgresType()
         {
             var nodePostgresTypeArgs = new QuerySql.InsertNodePostgresTypeArgs
@@ -177,7 +179,7 @@ namespace SqlcGenCsharpTests
             }));
         }
 
-        private static bool Equals(GetNodePostgresTypeRow x, GetNodePostgresTypeRow y)
+        private static bool Equals(QuerySql.GetNodePostgresTypeRow x, QuerySql.GetNodePostgresTypeRow y)
         {
             return x.CSmallint == y.CSmallint &&
                 x.CBoolean == y.CBoolean &&

@@ -20,6 +20,7 @@ namespace SqlcGenCsharpTests
         public async Task EmptyTestsTable()
         {
             await QuerySql.TruncateAuthors();
+            await QuerySql.TruncateNodePostgresTypes();
         }
 
         [Test]
