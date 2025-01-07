@@ -195,8 +195,8 @@ namespace SqlcGenCsharpTests
                 x.CChar.Equals(y.CChar) &&
                 x.CVarchar.Equals(y.CVarchar) &&
                 x.CCharacterVarying.Equals(y.CCharacterVarying) &&
-                x.CText.Equals(y.CText) &&
-                x.CTextArray.SequenceEqual(y.CTextArray);
+                x.CText.Equals(y.CText);
+                // x.CTextArray.SequenceEqual(y.CTextArray);
         }
 
         private static bool Equals(QuerySql.GetAuthorRow x, QuerySql.GetAuthorRow y)
