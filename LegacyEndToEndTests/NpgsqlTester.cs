@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using static NpgsqlDapperLegacyExampleGen.QuerySql;
 
 namespace SqlcGenCsharpTests
 {
@@ -155,6 +156,74 @@ namespace SqlcGenCsharpTests
             });
             ClassicAssert.IsNotNull(actual);
             Assert.That(Equals(expected, actual));
+        }
+
+        [Test]
+    public async Task TestNodePostgresType()
+    {
+        var nodePostgresTypeArgs = new QuerySql.InsertNodePostgresTypeArgs
+        {
+            CBigint = 1,
+            CReal = 1.0f,
+            CNumeric = 1,
+            CSerial = 1,
+            CSmallint = 1,
+            CDecimal = 1,
+            CDate = DateTime.Now,
+            CTimestamp = DateTime.Now,
+            CBoolean = true,
+            CChar = "a",
+            CDoublePrecision = (float?)1.0,
+            CInteger = 1,
+            CText = "ab",
+            CVarchar = "abc",
+            CCharacterVarying = "abcd",
+            CTextArray = new string[]{"a", "b"}
+        };
+        var insertedId = await QuerySql.InsertNodePostgresType(nodePostgresTypeArgs);
+
+        var actual = await QuerySql.GetNodePostgresType(new QuerySql.GetNodePostgresTypeArgs
+        {
+            Id = insertedId
+        });
+
+        ClassicAssert.IsNotNull(actual);
+        Assert.That(Equals(actual, new GetNodePostgresTypeRow
+        {
+            CBigint = 1,
+            CReal = 1.0f,
+            CSerial = 1,
+            CNumeric = 1,
+            CDecimal = 1,
+            CSmallint = 1,
+            CBoolean = true,
+            CChar = "a",
+            CDoublePrecision = (float?)1.0,
+            CInteger = 1,
+            CText = "ab",
+            CVarchar = "abc",
+            CTextArray = new string[] { "a", "b" }
+        }));
+    }
+
+    private static bool Equals(GetNodePostgresTypeRow x, GetNodePostgresTypeRow y)
+        {
+            return x.CSmallint == y.CSmallint &&
+                x.CBoolean == y.CBoolean &&
+                x.CInteger == y.CInteger &&
+                x.CBigint == y.CBigint &&
+                x.CSerial == y.CSerial &&
+                x.CDecimal == y.CDecimal &&
+                x.CNumeric == y.CNumeric &&
+                x.CReal == y.CReal &&
+                x.CDoublePrecision == y.CDoublePrecision &&
+                // x.CDate == y.CDate &&
+                // x.CTimestamp == y.CTimestamp &&
+                x.CChar == y.CChar &&
+                x.CVarchar == y.CVarchar &&
+                x.CCharacterVarying == y.CCharacterVarying &&
+                x.CText == y.CText &&
+                x.CTextArray.SequenceEqual(y.CTextArray);
         }
 
         private static bool Equals(QuerySql.GetAuthorRow x, QuerySql.GetAuthorRow y)
