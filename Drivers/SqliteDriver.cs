@@ -12,7 +12,7 @@ namespace SqlcGenCsharp.Drivers;
 public partial class SqliteDriver(Options options) : DbDriver(options), IOne, IMany, IExec, IExecRows, IExecLastId
 {
     protected override List<ColumnMapping> ColumnMappings { get; } = [
-        new("byte[]",new Dictionary<string, string?>
+        new("byte[]", new Dictionary<string, string?>
             {
                 {"blob", null}
             }, ordinal => $"Utils.GetBytes(reader, {ordinal})"),
