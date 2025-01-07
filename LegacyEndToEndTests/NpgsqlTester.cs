@@ -188,6 +188,7 @@ namespace SqlcGenCsharpTests
             });
 
             ClassicAssert.IsNotNull(actual);
+            System.Console.WriteLine("insertedId: " + insertedId + ", Actual.CBigint: " + actual.CBigint);
             Assert.That(Equals(actual, new GetNodePostgresTypeRow
             {
                 CBigint = 1,
