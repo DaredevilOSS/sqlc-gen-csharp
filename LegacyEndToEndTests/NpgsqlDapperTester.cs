@@ -175,6 +175,7 @@ namespace SqlcGenCsharpTests
                 CInteger = 1,
                 CText = "ab",
                 CVarchar = "abc",
+                CCharacterVarying = "abcd",
                 CTextArray = new string[] { "a", "b" }
             }));
         }
