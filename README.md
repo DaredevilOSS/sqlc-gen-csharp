@@ -67,7 +67,7 @@ Advanced functionality - varies between databases:
 | :exec       | ✅          | ✅    | ✅     |
 | :execrows   | ✅          | ✅    | ✅     |
 | :execlastid | ✅          | ✅    | ✅     |
-| :copyfrom   | ✅          | ❌    | 🚫     |
+| :copyfrom   | ✅          | ✅    | 🚫     |
 
 - ✅ means the feature is fully supported.
 - 🚫 means the database does not support the feature.
