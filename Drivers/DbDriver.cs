@@ -115,7 +115,7 @@ public abstract class DbDriver(Options options)
 
     public string GetIdColumnType()
     {
-        return options.DriverName switch
+        return Options.DriverName switch
         {
             DriverName.Sqlite => "int",
             _ => "long"

@@ -24,5 +24,14 @@ UPDATE authors
 SET bio = sqlc.arg('bio')
 WHERE bio IS NOT NULL;
 
+-- name: TruncateCopyToTests :exec
+TRUNCATE TABLE copy_tests;
+
+-- name: CopyToTests :copyfrom
+INSERT INTO copy_tests (c_int, c_varchar, c_date, c_timestamp) VALUES (?, ?, ?, ?);
+
+-- name: CountCopyRows :one
+SELECT COUNT(1) AS cnt FROM copy_tests;
+
 /* name: Test :one */
 SELECT * FROM node_mysql_types LIMIT 1;

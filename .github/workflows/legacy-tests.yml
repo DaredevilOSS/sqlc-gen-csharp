@@ -100,7 +100,7 @@ jobs:
         run: |
           $env:Path += ";C:\Program Files\MySQL\MySQL Server 8.0\bin"
           [Environment]::SetEnvironmentVariable("Path", $env:Path, "Machine")
-          mysql -u root -e "CREATE DATABASE $Env:TESTS_DB;"
+          mysql -u root -e "SET GLOBAL local_infile=1; CREATE DATABASE $Env:TESTS_DB;"
           mysql -u root $Env:TESTS_DB --execute="source examples/config/mysql/schema.sql"    
 
       - name: Run Tests

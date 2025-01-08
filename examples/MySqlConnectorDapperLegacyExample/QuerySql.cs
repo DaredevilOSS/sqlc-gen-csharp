@@ -10,6 +10,10 @@ namespace MySqlConnectorDapperLegacyExampleGen
     using System.Threading.Tasks;
     using Dapper;
     using MySqlConnector;
+    using System.Globalization;
+    using System.IO;
+    using CsvHelper;
+    using CsvHelper.Configuration;
 
     public class QuerySql
     {
@@ -140,6 +144,62 @@ namespace MySqlConnectorDapperLegacyExampleGen
             using (var connection = new MySqlConnection(ConnectionString))
             {
                 return await connection.ExecuteAsync(UpdateAuthorsSql, new { bio = args.Bio });
+            }
+        }
+
+        private const string TruncateCopyToTestsSql = "TRUNCATE TABLE copy_tests; SELECT LAST_INSERT_ID()";
+        public async Task TruncateCopyToTests()
+        {
+            using (var connection = new MySqlConnection(ConnectionString))
+            {
+                await connection.ExecuteAsync(TruncateCopyToTestsSql);
+            }
+        }
+
+        private const string CopyToTestsSql = "INSERT INTO copy_tests (c_int, c_varchar, c_date, c_timestamp) VALUES (@c_int, @c_varchar, @c_date, @c_timestamp); SELECT LAST_INSERT_ID()";
+        public class CopyToTestsArgs
+        {
+            public int CInt { get; set; }
+            public string CVarchar { get; set; }
+            public DateTime CDate { get; set; }
+            public DateTime CTimestamp { get; set; }
+        };
+        public async Task CopyToTests(List<CopyToTestsArgs> args)
+        {
+            var config = new CsvConfiguration(CultureInfo.CurrentCulture)
+            {
+                Delimiter = ","
+            };
+            using (var writer = new StreamWriter("input.csv"))
+            using (var csvWriter = new CsvWriter(writer, config))
+                await csvWriter.WriteRecordsAsync(args);
+            using (var connection = new MySqlConnection(ConnectionString))
+            {
+                connection.Open();
+                var loader = new MySqlBulkLoader(connection)
+                {
+                    Local = true,
+                    TableName = "copy_tests",
+                    FieldTerminator = ",",
+                    FileName = "input.csv",
+                    NumberOfLinesToSkip = 1
+                };
+                await loader.LoadAsync();
+                await connection.CloseAsync();
+            }
+        }
+
+        private const string CountCopyRowsSql = "SELECT COUNT(1) AS cnt FROM copy_tests; SELECT LAST_INSERT_ID()";
+        public class CountCopyRowsRow
+        {
+            public long Cnt { get; set; }
+        };
+        public async Task<CountCopyRowsRow> CountCopyRows()
+        {
+            using (var connection = new MySqlConnection(ConnectionString))
+            {
+                var result = await connection.QueryFirstOrDefaultAsync<CountCopyRowsRow>(CountCopyRowsSql);
+                return result;
             }
         }
 

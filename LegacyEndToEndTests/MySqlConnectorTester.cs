@@ -8,8 +8,10 @@ using System.Threading.Tasks;
 
 namespace SqlcGenCsharpTests
 {
-    public class MySqlConnectorTester : IOneTester, IManyTester, IExecTester, IExecRowsTester, IExecLastIdTester
+    public class MySqlConnectorTester : IOneTester, IManyTester, IExecTester, IExecRowsTester, IExecLastIdTester, ICopyFromTester
     {
+        private static readonly Random Randomizer = new Random();
+
         private QuerySql QuerySql { get; } = new QuerySql(
             Environment.GetEnvironmentVariable(EndToEndCommon.MySqlConnectionStringEnv));
 
@@ -129,6 +131,30 @@ namespace SqlcGenCsharpTests
             });
             ClassicAssert.IsNotNull(actual);
             Assert.That(Equals(expected, actual));
+        }
+
+        [Test]
+        public async Task TestCopyFrom()
+        {
+            const int batchSize = 100;
+            var createAuthorBatchArgs = Enumerable.Range(0, batchSize)
+                .Select(_ => GenerateRandom())
+                .ToList();
+            await QuerySql.CopyToTests(createAuthorBatchArgs);
+            var countRows = QuerySql.CountCopyRows().Result.Cnt;
+            ClassicAssert.AreEqual(batchSize, countRows);
+            return;
+
+            QuerySql.CopyToTestsArgs GenerateRandom()
+            {
+                return new QuerySql.CopyToTestsArgs
+                {
+                    CVarchar = Randomizer.Next().ToString(),
+                    CInt = Randomizer.Next(),
+                    CDate = DateTime.Now.Subtract(TimeSpan.FromMilliseconds(Randomizer.Next())),
+                    CTimestamp = DateTime.Now.Subtract(TimeSpan.FromMilliseconds(Randomizer.Next()))
+                };
+            }
         }
 
         private static bool Equals(QuerySql.GetAuthorRow x, QuerySql.GetAuthorRow y)

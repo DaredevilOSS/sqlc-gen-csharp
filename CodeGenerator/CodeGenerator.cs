@@ -219,9 +219,9 @@ public class CodeGenerator
             ":exec" => DbDriver.ExecDeclare(queryTextConstant, argInterface, query),
             ":one" => DbDriver.OneDeclare(queryTextConstant, argInterface, returnInterface, query),
             ":many" => DbDriver.ManyDeclare(queryTextConstant, argInterface, returnInterface, query),
+            ":execrows" => ((IExecRows)DbDriver).ExecRowsDeclare(queryTextConstant, argInterface, query),
             ":execlastid" => ((IExecLastId)DbDriver).ExecLastIdDeclare(queryTextConstant, argInterface, query),
             ":copyfrom" => ((ICopyFrom)DbDriver).CopyFromDeclare(queryTextConstant, argInterface, query),
-            ":execrows" => ((IExecRows)DbDriver).ExecRowsDeclare(queryTextConstant, argInterface, query),
             _ => throw new NotImplementedException($"{query.Cmd} is not implemented")
         };
 

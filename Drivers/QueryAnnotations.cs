@@ -26,6 +26,8 @@ public interface IExecLastId
 public interface ICopyFrom
 {
     MemberDeclarationSyntax CopyFromDeclare(string queryTextConstant, string argInterface, Query query);
+
+    string GetCopyFromImpl(Query query, string queryTextConstant);
 }
 
 public interface IExecRows

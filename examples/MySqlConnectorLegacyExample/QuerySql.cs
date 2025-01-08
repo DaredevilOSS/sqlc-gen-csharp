@@ -9,6 +9,10 @@ namespace MySqlConnectorLegacyExampleGen
     using System.Collections.Generic;
     using System.Threading.Tasks;
     using MySqlConnector;
+    using System.Globalization;
+    using System.IO;
+    using CsvHelper;
+    using CsvHelper.Configuration;
 
     public class QuerySql
     {
@@ -214,6 +218,80 @@ namespace MySqlConnectorLegacyExampleGen
                     return await command.ExecuteNonQueryAsync();
                 }
             }
+        }
+
+        private const string TruncateCopyToTestsSql = "TRUNCATE TABLE copy_tests";
+        public async Task TruncateCopyToTests()
+        {
+            using (var connection = new MySqlConnection(ConnectionString))
+            {
+                connection.Open();
+                using (var command = new MySqlCommand(TruncateCopyToTestsSql, connection))
+                {
+                    await command.ExecuteScalarAsync();
+                }
+            }
+        }
+
+        private const string CopyToTestsSql = "INSERT INTO copy_tests (c_int, c_varchar, c_date, c_timestamp) VALUES (@c_int, @c_varchar, @c_date, @c_timestamp)";
+        public class CopyToTestsArgs
+        {
+            public int CInt { get; set; }
+            public string CVarchar { get; set; }
+            public DateTime CDate { get; set; }
+            public DateTime CTimestamp { get; set; }
+        };
+        public async Task CopyToTests(List<CopyToTestsArgs> args)
+        {
+            var config = new CsvConfiguration(CultureInfo.CurrentCulture)
+            {
+                Delimiter = ","
+            };
+            using (var writer = new StreamWriter("input.csv"))
+            using (var csvWriter = new CsvWriter(writer, config))
+                await csvWriter.WriteRecordsAsync(args);
+            using (var connection = new MySqlConnection(ConnectionString))
+            {
+                connection.Open();
+                var loader = new MySqlBulkLoader(connection)
+                {
+                    Local = true,
+                    TableName = "copy_tests",
+                    FieldTerminator = ",",
+                    FileName = "input.csv",
+                    NumberOfLinesToSkip = 1
+                };
+                await loader.LoadAsync();
+                await connection.CloseAsync();
+            }
+        }
+
+        private const string CountCopyRowsSql = "SELECT COUNT(1) AS cnt FROM copy_tests";
+        public class CountCopyRowsRow
+        {
+            public long Cnt { get; set; }
+        };
+        public async Task<CountCopyRowsRow> CountCopyRows()
+        {
+            using (var connection = new MySqlConnection(ConnectionString))
+            {
+                connection.Open();
+                using (var command = new MySqlCommand(CountCopyRowsSql, connection))
+                {
+                    using (var reader = await command.ExecuteReaderAsync())
+                    {
+                        if (await reader.ReadAsync())
+                        {
+                            return new CountCopyRowsRow
+                            {
+                                Cnt = reader.GetInt64(0)
+                            };
+                        }
+                    }
+                }
+            }
+
+            return null;
         }
 
         private const string TestSql = "SELECT c_bit, c_tinyint, c_bool, c_boolean, c_smallint, c_mediumint, c_int, c_integer, c_bigint, c_serial, c_decimal, c_dec, c_numeric, c_fixed, c_float, c_double, c_double_precision, c_date, c_time, c_datetime, c_timestamp, c_year, c_char, c_nchar, c_national_char, c_varchar, c_binary, c_varbinary, c_tinyblob, c_tinytext, c_blob, c_text, c_mediumblob, c_mediumtext, c_longblob, c_longtext, c_json FROM node_mysql_types LIMIT 1";
