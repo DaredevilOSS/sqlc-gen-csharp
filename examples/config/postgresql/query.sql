@@ -24,6 +24,9 @@ UPDATE authors
    SET bio = $1
  WHERE bio IS NOT NULL;
 
+-- name: SelectAuthorsWithSlice :many
+SELECT * FROM authors WHERE id = ANY($1::BIGINT[]);
+
 -- name: TruncateCopyToTests :exec
 TRUNCATE TABLE copy_tests;
 

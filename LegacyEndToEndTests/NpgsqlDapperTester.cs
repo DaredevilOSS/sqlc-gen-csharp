@@ -72,6 +72,38 @@ namespace SqlcGenCsharpTests
         }
 
         [Test]
+        public async Task TestManyWithSlice()
+        {
+            await QuerySql.CreateAuthor(new QuerySql.CreateAuthorArgs
+            {
+                Name = DataGenerator.BojackAuthor,
+                Bio = DataGenerator.BojackTheme
+            });
+            var author2 = await QuerySql.CreateAuthor(new QuerySql.CreateAuthorArgs
+            {
+                Name = DataGenerator.DrSeussAuthor,
+                Bio = DataGenerator.DrSeussQuote
+            });
+            var author3 = await QuerySql.CreateAuthor(new QuerySql.CreateAuthorArgs
+            {
+                Name = DataGenerator.GenericAuthor,
+                Bio = DataGenerator.GenericQuote1
+            });
+
+            var actual = await QuerySql.SelectAuthorsWithSlice(new QuerySql.SelectAuthorsWithSliceArgs
+            {
+                LongArr1 = new long[] { author2.Id, author3.Id }
+            });
+            ClassicAssert.AreEqual(2, actual.Count);
+            var expected = new List<QuerySql.SelectAuthorsWithSliceRow>
+            {
+                new QuerySql.SelectAuthorsWithSliceRow { Name = DataGenerator.DrSeussAuthor, Bio = DataGenerator.DrSeussQuote }
+                new QuerySql.SelectAuthorsWithSliceRow { Name = DataGenerator.GenericAuthor, Bio = DataGenerator.GenericQuote1 },
+            };
+            Assert.That(SequenceEquals(expected, actual));
+        }
+
+        [Test]
         public async Task TestExec()
         {
             await QuerySql.CreateAuthor(new QuerySql.CreateAuthorArgs
@@ -220,6 +252,14 @@ namespace SqlcGenCsharpTests
             if (x.Count != y.Count) return false;
             x = x.OrderBy<QuerySql.ListAuthorsRow, object>(o => o.Name + o.Bio).ToList();
             y = y.OrderBy<QuerySql.ListAuthorsRow, object>(o => o.Name + o.Bio).ToList();
+            return !x.Where((t, i) => !Equals(t, y[i])).Any();
+        }
+
+        private static bool SequenceEquals(List<QuerySql.SelectAuthorsWithSliceRow> x, List<QuerySql.SelectAuthorsWithSliceRow> y)
+        {
+            if (x.Count != y.Count) return false;
+            x = x.OrderBy<QuerySql.SelectAuthorsWithSliceRow, object>(o => o.Name + o.Bio).ToList();
+            y = y.OrderBy<QuerySql.SelectAuthorsWithSliceRow, object>(o => o.Name + o.Bio).ToList();
             return !x.Where((t, i) => !Equals(t, y[i])).Any();
         }
     }

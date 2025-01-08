@@ -156,6 +156,27 @@ namespace NpgsqlDapperLegacyExampleGen
             }
         }
 
+        private const string SelectAuthorsWithSliceSql = "SELECT id, name, bio, created FROM authors WHERE id = ANY(@longArr_1::BIGINT[])";
+        public class SelectAuthorsWithSliceRow
+        {
+            public long Id { get; set; }
+            public string Name { get; set; }
+            public string Bio { get; set; }
+            public DateTime Created { get; set; }
+        };
+        public class SelectAuthorsWithSliceArgs
+        {
+            public long[] LongArr1 { get; set; }
+        };
+        public async Task<List<SelectAuthorsWithSliceRow>> SelectAuthorsWithSlice(SelectAuthorsWithSliceArgs args)
+        {
+            using (var connection = new NpgsqlConnection(ConnectionString))
+            {
+                var results = await connection.QueryAsync<SelectAuthorsWithSliceRow>(SelectAuthorsWithSliceSql, new { longArr_1 = args.LongArr1 });
+                return results.AsList();
+            }
+        }
+
         private const string TruncateCopyToTestsSql = "TRUNCATE TABLE copy_tests";
         public async Task TruncateCopyToTests()
         {

@@ -186,6 +186,30 @@ public class QuerySql
         }
     }
 
+    private const string SelectAuthorsWithSliceSql = "SELECT id, name, bio, created FROM authors WHERE id = ANY(@longArr_1::BIGINT[])";
+    public readonly record struct SelectAuthorsWithSliceRow(long Id, string Name, string? Bio, DateTime Created);
+    public readonly record struct SelectAuthorsWithSliceArgs(long[] LongArr1);
+    public async Task<List<SelectAuthorsWithSliceRow>> SelectAuthorsWithSlice(SelectAuthorsWithSliceArgs args)
+    {
+        using (var connection = NpgsqlDataSource.Create(ConnectionString))
+        {
+            using (var command = connection.CreateCommand(SelectAuthorsWithSliceSql))
+            {
+                command.Parameters.AddWithValue("@longArr_1", args.LongArr1);
+                using (var reader = await command.ExecuteReaderAsync())
+                {
+                    var result = new List<SelectAuthorsWithSliceRow>();
+                    while (await reader.ReadAsync())
+                    {
+                        result.Add(new SelectAuthorsWithSliceRow { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2), Created = reader.GetDateTime(3) });
+                    }
+
+                    return result;
+                }
+            }
+        }
+    }
+
     private const string TruncateCopyToTestsSql = "TRUNCATE TABLE copy_tests";
     public async Task TruncateCopyToTests()
     {

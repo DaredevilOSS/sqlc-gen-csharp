@@ -131,4 +131,13 @@ public abstract class DbDriver(Options options)
             $"return Convert.{convertFunc}({Variable.Result.AsVarName()});"
         ];
     }
+
+    public Column GetColumnFromParam(Plugin.Parameter queryParam)
+    {
+        if (IsNullOrEmpty(queryParam.Column.Name))
+        {
+            queryParam.Column.Name = $"{GetColumnType(queryParam.Column).Replace("[]", "Arr")}_{queryParam.Number}";
+        }
+        return queryParam.Column;
+    }
 }

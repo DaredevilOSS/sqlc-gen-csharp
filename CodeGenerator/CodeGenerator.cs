@@ -196,7 +196,7 @@ public class CodeGenerator
     private MemberDeclarationSyntax? GetQueryParamsDataclass(Query query)
     {
         if (query.Params.Count <= 0) return null;
-        var columns = query.Params.Select(p => p.Column).ToList();
+        var columns = query.Params.Select(DbDriver.GetColumnFromParam).ToList();
         return DataClassesGen.Generate(query.Name, ClassMember.Args, columns, Options);
     }
 
