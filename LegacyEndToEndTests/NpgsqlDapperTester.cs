@@ -97,7 +97,7 @@ namespace SqlcGenCsharpTests
             ClassicAssert.AreEqual(2, actual.Count);
             var expected = new List<QuerySql.SelectAuthorsWithSliceRow>
             {
-                new QuerySql.SelectAuthorsWithSliceRow { Name = DataGenerator.DrSeussAuthor, Bio = DataGenerator.DrSeussQuote }
+                new QuerySql.SelectAuthorsWithSliceRow { Name = DataGenerator.DrSeussAuthor, Bio = DataGenerator.DrSeussQuote },
                 new QuerySql.SelectAuthorsWithSliceRow { Name = DataGenerator.GenericAuthor, Bio = DataGenerator.GenericQuote1 },
             };
             Assert.That(SequenceEquals(expected, actual));
