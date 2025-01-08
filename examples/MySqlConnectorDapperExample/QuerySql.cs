@@ -149,7 +149,7 @@ public class QuerySql
     private const string TruncateCopyToTestsSql = "TRUNCATE TABLE copy_tests; SELECT LAST_INSERT_ID()";
     public async Task TruncateCopyToTests()
     {
-        using (var connection = new MySqlConnection(connectionString))
+        using (var connection = new MySqlConnection(ConnectionString))
         {
             await connection.ExecuteAsync(TruncateCopyToTestsSql);
         }
@@ -172,7 +172,7 @@ public class QuerySql
         using (var writer = new StreamWriter("input.csv"))
         using (var csvWriter = new CsvWriter(writer, config))
             await csvWriter.WriteRecordsAsync(args);
-        using (var connection = new MySqlConnection(connectionString))
+        using (var connection = new MySqlConnection(ConnectionString))
         {
             connection.Open();
             var loader = new MySqlBulkLoader(connection)
@@ -195,7 +195,7 @@ public class QuerySql
     };
     public async Task<CountCopyRowsRow?> CountCopyRows()
     {
-        using (var connection = new MySqlConnection(connectionString))
+        using (var connection = new MySqlConnection(ConnectionString))
         {
             var result = await connection.QueryFirstOrDefaultAsync<CountCopyRowsRow?>(CountCopyRowsSql);
             return result;

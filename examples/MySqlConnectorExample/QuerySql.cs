@@ -184,7 +184,7 @@ public class QuerySql
     private const string TruncateCopyToTestsSql = "TRUNCATE TABLE copy_tests";
     public async Task TruncateCopyToTests()
     {
-        using (var connection = new MySqlConnection(connectionString))
+        using (var connection = new MySqlConnection(ConnectionString))
         {
             connection.Open();
             using (var command = new MySqlCommand(TruncateCopyToTestsSql, connection))
@@ -205,7 +205,7 @@ public class QuerySql
         using (var writer = new StreamWriter("input.csv"))
         using (var csvWriter = new CsvWriter(writer, config))
             await csvWriter.WriteRecordsAsync(args);
-        using (var connection = new MySqlConnection(connectionString))
+        using (var connection = new MySqlConnection(ConnectionString))
         {
             connection.Open();
             var loader = new MySqlBulkLoader(connection)
@@ -225,7 +225,7 @@ public class QuerySql
     public readonly record struct CountCopyRowsRow(long Cnt);
     public async Task<CountCopyRowsRow?> CountCopyRows()
     {
-        using (var connection = new MySqlConnection(connectionString))
+        using (var connection = new MySqlConnection(ConnectionString))
         {
             connection.Open();
             using (var command = new MySqlCommand(CountCopyRowsSql, connection))
