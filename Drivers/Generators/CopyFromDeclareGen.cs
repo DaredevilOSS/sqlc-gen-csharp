@@ -13,52 +13,8 @@ public class CopyFromDeclareGen(DbDriver dbDriver)
         return ParseMemberDeclaration($$"""
                                         public async Task {{query.Name}}(List<{{argInterface}}> args)
                                         {
-                                            {{GetMethodBody(queryTextConstant, query)}}
+                                            {{((ICopyFrom)dbDriver).GetCopyFromImpl(query, queryTextConstant)}}
                                         }
                                         """)!;
-    }
-
-
-    private string GetMethodBody(string queryTextConstant, Query query)
-    {
-        var (establishConnection, connectionOpen) = dbDriver.EstablishConnection(query);
-        var beginBinaryImport = $"{Variable.Connection.AsVarName()}.BeginBinaryImportAsync({queryTextConstant}";
-        var addRowsToCopyCommand = AddRowsToCopyCommand(query);
-        return $$"""
-                 using ({{establishConnection}})
-                 {
-                     {{connectionOpen.AppendSemicolonUnlessEmpty()}}
-                     await {{Variable.Connection.AsVarName()}}.OpenAsync();
-                     using (var {{Variable.Writer.AsVarName()}} = await {{beginBinaryImport}}))
-                     {
-                        {{addRowsToCopyCommand}}
-                        await {{Variable.Writer.AsVarName()}}.CompleteAsync();
-                     }
-                     await {{Variable.Connection.AsVarName()}}.CloseAsync();
-                 }
-                 """;
-    }
-
-    private string AddRowsToCopyCommand(Query query)
-    {
-        var constructRow = new List<string>()
-            .Append($"await {Variable.Writer.AsVarName()}.StartRowAsync();")
-            .Concat(query.Params
-                .Select(p =>
-                {
-                    var typeOverride = dbDriver.GetColumnDbTypeOverride(p.Column);
-                    var partialStmt =
-                        $"await {Variable.Writer.AsVarName()}.WriteAsync({Variable.Row.AsVarName()}.{p.Column.Name.ToPascalCase()}";
-                    return typeOverride is null
-                        ? $"{partialStmt});"
-                        : $"{partialStmt}, {typeOverride});";
-                }))
-            .JoinByNewLine();
-        return $$"""
-                 foreach (var {{Variable.Row.AsVarName()}} in args) 
-                 {
-                      {{constructRow}}
-                 }
-                 """;
     }
 }

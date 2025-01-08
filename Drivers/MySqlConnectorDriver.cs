@@ -9,7 +9,8 @@ using OneDeclareGen = SqlcGenCsharp.Drivers.Generators.OneDeclareGen;
 
 namespace SqlcGenCsharp.Drivers;
 
-public partial class MySqlConnectorDriver(Options options) : DbDriver(options), IOne, IMany, IExec, IExecRows, IExecLastId
+public partial class MySqlConnectorDriver(Options options) : DbDriver(options), IOne, IMany, IExec, IExecRows,
+    IExecLastId, ICopyFrom
 {
     protected override List<ColumnMapping> ColumnMappings { get; } =
     [
@@ -59,6 +60,10 @@ public partial class MySqlConnectorDriver(Options options) : DbDriver(options), 
     {
         return base.GetUsingDirectives()
             .Append(UsingDirective(ParseName("MySqlConnector")))
+            .Append(UsingDirective(ParseName("System.Globalization")))
+            .Append(UsingDirective(ParseName("System.IO")))
+            .Append(UsingDirective(ParseName("CsvHelper")))
+            .Append(UsingDirective(ParseName("CsvHelper.Configuration")))
             .ToArray();
     }
 
@@ -119,5 +124,39 @@ public partial class MySqlConnectorDriver(Options options) : DbDriver(options), 
     public MemberDeclarationSyntax ExecRowsDeclare(string queryTextConstant, string argInterface, Query query)
     {
         return new ExecRowsDeclareGen(this).Generate(queryTextConstant, argInterface, query);
+    }
+
+    public MemberDeclarationSyntax CopyFromDeclare(string queryTextConstant, string argInterface, Query query)
+    {
+        return new CopyFromDeclareGen(this).Generate(queryTextConstant, argInterface, query);
+    }
+
+    public string GetCopyFromImpl(Query query, string queryTextConstant)
+    {
+        const string tempCsvFilename = "input.csv";
+        const string csvDelimiter = ",";
+
+        var (establishConnection, connectionOpen) = EstablishConnection(query);
+        return $$"""  
+                 var {{Variable.Config.AsVarName()}} = new CsvConfiguration(CultureInfo.CurrentCulture) { Delimiter = "{{csvDelimiter}}" };
+                 using (var {{Variable.Writer.AsVarName()}} = new StreamWriter("{{tempCsvFilename}}"))
+                 using (var {{Variable.CsvWriter.AsVarName()}} = new CsvWriter({{Variable.Writer.AsVarName()}}, {{Variable.Config.AsVarName()}}))
+                    await {{Variable.CsvWriter.AsVarName()}}.WriteRecordsAsync({{Variable.Args.AsVarName()}});
+                 
+                 using ({{establishConnection}})
+                 {
+                     {{connectionOpen.AppendSemicolonUnlessEmpty()}}
+                     var {{Variable.Loader.AsVarName()}} = new MySqlBulkLoader({{Variable.Connection.AsVarName()}})
+                     {
+                         Local = true, 
+                         TableName = "{{query.InsertIntoTable.Name}}", 
+                         FieldTerminator = "{{csvDelimiter}}",
+                         FileName = "{{tempCsvFilename}}",
+                         NumberOfLinesToSkip = 1
+                     };
+                     await {{Variable.Loader.AsVarName()}}.LoadAsync();
+                     await {{Variable.Connection.AsVarName()}}.CloseAsync();
+                 }
+                 """;
     }
 }
