@@ -160,7 +160,9 @@ public class CodeGenerator
     private ClassDeclarationSyntax GetClassDeclaration(string className,
         IEnumerable<MemberDeclarationSyntax> classMembers)
     {
-        var optionalDapperConfig = Options.UseDapper ? Environment.NewLine + "        Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;" : "";
+        var optionalDapperConfig = Options.UseDapper
+            ? Environment.NewLine + "        Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;"
+            : "";
         var classDeclaration = (ClassDeclarationSyntax)ParseMemberDeclaration(
                     $$"""
                       class {{className}}

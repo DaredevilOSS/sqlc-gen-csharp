@@ -33,5 +33,4 @@
       <ProjectReference Include="..\examples\SqliteDapperExample\SqliteDapperExample.csproj" />
       <ProjectReference Include="..\examples\SqliteExample\SqliteExample.csproj" />
     </ItemGroup>
-
 </Project>
