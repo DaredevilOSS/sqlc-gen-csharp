@@ -284,6 +284,7 @@ namespace SqlcGenCsharpTests
 
         private static bool SequenceEquals(List<QuerySql.SelectAuthorsWithSliceRow> x, List<QuerySql.SelectAuthorsWithSliceRow> y)
         {
+            Console.WriteLine($"SequenceEquals({string.Join(", ", x.Select(r => $"{r.Name}, {r.Bio}"))}, {string.Join(", ", y.Select(r => $"{r.Name}, {r.Bio}"))})");
             if (x.Count != y.Count) return false;
             x = x.OrderBy<QuerySql.SelectAuthorsWithSliceRow, object>(o => o.Name + o.Bio).ToList();
             y = y.OrderBy<QuerySql.SelectAuthorsWithSliceRow, object>(o => o.Name + o.Bio).ToList();
