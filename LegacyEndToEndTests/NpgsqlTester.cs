@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using static NpgsqlLegacyExampleGen.QuerySql;
 
 namespace SqlcGenCsharpTests
 {
@@ -222,7 +221,7 @@ namespace SqlcGenCsharpTests
 
             ClassicAssert.IsNotNull(actual);
 
-            Assert.That(Equals(actual, new GetNodePostgresTypeRow
+            Assert.That(Equals(actual, new QuerySql.GetNodePostgresTypeRow
             {
                 CBigint = 1,
                 CReal = 1.0f,
@@ -241,7 +240,7 @@ namespace SqlcGenCsharpTests
             }));
         }
 
-        private static bool Equals(GetNodePostgresTypeRow x, GetNodePostgresTypeRow y)
+        private static bool Equals(QuerySql.GetNodePostgresTypeRow x, QuerySql.GetNodePostgresTypeRow y)
         {
             return x.CSmallint.Equals(y.CSmallint) &&
                 x.CBoolean.Equals(y.CBoolean) &&
@@ -282,9 +281,13 @@ namespace SqlcGenCsharpTests
             return !x.Where((t, i) => !Equals(t, y[i])).Any();
         }
 
+        private static bool Equals(QuerySql.SelectAuthorsWithSliceRow x, QuerySql.SelectAuthorsWithSliceRow y)
+        {
+            return x.Name.Equals(y.Name) && x.Bio.Equals(y.Bio);
+        }
+
         private static bool SequenceEquals(List<QuerySql.SelectAuthorsWithSliceRow> x, List<QuerySql.SelectAuthorsWithSliceRow> y)
         {
-            Console.WriteLine($"SequenceEquals({string.Join(", ", x.Select(r => $"{r.Name}, {r.Bio}"))}, {string.Join(", ", y.Select(r => $"{r.Name}, {r.Bio}"))})");
             if (x.Count != y.Count) return false;
             x = x.OrderBy<QuerySql.SelectAuthorsWithSliceRow, object>(o => o.Name + o.Bio).ToList();
             y = y.OrderBy<QuerySql.SelectAuthorsWithSliceRow, object>(o => o.Name + o.Bio).ToList();
