@@ -9,14 +9,21 @@ using System.Threading.Tasks;
 using Microsoft.Data.Sqlite;
 
 namespace SqliteExampleGen;
-public class QuerySql(string connectionString)
+public class QuerySql
 {
+    public QuerySql(string connectionString)
+    {
+        this.ConnectionString = connectionString;
+    }
+
+    private string ConnectionString { get; }
+
     private const string GetAuthorSql = "SELECT id, name, bio FROM authors WHERE name = @name LIMIT 1";
     public readonly record struct GetAuthorRow(int Id, string Name, string? Bio);
     public readonly record struct GetAuthorArgs(string Name);
     public async Task<GetAuthorRow?> GetAuthor(GetAuthorArgs args)
     {
-        using (var connection = new SqliteConnection(connectionString))
+        using (var connection = new SqliteConnection(ConnectionString))
         {
             connection.Open();
             using (var command = new SqliteCommand(GetAuthorSql, connection))
@@ -44,7 +51,7 @@ public class QuerySql(string connectionString)
     public readonly record struct ListAuthorsRow(int Id, string Name, string? Bio);
     public async Task<List<ListAuthorsRow>> ListAuthors()
     {
-        using (var connection = new SqliteConnection(connectionString))
+        using (var connection = new SqliteConnection(ConnectionString))
         {
             connection.Open();
             using (var command = new SqliteCommand(ListAuthorsSql, connection))
@@ -67,7 +74,7 @@ public class QuerySql(string connectionString)
     public readonly record struct CreateAuthorArgs(string Name, string? Bio);
     public async Task CreateAuthor(CreateAuthorArgs args)
     {
-        using (var connection = new SqliteConnection(connectionString))
+        using (var connection = new SqliteConnection(ConnectionString))
         {
             connection.Open();
             using (var command = new SqliteCommand(CreateAuthorSql, connection))
@@ -84,7 +91,7 @@ public class QuerySql(string connectionString)
     public readonly record struct CreateAuthorReturnIdArgs(string Name, string? Bio);
     public async Task<int> CreateAuthorReturnId(CreateAuthorReturnIdArgs args)
     {
-        using (var connection = new SqliteConnection(connectionString))
+        using (var connection = new SqliteConnection(ConnectionString))
         {
             connection.Open();
             using (var command = new SqliteCommand(CreateAuthorReturnIdSql, connection))
@@ -102,7 +109,7 @@ public class QuerySql(string connectionString)
     public readonly record struct GetAuthorByIdArgs(int Id);
     public async Task<GetAuthorByIdRow?> GetAuthorById(GetAuthorByIdArgs args)
     {
-        using (var connection = new SqliteConnection(connectionString))
+        using (var connection = new SqliteConnection(ConnectionString))
         {
             connection.Open();
             using (var command = new SqliteCommand(GetAuthorByIdSql, connection))
@@ -130,7 +137,7 @@ public class QuerySql(string connectionString)
     public readonly record struct UpdateAuthorsArgs(string? Bio);
     public async Task<long> UpdateAuthors(UpdateAuthorsArgs args)
     {
-        using (var connection = new SqliteConnection(connectionString))
+        using (var connection = new SqliteConnection(ConnectionString))
         {
             connection.Open();
             using (var command = new SqliteCommand(UpdateAuthorsSql, connection))
@@ -145,7 +152,7 @@ public class QuerySql(string connectionString)
     public readonly record struct DeleteAuthorArgs(string Name);
     public async Task DeleteAuthor(DeleteAuthorArgs args)
     {
-        using (var connection = new SqliteConnection(connectionString))
+        using (var connection = new SqliteConnection(ConnectionString))
         {
             connection.Open();
             using (var command = new SqliteCommand(DeleteAuthorSql, connection))
@@ -159,7 +166,7 @@ public class QuerySql(string connectionString)
     private const string DeleteAllAuthorsSql = "DELETE FROM authors";
     public async Task DeleteAllAuthors()
     {
-        using (var connection = new SqliteConnection(connectionString))
+        using (var connection = new SqliteConnection(ConnectionString))
         {
             connection.Open();
             using (var command = new SqliteCommand(DeleteAllAuthorsSql, connection))

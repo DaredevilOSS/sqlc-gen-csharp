@@ -10,8 +10,16 @@ using Dapper;
 using Microsoft.Data.Sqlite;
 
 namespace SqliteDapperExampleGen;
-public class QuerySql(string connectionString)
+public class QuerySql
 {
+    public QuerySql(string connectionString)
+    {
+        this.ConnectionString = connectionString;
+        Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
+    }
+
+    private string ConnectionString { get; }
+
     private const string GetAuthorSql = "SELECT id, name, bio FROM authors WHERE name = @name LIMIT 1";
     public class GetAuthorRow
     {
@@ -25,7 +33,7 @@ public class QuerySql(string connectionString)
     };
     public async Task<GetAuthorRow?> GetAuthor(GetAuthorArgs args)
     {
-        using (var connection = new SqliteConnection(connectionString))
+        using (var connection = new SqliteConnection(ConnectionString))
         {
             var result = await connection.QueryFirstOrDefaultAsync<GetAuthorRow?>(GetAuthorSql, new { name = args.Name });
             return result;
@@ -41,7 +49,7 @@ public class QuerySql(string connectionString)
     };
     public async Task<List<ListAuthorsRow>> ListAuthors()
     {
-        using (var connection = new SqliteConnection(connectionString))
+        using (var connection = new SqliteConnection(ConnectionString))
         {
             var results = await connection.QueryAsync<ListAuthorsRow>(ListAuthorsSql);
             return results.AsList();
@@ -56,7 +64,7 @@ public class QuerySql(string connectionString)
     };
     public async Task CreateAuthor(CreateAuthorArgs args)
     {
-        using (var connection = new SqliteConnection(connectionString))
+        using (var connection = new SqliteConnection(ConnectionString))
         {
             await connection.ExecuteAsync(CreateAuthorSql, new { name = args.Name, bio = args.Bio });
         }
@@ -74,7 +82,7 @@ public class QuerySql(string connectionString)
     };
     public async Task<int> CreateAuthorReturnId(CreateAuthorReturnIdArgs args)
     {
-        using (var connection = new SqliteConnection(connectionString))
+        using (var connection = new SqliteConnection(ConnectionString))
         {
             return await connection.QuerySingleAsync<int>(CreateAuthorReturnIdSql, new { name = args.Name, bio = args.Bio });
         }
@@ -93,7 +101,7 @@ public class QuerySql(string connectionString)
     };
     public async Task<GetAuthorByIdRow?> GetAuthorById(GetAuthorByIdArgs args)
     {
-        using (var connection = new SqliteConnection(connectionString))
+        using (var connection = new SqliteConnection(ConnectionString))
         {
             var result = await connection.QueryFirstOrDefaultAsync<GetAuthorByIdRow?>(GetAuthorByIdSql, new { id = args.Id });
             return result;
@@ -107,7 +115,7 @@ public class QuerySql(string connectionString)
     };
     public async Task<long> UpdateAuthors(UpdateAuthorsArgs args)
     {
-        using (var connection = new SqliteConnection(connectionString))
+        using (var connection = new SqliteConnection(ConnectionString))
         {
             return await connection.ExecuteAsync(UpdateAuthorsSql, new { bio = args.Bio });
         }
@@ -120,7 +128,7 @@ public class QuerySql(string connectionString)
     };
     public async Task DeleteAuthor(DeleteAuthorArgs args)
     {
-        using (var connection = new SqliteConnection(connectionString))
+        using (var connection = new SqliteConnection(ConnectionString))
         {
             await connection.ExecuteAsync(DeleteAuthorSql, new { name = args.Name });
         }
@@ -129,7 +137,7 @@ public class QuerySql(string connectionString)
     private const string DeleteAllAuthorsSql = "DELETE FROM authors";
     public async Task DeleteAllAuthors()
     {
-        using (var connection = new SqliteConnection(connectionString))
+        using (var connection = new SqliteConnection(ConnectionString))
         {
             await connection.ExecuteAsync(DeleteAllAuthorsSql);
         }

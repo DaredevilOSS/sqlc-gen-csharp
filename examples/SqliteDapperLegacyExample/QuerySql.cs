@@ -16,6 +16,7 @@ namespace SqliteDapperLegacyExampleGen
         public QuerySql(string connectionString)
         {
             this.ConnectionString = connectionString;
+            Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
         }
 
         private string ConnectionString { get; }

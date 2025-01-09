@@ -19,6 +19,7 @@ public class NpgsqlTester : IOneTester, IManyTester, IExecTester, IExecRowsTeste
     {
         await QuerySql.TruncateAuthors();
         await QuerySql.TruncateCopyToTests();
+        await QuerySql.TruncateNodePostgresTypes();
     }
 
     [Test]
@@ -76,12 +77,50 @@ public class NpgsqlTester : IOneTester, IManyTester, IExecTester, IExecRowsTeste
     }
 
     [Test]
-    public async Task TestExec()
+    public async Task TestSlice()
     {
         await QuerySql.CreateAuthor(new QuerySql.CreateAuthorArgs
         {
             Name = DataGenerator.BojackAuthor,
             Bio = DataGenerator.BojackTheme
+        });
+        var author2 = await QuerySql.CreateAuthor(new QuerySql.CreateAuthorArgs
+        {
+            Name = DataGenerator.DrSeussAuthor,
+            Bio = DataGenerator.DrSeussQuote
+        });
+
+        var author3 = await QuerySql.CreateAuthor(new QuerySql.CreateAuthorArgs
+        {
+            Name = DataGenerator.GenericAuthor,
+            Bio = DataGenerator.GenericQuote1
+        });
+
+        var actualAuthors = await QuerySql.SelectAuthorsWithSlice(new QuerySql.SelectAuthorsWithSliceArgs
+        {
+            LongArr1 = [author2.Value.Id, author3.Value.Id]
+        });
+        ClassicAssert.AreEqual(2, actualAuthors.Count);
+        Assert.That(actualAuthors is [
+        {
+            Name: DataGenerator.DrSeussAuthor,
+            Bio: DataGenerator.DrSeussQuote
+        },
+        {
+            Name: DataGenerator.GenericAuthor,
+            Bio: DataGenerator.GenericQuote1
+        }
+        ]);
+    }
+
+    [Test]
+    public async Task TestExec()
+    {
+        await QuerySql.CreateAuthor(new QuerySql.CreateAuthorArgs
+        {
+            Name = DataGenerator.BojackAuthor,
+            Bio = DataGenerator.BojackTheme,
+
         });
         await QuerySql.CreateAuthor(new QuerySql.CreateAuthorArgs
         {
@@ -143,7 +182,7 @@ public class NpgsqlTester : IOneTester, IManyTester, IExecTester, IExecRowsTeste
             };
         }
     }
-
+    [Test]
     public async Task TestExecLastId()
     {
         var bojackCreateAuthorArgs = new QuerySql.CreateAuthorReturnIdArgs
@@ -161,6 +200,53 @@ public class NpgsqlTester : IOneTester, IManyTester, IExecTester, IExecRowsTeste
         {
             Name: DataGenerator.GenericAuthor,
             Bio: DataGenerator.GenericQuote1
+        });
+    }
+
+    [Test]
+    public async Task TestNodePostgresType()
+    {
+        var nodePostgresTypeArgs = new QuerySql.InsertNodePostgresTypeArgs
+        {
+            CBigint = 1,
+            CReal = 1.0f,
+            CNumeric = 1,
+            CSerial = 1,
+            CSmallint = 1,
+            CDecimal = 1,
+            CDate = DateTime.Now,
+            CTimestamp = DateTime.Now,
+            CBoolean = true,
+            CChar = "a",
+            CInteger = 1,
+            CText = "ab",
+            CVarchar = "abc",
+            CCharacterVarying = "abcd",
+            CTextArray = ["a", "b"],
+            CIntegerArray = [1, 2]
+        };
+        var insertedId = await QuerySql.InsertNodePostgresType(nodePostgresTypeArgs);
+
+        var actual = await QuerySql.GetNodePostgresType(new QuerySql.GetNodePostgresTypeArgs
+        {
+            Id = insertedId
+        });
+
+        Assert.That(actual is
+        {
+            CBigint: 1,
+            CReal: 1.0f,
+            CSerial: 1,
+            CNumeric: 1,
+            CDecimal: 1,
+            CSmallint: 1,
+            CBoolean: true,
+            CChar: "a",
+            CInteger: 1,
+            CText: "ab",
+            CVarchar: "abc",
+            CTextArray: ["a", "b"],
+            CIntegerArray: [1, 2]
         });
     }
 }

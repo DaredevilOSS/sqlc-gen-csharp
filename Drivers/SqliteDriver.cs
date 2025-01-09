@@ -12,26 +12,25 @@ namespace SqlcGenCsharp.Drivers;
 public partial class SqliteDriver(Options options) : DbDriver(options), IOne, IMany, IExec, IExecRows, IExecLastId
 {
     protected override List<ColumnMapping> ColumnMappings { get; } = [
-        new("byte[]", ordinal => $"Utils.GetBytes(reader, {ordinal})",
-            new Dictionary<string, string?>
+        new("byte[]", new Dictionary<string, string?>
             {
                 {"blob", null}
-            }),
-        new("string", ordinal => $"reader.GetString({ordinal})",
+            }, ordinal => $"Utils.GetBytes(reader, {ordinal})"),
+        new("string",
             new Dictionary<string, string?>
             {
                 {"text", null}
-            }),
-        new("int", ordinal => $"reader.GetInt32({ordinal})",
+            }, ordinal => $"reader.GetString({ordinal})"),
+        new("int",
             new Dictionary<string, string?>{
             {
                 "integer", null
-            }}),
-        new("float", ordinal => $"reader.GetFloat({ordinal})",
+            }}, ordinal => $"reader.GetInt32({ordinal})"),
+        new("float",
             new Dictionary<string, string?>
             {
                 {"real", null}
-            }),
+            }, ordinal => $"reader.GetFloat({ordinal})"),
     ];
 
     public override UsingDirectiveSyntax[] GetUsingDirectives()

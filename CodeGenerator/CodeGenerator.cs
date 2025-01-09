@@ -160,33 +160,21 @@ public class CodeGenerator
     private ClassDeclarationSyntax GetClassDeclaration(string className,
         IEnumerable<MemberDeclarationSyntax> classMembers)
     {
-        var classDeclaration = (ClassDeclarationSyntax)(Options.DotnetFramework.LatestDotnetSupported()
-            ? GetWithPrimaryConstructor()
-            : GetWithRegularConstructor());
-        return classDeclaration.AddMembers(classMembers.ToArray());
-
-        MemberDeclarationSyntax GetWithPrimaryConstructor()
-        {
-            return ParseMemberDeclaration(
-                    $"class {className}(string {Variable.ConnectionString.AsVarName()})" + "{}")!
-                .AddModifiers(Token(SyntaxKind.PublicKeyword));
-        }
-
-        MemberDeclarationSyntax GetWithRegularConstructor()
-        {
-            return ParseMemberDeclaration(
+        var optionalDapperConfig = Options.UseDapper ? Environment.NewLine + "        Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;" : "";
+        var classDeclaration = (ClassDeclarationSyntax)ParseMemberDeclaration(
                     $$"""
                       class {{className}}
                       {
                           public {{className}}(string {{Variable.ConnectionString.AsVarName()}})
                           {
-                              this.{{Variable.ConnectionString.AsPropertyName()}} = {{Variable.ConnectionString.AsVarName()}};
+                              this.{{Variable.ConnectionString.AsPropertyName()}} = {{Variable.ConnectionString.AsVarName()}};{{optionalDapperConfig}}
                           }
                           private string {{Variable.ConnectionString.AsPropertyName()}} { get; }
                       }
                       """)!
                 .AddModifiers(Token(SyntaxKind.PublicKeyword));
-        }
+
+        return classDeclaration.AddMembers(classMembers.ToArray());
     }
 
     private IEnumerable<MemberDeclarationSyntax> GetMembersForSingleQuery(Query query)
@@ -208,7 +196,7 @@ public class CodeGenerator
     private MemberDeclarationSyntax? GetQueryParamsDataclass(Query query)
     {
         if (query.Params.Count <= 0) return null;
-        var columns = query.Params.Select(p => p.Column).ToList();
+        var columns = query.Params.Select(DbDriver.GetColumnFromParam).ToList();
         return DataClassesGen.Generate(query.Name, ClassMember.Args, columns, Options);
     }
 

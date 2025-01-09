@@ -11,8 +11,16 @@ using Npgsql;
 using NpgsqlTypes;
 
 namespace NpgsqlDapperExampleGen;
-public class QuerySql(string connectionString)
+public class QuerySql
 {
+    public QuerySql(string connectionString)
+    {
+        this.ConnectionString = connectionString;
+        Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
+    }
+
+    private string ConnectionString { get; }
+
     private const string GetAuthorSql = "SELECT id, name, bio, created FROM authors WHERE name = @name LIMIT 1";
     public class GetAuthorRow
     {
@@ -27,7 +35,7 @@ public class QuerySql(string connectionString)
     };
     public async Task<GetAuthorRow?> GetAuthor(GetAuthorArgs args)
     {
-        using (var connection = new NpgsqlConnection(connectionString))
+        using (var connection = new NpgsqlConnection(ConnectionString))
         {
             var result = await connection.QueryFirstOrDefaultAsync<GetAuthorRow?>(GetAuthorSql, new { name = args.Name });
             return result;
@@ -44,7 +52,7 @@ public class QuerySql(string connectionString)
     };
     public async Task<List<ListAuthorsRow>> ListAuthors()
     {
-        using (var connection = new NpgsqlConnection(connectionString))
+        using (var connection = new NpgsqlConnection(ConnectionString))
         {
             var results = await connection.QueryAsync<ListAuthorsRow>(ListAuthorsSql);
             return results.AsList();
@@ -66,7 +74,7 @@ public class QuerySql(string connectionString)
     };
     public async Task<CreateAuthorRow?> CreateAuthor(CreateAuthorArgs args)
     {
-        using (var connection = new NpgsqlConnection(connectionString))
+        using (var connection = new NpgsqlConnection(ConnectionString))
         {
             var result = await connection.QueryFirstOrDefaultAsync<CreateAuthorRow?>(CreateAuthorSql, new { name = args.Name, bio = args.Bio });
             return result;
@@ -85,7 +93,7 @@ public class QuerySql(string connectionString)
     };
     public async Task<long> CreateAuthorReturnId(CreateAuthorReturnIdArgs args)
     {
-        using (var connection = new NpgsqlConnection(connectionString))
+        using (var connection = new NpgsqlConnection(ConnectionString))
         {
             return await connection.QuerySingleAsync<long>(CreateAuthorReturnIdSql, new { name = args.Name, bio = args.Bio });
         }
@@ -105,7 +113,7 @@ public class QuerySql(string connectionString)
     };
     public async Task<GetAuthorByIdRow?> GetAuthorById(GetAuthorByIdArgs args)
     {
-        using (var connection = new NpgsqlConnection(connectionString))
+        using (var connection = new NpgsqlConnection(ConnectionString))
         {
             var result = await connection.QueryFirstOrDefaultAsync<GetAuthorByIdRow?>(GetAuthorByIdSql, new { id = args.Id });
             return result;
@@ -119,7 +127,7 @@ public class QuerySql(string connectionString)
     };
     public async Task DeleteAuthor(DeleteAuthorArgs args)
     {
-        using (var connection = new NpgsqlConnection(connectionString))
+        using (var connection = new NpgsqlConnection(ConnectionString))
         {
             await connection.ExecuteAsync(DeleteAuthorSql, new { name = args.Name });
         }
@@ -128,7 +136,7 @@ public class QuerySql(string connectionString)
     private const string TruncateAuthorsSql = "TRUNCATE TABLE authors";
     public async Task TruncateAuthors()
     {
-        using (var connection = new NpgsqlConnection(connectionString))
+        using (var connection = new NpgsqlConnection(ConnectionString))
         {
             await connection.ExecuteAsync(TruncateAuthorsSql);
         }
@@ -141,18 +149,48 @@ public class QuerySql(string connectionString)
     };
     public async Task<long> UpdateAuthors(UpdateAuthorsArgs args)
     {
-        using (var connection = new NpgsqlConnection(connectionString))
+        using (var connection = new NpgsqlConnection(ConnectionString))
         {
             return await connection.ExecuteAsync(UpdateAuthorsSql, new { bio = args.Bio });
+        }
+    }
+
+    private const string SelectAuthorsWithSliceSql = "SELECT id, name, bio, created FROM authors WHERE id = ANY(@longArr_1::BIGINT[])";
+    public class SelectAuthorsWithSliceRow
+    {
+        public long Id { get; set; }
+        public string Name { get; set; }
+        public string? Bio { get; set; }
+        public DateTime Created { get; set; }
+    };
+    public class SelectAuthorsWithSliceArgs
+    {
+        public long[] LongArr1 { get; set; }
+    };
+    public async Task<List<SelectAuthorsWithSliceRow>> SelectAuthorsWithSlice(SelectAuthorsWithSliceArgs args)
+    {
+        using (var connection = new NpgsqlConnection(ConnectionString))
+        {
+            var results = await connection.QueryAsync<SelectAuthorsWithSliceRow>(SelectAuthorsWithSliceSql, new { longArr_1 = args.LongArr1 });
+            return results.AsList();
         }
     }
 
     private const string TruncateCopyToTestsSql = "TRUNCATE TABLE copy_tests";
     public async Task TruncateCopyToTests()
     {
-        using (var connection = new NpgsqlConnection(connectionString))
+        using (var connection = new NpgsqlConnection(ConnectionString))
         {
             await connection.ExecuteAsync(TruncateCopyToTestsSql);
+        }
+    }
+
+    private const string TruncateNodePostgresTypesSql = "TRUNCATE TABLE node_postgres_types";
+    public async Task TruncateNodePostgresTypes()
+    {
+        using (var connection = new NpgsqlConnection(ConnectionString))
+        {
+            await connection.ExecuteAsync(TruncateNodePostgresTypesSql);
         }
     }
 
@@ -166,7 +204,7 @@ public class QuerySql(string connectionString)
     };
     public async Task CopyToTests(List<CopyToTestsArgs> args)
     {
-        using (var ds = NpgsqlDataSource.Create(connectionString))
+        using (var ds = NpgsqlDataSource.Create(ConnectionString))
         {
             var connection = ds.CreateConnection();
             await connection.OpenAsync();
@@ -195,17 +233,20 @@ public class QuerySql(string connectionString)
     };
     public async Task<CountCopyRowsRow?> CountCopyRows()
     {
-        using (var connection = new NpgsqlConnection(connectionString))
+        using (var connection = new NpgsqlConnection(ConnectionString))
         {
             var result = await connection.QueryFirstOrDefaultAsync<CountCopyRowsRow?>(CountCopyRowsSql);
             return result;
         }
     }
 
-    private const string TestSql = "SELECT c_bit, c_smallint, c_boolean, c_integer, c_bigint, c_serial, c_decimal, c_numeric, c_real, c_double_precision, c_date, c_time, c_timestamp, c_char, c_varchar, c_character_varying, c_bytea, c_text, c_json FROM node_postgres_types LIMIT 1";
-    public class TestRow
+    private const string InsertNodePostgresTypeSql = "INSERT INTO node_postgres_types (c_smallint, c_boolean, c_integer, c_bigint, c_serial, c_decimal, c_numeric, c_real, c_date, c_timestamp, c_char, c_varchar, c_character_varying, c_text, c_text_array, c_integer_array) VALUES ( @c_smallint , @c_boolean, @c_integer, @c_bigint, @c_serial, @c_decimal, @c_numeric, @c_real, @c_date, @c_timestamp, @c_char, @c_varchar, @c_character_varying, @c_text, @c_text_array, @c_integer_array ) RETURNING  id  "; 
+    public class InsertNodePostgresTypeRow
     {
-        public byte[]? CBit { get; set; }
+        public long Id { get; set; }
+    };
+    public class InsertNodePostgresTypeArgs
+    {
         public int? CSmallint { get; set; }
         public bool? CBoolean { get; set; }
         public int? CInteger { get; set; }
@@ -214,22 +255,52 @@ public class QuerySql(string connectionString)
         public float? CDecimal { get; set; }
         public float? CNumeric { get; set; }
         public float? CReal { get; set; }
-        public float? CDoublePrecision { get; set; }
         public DateTime? CDate { get; set; }
-        public string? CTime { get; set; }
         public DateTime? CTimestamp { get; set; }
         public string? CChar { get; set; }
         public string? CVarchar { get; set; }
         public string? CCharacterVarying { get; set; }
-        public byte[]? CBytea { get; set; }
         public string? CText { get; set; }
-        public object? CJson { get; set; }
+        public string[]? CTextArray { get; set; }
+        public int[]? CIntegerArray { get; set; }
     };
-    public async Task<TestRow?> Test()
+    public async Task<long> InsertNodePostgresType(InsertNodePostgresTypeArgs args)
     {
-        using (var connection = new NpgsqlConnection(connectionString))
+        using (var connection = new NpgsqlConnection(ConnectionString))
         {
-            var result = await connection.QueryFirstOrDefaultAsync<TestRow?>(TestSql);
+            return await connection.QuerySingleAsync<long>(InsertNodePostgresTypeSql, new { c_smallint = args.CSmallint, c_boolean = args.CBoolean, c_integer = args.CInteger, c_bigint = args.CBigint, c_serial = args.CSerial, c_decimal = args.CDecimal, c_numeric = args.CNumeric, c_real = args.CReal, c_date = args.CDate, c_timestamp = args.CTimestamp, c_char = args.CChar, c_varchar = args.CVarchar, c_character_varying = args.CCharacterVarying, c_text = args.CText, c_text_array = args.CTextArray, c_integer_array = args.CIntegerArray });
+        }
+    }
+
+    private const string GetNodePostgresTypeSql = "SELECT c_smallint, c_boolean, c_integer, c_bigint, c_serial, c_decimal, c_numeric, c_real, c_date, c_timestamp, c_char, c_varchar, c_character_varying, c_text, c_text_array, c_integer_array FROM node_postgres_types WHERE id = @id LIMIT 1";
+    public class GetNodePostgresTypeRow
+    {
+        public int? CSmallint { get; set; }
+        public bool? CBoolean { get; set; }
+        public int? CInteger { get; set; }
+        public long? CBigint { get; set; }
+        public int? CSerial { get; set; }
+        public float? CDecimal { get; set; }
+        public float? CNumeric { get; set; }
+        public float? CReal { get; set; }
+        public DateTime? CDate { get; set; }
+        public DateTime? CTimestamp { get; set; }
+        public string? CChar { get; set; }
+        public string? CVarchar { get; set; }
+        public string? CCharacterVarying { get; set; }
+        public string? CText { get; set; }
+        public string[]? CTextArray { get; set; }
+        public int[]? CIntegerArray { get; set; }
+    };
+    public class GetNodePostgresTypeArgs
+    {
+        public long Id { get; set; }
+    };
+    public async Task<GetNodePostgresTypeRow?> GetNodePostgresType(GetNodePostgresTypeArgs args)
+    {
+        using (var connection = new NpgsqlConnection(ConnectionString))
+        {
+            var result = await connection.QueryFirstOrDefaultAsync<GetNodePostgresTypeRow?>(GetNodePostgresTypeSql, new { id = args.Id });
             return result;
         }
     }
