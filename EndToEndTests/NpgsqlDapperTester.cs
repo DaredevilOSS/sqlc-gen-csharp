@@ -74,7 +74,7 @@ public class NpgsqlDapperTester : IOneTester, IManyTester, IExecTester, IExecRow
     }
 
     [Test]
-    public async Task TestManyWithSlice()
+    public async Task TestSlice()
     {
         await QuerySql.CreateAuthor(new QuerySql.CreateAuthorArgs
         {

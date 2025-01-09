@@ -51,10 +51,8 @@ public abstract class DbDriver(Options options)
             foreach (var columnMapping in ColumnMappings
                          .Where(columnMapping => columnMapping.DbTypes.ContainsKey(columnType)))
             {
-                if (column.IsArray)
-                {
-                    return $"{columnMapping.CsharpType}[]";
-                }
+                if (column.IsArray) return $"{columnMapping.CsharpType}[]";
+
                 return columnMapping.CsharpType;
             }
             throw new NotSupportedException($"Unsupported column type: {column.Type.Name}");
@@ -68,10 +66,7 @@ public abstract class DbDriver(Options options)
                      .Where(columnMapping => columnMapping.DbTypes.ContainsKey(columnType)))
         {
             if (column.IsArray)
-            {
                 return columnMapping.ReaderArrayFn?.Invoke(ordinal) ?? throw new InvalidOperationException("ReaderArrayFn is null");
-            }
-
             return columnMapping.ReaderFn(ordinal);
         }
         throw new NotSupportedException($"Unsupported column type: {column.Type.Name}");
@@ -135,9 +130,7 @@ public abstract class DbDriver(Options options)
     public Column GetColumnFromParam(Plugin.Parameter queryParam)
     {
         if (IsNullOrEmpty(queryParam.Column.Name))
-        {
             queryParam.Column.Name = $"{GetColumnType(queryParam.Column).Replace("[]", "Arr")}_{queryParam.Number}";
-        }
         return queryParam.Column;
     }
 }
