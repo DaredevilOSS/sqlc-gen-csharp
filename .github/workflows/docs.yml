@@ -11,8 +11,6 @@ env:
   DOTNET_VERSION: '8.0.x'
 
 on:
-  push:
-    branches: [ "main" ]
   release:
     types: [ published ]
     
@@ -39,7 +37,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          base: ${{ github.head_ref }}
+          base: main
           title: update auto-generated docs
           commit-message: update docs
           branch: update-docs
