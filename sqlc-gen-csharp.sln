@@ -9,7 +9,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Extensions", "Extensions\Ex
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Drivers", "Drivers\Drivers.csproj", "{6C698DAA-5151-4241-B07E-3435A717ABFB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EndToEndTests", "EndToEndTests\EndToEndTests.csproj", "{3675F864-9CD2-49C0-9754-56E490F15DF0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EndToEndTests", "end2end\EndToEndTests\EndToEndTests.csproj", "{3675F864-9CD2-49C0-9754-56E490F15DF0}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WasmRunner", "WasmRunner\WasmRunner.csproj", "{D3095033-1C96-42D9-AE44-3D4F1B24CB51}"
 EndProject
@@ -21,7 +21,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeGenerator", "CodeGenera
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PluginOptions", "PluginOptions\PluginOptions.csproj", "{ABD93C33-BEBE-4DE9-9ABF-430DAC1A938C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EndToEndTestsLegacy", "EndToEndTestsLegacy\EndToEndTestsLegacy.csproj", "{7409C5C4-61B4-4219-930B-9FC9CD5C91A8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EndToEndTestsLegacy", "end2end\EndToEndTestsLegacy\EndToEndTestsLegacy.csproj", "{7409C5C4-61B4-4219-930B-9FC9CD5C91A8}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "examples", "examples", "{9404C766-3491-4959-A575-D6015FFB7AE6}"
 EndProject
@@ -51,13 +51,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SqliteExample", "examples\S
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SqlcGenCsharpTests", "SqlcGenCsharpTests\SqlcGenCsharpTests.csproj", "{9FD3C47C-88A5-4C4A-A807-1E36114CBB38}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EndToEndCommon", "EndToEndCommon\EndToEndCommon.csproj", "{FE5AA465-DC0E-4B14-9BD3-16B47813FB97}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EndToEndCommon", "end2end\EndToEndCommon\EndToEndCommon.csproj", "{FE5AA465-DC0E-4B14-9BD3-16B47813FB97}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{4688A74C-E49F-4AF2-9443-C490D7956E0D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExampleDocGen", "docs\ExamplesDocGen\ExampleDocGen.csproj", "{48A7802E-3D90-4F19-B14A-9662CDEA86E3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EndToEndScaffold", "EndToEndScaffold\EndToEndScaffold.csproj", "{2A101C54-4F0C-41AC-86B2-FFF6DFBFD0C0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EndToEndScaffold", "end2end\EndToEndScaffold\EndToEndScaffold.csproj", "{2A101C54-4F0C-41AC-86B2-FFF6DFBFD0C0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
