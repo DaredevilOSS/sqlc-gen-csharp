@@ -61,6 +61,7 @@ jobs:
         with:
           name: wasm-file
           path: dist/plugin.wasm
+          
   lint:
     name: Lint
     needs: [build-wasm]
@@ -92,6 +93,11 @@ jobs:
      steps:
        - uses: actions/checkout@v4
 
+       - name: Verify pushed generated tests code is synced
+         run: |
+           ./end2end/scripts/generate_tests.sh
+           git diff --quiet
+           
        - uses: actions/download-artifact@v4
          with:
            name: wasm-file
@@ -113,8 +119,3 @@ jobs:
          run: |
            ./scripts/wasm/update_sha.sh sqlc.ci.yaml
            sqlc -f sqlc.ci.yaml diff
-           
-       - name: Verify pushed generated tests code is synced
-         run: |
-           ./end2end/scripts/generate_tests.sh
-           git diff --quiet
