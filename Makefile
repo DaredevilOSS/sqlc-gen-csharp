@@ -11,7 +11,7 @@ unit-tests:
 	dotnet test SqlcGenCsharpTests
     
 run-end2end-tests:
-	./scripts/run_end2end_tests.sh
+	./end2end/scripts/run_tests.sh
 
 # process type plugin
 dotnet-build-process: protobuf-generate dotnet-format
