@@ -74,8 +74,8 @@ jobs:
                 Where-Object { $_.FullName -like '*Legacy*' } |
                 ForEach-Object { nuget restore $_.FullName }
               nuget restore ./EndToEndCommon/EndToEndCommon.csproj
-              nuget restore ./LegacyEndToEndTests/LegacyEndToEndTests.csproj
-              msbuild.exe ./LegacyEndToEndTests/LegacyEndToEndTests.csproj -p:Configuration=Release -p:FrameworkVersion=v4.7.2
+              nuget restore ./EndToEndTestsLegacy/EndToEndTestsLegacy.csproj
+              msbuild.exe ./EndToEndTestsLegacy/EndToEndTestsLegacy.csproj -p:Configuration=Release -p:FrameworkVersion=v4.7.2
               return $LASTEXITCODE
             }
   
@@ -108,4 +108,4 @@ jobs:
         run: |
           $path = vswhere -latest -products * -requires Microsoft.VisualStudio.Workload.ManagedDesktop Microsoft.VisualStudio.Workload.Web -requiresAny -property installationPath
           $path = join-path $path 'Common7\IDE\CommonExtensions\Microsoft\TestWindow\vstest.console.exe'
-          & $path ./LegacyEndToEndTests/bin/Release/net472/LegacyEndToEndTests.dll
+          & $path ./EndToEndTestsLegacy/bin/Release/net472/EndToEndTestsLegacy.dll

@@ -32,7 +32,7 @@ public static class ExamplesDocGen
 
         var outputDirectory = firstCodegenObj["out"].ToString();
         var projectName = outputDirectory.Replace("examples/", "");
-        var testProject = projectName.Contains("Legacy") ? "LegacyEndToEndTests" : "EndToEndTests";
+        var testProject = projectName.Contains("Legacy") ? "EndToEndTestsLegacy" : "EndToEndTests";
         var testClassName = projectName.Replace("Example", "Tester");
         if (testClassName.Contains("Legacy"))
             testClassName = testClassName.Replace("Legacy", "");
