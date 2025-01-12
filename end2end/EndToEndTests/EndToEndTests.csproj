@@ -7,10 +7,10 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <Content Include="../.env">
+        <Content Include="../../.env">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </Content>
-        <Content Include="../examples/config/sqlite/schema.sql">
+        <Content Include="../../examples/config/sqlite/schema.sql">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
             <TargetPath>sqlite.schema.sql</TargetPath>
         </Content>
@@ -26,11 +26,11 @@
     
     <ItemGroup>
       <ProjectReference Include="..\EndToEndCommon\EndToEndCommon.csproj" />
-      <ProjectReference Include="..\examples\MySqlConnectorDapperExample\MySqlConnectorDapperExample.csproj" />
-      <ProjectReference Include="..\examples\MySqlConnectorExample\MySqlConnectorExample.csproj" />
-      <ProjectReference Include="..\examples\NpgsqlDapperExample\NpgsqlDapperExample.csproj" />
-      <ProjectReference Include="..\examples\NpgsqlExample\NpgsqlExample.csproj" />
-      <ProjectReference Include="..\examples\SqliteDapperExample\SqliteDapperExample.csproj" />
-      <ProjectReference Include="..\examples\SqliteExample\SqliteExample.csproj" />
+      <ProjectReference Include="..\..\examples\MySqlConnectorDapperExample\MySqlConnectorDapperExample.csproj" />
+      <ProjectReference Include="..\..\examples\MySqlConnectorExample\MySqlConnectorExample.csproj" />
+      <ProjectReference Include="..\..\examples\NpgsqlDapperExample\NpgsqlDapperExample.csproj" />
+      <ProjectReference Include="..\..\examples\NpgsqlExample\NpgsqlExample.csproj" />
+      <ProjectReference Include="..\..\examples\SqliteDapperExample\SqliteDapperExample.csproj" />
+      <ProjectReference Include="..\..\examples\SqliteExample\SqliteExample.csproj" />
     </ItemGroup>
 </Project>

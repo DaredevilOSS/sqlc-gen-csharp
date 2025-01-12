@@ -73,9 +73,9 @@ jobs:
               Get-ChildItem -Path examples -Recurse -Filter *.csproj |
                 Where-Object { $_.FullName -like '*Legacy*' } |
                 ForEach-Object { nuget restore $_.FullName }
-              nuget restore ./EndToEndCommon/EndToEndCommon.csproj
-              nuget restore ./EndToEndTestsLegacy/EndToEndTestsLegacy.csproj
-              msbuild.exe ./EndToEndTestsLegacy/EndToEndTestsLegacy.csproj -p:Configuration=Release -p:FrameworkVersion=v4.7.2
+              nuget restore ./end2end/EndToEndCommon/EndToEndCommon.csproj
+              nuget restore ./end2end/EndToEndTestsLegacy/EndToEndTestsLegacy.csproj
+              msbuild.exe ./end2end/EndToEndTestsLegacy/EndToEndTestsLegacy.csproj -p:Configuration=Release -p:FrameworkVersion=v4.7.2
               return $LASTEXITCODE
             }
   
@@ -108,4 +108,4 @@ jobs:
         run: |
           $path = vswhere -latest -products * -requires Microsoft.VisualStudio.Workload.ManagedDesktop Microsoft.VisualStudio.Workload.Web -requiresAny -property installationPath
           $path = join-path $path 'Common7\IDE\CommonExtensions\Microsoft\TestWindow\vstest.console.exe'
-          & $path ./EndToEndTestsLegacy/bin/Release/net472/EndToEndTestsLegacy.dll
+          & $path ./end2end/EndToEndTestsLegacy/bin/Release/net472/EndToEndTestsLegacy.dll

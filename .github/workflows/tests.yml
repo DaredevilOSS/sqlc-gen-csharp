@@ -47,4 +47,4 @@ jobs:
         uses: hoverkraft-tech/compose-action@v1.5.1
 
       - name: Run Tests
-        run: ./scripts/run_end2end_tests.sh
+        run: ./end2end/scripts/run_tests.sh

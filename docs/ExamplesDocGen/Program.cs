@@ -47,7 +47,7 @@ public static class ExamplesDocGen
         return $"""
                 ## Engine `{item["engine"]}`: [{projectName}]({outputDirectory})
 
-                ### [Schema]({item["schema"]}) | [Queries]({queryFiles}) | [End2End Test]({testProject}/{testClassName}.cs)
+                ### [Schema]({item["schema"]}) | [Queries]({queryFiles}) | [End2End Test](end2end/{testProject}/{testClassName}.cs)
 
                 ### Config
                 ```yaml
