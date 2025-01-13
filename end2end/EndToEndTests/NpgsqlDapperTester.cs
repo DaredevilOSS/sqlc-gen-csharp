@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SqlcGenCsharpTests;
 
-public partial class NpgsqlDapperTester : IOneTester, IManyTester, IExecTester, IExecRowsTester, IExecLastIdTester
+public partial class NpgsqlDapperTester
 {
     private QuerySql QuerySql { get; } = new(
         Environment.GetEnvironmentVariable(EndToEndCommon.PostgresConnectionStringEnv)!);
@@ -53,28 +53,6 @@ public partial class NpgsqlDapperTester : IOneTester, IManyTester, IExecTester, 
             Bio: DataGenerator.GenericQuote1
         }
         ]);
-    }
-
-    [Test]
-    public async Task TestExecLastId()
-    {
-        var bojackCreateAuthorArgs = new QuerySql.CreateAuthorReturnIdArgs
-        {
-            Name = DataGenerator.GenericAuthor,
-            Bio = DataGenerator.GenericQuote1
-        };
-        var insertedId = await QuerySql.CreateAuthorReturnId(bojackCreateAuthorArgs);
-
-        var getAuthorByIdArgs = new QuerySql.GetAuthorByIdArgs
-        {
-            Id = insertedId
-        };
-        var actual = await QuerySql.GetAuthorById(getAuthorByIdArgs);
-        Assert.That(actual is
-        {
-            Name: DataGenerator.GenericAuthor,
-            Bio: DataGenerator.GenericQuote1
-        });
     }
 
     [Test]

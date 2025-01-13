@@ -14,6 +14,7 @@ public enum KnownTestType
     Many,
     Exec,
     ExecRows,
+    ExecLastId
 }
 
 internal static class Config
@@ -26,7 +27,13 @@ internal static class Config
             {
                 TestNamespace = "MySqlConnectorExampleGen",
                 LegacyTestNamespace = "MySqlConnectorLegacyExampleGen",
-                TestTypes = [KnownTestType.One, KnownTestType.Many, KnownTestType.Exec, KnownTestType.ExecRows]
+                TestTypes = [
+                    KnownTestType.One,
+                    KnownTestType.Many,
+                    KnownTestType.Exec,
+                    KnownTestType.ExecRows,
+                    KnownTestType.ExecLastId
+                ]
             }
         },
         {
@@ -34,7 +41,13 @@ internal static class Config
                 {
                     TestNamespace = "MySqlConnectorDapperExampleGen",
                     LegacyTestNamespace = "MySqlConnectorDapperLegacyExampleGen",
-                    TestTypes = [KnownTestType.One, KnownTestType.Many, KnownTestType.Exec, KnownTestType.ExecRows]
+                    TestTypes = [
+                        KnownTestType.One,
+                        KnownTestType.Many,
+                        KnownTestType.Exec,
+                        KnownTestType.ExecRows,
+                        KnownTestType.ExecLastId
+                    ]
                 }
         },
         {
@@ -42,7 +55,13 @@ internal static class Config
             {
                 TestNamespace = "NpgsqlExampleGen",
                 LegacyTestNamespace = "NpgsqlLegacyExampleGen",
-                TestTypes = [KnownTestType.One, KnownTestType.Many, KnownTestType.Exec, KnownTestType.ExecRows]
+                TestTypes = [
+                    KnownTestType.One,
+                    KnownTestType.Many,
+                    KnownTestType.Exec,
+                    KnownTestType.ExecRows,
+                    KnownTestType.ExecLastId
+                ]
             }
         },
         {
@@ -50,7 +69,13 @@ internal static class Config
             {
                 TestNamespace = "NpgsqlDapperExampleGen",
                 LegacyTestNamespace = "NpgsqlDapperLegacyExampleGen",
-                TestTypes = [KnownTestType.One, KnownTestType.Many, KnownTestType.Exec, KnownTestType.ExecRows]
+                TestTypes = [
+                    KnownTestType.One,
+                    KnownTestType.Many,
+                    KnownTestType.Exec,
+                    KnownTestType.ExecRows,
+                    KnownTestType.ExecLastId
+                ]
             }
         },
         {
@@ -58,7 +83,13 @@ internal static class Config
             {
                 TestNamespace = "SqliteExampleGen",
                 LegacyTestNamespace = "SqliteLegacyExampleGen",
-                TestTypes = [KnownTestType.One, KnownTestType.Many, KnownTestType.Exec, KnownTestType.ExecRows]
+                TestTypes = [
+                    KnownTestType.One,
+                    KnownTestType.Many,
+                    KnownTestType.Exec,
+                    KnownTestType.ExecRows,
+                    KnownTestType.ExecLastId
+                ]
             }
         },
         {
@@ -66,7 +97,13 @@ internal static class Config
             {
                 TestNamespace = "SqliteDapperExampleGen",
                 LegacyTestNamespace = "SqliteDapperLegacyExampleGen",
-                TestTypes = [KnownTestType.One, KnownTestType.Many, KnownTestType.Exec, KnownTestType.ExecRows]
+                TestTypes = [
+                    KnownTestType.One,
+                    KnownTestType.Many,
+                    KnownTestType.Exec,
+                    KnownTestType.ExecRows,
+                    KnownTestType.ExecLastId
+                ]
             }
         },
     };

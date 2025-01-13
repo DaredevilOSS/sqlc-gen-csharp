@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace SqlcGenCsharpTests;
 
 [TestFixture]
-public partial class MySqlConnectorTester : IExecLastIdTester, ICopyFromTester
+public partial class MySqlConnectorTester
 {
     private static readonly Random Randomizer = new();
 
@@ -20,28 +20,6 @@ public partial class MySqlConnectorTester : IExecLastIdTester, ICopyFromTester
     {
         await QuerySql.TruncateAuthors();
         await QuerySql.TruncateCopyToTests();
-    }
-
-    [Test]
-    public async Task TestExecLastId()
-    {
-        var bojackCreateAuthorArgs = new QuerySql.CreateAuthorReturnIdArgs
-        {
-            Name = DataGenerator.GenericAuthor,
-            Bio = DataGenerator.GenericQuote1
-        };
-        var insertedId = await QuerySql.CreateAuthorReturnId(bojackCreateAuthorArgs);
-
-        var getAuthorByIdArgs = new QuerySql.GetAuthorByIdArgs
-        {
-            Id = insertedId
-        };
-        var actual = await QuerySql.GetAuthorById(getAuthorByIdArgs);
-        Assert.That(actual is
-        {
-            Name: DataGenerator.GenericAuthor,
-            Bio: DataGenerator.GenericQuote1
-        });
     }
 
     [Test]
