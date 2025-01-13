@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace SqlcGenCsharpTests
 {
-    public partial class NpgsqlTester : IExecLastIdTester, ICopyFromTester
+    public partial class NpgsqlTester
     {
         private static readonly Random Randomizer = new Random();
 
@@ -79,30 +79,6 @@ namespace SqlcGenCsharpTests
         }
 
         [Test]
-        public async Task TestExecLastId()
-        {
-            var bojackCreateAuthorArgs = new QuerySql.CreateAuthorReturnIdArgs
-            {
-                Name = DataGenerator.BojackAuthor,
-                Bio = DataGenerator.BojackTheme
-            };
-            var insertedId = await QuerySql.CreateAuthorReturnId(bojackCreateAuthorArgs);
-
-            var expected = new QuerySql.GetAuthorByIdRow
-            {
-                Id = insertedId,
-                Name = DataGenerator.BojackAuthor,
-                Bio = DataGenerator.BojackTheme
-            };
-            var actual = await QuerySql.GetAuthorById(new QuerySql.GetAuthorByIdArgs
-            {
-                Id = insertedId
-            });
-            ClassicAssert.IsNotNull(actual);
-            Assert.That(Equals(expected, actual));
-        }
-
-        [Test]
         public async Task TestNodePostgresType()
         {
             var nodePostgresTypeArgs = new QuerySql.InsertNodePostgresTypeArgs
@@ -168,11 +144,6 @@ namespace SqlcGenCsharpTests
                 x.CText.Equals(y.CText) &&
                 x.CTextArray.SequenceEqual(y.CTextArray) &&
                 x.CIntegerArray.SequenceEqual(y.CIntegerArray);
-        }
-
-        private static bool Equals(QuerySql.GetAuthorByIdRow x, QuerySql.GetAuthorByIdRow y)
-        {
-            return x.Id.Equals(y.Id) && x.Name.Equals(y.Name) && x.Bio.Equals(y.Bio);
         }
 
         private static bool Equals(QuerySql.SelectAuthorsWithSliceRow x, QuerySql.SelectAuthorsWithSliceRow y)

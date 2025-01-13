@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace SqlcGenCsharpTests
 {
-    public partial class NpgsqlDapperTester : IExecLastIdTester
+    public partial class NpgsqlDapperTester
     {
         private QuerySql QuerySql { get; } = new QuerySql(
             Environment.GetEnvironmentVariable(EndToEndCommon.PostgresConnectionStringEnv));
@@ -50,30 +50,6 @@ namespace SqlcGenCsharpTests
                 new QuerySql.SelectAuthorsWithSliceRow { Name = DataGenerator.GenericAuthor, Bio = DataGenerator.GenericQuote1 },
             };
             Assert.That(SequenceEquals(expected, actual));
-        }
-
-        [Test]
-        public async Task TestExecLastId()
-        {
-            var bojackCreateAuthorArgs = new QuerySql.CreateAuthorReturnIdArgs
-            {
-                Name = DataGenerator.BojackAuthor,
-                Bio = DataGenerator.BojackTheme
-            };
-            var insertedId = await QuerySql.CreateAuthorReturnId(bojackCreateAuthorArgs);
-
-            var expected = new QuerySql.GetAuthorByIdRow
-            {
-                Id = insertedId,
-                Name = DataGenerator.BojackAuthor,
-                Bio = DataGenerator.BojackTheme
-            };
-            var actual = await QuerySql.GetAuthorById(new QuerySql.GetAuthorByIdArgs
-            {
-                Id = insertedId
-            });
-            ClassicAssert.IsNotNull(actual);
-            Assert.That(Equals(expected, actual));
         }
 
         [Test]
@@ -141,11 +117,6 @@ namespace SqlcGenCsharpTests
                 x.CText.Equals(y.CText) &&
                 x.CTextArray.SequenceEqual(y.CTextArray) &&
                 x.CIntegerArray.SequenceEqual(y.CIntegerArray);
-        }
-
-        private static bool Equals(QuerySql.GetAuthorByIdRow x, QuerySql.GetAuthorByIdRow y)
-        {
-            return x.Id.Equals(y.Id) && x.Name.Equals(y.Name) && x.Bio.Equals(y.Bio);
         }
 
         private static bool Equals(QuerySql.SelectAuthorsWithSliceRow x, QuerySql.SelectAuthorsWithSliceRow y)

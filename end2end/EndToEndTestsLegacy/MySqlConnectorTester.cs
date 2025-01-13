@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace SqlcGenCsharpTests
 {
     [TestFixture]
-    public partial class MySqlConnectorTester : IExecLastIdTester, ICopyFromTester
+    public partial class MySqlConnectorTester
     {
         private static readonly Random Randomizer = new Random();
 
@@ -19,30 +19,6 @@ namespace SqlcGenCsharpTests
         public async Task EmptyTestsTable()
         {
             await QuerySql.TruncateAuthors();
-        }
-
-        [Test]
-        public async Task TestExecLastId()
-        {
-            var bojackCreateAuthorArgs = new QuerySql.CreateAuthorReturnIdArgs
-            {
-                Name = DataGenerator.BojackAuthor,
-                Bio = DataGenerator.BojackTheme
-            };
-            var insertedId = await QuerySql.CreateAuthorReturnId(bojackCreateAuthorArgs);
-
-            var expected = new QuerySql.GetAuthorByIdRow
-            {
-                Id = insertedId,
-                Name = DataGenerator.BojackAuthor,
-                Bio = DataGenerator.BojackTheme
-            };
-            var actual = await QuerySql.GetAuthorById(new QuerySql.GetAuthorByIdArgs
-            {
-                Id = insertedId
-            });
-            ClassicAssert.IsNotNull(actual);
-            Assert.That(Equals(expected, actual));
         }
 
         [Test]
@@ -68,11 +44,5 @@ namespace SqlcGenCsharpTests
                 };
             }
         }
-
-        private static bool Equals(QuerySql.GetAuthorByIdRow x, QuerySql.GetAuthorByIdRow y)
-        {
-            return x.Id.Equals(y.Id) && x.Name.Equals(y.Name) && x.Bio.Equals(y.Bio);
-        }
-
     }
 }
