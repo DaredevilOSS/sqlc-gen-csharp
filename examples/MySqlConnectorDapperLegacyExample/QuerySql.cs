@@ -14,6 +14,7 @@ namespace MySqlConnectorDapperLegacyExampleGen
     using System.IO;
     using CsvHelper;
     using CsvHelper.Configuration;
+    using System.Linq;
 
     public class QuerySql
     {
@@ -144,6 +145,27 @@ namespace MySqlConnectorDapperLegacyExampleGen
             using (var connection = new MySqlConnection(ConnectionString))
             {
                 return await connection.ExecuteAsync(UpdateAuthorsSql, new { bio = args.Bio });
+            }
+        }
+
+        private const string SelectAuthorsWithSliceSql = "SELECT id, name, bio, created FROM authors WHERE id IN (/*SLICE:ids*/@ids); SELECT LAST_INSERT_ID()";
+        public class SelectAuthorsWithSliceRow
+        {
+            public long Id { get; set; }
+            public string Name { get; set; }
+            public string Bio { get; set; }
+            public DateTime Created { get; set; }
+        };
+        public class SelectAuthorsWithSliceArgs
+        {
+            public long[] Ids { get; set; }
+        };
+        public async Task<List<SelectAuthorsWithSliceRow>> SelectAuthorsWithSlice(SelectAuthorsWithSliceArgs args)
+        {
+            using (var connection = new MySqlConnection(ConnectionString))
+            {
+                var results = await connection.QueryAsync<SelectAuthorsWithSliceRow>(SelectAuthorsWithSliceSql, new { ids = args.Ids });
+                return results.AsList();
             }
         }
 

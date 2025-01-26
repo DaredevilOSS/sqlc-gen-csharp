@@ -1,6 +1,7 @@
 using Plugin;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 
 namespace SqlcGenCsharp.Drivers.Generators;
 
@@ -80,6 +81,15 @@ public class CommonGen(DbDriver dbDriver)
             var columnName = p.Column.Name;
             var param = p.Column.Name.ToPascalCase();
             var nullCheck = dbDriver.Options.DotnetFramework.LatestDotnetSupported() && !p.Column.NotNull ? "!" : "";
+            if (p.Column.IsSqlcSlice == true)
+            {
+                return $$"""
+                         foreach (var (value, i) in args.Ids.Select((v, i) => (v, i)))
+                         {
+                            {{varName}}.Parameters.AddWithValue($"@{nameof(args.{{param}}{{nullCheck}})}Arg{i}", value);
+                         }
+                         """;
+            }
             return $"{varName}.Parameters.AddWithValue(\"@{columnName}\", args.{param}{nullCheck});";
         }).ToList();
     }
