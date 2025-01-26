@@ -1,6 +1,7 @@
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Plugin;
 using SqlcGenCsharp.Drivers.Generators;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -64,6 +65,7 @@ public partial class MySqlConnectorDriver(Options options) : DbDriver(options), 
             .Append(UsingDirective(ParseName("System.IO")))
             .Append(UsingDirective(ParseName("CsvHelper")))
             .Append(UsingDirective(ParseName("CsvHelper.Configuration")))
+            .Append(UsingDirective(ParseName("System.Linq"))) // TODO: add only if sqlc slice exists
             .ToArray();
     }
 

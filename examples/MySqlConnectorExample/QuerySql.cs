@@ -11,6 +11,7 @@ using System.Globalization;
 using System.IO;
 using CsvHelper;
 using CsvHelper.Configuration;
+using System.Linq;
 
 namespace MySqlConnectorExampleGen;
 public class QuerySql
@@ -177,6 +178,38 @@ public class QuerySql
             {
                 command.Parameters.AddWithValue("@bio", args.Bio!);
                 return await command.ExecuteNonQueryAsync();
+            }
+        }
+    }
+
+    private const string SelectAuthorsWithSliceSql = "SELECT id, name, bio, created FROM authors WHERE id IN (/*SLICE:ids*/@ids)";
+    public readonly record struct SelectAuthorsWithSliceRow(long Id, string Name, string? Bio, DateTime Created);
+    public readonly record struct SelectAuthorsWithSliceArgs(long[] Ids);
+    public async Task<List<SelectAuthorsWithSliceRow>> SelectAuthorsWithSlice(SelectAuthorsWithSliceArgs args)
+    {
+        using (var connection = new MySqlConnection(ConnectionString))
+        {
+            connection.Open();
+            var transformSql = SelectAuthorsWithSliceSql;
+            var IdsArgs = Enumerable.Range(0, args.Ids.Length).Select(i => $"@{nameof(args.Ids)}Arg{i}").ToList();
+            transformSql = transformSql.Replace("/*SLICE:ids*/@ids", string.Join(",", IdsArgs));
+            using (var command = new MySqlCommand(transformSql, connection))
+            {
+                foreach (var(value, i)in args.Ids.Select((v, i) => (v, i)))
+                {
+                    command.Parameters.AddWithValue($"@{nameof(args.Ids)}Arg{i}", value);
+                }
+
+                using (var reader = await command.ExecuteReaderAsync())
+                {
+                    var result = new List<SelectAuthorsWithSliceRow>();
+                    while (await reader.ReadAsync())
+                    {
+                        result.Add(new SelectAuthorsWithSliceRow { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2), Created = reader.GetDateTime(3) });
+                    }
+
+                    return result;
+                }
             }
         }
     }

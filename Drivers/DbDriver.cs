@@ -51,7 +51,7 @@ public abstract class DbDriver(Options options)
             foreach (var columnMapping in ColumnMappings
                          .Where(columnMapping => columnMapping.DbTypes.ContainsKey(columnType)))
             {
-                if (column.IsArray) return $"{columnMapping.CsharpType}[]";
+                if (column.IsArray || column.IsSqlcSlice) return $"{columnMapping.CsharpType}[]";
 
                 return columnMapping.CsharpType;
             }
@@ -132,5 +132,10 @@ public abstract class DbDriver(Options options)
         if (IsNullOrEmpty(queryParam.Column.Name))
             queryParam.Column.Name = $"{GetColumnType(queryParam.Column).Replace("[]", "Arr")}_{queryParam.Number}";
         return queryParam.Column;
+    }
+
+    public string GetSliceManipulator(Column column)
+    {
+        return column.IsSqlcSlice ? "SqlcSlice" : "Array";
     }
 }

@@ -24,6 +24,9 @@ UPDATE authors
 SET bio = sqlc.arg('bio')
 WHERE bio IS NOT NULL;
 
+-- name: SelectAuthorsWithSlice :many
+SELECT * FROM authors WHERE id IN (sqlc.slice('ids'));
+
 -- name: TruncateCopyToTests :exec
 TRUNCATE TABLE copy_tests;
 
