@@ -23,14 +23,35 @@ Advanced functionality - varies between databases:
 
 | Annotation  | PostgresSQL | MySQL | SQLite |
 |-------------|-------------|-------|--------|
-| :one        | ✅          | ✅    | ✅     |
-| :many       | ✅          | ✅    | ✅     |
-| :exec       | ✅          | ✅    | ✅     |
-| :execrows   | ✅          | ✅    | ✅     |
-| :execlastid | ✅          | ✅    | ✅     |
-| :copyfrom   | ✅          | ✅    | ❌     |
+| :one        | ✅          | ✅    | ✅      |
+| :many       | ✅          | ✅    | ✅      |
+| :exec       | ✅          | ✅    | ✅      |
+| :execrows   | ✅          | ✅    | ✅      |
+| :execlastid | ✅          | ✅    | ✅      |
+| :copyfrom   | ✅          | ✅    | ❌      |
 
 - ✅ means the feature is fully supported.
 - ❌ means the feature is not supported by the plugin (but could be supported by the database).
 
-More info can be found in [here](https://docs.sqlc.dev/en/latest/reference/query-annotations.html).
+More info can be found in [here](https://docs.sqlc.dev/en/stable/reference/query-annotations.html).
+
+## Macros Annotations
+- `sqlc.arg`       - Attach a name to a parameter in a SQL query
+- `sqlc.embed`     - Embedding allows you to reuse existing model structs in more queries
+- `sqlc.narg`      - The same as `sqlc.arg`, but always marks the parameter as nullable
+- `sqlc.slice`     - For databases that do not support passing arrays to the `IN` operator, generates a dynamic query at runtime with the correct number of parameters
+
+<br/>
+
+| Annotation  | PostgresSQL | MySQL | SQLite |
+|-------------|-------------|-------|--------|
+| sqlc.arg    | ✅          | ✅    | ✅      |
+| sqlc.embed  | ❌          | ❌    | ❌      |
+| sqlc.narg   | ❌          | ❌    | ❌      |
+| sqlc.slice  | 🚫          | ✅    | ❌      |
+
+- ✅ means the feature is fully supported.
+- 🚫 means the database does not support the feature.
+- ❌ means the feature is not supported by the plugin (but could be supported by the database).
+
+More info can be found in [here](https://docs.sqlc.dev/en/stable/reference/macros.html#macros).
