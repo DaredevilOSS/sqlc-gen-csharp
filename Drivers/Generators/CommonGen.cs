@@ -1,4 +1,5 @@
 using Plugin;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -77,20 +78,37 @@ public class CommonGen(DbDriver dbDriver)
     {
         return parameters.Select(p =>
         {
-            var varName = Variable.Command.AsVarName();
+            var commandVar = Variable.Command.AsVarName();
             var columnName = p.Column.Name;
             var param = p.Column.Name.ToPascalCase();
             var nullCheck = dbDriver.Options.DotnetFramework.LatestDotnetSupported() && !p.Column.NotNull ? "!" : "";
-            if (p.Column.IsSqlcSlice == true)
+            if (p.Column.IsSqlcSlice)
             {
                 return $$"""
-                         foreach (var (value, i) in args.Ids.Select((v, i) => (v, i)))
+                         for (int i = 0; i < {{Variable.Args.AsVarName()}}.{{param}}.Length; i++)
                          {
-                            {{varName}}.Parameters.AddWithValue($"@{nameof(args.{{param}}{{nullCheck}})}Arg{i}", value);
+                            {{commandVar}}.Parameters.AddWithValue($"@{nameof({{Variable.Args.AsVarName()}}.{{param}})}Arg{i}", {{Variable.Args.AsVarName()}}.{{param}}[i]);
                          }
                          """;
             }
-            return $"{varName}.Parameters.AddWithValue(\"@{columnName}\", args.{param}{nullCheck});";
+            return $"{commandVar}.Parameters.AddWithValue(\"@{columnName}\", args.{param}{nullCheck});";
         }).ToList();
+    }
+
+    public string GetSqlSliceSection(Query query, string queryTextConstant)
+    {
+        var sqlcSliceCommands = new List<string>();
+        var initVariable = $"var {Variable.TransformSql.AsVarName()} = {queryTextConstant};";
+        sqlcSliceCommands.Add(initVariable);
+        var sqlcSliceParams = query.Params.Where(p => p.Column.IsSqlcSlice);
+        foreach (var sqlcSliceParam in sqlcSliceParams)
+        {
+            var paramName = sqlcSliceParam.Column.Name;
+            var createArgsName = $"var {paramName.ToPascalCase()}Args = Enumerable.Range(0, args.{paramName.ToPascalCase()}.Length).Select(i => $\"@{{nameof({Variable.Args.AsVarName()}. {paramName.ToPascalCase()})}}Arg{{i}}\").ToList();";
+            var sqlReplace = $"{Variable.TransformSql.AsVarName()} = {Variable.TransformSql.AsVarName()}.Replace(\"/*SLICE:{paramName}*/@{paramName}\", string.Join(\",\", {paramName.ToPascalCase()}Args));";
+            sqlcSliceCommands.Add(createArgsName);
+            sqlcSliceCommands.Add(sqlReplace);
+        }
+        return Environment.NewLine + sqlcSliceCommands.JoinByNewLine();
     }
 }

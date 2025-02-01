@@ -169,6 +169,28 @@ namespace MySqlConnectorDapperLegacyExampleGen
             }
         }
 
+        private const string SelectAuthorsWithTwoSlicesSql = "SELECT id, name, bio, created FROM authors WHERE id IN (/*SLICE:ids*/@ids) AND name IN (/*SLICE:names*/@names); SELECT LAST_INSERT_ID()";
+        public class SelectAuthorsWithTwoSlicesRow
+        {
+            public long Id { get; set; }
+            public string Name { get; set; }
+            public string Bio { get; set; }
+            public DateTime Created { get; set; }
+        };
+        public class SelectAuthorsWithTwoSlicesArgs
+        {
+            public long[] Ids { get; set; }
+            public string[] Names { get; set; }
+        };
+        public async Task<List<SelectAuthorsWithTwoSlicesRow>> SelectAuthorsWithTwoSlices(SelectAuthorsWithTwoSlicesArgs args)
+        {
+            using (var connection = new MySqlConnection(ConnectionString))
+            {
+                var results = await connection.QueryAsync<SelectAuthorsWithTwoSlicesRow>(SelectAuthorsWithTwoSlicesSql, new { ids = args.Ids, names = args.Names });
+                return results.AsList();
+            }
+        }
+
         private const string TruncateCopyToTestsSql = "TRUNCATE TABLE copy_tests; SELECT LAST_INSERT_ID()";
         public async Task TruncateCopyToTests()
         {

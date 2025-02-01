@@ -1,7 +1,5 @@
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Plugin;
-using System;
-using System.Collections.Generic;
 using System.Linq;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
@@ -45,23 +43,8 @@ public class ManyDeclareGen(DbDriver dbDriver)
         string GetAsDriver()
         {
             var isSliceInQuery = query.Params.Any(p => p.Column.IsSqlcSlice);
-            var sqlcSliceSection = "";
-            if (isSliceInQuery)
-            {
-                var sqlcSliceCommands = new List<string>();
-                var initVariable = $"var {Variable.TransformSql.AsVarName()} = {queryTextConstant};";
-                sqlcSliceCommands.Add(initVariable);
-                var sqlcSliceParams = query.Params.Where(p => p.Column.IsSqlcSlice);
-                foreach (var sqlcSliceParam in sqlcSliceParams)
-                {
-                    var paramName = sqlcSliceParam.Column.Name;
-                    var createArgsName = $"var {paramName.ToPascalCase()}Args = Enumerable.Range(0, args.{paramName.ToPascalCase()}.Length).Select(i => $\"@{{nameof(args.Ids)}}Arg{{i}}\").ToList();";
-                    var sqlReplace = $"{Variable.TransformSql.AsVarName()} = {Variable.TransformSql.AsVarName()}.Replace(\"/*SLICE:{paramName}*/@{paramName}\", string.Join(\",\", {paramName.ToPascalCase()}Args));";
-                    sqlcSliceCommands.Add(createArgsName);
-                    sqlcSliceCommands.Add(sqlReplace);
-                }
-                sqlcSliceSection = Environment.NewLine + sqlcSliceCommands.JoinByNewLine();
-            }
+            var sqlcSliceSection = isSliceInQuery ? CommonGen.GetSqlSliceSection(query, queryTextConstant) : string.Empty;
+
             var createSqlCommand = dbDriver.CreateSqlCommand(isSliceInQuery ? Variable.TransformSql.AsVarName() : queryTextConstant);
             var commandParameters = CommonGen.GetCommandParameters(query.Params);
             var initDataReader = CommonGen.InitDataReader();

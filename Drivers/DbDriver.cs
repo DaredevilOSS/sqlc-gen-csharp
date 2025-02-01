@@ -127,15 +127,10 @@ public abstract class DbDriver(Options options)
         ];
     }
 
-    public Column GetColumnFromParam(Plugin.Parameter queryParam)
+    public Column GetColumnFromParam(Parameter queryParam)
     {
         if (IsNullOrEmpty(queryParam.Column.Name))
             queryParam.Column.Name = $"{GetColumnType(queryParam.Column).Replace("[]", "Arr")}_{queryParam.Number}";
         return queryParam.Column;
-    }
-
-    public string GetSliceManipulator(Column column)
-    {
-        return column.IsSqlcSlice ? "SqlcSlice" : "Array";
     }
 }

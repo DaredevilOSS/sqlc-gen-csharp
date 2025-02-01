@@ -243,9 +243,9 @@ namespace MySqlConnectorLegacyExampleGen
                 transformSql = transformSql.Replace("/*SLICE:ids*/@ids", string.Join(",", IdsArgs));
                 using (var command = new MySqlCommand(transformSql, connection))
                 {
-                    foreach (var(value, i)in args.Ids.Select((v, i) => (v, i)))
+                    for (int i = 0; i < args.Ids.Length; i++)
                     {
-                        command.Parameters.AddWithValue($"@{nameof(args.Ids)}Arg{i}", value);
+                        command.Parameters.AddWithValue($"@{nameof(args.Ids)}Arg{i}", args.Ids[i]);
                     }
 
                     using (var reader = await command.ExecuteReaderAsync())
@@ -254,6 +254,55 @@ namespace MySqlConnectorLegacyExampleGen
                         while (await reader.ReadAsync())
                         {
                             result.Add(new SelectAuthorsWithSliceRow { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? string.Empty : reader.GetString(2), Created = reader.GetDateTime(3) });
+                        }
+
+                        return result;
+                    }
+                }
+            }
+        }
+
+        private const string SelectAuthorsWithTwoSlicesSql = "SELECT id, name, bio, created FROM authors WHERE id IN (/*SLICE:ids*/@ids) AND name IN (/*SLICE:names*/@names)";
+        public class SelectAuthorsWithTwoSlicesRow
+        {
+            public long Id { get; set; }
+            public string Name { get; set; }
+            public string Bio { get; set; }
+            public DateTime Created { get; set; }
+        };
+        public class SelectAuthorsWithTwoSlicesArgs
+        {
+            public long[] Ids { get; set; }
+            public string[] Names { get; set; }
+        };
+        public async Task<List<SelectAuthorsWithTwoSlicesRow>> SelectAuthorsWithTwoSlices(SelectAuthorsWithTwoSlicesArgs args)
+        {
+            using (var connection = new MySqlConnection(ConnectionString))
+            {
+                connection.Open();
+                var transformSql = SelectAuthorsWithTwoSlicesSql;
+                var IdsArgs = Enumerable.Range(0, args.Ids.Length).Select(i => $"@{nameof(args.Ids)}Arg{i}").ToList();
+                transformSql = transformSql.Replace("/*SLICE:ids*/@ids", string.Join(",", IdsArgs));
+                var NamesArgs = Enumerable.Range(0, args.Names.Length).Select(i => $"@{nameof(args.Names)}Arg{i}").ToList();
+                transformSql = transformSql.Replace("/*SLICE:names*/@names", string.Join(",", NamesArgs));
+                using (var command = new MySqlCommand(transformSql, connection))
+                {
+                    for (int i = 0; i < args.Ids.Length; i++)
+                    {
+                        command.Parameters.AddWithValue($"@{nameof(args.Ids)}Arg{i}", args.Ids[i]);
+                    }
+
+                    for (int i = 0; i < args.Names.Length; i++)
+                    {
+                        command.Parameters.AddWithValue($"@{nameof(args.Names)}Arg{i}", args.Names[i]);
+                    }
+
+                    using (var reader = await command.ExecuteReaderAsync())
+                    {
+                        var result = new List<SelectAuthorsWithTwoSlicesRow>();
+                        while (await reader.ReadAsync())
+                        {
+                            result.Add(new SelectAuthorsWithTwoSlicesRow { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? string.Empty : reader.GetString(2), Created = reader.GetDateTime(3) });
                         }
 
                         return result;
