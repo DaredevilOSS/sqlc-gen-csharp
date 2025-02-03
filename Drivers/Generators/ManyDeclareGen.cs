@@ -43,7 +43,7 @@ public class ManyDeclareGen(DbDriver dbDriver)
         string GetAsDriver()
         {
             var sqlcSliceSection = CommonGen.GetSqlTransformations(query, queryTextConstant);
-            var createSqlCommand = dbDriver.CreateSqlCommand(sqlcSliceSection != string.Empty ? Variable.TransformSql.AsVarName() : queryTextConstant);
+            var createSqlCommand = dbDriver.CreateSqlCommand(sqlcSliceSection != string.Empty ? Variable.TransformedSql.AsVarName() : queryTextConstant);
             var commandParameters = CommonGen.GetCommandParameters(query.Params);
             var initDataReader = CommonGen.InitDataReader();
             var awaitReaderRow = CommonGen.AwaitReaderRow();

@@ -97,13 +97,13 @@ public class CommonGen(DbDriver dbDriver)
     {
         if (!query.Params.Any(p => p.Column.IsSqlcSlice)) return string.Empty;
         var sqlcSliceCommands = new List<string>();
-        var initVariable = $"var {Variable.TransformSql.AsVarName()} = {queryTextConstant};";
+        var initVariable = $"var {Variable.TransformedSql.AsVarName()} = {queryTextConstant};";
         sqlcSliceCommands.Add(initVariable);
         var sqlcSliceParams = query.Params.Where(p => p.Column.IsSqlcSlice);
         foreach (var sqlcSliceParam in sqlcSliceParams)
         {
             var paramName = sqlcSliceParam.Column.Name;
-            var sqlReplace = $"{Variable.TransformSql.AsVarName()} = Utils.GetTransformedString(transformSql, {Variable.Args.AsVarName()}.{paramName.ToPascalCase()}, \"{paramName.ToPascalCase()}\", \"{paramName}\");";
+            var sqlReplace = $"{Variable.TransformedSql.AsVarName()} = Utils.GetTransformedString(transformSql, {Variable.Args.AsVarName()}.{paramName.ToPascalCase()}, \"{paramName.ToPascalCase()}\", \"{paramName}\");";
             sqlcSliceCommands.Add(sqlReplace);
         }
         return Environment.NewLine + sqlcSliceCommands.JoinByNewLine();
