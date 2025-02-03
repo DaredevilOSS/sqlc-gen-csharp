@@ -25,31 +25,31 @@ public class ExecLastIdDeclareGen(DbDriver dbDriver)
     private string GetMethodBody(string queryTextConstant, Query query)
     {
         var (establishConnection, connectionOpen) = dbDriver.EstablishConnection(query);
+        var sqlTextTrasformation = CommonGen.GetSqlTransformations(query, queryTextConstant);
         connectionOpen = connectionOpen.AppendSemicolonUnlessEmpty();
         return dbDriver.Options.UseDapper ? GetAsDapper() : GetAsDriver();
 
         string GetAsDapper()
         {
             var dapperParamsSection = CommonGen.GetParameterListForDapper(query.Params);
+            var dapperArgs = dapperParamsSection != string.Empty ? $", {Variable.DapperParams.AsVarName()}" : string.Empty;
             return $$"""
                      using ({{establishConnection}})
-                     {
-                        {{dapperParamsSection}}
-                        return await connection.QuerySingleAsync<{{dbDriver.GetIdColumnType()}}>({{queryTextConstant}}, {{Variable.DapperParams.AsVarName()}});
+                     {{{sqlTextTrasformation}}{{dapperParamsSection}}
+                        return await connection.QuerySingleAsync<{{dbDriver.GetIdColumnType()}}>({{queryTextConstant}}{{dapperArgs}});
                      }
                      """;
         }
 
         string GetAsDriver()
         {
-            var sqlcSliceSection = CommonGen.GetSqlTransformations(query, queryTextConstant);
-            var createSqlCommand = dbDriver.CreateSqlCommand(sqlcSliceSection != string.Empty ? Variable.TransformedSql.AsVarName() : queryTextConstant);
+            var createSqlCommand = dbDriver.CreateSqlCommand(sqlTextTrasformation != string.Empty ? Variable.TransformedSql.AsVarName() : queryTextConstant);
             var commandParameters = CommonGen.GetCommandParameters(query.Params).JoinByNewLine();
             var returnLastId = ((IExecLastId)dbDriver).GetLastIdStatement().JoinByNewLine();
             return $$"""
                      using ({{establishConnection}})
                      {
-                         {{connectionOpen}}{{sqlcSliceSection}}
+                         {{connectionOpen}}{{sqlTextTrasformation}}
                          using ({{createSqlCommand}})
                          {
                             {{commandParameters}}

@@ -60,8 +60,7 @@ namespace MySqlConnectorDapperLegacyExampleGen
         {
             using (var connection = new MySqlConnection(ConnectionString))
             {
-                var dapperParams = new Dictionary<string, object>();
-                var results = await connection.QueryAsync<ListAuthorsRow>(ListAuthorsSql, dapperParams);
+                var results = await connection.QueryAsync<ListAuthorsRow>(ListAuthorsSql);
                 return results.AsList();
             }
         }
@@ -143,8 +142,7 @@ namespace MySqlConnectorDapperLegacyExampleGen
         {
             using (var connection = new MySqlConnection(ConnectionString))
             {
-                var dapperParams = new Dictionary<string, object>();
-                await connection.ExecuteAsync(TruncateAuthorsSql, dapperParams);
+                await connection.ExecuteAsync(TruncateAuthorsSql);
             }
         }
 
@@ -224,8 +222,7 @@ namespace MySqlConnectorDapperLegacyExampleGen
         {
             using (var connection = new MySqlConnection(ConnectionString))
             {
-                var dapperParams = new Dictionary<string, object>();
-                await connection.ExecuteAsync(TruncateCopyToTestsSql, dapperParams);
+                await connection.ExecuteAsync(TruncateCopyToTestsSql);
             }
         }
 
@@ -271,8 +268,7 @@ namespace MySqlConnectorDapperLegacyExampleGen
         {
             using (var connection = new MySqlConnection(ConnectionString))
             {
-                var dapperParams = new Dictionary<string, object>();
-                var result = await connection.QueryFirstOrDefaultAsync<CountCopyRowsRow>(CountCopyRowsSql, dapperParams);
+                var result = await connection.QueryFirstOrDefaultAsync<CountCopyRowsRow>(CountCopyRowsSql);
                 return result;
             }
         }
@@ -322,8 +318,7 @@ namespace MySqlConnectorDapperLegacyExampleGen
         {
             using (var connection = new MySqlConnection(ConnectionString))
             {
-                var dapperParams = new Dictionary<string, object>();
-                var result = await connection.QueryFirstOrDefaultAsync<TestRow>(TestSql, dapperParams);
+                var result = await connection.QueryFirstOrDefaultAsync<TestRow>(TestSql);
                 return result;
             }
         }

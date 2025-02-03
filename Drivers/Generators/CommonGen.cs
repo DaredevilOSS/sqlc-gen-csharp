@@ -21,6 +21,7 @@ public class CommonGen(DbDriver dbDriver)
 
     public static string GetParameterListForDapper(IList<Parameter> parameters)
     {
+        if (!parameters.Any()) return string.Empty;
         var dapperParamsCommands = new List<string>
         {
             $"var {Variable.DapperParams.AsVarName()} = new Dictionary<string, object>();"
@@ -38,7 +39,7 @@ public class CommonGen(DbDriver dbDriver)
             }
             dapperParamsCommands.Add($"{Variable.DapperParams.AsVarName()}.Add(\"{p.Column.Name}\", {Variable.Args.AsVarName()}.{param});");
         }
-        return dapperParamsCommands.JoinByNewLine();
+        return Environment.NewLine + dapperParamsCommands.JoinByNewLine();
     }
 
     public static string InitDataReader()

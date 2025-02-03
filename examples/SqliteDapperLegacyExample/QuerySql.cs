@@ -54,8 +54,7 @@ namespace SqliteDapperLegacyExampleGen
         {
             using (var connection = new SqliteConnection(ConnectionString))
             {
-                var dapperParams = new Dictionary<string, object>();
-                var results = await connection.QueryAsync<ListAuthorsRow>(ListAuthorsSql, dapperParams);
+                var results = await connection.QueryAsync<ListAuthorsRow>(ListAuthorsSql);
                 return results.AsList();
             }
         }
@@ -155,8 +154,7 @@ namespace SqliteDapperLegacyExampleGen
         {
             using (var connection = new SqliteConnection(ConnectionString))
             {
-                var dapperParams = new Dictionary<string, object>();
-                await connection.ExecuteAsync(DeleteAllAuthorsSql, dapperParams);
+                await connection.ExecuteAsync(DeleteAllAuthorsSql);
             }
         }
     }
