@@ -36,7 +36,9 @@ namespace SqliteDapperLegacyExampleGen
         {
             using (var connection = new SqliteConnection(ConnectionString))
             {
-                var result = await connection.QueryFirstOrDefaultAsync<GetAuthorRow>(GetAuthorSql, new { name = args.Name });
+                var sqlParams = new System.Dynamic.ExpandoObject() as IDictionary<string, object>;
+                sqlParams.Add("name", args.Name);
+                var result = await connection.QueryFirstOrDefaultAsync<GetAuthorRow>(GetAuthorSql, sqlParams);
                 return result;
             }
         }
@@ -52,7 +54,8 @@ namespace SqliteDapperLegacyExampleGen
         {
             using (var connection = new SqliteConnection(ConnectionString))
             {
-                var results = await connection.QueryAsync<ListAuthorsRow>(ListAuthorsSql);
+                var sqlParams = new System.Dynamic.ExpandoObject() as IDictionary<string, object>;
+                var results = await connection.QueryAsync<ListAuthorsRow>(ListAuthorsSql, sqlParams);
                 return results.AsList();
             }
         }
@@ -67,7 +70,10 @@ namespace SqliteDapperLegacyExampleGen
         {
             using (var connection = new SqliteConnection(ConnectionString))
             {
-                await connection.ExecuteAsync(CreateAuthorSql, new { name = args.Name, bio = args.Bio });
+                var sqlParams = new System.Dynamic.ExpandoObject() as IDictionary<string, object>;
+                sqlParams.Add("name", args.Name);
+                sqlParams.Add("bio", args.Bio);
+                await connection.ExecuteAsync(CreateAuthorSql, sqlParams);
             }
         }
 
@@ -85,7 +91,10 @@ namespace SqliteDapperLegacyExampleGen
         {
             using (var connection = new SqliteConnection(ConnectionString))
             {
-                return await connection.QuerySingleAsync<int>(CreateAuthorReturnIdSql, new { name = args.Name, bio = args.Bio });
+                var sqlParams = new System.Dynamic.ExpandoObject() as IDictionary<string, object>;
+                sqlParams.Add("name", args.Name);
+                sqlParams.Add("bio", args.Bio);
+                return await connection.QuerySingleAsync<int>(CreateAuthorReturnIdSql, sqlParams);
             }
         }
 
@@ -104,7 +113,9 @@ namespace SqliteDapperLegacyExampleGen
         {
             using (var connection = new SqliteConnection(ConnectionString))
             {
-                var result = await connection.QueryFirstOrDefaultAsync<GetAuthorByIdRow>(GetAuthorByIdSql, new { id = args.Id });
+                var sqlParams = new System.Dynamic.ExpandoObject() as IDictionary<string, object>;
+                sqlParams.Add("id", args.Id);
+                var result = await connection.QueryFirstOrDefaultAsync<GetAuthorByIdRow>(GetAuthorByIdSql, sqlParams);
                 return result;
             }
         }
@@ -118,7 +129,9 @@ namespace SqliteDapperLegacyExampleGen
         {
             using (var connection = new SqliteConnection(ConnectionString))
             {
-                return await connection.ExecuteAsync(UpdateAuthorsSql, new { bio = args.Bio });
+                var sqlParams = new System.Dynamic.ExpandoObject() as IDictionary<string, object>;
+                sqlParams.Add("bio", args.Bio);
+                return await connection.ExecuteAsync(UpdateAuthorsSql, sqlParams);
             }
         }
 
@@ -131,7 +144,9 @@ namespace SqliteDapperLegacyExampleGen
         {
             using (var connection = new SqliteConnection(ConnectionString))
             {
-                await connection.ExecuteAsync(DeleteAuthorSql, new { name = args.Name });
+                var sqlParams = new System.Dynamic.ExpandoObject() as IDictionary<string, object>;
+                sqlParams.Add("name", args.Name);
+                await connection.ExecuteAsync(DeleteAuthorSql, sqlParams);
             }
         }
 
@@ -140,7 +155,8 @@ namespace SqliteDapperLegacyExampleGen
         {
             using (var connection = new SqliteConnection(ConnectionString))
             {
-                await connection.ExecuteAsync(DeleteAllAuthorsSql);
+                var sqlParams = new System.Dynamic.ExpandoObject() as IDictionary<string, object>;
+                await connection.ExecuteAsync(DeleteAllAuthorsSql, sqlParams);
             }
         }
     }

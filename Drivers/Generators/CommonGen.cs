@@ -21,11 +21,24 @@ public class CommonGen(DbDriver dbDriver)
 
     public static string GetParameterListForDapper(IList<Parameter> parameters)
     {
-        var parametersStr = parameters
-            .Select(p => p.Column.Name + "=args." + p.Column.Name.ToPascalCase() + "");
-        return parameters.Count > 0
-            ? ", new { " + string.Join(", ", parametersStr) + "}"
-            : string.Empty;
+        var sqlParamsCommands = new List<string>
+        {
+            $"var {Variable.SqlParams.AsVarName()} = new System.Dynamic.ExpandoObject() as IDictionary<string, object>;"
+        };
+        foreach (var p in parameters)
+        {
+            var param = p.Column.Name.ToPascalCase();
+            if (p.Column.IsSqlcSlice)
+            {
+                sqlParamsCommands.Add($$"""
+                         for (int i = 0; i < {{Variable.Args.AsVarName()}}.{{param}}.Length; i++)
+                            {{Variable.SqlParams.AsVarName()}}.Add($"@{{param}}Arg{i}", {{Variable.Args.AsVarName()}}.{{param}}[i]);
+                         """);
+                continue;
+            }
+            sqlParamsCommands.Add($"{Variable.SqlParams.AsVarName()}.Add(\"{p.Column.Name}\", {Variable.Args.AsVarName()}.{param});");
+        }
+        return sqlParamsCommands.JoinByNewLine();
     }
 
     public static string InitDataReader()

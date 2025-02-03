@@ -27,11 +27,12 @@ public class ExecDeclareGen(DbDriver dbDriver)
 
         string GetAsDapper()
         {
-            var args = CommonGen.GetParameterListForDapper(query.Params);
+            var sqlArgs = CommonGen.GetParameterListForDapper(query.Params);
             return $$"""
                         using ({{establishConnection}})
                         {
-                            await connection.ExecuteAsync({{queryTextConstant}}{{args}});
+                            {{sqlArgs}}
+                            await connection.ExecuteAsync({{queryTextConstant}}, {{Variable.SqlParams.AsVarName()}});
                         }
                      """;
         }

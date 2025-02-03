@@ -40,7 +40,9 @@ public class QuerySql
     {
         using (var connection = new MySqlConnection(ConnectionString))
         {
-            var result = await connection.QueryFirstOrDefaultAsync<GetAuthorRow?>(GetAuthorSql, new { name = args.Name });
+            var sqlParams = new System.Dynamic.ExpandoObject() as IDictionary<string, object>;
+            sqlParams.Add("name", args.Name);
+            var result = await connection.QueryFirstOrDefaultAsync<GetAuthorRow?>(GetAuthorSql, sqlParams);
             return result;
         }
     }
@@ -57,7 +59,8 @@ public class QuerySql
     {
         using (var connection = new MySqlConnection(ConnectionString))
         {
-            var results = await connection.QueryAsync<ListAuthorsRow>(ListAuthorsSql);
+            var sqlParams = new System.Dynamic.ExpandoObject() as IDictionary<string, object>;
+            var results = await connection.QueryAsync<ListAuthorsRow>(ListAuthorsSql, sqlParams);
             return results.AsList();
         }
     }
@@ -72,7 +75,10 @@ public class QuerySql
     {
         using (var connection = new MySqlConnection(ConnectionString))
         {
-            await connection.ExecuteAsync(CreateAuthorSql, new { name = args.Name, bio = args.Bio });
+            var sqlParams = new System.Dynamic.ExpandoObject() as IDictionary<string, object>;
+            sqlParams.Add("name", args.Name);
+            sqlParams.Add("bio", args.Bio);
+            await connection.ExecuteAsync(CreateAuthorSql, sqlParams);
         }
     }
 
@@ -86,7 +92,10 @@ public class QuerySql
     {
         using (var connection = new MySqlConnection(ConnectionString))
         {
-            return await connection.QuerySingleAsync<long>(CreateAuthorReturnIdSql, new { name = args.Name, bio = args.Bio });
+            var sqlParams = new System.Dynamic.ExpandoObject() as IDictionary<string, object>;
+            sqlParams.Add("name", args.Name);
+            sqlParams.Add("bio", args.Bio);
+            return await connection.QuerySingleAsync<long>(CreateAuthorReturnIdSql, sqlParams);
         }
     }
 
@@ -106,7 +115,9 @@ public class QuerySql
     {
         using (var connection = new MySqlConnection(ConnectionString))
         {
-            var result = await connection.QueryFirstOrDefaultAsync<GetAuthorByIdRow?>(GetAuthorByIdSql, new { id = args.Id });
+            var sqlParams = new System.Dynamic.ExpandoObject() as IDictionary<string, object>;
+            sqlParams.Add("id", args.Id);
+            var result = await connection.QueryFirstOrDefaultAsync<GetAuthorByIdRow?>(GetAuthorByIdSql, sqlParams);
             return result;
         }
     }
@@ -120,7 +131,9 @@ public class QuerySql
     {
         using (var connection = new MySqlConnection(ConnectionString))
         {
-            await connection.ExecuteAsync(DeleteAuthorSql, new { name = args.Name });
+            var sqlParams = new System.Dynamic.ExpandoObject() as IDictionary<string, object>;
+            sqlParams.Add("name", args.Name);
+            await connection.ExecuteAsync(DeleteAuthorSql, sqlParams);
         }
     }
 
@@ -129,7 +142,8 @@ public class QuerySql
     {
         using (var connection = new MySqlConnection(ConnectionString))
         {
-            await connection.ExecuteAsync(TruncateAuthorsSql);
+            var sqlParams = new System.Dynamic.ExpandoObject() as IDictionary<string, object>;
+            await connection.ExecuteAsync(TruncateAuthorsSql, sqlParams);
         }
     }
 
@@ -142,7 +156,9 @@ public class QuerySql
     {
         using (var connection = new MySqlConnection(ConnectionString))
         {
-            return await connection.ExecuteAsync(UpdateAuthorsSql, new { bio = args.Bio });
+            var sqlParams = new System.Dynamic.ExpandoObject() as IDictionary<string, object>;
+            sqlParams.Add("bio", args.Bio);
+            return await connection.ExecuteAsync(UpdateAuthorsSql, sqlParams);
         }
     }
 
@@ -162,7 +178,12 @@ public class QuerySql
     {
         using (var connection = new MySqlConnection(ConnectionString))
         {
-            var results = await connection.QueryAsync<SelectAuthorsWithSliceRow>(SelectAuthorsWithSliceSql, new { ids = args.Ids });
+            var transformedSql = SelectAuthorsWithSliceSql;
+            transformedSql = Utils.GetTransformedString(transformedSql, args.Ids, "Ids", "ids");
+            var sqlParams = new System.Dynamic.ExpandoObject() as IDictionary<string, object>;
+            for (int i = 0; i < args.Ids.Length; i++)
+                sqlParams.Add($"@IdsArg{i}", args.Ids[i]);
+            var results = await connection.QueryAsync<SelectAuthorsWithSliceRow>(transformedSql, sqlParams);
             return results.AsList();
         }
     }
@@ -184,7 +205,15 @@ public class QuerySql
     {
         using (var connection = new MySqlConnection(ConnectionString))
         {
-            var results = await connection.QueryAsync<SelectAuthorsWithTwoSlicesRow>(SelectAuthorsWithTwoSlicesSql, new { ids = args.Ids, names = args.Names });
+            var transformedSql = SelectAuthorsWithTwoSlicesSql;
+            transformedSql = Utils.GetTransformedString(transformedSql, args.Ids, "Ids", "ids");
+            transformedSql = Utils.GetTransformedString(transformedSql, args.Names, "Names", "names");
+            var sqlParams = new System.Dynamic.ExpandoObject() as IDictionary<string, object>;
+            for (int i = 0; i < args.Ids.Length; i++)
+                sqlParams.Add($"@IdsArg{i}", args.Ids[i]);
+            for (int i = 0; i < args.Names.Length; i++)
+                sqlParams.Add($"@NamesArg{i}", args.Names[i]);
+            var results = await connection.QueryAsync<SelectAuthorsWithTwoSlicesRow>(transformedSql, sqlParams);
             return results.AsList();
         }
     }
@@ -194,7 +223,8 @@ public class QuerySql
     {
         using (var connection = new MySqlConnection(ConnectionString))
         {
-            await connection.ExecuteAsync(TruncateCopyToTestsSql);
+            var sqlParams = new System.Dynamic.ExpandoObject() as IDictionary<string, object>;
+            await connection.ExecuteAsync(TruncateCopyToTestsSql, sqlParams);
         }
     }
 
@@ -240,7 +270,8 @@ public class QuerySql
     {
         using (var connection = new MySqlConnection(ConnectionString))
         {
-            var result = await connection.QueryFirstOrDefaultAsync<CountCopyRowsRow?>(CountCopyRowsSql);
+            var sqlParams = new System.Dynamic.ExpandoObject() as IDictionary<string, object>;
+            var result = await connection.QueryFirstOrDefaultAsync<CountCopyRowsRow?>(CountCopyRowsSql, sqlParams);
             return result;
         }
     }
@@ -290,7 +321,8 @@ public class QuerySql
     {
         using (var connection = new MySqlConnection(ConnectionString))
         {
-            var result = await connection.QueryFirstOrDefaultAsync<TestRow?>(TestSql);
+            var sqlParams = new System.Dynamic.ExpandoObject() as IDictionary<string, object>;
+            var result = await connection.QueryFirstOrDefaultAsync<TestRow?>(TestSql, sqlParams);
             return result;
         }
     }

@@ -29,13 +29,13 @@ public class OneDeclareGen(DbDriver dbDriver)
 
         string GetAsDapper()
         {
-            var args = CommonGen.GetParameterListForDapper(query.Params);
+            var sqlArgs = CommonGen.GetParameterListForDapper(query.Params);
             var returnType = dbDriver.AddNullableSuffix(returnInterface, false);
             return $$"""
                         using ({{establishConnection}})
                         {
-                            var result = await connection.QueryFirstOrDefaultAsync<{{returnType}}>(
-                            {{queryTextConstant}}{{args}});
+                            {{sqlArgs}}
+                            var result = await connection.QueryFirstOrDefaultAsync<{{returnType}}>({{queryTextConstant}}, {{Variable.SqlParams.AsVarName()}});
                             return result;
                         }
                      """;
