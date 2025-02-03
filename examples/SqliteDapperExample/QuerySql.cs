@@ -35,7 +35,9 @@ public class QuerySql
     {
         using (var connection = new SqliteConnection(ConnectionString))
         {
-            var result = await connection.QueryFirstOrDefaultAsync<GetAuthorRow?>(GetAuthorSql, new { name = args.Name });
+            var dapperParams = new Dictionary<string, object>();
+            dapperParams.Add("name", args.Name);
+            var result = await connection.QueryFirstOrDefaultAsync<GetAuthorRow?>(GetAuthorSql, dapperParams);
             return result;
         }
     }
@@ -66,7 +68,10 @@ public class QuerySql
     {
         using (var connection = new SqliteConnection(ConnectionString))
         {
-            await connection.ExecuteAsync(CreateAuthorSql, new { name = args.Name, bio = args.Bio });
+            var dapperParams = new Dictionary<string, object>();
+            dapperParams.Add("name", args.Name);
+            dapperParams.Add("bio", args.Bio);
+            await connection.ExecuteAsync(CreateAuthorSql, dapperParams);
         }
     }
 
@@ -84,7 +89,10 @@ public class QuerySql
     {
         using (var connection = new SqliteConnection(ConnectionString))
         {
-            return await connection.QuerySingleAsync<int>(CreateAuthorReturnIdSql, new { name = args.Name, bio = args.Bio });
+            var dapperParams = new Dictionary<string, object>();
+            dapperParams.Add("name", args.Name);
+            dapperParams.Add("bio", args.Bio);
+            return await connection.QuerySingleAsync<int>(CreateAuthorReturnIdSql, dapperParams);
         }
     }
 
@@ -103,7 +111,9 @@ public class QuerySql
     {
         using (var connection = new SqliteConnection(ConnectionString))
         {
-            var result = await connection.QueryFirstOrDefaultAsync<GetAuthorByIdRow?>(GetAuthorByIdSql, new { id = args.Id });
+            var dapperParams = new Dictionary<string, object>();
+            dapperParams.Add("id", args.Id);
+            var result = await connection.QueryFirstOrDefaultAsync<GetAuthorByIdRow?>(GetAuthorByIdSql, dapperParams);
             return result;
         }
     }
@@ -117,7 +127,9 @@ public class QuerySql
     {
         using (var connection = new SqliteConnection(ConnectionString))
         {
-            return await connection.ExecuteAsync(UpdateAuthorsSql, new { bio = args.Bio });
+            var dapperParams = new Dictionary<string, object>();
+            dapperParams.Add("bio", args.Bio);
+            return await connection.ExecuteAsync(UpdateAuthorsSql, dapperParams);
         }
     }
 
@@ -130,7 +142,9 @@ public class QuerySql
     {
         using (var connection = new SqliteConnection(ConnectionString))
         {
-            await connection.ExecuteAsync(DeleteAuthorSql, new { name = args.Name });
+            var dapperParams = new Dictionary<string, object>();
+            dapperParams.Add("name", args.Name);
+            await connection.ExecuteAsync(DeleteAuthorSql, dapperParams);
         }
     }
 

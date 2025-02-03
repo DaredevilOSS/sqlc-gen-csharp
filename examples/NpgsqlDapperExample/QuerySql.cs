@@ -37,7 +37,9 @@ public class QuerySql
     {
         using (var connection = new NpgsqlConnection(ConnectionString))
         {
-            var result = await connection.QueryFirstOrDefaultAsync<GetAuthorRow?>(GetAuthorSql, new { name = args.Name });
+            var dapperParams = new Dictionary<string, object>();
+            dapperParams.Add("name", args.Name);
+            var result = await connection.QueryFirstOrDefaultAsync<GetAuthorRow?>(GetAuthorSql, dapperParams);
             return result;
         }
     }
@@ -76,7 +78,10 @@ public class QuerySql
     {
         using (var connection = new NpgsqlConnection(ConnectionString))
         {
-            var result = await connection.QueryFirstOrDefaultAsync<CreateAuthorRow?>(CreateAuthorSql, new { name = args.Name, bio = args.Bio });
+            var dapperParams = new Dictionary<string, object>();
+            dapperParams.Add("name", args.Name);
+            dapperParams.Add("bio", args.Bio);
+            var result = await connection.QueryFirstOrDefaultAsync<CreateAuthorRow?>(CreateAuthorSql, dapperParams);
             return result;
         }
     }
@@ -95,7 +100,10 @@ public class QuerySql
     {
         using (var connection = new NpgsqlConnection(ConnectionString))
         {
-            return await connection.QuerySingleAsync<long>(CreateAuthorReturnIdSql, new { name = args.Name, bio = args.Bio });
+            var dapperParams = new Dictionary<string, object>();
+            dapperParams.Add("name", args.Name);
+            dapperParams.Add("bio", args.Bio);
+            return await connection.QuerySingleAsync<long>(CreateAuthorReturnIdSql, dapperParams);
         }
     }
 
@@ -115,7 +123,9 @@ public class QuerySql
     {
         using (var connection = new NpgsqlConnection(ConnectionString))
         {
-            var result = await connection.QueryFirstOrDefaultAsync<GetAuthorByIdRow?>(GetAuthorByIdSql, new { id = args.Id });
+            var dapperParams = new Dictionary<string, object>();
+            dapperParams.Add("id", args.Id);
+            var result = await connection.QueryFirstOrDefaultAsync<GetAuthorByIdRow?>(GetAuthorByIdSql, dapperParams);
             return result;
         }
     }
@@ -129,7 +139,9 @@ public class QuerySql
     {
         using (var connection = new NpgsqlConnection(ConnectionString))
         {
-            await connection.ExecuteAsync(DeleteAuthorSql, new { name = args.Name });
+            var dapperParams = new Dictionary<string, object>();
+            dapperParams.Add("name", args.Name);
+            await connection.ExecuteAsync(DeleteAuthorSql, dapperParams);
         }
     }
 
@@ -151,7 +163,9 @@ public class QuerySql
     {
         using (var connection = new NpgsqlConnection(ConnectionString))
         {
-            return await connection.ExecuteAsync(UpdateAuthorsSql, new { bio = args.Bio });
+            var dapperParams = new Dictionary<string, object>();
+            dapperParams.Add("bio", args.Bio);
+            return await connection.ExecuteAsync(UpdateAuthorsSql, dapperParams);
         }
     }
 
@@ -171,7 +185,9 @@ public class QuerySql
     {
         using (var connection = new NpgsqlConnection(ConnectionString))
         {
-            var results = await connection.QueryAsync<SelectAuthorsWithSliceRow>(SelectAuthorsWithSliceSql, new { longArr_1 = args.LongArr1 });
+            var dapperParams = new Dictionary<string, object>();
+            dapperParams.Add("longArr_1", args.LongArr1);
+            var results = await connection.QueryAsync<SelectAuthorsWithSliceRow>(SelectAuthorsWithSliceSql, dapperParams);
             return results.AsList();
         }
     }
@@ -268,7 +284,24 @@ public class QuerySql
     {
         using (var connection = new NpgsqlConnection(ConnectionString))
         {
-            return await connection.QuerySingleAsync<long>(InsertNodePostgresTypeSql, new { c_smallint = args.CSmallint, c_boolean = args.CBoolean, c_integer = args.CInteger, c_bigint = args.CBigint, c_serial = args.CSerial, c_decimal = args.CDecimal, c_numeric = args.CNumeric, c_real = args.CReal, c_date = args.CDate, c_timestamp = args.CTimestamp, c_char = args.CChar, c_varchar = args.CVarchar, c_character_varying = args.CCharacterVarying, c_text = args.CText, c_text_array = args.CTextArray, c_integer_array = args.CIntegerArray });
+            var dapperParams = new Dictionary<string, object>();
+            dapperParams.Add("c_smallint", args.CSmallint);
+            dapperParams.Add("c_boolean", args.CBoolean);
+            dapperParams.Add("c_integer", args.CInteger);
+            dapperParams.Add("c_bigint", args.CBigint);
+            dapperParams.Add("c_serial", args.CSerial);
+            dapperParams.Add("c_decimal", args.CDecimal);
+            dapperParams.Add("c_numeric", args.CNumeric);
+            dapperParams.Add("c_real", args.CReal);
+            dapperParams.Add("c_date", args.CDate);
+            dapperParams.Add("c_timestamp", args.CTimestamp);
+            dapperParams.Add("c_char", args.CChar);
+            dapperParams.Add("c_varchar", args.CVarchar);
+            dapperParams.Add("c_character_varying", args.CCharacterVarying);
+            dapperParams.Add("c_text", args.CText);
+            dapperParams.Add("c_text_array", args.CTextArray);
+            dapperParams.Add("c_integer_array", args.CIntegerArray);
+            return await connection.QuerySingleAsync<long>(InsertNodePostgresTypeSql, dapperParams);
         }
     }
 
@@ -300,7 +333,9 @@ public class QuerySql
     {
         using (var connection = new NpgsqlConnection(ConnectionString))
         {
-            var result = await connection.QueryFirstOrDefaultAsync<GetNodePostgresTypeRow?>(GetNodePostgresTypeSql, new { id = args.Id });
+            var dapperParams = new Dictionary<string, object>();
+            dapperParams.Add("id", args.Id);
+            var result = await connection.QueryFirstOrDefaultAsync<GetNodePostgresTypeRow?>(GetNodePostgresTypeSql, dapperParams);
             return result;
         }
     }

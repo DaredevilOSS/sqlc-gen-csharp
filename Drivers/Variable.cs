@@ -13,7 +13,8 @@ public enum Variable
     Result,
     Args,
     Loader,
-    TransformedSql
+    TransformedSql,
+    DapperParams
 }
 
 public static class VariablesExtensions

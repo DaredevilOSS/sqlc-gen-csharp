@@ -48,21 +48,14 @@ namespace SqlcGenCsharpTests
         [Test]
         public async Task TestSliceIds()
         {
-            var insertedId1 = await QuerySql.CreateAuthorReturnId(new QuerySql.CreateAuthorReturnIdArgs
+            var args = new QuerySql.CreateAuthorReturnIdArgs
             {
                 Name = DataGenerator.GenericAuthor,
                 Bio = DataGenerator.GenericQuote1
-            });
-            var insertedId2 = await QuerySql.CreateAuthorReturnId(new QuerySql.CreateAuthorReturnIdArgs
-            {
-                Name = DataGenerator.GenericAuthor,
-                Bio = DataGenerator.GenericQuote1
-            });
-            await QuerySql.CreateAuthor(new QuerySql.CreateAuthorArgs
-            {
-                Name = DataGenerator.GenericAuthor,
-                Bio = DataGenerator.GenericQuote1
-            });
+            };
+            var insertedId1 = await QuerySql.CreateAuthorReturnId(args);
+            var insertedId2 = await QuerySql.CreateAuthorReturnId(args);
+            await QuerySql.CreateAuthorReturnId(args);
 
             var actual = await QuerySql.SelectAuthorsWithSlice(new QuerySql.SelectAuthorsWithSliceArgs { Ids = new[] { insertedId1, insertedId2 } });
 
@@ -72,21 +65,18 @@ namespace SqlcGenCsharpTests
         [Test]
         public async Task TestTwoSlices()
         {
-            var insertedId1 = await QuerySql.CreateAuthorReturnId(new QuerySql.CreateAuthorReturnIdArgs
+            var args = new QuerySql.CreateAuthorReturnIdArgs
             {
                 Name = DataGenerator.GenericAuthor,
                 Bio = DataGenerator.GenericQuote1
-            });
+            };
+            var insertedId1 = await QuerySql.CreateAuthorReturnId(args);
             var insertedId2 = await QuerySql.CreateAuthorReturnId(new QuerySql.CreateAuthorReturnIdArgs
             {
                 Name = DataGenerator.BojackAuthor,
                 Bio = DataGenerator.GenericQuote1
             });
-            await QuerySql.CreateAuthor(new QuerySql.CreateAuthorArgs
-            {
-                Name = DataGenerator.GenericAuthor,
-                Bio = DataGenerator.GenericQuote1
-            });
+            await QuerySql.CreateAuthorReturnId(args);
 
             var actual = await QuerySql.SelectAuthorsWithTwoSlices(new QuerySql.SelectAuthorsWithTwoSlicesArgs { Ids = new[] { insertedId1, insertedId2 }, Names = new[] { DataGenerator.GenericAuthor } });
 

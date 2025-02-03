@@ -25,17 +25,18 @@ public class OneDeclareGen(DbDriver dbDriver)
     private string GetMethodBody(string queryTextConstant, string returnInterface, Query query)
     {
         var (establishConnection, connectionOpen) = dbDriver.EstablishConnection(query);
+        var sqlTextTrasformation = CommonGen.GetSqlTransformations(query, queryTextConstant);
         return dbDriver.Options.UseDapper ? GetAsDapper() : GetAsDriver();
 
         string GetAsDapper()
         {
-            var args = CommonGen.GetParameterListForDapper(query.Params);
+            var dapperParamsSection = CommonGen.GetParameterListForDapper(query.Params);
+            var dapperArgs = dapperParamsSection != string.Empty ? $", {Variable.DapperParams.AsVarName()}" : string.Empty;
             var returnType = dbDriver.AddNullableSuffix(returnInterface, false);
             return $$"""
                         using ({{establishConnection}})
-                        {
-                            var result = await connection.QueryFirstOrDefaultAsync<{{returnType}}>(
-                            {{queryTextConstant}}{{args}});
+                        {{{sqlTextTrasformation}}{{dapperParamsSection}}
+                            var result = await connection.QueryFirstOrDefaultAsync<{{returnType}}>({{queryTextConstant}}{{dapperArgs}});
                             return result;
                         }
                      """;
@@ -43,8 +44,7 @@ public class OneDeclareGen(DbDriver dbDriver)
 
         string GetAsDriver()
         {
-            var sqlcSliceSection = CommonGen.GetSqlTransformations(query, queryTextConstant);
-            var createSqlCommand = dbDriver.CreateSqlCommand(sqlcSliceSection != string.Empty ? Variable.TransformedSql.AsVarName() : queryTextConstant);
+            var createSqlCommand = dbDriver.CreateSqlCommand(sqlTextTrasformation != string.Empty ? Variable.TransformedSql.AsVarName() : queryTextConstant);
             var commandParameters = CommonGen.GetCommandParameters(query.Params);
             var initDataReader = CommonGen.InitDataReader();
             var awaitReaderRow = CommonGen.AwaitReaderRow();
@@ -52,7 +52,7 @@ public class OneDeclareGen(DbDriver dbDriver)
             return $$"""
                      using ({{establishConnection}})
                      {
-                         {{connectionOpen.AppendSemicolonUnlessEmpty()}}{{sqlcSliceSection}}
+                         {{connectionOpen.AppendSemicolonUnlessEmpty()}}{{sqlTextTrasformation}}
                          using ({{createSqlCommand}})
                          {
                             {{commandParameters.JoinByNewLine()}}

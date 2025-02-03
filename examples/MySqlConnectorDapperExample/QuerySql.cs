@@ -40,7 +40,9 @@ public class QuerySql
     {
         using (var connection = new MySqlConnection(ConnectionString))
         {
-            var result = await connection.QueryFirstOrDefaultAsync<GetAuthorRow?>(GetAuthorSql, new { name = args.Name });
+            var dapperParams = new Dictionary<string, object>();
+            dapperParams.Add("name", args.Name);
+            var result = await connection.QueryFirstOrDefaultAsync<GetAuthorRow?>(GetAuthorSql, dapperParams);
             return result;
         }
     }
@@ -72,7 +74,10 @@ public class QuerySql
     {
         using (var connection = new MySqlConnection(ConnectionString))
         {
-            await connection.ExecuteAsync(CreateAuthorSql, new { name = args.Name, bio = args.Bio });
+            var dapperParams = new Dictionary<string, object>();
+            dapperParams.Add("name", args.Name);
+            dapperParams.Add("bio", args.Bio);
+            await connection.ExecuteAsync(CreateAuthorSql, dapperParams);
         }
     }
 
@@ -86,7 +91,10 @@ public class QuerySql
     {
         using (var connection = new MySqlConnection(ConnectionString))
         {
-            return await connection.QuerySingleAsync<long>(CreateAuthorReturnIdSql, new { name = args.Name, bio = args.Bio });
+            var dapperParams = new Dictionary<string, object>();
+            dapperParams.Add("name", args.Name);
+            dapperParams.Add("bio", args.Bio);
+            return await connection.QuerySingleAsync<long>(CreateAuthorReturnIdSql, dapperParams);
         }
     }
 
@@ -106,7 +114,9 @@ public class QuerySql
     {
         using (var connection = new MySqlConnection(ConnectionString))
         {
-            var result = await connection.QueryFirstOrDefaultAsync<GetAuthorByIdRow?>(GetAuthorByIdSql, new { id = args.Id });
+            var dapperParams = new Dictionary<string, object>();
+            dapperParams.Add("id", args.Id);
+            var result = await connection.QueryFirstOrDefaultAsync<GetAuthorByIdRow?>(GetAuthorByIdSql, dapperParams);
             return result;
         }
     }
@@ -120,7 +130,9 @@ public class QuerySql
     {
         using (var connection = new MySqlConnection(ConnectionString))
         {
-            await connection.ExecuteAsync(DeleteAuthorSql, new { name = args.Name });
+            var dapperParams = new Dictionary<string, object>();
+            dapperParams.Add("name", args.Name);
+            await connection.ExecuteAsync(DeleteAuthorSql, dapperParams);
         }
     }
 
@@ -142,7 +154,9 @@ public class QuerySql
     {
         using (var connection = new MySqlConnection(ConnectionString))
         {
-            return await connection.ExecuteAsync(UpdateAuthorsSql, new { bio = args.Bio });
+            var dapperParams = new Dictionary<string, object>();
+            dapperParams.Add("bio", args.Bio);
+            return await connection.ExecuteAsync(UpdateAuthorsSql, dapperParams);
         }
     }
 
@@ -162,7 +176,12 @@ public class QuerySql
     {
         using (var connection = new MySqlConnection(ConnectionString))
         {
-            var results = await connection.QueryAsync<SelectAuthorsWithSliceRow>(SelectAuthorsWithSliceSql, new { ids = args.Ids });
+            var transformedSql = SelectAuthorsWithSliceSql;
+            transformedSql = Utils.GetTransformedString(transformedSql, args.Ids, "Ids", "ids");
+            var dapperParams = new Dictionary<string, object>();
+            for (int i = 0; i < args.Ids.Length; i++)
+                dapperParams.Add($"@IdsArg{i}", args.Ids[i]);
+            var results = await connection.QueryAsync<SelectAuthorsWithSliceRow>(transformedSql, dapperParams);
             return results.AsList();
         }
     }
@@ -184,7 +203,15 @@ public class QuerySql
     {
         using (var connection = new MySqlConnection(ConnectionString))
         {
-            var results = await connection.QueryAsync<SelectAuthorsWithTwoSlicesRow>(SelectAuthorsWithTwoSlicesSql, new { ids = args.Ids, names = args.Names });
+            var transformedSql = SelectAuthorsWithTwoSlicesSql;
+            transformedSql = Utils.GetTransformedString(transformedSql, args.Ids, "Ids", "ids");
+            transformedSql = Utils.GetTransformedString(transformedSql, args.Names, "Names", "names");
+            var dapperParams = new Dictionary<string, object>();
+            for (int i = 0; i < args.Ids.Length; i++)
+                dapperParams.Add($"@IdsArg{i}", args.Ids[i]);
+            for (int i = 0; i < args.Names.Length; i++)
+                dapperParams.Add($"@NamesArg{i}", args.Names[i]);
+            var results = await connection.QueryAsync<SelectAuthorsWithTwoSlicesRow>(transformedSql, dapperParams);
             return results.AsList();
         }
     }
