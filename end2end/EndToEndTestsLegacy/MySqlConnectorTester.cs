@@ -64,7 +64,7 @@ namespace SqlcGenCsharpTests
                 Bio = DataGenerator.GenericQuote1
             });
 
-            var actual = await QuerySql.SelectAuthorsWithSlice(new QuerySql.SelectAuthorsWithSliceArgs { Ids = [insertedId1, insertedId2] });
+            var actual = await QuerySql.SelectAuthorsWithSlice(new QuerySql.SelectAuthorsWithSliceArgs { Ids = new[] { insertedId1, insertedId2 } });
 
             ClassicAssert.AreEqual(2, actual.Count);
         }
@@ -88,7 +88,7 @@ namespace SqlcGenCsharpTests
                 Bio = DataGenerator.GenericQuote1
             });
 
-            var actual = await QuerySql.SelectAuthorsWithTwoSlices(new QuerySql.SelectAuthorsWithTwoSlicesArgs { Ids = [insertedId1, insertedId2], Names = [DataGenerator.GenericAuthor] });
+            var actual = await QuerySql.SelectAuthorsWithTwoSlices(new QuerySql.SelectAuthorsWithTwoSlicesArgs { Ids = new[] { insertedId1, insertedId2 }, Names = new[] { DataGenerator.GenericAuthor } });
 
             ClassicAssert.AreEqual(1, actual.Count);
         }

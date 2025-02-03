@@ -87,7 +87,7 @@ public class CommonGen(DbDriver dbDriver)
                 return $$"""
                          for (int i = 0; i < {{Variable.Args.AsVarName()}}.{{param}}.Length; i++)
                          {
-                            {{commandVar}}.Parameters.AddWithValue($"@{nameof({{Variable.Args.AsVarName()}}.{{param}})}Arg{i}", {{Variable.Args.AsVarName()}}.{{param}}[i]);
+                            {{commandVar}}.Parameters.AddWithValue($"@{{param}}Arg{i}", {{Variable.Args.AsVarName()}}.{{param}}[i]);
                          }
                          """;
             }
@@ -97,6 +97,7 @@ public class CommonGen(DbDriver dbDriver)
 
     public string GetSqlSliceSection(Query query, string queryTextConstant)
     {
+        if (query.Params.Any(p => p.Column.IsSqlcSlice)) return string.Empty;
         var sqlcSliceCommands = new List<string>();
         var initVariable = $"var {Variable.TransformSql.AsVarName()} = {queryTextConstant};";
         sqlcSliceCommands.Add(initVariable);
@@ -104,9 +105,7 @@ public class CommonGen(DbDriver dbDriver)
         foreach (var sqlcSliceParam in sqlcSliceParams)
         {
             var paramName = sqlcSliceParam.Column.Name;
-            var createArgsName = $"var {paramName.ToPascalCase()}Args = Enumerable.Range(0, args.{paramName.ToPascalCase()}.Length).Select(i => $\"@{{nameof({Variable.Args.AsVarName()}. {paramName.ToPascalCase()})}}Arg{{i}}\").ToList();";
-            var sqlReplace = $"{Variable.TransformSql.AsVarName()} = {Variable.TransformSql.AsVarName()}.Replace(\"/*SLICE:{paramName}*/@{paramName}\", string.Join(\",\", {paramName.ToPascalCase()}Args));";
-            sqlcSliceCommands.Add(createArgsName);
+            var sqlReplace = $"{Variable.TransformSql.AsVarName()} = Utils.GetTransformedString(transformSql, {Variable.Args.AsVarName()}.{paramName.ToPascalCase()}, \"{paramName.ToPascalCase()}\", \"{paramName}\");";
             sqlcSliceCommands.Add(sqlReplace);
         }
         return Environment.NewLine + sqlcSliceCommands.JoinByNewLine();

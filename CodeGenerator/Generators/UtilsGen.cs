@@ -31,7 +31,8 @@ internal class UtilsGen(string namespaceName, Options options)
         return
         [
             UsingDirective(ParseName("System")),
-            UsingDirective(ParseName("System.Data"))
+            UsingDirective(ParseName("System.Data")),
+            UsingDirective(ParseName("System.Linq"))
         ];
     }
 
@@ -64,6 +65,12 @@ internal class UtilsGen(string namespaceName, Options options)
                                                        if (bytesRead < bufferSize)
                                                            Array.Resize(ref buffer, bytesRead);
                                                        return buffer;
+                                                   }
+
+                                                   public static string GetTransformedString<T>(string originalSql, T[] sqlParams, string csharpParamName, string sqlParamName)
+                                                   {
+                                                       var paramArgs = Enumerable.Range(0, sqlParams.Length).Select(i => $"@{csharpParamName}Arg{i}").ToList();
+                                                       return originalSql.Replace($"/*SLICE:{sqlParamName}*/@{sqlParamName}", string.Join(",", paramArgs));
                                                    }
                                                }
                                                """;

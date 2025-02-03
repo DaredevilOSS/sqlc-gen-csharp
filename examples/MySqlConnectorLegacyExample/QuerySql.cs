@@ -239,13 +239,12 @@ namespace MySqlConnectorLegacyExampleGen
             {
                 connection.Open();
                 var transformSql = SelectAuthorsWithSliceSql;
-                var IdsArgs = Enumerable.Range(0, args.Ids.Length).Select(i => $"@{nameof(args.Ids)}Arg{i}").ToList();
-                transformSql = transformSql.Replace("/*SLICE:ids*/@ids", string.Join(",", IdsArgs));
+                transformSql = Utils.GetTransformedString(transformSql, args.Ids, "Ids", "ids");
                 using (var command = new MySqlCommand(transformSql, connection))
                 {
                     for (int i = 0; i < args.Ids.Length; i++)
                     {
-                        command.Parameters.AddWithValue($"@{nameof(args.Ids)}Arg{i}", args.Ids[i]);
+                        command.Parameters.AddWithValue($"@IdsArg{i}", args.Ids[i]);
                     }
 
                     using (var reader = await command.ExecuteReaderAsync())
@@ -281,20 +280,18 @@ namespace MySqlConnectorLegacyExampleGen
             {
                 connection.Open();
                 var transformSql = SelectAuthorsWithTwoSlicesSql;
-                var IdsArgs = Enumerable.Range(0, args.Ids.Length).Select(i => $"@{nameof(args.Ids)}Arg{i}").ToList();
-                transformSql = transformSql.Replace("/*SLICE:ids*/@ids", string.Join(",", IdsArgs));
-                var NamesArgs = Enumerable.Range(0, args.Names.Length).Select(i => $"@{nameof(args.Names)}Arg{i}").ToList();
-                transformSql = transformSql.Replace("/*SLICE:names*/@names", string.Join(",", NamesArgs));
+                transformSql = Utils.GetTransformedString(transformSql, args.Ids, "Ids", "ids");
+                transformSql = Utils.GetTransformedString(transformSql, args.Names, "Names", "names");
                 using (var command = new MySqlCommand(transformSql, connection))
                 {
                     for (int i = 0; i < args.Ids.Length; i++)
                     {
-                        command.Parameters.AddWithValue($"@{nameof(args.Ids)}Arg{i}", args.Ids[i]);
+                        command.Parameters.AddWithValue($"@IdsArg{i}", args.Ids[i]);
                     }
 
                     for (int i = 0; i < args.Names.Length; i++)
                     {
-                        command.Parameters.AddWithValue($"@{nameof(args.Names)}Arg{i}", args.Names[i]);
+                        command.Parameters.AddWithValue($"@NamesArg{i}", args.Names[i]);
                     }
 
                     using (var reader = await command.ExecuteReaderAsync())

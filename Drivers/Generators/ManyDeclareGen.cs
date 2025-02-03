@@ -42,10 +42,8 @@ public class ManyDeclareGen(DbDriver dbDriver)
 
         string GetAsDriver()
         {
-            var isSliceInQuery = query.Params.Any(p => p.Column.IsSqlcSlice);
-            var sqlcSliceSection = isSliceInQuery ? CommonGen.GetSqlSliceSection(query, queryTextConstant) : string.Empty;
-
-            var createSqlCommand = dbDriver.CreateSqlCommand(isSliceInQuery ? Variable.TransformSql.AsVarName() : queryTextConstant);
+            var sqlcSliceSection = CommonGen.GetSqlSliceSection(query, queryTextConstant);
+            var createSqlCommand = dbDriver.CreateSqlCommand(sqlcSliceSection!=string.Empty ? Variable.TransformSql.AsVarName() : queryTextConstant);
             var commandParameters = CommonGen.GetCommandParameters(query.Params);
             var initDataReader = CommonGen.InitDataReader();
             var awaitReaderRow = CommonGen.AwaitReaderRow();
