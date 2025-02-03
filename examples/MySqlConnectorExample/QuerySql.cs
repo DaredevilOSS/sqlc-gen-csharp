@@ -189,9 +189,9 @@ public class QuerySql
         using (var connection = new MySqlConnection(ConnectionString))
         {
             connection.Open();
-            var transformSql = SelectAuthorsWithSliceSql;
-            transformSql = Utils.GetTransformedString(transformSql, args.Ids, "Ids", "ids");
-            using (var command = new MySqlCommand(transformSql, connection))
+            var transformedSql = SelectAuthorsWithSliceSql;
+            transformedSql = Utils.GetTransformedString(transformSql, args.Ids, "Ids", "ids");
+            using (var command = new MySqlCommand(transformedSql, connection))
             {
                 for (int i = 0; i < args.Ids.Length; i++)
                     command.Parameters.AddWithValue($"@IdsArg{i}", args.Ids[i]);
@@ -217,10 +217,10 @@ public class QuerySql
         using (var connection = new MySqlConnection(ConnectionString))
         {
             connection.Open();
-            var transformSql = SelectAuthorsWithTwoSlicesSql;
-            transformSql = Utils.GetTransformedString(transformSql, args.Ids, "Ids", "ids");
-            transformSql = Utils.GetTransformedString(transformSql, args.Names, "Names", "names");
-            using (var command = new MySqlCommand(transformSql, connection))
+            var transformedSql = SelectAuthorsWithTwoSlicesSql;
+            transformedSql = Utils.GetTransformedString(transformSql, args.Ids, "Ids", "ids");
+            transformedSql = Utils.GetTransformedString(transformSql, args.Names, "Names", "names");
+            using (var command = new MySqlCommand(transformedSql, connection))
             {
                 for (int i = 0; i < args.Ids.Length; i++)
                     command.Parameters.AddWithValue($"@IdsArg{i}", args.Ids[i]);
