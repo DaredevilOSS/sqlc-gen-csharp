@@ -65,7 +65,6 @@ public partial class MySqlConnectorDriver(Options options) : DbDriver(options), 
             .Append(UsingDirective(ParseName("System.IO")))
             .Append(UsingDirective(ParseName("CsvHelper")))
             .Append(UsingDirective(ParseName("CsvHelper.Configuration")))
-            .Append(UsingDirective(ParseName("System.Linq"))) // TODO: add only if sqlc slice exists
             .ToArray();
     }
 
