@@ -11,7 +11,6 @@ using System.Globalization;
 using System.IO;
 using CsvHelper;
 using CsvHelper.Configuration;
-using System.Linq;
 
 namespace MySqlConnectorExampleGen;
 public class QuerySql
@@ -195,10 +194,7 @@ public class QuerySql
             using (var command = new MySqlCommand(transformSql, connection))
             {
                 for (int i = 0; i < args.Ids.Length; i++)
-                {
                     command.Parameters.AddWithValue($"@IdsArg{i}", args.Ids[i]);
-                }
-
                 using (var reader = await command.ExecuteReaderAsync())
                 {
                     var result = new List<SelectAuthorsWithSliceRow>();
@@ -227,15 +223,9 @@ public class QuerySql
             using (var command = new MySqlCommand(transformSql, connection))
             {
                 for (int i = 0; i < args.Ids.Length; i++)
-                {
                     command.Parameters.AddWithValue($"@IdsArg{i}", args.Ids[i]);
-                }
-
                 for (int i = 0; i < args.Names.Length; i++)
-                {
                     command.Parameters.AddWithValue($"@NamesArg{i}", args.Names[i]);
-                }
-
                 using (var reader = await command.ExecuteReaderAsync())
                 {
                     var result = new List<SelectAuthorsWithTwoSlicesRow>();

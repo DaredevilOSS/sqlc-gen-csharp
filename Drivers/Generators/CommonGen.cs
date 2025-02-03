@@ -86,16 +86,14 @@ public class CommonGen(DbDriver dbDriver)
             {
                 return $$"""
                          for (int i = 0; i < {{Variable.Args.AsVarName()}}.{{param}}.Length; i++)
-                         {
                             {{commandVar}}.Parameters.AddWithValue($"@{{param}}Arg{i}", {{Variable.Args.AsVarName()}}.{{param}}[i]);
-                         }
                          """;
             }
             return $"{commandVar}.Parameters.AddWithValue(\"@{columnName}\", args.{param}{nullCheck});";
         }).ToList();
     }
 
-    public string GetSqlSliceSection(Query query, string queryTextConstant)
+    public string GetSqlTransformations(Query query, string queryTextConstant)
     {
         if (!query.Params.Any(p => p.Column.IsSqlcSlice)) return string.Empty;
         var sqlcSliceCommands = new List<string>();

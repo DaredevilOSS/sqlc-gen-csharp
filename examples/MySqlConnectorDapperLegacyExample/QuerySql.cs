@@ -14,7 +14,6 @@ namespace MySqlConnectorDapperLegacyExampleGen
     using System.IO;
     using CsvHelper;
     using CsvHelper.Configuration;
-    using System.Linq;
 
     public class QuerySql
     {

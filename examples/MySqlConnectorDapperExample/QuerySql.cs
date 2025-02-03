@@ -12,7 +12,6 @@ using System.Globalization;
 using System.IO;
 using CsvHelper;
 using CsvHelper.Configuration;
-using System.Linq;
 
 namespace MySqlConnectorDapperExampleGen;
 public class QuerySql
