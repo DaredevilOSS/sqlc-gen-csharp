@@ -190,7 +190,7 @@ public class QuerySql
         {
             connection.Open();
             var transformedSql = SelectAuthorsWithSliceSql;
-            transformedSql = Utils.GetTransformedString(transformSql, args.Ids, "Ids", "ids");
+            transformedSql = Utils.GetTransformedString(transformedSql, args.Ids, "Ids", "ids");
             using (var command = new MySqlCommand(transformedSql, connection))
             {
                 for (int i = 0; i < args.Ids.Length; i++)
@@ -218,8 +218,8 @@ public class QuerySql
         {
             connection.Open();
             var transformedSql = SelectAuthorsWithTwoSlicesSql;
-            transformedSql = Utils.GetTransformedString(transformSql, args.Ids, "Ids", "ids");
-            transformedSql = Utils.GetTransformedString(transformSql, args.Names, "Names", "names");
+            transformedSql = Utils.GetTransformedString(transformedSql, args.Ids, "Ids", "ids");
+            transformedSql = Utils.GetTransformedString(transformedSql, args.Names, "Names", "names");
             using (var command = new MySqlCommand(transformedSql, connection))
             {
                 for (int i = 0; i < args.Ids.Length; i++)

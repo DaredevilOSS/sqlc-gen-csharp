@@ -102,7 +102,7 @@ public class CommonGen(DbDriver dbDriver)
         foreach (var sqlcSliceParam in sqlcSliceParams)
         {
             var paramName = sqlcSliceParam.Column.Name;
-            var sqlReplace = $"{Variable.TransformedSql.AsVarName()} = Utils.GetTransformedString(transformSql, {Variable.Args.AsVarName()}.{paramName.ToPascalCase()}, \"{paramName.ToPascalCase()}\", \"{paramName}\");";
+            var sqlReplace = $"{Variable.TransformedSql.AsVarName()} = Utils.GetTransformedString({Variable.TransformedSql.AsVarName()}, {Variable.Args.AsVarName()}.{paramName.ToPascalCase()}, \"{paramName.ToPascalCase()}\", \"{paramName}\");";
             sqlcSliceCommands.Add(sqlReplace);
         }
         return Environment.NewLine + sqlcSliceCommands.JoinByNewLine();
