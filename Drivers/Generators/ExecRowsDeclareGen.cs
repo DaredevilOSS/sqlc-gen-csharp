@@ -39,12 +39,13 @@ public class ExecRowsDeclareGen(DbDriver dbDriver)
 
         string GetAsDriver()
         {
-            var createSqlCommand = dbDriver.CreateSqlCommand(queryTextConstant);
+            var sqlcSliceSection = CommonGen.GetSqlTransformations(query, queryTextConstant);
+            var createSqlCommand = dbDriver.CreateSqlCommand(sqlcSliceSection != string.Empty ? Variable.TransformedSql.AsVarName() : queryTextConstant);
             var commandParameters = CommonGen.GetCommandParameters(query.Params);
             return $$"""
                      using ({{establishConnection}})
                      {
-                         {{connectionOpen.AppendSemicolonUnlessEmpty()}}
+                         {{connectionOpen.AppendSemicolonUnlessEmpty()}}{{sqlcSliceSection}}
                          using ({{createSqlCommand}})
                          {
                             {{commandParameters.JoinByNewLine()}}

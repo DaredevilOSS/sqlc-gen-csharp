@@ -51,7 +51,7 @@ public abstract class DbDriver(Options options)
             foreach (var columnMapping in ColumnMappings
                          .Where(columnMapping => columnMapping.DbTypes.ContainsKey(columnType)))
             {
-                if (column.IsArray) return $"{columnMapping.CsharpType}[]";
+                if (column.IsArray || column.IsSqlcSlice) return $"{columnMapping.CsharpType}[]";
 
                 return columnMapping.CsharpType;
             }
@@ -127,7 +127,7 @@ public abstract class DbDriver(Options options)
         ];
     }
 
-    public Column GetColumnFromParam(Plugin.Parameter queryParam)
+    public Column GetColumnFromParam(Parameter queryParam)
     {
         if (IsNullOrEmpty(queryParam.Column.Name))
             queryParam.Column.Name = $"{GetColumnType(queryParam.Column).Replace("[]", "Arr")}_{queryParam.Number}";

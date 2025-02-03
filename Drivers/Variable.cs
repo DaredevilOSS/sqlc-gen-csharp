@@ -12,7 +12,8 @@ public enum Variable
     Command,
     Result,
     Args,
-    Loader
+    Loader,
+    TransformedSql
 }
 
 public static class VariablesExtensions

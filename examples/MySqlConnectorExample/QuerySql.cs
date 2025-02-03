@@ -181,6 +181,65 @@ public class QuerySql
         }
     }
 
+    private const string SelectAuthorsWithSliceSql = "SELECT id, name, bio, created FROM authors WHERE id IN (/*SLICE:ids*/@ids)";
+    public readonly record struct SelectAuthorsWithSliceRow(long Id, string Name, string? Bio, DateTime Created);
+    public readonly record struct SelectAuthorsWithSliceArgs(long[] Ids);
+    public async Task<List<SelectAuthorsWithSliceRow>> SelectAuthorsWithSlice(SelectAuthorsWithSliceArgs args)
+    {
+        using (var connection = new MySqlConnection(ConnectionString))
+        {
+            connection.Open();
+            var transformedSql = SelectAuthorsWithSliceSql;
+            transformedSql = Utils.GetTransformedString(transformedSql, args.Ids, "Ids", "ids");
+            using (var command = new MySqlCommand(transformedSql, connection))
+            {
+                for (int i = 0; i < args.Ids.Length; i++)
+                    command.Parameters.AddWithValue($"@IdsArg{i}", args.Ids[i]);
+                using (var reader = await command.ExecuteReaderAsync())
+                {
+                    var result = new List<SelectAuthorsWithSliceRow>();
+                    while (await reader.ReadAsync())
+                    {
+                        result.Add(new SelectAuthorsWithSliceRow { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2), Created = reader.GetDateTime(3) });
+                    }
+
+                    return result;
+                }
+            }
+        }
+    }
+
+    private const string SelectAuthorsWithTwoSlicesSql = "SELECT id, name, bio, created FROM authors WHERE id IN (/*SLICE:ids*/@ids) AND name IN (/*SLICE:names*/@names)";
+    public readonly record struct SelectAuthorsWithTwoSlicesRow(long Id, string Name, string? Bio, DateTime Created);
+    public readonly record struct SelectAuthorsWithTwoSlicesArgs(long[] Ids, string[] Names);
+    public async Task<List<SelectAuthorsWithTwoSlicesRow>> SelectAuthorsWithTwoSlices(SelectAuthorsWithTwoSlicesArgs args)
+    {
+        using (var connection = new MySqlConnection(ConnectionString))
+        {
+            connection.Open();
+            var transformedSql = SelectAuthorsWithTwoSlicesSql;
+            transformedSql = Utils.GetTransformedString(transformedSql, args.Ids, "Ids", "ids");
+            transformedSql = Utils.GetTransformedString(transformedSql, args.Names, "Names", "names");
+            using (var command = new MySqlCommand(transformedSql, connection))
+            {
+                for (int i = 0; i < args.Ids.Length; i++)
+                    command.Parameters.AddWithValue($"@IdsArg{i}", args.Ids[i]);
+                for (int i = 0; i < args.Names.Length; i++)
+                    command.Parameters.AddWithValue($"@NamesArg{i}", args.Names[i]);
+                using (var reader = await command.ExecuteReaderAsync())
+                {
+                    var result = new List<SelectAuthorsWithTwoSlicesRow>();
+                    while (await reader.ReadAsync())
+                    {
+                        result.Add(new SelectAuthorsWithTwoSlicesRow { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2), Created = reader.GetDateTime(3) });
+                    }
+
+                    return result;
+                }
+            }
+        }
+    }
+
     private const string TruncateCopyToTestsSql = "TRUNCATE TABLE copy_tests";
     public async Task TruncateCopyToTests()
     {

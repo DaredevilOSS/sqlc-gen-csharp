@@ -220,6 +220,84 @@ namespace MySqlConnectorLegacyExampleGen
             }
         }
 
+        private const string SelectAuthorsWithSliceSql = "SELECT id, name, bio, created FROM authors WHERE id IN (/*SLICE:ids*/@ids)";
+        public class SelectAuthorsWithSliceRow
+        {
+            public long Id { get; set; }
+            public string Name { get; set; }
+            public string Bio { get; set; }
+            public DateTime Created { get; set; }
+        };
+        public class SelectAuthorsWithSliceArgs
+        {
+            public long[] Ids { get; set; }
+        };
+        public async Task<List<SelectAuthorsWithSliceRow>> SelectAuthorsWithSlice(SelectAuthorsWithSliceArgs args)
+        {
+            using (var connection = new MySqlConnection(ConnectionString))
+            {
+                connection.Open();
+                var transformedSql = SelectAuthorsWithSliceSql;
+                transformedSql = Utils.GetTransformedString(transformedSql, args.Ids, "Ids", "ids");
+                using (var command = new MySqlCommand(transformedSql, connection))
+                {
+                    for (int i = 0; i < args.Ids.Length; i++)
+                        command.Parameters.AddWithValue($"@IdsArg{i}", args.Ids[i]);
+                    using (var reader = await command.ExecuteReaderAsync())
+                    {
+                        var result = new List<SelectAuthorsWithSliceRow>();
+                        while (await reader.ReadAsync())
+                        {
+                            result.Add(new SelectAuthorsWithSliceRow { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? string.Empty : reader.GetString(2), Created = reader.GetDateTime(3) });
+                        }
+
+                        return result;
+                    }
+                }
+            }
+        }
+
+        private const string SelectAuthorsWithTwoSlicesSql = "SELECT id, name, bio, created FROM authors WHERE id IN (/*SLICE:ids*/@ids) AND name IN (/*SLICE:names*/@names)";
+        public class SelectAuthorsWithTwoSlicesRow
+        {
+            public long Id { get; set; }
+            public string Name { get; set; }
+            public string Bio { get; set; }
+            public DateTime Created { get; set; }
+        };
+        public class SelectAuthorsWithTwoSlicesArgs
+        {
+            public long[] Ids { get; set; }
+            public string[] Names { get; set; }
+        };
+        public async Task<List<SelectAuthorsWithTwoSlicesRow>> SelectAuthorsWithTwoSlices(SelectAuthorsWithTwoSlicesArgs args)
+        {
+            using (var connection = new MySqlConnection(ConnectionString))
+            {
+                connection.Open();
+                var transformedSql = SelectAuthorsWithTwoSlicesSql;
+                transformedSql = Utils.GetTransformedString(transformedSql, args.Ids, "Ids", "ids");
+                transformedSql = Utils.GetTransformedString(transformedSql, args.Names, "Names", "names");
+                using (var command = new MySqlCommand(transformedSql, connection))
+                {
+                    for (int i = 0; i < args.Ids.Length; i++)
+                        command.Parameters.AddWithValue($"@IdsArg{i}", args.Ids[i]);
+                    for (int i = 0; i < args.Names.Length; i++)
+                        command.Parameters.AddWithValue($"@NamesArg{i}", args.Names[i]);
+                    using (var reader = await command.ExecuteReaderAsync())
+                    {
+                        var result = new List<SelectAuthorsWithTwoSlicesRow>();
+                        while (await reader.ReadAsync())
+                        {
+                            result.Add(new SelectAuthorsWithTwoSlicesRow { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? string.Empty : reader.GetString(2), Created = reader.GetDateTime(3) });
+                        }
+
+                        return result;
+                    }
+                }
+            }
+        }
+
         private const string TruncateCopyToTestsSql = "TRUNCATE TABLE copy_tests";
         public async Task TruncateCopyToTests()
         {
