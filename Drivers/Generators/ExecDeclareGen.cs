@@ -32,7 +32,7 @@ public class ExecDeclareGen(DbDriver dbDriver)
                         using ({{establishConnection}})
                         {
                             {{sqlArgs}}
-                            await connection.ExecuteAsync({{queryTextConstant}}, {{Variable.SqlParams.AsVarName()}});
+                            await connection.ExecuteAsync({{queryTextConstant}}, {{Variable.DapperParams.AsVarName()}});
                         }
                      """;
         }

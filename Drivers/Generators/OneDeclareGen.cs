@@ -35,7 +35,7 @@ public class OneDeclareGen(DbDriver dbDriver)
                         using ({{establishConnection}})
                         {
                             {{sqlArgs}}
-                            var result = await connection.QueryFirstOrDefaultAsync<{{returnType}}>({{queryTextConstant}}, {{Variable.SqlParams.AsVarName()}});
+                            var result = await connection.QueryFirstOrDefaultAsync<{{returnType}}>({{queryTextConstant}}, {{Variable.DapperParams.AsVarName()}});
                             return result;
                         }
                      """;

@@ -37,7 +37,7 @@ public class ManyDeclareGen(DbDriver dbDriver)
                         using ({{establishConnection}})
                         {{{sqlcSliceSection}}
                             {{sqlArgs}}
-                            var results = await connection.QueryAsync<{{returnType}}>({{sqlQuery}}, {{Variable.SqlParams.AsVarName()}});
+                            var results = await connection.QueryAsync<{{returnType}}>({{sqlQuery}}, {{Variable.DapperParams.AsVarName()}});
                             return results.AsList();
                         }
                      """;

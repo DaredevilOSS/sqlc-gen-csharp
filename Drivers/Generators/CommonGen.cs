@@ -23,7 +23,7 @@ public class CommonGen(DbDriver dbDriver)
     {
         var sqlParamsCommands = new List<string>
         {
-            $"var {Variable.SqlParams.AsVarName()} = new System.Dynamic.ExpandoObject() as IDictionary<string, object>;"
+            $"var {Variable.DapperParams.AsVarName()} = new System.Dynamic.ExpandoObject() as IDictionary<string, object>;"
         };
         foreach (var p in parameters)
         {
@@ -32,11 +32,11 @@ public class CommonGen(DbDriver dbDriver)
             {
                 sqlParamsCommands.Add($$"""
                          for (int i = 0; i < {{Variable.Args.AsVarName()}}.{{param}}.Length; i++)
-                            {{Variable.SqlParams.AsVarName()}}.Add($"@{{param}}Arg{i}", {{Variable.Args.AsVarName()}}.{{param}}[i]);
+                            {{Variable.DapperParams.AsVarName()}}.Add($"@{{param}}Arg{i}", {{Variable.Args.AsVarName()}}.{{param}}[i]);
                          """);
                 continue;
             }
-            sqlParamsCommands.Add($"{Variable.SqlParams.AsVarName()}.Add(\"{p.Column.Name}\", {Variable.Args.AsVarName()}.{param});");
+            sqlParamsCommands.Add($"{Variable.DapperParams.AsVarName()}.Add(\"{p.Column.Name}\", {Variable.Args.AsVarName()}.{param});");
         }
         return sqlParamsCommands.JoinByNewLine();
     }

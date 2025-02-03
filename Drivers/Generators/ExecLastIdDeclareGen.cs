@@ -35,7 +35,7 @@ public class ExecLastIdDeclareGen(DbDriver dbDriver)
                      using ({{establishConnection}})
                      {
                         {{sqlArgs}}
-                        return await connection.QuerySingleAsync<{{dbDriver.GetIdColumnType()}}>({{queryTextConstant}}, {{Variable.SqlParams.AsVarName()}});
+                        return await connection.QuerySingleAsync<{{dbDriver.GetIdColumnType()}}>({{queryTextConstant}}, {{Variable.DapperParams.AsVarName()}});
                      }
                      """;
         }
