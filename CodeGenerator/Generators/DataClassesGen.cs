@@ -12,16 +12,15 @@ internal class DataClassesGen(DbDriver dbDriver)
 {
     public MemberDeclarationSyntax Generate(string name, ClassMember classMember, IList<Column> columns, Options options)
     {
+        var className = classMember == ClassMember.Model ? $"{name.ToModelName()}" : $"{name}{classMember.Name()}";
         if (options.DotnetFramework.LatestDotnetSupported() && !options.UseDapper)
-            return GenerateAsRecord(name, classMember, columns);
-        return GenerateAsCLass(name, classMember, columns);
+            return GenerateAsRecord(className, columns);
+        return GenerateAsCLass(className, columns);
     }
 
-    private RecordDeclarationSyntax GenerateAsRecord(string name, ClassMember classMember, IList<Column> columns)
+    private RecordDeclarationSyntax GenerateAsRecord(string className, IList<Column> columns)
     {
-        return RecordDeclaration(
-                Token(SyntaxKind.StructKeyword),
-                $"{name}{classMember.Name()}")
+        return RecordDeclaration(Token(SyntaxKind.StructKeyword), className)
             .AddModifiers(
                 Token(SyntaxKind.PublicKeyword),
                 Token(SyntaxKind.ReadOnlyKeyword),
@@ -33,15 +32,20 @@ internal class DataClassesGen(DbDriver dbDriver)
         ParameterListSyntax ColumnsToParameterList()
         {
             return ParameterList(SeparatedList(columns
-                .Select(column => Parameter(Identifier(column.Name.ToPascalCase()))
-                    .WithType(ParseTypeName(dbDriver.GetColumnType(column)))
+                .Select(column =>
+                    {
+                        var fieldName = column.EmbedTable == null
+                            ? column.Name.ToPascalCase()
+                            : column.Name.ToModelName();
+                        return Parameter(Identifier(fieldName))
+                            .WithType(ParseTypeName(dbDriver.GetColumnType(column)));
+                    }
                 )));
         }
     }
 
-    private ClassDeclarationSyntax GenerateAsCLass(string name, ClassMember classMember, IList<Column> columns)
+    private ClassDeclarationSyntax GenerateAsCLass(string className, IList<Column> columns)
     {
-        var className = $"{name}{classMember.Name()}";
         return ClassDeclaration(className)
             .AddModifiers(Token(SyntaxKind.PublicKeyword))
             .AddMembers(ColumnsToProperties())
@@ -52,8 +56,11 @@ internal class DataClassesGen(DbDriver dbDriver)
             return columns.Select(column =>
                 {
                     var propertyType = dbDriver.GetColumnType(column);
+                    var propertyName = column.EmbedTable == null
+                        ? column.Name.ToPascalCase()
+                        : column.Name.ToModelName();
                     return ParseMemberDeclaration(
-                        $"public {propertyType} {column.Name.ToPascalCase()} {{ get; set; }}");
+                        $"public {propertyType} {propertyName} {{ get; set; }}");
                 })
                 .Cast<MemberDeclarationSyntax>()
                 .ToArray();

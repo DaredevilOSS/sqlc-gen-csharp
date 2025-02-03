@@ -18,7 +18,8 @@ public partial class MySqlConnectorTester
     [TearDown]
     public async Task EmptyTestsTable()
     {
-        await QuerySql.TruncateAuthors();
+        await QuerySql.TruncateBooks();
+        await QuerySql.DeleteAllAuthors();
         await QuerySql.TruncateCopyToTests();
     }
 
@@ -79,7 +80,11 @@ public partial class MySqlConnectorTester
         });
         await QuerySql.CreateAuthorReturnId(args);
 
-        var actual = await QuerySql.SelectAuthorsWithTwoSlices(new QuerySql.SelectAuthorsWithTwoSlicesArgs { Ids = [insertedId1, insertedId2], Names = [DataGenerator.GenericAuthor] });
+        var actual = await QuerySql.SelectAuthorsWithTwoSlices(new QuerySql.SelectAuthorsWithTwoSlicesArgs
+        {
+            Ids = [insertedId1, insertedId2],
+            Names = [DataGenerator.GenericAuthor]
+        });
 
         ClassicAssert.AreEqual(1, actual.Count);
     }

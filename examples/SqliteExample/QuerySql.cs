@@ -163,6 +163,45 @@ public class QuerySql
         }
     }
 
+    private const string CreateBookSql = "INSERT INTO books (name, author_id) VALUES (@name, @author_id)";
+    public readonly record struct CreateBookArgs(string Name, int AuthorId);
+    public async Task CreateBook(CreateBookArgs args)
+    {
+        using (var connection = new SqliteConnection(ConnectionString))
+        {
+            connection.Open();
+            using (var command = new SqliteCommand(CreateBookSql, connection))
+            {
+                command.Parameters.AddWithValue("@name", args.Name);
+                command.Parameters.AddWithValue("@author_id", args.AuthorId);
+                await command.ExecuteScalarAsync();
+            }
+        }
+    }
+
+    private const string ListAllAuthorsBooksSql = "SELECT authors.id, authors.name, authors.bio, books.id, books.name, books.author_id, books.description FROM authors JOIN books ON authors.id = books.author_id ORDER BY authors.name";
+    public readonly record struct ListAllAuthorsBooksRow(Author Author, Book Book);
+    public async Task<List<ListAllAuthorsBooksRow>> ListAllAuthorsBooks()
+    {
+        using (var connection = new SqliteConnection(ConnectionString))
+        {
+            connection.Open();
+            using (var command = new SqliteCommand(ListAllAuthorsBooksSql, connection))
+            {
+                using (var reader = await command.ExecuteReaderAsync())
+                {
+                    var result = new List<ListAllAuthorsBooksRow>();
+                    while (await reader.ReadAsync())
+                    {
+                        result.Add(new ListAllAuthorsBooksRow { Author = new Author { Id = reader.GetInt32(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2) }, Book = new Book { Id = reader.GetInt32(3), Name = reader.GetString(4), AuthorId = reader.GetInt32(5), Description = reader.IsDBNull(6) ? null : reader.GetString(6) } });
+                    }
+
+                    return result;
+                }
+            }
+        }
+    }
+
     private const string DeleteAllAuthorsSql = "DELETE FROM authors";
     public async Task DeleteAllAuthors()
     {
@@ -170,6 +209,19 @@ public class QuerySql
         {
             connection.Open();
             using (var command = new SqliteCommand(DeleteAllAuthorsSql, connection))
+            {
+                await command.ExecuteScalarAsync();
+            }
+        }
+    }
+
+    private const string DeleteAllBooksSql = "DELETE FROM books";
+    public async Task DeleteAllBooks()
+    {
+        using (var connection = new SqliteConnection(ConnectionString))
+        {
+            connection.Open();
+            using (var command = new SqliteCommand(DeleteAllBooksSql, connection))
             {
                 await command.ExecuteScalarAsync();
             }

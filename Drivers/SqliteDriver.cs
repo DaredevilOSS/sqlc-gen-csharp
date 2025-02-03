@@ -1,7 +1,6 @@
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Plugin;
 using SqlcGenCsharp.Drivers.Generators;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -9,7 +8,8 @@ using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace SqlcGenCsharp.Drivers;
 
-public partial class SqliteDriver(Options options) : DbDriver(options), IOne, IMany, IExec, IExecRows, IExecLastId
+public partial class SqliteDriver(Options options, Dictionary<string, Table> tables) :
+    DbDriver(options, tables), IOne, IMany, IExec, IExecRows, IExecLastId
 {
     protected override List<ColumnMapping> ColumnMappings { get; } = [
         new("byte[]", new Dictionary<string, string?>
@@ -55,30 +55,29 @@ public partial class SqliteDriver(Options options) : DbDriver(options), IOne, IM
 
     public override string TransformQueryText(Query query)
     {
-        return query.Params
-            .Aggregate(query.Text, (current, currentParameter) => BindParameterRegex()
-            .Replace(current, $"@{currentParameter.Column.Name.ToCamelCase()}", 1));
+        var counter = 0;
+        return QueryParamRegex().Replace(query.Text, _ => "@" + query.Params[counter++].Column.Name);
     }
 
-    public override MemberDeclarationSyntax OneDeclare(string queryTextConstant, string argInterface,
+    [GeneratedRegex(@"\?")]
+    private static partial Regex QueryParamRegex();
+
+    public MemberDeclarationSyntax OneDeclare(string queryTextConstant, string argInterface,
         string returnInterface, Query query)
     {
         return new OneDeclareGen(this).Generate(queryTextConstant, argInterface, returnInterface, query);
     }
 
-    public override MemberDeclarationSyntax ExecDeclare(string queryTextConstant, string argInterface, Query query)
+    public MemberDeclarationSyntax ExecDeclare(string queryTextConstant, string argInterface, Query query)
     {
         return new ExecDeclareGen(this).Generate(queryTextConstant, argInterface, query);
     }
 
-    public override MemberDeclarationSyntax ManyDeclare(string queryTextConstant, string argInterface,
+    public MemberDeclarationSyntax ManyDeclare(string queryTextConstant, string argInterface,
         string returnInterface, Query query)
     {
         return new ManyDeclareGen(this).Generate(queryTextConstant, argInterface, returnInterface, query);
     }
-
-    [GeneratedRegex(@"\?")]
-    private static partial Regex BindParameterRegex();
 
     public MemberDeclarationSyntax ExecRowsDeclare(string queryTextConstant, string argInterface, Query query)
     {

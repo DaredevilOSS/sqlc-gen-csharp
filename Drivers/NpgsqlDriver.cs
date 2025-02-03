@@ -10,7 +10,7 @@ namespace SqlcGenCsharp.Drivers;
 
 public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId, ICopyFrom
 {
-    public NpgsqlDriver(Options options) : base(options)
+    public NpgsqlDriver(Options options, Dictionary<string, Table> tables) : base(options, tables)
     {
         foreach (var columnMapping in ColumnMappings)
         {
@@ -132,18 +132,18 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId
         }
     }
 
-    public override MemberDeclarationSyntax OneDeclare(string queryTextConstant, string argInterface,
+    public MemberDeclarationSyntax OneDeclare(string queryTextConstant, string argInterface,
         string returnInterface, Query query)
     {
         return new OneDeclareGen(this).Generate(queryTextConstant, argInterface, returnInterface, query);
     }
 
-    public override MemberDeclarationSyntax ExecDeclare(string queryTextConstant, string argInterface, Query query)
+    public MemberDeclarationSyntax ExecDeclare(string queryTextConstant, string argInterface, Query query)
     {
         return new ExecDeclareGen(this).Generate(queryTextConstant, argInterface, query);
     }
 
-    public override MemberDeclarationSyntax ManyDeclare(string queryTextConstant, string argInterface,
+    public MemberDeclarationSyntax ManyDeclare(string queryTextConstant, string argInterface,
         string returnInterface, Query query)
     {
         return new ManyDeclareGen(this).Generate(queryTextConstant, argInterface, returnInterface, query);

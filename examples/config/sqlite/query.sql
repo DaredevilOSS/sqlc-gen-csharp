@@ -21,5 +21,14 @@ WHERE bio IS NOT NULL;
 -- name: DeleteAuthor :exec
 DELETE FROM authors WHERE name = ?;
 
+-- name: CreateBook :exec
+INSERT INTO books (name, author_id) VALUES (?, ?);
+
+-- name: ListAllAuthorsBooks :many 
+SELECT sqlc.embed(authors), sqlc.embed(books) FROM authors JOIN books ON authors.id = books.author_id ORDER BY authors.name;
+
 -- name: DeleteAllAuthors :exec
 DELETE FROM authors;
+
+-- name: DeleteAllBooks :exec
+DELETE FROM books;

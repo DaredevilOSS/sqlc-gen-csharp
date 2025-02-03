@@ -5,6 +5,14 @@ CREATE TABLE authors (
     created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE TABLE books (
+    id            BIGSERIAL   PRIMARY KEY,
+    name          TEXT        NOT NULL,
+    author_id     BIGINT      NOT NULL,
+    description   TEXT,
+    FOREIGN KEY (author_id) REFERENCES authors (id) ON DELETE CASCADE
+);
+
 CREATE TABLE copy_tests (
     c_int       INTEGER   NOT NULL,
     c_varchar   VARCHAR   NOT NULL,

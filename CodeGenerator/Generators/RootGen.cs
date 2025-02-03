@@ -7,7 +7,7 @@ namespace SqlcGenCsharp.Generators;
 internal class RootGen(Options options)
 {
     public CompilationUnitSyntax CompilationRootGen(IdentifierNameSyntax namespaceName,
-        UsingDirectiveSyntax[] usingDirectives, MemberDeclarationSyntax classDeclaration)
+        UsingDirectiveSyntax[] usingDirectives, MemberDeclarationSyntax[] classDeclarations)
     {
         return options.DotnetFramework.LatestDotnetSupported() ? GetFileScoped() : GetBLockScoped();
 
@@ -15,7 +15,8 @@ internal class RootGen(Options options)
         {
             return CompilationUnit()
                 .AddUsings(usingDirectives)
-                .AddMembers(FileScopedNamespaceDeclaration(namespaceName), classDeclaration)
+                .AddMembers(FileScopedNamespaceDeclaration(namespaceName))
+                .AddMembers(classDeclarations)
                 .NormalizeWhitespace();
         }
 
@@ -25,7 +26,7 @@ internal class RootGen(Options options)
                 .AddMembers(
                     NamespaceDeclaration(namespaceName)
                         .AddUsings(usingDirectives)
-                        .AddMembers(classDeclaration))
+                        .AddMembers(classDeclarations))
                 .NormalizeWhitespace();
         }
     }

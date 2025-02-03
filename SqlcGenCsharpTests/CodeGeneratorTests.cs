@@ -8,6 +8,17 @@ namespace SqlcGenCsharpTests;
 
 public class CodeGeneratorTests
 {
+    private readonly Settings _defaultSettings = new()
+    {
+        Engine = "mysql",
+        Codegen = new Codegen
+        {
+            Out = "DummyProject"
+        }
+    };
+
+    private readonly Catalog _emptyCatalog = new() { Schemas = { Capacity = 0 } };
+
     private CodeGenerator CodeGenerator { get; } = new();
 
     [Test]
@@ -15,14 +26,8 @@ public class CodeGeneratorTests
     {
         var request = new GenerateRequest
         {
-            Settings = new Settings
-            {
-                Engine = "mysql",
-                Codegen = new Codegen
-                {
-                    Out = "DummyProject"
-                }
-            },
+            Settings = _defaultSettings,
+            Catalog = _emptyCatalog,
             PluginOptions = ByteString.CopyFrom("{\"generateCsproj\": true}", Encoding.UTF8)
         };
 
@@ -35,14 +40,8 @@ public class CodeGeneratorTests
     {
         var request = new GenerateRequest
         {
-            Settings = new Settings
-            {
-                Engine = "mysql",
-                Codegen = new Codegen
-                {
-                    Out = "DummyProject"
-                }
-            },
+            Settings = _defaultSettings,
+            Catalog = _emptyCatalog,
             PluginOptions = ByteString.CopyFrom("{\"generateCsproj\": false}", Encoding.UTF8)
         };
 
@@ -56,14 +55,8 @@ public class CodeGeneratorTests
         const string expected = "3.45.88";
         var request = new GenerateRequest
         {
-            Settings = new Settings
-            {
-                Engine = "mysql",
-                Codegen = new Codegen
-                {
-                    Out = "DummyProject"
-                }
-            },
+            Settings = _defaultSettings,
+            Catalog = _emptyCatalog,
             PluginOptions = ByteString.CopyFrom("{\"overrideDriverVersion\": \"" + expected + "\"}", Encoding.UTF8)
         };
 
@@ -85,14 +78,8 @@ public class CodeGeneratorTests
         const string expected = "12.34.67";
         var request = new GenerateRequest
         {
-            Settings = new Settings
-            {
-                Engine = "mysql",
-                Codegen = new Codegen
-                {
-                    Out = "DummyProject"
-                }
-            },
+            Settings = _defaultSettings,
+            Catalog = _emptyCatalog,
             PluginOptions = ByteString.CopyFrom("{\"useDapper\": true, \"overrideDapperVersion\": \"" + expected + "\"}", Encoding.UTF8)
         };
 

@@ -18,7 +18,8 @@ namespace SqlcGenCsharpTests
         [TearDown]
         public async Task EmptyTestsTable()
         {
-            await QuerySql.TruncateAuthors();
+            await QuerySql.TruncateBooks();
+            await QuerySql.DeleteAllAuthors();
         }
 
         [Test]

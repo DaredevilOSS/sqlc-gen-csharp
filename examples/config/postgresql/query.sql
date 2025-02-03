@@ -17,7 +17,7 @@ SELECT * FROM authors WHERE id = $1 LIMIT 1;
 DELETE FROM authors WHERE name = $1;
 
 -- name: TruncateAuthors :exec
-TRUNCATE TABLE authors;
+TRUNCATE TABLE authors CASCADE;
 
 -- name: UpdateAuthors :execrows
 UPDATE authors 
@@ -26,6 +26,12 @@ UPDATE authors
 
 -- name: SelectAuthorsWithSlice :many
 SELECT * FROM authors WHERE id = ANY($1::BIGINT[]);
+
+-- name: CreateBook :exec
+INSERT INTO books (name, author_id) VALUES ($1, $2);
+
+-- name: ListAllAuthorsBooks :many 
+SELECT sqlc.embed(authors), sqlc.embed(books) FROM authors JOIN books ON authors.id = books.author_id ORDER BY authors.name;
 
 -- name: TruncateCopyToTests :exec
 TRUNCATE TABLE copy_tests;
