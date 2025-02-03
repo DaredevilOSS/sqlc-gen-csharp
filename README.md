@@ -12,8 +12,8 @@ version: "2"
 plugins:
 - name: csharp
   wasm:
-    url: https://github.com/DaredevilOSS/sqlc-gen-csharp/releases/download/v0.13.2/sqlc-gen-csharp.wasm
-    sha256: dd5126d7e5fcc3667820ce5073fb74921bed027669b9d9caa949e2c998e1f675
+    url: https://github.com/DaredevilOSS/sqlc-gen-csharp/releases/download/v0.14.0/sqlc-gen-csharp.wasm
+    sha256: bd06f1c731335c587621a4c6be9ff1771451039bf9db475d2af94dd7369bdde7
 sql:
   # For PostgresSQL
   - schema: schema.sql
@@ -41,12 +41,12 @@ sql:
 ## Options
 | Option                 | Possible values                                                                                                                                                                    | Optional | Info                                                                                                                                                                                                                                                                                                                                      |
 |------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| overrideDriverVersion  | default:<br/> `2.3.6` for MySqlConnector  (mysql)<br/>`8.0.3` for Npgsql (postgresql)<br/>`8.0.10` for Microsoft.Data.Sqlite (sqlite)<br/><br/>values: The desired driver version  | Yes      | Determines the version of the driver to be used. |
+| overrideDriverVersion  | default:<br/> `2.3.6` for MySqlConnector  (mysql)<br/>`8.0.3` for Npgsql (postgresql)<br/>`8.0.10` for Microsoft.Data.Sqlite (sqlite)<br/><br/>values: The desired driver version  | Yes      | Allows you to override the version of DB driver to be used.                                                                                                                                                                                                                     |
 | targetFramework        | default: `net8.0`<br/>values: `netstandard2.0`, `netstandard2.1`, `net8.0`                                                                                                         | Yes      | Determines the target framework for your generated code, meaning the generated code will be compiled to the specified runtime.<br/>For more information and help deciding on the right value, refer to the [Microsoft .NET Standard documentation](https://learn.microsoft.com/en-us/dotnet/standard/net-standard?tabs=net-standard-1-0). |
 | generateCsproj         | default: `true`<br/>values: `false`,`true`                                                                                                                                         | Yes      | Assists you with the integration of SQLC and csharp by generating a `.csproj` file. This converts the generated output to a .dll, a project that you can easily incorporate into your build process.                                                                                                                                      |
 | namespaceName          | default: the generated project name                                                                                                                                                | Yes      | Allows you to override the namespace name to be different than the project name                                                                                                                                                                                                                                                           |
-| useDapper              | default: `false`<br/>values: `false`,`true`                                                                                                                                        | Yes      | Enables Dapper as a thin wrapper for the generated code. For more information, please refer to the [Dapper documentation](https://github.com/DapperLib/Dapper). |
-| overrideDapperVersion  | default:<br/> `2.1.35`<br/>values: The desired Dapper version                                                                                                                      | Yes      | If `useDapper` is set to `true`, this option allows you to override the version of Dapper to be used. |
+| useDapper              | default: `false`<br/>values: `false`,`true`                                                                                                                                        | Yes      | Enables Dapper as a thin wrapper for the generated code. For more information, please refer to the [Dapper documentation](https://github.com/DapperLib/Dapper).                                                                                                                                                                           |
+| overrideDapperVersion  | default:<br/> `2.1.35`<br/>values: The desired Dapper version                                                                                                                      | Yes      | If `useDapper` is set to `true`, this option allows you to override the version of Dapper to be used.                                                                                                                                                                                                                                     |
 
 ## Query Annotations
 Basic functionality - same for all databases:
@@ -62,19 +62,38 @@ Advanced functionality - varies between databases:
 
 | Annotation  | PostgresSQL | MySQL | SQLite |
 |-------------|-------------|-------|--------|
-| :one        | ✅          | ✅    | ✅     |
-| :many       | ✅          | ✅    | ✅     |
-| :exec       | ✅          | ✅    | ✅     |
-| :execrows   | ✅          | ✅    | ✅     |
-| :execlastid | ✅          | ✅    | ✅     |
-| :copyfrom   | ✅          | ✅    | 🚫     |
+| :one        | ✅          | ✅    | ✅      |
+| :many       | ✅          | ✅    | ✅      |
+| :exec       | ✅          | ✅    | ✅      |
+| :execrows   | ✅          | ✅    | ✅      |
+| :execlastid | ✅          | ✅    | ✅      |
+| :copyfrom   | ✅          | ✅    | ❌      |
+
+- ✅ means the feature is fully supported.
+- ❌ means the feature is not supported by the plugin (but could be supported by the database).
+
+More info can be found in [here](https://docs.sqlc.dev/en/stable/reference/query-annotations.html).
+
+## Macros Annotations
+- `sqlc.arg`       - Attach a name to a parameter in a SQL query
+- `sqlc.embed`     - Embedding allows you to reuse existing model structs in more queries
+- `sqlc.narg`      - The same as `sqlc.arg`, but always marks the parameter as nullable
+- `sqlc.slice`     - For databases that do not support passing arrays to the `IN` operator, generates a dynamic query at runtime with the correct number of parameters
+
+<br/>
+
+| Annotation  | PostgresSQL | MySQL | SQLite |
+|-------------|-------------|-------|--------|
+| sqlc.arg    | ✅          | ✅    | ✅      |
+| sqlc.embed  | ❌          | ❌    | ❌      |
+| sqlc.narg   | ❌          | ❌    | ❌      |
+| sqlc.slice  | 🚫          | ✅    | ❌      |
 
 - ✅ means the feature is fully supported.
 - 🚫 means the database does not support the feature.
 - ❌ means the feature is not supported by the plugin (but could be supported by the database).
 
-More info can be found in [here](https://docs.sqlc.dev/en/latest/reference/query-annotations.html).
-# Contributing
+More info can be found in [here](https://docs.sqlc.dev/en/stable/reference/macros.html#macros).# Contributing
 ## Local plugin development
 ### Prerequisites
 Make sure that the following applications are installed and added to your path.
@@ -119,7 +138,7 @@ The new created tag will create a draft release with it, in the release there wi
 # Examples
 ## Engine `postgresql`: [NpgsqlExample](examples/NpgsqlExample)
 
-### [Schema](examples/config/postgresql/schema.sql) | [Queries](examples/config/postgresql/query.sql) | [End2End Test](EndToEndTests/NpgsqlTester.cs)
+### [Schema](examples/config/postgresql/schema.sql) | [Queries](examples/config/postgresql/query.sql) | [End2End Test](end2end/EndToEndTests/NpgsqlTester.cs)
 
 ### Config
 ```yaml
@@ -130,7 +149,7 @@ namespaceName: NpgsqlExampleGen
 ```
 ## Engine `postgresql`: [NpgsqlDapperExample](examples/NpgsqlDapperExample)
 
-### [Schema](examples/config/postgresql/schema.sql) | [Queries](examples/config/postgresql/query.sql) | [End2End Test](EndToEndTests/NpgsqlDapperTester.cs)
+### [Schema](examples/config/postgresql/schema.sql) | [Queries](examples/config/postgresql/query.sql) | [End2End Test](end2end/EndToEndTests/NpgsqlDapperTester.cs)
 
 ### Config
 ```yaml
@@ -141,7 +160,7 @@ namespaceName: NpgsqlDapperExampleGen
 ```
 ## Engine `postgresql`: [NpgsqlLegacyExample](examples/NpgsqlLegacyExample)
 
-### [Schema](examples/config/postgresql/schema.sql) | [Queries](examples/config/postgresql/query.sql) | [End2End Test](LegacyEndToEndTests/NpgsqlTester.cs)
+### [Schema](examples/config/postgresql/schema.sql) | [Queries](examples/config/postgresql/query.sql) | [End2End Test](end2end/EndToEndTestsLegacy/NpgsqlTester.cs)
 
 ### Config
 ```yaml
@@ -152,7 +171,7 @@ namespaceName: NpgsqlLegacyExampleGen
 ```
 ## Engine `postgresql`: [NpgsqlDapperLegacyExample](examples/NpgsqlDapperLegacyExample)
 
-### [Schema](examples/config/postgresql/schema.sql) | [Queries](examples/config/postgresql/query.sql) | [End2End Test](LegacyEndToEndTests/NpgsqlDapperTester.cs)
+### [Schema](examples/config/postgresql/schema.sql) | [Queries](examples/config/postgresql/query.sql) | [End2End Test](end2end/EndToEndTestsLegacy/NpgsqlDapperTester.cs)
 
 ### Config
 ```yaml
@@ -163,7 +182,7 @@ namespaceName: NpgsqlDapperLegacyExampleGen
 ```
 ## Engine `mysql`: [MySqlConnectorExample](examples/MySqlConnectorExample)
 
-### [Schema](examples/config/mysql/schema.sql) | [Queries](examples/config/mysql/query.sql) | [End2End Test](EndToEndTests/MySqlConnectorTester.cs)
+### [Schema](examples/config/mysql/schema.sql) | [Queries](examples/config/mysql/query.sql) | [End2End Test](end2end/EndToEndTests/MySqlConnectorTester.cs)
 
 ### Config
 ```yaml
@@ -174,7 +193,7 @@ namespaceName: MySqlConnectorExampleGen
 ```
 ## Engine `mysql`: [MySqlConnectorDapperExample](examples/MySqlConnectorDapperExample)
 
-### [Schema](examples/config/mysql/schema.sql) | [Queries](examples/config/mysql/query.sql) | [End2End Test](EndToEndTests/MySqlConnectorDapperTester.cs)
+### [Schema](examples/config/mysql/schema.sql) | [Queries](examples/config/mysql/query.sql) | [End2End Test](end2end/EndToEndTests/MySqlConnectorDapperTester.cs)
 
 ### Config
 ```yaml
@@ -185,7 +204,7 @@ namespaceName: MySqlConnectorDapperExampleGen
 ```
 ## Engine `mysql`: [MySqlConnectorLegacyExample](examples/MySqlConnectorLegacyExample)
 
-### [Schema](examples/config/mysql/schema.sql) | [Queries](examples/config/mysql/query.sql) | [End2End Test](LegacyEndToEndTests/MySqlConnectorTester.cs)
+### [Schema](examples/config/mysql/schema.sql) | [Queries](examples/config/mysql/query.sql) | [End2End Test](end2end/EndToEndTestsLegacy/MySqlConnectorTester.cs)
 
 ### Config
 ```yaml
@@ -196,7 +215,7 @@ namespaceName: MySqlConnectorLegacyExampleGen
 ```
 ## Engine `mysql`: [MySqlConnectorDapperLegacyExample](examples/MySqlConnectorDapperLegacyExample)
 
-### [Schema](examples/config/mysql/schema.sql) | [Queries](examples/config/mysql/query.sql) | [End2End Test](LegacyEndToEndTests/MySqlConnectorDapperTester.cs)
+### [Schema](examples/config/mysql/schema.sql) | [Queries](examples/config/mysql/query.sql) | [End2End Test](end2end/EndToEndTestsLegacy/MySqlConnectorDapperTester.cs)
 
 ### Config
 ```yaml
@@ -207,7 +226,7 @@ namespaceName: MySqlConnectorDapperLegacyExampleGen
 ```
 ## Engine `sqlite`: [SqliteExample](examples/SqliteExample)
 
-### [Schema](examples/config/sqlite/schema.sql) | [Queries](examples/config/sqlite/query.sql) | [End2End Test](EndToEndTests/SqliteTester.cs)
+### [Schema](examples/config/sqlite/schema.sql) | [Queries](examples/config/sqlite/query.sql) | [End2End Test](end2end/EndToEndTests/SqliteTester.cs)
 
 ### Config
 ```yaml
@@ -218,7 +237,7 @@ namespaceName: SqliteExampleGen
 ```
 ## Engine `sqlite`: [SqliteDapperExample](examples/SqliteDapperExample)
 
-### [Schema](examples/config/sqlite/schema.sql) | [Queries](examples/config/sqlite/query.sql) | [End2End Test](EndToEndTests/SqliteDapperTester.cs)
+### [Schema](examples/config/sqlite/schema.sql) | [Queries](examples/config/sqlite/query.sql) | [End2End Test](end2end/EndToEndTests/SqliteDapperTester.cs)
 
 ### Config
 ```yaml
@@ -229,7 +248,7 @@ namespaceName: SqliteDapperExampleGen
 ```
 ## Engine `sqlite`: [SqliteLegacyExample](examples/SqliteLegacyExample)
 
-### [Schema](examples/config/sqlite/schema.sql) | [Queries](examples/config/sqlite/query.sql) | [End2End Test](LegacyEndToEndTests/SqliteTester.cs)
+### [Schema](examples/config/sqlite/schema.sql) | [Queries](examples/config/sqlite/query.sql) | [End2End Test](end2end/EndToEndTestsLegacy/SqliteTester.cs)
 
 ### Config
 ```yaml
@@ -240,7 +259,7 @@ namespaceName: SqliteLegacyExampleGen
 ```
 ## Engine `sqlite`: [SqliteDapperLegacyExample](examples/SqliteDapperLegacyExample)
 
-### [Schema](examples/config/sqlite/schema.sql) | [Queries](examples/config/sqlite/query.sql) | [End2End Test](LegacyEndToEndTests/SqliteDapperTester.cs)
+### [Schema](examples/config/sqlite/schema.sql) | [Queries](examples/config/sqlite/query.sql) | [End2End Test](end2end/EndToEndTestsLegacy/SqliteDapperTester.cs)
 
 ### Config
 ```yaml
