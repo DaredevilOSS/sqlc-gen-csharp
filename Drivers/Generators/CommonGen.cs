@@ -23,7 +23,7 @@ public class CommonGen(DbDriver dbDriver)
     {
         var dapperParamsCommands = new List<string>
         {
-            $"var {Variable.DapperParams.AsVarName()} = new System.Dynamic.ExpandoObject() as IDictionary<string, object>;"
+            $"var {Variable.DapperParams.AsVarName()} = new Dictionary<string, object>();"
         };
         foreach (var p in parameters)
         {

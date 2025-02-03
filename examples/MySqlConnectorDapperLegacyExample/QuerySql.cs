@@ -41,7 +41,7 @@ namespace MySqlConnectorDapperLegacyExampleGen
         {
             using (var connection = new MySqlConnection(ConnectionString))
             {
-                var dapperParams = new System.Dynamic.ExpandoObject() as IDictionary<string, object>;
+                var dapperParams = new Dictionary<string, object>();
                 dapperParams.Add("name", args.Name);
                 var result = await connection.QueryFirstOrDefaultAsync<GetAuthorRow>(GetAuthorSql, dapperParams);
                 return result;
@@ -60,7 +60,7 @@ namespace MySqlConnectorDapperLegacyExampleGen
         {
             using (var connection = new MySqlConnection(ConnectionString))
             {
-                var dapperParams = new System.Dynamic.ExpandoObject() as IDictionary<string, object>;
+                var dapperParams = new Dictionary<string, object>();
                 var results = await connection.QueryAsync<ListAuthorsRow>(ListAuthorsSql, dapperParams);
                 return results.AsList();
             }
@@ -76,7 +76,7 @@ namespace MySqlConnectorDapperLegacyExampleGen
         {
             using (var connection = new MySqlConnection(ConnectionString))
             {
-                var dapperParams = new System.Dynamic.ExpandoObject() as IDictionary<string, object>;
+                var dapperParams = new Dictionary<string, object>();
                 dapperParams.Add("name", args.Name);
                 dapperParams.Add("bio", args.Bio);
                 await connection.ExecuteAsync(CreateAuthorSql, dapperParams);
@@ -93,7 +93,7 @@ namespace MySqlConnectorDapperLegacyExampleGen
         {
             using (var connection = new MySqlConnection(ConnectionString))
             {
-                var dapperParams = new System.Dynamic.ExpandoObject() as IDictionary<string, object>;
+                var dapperParams = new Dictionary<string, object>();
                 dapperParams.Add("name", args.Name);
                 dapperParams.Add("bio", args.Bio);
                 return await connection.QuerySingleAsync<long>(CreateAuthorReturnIdSql, dapperParams);
@@ -116,7 +116,7 @@ namespace MySqlConnectorDapperLegacyExampleGen
         {
             using (var connection = new MySqlConnection(ConnectionString))
             {
-                var dapperParams = new System.Dynamic.ExpandoObject() as IDictionary<string, object>;
+                var dapperParams = new Dictionary<string, object>();
                 dapperParams.Add("id", args.Id);
                 var result = await connection.QueryFirstOrDefaultAsync<GetAuthorByIdRow>(GetAuthorByIdSql, dapperParams);
                 return result;
@@ -132,7 +132,7 @@ namespace MySqlConnectorDapperLegacyExampleGen
         {
             using (var connection = new MySqlConnection(ConnectionString))
             {
-                var dapperParams = new System.Dynamic.ExpandoObject() as IDictionary<string, object>;
+                var dapperParams = new Dictionary<string, object>();
                 dapperParams.Add("name", args.Name);
                 await connection.ExecuteAsync(DeleteAuthorSql, dapperParams);
             }
@@ -143,7 +143,7 @@ namespace MySqlConnectorDapperLegacyExampleGen
         {
             using (var connection = new MySqlConnection(ConnectionString))
             {
-                var dapperParams = new System.Dynamic.ExpandoObject() as IDictionary<string, object>;
+                var dapperParams = new Dictionary<string, object>();
                 await connection.ExecuteAsync(TruncateAuthorsSql, dapperParams);
             }
         }
@@ -157,7 +157,7 @@ namespace MySqlConnectorDapperLegacyExampleGen
         {
             using (var connection = new MySqlConnection(ConnectionString))
             {
-                var dapperParams = new System.Dynamic.ExpandoObject() as IDictionary<string, object>;
+                var dapperParams = new Dictionary<string, object>();
                 dapperParams.Add("bio", args.Bio);
                 return await connection.ExecuteAsync(UpdateAuthorsSql, dapperParams);
             }
@@ -181,7 +181,7 @@ namespace MySqlConnectorDapperLegacyExampleGen
             {
                 var transformedSql = SelectAuthorsWithSliceSql;
                 transformedSql = Utils.GetTransformedString(transformedSql, args.Ids, "Ids", "ids");
-                var dapperParams = new System.Dynamic.ExpandoObject() as IDictionary<string, object>;
+                var dapperParams = new Dictionary<string, object>();
                 for (int i = 0; i < args.Ids.Length; i++)
                     dapperParams.Add($"@IdsArg{i}", args.Ids[i]);
                 var results = await connection.QueryAsync<SelectAuthorsWithSliceRow>(transformedSql, dapperParams);
@@ -209,7 +209,7 @@ namespace MySqlConnectorDapperLegacyExampleGen
                 var transformedSql = SelectAuthorsWithTwoSlicesSql;
                 transformedSql = Utils.GetTransformedString(transformedSql, args.Ids, "Ids", "ids");
                 transformedSql = Utils.GetTransformedString(transformedSql, args.Names, "Names", "names");
-                var dapperParams = new System.Dynamic.ExpandoObject() as IDictionary<string, object>;
+                var dapperParams = new Dictionary<string, object>();
                 for (int i = 0; i < args.Ids.Length; i++)
                     dapperParams.Add($"@IdsArg{i}", args.Ids[i]);
                 for (int i = 0; i < args.Names.Length; i++)
@@ -224,7 +224,7 @@ namespace MySqlConnectorDapperLegacyExampleGen
         {
             using (var connection = new MySqlConnection(ConnectionString))
             {
-                var dapperParams = new System.Dynamic.ExpandoObject() as IDictionary<string, object>;
+                var dapperParams = new Dictionary<string, object>();
                 await connection.ExecuteAsync(TruncateCopyToTestsSql, dapperParams);
             }
         }
@@ -271,7 +271,7 @@ namespace MySqlConnectorDapperLegacyExampleGen
         {
             using (var connection = new MySqlConnection(ConnectionString))
             {
-                var dapperParams = new System.Dynamic.ExpandoObject() as IDictionary<string, object>;
+                var dapperParams = new Dictionary<string, object>();
                 var result = await connection.QueryFirstOrDefaultAsync<CountCopyRowsRow>(CountCopyRowsSql, dapperParams);
                 return result;
             }
@@ -322,7 +322,7 @@ namespace MySqlConnectorDapperLegacyExampleGen
         {
             using (var connection = new MySqlConnection(ConnectionString))
             {
-                var dapperParams = new System.Dynamic.ExpandoObject() as IDictionary<string, object>;
+                var dapperParams = new Dictionary<string, object>();
                 var result = await connection.QueryFirstOrDefaultAsync<TestRow>(TestSql, dapperParams);
                 return result;
             }

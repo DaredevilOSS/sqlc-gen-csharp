@@ -35,7 +35,7 @@ public class QuerySql
     {
         using (var connection = new SqliteConnection(ConnectionString))
         {
-            var dapperParams = new System.Dynamic.ExpandoObject() as IDictionary<string, object>;
+            var dapperParams = new Dictionary<string, object>();
             dapperParams.Add("name", args.Name);
             var result = await connection.QueryFirstOrDefaultAsync<GetAuthorRow?>(GetAuthorSql, dapperParams);
             return result;
@@ -53,7 +53,7 @@ public class QuerySql
     {
         using (var connection = new SqliteConnection(ConnectionString))
         {
-            var dapperParams = new System.Dynamic.ExpandoObject() as IDictionary<string, object>;
+            var dapperParams = new Dictionary<string, object>();
             var results = await connection.QueryAsync<ListAuthorsRow>(ListAuthorsSql, dapperParams);
             return results.AsList();
         }
@@ -69,7 +69,7 @@ public class QuerySql
     {
         using (var connection = new SqliteConnection(ConnectionString))
         {
-            var dapperParams = new System.Dynamic.ExpandoObject() as IDictionary<string, object>;
+            var dapperParams = new Dictionary<string, object>();
             dapperParams.Add("name", args.Name);
             dapperParams.Add("bio", args.Bio);
             await connection.ExecuteAsync(CreateAuthorSql, dapperParams);
@@ -90,7 +90,7 @@ public class QuerySql
     {
         using (var connection = new SqliteConnection(ConnectionString))
         {
-            var dapperParams = new System.Dynamic.ExpandoObject() as IDictionary<string, object>;
+            var dapperParams = new Dictionary<string, object>();
             dapperParams.Add("name", args.Name);
             dapperParams.Add("bio", args.Bio);
             return await connection.QuerySingleAsync<int>(CreateAuthorReturnIdSql, dapperParams);
@@ -112,7 +112,7 @@ public class QuerySql
     {
         using (var connection = new SqliteConnection(ConnectionString))
         {
-            var dapperParams = new System.Dynamic.ExpandoObject() as IDictionary<string, object>;
+            var dapperParams = new Dictionary<string, object>();
             dapperParams.Add("id", args.Id);
             var result = await connection.QueryFirstOrDefaultAsync<GetAuthorByIdRow?>(GetAuthorByIdSql, dapperParams);
             return result;
@@ -128,7 +128,7 @@ public class QuerySql
     {
         using (var connection = new SqliteConnection(ConnectionString))
         {
-            var dapperParams = new System.Dynamic.ExpandoObject() as IDictionary<string, object>;
+            var dapperParams = new Dictionary<string, object>();
             dapperParams.Add("bio", args.Bio);
             return await connection.ExecuteAsync(UpdateAuthorsSql, dapperParams);
         }
@@ -143,7 +143,7 @@ public class QuerySql
     {
         using (var connection = new SqliteConnection(ConnectionString))
         {
-            var dapperParams = new System.Dynamic.ExpandoObject() as IDictionary<string, object>;
+            var dapperParams = new Dictionary<string, object>();
             dapperParams.Add("name", args.Name);
             await connection.ExecuteAsync(DeleteAuthorSql, dapperParams);
         }
@@ -154,7 +154,7 @@ public class QuerySql
     {
         using (var connection = new SqliteConnection(ConnectionString))
         {
-            var dapperParams = new System.Dynamic.ExpandoObject() as IDictionary<string, object>;
+            var dapperParams = new Dictionary<string, object>();
             await connection.ExecuteAsync(DeleteAllAuthorsSql, dapperParams);
         }
     }

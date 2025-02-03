@@ -38,7 +38,7 @@ namespace NpgsqlDapperLegacyExampleGen
         {
             using (var connection = new NpgsqlConnection(ConnectionString))
             {
-                var dapperParams = new System.Dynamic.ExpandoObject() as IDictionary<string, object>;
+                var dapperParams = new Dictionary<string, object>();
                 dapperParams.Add("name", args.Name);
                 var result = await connection.QueryFirstOrDefaultAsync<GetAuthorRow>(GetAuthorSql, dapperParams);
                 return result;
@@ -57,7 +57,7 @@ namespace NpgsqlDapperLegacyExampleGen
         {
             using (var connection = new NpgsqlConnection(ConnectionString))
             {
-                var dapperParams = new System.Dynamic.ExpandoObject() as IDictionary<string, object>;
+                var dapperParams = new Dictionary<string, object>();
                 var results = await connection.QueryAsync<ListAuthorsRow>(ListAuthorsSql, dapperParams);
                 return results.AsList();
             }
@@ -80,7 +80,7 @@ namespace NpgsqlDapperLegacyExampleGen
         {
             using (var connection = new NpgsqlConnection(ConnectionString))
             {
-                var dapperParams = new System.Dynamic.ExpandoObject() as IDictionary<string, object>;
+                var dapperParams = new Dictionary<string, object>();
                 dapperParams.Add("name", args.Name);
                 dapperParams.Add("bio", args.Bio);
                 var result = await connection.QueryFirstOrDefaultAsync<CreateAuthorRow>(CreateAuthorSql, dapperParams);
@@ -102,7 +102,7 @@ namespace NpgsqlDapperLegacyExampleGen
         {
             using (var connection = new NpgsqlConnection(ConnectionString))
             {
-                var dapperParams = new System.Dynamic.ExpandoObject() as IDictionary<string, object>;
+                var dapperParams = new Dictionary<string, object>();
                 dapperParams.Add("name", args.Name);
                 dapperParams.Add("bio", args.Bio);
                 return await connection.QuerySingleAsync<long>(CreateAuthorReturnIdSql, dapperParams);
@@ -125,7 +125,7 @@ namespace NpgsqlDapperLegacyExampleGen
         {
             using (var connection = new NpgsqlConnection(ConnectionString))
             {
-                var dapperParams = new System.Dynamic.ExpandoObject() as IDictionary<string, object>;
+                var dapperParams = new Dictionary<string, object>();
                 dapperParams.Add("id", args.Id);
                 var result = await connection.QueryFirstOrDefaultAsync<GetAuthorByIdRow>(GetAuthorByIdSql, dapperParams);
                 return result;
@@ -141,7 +141,7 @@ namespace NpgsqlDapperLegacyExampleGen
         {
             using (var connection = new NpgsqlConnection(ConnectionString))
             {
-                var dapperParams = new System.Dynamic.ExpandoObject() as IDictionary<string, object>;
+                var dapperParams = new Dictionary<string, object>();
                 dapperParams.Add("name", args.Name);
                 await connection.ExecuteAsync(DeleteAuthorSql, dapperParams);
             }
@@ -152,7 +152,7 @@ namespace NpgsqlDapperLegacyExampleGen
         {
             using (var connection = new NpgsqlConnection(ConnectionString))
             {
-                var dapperParams = new System.Dynamic.ExpandoObject() as IDictionary<string, object>;
+                var dapperParams = new Dictionary<string, object>();
                 await connection.ExecuteAsync(TruncateAuthorsSql, dapperParams);
             }
         }
@@ -166,7 +166,7 @@ namespace NpgsqlDapperLegacyExampleGen
         {
             using (var connection = new NpgsqlConnection(ConnectionString))
             {
-                var dapperParams = new System.Dynamic.ExpandoObject() as IDictionary<string, object>;
+                var dapperParams = new Dictionary<string, object>();
                 dapperParams.Add("bio", args.Bio);
                 return await connection.ExecuteAsync(UpdateAuthorsSql, dapperParams);
             }
@@ -188,7 +188,7 @@ namespace NpgsqlDapperLegacyExampleGen
         {
             using (var connection = new NpgsqlConnection(ConnectionString))
             {
-                var dapperParams = new System.Dynamic.ExpandoObject() as IDictionary<string, object>;
+                var dapperParams = new Dictionary<string, object>();
                 dapperParams.Add("longArr_1", args.LongArr1);
                 var results = await connection.QueryAsync<SelectAuthorsWithSliceRow>(SelectAuthorsWithSliceSql, dapperParams);
                 return results.AsList();
@@ -200,7 +200,7 @@ namespace NpgsqlDapperLegacyExampleGen
         {
             using (var connection = new NpgsqlConnection(ConnectionString))
             {
-                var dapperParams = new System.Dynamic.ExpandoObject() as IDictionary<string, object>;
+                var dapperParams = new Dictionary<string, object>();
                 await connection.ExecuteAsync(TruncateCopyToTestsSql, dapperParams);
             }
         }
@@ -210,7 +210,7 @@ namespace NpgsqlDapperLegacyExampleGen
         {
             using (var connection = new NpgsqlConnection(ConnectionString))
             {
-                var dapperParams = new System.Dynamic.ExpandoObject() as IDictionary<string, object>;
+                var dapperParams = new Dictionary<string, object>();
                 await connection.ExecuteAsync(TruncateNodePostgresTypesSql, dapperParams);
             }
         }
@@ -256,7 +256,7 @@ namespace NpgsqlDapperLegacyExampleGen
         {
             using (var connection = new NpgsqlConnection(ConnectionString))
             {
-                var dapperParams = new System.Dynamic.ExpandoObject() as IDictionary<string, object>;
+                var dapperParams = new Dictionary<string, object>();
                 var result = await connection.QueryFirstOrDefaultAsync<CountCopyRowsRow>(CountCopyRowsSql, dapperParams);
                 return result;
             }
@@ -290,7 +290,7 @@ namespace NpgsqlDapperLegacyExampleGen
         {
             using (var connection = new NpgsqlConnection(ConnectionString))
             {
-                var dapperParams = new System.Dynamic.ExpandoObject() as IDictionary<string, object>;
+                var dapperParams = new Dictionary<string, object>();
                 dapperParams.Add("c_smallint", args.CSmallint);
                 dapperParams.Add("c_boolean", args.CBoolean);
                 dapperParams.Add("c_integer", args.CInteger);
@@ -339,7 +339,7 @@ namespace NpgsqlDapperLegacyExampleGen
         {
             using (var connection = new NpgsqlConnection(ConnectionString))
             {
-                var dapperParams = new System.Dynamic.ExpandoObject() as IDictionary<string, object>;
+                var dapperParams = new Dictionary<string, object>();
                 dapperParams.Add("id", args.Id);
                 var result = await connection.QueryFirstOrDefaultAsync<GetNodePostgresTypeRow>(GetNodePostgresTypeSql, dapperParams);
                 return result;
