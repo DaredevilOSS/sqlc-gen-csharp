@@ -29,12 +29,12 @@ public class OneDeclareGen(DbDriver dbDriver)
 
         string GetAsDapper()
         {
-            var sqlArgs = CommonGen.GetParameterListForDapper(query.Params);
+            var dapperParamsSection = CommonGen.GetParameterListForDapper(query.Params);
             var returnType = dbDriver.AddNullableSuffix(returnInterface, false);
             return $$"""
                         using ({{establishConnection}})
                         {
-                            {{sqlArgs}}
+                            {{dapperParamsSection}}
                             var result = await connection.QueryFirstOrDefaultAsync<{{returnType}}>({{queryTextConstant}}, {{Variable.DapperParams.AsVarName()}});
                             return result;
                         }

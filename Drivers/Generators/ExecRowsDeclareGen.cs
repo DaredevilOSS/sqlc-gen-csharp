@@ -28,11 +28,11 @@ public class ExecRowsDeclareGen(DbDriver dbDriver)
 
         string GetAsDapper()
         {
-            var sqlArgs = CommonGen.GetParameterListForDapper(query.Params);
+            var dapperParamsSection = CommonGen.GetParameterListForDapper(query.Params);
             return $$"""
                         using ({{establishConnection}})
                         {
-                            {{sqlArgs}}
+                            {{dapperParamsSection}}
                             return await connection.ExecuteAsync({{queryTextConstant}}, {{Variable.DapperParams.AsVarName()}});
                         }
                      """;

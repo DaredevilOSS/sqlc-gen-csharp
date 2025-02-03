@@ -30,13 +30,13 @@ public class ManyDeclareGen(DbDriver dbDriver)
         string GetAsDapper()
         {
             var sqlcSliceSection = CommonGen.GetSqlTransformations(query, queryTextConstant);
-            var sqlArgs = CommonGen.GetParameterListForDapper(query.Params);
+            var dapperParamsSection = CommonGen.GetParameterListForDapper(query.Params);
             var returnType = dbDriver.AddNullableSuffix(returnInterface, true);
             var sqlQuery = sqlcSliceSection != string.Empty ? Variable.TransformedSql.AsVarName() : queryTextConstant;
             return $$"""
                         using ({{establishConnection}})
                         {{{sqlcSliceSection}}
-                            {{sqlArgs}}
+                            {{dapperParamsSection}}
                             var results = await connection.QueryAsync<{{returnType}}>({{sqlQuery}}, {{Variable.DapperParams.AsVarName()}});
                             return results.AsList();
                         }

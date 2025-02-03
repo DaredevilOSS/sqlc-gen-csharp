@@ -21,7 +21,7 @@ public class CommonGen(DbDriver dbDriver)
 
     public static string GetParameterListForDapper(IList<Parameter> parameters)
     {
-        var sqlParamsCommands = new List<string>
+        var dapperParamsCommands = new List<string>
         {
             $"var {Variable.DapperParams.AsVarName()} = new System.Dynamic.ExpandoObject() as IDictionary<string, object>;"
         };
@@ -30,15 +30,15 @@ public class CommonGen(DbDriver dbDriver)
             var param = p.Column.Name.ToPascalCase();
             if (p.Column.IsSqlcSlice)
             {
-                sqlParamsCommands.Add($$"""
+                dapperParamsCommands.Add($$"""
                          for (int i = 0; i < {{Variable.Args.AsVarName()}}.{{param}}.Length; i++)
                             {{Variable.DapperParams.AsVarName()}}.Add($"@{{param}}Arg{i}", {{Variable.Args.AsVarName()}}.{{param}}[i]);
                          """);
                 continue;
             }
-            sqlParamsCommands.Add($"{Variable.DapperParams.AsVarName()}.Add(\"{p.Column.Name}\", {Variable.Args.AsVarName()}.{param});");
+            dapperParamsCommands.Add($"{Variable.DapperParams.AsVarName()}.Add(\"{p.Column.Name}\", {Variable.Args.AsVarName()}.{param});");
         }
-        return sqlParamsCommands.JoinByNewLine();
+        return dapperParamsCommands.JoinByNewLine();
     }
 
     public static string InitDataReader()

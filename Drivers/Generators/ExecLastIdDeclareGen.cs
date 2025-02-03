@@ -30,11 +30,11 @@ public class ExecLastIdDeclareGen(DbDriver dbDriver)
 
         string GetAsDapper()
         {
-            var sqlArgs = CommonGen.GetParameterListForDapper(query.Params);
+            var dapperParamsSection = CommonGen.GetParameterListForDapper(query.Params);
             return $$"""
                      using ({{establishConnection}})
                      {
-                        {{sqlArgs}}
+                        {{dapperParamsSection}}
                         return await connection.QuerySingleAsync<{{dbDriver.GetIdColumnType()}}>({{queryTextConstant}}, {{Variable.DapperParams.AsVarName()}});
                      }
                      """;
