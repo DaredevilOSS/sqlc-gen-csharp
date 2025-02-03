@@ -97,7 +97,7 @@ public class CommonGen(DbDriver dbDriver)
 
     public string GetSqlSliceSection(Query query, string queryTextConstant)
     {
-        if (query.Params.Any(p => p.Column.IsSqlcSlice)) return string.Empty;
+        if (!query.Params.Any(p => p.Column.IsSqlcSlice)) return string.Empty;
         var sqlcSliceCommands = new List<string>();
         var initVariable = $"var {Variable.TransformSql.AsVarName()} = {queryTextConstant};";
         sqlcSliceCommands.Add(initVariable);

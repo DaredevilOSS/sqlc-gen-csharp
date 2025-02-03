@@ -40,7 +40,7 @@ public class ExecDeclareGen(DbDriver dbDriver)
         {
             var commandParameters = CommonGen.GetCommandParameters(query.Params);
             var sqlcSliceSection = CommonGen.GetSqlSliceSection(query, queryTextConstant);
-            var createSqlCommand = dbDriver.CreateSqlCommand(sqlcSliceSection!=string.Empty ? Variable.TransformSql.AsVarName() : queryTextConstant);
+            var createSqlCommand = dbDriver.CreateSqlCommand(sqlcSliceSection != string.Empty ? Variable.TransformSql.AsVarName() : queryTextConstant);
             var executeScalar = $"await {Variable.Command.AsVarName()}.ExecuteScalarAsync();";
             return $$"""
                      using ({{establishConnection}})
