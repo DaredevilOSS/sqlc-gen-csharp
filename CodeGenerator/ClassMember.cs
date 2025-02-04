@@ -12,14 +12,14 @@ public enum ClassMember
 
 public static class ClassMemberTypeExtensions
 {
-    public static string Name(this ClassMember me)
+    public static string Name(this ClassMember me, string name)
     {
         return me switch
         {
-            ClassMember.Sql => "Sql",
-            ClassMember.Row => "Row",
-            ClassMember.Args => "Args",
-            ClassMember.Model => string.Empty,
+            ClassMember.Sql => $"{name}Sql",
+            ClassMember.Row => $"{name}Row",
+            ClassMember.Args => $"{name}Args",
+            ClassMember.Model => name.ToModelName(),
             _ => throw new ArgumentOutOfRangeException(nameof(me), me, null)
         };
     }

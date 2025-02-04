@@ -12,41 +12,43 @@ public class ExecLastIdDeclareGen(DbDriver dbDriver)
     {
         var parametersStr = CommonGen.GetMethodParameterList(argInterface, query.Params);
         return ParseMemberDeclaration($$"""
-                                        public async Task<{{dbDriver.GetIdColumnType()}}> {{query.Name}}({{parametersStr}})
-                                        {
-                                            {{GetMethodBody(queryTextConstant, query)}}
-                                        }
-                                        """)!;
+            public async Task<{{dbDriver.GetIdColumnType()}}> {{query.Name}}({{parametersStr}})
+            {
+                {{GetMethodBody(queryTextConstant, query)}}
+            }
+            """)!;
     }
 
     private string GetMethodBody(string queryTextConstant, Query query)
     {
         var (establishConnection, connectionOpen) = dbDriver.EstablishConnection(query);
-        var sqlTextTrasformation = CommonGen.GetSqlTransformations(query, queryTextConstant);
+        var sqlTextTransform = CommonGen.GetSqlTransformations(query, queryTextConstant);
         connectionOpen = connectionOpen.AppendSemicolonUnlessEmpty();
         return dbDriver.Options.UseDapper ? GetAsDapper() : GetAsDriver();
 
         string GetAsDapper()
         {
-            var dapperParamsSection = CommonGen.GetParameterListForDapper(query.Params);
-            var dapperArgs = dapperParamsSection != string.Empty ? $", {Variable.DapperParams.AsVarName()}" : string.Empty;
+            var dapperParamsSection = CommonGen.ConstructDapperParamsDict(query.Params);
+            var dapperArgs = dapperParamsSection != string.Empty
+                ? $", {Variable.QueryParams.AsVarName()}"
+                : string.Empty;
             return $$"""
                      using ({{establishConnection}})
-                     {{{sqlTextTrasformation}}{{dapperParamsSection}}
-                        return await connection.QuerySingleAsync<{{dbDriver.GetIdColumnType()}}>({{queryTextConstant}}{{dapperArgs}});
+                     {{{sqlTextTransform}}{{dapperParamsSection}}
+                        return await {{Variable.Connection.AsVarName()}}.QuerySingleAsync<{{dbDriver.GetIdColumnType()}}>({{queryTextConstant}}{{dapperArgs}});
                      }
                      """;
         }
 
         string GetAsDriver()
         {
-            var createSqlCommand = dbDriver.CreateSqlCommand(sqlTextTrasformation != string.Empty ? Variable.TransformedSql.AsVarName() : queryTextConstant);
-            var commandParameters = CommonGen.GetCommandParameters(query.Params).JoinByNewLine();
+            var createSqlCommand = dbDriver.CreateSqlCommand(sqlTextTransform != string.Empty ? Variable.SqlText.AsVarName() : queryTextConstant);
+            var commandParameters = CommonGen.AddParametersToCommand(query.Params);
             var returnLastId = ((IExecLastId)dbDriver).GetLastIdStatement().JoinByNewLine();
             return $$"""
                      using ({{establishConnection}})
                      {
-                         {{connectionOpen}}{{sqlTextTrasformation}}
+                         {{connectionOpen}}{{sqlTextTransform}}
                          using ({{createSqlCommand}})
                          {
                             {{commandParameters}}

@@ -13,6 +13,8 @@ public abstract class DbDriver(Options options, Dictionary<string, Table> tables
 {
     public Options Options { get; } = options;
 
+    public Dictionary<string, Table> Tables { get; } = tables;
+
     private HashSet<string> NullableTypesInAllRuntimes { get; } = ["long", "double", "int", "float", "bool", "DateTime"];
 
     protected abstract List<ColumnMapping> ColumnMappings { get; }
@@ -38,8 +40,7 @@ public abstract class DbDriver(Options options, Dictionary<string, Table> tables
         return Options.DotnetFramework.LatestDotnetSupported() ? $"{csharpType}?" : csharpType;
     }
 
-    // TODO rename to GetCsharpFieldType
-    public string GetColumnType(Column column)
+    public string GetCsharpType(Column column)
     {
         if (column.EmbedTable != null)
             return column.EmbedTable.Name.ToModelName();
@@ -60,7 +61,7 @@ public abstract class DbDriver(Options options, Dictionary<string, Table> tables
         }
     }
 
-    private string GetColumnReader(Column column, int ordinal)
+    public string GetColumnReader(Column column, int ordinal)
     {
         var columnType = column.Type.Name.ToLower();
         foreach (var columnMapping in ColumnMappings
@@ -81,8 +82,7 @@ public abstract class DbDriver(Options options, Dictionary<string, Table> tables
             if (columnMapping.DbTypes.TryGetValue(columnType, out var dbTypeOverride))
                 return dbTypeOverride;
         }
-
-        throw new NotSupportedException($"Unsupported column type: {column.Type.Name}");
+        throw new NotSupportedException($"Column {column.Name} has unsupported column type: {column.Type.Name}");
     }
 
     public abstract string TransformQueryText(Query query);
@@ -91,74 +91,7 @@ public abstract class DbDriver(Options options, Dictionary<string, Table> tables
 
     public abstract string CreateSqlCommand(string sqlTextConstant);
 
-    public string InstantiateDataclass(Column[] columns, string returnInterface)
-    {
-        var columnsInit = new List<string>();
-        var actualOrdinal = 0;
-
-        foreach (var column in columns)
-        {
-            if (column.EmbedTable == null)
-            {
-                columnsInit.Add(GetAsSimpleAssignment(column, actualOrdinal));
-                actualOrdinal++;
-                continue;
-            }
-
-            (actualOrdinal, var embeddedColumnInit) = GetAsEmbeddedTableAssignment(column, actualOrdinal);
-            columnsInit.Add(embeddedColumnInit);
-        }
-
-        return $$"""
-                 new {{returnInterface}}
-                 {
-                     {{string.Join(",\n", columnsInit)}}
-                 }
-                 """;
-
-        (int, string) GetAsEmbeddedTableAssignment(Column tableColumn, int ordinal)
-        {
-            var tableName = tableColumn.EmbedTable.Name.ToModelName();
-            var tableColumns = tables[tableColumn.EmbedTable.Name].Columns;
-            var tableColumnsInit = tableColumns
-                .Select((c, o) => GetAsSimpleAssignment(c, o + ordinal));
-
-            return (
-                ordinal + tableColumns.Count,
-                $$"""
-                  {{tableName}} = new {{tableName}}
-                  {
-                      {{string.Join(",\n", tableColumnsInit)}}
-                  }
-                  """
-                );
-        }
-
-        string GetAsSimpleAssignment(Column column, int ordinal)
-        {
-            var readExpression = column.NotNull
-                ? GetColumnReader(column, ordinal)
-                : $"{CheckNullExpression(ordinal)} ? {GetNullExpression(column)} : {GetColumnReader(column, ordinal)}";
-            return $"{column.Name.ToPascalCase()} = {readExpression}";
-        }
-
-        string GetNullExpression(Column column)
-        {
-            var csharpType = GetColumnType(column);
-            if (csharpType == "string")
-                return "string.Empty";
-            return !Options.DotnetFramework.LatestDotnetSupported() && IsTypeNullableForAllRuntimes(csharpType)
-                ? $"({csharpType}) null"
-                : "null";
-        }
-
-        string CheckNullExpression(int ordinal)
-        {
-            return $"{Variable.Reader.AsVarName()}.IsDBNull({ordinal})";
-        }
-    }
-
-    private bool IsTypeNullableForAllRuntimes(string csharpType)
+    public bool IsTypeNullableForAllRuntimes(string csharpType)
     {
         return NullableTypesInAllRuntimes.Contains(csharpType.Replace("?", ""));
     }
@@ -190,7 +123,7 @@ public abstract class DbDriver(Options options, Dictionary<string, Table> tables
     public Column GetColumnFromParam(Parameter queryParam)
     {
         if (string.IsNullOrEmpty(queryParam.Column.Name))
-            queryParam.Column.Name = $"{GetColumnType(queryParam.Column).Replace("[]", "Arr")}_{queryParam.Number}";
+            queryParam.Column.Name = $"{GetCsharpType(queryParam.Column).Replace("[]", "Arr")}_{queryParam.Number}";
         return queryParam.Column;
     }
 }

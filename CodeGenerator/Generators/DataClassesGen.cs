@@ -12,7 +12,7 @@ internal class DataClassesGen(DbDriver dbDriver)
 {
     public MemberDeclarationSyntax Generate(string name, ClassMember classMember, IList<Column> columns, Options options)
     {
-        var className = classMember == ClassMember.Model ? $"{name.ToModelName()}" : $"{name}{classMember.Name()}";
+        var className = classMember.Name(name);
         if (options.DotnetFramework.LatestDotnetSupported() && !options.UseDapper)
             return GenerateAsRecord(className, columns);
         return GenerateAsCLass(className, columns);
@@ -31,16 +31,10 @@ internal class DataClassesGen(DbDriver dbDriver)
 
         ParameterListSyntax ColumnsToParameterList()
         {
+            var seenEmbed = new Dictionary<string, int>();
             return ParameterList(SeparatedList(columns
-                .Select(column =>
-                    {
-                        var fieldName = column.EmbedTable == null
-                            ? column.Name.ToPascalCase()
-                            : column.Name.ToModelName();
-                        return Parameter(Identifier(fieldName))
-                            .WithType(ParseTypeName(dbDriver.GetColumnType(column)));
-                    }
-                )));
+                .Select(column => Parameter(Identifier(GetFieldName(column, seenEmbed)))
+                    .WithType(ParseTypeName(dbDriver.GetCsharpType(column))))));
         }
     }
 
@@ -53,17 +47,24 @@ internal class DataClassesGen(DbDriver dbDriver)
 
         MemberDeclarationSyntax[] ColumnsToProperties()
         {
-            return columns.Select(column =>
-                {
-                    var propertyType = dbDriver.GetColumnType(column);
-                    var propertyName = column.EmbedTable == null
-                        ? column.Name.ToPascalCase()
-                        : column.Name.ToModelName();
-                    return ParseMemberDeclaration(
-                        $"public {propertyType} {propertyName} {{ get; set; }}");
-                })
+            var seenEmbed = new Dictionary<string, int>();
+            return columns.Select(column => ParseMemberDeclaration(
+                    $"public {dbDriver.GetCsharpType(column)} {GetFieldName(column, seenEmbed)} {{ get; set; }}"))
                 .Cast<MemberDeclarationSyntax>()
                 .ToArray();
         }
+    }
+
+    private static string GetFieldName(Column column, Dictionary<string, int> seenEmbed)
+    {
+        if (column.EmbedTable is null)
+            return column.Name.ToPascalCase();
+
+        var fieldName = column.Name.ToModelName();
+        fieldName = seenEmbed.TryGetValue(fieldName, out var value)
+            ? $"{fieldName}{value}" : fieldName;
+        seenEmbed.TryAdd(fieldName, 1);
+        seenEmbed[fieldName]++;
+        return fieldName;
     }
 }

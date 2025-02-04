@@ -102,16 +102,16 @@ internal class QueriesGen(DbDriver dbDriver, Options options, string namespaceNa
     private MemberDeclarationSyntax GetQueryTextConstant(Query query)
     {
         return ParseMemberDeclaration(
-                $"private const string {query.Name}{ClassMember.Sql.Name()} = \"{dbDriver.TransformQueryText(query)}\";")
+                $"private const string {ClassMember.Sql.Name(query.Name)} = \"{dbDriver.TransformQueryText(query)}\";")
             !
             .AppendNewLine();
     }
 
     private MemberDeclarationSyntax AddMethodDeclaration(Query query)
     {
-        var queryTextConstant = GetInterfaceName(ClassMember.Sql);
-        var argInterface = GetInterfaceName(ClassMember.Args);
-        var returnInterface = GetInterfaceName(ClassMember.Row);
+        var queryTextConstant = ClassMember.Sql.Name(query.Name);
+        var argInterface = ClassMember.Args.Name(query.Name);
+        var returnInterface = ClassMember.Row.Name(query.Name);
 
         return query.Cmd switch
         {
@@ -121,12 +121,7 @@ internal class QueriesGen(DbDriver dbDriver, Options options, string namespaceNa
             ":execrows" => ((IExecRows)dbDriver).ExecRowsDeclare(queryTextConstant, argInterface, query),
             ":execlastid" => ((IExecLastId)dbDriver).ExecLastIdDeclare(queryTextConstant, argInterface, query),
             ":copyfrom" => ((ICopyFrom)dbDriver).CopyFromDeclare(queryTextConstant, argInterface, query),
-            _ => throw new NotImplementedException($"{query.Cmd} is not implemented")
+            _ => throw new NotSupportedException($"{query.Cmd} is not supported")
         };
-
-        string GetInterfaceName(ClassMember classMemberType)
-        {
-            return $"{query.Name}{classMemberType.Name()}";
-        }
     }
 }

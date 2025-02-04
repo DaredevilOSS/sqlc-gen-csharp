@@ -59,7 +59,9 @@ public partial class MySqlConnectorTester
         var insertedId2 = await QuerySql.CreateAuthorReturnId(args);
         await QuerySql.CreateAuthorReturnId(args);
 
-        var actual = await QuerySql.SelectAuthorsWithSlice(new QuerySql.SelectAuthorsWithSliceArgs { Ids = [insertedId1, insertedId2] });
+        var actual =
+            await QuerySql.SelectAuthorsWithSlice(
+                new QuerySql.SelectAuthorsWithSliceArgs { Ids = [insertedId1, insertedId2] });
 
         ClassicAssert.AreEqual(2, actual.Count);
     }

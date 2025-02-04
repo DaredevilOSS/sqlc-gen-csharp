@@ -40,9 +40,9 @@ public class QuerySql
     {
         using (var connection = new MySqlConnection(ConnectionString))
         {
-            var dapperParams = new Dictionary<string, object>();
-            dapperParams.Add("name", args.Name);
-            var result = await connection.QueryFirstOrDefaultAsync<GetAuthorRow?>(GetAuthorSql, dapperParams);
+            var queryParams = new Dictionary<string, object>();
+            queryParams.Add("name", args.Name);
+            var result = await connection.QueryFirstOrDefaultAsync<GetAuthorRow?>(GetAuthorSql, queryParams);
             return result;
         }
     }
@@ -59,8 +59,8 @@ public class QuerySql
     {
         using (var connection = new MySqlConnection(ConnectionString))
         {
-            var results = await connection.QueryAsync<ListAuthorsRow>(ListAuthorsSql);
-            return results.AsList();
+            var result = await connection.QueryAsync<ListAuthorsRow>(ListAuthorsSql);
+            return result.AsList();
         }
     }
 
@@ -74,10 +74,10 @@ public class QuerySql
     {
         using (var connection = new MySqlConnection(ConnectionString))
         {
-            var dapperParams = new Dictionary<string, object>();
-            dapperParams.Add("name", args.Name);
-            dapperParams.Add("bio", args.Bio);
-            await connection.ExecuteAsync(CreateAuthorSql, dapperParams);
+            var queryParams = new Dictionary<string, object>();
+            queryParams.Add("name", args.Name);
+            queryParams.Add("bio", args.Bio);
+            await connection.ExecuteAsync(CreateAuthorSql, queryParams);
         }
     }
 
@@ -91,10 +91,10 @@ public class QuerySql
     {
         using (var connection = new MySqlConnection(ConnectionString))
         {
-            var dapperParams = new Dictionary<string, object>();
-            dapperParams.Add("name", args.Name);
-            dapperParams.Add("bio", args.Bio);
-            return await connection.QuerySingleAsync<long>(CreateAuthorReturnIdSql, dapperParams);
+            var queryParams = new Dictionary<string, object>();
+            queryParams.Add("name", args.Name);
+            queryParams.Add("bio", args.Bio);
+            return await connection.QuerySingleAsync<long>(CreateAuthorReturnIdSql, queryParams);
         }
     }
 
@@ -114,9 +114,9 @@ public class QuerySql
     {
         using (var connection = new MySqlConnection(ConnectionString))
         {
-            var dapperParams = new Dictionary<string, object>();
-            dapperParams.Add("id", args.Id);
-            var result = await connection.QueryFirstOrDefaultAsync<GetAuthorByIdRow?>(GetAuthorByIdSql, dapperParams);
+            var queryParams = new Dictionary<string, object>();
+            queryParams.Add("id", args.Id);
+            var result = await connection.QueryFirstOrDefaultAsync<GetAuthorByIdRow?>(GetAuthorByIdSql, queryParams);
             return result;
         }
     }
@@ -130,9 +130,9 @@ public class QuerySql
     {
         using (var connection = new MySqlConnection(ConnectionString))
         {
-            var dapperParams = new Dictionary<string, object>();
-            dapperParams.Add("name", args.Name);
-            await connection.ExecuteAsync(DeleteAuthorSql, dapperParams);
+            var queryParams = new Dictionary<string, object>();
+            queryParams.Add("name", args.Name);
+            await connection.ExecuteAsync(DeleteAuthorSql, queryParams);
         }
     }
 
@@ -163,9 +163,9 @@ public class QuerySql
     {
         using (var connection = new MySqlConnection(ConnectionString))
         {
-            var dapperParams = new Dictionary<string, object>();
-            dapperParams.Add("bio", args.Bio);
-            return await connection.ExecuteAsync(UpdateAuthorsSql, dapperParams);
+            var queryParams = new Dictionary<string, object>();
+            queryParams.Add("bio", args.Bio);
+            return await connection.ExecuteAsync(UpdateAuthorsSql, queryParams);
         }
     }
 
@@ -185,13 +185,13 @@ public class QuerySql
     {
         using (var connection = new MySqlConnection(ConnectionString))
         {
-            var transformedSql = SelectAuthorsWithSliceSql;
-            transformedSql = Utils.GetTransformedString(transformedSql, args.Ids, "Ids", "ids");
-            var dapperParams = new Dictionary<string, object>();
+            var sqlText = SelectAuthorsWithSliceSql;
+            sqlText = Utils.GetTransformedString(sqlText, args.Ids, "Ids", "ids");
+            var queryParams = new Dictionary<string, object>();
             for (int i = 0; i < args.Ids.Length; i++)
-                dapperParams.Add($"@IdsArg{i}", args.Ids[i]);
-            var results = await connection.QueryAsync<SelectAuthorsWithSliceRow>(transformedSql, dapperParams);
-            return results.AsList();
+                queryParams.Add($"@IdsArg{i}", args.Ids[i]);
+            var result = await connection.QueryAsync<SelectAuthorsWithSliceRow>(sqlText, queryParams);
+            return result.AsList();
         }
     }
 
@@ -212,16 +212,16 @@ public class QuerySql
     {
         using (var connection = new MySqlConnection(ConnectionString))
         {
-            var transformedSql = SelectAuthorsWithTwoSlicesSql;
-            transformedSql = Utils.GetTransformedString(transformedSql, args.Ids, "Ids", "ids");
-            transformedSql = Utils.GetTransformedString(transformedSql, args.Names, "Names", "names");
-            var dapperParams = new Dictionary<string, object>();
+            var sqlText = SelectAuthorsWithTwoSlicesSql;
+            sqlText = Utils.GetTransformedString(sqlText, args.Ids, "Ids", "ids");
+            sqlText = Utils.GetTransformedString(sqlText, args.Names, "Names", "names");
+            var queryParams = new Dictionary<string, object>();
             for (int i = 0; i < args.Ids.Length; i++)
-                dapperParams.Add($"@IdsArg{i}", args.Ids[i]);
+                queryParams.Add($"@IdsArg{i}", args.Ids[i]);
             for (int i = 0; i < args.Names.Length; i++)
-                dapperParams.Add($"@NamesArg{i}", args.Names[i]);
-            var results = await connection.QueryAsync<SelectAuthorsWithTwoSlicesRow>(transformedSql, dapperParams);
-            return results.AsList();
+                queryParams.Add($"@NamesArg{i}", args.Names[i]);
+            var result = await connection.QueryAsync<SelectAuthorsWithTwoSlicesRow>(sqlText, queryParams);
+            return result.AsList();
         }
     }
 
@@ -235,14 +235,14 @@ public class QuerySql
     {
         using (var connection = new MySqlConnection(ConnectionString))
         {
-            var dapperParams = new Dictionary<string, object>();
-            dapperParams.Add("name", args.Name);
-            dapperParams.Add("author_id", args.AuthorId);
-            await connection.ExecuteAsync(CreateBookSql, dapperParams);
+            var queryParams = new Dictionary<string, object>();
+            queryParams.Add("name", args.Name);
+            queryParams.Add("author_id", args.AuthorId);
+            await connection.ExecuteAsync(CreateBookSql, queryParams);
         }
     }
 
-    private const string ListAllAuthorsBooksSql = "SELECT authors.id, authors.name, authors.bio, authors.created, books.id, books.name, books.author_id, books.description FROM authors JOIN books ON authors.id = books.author_id ORDER BY authors.name; SELECT LAST_INSERT_ID()";
+    private const string ListAllAuthorsBooksSql = "SELECT authors.id, authors.name, authors.bio, authors.created, books.id, books.name, books.author_id, books.description  FROM  authors  JOIN  books  ON  authors . id  =  books . author_id  ORDER  BY  authors . name ; SELECT  LAST_INSERT_ID ( ) "; 
     public class ListAllAuthorsBooksRow
     {
         public Author Author { get; set; }
@@ -252,8 +252,23 @@ public class QuerySql
     {
         using (var connection = new MySqlConnection(ConnectionString))
         {
-            var results = await connection.QueryAsync<ListAllAuthorsBooksRow>(ListAllAuthorsBooksSql);
-            return results.AsList();
+            var result = await connection.QueryAsync<ListAllAuthorsBooksRow>(ListAllAuthorsBooksSql);
+            return result.AsList();
+        }
+    }
+
+    private const string GetDuplicateAuthorsSql = "SELECT authors1.id, authors1.name, authors1.bio, authors1.created, authors2.id, authors2.name, authors2.bio, authors2.created FROM  authors  authors1  JOIN  authors  authors2  ON  authors1 . name  =  authors2 . name  WHERE  authors1 . id > authors2 . id ; SELECT  LAST_INSERT_ID ( ) "; 
+    public class GetDuplicateAuthorsRow
+    {
+        public Author Author { get; set; }
+        public Author Author2 { get; set; }
+    };
+    public async Task<List<GetDuplicateAuthorsRow>> GetDuplicateAuthors()
+    {
+        using (var connection = new MySqlConnection(ConnectionString))
+        {
+            var result = await connection.QueryAsync<GetDuplicateAuthorsRow>(GetDuplicateAuthorsSql);
+            return result.AsList();
         }
     }
 

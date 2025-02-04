@@ -202,9 +202,9 @@ public class QuerySql
         using (var connection = new MySqlConnection(ConnectionString))
         {
             connection.Open();
-            var transformedSql = SelectAuthorsWithSliceSql;
-            transformedSql = Utils.GetTransformedString(transformedSql, args.Ids, "Ids", "ids");
-            using (var command = new MySqlCommand(transformedSql, connection))
+            var sqlText = SelectAuthorsWithSliceSql;
+            sqlText = Utils.GetTransformedString(sqlText, args.Ids, "Ids", "ids");
+            using (var command = new MySqlCommand(sqlText, connection))
             {
                 for (int i = 0; i < args.Ids.Length; i++)
                     command.Parameters.AddWithValue($"@IdsArg{i}", args.Ids[i]);
@@ -230,10 +230,10 @@ public class QuerySql
         using (var connection = new MySqlConnection(ConnectionString))
         {
             connection.Open();
-            var transformedSql = SelectAuthorsWithTwoSlicesSql;
-            transformedSql = Utils.GetTransformedString(transformedSql, args.Ids, "Ids", "ids");
-            transformedSql = Utils.GetTransformedString(transformedSql, args.Names, "Names", "names");
-            using (var command = new MySqlCommand(transformedSql, connection))
+            var sqlText = SelectAuthorsWithTwoSlicesSql;
+            sqlText = Utils.GetTransformedString(sqlText, args.Ids, "Ids", "ids");
+            sqlText = Utils.GetTransformedString(sqlText, args.Names, "Names", "names");
+            using (var command = new MySqlCommand(sqlText, connection))
             {
                 for (int i = 0; i < args.Ids.Length; i++)
                     command.Parameters.AddWithValue($"@IdsArg{i}", args.Ids[i]);
@@ -269,7 +269,7 @@ public class QuerySql
         }
     }
 
-    private const string ListAllAuthorsBooksSql = "SELECT authors.id, authors.name, authors.bio, authors.created, books.id, books.name, books.author_id, books.description FROM authors JOIN books ON authors.id = books.author_id ORDER BY authors.name";
+    private const string ListAllAuthorsBooksSql = "SELECT authors.id, authors.name, authors.bio, authors.created, books.id, books.name, books.author_id, books.description  FROM  authors  JOIN  books  ON  authors . id  =  books . author_id  ORDER  BY  authors . name  ";  
     public readonly record struct ListAllAuthorsBooksRow(Author Author, Book Book);
     public async Task<List<ListAllAuthorsBooksRow>> ListAllAuthorsBooks()
     {
@@ -284,6 +284,29 @@ public class QuerySql
                     while (await reader.ReadAsync())
                     {
                         result.Add(new ListAllAuthorsBooksRow { Author = new Author { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2), Created = reader.GetDateTime(3) }, Book = new Book { Id = reader.GetInt64(4), Name = reader.GetString(5), AuthorId = reader.GetInt64(6), Description = reader.IsDBNull(7) ? null : reader.GetString(7) } });
+                    }
+
+                    return result;
+                }
+            }
+        }
+    }
+
+    private const string GetDuplicateAuthorsSql = "SELECT authors1.id, authors1.name, authors1.bio, authors1.created, authors2.id, authors2.name, authors2.bio, authors2.created FROM  authors  authors1  JOIN  authors  authors2  ON  authors1 . name  =  authors2 . name  WHERE  authors1 . id > authors2 . id  ";  
+    public readonly record struct GetDuplicateAuthorsRow(Author Author, Author Author2);
+    public async Task<List<GetDuplicateAuthorsRow>> GetDuplicateAuthors()
+    {
+        using (var connection = new MySqlConnection(ConnectionString))
+        {
+            connection.Open();
+            using (var command = new MySqlCommand(GetDuplicateAuthorsSql, connection))
+            {
+                using (var reader = await command.ExecuteReaderAsync())
+                {
+                    var result = new List<GetDuplicateAuthorsRow>();
+                    while (await reader.ReadAsync())
+                    {
+                        result.Add(new GetDuplicateAuthorsRow { Author = new Author { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2), Created = reader.GetDateTime(3) }, Author2 = new Author { Id = reader.GetInt64(4), Name = reader.GetString(5), Bio = reader.IsDBNull(6) ? null : reader.GetString(6), Created = reader.GetDateTime(7) } });
                     }
 
                     return result;
