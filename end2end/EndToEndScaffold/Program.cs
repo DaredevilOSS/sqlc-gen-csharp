@@ -1,5 +1,4 @@
 using Microsoft.CodeAnalysis;
-using SqlcGenCsharp;
 using System;
 using System.Linq;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;

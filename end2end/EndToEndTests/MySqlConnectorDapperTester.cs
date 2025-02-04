@@ -15,7 +15,8 @@ public partial class MySqlConnectorDapperTester
     [TearDown]
     public async Task EmptyTestsTable()
     {
-        await QuerySql.TruncateAuthors();
+        await QuerySql.TruncateBooks();
+        await QuerySql.DeleteAllAuthors();
     }
 
     [Test]

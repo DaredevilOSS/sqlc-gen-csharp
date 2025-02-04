@@ -5,11 +5,19 @@ CREATE TABLE authors (
   created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE TABLE books (
+  id            BIGINT      PRIMARY KEY AUTO_INCREMENT,
+  name          TEXT        NOT NULL,
+  author_id     BIGINT      NOT NULL,
+  description   TEXT,
+  FOREIGN KEY (author_id) REFERENCES authors (id) ON DELETE CASCADE
+);
+
 CREATE TABLE copy_tests (
-    c_int       INTEGER         NOT NULL,
-    c_varchar   VARCHAR(100)    NOT NULL,
-    c_date      DATE            NOT NULL,
-    c_timestamp TIMESTAMP       NOT NULL
+  c_int       INTEGER         NOT NULL,
+  c_varchar   VARCHAR(100)    NOT NULL,
+  c_date      DATE            NOT NULL,
+  c_timestamp TIMESTAMP       NOT NULL
 );
 
 CREATE TABLE node_mysql_types (

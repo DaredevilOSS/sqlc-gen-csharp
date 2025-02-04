@@ -48,7 +48,7 @@ public class OneDeclareGen(DbDriver dbDriver)
             var commandParameters = CommonGen.GetCommandParameters(query.Params);
             var initDataReader = CommonGen.InitDataReader();
             var awaitReaderRow = CommonGen.AwaitReaderRow();
-            var returnDataclass = CommonGen.InstantiateDataclass(query.Columns, returnInterface);
+            var returnDataclass = dbDriver.InstantiateDataclass(query.Columns.ToArray(), returnInterface);
             return $$"""
                      using ({{establishConnection}})
                      {

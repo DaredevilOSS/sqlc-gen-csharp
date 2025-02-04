@@ -1,7 +1,6 @@
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Plugin;
 using SqlcGenCsharp.Drivers.Generators;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -10,8 +9,8 @@ using OneDeclareGen = SqlcGenCsharp.Drivers.Generators.OneDeclareGen;
 
 namespace SqlcGenCsharp.Drivers;
 
-public partial class MySqlConnectorDriver(Options options) : DbDriver(options), IOne, IMany, IExec, IExecRows,
-    IExecLastId, ICopyFrom
+public partial class MySqlConnectorDriver(Options options, Dictionary<string, Table> tables) :
+    DbDriver(options, tables), IOne, IMany, IExec, IExecRows, IExecLastId, ICopyFrom
 {
     protected override List<ColumnMapping> ColumnMappings { get; } =
     [
@@ -83,18 +82,21 @@ public partial class MySqlConnectorDriver(Options options) : DbDriver(options), 
 
     public override string TransformQueryText(Query query)
     {
-        var counter = 0;
         var queryText = Options.UseDapper ? $"{query.Text}; SELECT LAST_INSERT_ID()" : query.Text;
+        var counter = 0;
         return QueryParamRegex().Replace(queryText, _ => "@" + query.Params[counter++].Column.Name);
     }
 
-    public override MemberDeclarationSyntax OneDeclare(string queryTextConstant, string argInterface,
+    [GeneratedRegex(@"\?")]
+    private static partial Regex QueryParamRegex();
+
+    public MemberDeclarationSyntax OneDeclare(string queryTextConstant, string argInterface,
         string returnInterface, Query query)
     {
         return new OneDeclareGen(this).Generate(queryTextConstant, argInterface, returnInterface, query);
     }
 
-    public override MemberDeclarationSyntax ExecDeclare(string queryTextConstant, string argInterface, Query query)
+    public MemberDeclarationSyntax ExecDeclare(string queryTextConstant, string argInterface, Query query)
     {
         return new ExecDeclareGen(this).Generate(queryTextConstant, argInterface, query);
     }
@@ -113,14 +115,11 @@ public partial class MySqlConnectorDriver(Options options) : DbDriver(options), 
         ];
     }
 
-    public override MemberDeclarationSyntax ManyDeclare(string queryTextConstant, string argInterface,
+    public MemberDeclarationSyntax ManyDeclare(string queryTextConstant, string argInterface,
         string returnInterface, Query query)
     {
         return new ManyDeclareGen(this).Generate(queryTextConstant, argInterface, returnInterface, query);
     }
-
-    [GeneratedRegex(@"\?")]
-    private static partial Regex QueryParamRegex();
 
     public MemberDeclarationSyntax ExecRowsDeclare(string queryTextConstant, string argInterface, Query query)
     {

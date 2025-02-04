@@ -47,46 +47,6 @@ public class CommonGen(DbDriver dbDriver)
         return $"var {Variable.Reader.AsVarName()} = await {Variable.Command.AsVarName()}.ExecuteReaderAsync()";
     }
 
-    public string InstantiateDataclass(IEnumerable<Column> columns, string returnInterface)
-    {
-        var columnsInit = columns
-            .Select((column, ordinal) =>
-            {
-                var readExpression = column.NotNull
-                    ? dbDriver.GetColumnReader(column, ordinal)
-                    : GetNullableReadExpression(column, ordinal);
-                return $"{column.Name.ToPascalCase()} = {readExpression}";
-            });
-
-        return $$"""
-                 new {{returnInterface}}
-                 {
-                     {{string.Join(",\n", columnsInit)}}
-                 }
-                 """;
-
-        string GetNullableReadExpression(Column column, int ordinal)
-        {
-            return
-                $"{CheckNullExpression(ordinal)} ? {GetNullExpression(column)} : {dbDriver.GetColumnReader(column, ordinal)}";
-        }
-
-        string CheckNullExpression(int ordinal)
-        {
-            return $"{Variable.Reader.AsVarName()}.IsDBNull({ordinal})";
-        }
-
-        string GetNullExpression(Column column)
-        {
-            var csharpType = dbDriver.GetColumnType(column);
-            if (csharpType == "string")
-                return "string.Empty";
-            return !dbDriver.Options.DotnetFramework.LatestDotnetSupported() && dbDriver.IsTypeNullableForAllRuntimes(csharpType)
-                ? $"({csharpType}) null"
-                : "null";
-        }
-    }
-
     public IList<string> GetCommandParameters(IEnumerable<Parameter> parameters)
     {
         return parameters.Select(p =>
@@ -106,7 +66,7 @@ public class CommonGen(DbDriver dbDriver)
         }).ToList();
     }
 
-    public string GetSqlTransformations(Query query, string queryTextConstant)
+    public static string GetSqlTransformations(Query query, string queryTextConstant)
     {
         if (!query.Params.Any(p => p.Column.IsSqlcSlice)) return string.Empty;
         var sqlcSliceCommands = new List<string>();

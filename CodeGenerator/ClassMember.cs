@@ -6,7 +6,8 @@ public enum ClassMember
 {
     Row,
     Args,
-    Sql
+    Sql,
+    Model
 }
 
 public static class ClassMemberTypeExtensions
@@ -18,6 +19,7 @@ public static class ClassMemberTypeExtensions
             ClassMember.Sql => "Sql",
             ClassMember.Row => "Row",
             ClassMember.Args => "Args",
+            ClassMember.Model => string.Empty,
             _ => throw new ArgumentOutOfRangeException(nameof(me), me, null)
         };
     }

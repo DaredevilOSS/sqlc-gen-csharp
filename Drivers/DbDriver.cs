@@ -4,13 +4,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
-using static System.String;
 
 namespace SqlcGenCsharp.Drivers;
 
 public record ConnectionGenCommands(string EstablishConnection, string ConnectionOpen);
 
-public abstract class DbDriver(Options options)
+public abstract class DbDriver(Options options, Dictionary<string, Table> tables)
 {
     public Options Options { get; } = options;
 
@@ -29,7 +28,6 @@ public abstract class DbDriver(Options options)
 
         if (Options.UseDapper)
             usingDirectives.Add(UsingDirective(ParseName("Dapper")));
-
         return usingDirectives.ToArray();
     }
 
@@ -40,9 +38,13 @@ public abstract class DbDriver(Options options)
         return Options.DotnetFramework.LatestDotnetSupported() ? $"{csharpType}?" : csharpType;
     }
 
+    // TODO rename to GetCsharpFieldType
     public string GetColumnType(Column column)
     {
-        var columnCsharpType = IsNullOrEmpty(column.Type.Name) ? "object" : GetTypeWithoutNullableSuffix();
+        if (column.EmbedTable != null)
+            return column.EmbedTable.Name.ToModelName();
+
+        var columnCsharpType = string.IsNullOrEmpty(column.Type.Name) ? "object" : GetTypeWithoutNullableSuffix();
         return AddNullableSuffix(columnCsharpType, column.NotNull);
 
         string GetTypeWithoutNullableSuffix()
@@ -52,14 +54,13 @@ public abstract class DbDriver(Options options)
                          .Where(columnMapping => columnMapping.DbTypes.ContainsKey(columnType)))
             {
                 if (column.IsArray || column.IsSqlcSlice) return $"{columnMapping.CsharpType}[]";
-
                 return columnMapping.CsharpType;
             }
-            throw new NotSupportedException($"Unsupported column type: {column.Type.Name}");
+            throw new NotSupportedException($"Column {column.Name} has unsupported column type: {column.Type.Name}");
         }
     }
 
-    public string GetColumnReader(Column column, int ordinal)
+    private string GetColumnReader(Column column, int ordinal)
     {
         var columnType = column.Type.Name.ToLower();
         foreach (var columnMapping in ColumnMappings
@@ -69,10 +70,10 @@ public abstract class DbDriver(Options options)
                 return columnMapping.ReaderArrayFn?.Invoke(ordinal) ?? throw new InvalidOperationException("ReaderArrayFn is null");
             return columnMapping.ReaderFn(ordinal);
         }
-        throw new NotSupportedException($"Unsupported column type: {column.Type.Name}");
+        throw new NotSupportedException($"Column {column.Name} has unsupported column type: {column.Type.Name}");
     }
 
-    public string? GetColumnDbTypeOverride(Column column)
+    protected string? GetColumnDbTypeOverride(Column column)
     {
         var columnType = column.Type.Name.ToLower();
         foreach (var columnMapping in ColumnMappings)
@@ -90,20 +91,79 @@ public abstract class DbDriver(Options options)
 
     public abstract string CreateSqlCommand(string sqlTextConstant);
 
-    public abstract MemberDeclarationSyntax OneDeclare(string sqlTextConstant, string argInterface,
-        string returnInterface, Query query);
+    public string InstantiateDataclass(Column[] columns, string returnInterface)
+    {
+        var columnsInit = new List<string>();
+        var actualOrdinal = 0;
 
-    public abstract MemberDeclarationSyntax ManyDeclare(string sqlTextConstant, string argInterface,
-        string returnInterface, Query query);
+        foreach (var column in columns)
+        {
+            if (column.EmbedTable == null)
+            {
+                columnsInit.Add(GetAsSimpleAssignment(column, actualOrdinal));
+                actualOrdinal++;
+                continue;
+            }
 
-    public abstract MemberDeclarationSyntax ExecDeclare(string text, string argInterface, Query query);
+            (actualOrdinal, var embeddedColumnInit) = GetAsEmbeddedTableAssignment(column, actualOrdinal);
+            columnsInit.Add(embeddedColumnInit);
+        }
 
-    public bool IsTypeNullableForAllRuntimes(string csharpType)
+        return $$"""
+                 new {{returnInterface}}
+                 {
+                     {{string.Join(",\n", columnsInit)}}
+                 }
+                 """;
+
+        (int, string) GetAsEmbeddedTableAssignment(Column tableColumn, int ordinal)
+        {
+            var tableName = tableColumn.EmbedTable.Name.ToModelName();
+            var tableColumns = tables[tableColumn.EmbedTable.Name].Columns;
+            var tableColumnsInit = tableColumns
+                .Select((c, o) => GetAsSimpleAssignment(c, o + ordinal));
+
+            return (
+                ordinal + tableColumns.Count,
+                $$"""
+                  {{tableName}} = new {{tableName}}
+                  {
+                      {{string.Join(",\n", tableColumnsInit)}}
+                  }
+                  """
+                );
+        }
+
+        string GetAsSimpleAssignment(Column column, int ordinal)
+        {
+            var readExpression = column.NotNull
+                ? GetColumnReader(column, ordinal)
+                : $"{CheckNullExpression(ordinal)} ? {GetNullExpression(column)} : {GetColumnReader(column, ordinal)}";
+            return $"{column.Name.ToPascalCase()} = {readExpression}";
+        }
+
+        string GetNullExpression(Column column)
+        {
+            var csharpType = GetColumnType(column);
+            if (csharpType == "string")
+                return "string.Empty";
+            return !Options.DotnetFramework.LatestDotnetSupported() && IsTypeNullableForAllRuntimes(csharpType)
+                ? $"({csharpType}) null"
+                : "null";
+        }
+
+        string CheckNullExpression(int ordinal)
+        {
+            return $"{Variable.Reader.AsVarName()}.IsDBNull({ordinal})";
+        }
+    }
+
+    private bool IsTypeNullableForAllRuntimes(string csharpType)
     {
         return NullableTypesInAllRuntimes.Contains(csharpType.Replace("?", ""));
     }
 
-    protected string GetConnectionStringField()
+    protected static string GetConnectionStringField()
     {
         return Variable.ConnectionString.AsPropertyName();
     }
@@ -129,7 +189,7 @@ public abstract class DbDriver(Options options)
 
     public Column GetColumnFromParam(Parameter queryParam)
     {
-        if (IsNullOrEmpty(queryParam.Column.Name))
+        if (string.IsNullOrEmpty(queryParam.Column.Name))
             queryParam.Column.Name = $"{GetColumnType(queryParam.Column).Replace("[]", "Arr")}_{queryParam.Number}";
         return queryParam.Column;
     }

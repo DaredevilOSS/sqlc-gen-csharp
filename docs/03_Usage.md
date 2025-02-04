@@ -48,7 +48,7 @@ More info can be found in [here](https://docs.sqlc.dev/en/stable/reference/query
 | sqlc.arg    | ✅          | ✅    | ✅     |
 | sqlc.narg   | ❌          | ❌    | ❌     |
 | sqlc.slice  | 🚫          | ✅    | ❌     |
-| sqlc.embed  | ❌          | ❌    | ❌     |
+| sqlc.embed  | ✅          | ✅    | ✅     |
 
 - ✅ means the feature is fully supported.
 - 🚫 means the database does not support the feature.

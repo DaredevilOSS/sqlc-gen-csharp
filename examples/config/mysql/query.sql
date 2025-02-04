@@ -16,8 +16,11 @@ SELECT * FROM authors WHERE id = ? LIMIT 1;
 -- name: DeleteAuthor :exec
 DELETE FROM authors WHERE name = ?;
 
--- name: TruncateAuthors :exec
-TRUNCATE TABLE authors;
+-- name: DeleteAllAuthors :exec
+DELETE FROM authors;
+
+-- name: TruncateBooks :exec
+TRUNCATE TABLE books;
 
 -- name: UpdateAuthors :execrows
 UPDATE authors
@@ -29,6 +32,12 @@ SELECT * FROM authors WHERE id IN (sqlc.slice('ids'));
 
 -- name: SelectAuthorsWithTwoSlices :many
 SELECT * FROM authors WHERE id IN (sqlc.slice('ids')) AND name IN (sqlc.slice('names'));
+
+-- name: CreateBook :exec
+INSERT INTO books (name, author_id) VALUES (?, ?);
+
+-- name: ListAllAuthorsBooks :many 
+SELECT sqlc.embed(authors), sqlc.embed(books) FROM authors JOIN books ON authors.id = books.author_id ORDER BY authors.name;
 
 -- name: TruncateCopyToTests :exec
 TRUNCATE TABLE copy_tests;

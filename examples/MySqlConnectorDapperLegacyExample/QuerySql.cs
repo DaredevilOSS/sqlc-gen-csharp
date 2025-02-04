@@ -137,12 +137,21 @@ namespace MySqlConnectorDapperLegacyExampleGen
             }
         }
 
-        private const string TruncateAuthorsSql = "TRUNCATE TABLE authors; SELECT LAST_INSERT_ID()";
-        public async Task TruncateAuthors()
+        private const string DeleteAllAuthorsSql = "DELETE FROM authors; SELECT LAST_INSERT_ID()";
+        public async Task DeleteAllAuthors()
         {
             using (var connection = new MySqlConnection(ConnectionString))
             {
-                await connection.ExecuteAsync(TruncateAuthorsSql);
+                await connection.ExecuteAsync(DeleteAllAuthorsSql);
+            }
+        }
+
+        private const string TruncateBooksSql = "TRUNCATE TABLE books; SELECT LAST_INSERT_ID()";
+        public async Task TruncateBooks()
+        {
+            using (var connection = new MySqlConnection(ConnectionString))
+            {
+                await connection.ExecuteAsync(TruncateBooksSql);
             }
         }
 
@@ -213,6 +222,38 @@ namespace MySqlConnectorDapperLegacyExampleGen
                 for (int i = 0; i < args.Names.Length; i++)
                     dapperParams.Add($"@NamesArg{i}", args.Names[i]);
                 var results = await connection.QueryAsync<SelectAuthorsWithTwoSlicesRow>(transformedSql, dapperParams);
+                return results.AsList();
+            }
+        }
+
+        private const string CreateBookSql = "INSERT INTO books (name, author_id) VALUES (@name, @author_id); SELECT LAST_INSERT_ID()";
+        public class CreateBookArgs
+        {
+            public string Name { get; set; }
+            public long AuthorId { get; set; }
+        };
+        public async Task CreateBook(CreateBookArgs args)
+        {
+            using (var connection = new MySqlConnection(ConnectionString))
+            {
+                var dapperParams = new Dictionary<string, object>();
+                dapperParams.Add("name", args.Name);
+                dapperParams.Add("author_id", args.AuthorId);
+                await connection.ExecuteAsync(CreateBookSql, dapperParams);
+            }
+        }
+
+        private const string ListAllAuthorsBooksSql = "SELECT authors.id, authors.name, authors.bio, authors.created, books.id, books.name, books.author_id, books.description FROM authors JOIN books ON authors.id = books.author_id ORDER BY authors.name; SELECT LAST_INSERT_ID()";
+        public class ListAllAuthorsBooksRow
+        {
+            public Author Author { get; set; }
+            public Book Book { get; set; }
+        };
+        public async Task<List<ListAllAuthorsBooksRow>> ListAllAuthorsBooks()
+        {
+            using (var connection = new MySqlConnection(ConnectionString))
+            {
+                var results = await connection.QueryAsync<ListAllAuthorsBooksRow>(ListAllAuthorsBooksSql);
                 return results.AsList();
             }
         }

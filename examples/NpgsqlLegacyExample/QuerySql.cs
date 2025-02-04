@@ -205,7 +205,7 @@ namespace NpgsqlLegacyExampleGen
             }
         }
 
-        private const string TruncateAuthorsSql = "TRUNCATE TABLE authors";
+        private const string TruncateAuthorsSql = "TRUNCATE TABLE authors CASCADE";
         public async Task TruncateAuthors()
         {
             using (var connection = NpgsqlDataSource.Create(ConnectionString))
@@ -259,6 +259,51 @@ namespace NpgsqlLegacyExampleGen
                         while (await reader.ReadAsync())
                         {
                             result.Add(new SelectAuthorsWithSliceRow { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? string.Empty : reader.GetString(2), Created = reader.GetDateTime(3) });
+                        }
+
+                        return result;
+                    }
+                }
+            }
+        }
+
+        private const string CreateBookSql = "INSERT INTO books (name, author_id) VALUES (@name, @author_id)";
+        public class CreateBookArgs
+        {
+            public string Name { get; set; }
+            public long AuthorId { get; set; }
+        };
+        public async Task CreateBook(CreateBookArgs args)
+        {
+            using (var connection = NpgsqlDataSource.Create(ConnectionString))
+            {
+                using (var command = connection.CreateCommand(CreateBookSql))
+                {
+                    command.Parameters.AddWithValue("@name", args.Name);
+                    command.Parameters.AddWithValue("@author_id", args.AuthorId);
+                    await command.ExecuteScalarAsync();
+                }
+            }
+        }
+
+        private const string ListAllAuthorsBooksSql = "SELECT authors.id, authors.name, authors.bio, authors.created, books.id, books.name, books.author_id, books.description FROM authors JOIN books ON authors.id = books.author_id ORDER BY authors.name";
+        public class ListAllAuthorsBooksRow
+        {
+            public Author Author { get; set; }
+            public Book Book { get; set; }
+        };
+        public async Task<List<ListAllAuthorsBooksRow>> ListAllAuthorsBooks()
+        {
+            using (var connection = NpgsqlDataSource.Create(ConnectionString))
+            {
+                using (var command = connection.CreateCommand(ListAllAuthorsBooksSql))
+                {
+                    using (var reader = await command.ExecuteReaderAsync())
+                    {
+                        var result = new List<ListAllAuthorsBooksRow>();
+                        while (await reader.ReadAsync())
+                        {
+                            result.Add(new ListAllAuthorsBooksRow { Author = new Author { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? string.Empty : reader.GetString(2), Created = reader.GetDateTime(3) }, Book = new Book { Id = reader.GetInt64(4), Name = reader.GetString(5), AuthorId = reader.GetInt64(6), Description = reader.IsDBNull(7) ? string.Empty : reader.GetString(7) } });
                         }
 
                         return result;

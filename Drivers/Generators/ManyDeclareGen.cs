@@ -49,7 +49,7 @@ public class ManyDeclareGen(DbDriver dbDriver)
             var commandParameters = CommonGen.GetCommandParameters(query.Params);
             var initDataReader = CommonGen.InitDataReader();
             var awaitReaderRow = CommonGen.AwaitReaderRow();
-            var dataclassInit = CommonGen.InstantiateDataclass(query.Columns, returnInterface);
+            var dataclassInit = dbDriver.InstantiateDataclass(query.Columns.ToArray(), returnInterface);
             var readWhileExists = $$"""
                                     while ({{awaitReaderRow}})
                                     {

@@ -1,5 +1,3 @@
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Plugin;
 using SqlcGenCsharp.Drivers;
 using SqlcGenCsharp.Generators;
@@ -8,54 +6,29 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
-using File = Plugin.File;
 
 namespace SqlcGenCsharp;
 
 public class CodeGenerator
 {
-    private static readonly string[] ResharperDisables =
-    [
-        "UnusedAutoPropertyAccessor.Global",
-        "NotAccessedPositionalProperty.Global",
-        "ConvertToUsingDeclaration",
-        "UseAwaitUsing"
-    ];
-
-    private string? _namespaceName;
     private Options? _options;
+    private Dictionary<string, Table>? _tables;
     private DbDriver? _dbDriver;
-    private DataClassesGen? _dataClassesGen;
-    private RootGen? _rootGen;
+    private QueriesGen? _queriesGen;
+    private ModelsGen? _modelsGen;
     private UtilsGen? _utilsGen;
     private CsprojGen? _csprojGen;
-
-    private void InitGenerators(GenerateRequest generateRequest)
-    {
-        var outputDirectory = generateRequest.Settings.Codegen.Out;
-        var projectName = new DirectoryInfo(outputDirectory).Name;
-        Options = new Options(generateRequest);
-        NamespaceName = Options.NamespaceName == string.Empty ? projectName : Options.NamespaceName;
-        DbDriver = InstantiateDriver();
-
-        // initialize file generators
-        CsprojGen = new CsprojGen(outputDirectory, projectName, NamespaceName, Options);
-        RootGen = new RootGen(Options);
-        UtilsGen = new UtilsGen(NamespaceName, Options);
-        DataClassesGen = new DataClassesGen(DbDriver);
-    }
-
-    private string NamespaceName
-    {
-        get => _namespaceName!;
-        set => _namespaceName = value;
-    }
 
     private Options Options
     {
         get => _options!;
         set => _options = value;
+    }
+
+    private Dictionary<string, Table> Tables
+    {
+        get => _tables!;
+        set => _tables = value;
     }
 
     private DbDriver DbDriver
@@ -64,16 +37,16 @@ public class CodeGenerator
         set => _dbDriver = value;
     }
 
-    private DataClassesGen DataClassesGen
+    private QueriesGen QueriesGen
     {
-        get => _dataClassesGen!;
-        set => _dataClassesGen = value;
+        get => _queriesGen!;
+        set => _queriesGen = value;
     }
 
-    private RootGen RootGen
+    private ModelsGen ModelsGen
     {
-        get => _rootGen!;
-        set => _rootGen = value;
+        get => _modelsGen!;
+        set => _modelsGen = value;
     }
 
     private UtilsGen UtilsGen
@@ -88,13 +61,35 @@ public class CodeGenerator
         set => _csprojGen = value;
     }
 
+    private void InitGenerators(GenerateRequest generateRequest)
+    {
+        var outputDirectory = generateRequest.Settings.Codegen.Out;
+        var projectName = new DirectoryInfo(outputDirectory).Name;
+        Options = new Options(generateRequest);
+
+        // TODO currently only default schema is considered - should consider all non-internal schemas
+        Tables = generateRequest.Catalog.Schemas
+            .Where(schema => schema.Name == generateRequest.Catalog.DefaultSchema)
+            .SelectMany(schema => schema.Tables)
+            .ToDictionary(table => table.Rel.Name, table => table);
+
+        var namespaceName = Options.NamespaceName == string.Empty ? projectName : Options.NamespaceName;
+        DbDriver = InstantiateDriver();
+
+        // initialize file generators
+        CsprojGen = new CsprojGen(outputDirectory, projectName, namespaceName, Options);
+        QueriesGen = new QueriesGen(DbDriver, Options, namespaceName);
+        ModelsGen = new ModelsGen(DbDriver, Options, namespaceName);
+        UtilsGen = new UtilsGen(namespaceName, Options);
+    }
+
     private DbDriver InstantiateDriver()
     {
         return Options.DriverName switch
         {
-            DriverName.MySqlConnector => new MySqlConnectorDriver(Options),
-            DriverName.Npgsql => new NpgsqlDriver(Options),
-            DriverName.Sqlite => new SqliteDriver(Options),
+            DriverName.MySqlConnector => new MySqlConnectorDriver(Options, Tables),
+            DriverName.Npgsql => new NpgsqlDriver(Options, Tables),
+            DriverName.Sqlite => new SqliteDriver(Options, Tables),
             _ => throw new ArgumentException($"unknown driver: {Options.DriverName}")
         };
     }
@@ -104,7 +99,8 @@ public class CodeGenerator
         InitGenerators(generateRequest); // the request is necessary in order to know which generators are needed
         var fileQueries = GetFileQueries();
         var files = fileQueries
-            .Select(fq => GenerateFile(fq.Value, fq.Key))
+            .Select(fq => QueriesGen.GenerateFile(fq.Value, fq.Key))
+            .Append(ModelsGen.GenerateFile(Tables))
             .Append(UtilsGen.GenerateFile())
             .AppendIf(CsprojGen.GenerateFile(), Options.GenerateCsproj);
 
@@ -124,112 +120,6 @@ public class CodeGenerator
             return string.Concat(
                 Path.GetFileNameWithoutExtension(filenameWithExtension).ToPascalCase(),
                 Path.GetExtension(filenameWithExtension)[1..].ToPascalCase());
-        }
-    }
-
-    private File GenerateFile(IEnumerable<Query> queries, string className)
-    {
-        var (usingDirectives, classDeclaration) = GenerateClass(queries, className);
-        var root = RootGen.CompilationRootGen(
-            IdentifierName(NamespaceName), usingDirectives.ToArray(), classDeclaration);
-        root = AddResharperDisables(root);
-        root = root.AddCommentOnTop(Consts.AutoGeneratedComment);
-
-        return new File
-        {
-            Name = $"{className}.cs",
-            Contents = root.ToByteString()
-        };
-    }
-
-    private static CompilationUnitSyntax AddResharperDisables(CompilationUnitSyntax compilationUnit)
-    {
-        return ResharperDisables
-            .Aggregate(compilationUnit, (current, resharperDisable) =>
-                current.AddCommentOnTop($"// ReSharper disable {resharperDisable}"));
-    }
-
-    private (IList<UsingDirectiveSyntax>, MemberDeclarationSyntax) GenerateClass(IEnumerable<Query> queries,
-        string className)
-    {
-        var usingDirectives = DbDriver.GetUsingDirectives();
-        var classMembers = queries.SelectMany(GetMembersForSingleQuery);
-        return (usingDirectives, GetClassDeclaration(className, classMembers));
-    }
-
-    private ClassDeclarationSyntax GetClassDeclaration(string className,
-        IEnumerable<MemberDeclarationSyntax> classMembers)
-    {
-        var optionalDapperConfig = Options.UseDapper
-            ? Environment.NewLine + "        Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;"
-            : "";
-        var classDeclaration = (ClassDeclarationSyntax)ParseMemberDeclaration(
-                    $$"""
-                      class {{className}}
-                      {
-                          public {{className}}(string {{Variable.ConnectionString.AsVarName()}})
-                          {
-                              this.{{Variable.ConnectionString.AsPropertyName()}} = {{Variable.ConnectionString.AsVarName()}};{{optionalDapperConfig}}
-                          }
-                          private string {{Variable.ConnectionString.AsPropertyName()}} { get; }
-                      }
-                      """)!
-                .AddModifiers(Token(SyntaxKind.PublicKeyword));
-
-        return classDeclaration.AddMembers(classMembers.ToArray());
-    }
-
-    private IEnumerable<MemberDeclarationSyntax> GetMembersForSingleQuery(Query query)
-    {
-        return new List<MemberDeclarationSyntax>()
-            .Append(GetQueryTextConstant(query))
-            .AppendIfNotNull(GetQueryColumnsDataclass(query))
-            .AppendIfNotNull(GetQueryParamsDataclass(query))
-            .Append(AddMethodDeclaration(query));
-    }
-
-    private MemberDeclarationSyntax? GetQueryColumnsDataclass(Query query)
-    {
-        return query.Columns.Count <= 0
-            ? null
-            : DataClassesGen.Generate(query.Name, ClassMember.Row, query.Columns, Options);
-    }
-
-    private MemberDeclarationSyntax? GetQueryParamsDataclass(Query query)
-    {
-        if (query.Params.Count <= 0) return null;
-        var columns = query.Params.Select(DbDriver.GetColumnFromParam).ToList();
-        return DataClassesGen.Generate(query.Name, ClassMember.Args, columns, Options);
-    }
-
-    private MemberDeclarationSyntax GetQueryTextConstant(Query query)
-    {
-        return ParseMemberDeclaration(
-                $"private const string {query.Name}{ClassMember.Sql.Name()} = \"{DbDriver.TransformQueryText(query)}\";")
-            !
-            .AppendNewLine();
-    }
-
-    private MemberDeclarationSyntax AddMethodDeclaration(Query query)
-    {
-        var queryTextConstant = GetInterfaceName(ClassMember.Sql);
-        var argInterface = GetInterfaceName(ClassMember.Args);
-        var returnInterface = GetInterfaceName(ClassMember.Row);
-
-        return query.Cmd switch
-        {
-            ":exec" => DbDriver.ExecDeclare(queryTextConstant, argInterface, query),
-            ":one" => DbDriver.OneDeclare(queryTextConstant, argInterface, returnInterface, query),
-            ":many" => DbDriver.ManyDeclare(queryTextConstant, argInterface, returnInterface, query),
-            ":execrows" => ((IExecRows)DbDriver).ExecRowsDeclare(queryTextConstant, argInterface, query),
-            ":execlastid" => ((IExecLastId)DbDriver).ExecLastIdDeclare(queryTextConstant, argInterface, query),
-            ":copyfrom" => ((ICopyFrom)DbDriver).CopyFromDeclare(queryTextConstant, argInterface, query),
-            _ => throw new NotImplementedException($"{query.Cmd} is not implemented")
-        };
-
-        string GetInterfaceName(ClassMember classMemberType)
-        {
-            return $"{query.Name}{classMemberType.Name()}";
         }
     }
 }
