@@ -74,26 +74,27 @@ Advanced functionality - varies between databases:
 
 More info can be found in [here](https://docs.sqlc.dev/en/stable/reference/query-annotations.html).
 
-## Macros Annotations
+## Macro Annotations
 - `sqlc.arg`       - Attach a name to a parameter in a SQL query
-- `sqlc.embed`     - Embedding allows you to reuse existing model structs in more queries
 - `sqlc.narg`      - The same as `sqlc.arg`, but always marks the parameter as nullable
 - `sqlc.slice`     - For databases that do not support passing arrays to the `IN` operator, generates a dynamic query at runtime with the correct number of parameters
+- `sqlc.embed`     - Embedding allows you to reuse existing model structs in more queries
 
 <br/>
 
-| Annotation  | PostgresSQL | MySQL | SQLite |
-|-------------|-------------|-------|--------|
-| sqlc.arg    | ✅          | ✅    | ✅      |
-| sqlc.embed  | ❌          | ❌    | ❌      |
-| sqlc.narg   | ❌          | ❌    | ❌      |
-| sqlc.slice  | 🚫          | ✅    | ❌      |
+| Annotation  | PostgresSQL | MySQL | SQLite  |
+|-------------|-------------|-------|---------|
+| sqlc.arg    | ✅          | ✅    | ✅     |
+| sqlc.narg   | ❌          | ❌    | ❌     |
+| sqlc.slice  | 🚫          | ✅    | ❌     |
+| sqlc.embed  | ❌          | ❌    | ❌     |
 
 - ✅ means the feature is fully supported.
 - 🚫 means the database does not support the feature.
 - ❌ means the feature is not supported by the plugin (but could be supported by the database).
 
-More info can be found in [here](https://docs.sqlc.dev/en/stable/reference/macros.html#macros).# Contributing
+More info can be found in [here](https://docs.sqlc.dev/en/stable/reference/macros.html#macros).
+# Contributing
 ## Local plugin development
 ### Prerequisites
 Make sure that the following applications are installed and added to your path.
