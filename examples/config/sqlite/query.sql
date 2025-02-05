@@ -18,6 +18,12 @@ UPDATE authors
 SET bio = ?
 WHERE bio IS NOT NULL;
 
+-- name: SelectAuthorsWithSlice :many
+SELECT * FROM authors WHERE id IN (sqlc.slice('ids'));
+
+-- name: SelectAuthorsWithTwoSlices :many
+SELECT * FROM authors WHERE id IN (sqlc.slice('ids')) AND name IN (sqlc.slice('names'));
+
 -- name: DeleteAuthor :exec
 DELETE FROM authors WHERE name = ?;
 

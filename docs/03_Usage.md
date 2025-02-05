@@ -45,10 +45,10 @@ More info can be found in [here](https://docs.sqlc.dev/en/stable/reference/query
 
 | Annotation  | PostgresSQL | MySQL | SQLite  |
 |-------------|-------------|-------|---------|
-| sqlc.arg    | ✅          | ✅    | ✅     |
-| sqlc.narg   | ❌          | ❌    | ❌     |
-| sqlc.slice  | 🚫          | ✅    | ❌     |
-| sqlc.embed  | ✅          | ✅    | ✅     |
+| sqlc.arg    | ✅          | ✅    | ✅       |
+| sqlc.narg   | ❌          | ❌    | ❌       |
+| sqlc.slice  | 🚫          | ✅    | ✅       |
+| sqlc.embed  | ✅          | ✅    | ✅       |
 
 - ✅ means the feature is fully supported.
 - 🚫 means the database does not support the feature.

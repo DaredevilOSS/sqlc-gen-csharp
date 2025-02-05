@@ -133,6 +133,60 @@ public class QuerySql
         }
     }
 
+    private const string SelectAuthorsWithSliceSql = "SELECT id, name, bio FROM authors WHERE id IN (/*SLICE:ids*/@ids)";
+    public class SelectAuthorsWithSliceRow
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public string? Bio { get; set; }
+    };
+    public class SelectAuthorsWithSliceArgs
+    {
+        public int[] Ids { get; set; }
+    };
+    public async Task<List<SelectAuthorsWithSliceRow>> SelectAuthorsWithSlice(SelectAuthorsWithSliceArgs args)
+    {
+        using (var connection = new SqliteConnection(ConnectionString))
+        {
+            var sqlText = SelectAuthorsWithSliceSql;
+            sqlText = Utils.GetTransformedString(sqlText, args.Ids, "Ids", "ids");
+            var queryParams = new Dictionary<string, object>();
+            for (int i = 0; i < args.Ids.Length; i++)
+                queryParams.Add($"@IdsArg{i}", args.Ids[i]);
+            var result = await connection.QueryAsync<SelectAuthorsWithSliceRow>(sqlText, queryParams);
+            return result.AsList();
+        }
+    }
+
+    private const string SelectAuthorsWithTwoSlicesSql = "SELECT id, name, bio FROM authors WHERE id IN (/*SLICE:ids*/@ids) AND name IN (/*SLICE:names*/@names)";
+    public class SelectAuthorsWithTwoSlicesRow
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public string? Bio { get; set; }
+    };
+    public class SelectAuthorsWithTwoSlicesArgs
+    {
+        public int[] Ids { get; set; }
+        public string[] Names { get; set; }
+    };
+    public async Task<List<SelectAuthorsWithTwoSlicesRow>> SelectAuthorsWithTwoSlices(SelectAuthorsWithTwoSlicesArgs args)
+    {
+        using (var connection = new SqliteConnection(ConnectionString))
+        {
+            var sqlText = SelectAuthorsWithTwoSlicesSql;
+            sqlText = Utils.GetTransformedString(sqlText, args.Ids, "Ids", "ids");
+            sqlText = Utils.GetTransformedString(sqlText, args.Names, "Names", "names");
+            var queryParams = new Dictionary<string, object>();
+            for (int i = 0; i < args.Ids.Length; i++)
+                queryParams.Add($"@IdsArg{i}", args.Ids[i]);
+            for (int i = 0; i < args.Names.Length; i++)
+                queryParams.Add($"@NamesArg{i}", args.Names[i]);
+            var result = await connection.QueryAsync<SelectAuthorsWithTwoSlicesRow>(sqlText, queryParams);
+            return result.AsList();
+        }
+    }
+
     private const string DeleteAuthorSql = "DELETE FROM authors WHERE name = @name";
     public class DeleteAuthorArgs
     {
