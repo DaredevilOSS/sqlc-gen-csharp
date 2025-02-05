@@ -230,8 +230,20 @@ namespace SqliteDapperLegacyExampleGen
         {
             using (var connection = new SqliteConnection(ConnectionString))
             {
-                var result = await connection.QueryAsync<ListAllAuthorsBooksRow>(ListAllAuthorsBooksSql);
-                return result.AsList();
+                connection.Open();
+                using (var command = new SqliteCommand(ListAllAuthorsBooksSql, connection))
+                {
+                    using (var reader = await command.ExecuteReaderAsync())
+                    {
+                        var result = new List<ListAllAuthorsBooksRow>();
+                        while (await reader.ReadAsync())
+                        {
+                            result.Add(new ListAllAuthorsBooksRow { Author = new Author { Id = reader.GetInt32(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? string.Empty : reader.GetString(2) }, Book = new Book { Id = reader.GetInt32(3), Name = reader.GetString(4), AuthorId = reader.GetInt32(5), Description = reader.IsDBNull(6) ? string.Empty : reader.GetString(6) } });
+                        }
+
+                        return result;
+                    }
+                }
             }
         }
 
@@ -245,8 +257,20 @@ namespace SqliteDapperLegacyExampleGen
         {
             using (var connection = new SqliteConnection(ConnectionString))
             {
-                var result = await connection.QueryAsync<GetDuplicateAuthorsRow>(GetDuplicateAuthorsSql);
-                return result.AsList();
+                connection.Open();
+                using (var command = new SqliteCommand(GetDuplicateAuthorsSql, connection))
+                {
+                    using (var reader = await command.ExecuteReaderAsync())
+                    {
+                        var result = new List<GetDuplicateAuthorsRow>();
+                        while (await reader.ReadAsync())
+                        {
+                            result.Add(new GetDuplicateAuthorsRow { Author = new Author { Id = reader.GetInt32(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? string.Empty : reader.GetString(2) }, Author2 = new Author { Id = reader.GetInt32(3), Name = reader.GetString(4), Bio = reader.IsDBNull(5) ? string.Empty : reader.GetString(5) } });
+                        }
+
+                        return result;
+                    }
+                }
             }
         }
 

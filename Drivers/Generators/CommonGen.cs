@@ -102,6 +102,7 @@ public class CommonGen(DbDriver dbDriver)
                 ? $"{tableFieldType}{value}" : tableFieldType;
             seenEmbed.TryAdd(tableFieldType, 1);
             seenEmbed[tableFieldType]++;
+
             var tableColumnsInit = GetAsEmbeddedTableColumnAssignment(column, actualOrdinal);
             columnsInit.Add($"{tableFieldName} = {InstantiateDataclassInternal(tableFieldType, tableColumnsInit)}");
             actualOrdinal += tableColumnsInit.Length;
@@ -119,10 +120,16 @@ public class CommonGen(DbDriver dbDriver)
 
         string GetAsSimpleAssignment(Column column, int ordinal)
         {
-            var readExpression = column.NotNull
+            var readExpression = GetReadExpression(column, ordinal);
+            return $"{column.Name.ToPascalCase()} = {readExpression}";
+        }
+
+        string GetReadExpression(Column column, int ordinal)
+        {
+            return column.NotNull
                 ? dbDriver.GetColumnReader(column, ordinal)
                 : $"{CheckNullExpression(ordinal)} ? {GetNullExpression(column)} : {dbDriver.GetColumnReader(column, ordinal)}";
-            return $"{column.Name.ToPascalCase()} = {readExpression}";
+            ;
         }
 
         string GetNullExpression(Column column)

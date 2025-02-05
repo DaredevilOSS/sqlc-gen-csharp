@@ -252,8 +252,20 @@ public class QuerySql
     {
         using (var connection = new MySqlConnection(ConnectionString))
         {
-            var result = await connection.QueryAsync<ListAllAuthorsBooksRow>(ListAllAuthorsBooksSql);
-            return result.AsList();
+            connection.Open();
+            using (var command = new MySqlCommand(ListAllAuthorsBooksSql, connection))
+            {
+                using (var reader = await command.ExecuteReaderAsync())
+                {
+                    var result = new List<ListAllAuthorsBooksRow>();
+                    while (await reader.ReadAsync())
+                    {
+                        result.Add(new ListAllAuthorsBooksRow { Author = new Author { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2), Created = reader.GetDateTime(3) }, Book = new Book { Id = reader.GetInt64(4), Name = reader.GetString(5), AuthorId = reader.GetInt64(6), Description = reader.IsDBNull(7) ? null : reader.GetString(7) } });
+                    }
+
+                    return result;
+                }
+            }
         }
     }
 
@@ -267,8 +279,20 @@ public class QuerySql
     {
         using (var connection = new MySqlConnection(ConnectionString))
         {
-            var result = await connection.QueryAsync<GetDuplicateAuthorsRow>(GetDuplicateAuthorsSql);
-            return result.AsList();
+            connection.Open();
+            using (var command = new MySqlCommand(GetDuplicateAuthorsSql, connection))
+            {
+                using (var reader = await command.ExecuteReaderAsync())
+                {
+                    var result = new List<GetDuplicateAuthorsRow>();
+                    while (await reader.ReadAsync())
+                    {
+                        result.Add(new GetDuplicateAuthorsRow { Author = new Author { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2), Created = reader.GetDateTime(3) }, Author2 = new Author { Id = reader.GetInt64(4), Name = reader.GetString(5), Bio = reader.IsDBNull(6) ? null : reader.GetString(6), Created = reader.GetDateTime(7) } });
+                    }
+
+                    return result;
+                }
+            }
         }
     }
 

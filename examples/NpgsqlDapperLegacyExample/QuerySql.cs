@@ -218,10 +218,21 @@ namespace NpgsqlDapperLegacyExampleGen
         };
         public async Task<List<ListAllAuthorsBooksRow>> ListAllAuthorsBooks()
         {
-            using (var connection = new NpgsqlConnection(ConnectionString))
+            using (var connection = NpgsqlDataSource.Create(ConnectionString))
             {
-                var result = await connection.QueryAsync<ListAllAuthorsBooksRow>(ListAllAuthorsBooksSql);
-                return result.AsList();
+                using (var command = connection.CreateCommand(ListAllAuthorsBooksSql))
+                {
+                    using (var reader = await command.ExecuteReaderAsync())
+                    {
+                        var result = new List<ListAllAuthorsBooksRow>();
+                        while (await reader.ReadAsync())
+                        {
+                            result.Add(new ListAllAuthorsBooksRow { Author = new Author { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? string.Empty : reader.GetString(2), Created = reader.GetDateTime(3) }, Book = new Book { Id = reader.GetInt64(4), Name = reader.GetString(5), AuthorId = reader.GetInt64(6), Description = reader.IsDBNull(7) ? string.Empty : reader.GetString(7) } });
+                        }
+
+                        return result;
+                    }
+                }
             }
         }
 
@@ -233,10 +244,21 @@ namespace NpgsqlDapperLegacyExampleGen
         };
         public async Task<List<GetDuplicateAuthorsRow>> GetDuplicateAuthors()
         {
-            using (var connection = new NpgsqlConnection(ConnectionString))
+            using (var connection = NpgsqlDataSource.Create(ConnectionString))
             {
-                var result = await connection.QueryAsync<GetDuplicateAuthorsRow>(GetDuplicateAuthorsSql);
-                return result.AsList();
+                using (var command = connection.CreateCommand(GetDuplicateAuthorsSql))
+                {
+                    using (var reader = await command.ExecuteReaderAsync())
+                    {
+                        var result = new List<GetDuplicateAuthorsRow>();
+                        while (await reader.ReadAsync())
+                        {
+                            result.Add(new GetDuplicateAuthorsRow { Author = new Author { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? string.Empty : reader.GetString(2), Created = reader.GetDateTime(3) }, Author2 = new Author { Id = reader.GetInt64(4), Name = reader.GetString(5), Bio = reader.IsDBNull(6) ? string.Empty : reader.GetString(6), Created = reader.GetDateTime(7) } });
+                        }
+
+                        return result;
+                    }
+                }
             }
         }
 

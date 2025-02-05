@@ -56,6 +56,8 @@ internal static class Config
                         KnownTestType.Exec,
                         KnownTestType.ExecRows,
                         KnownTestType.ExecLastId,
+                        KnownTestType.JoinEmbed,
+                        KnownTestType.SelfJoinEmbed,
                         KnownTestType.Slice,
                         KnownTestType.MultipleSlices
                     ]
@@ -87,7 +89,9 @@ internal static class Config
                     KnownTestType.Many,
                     KnownTestType.Exec,
                     KnownTestType.ExecRows,
-                    KnownTestType.ExecLastId
+                    KnownTestType.ExecLastId,
+                    KnownTestType.JoinEmbed,
+                    KnownTestType.SelfJoinEmbed
                 ]
             }
         },
@@ -120,6 +124,8 @@ internal static class Config
                     KnownTestType.Exec,
                     KnownTestType.ExecRows,
                     KnownTestType.ExecLastId,
+                    KnownTestType.JoinEmbed,
+                    KnownTestType.SelfJoinEmbed,
                     KnownTestType.Slice,
                     KnownTestType.MultipleSlices
                 ]
