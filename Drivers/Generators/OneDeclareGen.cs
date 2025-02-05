@@ -28,13 +28,17 @@ public class OneDeclareGen(DbDriver dbDriver)
         var sqlTextTransform = CommonGen.GetSqlTransformations(query, queryTextConstant);
         var connectionVar = Variable.Connection.AsVarName();
         var resultVar = Variable.Result.AsVarName();
-        return dbDriver.Options.UseDapper ? GetAsDapper() : GetAsDriver();
+        var anyEmbeddedTableExists = query.Columns.Any(c => c.EmbedTable is not null);
+        return dbDriver.Options.UseDapper && !anyEmbeddedTableExists
+            ? GetAsDapper()
+            : GetAsDriver();
 
         string GetAsDapper()
         {
             var dapperParamsSection = CommonGen.ConstructDapperParamsDict(query.Params);
             var dapperArgs = dapperParamsSection != string.Empty ? $", {Variable.QueryParams.AsVarName()}" : string.Empty;
             var returnType = dbDriver.AddNullableSuffix(returnInterface, false);
+
             return $$"""
                         using ({{establishConnection}})
                         {{{sqlTextTransform}}{{dapperParamsSection}}

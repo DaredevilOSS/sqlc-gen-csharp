@@ -75,5 +75,51 @@ namespace SqlcGenCsharpTests
             var actual = await QuerySql.GetAuthorById(getAuthorByIdArgs);
             Assert.That(actual is { Name: DataGenerator.GenericAuthor, Bio: DataGenerator.GenericQuote1 });
         }
+
+        [Test]
+        public async Task TestJoinEmbed()
+        {
+            var createAuthorArgs = new QuerySql.CreateAuthorReturnIdArgs
+            {
+                Name = DataGenerator.BojackAuthor,
+                Bio = DataGenerator.BojackTheme
+            };
+            var bojackAuthorId = await QuerySql.CreateAuthorReturnId(createAuthorArgs);
+            var createBookArgs = new QuerySql.CreateBookArgs
+            {
+                Name = DataGenerator.BojackBookTitle,
+                AuthorId = bojackAuthorId
+            };
+            await QuerySql.CreateBook(createBookArgs);
+            createAuthorArgs = new QuerySql.CreateAuthorReturnIdArgs
+            {
+                Name = DataGenerator.DrSeussAuthor,
+                Bio = DataGenerator.DrSeussQuote
+            };
+            var drSeussAuthorId = await QuerySql.CreateAuthorReturnId(createAuthorArgs);
+            createBookArgs = new QuerySql.CreateBookArgs
+            {
+                Name = DataGenerator.DrSeussBookTitle,
+                AuthorId = drSeussAuthorId
+            };
+            await QuerySql.CreateBook(createBookArgs);
+            var actual = await QuerySql.ListAllAuthorsBooks();
+            Assert.That(actual is [{ Author: { Name: DataGenerator.BojackAuthor, Bio: DataGenerator.BojackTheme, }, Book.Name: DataGenerator.BojackBookTitle, }, { Author: { Name: DataGenerator.DrSeussAuthor, Bio: DataGenerator.DrSeussQuote, }, Book.Name: DataGenerator.DrSeussBookTitle, }]);
+        }
+
+        [Test]
+        public async Task TestSelfJoinEmbed()
+        {
+            var createAuthorArgs = new QuerySql.CreateAuthorArgs
+            {
+                Name = DataGenerator.BojackAuthor,
+                Bio = DataGenerator.BojackTheme
+            };
+            await QuerySql.CreateAuthor(createAuthorArgs);
+            await QuerySql.CreateAuthor(createAuthorArgs);
+            var actual = await QuerySql.GetDuplicateAuthors();
+            Assert.That(actual is [{ Author: { Name: DataGenerator.BojackAuthor, Bio: DataGenerator.BojackTheme, }, Author2: { Name: DataGenerator.BojackAuthor, Bio: DataGenerator.BojackTheme, } }]);
+            Assert.That(actual[0].Author.Id, Is.Not.EqualTo(actual[0].Author2.Id));
+        }
     }
 }

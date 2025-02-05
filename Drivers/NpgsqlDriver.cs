@@ -94,7 +94,9 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId
                 $"var ds = NpgsqlDataSource.Create({connectionStringField})",
                 $"var {Variable.Connection.AsVarName()} = ds.CreateConnection()"
             );
-        if (Options.UseDapper)
+
+        var embedTableExists = query.Columns.Any(c => c.EmbedTable is not null);
+        if (Options.UseDapper && !embedTableExists)
             return new ConnectionGenCommands(
                 $"var {Variable.Connection.AsVarName()} = new NpgsqlConnection({connectionStringField})",
                 ""
