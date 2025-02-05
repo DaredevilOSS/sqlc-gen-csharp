@@ -38,9 +38,9 @@ namespace NpgsqlDapperLegacyExampleGen
         {
             using (var connection = new NpgsqlConnection(ConnectionString))
             {
-                var dapperParams = new Dictionary<string, object>();
-                dapperParams.Add("name", args.Name);
-                var result = await connection.QueryFirstOrDefaultAsync<GetAuthorRow>(GetAuthorSql, dapperParams);
+                var queryParams = new Dictionary<string, object>();
+                queryParams.Add("name", args.Name);
+                var result = await connection.QueryFirstOrDefaultAsync<GetAuthorRow>(GetAuthorSql, queryParams);
                 return result;
             }
         }
@@ -57,8 +57,8 @@ namespace NpgsqlDapperLegacyExampleGen
         {
             using (var connection = new NpgsqlConnection(ConnectionString))
             {
-                var results = await connection.QueryAsync<ListAuthorsRow>(ListAuthorsSql);
-                return results.AsList();
+                var result = await connection.QueryAsync<ListAuthorsRow>(ListAuthorsSql);
+                return result.AsList();
             }
         }
 
@@ -79,10 +79,10 @@ namespace NpgsqlDapperLegacyExampleGen
         {
             using (var connection = new NpgsqlConnection(ConnectionString))
             {
-                var dapperParams = new Dictionary<string, object>();
-                dapperParams.Add("name", args.Name);
-                dapperParams.Add("bio", args.Bio);
-                var result = await connection.QueryFirstOrDefaultAsync<CreateAuthorRow>(CreateAuthorSql, dapperParams);
+                var queryParams = new Dictionary<string, object>();
+                queryParams.Add("name", args.Name);
+                queryParams.Add("bio", args.Bio);
+                var result = await connection.QueryFirstOrDefaultAsync<CreateAuthorRow>(CreateAuthorSql, queryParams);
                 return result;
             }
         }
@@ -101,10 +101,10 @@ namespace NpgsqlDapperLegacyExampleGen
         {
             using (var connection = new NpgsqlConnection(ConnectionString))
             {
-                var dapperParams = new Dictionary<string, object>();
-                dapperParams.Add("name", args.Name);
-                dapperParams.Add("bio", args.Bio);
-                return await connection.QuerySingleAsync<long>(CreateAuthorReturnIdSql, dapperParams);
+                var queryParams = new Dictionary<string, object>();
+                queryParams.Add("name", args.Name);
+                queryParams.Add("bio", args.Bio);
+                return await connection.QuerySingleAsync<long>(CreateAuthorReturnIdSql, queryParams);
             }
         }
 
@@ -124,9 +124,9 @@ namespace NpgsqlDapperLegacyExampleGen
         {
             using (var connection = new NpgsqlConnection(ConnectionString))
             {
-                var dapperParams = new Dictionary<string, object>();
-                dapperParams.Add("id", args.Id);
-                var result = await connection.QueryFirstOrDefaultAsync<GetAuthorByIdRow>(GetAuthorByIdSql, dapperParams);
+                var queryParams = new Dictionary<string, object>();
+                queryParams.Add("id", args.Id);
+                var result = await connection.QueryFirstOrDefaultAsync<GetAuthorByIdRow>(GetAuthorByIdSql, queryParams);
                 return result;
             }
         }
@@ -140,9 +140,9 @@ namespace NpgsqlDapperLegacyExampleGen
         {
             using (var connection = new NpgsqlConnection(ConnectionString))
             {
-                var dapperParams = new Dictionary<string, object>();
-                dapperParams.Add("name", args.Name);
-                await connection.ExecuteAsync(DeleteAuthorSql, dapperParams);
+                var queryParams = new Dictionary<string, object>();
+                queryParams.Add("name", args.Name);
+                await connection.ExecuteAsync(DeleteAuthorSql, queryParams);
             }
         }
 
@@ -164,9 +164,9 @@ namespace NpgsqlDapperLegacyExampleGen
         {
             using (var connection = new NpgsqlConnection(ConnectionString))
             {
-                var dapperParams = new Dictionary<string, object>();
-                dapperParams.Add("bio", args.Bio);
-                return await connection.ExecuteAsync(UpdateAuthorsSql, dapperParams);
+                var queryParams = new Dictionary<string, object>();
+                queryParams.Add("bio", args.Bio);
+                return await connection.ExecuteAsync(UpdateAuthorsSql, queryParams);
             }
         }
 
@@ -186,10 +186,10 @@ namespace NpgsqlDapperLegacyExampleGen
         {
             using (var connection = new NpgsqlConnection(ConnectionString))
             {
-                var dapperParams = new Dictionary<string, object>();
-                dapperParams.Add("longArr_1", args.LongArr1);
-                var results = await connection.QueryAsync<SelectAuthorsWithSliceRow>(SelectAuthorsWithSliceSql, dapperParams);
-                return results.AsList();
+                var queryParams = new Dictionary<string, object>();
+                queryParams.Add("longArr_1", args.LongArr1);
+                var result = await connection.QueryAsync<SelectAuthorsWithSliceRow>(SelectAuthorsWithSliceSql, queryParams);
+                return result.AsList();
             }
         }
 
@@ -203,10 +203,10 @@ namespace NpgsqlDapperLegacyExampleGen
         {
             using (var connection = new NpgsqlConnection(ConnectionString))
             {
-                var dapperParams = new Dictionary<string, object>();
-                dapperParams.Add("name", args.Name);
-                dapperParams.Add("author_id", args.AuthorId);
-                await connection.ExecuteAsync(CreateBookSql, dapperParams);
+                var queryParams = new Dictionary<string, object>();
+                queryParams.Add("name", args.Name);
+                queryParams.Add("author_id", args.AuthorId);
+                await connection.ExecuteAsync(CreateBookSql, queryParams);
             }
         }
 
@@ -220,8 +220,23 @@ namespace NpgsqlDapperLegacyExampleGen
         {
             using (var connection = new NpgsqlConnection(ConnectionString))
             {
-                var results = await connection.QueryAsync<ListAllAuthorsBooksRow>(ListAllAuthorsBooksSql);
-                return results.AsList();
+                var result = await connection.QueryAsync<ListAllAuthorsBooksRow>(ListAllAuthorsBooksSql);
+                return result.AsList();
+            }
+        }
+
+        private const string GetDuplicateAuthorsSql = "SELECT authors1.id, authors1.name, authors1.bio, authors1.created, authors2.id, authors2.name, authors2.bio, authors2.created FROM  authors  authors1  JOIN  authors  authors2  ON  authors1 . name  =  authors2 . name  WHERE  authors1 . id > authors2 . id  ";  
+        public class GetDuplicateAuthorsRow
+        {
+            public Author Author { get; set; }
+            public Author Author2 { get; set; }
+        };
+        public async Task<List<GetDuplicateAuthorsRow>> GetDuplicateAuthors()
+        {
+            using (var connection = new NpgsqlConnection(ConnectionString))
+            {
+                var result = await connection.QueryAsync<GetDuplicateAuthorsRow>(GetDuplicateAuthorsSql);
+                return result.AsList();
             }
         }
 
@@ -317,24 +332,24 @@ namespace NpgsqlDapperLegacyExampleGen
         {
             using (var connection = new NpgsqlConnection(ConnectionString))
             {
-                var dapperParams = new Dictionary<string, object>();
-                dapperParams.Add("c_smallint", args.CSmallint);
-                dapperParams.Add("c_boolean", args.CBoolean);
-                dapperParams.Add("c_integer", args.CInteger);
-                dapperParams.Add("c_bigint", args.CBigint);
-                dapperParams.Add("c_serial", args.CSerial);
-                dapperParams.Add("c_decimal", args.CDecimal);
-                dapperParams.Add("c_numeric", args.CNumeric);
-                dapperParams.Add("c_real", args.CReal);
-                dapperParams.Add("c_date", args.CDate);
-                dapperParams.Add("c_timestamp", args.CTimestamp);
-                dapperParams.Add("c_char", args.CChar);
-                dapperParams.Add("c_varchar", args.CVarchar);
-                dapperParams.Add("c_character_varying", args.CCharacterVarying);
-                dapperParams.Add("c_text", args.CText);
-                dapperParams.Add("c_text_array", args.CTextArray);
-                dapperParams.Add("c_integer_array", args.CIntegerArray);
-                return await connection.QuerySingleAsync<long>(InsertNodePostgresTypeSql, dapperParams);
+                var queryParams = new Dictionary<string, object>();
+                queryParams.Add("c_smallint", args.CSmallint);
+                queryParams.Add("c_boolean", args.CBoolean);
+                queryParams.Add("c_integer", args.CInteger);
+                queryParams.Add("c_bigint", args.CBigint);
+                queryParams.Add("c_serial", args.CSerial);
+                queryParams.Add("c_decimal", args.CDecimal);
+                queryParams.Add("c_numeric", args.CNumeric);
+                queryParams.Add("c_real", args.CReal);
+                queryParams.Add("c_date", args.CDate);
+                queryParams.Add("c_timestamp", args.CTimestamp);
+                queryParams.Add("c_char", args.CChar);
+                queryParams.Add("c_varchar", args.CVarchar);
+                queryParams.Add("c_character_varying", args.CCharacterVarying);
+                queryParams.Add("c_text", args.CText);
+                queryParams.Add("c_text_array", args.CTextArray);
+                queryParams.Add("c_integer_array", args.CIntegerArray);
+                return await connection.QuerySingleAsync<long>(InsertNodePostgresTypeSql, queryParams);
             }
         }
 
@@ -366,9 +381,9 @@ namespace NpgsqlDapperLegacyExampleGen
         {
             using (var connection = new NpgsqlConnection(ConnectionString))
             {
-                var dapperParams = new Dictionary<string, object>();
-                dapperParams.Add("id", args.Id);
-                var result = await connection.QueryFirstOrDefaultAsync<GetNodePostgresTypeRow>(GetNodePostgresTypeSql, dapperParams);
+                var queryParams = new Dictionary<string, object>();
+                queryParams.Add("id", args.Id);
+                var result = await connection.QueryFirstOrDefaultAsync<GetNodePostgresTypeRow>(GetNodePostgresTypeSql, queryParams);
                 return result;
             }
         }

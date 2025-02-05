@@ -15,7 +15,8 @@ public enum KnownTestType
     Exec,
     ExecRows,
     ExecLastId,
-    SqlcEmbed
+    SelfJoinEmbed,
+    JoinEmbed
 }
 
 internal static class Config
@@ -35,7 +36,8 @@ internal static class Config
                     KnownTestType.Exec,
                     KnownTestType.ExecRows,
                     KnownTestType.ExecLastId,
-                    KnownTestType.SqlcEmbed
+                    KnownTestType.JoinEmbed,
+                    KnownTestType.SelfJoinEmbed
                 ]
             }
         },
@@ -64,7 +66,8 @@ internal static class Config
                     KnownTestType.Exec,
                     KnownTestType.ExecRows,
                     KnownTestType.ExecLastId,
-                    KnownTestType.SqlcEmbed
+                    KnownTestType.JoinEmbed,
+                    KnownTestType.SelfJoinEmbed
                 ]
             }
         },
@@ -93,7 +96,8 @@ internal static class Config
                     KnownTestType.Exec,
                     KnownTestType.ExecRows,
                     KnownTestType.ExecLastId,
-                    KnownTestType.SqlcEmbed
+                    KnownTestType.JoinEmbed,
+                    KnownTestType.SelfJoinEmbed
                 ]
             }
         },

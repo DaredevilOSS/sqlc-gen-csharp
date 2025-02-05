@@ -312,6 +312,32 @@ namespace NpgsqlLegacyExampleGen
             }
         }
 
+        private const string GetDuplicateAuthorsSql = "SELECT authors1.id, authors1.name, authors1.bio, authors1.created, authors2.id, authors2.name, authors2.bio, authors2.created FROM  authors  authors1  JOIN  authors  authors2  ON  authors1 . name  =  authors2 . name  WHERE  authors1 . id > authors2 . id  ";  
+        public class GetDuplicateAuthorsRow
+        {
+            public Author Author { get; set; }
+            public Author Author2 { get; set; }
+        };
+        public async Task<List<GetDuplicateAuthorsRow>> GetDuplicateAuthors()
+        {
+            using (var connection = NpgsqlDataSource.Create(ConnectionString))
+            {
+                using (var command = connection.CreateCommand(GetDuplicateAuthorsSql))
+                {
+                    using (var reader = await command.ExecuteReaderAsync())
+                    {
+                        var result = new List<GetDuplicateAuthorsRow>();
+                        while (await reader.ReadAsync())
+                        {
+                            result.Add(new GetDuplicateAuthorsRow { Author = new Author { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? string.Empty : reader.GetString(2), Created = reader.GetDateTime(3) }, Author2 = new Author { Id = reader.GetInt64(4), Name = reader.GetString(5), Bio = reader.IsDBNull(6) ? string.Empty : reader.GetString(6), Created = reader.GetDateTime(7) } });
+                        }
+
+                        return result;
+                    }
+                }
+            }
+        }
+
         private const string TruncateCopyToTestsSql = "TRUNCATE TABLE copy_tests";
         public async Task TruncateCopyToTests()
         {

@@ -15,47 +15,49 @@ public class OneDeclareGen(DbDriver dbDriver)
         var returnType = $"Task<{dbDriver.AddNullableSuffix(returnInterface, false)}>";
         var parametersStr = CommonGen.GetMethodParameterList(argInterface, query.Params);
         return ParseMemberDeclaration($$"""
-                                        public async {{returnType}} {{query.Name}}({{parametersStr}})
-                                        {
-                                            {{GetMethodBody(queryTextConstant, returnInterface, query)}}
-                                        }
-                                        """)!;
+            public async {{returnType}} {{query.Name}}({{parametersStr}})
+            {
+                {{GetMethodBody(queryTextConstant, returnInterface, query)}}
+            }
+            """)!;
     }
 
     private string GetMethodBody(string queryTextConstant, string returnInterface, Query query)
     {
         var (establishConnection, connectionOpen) = dbDriver.EstablishConnection(query);
-        var sqlTextTrasformation = CommonGen.GetSqlTransformations(query, queryTextConstant);
+        var sqlTextTransform = CommonGen.GetSqlTransformations(query, queryTextConstant);
+        var connectionVar = Variable.Connection.AsVarName();
+        var resultVar = Variable.Result.AsVarName();
         return dbDriver.Options.UseDapper ? GetAsDapper() : GetAsDriver();
 
         string GetAsDapper()
         {
-            var dapperParamsSection = CommonGen.GetParameterListForDapper(query.Params);
-            var dapperArgs = dapperParamsSection != string.Empty ? $", {Variable.DapperParams.AsVarName()}" : string.Empty;
+            var dapperParamsSection = CommonGen.ConstructDapperParamsDict(query.Params);
+            var dapperArgs = dapperParamsSection != string.Empty ? $", {Variable.QueryParams.AsVarName()}" : string.Empty;
             var returnType = dbDriver.AddNullableSuffix(returnInterface, false);
             return $$"""
                         using ({{establishConnection}})
-                        {{{sqlTextTrasformation}}{{dapperParamsSection}}
-                            var result = await connection.QueryFirstOrDefaultAsync<{{returnType}}>({{queryTextConstant}}{{dapperArgs}});
-                            return result;
+                        {{{sqlTextTransform}}{{dapperParamsSection}}
+                            var {{resultVar}} = await {{connectionVar}}.QueryFirstOrDefaultAsync<{{returnType}}>({{queryTextConstant}}{{dapperArgs}});
+                            return {{resultVar}};
                         }
                      """;
         }
 
         string GetAsDriver()
         {
-            var createSqlCommand = dbDriver.CreateSqlCommand(sqlTextTrasformation != string.Empty ? Variable.TransformedSql.AsVarName() : queryTextConstant);
-            var commandParameters = CommonGen.GetCommandParameters(query.Params);
+            var createSqlCommand = dbDriver.CreateSqlCommand(sqlTextTransform != string.Empty ? Variable.SqlText.AsVarName() : queryTextConstant);
+            var commandParameters = CommonGen.AddParametersToCommand(query.Params);
             var initDataReader = CommonGen.InitDataReader();
             var awaitReaderRow = CommonGen.AwaitReaderRow();
-            var returnDataclass = dbDriver.InstantiateDataclass(query.Columns.ToArray(), returnInterface);
+            var returnDataclass = CommonGen.InstantiateDataclass(query.Columns.ToArray(), returnInterface);
             return $$"""
                      using ({{establishConnection}})
                      {
-                         {{connectionOpen.AppendSemicolonUnlessEmpty()}}{{sqlTextTrasformation}}
+                         {{connectionOpen.AppendSemicolonUnlessEmpty()}}{{sqlTextTransform}}
                          using ({{createSqlCommand}})
                          {
-                            {{commandParameters.JoinByNewLine()}}
+                            {{commandParameters}}
                              using ({{initDataReader}})
                              {
                                  if ({{awaitReaderRow}})

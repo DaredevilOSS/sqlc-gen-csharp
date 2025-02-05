@@ -168,40 +168,42 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId
     {
         var (establishConnection, connectionOpen) = EstablishConnection(query);
         var beginBinaryImport = $"{Variable.Connection.AsVarName()}.BeginBinaryImportAsync({queryTextConstant}";
+        var connectionVar = Variable.Connection.AsVarName();
+        var writerVar = Variable.Writer.AsVarName();
+
         var addRowsToCopyCommand = AddRowsToCopyCommand();
         return $$"""
                  using ({{establishConnection}})
                  {
                      {{connectionOpen.AppendSemicolonUnlessEmpty()}}
-                     await {{Variable.Connection.AsVarName()}}.OpenAsync();
-                     using (var {{Variable.Writer.AsVarName()}} = await {{beginBinaryImport}}))
+                     await {{connectionVar}}.OpenAsync();
+                     using (var {{writerVar}} = await {{beginBinaryImport}}))
                      {
                         {{addRowsToCopyCommand}}
-                        await {{Variable.Writer.AsVarName()}}.CompleteAsync();
+                        await {{writerVar}}.CompleteAsync();
                      }
-                     await {{Variable.Connection.AsVarName()}}.CloseAsync();
+                     await {{connectionVar}}.CloseAsync();
                  }
                  """;
 
         string AddRowsToCopyCommand()
         {
-            var constructRow = new List<string>()
-                .Append($"await {Variable.Writer.AsVarName()}.StartRowAsync();")
-                .Concat(query.Params
+            var rowVar = Variable.Row.AsVarName();
+            var constructRowFields = query.Params
                     .Select(p =>
                     {
                         var typeOverride = GetColumnDbTypeOverride(p.Column);
-                        var partialStmt =
-                            $"await {Variable.Writer.AsVarName()}.WriteAsync({Variable.Row.AsVarName()}.{p.Column.Name.ToPascalCase()}";
+                        var partialStmt = $"await {writerVar}.WriteAsync({rowVar}.{p.Column.Name.ToPascalCase()}";
                         return typeOverride is null
                             ? $"{partialStmt});"
                             : $"{partialStmt}, {typeOverride});";
-                    }))
+                    })
                 .JoinByNewLine();
             return $$"""
-                     foreach (var {{Variable.Row.AsVarName()}} in args) 
+                     foreach (var {{rowVar}} in args) 
                      {
-                          {{constructRow}}
+                          await {{writerVar}}.StartRowAsync();
+                          {{constructRowFields}}
                      }
                      """;
         }

@@ -106,5 +106,20 @@ namespace SqlcGenCsharpTests
             var actual = await QuerySql.ListAllAuthorsBooks();
             Assert.That(actual is [{ Author: { Name: DataGenerator.BojackAuthor, Bio: DataGenerator.BojackTheme, }, Book.Name: DataGenerator.BojackBookTitle, }, { Author: { Name: DataGenerator.DrSeussAuthor, Bio: DataGenerator.DrSeussQuote, }, Book.Name: DataGenerator.DrSeussBookTitle, }]);
         }
+
+        [Test]
+        public async Task TestSelfJoinEmbed()
+        {
+            var createAuthorArgs = new QuerySql.CreateAuthorArgs
+            {
+                Name = DataGenerator.BojackAuthor,
+                Bio = DataGenerator.BojackTheme
+            };
+            await QuerySql.CreateAuthor(createAuthorArgs);
+            await QuerySql.CreateAuthor(createAuthorArgs);
+            var actual = await QuerySql.GetDuplicateAuthors();
+            Assert.That(actual is [{ Author: { Name: DataGenerator.BojackAuthor, Bio: DataGenerator.BojackTheme, }, Author2: { Name: DataGenerator.BojackAuthor, Bio: DataGenerator.BojackTheme, } }]);
+            Assert.That(actual[0].Author.Id, Is.Not.EqualTo(actual[0].Author2.Id));
+        }
     }
 }

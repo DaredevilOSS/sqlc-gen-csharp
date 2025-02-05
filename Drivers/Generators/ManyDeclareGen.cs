@@ -15,59 +15,61 @@ public class ManyDeclareGen(DbDriver dbDriver)
         var parametersStr = CommonGen.GetMethodParameterList(argInterface, query.Params);
         var returnType = $"Task<List<{returnInterface}>>";
         return ParseMemberDeclaration($$"""
-                                        public async {{returnType}} {{query.Name}}({{parametersStr}})
-                                        {
-                                            {{GetMethodBody(queryTextConstant, returnInterface, query)}}
-                                        }
-                                        """)!;
+            public async {{returnType}} {{query.Name}}({{parametersStr}})
+            {
+                {{GetMethodBody(queryTextConstant, returnInterface, query)}}
+            }
+            """)!;
     }
 
     private string GetMethodBody(string queryTextConstant, string returnInterface, Query query)
     {
         var (establishConnection, connectionOpen) = dbDriver.EstablishConnection(query);
-        var sqlTextTrasformation = CommonGen.GetSqlTransformations(query, queryTextConstant);
+        var sqlTextTransform = CommonGen.GetSqlTransformations(query, queryTextConstant);
+        var resultVar = Variable.Result.AsVarName();
         return dbDriver.Options.UseDapper ? GetAsDapper() : GetAsDriver();
 
         string GetAsDapper()
         {
-            var dapperParamsSection = CommonGen.GetParameterListForDapper(query.Params);
-            var dapperArgs = dapperParamsSection != string.Empty ? $", {Variable.DapperParams.AsVarName()}" : string.Empty;
+            var dapperParamsSection = CommonGen.ConstructDapperParamsDict(query.Params);
+            var dapperArgs = dapperParamsSection != string.Empty ? $", {Variable.QueryParams.AsVarName()}" : string.Empty;
             var returnType = dbDriver.AddNullableSuffix(returnInterface, true);
-            var sqlQuery = sqlTextTrasformation != string.Empty ? Variable.TransformedSql.AsVarName() : queryTextConstant;
+            var sqlQuery = sqlTextTransform != string.Empty ? Variable.SqlText.AsVarName() : queryTextConstant;
+
             return $$"""
                         using ({{establishConnection}})
-                        {{{sqlTextTrasformation}}{{dapperParamsSection}}
-                            var results = await connection.QueryAsync<{{returnType}}>({{sqlQuery}}{{dapperArgs}});
-                            return results.AsList();
+                        {{{sqlTextTransform}}{{dapperParamsSection}}
+                            var {{resultVar}} = await {{Variable.Connection.AsVarName()}}.QueryAsync<{{returnType}}>({{sqlQuery}}{{dapperArgs}});
+                            return {{resultVar}}.AsList();
                         }
                      """;
         }
 
         string GetAsDriver()
         {
-            var createSqlCommand = dbDriver.CreateSqlCommand(sqlTextTrasformation != string.Empty ? Variable.TransformedSql.AsVarName() : queryTextConstant);
-            var commandParameters = CommonGen.GetCommandParameters(query.Params);
+            var createSqlCommand = dbDriver.CreateSqlCommand(sqlTextTransform != string.Empty ? Variable.SqlText.AsVarName() : queryTextConstant);
+            var commandParameters = CommonGen.AddParametersToCommand(query.Params);
             var initDataReader = CommonGen.InitDataReader();
             var awaitReaderRow = CommonGen.AwaitReaderRow();
-            var dataclassInit = dbDriver.InstantiateDataclass(query.Columns.ToArray(), returnInterface);
+            var dataclassInit = CommonGen.InstantiateDataclass(query.Columns.ToArray(), returnInterface);
             var readWhileExists = $$"""
                                     while ({{awaitReaderRow}})
                                     {
-                                        {{Variable.Result.AsVarName()}}.Add({{dataclassInit}});
+                                        {{resultVar}}.Add({{dataclassInit}});
                                     }
                                     """;
             return $$"""
                      using ({{establishConnection}})
                      {
-                         {{connectionOpen.AppendSemicolonUnlessEmpty()}}{{sqlTextTrasformation}}
+                         {{connectionOpen.AppendSemicolonUnlessEmpty()}}{{sqlTextTransform}}
                          using ({{createSqlCommand}})
                          {
-                             {{commandParameters.JoinByNewLine()}}
+                             {{commandParameters}}
                              using ({{initDataReader}})
                              {
-                                 var {{Variable.Result.AsVarName()}} = new List<{{returnInterface}}>();
+                                 var {{resultVar}} = new List<{{returnInterface}}>();
                                  {{readWhileExists}}
-                                 return {{Variable.Result.AsVarName()}};
+                                 return {{resultVar}};
                              }
                          }
                      }

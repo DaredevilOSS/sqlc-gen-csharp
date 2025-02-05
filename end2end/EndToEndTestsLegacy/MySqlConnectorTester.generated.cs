@@ -189,5 +189,50 @@ namespace SqlcGenCsharpTests
             y = y.OrderBy<QuerySql.ListAllAuthorsBooksRow, object>(o => o.Author.Name + o.Book.Name).ToList();
             return !x.Where((t, i) => !Equals(t, y[i])).Any();
         }
+
+        [Test]
+        public async Task TestSelfJoinEmbed()
+        {
+            var createAuthorArgs = new QuerySql.CreateAuthorArgs
+            {
+                Name = DataGenerator.BojackAuthor,
+                Bio = DataGenerator.BojackTheme
+            };
+            await QuerySql.CreateAuthor(createAuthorArgs);
+            await QuerySql.CreateAuthor(createAuthorArgs);
+            var expected = new List<QuerySql.GetDuplicateAuthorsRow>()
+            {
+                new QuerySql.GetDuplicateAuthorsRow
+                {
+                    Author = new Author
+                    {
+                        Name = DataGenerator.BojackAuthor,
+                        Bio = DataGenerator.BojackTheme
+                    },
+                    Author2 = new Author
+                    {
+                        Name = DataGenerator.BojackAuthor,
+                        Bio = DataGenerator.BojackTheme
+                    }
+                }
+            };
+            var actual = await QuerySql.GetDuplicateAuthors();
+            Assert.That(SequenceEquals(expected, actual));
+            Assert.That(actual[0].Author.Id, Is.Not.EqualTo(actual[0].Author2.Id));
+        }
+
+        private static bool Equals(QuerySql.GetDuplicateAuthorsRow x, QuerySql.GetDuplicateAuthorsRow y)
+        {
+            return x.Author.Name.Equals(y.Author.Name) && x.Author.Bio.Equals(y.Author.Bio) && x.Author2.Name.Equals(y.Author2.Name) && x.Author2.Bio.Equals(y.Author2.Bio);
+        }
+
+        private static bool SequenceEquals(List<QuerySql.GetDuplicateAuthorsRow> x, List<QuerySql.GetDuplicateAuthorsRow> y)
+        {
+            if (x.Count != y.Count)
+                return false;
+            x = x.OrderBy<QuerySql.GetDuplicateAuthorsRow, object>(o => o.Author.Name + o.Author2.Name).ToList();
+            y = y.OrderBy<QuerySql.GetDuplicateAuthorsRow, object>(o => o.Author.Name + o.Author2.Name).ToList();
+            return !x.Where((t, i) => !Equals(t, y[i])).Any();
+        }
     }
 }

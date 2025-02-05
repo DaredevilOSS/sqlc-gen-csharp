@@ -5,16 +5,18 @@ public enum Variable
     Config,
     ConnectionString,
     Connection,
-    Reader,
-    Row,
-    Writer,
-    CsvWriter,
     Command,
-    Result,
-    Args,
+
+    Reader,
+    Writer,
     Loader,
-    TransformedSql,
-    DapperParams
+    CsvWriter,
+
+    Args,
+    QueryParams,
+    SqlText,
+    Row,
+    Result
 }
 
 public static class VariablesExtensions
