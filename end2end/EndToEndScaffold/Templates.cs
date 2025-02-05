@@ -492,6 +492,94 @@ public static class Templates
                              return !x.Where((t, i) => !Equals(t, y[i])).Any();
                          }
                          """
+            },
+            [KnownTestType.Slice] = new TestImpl
+            {
+                Modern = """
+                            [Test]
+                            public async Task TestSliceIds()
+                            {
+                                var args = new QuerySql.CreateAuthorReturnIdArgs
+                                {
+                                    Name = DataGenerator.GenericAuthor,
+                                    Bio = DataGenerator.GenericQuote1
+                                };
+                                var insertedId1 = await QuerySql.CreateAuthorReturnId(args);
+                                var insertedId2 = await QuerySql.CreateAuthorReturnId(args);
+                                await QuerySql.CreateAuthorReturnId(args);
+    
+                                var actual =
+                                    await QuerySql.SelectAuthorsWithSlice(
+                                        new QuerySql.SelectAuthorsWithSliceArgs { Ids = [insertedId1, insertedId2] });
+    
+                                ClassicAssert.AreEqual(2, actual.Count);
+                            }
+                         """,
+                Legacy = """
+                            [Test]
+                            public async Task TestSliceIds()
+                            {
+                                var args = new QuerySql.CreateAuthorReturnIdArgs
+                                {
+                                    Name = DataGenerator.GenericAuthor,
+                                    Bio = DataGenerator.GenericQuote1
+                                };
+                                var insertedId1 = await QuerySql.CreateAuthorReturnId(args);
+                                var insertedId2 = await QuerySql.CreateAuthorReturnId(args);
+                                await QuerySql.CreateAuthorReturnId(args);
+    
+                                var actual = await QuerySql.SelectAuthorsWithSlice(new QuerySql.SelectAuthorsWithSliceArgs { Ids = new[] { insertedId1, insertedId2 } });
+    
+                                ClassicAssert.AreEqual(2, actual.Count);
+                            }
+                         """
+            },
+            [KnownTestType.MultipleSlices] = new TestImpl
+            {
+                Modern = """
+                            [Test]
+                            public async Task TestMultipleSlices()
+                            {
+                                var args = new QuerySql.CreateAuthorReturnIdArgs
+                                {
+                                    Name = DataGenerator.GenericAuthor,
+                                    Bio = DataGenerator.GenericQuote1
+                                };
+                                var insertedId1 = await QuerySql.CreateAuthorReturnId(args);
+                                var insertedId2 = await QuerySql.CreateAuthorReturnId(new QuerySql.CreateAuthorReturnIdArgs
+                                {
+                                    Name = DataGenerator.BojackAuthor,
+                                    Bio = DataGenerator.GenericQuote1
+                                });
+                                await QuerySql.CreateAuthorReturnId(args);
+
+                                var actual = await QuerySql.SelectAuthorsWithTwoSlices(new QuerySql.SelectAuthorsWithTwoSlicesArgs { Ids = [insertedId1, insertedId2], Names = [DataGenerator.GenericAuthor] });
+
+                                ClassicAssert.AreEqual(1, actual.Count);
+                            }
+                         """,
+                Legacy = """
+                            [Test]
+                            public async Task TestMultipleSlices()
+                            {
+                                var sqlArgs = new QuerySql.CreateAuthorReturnIdArgs
+                                {
+                                    Name = DataGenerator.GenericAuthor,
+                                    Bio = DataGenerator.GenericQuote1
+                                };
+                                var insertedId1 = await QuerySql.CreateAuthorReturnId(sqlArgs);
+                                var insertedId2 = await QuerySql.CreateAuthorReturnId(new QuerySql.CreateAuthorReturnIdArgs
+                                {
+                                    Name = DataGenerator.BojackAuthor,
+                                    Bio = DataGenerator.GenericQuote1
+                                });
+                                await QuerySql.CreateAuthorReturnId(sqlArgs);
+
+                                var actual = await QuerySql.SelectAuthorsWithTwoSlices(new QuerySql.SelectAuthorsWithTwoSlicesArgs { Ids = new[] { insertedId1, insertedId2 }, Names = new[] { DataGenerator.GenericAuthor } });
+
+                                ClassicAssert.AreEqual(1, actual.Count);
+                            }
+                         """
             }
         };
 }

@@ -121,5 +121,35 @@ namespace SqlcGenCsharpTests
             Assert.That(actual is [{ Author: { Name: DataGenerator.BojackAuthor, Bio: DataGenerator.BojackTheme, }, Author2: { Name: DataGenerator.BojackAuthor, Bio: DataGenerator.BojackTheme, } }]);
             Assert.That(actual[0].Author.Id, Is.Not.EqualTo(actual[0].Author2.Id));
         }
+
+        [Test]
+        public async Task TestSliceIds()
+        {
+            var args = new QuerySql.CreateAuthorReturnIdArgs
+            {
+                Name = DataGenerator.GenericAuthor,
+                Bio = DataGenerator.GenericQuote1
+            };
+            var insertedId1 = await QuerySql.CreateAuthorReturnId(args);
+            var insertedId2 = await QuerySql.CreateAuthorReturnId(args);
+            await QuerySql.CreateAuthorReturnId(args);
+            var actual = await QuerySql.SelectAuthorsWithSlice(new QuerySql.SelectAuthorsWithSliceArgs { Ids = [insertedId1, insertedId2] });
+            ClassicAssert.AreEqual(2, actual.Count);
+        }
+
+        [Test]
+        public async Task TestMultipleSlices()
+        {
+            var args = new QuerySql.CreateAuthorReturnIdArgs
+            {
+                Name = DataGenerator.GenericAuthor,
+                Bio = DataGenerator.GenericQuote1
+            };
+            var insertedId1 = await QuerySql.CreateAuthorReturnId(args);
+            var insertedId2 = await QuerySql.CreateAuthorReturnId(new QuerySql.CreateAuthorReturnIdArgs { Name = DataGenerator.BojackAuthor, Bio = DataGenerator.GenericQuote1 });
+            await QuerySql.CreateAuthorReturnId(args);
+            var actual = await QuerySql.SelectAuthorsWithTwoSlices(new QuerySql.SelectAuthorsWithTwoSlicesArgs { Ids = [insertedId1, insertedId2], Names = [DataGenerator.GenericAuthor] });
+            ClassicAssert.AreEqual(1, actual.Count);
+        }
     }
 }

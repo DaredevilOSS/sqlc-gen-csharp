@@ -16,7 +16,9 @@ public enum KnownTestType
     ExecRows,
     ExecLastId,
     SelfJoinEmbed,
-    JoinEmbed
+    JoinEmbed,
+    Slice,
+    MultipleSlices
 }
 
 internal static class Config
@@ -37,7 +39,9 @@ internal static class Config
                     KnownTestType.ExecRows,
                     KnownTestType.ExecLastId,
                     KnownTestType.JoinEmbed,
-                    KnownTestType.SelfJoinEmbed
+                    KnownTestType.SelfJoinEmbed,
+                    KnownTestType.Slice,
+                    KnownTestType.MultipleSlices
                 ]
             }
         },
@@ -51,7 +55,9 @@ internal static class Config
                         KnownTestType.Many,
                         KnownTestType.Exec,
                         KnownTestType.ExecRows,
-                        KnownTestType.ExecLastId
+                        KnownTestType.ExecLastId,
+                        KnownTestType.Slice,
+                        KnownTestType.MultipleSlices
                     ]
                 }
         },
@@ -97,7 +103,9 @@ internal static class Config
                     KnownTestType.ExecRows,
                     KnownTestType.ExecLastId,
                     KnownTestType.JoinEmbed,
-                    KnownTestType.SelfJoinEmbed
+                    KnownTestType.SelfJoinEmbed,
+                    KnownTestType.Slice,
+                    KnownTestType.MultipleSlices
                 ]
             }
         },
@@ -111,7 +119,9 @@ internal static class Config
                     KnownTestType.Many,
                     KnownTestType.Exec,
                     KnownTestType.ExecRows,
-                    KnownTestType.ExecLastId
+                    KnownTestType.ExecLastId,
+                    KnownTestType.Slice,
+                    KnownTestType.MultipleSlices
                 ]
             }
         },
