@@ -17,7 +17,10 @@ public enum KnownTestType
     ExecLastId,
     SelfJoinEmbed,
     JoinEmbed,
+    PartialEmbed,
+    Array,
     Slice,
+    MultipleArrays,
     MultipleSlices
 }
 
@@ -75,7 +78,9 @@ internal static class Config
                     KnownTestType.ExecRows,
                     KnownTestType.ExecLastId,
                     KnownTestType.JoinEmbed,
-                    KnownTestType.SelfJoinEmbed
+                    KnownTestType.SelfJoinEmbed,
+                    KnownTestType.Array,
+                    KnownTestType.MultipleArrays
                 ]
             }
         },
@@ -91,7 +96,9 @@ internal static class Config
                     KnownTestType.ExecRows,
                     KnownTestType.ExecLastId,
                     KnownTestType.JoinEmbed,
-                    KnownTestType.SelfJoinEmbed
+                    KnownTestType.SelfJoinEmbed,
+                    KnownTestType.Array,
+                    KnownTestType.MultipleArrays
                 ]
             }
         },

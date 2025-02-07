@@ -2,7 +2,6 @@ using NpgsqlLegacyExampleGen;
 using NUnit.Framework;
 using NUnit.Framework.Legacy;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -20,38 +19,6 @@ namespace SqlcGenCsharpTests
         {
             await QuerySql.TruncateAuthors();
             await QuerySql.TruncateNodePostgresTypes();
-        }
-
-        [Test]
-        public async Task TestSlice()
-        {
-            await QuerySql.CreateAuthor(new QuerySql.CreateAuthorArgs
-            {
-                Name = DataGenerator.BojackAuthor,
-                Bio = DataGenerator.BojackTheme
-            });
-            var author2 = await QuerySql.CreateAuthor(new QuerySql.CreateAuthorArgs
-            {
-                Name = DataGenerator.DrSeussAuthor,
-                Bio = DataGenerator.DrSeussQuote
-            });
-            var author3 = await QuerySql.CreateAuthor(new QuerySql.CreateAuthorArgs
-            {
-                Name = DataGenerator.GenericAuthor,
-                Bio = DataGenerator.GenericQuote1
-            });
-
-            var actual = await QuerySql.SelectAuthorsWithSlice(new QuerySql.SelectAuthorsWithSliceArgs
-            {
-                LongArr1 = new long[] { author2.Id, author3.Id }
-            });
-            ClassicAssert.AreEqual(2, actual.Count);
-            var expected = new List<QuerySql.SelectAuthorsWithSliceRow>
-            {
-                new QuerySql.SelectAuthorsWithSliceRow { Name = DataGenerator.DrSeussAuthor, Bio = DataGenerator.DrSeussQuote },
-                new QuerySql.SelectAuthorsWithSliceRow { Name = DataGenerator.GenericAuthor, Bio = DataGenerator.GenericQuote1 }
-            };
-            Assert.That(SequenceEquals(expected, actual));
         }
 
         [Test]
@@ -144,19 +111,6 @@ namespace SqlcGenCsharpTests
                 x.CText.Equals(y.CText) &&
                 x.CTextArray.SequenceEqual(y.CTextArray) &&
                 x.CIntegerArray.SequenceEqual(y.CIntegerArray);
-        }
-
-        private static bool Equals(QuerySql.SelectAuthorsWithSliceRow x, QuerySql.SelectAuthorsWithSliceRow y)
-        {
-            return x.Name.Equals(y.Name) && x.Bio.Equals(y.Bio);
-        }
-
-        private static bool SequenceEquals(List<QuerySql.SelectAuthorsWithSliceRow> x, List<QuerySql.SelectAuthorsWithSliceRow> y)
-        {
-            if (x.Count != y.Count) return false;
-            x = x.OrderBy<QuerySql.SelectAuthorsWithSliceRow, object>(o => o.Name + o.Bio).ToList();
-            y = y.OrderBy<QuerySql.SelectAuthorsWithSliceRow, object>(o => o.Name + o.Bio).ToList();
-            return !x.Where((t, i) => !Equals(t, y[i])).Any();
         }
     }
 }

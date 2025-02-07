@@ -170,25 +170,50 @@ namespace NpgsqlDapperLegacyExampleGen
             }
         }
 
-        private const string SelectAuthorsWithSliceSql = "SELECT id, name, bio, created FROM authors WHERE id = ANY(@longArr_1::BIGINT[])";
-        public class SelectAuthorsWithSliceRow
+        private const string GetAuthorsByIdsSql = "SELECT id, name, bio, created FROM authors WHERE id = ANY(@longArr_1::BIGINT[])";
+        public class GetAuthorsByIdsRow
         {
             public long Id { get; set; }
             public string Name { get; set; }
             public string Bio { get; set; }
             public DateTime Created { get; set; }
         };
-        public class SelectAuthorsWithSliceArgs
+        public class GetAuthorsByIdsArgs
         {
             public long[] LongArr1 { get; set; }
         };
-        public async Task<List<SelectAuthorsWithSliceRow>> SelectAuthorsWithSlice(SelectAuthorsWithSliceArgs args)
+        public async Task<List<GetAuthorsByIdsRow>> GetAuthorsByIds(GetAuthorsByIdsArgs args)
         {
             using (var connection = new NpgsqlConnection(ConnectionString))
             {
                 var queryParams = new Dictionary<string, object>();
                 queryParams.Add("longArr_1", args.LongArr1);
-                var result = await connection.QueryAsync<SelectAuthorsWithSliceRow>(SelectAuthorsWithSliceSql, queryParams);
+                var result = await connection.QueryAsync<GetAuthorsByIdsRow>(GetAuthorsByIdsSql, queryParams);
+                return result.AsList();
+            }
+        }
+
+        private const string GetAuthorsByIdsAndNamesSql = "SELECT id, name, bio, created FROM authors WHERE id = ANY(@longArr_1::BIGINT[]) AND name = ANY(@stringArr_2::TEXT[])";
+        public class GetAuthorsByIdsAndNamesRow
+        {
+            public long Id { get; set; }
+            public string Name { get; set; }
+            public string Bio { get; set; }
+            public DateTime Created { get; set; }
+        };
+        public class GetAuthorsByIdsAndNamesArgs
+        {
+            public long[] LongArr1 { get; set; }
+            public string[] StringArr2 { get; set; }
+        };
+        public async Task<List<GetAuthorsByIdsAndNamesRow>> GetAuthorsByIdsAndNames(GetAuthorsByIdsAndNamesArgs args)
+        {
+            using (var connection = new NpgsqlConnection(ConnectionString))
+            {
+                var queryParams = new Dictionary<string, object>();
+                queryParams.Add("longArr_1", args.LongArr1);
+                queryParams.Add("stringArr_2", args.StringArr2);
+                var result = await connection.QueryAsync<GetAuthorsByIdsAndNamesRow>(GetAuthorsByIdsAndNamesSql, queryParams);
                 return result.AsList();
             }
         }
@@ -254,6 +279,40 @@ namespace NpgsqlDapperLegacyExampleGen
                         while (await reader.ReadAsync())
                         {
                             result.Add(new GetDuplicateAuthorsRow { Author = new Author { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? string.Empty : reader.GetString(2), Created = reader.GetDateTime(3) }, Author2 = new Author { Id = reader.GetInt64(4), Name = reader.GetString(5), Bio = reader.IsDBNull(6) ? string.Empty : reader.GetString(6), Created = reader.GetDateTime(7) } });
+                        }
+
+                        return result;
+                    }
+                }
+            }
+        }
+
+        private const string GetAuthorsByBookNameSql = "SELECT authors.id, authors.name, authors.bio, authors.created, books.id, books.name, books.author_id, books.description FROM  authors  JOIN  books  ON  authors . id  =  books . author_id  WHERE  books . name  =  @name  ";  
+        public class GetAuthorsByBookNameRow
+        {
+            public long Id { get; set; }
+            public string Name { get; set; }
+            public string Bio { get; set; }
+            public DateTime Created { get; set; }
+            public Book Book { get; set; }
+        };
+        public class GetAuthorsByBookNameArgs
+        {
+            public string Name { get; set; }
+        };
+        public async Task<List<GetAuthorsByBookNameRow>> GetAuthorsByBookName(GetAuthorsByBookNameArgs args)
+        {
+            using (var connection = NpgsqlDataSource.Create(ConnectionString))
+            {
+                using (var command = connection.CreateCommand(GetAuthorsByBookNameSql))
+                {
+                    command.Parameters.AddWithValue("@name", args.Name);
+                    using (var reader = await command.ExecuteReaderAsync())
+                    {
+                        var result = new List<GetAuthorsByBookNameRow>();
+                        while (await reader.ReadAsync())
+                        {
+                            result.Add(new GetAuthorsByBookNameRow { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? string.Empty : reader.GetString(2), Created = reader.GetDateTime(3), Book = new Book { Id = reader.GetInt64(4), Name = reader.GetString(5), AuthorId = reader.GetInt64(6), Description = reader.IsDBNull(7) ? string.Empty : reader.GetString(7) } });
                         }
 
                         return result;

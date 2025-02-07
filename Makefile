@@ -9,8 +9,11 @@ protobuf-generate:
 
 unit-tests:
 	dotnet test SqlcGenCsharpTests
+
+generate-end2end-tests:
+	./end2end/scripts/generate_tests.sh
     
-run-end2end-tests:
+run-end2end-tests: generate-end2end-tests
 	./end2end/scripts/run_tests.sh
 
 # process type plugin

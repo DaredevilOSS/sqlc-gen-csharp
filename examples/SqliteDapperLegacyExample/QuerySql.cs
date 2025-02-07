@@ -134,48 +134,48 @@ namespace SqliteDapperLegacyExampleGen
             }
         }
 
-        private const string SelectAuthorsWithSliceSql = "SELECT id, name, bio FROM authors WHERE id IN (/*SLICE:ids*/@ids)";
-        public class SelectAuthorsWithSliceRow
+        private const string GetAuthorsByIdsSql = "SELECT id, name, bio FROM authors WHERE id IN (/*SLICE:ids*/@ids)";
+        public class GetAuthorsByIdsRow
         {
             public int Id { get; set; }
             public string Name { get; set; }
             public string Bio { get; set; }
         };
-        public class SelectAuthorsWithSliceArgs
+        public class GetAuthorsByIdsArgs
         {
             public int[] Ids { get; set; }
         };
-        public async Task<List<SelectAuthorsWithSliceRow>> SelectAuthorsWithSlice(SelectAuthorsWithSliceArgs args)
+        public async Task<List<GetAuthorsByIdsRow>> GetAuthorsByIds(GetAuthorsByIdsArgs args)
         {
             using (var connection = new SqliteConnection(ConnectionString))
             {
-                var sqlText = SelectAuthorsWithSliceSql;
+                var sqlText = GetAuthorsByIdsSql;
                 sqlText = Utils.GetTransformedString(sqlText, args.Ids, "Ids", "ids");
                 var queryParams = new Dictionary<string, object>();
                 for (int i = 0; i < args.Ids.Length; i++)
                     queryParams.Add($"@IdsArg{i}", args.Ids[i]);
-                var result = await connection.QueryAsync<SelectAuthorsWithSliceRow>(sqlText, queryParams);
+                var result = await connection.QueryAsync<GetAuthorsByIdsRow>(sqlText, queryParams);
                 return result.AsList();
             }
         }
 
-        private const string SelectAuthorsWithTwoSlicesSql = "SELECT id, name, bio FROM authors WHERE id IN (/*SLICE:ids*/@ids) AND name IN (/*SLICE:names*/@names)";
-        public class SelectAuthorsWithTwoSlicesRow
+        private const string GetAuthorsByIdsAndNamesSql = "SELECT id, name, bio FROM authors WHERE id IN (/*SLICE:ids*/@ids) AND name IN (/*SLICE:names*/@names)";
+        public class GetAuthorsByIdsAndNamesRow
         {
             public int Id { get; set; }
             public string Name { get; set; }
             public string Bio { get; set; }
         };
-        public class SelectAuthorsWithTwoSlicesArgs
+        public class GetAuthorsByIdsAndNamesArgs
         {
             public int[] Ids { get; set; }
             public string[] Names { get; set; }
         };
-        public async Task<List<SelectAuthorsWithTwoSlicesRow>> SelectAuthorsWithTwoSlices(SelectAuthorsWithTwoSlicesArgs args)
+        public async Task<List<GetAuthorsByIdsAndNamesRow>> GetAuthorsByIdsAndNames(GetAuthorsByIdsAndNamesArgs args)
         {
             using (var connection = new SqliteConnection(ConnectionString))
             {
-                var sqlText = SelectAuthorsWithTwoSlicesSql;
+                var sqlText = GetAuthorsByIdsAndNamesSql;
                 sqlText = Utils.GetTransformedString(sqlText, args.Ids, "Ids", "ids");
                 sqlText = Utils.GetTransformedString(sqlText, args.Names, "Names", "names");
                 var queryParams = new Dictionary<string, object>();
@@ -183,7 +183,7 @@ namespace SqliteDapperLegacyExampleGen
                     queryParams.Add($"@IdsArg{i}", args.Ids[i]);
                 for (int i = 0; i < args.Names.Length; i++)
                     queryParams.Add($"@NamesArg{i}", args.Names[i]);
-                var result = await connection.QueryAsync<SelectAuthorsWithTwoSlicesRow>(sqlText, queryParams);
+                var result = await connection.QueryAsync<GetAuthorsByIdsAndNamesRow>(sqlText, queryParams);
                 return result.AsList();
             }
         }
@@ -220,7 +220,7 @@ namespace SqliteDapperLegacyExampleGen
             }
         }
 
-        private const string ListAllAuthorsBooksSql = "SELECT authors.id, authors.name, authors.bio, books.id, books.name, books.author_id, books.description FROM authors JOIN books ON authors.id = books.author_id ORDER BY authors.name";
+        private const string ListAllAuthorsBooksSql = "SELECT authors.id, authors.name, authors.bio, books.id, books.name, books.author_id, books.description  FROM  authors  JOIN  books  ON  authors . id  =  books . author_id  ORDER  BY  authors . name  ";  
         public class ListAllAuthorsBooksRow
         {
             public Author Author { get; set; }
@@ -266,6 +266,40 @@ namespace SqliteDapperLegacyExampleGen
                         while (await reader.ReadAsync())
                         {
                             result.Add(new GetDuplicateAuthorsRow { Author = new Author { Id = reader.GetInt32(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? string.Empty : reader.GetString(2) }, Author2 = new Author { Id = reader.GetInt32(3), Name = reader.GetString(4), Bio = reader.IsDBNull(5) ? string.Empty : reader.GetString(5) } });
+                        }
+
+                        return result;
+                    }
+                }
+            }
+        }
+
+        private const string GetAuthorsByBookNameSql = "SELECT authors.id, authors.name, authors.bio, books.id, books.name, books.author_id, books.description FROM  authors  JOIN  books  ON  authors . id  =  books . author_id  WHERE  books . name  =  @name  ";  
+        public class GetAuthorsByBookNameRow
+        {
+            public int Id { get; set; }
+            public string Name { get; set; }
+            public string Bio { get; set; }
+            public Book Book { get; set; }
+        };
+        public class GetAuthorsByBookNameArgs
+        {
+            public string Name { get; set; }
+        };
+        public async Task<List<GetAuthorsByBookNameRow>> GetAuthorsByBookName(GetAuthorsByBookNameArgs args)
+        {
+            using (var connection = new SqliteConnection(ConnectionString))
+            {
+                connection.Open();
+                using (var command = new SqliteCommand(GetAuthorsByBookNameSql, connection))
+                {
+                    command.Parameters.AddWithValue("@name", args.Name);
+                    using (var reader = await command.ExecuteReaderAsync())
+                    {
+                        var result = new List<GetAuthorsByBookNameRow>();
+                        while (await reader.ReadAsync())
+                        {
+                            result.Add(new GetAuthorsByBookNameRow { Id = reader.GetInt32(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? string.Empty : reader.GetString(2), Book = new Book { Id = reader.GetInt32(3), Name = reader.GetString(4), AuthorId = reader.GetInt32(5), Description = reader.IsDBNull(6) ? string.Empty : reader.GetString(6) } });
                         }
 
                         return result;

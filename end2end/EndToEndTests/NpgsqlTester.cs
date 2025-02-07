@@ -23,43 +23,6 @@ public partial class NpgsqlTester
     }
 
     [Test]
-    public async Task TestSlice()
-    {
-        await QuerySql.CreateAuthor(new QuerySql.CreateAuthorArgs
-        {
-            Name = DataGenerator.BojackAuthor,
-            Bio = DataGenerator.BojackTheme
-        });
-        var author2 = await QuerySql.CreateAuthor(new QuerySql.CreateAuthorArgs
-        {
-            Name = DataGenerator.DrSeussAuthor,
-            Bio = DataGenerator.DrSeussQuote
-        });
-
-        var author3 = await QuerySql.CreateAuthor(new QuerySql.CreateAuthorArgs
-        {
-            Name = DataGenerator.GenericAuthor,
-            Bio = DataGenerator.GenericQuote1
-        });
-
-        var actualAuthors = await QuerySql.SelectAuthorsWithSlice(new QuerySql.SelectAuthorsWithSliceArgs
-        {
-            LongArr1 = [author2.Value.Id, author3.Value.Id]
-        });
-        ClassicAssert.AreEqual(2, actualAuthors.Count);
-        Assert.That(actualAuthors is [
-        {
-            Name: DataGenerator.DrSeussAuthor,
-            Bio: DataGenerator.DrSeussQuote
-        },
-        {
-            Name: DataGenerator.GenericAuthor,
-            Bio: DataGenerator.GenericQuote1
-        }
-        ]);
-    }
-
-    [Test]
     public async Task TestCopyFrom()
     {
         const int batchSize = 100;
