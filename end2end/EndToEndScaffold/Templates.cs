@@ -2,10 +2,12 @@ using System.Collections.Generic;
 
 namespace EndToEndScaffold;
 
-public readonly record struct TestImpl(string Modern, string Legacy);
+public readonly record struct TestImpl(string Impl);
 
 public static class Templates
 {
+    public const string UnknownRecordValuePlaceholder = "#Unknown#";
+
     private const string CreateBojackAuthor = """
         await this.QuerySql.CreateAuthor(new QuerySql.CreateAuthorArgs 
         {
@@ -69,82 +71,43 @@ public static class Templates
             Bio = DataGenerator.GenericQuote1
         });
         """;
-    public static Dictionary<KnownTestType, TestImpl> TestImplementations { get; } =
-        new()
+
+    public static Dictionary<KnownTestType, TestImpl> TestImplementations { get; } = new()
+    {
+        [KnownTestType.One] = new TestImpl
         {
-            [KnownTestType.One] = new TestImpl
-            {
-                Modern = $$"""
+            Impl = $$"""
                     [Test]
                     public async Task TestOne()
                     {
                         {{CreateBojackAuthor}}
                         {{CreateDrSeussAuthor}}
-
-                        var actual = await this.QuerySql.GetAuthor(new QuerySql.GetAuthorArgs 
-                        {
-                            Name = DataGenerator.BojackAuthor
-                        });
-                        Assert.That(actual is 
-                        {
-                            Name: DataGenerator.BojackAuthor,
-                            Bio: DataGenerator.BojackTheme
-                        });
-                    }
-                    """,
-                Legacy = $$"""
-                    [Test]
-                    public async Task TestOne()
-                    {
-                        {{CreateBojackAuthor}}
-                        {{CreateDrSeussAuthor}}
-
-                        var actual = await this.QuerySql.GetAuthor(new QuerySql.GetAuthorArgs
-                        {
-                            Name = DataGenerator.BojackAuthor
-                        });
                         var expected = new QuerySql.GetAuthorRow
                         {
                             Name = DataGenerator.BojackAuthor,
                             Bio = DataGenerator.BojackTheme
                         };
-                        Assert.That(Equals(expected, actual));
+                        var actual = await this.QuerySql.GetAuthor(new QuerySql.GetAuthorArgs
+                        {
+                            Name = DataGenerator.BojackAuthor
+                        });
+                        Assert.That(SingularEquals(expected, actual{{UnknownRecordValuePlaceholder}}));
                     }
 
-                    private static bool Equals(QuerySql.GetAuthorRow x, QuerySql.GetAuthorRow y)
+                    private static bool SingularEquals(QuerySql.GetAuthorRow x, QuerySql.GetAuthorRow y)
                     {
                         return x.Name.Equals(y.Name) && x.Bio.Equals(y.Bio);
                     }
                     """
-            },
-            [KnownTestType.Many] = new TestImpl
-            {
-                Modern = $$"""
+        },
+        [KnownTestType.Many] = new TestImpl
+        {
+            Impl = $$"""
                     [Test]
                     public async Task TestMany()
                     {
                         {{CreateBojackAuthor}}
                         {{CreateDrSeussAuthor}}
-
-                        var actual = await this.QuerySql.ListAuthors();
-                        Assert.That(actual is 
-                        [{
-                            Name: DataGenerator.BojackAuthor,
-                            Bio: DataGenerator.BojackTheme
-                        },
-                        {
-                            Name: DataGenerator.DrSeussAuthor,
-                            Bio: DataGenerator.DrSeussQuote
-                        }]);
-                    }
-                    """,
-                Legacy = $$"""
-                    [Test]
-                    public async Task TestMany()
-                    {
-                        {{CreateBojackAuthor}}
-                        {{CreateDrSeussAuthor}}
-
                         var expected = new List<QuerySql.ListAuthorsRow>
                         {
                             new QuerySql.ListAuthorsRow { Name = DataGenerator.BojackAuthor, Bio = DataGenerator.BojackTheme },
@@ -154,7 +117,7 @@ public static class Templates
                         Assert.That(SequenceEquals(expected, actual));
                     }
 
-                    private static bool Equals(QuerySql.ListAuthorsRow x, QuerySql.ListAuthorsRow y)
+                    private static bool SingularEquals(QuerySql.ListAuthorsRow x, QuerySql.ListAuthorsRow y)
                     {
                         return x.Name.Equals(y.Name) && x.Bio.Equals(y.Bio);
                     }
@@ -164,19 +127,18 @@ public static class Templates
                         if (x.Count != y.Count) return false;
                         x = x.OrderBy<QuerySql.ListAuthorsRow, object>(o => o.Name + o.Bio).ToList();
                         y = y.OrderBy<QuerySql.ListAuthorsRow, object>(o => o.Name + o.Bio).ToList();
-                        return !x.Where((t, i) => !Equals(t, y[i])).Any();
+                        return !x.Where((t, i) => !SingularEquals(t, y[i])).Any();
                     }
                     """
-            },
-            [KnownTestType.Exec] = new TestImpl
-            {
-                Modern = $$"""
+        },
+        [KnownTestType.Exec] = new TestImpl
+        {
+            Impl = $$"""
                     [Test]
                     public async Task TestExec()
                     {
                         {{CreateBojackAuthor}}
                         {{CreateDrSeussAuthor}}
-
                         await this.QuerySql.DeleteAuthor(new QuerySql.DeleteAuthorArgs 
                         { 
                             Name = DataGenerator.BojackAuthor 
@@ -188,82 +150,37 @@ public static class Templates
                         ClassicAssert.IsNull(actual);
                     }
                     """,
-                Legacy = $$"""
-                    [Test]
-                    public async Task TestExec()
-                    {
-                        {{CreateBojackAuthor}}
-                        {{CreateDrSeussAuthor}}
-
-                        await this.QuerySql.DeleteAuthor(new QuerySql.DeleteAuthorArgs 
-                        { 
-                            Name = DataGenerator.BojackAuthor 
-                        });
-                        var actual = await this.QuerySql.GetAuthor(new QuerySql.GetAuthorArgs 
-                        {
-                            Name = DataGenerator.BojackAuthor
-                        });
-                        ClassicAssert.IsNull(actual);
-                    }
-                    """,
-            },
-            [KnownTestType.ExecRows] = new TestImpl
-            // TODO implement this test better
-            {
-                Modern = $$"""
+        },
+        [KnownTestType.ExecRows] = new TestImpl
+        {
+            Impl = $$"""
                     [Test]
                     public async Task TestExecRows()
                     {
                         {{CreateGenericAuthor}}
                         {{CreateGenericAuthor}}
-
                         var affectedRows = await this.QuerySql.UpdateAuthors(new QuerySql.UpdateAuthorsArgs
                         {
-                            Bio = DataGenerator.BojackTheme
+                            Bio = DataGenerator.GenericQuote2
                         });
                         ClassicAssert.AreEqual(2, affectedRows);
-                    }
-                    """,
-                Legacy = $$"""
-                    [Test]
-                    public async Task TestExecRows()
-                    {
-                        {{CreateGenericAuthor}}
-                        {{CreateGenericAuthor}}
-
-                        var affectedRows = await this.QuerySql.UpdateAuthors(new QuerySql.UpdateAuthorsArgs
+                        var expected = new List<QuerySql.ListAuthorsRow>
                         {
-                            Bio = DataGenerator.BojackTheme
-                        });
-                        ClassicAssert.AreEqual(2, affectedRows);
+                            new QuerySql.ListAuthorsRow { Name = DataGenerator.GenericAuthor, Bio = DataGenerator.GenericQuote2 },
+                            new QuerySql.ListAuthorsRow { Name = DataGenerator.GenericAuthor, Bio = DataGenerator.GenericQuote2 }
+                        };
+                        var actual = await this.QuerySql.ListAuthors();
+                        Assert.That(SequenceEquals(expected, actual));
                     }
                     """,
-            },
-            [KnownTestType.ExecLastId] = new TestImpl
-            {
-                Modern = $$"""
+        },
+        [KnownTestType.ExecLastId] = new TestImpl
+        {
+            Impl = $$"""
                     [Test]
                     public async Task TestExecLastId()
                     {
                         {{CreateGenericAuthorWithId}}
-
-                        var actual = await QuerySql.GetAuthorById(new QuerySql.GetAuthorByIdArgs 
-                        {
-                            Id = genericId
-                        });
-                        Assert.That(actual is 
-                        {
-                            Name: DataGenerator.GenericAuthor,
-                            Bio: DataGenerator.GenericQuote1
-                        });
-                    }
-                    """,
-                Legacy = $$"""
-                    [Test]
-                    public async Task TestExecLastId()
-                    {
-                        {{CreateGenericAuthorWithId}}
-
                         var expected = new QuerySql.GetAuthorByIdRow 
                         {
                             Id = genericId,
@@ -274,48 +191,18 @@ public static class Templates
                         {
                             Id = genericId
                         });
-                        Assert.That(Equals(expected, actual));
+                        Assert.That(SingularEquals(expected, actual{{UnknownRecordValuePlaceholder}}));
                     }
 
-                    private static bool Equals(QuerySql.GetAuthorByIdRow x, QuerySql.GetAuthorByIdRow y)
+                    private static bool SingularEquals(QuerySql.GetAuthorByIdRow x, QuerySql.GetAuthorByIdRow y)
                     {
                         return x.Id.Equals(y.Id) && x.Name.Equals(y.Name) && x.Bio.Equals(y.Bio);
                     }
                     """
-            },
-            [KnownTestType.JoinEmbed] = new TestImpl
-            {
-                Modern = $$"""
-                    [Test]
-                    public async Task TestJoinEmbed()
-                    {
-                        {{CreateBojackAuthorWithId}}
-                        {{CreateBookByBojack}}
-
-                        {{CreateDrSeussAuthorWithId}}
-                        {{CreateBookByDrSeuss}}
-
-                        var actual = await QuerySql.ListAllAuthorsBooks();
-                        Assert.That(actual is
-                        [{
-                            Author:
-                            {
-                                Name: DataGenerator.BojackAuthor,
-                                Bio: DataGenerator.BojackTheme
-                            },
-                            Book.Name: DataGenerator.BojackBookTitle
-                        },
-                        {
-                            Author:
-                            {
-                                Name: DataGenerator.DrSeussAuthor,
-                                Bio: DataGenerator.DrSeussQuote
-                            },
-                            Book.Name: DataGenerator.DrSeussBookTitle
-                        }]);
-                    }
-                    """,
-                Legacy = $$"""
+        },
+        [KnownTestType.JoinEmbed] = new TestImpl
+        {
+            Impl = $$"""
                     [Test]
                     public async Task TestJoinEmbed()
                     {
@@ -329,22 +216,26 @@ public static class Templates
                         {
                             new QuerySql.ListAllAuthorsBooksRow
                             {
-                                Author = new Author { Name = DataGenerator.BojackAuthor, Bio = DataGenerator.BojackTheme },
-                                Book = new Book { Name = DataGenerator.BojackBookTitle }
+                                Author = new Author { Id = bojackId, Name = DataGenerator.BojackAuthor, Bio = DataGenerator.BojackTheme },
+                                Book = new Book { AuthorId = bojackId, Name = DataGenerator.BojackBookTitle }
                             },
                             new QuerySql.ListAllAuthorsBooksRow
                             {
-                                Author = new Author { Name = DataGenerator.DrSeussAuthor, Bio = DataGenerator.DrSeussQuote },
-                                Book = new Book { Name = DataGenerator.DrSeussBookTitle }
+                                Author = new Author { Id = drSeussId, Name = DataGenerator.DrSeussAuthor, Bio = DataGenerator.DrSeussQuote },
+                                Book = new Book { AuthorId = drSeussId, Name = DataGenerator.DrSeussBookTitle }
                             }
                         };
                         var actual = await QuerySql.ListAllAuthorsBooks();
                         Assert.That(SequenceEquals(expected, actual));
                     }
 
-                    private static bool Equals(QuerySql.ListAllAuthorsBooksRow x, QuerySql.ListAllAuthorsBooksRow y)
+                    private static bool SingularEquals(QuerySql.ListAllAuthorsBooksRow x, QuerySql.ListAllAuthorsBooksRow y)
                     {
-                        return x.Author.Name.Equals(y.Author.Name) && x.Author.Bio.Equals(y.Author.Bio) && x.Book.Name.Equals(y.Book.Name);
+                        return x.Author.Id.Equals(y.Author.Id) &&
+                            x.Author.Name.Equals(y.Author.Name) && 
+                            x.Author.Bio.Equals(y.Author.Bio) && 
+                            x.Book.AuthorId.Equals(y.Book.AuthorId) &&
+                            x.Book.Name.Equals(y.Book.Name);
                     }
 
                     private static bool SequenceEquals(List<QuerySql.ListAllAuthorsBooksRow> x, List<QuerySql.ListAllAuthorsBooksRow> y)
@@ -353,35 +244,18 @@ public static class Templates
                             return false;
                         x = x.OrderBy<QuerySql.ListAllAuthorsBooksRow, object>(o => o.Author.Name + o.Book.Name).ToList();
                         y = y.OrderBy<QuerySql.ListAllAuthorsBooksRow, object>(o => o.Author.Name + o.Book.Name).ToList();
-                        return !x.Where((t, i) => !Equals(t, y[i])).Any();
+                        return !x.Where((t, i) => !SingularEquals(t, y[i])).Any();
                     }
                     """
-            },
-            [KnownTestType.SelfJoinEmbed] = new TestImpl
-            {
-                Modern = $$"""
+        },
+        [KnownTestType.SelfJoinEmbed] = new TestImpl
+        {
+            Impl = $$"""
                     [Test]
                     public async Task TestSelfJoinEmbed()
                     {
                         {{CreateBojackAuthor}}
                         {{CreateBojackAuthor}}
-
-                        var actual = await QuerySql.GetDuplicateAuthors();
-                        Assert.That(actual is
-                        [{
-                            Author: { Name: DataGenerator.BojackAuthor, Bio: DataGenerator.BojackTheme },
-                            Author2: { Name: DataGenerator.BojackAuthor, Bio: DataGenerator.BojackTheme }
-                        }]);
-                        Assert.That(actual[0].Author.Id, Is.Not.EqualTo(actual[0].Author2.Id));
-                    }
-                    """,
-                Legacy = $$"""
-                    [Test]
-                    public async Task TestSelfJoinEmbed()
-                    {
-                        {{CreateBojackAuthor}}
-                        {{CreateBojackAuthor}}
-
                         var expected = new List<QuerySql.GetDuplicateAuthorsRow>()
                         {
                             new QuerySql.GetDuplicateAuthorsRow
@@ -391,15 +265,16 @@ public static class Templates
                             }
                         };
                         var actual = await QuerySql.GetDuplicateAuthors();
-
                         Assert.That(SequenceEquals(expected, actual));
-                        Assert.That(actual[0].Author.Id, Is.Not.EqualTo(actual[0].Author2.Id));
+                        Assert.That(actual[0].Author.Id != actual[0].Author2.Id);
                     }
 
-                    private static bool Equals(QuerySql.GetDuplicateAuthorsRow x, QuerySql.GetDuplicateAuthorsRow y)
+                    private static bool SingularEquals(QuerySql.GetDuplicateAuthorsRow x, QuerySql.GetDuplicateAuthorsRow y)
                     {
-                        return x.Author.Name.Equals(y.Author.Name) && x.Author.Bio.Equals(y.Author.Bio) &&
-                            x.Author2.Name.Equals(y.Author2.Name) && x.Author2.Bio.Equals(y.Author2.Bio);
+                        return x.Author.Name.Equals(y.Author.Name) && 
+                            x.Author.Bio.Equals(y.Author.Bio) &&
+                            x.Author2.Name.Equals(y.Author2.Name) && 
+                            x.Author2.Bio.Equals(y.Author2.Bio);
                     }
 
                     private static bool SequenceEquals(List<QuerySql.GetDuplicateAuthorsRow> x, List<QuerySql.GetDuplicateAuthorsRow> y)
@@ -408,44 +283,20 @@ public static class Templates
                             return false;
                         x = x.OrderBy<QuerySql.GetDuplicateAuthorsRow, object>(o => o.Author.Name + o.Author2.Name).ToList();
                         y = y.OrderBy<QuerySql.GetDuplicateAuthorsRow, object>(o => o.Author.Name + o.Author2.Name).ToList();
-                        return !x.Where((t, i) => !Equals(t, y[i])).Any();
+                        return !x.Where((t, i) => !SingularEquals(t, y[i])).Any();
                     }
                     """
-            },
-            [KnownTestType.PartialEmbed] = new TestImpl
-            {
-                Modern = $$"""
+        },
+        [KnownTestType.PartialEmbed] = new TestImpl
+        {
+            Impl = $$"""
                     [Test]
                     public async Task TestPartialEmbed()
                     {
                         {{CreateBojackAuthorWithId}}
                         {{CreateBookByBojack}}
-
                         {{CreateDrSeussAuthorWithId}}
                         {{CreateBookByDrSeuss}}
-
-                        var actual = await QuerySql.GetAuthorsByBookName(new QuerySql.GetAuthorsByBookNameArgs 
-                        { 
-                            Name = DataGenerator.BojackBookTitle 
-                        });
-                        Assert.That(actual is 
-                        [{
-                            Name: DataGenerator.BojackAuthor,
-                            Bio: DataGenerator.BojackTheme,
-                            Book.Name: DataGenerator.BojackBookTitle
-                        }]);
-                    }
-                    """,
-                Legacy = $$"""
-                    [Test]
-                    public async Task TestPartialEmbed()
-                    {
-                        {{CreateBojackAuthorWithId}}
-                        {{CreateBookByBojack}}
-
-                        {{CreateDrSeussAuthorWithId}}
-                        {{CreateBookByDrSeuss}}
-
                         var expected = new List<QuerySql.GetAuthorsByBookNameRow>
                         {
                             new QuerySql.GetAuthorsByBookNameRow
@@ -462,9 +313,13 @@ public static class Templates
                         Assert.That(SequenceEquals(expected, actual));
                     }
 
-                    private static bool Equals(QuerySql.GetAuthorsByBookNameRow x, QuerySql.GetAuthorsByBookNameRow y)
+                    private static bool SingularEquals(QuerySql.GetAuthorsByBookNameRow x, QuerySql.GetAuthorsByBookNameRow y)
                     {
-                        return x.Name.Equals(y.Name) && x.Bio.Equals(y.Bio) && x.Book.Name.Equals(y.Book.Name);
+                        return x.Id.Equals(y.Id) && 
+                            x.Name.Equals(y.Name) && 
+                            x.Bio.Equals(y.Bio) && 
+                            x.Book.AuthorId.Equals(y.Book.AuthorId) &&
+                            x.Book.Name.Equals(y.Book.Name);
                     }
 
                     private static bool SequenceEquals(List<QuerySql.GetAuthorsByBookNameRow> x, List<QuerySql.GetAuthorsByBookNameRow> y)
@@ -473,33 +328,18 @@ public static class Templates
                             return false;
                         x = x.OrderBy<QuerySql.GetAuthorsByBookNameRow, object>(o => o.Name + o.Book.Name).ToList();
                         y = y.OrderBy<QuerySql.GetAuthorsByBookNameRow, object>(o => o.Name + o.Book.Name).ToList();
-                        return !x.Where((t, i) => !Equals(t, y[i])).Any();
+                        return !x.Where((t, i) => !SingularEquals(t, y[i])).Any();
                     }
                     """
-            },
-            [KnownTestType.Slice] = new TestImpl
-            {
-                Modern = $$"""
+        },
+        [KnownTestType.Slice] = new TestImpl
+        {
+            Impl = $$"""
                     [Test]
                     public async Task TestSlice()
                     {
                         {{CreateGenericAuthorWithId}}
                         {{CreateBojackAuthorWithId}}
-
-                        var actual = await QuerySql.GetAuthorsByIds(new QuerySql.GetAuthorsByIdsArgs 
-                        { 
-                            Ids = [genericId, bojackId] 
-                        });
-                        ClassicAssert.AreEqual(2, actual.Count);
-                    }
-                    """,
-                Legacy = $$"""
-                    [Test]
-                    public async Task TestSlice()
-                    {
-                        {{CreateGenericAuthorWithId}}
-                        {{CreateBojackAuthorWithId}}
-
                         var actual = await QuerySql.GetAuthorsByIds(new QuerySql.GetAuthorsByIdsArgs 
                         { 
                             Ids = new[] { genericId, bojackId } 
@@ -507,30 +347,15 @@ public static class Templates
                         ClassicAssert.AreEqual(2, actual.Count);
                     }
                     """
-            },
-            [KnownTestType.Array] = new TestImpl
-            {
-                Modern = $$"""
+        },
+        [KnownTestType.ArrayAsParam] = new TestImpl
+        {
+            Impl = $$"""
                     [Test]
                     public async Task TestArray()
                     {
                         {{CreateGenericAuthorWithId}}
                         {{CreateBojackAuthorWithId}}
-
-                        var actual = await QuerySql.GetAuthorsByIds(new QuerySql.GetAuthorsByIdsArgs 
-                        { 
-                            LongArr1 = [genericId, bojackId] 
-                        });
-                        ClassicAssert.AreEqual(2, actual.Count);
-                    }
-                    """,
-                Legacy = $$"""
-                    [Test]
-                    public async Task TestArray()
-                    {
-                        {{CreateGenericAuthorWithId}}
-                        {{CreateBojackAuthorWithId}}
-
                         var actual = await QuerySql.GetAuthorsByIds(new QuerySql.GetAuthorsByIdsArgs 
                         { 
                             LongArr1 = new[] { genericId, bojackId } 
@@ -538,31 +363,15 @@ public static class Templates
                         ClassicAssert.AreEqual(2, actual.Count);
                     }
                     """
-            },
-            [KnownTestType.MultipleSlices] = new TestImpl
-            {
-                Modern = $$"""
+        },
+        [KnownTestType.MultipleSlices] = new TestImpl
+        {
+            Impl = $$"""
                     [Test]
                     public async Task TestMultipleSlices()
                     {
                         {{CreateGenericAuthorWithId}}
                         {{CreateBojackAuthorWithId}}
-
-                        var actual = await QuerySql.GetAuthorsByIdsAndNames(new QuerySql.GetAuthorsByIdsAndNamesArgs 
-                        { 
-                            Ids = [genericId, bojackId], 
-                            Names = [DataGenerator.GenericAuthor] 
-                        });
-                        ClassicAssert.AreEqual(1, actual.Count);
-                    }
-                    """,
-                Legacy = $$"""
-                    [Test]
-                    public async Task TestMultipleSlices()
-                    {
-                        {{CreateGenericAuthorWithId}}
-                        {{CreateBojackAuthorWithId}}
-
                         var actual = await QuerySql.GetAuthorsByIdsAndNames(new QuerySql.GetAuthorsByIdsAndNamesArgs 
                         { 
                             Ids = new[] { genericId, bojackId }, 
@@ -571,26 +380,10 @@ public static class Templates
                         ClassicAssert.AreEqual(1, actual.Count);
                     }
                     """
-            },
-            [KnownTestType.MultipleArrays] = new TestImpl
-            {
-                Modern = $$"""
-                    [Test]
-                    public async Task TestMultipleArrays()
-                    {
-                        {{CreateGenericAuthorWithId}}
-                        {{CreateGenericAuthor}}
-                        {{CreateBojackAuthorWithId}}
-
-                        var actual = await QuerySql.GetAuthorsByIdsAndNames(new QuerySql.GetAuthorsByIdsAndNamesArgs 
-                        { 
-                            LongArr1 = [genericId, bojackId], 
-                            StringArr2 = [DataGenerator.GenericAuthor] 
-                        });
-                        ClassicAssert.AreEqual(1, actual.Count);
-                    }
-                    """,
-                Legacy = $$"""
+        },
+        [KnownTestType.MultipleArraysAsParams] = new TestImpl
+        {
+            Impl = $$"""
                     [Test]
                     public async Task TestMultipleArrays()
                     {
@@ -606,6 +399,145 @@ public static class Templates
                         ClassicAssert.AreEqual(1, actual.Count);
                     }
                     """
-            }
-        };
+        },
+        [KnownTestType.PostgresCopyFrom] = new TestImpl
+        {
+            Impl = $$"""
+                     [Test]
+                     public async Task TestCopyFrom()
+                     {
+                         const int batchSize = 100;
+                         var batchArgs = Enumerable.Range(0, batchSize)
+                             .Select(_ => new QuerySql.CopyToTestsArgs
+                             {
+                                 CInt = 1,
+                                 CVarchar = "abc",
+                                 CDate = new DateTime(2020, 7, 22, 11, 7, 45, 35),
+                                 CTimestamp = new DateTime(2020, 7, 22, 11, 7, 45, 35)
+                             })
+                             .ToList();
+                         await QuerySql.CopyToTests(batchArgs);
+                         var expected = new QuerySql.GetCopyStatsRow
+                         {
+                             Cnt = batchSize,
+                             CInt = 1,
+                             CVarchar = "abc",
+                             CDate = new DateTime(2020, 7, 22),
+                             CTimestamp = new DateTime(2020, 7, 22, 11, 7, 45, 35)
+                         };
+                         var actual = await QuerySql.GetCopyStats();
+                         Assert.That(SingularEquals(expected, actual{{UnknownRecordValuePlaceholder}}));
+                     }
+                     
+                     private static bool SingularEquals(QuerySql.GetCopyStatsRow x, QuerySql.GetCopyStatsRow y)
+                     {
+                         return x.Cnt.Equals(y.Cnt) &&
+                            x.CInt.Equals(y.CInt) &&
+                            x.CVarchar.Equals(y.CVarchar) &&
+                            x.CDate.Equals(y.CDate) &&
+                            x.CTimestamp.Equals(y.CTimestamp);
+                     }
+                     """
+        },
+        [KnownTestType.MySqlCopyFrom] = new TestImpl
+        {
+            Impl = $$"""
+                     [Test]
+                     public async Task TestCopyFrom()
+                     {
+                         const int batchSize = 100;
+                         var batchArgs = Enumerable.Range(0, batchSize)
+                             .Select(_ => new QuerySql.CopyToTestsArgs
+                             {
+                                 CInt = 1,
+                                 CVarchar = "abc",
+                                 CDate = new DateTime(2020, 7, 22, 11, 7, 45, 35),
+                                 CTimestamp = new DateTime(2020, 7, 22, 11, 7, 45, 35)
+                             })
+                             .ToList();
+                         await QuerySql.CopyToTests(batchArgs);
+                         var expected = new QuerySql.GetCopyStatsRow
+                         {
+                             Cnt = batchSize
+                         };
+                         var actual = await QuerySql.GetCopyStats();
+                         Assert.That(SingularEquals(expected, actual{{UnknownRecordValuePlaceholder}}));
+                     }
+                     
+                     private static bool SingularEquals(QuerySql.GetCopyStatsRow x, QuerySql.GetCopyStatsRow y)
+                     {
+                         return x.Cnt.Equals(y.Cnt);
+                     }
+                     """
+        },
+        [KnownTestType.PostgresDataTypes] = new TestImpl
+        {
+            Impl = $$"""
+                   [Test]
+                   public async Task TestPostgresTypes()
+                   {
+                       var insertedId = await QuerySql.InsertPostgresTypes(new QuerySql.InsertPostgresTypesArgs
+                       {
+                           CBigint = 1,
+                           CReal = 1.0f,
+                           CNumeric = 1,
+                           CSerial = 1,
+                           CSmallint = 1,
+                           CDecimal = 1,
+                           CDate = DateTime.Now,
+                           CTimestamp = DateTime.Now,
+                           CBoolean = true,
+                           CChar = "a",
+                           CInteger = 1,
+                           CText = "ab",
+                           CVarchar = "abc",
+                           CCharacterVarying = "abcd",
+                           CTextArray = new string[] { "a", "b" },
+                           CIntegerArray = new int[] { 1, 2 }
+                       });
+                   
+                       var expected = new QuerySql.GetPostgresTypesRow
+                       {
+                           CBigint = 1,
+                           CReal = 1.0f,
+                           CSerial = 1,
+                           CNumeric = 1,
+                           CDecimal = 1,
+                           CSmallint = 1,
+                           CBoolean = true,
+                           CChar = "a",
+                           CInteger = 1,
+                           CText = "ab",
+                           CVarchar = "abc",
+                           CCharacterVarying = "abcd",
+                           CTextArray = new string[] { "a", "b" },
+                           CIntegerArray = new int[] { 1, 2 }
+                       };
+                       var actual = await QuerySql.GetPostgresTypes(new QuerySql.GetPostgresTypesArgs
+                       {
+                           Id = insertedId
+                       });
+                       Assert.That(SingularEquals(expected, actual{{UnknownRecordValuePlaceholder}}));
+                   }
+                   
+                   private static bool SingularEquals(QuerySql.GetPostgresTypesRow x, QuerySql.GetPostgresTypesRow y)
+                   {
+                       return x.CSmallint.Equals(y.CSmallint) &&
+                           x.CBoolean.Equals(y.CBoolean) &&
+                           x.CInteger.Equals(y.CInteger) &&
+                           x.CBigint.Equals(y.CBigint) &&
+                           x.CSerial.Equals(y.CSerial) &&
+                           x.CDecimal.Equals(y.CDecimal) &&
+                           x.CNumeric.Equals(y.CNumeric) &&
+                           x.CReal.Equals(y.CReal) &&
+                           x.CChar.Equals(y.CChar) &&
+                           x.CVarchar.Equals(y.CVarchar) &&
+                           x.CCharacterVarying.Equals(y.CCharacterVarying) &&
+                           x.CText.Equals(y.CText) &&
+                           x.CTextArray.SequenceEqual(y.CTextArray) &&
+                           x.CIntegerArray.SequenceEqual(y.CIntegerArray);
+                   }
+                   """
+        }
+    };
 }

@@ -23,7 +23,7 @@ public class CopyTest
     public DateTime CDate { get; set; }
     public DateTime CTimestamp { get; set; }
 };
-public class NodeMysqlType
+public class MysqlType
 {
     public byte[]? CBit { get; set; }
     public int? CTinyint { get; set; }

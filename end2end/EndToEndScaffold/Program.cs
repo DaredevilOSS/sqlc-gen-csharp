@@ -22,12 +22,9 @@ public static class Program
             throw new ArgumentException($"No code to generate for input {testClassName}");
 
         var testsImplementation = string.Join("\n", config.TestTypes
-            .Select(t =>
-            {
-                var testGen = Templates.TestImplementations[t];
-                return isLegacyDotnet ? testGen.Legacy : testGen.Modern;
-            })
+            .Select(t => GetTestImplementation(testClassName, isLegacyDotnet, t))
             .ToList());
+
         var namespaceToTest = isLegacyDotnet ? config.LegacyTestNamespace : config.TestNamespace;
         return ParseCompilationUnit(
             $$"""
@@ -50,5 +47,18 @@ public static class Program
                  """)
             .NormalizeWhitespace()
             .ToFullString();
+    }
+
+    private static bool RecordsAreInUse(string testClassName, bool isLegacyDotnet)
+    {
+        return !isLegacyDotnet && !testClassName.Contains("Dapper");
+    }
+
+    private static string GetTestImplementation(string testClassName, bool isLegacyDotnet, KnownTestType testType)
+    {
+        var testGen = Templates.TestImplementations[testType];
+        return testGen.Impl.Replace(
+            Templates.UnknownRecordValuePlaceholder,
+            RecordsAreInUse(testClassName, isLegacyDotnet) ? ".Value" : string.Empty);
     }
 }

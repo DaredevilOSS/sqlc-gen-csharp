@@ -54,11 +54,14 @@ WHERE books.name = ?;
 -- name: TruncateCopyToTests :exec
 TRUNCATE TABLE copy_tests;
 
+-- name: GetCopyStats :one
+SELECT COUNT(1) AS cnt FROM copy_tests;
+
 -- name: CopyToTests :copyfrom
 INSERT INTO copy_tests (c_int, c_varchar, c_date, c_timestamp) VALUES (?, ?, ?, ?);
 
--- name: CountCopyRows :one
-SELECT COUNT(1) AS cnt FROM copy_tests;
+/* name: GetMysqlTypes :one */
+SELECT * FROM mysql_types LIMIT 1;
 
-/* name: Test :one */
-SELECT * FROM node_mysql_types LIMIT 1;
+-- name: TruncateMysqlTypes :exec
+TRUNCATE TABLE mysql_types;

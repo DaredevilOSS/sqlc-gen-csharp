@@ -433,6 +433,34 @@ namespace MySqlConnectorLegacyExampleGen
             }
         }
 
+        private const string GetCopyStatsSql = "SELECT COUNT(1) AS cnt FROM copy_tests";
+        public class GetCopyStatsRow
+        {
+            public long Cnt { get; set; }
+        };
+        public async Task<GetCopyStatsRow> GetCopyStats()
+        {
+            using (var connection = new MySqlConnection(ConnectionString))
+            {
+                connection.Open();
+                using (var command = new MySqlCommand(GetCopyStatsSql, connection))
+                {
+                    using (var reader = await command.ExecuteReaderAsync())
+                    {
+                        if (await reader.ReadAsync())
+                        {
+                            return new GetCopyStatsRow
+                            {
+                                Cnt = reader.GetInt64(0)
+                            };
+                        }
+                    }
+                }
+            }
+
+            return null;
+        }
+
         private const string CopyToTestsSql = "INSERT INTO copy_tests (c_int, c_varchar, c_date, c_timestamp) VALUES (@c_int, @c_varchar, @c_date, @c_timestamp)";
         public class CopyToTestsArgs
         {
@@ -466,36 +494,8 @@ namespace MySqlConnectorLegacyExampleGen
             }
         }
 
-        private const string CountCopyRowsSql = "SELECT COUNT(1) AS cnt FROM copy_tests";
-        public class CountCopyRowsRow
-        {
-            public long Cnt { get; set; }
-        };
-        public async Task<CountCopyRowsRow> CountCopyRows()
-        {
-            using (var connection = new MySqlConnection(ConnectionString))
-            {
-                connection.Open();
-                using (var command = new MySqlCommand(CountCopyRowsSql, connection))
-                {
-                    using (var reader = await command.ExecuteReaderAsync())
-                    {
-                        if (await reader.ReadAsync())
-                        {
-                            return new CountCopyRowsRow
-                            {
-                                Cnt = reader.GetInt64(0)
-                            };
-                        }
-                    }
-                }
-            }
-
-            return null;
-        }
-
-        private const string TestSql = "SELECT c_bit, c_tinyint, c_bool, c_boolean, c_smallint, c_mediumint, c_int, c_integer, c_bigint, c_serial, c_decimal, c_dec, c_numeric, c_fixed, c_float, c_double, c_double_precision, c_date, c_time, c_datetime, c_timestamp, c_year, c_char, c_nchar, c_national_char, c_varchar, c_binary, c_varbinary, c_tinyblob, c_tinytext, c_blob, c_text, c_mediumblob, c_mediumtext, c_longblob, c_longtext, c_json FROM node_mysql_types LIMIT 1";
-        public class TestRow
+        private const string GetMysqlTypesSql = "SELECT c_bit, c_tinyint, c_bool, c_boolean, c_smallint, c_mediumint, c_int, c_integer, c_bigint, c_serial, c_decimal, c_dec, c_numeric, c_fixed, c_float, c_double, c_double_precision, c_date, c_time, c_datetime, c_timestamp, c_year, c_char, c_nchar, c_national_char, c_varchar, c_binary, c_varbinary, c_tinyblob, c_tinytext, c_blob, c_text, c_mediumblob, c_mediumtext, c_longblob, c_longtext, c_json FROM mysql_types LIMIT 1";
+        public class GetMysqlTypesRow
         {
             public byte[] CBit { get; set; }
             public int? CTinyint { get; set; }
@@ -535,18 +535,18 @@ namespace MySqlConnectorLegacyExampleGen
             public string CLongtext { get; set; }
             public object CJson { get; set; }
         };
-        public async Task<TestRow> Test()
+        public async Task<GetMysqlTypesRow> GetMysqlTypes()
         {
             using (var connection = new MySqlConnection(ConnectionString))
             {
                 connection.Open();
-                using (var command = new MySqlCommand(TestSql, connection))
+                using (var command = new MySqlCommand(GetMysqlTypesSql, connection))
                 {
                     using (var reader = await command.ExecuteReaderAsync())
                     {
                         if (await reader.ReadAsync())
                         {
-                            return new TestRow
+                            return new GetMysqlTypesRow
                             {
                                 CBit = reader.IsDBNull(0) ? null : Utils.GetBytes(reader, 0),
                                 CTinyint = reader.IsDBNull(1) ? (int? )null : reader.GetInt32(1),
@@ -592,6 +592,19 @@ namespace MySqlConnectorLegacyExampleGen
             }
 
             return null;
+        }
+
+        private const string TruncateMysqlTypesSql = "TRUNCATE TABLE mysql_types";
+        public async Task TruncateMysqlTypes()
+        {
+            using (var connection = new MySqlConnection(ConnectionString))
+            {
+                connection.Open();
+                using (var command = new MySqlCommand(TruncateMysqlTypesSql, connection))
+                {
+                    await command.ExecuteScalarAsync();
+                }
+            }
         }
     }
 }

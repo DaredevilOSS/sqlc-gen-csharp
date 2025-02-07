@@ -353,6 +353,31 @@ public class QuerySql
         }
     }
 
+    private const string GetCopyStatsSql = "SELECT COUNT(1) AS cnt FROM copy_tests";
+    public readonly record struct GetCopyStatsRow(long Cnt);
+    public async Task<GetCopyStatsRow?> GetCopyStats()
+    {
+        using (var connection = new MySqlConnection(ConnectionString))
+        {
+            connection.Open();
+            using (var command = new MySqlCommand(GetCopyStatsSql, connection))
+            {
+                using (var reader = await command.ExecuteReaderAsync())
+                {
+                    if (await reader.ReadAsync())
+                    {
+                        return new GetCopyStatsRow
+                        {
+                            Cnt = reader.GetInt64(0)
+                        };
+                    }
+                }
+            }
+        }
+
+        return null;
+    }
+
     private const string CopyToTestsSql = "INSERT INTO copy_tests (c_int, c_varchar, c_date, c_timestamp) VALUES (@c_int, @c_varchar, @c_date, @c_timestamp)";
     public readonly record struct CopyToTestsArgs(int CInt, string CVarchar, DateTime CDate, DateTime CTimestamp);
     public async Task CopyToTests(List<CopyToTestsArgs> args)
@@ -380,45 +405,20 @@ public class QuerySql
         }
     }
 
-    private const string CountCopyRowsSql = "SELECT COUNT(1) AS cnt FROM copy_tests";
-    public readonly record struct CountCopyRowsRow(long Cnt);
-    public async Task<CountCopyRowsRow?> CountCopyRows()
+    private const string GetMysqlTypesSql = "SELECT c_bit, c_tinyint, c_bool, c_boolean, c_smallint, c_mediumint, c_int, c_integer, c_bigint, c_serial, c_decimal, c_dec, c_numeric, c_fixed, c_float, c_double, c_double_precision, c_date, c_time, c_datetime, c_timestamp, c_year, c_char, c_nchar, c_national_char, c_varchar, c_binary, c_varbinary, c_tinyblob, c_tinytext, c_blob, c_text, c_mediumblob, c_mediumtext, c_longblob, c_longtext, c_json FROM mysql_types LIMIT 1";
+    public readonly record struct GetMysqlTypesRow(byte[]? CBit, int? CTinyint, int? CBool, int? CBoolean, int? CSmallint, int? CMediumint, int? CInt, int? CInteger, long? CBigint, long CSerial, string? CDecimal, string? CDec, string? CNumeric, string? CFixed, double? CFloat, double? CDouble, double? CDoublePrecision, DateTime? CDate, string? CTime, DateTime? CDatetime, DateTime? CTimestamp, int? CYear, string? CChar, string? CNchar, string? CNationalChar, string? CVarchar, byte[]? CBinary, byte[]? CVarbinary, byte[]? CTinyblob, string? CTinytext, byte[]? CBlob, string? CText, byte[]? CMediumblob, string? CMediumtext, byte[]? CLongblob, string? CLongtext, object? CJson);
+    public async Task<GetMysqlTypesRow?> GetMysqlTypes()
     {
         using (var connection = new MySqlConnection(ConnectionString))
         {
             connection.Open();
-            using (var command = new MySqlCommand(CountCopyRowsSql, connection))
+            using (var command = new MySqlCommand(GetMysqlTypesSql, connection))
             {
                 using (var reader = await command.ExecuteReaderAsync())
                 {
                     if (await reader.ReadAsync())
                     {
-                        return new CountCopyRowsRow
-                        {
-                            Cnt = reader.GetInt64(0)
-                        };
-                    }
-                }
-            }
-        }
-
-        return null;
-    }
-
-    private const string TestSql = "SELECT c_bit, c_tinyint, c_bool, c_boolean, c_smallint, c_mediumint, c_int, c_integer, c_bigint, c_serial, c_decimal, c_dec, c_numeric, c_fixed, c_float, c_double, c_double_precision, c_date, c_time, c_datetime, c_timestamp, c_year, c_char, c_nchar, c_national_char, c_varchar, c_binary, c_varbinary, c_tinyblob, c_tinytext, c_blob, c_text, c_mediumblob, c_mediumtext, c_longblob, c_longtext, c_json FROM node_mysql_types LIMIT 1";
-    public readonly record struct TestRow(byte[]? CBit, int? CTinyint, int? CBool, int? CBoolean, int? CSmallint, int? CMediumint, int? CInt, int? CInteger, long? CBigint, long CSerial, string? CDecimal, string? CDec, string? CNumeric, string? CFixed, double? CFloat, double? CDouble, double? CDoublePrecision, DateTime? CDate, string? CTime, DateTime? CDatetime, DateTime? CTimestamp, int? CYear, string? CChar, string? CNchar, string? CNationalChar, string? CVarchar, byte[]? CBinary, byte[]? CVarbinary, byte[]? CTinyblob, string? CTinytext, byte[]? CBlob, string? CText, byte[]? CMediumblob, string? CMediumtext, byte[]? CLongblob, string? CLongtext, object? CJson);
-    public async Task<TestRow?> Test()
-    {
-        using (var connection = new MySqlConnection(ConnectionString))
-        {
-            connection.Open();
-            using (var command = new MySqlCommand(TestSql, connection))
-            {
-                using (var reader = await command.ExecuteReaderAsync())
-                {
-                    if (await reader.ReadAsync())
-                    {
-                        return new TestRow
+                        return new GetMysqlTypesRow
                         {
                             CBit = reader.IsDBNull(0) ? null : Utils.GetBytes(reader, 0),
                             CTinyint = reader.IsDBNull(1) ? null : reader.GetInt32(1),
@@ -464,5 +464,18 @@ public class QuerySql
         }
 
         return null;
+    }
+
+    private const string TruncateMysqlTypesSql = "TRUNCATE TABLE mysql_types";
+    public async Task TruncateMysqlTypes()
+    {
+        using (var connection = new MySqlConnection(ConnectionString))
+        {
+            connection.Open();
+            using (var command = new MySqlCommand(TruncateMysqlTypesSql, connection))
+            {
+                await command.ExecuteScalarAsync();
+            }
+        }
     }
 }

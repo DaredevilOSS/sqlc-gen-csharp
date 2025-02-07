@@ -49,19 +49,25 @@ WHERE books.name = $1;
 -- name: TruncateCopyToTests :exec
 TRUNCATE TABLE copy_tests;
 
--- name: TruncateNodePostgresTypes :exec
-TRUNCATE TABLE node_postgres_types;
-
 -- name: CopyToTests :copyfrom
 INSERT INTO copy_tests (c_int, c_varchar, c_date, c_timestamp)
 VALUES ($1, $2, $3, $4);
 
--- name: CountCopyRows :one
-SELECT COUNT(1) AS cnt FROM copy_tests;
+-- name: GetCopyStats :one
+SELECT
+    COUNT(1) AS cnt,
+    MAX(c_int)::int AS c_int,
+    MAX(c_varchar)::varchar AS c_varchar,
+    MAX(c_date)::date AS c_date,
+    MAX(c_timestamp)::timestamp AS c_timestamp
+FROM copy_tests;
 
--- name: InsertNodePostgresType :execlastid
-INSERT INTO node_postgres_types (c_smallint, c_boolean, c_integer, c_bigint, c_serial, c_decimal, c_numeric, c_real, c_date, c_timestamp, c_char, c_varchar, c_character_varying, c_text, c_text_array, c_integer_array)
+-- name: InsertPostgresTypes :execlastid
+INSERT INTO postgres_types (c_smallint, c_boolean, c_integer, c_bigint, c_serial, c_decimal, c_numeric, c_real, c_date, c_timestamp, c_char, c_varchar, c_character_varying, c_text, c_text_array, c_integer_array)
 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16) RETURNING id;
 
--- name: GetNodePostgresType :one
-SELECT c_smallint, c_boolean, c_integer, c_bigint, c_serial, c_decimal, c_numeric, c_real, c_date, c_timestamp, c_char, c_varchar, c_character_varying, c_text, c_text_array, c_integer_array FROM node_postgres_types WHERE id = $1 LIMIT 1;
+-- name: GetPostgresTypes :one
+SELECT * FROM postgres_types WHERE id = $1 LIMIT 1;
+
+-- name: TruncatePostgresTypes :exec
+TRUNCATE TABLE postgres_types;

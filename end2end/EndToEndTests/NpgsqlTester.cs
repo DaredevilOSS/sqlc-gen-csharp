@@ -19,77 +19,8 @@ public partial class NpgsqlTester
     {
         await QuerySql.TruncateAuthors();
         await QuerySql.TruncateCopyToTests();
-        await QuerySql.TruncateNodePostgresTypes();
-    }
+        await QuerySql.TruncatePostgresTypes();
 
-    [Test]
-    public async Task TestCopyFrom()
-    {
-        const int batchSize = 100;
-        var createAuthorBatchArgs = Enumerable.Range(0, batchSize)
-            .Select(_ => GenerateRandom())
-            .ToList();
-        await QuerySql.CopyToTests(createAuthorBatchArgs);
-        var countRows = QuerySql.CountCopyRows().Result!.Value.Cnt;
-        ClassicAssert.AreEqual(batchSize, countRows);
-        return;
-
-        QuerySql.CopyToTestsArgs GenerateRandom()
-        {
-            return new QuerySql.CopyToTestsArgs
-            {
-                CVarchar = Randomizer.Next().ToString(),
-                CInt = Randomizer.Next(),
-                CDate = DateTime.Now.Subtract(TimeSpan.FromMilliseconds(Randomizer.Next())),
-                CTimestamp = DateTime.Now.Subtract(TimeSpan.FromMilliseconds(Randomizer.Next()))
-            };
-        }
-    }
-
-    [Test]
-    public async Task TestNodePostgresType()
-    {
-        var nodePostgresTypeArgs = new QuerySql.InsertNodePostgresTypeArgs
-        {
-            CBigint = 1,
-            CReal = 1.0f,
-            CNumeric = 1,
-            CSerial = 1,
-            CSmallint = 1,
-            CDecimal = 1,
-            CDate = DateTime.Now,
-            CTimestamp = DateTime.Now,
-            CBoolean = true,
-            CChar = "a",
-            CInteger = 1,
-            CText = "ab",
-            CVarchar = "abc",
-            CCharacterVarying = "abcd",
-            CTextArray = ["a", "b"],
-            CIntegerArray = [1, 2]
-        };
-        var insertedId = await QuerySql.InsertNodePostgresType(nodePostgresTypeArgs);
-
-        var actual = await QuerySql.GetNodePostgresType(new QuerySql.GetNodePostgresTypeArgs
-        {
-            Id = insertedId
-        });
-
-        Assert.That(actual is
-        {
-            CBigint: 1,
-            CReal: 1.0f,
-            CSerial: 1,
-            CNumeric: 1,
-            CDecimal: 1,
-            CSmallint: 1,
-            CBoolean: true,
-            CChar: "a",
-            CInteger: 1,
-            CText: "ab",
-            CVarchar: "abc",
-            CTextArray: ["a", "b"],
-            CIntegerArray: [1, 2]
-        });
+        new DateTime(2020, 11, 20, 10, 00, 00, 11);
     }
 }

@@ -20,7 +20,7 @@ CREATE TABLE copy_tests (
     c_timestamp TIMESTAMP NOT NULL
 );
 
-CREATE TABLE node_postgres_types (
+CREATE TABLE postgres_types (
     id BIGSERIAL PRIMARY KEY,
     c_bit BIT(1),
     c_smallint SMALLINT,

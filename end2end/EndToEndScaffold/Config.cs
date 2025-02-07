@@ -10,18 +10,26 @@ public readonly record struct ClassGenConfig(
 
 public enum KnownTestType
 {
+    // query annotations
     One,
     Many,
     Exec,
     ExecRows,
     ExecLastId,
+    PostgresCopyFrom,
+    MySqlCopyFrom,
+
+    // macros
     SelfJoinEmbed,
     JoinEmbed,
     PartialEmbed,
-    Array,
     Slice,
-    MultipleArrays,
-    MultipleSlices
+    MultipleSlices,
+
+    // data types
+    ArrayAsParam,
+    MultipleArraysAsParams,
+    PostgresDataTypes
 }
 
 internal static class Config
@@ -44,7 +52,8 @@ internal static class Config
                     KnownTestType.JoinEmbed,
                     KnownTestType.SelfJoinEmbed,
                     KnownTestType.Slice,
-                    KnownTestType.MultipleSlices
+                    KnownTestType.MultipleSlices,
+                    KnownTestType.MySqlCopyFrom
                 ]
             }
         },
@@ -62,7 +71,8 @@ internal static class Config
                         KnownTestType.JoinEmbed,
                         KnownTestType.SelfJoinEmbed,
                         KnownTestType.Slice,
-                        KnownTestType.MultipleSlices
+                        KnownTestType.MultipleSlices,
+                        KnownTestType.MySqlCopyFrom
                     ]
                 }
         },
@@ -79,8 +89,10 @@ internal static class Config
                     KnownTestType.ExecLastId,
                     KnownTestType.JoinEmbed,
                     KnownTestType.SelfJoinEmbed,
-                    KnownTestType.Array,
-                    KnownTestType.MultipleArrays
+                    KnownTestType.ArrayAsParam,
+                    KnownTestType.MultipleArraysAsParams,
+                    KnownTestType.PostgresCopyFrom,
+                    KnownTestType.PostgresDataTypes
                 ]
             }
         },
@@ -97,8 +109,10 @@ internal static class Config
                     KnownTestType.ExecLastId,
                     KnownTestType.JoinEmbed,
                     KnownTestType.SelfJoinEmbed,
-                    KnownTestType.Array,
-                    KnownTestType.MultipleArrays
+                    KnownTestType.ArrayAsParam,
+                    KnownTestType.MultipleArraysAsParams,
+                    KnownTestType.PostgresCopyFrom,
+                    KnownTestType.PostgresDataTypes
                 ]
             }
         },
