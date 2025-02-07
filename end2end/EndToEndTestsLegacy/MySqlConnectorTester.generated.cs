@@ -70,6 +70,7 @@ namespace SqlcGenCsharpTests
         public async Task TestExec()
         {
             await this.QuerySql.CreateAuthor(new QuerySql.CreateAuthorArgs { Name = DataGenerator.BojackAuthor, Bio = DataGenerator.BojackTheme });
+            await this.QuerySql.CreateAuthor(new QuerySql.CreateAuthorArgs { Name = DataGenerator.DrSeussAuthor, Bio = DataGenerator.DrSeussQuote });
             await this.QuerySql.DeleteAuthor(new QuerySql.DeleteAuthorArgs { Name = DataGenerator.BojackAuthor });
             var actual = await this.QuerySql.GetAuthor(new QuerySql.GetAuthorArgs { Name = DataGenerator.BojackAuthor });
             ClassicAssert.IsNull(actual);
@@ -78,38 +79,23 @@ namespace SqlcGenCsharpTests
         [Test]
         public async Task TestExecRows()
         {
-            var createAuthorArgs = new QuerySql.CreateAuthorArgs
-            {
-                Name = DataGenerator.GenericAuthor,
-                Bio = DataGenerator.GenericQuote1
-            };
-            await this.QuerySql.CreateAuthor(createAuthorArgs);
-            await this.QuerySql.CreateAuthor(createAuthorArgs);
-            var updateAuthorsArgs = new QuerySql.UpdateAuthorsArgs
-            {
-                Bio = DataGenerator.GenericQuote1
-            };
-            var affectedRows = await this.QuerySql.UpdateAuthors(updateAuthorsArgs);
+            await this.QuerySql.CreateAuthor(new QuerySql.CreateAuthorArgs { Name = DataGenerator.GenericAuthor, Bio = DataGenerator.GenericQuote1 });
+            await this.QuerySql.CreateAuthor(new QuerySql.CreateAuthorArgs { Name = DataGenerator.GenericAuthor, Bio = DataGenerator.GenericQuote1 });
+            var affectedRows = await this.QuerySql.UpdateAuthors(new QuerySql.UpdateAuthorsArgs { Bio = DataGenerator.BojackTheme });
             ClassicAssert.AreEqual(2, affectedRows);
         }
 
         [Test]
         public async Task TestExecLastId()
         {
-            var createAuthorArgs = new QuerySql.CreateAuthorReturnIdArgs
-            {
-                Name = DataGenerator.GenericAuthor,
-                Bio = DataGenerator.GenericQuote1
-            };
-            var insertedId = await QuerySql.CreateAuthorReturnId(createAuthorArgs);
+            var genericId = await this.QuerySql.CreateAuthorReturnId(new QuerySql.CreateAuthorReturnIdArgs { Name = DataGenerator.GenericAuthor, Bio = DataGenerator.GenericQuote1 });
             var expected = new QuerySql.GetAuthorByIdRow
             {
-                Id = insertedId,
+                Id = genericId,
                 Name = DataGenerator.GenericAuthor,
                 Bio = DataGenerator.GenericQuote1
             };
-            var actual = await QuerySql.GetAuthorById(new QuerySql.GetAuthorByIdArgs { Id = insertedId });
-            ClassicAssert.IsNotNull(actual);
+            var actual = await QuerySql.GetAuthorById(new QuerySql.GetAuthorByIdArgs { Id = genericId });
             Assert.That(Equals(expected, actual));
         }
 
@@ -121,30 +107,10 @@ namespace SqlcGenCsharpTests
         [Test]
         public async Task TestJoinEmbed()
         {
-            var createAuthorArgs = new QuerySql.CreateAuthorReturnIdArgs
-            {
-                Name = DataGenerator.BojackAuthor,
-                Bio = DataGenerator.BojackTheme
-            };
-            var bojackAuthorId = await QuerySql.CreateAuthorReturnId(createAuthorArgs);
-            var createBookArgs = new QuerySql.CreateBookArgs
-            {
-                Name = DataGenerator.BojackBookTitle,
-                AuthorId = bojackAuthorId
-            };
-            await QuerySql.CreateBook(createBookArgs);
-            createAuthorArgs = new QuerySql.CreateAuthorReturnIdArgs
-            {
-                Name = DataGenerator.DrSeussAuthor,
-                Bio = DataGenerator.DrSeussQuote
-            };
-            var drSeussAuthorId = await QuerySql.CreateAuthorReturnId(createAuthorArgs);
-            createBookArgs = new QuerySql.CreateBookArgs
-            {
-                Name = DataGenerator.DrSeussBookTitle,
-                AuthorId = drSeussAuthorId
-            };
-            await QuerySql.CreateBook(createBookArgs);
+            var bojackId = await this.QuerySql.CreateAuthorReturnId(new QuerySql.CreateAuthorReturnIdArgs { Name = DataGenerator.BojackAuthor, Bio = DataGenerator.BojackTheme });
+            await QuerySql.CreateBook(new QuerySql.CreateBookArgs { Name = DataGenerator.BojackBookTitle, AuthorId = bojackId });
+            var drSeussId = await this.QuerySql.CreateAuthorReturnId(new QuerySql.CreateAuthorReturnIdArgs { Name = DataGenerator.DrSeussAuthor, Bio = DataGenerator.DrSeussQuote });
+            await QuerySql.CreateBook(new QuerySql.CreateBookArgs { Name = DataGenerator.DrSeussBookTitle, AuthorId = drSeussId });
             var expected = new List<QuerySql.ListAllAuthorsBooksRow>()
             {
                 new QuerySql.ListAllAuthorsBooksRow
@@ -152,11 +118,11 @@ namespace SqlcGenCsharpTests
                     Author = new Author
                     {
                         Name = DataGenerator.BojackAuthor,
-                        Bio = DataGenerator.BojackTheme,
+                        Bio = DataGenerator.BojackTheme
                     },
                     Book = new Book
                     {
-                        Name = DataGenerator.BojackBookTitle,
+                        Name = DataGenerator.BojackBookTitle
                     }
                 },
                 new QuerySql.ListAllAuthorsBooksRow
@@ -164,11 +130,11 @@ namespace SqlcGenCsharpTests
                     Author = new Author
                     {
                         Name = DataGenerator.DrSeussAuthor,
-                        Bio = DataGenerator.DrSeussQuote,
+                        Bio = DataGenerator.DrSeussQuote
                     },
                     Book = new Book
                     {
-                        Name = DataGenerator.DrSeussBookTitle,
+                        Name = DataGenerator.DrSeussBookTitle
                     }
                 }
             };
@@ -193,13 +159,8 @@ namespace SqlcGenCsharpTests
         [Test]
         public async Task TestSelfJoinEmbed()
         {
-            var createAuthorArgs = new QuerySql.CreateAuthorArgs
-            {
-                Name = DataGenerator.BojackAuthor,
-                Bio = DataGenerator.BojackTheme
-            };
-            await QuerySql.CreateAuthor(createAuthorArgs);
-            await QuerySql.CreateAuthor(createAuthorArgs);
+            await this.QuerySql.CreateAuthor(new QuerySql.CreateAuthorArgs { Name = DataGenerator.BojackAuthor, Bio = DataGenerator.BojackTheme });
+            await this.QuerySql.CreateAuthor(new QuerySql.CreateAuthorArgs { Name = DataGenerator.BojackAuthor, Bio = DataGenerator.BojackTheme });
             var expected = new List<QuerySql.GetDuplicateAuthorsRow>()
             {
                 new QuerySql.GetDuplicateAuthorsRow
@@ -236,32 +197,20 @@ namespace SqlcGenCsharpTests
         }
 
         [Test]
-        public async Task TestSliceIds()
+        public async Task TestSlice()
         {
-            var args = new QuerySql.CreateAuthorReturnIdArgs
-            {
-                Name = DataGenerator.GenericAuthor,
-                Bio = DataGenerator.GenericQuote1
-            };
-            var insertedId1 = await QuerySql.CreateAuthorReturnId(args);
-            var insertedId2 = await QuerySql.CreateAuthorReturnId(args);
-            await QuerySql.CreateAuthorReturnId(args);
-            var actual = await QuerySql.SelectAuthorsWithSlice(new QuerySql.SelectAuthorsWithSliceArgs { Ids = new[] { insertedId1, insertedId2 } });
+            var genericId = await this.QuerySql.CreateAuthorReturnId(new QuerySql.CreateAuthorReturnIdArgs { Name = DataGenerator.GenericAuthor, Bio = DataGenerator.GenericQuote1 });
+            var bojackId = await this.QuerySql.CreateAuthorReturnId(new QuerySql.CreateAuthorReturnIdArgs { Name = DataGenerator.BojackAuthor, Bio = DataGenerator.BojackTheme });
+            var actual = await QuerySql.GetAuthorsByIds(new QuerySql.GetAuthorsByIdsArgs { Ids = new[] { genericId, bojackId } });
             ClassicAssert.AreEqual(2, actual.Count);
         }
 
         [Test]
         public async Task TestMultipleSlices()
         {
-            var sqlArgs = new QuerySql.CreateAuthorReturnIdArgs
-            {
-                Name = DataGenerator.GenericAuthor,
-                Bio = DataGenerator.GenericQuote1
-            };
-            var insertedId1 = await QuerySql.CreateAuthorReturnId(sqlArgs);
-            var insertedId2 = await QuerySql.CreateAuthorReturnId(new QuerySql.CreateAuthorReturnIdArgs { Name = DataGenerator.BojackAuthor, Bio = DataGenerator.GenericQuote1 });
-            await QuerySql.CreateAuthorReturnId(sqlArgs);
-            var actual = await QuerySql.SelectAuthorsWithTwoSlices(new QuerySql.SelectAuthorsWithTwoSlicesArgs { Ids = new[] { insertedId1, insertedId2 }, Names = new[] { DataGenerator.GenericAuthor } });
+            var genericId = await this.QuerySql.CreateAuthorReturnId(new QuerySql.CreateAuthorReturnIdArgs { Name = DataGenerator.GenericAuthor, Bio = DataGenerator.GenericQuote1 });
+            var bojackId = await this.QuerySql.CreateAuthorReturnId(new QuerySql.CreateAuthorReturnIdArgs { Name = DataGenerator.BojackAuthor, Bio = DataGenerator.BojackTheme });
+            var actual = await QuerySql.GetAuthorsByIdsAndNames(new QuerySql.GetAuthorsByIdsAndNamesArgs { Ids = new[] { genericId, bojackId }, Names = new[] { DataGenerator.GenericAuthor } });
             ClassicAssert.AreEqual(1, actual.Count);
         }
     }

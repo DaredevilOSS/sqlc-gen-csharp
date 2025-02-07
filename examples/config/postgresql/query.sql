@@ -24,8 +24,11 @@ UPDATE authors
    SET bio = $1
  WHERE bio IS NOT NULL;
 
--- name: SelectAuthorsWithSlice :many
+-- name: GetAuthorsByIds :many
 SELECT * FROM authors WHERE id = ANY($1::BIGINT[]);
+
+-- name: GetAuthorsByIdsAndNames :many
+SELECT * FROM authors WHERE id = ANY($1::BIGINT[]) AND name = ANY($2::TEXT[]);;
 
 -- name: CreateBook :exec
 INSERT INTO books (name, author_id) VALUES ($1, $2);
@@ -37,6 +40,11 @@ SELECT sqlc.embed(authors), sqlc.embed(books) FROM authors JOIN books ON authors
 SELECT sqlc.embed(authors1), sqlc.embed(authors2)
 FROM authors authors1 JOIN authors authors2 ON authors1.name = authors2.name
 WHERE authors1.id > authors2.id;
+
+-- name: GetAuthorsByBookName :many 
+SELECT authors.*, sqlc.embed(books)
+FROM authors JOIN books ON authors.id = books.author_id
+WHERE books.name = $1;
 
 -- name: TruncateCopyToTests :exec
 TRUNCATE TABLE copy_tests;

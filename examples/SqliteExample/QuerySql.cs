@@ -148,15 +148,15 @@ public class QuerySql
         }
     }
 
-    private const string SelectAuthorsWithSliceSql = "SELECT id, name, bio FROM authors WHERE id IN (/*SLICE:ids*/@ids)";
-    public readonly record struct SelectAuthorsWithSliceRow(int Id, string Name, string? Bio);
-    public readonly record struct SelectAuthorsWithSliceArgs(int[] Ids);
-    public async Task<List<SelectAuthorsWithSliceRow>> SelectAuthorsWithSlice(SelectAuthorsWithSliceArgs args)
+    private const string GetAuthorsByIdsSql = "SELECT id, name, bio FROM authors WHERE id IN (/*SLICE:ids*/@ids)";
+    public readonly record struct GetAuthorsByIdsRow(int Id, string Name, string? Bio);
+    public readonly record struct GetAuthorsByIdsArgs(int[] Ids);
+    public async Task<List<GetAuthorsByIdsRow>> GetAuthorsByIds(GetAuthorsByIdsArgs args)
     {
         using (var connection = new SqliteConnection(ConnectionString))
         {
             connection.Open();
-            var sqlText = SelectAuthorsWithSliceSql;
+            var sqlText = GetAuthorsByIdsSql;
             sqlText = Utils.GetTransformedString(sqlText, args.Ids, "Ids", "ids");
             using (var command = new SqliteCommand(sqlText, connection))
             {
@@ -164,10 +164,10 @@ public class QuerySql
                     command.Parameters.AddWithValue($"@IdsArg{i}", args.Ids[i]);
                 using (var reader = await command.ExecuteReaderAsync())
                 {
-                    var result = new List<SelectAuthorsWithSliceRow>();
+                    var result = new List<GetAuthorsByIdsRow>();
                     while (await reader.ReadAsync())
                     {
-                        result.Add(new SelectAuthorsWithSliceRow { Id = reader.GetInt32(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2) });
+                        result.Add(new GetAuthorsByIdsRow { Id = reader.GetInt32(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2) });
                     }
 
                     return result;
@@ -176,15 +176,15 @@ public class QuerySql
         }
     }
 
-    private const string SelectAuthorsWithTwoSlicesSql = "SELECT id, name, bio FROM authors WHERE id IN (/*SLICE:ids*/@ids) AND name IN (/*SLICE:names*/@names)";
-    public readonly record struct SelectAuthorsWithTwoSlicesRow(int Id, string Name, string? Bio);
-    public readonly record struct SelectAuthorsWithTwoSlicesArgs(int[] Ids, string[] Names);
-    public async Task<List<SelectAuthorsWithTwoSlicesRow>> SelectAuthorsWithTwoSlices(SelectAuthorsWithTwoSlicesArgs args)
+    private const string GetAuthorsByIdsAndNamesSql = "SELECT id, name, bio FROM authors WHERE id IN (/*SLICE:ids*/@ids) AND name IN (/*SLICE:names*/@names)";
+    public readonly record struct GetAuthorsByIdsAndNamesRow(int Id, string Name, string? Bio);
+    public readonly record struct GetAuthorsByIdsAndNamesArgs(int[] Ids, string[] Names);
+    public async Task<List<GetAuthorsByIdsAndNamesRow>> GetAuthorsByIdsAndNames(GetAuthorsByIdsAndNamesArgs args)
     {
         using (var connection = new SqliteConnection(ConnectionString))
         {
             connection.Open();
-            var sqlText = SelectAuthorsWithTwoSlicesSql;
+            var sqlText = GetAuthorsByIdsAndNamesSql;
             sqlText = Utils.GetTransformedString(sqlText, args.Ids, "Ids", "ids");
             sqlText = Utils.GetTransformedString(sqlText, args.Names, "Names", "names");
             using (var command = new SqliteCommand(sqlText, connection))
@@ -195,10 +195,10 @@ public class QuerySql
                     command.Parameters.AddWithValue($"@NamesArg{i}", args.Names[i]);
                 using (var reader = await command.ExecuteReaderAsync())
                 {
-                    var result = new List<SelectAuthorsWithTwoSlicesRow>();
+                    var result = new List<GetAuthorsByIdsAndNamesRow>();
                     while (await reader.ReadAsync())
                     {
-                        result.Add(new SelectAuthorsWithTwoSlicesRow { Id = reader.GetInt32(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2) });
+                        result.Add(new GetAuthorsByIdsAndNamesRow { Id = reader.GetInt32(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2) });
                     }
 
                     return result;
@@ -238,7 +238,7 @@ public class QuerySql
         }
     }
 
-    private const string ListAllAuthorsBooksSql = "SELECT authors.id, authors.name, authors.bio, books.id, books.name, books.author_id, books.description FROM authors JOIN books ON authors.id = books.author_id ORDER BY authors.name";
+    private const string ListAllAuthorsBooksSql = "SELECT authors.id, authors.name, authors.bio, books.id, books.name, books.author_id, books.description  FROM  authors  JOIN  books  ON  authors . id  =  books . author_id  ORDER  BY  authors . name  ";  
     public readonly record struct ListAllAuthorsBooksRow(Author Author, Book Book);
     public async Task<List<ListAllAuthorsBooksRow>> ListAllAuthorsBooks()
     {
@@ -276,6 +276,31 @@ public class QuerySql
                     while (await reader.ReadAsync())
                     {
                         result.Add(new GetDuplicateAuthorsRow { Author = new Author { Id = reader.GetInt32(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2) }, Author2 = new Author { Id = reader.GetInt32(3), Name = reader.GetString(4), Bio = reader.IsDBNull(5) ? null : reader.GetString(5) } });
+                    }
+
+                    return result;
+                }
+            }
+        }
+    }
+
+    private const string GetAuthorsByBookNameSql = "SELECT authors.id, authors.name, authors.bio, books.id, books.name, books.author_id, books.description FROM  authors  JOIN  books  ON  authors . id  =  books . author_id  WHERE  books . name  =  @name  ";  
+    public readonly record struct GetAuthorsByBookNameRow(int Id, string Name, string? Bio, Book Book);
+    public readonly record struct GetAuthorsByBookNameArgs(string Name);
+    public async Task<List<GetAuthorsByBookNameRow>> GetAuthorsByBookName(GetAuthorsByBookNameArgs args)
+    {
+        using (var connection = new SqliteConnection(ConnectionString))
+        {
+            connection.Open();
+            using (var command = new SqliteCommand(GetAuthorsByBookNameSql, connection))
+            {
+                command.Parameters.AddWithValue("@name", args.Name);
+                using (var reader = await command.ExecuteReaderAsync())
+                {
+                    var result = new List<GetAuthorsByBookNameRow>();
+                    while (await reader.ReadAsync())
+                    {
+                        result.Add(new GetAuthorsByBookNameRow { Id = reader.GetInt32(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2), Book = new Book { Id = reader.GetInt32(3), Name = reader.GetString(4), AuthorId = reader.GetInt32(5), Description = reader.IsDBNull(6) ? null : reader.GetString(6) } });
                     }
 
                     return result;

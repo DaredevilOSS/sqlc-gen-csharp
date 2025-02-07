@@ -27,10 +27,10 @@ UPDATE authors
 SET bio = sqlc.arg('bio')
 WHERE bio IS NOT NULL;
 
--- name: SelectAuthorsWithSlice :many
+-- name: GetAuthorsByIds :many
 SELECT * FROM authors WHERE id IN (sqlc.slice('ids'));
 
--- name: SelectAuthorsWithTwoSlices :many
+-- name: GetAuthorsByIdsAndNames :many
 SELECT * FROM authors WHERE id IN (sqlc.slice('ids')) AND name IN (sqlc.slice('names'));
 
 -- name: CreateBook :exec
@@ -45,6 +45,11 @@ ORDER BY authors.name;
 SELECT sqlc.embed(authors1), sqlc.embed(authors2)
 FROM authors authors1 JOIN authors authors2 ON authors1.name = authors2.name
 WHERE authors1.id > authors2.id;
+
+-- name: GetAuthorsByBookName :many 
+SELECT authors.*, sqlc.embed(books)
+FROM authors JOIN books ON authors.id = books.author_id
+WHERE books.name = ?;
 
 -- name: TruncateCopyToTests :exec
 TRUNCATE TABLE copy_tests;
