@@ -340,6 +340,20 @@ public class QuerySql
         }
     }
 
+    private const string GetCopyStatsSql = "SELECT COUNT(1) AS cnt FROM copy_tests; SELECT LAST_INSERT_ID()";
+    public class GetCopyStatsRow
+    {
+        public long Cnt { get; set; }
+    };
+    public async Task<GetCopyStatsRow?> GetCopyStats()
+    {
+        using (var connection = new MySqlConnection(ConnectionString))
+        {
+            var result = await connection.QueryFirstOrDefaultAsync<GetCopyStatsRow?>(GetCopyStatsSql);
+            return result;
+        }
+    }
+
     private const string CopyToTestsSql = "INSERT INTO copy_tests (c_int, c_varchar, c_date, c_timestamp) VALUES (@c_int, @c_varchar, @c_date, @c_timestamp); SELECT LAST_INSERT_ID()";
     public class CopyToTestsArgs
     {
@@ -373,22 +387,8 @@ public class QuerySql
         }
     }
 
-    private const string CountCopyRowsSql = "SELECT COUNT(1) AS cnt FROM copy_tests; SELECT LAST_INSERT_ID()";
-    public class CountCopyRowsRow
-    {
-        public long Cnt { get; set; }
-    };
-    public async Task<CountCopyRowsRow?> CountCopyRows()
-    {
-        using (var connection = new MySqlConnection(ConnectionString))
-        {
-            var result = await connection.QueryFirstOrDefaultAsync<CountCopyRowsRow?>(CountCopyRowsSql);
-            return result;
-        }
-    }
-
-    private const string TestSql = "SELECT c_bit, c_tinyint, c_bool, c_boolean, c_smallint, c_mediumint, c_int, c_integer, c_bigint, c_serial, c_decimal, c_dec, c_numeric, c_fixed, c_float, c_double, c_double_precision, c_date, c_time, c_datetime, c_timestamp, c_year, c_char, c_nchar, c_national_char, c_varchar, c_binary, c_varbinary, c_tinyblob, c_tinytext, c_blob, c_text, c_mediumblob, c_mediumtext, c_longblob, c_longtext, c_json FROM node_mysql_types LIMIT 1; SELECT LAST_INSERT_ID()";
-    public class TestRow
+    private const string GetMysqlTypesSql = "SELECT c_bit, c_tinyint, c_bool, c_boolean, c_smallint, c_mediumint, c_int, c_integer, c_bigint, c_serial, c_decimal, c_dec, c_numeric, c_fixed, c_float, c_double, c_double_precision, c_date, c_time, c_datetime, c_timestamp, c_year, c_char, c_nchar, c_national_char, c_varchar, c_binary, c_varbinary, c_tinyblob, c_tinytext, c_blob, c_text, c_mediumblob, c_mediumtext, c_longblob, c_longtext, c_json FROM mysql_types LIMIT 1; SELECT LAST_INSERT_ID()";
+    public class GetMysqlTypesRow
     {
         public byte[]? CBit { get; set; }
         public int? CTinyint { get; set; }
@@ -428,12 +428,21 @@ public class QuerySql
         public string? CLongtext { get; set; }
         public object? CJson { get; set; }
     };
-    public async Task<TestRow?> Test()
+    public async Task<GetMysqlTypesRow?> GetMysqlTypes()
     {
         using (var connection = new MySqlConnection(ConnectionString))
         {
-            var result = await connection.QueryFirstOrDefaultAsync<TestRow?>(TestSql);
+            var result = await connection.QueryFirstOrDefaultAsync<GetMysqlTypesRow?>(GetMysqlTypesSql);
             return result;
+        }
+    }
+
+    private const string TruncateMysqlTypesSql = "TRUNCATE TABLE mysql_types; SELECT LAST_INSERT_ID()";
+    public async Task TruncateMysqlTypes()
+    {
+        using (var connection = new MySqlConnection(ConnectionString))
+        {
+            await connection.ExecuteAsync(TruncateMysqlTypesSql);
         }
     }
 }

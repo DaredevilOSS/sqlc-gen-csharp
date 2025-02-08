@@ -16,16 +16,16 @@ namespace SqlcGenCsharpTests
         {
             await this.QuerySql.CreateAuthor(new QuerySql.CreateAuthorArgs { Name = DataGenerator.BojackAuthor, Bio = DataGenerator.BojackTheme });
             await this.QuerySql.CreateAuthor(new QuerySql.CreateAuthorArgs { Name = DataGenerator.DrSeussAuthor, Bio = DataGenerator.DrSeussQuote });
-            var actual = await this.QuerySql.GetAuthor(new QuerySql.GetAuthorArgs { Name = DataGenerator.BojackAuthor });
             var expected = new QuerySql.GetAuthorRow
             {
                 Name = DataGenerator.BojackAuthor,
                 Bio = DataGenerator.BojackTheme
             };
-            Assert.That(Equals(expected, actual));
+            var actual = await this.QuerySql.GetAuthor(new QuerySql.GetAuthorArgs { Name = DataGenerator.BojackAuthor });
+            Assert.That(SingularEquals(expected, actual));
         }
 
-        private static bool Equals(QuerySql.GetAuthorRow x, QuerySql.GetAuthorRow y)
+        private static bool SingularEquals(QuerySql.GetAuthorRow x, QuerySql.GetAuthorRow y)
         {
             return x.Name.Equals(y.Name) && x.Bio.Equals(y.Bio);
         }
@@ -52,7 +52,7 @@ namespace SqlcGenCsharpTests
             Assert.That(SequenceEquals(expected, actual));
         }
 
-        private static bool Equals(QuerySql.ListAuthorsRow x, QuerySql.ListAuthorsRow y)
+        private static bool SingularEquals(QuerySql.ListAuthorsRow x, QuerySql.ListAuthorsRow y)
         {
             return x.Name.Equals(y.Name) && x.Bio.Equals(y.Bio);
         }
@@ -63,7 +63,7 @@ namespace SqlcGenCsharpTests
                 return false;
             x = x.OrderBy<QuerySql.ListAuthorsRow, object>(o => o.Name + o.Bio).ToList();
             y = y.OrderBy<QuerySql.ListAuthorsRow, object>(o => o.Name + o.Bio).ToList();
-            return !x.Where((t, i) => !Equals(t, y[i])).Any();
+            return !x.Where((t, i) => !SingularEquals(t, y[i])).Any();
         }
 
         [Test]
@@ -81,8 +81,23 @@ namespace SqlcGenCsharpTests
         {
             await this.QuerySql.CreateAuthor(new QuerySql.CreateAuthorArgs { Name = DataGenerator.GenericAuthor, Bio = DataGenerator.GenericQuote1 });
             await this.QuerySql.CreateAuthor(new QuerySql.CreateAuthorArgs { Name = DataGenerator.GenericAuthor, Bio = DataGenerator.GenericQuote1 });
-            var affectedRows = await this.QuerySql.UpdateAuthors(new QuerySql.UpdateAuthorsArgs { Bio = DataGenerator.BojackTheme });
+            var affectedRows = await this.QuerySql.UpdateAuthors(new QuerySql.UpdateAuthorsArgs { Bio = DataGenerator.GenericQuote2 });
             ClassicAssert.AreEqual(2, affectedRows);
+            var expected = new List<QuerySql.ListAuthorsRow>
+            {
+                new QuerySql.ListAuthorsRow
+                {
+                    Name = DataGenerator.GenericAuthor,
+                    Bio = DataGenerator.GenericQuote2
+                },
+                new QuerySql.ListAuthorsRow
+                {
+                    Name = DataGenerator.GenericAuthor,
+                    Bio = DataGenerator.GenericQuote2
+                }
+            };
+            var actual = await this.QuerySql.ListAuthors();
+            Assert.That(SequenceEquals(expected, actual));
         }
 
         [Test]
@@ -96,10 +111,10 @@ namespace SqlcGenCsharpTests
                 Bio = DataGenerator.GenericQuote1
             };
             var actual = await QuerySql.GetAuthorById(new QuerySql.GetAuthorByIdArgs { Id = genericId });
-            Assert.That(Equals(expected, actual));
+            Assert.That(SingularEquals(expected, actual));
         }
 
-        private static bool Equals(QuerySql.GetAuthorByIdRow x, QuerySql.GetAuthorByIdRow y)
+        private static bool SingularEquals(QuerySql.GetAuthorByIdRow x, QuerySql.GetAuthorByIdRow y)
         {
             return x.Id.Equals(y.Id) && x.Name.Equals(y.Name) && x.Bio.Equals(y.Bio);
         }
@@ -117,11 +132,13 @@ namespace SqlcGenCsharpTests
                 {
                     Author = new Author
                     {
+                        Id = bojackId,
                         Name = DataGenerator.BojackAuthor,
                         Bio = DataGenerator.BojackTheme
                     },
                     Book = new Book
                     {
+                        AuthorId = bojackId,
                         Name = DataGenerator.BojackBookTitle
                     }
                 },
@@ -129,11 +146,13 @@ namespace SqlcGenCsharpTests
                 {
                     Author = new Author
                     {
+                        Id = drSeussId,
                         Name = DataGenerator.DrSeussAuthor,
                         Bio = DataGenerator.DrSeussQuote
                     },
                     Book = new Book
                     {
+                        AuthorId = drSeussId,
                         Name = DataGenerator.DrSeussBookTitle
                     }
                 }
@@ -142,9 +161,9 @@ namespace SqlcGenCsharpTests
             Assert.That(SequenceEquals(expected, actual));
         }
 
-        private static bool Equals(QuerySql.ListAllAuthorsBooksRow x, QuerySql.ListAllAuthorsBooksRow y)
+        private static bool SingularEquals(QuerySql.ListAllAuthorsBooksRow x, QuerySql.ListAllAuthorsBooksRow y)
         {
-            return x.Author.Name.Equals(y.Author.Name) && x.Author.Bio.Equals(y.Author.Bio) && x.Book.Name.Equals(y.Book.Name);
+            return x.Author.Id.Equals(y.Author.Id) && x.Author.Name.Equals(y.Author.Name) && x.Author.Bio.Equals(y.Author.Bio) && x.Book.AuthorId.Equals(y.Book.AuthorId) && x.Book.Name.Equals(y.Book.Name);
         }
 
         private static bool SequenceEquals(List<QuerySql.ListAllAuthorsBooksRow> x, List<QuerySql.ListAllAuthorsBooksRow> y)
@@ -153,7 +172,7 @@ namespace SqlcGenCsharpTests
                 return false;
             x = x.OrderBy<QuerySql.ListAllAuthorsBooksRow, object>(o => o.Author.Name + o.Book.Name).ToList();
             y = y.OrderBy<QuerySql.ListAllAuthorsBooksRow, object>(o => o.Author.Name + o.Book.Name).ToList();
-            return !x.Where((t, i) => !Equals(t, y[i])).Any();
+            return !x.Where((t, i) => !SingularEquals(t, y[i])).Any();
         }
 
         [Test]
@@ -179,10 +198,10 @@ namespace SqlcGenCsharpTests
             };
             var actual = await QuerySql.GetDuplicateAuthors();
             Assert.That(SequenceEquals(expected, actual));
-            Assert.That(actual[0].Author.Id, Is.Not.EqualTo(actual[0].Author2.Id));
+            Assert.That(actual[0].Author.Id != actual[0].Author2.Id);
         }
 
-        private static bool Equals(QuerySql.GetDuplicateAuthorsRow x, QuerySql.GetDuplicateAuthorsRow y)
+        private static bool SingularEquals(QuerySql.GetDuplicateAuthorsRow x, QuerySql.GetDuplicateAuthorsRow y)
         {
             return x.Author.Name.Equals(y.Author.Name) && x.Author.Bio.Equals(y.Author.Bio) && x.Author2.Name.Equals(y.Author2.Name) && x.Author2.Bio.Equals(y.Author2.Bio);
         }
@@ -193,7 +212,7 @@ namespace SqlcGenCsharpTests
                 return false;
             x = x.OrderBy<QuerySql.GetDuplicateAuthorsRow, object>(o => o.Author.Name + o.Author2.Name).ToList();
             y = y.OrderBy<QuerySql.GetDuplicateAuthorsRow, object>(o => o.Author.Name + o.Author2.Name).ToList();
-            return !x.Where((t, i) => !Equals(t, y[i])).Any();
+            return !x.Where((t, i) => !SingularEquals(t, y[i])).Any();
         }
 
         [Test]
@@ -213,6 +232,67 @@ namespace SqlcGenCsharpTests
             var bojackId = await this.QuerySql.CreateAuthorReturnId(new QuerySql.CreateAuthorReturnIdArgs { Name = DataGenerator.BojackAuthor, Bio = DataGenerator.BojackTheme });
             var actual = await QuerySql.GetAuthorsByIdsAndNames(new QuerySql.GetAuthorsByIdsAndNamesArgs { LongArr1 = new[] { genericId, bojackId }, StringArr2 = new[] { DataGenerator.GenericAuthor } });
             ClassicAssert.AreEqual(1, actual.Count);
+        }
+
+        [Test]
+        public async Task TestCopyFrom()
+        {
+            const int batchSize = 100;
+            var batchArgs = Enumerable.Range(0, batchSize).Select(_ => new QuerySql.CopyToTestsArgs { CInt = 1, CVarchar = "abc", CDate = new DateTime(2020, 7, 22, 11, 7, 45, 35), CTimestamp = new DateTime(2020, 7, 22, 11, 7, 45, 35) }).ToList();
+            await QuerySql.CopyToTests(batchArgs);
+            var expected = new QuerySql.GetCopyStatsRow
+            {
+                Cnt = batchSize,
+                CInt = 1,
+                CVarchar = "abc",
+                CDate = new DateTime(2020, 7, 22),
+                CTimestamp = new DateTime(2020, 7, 22, 11, 7, 45, 35)
+            };
+            var actual = await QuerySql.GetCopyStats();
+            Assert.That(SingularEquals(expected, actual));
+        }
+
+        private static bool SingularEquals(QuerySql.GetCopyStatsRow x, QuerySql.GetCopyStatsRow y)
+        {
+            return x.Cnt.Equals(y.Cnt) && x.CInt.Equals(y.CInt) && x.CVarchar.Equals(y.CVarchar) && x.CDate.Equals(y.CDate) && x.CTimestamp.Equals(y.CTimestamp);
+        }
+
+        [Test]
+        public async Task TestPostgresTypes()
+        {
+            var insertedId = await QuerySql.InsertPostgresTypes(new QuerySql.InsertPostgresTypesArgs { CBigint = 1, CReal = 1.0f, CNumeric = 1, CSerial = 1, CSmallint = 1, CDecimal = 1, CDate = DateTime.Now, CTimestamp = DateTime.Now, CBoolean = true, CChar = "a", CInteger = 1, CText = "ab", CVarchar = "abc", CCharacterVarying = "abcd", CTextArray = new string[] { "a", "b" }, CIntegerArray = new int[] { 1, 2 } });
+            var expected = new QuerySql.GetPostgresTypesRow
+            {
+                CBigint = 1,
+                CReal = 1.0f,
+                CSerial = 1,
+                CNumeric = 1,
+                CDecimal = 1,
+                CSmallint = 1,
+                CBoolean = true,
+                CChar = "a",
+                CInteger = 1,
+                CText = "ab",
+                CVarchar = "abc",
+                CCharacterVarying = "abcd",
+                CTextArray = new string[]
+                {
+                    "a",
+                    "b"
+                },
+                CIntegerArray = new int[]
+                {
+                    1,
+                    2
+                }
+            };
+            var actual = await QuerySql.GetPostgresTypes(new QuerySql.GetPostgresTypesArgs { Id = insertedId });
+            Assert.That(SingularEquals(expected, actual));
+        }
+
+        private static bool SingularEquals(QuerySql.GetPostgresTypesRow x, QuerySql.GetPostgresTypesRow y)
+        {
+            return x.CSmallint.Equals(y.CSmallint) && x.CBoolean.Equals(y.CBoolean) && x.CInteger.Equals(y.CInteger) && x.CBigint.Equals(y.CBigint) && x.CSerial.Equals(y.CSerial) && x.CDecimal.Equals(y.CDecimal) && x.CNumeric.Equals(y.CNumeric) && x.CReal.Equals(y.CReal) && x.CChar.Equals(y.CChar) && x.CVarchar.Equals(y.CVarchar) && x.CCharacterVarying.Equals(y.CCharacterVarying) && x.CText.Equals(y.CText) && x.CTextArray.SequenceEqual(y.CTextArray) && x.CIntegerArray.SequenceEqual(y.CIntegerArray);
         }
     }
 }

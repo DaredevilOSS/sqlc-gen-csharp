@@ -23,7 +23,7 @@ public class CopyTest
     public DateTime CDate { get; set; }
     public DateTime CTimestamp { get; set; }
 };
-public class NodePostgresType
+public class PostgresType
 {
     public long Id { get; set; }
     public byte[]? CBit { get; set; }

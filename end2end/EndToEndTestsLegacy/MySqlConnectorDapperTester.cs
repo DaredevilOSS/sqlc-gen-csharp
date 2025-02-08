@@ -7,6 +7,9 @@ namespace SqlcGenCsharpTests
 {
     public partial class MySqlConnectorDapperTester
     {
+
+        private static readonly Random Randomizer = new Random();
+
         private QuerySql QuerySql { get; } = new QuerySql(
             Environment.GetEnvironmentVariable(EndToEndCommon.MySqlConnectionStringEnv));
 
@@ -15,6 +18,7 @@ namespace SqlcGenCsharpTests
         {
             await QuerySql.TruncateBooks();
             await QuerySql.DeleteAllAuthors();
+            await QuerySql.TruncateCopyToTests();
         }
     }
 }

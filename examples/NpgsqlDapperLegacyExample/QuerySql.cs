@@ -330,15 +330,6 @@ namespace NpgsqlDapperLegacyExampleGen
             }
         }
 
-        private const string TruncateNodePostgresTypesSql = "TRUNCATE TABLE node_postgres_types";
-        public async Task TruncateNodePostgresTypes()
-        {
-            using (var connection = new NpgsqlConnection(ConnectionString))
-            {
-                await connection.ExecuteAsync(TruncateNodePostgresTypesSql);
-            }
-        }
-
         private const string CopyToTestsSql = "COPY copy_tests (c_int, c_varchar, c_date, c_timestamp) FROM STDIN (FORMAT BINARY)";
         public class CopyToTestsArgs
         {
@@ -371,26 +362,30 @@ namespace NpgsqlDapperLegacyExampleGen
             }
         }
 
-        private const string CountCopyRowsSql = "SELECT COUNT(1) AS cnt FROM copy_tests";
-        public class CountCopyRowsRow
+        private const string GetCopyStatsSql = "SELECT COUNT ( 1 ) AS  cnt , MAX (c_int ) :: int  AS  c_int, MAX (c_varchar ) :: varchar  AS  c_varchar, MAX (c_date ) :: date  AS  c_date, MAX (c_timestamp ) :: timestamp  AS  c_timestamp  FROM  copy_tests  "; 
+        public class GetCopyStatsRow
         {
             public long Cnt { get; set; }
+            public int CInt { get; set; }
+            public string CVarchar { get; set; }
+            public DateTime CDate { get; set; }
+            public DateTime CTimestamp { get; set; }
         };
-        public async Task<CountCopyRowsRow> CountCopyRows()
+        public async Task<GetCopyStatsRow> GetCopyStats()
         {
             using (var connection = new NpgsqlConnection(ConnectionString))
             {
-                var result = await connection.QueryFirstOrDefaultAsync<CountCopyRowsRow>(CountCopyRowsSql);
+                var result = await connection.QueryFirstOrDefaultAsync<GetCopyStatsRow>(GetCopyStatsSql);
                 return result;
             }
         }
 
-        private const string InsertNodePostgresTypeSql = "INSERT INTO node_postgres_types (c_smallint, c_boolean, c_integer, c_bigint, c_serial, c_decimal, c_numeric, c_real, c_date, c_timestamp, c_char, c_varchar, c_character_varying, c_text, c_text_array, c_integer_array) VALUES ( @c_smallint , @c_boolean, @c_integer, @c_bigint, @c_serial, @c_decimal, @c_numeric, @c_real, @c_date, @c_timestamp, @c_char, @c_varchar, @c_character_varying, @c_text, @c_text_array, @c_integer_array ) RETURNING  id  "; 
-        public class InsertNodePostgresTypeRow
+        private const string InsertPostgresTypesSql = "INSERT INTO postgres_types (c_smallint, c_boolean, c_integer, c_bigint, c_serial, c_decimal, c_numeric, c_real, c_date, c_timestamp, c_char, c_varchar, c_character_varying, c_text, c_text_array, c_integer_array) VALUES ( @c_smallint , @c_boolean, @c_integer, @c_bigint, @c_serial, @c_decimal, @c_numeric, @c_real, @c_date, @c_timestamp, @c_char, @c_varchar, @c_character_varying, @c_text, @c_text_array, @c_integer_array ) RETURNING  id  "; 
+        public class InsertPostgresTypesRow
         {
             public long Id { get; set; }
         };
-        public class InsertNodePostgresTypeArgs
+        public class InsertPostgresTypesArgs
         {
             public int? CSmallint { get; set; }
             public bool? CBoolean { get; set; }
@@ -409,7 +404,7 @@ namespace NpgsqlDapperLegacyExampleGen
             public string[] CTextArray { get; set; }
             public int[] CIntegerArray { get; set; }
         };
-        public async Task<long> InsertNodePostgresType(InsertNodePostgresTypeArgs args)
+        public async Task<long> InsertPostgresTypes(InsertPostgresTypesArgs args)
         {
             using (var connection = new NpgsqlConnection(ConnectionString))
             {
@@ -430,13 +425,15 @@ namespace NpgsqlDapperLegacyExampleGen
                 queryParams.Add("c_text", args.CText);
                 queryParams.Add("c_text_array", args.CTextArray);
                 queryParams.Add("c_integer_array", args.CIntegerArray);
-                return await connection.QuerySingleAsync<long>(InsertNodePostgresTypeSql, queryParams);
+                return await connection.QuerySingleAsync<long>(InsertPostgresTypesSql, queryParams);
             }
         }
 
-        private const string GetNodePostgresTypeSql = "SELECT c_smallint, c_boolean, c_integer, c_bigint, c_serial, c_decimal, c_numeric, c_real, c_date, c_timestamp, c_char, c_varchar, c_character_varying, c_text, c_text_array, c_integer_array FROM node_postgres_types WHERE id = @id LIMIT 1";
-        public class GetNodePostgresTypeRow
+        private const string GetPostgresTypesSql = "SELECT id, c_bit, c_smallint, c_boolean, c_integer, c_bigint, c_serial, c_decimal, c_numeric, c_real, c_double_precision, c_date, c_time, c_timestamp, c_char, c_varchar, c_character_varying, c_bytea, c_text, c_json, c_text_array, c_integer_array FROM postgres_types WHERE id = @id LIMIT 1";
+        public class GetPostgresTypesRow
         {
+            public long Id { get; set; }
+            public byte[] CBit { get; set; }
             public int? CSmallint { get; set; }
             public bool? CBoolean { get; set; }
             public int? CInteger { get; set; }
@@ -445,27 +442,40 @@ namespace NpgsqlDapperLegacyExampleGen
             public float? CDecimal { get; set; }
             public float? CNumeric { get; set; }
             public float? CReal { get; set; }
+            public float? CDoublePrecision { get; set; }
             public DateTime? CDate { get; set; }
+            public string CTime { get; set; }
             public DateTime? CTimestamp { get; set; }
             public string CChar { get; set; }
             public string CVarchar { get; set; }
             public string CCharacterVarying { get; set; }
+            public byte[] CBytea { get; set; }
             public string CText { get; set; }
+            public object CJson { get; set; }
             public string[] CTextArray { get; set; }
             public int[] CIntegerArray { get; set; }
         };
-        public class GetNodePostgresTypeArgs
+        public class GetPostgresTypesArgs
         {
             public long Id { get; set; }
         };
-        public async Task<GetNodePostgresTypeRow> GetNodePostgresType(GetNodePostgresTypeArgs args)
+        public async Task<GetPostgresTypesRow> GetPostgresTypes(GetPostgresTypesArgs args)
         {
             using (var connection = new NpgsqlConnection(ConnectionString))
             {
                 var queryParams = new Dictionary<string, object>();
                 queryParams.Add("id", args.Id);
-                var result = await connection.QueryFirstOrDefaultAsync<GetNodePostgresTypeRow>(GetNodePostgresTypeSql, queryParams);
+                var result = await connection.QueryFirstOrDefaultAsync<GetPostgresTypesRow>(GetPostgresTypesSql, queryParams);
                 return result;
+            }
+        }
+
+        private const string TruncatePostgresTypesSql = "TRUNCATE TABLE postgres_types";
+        public async Task TruncatePostgresTypes()
+        {
+            using (var connection = new NpgsqlConnection(ConnectionString))
+            {
+                await connection.ExecuteAsync(TruncatePostgresTypesSql);
             }
         }
     }

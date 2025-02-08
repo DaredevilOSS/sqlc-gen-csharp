@@ -20,7 +20,7 @@ CREATE TABLE copy_tests (
   c_timestamp TIMESTAMP       NOT NULL
 );
 
-CREATE TABLE node_mysql_types (
+CREATE TABLE mysql_types (
   c_bit BIT,
   c_tinyint TINYINT,
   c_bool BOOL,

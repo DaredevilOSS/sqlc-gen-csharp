@@ -37,7 +37,8 @@ public partial class MySqlConnectorDriver(Options options, Dictionary<string, Ta
                 { "text", null },
                 { "time", null },
                 { "tinytext", null },
-                { "varchar", null }
+                { "varchar", null },
+                { "var_string", null }
             }, ordinal => $"reader.GetString({ordinal})"),
         new("DateTime",
             new Dictionary<string, string?> { { "date", null }, { "datetime", null }, { "timestamp", null } }, ordinal => $"reader.GetDateTime({ordinal})"),
