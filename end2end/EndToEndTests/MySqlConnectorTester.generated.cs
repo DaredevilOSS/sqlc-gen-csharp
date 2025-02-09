@@ -237,19 +237,23 @@ namespace SqlcGenCsharpTests
         public async Task TestCopyFrom()
         {
             const int batchSize = 100;
-            var batchArgs = Enumerable.Range(0, batchSize).Select(_ => new QuerySql.CopyToTestsArgs { CInt = 1, CVarchar = "abc", CDate = new DateTime(2020, 7, 22, 11, 7, 45, 35), CTimestamp = new DateTime(2020, 7, 22, 11, 7, 45, 35) }).ToList();
-            await QuerySql.CopyToTests(batchArgs);
-            var expected = new QuerySql.GetCopyStatsRow
+            var batchArgs = Enumerable.Range(0, batchSize).Select(_ => new QuerySql.InsertMysqlTypesBatchArgs { CInt = 1, CVarchar = "abc", CDate = new DateTime(2020, 7, 22, 11, 7, 45), CTimestamp = new DateTime(2020, 7, 22, 11, 7, 45) }).ToList();
+            await QuerySql.InsertMysqlTypesBatch(batchArgs);
+            var expected = new QuerySql.GetMysqlTypesAggRow
             {
-                Cnt = batchSize
+                Cnt = batchSize,
+                CInt = 1,
+                CVarchar = "abc",
+                CDate = new DateTime(2020, 7, 22),
+                CTimestamp = new DateTime(2020, 7, 22, 11, 7, 45)
             };
-            var actual = await QuerySql.GetCopyStats();
+            var actual = await QuerySql.GetMysqlTypesAgg();
             Assert.That(SingularEquals(expected, actual.Value));
         }
 
-        private static bool SingularEquals(QuerySql.GetCopyStatsRow x, QuerySql.GetCopyStatsRow y)
+        private static bool SingularEquals(QuerySql.GetMysqlTypesAggRow x, QuerySql.GetMysqlTypesAggRow y)
         {
-            return x.Cnt.Equals(y.Cnt);
+            return x.Cnt.Equals(y.Cnt) && x.CInt.Equals(y.CInt) && x.CVarchar.Equals(y.CVarchar) && x.CDate.Value.Equals(y.CDate.Value) && x.CTimestamp.Equals(y.CTimestamp);
         }
     }
 }

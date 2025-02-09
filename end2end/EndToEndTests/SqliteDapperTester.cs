@@ -9,6 +9,7 @@ public partial class SqliteDapperTester
 {
     private QuerySql QuerySql { get; } = new(
         Environment.GetEnvironmentVariable(EndToEndCommon.SqliteConnectionStringEnv)!);
+
     [TearDown]
     public async Task EmptyTestsTable()
     {

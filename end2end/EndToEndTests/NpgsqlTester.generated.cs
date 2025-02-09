@@ -238,23 +238,29 @@ namespace SqlcGenCsharpTests
         public async Task TestCopyFrom()
         {
             const int batchSize = 100;
-            var batchArgs = Enumerable.Range(0, batchSize).Select(_ => new QuerySql.CopyToTestsArgs { CInt = 1, CVarchar = "abc", CDate = new DateTime(2020, 7, 22, 11, 7, 45, 35), CTimestamp = new DateTime(2020, 7, 22, 11, 7, 45, 35) }).ToList();
-            await QuerySql.CopyToTests(batchArgs);
-            var expected = new QuerySql.GetCopyStatsRow
+            var batchArgs = Enumerable.Range(0, batchSize).Select(_ => new QuerySql.InsertPostgresTypesBatchArgs { CBoolean = true, CSmallint = 3, CInteger = 1, CBigint = 14214231, CDecimal = 1.2f, CNumeric = 8.4f, CReal = 1.432423f, CVarchar = "abc", CDate = new DateTime(2020, 7, 22, 11, 7, 45, 35), CTimestamp = new DateTime(2020, 7, 22, 11, 7, 45, 35) }).ToList();
+            await QuerySql.InsertPostgresTypesBatch(batchArgs);
+            var expected = new QuerySql.GetPostgresTypesAggRow
             {
                 Cnt = batchSize,
-                CInt = 1,
+                CBoolean = true,
+                CSmallint = 3,
+                CInteger = 1,
+                CBigint = 14214231,
+                CDecimal = 1.2f,
+                CNumeric = 8.4f,
+                CReal = 1.432423f,
                 CVarchar = "abc",
                 CDate = new DateTime(2020, 7, 22),
                 CTimestamp = new DateTime(2020, 7, 22, 11, 7, 45, 35)
             };
-            var actual = await QuerySql.GetCopyStats();
+            var actual = await QuerySql.GetPostgresTypesAgg();
             Assert.That(SingularEquals(expected, actual.Value));
         }
 
-        private static bool SingularEquals(QuerySql.GetCopyStatsRow x, QuerySql.GetCopyStatsRow y)
+        private static bool SingularEquals(QuerySql.GetPostgresTypesAggRow x, QuerySql.GetPostgresTypesAggRow y)
         {
-            return x.Cnt.Equals(y.Cnt) && x.CInt.Equals(y.CInt) && x.CVarchar.Equals(y.CVarchar) && x.CDate.Equals(y.CDate) && x.CTimestamp.Equals(y.CTimestamp);
+            return x.Cnt.Equals(y.Cnt) && x.CSmallint.Equals(y.CSmallint) && x.CBoolean.Equals(y.CBoolean) && x.CInteger.Equals(y.CInteger) && x.CBigint.Equals(y.CBigint) && x.CDecimal.Equals(y.CDecimal) && x.CNumeric.Equals(y.CNumeric) && x.CReal.Equals(y.CReal) && x.CVarchar.Equals(y.CVarchar) && x.CDate.Equals(y.CDate) && x.CTimestamp.Equals(y.CTimestamp);
         }
 
         [Test]

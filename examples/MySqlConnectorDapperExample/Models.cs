@@ -4,62 +4,55 @@ using System;
 namespace MySqlConnectorDapperExampleGen;
 public class Author
 {
-    public long Id { get; set; }
-    public string Name { get; set; }
-    public string? Bio { get; set; }
-    public DateTime Created { get; set; }
+    public long Id { get; init; }
+    public required string Name { get; init; }
+    public string? Bio { get; init; }
+    public DateTime Created { get; init; }
 };
 public class Book
 {
-    public long Id { get; set; }
-    public string Name { get; set; }
-    public long AuthorId { get; set; }
-    public string? Description { get; set; }
-};
-public class CopyTest
-{
-    public int CInt { get; set; }
-    public string CVarchar { get; set; }
-    public DateTime CDate { get; set; }
-    public DateTime CTimestamp { get; set; }
+    public long Id { get; init; }
+    public required string Name { get; init; }
+    public long AuthorId { get; init; }
+    public string? Description { get; init; }
 };
 public class MysqlType
 {
-    public byte[]? CBit { get; set; }
-    public int? CTinyint { get; set; }
-    public int? CBool { get; set; }
-    public int? CBoolean { get; set; }
-    public int? CSmallint { get; set; }
-    public int? CMediumint { get; set; }
-    public int? CInt { get; set; }
-    public int? CInteger { get; set; }
-    public long? CBigint { get; set; }
-    public long CSerial { get; set; }
-    public string? CDecimal { get; set; }
-    public string? CDec { get; set; }
-    public string? CNumeric { get; set; }
-    public string? CFixed { get; set; }
-    public double? CFloat { get; set; }
-    public double? CDouble { get; set; }
-    public double? CDoublePrecision { get; set; }
-    public DateTime? CDate { get; set; }
-    public string? CTime { get; set; }
-    public DateTime? CDatetime { get; set; }
-    public DateTime? CTimestamp { get; set; }
-    public int? CYear { get; set; }
-    public string? CChar { get; set; }
-    public string? CNchar { get; set; }
-    public string? CNationalChar { get; set; }
-    public string? CVarchar { get; set; }
-    public byte[]? CBinary { get; set; }
-    public byte[]? CVarbinary { get; set; }
-    public byte[]? CTinyblob { get; set; }
-    public string? CTinytext { get; set; }
-    public byte[]? CBlob { get; set; }
-    public string? CText { get; set; }
-    public byte[]? CMediumblob { get; set; }
-    public string? CMediumtext { get; set; }
-    public byte[]? CLongblob { get; set; }
-    public string? CLongtext { get; set; }
-    public object? CJson { get; set; }
+    public byte[]? CBit { get; init; }
+    public int? CTinyint { get; init; }
+    public int? CBool { get; init; }
+    public int? CBoolean { get; init; }
+    public int? CSmallint { get; init; }
+    public int? CMediumint { get; init; }
+    public int? CInt { get; init; }
+    public int? CInteger { get; init; }
+    public long? CBigint { get; init; }
+    public long CSerial { get; init; }
+    public string? CDecimal { get; init; }
+    public string? CDec { get; init; }
+    public string? CNumeric { get; init; }
+    public string? CFixed { get; init; }
+    public double? CFloat { get; init; }
+    public double? CDouble { get; init; }
+    public double? CDoublePrecision { get; init; }
+    public DateTime? CDate { get; init; }
+    public string? CTime { get; init; }
+    public DateTime? CDatetime { get; init; }
+    public DateTime? CTimestamp { get; init; }
+    public int? CYear { get; init; }
+    public string? CChar { get; init; }
+    public string? CNchar { get; init; }
+    public string? CNationalChar { get; init; }
+    public string? CVarchar { get; init; }
+    public byte[]? CBinary { get; init; }
+    public byte[]? CVarbinary { get; init; }
+    public byte[]? CTinyblob { get; init; }
+    public string? CTinytext { get; init; }
+    public byte[]? CBlob { get; init; }
+    public string? CText { get; init; }
+    public byte[]? CMediumblob { get; init; }
+    public string? CMediumtext { get; init; }
+    public byte[]? CLongblob { get; init; }
+    public string? CLongtext { get; init; }
+    public string? CJson { get; init; }
 };

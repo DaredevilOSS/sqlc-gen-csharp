@@ -15,8 +15,6 @@ public abstract class DbDriver(Options options, Dictionary<string, Table> tables
 
     public Dictionary<string, Table> Tables { get; } = tables;
 
-    private HashSet<string> NullableTypesInAllRuntimes { get; } = ["long", "double", "int", "float", "bool", "DateTime"];
-
     protected abstract List<ColumnMapping> ColumnMappings { get; }
 
     public virtual UsingDirectiveSyntax[] GetUsingDirectives()
@@ -91,6 +89,9 @@ public abstract class DbDriver(Options options, Dictionary<string, Table> tables
 
     public abstract string CreateSqlCommand(string sqlTextConstant);
 
+    private HashSet<string> NullableTypesInAllRuntimes { get; } = ["long", "double", "int", "float", "bool", "DateTime"];
+
+    // TODO move out from driver + rename
     public bool IsTypeNullableForAllRuntimes(string csharpType)
     {
         return NullableTypesInAllRuntimes.Contains(csharpType.Replace("?", ""));

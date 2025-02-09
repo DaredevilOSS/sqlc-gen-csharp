@@ -9,8 +9,6 @@ namespace SqlcGenCsharpTests;
 
 public partial class NpgsqlTester
 {
-    private static readonly Random Randomizer = new();
-
     private QuerySql QuerySql { get; } = new(
         Environment.GetEnvironmentVariable(EndToEndCommon.PostgresConnectionStringEnv)!);
 
@@ -18,9 +16,6 @@ public partial class NpgsqlTester
     public async Task EmptyTestsTables()
     {
         await QuerySql.TruncateAuthors();
-        await QuerySql.TruncateCopyToTests();
         await QuerySql.TruncatePostgresTypes();
-
-        new DateTime(2020, 11, 20, 10, 00, 00, 11);
     }
 }
