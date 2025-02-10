@@ -25,7 +25,12 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId
     protected sealed override List<ColumnMapping> ColumnMappings { get; } =
     [
         new("long",
-            new Dictionary<string, string?> { { "int8", null }, { "bigint", null }, { "bigserial", null } }
+            new Dictionary<string, string?>
+            {
+                { "int8", "NpgsqlDbType.Bigint" },
+                { "bigint", "NpgsqlDbType.Bigint" },
+                { "bigserial", "NpgsqlDbType.Bigint" }
+            }
             , ordinal => $"reader.GetInt64({ordinal})"),
         new("byte[]",
             new Dictionary<string, string?>
@@ -63,16 +68,23 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId
             {
                 { "integer", "NpgsqlDbType.Integer" },
                 { "int", "NpgsqlDbType.Integer" },
-                { "int2", null },
+                { "int2", "NpgsqlDbType.Smallint" },
                 { "int4", "NpgsqlDbType.Integer" },
-                { "serial", null }
+                { "serial", "NpgsqlDbType.Integer" }
             }, ordinal => $"reader.GetInt32({ordinal})",
                ordinal => $"reader.GetFieldValue<int[]>({ordinal})"),
         new("float",
-            new Dictionary<string, string?> { { "numeric", null }, { "float4", null }, { "float8", null } }
-            , ordinal => $"reader.GetFloat({ordinal})"),
+            new Dictionary<string, string?>
+            {
+                { "numeric", "NpgsqlDbType.Numeric" },
+                { "float4", "NpgsqlDbType.Real" },
+                { "float8", "NpgsqlDbType.Real" }
+            }, ordinal => $"reader.GetFloat({ordinal})"),
         new("decimal",
-            new Dictionary<string, string?> { { "decimal", null } }, ordinal => $"reader.GetDecimal({ordinal})"),
+            new Dictionary<string, string?>
+            {
+                { "decimal", "NpgsqlDbType.Real" }
+            }, ordinal => $"reader.GetDecimal({ordinal})"),
         new("bool",
             new Dictionary<string, string?> { { "bool", null }, { "boolean", null } }, ordinal => $"reader.GetBoolean({ordinal})")
     ];

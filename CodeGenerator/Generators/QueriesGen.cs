@@ -17,7 +17,8 @@ internal class QueriesGen(DbDriver dbDriver, Options options, string namespaceNa
         "UnusedAutoPropertyAccessor.Global",
         "NotAccessedPositionalProperty.Global",
         "ConvertToUsingDeclaration",
-        "UseAwaitUsing"
+        "UseAwaitUsing",
+        "UseObjectOrCollectionInitializer"
     ];
 
     private RootGen RootGen { get; } = new(options);

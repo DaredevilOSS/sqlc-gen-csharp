@@ -38,7 +38,8 @@ public partial class MySqlConnectorDriver(Options options, Dictionary<string, Ta
                 { "time", null },
                 { "tinytext", null },
                 { "varchar", null },
-                { "var_string", null }
+                { "var_string", null },
+                { "json", null }
             }, ordinal => $"reader.GetString({ordinal})"),
         new("DateTime",
             new Dictionary<string, string?> { { "date", null }, { "datetime", null }, { "timestamp", null } }, ordinal => $"reader.GetDateTime({ordinal})"),
@@ -54,17 +55,22 @@ public partial class MySqlConnectorDriver(Options options, Dictionary<string, Ta
         new("double",
             new Dictionary<string, string?> { { "double", null }, { "float", null } }, ordinal => $"reader.GetDouble({ordinal})"),
         new("object",
-            new Dictionary<string, string?> { { "json", null } }, ordinal => $"reader.GetString({ordinal})")
+            new Dictionary<string, string?> { }, ordinal => $"reader.GetValue({ordinal})")
     ];
 
     public override UsingDirectiveSyntax[] GetUsingDirectives()
     {
         return base.GetUsingDirectives()
-            .Append(UsingDirective(ParseName("MySqlConnector")))
-            .Append(UsingDirective(ParseName("System.Globalization")))
-            .Append(UsingDirective(ParseName("System.IO")))
-            .Append(UsingDirective(ParseName("CsvHelper")))
-            .Append(UsingDirective(ParseName("CsvHelper.Configuration")))
+            .Concat(
+            [
+                UsingDirective(ParseName("MySqlConnector")),
+                UsingDirective(ParseName("System.Globalization")),
+                UsingDirective(ParseName("System.IO")),
+                UsingDirective(ParseName("CsvHelper")),
+                UsingDirective(ParseName("CsvHelper.Configuration")),
+                UsingDirective(ParseName("CsvHelper.TypeConversion")),
+                UsingDirective(ParseName("System.Text"))
+            ])
             .ToArray();
     }
 
@@ -72,7 +78,7 @@ public partial class MySqlConnectorDriver(Options options, Dictionary<string, Ta
     {
         return new ConnectionGenCommands(
             $"var {Variable.Connection.AsVarName()} = new MySqlConnection({GetConnectionStringField()})",
-            $"{Variable.Connection.AsVarName()}.Open()"
+            $"await {Variable.Connection.AsVarName()}.OpenAsync()"
         );
     }
 
@@ -137,26 +143,39 @@ public partial class MySqlConnectorDriver(Options options, Dictionary<string, Ta
         const string tempCsvFilename = "input.csv";
         const string csvDelimiter = ",";
 
+        var csvWriterVar = Variable.CsvWriter.AsVarName();
+        var loaderVar = Variable.Loader.AsVarName();
+        var connectionVar = Variable.Connection.AsVarName();
+
+        var loaderColumns = query.Params.Select(p => $"\"{p.Column.Name}\"").JoinByComma();
         var (establishConnection, connectionOpen) = EstablishConnection(query);
         return $$"""  
+                 const string supportedDateTimeFormat = "yyyy-MM-dd H:mm:ss";
                  var {{Variable.Config.AsVarName()}} = new CsvConfiguration(CultureInfo.CurrentCulture) { Delimiter = "{{csvDelimiter}}" };
-                 using (var {{Variable.Writer.AsVarName()}} = new StreamWriter("{{tempCsvFilename}}"))
-                 using (var {{Variable.CsvWriter.AsVarName()}} = new CsvWriter({{Variable.Writer.AsVarName()}}, {{Variable.Config.AsVarName()}}))
-                    await {{Variable.CsvWriter.AsVarName()}}.WriteRecordsAsync({{Variable.Args.AsVarName()}});
+                 using (var {{Variable.Writer.AsVarName()}} = new StreamWriter("{{tempCsvFilename}}", false, new UTF8Encoding(false)))
+                 using (var {{csvWriterVar}} = new CsvWriter({{Variable.Writer.AsVarName()}}, {{Variable.Config.AsVarName()}}))
+                 {
+                    var options = new TypeConverterOptions { Formats = new[] { supportedDateTimeFormat } };
+                    {{csvWriterVar}}.Context.TypeConverterOptionsCache.AddOptions<DateTime>(options);
+                    {{csvWriterVar}}.Context.TypeConverterOptionsCache.AddOptions<DateTime?>(options);
+                    await {{csvWriterVar}}.WriteRecordsAsync({{Variable.Args.AsVarName()}});
+                 }
                  
                  using ({{establishConnection}})
                  {
                      {{connectionOpen.AppendSemicolonUnlessEmpty()}}
-                     var {{Variable.Loader.AsVarName()}} = new MySqlBulkLoader({{Variable.Connection.AsVarName()}})
+                     var {{loaderVar}} = new MySqlBulkLoader({{connectionVar}})
                      {
                          Local = true, 
                          TableName = "{{query.InsertIntoTable.Name}}", 
                          FieldTerminator = "{{csvDelimiter}}",
                          FileName = "{{tempCsvFilename}}",
+                         FieldQuotationCharacter = '"',
                          NumberOfLinesToSkip = 1
                      };
-                     await {{Variable.Loader.AsVarName()}}.LoadAsync();
-                     await {{Variable.Connection.AsVarName()}}.CloseAsync();
+                     {{loaderVar}}.Columns.AddRange(new List<string> { {{loaderColumns}} });
+                     await {{loaderVar}}.LoadAsync();
+                     await {{connectionVar}}.CloseAsync();
                  }
                  """;
     }

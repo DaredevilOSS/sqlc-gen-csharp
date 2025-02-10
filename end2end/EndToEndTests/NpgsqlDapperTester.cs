@@ -7,8 +7,6 @@ namespace SqlcGenCsharpTests;
 
 public partial class NpgsqlDapperTester
 {
-    private static readonly Random Randomizer = new();
-
     private QuerySql QuerySql { get; } = new(
         Environment.GetEnvironmentVariable(EndToEndCommon.PostgresConnectionStringEnv)!);
 
@@ -17,6 +15,5 @@ public partial class NpgsqlDapperTester
     {
         await QuerySql.TruncateAuthors();
         await QuerySql.TruncatePostgresTypes();
-        await QuerySql.TruncateCopyToTests();
     }
 }

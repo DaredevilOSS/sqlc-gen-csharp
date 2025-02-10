@@ -4,47 +4,40 @@ using System;
 namespace NpgsqlDapperExampleGen;
 public class Author
 {
-    public long Id { get; set; }
-    public string Name { get; set; }
-    public string? Bio { get; set; }
-    public DateTime Created { get; set; }
+    public long Id { get; init; }
+    public required string Name { get; init; }
+    public string? Bio { get; init; }
+    public DateTime Created { get; init; }
 };
 public class Book
 {
-    public long Id { get; set; }
-    public string Name { get; set; }
-    public long AuthorId { get; set; }
-    public string? Description { get; set; }
-};
-public class CopyTest
-{
-    public int CInt { get; set; }
-    public string CVarchar { get; set; }
-    public DateTime CDate { get; set; }
-    public DateTime CTimestamp { get; set; }
+    public long Id { get; init; }
+    public required string Name { get; init; }
+    public long AuthorId { get; init; }
+    public string? Description { get; init; }
 };
 public class PostgresType
 {
-    public long Id { get; set; }
-    public byte[]? CBit { get; set; }
-    public int? CSmallint { get; set; }
-    public bool? CBoolean { get; set; }
-    public int? CInteger { get; set; }
-    public long? CBigint { get; set; }
-    public int? CSerial { get; set; }
-    public float? CDecimal { get; set; }
-    public float? CNumeric { get; set; }
-    public float? CReal { get; set; }
-    public float? CDoublePrecision { get; set; }
-    public DateTime? CDate { get; set; }
-    public string? CTime { get; set; }
-    public DateTime? CTimestamp { get; set; }
-    public string? CChar { get; set; }
-    public string? CVarchar { get; set; }
-    public string? CCharacterVarying { get; set; }
-    public byte[]? CBytea { get; set; }
-    public string? CText { get; set; }
-    public object? CJson { get; set; }
-    public string[]? CTextArray { get; set; }
-    public int[]? CIntegerArray { get; set; }
+    public long Id { get; init; }
+    public byte[]? CBit { get; init; }
+    public int? CSmallint { get; init; }
+    public bool? CBoolean { get; init; }
+    public int? CInteger { get; init; }
+    public long? CBigint { get; init; }
+    public int? CSerial { get; init; }
+    public float? CDecimal { get; init; }
+    public float? CNumeric { get; init; }
+    public float? CReal { get; init; }
+    public float? CDoublePrecision { get; init; }
+    public DateTime? CDate { get; init; }
+    public string? CTime { get; init; }
+    public DateTime? CTimestamp { get; init; }
+    public string? CChar { get; init; }
+    public string? CVarchar { get; init; }
+    public string? CCharacterVarying { get; init; }
+    public byte[]? CBytea { get; init; }
+    public string? CText { get; init; }
+    public object? CJson { get; init; }
+    public string[]? CTextArray { get; init; }
+    public int[]? CIntegerArray { get; init; }
 };

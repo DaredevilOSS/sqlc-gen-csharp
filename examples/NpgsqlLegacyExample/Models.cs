@@ -17,13 +17,6 @@ namespace NpgsqlLegacyExampleGen
         public long AuthorId { get; set; }
         public string Description { get; set; }
     };
-    public class CopyTest
-    {
-        public int CInt { get; set; }
-        public string CVarchar { get; set; }
-        public DateTime CDate { get; set; }
-        public DateTime CTimestamp { get; set; }
-    };
     public class PostgresType
     {
         public long Id { get; set; }

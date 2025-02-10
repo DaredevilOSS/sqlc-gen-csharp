@@ -13,13 +13,6 @@ CREATE TABLE books (
   FOREIGN KEY (author_id) REFERENCES authors (id) ON DELETE CASCADE
 );
 
-CREATE TABLE copy_tests (
-  c_int       INTEGER         NOT NULL,
-  c_varchar   VARCHAR(100)    NOT NULL,
-  c_date      DATE            NOT NULL,
-  c_timestamp TIMESTAMP       NOT NULL
-);
-
 CREATE TABLE mysql_types (
   c_bit BIT,
   c_tinyint TINYINT,

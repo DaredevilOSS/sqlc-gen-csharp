@@ -47,6 +47,3 @@ WHERE books.name = ?;
 
 -- name: DeleteAllAuthors :exec
 DELETE FROM authors;
-
--- name: DeleteAllBooks :exec
-DELETE FROM books;

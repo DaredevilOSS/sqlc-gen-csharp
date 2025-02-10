@@ -13,19 +13,22 @@ public class CommonGen(DbDriver dbDriver)
             : $"{argInterface} {Variable.Args.AsVarName()}")}";
     }
 
-    public string AddParametersToCommand(IEnumerable<Parameter> parameters)
+    public static string AddParametersToCommand(IEnumerable<Parameter> parameters)
     {
         return parameters.Select(p =>
         {
             var commandVar = Variable.Command.AsVarName();
             var param = p.Column.Name.ToPascalCase();
-            var nullCheck = dbDriver.Options.DotnetFramework.LatestDotnetSupported() && !p.Column.NotNull ? "!" : "";
+            var argsVar = Variable.Args.AsVarName();
             return p.Column.IsSqlcSlice
                 ? $$"""
-                    for (int i = 0; i < {{Variable.Args.AsVarName()}}.{{param}}.Length; i++)
-                       {{commandVar}}.Parameters.AddWithValue($"@{{param}}Arg{i}", {{Variable.Args.AsVarName()}}.{{param}}[i]);
+                    for (int i = 0; i < {{argsVar}}.{{param}}.Length; i++)
+                        {{commandVar}}.Parameters.AddWithValue($"@{{param}}Arg{i}", {{argsVar}}.{{param}}[i]);
                     """
-                : $"{commandVar}.Parameters.AddWithValue(\"@{p.Column.Name}\", args.{param}{nullCheck});";
+                : $$"""
+                   if ({{argsVar}}.{{param}} != null) 
+                        {{commandVar}}.Parameters.AddWithValue("@{{p.Column.Name}}", {{argsVar}}.{{param}});
+                   """;
         }).JoinByNewLine();
     }
 
@@ -33,15 +36,25 @@ public class CommonGen(DbDriver dbDriver)
     {
         if (!parameters.Any()) return string.Empty;
         var initParamsDict = $"var {Variable.QueryParams.AsVarName()} = new Dictionary<string, object>();";
+        var argsVar = Variable.Args.AsVarName();
+        var queryParamsVar = Variable.QueryParams.AsVarName();
+
         var dapperParamsCommands = parameters.Select(p =>
         {
             var param = p.Column.Name.ToPascalCase();
-            return p.Column.IsSqlcSlice
-                ? $$"""
-                    for (int i = 0; i < {{Variable.Args.AsVarName()}}.{{param}}.Length; i++)
-                       {{Variable.QueryParams.AsVarName()}}.Add($"@{{param}}Arg{i}", {{Variable.Args.AsVarName()}}.{{param}}[i]);
-                    """
-                : $"{Variable.QueryParams.AsVarName()}.Add(\"{p.Column.Name}\", {Variable.Args.AsVarName()}.{param});";
+            if (p.Column.IsSqlcSlice)
+                return $$"""
+                        for (int i = 0; i < {{argsVar}}.{{param}}.Length; i++)
+                            {{queryParamsVar}}.Add($"@{{param}}Arg{i}", {{argsVar}}.{{param}}[i]);
+                        """;
+
+            var addParamToDict = $"{queryParamsVar}.Add(\"{p.Column.Name}\", {argsVar}.{param});";
+            return p.Column.NotNull
+                ? addParamToDict
+                : $"""
+                    if ({argsVar}.{param} != null) 
+                        {addParamToDict}
+                    """;
         });
 
         return $$"""

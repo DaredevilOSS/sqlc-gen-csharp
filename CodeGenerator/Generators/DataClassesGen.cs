@@ -2,6 +2,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Plugin;
 using SqlcGenCsharp.Drivers;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
@@ -18,28 +19,18 @@ internal class DataClassesGen(DbDriver dbDriver)
         return GenerateAsCLass(className, columns);
     }
 
-    private RecordDeclarationSyntax GenerateAsRecord(string className, IList<Column> columns)
+    private MemberDeclarationSyntax GenerateAsRecord(string className, IList<Column> columns)
     {
-        return RecordDeclaration(Token(SyntaxKind.StructKeyword), className)
-            .AddModifiers(
-                Token(SyntaxKind.PublicKeyword),
-                Token(SyntaxKind.ReadOnlyKeyword),
-                Token(SyntaxKind.RecordKeyword)
-            )
-            .WithParameterList(ColumnsToParameterList())
-            .WithSemicolonToken(Token(SyntaxKind.SemicolonToken));
-
-        ParameterListSyntax ColumnsToParameterList()
-        {
-            var seenEmbed = new Dictionary<string, int>();
-            return ParameterList(SeparatedList(columns
-                .Select(column => Parameter(Identifier(GetFieldName(column, seenEmbed)))
-                    .WithType(ParseTypeName(dbDriver.GetCsharpType(column))))));
-        }
+        var seenEmbed = new Dictionary<string, int>();
+        var recordParameters = columns
+            .Select(column => $"{dbDriver.GetCsharpType(column)} {GetFieldName(column, seenEmbed)}")
+            .JoinByComma();
+        return ParseMemberDeclaration($"public readonly record struct {className} ({recordParameters});")!;
     }
 
     private ClassDeclarationSyntax GenerateAsCLass(string className, IList<Column> columns)
     {
+        var modernDotnetSupported = dbDriver.Options.DotnetFramework.LatestDotnetSupported();
         return ClassDeclaration(className)
             .AddModifiers(Token(SyntaxKind.PublicKeyword))
             .AddMembers(ColumnsToProperties())
@@ -48,8 +39,19 @@ internal class DataClassesGen(DbDriver dbDriver)
         MemberDeclarationSyntax[] ColumnsToProperties()
         {
             var seenEmbed = new Dictionary<string, int>();
-            return columns.Select(column => ParseMemberDeclaration(
-                    $"public {dbDriver.GetCsharpType(column)} {GetFieldName(column, seenEmbed)} {{ get; set; }}"))
+            return columns.Select(column =>
+                {
+                    var csharpType = dbDriver.GetCsharpType(column);
+                    var requiredModifierNeeded = modernDotnetSupported && // required modifier supported by .Net framework
+                        column.NotNull && // the field is not null, hence required
+                        !dbDriver.IsTypeNullableForAllRuntimes(csharpType); // TODO document
+                    var optionalRequiredModifier = requiredModifierNeeded ? "required" : string.Empty;
+                    var setterMethod = modernDotnetSupported ? "init" : "set";
+                    return ParseMemberDeclaration(
+                        $$"""
+                          public {{optionalRequiredModifier}} {{csharpType}} {{GetFieldName(column, seenEmbed)}} { get; {{setterMethod}}; }
+                          """);
+                })
                 .Cast<MemberDeclarationSyntax>()
                 .ToArray();
         }

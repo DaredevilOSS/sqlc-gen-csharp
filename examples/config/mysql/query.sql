@@ -19,9 +19,6 @@ DELETE FROM authors WHERE name = ?;
 -- name: DeleteAllAuthors :exec
 DELETE FROM authors;
 
--- name: TruncateBooks :exec
-TRUNCATE TABLE books;
-
 -- name: UpdateAuthors :execrows
 UPDATE authors
 SET bio = sqlc.arg('bio')
@@ -51,17 +48,17 @@ SELECT authors.*, sqlc.embed(books)
 FROM authors JOIN books ON authors.id = books.author_id
 WHERE books.name = ?;
 
--- name: TruncateCopyToTests :exec
-TRUNCATE TABLE copy_tests;
+-- name: InsertMysqlTypesBatch :copyfrom
+INSERT INTO mysql_types (c_int, c_varchar, c_date, c_timestamp) VALUES (?, ?, ?, ?);
 
--- name: GetCopyStats :one
-SELECT COUNT(1) AS cnt FROM copy_tests;
-
--- name: CopyToTests :copyfrom
-INSERT INTO copy_tests (c_int, c_varchar, c_date, c_timestamp) VALUES (?, ?, ?, ?);
-
-/* name: GetMysqlTypes :one */
+-- name: GetMysqlTypes :one
 SELECT * FROM mysql_types LIMIT 1;
+
+-- name: GetMysqlTypesAgg :one
+SELECT COUNT(1) AS cnt , c_int, c_varchar, c_date, c_timestamp
+FROM mysql_types
+GROUP BY c_int, c_varchar, c_date, c_timestamp
+LIMIT 1;
 
 -- name: TruncateMysqlTypes :exec
 TRUNCATE TABLE mysql_types;

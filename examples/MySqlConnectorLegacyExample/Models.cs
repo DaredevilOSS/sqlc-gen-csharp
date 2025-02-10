@@ -17,13 +17,6 @@ namespace MySqlConnectorLegacyExampleGen
         public long AuthorId { get; set; }
         public string Description { get; set; }
     };
-    public class CopyTest
-    {
-        public int CInt { get; set; }
-        public string CVarchar { get; set; }
-        public DateTime CDate { get; set; }
-        public DateTime CTimestamp { get; set; }
-    };
     public class MysqlType
     {
         public byte[] CBit { get; set; }
@@ -62,6 +55,6 @@ namespace MySqlConnectorLegacyExampleGen
         public string CMediumtext { get; set; }
         public byte[] CLongblob { get; set; }
         public string CLongtext { get; set; }
-        public object CJson { get; set; }
+        public string CJson { get; set; }
     };
 }

@@ -46,28 +46,22 @@ SELECT authors.*, sqlc.embed(books)
 FROM authors JOIN books ON authors.id = books.author_id
 WHERE books.name = $1;
 
--- name: TruncateCopyToTests :exec
-TRUNCATE TABLE copy_tests;
-
--- name: CopyToTests :copyfrom
-INSERT INTO copy_tests (c_int, c_varchar, c_date, c_timestamp)
-VALUES ($1, $2, $3, $4);
-
--- name: GetCopyStats :one
-SELECT
-    COUNT(1) AS cnt,
-    MAX(c_int)::int AS c_int,
-    MAX(c_varchar)::varchar AS c_varchar,
-    MAX(c_date)::date AS c_date,
-    MAX(c_timestamp)::timestamp AS c_timestamp
-FROM copy_tests;
-
 -- name: InsertPostgresTypes :execlastid
 INSERT INTO postgres_types (c_smallint, c_boolean, c_integer, c_bigint, c_serial, c_decimal, c_numeric, c_real, c_date, c_timestamp, c_char, c_varchar, c_character_varying, c_text, c_text_array, c_integer_array)
 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16) RETURNING id;
 
+-- name: InsertPostgresTypesBatch :copyfrom
+INSERT INTO postgres_types (c_smallint, c_boolean, c_integer, c_bigint, c_decimal, c_numeric, c_real, c_varchar, c_date, c_timestamp)
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10);
+
 -- name: GetPostgresTypes :one
 SELECT * FROM postgres_types WHERE id = $1 LIMIT 1;
+
+-- name: GetPostgresTypesAgg :one
+SELECT COUNT(1) AS cnt , c_smallint, c_boolean, c_integer, c_bigint, c_decimal, c_numeric, c_real, c_varchar, c_date, c_timestamp
+FROM postgres_types
+GROUP BY c_smallint, c_boolean, c_integer, c_bigint, c_decimal, c_numeric, c_real, c_varchar, c_date, c_timestamp
+LIMIT 1;
 
 -- name: TruncatePostgresTypes :exec
 TRUNCATE TABLE postgres_types;
