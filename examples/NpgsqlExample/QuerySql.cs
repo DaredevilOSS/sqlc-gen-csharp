@@ -20,8 +20,8 @@ public class QuerySql
 
     private string ConnectionString { get; }
 
-    private const string GetAuthorSql = "SELECT id, name, bio, created FROM authors WHERE name = @name LIMIT 1";
-    public readonly record struct GetAuthorRow(long Id, string Name, string? Bio, DateTime Created);
+    private const string GetAuthorSql = "SELECT id, name, bio FROM authors WHERE name = @name LIMIT 1";
+    public readonly record struct GetAuthorRow(long Id, string Name, string? Bio);
     public readonly record struct GetAuthorArgs(string Name);
     public async Task<GetAuthorRow?> GetAuthor(GetAuthorArgs args)
     {
@@ -29,8 +29,7 @@ public class QuerySql
         {
             using (var command = connection.CreateCommand(GetAuthorSql))
             {
-                if (args.Name != null)
-                    command.Parameters.AddWithValue("@name", args.Name);
+                command.Parameters.AddWithValue("@name", args.Name);
                 using (var reader = await command.ExecuteReaderAsync())
                 {
                     if (await reader.ReadAsync())
@@ -39,8 +38,7 @@ public class QuerySql
                         {
                             Id = reader.GetInt64(0),
                             Name = reader.GetString(1),
-                            Bio = reader.IsDBNull(2) ? null : reader.GetString(2),
-                            Created = reader.GetDateTime(3)
+                            Bio = reader.IsDBNull(2) ? null : reader.GetString(2)
                         };
                     }
                 }
@@ -50,8 +48,8 @@ public class QuerySql
         return null;
     }
 
-    private const string ListAuthorsSql = "SELECT id, name, bio, created FROM authors ORDER BY name";
-    public readonly record struct ListAuthorsRow(long Id, string Name, string? Bio, DateTime Created);
+    private const string ListAuthorsSql = "SELECT id, name, bio FROM authors ORDER BY name";
+    public readonly record struct ListAuthorsRow(long Id, string Name, string? Bio);
     public async Task<List<ListAuthorsRow>> ListAuthors()
     {
         using (var connection = NpgsqlDataSource.Create(ConnectionString))
@@ -63,7 +61,7 @@ public class QuerySql
                     var result = new List<ListAuthorsRow>();
                     while (await reader.ReadAsync())
                     {
-                        result.Add(new ListAuthorsRow { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2), Created = reader.GetDateTime(3) });
+                        result.Add(new ListAuthorsRow { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2) });
                     }
 
                     return result;
@@ -72,17 +70,17 @@ public class QuerySql
         }
     }
 
-    private const string CreateAuthorSql = "INSERT INTO authors (name, bio) VALUES (@name, @bio) RETURNING id, name, bio, created";
-    public readonly record struct CreateAuthorRow(long Id, string Name, string? Bio, DateTime Created);
-    public readonly record struct CreateAuthorArgs(string Name, string? Bio);
+    private const string CreateAuthorSql = "INSERT INTO authors (id, name, bio) VALUES (@id, @name, @bio) RETURNING id, name, bio";
+    public readonly record struct CreateAuthorRow(long Id, string Name, string? Bio);
+    public readonly record struct CreateAuthorArgs(long Id, string Name, string? Bio);
     public async Task<CreateAuthorRow?> CreateAuthor(CreateAuthorArgs args)
     {
         using (var connection = NpgsqlDataSource.Create(ConnectionString))
         {
             using (var command = connection.CreateCommand(CreateAuthorSql))
             {
-                if (args.Name != null)
-                    command.Parameters.AddWithValue("@name", args.Name);
+                command.Parameters.AddWithValue("@id", args.Id);
+                command.Parameters.AddWithValue("@name", args.Name);
                 if (args.Bio != null)
                     command.Parameters.AddWithValue("@bio", args.Bio);
                 using (var reader = await command.ExecuteReaderAsync())
@@ -93,8 +91,7 @@ public class QuerySql
                         {
                             Id = reader.GetInt64(0),
                             Name = reader.GetString(1),
-                            Bio = reader.IsDBNull(2) ? null : reader.GetString(2),
-                            Created = reader.GetDateTime(3)
+                            Bio = reader.IsDBNull(2) ? null : reader.GetString(2)
                         };
                     }
                 }
@@ -113,8 +110,7 @@ public class QuerySql
         {
             using (var command = connection.CreateCommand(CreateAuthorReturnIdSql))
             {
-                if (args.Name != null)
-                    command.Parameters.AddWithValue("@name", args.Name);
+                command.Parameters.AddWithValue("@name", args.Name);
                 if (args.Bio != null)
                     command.Parameters.AddWithValue("@bio", args.Bio);
                 var result = await command.ExecuteScalarAsync();
@@ -123,8 +119,8 @@ public class QuerySql
         }
     }
 
-    private const string GetAuthorByIdSql = "SELECT id, name, bio, created FROM authors WHERE id = @id LIMIT 1";
-    public readonly record struct GetAuthorByIdRow(long Id, string Name, string? Bio, DateTime Created);
+    private const string GetAuthorByIdSql = "SELECT id, name, bio FROM authors WHERE id = @id LIMIT 1";
+    public readonly record struct GetAuthorByIdRow(long Id, string Name, string? Bio);
     public readonly record struct GetAuthorByIdArgs(long Id);
     public async Task<GetAuthorByIdRow?> GetAuthorById(GetAuthorByIdArgs args)
     {
@@ -132,8 +128,7 @@ public class QuerySql
         {
             using (var command = connection.CreateCommand(GetAuthorByIdSql))
             {
-                if (args.Id != null)
-                    command.Parameters.AddWithValue("@id", args.Id);
+                command.Parameters.AddWithValue("@id", args.Id);
                 using (var reader = await command.ExecuteReaderAsync())
                 {
                     if (await reader.ReadAsync())
@@ -142,8 +137,7 @@ public class QuerySql
                         {
                             Id = reader.GetInt64(0),
                             Name = reader.GetString(1),
-                            Bio = reader.IsDBNull(2) ? null : reader.GetString(2),
-                            Created = reader.GetDateTime(3)
+                            Bio = reader.IsDBNull(2) ? null : reader.GetString(2)
                         };
                     }
                 }
@@ -161,8 +155,7 @@ public class QuerySql
         {
             using (var command = connection.CreateCommand(DeleteAuthorSql))
             {
-                if (args.Name != null)
-                    command.Parameters.AddWithValue("@name", args.Name);
+                command.Parameters.AddWithValue("@name", args.Name);
                 await command.ExecuteScalarAsync();
             }
         }
@@ -195,8 +188,8 @@ public class QuerySql
         }
     }
 
-    private const string GetAuthorsByIdsSql = "SELECT id, name, bio, created FROM authors WHERE id = ANY(@longArr_1::BIGINT[])";
-    public readonly record struct GetAuthorsByIdsRow(long Id, string Name, string? Bio, DateTime Created);
+    private const string GetAuthorsByIdsSql = "SELECT id, name, bio FROM authors WHERE id = ANY(@longArr_1::BIGINT[])";
+    public readonly record struct GetAuthorsByIdsRow(long Id, string Name, string? Bio);
     public readonly record struct GetAuthorsByIdsArgs(long[] LongArr1);
     public async Task<List<GetAuthorsByIdsRow>> GetAuthorsByIds(GetAuthorsByIdsArgs args)
     {
@@ -204,14 +197,13 @@ public class QuerySql
         {
             using (var command = connection.CreateCommand(GetAuthorsByIdsSql))
             {
-                if (args.LongArr1 != null)
-                    command.Parameters.AddWithValue("@longArr_1", args.LongArr1);
+                command.Parameters.AddWithValue("@longArr_1", args.LongArr1);
                 using (var reader = await command.ExecuteReaderAsync())
                 {
                     var result = new List<GetAuthorsByIdsRow>();
                     while (await reader.ReadAsync())
                     {
-                        result.Add(new GetAuthorsByIdsRow { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2), Created = reader.GetDateTime(3) });
+                        result.Add(new GetAuthorsByIdsRow { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2) });
                     }
 
                     return result;
@@ -220,8 +212,8 @@ public class QuerySql
         }
     }
 
-    private const string GetAuthorsByIdsAndNamesSql = "SELECT id, name, bio, created FROM authors WHERE id = ANY(@longArr_1::BIGINT[]) AND name = ANY(@stringArr_2::TEXT[])";
-    public readonly record struct GetAuthorsByIdsAndNamesRow(long Id, string Name, string? Bio, DateTime Created);
+    private const string GetAuthorsByIdsAndNamesSql = "SELECT id, name, bio FROM authors WHERE id = ANY(@longArr_1::BIGINT[]) AND name = ANY(@stringArr_2::TEXT[])";
+    public readonly record struct GetAuthorsByIdsAndNamesRow(long Id, string Name, string? Bio);
     public readonly record struct GetAuthorsByIdsAndNamesArgs(long[] LongArr1, string[] StringArr2);
     public async Task<List<GetAuthorsByIdsAndNamesRow>> GetAuthorsByIdsAndNames(GetAuthorsByIdsAndNamesArgs args)
     {
@@ -229,16 +221,14 @@ public class QuerySql
         {
             using (var command = connection.CreateCommand(GetAuthorsByIdsAndNamesSql))
             {
-                if (args.LongArr1 != null)
-                    command.Parameters.AddWithValue("@longArr_1", args.LongArr1);
-                if (args.StringArr2 != null)
-                    command.Parameters.AddWithValue("@stringArr_2", args.StringArr2);
+                command.Parameters.AddWithValue("@longArr_1", args.LongArr1);
+                command.Parameters.AddWithValue("@stringArr_2", args.StringArr2);
                 using (var reader = await command.ExecuteReaderAsync())
                 {
                     var result = new List<GetAuthorsByIdsAndNamesRow>();
                     while (await reader.ReadAsync())
                     {
-                        result.Add(new GetAuthorsByIdsAndNamesRow { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2), Created = reader.GetDateTime(3) });
+                        result.Add(new GetAuthorsByIdsAndNamesRow { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2) });
                     }
 
                     return result;
@@ -247,24 +237,24 @@ public class QuerySql
         }
     }
 
-    private const string CreateBookSql = "INSERT INTO books (name, author_id) VALUES (@name, @author_id)";
+    private const string CreateBookSql = "INSERT INTO books (name, author_id) VALUES (@name, @author_id) RETURNING id";
+    public readonly record struct CreateBookRow(long Id);
     public readonly record struct CreateBookArgs(string Name, long AuthorId);
-    public async Task CreateBook(CreateBookArgs args)
+    public async Task<long> CreateBook(CreateBookArgs args)
     {
         using (var connection = NpgsqlDataSource.Create(ConnectionString))
         {
             using (var command = connection.CreateCommand(CreateBookSql))
             {
-                if (args.Name != null)
-                    command.Parameters.AddWithValue("@name", args.Name);
-                if (args.AuthorId != null)
-                    command.Parameters.AddWithValue("@author_id", args.AuthorId);
-                await command.ExecuteScalarAsync();
+                command.Parameters.AddWithValue("@name", args.Name);
+                command.Parameters.AddWithValue("@author_id", args.AuthorId);
+                var result = await command.ExecuteScalarAsync();
+                return Convert.ToInt64(result);
             }
         }
     }
 
-    private const string ListAllAuthorsBooksSql = "SELECT authors.id, authors.name, authors.bio, authors.created, books.id, books.name, books.author_id, books.description FROM authors JOIN books ON authors.id = books.author_id ORDER BY authors.name";
+    private const string ListAllAuthorsBooksSql = "SELECT authors.id, authors.name, authors.bio, books.id, books.name, books.author_id, books.description FROM authors JOIN books ON authors.id = books.author_id ORDER BY authors.name";
     public readonly record struct ListAllAuthorsBooksRow(Author Author, Book Book);
     public async Task<List<ListAllAuthorsBooksRow>> ListAllAuthorsBooks()
     {
@@ -277,7 +267,7 @@ public class QuerySql
                     var result = new List<ListAllAuthorsBooksRow>();
                     while (await reader.ReadAsync())
                     {
-                        result.Add(new ListAllAuthorsBooksRow { Author = new Author { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2), Created = reader.GetDateTime(3) }, Book = new Book { Id = reader.GetInt64(4), Name = reader.GetString(5), AuthorId = reader.GetInt64(6), Description = reader.IsDBNull(7) ? null : reader.GetString(7) } });
+                        result.Add(new ListAllAuthorsBooksRow { Author = new Author { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2) }, Book = new Book { Id = reader.GetInt64(3), Name = reader.GetString(4), AuthorId = reader.GetInt64(5), Description = reader.IsDBNull(6) ? null : reader.GetString(6) } });
                     }
 
                     return result;
@@ -286,7 +276,7 @@ public class QuerySql
         }
     }
 
-    private const string GetDuplicateAuthorsSql = "SELECT authors1.id, authors1.name, authors1.bio, authors1.created, authors2.id, authors2.name, authors2.bio, authors2.created FROM  authors  authors1  JOIN  authors  authors2  ON  authors1 . name  =  authors2 . name  WHERE  authors1 . id > authors2 . id  ";  
+    private const string GetDuplicateAuthorsSql = "SELECT authors1.id, authors1.name, authors1.bio, authors2.id, authors2.name, authors2.bio FROM  authors  authors1  JOIN  authors  authors2  ON  authors1 . name  =  authors2 . name  WHERE  authors1 . id < authors2 . id  ";  
     public readonly record struct GetDuplicateAuthorsRow(Author Author, Author Author2);
     public async Task<List<GetDuplicateAuthorsRow>> GetDuplicateAuthors()
     {
@@ -299,7 +289,7 @@ public class QuerySql
                     var result = new List<GetDuplicateAuthorsRow>();
                     while (await reader.ReadAsync())
                     {
-                        result.Add(new GetDuplicateAuthorsRow { Author = new Author { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2), Created = reader.GetDateTime(3) }, Author2 = new Author { Id = reader.GetInt64(4), Name = reader.GetString(5), Bio = reader.IsDBNull(6) ? null : reader.GetString(6), Created = reader.GetDateTime(7) } });
+                        result.Add(new GetDuplicateAuthorsRow { Author = new Author { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2) }, Author2 = new Author { Id = reader.GetInt64(3), Name = reader.GetString(4), Bio = reader.IsDBNull(5) ? null : reader.GetString(5) } });
                     }
 
                     return result;
@@ -308,8 +298,8 @@ public class QuerySql
         }
     }
 
-    private const string GetAuthorsByBookNameSql = "SELECT authors.id, authors.name, authors.bio, authors.created, books.id, books.name, books.author_id, books.description FROM  authors  JOIN  books  ON  authors . id  =  books . author_id  WHERE  books . name  =  @name  ";  
-    public readonly record struct GetAuthorsByBookNameRow(long Id, string Name, string? Bio, DateTime Created, Book Book);
+    private const string GetAuthorsByBookNameSql = "SELECT authors.id, authors.name, authors.bio, books.id, books.name, books.author_id, books.description FROM  authors  JOIN  books  ON  authors . id  =  books . author_id  WHERE  books . name  =  @name  ";  
+    public readonly record struct GetAuthorsByBookNameRow(long Id, string Name, string? Bio, Book Book);
     public readonly record struct GetAuthorsByBookNameArgs(string Name);
     public async Task<List<GetAuthorsByBookNameRow>> GetAuthorsByBookName(GetAuthorsByBookNameArgs args)
     {
@@ -317,14 +307,13 @@ public class QuerySql
         {
             using (var command = connection.CreateCommand(GetAuthorsByBookNameSql))
             {
-                if (args.Name != null)
-                    command.Parameters.AddWithValue("@name", args.Name);
+                command.Parameters.AddWithValue("@name", args.Name);
                 using (var reader = await command.ExecuteReaderAsync())
                 {
                     var result = new List<GetAuthorsByBookNameRow>();
                     while (await reader.ReadAsync())
                     {
-                        result.Add(new GetAuthorsByBookNameRow { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2), Created = reader.GetDateTime(3), Book = new Book { Id = reader.GetInt64(4), Name = reader.GetString(5), AuthorId = reader.GetInt64(6), Description = reader.IsDBNull(7) ? null : reader.GetString(7) } });
+                        result.Add(new GetAuthorsByBookNameRow { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2), Book = new Book { Id = reader.GetInt64(3), Name = reader.GetString(4), AuthorId = reader.GetInt64(5), Description = reader.IsDBNull(6) ? null : reader.GetString(6) } });
                     }
 
                     return result;
@@ -333,10 +322,9 @@ public class QuerySql
         }
     }
 
-    private const string InsertPostgresTypesSql = "INSERT INTO postgres_types (c_smallint, c_boolean, c_integer, c_bigint, c_serial, c_decimal, c_numeric, c_real, c_date, c_timestamp, c_char, c_varchar, c_character_varying, c_text, c_text_array, c_integer_array) VALUES ( @c_smallint , @c_boolean, @c_integer, @c_bigint, @c_serial, @c_decimal, @c_numeric, @c_real, @c_date, @c_timestamp, @c_char, @c_varchar, @c_character_varying, @c_text, @c_text_array, @c_integer_array ) RETURNING  id  "; 
-    public readonly record struct InsertPostgresTypesRow(long Id);
-    public readonly record struct InsertPostgresTypesArgs(int? CSmallint, bool? CBoolean, int? CInteger, long? CBigint, int? CSerial, float? CDecimal, float? CNumeric, float? CReal, DateTime? CDate, DateTime? CTimestamp, string? CChar, string? CVarchar, string? CCharacterVarying, string? CText, string[]? CTextArray, int[]? CIntegerArray);
-    public async Task<long> InsertPostgresTypes(InsertPostgresTypesArgs args)
+    private const string InsertPostgresTypesSql = "INSERT INTO postgres_types (c_smallint, c_boolean, c_integer, c_bigint, c_decimal, c_numeric, c_real, c_date, c_timestamp, c_char, c_varchar, c_character_varying, c_text, c_text_array, c_integer_array) VALUES ( @c_smallint , @c_boolean, @c_integer, @c_bigint, @c_decimal, @c_numeric, @c_real, @c_date, @c_timestamp, @c_char, @c_varchar, @c_character_varying, @c_text, @c_text_array, @c_integer_array ) "; 
+    public readonly record struct InsertPostgresTypesArgs(int? CSmallint, bool? CBoolean, int? CInteger, long? CBigint, float? CDecimal, float? CNumeric, float? CReal, DateTime? CDate, DateTime? CTimestamp, string? CChar, string? CVarchar, string? CCharacterVarying, string? CText, string[]? CTextArray, int[]? CIntegerArray);
+    public async Task InsertPostgresTypes(InsertPostgresTypesArgs args)
     {
         using (var connection = NpgsqlDataSource.Create(ConnectionString))
         {
@@ -350,8 +338,6 @@ public class QuerySql
                     command.Parameters.AddWithValue("@c_integer", args.CInteger);
                 if (args.CBigint != null)
                     command.Parameters.AddWithValue("@c_bigint", args.CBigint);
-                if (args.CSerial != null)
-                    command.Parameters.AddWithValue("@c_serial", args.CSerial);
                 if (args.CDecimal != null)
                     command.Parameters.AddWithValue("@c_decimal", args.CDecimal);
                 if (args.CNumeric != null)
@@ -370,18 +356,15 @@ public class QuerySql
                     command.Parameters.AddWithValue("@c_character_varying", args.CCharacterVarying);
                 if (args.CText != null)
                     command.Parameters.AddWithValue("@c_text", args.CText);
-                if (args.CTextArray != null)
-                    command.Parameters.AddWithValue("@c_text_array", args.CTextArray);
-                if (args.CIntegerArray != null)
-                    command.Parameters.AddWithValue("@c_integer_array", args.CIntegerArray);
-                var result = await command.ExecuteScalarAsync();
-                return Convert.ToInt64(result);
+                command.Parameters.AddWithValue("@c_text_array", args.CTextArray);
+                command.Parameters.AddWithValue("@c_integer_array", args.CIntegerArray);
+                await command.ExecuteScalarAsync();
             }
         }
     }
 
-    private const string InsertPostgresTypesBatchSql = "COPY postgres_types (c_smallint, c_boolean, c_integer, c_bigint, c_decimal, c_numeric, c_real, c_varchar, c_date, c_timestamp) FROM STDIN (FORMAT BINARY)";
-    public readonly record struct InsertPostgresTypesBatchArgs(int? CSmallint, bool? CBoolean, int? CInteger, long? CBigint, float? CDecimal, float? CNumeric, float? CReal, string? CVarchar, DateTime? CDate, DateTime? CTimestamp);
+    private const string InsertPostgresTypesBatchSql = "COPY postgres_types (c_smallint, c_boolean, c_integer, c_bigint, c_decimal, c_numeric, c_real, c_date, c_timestamp, c_char, c_varchar, c_character_varying, c_text) FROM STDIN (FORMAT BINARY)";
+    public readonly record struct InsertPostgresTypesBatchArgs(int? CSmallint, bool? CBoolean, int? CInteger, long? CBigint, float? CDecimal, float? CNumeric, float? CReal, DateTime? CDate, DateTime? CTimestamp, string? CChar, string? CVarchar, string? CCharacterVarying, string? CText);
     public async Task InsertPostgresTypesBatch(List<InsertPostgresTypesBatchArgs> args)
     {
         using (var ds = NpgsqlDataSource.Create(ConnectionString))
@@ -400,9 +383,12 @@ public class QuerySql
                     await writer.WriteAsync(row.CDecimal, NpgsqlDbType.Numeric);
                     await writer.WriteAsync(row.CNumeric, NpgsqlDbType.Numeric);
                     await writer.WriteAsync(row.CReal, NpgsqlDbType.Real);
-                    await writer.WriteAsync(row.CVarchar, NpgsqlDbType.Varchar);
                     await writer.WriteAsync(row.CDate, NpgsqlDbType.Date);
                     await writer.WriteAsync(row.CTimestamp, NpgsqlDbType.Timestamp);
+                    await writer.WriteAsync(row.CChar);
+                    await writer.WriteAsync(row.CVarchar, NpgsqlDbType.Varchar);
+                    await writer.WriteAsync(row.CCharacterVarying, NpgsqlDbType.Varchar);
+                    await writer.WriteAsync(row.CText);
                 }
 
                 await writer.CompleteAsync();
@@ -412,45 +398,40 @@ public class QuerySql
         }
     }
 
-    private const string GetPostgresTypesSql = "SELECT id, c_bit, c_smallint, c_boolean, c_integer, c_bigint, c_serial, c_decimal, c_numeric, c_real, c_double_precision, c_date, c_time, c_timestamp, c_char, c_varchar, c_character_varying, c_bytea, c_text, c_json, c_text_array, c_integer_array FROM postgres_types WHERE id = @id LIMIT 1";
-    public readonly record struct GetPostgresTypesRow(long Id, byte[]? CBit, int? CSmallint, bool? CBoolean, int? CInteger, long? CBigint, int? CSerial, float? CDecimal, float? CNumeric, float? CReal, float? CDoublePrecision, DateTime? CDate, string? CTime, DateTime? CTimestamp, string? CChar, string? CVarchar, string? CCharacterVarying, byte[]? CBytea, string? CText, object? CJson, string[]? CTextArray, int[]? CIntegerArray);
-    public readonly record struct GetPostgresTypesArgs(long Id);
-    public async Task<GetPostgresTypesRow?> GetPostgresTypes(GetPostgresTypesArgs args)
+    private const string GetPostgresTypesSql = "SELECT c_bit, c_smallint, c_boolean, c_integer, c_bigint, c_decimal, c_numeric, c_real, c_double_precision, c_date, c_time, c_timestamp, c_char, c_varchar, c_character_varying, c_bytea, c_text, c_json, c_text_array, c_integer_array FROM postgres_types LIMIT 1";
+    public readonly record struct GetPostgresTypesRow(byte[]? CBit, int? CSmallint, bool? CBoolean, int? CInteger, long? CBigint, float? CDecimal, float? CNumeric, float? CReal, float? CDoublePrecision, DateTime? CDate, string? CTime, DateTime? CTimestamp, string? CChar, string? CVarchar, string? CCharacterVarying, byte[]? CBytea, string? CText, object? CJson, string[]? CTextArray, int[]? CIntegerArray);
+    public async Task<GetPostgresTypesRow?> GetPostgresTypes()
     {
         using (var connection = NpgsqlDataSource.Create(ConnectionString))
         {
             using (var command = connection.CreateCommand(GetPostgresTypesSql))
             {
-                if (args.Id != null)
-                    command.Parameters.AddWithValue("@id", args.Id);
                 using (var reader = await command.ExecuteReaderAsync())
                 {
                     if (await reader.ReadAsync())
                     {
                         return new GetPostgresTypesRow
                         {
-                            Id = reader.GetInt64(0),
-                            CBit = reader.IsDBNull(1) ? null : Utils.GetBytes(reader, 1),
-                            CSmallint = reader.IsDBNull(2) ? null : reader.GetInt32(2),
-                            CBoolean = reader.IsDBNull(3) ? null : reader.GetBoolean(3),
-                            CInteger = reader.IsDBNull(4) ? null : reader.GetInt32(4),
-                            CBigint = reader.IsDBNull(5) ? null : reader.GetInt64(5),
-                            CSerial = reader.IsDBNull(6) ? null : reader.GetInt32(6),
-                            CDecimal = reader.IsDBNull(7) ? null : reader.GetFloat(7),
-                            CNumeric = reader.IsDBNull(8) ? null : reader.GetFloat(8),
-                            CReal = reader.IsDBNull(9) ? null : reader.GetFloat(9),
-                            CDoublePrecision = reader.IsDBNull(10) ? null : reader.GetFloat(10),
-                            CDate = reader.IsDBNull(11) ? null : reader.GetDateTime(11),
-                            CTime = reader.IsDBNull(12) ? null : reader.GetString(12),
-                            CTimestamp = reader.IsDBNull(13) ? null : reader.GetDateTime(13),
-                            CChar = reader.IsDBNull(14) ? null : reader.GetString(14),
-                            CVarchar = reader.IsDBNull(15) ? null : reader.GetString(15),
-                            CCharacterVarying = reader.IsDBNull(16) ? null : reader.GetString(16),
-                            CBytea = reader.IsDBNull(17) ? null : Utils.GetBytes(reader, 17),
-                            CText = reader.IsDBNull(18) ? null : reader.GetString(18),
-                            CJson = reader.IsDBNull(19) ? null : reader.GetString(19),
-                            CTextArray = reader.IsDBNull(20) ? null : reader.GetFieldValue<string[]>(20),
-                            CIntegerArray = reader.IsDBNull(21) ? null : reader.GetFieldValue<int[]>(21)
+                            CBit = reader.IsDBNull(0) ? null : Utils.GetBytes(reader, 0),
+                            CSmallint = reader.IsDBNull(1) ? null : reader.GetInt32(1),
+                            CBoolean = reader.IsDBNull(2) ? null : reader.GetBoolean(2),
+                            CInteger = reader.IsDBNull(3) ? null : reader.GetInt32(3),
+                            CBigint = reader.IsDBNull(4) ? null : reader.GetInt64(4),
+                            CDecimal = reader.IsDBNull(5) ? null : reader.GetFloat(5),
+                            CNumeric = reader.IsDBNull(6) ? null : reader.GetFloat(6),
+                            CReal = reader.IsDBNull(7) ? null : reader.GetFloat(7),
+                            CDoublePrecision = reader.IsDBNull(8) ? null : reader.GetFloat(8),
+                            CDate = reader.IsDBNull(9) ? null : reader.GetDateTime(9),
+                            CTime = reader.IsDBNull(10) ? null : reader.GetString(10),
+                            CTimestamp = reader.IsDBNull(11) ? null : reader.GetDateTime(11),
+                            CChar = reader.IsDBNull(12) ? null : reader.GetString(12),
+                            CVarchar = reader.IsDBNull(13) ? null : reader.GetString(13),
+                            CCharacterVarying = reader.IsDBNull(14) ? null : reader.GetString(14),
+                            CBytea = reader.IsDBNull(15) ? null : Utils.GetBytes(reader, 15),
+                            CText = reader.IsDBNull(16) ? null : reader.GetString(16),
+                            CJson = reader.IsDBNull(17) ? null : reader.GetString(17),
+                            CTextArray = reader.IsDBNull(18) ? null : reader.GetFieldValue<string[]>(18),
+                            CIntegerArray = reader.IsDBNull(19) ? null : reader.GetFieldValue<int[]>(19)
                         };
                     }
                 }
@@ -460,8 +441,8 @@ public class QuerySql
         return null;
     }
 
-    private const string GetPostgresTypesAggSql = "SELECT COUNT(1) AS cnt , c_smallint, c_boolean, c_integer, c_bigint, c_decimal, c_numeric, c_real, c_varchar, c_date, c_timestamp FROM  postgres_types  GROUP  BY  c_smallint , c_boolean, c_integer, c_bigint, c_decimal, c_numeric, c_real, c_varchar, c_date, c_timestamp LIMIT  1  ";  
-    public readonly record struct GetPostgresTypesAggRow(long Cnt, int? CSmallint, bool? CBoolean, int? CInteger, long? CBigint, float? CDecimal, float? CNumeric, float? CReal, string? CVarchar, DateTime? CDate, DateTime? CTimestamp);
+    private const string GetPostgresTypesAggSql = "SELECT COUNT(1) AS cnt , c_smallint, c_boolean, c_integer, c_bigint, c_decimal, c_numeric, c_real, c_date, c_timestamp, c_char, c_varchar, c_character_varying, c_text FROM  postgres_types  GROUP  BY  c_smallint , c_boolean, c_integer, c_bigint, c_decimal, c_numeric, c_real, c_date, c_timestamp, c_char, c_varchar, c_character_varying, c_text LIMIT  1  ";  
+    public readonly record struct GetPostgresTypesAggRow(long Cnt, int? CSmallint, bool? CBoolean, int? CInteger, long? CBigint, float? CDecimal, float? CNumeric, float? CReal, DateTime? CDate, DateTime? CTimestamp, string? CChar, string? CVarchar, string? CCharacterVarying, string? CText);
     public async Task<GetPostgresTypesAggRow?> GetPostgresTypesAgg()
     {
         using (var connection = NpgsqlDataSource.Create(ConnectionString))
@@ -482,9 +463,12 @@ public class QuerySql
                             CDecimal = reader.IsDBNull(5) ? null : reader.GetFloat(5),
                             CNumeric = reader.IsDBNull(6) ? null : reader.GetFloat(6),
                             CReal = reader.IsDBNull(7) ? null : reader.GetFloat(7),
-                            CVarchar = reader.IsDBNull(8) ? null : reader.GetString(8),
-                            CDate = reader.IsDBNull(9) ? null : reader.GetDateTime(9),
-                            CTimestamp = reader.IsDBNull(10) ? null : reader.GetDateTime(10)
+                            CDate = reader.IsDBNull(8) ? null : reader.GetDateTime(8),
+                            CTimestamp = reader.IsDBNull(9) ? null : reader.GetDateTime(9),
+                            CChar = reader.IsDBNull(10) ? null : reader.GetString(10),
+                            CVarchar = reader.IsDBNull(11) ? null : reader.GetString(11),
+                            CCharacterVarying = reader.IsDBNull(12) ? null : reader.GetString(12),
+                            CText = reader.IsDBNull(13) ? null : reader.GetString(13)
                         };
                     }
                 }

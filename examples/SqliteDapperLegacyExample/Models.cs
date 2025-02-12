@@ -16,4 +16,11 @@ namespace SqliteDapperLegacyExampleGen
         public int AuthorId { get; set; }
         public string Description { get; set; }
     };
+    public class TypesSqlite
+    {
+        public int? CInteger { get; set; }
+        public float? CReal { get; set; }
+        public string CText { get; set; }
+        public byte[] CBlob { get; set; }
+    };
 }

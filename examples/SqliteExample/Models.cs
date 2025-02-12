@@ -4,3 +4,4 @@ using System;
 namespace SqliteExampleGen;
 public readonly record struct Author(int Id, string Name, string? Bio);
 public readonly record struct Book(int Id, string Name, int AuthorId, string? Description);
+public readonly record struct TypesSqlite(int? CInteger, float? CReal, string? CText, byte[]? CBlob);

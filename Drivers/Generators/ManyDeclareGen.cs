@@ -36,7 +36,7 @@ public class ManyDeclareGen(DbDriver dbDriver)
         {
             var dapperParamsSection = CommonGen.ConstructDapperParamsDict(query.Params);
             var dapperArgs = dapperParamsSection != string.Empty ? $", {Variable.QueryParams.AsVarName()}" : string.Empty;
-            var returnType = dbDriver.AddNullableSuffix(returnInterface, true);
+            var returnType = dbDriver.AddNullableSuffixIfNeeded(returnInterface, true);
             var sqlQuery = sqlTextTransform != string.Empty ? Variable.SqlText.AsVarName() : queryTextConstant;
 
             return $$"""

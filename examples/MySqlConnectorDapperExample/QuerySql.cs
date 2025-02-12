@@ -27,13 +27,12 @@ public class QuerySql
 
     private string ConnectionString { get; }
 
-    private const string GetAuthorSql = "SELECT id, name, bio, created FROM authors WHERE name = @name LIMIT 1; SELECT LAST_INSERT_ID()";
+    private const string GetAuthorSql = "SELECT id, name, bio FROM authors WHERE name = @name LIMIT 1; SELECT LAST_INSERT_ID()";
     public class GetAuthorRow
     {
-        public long Id { get; init; }
+        public required long Id { get; init; }
         public required string Name { get; init; }
         public string? Bio { get; init; }
-        public DateTime Created { get; init; }
     };
     public class GetAuthorArgs
     {
@@ -50,13 +49,12 @@ public class QuerySql
         }
     }
 
-    private const string ListAuthorsSql = "SELECT id, name, bio, created FROM authors ORDER BY name; SELECT LAST_INSERT_ID()";
+    private const string ListAuthorsSql = "SELECT id, name, bio FROM authors ORDER BY name; SELECT LAST_INSERT_ID()";
     public class ListAuthorsRow
     {
-        public long Id { get; init; }
+        public required long Id { get; init; }
         public required string Name { get; init; }
         public string? Bio { get; init; }
-        public DateTime Created { get; init; }
     };
     public async Task<List<ListAuthorsRow>> ListAuthors()
     {
@@ -67,9 +65,10 @@ public class QuerySql
         }
     }
 
-    private const string CreateAuthorSql = "INSERT INTO authors (name, bio) VALUES (@name, @bio); SELECT LAST_INSERT_ID()";
+    private const string CreateAuthorSql = "INSERT INTO authors (id, name, bio) VALUES (@id, @name, @bio); SELECT LAST_INSERT_ID()";
     public class CreateAuthorArgs
     {
+        public required long Id { get; init; }
         public required string Name { get; init; }
         public string? Bio { get; init; }
     };
@@ -78,6 +77,7 @@ public class QuerySql
         using (var connection = new MySqlConnection(ConnectionString))
         {
             var queryParams = new Dictionary<string, object>();
+            queryParams.Add("id", args.Id);
             queryParams.Add("name", args.Name);
             if (args.Bio != null)
                 queryParams.Add("bio", args.Bio);
@@ -103,17 +103,16 @@ public class QuerySql
         }
     }
 
-    private const string GetAuthorByIdSql = "SELECT id, name, bio, created FROM authors WHERE id = @id LIMIT 1; SELECT LAST_INSERT_ID()";
+    private const string GetAuthorByIdSql = "SELECT id, name, bio FROM authors WHERE id = @id LIMIT 1; SELECT LAST_INSERT_ID()";
     public class GetAuthorByIdRow
     {
-        public long Id { get; init; }
+        public required long Id { get; init; }
         public required string Name { get; init; }
         public string? Bio { get; init; }
-        public DateTime Created { get; init; }
     };
     public class GetAuthorByIdArgs
     {
-        public long Id { get; init; }
+        public required long Id { get; init; }
     };
     public async Task<GetAuthorByIdRow?> GetAuthorById(GetAuthorByIdArgs args)
     {
@@ -166,13 +165,12 @@ public class QuerySql
         }
     }
 
-    private const string GetAuthorsByIdsSql = "SELECT id, name, bio, created FROM authors WHERE id IN (/*SLICE:ids*/@ids); SELECT LAST_INSERT_ID()";
+    private const string GetAuthorsByIdsSql = "SELECT id, name, bio FROM authors WHERE id IN (/*SLICE:ids*/@ids); SELECT LAST_INSERT_ID()";
     public class GetAuthorsByIdsRow
     {
-        public long Id { get; init; }
+        public required long Id { get; init; }
         public required string Name { get; init; }
         public string? Bio { get; init; }
-        public DateTime Created { get; init; }
     };
     public class GetAuthorsByIdsArgs
     {
@@ -192,13 +190,12 @@ public class QuerySql
         }
     }
 
-    private const string GetAuthorsByIdsAndNamesSql = "SELECT id, name, bio, created FROM authors WHERE id IN (/*SLICE:ids*/@ids) AND name IN (/*SLICE:names*/@names); SELECT LAST_INSERT_ID()";
+    private const string GetAuthorsByIdsAndNamesSql = "SELECT id, name, bio FROM authors WHERE id IN (/*SLICE:ids*/@ids) AND name IN (/*SLICE:names*/@names); SELECT LAST_INSERT_ID()";
     public class GetAuthorsByIdsAndNamesRow
     {
-        public long Id { get; init; }
+        public required long Id { get; init; }
         public required string Name { get; init; }
         public string? Bio { get; init; }
-        public DateTime Created { get; init; }
     };
     public class GetAuthorsByIdsAndNamesArgs
     {
@@ -226,24 +223,24 @@ public class QuerySql
     public class CreateBookArgs
     {
         public required string Name { get; init; }
-        public long AuthorId { get; init; }
+        public required long AuthorId { get; init; }
     };
-    public async Task CreateBook(CreateBookArgs args)
+    public async Task<long> CreateBook(CreateBookArgs args)
     {
         using (var connection = new MySqlConnection(ConnectionString))
         {
             var queryParams = new Dictionary<string, object>();
             queryParams.Add("name", args.Name);
             queryParams.Add("author_id", args.AuthorId);
-            await connection.ExecuteAsync(CreateBookSql, queryParams);
+            return await connection.QuerySingleAsync<long>(CreateBookSql, queryParams);
         }
     }
 
-    private const string ListAllAuthorsBooksSql = "SELECT authors.id, authors.name, authors.bio, authors.created, books.id, books.name, books.author_id, books.description  FROM  authors  JOIN  books  ON  authors . id  =  books . author_id  ORDER  BY  authors . name ; SELECT  LAST_INSERT_ID ( ) "; 
+    private const string ListAllAuthorsBooksSql = "SELECT authors.id, authors.name, authors.bio, books.id, books.name, books.author_id, books.description  FROM  authors  JOIN  books  ON  authors . id  =  books . author_id  ORDER  BY  authors . name ; SELECT  LAST_INSERT_ID ( ) "; 
     public class ListAllAuthorsBooksRow
     {
-        public Author Author { get; init; }
-        public Book Book { get; init; }
+        public required Author Author { get; init; }
+        public required Book Book { get; init; }
     };
     public async Task<List<ListAllAuthorsBooksRow>> ListAllAuthorsBooks()
     {
@@ -257,7 +254,7 @@ public class QuerySql
                     var result = new List<ListAllAuthorsBooksRow>();
                     while (await reader.ReadAsync())
                     {
-                        result.Add(new ListAllAuthorsBooksRow { Author = new Author { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2), Created = reader.GetDateTime(3) }, Book = new Book { Id = reader.GetInt64(4), Name = reader.GetString(5), AuthorId = reader.GetInt64(6), Description = reader.IsDBNull(7) ? null : reader.GetString(7) } });
+                        result.Add(new ListAllAuthorsBooksRow { Author = new Author { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2) }, Book = new Book { Id = reader.GetInt64(3), Name = reader.GetString(4), AuthorId = reader.GetInt64(5), Description = reader.IsDBNull(6) ? null : reader.GetString(6) } });
                     }
 
                     return result;
@@ -266,11 +263,11 @@ public class QuerySql
         }
     }
 
-    private const string GetDuplicateAuthorsSql = "SELECT authors1.id, authors1.name, authors1.bio, authors1.created, authors2.id, authors2.name, authors2.bio, authors2.created FROM  authors  authors1  JOIN  authors  authors2  ON  authors1 . name  =  authors2 . name  WHERE  authors1 . id > authors2 . id ; SELECT  LAST_INSERT_ID ( ) "; 
+    private const string GetDuplicateAuthorsSql = "SELECT authors1.id, authors1.name, authors1.bio, authors2.id, authors2.name, authors2.bio FROM  authors  authors1  JOIN  authors  authors2  ON  authors1 . name  =  authors2 . name  WHERE  authors1 . id < authors2 . id ; SELECT  LAST_INSERT_ID ( ) "; 
     public class GetDuplicateAuthorsRow
     {
-        public Author Author { get; init; }
-        public Author Author2 { get; init; }
+        public required Author Author { get; init; }
+        public required Author Author2 { get; init; }
     };
     public async Task<List<GetDuplicateAuthorsRow>> GetDuplicateAuthors()
     {
@@ -284,7 +281,7 @@ public class QuerySql
                     var result = new List<GetDuplicateAuthorsRow>();
                     while (await reader.ReadAsync())
                     {
-                        result.Add(new GetDuplicateAuthorsRow { Author = new Author { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2), Created = reader.GetDateTime(3) }, Author2 = new Author { Id = reader.GetInt64(4), Name = reader.GetString(5), Bio = reader.IsDBNull(6) ? null : reader.GetString(6), Created = reader.GetDateTime(7) } });
+                        result.Add(new GetDuplicateAuthorsRow { Author = new Author { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2) }, Author2 = new Author { Id = reader.GetInt64(3), Name = reader.GetString(4), Bio = reader.IsDBNull(5) ? null : reader.GetString(5) } });
                     }
 
                     return result;
@@ -293,14 +290,13 @@ public class QuerySql
         }
     }
 
-    private const string GetAuthorsByBookNameSql = "SELECT authors.id, authors.name, authors.bio, authors.created, books.id, books.name, books.author_id, books.description FROM  authors  JOIN  books  ON  authors . id  =  books . author_id  WHERE  books . name  =  @name ; SELECT  LAST_INSERT_ID ( ) "; 
+    private const string GetAuthorsByBookNameSql = "SELECT authors.id, authors.name, authors.bio, books.id, books.name, books.author_id, books.description FROM  authors  JOIN  books  ON  authors . id  =  books . author_id  WHERE  books . name  =  @name ; SELECT  LAST_INSERT_ID ( ) "; 
     public class GetAuthorsByBookNameRow
     {
-        public long Id { get; init; }
+        public required long Id { get; init; }
         public required string Name { get; init; }
         public string? Bio { get; init; }
-        public DateTime Created { get; init; }
-        public Book Book { get; init; }
+        public required Book Book { get; init; }
     };
     public class GetAuthorsByBookNameArgs
     {
@@ -313,14 +309,13 @@ public class QuerySql
             await connection.OpenAsync();
             using (var command = new MySqlCommand(GetAuthorsByBookNameSql, connection))
             {
-                if (args.Name != null)
-                    command.Parameters.AddWithValue("@name", args.Name);
+                command.Parameters.AddWithValue("@name", args.Name);
                 using (var reader = await command.ExecuteReaderAsync())
                 {
                     var result = new List<GetAuthorsByBookNameRow>();
                     while (await reader.ReadAsync())
                     {
-                        result.Add(new GetAuthorsByBookNameRow { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2), Created = reader.GetDateTime(3), Book = new Book { Id = reader.GetInt64(4), Name = reader.GetString(5), AuthorId = reader.GetInt64(6), Description = reader.IsDBNull(7) ? null : reader.GetString(7) } });
+                        result.Add(new GetAuthorsByBookNameRow { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2), Book = new Book { Id = reader.GetInt64(3), Name = reader.GetString(4), AuthorId = reader.GetInt64(5), Description = reader.IsDBNull(6) ? null : reader.GetString(6) } });
                     }
 
                     return result;
@@ -329,9 +324,49 @@ public class QuerySql
         }
     }
 
-    private const string InsertMysqlTypesBatchSql = "INSERT INTO mysql_types (c_int, c_varchar, c_date, c_timestamp) VALUES (@c_int, @c_varchar, @c_date, @c_timestamp); SELECT LAST_INSERT_ID()";
+    private const string InsertMysqlTypesSql = "INSERT INTO mysql_types (c_bit, c_tinyint, c_bool, c_boolean, c_int, c_varchar, c_date, c_timestamp) VALUES (@c_bit, @c_tinyint, @c_bool, @c_boolean, @c_int, @c_varchar, @c_date, @c_timestamp); SELECT LAST_INSERT_ID()";
+    public class InsertMysqlTypesArgs
+    {
+        public bool? CBit { get; init; }
+        public bool? CTinyint { get; init; }
+        public bool? CBool { get; init; }
+        public bool? CBoolean { get; init; }
+        public int? CInt { get; init; }
+        public string? CVarchar { get; init; }
+        public DateTime? CDate { get; init; }
+        public DateTime? CTimestamp { get; init; }
+    };
+    public async Task InsertMysqlTypes(InsertMysqlTypesArgs args)
+    {
+        using (var connection = new MySqlConnection(ConnectionString))
+        {
+            var queryParams = new Dictionary<string, object>();
+            if (args.CBit != null)
+                queryParams.Add("c_bit", args.CBit);
+            if (args.CTinyint != null)
+                queryParams.Add("c_tinyint", args.CTinyint);
+            if (args.CBool != null)
+                queryParams.Add("c_bool", args.CBool);
+            if (args.CBoolean != null)
+                queryParams.Add("c_boolean", args.CBoolean);
+            if (args.CInt != null)
+                queryParams.Add("c_int", args.CInt);
+            if (args.CVarchar != null)
+                queryParams.Add("c_varchar", args.CVarchar);
+            if (args.CDate != null)
+                queryParams.Add("c_date", args.CDate);
+            if (args.CTimestamp != null)
+                queryParams.Add("c_timestamp", args.CTimestamp);
+            await connection.ExecuteAsync(InsertMysqlTypesSql, queryParams);
+        }
+    }
+
     public class InsertMysqlTypesBatchArgs
     {
+        public bool? CBit { get; init; }
+        public bool? CTinyint { get; init; }
+        public bool? CBool { get; init; }
+        public bool? CBoolean { get; init; }
         public int? CInt { get; init; }
         public string? CVarchar { get; init; }
         public DateTime? CDate { get; init; }
@@ -371,25 +406,25 @@ public class QuerySql
                 FieldQuotationCharacter = '"',
                 NumberOfLinesToSkip = 1
             };
-            loader.Columns.AddRange(new List<string> { "c_int", "c_varchar", "c_date", "c_timestamp" });
+            loader.Columns.AddRange(new List<string> { "c_bit", "c_tinyint", "c_bool", "c_boolean", "c_int", "c_varchar", "c_date", "c_timestamp" });
             await loader.LoadAsync();
             await connection.CloseAsync();
         }
     }
 
-    private const string GetMysqlTypesSql = "SELECT c_bit, c_tinyint, c_bool, c_boolean, c_smallint, c_mediumint, c_int, c_integer, c_bigint, c_serial, c_decimal, c_dec, c_numeric, c_fixed, c_float, c_double, c_double_precision, c_date, c_time, c_datetime, c_timestamp, c_year, c_char, c_nchar, c_national_char, c_varchar, c_binary, c_varbinary, c_tinyblob, c_tinytext, c_blob, c_text, c_mediumblob, c_mediumtext, c_longblob, c_longtext, c_json FROM mysql_types LIMIT 1; SELECT LAST_INSERT_ID()";
+    private const string GetMysqlTypesSql = "SELECT c_bit, c_tinyint, c_bool, c_boolean, c_smallint, c_mediumint, c_int, c_year, c_integer, c_bigint, c_decimal, c_dec, c_numeric, c_fixed, c_float, c_double, c_double_precision, c_date, c_time, c_datetime, c_timestamp, c_char, c_nchar, c_national_char, c_varchar, c_tinytext, c_mediumtext, c_text, c_longtext, c_binary, c_varbinary, c_tinyblob, c_blob, c_mediumblob, c_longblob, c_json FROM mysql_types LIMIT 1; SELECT LAST_INSERT_ID()";
     public class GetMysqlTypesRow
     {
-        public byte[]? CBit { get; init; }
-        public int? CTinyint { get; init; }
-        public int? CBool { get; init; }
-        public int? CBoolean { get; init; }
+        public bool? CBit { get; init; }
+        public bool? CTinyint { get; init; }
+        public bool? CBool { get; init; }
+        public bool? CBoolean { get; init; }
         public int? CSmallint { get; init; }
         public int? CMediumint { get; init; }
         public int? CInt { get; init; }
+        public int? CYear { get; init; }
         public int? CInteger { get; init; }
         public long? CBigint { get; init; }
-        public long CSerial { get; init; }
         public string? CDecimal { get; init; }
         public string? CDec { get; init; }
         public string? CNumeric { get; init; }
@@ -401,21 +436,20 @@ public class QuerySql
         public string? CTime { get; init; }
         public DateTime? CDatetime { get; init; }
         public DateTime? CTimestamp { get; init; }
-        public int? CYear { get; init; }
         public string? CChar { get; init; }
         public string? CNchar { get; init; }
         public string? CNationalChar { get; init; }
         public string? CVarchar { get; init; }
+        public string? CTinytext { get; init; }
+        public string? CMediumtext { get; init; }
+        public string? CText { get; init; }
+        public string? CLongtext { get; init; }
         public byte[]? CBinary { get; init; }
         public byte[]? CVarbinary { get; init; }
         public byte[]? CTinyblob { get; init; }
-        public string? CTinytext { get; init; }
         public byte[]? CBlob { get; init; }
-        public string? CText { get; init; }
         public byte[]? CMediumblob { get; init; }
-        public string? CMediumtext { get; init; }
         public byte[]? CLongblob { get; init; }
-        public string? CLongtext { get; init; }
         public string? CJson { get; init; }
     };
     public async Task<GetMysqlTypesRow?> GetMysqlTypes()
@@ -427,10 +461,14 @@ public class QuerySql
         }
     }
 
-    private const string GetMysqlTypesAggSql = "SELECT COUNT(1) AS cnt , c_int, c_varchar, c_date, c_timestamp FROM  mysql_types  GROUP  BY  c_int , c_varchar, c_date, c_timestamp LIMIT  1 ; SELECT  LAST_INSERT_ID ( ) "; 
+    private const string GetMysqlTypesAggSql = "SELECT COUNT(1) AS cnt , c_bit, c_tinyint, c_bool, c_boolean, c_int, c_varchar, c_date, c_timestamp FROM  mysql_types  GROUP  BY  c_bit , c_tinyint, c_bool, c_boolean, c_int, c_varchar, c_date, c_timestamp LIMIT  1 ; SELECT  LAST_INSERT_ID ( ) "; 
     public class GetMysqlTypesAggRow
     {
-        public long Cnt { get; init; }
+        public required long Cnt { get; init; }
+        public bool? CBit { get; init; }
+        public bool? CTinyint { get; init; }
+        public bool? CBool { get; init; }
+        public bool? CBoolean { get; init; }
         public int? CInt { get; init; }
         public string? CVarchar { get; init; }
         public DateTime? CDate { get; init; }

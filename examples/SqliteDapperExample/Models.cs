@@ -4,14 +4,21 @@ using System;
 namespace SqliteDapperExampleGen;
 public class Author
 {
-    public int Id { get; init; }
+    public required int Id { get; init; }
     public required string Name { get; init; }
     public string? Bio { get; init; }
 };
 public class Book
 {
-    public int Id { get; init; }
+    public required int Id { get; init; }
     public required string Name { get; init; }
-    public int AuthorId { get; init; }
+    public required int AuthorId { get; init; }
     public string? Description { get; init; }
+};
+public class TypesSqlite
+{
+    public int? CInteger { get; init; }
+    public float? CReal { get; init; }
+    public string? CText { get; init; }
+    public byte[]? CBlob { get; init; }
 };

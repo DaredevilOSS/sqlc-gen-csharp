@@ -31,7 +31,7 @@ public static class DotnetFrameworkExtensions
             [dotnetFramework];
     }
 
-    public static bool LatestDotnetSupported(this DotnetFramework me)
+    public static bool IsDotnetCore(this DotnetFramework me)
     {
         return me == DotnetFramework.Dotnet80;
     }

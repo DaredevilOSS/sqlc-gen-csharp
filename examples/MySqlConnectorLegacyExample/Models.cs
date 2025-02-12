@@ -8,7 +8,6 @@ namespace MySqlConnectorLegacyExampleGen
         public long Id { get; set; }
         public string Name { get; set; }
         public string Bio { get; set; }
-        public DateTime Created { get; set; }
     };
     public class Book
     {
@@ -19,16 +18,16 @@ namespace MySqlConnectorLegacyExampleGen
     };
     public class MysqlType
     {
-        public byte[] CBit { get; set; }
-        public int? CTinyint { get; set; }
-        public int? CBool { get; set; }
-        public int? CBoolean { get; set; }
+        public bool? CBit { get; set; }
+        public bool? CTinyint { get; set; }
+        public bool? CBool { get; set; }
+        public bool? CBoolean { get; set; }
         public int? CSmallint { get; set; }
         public int? CMediumint { get; set; }
         public int? CInt { get; set; }
+        public int? CYear { get; set; }
         public int? CInteger { get; set; }
         public long? CBigint { get; set; }
-        public long CSerial { get; set; }
         public string CDecimal { get; set; }
         public string CDec { get; set; }
         public string CNumeric { get; set; }
@@ -40,21 +39,20 @@ namespace MySqlConnectorLegacyExampleGen
         public string CTime { get; set; }
         public DateTime? CDatetime { get; set; }
         public DateTime? CTimestamp { get; set; }
-        public int? CYear { get; set; }
         public string CChar { get; set; }
         public string CNchar { get; set; }
         public string CNationalChar { get; set; }
         public string CVarchar { get; set; }
+        public string CTinytext { get; set; }
+        public string CMediumtext { get; set; }
+        public string CText { get; set; }
+        public string CLongtext { get; set; }
         public byte[] CBinary { get; set; }
         public byte[] CVarbinary { get; set; }
         public byte[] CTinyblob { get; set; }
-        public string CTinytext { get; set; }
         public byte[] CBlob { get; set; }
-        public string CText { get; set; }
         public byte[] CMediumblob { get; set; }
-        public string CMediumtext { get; set; }
         public byte[] CLongblob { get; set; }
-        public string CLongtext { get; set; }
         public string CJson { get; set; }
     };
 }

@@ -8,7 +8,6 @@ namespace NpgsqlLegacyExampleGen
         public long Id { get; set; }
         public string Name { get; set; }
         public string Bio { get; set; }
-        public DateTime Created { get; set; }
     };
     public class Book
     {
@@ -19,13 +18,11 @@ namespace NpgsqlLegacyExampleGen
     };
     public class PostgresType
     {
-        public long Id { get; set; }
         public byte[] CBit { get; set; }
         public int? CSmallint { get; set; }
         public bool? CBoolean { get; set; }
         public int? CInteger { get; set; }
         public long? CBigint { get; set; }
-        public int? CSerial { get; set; }
         public float? CDecimal { get; set; }
         public float? CNumeric { get; set; }
         public float? CReal { get; set; }

@@ -13,26 +13,30 @@ public class CommonGen(DbDriver dbDriver)
             : $"{argInterface} {Variable.Args.AsVarName()}")}";
     }
 
-    public static string AddParametersToCommand(IEnumerable<Parameter> parameters)
+    public string AddParametersToCommand(IEnumerable<Parameter> parameters)
     {
         return parameters.Select(p =>
         {
             var commandVar = Variable.Command.AsVarName();
             var param = p.Column.Name.ToPascalCase();
             var argsVar = Variable.Args.AsVarName();
-            return p.Column.IsSqlcSlice
-                ? $$"""
-                    for (int i = 0; i < {{argsVar}}.{{param}}.Length; i++)
-                        {{commandVar}}.Parameters.AddWithValue($"@{{param}}Arg{i}", {{argsVar}}.{{param}}[i]);
-                    """
-                : $$"""
-                   if ({{argsVar}}.{{param}} != null) 
-                        {{commandVar}}.Parameters.AddWithValue("@{{p.Column.Name}}", {{argsVar}}.{{param}});
-                   """;
+            if (p.Column.IsSqlcSlice)
+                return $$"""
+                         for (int i = 0; i < {{argsVar}}.{{param}}.Length; i++)
+                             {{commandVar}}.Parameters.AddWithValue($"@{{param}}Arg{i}", {{argsVar}}.{{param}}[i]);
+                         """;
+
+            var addParamToCommand = $"""{commandVar}.Parameters.AddWithValue("@{p.Column.Name}", {argsVar}.{param});""";
+            return ShouldCheckParameterForNull(p)
+                ? $"""
+                   if ({argsVar}.{param} != null) 
+                        {addParamToCommand}
+                   """
+                : addParamToCommand;
         }).JoinByNewLine();
     }
 
-    public static string ConstructDapperParamsDict(IList<Parameter> parameters)
+    public string ConstructDapperParamsDict(IList<Parameter> parameters)
     {
         if (!parameters.Any()) return string.Empty;
         var initParamsDict = $"var {Variable.QueryParams.AsVarName()} = new Dictionary<string, object>();";
@@ -49,18 +53,26 @@ public class CommonGen(DbDriver dbDriver)
                         """;
 
             var addParamToDict = $"{queryParamsVar}.Add(\"{p.Column.Name}\", {argsVar}.{param});";
-            return p.Column.NotNull
-                ? addParamToDict
-                : $"""
-                    if ({argsVar}.{param} != null) 
-                        {addParamToDict}
-                    """;
+            return ShouldCheckParameterForNull(p)
+                ? $"""
+                   if ({argsVar}.{param} != null) 
+                       {addParamToDict}
+                   """
+                : addParamToDict;
         });
 
-        return $$"""
-                 {{initParamsDict}}
-                 {{dapperParamsCommands.JoinByNewLine()}}
+        return $"""
+                 {initParamsDict}
+                 {dapperParamsCommands.JoinByNewLine()}
                  """;
+    }
+
+    private bool ShouldCheckParameterForNull(Parameter parameter)
+    {
+        if (parameter.Column.IsArray || parameter.Column.NotNull)
+            return false;
+        var csharpType = dbDriver.GetCsharpType(parameter.Column);
+        return dbDriver.IsTypeNullable(csharpType);
     }
 
     public static string AwaitReaderRow()
@@ -150,7 +162,7 @@ public class CommonGen(DbDriver dbDriver)
             var csharpType = dbDriver.GetCsharpType(column);
             if (csharpType == "string")
                 return "string.Empty";
-            return !dbDriver.Options.DotnetFramework.LatestDotnetSupported() && dbDriver.IsTypeNullableForAllRuntimes(csharpType)
+            return !dbDriver.Options.DotnetFramework.IsDotnetCore() && dbDriver.IsTypeNullable(csharpType)
                 ? $"({csharpType}) null"
                 : "null";
         }
@@ -165,7 +177,7 @@ public class CommonGen(DbDriver dbDriver)
             return $$"""
                      new {{name}}
                      {
-                         {{string.Join(",\n", fieldsInit)}}
+                         {{fieldsInit.JoinByComma()}}
                      }
                      """;
         }

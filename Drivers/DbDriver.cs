@@ -9,13 +9,29 @@ namespace SqlcGenCsharp.Drivers;
 
 public record ConnectionGenCommands(string EstablishConnection, string ConnectionOpen);
 
-public abstract class DbDriver(Options options, Dictionary<string, Table> tables)
+public abstract class DbDriver
 {
-    public Options Options { get; } = options;
+    public Options Options { get; }
 
-    public Dictionary<string, Table> Tables { get; } = tables;
+    public Dictionary<string, Table> Tables { get; }
+
+    private HashSet<string> NullableTypesInDotnetCore { get; } = ["string"];
+
+    private HashSet<string> NullableTypes { get; } = ["long", "double", "int", "float", "bool", "DateTime"];
 
     protected abstract List<ColumnMapping> ColumnMappings { get; }
+
+    protected DbDriver(Options options, Dictionary<string, Table> tables)
+    {
+        Options = options;
+        Tables = tables;
+
+        if (!Options.DotnetFramework.IsDotnetCore()) return; // `string?` is possible only in .Net Core
+        foreach (var t in NullableTypesInDotnetCore)
+        {
+            NullableTypes.Add(t);
+        }
+    }
 
     public virtual UsingDirectiveSyntax[] GetUsingDirectives()
     {
@@ -31,11 +47,11 @@ public abstract class DbDriver(Options options, Dictionary<string, Table> tables
         return usingDirectives.ToArray();
     }
 
-    public string AddNullableSuffix(string csharpType, bool notNull)
+    public string AddNullableSuffixIfNeeded(string csharpType, bool notNull)
     {
         if (notNull) return csharpType;
-        if (IsTypeNullableForAllRuntimes(csharpType)) return $"{csharpType}?";
-        return Options.DotnetFramework.LatestDotnetSupported() ? $"{csharpType}?" : csharpType;
+        if (IsTypeNullable(csharpType)) return $"{csharpType}?";
+        return Options.DotnetFramework.IsDotnetCore() ? $"{csharpType}?" : csharpType;
     }
 
     public string GetCsharpType(Column column)
@@ -44,7 +60,7 @@ public abstract class DbDriver(Options options, Dictionary<string, Table> tables
             return column.EmbedTable.Name.ToModelName();
 
         var columnCsharpType = string.IsNullOrEmpty(column.Type.Name) ? "object" : GetTypeWithoutNullableSuffix();
-        return AddNullableSuffix(columnCsharpType, column.NotNull);
+        return AddNullableSuffixIfNeeded(columnCsharpType, column.NotNull);
 
         string GetTypeWithoutNullableSuffix()
         {
@@ -89,31 +105,30 @@ public abstract class DbDriver(Options options, Dictionary<string, Table> tables
 
     public abstract string CreateSqlCommand(string sqlTextConstant);
 
-    private HashSet<string> NullableTypesInAllRuntimes { get; } = ["long", "double", "int", "float", "bool", "DateTime"];
-
     // TODO move out from driver + rename
-    public bool IsTypeNullableForAllRuntimes(string csharpType)
+    public bool IsTypeNullable(string csharpType)
     {
-        return NullableTypesInAllRuntimes.Contains(csharpType.Replace("?", ""));
+        return NullableTypes.Contains(csharpType.Replace("?", ""));
     }
 
-    protected static string GetConnectionStringField()
+    /*
+    Since there is no indication of the primary key column in SQLC protobuf (assuming it is a single column even),
+    this method uses a few heuristics to assess the type of the id column
+    */
+    public string GetIdColumnType(Query query)
     {
-        return Variable.ConnectionString.AsPropertyName();
+        var tableColumns = Tables[query.InsertIntoTable.Name].Columns;
+        var idColumn = tableColumns.First(c => c.Name.Equals("id", StringComparison.OrdinalIgnoreCase));
+        if (idColumn is not null)
+            return GetCsharpType(idColumn);
+
+        idColumn = tableColumns.First(c => c.Name.Contains("id", StringComparison.CurrentCultureIgnoreCase));
+        return GetCsharpType(idColumn ?? tableColumns[0]);
     }
 
-    public string GetIdColumnType()
+    public virtual string[] GetLastIdStatement(Query query)
     {
-        return Options.DriverName switch
-        {
-            DriverName.Sqlite => "int",
-            _ => "long"
-        };
-    }
-
-    public virtual string[] GetLastIdStatement()
-    {
-        var convertFunc = GetIdColumnType() == "int" ? "ToInt32" : "ToInt64";
+        var convertFunc = GetIdColumnType(query) == "int" ? "ToInt32" : "ToInt64"; // TODO refactor
         return
         [
             $"var {Variable.Result.AsVarName()} = await {Variable.Command.AsVarName()}.ExecuteScalarAsync();",

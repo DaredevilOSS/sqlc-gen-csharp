@@ -25,7 +25,7 @@ public interface IExecLastId
 {
     MemberDeclarationSyntax ExecLastIdDeclare(string queryTextConstant, string argInterface, Query query);
 
-    string[] GetLastIdStatement();
+    string[] GetLastIdStatement(Query query);
 }
 
 public interface ICopyFrom

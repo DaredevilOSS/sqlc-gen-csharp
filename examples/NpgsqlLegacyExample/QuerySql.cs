@@ -21,13 +21,12 @@ namespace NpgsqlLegacyExampleGen
 
         private string ConnectionString { get; }
 
-        private const string GetAuthorSql = "SELECT id, name, bio, created FROM authors WHERE name = @name LIMIT 1";
+        private const string GetAuthorSql = "SELECT id, name, bio FROM authors WHERE name = @name LIMIT 1";
         public class GetAuthorRow
         {
             public long Id { get; set; }
             public string Name { get; set; }
             public string Bio { get; set; }
-            public DateTime Created { get; set; }
         };
         public class GetAuthorArgs
         {
@@ -39,8 +38,7 @@ namespace NpgsqlLegacyExampleGen
             {
                 using (var command = connection.CreateCommand(GetAuthorSql))
                 {
-                    if (args.Name != null)
-                        command.Parameters.AddWithValue("@name", args.Name);
+                    command.Parameters.AddWithValue("@name", args.Name);
                     using (var reader = await command.ExecuteReaderAsync())
                     {
                         if (await reader.ReadAsync())
@@ -49,8 +47,7 @@ namespace NpgsqlLegacyExampleGen
                             {
                                 Id = reader.GetInt64(0),
                                 Name = reader.GetString(1),
-                                Bio = reader.IsDBNull(2) ? string.Empty : reader.GetString(2),
-                                Created = reader.GetDateTime(3)
+                                Bio = reader.IsDBNull(2) ? string.Empty : reader.GetString(2)
                             };
                         }
                     }
@@ -60,13 +57,12 @@ namespace NpgsqlLegacyExampleGen
             return null;
         }
 
-        private const string ListAuthorsSql = "SELECT id, name, bio, created FROM authors ORDER BY name";
+        private const string ListAuthorsSql = "SELECT id, name, bio FROM authors ORDER BY name";
         public class ListAuthorsRow
         {
             public long Id { get; set; }
             public string Name { get; set; }
             public string Bio { get; set; }
-            public DateTime Created { get; set; }
         };
         public async Task<List<ListAuthorsRow>> ListAuthors()
         {
@@ -79,7 +75,7 @@ namespace NpgsqlLegacyExampleGen
                         var result = new List<ListAuthorsRow>();
                         while (await reader.ReadAsync())
                         {
-                            result.Add(new ListAuthorsRow { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? string.Empty : reader.GetString(2), Created = reader.GetDateTime(3) });
+                            result.Add(new ListAuthorsRow { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? string.Empty : reader.GetString(2) });
                         }
 
                         return result;
@@ -88,16 +84,16 @@ namespace NpgsqlLegacyExampleGen
             }
         }
 
-        private const string CreateAuthorSql = "INSERT INTO authors (name, bio) VALUES (@name, @bio) RETURNING id, name, bio, created";
+        private const string CreateAuthorSql = "INSERT INTO authors (id, name, bio) VALUES (@id, @name, @bio) RETURNING id, name, bio";
         public class CreateAuthorRow
         {
             public long Id { get; set; }
             public string Name { get; set; }
             public string Bio { get; set; }
-            public DateTime Created { get; set; }
         };
         public class CreateAuthorArgs
         {
+            public long Id { get; set; }
             public string Name { get; set; }
             public string Bio { get; set; }
         };
@@ -107,10 +103,9 @@ namespace NpgsqlLegacyExampleGen
             {
                 using (var command = connection.CreateCommand(CreateAuthorSql))
                 {
-                    if (args.Name != null)
-                        command.Parameters.AddWithValue("@name", args.Name);
-                    if (args.Bio != null)
-                        command.Parameters.AddWithValue("@bio", args.Bio);
+                    command.Parameters.AddWithValue("@id", args.Id);
+                    command.Parameters.AddWithValue("@name", args.Name);
+                    command.Parameters.AddWithValue("@bio", args.Bio);
                     using (var reader = await command.ExecuteReaderAsync())
                     {
                         if (await reader.ReadAsync())
@@ -119,8 +114,7 @@ namespace NpgsqlLegacyExampleGen
                             {
                                 Id = reader.GetInt64(0),
                                 Name = reader.GetString(1),
-                                Bio = reader.IsDBNull(2) ? string.Empty : reader.GetString(2),
-                                Created = reader.GetDateTime(3)
+                                Bio = reader.IsDBNull(2) ? string.Empty : reader.GetString(2)
                             };
                         }
                     }
@@ -146,23 +140,20 @@ namespace NpgsqlLegacyExampleGen
             {
                 using (var command = connection.CreateCommand(CreateAuthorReturnIdSql))
                 {
-                    if (args.Name != null)
-                        command.Parameters.AddWithValue("@name", args.Name);
-                    if (args.Bio != null)
-                        command.Parameters.AddWithValue("@bio", args.Bio);
+                    command.Parameters.AddWithValue("@name", args.Name);
+                    command.Parameters.AddWithValue("@bio", args.Bio);
                     var result = await command.ExecuteScalarAsync();
                     return Convert.ToInt64(result);
                 }
             }
         }
 
-        private const string GetAuthorByIdSql = "SELECT id, name, bio, created FROM authors WHERE id = @id LIMIT 1";
+        private const string GetAuthorByIdSql = "SELECT id, name, bio FROM authors WHERE id = @id LIMIT 1";
         public class GetAuthorByIdRow
         {
             public long Id { get; set; }
             public string Name { get; set; }
             public string Bio { get; set; }
-            public DateTime Created { get; set; }
         };
         public class GetAuthorByIdArgs
         {
@@ -174,8 +165,7 @@ namespace NpgsqlLegacyExampleGen
             {
                 using (var command = connection.CreateCommand(GetAuthorByIdSql))
                 {
-                    if (args.Id != null)
-                        command.Parameters.AddWithValue("@id", args.Id);
+                    command.Parameters.AddWithValue("@id", args.Id);
                     using (var reader = await command.ExecuteReaderAsync())
                     {
                         if (await reader.ReadAsync())
@@ -184,8 +174,7 @@ namespace NpgsqlLegacyExampleGen
                             {
                                 Id = reader.GetInt64(0),
                                 Name = reader.GetString(1),
-                                Bio = reader.IsDBNull(2) ? string.Empty : reader.GetString(2),
-                                Created = reader.GetDateTime(3)
+                                Bio = reader.IsDBNull(2) ? string.Empty : reader.GetString(2)
                             };
                         }
                     }
@@ -206,8 +195,7 @@ namespace NpgsqlLegacyExampleGen
             {
                 using (var command = connection.CreateCommand(DeleteAuthorSql))
                 {
-                    if (args.Name != null)
-                        command.Parameters.AddWithValue("@name", args.Name);
+                    command.Parameters.AddWithValue("@name", args.Name);
                     await command.ExecuteScalarAsync();
                 }
             }
@@ -236,20 +224,18 @@ namespace NpgsqlLegacyExampleGen
             {
                 using (var command = connection.CreateCommand(UpdateAuthorsSql))
                 {
-                    if (args.Bio != null)
-                        command.Parameters.AddWithValue("@bio", args.Bio);
+                    command.Parameters.AddWithValue("@bio", args.Bio);
                     return await command.ExecuteNonQueryAsync();
                 }
             }
         }
 
-        private const string GetAuthorsByIdsSql = "SELECT id, name, bio, created FROM authors WHERE id = ANY(@longArr_1::BIGINT[])";
+        private const string GetAuthorsByIdsSql = "SELECT id, name, bio FROM authors WHERE id = ANY(@longArr_1::BIGINT[])";
         public class GetAuthorsByIdsRow
         {
             public long Id { get; set; }
             public string Name { get; set; }
             public string Bio { get; set; }
-            public DateTime Created { get; set; }
         };
         public class GetAuthorsByIdsArgs
         {
@@ -261,14 +247,13 @@ namespace NpgsqlLegacyExampleGen
             {
                 using (var command = connection.CreateCommand(GetAuthorsByIdsSql))
                 {
-                    if (args.LongArr1 != null)
-                        command.Parameters.AddWithValue("@longArr_1", args.LongArr1);
+                    command.Parameters.AddWithValue("@longArr_1", args.LongArr1);
                     using (var reader = await command.ExecuteReaderAsync())
                     {
                         var result = new List<GetAuthorsByIdsRow>();
                         while (await reader.ReadAsync())
                         {
-                            result.Add(new GetAuthorsByIdsRow { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? string.Empty : reader.GetString(2), Created = reader.GetDateTime(3) });
+                            result.Add(new GetAuthorsByIdsRow { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? string.Empty : reader.GetString(2) });
                         }
 
                         return result;
@@ -277,13 +262,12 @@ namespace NpgsqlLegacyExampleGen
             }
         }
 
-        private const string GetAuthorsByIdsAndNamesSql = "SELECT id, name, bio, created FROM authors WHERE id = ANY(@longArr_1::BIGINT[]) AND name = ANY(@stringArr_2::TEXT[])";
+        private const string GetAuthorsByIdsAndNamesSql = "SELECT id, name, bio FROM authors WHERE id = ANY(@longArr_1::BIGINT[]) AND name = ANY(@stringArr_2::TEXT[])";
         public class GetAuthorsByIdsAndNamesRow
         {
             public long Id { get; set; }
             public string Name { get; set; }
             public string Bio { get; set; }
-            public DateTime Created { get; set; }
         };
         public class GetAuthorsByIdsAndNamesArgs
         {
@@ -296,16 +280,14 @@ namespace NpgsqlLegacyExampleGen
             {
                 using (var command = connection.CreateCommand(GetAuthorsByIdsAndNamesSql))
                 {
-                    if (args.LongArr1 != null)
-                        command.Parameters.AddWithValue("@longArr_1", args.LongArr1);
-                    if (args.StringArr2 != null)
-                        command.Parameters.AddWithValue("@stringArr_2", args.StringArr2);
+                    command.Parameters.AddWithValue("@longArr_1", args.LongArr1);
+                    command.Parameters.AddWithValue("@stringArr_2", args.StringArr2);
                     using (var reader = await command.ExecuteReaderAsync())
                     {
                         var result = new List<GetAuthorsByIdsAndNamesRow>();
                         while (await reader.ReadAsync())
                         {
-                            result.Add(new GetAuthorsByIdsAndNamesRow { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? string.Empty : reader.GetString(2), Created = reader.GetDateTime(3) });
+                            result.Add(new GetAuthorsByIdsAndNamesRow { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? string.Empty : reader.GetString(2) });
                         }
 
                         return result;
@@ -314,28 +296,31 @@ namespace NpgsqlLegacyExampleGen
             }
         }
 
-        private const string CreateBookSql = "INSERT INTO books (name, author_id) VALUES (@name, @author_id)";
+        private const string CreateBookSql = "INSERT INTO books (name, author_id) VALUES (@name, @author_id) RETURNING id";
+        public class CreateBookRow
+        {
+            public long Id { get; set; }
+        };
         public class CreateBookArgs
         {
             public string Name { get; set; }
             public long AuthorId { get; set; }
         };
-        public async Task CreateBook(CreateBookArgs args)
+        public async Task<long> CreateBook(CreateBookArgs args)
         {
             using (var connection = NpgsqlDataSource.Create(ConnectionString))
             {
                 using (var command = connection.CreateCommand(CreateBookSql))
                 {
-                    if (args.Name != null)
-                        command.Parameters.AddWithValue("@name", args.Name);
-                    if (args.AuthorId != null)
-                        command.Parameters.AddWithValue("@author_id", args.AuthorId);
-                    await command.ExecuteScalarAsync();
+                    command.Parameters.AddWithValue("@name", args.Name);
+                    command.Parameters.AddWithValue("@author_id", args.AuthorId);
+                    var result = await command.ExecuteScalarAsync();
+                    return Convert.ToInt64(result);
                 }
             }
         }
 
-        private const string ListAllAuthorsBooksSql = "SELECT authors.id, authors.name, authors.bio, authors.created, books.id, books.name, books.author_id, books.description FROM authors JOIN books ON authors.id = books.author_id ORDER BY authors.name";
+        private const string ListAllAuthorsBooksSql = "SELECT authors.id, authors.name, authors.bio, books.id, books.name, books.author_id, books.description FROM authors JOIN books ON authors.id = books.author_id ORDER BY authors.name";
         public class ListAllAuthorsBooksRow
         {
             public Author Author { get; set; }
@@ -352,7 +337,7 @@ namespace NpgsqlLegacyExampleGen
                         var result = new List<ListAllAuthorsBooksRow>();
                         while (await reader.ReadAsync())
                         {
-                            result.Add(new ListAllAuthorsBooksRow { Author = new Author { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? string.Empty : reader.GetString(2), Created = reader.GetDateTime(3) }, Book = new Book { Id = reader.GetInt64(4), Name = reader.GetString(5), AuthorId = reader.GetInt64(6), Description = reader.IsDBNull(7) ? string.Empty : reader.GetString(7) } });
+                            result.Add(new ListAllAuthorsBooksRow { Author = new Author { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? string.Empty : reader.GetString(2) }, Book = new Book { Id = reader.GetInt64(3), Name = reader.GetString(4), AuthorId = reader.GetInt64(5), Description = reader.IsDBNull(6) ? string.Empty : reader.GetString(6) } });
                         }
 
                         return result;
@@ -361,7 +346,7 @@ namespace NpgsqlLegacyExampleGen
             }
         }
 
-        private const string GetDuplicateAuthorsSql = "SELECT authors1.id, authors1.name, authors1.bio, authors1.created, authors2.id, authors2.name, authors2.bio, authors2.created FROM  authors  authors1  JOIN  authors  authors2  ON  authors1 . name  =  authors2 . name  WHERE  authors1 . id > authors2 . id  ";  
+        private const string GetDuplicateAuthorsSql = "SELECT authors1.id, authors1.name, authors1.bio, authors2.id, authors2.name, authors2.bio FROM  authors  authors1  JOIN  authors  authors2  ON  authors1 . name  =  authors2 . name  WHERE  authors1 . id < authors2 . id  ";  
         public class GetDuplicateAuthorsRow
         {
             public Author Author { get; set; }
@@ -378,7 +363,7 @@ namespace NpgsqlLegacyExampleGen
                         var result = new List<GetDuplicateAuthorsRow>();
                         while (await reader.ReadAsync())
                         {
-                            result.Add(new GetDuplicateAuthorsRow { Author = new Author { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? string.Empty : reader.GetString(2), Created = reader.GetDateTime(3) }, Author2 = new Author { Id = reader.GetInt64(4), Name = reader.GetString(5), Bio = reader.IsDBNull(6) ? string.Empty : reader.GetString(6), Created = reader.GetDateTime(7) } });
+                            result.Add(new GetDuplicateAuthorsRow { Author = new Author { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? string.Empty : reader.GetString(2) }, Author2 = new Author { Id = reader.GetInt64(3), Name = reader.GetString(4), Bio = reader.IsDBNull(5) ? string.Empty : reader.GetString(5) } });
                         }
 
                         return result;
@@ -387,13 +372,12 @@ namespace NpgsqlLegacyExampleGen
             }
         }
 
-        private const string GetAuthorsByBookNameSql = "SELECT authors.id, authors.name, authors.bio, authors.created, books.id, books.name, books.author_id, books.description FROM  authors  JOIN  books  ON  authors . id  =  books . author_id  WHERE  books . name  =  @name  ";  
+        private const string GetAuthorsByBookNameSql = "SELECT authors.id, authors.name, authors.bio, books.id, books.name, books.author_id, books.description FROM  authors  JOIN  books  ON  authors . id  =  books . author_id  WHERE  books . name  =  @name  ";  
         public class GetAuthorsByBookNameRow
         {
             public long Id { get; set; }
             public string Name { get; set; }
             public string Bio { get; set; }
-            public DateTime Created { get; set; }
             public Book Book { get; set; }
         };
         public class GetAuthorsByBookNameArgs
@@ -406,14 +390,13 @@ namespace NpgsqlLegacyExampleGen
             {
                 using (var command = connection.CreateCommand(GetAuthorsByBookNameSql))
                 {
-                    if (args.Name != null)
-                        command.Parameters.AddWithValue("@name", args.Name);
+                    command.Parameters.AddWithValue("@name", args.Name);
                     using (var reader = await command.ExecuteReaderAsync())
                     {
                         var result = new List<GetAuthorsByBookNameRow>();
                         while (await reader.ReadAsync())
                         {
-                            result.Add(new GetAuthorsByBookNameRow { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? string.Empty : reader.GetString(2), Created = reader.GetDateTime(3), Book = new Book { Id = reader.GetInt64(4), Name = reader.GetString(5), AuthorId = reader.GetInt64(6), Description = reader.IsDBNull(7) ? string.Empty : reader.GetString(7) } });
+                            result.Add(new GetAuthorsByBookNameRow { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? string.Empty : reader.GetString(2), Book = new Book { Id = reader.GetInt64(3), Name = reader.GetString(4), AuthorId = reader.GetInt64(5), Description = reader.IsDBNull(6) ? string.Empty : reader.GetString(6) } });
                         }
 
                         return result;
@@ -422,18 +405,13 @@ namespace NpgsqlLegacyExampleGen
             }
         }
 
-        private const string InsertPostgresTypesSql = "INSERT INTO postgres_types (c_smallint, c_boolean, c_integer, c_bigint, c_serial, c_decimal, c_numeric, c_real, c_date, c_timestamp, c_char, c_varchar, c_character_varying, c_text, c_text_array, c_integer_array) VALUES ( @c_smallint , @c_boolean, @c_integer, @c_bigint, @c_serial, @c_decimal, @c_numeric, @c_real, @c_date, @c_timestamp, @c_char, @c_varchar, @c_character_varying, @c_text, @c_text_array, @c_integer_array ) RETURNING  id  "; 
-        public class InsertPostgresTypesRow
-        {
-            public long Id { get; set; }
-        };
+        private const string InsertPostgresTypesSql = "INSERT INTO postgres_types (c_smallint, c_boolean, c_integer, c_bigint, c_decimal, c_numeric, c_real, c_date, c_timestamp, c_char, c_varchar, c_character_varying, c_text, c_text_array, c_integer_array) VALUES ( @c_smallint , @c_boolean, @c_integer, @c_bigint, @c_decimal, @c_numeric, @c_real, @c_date, @c_timestamp, @c_char, @c_varchar, @c_character_varying, @c_text, @c_text_array, @c_integer_array ) "; 
         public class InsertPostgresTypesArgs
         {
             public int? CSmallint { get; set; }
             public bool? CBoolean { get; set; }
             public int? CInteger { get; set; }
             public long? CBigint { get; set; }
-            public int? CSerial { get; set; }
             public float? CDecimal { get; set; }
             public float? CNumeric { get; set; }
             public float? CReal { get; set; }
@@ -446,7 +424,7 @@ namespace NpgsqlLegacyExampleGen
             public string[] CTextArray { get; set; }
             public int[] CIntegerArray { get; set; }
         };
-        public async Task<long> InsertPostgresTypes(InsertPostgresTypesArgs args)
+        public async Task InsertPostgresTypes(InsertPostgresTypesArgs args)
         {
             using (var connection = NpgsqlDataSource.Create(ConnectionString))
             {
@@ -460,8 +438,6 @@ namespace NpgsqlLegacyExampleGen
                         command.Parameters.AddWithValue("@c_integer", args.CInteger);
                     if (args.CBigint != null)
                         command.Parameters.AddWithValue("@c_bigint", args.CBigint);
-                    if (args.CSerial != null)
-                        command.Parameters.AddWithValue("@c_serial", args.CSerial);
                     if (args.CDecimal != null)
                         command.Parameters.AddWithValue("@c_decimal", args.CDecimal);
                     if (args.CNumeric != null)
@@ -472,25 +448,18 @@ namespace NpgsqlLegacyExampleGen
                         command.Parameters.AddWithValue("@c_date", args.CDate);
                     if (args.CTimestamp != null)
                         command.Parameters.AddWithValue("@c_timestamp", args.CTimestamp);
-                    if (args.CChar != null)
-                        command.Parameters.AddWithValue("@c_char", args.CChar);
-                    if (args.CVarchar != null)
-                        command.Parameters.AddWithValue("@c_varchar", args.CVarchar);
-                    if (args.CCharacterVarying != null)
-                        command.Parameters.AddWithValue("@c_character_varying", args.CCharacterVarying);
-                    if (args.CText != null)
-                        command.Parameters.AddWithValue("@c_text", args.CText);
-                    if (args.CTextArray != null)
-                        command.Parameters.AddWithValue("@c_text_array", args.CTextArray);
-                    if (args.CIntegerArray != null)
-                        command.Parameters.AddWithValue("@c_integer_array", args.CIntegerArray);
-                    var result = await command.ExecuteScalarAsync();
-                    return Convert.ToInt64(result);
+                    command.Parameters.AddWithValue("@c_char", args.CChar);
+                    command.Parameters.AddWithValue("@c_varchar", args.CVarchar);
+                    command.Parameters.AddWithValue("@c_character_varying", args.CCharacterVarying);
+                    command.Parameters.AddWithValue("@c_text", args.CText);
+                    command.Parameters.AddWithValue("@c_text_array", args.CTextArray);
+                    command.Parameters.AddWithValue("@c_integer_array", args.CIntegerArray);
+                    await command.ExecuteScalarAsync();
                 }
             }
         }
 
-        private const string InsertPostgresTypesBatchSql = "COPY postgres_types (c_smallint, c_boolean, c_integer, c_bigint, c_decimal, c_numeric, c_real, c_varchar, c_date, c_timestamp) FROM STDIN (FORMAT BINARY)";
+        private const string InsertPostgresTypesBatchSql = "COPY postgres_types (c_smallint, c_boolean, c_integer, c_bigint, c_decimal, c_numeric, c_real, c_date, c_timestamp, c_char, c_varchar, c_character_varying, c_text) FROM STDIN (FORMAT BINARY)";
         public class InsertPostgresTypesBatchArgs
         {
             public int? CSmallint { get; set; }
@@ -500,9 +469,12 @@ namespace NpgsqlLegacyExampleGen
             public float? CDecimal { get; set; }
             public float? CNumeric { get; set; }
             public float? CReal { get; set; }
-            public string CVarchar { get; set; }
             public DateTime? CDate { get; set; }
             public DateTime? CTimestamp { get; set; }
+            public string CChar { get; set; }
+            public string CVarchar { get; set; }
+            public string CCharacterVarying { get; set; }
+            public string CText { get; set; }
         };
         public async Task InsertPostgresTypesBatch(List<InsertPostgresTypesBatchArgs> args)
         {
@@ -522,9 +494,12 @@ namespace NpgsqlLegacyExampleGen
                         await writer.WriteAsync(row.CDecimal, NpgsqlDbType.Numeric);
                         await writer.WriteAsync(row.CNumeric, NpgsqlDbType.Numeric);
                         await writer.WriteAsync(row.CReal, NpgsqlDbType.Real);
-                        await writer.WriteAsync(row.CVarchar, NpgsqlDbType.Varchar);
                         await writer.WriteAsync(row.CDate, NpgsqlDbType.Date);
                         await writer.WriteAsync(row.CTimestamp, NpgsqlDbType.Timestamp);
+                        await writer.WriteAsync(row.CChar);
+                        await writer.WriteAsync(row.CVarchar, NpgsqlDbType.Varchar);
+                        await writer.WriteAsync(row.CCharacterVarying, NpgsqlDbType.Varchar);
+                        await writer.WriteAsync(row.CText);
                     }
 
                     await writer.CompleteAsync();
@@ -534,16 +509,14 @@ namespace NpgsqlLegacyExampleGen
             }
         }
 
-        private const string GetPostgresTypesSql = "SELECT id, c_bit, c_smallint, c_boolean, c_integer, c_bigint, c_serial, c_decimal, c_numeric, c_real, c_double_precision, c_date, c_time, c_timestamp, c_char, c_varchar, c_character_varying, c_bytea, c_text, c_json, c_text_array, c_integer_array FROM postgres_types WHERE id = @id LIMIT 1";
+        private const string GetPostgresTypesSql = "SELECT c_bit, c_smallint, c_boolean, c_integer, c_bigint, c_decimal, c_numeric, c_real, c_double_precision, c_date, c_time, c_timestamp, c_char, c_varchar, c_character_varying, c_bytea, c_text, c_json, c_text_array, c_integer_array FROM postgres_types LIMIT 1";
         public class GetPostgresTypesRow
         {
-            public long Id { get; set; }
             public byte[] CBit { get; set; }
             public int? CSmallint { get; set; }
             public bool? CBoolean { get; set; }
             public int? CInteger { get; set; }
             public long? CBigint { get; set; }
-            public int? CSerial { get; set; }
             public float? CDecimal { get; set; }
             public float? CNumeric { get; set; }
             public float? CReal { get; set; }
@@ -560,46 +533,38 @@ namespace NpgsqlLegacyExampleGen
             public string[] CTextArray { get; set; }
             public int[] CIntegerArray { get; set; }
         };
-        public class GetPostgresTypesArgs
-        {
-            public long Id { get; set; }
-        };
-        public async Task<GetPostgresTypesRow> GetPostgresTypes(GetPostgresTypesArgs args)
+        public async Task<GetPostgresTypesRow> GetPostgresTypes()
         {
             using (var connection = NpgsqlDataSource.Create(ConnectionString))
             {
                 using (var command = connection.CreateCommand(GetPostgresTypesSql))
                 {
-                    if (args.Id != null)
-                        command.Parameters.AddWithValue("@id", args.Id);
                     using (var reader = await command.ExecuteReaderAsync())
                     {
                         if (await reader.ReadAsync())
                         {
                             return new GetPostgresTypesRow
                             {
-                                Id = reader.GetInt64(0),
-                                CBit = reader.IsDBNull(1) ? null : Utils.GetBytes(reader, 1),
-                                CSmallint = reader.IsDBNull(2) ? (int? )null : reader.GetInt32(2),
-                                CBoolean = reader.IsDBNull(3) ? (bool? )null : reader.GetBoolean(3),
-                                CInteger = reader.IsDBNull(4) ? (int? )null : reader.GetInt32(4),
-                                CBigint = reader.IsDBNull(5) ? (long? )null : reader.GetInt64(5),
-                                CSerial = reader.IsDBNull(6) ? (int? )null : reader.GetInt32(6),
-                                CDecimal = reader.IsDBNull(7) ? (float? )null : reader.GetFloat(7),
-                                CNumeric = reader.IsDBNull(8) ? (float? )null : reader.GetFloat(8),
-                                CReal = reader.IsDBNull(9) ? (float? )null : reader.GetFloat(9),
-                                CDoublePrecision = reader.IsDBNull(10) ? (float? )null : reader.GetFloat(10),
-                                CDate = reader.IsDBNull(11) ? (DateTime? )null : reader.GetDateTime(11),
-                                CTime = reader.IsDBNull(12) ? string.Empty : reader.GetString(12),
-                                CTimestamp = reader.IsDBNull(13) ? (DateTime? )null : reader.GetDateTime(13),
-                                CChar = reader.IsDBNull(14) ? string.Empty : reader.GetString(14),
-                                CVarchar = reader.IsDBNull(15) ? string.Empty : reader.GetString(15),
-                                CCharacterVarying = reader.IsDBNull(16) ? string.Empty : reader.GetString(16),
-                                CBytea = reader.IsDBNull(17) ? null : Utils.GetBytes(reader, 17),
-                                CText = reader.IsDBNull(18) ? string.Empty : reader.GetString(18),
-                                CJson = reader.IsDBNull(19) ? null : reader.GetString(19),
-                                CTextArray = reader.IsDBNull(20) ? null : reader.GetFieldValue<string[]>(20),
-                                CIntegerArray = reader.IsDBNull(21) ? null : reader.GetFieldValue<int[]>(21)
+                                CBit = reader.IsDBNull(0) ? null : Utils.GetBytes(reader, 0),
+                                CSmallint = reader.IsDBNull(1) ? (int? )null : reader.GetInt32(1),
+                                CBoolean = reader.IsDBNull(2) ? (bool? )null : reader.GetBoolean(2),
+                                CInteger = reader.IsDBNull(3) ? (int? )null : reader.GetInt32(3),
+                                CBigint = reader.IsDBNull(4) ? (long? )null : reader.GetInt64(4),
+                                CDecimal = reader.IsDBNull(5) ? (float? )null : reader.GetFloat(5),
+                                CNumeric = reader.IsDBNull(6) ? (float? )null : reader.GetFloat(6),
+                                CReal = reader.IsDBNull(7) ? (float? )null : reader.GetFloat(7),
+                                CDoublePrecision = reader.IsDBNull(8) ? (float? )null : reader.GetFloat(8),
+                                CDate = reader.IsDBNull(9) ? (DateTime? )null : reader.GetDateTime(9),
+                                CTime = reader.IsDBNull(10) ? string.Empty : reader.GetString(10),
+                                CTimestamp = reader.IsDBNull(11) ? (DateTime? )null : reader.GetDateTime(11),
+                                CChar = reader.IsDBNull(12) ? string.Empty : reader.GetString(12),
+                                CVarchar = reader.IsDBNull(13) ? string.Empty : reader.GetString(13),
+                                CCharacterVarying = reader.IsDBNull(14) ? string.Empty : reader.GetString(14),
+                                CBytea = reader.IsDBNull(15) ? null : Utils.GetBytes(reader, 15),
+                                CText = reader.IsDBNull(16) ? string.Empty : reader.GetString(16),
+                                CJson = reader.IsDBNull(17) ? null : reader.GetString(17),
+                                CTextArray = reader.IsDBNull(18) ? null : reader.GetFieldValue<string[]>(18),
+                                CIntegerArray = reader.IsDBNull(19) ? null : reader.GetFieldValue<int[]>(19)
                             };
                         }
                     }
@@ -609,7 +574,7 @@ namespace NpgsqlLegacyExampleGen
             return null;
         }
 
-        private const string GetPostgresTypesAggSql = "SELECT COUNT(1) AS cnt , c_smallint, c_boolean, c_integer, c_bigint, c_decimal, c_numeric, c_real, c_varchar, c_date, c_timestamp FROM  postgres_types  GROUP  BY  c_smallint , c_boolean, c_integer, c_bigint, c_decimal, c_numeric, c_real, c_varchar, c_date, c_timestamp LIMIT  1  ";  
+        private const string GetPostgresTypesAggSql = "SELECT COUNT(1) AS cnt , c_smallint, c_boolean, c_integer, c_bigint, c_decimal, c_numeric, c_real, c_date, c_timestamp, c_char, c_varchar, c_character_varying, c_text FROM  postgres_types  GROUP  BY  c_smallint , c_boolean, c_integer, c_bigint, c_decimal, c_numeric, c_real, c_date, c_timestamp, c_char, c_varchar, c_character_varying, c_text LIMIT  1  ";  
         public class GetPostgresTypesAggRow
         {
             public long Cnt { get; set; }
@@ -620,9 +585,12 @@ namespace NpgsqlLegacyExampleGen
             public float? CDecimal { get; set; }
             public float? CNumeric { get; set; }
             public float? CReal { get; set; }
-            public string CVarchar { get; set; }
             public DateTime? CDate { get; set; }
             public DateTime? CTimestamp { get; set; }
+            public string CChar { get; set; }
+            public string CVarchar { get; set; }
+            public string CCharacterVarying { get; set; }
+            public string CText { get; set; }
         };
         public async Task<GetPostgresTypesAggRow> GetPostgresTypesAgg()
         {
@@ -644,9 +612,12 @@ namespace NpgsqlLegacyExampleGen
                                 CDecimal = reader.IsDBNull(5) ? (float? )null : reader.GetFloat(5),
                                 CNumeric = reader.IsDBNull(6) ? (float? )null : reader.GetFloat(6),
                                 CReal = reader.IsDBNull(7) ? (float? )null : reader.GetFloat(7),
-                                CVarchar = reader.IsDBNull(8) ? string.Empty : reader.GetString(8),
-                                CDate = reader.IsDBNull(9) ? (DateTime? )null : reader.GetDateTime(9),
-                                CTimestamp = reader.IsDBNull(10) ? (DateTime? )null : reader.GetDateTime(10)
+                                CDate = reader.IsDBNull(8) ? (DateTime? )null : reader.GetDateTime(8),
+                                CTimestamp = reader.IsDBNull(9) ? (DateTime? )null : reader.GetDateTime(9),
+                                CChar = reader.IsDBNull(10) ? string.Empty : reader.GetString(10),
+                                CVarchar = reader.IsDBNull(11) ? string.Empty : reader.GetString(11),
+                                CCharacterVarying = reader.IsDBNull(12) ? string.Empty : reader.GetString(12),
+                                CText = reader.IsDBNull(13) ? string.Empty : reader.GetString(13)
                             };
                         }
                     }

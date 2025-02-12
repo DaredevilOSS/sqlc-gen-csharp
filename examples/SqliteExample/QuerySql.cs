@@ -26,11 +26,10 @@ public class QuerySql
     {
         using (var connection = new SqliteConnection(ConnectionString))
         {
-            connection.Open();
+            await connection.OpenAsync();
             using (var command = new SqliteCommand(GetAuthorSql, connection))
             {
-                if (args.Name != null)
-                    command.Parameters.AddWithValue("@name", args.Name);
+                command.Parameters.AddWithValue("@name", args.Name);
                 using (var reader = await command.ExecuteReaderAsync())
                 {
                     if (await reader.ReadAsync())
@@ -55,7 +54,7 @@ public class QuerySql
     {
         using (var connection = new SqliteConnection(ConnectionString))
         {
-            connection.Open();
+            await connection.OpenAsync();
             using (var command = new SqliteCommand(ListAuthorsSql, connection))
             {
                 using (var reader = await command.ExecuteReaderAsync())
@@ -72,17 +71,17 @@ public class QuerySql
         }
     }
 
-    private const string CreateAuthorSql = "INSERT INTO authors (name, bio) VALUES (@name, @bio)";
-    public readonly record struct CreateAuthorArgs(string Name, string? Bio);
+    private const string CreateAuthorSql = "INSERT INTO authors (id, name, bio) VALUES (@id, @name, @bio)";
+    public readonly record struct CreateAuthorArgs(int Id, string Name, string? Bio);
     public async Task CreateAuthor(CreateAuthorArgs args)
     {
         using (var connection = new SqliteConnection(ConnectionString))
         {
-            connection.Open();
+            await connection.OpenAsync();
             using (var command = new SqliteCommand(CreateAuthorSql, connection))
             {
-                if (args.Name != null)
-                    command.Parameters.AddWithValue("@name", args.Name);
+                command.Parameters.AddWithValue("@id", args.Id);
+                command.Parameters.AddWithValue("@name", args.Name);
                 if (args.Bio != null)
                     command.Parameters.AddWithValue("@bio", args.Bio);
                 await command.ExecuteScalarAsync();
@@ -97,11 +96,10 @@ public class QuerySql
     {
         using (var connection = new SqliteConnection(ConnectionString))
         {
-            connection.Open();
+            await connection.OpenAsync();
             using (var command = new SqliteCommand(CreateAuthorReturnIdSql, connection))
             {
-                if (args.Name != null)
-                    command.Parameters.AddWithValue("@name", args.Name);
+                command.Parameters.AddWithValue("@name", args.Name);
                 if (args.Bio != null)
                     command.Parameters.AddWithValue("@bio", args.Bio);
                 var result = await command.ExecuteScalarAsync();
@@ -117,11 +115,10 @@ public class QuerySql
     {
         using (var connection = new SqliteConnection(ConnectionString))
         {
-            connection.Open();
+            await connection.OpenAsync();
             using (var command = new SqliteCommand(GetAuthorByIdSql, connection))
             {
-                if (args.Id != null)
-                    command.Parameters.AddWithValue("@id", args.Id);
+                command.Parameters.AddWithValue("@id", args.Id);
                 using (var reader = await command.ExecuteReaderAsync())
                 {
                     if (await reader.ReadAsync())
@@ -146,7 +143,7 @@ public class QuerySql
     {
         using (var connection = new SqliteConnection(ConnectionString))
         {
-            connection.Open();
+            await connection.OpenAsync();
             using (var command = new SqliteCommand(UpdateAuthorsSql, connection))
             {
                 if (args.Bio != null)
@@ -163,7 +160,7 @@ public class QuerySql
     {
         using (var connection = new SqliteConnection(ConnectionString))
         {
-            connection.Open();
+            await connection.OpenAsync();
             var sqlText = GetAuthorsByIdsSql;
             sqlText = Utils.GetTransformedString(sqlText, args.Ids, "Ids", "ids");
             using (var command = new SqliteCommand(sqlText, connection))
@@ -191,7 +188,7 @@ public class QuerySql
     {
         using (var connection = new SqliteConnection(ConnectionString))
         {
-            connection.Open();
+            await connection.OpenAsync();
             var sqlText = GetAuthorsByIdsAndNamesSql;
             sqlText = Utils.GetTransformedString(sqlText, args.Ids, "Ids", "ids");
             sqlText = Utils.GetTransformedString(sqlText, args.Names, "Names", "names");
@@ -221,30 +218,29 @@ public class QuerySql
     {
         using (var connection = new SqliteConnection(ConnectionString))
         {
-            connection.Open();
+            await connection.OpenAsync();
             using (var command = new SqliteCommand(DeleteAuthorSql, connection))
             {
-                if (args.Name != null)
-                    command.Parameters.AddWithValue("@name", args.Name);
+                command.Parameters.AddWithValue("@name", args.Name);
                 await command.ExecuteScalarAsync();
             }
         }
     }
 
-    private const string CreateBookSql = "INSERT INTO books (name, author_id) VALUES (@name, @author_id)";
+    private const string CreateBookSql = "INSERT INTO books (name, author_id) VALUES (@name, @author_id) RETURNING id";
+    public readonly record struct CreateBookRow(int Id);
     public readonly record struct CreateBookArgs(string Name, int AuthorId);
-    public async Task CreateBook(CreateBookArgs args)
+    public async Task<int> CreateBook(CreateBookArgs args)
     {
         using (var connection = new SqliteConnection(ConnectionString))
         {
-            connection.Open();
+            await connection.OpenAsync();
             using (var command = new SqliteCommand(CreateBookSql, connection))
             {
-                if (args.Name != null)
-                    command.Parameters.AddWithValue("@name", args.Name);
-                if (args.AuthorId != null)
-                    command.Parameters.AddWithValue("@author_id", args.AuthorId);
-                await command.ExecuteScalarAsync();
+                command.Parameters.AddWithValue("@name", args.Name);
+                command.Parameters.AddWithValue("@author_id", args.AuthorId);
+                var result = await command.ExecuteScalarAsync();
+                return Convert.ToInt32(result);
             }
         }
     }
@@ -255,7 +251,7 @@ public class QuerySql
     {
         using (var connection = new SqliteConnection(ConnectionString))
         {
-            connection.Open();
+            await connection.OpenAsync();
             using (var command = new SqliteCommand(ListAllAuthorsBooksSql, connection))
             {
                 using (var reader = await command.ExecuteReaderAsync())
@@ -272,13 +268,13 @@ public class QuerySql
         }
     }
 
-    private const string GetDuplicateAuthorsSql = "SELECT authors1.id, authors1.name, authors1.bio, authors2.id, authors2.name, authors2.bio FROM  authors  authors1  JOIN  authors  authors2  ON  authors1 . name  =  authors2 . name  WHERE  authors1 . id > authors2 . id  ";  
+    private const string GetDuplicateAuthorsSql = "SELECT authors1.id, authors1.name, authors1.bio, authors2.id, authors2.name, authors2.bio FROM  authors  authors1  JOIN  authors  authors2  ON  authors1 . name  =  authors2 . name  WHERE  authors1 . id < authors2 . id  ";  
     public readonly record struct GetDuplicateAuthorsRow(Author Author, Author Author2);
     public async Task<List<GetDuplicateAuthorsRow>> GetDuplicateAuthors()
     {
         using (var connection = new SqliteConnection(ConnectionString))
         {
-            connection.Open();
+            await connection.OpenAsync();
             using (var command = new SqliteCommand(GetDuplicateAuthorsSql, connection))
             {
                 using (var reader = await command.ExecuteReaderAsync())
@@ -302,11 +298,10 @@ public class QuerySql
     {
         using (var connection = new SqliteConnection(ConnectionString))
         {
-            connection.Open();
+            await connection.OpenAsync();
             using (var command = new SqliteCommand(GetAuthorsByBookNameSql, connection))
             {
-                if (args.Name != null)
-                    command.Parameters.AddWithValue("@name", args.Name);
+                command.Parameters.AddWithValue("@name", args.Name);
                 using (var reader = await command.ExecuteReaderAsync())
                 {
                     var result = new List<GetAuthorsByBookNameRow>();
@@ -326,8 +321,99 @@ public class QuerySql
     {
         using (var connection = new SqliteConnection(ConnectionString))
         {
-            connection.Open();
+            await connection.OpenAsync();
             using (var command = new SqliteCommand(DeleteAllAuthorsSql, connection))
+            {
+                await command.ExecuteScalarAsync();
+            }
+        }
+    }
+
+    private const string InsertSqliteTypesSql = "INSERT INTO types_sqlite (c_integer, c_real, c_text, c_blob) VALUES (@c_integer, @c_real, @c_text, @c_blob)";
+    public readonly record struct InsertSqliteTypesArgs(int? CInteger, float? CReal, string? CText, byte[]? CBlob);
+    public async Task InsertSqliteTypes(InsertSqliteTypesArgs args)
+    {
+        using (var connection = new SqliteConnection(ConnectionString))
+        {
+            await connection.OpenAsync();
+            using (var command = new SqliteCommand(InsertSqliteTypesSql, connection))
+            {
+                if (args.CInteger != null)
+                    command.Parameters.AddWithValue("@c_integer", args.CInteger);
+                if (args.CReal != null)
+                    command.Parameters.AddWithValue("@c_real", args.CReal);
+                if (args.CText != null)
+                    command.Parameters.AddWithValue("@c_text", args.CText);
+                command.Parameters.AddWithValue("@c_blob", args.CBlob);
+                await command.ExecuteScalarAsync();
+            }
+        }
+    }
+
+    private const string GetSqliteTypesSql = "SELECT c_integer, c_real, c_text, c_blob FROM types_sqlite LIMIT 1";
+    public readonly record struct GetSqliteTypesRow(int? CInteger, float? CReal, string? CText, byte[]? CBlob);
+    public async Task<GetSqliteTypesRow?> GetSqliteTypes()
+    {
+        using (var connection = new SqliteConnection(ConnectionString))
+        {
+            await connection.OpenAsync();
+            using (var command = new SqliteCommand(GetSqliteTypesSql, connection))
+            {
+                using (var reader = await command.ExecuteReaderAsync())
+                {
+                    if (await reader.ReadAsync())
+                    {
+                        return new GetSqliteTypesRow
+                        {
+                            CInteger = reader.IsDBNull(0) ? null : reader.GetInt32(0),
+                            CReal = reader.IsDBNull(1) ? null : reader.GetFloat(1),
+                            CText = reader.IsDBNull(2) ? null : reader.GetString(2),
+                            CBlob = reader.IsDBNull(3) ? null : Utils.GetBytes(reader, 3)
+                        };
+                    }
+                }
+            }
+        }
+
+        return null;
+    }
+
+    private const string GetSqliteTypesAggSql = "SELECT COUNT(1) AS cnt , c_integer, c_real, c_text, c_blob FROM  types_sqlite  GROUP  BY  c_integer , c_real, c_text, c_blob LIMIT  1  ";  
+    public readonly record struct GetSqliteTypesAggRow(int Cnt, int? CInteger, float? CReal, string? CText, byte[]? CBlob);
+    public async Task<GetSqliteTypesAggRow?> GetSqliteTypesAgg()
+    {
+        using (var connection = new SqliteConnection(ConnectionString))
+        {
+            await connection.OpenAsync();
+            using (var command = new SqliteCommand(GetSqliteTypesAggSql, connection))
+            {
+                using (var reader = await command.ExecuteReaderAsync())
+                {
+                    if (await reader.ReadAsync())
+                    {
+                        return new GetSqliteTypesAggRow
+                        {
+                            Cnt = reader.GetInt32(0),
+                            CInteger = reader.IsDBNull(1) ? null : reader.GetInt32(1),
+                            CReal = reader.IsDBNull(2) ? null : reader.GetFloat(2),
+                            CText = reader.IsDBNull(3) ? null : reader.GetString(3),
+                            CBlob = reader.IsDBNull(4) ? null : Utils.GetBytes(reader, 4)
+                        };
+                    }
+                }
+            }
+        }
+
+        return null;
+    }
+
+    private const string DeleteAllSqliteTypesSql = "DELETE FROM types_sqlite";
+    public async Task DeleteAllSqliteTypes()
+    {
+        using (var connection = new SqliteConnection(ConnectionString))
+        {
+            await connection.OpenAsync();
+            using (var command = new SqliteCommand(DeleteAllSqliteTypesSql, connection))
             {
                 await command.ExecuteScalarAsync();
             }

@@ -12,7 +12,7 @@ public class OneDeclareGen(DbDriver dbDriver)
 
     public MemberDeclarationSyntax Generate(string queryTextConstant, string argInterface, string returnInterface, Query query)
     {
-        var returnType = $"Task<{dbDriver.AddNullableSuffix(returnInterface, false)}>";
+        var returnType = $"Task<{dbDriver.AddNullableSuffixIfNeeded(returnInterface, false)}>";
         var parametersStr = CommonGen.GetMethodParameterList(argInterface, query.Params);
         return ParseMemberDeclaration($$"""
             public async {{returnType}} {{query.Name}}({{parametersStr}})
@@ -37,7 +37,7 @@ public class OneDeclareGen(DbDriver dbDriver)
         {
             var dapperParamsSection = CommonGen.ConstructDapperParamsDict(query.Params);
             var dapperArgs = dapperParamsSection != string.Empty ? $", {Variable.QueryParams.AsVarName()}" : string.Empty;
-            var returnType = dbDriver.AddNullableSuffix(returnInterface, false);
+            var returnType = dbDriver.AddNullableSuffixIfNeeded(returnInterface, false);
 
             return $$"""
                         using ({{establishConnection}})

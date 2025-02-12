@@ -10,6 +10,8 @@ namespace SqlcGenCsharp.Generators;
 
 internal class ModelsGen(DbDriver dbDriver, Options options, string namespaceName)
 {
+    private const string ClassName = "Models";
+
     private RootGen RootGen { get; } = new(options);
 
     private DataClassesGen DataClassesGen { get; } = new(dbDriver);
@@ -23,7 +25,7 @@ internal class ModelsGen(DbDriver dbDriver, Options options, string namespaceNam
 
         return new File
         {
-            Name = "Models.cs",
+            Name = $"{ClassName}.cs",
             Contents = root.ToByteString()
         };
     }

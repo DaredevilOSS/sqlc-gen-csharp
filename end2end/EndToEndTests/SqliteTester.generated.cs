@@ -14,38 +14,41 @@ namespace SqlcGenCsharpTests
         [Test]
         public async Task TestOne()
         {
-            await this.QuerySql.CreateAuthor(new QuerySql.CreateAuthorArgs { Name = DataGenerator.BojackAuthor, Bio = DataGenerator.BojackTheme });
-            await this.QuerySql.CreateAuthor(new QuerySql.CreateAuthorArgs { Name = DataGenerator.DrSeussAuthor, Bio = DataGenerator.DrSeussQuote });
+            await this.QuerySql.CreateAuthor(new QuerySql.CreateAuthorArgs { Id = 1111, Name = "Bojack Horseman", Bio = "Back in the 90s he was in a very famous TV show" });
+            await this.QuerySql.CreateAuthor(new QuerySql.CreateAuthorArgs { Id = 2222, Name = "Dr. Seuss", Bio = "You'll miss the best things if you keep your eyes shut" });
             var expected = new QuerySql.GetAuthorRow
             {
-                Name = DataGenerator.BojackAuthor,
-                Bio = DataGenerator.BojackTheme
+                Id = 1111,
+                Name = "Bojack Horseman",
+                Bio = "Back in the 90s he was in a very famous TV show"
             };
-            var actual = await this.QuerySql.GetAuthor(new QuerySql.GetAuthorArgs { Name = DataGenerator.BojackAuthor });
+            var actual = await this.QuerySql.GetAuthor(new QuerySql.GetAuthorArgs { Name = "Bojack Horseman" });
             Assert.That(SingularEquals(expected, actual.Value));
         }
 
         private static bool SingularEquals(QuerySql.GetAuthorRow x, QuerySql.GetAuthorRow y)
         {
-            return x.Name.Equals(y.Name) && x.Bio.Equals(y.Bio);
+            return x.Id.Equals(y.Id) && x.Name.Equals(y.Name) && x.Bio.Equals(y.Bio);
         }
 
         [Test]
         public async Task TestMany()
         {
-            await this.QuerySql.CreateAuthor(new QuerySql.CreateAuthorArgs { Name = DataGenerator.BojackAuthor, Bio = DataGenerator.BojackTheme });
-            await this.QuerySql.CreateAuthor(new QuerySql.CreateAuthorArgs { Name = DataGenerator.DrSeussAuthor, Bio = DataGenerator.DrSeussQuote });
+            await this.QuerySql.CreateAuthor(new QuerySql.CreateAuthorArgs { Id = 1111, Name = "Bojack Horseman", Bio = "Back in the 90s he was in a very famous TV show" });
+            await this.QuerySql.CreateAuthor(new QuerySql.CreateAuthorArgs { Id = 2222, Name = "Dr. Seuss", Bio = "You'll miss the best things if you keep your eyes shut" });
             var expected = new List<QuerySql.ListAuthorsRow>
             {
                 new QuerySql.ListAuthorsRow
                 {
-                    Name = DataGenerator.BojackAuthor,
-                    Bio = DataGenerator.BojackTheme
+                    Id = 1111,
+                    Name = "Bojack Horseman",
+                    Bio = "Back in the 90s he was in a very famous TV show"
                 },
                 new QuerySql.ListAuthorsRow
                 {
-                    Name = DataGenerator.DrSeussAuthor,
-                    Bio = DataGenerator.DrSeussQuote
+                    Id = 2222,
+                    Name = "Dr. Seuss",
+                    Bio = "You'll miss the best things if you keep your eyes shut"
                 }
             };
             var actual = await this.QuerySql.ListAuthors();
@@ -54,46 +57,48 @@ namespace SqlcGenCsharpTests
 
         private static bool SingularEquals(QuerySql.ListAuthorsRow x, QuerySql.ListAuthorsRow y)
         {
-            return x.Name.Equals(y.Name) && x.Bio.Equals(y.Bio);
+            return x.Id.Equals(y.Id) && x.Name.Equals(y.Name) && x.Bio.Equals(y.Bio);
         }
 
         private static bool SequenceEquals(List<QuerySql.ListAuthorsRow> x, List<QuerySql.ListAuthorsRow> y)
         {
             if (x.Count != y.Count)
                 return false;
-            x = x.OrderBy<QuerySql.ListAuthorsRow, object>(o => o.Name + o.Bio).ToList();
-            y = y.OrderBy<QuerySql.ListAuthorsRow, object>(o => o.Name + o.Bio).ToList();
+            x = x.OrderBy<QuerySql.ListAuthorsRow, object>(o => o.Id).ToList();
+            y = y.OrderBy<QuerySql.ListAuthorsRow, object>(o => o.Id).ToList();
             return !x.Where((t, i) => !SingularEquals(t, y[i])).Any();
         }
 
         [Test]
         public async Task TestExec()
         {
-            await this.QuerySql.CreateAuthor(new QuerySql.CreateAuthorArgs { Name = DataGenerator.BojackAuthor, Bio = DataGenerator.BojackTheme });
-            await this.QuerySql.CreateAuthor(new QuerySql.CreateAuthorArgs { Name = DataGenerator.DrSeussAuthor, Bio = DataGenerator.DrSeussQuote });
-            await this.QuerySql.DeleteAuthor(new QuerySql.DeleteAuthorArgs { Name = DataGenerator.BojackAuthor });
-            var actual = await this.QuerySql.GetAuthor(new QuerySql.GetAuthorArgs { Name = DataGenerator.BojackAuthor });
+            await this.QuerySql.CreateAuthor(new QuerySql.CreateAuthorArgs { Id = 1111, Name = "Bojack Horseman", Bio = "Back in the 90s he was in a very famous TV show" });
+            await this.QuerySql.CreateAuthor(new QuerySql.CreateAuthorArgs { Id = 2222, Name = "Dr. Seuss", Bio = "You'll miss the best things if you keep your eyes shut" });
+            await this.QuerySql.DeleteAuthor(new QuerySql.DeleteAuthorArgs { Name = "Bojack Horseman" });
+            var actual = await this.QuerySql.GetAuthor(new QuerySql.GetAuthorArgs { Name = "Bojack Horseman" });
             ClassicAssert.IsNull(actual);
         }
 
         [Test]
         public async Task TestExecRows()
         {
-            await this.QuerySql.CreateAuthor(new QuerySql.CreateAuthorArgs { Name = DataGenerator.GenericAuthor, Bio = DataGenerator.GenericQuote1 });
-            await this.QuerySql.CreateAuthor(new QuerySql.CreateAuthorArgs { Name = DataGenerator.GenericAuthor, Bio = DataGenerator.GenericQuote1 });
-            var affectedRows = await this.QuerySql.UpdateAuthors(new QuerySql.UpdateAuthorsArgs { Bio = DataGenerator.GenericQuote2 });
+            await this.QuerySql.CreateAuthor(new QuerySql.CreateAuthorArgs { Id = 1111, Name = "Bojack Horseman", Bio = "Back in the 90s he was in a very famous TV show" });
+            await this.QuerySql.CreateAuthor(new QuerySql.CreateAuthorArgs { Id = 2222, Name = "Dr. Seuss", Bio = "You'll miss the best things if you keep your eyes shut" });
+            var affectedRows = await this.QuerySql.UpdateAuthors(new QuerySql.UpdateAuthorsArgs { Bio = "Quote that everyone always attribute to Einstein" });
             ClassicAssert.AreEqual(2, affectedRows);
             var expected = new List<QuerySql.ListAuthorsRow>
             {
                 new QuerySql.ListAuthorsRow
                 {
-                    Name = DataGenerator.GenericAuthor,
-                    Bio = DataGenerator.GenericQuote2
+                    Id = 1111,
+                    Name = "Bojack Horseman",
+                    Bio = "Quote that everyone always attribute to Einstein"
                 },
                 new QuerySql.ListAuthorsRow
                 {
-                    Name = DataGenerator.GenericAuthor,
-                    Bio = DataGenerator.GenericQuote2
+                    Id = 2222,
+                    Name = "Dr. Seuss",
+                    Bio = "Quote that everyone always attribute to Einstein"
                 }
             };
             var actual = await this.QuerySql.ListAuthors();
@@ -103,14 +108,14 @@ namespace SqlcGenCsharpTests
         [Test]
         public async Task TestExecLastId()
         {
-            var genericId = await this.QuerySql.CreateAuthorReturnId(new QuerySql.CreateAuthorReturnIdArgs { Name = DataGenerator.GenericAuthor, Bio = DataGenerator.GenericQuote1 });
+            var id1 = await this.QuerySql.CreateAuthorReturnId(new QuerySql.CreateAuthorReturnIdArgs { Name = "Albert Einstein", Bio = "Quote that everyone always attribute to Einstein" });
             var expected = new QuerySql.GetAuthorByIdRow
             {
-                Id = genericId,
-                Name = DataGenerator.GenericAuthor,
-                Bio = DataGenerator.GenericQuote1
+                Id = id1,
+                Name = "Albert Einstein",
+                Bio = "Quote that everyone always attribute to Einstein"
             };
-            var actual = await QuerySql.GetAuthorById(new QuerySql.GetAuthorByIdArgs { Id = genericId });
+            var actual = await QuerySql.GetAuthorById(new QuerySql.GetAuthorByIdArgs { Id = id1 });
             Assert.That(SingularEquals(expected, actual.Value));
         }
 
@@ -122,10 +127,10 @@ namespace SqlcGenCsharpTests
         [Test]
         public async Task TestJoinEmbed()
         {
-            var bojackId = await this.QuerySql.CreateAuthorReturnId(new QuerySql.CreateAuthorReturnIdArgs { Name = DataGenerator.BojackAuthor, Bio = DataGenerator.BojackTheme });
-            await QuerySql.CreateBook(new QuerySql.CreateBookArgs { Name = DataGenerator.BojackBookTitle, AuthorId = bojackId });
-            var drSeussId = await this.QuerySql.CreateAuthorReturnId(new QuerySql.CreateAuthorReturnIdArgs { Name = DataGenerator.DrSeussAuthor, Bio = DataGenerator.DrSeussQuote });
-            await QuerySql.CreateBook(new QuerySql.CreateBookArgs { Name = DataGenerator.DrSeussBookTitle, AuthorId = drSeussId });
+            var bojackId = await this.QuerySql.CreateAuthorReturnId(new QuerySql.CreateAuthorReturnIdArgs { Name = "Bojack Horseman", Bio = "Back in the 90s he was in a very famous TV show" });
+            var bojackBookId = await QuerySql.CreateBook(new QuerySql.CreateBookArgs { Name = "One Trick Pony", AuthorId = bojackId });
+            var drSeussId = await this.QuerySql.CreateAuthorReturnId(new QuerySql.CreateAuthorReturnIdArgs { Name = "Dr. Seuss", Bio = "You'll miss the best things if you keep your eyes shut" });
+            var drSeussBookId = await QuerySql.CreateBook(new QuerySql.CreateBookArgs { AuthorId = drSeussId, Name = "How the Grinch Stole Christmas!" });
             var expected = new List<QuerySql.ListAllAuthorsBooksRow>()
             {
                 new QuerySql.ListAllAuthorsBooksRow
@@ -133,13 +138,14 @@ namespace SqlcGenCsharpTests
                     Author = new Author
                     {
                         Id = bojackId,
-                        Name = DataGenerator.BojackAuthor,
-                        Bio = DataGenerator.BojackTheme
+                        Name = "Bojack Horseman",
+                        Bio = "Back in the 90s he was in a very famous TV show"
                     },
                     Book = new Book
                     {
+                        Id = bojackBookId,
                         AuthorId = bojackId,
-                        Name = DataGenerator.BojackBookTitle
+                        Name = "One Trick Pony"
                     }
                 },
                 new QuerySql.ListAllAuthorsBooksRow
@@ -147,13 +153,14 @@ namespace SqlcGenCsharpTests
                     Author = new Author
                     {
                         Id = drSeussId,
-                        Name = DataGenerator.DrSeussAuthor,
-                        Bio = DataGenerator.DrSeussQuote
+                        Name = "Dr. Seuss",
+                        Bio = "You'll miss the best things if you keep your eyes shut"
                     },
                     Book = new Book
                     {
+                        Id = drSeussBookId,
                         AuthorId = drSeussId,
-                        Name = DataGenerator.DrSeussBookTitle
+                        Name = "How the Grinch Stole Christmas!"
                     }
                 }
             };
@@ -163,7 +170,7 @@ namespace SqlcGenCsharpTests
 
         private static bool SingularEquals(QuerySql.ListAllAuthorsBooksRow x, QuerySql.ListAllAuthorsBooksRow y)
         {
-            return x.Author.Id.Equals(y.Author.Id) && x.Author.Name.Equals(y.Author.Name) && x.Author.Bio.Equals(y.Author.Bio) && x.Book.AuthorId.Equals(y.Book.AuthorId) && x.Book.Name.Equals(y.Book.Name);
+            return SingularEquals(x.Author, y.Author) && SingularEquals(x.Book, y.Book);
         }
 
         private static bool SequenceEquals(List<QuerySql.ListAllAuthorsBooksRow> x, List<QuerySql.ListAllAuthorsBooksRow> y)
@@ -175,62 +182,97 @@ namespace SqlcGenCsharpTests
             return !x.Where((t, i) => !SingularEquals(t, y[i])).Any();
         }
 
+        private static bool SingularEquals(Author x, Author y)
+        {
+            return x.Id.Equals(y.Id) && x.Name.Equals(y.Name) && x.Bio.Equals(y.Bio);
+        }
+
+        private static bool SingularEquals(Book x, Book y)
+        {
+            return x.Id.Equals(y.Id) && x.AuthorId.Equals(y.AuthorId) && x.Name.Equals(y.Name);
+        }
+
         [Test]
         public async Task TestSelfJoinEmbed()
         {
-            await this.QuerySql.CreateAuthor(new QuerySql.CreateAuthorArgs { Name = DataGenerator.BojackAuthor, Bio = DataGenerator.BojackTheme });
-            await this.QuerySql.CreateAuthor(new QuerySql.CreateAuthorArgs { Name = DataGenerator.BojackAuthor, Bio = DataGenerator.BojackTheme });
+            var id1 = await this.QuerySql.CreateAuthorReturnId(new QuerySql.CreateAuthorReturnIdArgs { Name = "Albert Einstein", Bio = "Quote that everyone always attribute to Einstein" });
+            var id2 = await this.QuerySql.CreateAuthorReturnId(new QuerySql.CreateAuthorReturnIdArgs { Name = "Albert Einstein", Bio = "Only 2 things are infinite, the universe and human stupidity" });
             var expected = new List<QuerySql.GetDuplicateAuthorsRow>()
             {
                 new QuerySql.GetDuplicateAuthorsRow
                 {
                     Author = new Author
                     {
-                        Name = DataGenerator.BojackAuthor,
-                        Bio = DataGenerator.BojackTheme
+                        Id = id1,
+                        Name = "Albert Einstein",
+                        Bio = "Quote that everyone always attribute to Einstein"
                     },
                     Author2 = new Author
                     {
-                        Name = DataGenerator.BojackAuthor,
-                        Bio = DataGenerator.BojackTheme
+                        Id = id2,
+                        Name = "Albert Einstein",
+                        Bio = "Only 2 things are infinite, the universe and human stupidity"
                     }
                 }
             };
             var actual = await QuerySql.GetDuplicateAuthors();
             Assert.That(SequenceEquals(expected, actual));
-            Assert.That(actual[0].Author.Id != actual[0].Author2.Id);
         }
 
         private static bool SingularEquals(QuerySql.GetDuplicateAuthorsRow x, QuerySql.GetDuplicateAuthorsRow y)
         {
-            return x.Author.Name.Equals(y.Author.Name) && x.Author.Bio.Equals(y.Author.Bio) && x.Author2.Name.Equals(y.Author2.Name) && x.Author2.Bio.Equals(y.Author2.Bio);
+            return SingularEquals(x.Author, y.Author) && SingularEquals(x.Author2, y.Author2);
         }
 
         private static bool SequenceEquals(List<QuerySql.GetDuplicateAuthorsRow> x, List<QuerySql.GetDuplicateAuthorsRow> y)
         {
             if (x.Count != y.Count)
                 return false;
-            x = x.OrderBy<QuerySql.GetDuplicateAuthorsRow, object>(o => o.Author.Name + o.Author2.Name).ToList();
-            y = y.OrderBy<QuerySql.GetDuplicateAuthorsRow, object>(o => o.Author.Name + o.Author2.Name).ToList();
             return !x.Where((t, i) => !SingularEquals(t, y[i])).Any();
         }
 
         [Test]
         public async Task TestSlice()
         {
-            var genericId = await this.QuerySql.CreateAuthorReturnId(new QuerySql.CreateAuthorReturnIdArgs { Name = DataGenerator.GenericAuthor, Bio = DataGenerator.GenericQuote1 });
-            var bojackId = await this.QuerySql.CreateAuthorReturnId(new QuerySql.CreateAuthorReturnIdArgs { Name = DataGenerator.BojackAuthor, Bio = DataGenerator.BojackTheme });
-            var actual = await QuerySql.GetAuthorsByIds(new QuerySql.GetAuthorsByIdsArgs { Ids = new[] { genericId, bojackId } });
+            var id1 = await this.QuerySql.CreateAuthorReturnId(new QuerySql.CreateAuthorReturnIdArgs { Name = "Albert Einstein", Bio = "Quote that everyone always attribute to Einstein" });
+            var bojackId = await this.QuerySql.CreateAuthorReturnId(new QuerySql.CreateAuthorReturnIdArgs { Name = "Bojack Horseman", Bio = "Back in the 90s he was in a very famous TV show" });
+            var actual = await QuerySql.GetAuthorsByIds(new QuerySql.GetAuthorsByIdsArgs { Ids = new[] { id1, bojackId } });
             ClassicAssert.AreEqual(2, actual.Count);
         }
 
         [Test]
         public async Task TestMultipleSlices()
         {
-            var genericId = await this.QuerySql.CreateAuthorReturnId(new QuerySql.CreateAuthorReturnIdArgs { Name = DataGenerator.GenericAuthor, Bio = DataGenerator.GenericQuote1 });
-            var bojackId = await this.QuerySql.CreateAuthorReturnId(new QuerySql.CreateAuthorReturnIdArgs { Name = DataGenerator.BojackAuthor, Bio = DataGenerator.BojackTheme });
-            var actual = await QuerySql.GetAuthorsByIdsAndNames(new QuerySql.GetAuthorsByIdsAndNamesArgs { Ids = new[] { genericId, bojackId }, Names = new[] { DataGenerator.GenericAuthor } });
+            var id1 = await this.QuerySql.CreateAuthorReturnId(new QuerySql.CreateAuthorReturnIdArgs { Name = "Albert Einstein", Bio = "Quote that everyone always attribute to Einstein" });
+            var bojackId = await this.QuerySql.CreateAuthorReturnId(new QuerySql.CreateAuthorReturnIdArgs { Name = "Bojack Horseman", Bio = "Back in the 90s he was in a very famous TV show" });
+            var actual = await QuerySql.GetAuthorsByIdsAndNames(new QuerySql.GetAuthorsByIdsAndNamesArgs { Ids = new[] { id1, bojackId }, Names = new[] { "Albert Einstein" } });
             ClassicAssert.AreEqual(1, actual.Count);
+        }
+
+        [Test]
+        public async Task TestSqliteTypes()
+        {
+            await QuerySql.InsertSqliteTypes(new QuerySql.InsertSqliteTypesArgs { CInteger = 312, CReal = 1.33f, CText = "fdsfsd", CBlob = new byte[] { 0x15, 0x20, 0x22 }, });
+            var expected = new QuerySql.GetSqliteTypesRow
+            {
+                CInteger = 312,
+                CReal = 1.33f,
+                CText = "fdsfsd",
+                CBlob = new byte[]
+                {
+                    0x15,
+                    0x20,
+                    0x22
+                },
+            };
+            var actual = await QuerySql.GetSqliteTypes();
+            Assert.That(SingularEquals(expected, actual.Value));
+        }
+
+        private static bool SingularEquals(QuerySql.GetSqliteTypesRow x, QuerySql.GetSqliteTypesRow y)
+        {
+            return x.CInteger.Equals(y.CInteger) && x.CReal.Equals(y.CReal) && x.CText.Equals(y.CText);
+        // TODO add CBlob.Equals - fix impl
         }
     }
 }
