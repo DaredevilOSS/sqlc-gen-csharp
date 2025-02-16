@@ -130,6 +130,28 @@ namespace NpgsqlDapperLegacyExampleGen
             }
         }
 
+        private const string GetAuthorByNamePatternSql = "SELECT id, name, bio FROM authors WHERE name LIKE COALESCE(@name_pattern, '%')";
+        public class GetAuthorByNamePatternRow
+        {
+            public long Id { get; set; }
+            public string Name { get; set; }
+            public string Bio { get; set; }
+        };
+        public class GetAuthorByNamePatternArgs
+        {
+            public string NamePattern { get; set; }
+        };
+        public async Task<List<GetAuthorByNamePatternRow>> GetAuthorByNamePattern(GetAuthorByNamePatternArgs args)
+        {
+            using (var connection = new NpgsqlConnection(ConnectionString))
+            {
+                var queryParams = new Dictionary<string, object>();
+                queryParams.Add("name_pattern", args.NamePattern);
+                var result = await connection.QueryAsync<GetAuthorByNamePatternRow>(GetAuthorByNamePatternSql, queryParams);
+                return result.AsList();
+            }
+        }
+
         private const string DeleteAuthorSql = "DELETE FROM authors WHERE name = @name";
         public class DeleteAuthorArgs
         {
@@ -345,24 +367,15 @@ namespace NpgsqlDapperLegacyExampleGen
             using (var connection = new NpgsqlConnection(ConnectionString))
             {
                 var queryParams = new Dictionary<string, object>();
-                if (args.CSmallint != null)
-                    queryParams.Add("c_smallint", args.CSmallint);
-                if (args.CBoolean != null)
-                    queryParams.Add("c_boolean", args.CBoolean);
-                if (args.CInteger != null)
-                    queryParams.Add("c_integer", args.CInteger);
-                if (args.CBigint != null)
-                    queryParams.Add("c_bigint", args.CBigint);
-                if (args.CDecimal != null)
-                    queryParams.Add("c_decimal", args.CDecimal);
-                if (args.CNumeric != null)
-                    queryParams.Add("c_numeric", args.CNumeric);
-                if (args.CReal != null)
-                    queryParams.Add("c_real", args.CReal);
-                if (args.CDate != null)
-                    queryParams.Add("c_date", args.CDate);
-                if (args.CTimestamp != null)
-                    queryParams.Add("c_timestamp", args.CTimestamp);
+                queryParams.Add("c_smallint", args.CSmallint);
+                queryParams.Add("c_boolean", args.CBoolean);
+                queryParams.Add("c_integer", args.CInteger);
+                queryParams.Add("c_bigint", args.CBigint);
+                queryParams.Add("c_decimal", args.CDecimal);
+                queryParams.Add("c_numeric", args.CNumeric);
+                queryParams.Add("c_real", args.CReal);
+                queryParams.Add("c_date", args.CDate);
+                queryParams.Add("c_timestamp", args.CTimestamp);
                 queryParams.Add("c_char", args.CChar);
                 queryParams.Add("c_varchar", args.CVarchar);
                 queryParams.Add("c_character_varying", args.CCharacterVarying);

@@ -124,6 +124,28 @@ namespace MySqlConnectorDapperLegacyExampleGen
             }
         }
 
+        private const string GetAuthorByNamePatternSql = "SELECT id, name, bio FROM authors WHERE name LIKE COALESCE(@name_pattern, '%'); SELECT LAST_INSERT_ID()";
+        public class GetAuthorByNamePatternRow
+        {
+            public long Id { get; set; }
+            public string Name { get; set; }
+            public string Bio { get; set; }
+        };
+        public class GetAuthorByNamePatternArgs
+        {
+            public string NamePattern { get; set; }
+        };
+        public async Task<List<GetAuthorByNamePatternRow>> GetAuthorByNamePattern(GetAuthorByNamePatternArgs args)
+        {
+            using (var connection = new MySqlConnection(ConnectionString))
+            {
+                var queryParams = new Dictionary<string, object>();
+                queryParams.Add("name_pattern", args.NamePattern);
+                var result = await connection.QueryAsync<GetAuthorByNamePatternRow>(GetAuthorByNamePatternSql, queryParams);
+                return result.AsList();
+            }
+        }
+
         private const string DeleteAuthorSql = "DELETE FROM authors WHERE name = @name; SELECT LAST_INSERT_ID()";
         public class DeleteAuthorArgs
         {
@@ -339,21 +361,14 @@ namespace MySqlConnectorDapperLegacyExampleGen
             using (var connection = new MySqlConnection(ConnectionString))
             {
                 var queryParams = new Dictionary<string, object>();
-                if (args.CBit != null)
-                    queryParams.Add("c_bit", args.CBit);
-                if (args.CTinyint != null)
-                    queryParams.Add("c_tinyint", args.CTinyint);
-                if (args.CBool != null)
-                    queryParams.Add("c_bool", args.CBool);
-                if (args.CBoolean != null)
-                    queryParams.Add("c_boolean", args.CBoolean);
-                if (args.CInt != null)
-                    queryParams.Add("c_int", args.CInt);
+                queryParams.Add("c_bit", args.CBit);
+                queryParams.Add("c_tinyint", args.CTinyint);
+                queryParams.Add("c_bool", args.CBool);
+                queryParams.Add("c_boolean", args.CBoolean);
+                queryParams.Add("c_int", args.CInt);
                 queryParams.Add("c_varchar", args.CVarchar);
-                if (args.CDate != null)
-                    queryParams.Add("c_date", args.CDate);
-                if (args.CTimestamp != null)
-                    queryParams.Add("c_timestamp", args.CTimestamp);
+                queryParams.Add("c_date", args.CDate);
+                queryParams.Add("c_timestamp", args.CTimestamp);
                 await connection.ExecuteAsync(InsertMysqlTypesSql, queryParams);
             }
         }

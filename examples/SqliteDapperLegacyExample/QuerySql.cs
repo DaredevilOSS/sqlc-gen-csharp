@@ -337,10 +337,8 @@ namespace SqliteDapperLegacyExampleGen
             using (var connection = new SqliteConnection(ConnectionString))
             {
                 var queryParams = new Dictionary<string, object>();
-                if (args.CInteger != null)
-                    queryParams.Add("c_integer", args.CInteger);
-                if (args.CReal != null)
-                    queryParams.Add("c_real", args.CReal);
+                queryParams.Add("c_integer", args.CInteger);
+                queryParams.Add("c_real", args.CReal);
                 queryParams.Add("c_text", args.CText);
                 queryParams.Add("c_blob", args.CBlob);
                 await connection.ExecuteAsync(InsertSqliteTypesSql, queryParams);

@@ -73,8 +73,7 @@ public class QuerySql
             var queryParams = new Dictionary<string, object>();
             queryParams.Add("id", args.Id);
             queryParams.Add("name", args.Name);
-            if (args.Bio != null)
-                queryParams.Add("bio", args.Bio);
+            queryParams.Add("bio", args.Bio);
             await connection.ExecuteAsync(CreateAuthorSql, queryParams);
         }
     }
@@ -95,8 +94,7 @@ public class QuerySql
         {
             var queryParams = new Dictionary<string, object>();
             queryParams.Add("name", args.Name);
-            if (args.Bio != null)
-                queryParams.Add("bio", args.Bio);
+            queryParams.Add("bio", args.Bio);
             return await connection.QuerySingleAsync<int>(CreateAuthorReturnIdSql, queryParams);
         }
     }
@@ -133,8 +131,7 @@ public class QuerySql
         using (var connection = new SqliteConnection(ConnectionString))
         {
             var queryParams = new Dictionary<string, object>();
-            if (args.Bio != null)
-                queryParams.Add("bio", args.Bio);
+            queryParams.Add("bio", args.Bio);
             return await connection.ExecuteAsync(UpdateAuthorsSql, queryParams);
         }
     }
@@ -339,12 +336,9 @@ public class QuerySql
         using (var connection = new SqliteConnection(ConnectionString))
         {
             var queryParams = new Dictionary<string, object>();
-            if (args.CInteger != null)
-                queryParams.Add("c_integer", args.CInteger);
-            if (args.CReal != null)
-                queryParams.Add("c_real", args.CReal);
-            if (args.CText != null)
-                queryParams.Add("c_text", args.CText);
+            queryParams.Add("c_integer", args.CInteger);
+            queryParams.Add("c_real", args.CReal);
+            queryParams.Add("c_text", args.CText);
             queryParams.Add("c_blob", args.CBlob);
             await connection.ExecuteAsync(InsertSqliteTypesSql, queryParams);
         }

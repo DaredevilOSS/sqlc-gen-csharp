@@ -422,10 +422,8 @@ namespace SqliteLegacyExampleGen
                 await connection.OpenAsync();
                 using (var command = new SqliteCommand(InsertSqliteTypesSql, connection))
                 {
-                    if (args.CInteger != null)
-                        command.Parameters.AddWithValue("@c_integer", args.CInteger);
-                    if (args.CReal != null)
-                        command.Parameters.AddWithValue("@c_real", args.CReal);
+                    command.Parameters.AddWithValue("@c_integer", args.CInteger);
+                    command.Parameters.AddWithValue("@c_real", args.CReal);
                     command.Parameters.AddWithValue("@c_text", args.CText);
                     command.Parameters.AddWithValue("@c_blob", args.CBlob);
                     await command.ExecuteScalarAsync();

@@ -27,12 +27,13 @@ public class CommonGen(DbDriver dbDriver)
                          """;
 
             var addParamToCommand = $"""{commandVar}.Parameters.AddWithValue("@{p.Column.Name}", {argsVar}.{param});""";
-            return ShouldCheckParameterForNull(p)
-                ? $"""
-                   if ({argsVar}.{param} != null) 
-                        {addParamToCommand}
-                   """
-                : addParamToCommand;
+            return addParamToCommand;
+            // return ShouldCheckParameterForNull(p)
+            //     ? $"""
+            //        if ({argsVar}.{param} != null) 
+            //             {addParamToCommand}
+            //        """
+            //     : addParamToCommand;
         }).JoinByNewLine();
     }
 
@@ -53,12 +54,13 @@ public class CommonGen(DbDriver dbDriver)
                         """;
 
             var addParamToDict = $"{queryParamsVar}.Add(\"{p.Column.Name}\", {argsVar}.{param});";
-            return ShouldCheckParameterForNull(p)
-                ? $"""
-                   if ({argsVar}.{param} != null) 
-                       {addParamToDict}
-                   """
-                : addParamToDict;
+            return addParamToDict;
+            // return ShouldCheckParameterForNull(p)
+            //     ? $"""
+            //        if ({argsVar}.{param} != null) 
+            //            {addParamToDict}
+            //        """
+            //     : addParamToDict;
         });
 
         return $"""

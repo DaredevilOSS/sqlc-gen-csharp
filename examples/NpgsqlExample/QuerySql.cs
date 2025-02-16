@@ -81,8 +81,7 @@ public class QuerySql
             {
                 command.Parameters.AddWithValue("@id", args.Id);
                 command.Parameters.AddWithValue("@name", args.Name);
-                if (args.Bio != null)
-                    command.Parameters.AddWithValue("@bio", args.Bio);
+                command.Parameters.AddWithValue("@bio", args.Bio);
                 using (var reader = await command.ExecuteReaderAsync())
                 {
                     if (await reader.ReadAsync())
@@ -111,8 +110,7 @@ public class QuerySql
             using (var command = connection.CreateCommand(CreateAuthorReturnIdSql))
             {
                 command.Parameters.AddWithValue("@name", args.Name);
-                if (args.Bio != null)
-                    command.Parameters.AddWithValue("@bio", args.Bio);
+                command.Parameters.AddWithValue("@bio", args.Bio);
                 var result = await command.ExecuteScalarAsync();
                 return Convert.ToInt64(result);
             }
@@ -145,6 +143,30 @@ public class QuerySql
         }
 
         return null;
+    }
+
+    private const string GetAuthorByNamePatternSql = "SELECT id, name, bio FROM authors WHERE name LIKE COALESCE(@name_pattern, '%')";
+    public readonly record struct GetAuthorByNamePatternRow(long Id, string Name, string? Bio);
+    public readonly record struct GetAuthorByNamePatternArgs(string? NamePattern);
+    public async Task<List<GetAuthorByNamePatternRow>> GetAuthorByNamePattern(GetAuthorByNamePatternArgs args)
+    {
+        using (var connection = NpgsqlDataSource.Create(ConnectionString))
+        {
+            using (var command = connection.CreateCommand(GetAuthorByNamePatternSql))
+            {
+                command.Parameters.AddWithValue("@name_pattern", args.NamePattern);
+                using (var reader = await command.ExecuteReaderAsync())
+                {
+                    var result = new List<GetAuthorByNamePatternRow>();
+                    while (await reader.ReadAsync())
+                    {
+                        result.Add(new GetAuthorByNamePatternRow { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2) });
+                    }
+
+                    return result;
+                }
+            }
+        }
     }
 
     private const string DeleteAuthorSql = "DELETE FROM authors WHERE name = @name";
@@ -181,8 +203,7 @@ public class QuerySql
         {
             using (var command = connection.CreateCommand(UpdateAuthorsSql))
             {
-                if (args.Bio != null)
-                    command.Parameters.AddWithValue("@bio", args.Bio);
+                command.Parameters.AddWithValue("@bio", args.Bio);
                 return await command.ExecuteNonQueryAsync();
             }
         }
@@ -330,32 +351,19 @@ public class QuerySql
         {
             using (var command = connection.CreateCommand(InsertPostgresTypesSql))
             {
-                if (args.CSmallint != null)
-                    command.Parameters.AddWithValue("@c_smallint", args.CSmallint);
-                if (args.CBoolean != null)
-                    command.Parameters.AddWithValue("@c_boolean", args.CBoolean);
-                if (args.CInteger != null)
-                    command.Parameters.AddWithValue("@c_integer", args.CInteger);
-                if (args.CBigint != null)
-                    command.Parameters.AddWithValue("@c_bigint", args.CBigint);
-                if (args.CDecimal != null)
-                    command.Parameters.AddWithValue("@c_decimal", args.CDecimal);
-                if (args.CNumeric != null)
-                    command.Parameters.AddWithValue("@c_numeric", args.CNumeric);
-                if (args.CReal != null)
-                    command.Parameters.AddWithValue("@c_real", args.CReal);
-                if (args.CDate != null)
-                    command.Parameters.AddWithValue("@c_date", args.CDate);
-                if (args.CTimestamp != null)
-                    command.Parameters.AddWithValue("@c_timestamp", args.CTimestamp);
-                if (args.CChar != null)
-                    command.Parameters.AddWithValue("@c_char", args.CChar);
-                if (args.CVarchar != null)
-                    command.Parameters.AddWithValue("@c_varchar", args.CVarchar);
-                if (args.CCharacterVarying != null)
-                    command.Parameters.AddWithValue("@c_character_varying", args.CCharacterVarying);
-                if (args.CText != null)
-                    command.Parameters.AddWithValue("@c_text", args.CText);
+                command.Parameters.AddWithValue("@c_smallint", args.CSmallint);
+                command.Parameters.AddWithValue("@c_boolean", args.CBoolean);
+                command.Parameters.AddWithValue("@c_integer", args.CInteger);
+                command.Parameters.AddWithValue("@c_bigint", args.CBigint);
+                command.Parameters.AddWithValue("@c_decimal", args.CDecimal);
+                command.Parameters.AddWithValue("@c_numeric", args.CNumeric);
+                command.Parameters.AddWithValue("@c_real", args.CReal);
+                command.Parameters.AddWithValue("@c_date", args.CDate);
+                command.Parameters.AddWithValue("@c_timestamp", args.CTimestamp);
+                command.Parameters.AddWithValue("@c_char", args.CChar);
+                command.Parameters.AddWithValue("@c_varchar", args.CVarchar);
+                command.Parameters.AddWithValue("@c_character_varying", args.CCharacterVarying);
+                command.Parameters.AddWithValue("@c_text", args.CText);
                 command.Parameters.AddWithValue("@c_text_array", args.CTextArray);
                 command.Parameters.AddWithValue("@c_integer_array", args.CIntegerArray);
                 await command.ExecuteScalarAsync();

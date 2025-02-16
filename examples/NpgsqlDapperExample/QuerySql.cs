@@ -80,8 +80,7 @@ public class QuerySql
             var queryParams = new Dictionary<string, object>();
             queryParams.Add("id", args.Id);
             queryParams.Add("name", args.Name);
-            if (args.Bio != null)
-                queryParams.Add("bio", args.Bio);
+            queryParams.Add("bio", args.Bio);
             var result = await connection.QueryFirstOrDefaultAsync<CreateAuthorRow?>(CreateAuthorSql, queryParams);
             return result;
         }
@@ -103,8 +102,7 @@ public class QuerySql
         {
             var queryParams = new Dictionary<string, object>();
             queryParams.Add("name", args.Name);
-            if (args.Bio != null)
-                queryParams.Add("bio", args.Bio);
+            queryParams.Add("bio", args.Bio);
             return await connection.QuerySingleAsync<long>(CreateAuthorReturnIdSql, queryParams);
         }
     }
@@ -128,6 +126,28 @@ public class QuerySql
             queryParams.Add("id", args.Id);
             var result = await connection.QueryFirstOrDefaultAsync<GetAuthorByIdRow?>(GetAuthorByIdSql, queryParams);
             return result;
+        }
+    }
+
+    private const string GetAuthorByNamePatternSql = "SELECT id, name, bio FROM authors WHERE name LIKE COALESCE(@name_pattern, '%')";
+    public class GetAuthorByNamePatternRow
+    {
+        public required long Id { get; init; }
+        public required string Name { get; init; }
+        public string? Bio { get; init; }
+    };
+    public class GetAuthorByNamePatternArgs
+    {
+        public string? NamePattern { get; init; }
+    };
+    public async Task<List<GetAuthorByNamePatternRow>> GetAuthorByNamePattern(GetAuthorByNamePatternArgs args)
+    {
+        using (var connection = new NpgsqlConnection(ConnectionString))
+        {
+            var queryParams = new Dictionary<string, object>();
+            queryParams.Add("name_pattern", args.NamePattern);
+            var result = await connection.QueryAsync<GetAuthorByNamePatternRow>(GetAuthorByNamePatternSql, queryParams);
+            return result.AsList();
         }
     }
 
@@ -165,8 +185,7 @@ public class QuerySql
         using (var connection = new NpgsqlConnection(ConnectionString))
         {
             var queryParams = new Dictionary<string, object>();
-            if (args.Bio != null)
-                queryParams.Add("bio", args.Bio);
+            queryParams.Add("bio", args.Bio);
             return await connection.ExecuteAsync(UpdateAuthorsSql, queryParams);
         }
     }
@@ -347,32 +366,19 @@ public class QuerySql
         using (var connection = new NpgsqlConnection(ConnectionString))
         {
             var queryParams = new Dictionary<string, object>();
-            if (args.CSmallint != null)
-                queryParams.Add("c_smallint", args.CSmallint);
-            if (args.CBoolean != null)
-                queryParams.Add("c_boolean", args.CBoolean);
-            if (args.CInteger != null)
-                queryParams.Add("c_integer", args.CInteger);
-            if (args.CBigint != null)
-                queryParams.Add("c_bigint", args.CBigint);
-            if (args.CDecimal != null)
-                queryParams.Add("c_decimal", args.CDecimal);
-            if (args.CNumeric != null)
-                queryParams.Add("c_numeric", args.CNumeric);
-            if (args.CReal != null)
-                queryParams.Add("c_real", args.CReal);
-            if (args.CDate != null)
-                queryParams.Add("c_date", args.CDate);
-            if (args.CTimestamp != null)
-                queryParams.Add("c_timestamp", args.CTimestamp);
-            if (args.CChar != null)
-                queryParams.Add("c_char", args.CChar);
-            if (args.CVarchar != null)
-                queryParams.Add("c_varchar", args.CVarchar);
-            if (args.CCharacterVarying != null)
-                queryParams.Add("c_character_varying", args.CCharacterVarying);
-            if (args.CText != null)
-                queryParams.Add("c_text", args.CText);
+            queryParams.Add("c_smallint", args.CSmallint);
+            queryParams.Add("c_boolean", args.CBoolean);
+            queryParams.Add("c_integer", args.CInteger);
+            queryParams.Add("c_bigint", args.CBigint);
+            queryParams.Add("c_decimal", args.CDecimal);
+            queryParams.Add("c_numeric", args.CNumeric);
+            queryParams.Add("c_real", args.CReal);
+            queryParams.Add("c_date", args.CDate);
+            queryParams.Add("c_timestamp", args.CTimestamp);
+            queryParams.Add("c_char", args.CChar);
+            queryParams.Add("c_varchar", args.CVarchar);
+            queryParams.Add("c_character_varying", args.CCharacterVarying);
+            queryParams.Add("c_text", args.CText);
             queryParams.Add("c_text_array", args.CTextArray);
             queryParams.Add("c_integer_array", args.CIntegerArray);
             await connection.ExecuteAsync(InsertPostgresTypesSql, queryParams);

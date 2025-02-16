@@ -82,8 +82,7 @@ public class QuerySql
             {
                 command.Parameters.AddWithValue("@id", args.Id);
                 command.Parameters.AddWithValue("@name", args.Name);
-                if (args.Bio != null)
-                    command.Parameters.AddWithValue("@bio", args.Bio);
+                command.Parameters.AddWithValue("@bio", args.Bio);
                 await command.ExecuteScalarAsync();
             }
         }
@@ -100,8 +99,7 @@ public class QuerySql
             using (var command = new SqliteCommand(CreateAuthorReturnIdSql, connection))
             {
                 command.Parameters.AddWithValue("@name", args.Name);
-                if (args.Bio != null)
-                    command.Parameters.AddWithValue("@bio", args.Bio);
+                command.Parameters.AddWithValue("@bio", args.Bio);
                 var result = await command.ExecuteScalarAsync();
                 return Convert.ToInt32(result);
             }
@@ -146,8 +144,7 @@ public class QuerySql
             await connection.OpenAsync();
             using (var command = new SqliteCommand(UpdateAuthorsSql, connection))
             {
-                if (args.Bio != null)
-                    command.Parameters.AddWithValue("@bio", args.Bio);
+                command.Parameters.AddWithValue("@bio", args.Bio);
                 return await command.ExecuteNonQueryAsync();
             }
         }
@@ -338,12 +335,9 @@ public class QuerySql
             await connection.OpenAsync();
             using (var command = new SqliteCommand(InsertSqliteTypesSql, connection))
             {
-                if (args.CInteger != null)
-                    command.Parameters.AddWithValue("@c_integer", args.CInteger);
-                if (args.CReal != null)
-                    command.Parameters.AddWithValue("@c_real", args.CReal);
-                if (args.CText != null)
-                    command.Parameters.AddWithValue("@c_text", args.CText);
+                command.Parameters.AddWithValue("@c_integer", args.CInteger);
+                command.Parameters.AddWithValue("@c_real", args.CReal);
+                command.Parameters.AddWithValue("@c_text", args.CText);
                 command.Parameters.AddWithValue("@c_blob", args.CBlob);
                 await command.ExecuteScalarAsync();
             }

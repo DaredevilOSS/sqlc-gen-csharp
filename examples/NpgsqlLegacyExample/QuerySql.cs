@@ -184,6 +184,38 @@ namespace NpgsqlLegacyExampleGen
             return null;
         }
 
+        private const string GetAuthorByNamePatternSql = "SELECT id, name, bio FROM authors WHERE name LIKE COALESCE(@name_pattern, '%')";
+        public class GetAuthorByNamePatternRow
+        {
+            public long Id { get; set; }
+            public string Name { get; set; }
+            public string Bio { get; set; }
+        };
+        public class GetAuthorByNamePatternArgs
+        {
+            public string NamePattern { get; set; }
+        };
+        public async Task<List<GetAuthorByNamePatternRow>> GetAuthorByNamePattern(GetAuthorByNamePatternArgs args)
+        {
+            using (var connection = NpgsqlDataSource.Create(ConnectionString))
+            {
+                using (var command = connection.CreateCommand(GetAuthorByNamePatternSql))
+                {
+                    command.Parameters.AddWithValue("@name_pattern", args.NamePattern);
+                    using (var reader = await command.ExecuteReaderAsync())
+                    {
+                        var result = new List<GetAuthorByNamePatternRow>();
+                        while (await reader.ReadAsync())
+                        {
+                            result.Add(new GetAuthorByNamePatternRow { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? string.Empty : reader.GetString(2) });
+                        }
+
+                        return result;
+                    }
+                }
+            }
+        }
+
         private const string DeleteAuthorSql = "DELETE FROM authors WHERE name = @name";
         public class DeleteAuthorArgs
         {
@@ -430,24 +462,15 @@ namespace NpgsqlLegacyExampleGen
             {
                 using (var command = connection.CreateCommand(InsertPostgresTypesSql))
                 {
-                    if (args.CSmallint != null)
-                        command.Parameters.AddWithValue("@c_smallint", args.CSmallint);
-                    if (args.CBoolean != null)
-                        command.Parameters.AddWithValue("@c_boolean", args.CBoolean);
-                    if (args.CInteger != null)
-                        command.Parameters.AddWithValue("@c_integer", args.CInteger);
-                    if (args.CBigint != null)
-                        command.Parameters.AddWithValue("@c_bigint", args.CBigint);
-                    if (args.CDecimal != null)
-                        command.Parameters.AddWithValue("@c_decimal", args.CDecimal);
-                    if (args.CNumeric != null)
-                        command.Parameters.AddWithValue("@c_numeric", args.CNumeric);
-                    if (args.CReal != null)
-                        command.Parameters.AddWithValue("@c_real", args.CReal);
-                    if (args.CDate != null)
-                        command.Parameters.AddWithValue("@c_date", args.CDate);
-                    if (args.CTimestamp != null)
-                        command.Parameters.AddWithValue("@c_timestamp", args.CTimestamp);
+                    command.Parameters.AddWithValue("@c_smallint", args.CSmallint);
+                    command.Parameters.AddWithValue("@c_boolean", args.CBoolean);
+                    command.Parameters.AddWithValue("@c_integer", args.CInteger);
+                    command.Parameters.AddWithValue("@c_bigint", args.CBigint);
+                    command.Parameters.AddWithValue("@c_decimal", args.CDecimal);
+                    command.Parameters.AddWithValue("@c_numeric", args.CNumeric);
+                    command.Parameters.AddWithValue("@c_real", args.CReal);
+                    command.Parameters.AddWithValue("@c_date", args.CDate);
+                    command.Parameters.AddWithValue("@c_timestamp", args.CTimestamp);
                     command.Parameters.AddWithValue("@c_char", args.CChar);
                     command.Parameters.AddWithValue("@c_varchar", args.CVarchar);
                     command.Parameters.AddWithValue("@c_character_varying", args.CCharacterVarying);
