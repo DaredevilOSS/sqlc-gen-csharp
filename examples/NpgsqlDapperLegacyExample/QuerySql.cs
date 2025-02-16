@@ -38,7 +38,7 @@ namespace NpgsqlDapperLegacyExampleGen
         {
             using (var connection = new NpgsqlConnection(ConnectionString))
             {
-                var queryParams = new Dictionary<string, object?>();
+                var queryParams = new Dictionary<string, object>();
                 queryParams.Add("name", args.Name);
                 var result = await connection.QueryFirstOrDefaultAsync<GetAuthorRow>(GetAuthorSql, queryParams);
                 return result;
@@ -78,7 +78,7 @@ namespace NpgsqlDapperLegacyExampleGen
         {
             using (var connection = new NpgsqlConnection(ConnectionString))
             {
-                var queryParams = new Dictionary<string, object?>();
+                var queryParams = new Dictionary<string, object>();
                 queryParams.Add("id", args.Id);
                 queryParams.Add("name", args.Name);
                 queryParams.Add("bio", args.Bio);
@@ -101,7 +101,7 @@ namespace NpgsqlDapperLegacyExampleGen
         {
             using (var connection = new NpgsqlConnection(ConnectionString))
             {
-                var queryParams = new Dictionary<string, object?>();
+                var queryParams = new Dictionary<string, object>();
                 queryParams.Add("name", args.Name);
                 queryParams.Add("bio", args.Bio);
                 return await connection.QuerySingleAsync<long>(CreateAuthorReturnIdSql, queryParams);
@@ -123,7 +123,7 @@ namespace NpgsqlDapperLegacyExampleGen
         {
             using (var connection = new NpgsqlConnection(ConnectionString))
             {
-                var queryParams = new Dictionary<string, object?>();
+                var queryParams = new Dictionary<string, object>();
                 queryParams.Add("id", args.Id);
                 var result = await connection.QueryFirstOrDefaultAsync<GetAuthorByIdRow>(GetAuthorByIdSql, queryParams);
                 return result;
@@ -145,7 +145,7 @@ namespace NpgsqlDapperLegacyExampleGen
         {
             using (var connection = new NpgsqlConnection(ConnectionString))
             {
-                var queryParams = new Dictionary<string, object?>();
+                var queryParams = new Dictionary<string, object>();
                 queryParams.Add("name_pattern", args.NamePattern);
                 var result = await connection.QueryAsync<GetAuthorByNamePatternRow>(GetAuthorByNamePatternSql, queryParams);
                 return result.AsList();
@@ -161,7 +161,7 @@ namespace NpgsqlDapperLegacyExampleGen
         {
             using (var connection = new NpgsqlConnection(ConnectionString))
             {
-                var queryParams = new Dictionary<string, object?>();
+                var queryParams = new Dictionary<string, object>();
                 queryParams.Add("name", args.Name);
                 await connection.ExecuteAsync(DeleteAuthorSql, queryParams);
             }
@@ -185,7 +185,7 @@ namespace NpgsqlDapperLegacyExampleGen
         {
             using (var connection = new NpgsqlConnection(ConnectionString))
             {
-                var queryParams = new Dictionary<string, object?>();
+                var queryParams = new Dictionary<string, object>();
                 queryParams.Add("bio", args.Bio);
                 return await connection.ExecuteAsync(UpdateAuthorsSql, queryParams);
             }
@@ -206,7 +206,7 @@ namespace NpgsqlDapperLegacyExampleGen
         {
             using (var connection = new NpgsqlConnection(ConnectionString))
             {
-                var queryParams = new Dictionary<string, object?>();
+                var queryParams = new Dictionary<string, object>();
                 queryParams.Add("longArr_1", args.LongArr1);
                 var result = await connection.QueryAsync<GetAuthorsByIdsRow>(GetAuthorsByIdsSql, queryParams);
                 return result.AsList();
@@ -229,7 +229,7 @@ namespace NpgsqlDapperLegacyExampleGen
         {
             using (var connection = new NpgsqlConnection(ConnectionString))
             {
-                var queryParams = new Dictionary<string, object?>();
+                var queryParams = new Dictionary<string, object>();
                 queryParams.Add("longArr_1", args.LongArr1);
                 queryParams.Add("stringArr_2", args.StringArr2);
                 var result = await connection.QueryAsync<GetAuthorsByIdsAndNamesRow>(GetAuthorsByIdsAndNamesSql, queryParams);
@@ -251,7 +251,7 @@ namespace NpgsqlDapperLegacyExampleGen
         {
             using (var connection = new NpgsqlConnection(ConnectionString))
             {
-                var queryParams = new Dictionary<string, object?>();
+                var queryParams = new Dictionary<string, object>();
                 queryParams.Add("name", args.Name);
                 queryParams.Add("author_id", args.AuthorId);
                 return await connection.QuerySingleAsync<long>(CreateBookSql, queryParams);
@@ -366,7 +366,7 @@ namespace NpgsqlDapperLegacyExampleGen
         {
             using (var connection = new NpgsqlConnection(ConnectionString))
             {
-                var queryParams = new Dictionary<string, object?>();
+                var queryParams = new Dictionary<string, object>();
                 queryParams.Add("c_smallint", args.CSmallint);
                 queryParams.Add("c_boolean", args.CBoolean);
                 queryParams.Add("c_integer", args.CInteger);
