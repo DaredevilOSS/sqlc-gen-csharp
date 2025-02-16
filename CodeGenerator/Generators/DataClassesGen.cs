@@ -2,7 +2,6 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Plugin;
 using SqlcGenCsharp.Drivers;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
@@ -14,7 +13,7 @@ internal class DataClassesGen(DbDriver dbDriver)
     public MemberDeclarationSyntax Generate(string name, ClassMember classMember, IList<Column> columns, Options options)
     {
         var className = classMember.Name(name);
-        if (options.DotnetFramework.LatestDotnetSupported() && !options.UseDapper)
+        if (options.DotnetFramework.IsDotnetCore() && !options.UseDapper)
             return GenerateAsRecord(className, columns);
         return GenerateAsCLass(className, columns);
     }
@@ -30,7 +29,7 @@ internal class DataClassesGen(DbDriver dbDriver)
 
     private ClassDeclarationSyntax GenerateAsCLass(string className, IList<Column> columns)
     {
-        var modernDotnetSupported = dbDriver.Options.DotnetFramework.LatestDotnetSupported();
+        var modernDotnetSupported = dbDriver.Options.DotnetFramework.IsDotnetCore();
         return ClassDeclaration(className)
             .AddModifiers(Token(SyntaxKind.PublicKeyword))
             .AddMembers(ColumnsToProperties())
@@ -42,10 +41,7 @@ internal class DataClassesGen(DbDriver dbDriver)
             return columns.Select(column =>
                 {
                     var csharpType = dbDriver.GetCsharpType(column);
-                    var requiredModifierNeeded = modernDotnetSupported && // required modifier supported by .Net framework
-                        column.NotNull && // the field is not null, hence required
-                        !dbDriver.IsTypeNullableForAllRuntimes(csharpType); // TODO document
-                    var optionalRequiredModifier = requiredModifierNeeded ? "required" : string.Empty;
+                    var optionalRequiredModifier = RequiredModifierNeeded(column) ? "required" : string.Empty;
                     var setterMethod = modernDotnetSupported ? "init" : "set";
                     return ParseMemberDeclaration(
                         $$"""
@@ -54,6 +50,15 @@ internal class DataClassesGen(DbDriver dbDriver)
                 })
                 .Cast<MemberDeclarationSyntax>()
                 .ToArray();
+        }
+
+        bool RequiredModifierNeeded(Column column)
+        {
+            if (!dbDriver.Options.DotnetFramework.IsDotnetCore())
+                return false;
+            if (column.EmbedTable != null)
+                return true;
+            return column.NotNull;
         }
     }
 

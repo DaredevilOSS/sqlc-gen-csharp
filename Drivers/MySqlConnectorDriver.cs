@@ -15,12 +15,14 @@ public partial class MySqlConnectorDriver(Options options, Dictionary<string, Ta
     protected override List<ColumnMapping> ColumnMappings { get; } =
     [
         new("long",
-            new Dictionary<string, string?> { { "bigint", null } }, ordinal => $"reader.GetInt64({ordinal})"),
+            new Dictionary<string, string?>
+            {
+                { "bigint", null }
+            }, ordinal => $"reader.GetInt64({ordinal})"),
         new("byte[]",
             new Dictionary<string, string?>
             {
                 { "binary", null },
-                { "bit", null },
                 { "blob", null },
                 { "longblob", null },
                 { "mediumblob", null },
@@ -42,20 +44,36 @@ public partial class MySqlConnectorDriver(Options options, Dictionary<string, Ta
                 { "json", null }
             }, ordinal => $"reader.GetString({ordinal})"),
         new("DateTime",
-            new Dictionary<string, string?> { { "date", null }, { "datetime", null }, { "timestamp", null } }, ordinal => $"reader.GetDateTime({ordinal})"),
+            new Dictionary<string, string?>
+            {
+                { "date", null },
+                { "datetime", null },
+                { "timestamp", null }
+            }, ordinal => $"reader.GetDateTime({ordinal})"),
         new("int",
             new Dictionary<string, string?>
             {
                 { "int", null },
                 { "mediumint", null },
                 { "smallint", null },
-                { "tinyint", null },
                 { "year", null }
             }, ordinal => $"reader.GetInt32({ordinal})"),
+        new("bool",
+            new Dictionary<string, string?>
+            {
+                { "bit", null },
+                { "tinyint", null },
+                { "bool", null },
+                { "boolean", null }
+            }, ordinal => $"reader.GetBoolean({ordinal})"),
         new("double",
-            new Dictionary<string, string?> { { "double", null }, { "float", null } }, ordinal => $"reader.GetDouble({ordinal})"),
+            new Dictionary<string, string?>
+            {
+                { "double", null },
+                { "float", null }
+            }, ordinal => $"reader.GetDouble({ordinal})"),
         new("object",
-            new Dictionary<string, string?> { }, ordinal => $"reader.GetValue({ordinal})")
+            new Dictionary<string, string?>(), ordinal => $"reader.GetValue({ordinal})")
     ];
 
     public override UsingDirectiveSyntax[] GetUsingDirectives()
@@ -77,7 +95,7 @@ public partial class MySqlConnectorDriver(Options options, Dictionary<string, Ta
     public override ConnectionGenCommands EstablishConnection(Query query)
     {
         return new ConnectionGenCommands(
-            $"var {Variable.Connection.AsVarName()} = new MySqlConnection({GetConnectionStringField()})",
+            $"var {Variable.Connection.AsVarName()} = new MySqlConnection({Variable.ConnectionString.AsPropertyName()})",
             $"await {Variable.Connection.AsVarName()}.OpenAsync()"
         );
     }
@@ -89,6 +107,9 @@ public partial class MySqlConnectorDriver(Options options, Dictionary<string, Ta
 
     public override string TransformQueryText(Query query)
     {
+        if (query.Cmd == ":copyfrom")
+            return string.Empty;
+
         var queryText = Options.UseDapper ? $"{query.Text}; SELECT LAST_INSERT_ID()" : query.Text;
         var counter = 0;
         return QueryParamRegex().Replace(queryText, _ => "@" + query.Params[counter++].Column.Name);
@@ -113,7 +134,7 @@ public partial class MySqlConnectorDriver(Options options, Dictionary<string, Ta
         return new ExecLastIdDeclareGen(this).Generate(queryTextConstant, argInterface, query);
     }
 
-    public override string[] GetLastIdStatement()
+    public override string[] GetLastIdStatement(Query query)
     {
         return
         [
@@ -122,8 +143,7 @@ public partial class MySqlConnectorDriver(Options options, Dictionary<string, Ta
         ];
     }
 
-    public MemberDeclarationSyntax ManyDeclare(string queryTextConstant, string argInterface,
-        string returnInterface, Query query)
+    public MemberDeclarationSyntax ManyDeclare(string queryTextConstant, string argInterface, string returnInterface, Query query)
     {
         return new ManyDeclareGen(this).Generate(queryTextConstant, argInterface, returnInterface, query);
     }

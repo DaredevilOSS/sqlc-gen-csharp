@@ -1,8 +1,7 @@
 CREATE TABLE authors (
     id      BIGSERIAL PRIMARY KEY,
     name    TEXT      NOT NULL,
-    bio     TEXT,
-    created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+    bio     TEXT
 );
 
 CREATE TABLE books (
@@ -14,13 +13,11 @@ CREATE TABLE books (
 );
 
 CREATE TABLE postgres_types (
-    id BIGSERIAL PRIMARY KEY,
     c_bit BIT(1),
     c_smallint SMALLINT,
     c_boolean BOOLEAN,
     c_integer INTEGER,
     c_bigint BIGINT,
-    c_serial SERIAL,
     c_decimal DECIMAL(2,1),
     c_numeric NUMERIC(2,1),
     c_real REAL,

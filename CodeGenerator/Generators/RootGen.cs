@@ -9,7 +9,7 @@ internal class RootGen(Options options)
     public CompilationUnitSyntax CompilationRootGen(IdentifierNameSyntax namespaceName,
         UsingDirectiveSyntax[] usingDirectives, MemberDeclarationSyntax[] classDeclarations)
     {
-        return options.DotnetFramework.LatestDotnetSupported() ? GetFileScoped() : GetBLockScoped();
+        return options.DotnetFramework.IsDotnetCore() ? GetFileScoped() : GetBLockScoped();
 
         CompilationUnitSyntax GetFileScoped()
         {

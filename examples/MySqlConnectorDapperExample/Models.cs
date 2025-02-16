@@ -4,30 +4,29 @@ using System;
 namespace MySqlConnectorDapperExampleGen;
 public class Author
 {
-    public long Id { get; init; }
+    public required long Id { get; init; }
     public required string Name { get; init; }
     public string? Bio { get; init; }
-    public DateTime Created { get; init; }
 };
 public class Book
 {
-    public long Id { get; init; }
+    public required long Id { get; init; }
     public required string Name { get; init; }
-    public long AuthorId { get; init; }
+    public required long AuthorId { get; init; }
     public string? Description { get; init; }
 };
 public class MysqlType
 {
-    public byte[]? CBit { get; init; }
-    public int? CTinyint { get; init; }
-    public int? CBool { get; init; }
-    public int? CBoolean { get; init; }
+    public bool? CBit { get; init; }
+    public bool? CTinyint { get; init; }
+    public bool? CBool { get; init; }
+    public bool? CBoolean { get; init; }
     public int? CSmallint { get; init; }
     public int? CMediumint { get; init; }
     public int? CInt { get; init; }
+    public int? CYear { get; init; }
     public int? CInteger { get; init; }
     public long? CBigint { get; init; }
-    public long CSerial { get; init; }
     public string? CDecimal { get; init; }
     public string? CDec { get; init; }
     public string? CNumeric { get; init; }
@@ -39,20 +38,19 @@ public class MysqlType
     public string? CTime { get; init; }
     public DateTime? CDatetime { get; init; }
     public DateTime? CTimestamp { get; init; }
-    public int? CYear { get; init; }
     public string? CChar { get; init; }
     public string? CNchar { get; init; }
     public string? CNationalChar { get; init; }
     public string? CVarchar { get; init; }
+    public string? CTinytext { get; init; }
+    public string? CMediumtext { get; init; }
+    public string? CText { get; init; }
+    public string? CLongtext { get; init; }
     public byte[]? CBinary { get; init; }
     public byte[]? CVarbinary { get; init; }
     public byte[]? CTinyblob { get; init; }
-    public string? CTinytext { get; init; }
     public byte[]? CBlob { get; init; }
-    public string? CText { get; init; }
     public byte[]? CMediumblob { get; init; }
-    public string? CMediumtext { get; init; }
     public byte[]? CLongblob { get; init; }
-    public string? CLongtext { get; init; }
     public string? CJson { get; init; }
 };

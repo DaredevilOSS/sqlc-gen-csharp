@@ -22,10 +22,11 @@ public partial class SqliteDriver(Options options, Dictionary<string, Table> tab
                 {"text", null}
             }, ordinal => $"reader.GetString({ordinal})"),
         new("int",
-            new Dictionary<string, string?>{
+            new Dictionary<string, string?>
             {
-                "integer", null
-            }}, ordinal => $"reader.GetInt32({ordinal})"),
+                { "integer", null },
+                { "integernotnulldefaultunixepoch", null } // return type of UNIXEPOCH function
+            }, ordinal => $"reader.GetInt32({ordinal})"),
         new("float",
             new Dictionary<string, string?>
             {
@@ -43,8 +44,8 @@ public partial class SqliteDriver(Options options, Dictionary<string, Table> tab
     public override ConnectionGenCommands EstablishConnection(Query query)
     {
         return new ConnectionGenCommands(
-            $"var {Variable.Connection.AsVarName()} = new SqliteConnection({GetConnectionStringField()})",
-            $"{Variable.Connection.AsVarName()}.Open()"
+            $"var {Variable.Connection.AsVarName()} = new SqliteConnection({Variable.ConnectionString.AsPropertyName()})",
+            $"await {Variable.Connection.AsVarName()}.OpenAsync()"
         );
     }
 

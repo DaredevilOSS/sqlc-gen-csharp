@@ -10,7 +10,7 @@ public readonly record struct ClassGenConfig(
 
 public enum KnownTestType
 {
-    // query annotations
+    // query annotations aligned tests
     One,
     Many,
     Exec,
@@ -19,17 +19,19 @@ public enum KnownTestType
     PostgresCopyFrom,
     MySqlCopyFrom,
 
-    // macros
+    // macros aligned tests
     SelfJoinEmbed,
     JoinEmbed,
     PartialEmbed,
     Slice,
     MultipleSlices,
 
-    // data types
+    // data types aligned tests
     ArrayAsParam,
     MultipleArraysAsParams,
-    PostgresDataTypes
+    PostgresDataTypes,
+    MySqlDataTypes,
+    SqliteDataTypes
 }
 
 internal static class Config
@@ -53,7 +55,8 @@ internal static class Config
                     KnownTestType.SelfJoinEmbed,
                     KnownTestType.Slice,
                     KnownTestType.MultipleSlices,
-                    KnownTestType.MySqlCopyFrom
+                    KnownTestType.MySqlCopyFrom,
+                    KnownTestType.MySqlDataTypes
                 ]
             }
         },
@@ -72,7 +75,8 @@ internal static class Config
                         KnownTestType.SelfJoinEmbed,
                         KnownTestType.Slice,
                         KnownTestType.MultipleSlices,
-                        KnownTestType.MySqlCopyFrom
+                        KnownTestType.MySqlCopyFrom,
+                        KnownTestType.MySqlDataTypes
                     ]
                 }
         },
@@ -130,7 +134,8 @@ internal static class Config
                     KnownTestType.JoinEmbed,
                     KnownTestType.SelfJoinEmbed,
                     KnownTestType.Slice,
-                    KnownTestType.MultipleSlices
+                    KnownTestType.MultipleSlices,
+                    KnownTestType.SqliteDataTypes
                 ]
             }
         },
@@ -148,7 +153,8 @@ internal static class Config
                     KnownTestType.JoinEmbed,
                     KnownTestType.SelfJoinEmbed,
                     KnownTestType.Slice,
-                    KnownTestType.MultipleSlices
+                    KnownTestType.MultipleSlices,
+                    KnownTestType.SqliteDataTypes
                 ]
             }
         },

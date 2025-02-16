@@ -4,27 +4,24 @@ using System;
 namespace NpgsqlDapperExampleGen;
 public class Author
 {
-    public long Id { get; init; }
+    public required long Id { get; init; }
     public required string Name { get; init; }
     public string? Bio { get; init; }
-    public DateTime Created { get; init; }
 };
 public class Book
 {
-    public long Id { get; init; }
+    public required long Id { get; init; }
     public required string Name { get; init; }
-    public long AuthorId { get; init; }
+    public required long AuthorId { get; init; }
     public string? Description { get; init; }
 };
 public class PostgresType
 {
-    public long Id { get; init; }
     public byte[]? CBit { get; init; }
     public int? CSmallint { get; init; }
     public bool? CBoolean { get; init; }
     public int? CInteger { get; init; }
     public long? CBigint { get; init; }
-    public int? CSerial { get; init; }
     public float? CDecimal { get; init; }
     public float? CNumeric { get; init; }
     public float? CReal { get; init; }

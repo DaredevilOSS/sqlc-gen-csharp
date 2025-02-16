@@ -24,7 +24,7 @@ public class QuerySql
     private const string GetAuthorSql = "SELECT id, name, bio FROM authors WHERE name = @name LIMIT 1";
     public class GetAuthorRow
     {
-        public int Id { get; init; }
+        public required int Id { get; init; }
         public required string Name { get; init; }
         public string? Bio { get; init; }
     };
@@ -46,7 +46,7 @@ public class QuerySql
     private const string ListAuthorsSql = "SELECT id, name, bio FROM authors ORDER BY name";
     public class ListAuthorsRow
     {
-        public int Id { get; init; }
+        public required int Id { get; init; }
         public required string Name { get; init; }
         public string? Bio { get; init; }
     };
@@ -59,9 +59,10 @@ public class QuerySql
         }
     }
 
-    private const string CreateAuthorSql = "INSERT INTO authors (name, bio) VALUES (@name, @bio)";
+    private const string CreateAuthorSql = "INSERT INTO authors (id, name, bio) VALUES (@id, @name, @bio)";
     public class CreateAuthorArgs
     {
+        public required int Id { get; init; }
         public required string Name { get; init; }
         public string? Bio { get; init; }
     };
@@ -70,6 +71,7 @@ public class QuerySql
         using (var connection = new SqliteConnection(ConnectionString))
         {
             var queryParams = new Dictionary<string, object>();
+            queryParams.Add("id", args.Id);
             queryParams.Add("name", args.Name);
             if (args.Bio != null)
                 queryParams.Add("bio", args.Bio);
@@ -80,7 +82,7 @@ public class QuerySql
     private const string CreateAuthorReturnIdSql = "INSERT INTO authors (name, bio) VALUES (@name, @bio) RETURNING id";
     public class CreateAuthorReturnIdRow
     {
-        public int Id { get; init; }
+        public required int Id { get; init; }
     };
     public class CreateAuthorReturnIdArgs
     {
@@ -102,13 +104,13 @@ public class QuerySql
     private const string GetAuthorByIdSql = "SELECT id, name, bio FROM authors WHERE id = @id LIMIT 1";
     public class GetAuthorByIdRow
     {
-        public int Id { get; init; }
+        public required int Id { get; init; }
         public required string Name { get; init; }
         public string? Bio { get; init; }
     };
     public class GetAuthorByIdArgs
     {
-        public int Id { get; init; }
+        public required int Id { get; init; }
     };
     public async Task<GetAuthorByIdRow?> GetAuthorById(GetAuthorByIdArgs args)
     {
@@ -140,7 +142,7 @@ public class QuerySql
     private const string GetAuthorsByIdsSql = "SELECT id, name, bio FROM authors WHERE id IN (/*SLICE:ids*/@ids)";
     public class GetAuthorsByIdsRow
     {
-        public int Id { get; init; }
+        public required int Id { get; init; }
         public required string Name { get; init; }
         public string? Bio { get; init; }
     };
@@ -165,7 +167,7 @@ public class QuerySql
     private const string GetAuthorsByIdsAndNamesSql = "SELECT id, name, bio FROM authors WHERE id IN (/*SLICE:ids*/@ids) AND name IN (/*SLICE:names*/@names)";
     public class GetAuthorsByIdsAndNamesRow
     {
-        public int Id { get; init; }
+        public required int Id { get; init; }
         public required string Name { get; init; }
         public string? Bio { get; init; }
     };
@@ -206,34 +208,38 @@ public class QuerySql
         }
     }
 
-    private const string CreateBookSql = "INSERT INTO books (name, author_id) VALUES (@name, @author_id)";
+    private const string CreateBookSql = "INSERT INTO books (name, author_id) VALUES (@name, @author_id) RETURNING id";
+    public class CreateBookRow
+    {
+        public required int Id { get; init; }
+    };
     public class CreateBookArgs
     {
         public required string Name { get; init; }
-        public int AuthorId { get; init; }
+        public required int AuthorId { get; init; }
     };
-    public async Task CreateBook(CreateBookArgs args)
+    public async Task<int> CreateBook(CreateBookArgs args)
     {
         using (var connection = new SqliteConnection(ConnectionString))
         {
             var queryParams = new Dictionary<string, object>();
             queryParams.Add("name", args.Name);
             queryParams.Add("author_id", args.AuthorId);
-            await connection.ExecuteAsync(CreateBookSql, queryParams);
+            return await connection.QuerySingleAsync<int>(CreateBookSql, queryParams);
         }
     }
 
     private const string ListAllAuthorsBooksSql = "SELECT authors.id, authors.name, authors.bio, books.id, books.name, books.author_id, books.description  FROM  authors  JOIN  books  ON  authors . id  =  books . author_id  ORDER  BY  authors . name  ";  
     public class ListAllAuthorsBooksRow
     {
-        public Author Author { get; init; }
-        public Book Book { get; init; }
+        public required Author Author { get; init; }
+        public required Book Book { get; init; }
     };
     public async Task<List<ListAllAuthorsBooksRow>> ListAllAuthorsBooks()
     {
         using (var connection = new SqliteConnection(ConnectionString))
         {
-            connection.Open();
+            await connection.OpenAsync();
             using (var command = new SqliteCommand(ListAllAuthorsBooksSql, connection))
             {
                 using (var reader = await command.ExecuteReaderAsync())
@@ -250,17 +256,17 @@ public class QuerySql
         }
     }
 
-    private const string GetDuplicateAuthorsSql = "SELECT authors1.id, authors1.name, authors1.bio, authors2.id, authors2.name, authors2.bio FROM  authors  authors1  JOIN  authors  authors2  ON  authors1 . name  =  authors2 . name  WHERE  authors1 . id > authors2 . id  ";  
+    private const string GetDuplicateAuthorsSql = "SELECT authors1.id, authors1.name, authors1.bio, authors2.id, authors2.name, authors2.bio FROM  authors  authors1  JOIN  authors  authors2  ON  authors1 . name  =  authors2 . name  WHERE  authors1 . id < authors2 . id  ";  
     public class GetDuplicateAuthorsRow
     {
-        public Author Author { get; init; }
-        public Author Author2 { get; init; }
+        public required Author Author { get; init; }
+        public required Author Author2 { get; init; }
     };
     public async Task<List<GetDuplicateAuthorsRow>> GetDuplicateAuthors()
     {
         using (var connection = new SqliteConnection(ConnectionString))
         {
-            connection.Open();
+            await connection.OpenAsync();
             using (var command = new SqliteCommand(GetDuplicateAuthorsSql, connection))
             {
                 using (var reader = await command.ExecuteReaderAsync())
@@ -280,10 +286,10 @@ public class QuerySql
     private const string GetAuthorsByBookNameSql = "SELECT authors.id, authors.name, authors.bio, books.id, books.name, books.author_id, books.description FROM  authors  JOIN  books  ON  authors . id  =  books . author_id  WHERE  books . name  =  @name  ";  
     public class GetAuthorsByBookNameRow
     {
-        public int Id { get; init; }
+        public required int Id { get; init; }
         public required string Name { get; init; }
         public string? Bio { get; init; }
-        public Book Book { get; init; }
+        public required Book Book { get; init; }
     };
     public class GetAuthorsByBookNameArgs
     {
@@ -293,11 +299,10 @@ public class QuerySql
     {
         using (var connection = new SqliteConnection(ConnectionString))
         {
-            connection.Open();
+            await connection.OpenAsync();
             using (var command = new SqliteCommand(GetAuthorsByBookNameSql, connection))
             {
-                if (args.Name != null)
-                    command.Parameters.AddWithValue("@name", args.Name);
+                command.Parameters.AddWithValue("@name", args.Name);
                 using (var reader = await command.ExecuteReaderAsync())
                 {
                     var result = new List<GetAuthorsByBookNameRow>();
@@ -318,6 +323,74 @@ public class QuerySql
         using (var connection = new SqliteConnection(ConnectionString))
         {
             await connection.ExecuteAsync(DeleteAllAuthorsSql);
+        }
+    }
+
+    private const string InsertSqliteTypesSql = "INSERT INTO types_sqlite (c_integer, c_real, c_text, c_blob) VALUES (@c_integer, @c_real, @c_text, @c_blob)";
+    public class InsertSqliteTypesArgs
+    {
+        public int? CInteger { get; init; }
+        public float? CReal { get; init; }
+        public string? CText { get; init; }
+        public byte[]? CBlob { get; init; }
+    };
+    public async Task InsertSqliteTypes(InsertSqliteTypesArgs args)
+    {
+        using (var connection = new SqliteConnection(ConnectionString))
+        {
+            var queryParams = new Dictionary<string, object>();
+            if (args.CInteger != null)
+                queryParams.Add("c_integer", args.CInteger);
+            if (args.CReal != null)
+                queryParams.Add("c_real", args.CReal);
+            if (args.CText != null)
+                queryParams.Add("c_text", args.CText);
+            queryParams.Add("c_blob", args.CBlob);
+            await connection.ExecuteAsync(InsertSqliteTypesSql, queryParams);
+        }
+    }
+
+    private const string GetSqliteTypesSql = "SELECT c_integer, c_real, c_text, c_blob FROM types_sqlite LIMIT 1";
+    public class GetSqliteTypesRow
+    {
+        public int? CInteger { get; init; }
+        public float? CReal { get; init; }
+        public string? CText { get; init; }
+        public byte[]? CBlob { get; init; }
+    };
+    public async Task<GetSqliteTypesRow?> GetSqliteTypes()
+    {
+        using (var connection = new SqliteConnection(ConnectionString))
+        {
+            var result = await connection.QueryFirstOrDefaultAsync<GetSqliteTypesRow?>(GetSqliteTypesSql);
+            return result;
+        }
+    }
+
+    private const string GetSqliteTypesAggSql = "SELECT COUNT(1) AS cnt , c_integer, c_real, c_text, c_blob FROM  types_sqlite  GROUP  BY  c_integer , c_real, c_text, c_blob LIMIT  1  ";  
+    public class GetSqliteTypesAggRow
+    {
+        public required int Cnt { get; init; }
+        public int? CInteger { get; init; }
+        public float? CReal { get; init; }
+        public string? CText { get; init; }
+        public byte[]? CBlob { get; init; }
+    };
+    public async Task<GetSqliteTypesAggRow?> GetSqliteTypesAgg()
+    {
+        using (var connection = new SqliteConnection(ConnectionString))
+        {
+            var result = await connection.QueryFirstOrDefaultAsync<GetSqliteTypesAggRow?>(GetSqliteTypesAggSql);
+            return result;
+        }
+    }
+
+    private const string DeleteAllSqliteTypesSql = "DELETE FROM types_sqlite";
+    public async Task DeleteAllSqliteTypes()
+    {
+        using (var connection = new SqliteConnection(ConnectionString))
+        {
+            await connection.ExecuteAsync(DeleteAllSqliteTypesSql);
         }
     }
 }

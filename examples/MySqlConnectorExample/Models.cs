@@ -2,6 +2,6 @@
 using System;
 
 namespace MySqlConnectorExampleGen;
-public readonly record struct Author(long Id, string Name, string? Bio, DateTime Created);
+public readonly record struct Author(long Id, string Name, string? Bio);
 public readonly record struct Book(long Id, string Name, long AuthorId, string? Description);
-public readonly record struct MysqlType(byte[]? CBit, int? CTinyint, int? CBool, int? CBoolean, int? CSmallint, int? CMediumint, int? CInt, int? CInteger, long? CBigint, long CSerial, string? CDecimal, string? CDec, string? CNumeric, string? CFixed, double? CFloat, double? CDouble, double? CDoublePrecision, DateTime? CDate, string? CTime, DateTime? CDatetime, DateTime? CTimestamp, int? CYear, string? CChar, string? CNchar, string? CNationalChar, string? CVarchar, byte[]? CBinary, byte[]? CVarbinary, byte[]? CTinyblob, string? CTinytext, byte[]? CBlob, string? CText, byte[]? CMediumblob, string? CMediumtext, byte[]? CLongblob, string? CLongtext, string? CJson);
+public readonly record struct MysqlType(bool? CBit, bool? CTinyint, bool? CBool, bool? CBoolean, int? CSmallint, int? CMediumint, int? CInt, int? CYear, int? CInteger, long? CBigint, string? CDecimal, string? CDec, string? CNumeric, string? CFixed, double? CFloat, double? CDouble, double? CDoublePrecision, DateTime? CDate, string? CTime, DateTime? CDatetime, DateTime? CTimestamp, string? CChar, string? CNchar, string? CNationalChar, string? CVarchar, string? CTinytext, string? CMediumtext, string? CText, string? CLongtext, byte[]? CBinary, byte[]? CVarbinary, byte[]? CTinyblob, byte[]? CBlob, byte[]? CMediumblob, byte[]? CLongblob, string? CJson);

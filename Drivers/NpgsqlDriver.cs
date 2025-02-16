@@ -86,7 +86,11 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId
                 { "decimal", "NpgsqlDbType.Real" }
             }, ordinal => $"reader.GetDecimal({ordinal})"),
         new("bool",
-            new Dictionary<string, string?> { { "bool", null }, { "boolean", null } }, ordinal => $"reader.GetBoolean({ordinal})")
+            new Dictionary<string, string?>
+            {
+                { "bool", null },
+                { "boolean", null }
+            }, ordinal => $"reader.GetBoolean({ordinal})")
     ];
 
     public override UsingDirectiveSyntax[] GetUsingDirectives()
@@ -100,22 +104,24 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId
     // TODO different operations require different types of connections - improve code and docs to make it clearer
     public override ConnectionGenCommands EstablishConnection(Query query)
     {
-        var connectionStringField = GetConnectionStringField();
+        var connectionStringVar = Variable.ConnectionString.AsPropertyName();
+        var connectionVar = Variable.Connection.AsVarName();
+
         if (query.Cmd == ":copyfrom")
             return new ConnectionGenCommands(
-                $"var ds = NpgsqlDataSource.Create({connectionStringField})",
-                $"var {Variable.Connection.AsVarName()} = ds.CreateConnection()"
+                $"var ds = NpgsqlDataSource.Create({connectionStringVar})",
+                $"var {connectionVar} = ds.CreateConnection()"
             );
 
         var embedTableExists = query.Columns.Any(c => c.EmbedTable is not null);
         if (Options.UseDapper && !embedTableExists)
             return new ConnectionGenCommands(
-                $"var {Variable.Connection.AsVarName()} = new NpgsqlConnection({connectionStringField})",
-                ""
+                $"var {connectionVar} = new NpgsqlConnection({connectionStringVar})",
+                string.Empty
             );
         return new ConnectionGenCommands(
-            $"var {Variable.Connection.AsVarName()} = NpgsqlDataSource.Create({connectionStringField})",
-            ""
+            $"var {connectionVar} = NpgsqlDataSource.Create({connectionStringVar})",
+            string.Empty
         );
     }
 

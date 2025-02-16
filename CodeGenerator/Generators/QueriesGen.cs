@@ -80,7 +80,7 @@ internal class QueriesGen(DbDriver dbDriver, Options options, string namespaceNa
     private IEnumerable<MemberDeclarationSyntax> GetMembersForSingleQuery(Query query)
     {
         return new List<MemberDeclarationSyntax>()
-            .Append(GetQueryTextConstant(query))
+            .AppendIfNotNull(GetQueryTextConstant(query))
             .AppendIfNotNull(GetQueryColumnsDataclass(query))
             .AppendIfNotNull(GetQueryParamsDataclass(query))
             .Append(AddMethodDeclaration(query));
@@ -88,9 +88,8 @@ internal class QueriesGen(DbDriver dbDriver, Options options, string namespaceNa
 
     private MemberDeclarationSyntax? GetQueryColumnsDataclass(Query query)
     {
-        return query.Columns.Count <= 0
-            ? null
-            : DataClassesGen.Generate(query.Name, ClassMember.Row, query.Columns, options);
+        if (query.Columns.Count <= 0) return null;
+        return DataClassesGen.Generate(query.Name, ClassMember.Row, query.Columns, options);
     }
 
     private MemberDeclarationSyntax? GetQueryParamsDataclass(Query query)
@@ -100,11 +99,15 @@ internal class QueriesGen(DbDriver dbDriver, Options options, string namespaceNa
         return DataClassesGen.Generate(query.Name, ClassMember.Args, columns, options);
     }
 
-    private MemberDeclarationSyntax GetQueryTextConstant(Query query)
+    private MemberDeclarationSyntax? GetQueryTextConstant(Query query)
     {
+        var transformQueryText = dbDriver.TransformQueryText(query);
+        if (transformQueryText == string.Empty)
+            return null;
         return ParseMemberDeclaration(
-                $"private const string {ClassMember.Sql.Name(query.Name)} = \"{dbDriver.TransformQueryText(query)}\";")
-            !
+                $"""
+                 private const string {ClassMember.Sql.Name(query.Name)} = "{transformQueryText}";
+                 """)!
             .AppendNewLine();
     }
 

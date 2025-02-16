@@ -26,13 +26,12 @@ namespace MySqlConnectorLegacyExampleGen
 
         private string ConnectionString { get; }
 
-        private const string GetAuthorSql = "SELECT id, name, bio, created FROM authors WHERE name = @name LIMIT 1";
+        private const string GetAuthorSql = "SELECT id, name, bio FROM authors WHERE name = @name LIMIT 1";
         public class GetAuthorRow
         {
             public long Id { get; set; }
             public string Name { get; set; }
             public string Bio { get; set; }
-            public DateTime Created { get; set; }
         };
         public class GetAuthorArgs
         {
@@ -45,8 +44,7 @@ namespace MySqlConnectorLegacyExampleGen
                 await connection.OpenAsync();
                 using (var command = new MySqlCommand(GetAuthorSql, connection))
                 {
-                    if (args.Name != null)
-                        command.Parameters.AddWithValue("@name", args.Name);
+                    command.Parameters.AddWithValue("@name", args.Name);
                     using (var reader = await command.ExecuteReaderAsync())
                     {
                         if (await reader.ReadAsync())
@@ -55,8 +53,7 @@ namespace MySqlConnectorLegacyExampleGen
                             {
                                 Id = reader.GetInt64(0),
                                 Name = reader.GetString(1),
-                                Bio = reader.IsDBNull(2) ? string.Empty : reader.GetString(2),
-                                Created = reader.GetDateTime(3)
+                                Bio = reader.IsDBNull(2) ? string.Empty : reader.GetString(2)
                             };
                         }
                     }
@@ -66,13 +63,12 @@ namespace MySqlConnectorLegacyExampleGen
             return null;
         }
 
-        private const string ListAuthorsSql = "SELECT id, name, bio, created FROM authors ORDER BY name";
+        private const string ListAuthorsSql = "SELECT id, name, bio FROM authors ORDER BY name";
         public class ListAuthorsRow
         {
             public long Id { get; set; }
             public string Name { get; set; }
             public string Bio { get; set; }
-            public DateTime Created { get; set; }
         };
         public async Task<List<ListAuthorsRow>> ListAuthors()
         {
@@ -86,7 +82,7 @@ namespace MySqlConnectorLegacyExampleGen
                         var result = new List<ListAuthorsRow>();
                         while (await reader.ReadAsync())
                         {
-                            result.Add(new ListAuthorsRow { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? string.Empty : reader.GetString(2), Created = reader.GetDateTime(3) });
+                            result.Add(new ListAuthorsRow { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? string.Empty : reader.GetString(2) });
                         }
 
                         return result;
@@ -95,9 +91,10 @@ namespace MySqlConnectorLegacyExampleGen
             }
         }
 
-        private const string CreateAuthorSql = "INSERT INTO authors (name, bio) VALUES (@name, @bio)";
+        private const string CreateAuthorSql = "INSERT INTO authors (id, name, bio) VALUES (@id, @name, @bio)";
         public class CreateAuthorArgs
         {
+            public long Id { get; set; }
             public string Name { get; set; }
             public string Bio { get; set; }
         };
@@ -108,10 +105,9 @@ namespace MySqlConnectorLegacyExampleGen
                 await connection.OpenAsync();
                 using (var command = new MySqlCommand(CreateAuthorSql, connection))
                 {
-                    if (args.Name != null)
-                        command.Parameters.AddWithValue("@name", args.Name);
-                    if (args.Bio != null)
-                        command.Parameters.AddWithValue("@bio", args.Bio);
+                    command.Parameters.AddWithValue("@id", args.Id);
+                    command.Parameters.AddWithValue("@name", args.Name);
+                    command.Parameters.AddWithValue("@bio", args.Bio);
                     await command.ExecuteScalarAsync();
                 }
             }
@@ -130,23 +126,20 @@ namespace MySqlConnectorLegacyExampleGen
                 await connection.OpenAsync();
                 using (var command = new MySqlCommand(CreateAuthorReturnIdSql, connection))
                 {
-                    if (args.Name != null)
-                        command.Parameters.AddWithValue("@name", args.Name);
-                    if (args.Bio != null)
-                        command.Parameters.AddWithValue("@bio", args.Bio);
+                    command.Parameters.AddWithValue("@name", args.Name);
+                    command.Parameters.AddWithValue("@bio", args.Bio);
                     await command.ExecuteNonQueryAsync();
                     return command.LastInsertedId;
                 }
             }
         }
 
-        private const string GetAuthorByIdSql = "SELECT id, name, bio, created FROM authors WHERE id = @id LIMIT 1";
+        private const string GetAuthorByIdSql = "SELECT id, name, bio FROM authors WHERE id = @id LIMIT 1";
         public class GetAuthorByIdRow
         {
             public long Id { get; set; }
             public string Name { get; set; }
             public string Bio { get; set; }
-            public DateTime Created { get; set; }
         };
         public class GetAuthorByIdArgs
         {
@@ -159,8 +152,7 @@ namespace MySqlConnectorLegacyExampleGen
                 await connection.OpenAsync();
                 using (var command = new MySqlCommand(GetAuthorByIdSql, connection))
                 {
-                    if (args.Id != null)
-                        command.Parameters.AddWithValue("@id", args.Id);
+                    command.Parameters.AddWithValue("@id", args.Id);
                     using (var reader = await command.ExecuteReaderAsync())
                     {
                         if (await reader.ReadAsync())
@@ -169,8 +161,7 @@ namespace MySqlConnectorLegacyExampleGen
                             {
                                 Id = reader.GetInt64(0),
                                 Name = reader.GetString(1),
-                                Bio = reader.IsDBNull(2) ? string.Empty : reader.GetString(2),
-                                Created = reader.GetDateTime(3)
+                                Bio = reader.IsDBNull(2) ? string.Empty : reader.GetString(2)
                             };
                         }
                     }
@@ -192,8 +183,7 @@ namespace MySqlConnectorLegacyExampleGen
                 await connection.OpenAsync();
                 using (var command = new MySqlCommand(DeleteAuthorSql, connection))
                 {
-                    if (args.Name != null)
-                        command.Parameters.AddWithValue("@name", args.Name);
+                    command.Parameters.AddWithValue("@name", args.Name);
                     await command.ExecuteScalarAsync();
                 }
             }
@@ -224,20 +214,18 @@ namespace MySqlConnectorLegacyExampleGen
                 await connection.OpenAsync();
                 using (var command = new MySqlCommand(UpdateAuthorsSql, connection))
                 {
-                    if (args.Bio != null)
-                        command.Parameters.AddWithValue("@bio", args.Bio);
+                    command.Parameters.AddWithValue("@bio", args.Bio);
                     return await command.ExecuteNonQueryAsync();
                 }
             }
         }
 
-        private const string GetAuthorsByIdsSql = "SELECT id, name, bio, created FROM authors WHERE id IN (/*SLICE:ids*/@ids)";
+        private const string GetAuthorsByIdsSql = "SELECT id, name, bio FROM authors WHERE id IN (/*SLICE:ids*/@ids)";
         public class GetAuthorsByIdsRow
         {
             public long Id { get; set; }
             public string Name { get; set; }
             public string Bio { get; set; }
-            public DateTime Created { get; set; }
         };
         public class GetAuthorsByIdsArgs
         {
@@ -259,7 +247,7 @@ namespace MySqlConnectorLegacyExampleGen
                         var result = new List<GetAuthorsByIdsRow>();
                         while (await reader.ReadAsync())
                         {
-                            result.Add(new GetAuthorsByIdsRow { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? string.Empty : reader.GetString(2), Created = reader.GetDateTime(3) });
+                            result.Add(new GetAuthorsByIdsRow { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? string.Empty : reader.GetString(2) });
                         }
 
                         return result;
@@ -268,13 +256,12 @@ namespace MySqlConnectorLegacyExampleGen
             }
         }
 
-        private const string GetAuthorsByIdsAndNamesSql = "SELECT id, name, bio, created FROM authors WHERE id IN (/*SLICE:ids*/@ids) AND name IN (/*SLICE:names*/@names)";
+        private const string GetAuthorsByIdsAndNamesSql = "SELECT id, name, bio FROM authors WHERE id IN (/*SLICE:ids*/@ids) AND name IN (/*SLICE:names*/@names)";
         public class GetAuthorsByIdsAndNamesRow
         {
             public long Id { get; set; }
             public string Name { get; set; }
             public string Bio { get; set; }
-            public DateTime Created { get; set; }
         };
         public class GetAuthorsByIdsAndNamesArgs
         {
@@ -300,7 +287,7 @@ namespace MySqlConnectorLegacyExampleGen
                         var result = new List<GetAuthorsByIdsAndNamesRow>();
                         while (await reader.ReadAsync())
                         {
-                            result.Add(new GetAuthorsByIdsAndNamesRow { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? string.Empty : reader.GetString(2), Created = reader.GetDateTime(3) });
+                            result.Add(new GetAuthorsByIdsAndNamesRow { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? string.Empty : reader.GetString(2) });
                         }
 
                         return result;
@@ -315,23 +302,22 @@ namespace MySqlConnectorLegacyExampleGen
             public string Name { get; set; }
             public long AuthorId { get; set; }
         };
-        public async Task CreateBook(CreateBookArgs args)
+        public async Task<long> CreateBook(CreateBookArgs args)
         {
             using (var connection = new MySqlConnection(ConnectionString))
             {
                 await connection.OpenAsync();
                 using (var command = new MySqlCommand(CreateBookSql, connection))
                 {
-                    if (args.Name != null)
-                        command.Parameters.AddWithValue("@name", args.Name);
-                    if (args.AuthorId != null)
-                        command.Parameters.AddWithValue("@author_id", args.AuthorId);
-                    await command.ExecuteScalarAsync();
+                    command.Parameters.AddWithValue("@name", args.Name);
+                    command.Parameters.AddWithValue("@author_id", args.AuthorId);
+                    await command.ExecuteNonQueryAsync();
+                    return command.LastInsertedId;
                 }
             }
         }
 
-        private const string ListAllAuthorsBooksSql = "SELECT authors.id, authors.name, authors.bio, authors.created, books.id, books.name, books.author_id, books.description  FROM  authors  JOIN  books  ON  authors . id  =  books . author_id  ORDER  BY  authors . name  ";  
+        private const string ListAllAuthorsBooksSql = "SELECT authors.id, authors.name, authors.bio, books.id, books.name, books.author_id, books.description  FROM  authors  JOIN  books  ON  authors . id  =  books . author_id  ORDER  BY  authors . name  ";  
         public class ListAllAuthorsBooksRow
         {
             public Author Author { get; set; }
@@ -349,7 +335,7 @@ namespace MySqlConnectorLegacyExampleGen
                         var result = new List<ListAllAuthorsBooksRow>();
                         while (await reader.ReadAsync())
                         {
-                            result.Add(new ListAllAuthorsBooksRow { Author = new Author { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? string.Empty : reader.GetString(2), Created = reader.GetDateTime(3) }, Book = new Book { Id = reader.GetInt64(4), Name = reader.GetString(5), AuthorId = reader.GetInt64(6), Description = reader.IsDBNull(7) ? string.Empty : reader.GetString(7) } });
+                            result.Add(new ListAllAuthorsBooksRow { Author = new Author { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? string.Empty : reader.GetString(2) }, Book = new Book { Id = reader.GetInt64(3), Name = reader.GetString(4), AuthorId = reader.GetInt64(5), Description = reader.IsDBNull(6) ? string.Empty : reader.GetString(6) } });
                         }
 
                         return result;
@@ -358,7 +344,7 @@ namespace MySqlConnectorLegacyExampleGen
             }
         }
 
-        private const string GetDuplicateAuthorsSql = "SELECT authors1.id, authors1.name, authors1.bio, authors1.created, authors2.id, authors2.name, authors2.bio, authors2.created FROM  authors  authors1  JOIN  authors  authors2  ON  authors1 . name  =  authors2 . name  WHERE  authors1 . id > authors2 . id  ";  
+        private const string GetDuplicateAuthorsSql = "SELECT authors1.id, authors1.name, authors1.bio, authors2.id, authors2.name, authors2.bio FROM  authors  authors1  JOIN  authors  authors2  ON  authors1 . name  =  authors2 . name  WHERE  authors1 . id < authors2 . id  ";  
         public class GetDuplicateAuthorsRow
         {
             public Author Author { get; set; }
@@ -376,7 +362,7 @@ namespace MySqlConnectorLegacyExampleGen
                         var result = new List<GetDuplicateAuthorsRow>();
                         while (await reader.ReadAsync())
                         {
-                            result.Add(new GetDuplicateAuthorsRow { Author = new Author { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? string.Empty : reader.GetString(2), Created = reader.GetDateTime(3) }, Author2 = new Author { Id = reader.GetInt64(4), Name = reader.GetString(5), Bio = reader.IsDBNull(6) ? string.Empty : reader.GetString(6), Created = reader.GetDateTime(7) } });
+                            result.Add(new GetDuplicateAuthorsRow { Author = new Author { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? string.Empty : reader.GetString(2) }, Author2 = new Author { Id = reader.GetInt64(3), Name = reader.GetString(4), Bio = reader.IsDBNull(5) ? string.Empty : reader.GetString(5) } });
                         }
 
                         return result;
@@ -385,13 +371,12 @@ namespace MySqlConnectorLegacyExampleGen
             }
         }
 
-        private const string GetAuthorsByBookNameSql = "SELECT authors.id, authors.name, authors.bio, authors.created, books.id, books.name, books.author_id, books.description FROM  authors  JOIN  books  ON  authors . id  =  books . author_id  WHERE  books . name  =  @name  ";  
+        private const string GetAuthorsByBookNameSql = "SELECT authors.id, authors.name, authors.bio, books.id, books.name, books.author_id, books.description FROM  authors  JOIN  books  ON  authors . id  =  books . author_id  WHERE  books . name  =  @name  ";  
         public class GetAuthorsByBookNameRow
         {
             public long Id { get; set; }
             public string Name { get; set; }
             public string Bio { get; set; }
-            public DateTime Created { get; set; }
             public Book Book { get; set; }
         };
         public class GetAuthorsByBookNameArgs
@@ -405,14 +390,13 @@ namespace MySqlConnectorLegacyExampleGen
                 await connection.OpenAsync();
                 using (var command = new MySqlCommand(GetAuthorsByBookNameSql, connection))
                 {
-                    if (args.Name != null)
-                        command.Parameters.AddWithValue("@name", args.Name);
+                    command.Parameters.AddWithValue("@name", args.Name);
                     using (var reader = await command.ExecuteReaderAsync())
                     {
                         var result = new List<GetAuthorsByBookNameRow>();
                         while (await reader.ReadAsync())
                         {
-                            result.Add(new GetAuthorsByBookNameRow { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? string.Empty : reader.GetString(2), Created = reader.GetDateTime(3), Book = new Book { Id = reader.GetInt64(4), Name = reader.GetString(5), AuthorId = reader.GetInt64(6), Description = reader.IsDBNull(7) ? string.Empty : reader.GetString(7) } });
+                            result.Add(new GetAuthorsByBookNameRow { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? string.Empty : reader.GetString(2), Book = new Book { Id = reader.GetInt64(3), Name = reader.GetString(4), AuthorId = reader.GetInt64(5), Description = reader.IsDBNull(6) ? string.Empty : reader.GetString(6) } });
                         }
 
                         return result;
@@ -421,9 +405,51 @@ namespace MySqlConnectorLegacyExampleGen
             }
         }
 
-        private const string InsertMysqlTypesBatchSql = "INSERT INTO mysql_types (c_int, c_varchar, c_date, c_timestamp) VALUES (@c_int, @c_varchar, @c_date, @c_timestamp)";
+        private const string InsertMysqlTypesSql = "INSERT INTO mysql_types (c_bit, c_tinyint, c_bool, c_boolean, c_int, c_varchar, c_date, c_timestamp) VALUES (@c_bit, @c_tinyint, @c_bool, @c_boolean, @c_int, @c_varchar, @c_date, @c_timestamp)";
+        public class InsertMysqlTypesArgs
+        {
+            public bool? CBit { get; set; }
+            public bool? CTinyint { get; set; }
+            public bool? CBool { get; set; }
+            public bool? CBoolean { get; set; }
+            public int? CInt { get; set; }
+            public string CVarchar { get; set; }
+            public DateTime? CDate { get; set; }
+            public DateTime? CTimestamp { get; set; }
+        };
+        public async Task InsertMysqlTypes(InsertMysqlTypesArgs args)
+        {
+            using (var connection = new MySqlConnection(ConnectionString))
+            {
+                await connection.OpenAsync();
+                using (var command = new MySqlCommand(InsertMysqlTypesSql, connection))
+                {
+                    if (args.CBit != null)
+                        command.Parameters.AddWithValue("@c_bit", args.CBit);
+                    if (args.CTinyint != null)
+                        command.Parameters.AddWithValue("@c_tinyint", args.CTinyint);
+                    if (args.CBool != null)
+                        command.Parameters.AddWithValue("@c_bool", args.CBool);
+                    if (args.CBoolean != null)
+                        command.Parameters.AddWithValue("@c_boolean", args.CBoolean);
+                    if (args.CInt != null)
+                        command.Parameters.AddWithValue("@c_int", args.CInt);
+                    command.Parameters.AddWithValue("@c_varchar", args.CVarchar);
+                    if (args.CDate != null)
+                        command.Parameters.AddWithValue("@c_date", args.CDate);
+                    if (args.CTimestamp != null)
+                        command.Parameters.AddWithValue("@c_timestamp", args.CTimestamp);
+                    await command.ExecuteScalarAsync();
+                }
+            }
+        }
+
         public class InsertMysqlTypesBatchArgs
         {
+            public bool? CBit { get; set; }
+            public bool? CTinyint { get; set; }
+            public bool? CBool { get; set; }
+            public bool? CBoolean { get; set; }
             public int? CInt { get; set; }
             public string CVarchar { get; set; }
             public DateTime? CDate { get; set; }
@@ -463,25 +489,25 @@ namespace MySqlConnectorLegacyExampleGen
                     FieldQuotationCharacter = '"',
                     NumberOfLinesToSkip = 1
                 };
-                loader.Columns.AddRange(new List<string> { "c_int", "c_varchar", "c_date", "c_timestamp" });
+                loader.Columns.AddRange(new List<string> { "c_bit", "c_tinyint", "c_bool", "c_boolean", "c_int", "c_varchar", "c_date", "c_timestamp" });
                 await loader.LoadAsync();
                 await connection.CloseAsync();
             }
         }
 
-        private const string GetMysqlTypesSql = "SELECT c_bit, c_tinyint, c_bool, c_boolean, c_smallint, c_mediumint, c_int, c_integer, c_bigint, c_serial, c_decimal, c_dec, c_numeric, c_fixed, c_float, c_double, c_double_precision, c_date, c_time, c_datetime, c_timestamp, c_year, c_char, c_nchar, c_national_char, c_varchar, c_binary, c_varbinary, c_tinyblob, c_tinytext, c_blob, c_text, c_mediumblob, c_mediumtext, c_longblob, c_longtext, c_json FROM mysql_types LIMIT 1";
+        private const string GetMysqlTypesSql = "SELECT c_bit, c_tinyint, c_bool, c_boolean, c_smallint, c_mediumint, c_int, c_year, c_integer, c_bigint, c_decimal, c_dec, c_numeric, c_fixed, c_float, c_double, c_double_precision, c_date, c_time, c_datetime, c_timestamp, c_char, c_nchar, c_national_char, c_varchar, c_tinytext, c_mediumtext, c_text, c_longtext, c_binary, c_varbinary, c_tinyblob, c_blob, c_mediumblob, c_longblob, c_json FROM mysql_types LIMIT 1";
         public class GetMysqlTypesRow
         {
-            public byte[] CBit { get; set; }
-            public int? CTinyint { get; set; }
-            public int? CBool { get; set; }
-            public int? CBoolean { get; set; }
+            public bool? CBit { get; set; }
+            public bool? CTinyint { get; set; }
+            public bool? CBool { get; set; }
+            public bool? CBoolean { get; set; }
             public int? CSmallint { get; set; }
             public int? CMediumint { get; set; }
             public int? CInt { get; set; }
+            public int? CYear { get; set; }
             public int? CInteger { get; set; }
             public long? CBigint { get; set; }
-            public long CSerial { get; set; }
             public string CDecimal { get; set; }
             public string CDec { get; set; }
             public string CNumeric { get; set; }
@@ -493,21 +519,20 @@ namespace MySqlConnectorLegacyExampleGen
             public string CTime { get; set; }
             public DateTime? CDatetime { get; set; }
             public DateTime? CTimestamp { get; set; }
-            public int? CYear { get; set; }
             public string CChar { get; set; }
             public string CNchar { get; set; }
             public string CNationalChar { get; set; }
             public string CVarchar { get; set; }
+            public string CTinytext { get; set; }
+            public string CMediumtext { get; set; }
+            public string CText { get; set; }
+            public string CLongtext { get; set; }
             public byte[] CBinary { get; set; }
             public byte[] CVarbinary { get; set; }
             public byte[] CTinyblob { get; set; }
-            public string CTinytext { get; set; }
             public byte[] CBlob { get; set; }
-            public string CText { get; set; }
             public byte[] CMediumblob { get; set; }
-            public string CMediumtext { get; set; }
             public byte[] CLongblob { get; set; }
-            public string CLongtext { get; set; }
             public string CJson { get; set; }
         };
         public async Task<GetMysqlTypesRow> GetMysqlTypes()
@@ -523,16 +548,16 @@ namespace MySqlConnectorLegacyExampleGen
                         {
                             return new GetMysqlTypesRow
                             {
-                                CBit = reader.IsDBNull(0) ? null : Utils.GetBytes(reader, 0),
-                                CTinyint = reader.IsDBNull(1) ? (int? )null : reader.GetInt32(1),
-                                CBool = reader.IsDBNull(2) ? (int? )null : reader.GetInt32(2),
-                                CBoolean = reader.IsDBNull(3) ? (int? )null : reader.GetInt32(3),
+                                CBit = reader.IsDBNull(0) ? (bool? )null : reader.GetBoolean(0),
+                                CTinyint = reader.IsDBNull(1) ? (bool? )null : reader.GetBoolean(1),
+                                CBool = reader.IsDBNull(2) ? (bool? )null : reader.GetBoolean(2),
+                                CBoolean = reader.IsDBNull(3) ? (bool? )null : reader.GetBoolean(3),
                                 CSmallint = reader.IsDBNull(4) ? (int? )null : reader.GetInt32(4),
                                 CMediumint = reader.IsDBNull(5) ? (int? )null : reader.GetInt32(5),
                                 CInt = reader.IsDBNull(6) ? (int? )null : reader.GetInt32(6),
-                                CInteger = reader.IsDBNull(7) ? (int? )null : reader.GetInt32(7),
-                                CBigint = reader.IsDBNull(8) ? (long? )null : reader.GetInt64(8),
-                                CSerial = reader.GetInt64(9),
+                                CYear = reader.IsDBNull(7) ? (int? )null : reader.GetInt32(7),
+                                CInteger = reader.IsDBNull(8) ? (int? )null : reader.GetInt32(8),
+                                CBigint = reader.IsDBNull(9) ? (long? )null : reader.GetInt64(9),
                                 CDecimal = reader.IsDBNull(10) ? string.Empty : reader.GetString(10),
                                 CDec = reader.IsDBNull(11) ? string.Empty : reader.GetString(11),
                                 CNumeric = reader.IsDBNull(12) ? string.Empty : reader.GetString(12),
@@ -544,22 +569,21 @@ namespace MySqlConnectorLegacyExampleGen
                                 CTime = reader.IsDBNull(18) ? string.Empty : reader.GetString(18),
                                 CDatetime = reader.IsDBNull(19) ? (DateTime? )null : reader.GetDateTime(19),
                                 CTimestamp = reader.IsDBNull(20) ? (DateTime? )null : reader.GetDateTime(20),
-                                CYear = reader.IsDBNull(21) ? (int? )null : reader.GetInt32(21),
-                                CChar = reader.IsDBNull(22) ? string.Empty : reader.GetString(22),
-                                CNchar = reader.IsDBNull(23) ? string.Empty : reader.GetString(23),
-                                CNationalChar = reader.IsDBNull(24) ? string.Empty : reader.GetString(24),
-                                CVarchar = reader.IsDBNull(25) ? string.Empty : reader.GetString(25),
-                                CBinary = reader.IsDBNull(26) ? null : Utils.GetBytes(reader, 26),
-                                CVarbinary = reader.IsDBNull(27) ? null : Utils.GetBytes(reader, 27),
-                                CTinyblob = reader.IsDBNull(28) ? null : Utils.GetBytes(reader, 28),
-                                CTinytext = reader.IsDBNull(29) ? string.Empty : reader.GetString(29),
-                                CBlob = reader.IsDBNull(30) ? null : Utils.GetBytes(reader, 30),
-                                CText = reader.IsDBNull(31) ? string.Empty : reader.GetString(31),
-                                CMediumblob = reader.IsDBNull(32) ? null : Utils.GetBytes(reader, 32),
-                                CMediumtext = reader.IsDBNull(33) ? string.Empty : reader.GetString(33),
+                                CChar = reader.IsDBNull(21) ? string.Empty : reader.GetString(21),
+                                CNchar = reader.IsDBNull(22) ? string.Empty : reader.GetString(22),
+                                CNationalChar = reader.IsDBNull(23) ? string.Empty : reader.GetString(23),
+                                CVarchar = reader.IsDBNull(24) ? string.Empty : reader.GetString(24),
+                                CTinytext = reader.IsDBNull(25) ? string.Empty : reader.GetString(25),
+                                CMediumtext = reader.IsDBNull(26) ? string.Empty : reader.GetString(26),
+                                CText = reader.IsDBNull(27) ? string.Empty : reader.GetString(27),
+                                CLongtext = reader.IsDBNull(28) ? string.Empty : reader.GetString(28),
+                                CBinary = reader.IsDBNull(29) ? null : Utils.GetBytes(reader, 29),
+                                CVarbinary = reader.IsDBNull(30) ? null : Utils.GetBytes(reader, 30),
+                                CTinyblob = reader.IsDBNull(31) ? null : Utils.GetBytes(reader, 31),
+                                CBlob = reader.IsDBNull(32) ? null : Utils.GetBytes(reader, 32),
+                                CMediumblob = reader.IsDBNull(33) ? null : Utils.GetBytes(reader, 33),
                                 CLongblob = reader.IsDBNull(34) ? null : Utils.GetBytes(reader, 34),
-                                CLongtext = reader.IsDBNull(35) ? string.Empty : reader.GetString(35),
-                                CJson = reader.IsDBNull(36) ? string.Empty : reader.GetString(36)
+                                CJson = reader.IsDBNull(35) ? string.Empty : reader.GetString(35)
                             };
                         }
                     }
@@ -569,10 +593,14 @@ namespace MySqlConnectorLegacyExampleGen
             return null;
         }
 
-        private const string GetMysqlTypesAggSql = "SELECT COUNT(1) AS cnt , c_int, c_varchar, c_date, c_timestamp FROM  mysql_types  GROUP  BY  c_int , c_varchar, c_date, c_timestamp LIMIT  1  ";  
+        private const string GetMysqlTypesAggSql = "SELECT COUNT(1) AS cnt , c_bit, c_tinyint, c_bool, c_boolean, c_int, c_varchar, c_date, c_timestamp FROM  mysql_types  GROUP  BY  c_bit , c_tinyint, c_bool, c_boolean, c_int, c_varchar, c_date, c_timestamp LIMIT  1  ";  
         public class GetMysqlTypesAggRow
         {
             public long Cnt { get; set; }
+            public bool? CBit { get; set; }
+            public bool? CTinyint { get; set; }
+            public bool? CBool { get; set; }
+            public bool? CBoolean { get; set; }
             public int? CInt { get; set; }
             public string CVarchar { get; set; }
             public DateTime? CDate { get; set; }
@@ -592,10 +620,14 @@ namespace MySqlConnectorLegacyExampleGen
                             return new GetMysqlTypesAggRow
                             {
                                 Cnt = reader.GetInt64(0),
-                                CInt = reader.IsDBNull(1) ? (int? )null : reader.GetInt32(1),
-                                CVarchar = reader.IsDBNull(2) ? string.Empty : reader.GetString(2),
-                                CDate = reader.IsDBNull(3) ? (DateTime? )null : reader.GetDateTime(3),
-                                CTimestamp = reader.IsDBNull(4) ? (DateTime? )null : reader.GetDateTime(4)
+                                CBit = reader.IsDBNull(1) ? (bool? )null : reader.GetBoolean(1),
+                                CTinyint = reader.IsDBNull(2) ? (bool? )null : reader.GetBoolean(2),
+                                CBool = reader.IsDBNull(3) ? (bool? )null : reader.GetBoolean(3),
+                                CBoolean = reader.IsDBNull(4) ? (bool? )null : reader.GetBoolean(4),
+                                CInt = reader.IsDBNull(5) ? (int? )null : reader.GetInt32(5),
+                                CVarchar = reader.IsDBNull(6) ? string.Empty : reader.GetString(6),
+                                CDate = reader.IsDBNull(7) ? (DateTime? )null : reader.GetDateTime(7),
+                                CTimestamp = reader.IsDBNull(8) ? (DateTime? )null : reader.GetDateTime(8)
                             };
                         }
                     }
