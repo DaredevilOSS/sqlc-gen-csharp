@@ -43,7 +43,7 @@ namespace MySqlConnectorDapperLegacyExampleGen
         {
             using (var connection = new MySqlConnection(ConnectionString))
             {
-                var queryParams = new Dictionary<string, object>();
+                var queryParams = new Dictionary<string, object?>();
                 queryParams.Add("name", args.Name);
                 var result = await connection.QueryFirstOrDefaultAsync<GetAuthorRow>(GetAuthorSql, queryParams);
                 return result;
@@ -77,7 +77,7 @@ namespace MySqlConnectorDapperLegacyExampleGen
         {
             using (var connection = new MySqlConnection(ConnectionString))
             {
-                var queryParams = new Dictionary<string, object>();
+                var queryParams = new Dictionary<string, object?>();
                 queryParams.Add("id", args.Id);
                 queryParams.Add("name", args.Name);
                 queryParams.Add("bio", args.Bio);
@@ -95,7 +95,7 @@ namespace MySqlConnectorDapperLegacyExampleGen
         {
             using (var connection = new MySqlConnection(ConnectionString))
             {
-                var queryParams = new Dictionary<string, object>();
+                var queryParams = new Dictionary<string, object?>();
                 queryParams.Add("name", args.Name);
                 queryParams.Add("bio", args.Bio);
                 return await connection.QuerySingleAsync<long>(CreateAuthorReturnIdSql, queryParams);
@@ -117,7 +117,7 @@ namespace MySqlConnectorDapperLegacyExampleGen
         {
             using (var connection = new MySqlConnection(ConnectionString))
             {
-                var queryParams = new Dictionary<string, object>();
+                var queryParams = new Dictionary<string, object?>();
                 queryParams.Add("id", args.Id);
                 var result = await connection.QueryFirstOrDefaultAsync<GetAuthorByIdRow>(GetAuthorByIdSql, queryParams);
                 return result;
@@ -139,7 +139,7 @@ namespace MySqlConnectorDapperLegacyExampleGen
         {
             using (var connection = new MySqlConnection(ConnectionString))
             {
-                var queryParams = new Dictionary<string, object>();
+                var queryParams = new Dictionary<string, object?>();
                 queryParams.Add("name_pattern", args.NamePattern);
                 var result = await connection.QueryAsync<GetAuthorByNamePatternRow>(GetAuthorByNamePatternSql, queryParams);
                 return result.AsList();
@@ -155,7 +155,7 @@ namespace MySqlConnectorDapperLegacyExampleGen
         {
             using (var connection = new MySqlConnection(ConnectionString))
             {
-                var queryParams = new Dictionary<string, object>();
+                var queryParams = new Dictionary<string, object?>();
                 queryParams.Add("name", args.Name);
                 await connection.ExecuteAsync(DeleteAuthorSql, queryParams);
             }
@@ -179,7 +179,7 @@ namespace MySqlConnectorDapperLegacyExampleGen
         {
             using (var connection = new MySqlConnection(ConnectionString))
             {
-                var queryParams = new Dictionary<string, object>();
+                var queryParams = new Dictionary<string, object?>();
                 queryParams.Add("bio", args.Bio);
                 return await connection.ExecuteAsync(UpdateAuthorsSql, queryParams);
             }
@@ -202,7 +202,7 @@ namespace MySqlConnectorDapperLegacyExampleGen
             {
                 var sqlText = GetAuthorsByIdsSql;
                 sqlText = Utils.GetTransformedString(sqlText, args.Ids, "Ids", "ids");
-                var queryParams = new Dictionary<string, object>();
+                var queryParams = new Dictionary<string, object?>();
                 for (int i = 0; i < args.Ids.Length; i++)
                     queryParams.Add($"@IdsArg{i}", args.Ids[i]);
                 var result = await connection.QueryAsync<GetAuthorsByIdsRow>(sqlText, queryParams);
@@ -229,7 +229,7 @@ namespace MySqlConnectorDapperLegacyExampleGen
                 var sqlText = GetAuthorsByIdsAndNamesSql;
                 sqlText = Utils.GetTransformedString(sqlText, args.Ids, "Ids", "ids");
                 sqlText = Utils.GetTransformedString(sqlText, args.Names, "Names", "names");
-                var queryParams = new Dictionary<string, object>();
+                var queryParams = new Dictionary<string, object?>();
                 for (int i = 0; i < args.Ids.Length; i++)
                     queryParams.Add($"@IdsArg{i}", args.Ids[i]);
                 for (int i = 0; i < args.Names.Length; i++)
@@ -249,7 +249,7 @@ namespace MySqlConnectorDapperLegacyExampleGen
         {
             using (var connection = new MySqlConnection(ConnectionString))
             {
-                var queryParams = new Dictionary<string, object>();
+                var queryParams = new Dictionary<string, object?>();
                 queryParams.Add("name", args.Name);
                 queryParams.Add("author_id", args.AuthorId);
                 return await connection.QuerySingleAsync<long>(CreateBookSql, queryParams);
@@ -360,7 +360,7 @@ namespace MySqlConnectorDapperLegacyExampleGen
         {
             using (var connection = new MySqlConnection(ConnectionString))
             {
-                var queryParams = new Dictionary<string, object>();
+                var queryParams = new Dictionary<string, object?>();
                 queryParams.Add("c_bit", args.CBit);
                 queryParams.Add("c_tinyint", args.CTinyint);
                 queryParams.Add("c_bool", args.CBool);

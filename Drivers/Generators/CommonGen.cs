@@ -40,7 +40,7 @@ public class CommonGen(DbDriver dbDriver)
     public string ConstructDapperParamsDict(IList<Parameter> parameters)
     {
         if (!parameters.Any()) return string.Empty;
-        var initParamsDict = $"var {Variable.QueryParams.AsVarName()} = new Dictionary<string, object>();";
+        var initParamsDict = $"var {Variable.QueryParams.AsVarName()} = new Dictionary<string, object?>();";
         var argsVar = Variable.Args.AsVarName();
         var queryParamsVar = Variable.QueryParams.AsVarName();
 
