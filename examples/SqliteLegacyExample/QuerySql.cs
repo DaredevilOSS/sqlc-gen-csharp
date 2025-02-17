@@ -169,6 +169,39 @@ namespace SqliteLegacyExampleGen
             return null;
         }
 
+        private const string GetAuthorByNamePatternSql = "SELECT id, name, bio FROM authors WHERE name LIKE COALESCE(@name_pattern1, '%')";
+        public class GetAuthorByNamePatternRow
+        {
+            public int Id { get; set; }
+            public string Name { get; set; }
+            public string Bio { get; set; }
+        };
+        public class GetAuthorByNamePatternArgs
+        {
+            public string NamePattern { get; set; }
+        };
+        public async Task<List<GetAuthorByNamePatternRow>> GetAuthorByNamePattern(GetAuthorByNamePatternArgs args)
+        {
+            using (var connection = new SqliteConnection(ConnectionString))
+            {
+                await connection.OpenAsync();
+                using (var command = new SqliteCommand(GetAuthorByNamePatternSql, connection))
+                {
+                    command.Parameters.AddWithValue("@name_pattern", args.NamePattern);
+                    using (var reader = await command.ExecuteReaderAsync())
+                    {
+                        var result = new List<GetAuthorByNamePatternRow>();
+                        while (await reader.ReadAsync())
+                        {
+                            result.Add(new GetAuthorByNamePatternRow { Id = reader.GetInt32(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? string.Empty : reader.GetString(2) });
+                        }
+
+                        return result;
+                    }
+                }
+            }
+        }
+
         private const string UpdateAuthorsSql = "UPDATE authors  SET  bio  =  @bio  WHERE  bio  IS  NOT  NULL  ";  
         public class UpdateAuthorsArgs
         {

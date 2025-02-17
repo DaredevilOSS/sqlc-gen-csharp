@@ -13,6 +13,9 @@ INSERT INTO authors (name, bio) VALUES (?, ?) RETURNING id;
 -- name: GetAuthorById :one
 SELECT * FROM authors WHERE id = ? LIMIT 1;
 
+-- name: GetAuthorByNamePattern :many
+SELECT * FROM authors WHERE name LIKE COALESCE(sqlc.narg('name_pattern'), '%');
+
 -- name: UpdateAuthors :execrows
 UPDATE authors 
 SET bio = ?

@@ -28,12 +28,6 @@ public class CommonGen(DbDriver dbDriver)
 
             var addParamToCommand = $"""{commandVar}.Parameters.AddWithValue("@{p.Column.Name}", {argsVar}.{param});""";
             return addParamToCommand;
-            // return ShouldCheckParameterForNull(p)
-            //     ? $"""
-            //        if ({argsVar}.{param} != null) 
-            //             {addParamToCommand}
-            //        """
-            //     : addParamToCommand;
         }).JoinByNewLine();
     }
 
@@ -56,26 +50,12 @@ public class CommonGen(DbDriver dbDriver)
 
             var addParamToDict = $"{queryParamsVar}.Add(\"{p.Column.Name}\", {argsVar}.{param});";
             return addParamToDict;
-            // return ShouldCheckParameterForNull(p)
-            //     ? $"""
-            //        if ({argsVar}.{param} != null) 
-            //            {addParamToDict}
-            //        """
-            //     : addParamToDict;
         });
 
         return $"""
                  {initParamsDict}
                  {dapperParamsCommands.JoinByNewLine()}
                  """;
-    }
-
-    private bool ShouldCheckParameterForNull(Parameter parameter)
-    {
-        if (parameter.Column.IsArray || parameter.Column.NotNull)
-            return false;
-        var csharpType = dbDriver.GetCsharpType(parameter.Column);
-        return dbDriver.IsTypeNullable(csharpType);
     }
 
     public static string AwaitReaderRow()

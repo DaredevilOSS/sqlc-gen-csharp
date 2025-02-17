@@ -121,6 +121,28 @@ public class QuerySql
         }
     }
 
+    private const string GetAuthorByNamePatternSql = "SELECT id, name, bio FROM authors WHERE name LIKE COALESCE(@name_pattern1, '%')";
+    public class GetAuthorByNamePatternRow
+    {
+        public required int Id { get; init; }
+        public required string Name { get; init; }
+        public string? Bio { get; init; }
+    };
+    public class GetAuthorByNamePatternArgs
+    {
+        public string? NamePattern { get; init; }
+    };
+    public async Task<List<GetAuthorByNamePatternRow>> GetAuthorByNamePattern(GetAuthorByNamePatternArgs args)
+    {
+        using (var connection = new SqliteConnection(ConnectionString))
+        {
+            var queryParams = new Dictionary<string, object?>();
+            queryParams.Add("name_pattern", args.NamePattern);
+            var result = await connection.QueryAsync<GetAuthorByNamePatternRow>(GetAuthorByNamePatternSql, queryParams);
+            return result.AsList();
+        }
+    }
+
     private const string UpdateAuthorsSql = "UPDATE authors  SET  bio  =  @bio  WHERE  bio  IS  NOT  NULL  ";  
     public class UpdateAuthorsArgs
     {
