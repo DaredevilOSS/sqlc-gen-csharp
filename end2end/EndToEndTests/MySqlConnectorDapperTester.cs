@@ -1,8 +1,6 @@
 using MySqlConnectorDapperExampleGen;
 using NUnit.Framework;
-using NUnit.Framework.Legacy;
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace SqlcGenCsharpTests;
