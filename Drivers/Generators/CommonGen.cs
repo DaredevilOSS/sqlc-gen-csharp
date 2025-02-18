@@ -26,7 +26,8 @@ public class CommonGen(DbDriver dbDriver)
                              {{commandVar}}.Parameters.AddWithValue($"@{{param}}Arg{i}", {{argsVar}}.{{param}}[i]);
                          """;
 
-            var addParamToCommand = $"""{commandVar}.Parameters.AddWithValue("@{p.Column.Name}", {argsVar}.{param});""";
+            var nullableParamCasting = p.Column.NotNull ? "" : " ?? (object)DBNull.Value";
+            var addParamToCommand = $"""{commandVar}.Parameters.AddWithValue("@{p.Column.Name}", {argsVar}.{param}{nullableParamCasting});""";
             return addParamToCommand;
         }).JoinByNewLine();
     }
@@ -164,5 +165,12 @@ public class CommonGen(DbDriver dbDriver)
                      }
                      """;
         }
+    }
+    private bool ShouldCheckParameterForNull(Parameter parameter)
+    {
+        if (parameter.Column.IsArray || parameter.Column.NotNull)
+            return false;
+        var csharpType = dbDriver.GetCsharpType(parameter.Column);
+        return dbDriver.IsTypeNullable(csharpType);
     }
 }

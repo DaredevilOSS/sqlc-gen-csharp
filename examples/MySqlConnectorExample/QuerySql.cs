@@ -88,7 +88,7 @@ public class QuerySql
             {
                 command.Parameters.AddWithValue("@id", args.Id);
                 command.Parameters.AddWithValue("@name", args.Name);
-                command.Parameters.AddWithValue("@bio", args.Bio);
+                command.Parameters.AddWithValue("@bio", args.Bio ?? (object)DBNull.Value);
                 await command.ExecuteScalarAsync();
             }
         }
@@ -104,7 +104,7 @@ public class QuerySql
             using (var command = new MySqlCommand(CreateAuthorReturnIdSql, connection))
             {
                 command.Parameters.AddWithValue("@name", args.Name);
-                command.Parameters.AddWithValue("@bio", args.Bio);
+                command.Parameters.AddWithValue("@bio", args.Bio ?? (object)DBNull.Value);
                 await command.ExecuteNonQueryAsync();
                 return command.LastInsertedId;
             }
@@ -150,7 +150,7 @@ public class QuerySql
             await connection.OpenAsync();
             using (var command = new MySqlCommand(GetAuthorByNamePatternSql, connection))
             {
-                command.Parameters.AddWithValue("@name_pattern", args.NamePattern);
+                command.Parameters.AddWithValue("@name_pattern", args.NamePattern ?? (object)DBNull.Value);
                 using (var reader = await command.ExecuteReaderAsync())
                 {
                     var result = new List<GetAuthorByNamePatternRow>();
@@ -202,7 +202,7 @@ public class QuerySql
             await connection.OpenAsync();
             using (var command = new MySqlCommand(UpdateAuthorsSql, connection))
             {
-                command.Parameters.AddWithValue("@bio", args.Bio);
+                command.Parameters.AddWithValue("@bio", args.Bio ?? (object)DBNull.Value);
                 return await command.ExecuteNonQueryAsync();
             }
         }
@@ -364,14 +364,14 @@ public class QuerySql
             await connection.OpenAsync();
             using (var command = new MySqlCommand(InsertMysqlTypesSql, connection))
             {
-                command.Parameters.AddWithValue("@c_bit", args.CBit);
-                command.Parameters.AddWithValue("@c_tinyint", args.CTinyint);
-                command.Parameters.AddWithValue("@c_bool", args.CBool);
-                command.Parameters.AddWithValue("@c_boolean", args.CBoolean);
-                command.Parameters.AddWithValue("@c_int", args.CInt);
-                command.Parameters.AddWithValue("@c_varchar", args.CVarchar);
-                command.Parameters.AddWithValue("@c_date", args.CDate);
-                command.Parameters.AddWithValue("@c_timestamp", args.CTimestamp);
+                command.Parameters.AddWithValue("@c_bit", args.CBit ?? (object)DBNull.Value);
+                command.Parameters.AddWithValue("@c_tinyint", args.CTinyint ?? (object)DBNull.Value);
+                command.Parameters.AddWithValue("@c_bool", args.CBool ?? (object)DBNull.Value);
+                command.Parameters.AddWithValue("@c_boolean", args.CBoolean ?? (object)DBNull.Value);
+                command.Parameters.AddWithValue("@c_int", args.CInt ?? (object)DBNull.Value);
+                command.Parameters.AddWithValue("@c_varchar", args.CVarchar ?? (object)DBNull.Value);
+                command.Parameters.AddWithValue("@c_date", args.CDate ?? (object)DBNull.Value);
+                command.Parameters.AddWithValue("@c_timestamp", args.CTimestamp ?? (object)DBNull.Value);
                 await command.ExecuteScalarAsync();
             }
         }

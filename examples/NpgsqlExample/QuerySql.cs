@@ -81,7 +81,7 @@ public class QuerySql
             {
                 command.Parameters.AddWithValue("@id", args.Id);
                 command.Parameters.AddWithValue("@name", args.Name);
-                command.Parameters.AddWithValue("@bio", args.Bio);
+                command.Parameters.AddWithValue("@bio", args.Bio ?? (object)DBNull.Value);
                 using (var reader = await command.ExecuteReaderAsync())
                 {
                     if (await reader.ReadAsync())
@@ -110,7 +110,7 @@ public class QuerySql
             using (var command = connection.CreateCommand(CreateAuthorReturnIdSql))
             {
                 command.Parameters.AddWithValue("@name", args.Name);
-                command.Parameters.AddWithValue("@bio", args.Bio);
+                command.Parameters.AddWithValue("@bio", args.Bio ?? (object)DBNull.Value);
                 var result = await command.ExecuteScalarAsync();
                 return Convert.ToInt64(result);
             }
@@ -154,7 +154,7 @@ public class QuerySql
         {
             using (var command = connection.CreateCommand(GetAuthorByNamePatternSql))
             {
-                command.Parameters.AddWithValue("@name_pattern", args.NamePattern);
+                command.Parameters.AddWithValue("@name_pattern", args.NamePattern ?? (object)DBNull.Value);
                 using (var reader = await command.ExecuteReaderAsync())
                 {
                     var result = new List<GetAuthorByNamePatternRow>();
@@ -203,7 +203,7 @@ public class QuerySql
         {
             using (var command = connection.CreateCommand(UpdateAuthorsSql))
             {
-                command.Parameters.AddWithValue("@bio", args.Bio);
+                command.Parameters.AddWithValue("@bio", args.Bio ?? (object)DBNull.Value);
                 return await command.ExecuteNonQueryAsync();
             }
         }
@@ -351,21 +351,21 @@ public class QuerySql
         {
             using (var command = connection.CreateCommand(InsertPostgresTypesSql))
             {
-                command.Parameters.AddWithValue("@c_smallint", args.CSmallint);
-                command.Parameters.AddWithValue("@c_boolean", args.CBoolean);
-                command.Parameters.AddWithValue("@c_integer", args.CInteger);
-                command.Parameters.AddWithValue("@c_bigint", args.CBigint);
-                command.Parameters.AddWithValue("@c_decimal", args.CDecimal);
-                command.Parameters.AddWithValue("@c_numeric", args.CNumeric);
-                command.Parameters.AddWithValue("@c_real", args.CReal);
-                command.Parameters.AddWithValue("@c_date", args.CDate);
-                command.Parameters.AddWithValue("@c_timestamp", args.CTimestamp);
-                command.Parameters.AddWithValue("@c_char", args.CChar);
-                command.Parameters.AddWithValue("@c_varchar", args.CVarchar);
-                command.Parameters.AddWithValue("@c_character_varying", args.CCharacterVarying);
-                command.Parameters.AddWithValue("@c_text", args.CText);
-                command.Parameters.AddWithValue("@c_text_array", args.CTextArray);
-                command.Parameters.AddWithValue("@c_integer_array", args.CIntegerArray);
+                command.Parameters.AddWithValue("@c_smallint", args.CSmallint ?? (object)DBNull.Value);
+                command.Parameters.AddWithValue("@c_boolean", args.CBoolean ?? (object)DBNull.Value);
+                command.Parameters.AddWithValue("@c_integer", args.CInteger ?? (object)DBNull.Value);
+                command.Parameters.AddWithValue("@c_bigint", args.CBigint ?? (object)DBNull.Value);
+                command.Parameters.AddWithValue("@c_decimal", args.CDecimal ?? (object)DBNull.Value);
+                command.Parameters.AddWithValue("@c_numeric", args.CNumeric ?? (object)DBNull.Value);
+                command.Parameters.AddWithValue("@c_real", args.CReal ?? (object)DBNull.Value);
+                command.Parameters.AddWithValue("@c_date", args.CDate ?? (object)DBNull.Value);
+                command.Parameters.AddWithValue("@c_timestamp", args.CTimestamp ?? (object)DBNull.Value);
+                command.Parameters.AddWithValue("@c_char", args.CChar ?? (object)DBNull.Value);
+                command.Parameters.AddWithValue("@c_varchar", args.CVarchar ?? (object)DBNull.Value);
+                command.Parameters.AddWithValue("@c_character_varying", args.CCharacterVarying ?? (object)DBNull.Value);
+                command.Parameters.AddWithValue("@c_text", args.CText ?? (object)DBNull.Value);
+                command.Parameters.AddWithValue("@c_text_array", args.CTextArray ?? (object)DBNull.Value);
+                command.Parameters.AddWithValue("@c_integer_array", args.CIntegerArray ?? (object)DBNull.Value);
                 await command.ExecuteScalarAsync();
             }
         }

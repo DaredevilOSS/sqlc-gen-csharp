@@ -82,7 +82,7 @@ public class QuerySql
             {
                 command.Parameters.AddWithValue("@id", args.Id);
                 command.Parameters.AddWithValue("@name", args.Name);
-                command.Parameters.AddWithValue("@bio", args.Bio);
+                command.Parameters.AddWithValue("@bio", args.Bio ?? (object)DBNull.Value);
                 await command.ExecuteScalarAsync();
             }
         }
@@ -99,7 +99,7 @@ public class QuerySql
             using (var command = new SqliteCommand(CreateAuthorReturnIdSql, connection))
             {
                 command.Parameters.AddWithValue("@name", args.Name);
-                command.Parameters.AddWithValue("@bio", args.Bio);
+                command.Parameters.AddWithValue("@bio", args.Bio ?? (object)DBNull.Value);
                 var result = await command.ExecuteScalarAsync();
                 return Convert.ToInt32(result);
             }
@@ -145,7 +145,7 @@ public class QuerySql
             await connection.OpenAsync();
             using (var command = new SqliteCommand(GetAuthorByNamePatternSql, connection))
             {
-                command.Parameters.AddWithValue("@name_pattern", args.NamePattern);
+                command.Parameters.AddWithValue("@name_pattern", args.NamePattern ?? (object)DBNull.Value);
                 using (var reader = await command.ExecuteReaderAsync())
                 {
                     var result = new List<GetAuthorByNamePatternRow>();
@@ -169,7 +169,7 @@ public class QuerySql
             await connection.OpenAsync();
             using (var command = new SqliteCommand(UpdateAuthorsSql, connection))
             {
-                command.Parameters.AddWithValue("@bio", args.Bio);
+                command.Parameters.AddWithValue("@bio", args.Bio ?? (object)DBNull.Value);
                 return await command.ExecuteNonQueryAsync();
             }
         }
@@ -360,10 +360,10 @@ public class QuerySql
             await connection.OpenAsync();
             using (var command = new SqliteCommand(InsertSqliteTypesSql, connection))
             {
-                command.Parameters.AddWithValue("@c_integer", args.CInteger);
-                command.Parameters.AddWithValue("@c_real", args.CReal);
-                command.Parameters.AddWithValue("@c_text", args.CText);
-                command.Parameters.AddWithValue("@c_blob", args.CBlob);
+                command.Parameters.AddWithValue("@c_integer", args.CInteger ?? (object)DBNull.Value);
+                command.Parameters.AddWithValue("@c_real", args.CReal ?? (object)DBNull.Value);
+                command.Parameters.AddWithValue("@c_text", args.CText ?? (object)DBNull.Value);
+                command.Parameters.AddWithValue("@c_blob", args.CBlob ?? (object)DBNull.Value);
                 await command.ExecuteScalarAsync();
             }
         }
