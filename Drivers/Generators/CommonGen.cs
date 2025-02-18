@@ -166,11 +166,4 @@ public class CommonGen(DbDriver dbDriver)
                      """;
         }
     }
-    private bool ShouldCheckParameterForNull(Parameter parameter)
-    {
-        if (parameter.Column.IsArray || parameter.Column.NotNull)
-            return false;
-        var csharpType = dbDriver.GetCsharpType(parameter.Column);
-        return dbDriver.IsTypeNullable(csharpType);
-    }
 }
