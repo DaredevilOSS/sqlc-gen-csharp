@@ -46,7 +46,7 @@ More info can be found in [here](https://docs.sqlc.dev/en/stable/reference/query
 | Annotation  | PostgresSQL | MySQL | SQLite  |
 |-------------|-------------|-------|---------|
 | sqlc.arg    | ✅          | ✅    | ✅       |
-| sqlc.narg   | ❌          | ❌    | ❌       |
+| sqlc.narg   | ✅          | ✅    | ✅       |
 | sqlc.slice  | 🚫          | ✅    | ✅       |
 | sqlc.embed  | ✅          | ✅    | ✅       |
 
