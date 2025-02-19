@@ -301,7 +301,7 @@ namespace SqlcGenCsharpTests
         {
             await this.QuerySql.CreateAuthor(new QuerySql.CreateAuthorArgs { Id = 1111, Name = "Bojack Horseman", Bio = "Back in the 90s he was in a very famous TV show" });
             await this.QuerySql.CreateAuthor(new QuerySql.CreateAuthorArgs { Id = 2222, Name = "Dr. Seuss", Bio = "You'll miss the best things if you keep your eyes shut" });
-            var expectedNullSearch = new List<QuerySql.GetAuthorByNamePatternRow>
+            var expected = new List<QuerySql.GetAuthorByNamePatternRow>
             {
                 new QuerySql.GetAuthorByNamePatternRow
                 {
@@ -318,7 +318,7 @@ namespace SqlcGenCsharpTests
             };
             var actual = await this.QuerySql.GetAuthorByNamePattern(new QuerySql.GetAuthorByNamePatternArgs());
             ClassicAssert.AreEqual(2, actual.Count);
-            SequenceEquals(expectedNullSearch, actual);
+            SequenceEquals(expected, actual);
         }
 
         private static bool SequenceEquals(List<QuerySql.GetAuthorByNamePatternRow> x, List<QuerySql.GetAuthorByNamePatternRow> y)
@@ -340,7 +340,7 @@ namespace SqlcGenCsharpTests
         {
             await this.QuerySql.CreateAuthor(new QuerySql.CreateAuthorArgs { Id = 1111, Name = "Bojack Horseman", Bio = "Back in the 90s he was in a very famous TV show" });
             await this.QuerySql.CreateAuthor(new QuerySql.CreateAuthorArgs { Id = 2222, Name = "Dr. Seuss", Bio = "You'll miss the best things if you keep your eyes shut" });
-            var expectedBojackSearch = new List<QuerySql.GetAuthorByNamePatternRow>
+            var expected = new List<QuerySql.GetAuthorByNamePatternRow>
             {
                 new QuerySql.GetAuthorByNamePatternRow
                 {
@@ -349,9 +349,9 @@ namespace SqlcGenCsharpTests
                     Bio = "Back in the 90s he was in a very famous TV show"
                 }
             };
-            var actualBojeck = await this.QuerySql.GetAuthorByNamePattern(new QuerySql.GetAuthorByNamePatternArgs { NamePattern = "Bojack%" });
-            ClassicAssert.AreEqual(1, actualBojeck.Count);
-            SequenceEquals(expectedBojackSearch, actualBojeck);
+            var actual = await this.QuerySql.GetAuthorByNamePattern(new QuerySql.GetAuthorByNamePatternArgs { NamePattern = "Bojack%" });
+            ClassicAssert.AreEqual(1, actual.Count);
+            SequenceEquals(expected, actual);
         }
     }
 }
