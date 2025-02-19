@@ -107,7 +107,7 @@ namespace MySqlConnectorLegacyExampleGen
                 {
                     command.Parameters.AddWithValue("@id", args.Id);
                     command.Parameters.AddWithValue("@name", args.Name);
-                    command.Parameters.AddWithValue("@bio", args.Bio);
+                    command.Parameters.AddWithValue("@bio", args.Bio ?? (object)DBNull.Value);
                     await command.ExecuteScalarAsync();
                 }
             }
@@ -127,7 +127,7 @@ namespace MySqlConnectorLegacyExampleGen
                 using (var command = new MySqlCommand(CreateAuthorReturnIdSql, connection))
                 {
                     command.Parameters.AddWithValue("@name", args.Name);
-                    command.Parameters.AddWithValue("@bio", args.Bio);
+                    command.Parameters.AddWithValue("@bio", args.Bio ?? (object)DBNull.Value);
                     await command.ExecuteNonQueryAsync();
                     return command.LastInsertedId;
                 }
@@ -169,6 +169,39 @@ namespace MySqlConnectorLegacyExampleGen
             }
 
             return null;
+        }
+
+        private const string GetAuthorByNamePatternSql = "SELECT id, name, bio FROM authors WHERE name LIKE COALESCE(@name_pattern, '%')";
+        public class GetAuthorByNamePatternRow
+        {
+            public long Id { get; set; }
+            public string Name { get; set; }
+            public string Bio { get; set; }
+        };
+        public class GetAuthorByNamePatternArgs
+        {
+            public string NamePattern { get; set; }
+        };
+        public async Task<List<GetAuthorByNamePatternRow>> GetAuthorByNamePattern(GetAuthorByNamePatternArgs args)
+        {
+            using (var connection = new MySqlConnection(ConnectionString))
+            {
+                await connection.OpenAsync();
+                using (var command = new MySqlCommand(GetAuthorByNamePatternSql, connection))
+                {
+                    command.Parameters.AddWithValue("@name_pattern", args.NamePattern ?? (object)DBNull.Value);
+                    using (var reader = await command.ExecuteReaderAsync())
+                    {
+                        var result = new List<GetAuthorByNamePatternRow>();
+                        while (await reader.ReadAsync())
+                        {
+                            result.Add(new GetAuthorByNamePatternRow { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? string.Empty : reader.GetString(2) });
+                        }
+
+                        return result;
+                    }
+                }
+            }
         }
 
         private const string DeleteAuthorSql = "DELETE FROM authors WHERE name = @name";
@@ -214,7 +247,7 @@ namespace MySqlConnectorLegacyExampleGen
                 await connection.OpenAsync();
                 using (var command = new MySqlCommand(UpdateAuthorsSql, connection))
                 {
-                    command.Parameters.AddWithValue("@bio", args.Bio);
+                    command.Parameters.AddWithValue("@bio", args.Bio ?? (object)DBNull.Value);
                     return await command.ExecuteNonQueryAsync();
                 }
             }
@@ -424,21 +457,14 @@ namespace MySqlConnectorLegacyExampleGen
                 await connection.OpenAsync();
                 using (var command = new MySqlCommand(InsertMysqlTypesSql, connection))
                 {
-                    if (args.CBit != null)
-                        command.Parameters.AddWithValue("@c_bit", args.CBit);
-                    if (args.CTinyint != null)
-                        command.Parameters.AddWithValue("@c_tinyint", args.CTinyint);
-                    if (args.CBool != null)
-                        command.Parameters.AddWithValue("@c_bool", args.CBool);
-                    if (args.CBoolean != null)
-                        command.Parameters.AddWithValue("@c_boolean", args.CBoolean);
-                    if (args.CInt != null)
-                        command.Parameters.AddWithValue("@c_int", args.CInt);
-                    command.Parameters.AddWithValue("@c_varchar", args.CVarchar);
-                    if (args.CDate != null)
-                        command.Parameters.AddWithValue("@c_date", args.CDate);
-                    if (args.CTimestamp != null)
-                        command.Parameters.AddWithValue("@c_timestamp", args.CTimestamp);
+                    command.Parameters.AddWithValue("@c_bit", args.CBit ?? (object)DBNull.Value);
+                    command.Parameters.AddWithValue("@c_tinyint", args.CTinyint ?? (object)DBNull.Value);
+                    command.Parameters.AddWithValue("@c_bool", args.CBool ?? (object)DBNull.Value);
+                    command.Parameters.AddWithValue("@c_boolean", args.CBoolean ?? (object)DBNull.Value);
+                    command.Parameters.AddWithValue("@c_int", args.CInt ?? (object)DBNull.Value);
+                    command.Parameters.AddWithValue("@c_varchar", args.CVarchar ?? (object)DBNull.Value);
+                    command.Parameters.AddWithValue("@c_date", args.CDate ?? (object)DBNull.Value);
+                    command.Parameters.AddWithValue("@c_timestamp", args.CTimestamp ?? (object)DBNull.Value);
                     await command.ExecuteScalarAsync();
                 }
             }

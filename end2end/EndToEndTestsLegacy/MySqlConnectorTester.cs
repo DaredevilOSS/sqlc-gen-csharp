@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 
 namespace SqlcGenCsharpTests
 {
-    [TestFixture]
     public partial class MySqlConnectorTester
     {
         private QuerySql QuerySql { get; } = new QuerySql(

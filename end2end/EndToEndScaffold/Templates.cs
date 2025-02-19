@@ -729,6 +729,72 @@ public static class Templates
                            // TODO add CBlob.Equals - fix impl
                    }
                    """
+        },
+        [KnownTestType.NargNull] = new TestImpl
+        {
+            Impl = $$"""
+                    [Test]
+                    public async Task TestNargNull()
+                    {
+                        {{CreateBojackAuthor}}
+                        {{CreateDrSeussAuthor}}
+                        var expected = new List<QuerySql.GetAuthorByNamePatternRow>
+                        {
+                            new QuerySql.GetAuthorByNamePatternRow
+                            {
+                                Id = {{BojackId}},
+                                Name = {{BojackAuthor}},
+                                Bio = {{BojackTheme}}
+                            },
+                            new QuerySql.GetAuthorByNamePatternRow
+                            {
+                                Id = {{DrSeussId}},
+                                Name = {{DrSeussAuthor}},
+                                Bio = {{DrSeussQuote}}
+                            }
+                        };
+
+                        var actual = await this.QuerySql.GetAuthorByNamePattern(new QuerySql.GetAuthorByNamePatternArgs());
+                        Assert.That(SequenceEquals(expected, actual));
+                    }
+
+                    private static bool SequenceEquals(List<QuerySql.GetAuthorByNamePatternRow> x, List<QuerySql.GetAuthorByNamePatternRow> y)
+                    {
+                        if (x.Count != y.Count)
+                            return false;
+                        x = x.OrderBy<QuerySql.GetAuthorByNamePatternRow, object>(o => o.Id).ToList();
+                        y = y.OrderBy<QuerySql.GetAuthorByNamePatternRow, object>(o => o.Id).ToList();
+                        return !x.Where((t, i) => !SingularEquals(t, y[i])).Any();
+                    }
+                    private static bool SingularEquals(QuerySql.GetAuthorByNamePatternRow x, QuerySql.GetAuthorByNamePatternRow y)
+                    {
+                        return x.Id.Equals(y.Id) && x.Name.Equals(y.Name) && x.Bio.Equals(y.Bio);
+                    }
+                   """
+        },
+        [KnownTestType.NargNotNull] = new TestImpl
+        {
+            Impl = $$"""
+                    [Test]
+                    public async Task TestNargNotNull()
+                    {
+                        {{CreateBojackAuthor}}
+                        {{CreateDrSeussAuthor}}
+
+                        var expected = new List<QuerySql.GetAuthorByNamePatternRow>
+                        {
+                            new QuerySql.GetAuthorByNamePatternRow
+                            {
+                                Id = {{BojackId}},
+                                Name = {{BojackAuthor}},
+                                Bio = {{BojackTheme}}
+                            }
+                        };
+
+                        var actual = await this.QuerySql.GetAuthorByNamePattern(new QuerySql.GetAuthorByNamePatternArgs { NamePattern = "Bojack%" });
+                        Assert.That(SequenceEquals(expected, actual));
+                    }
+                   """
         }
     };
 }

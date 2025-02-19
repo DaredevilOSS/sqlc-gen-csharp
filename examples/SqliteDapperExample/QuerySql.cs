@@ -36,7 +36,7 @@ public class QuerySql
     {
         using (var connection = new SqliteConnection(ConnectionString))
         {
-            var queryParams = new Dictionary<string, object>();
+            var queryParams = new Dictionary<string, object?>();
             queryParams.Add("name", args.Name);
             var result = await connection.QueryFirstOrDefaultAsync<GetAuthorRow?>(GetAuthorSql, queryParams);
             return result;
@@ -70,11 +70,10 @@ public class QuerySql
     {
         using (var connection = new SqliteConnection(ConnectionString))
         {
-            var queryParams = new Dictionary<string, object>();
+            var queryParams = new Dictionary<string, object?>();
             queryParams.Add("id", args.Id);
             queryParams.Add("name", args.Name);
-            if (args.Bio != null)
-                queryParams.Add("bio", args.Bio);
+            queryParams.Add("bio", args.Bio);
             await connection.ExecuteAsync(CreateAuthorSql, queryParams);
         }
     }
@@ -93,10 +92,9 @@ public class QuerySql
     {
         using (var connection = new SqliteConnection(ConnectionString))
         {
-            var queryParams = new Dictionary<string, object>();
+            var queryParams = new Dictionary<string, object?>();
             queryParams.Add("name", args.Name);
-            if (args.Bio != null)
-                queryParams.Add("bio", args.Bio);
+            queryParams.Add("bio", args.Bio);
             return await connection.QuerySingleAsync<int>(CreateAuthorReturnIdSql, queryParams);
         }
     }
@@ -116,10 +114,32 @@ public class QuerySql
     {
         using (var connection = new SqliteConnection(ConnectionString))
         {
-            var queryParams = new Dictionary<string, object>();
+            var queryParams = new Dictionary<string, object?>();
             queryParams.Add("id", args.Id);
             var result = await connection.QueryFirstOrDefaultAsync<GetAuthorByIdRow?>(GetAuthorByIdSql, queryParams);
             return result;
+        }
+    }
+
+    private const string GetAuthorByNamePatternSql = "SELECT id, name, bio FROM authors WHERE name LIKE COALESCE(@name_pattern, '%')";
+    public class GetAuthorByNamePatternRow
+    {
+        public required int Id { get; init; }
+        public required string Name { get; init; }
+        public string? Bio { get; init; }
+    };
+    public class GetAuthorByNamePatternArgs
+    {
+        public string? NamePattern { get; init; }
+    };
+    public async Task<List<GetAuthorByNamePatternRow>> GetAuthorByNamePattern(GetAuthorByNamePatternArgs args)
+    {
+        using (var connection = new SqliteConnection(ConnectionString))
+        {
+            var queryParams = new Dictionary<string, object?>();
+            queryParams.Add("name_pattern", args.NamePattern);
+            var result = await connection.QueryAsync<GetAuthorByNamePatternRow>(GetAuthorByNamePatternSql, queryParams);
+            return result.AsList();
         }
     }
 
@@ -132,9 +152,8 @@ public class QuerySql
     {
         using (var connection = new SqliteConnection(ConnectionString))
         {
-            var queryParams = new Dictionary<string, object>();
-            if (args.Bio != null)
-                queryParams.Add("bio", args.Bio);
+            var queryParams = new Dictionary<string, object?>();
+            queryParams.Add("bio", args.Bio);
             return await connection.ExecuteAsync(UpdateAuthorsSql, queryParams);
         }
     }
@@ -156,7 +175,7 @@ public class QuerySql
         {
             var sqlText = GetAuthorsByIdsSql;
             sqlText = Utils.GetTransformedString(sqlText, args.Ids, "Ids", "ids");
-            var queryParams = new Dictionary<string, object>();
+            var queryParams = new Dictionary<string, object?>();
             for (int i = 0; i < args.Ids.Length; i++)
                 queryParams.Add($"@IdsArg{i}", args.Ids[i]);
             var result = await connection.QueryAsync<GetAuthorsByIdsRow>(sqlText, queryParams);
@@ -183,7 +202,7 @@ public class QuerySql
             var sqlText = GetAuthorsByIdsAndNamesSql;
             sqlText = Utils.GetTransformedString(sqlText, args.Ids, "Ids", "ids");
             sqlText = Utils.GetTransformedString(sqlText, args.Names, "Names", "names");
-            var queryParams = new Dictionary<string, object>();
+            var queryParams = new Dictionary<string, object?>();
             for (int i = 0; i < args.Ids.Length; i++)
                 queryParams.Add($"@IdsArg{i}", args.Ids[i]);
             for (int i = 0; i < args.Names.Length; i++)
@@ -202,7 +221,7 @@ public class QuerySql
     {
         using (var connection = new SqliteConnection(ConnectionString))
         {
-            var queryParams = new Dictionary<string, object>();
+            var queryParams = new Dictionary<string, object?>();
             queryParams.Add("name", args.Name);
             await connection.ExecuteAsync(DeleteAuthorSql, queryParams);
         }
@@ -222,7 +241,7 @@ public class QuerySql
     {
         using (var connection = new SqliteConnection(ConnectionString))
         {
-            var queryParams = new Dictionary<string, object>();
+            var queryParams = new Dictionary<string, object?>();
             queryParams.Add("name", args.Name);
             queryParams.Add("author_id", args.AuthorId);
             return await connection.QuerySingleAsync<int>(CreateBookSql, queryParams);
@@ -338,13 +357,10 @@ public class QuerySql
     {
         using (var connection = new SqliteConnection(ConnectionString))
         {
-            var queryParams = new Dictionary<string, object>();
-            if (args.CInteger != null)
-                queryParams.Add("c_integer", args.CInteger);
-            if (args.CReal != null)
-                queryParams.Add("c_real", args.CReal);
-            if (args.CText != null)
-                queryParams.Add("c_text", args.CText);
+            var queryParams = new Dictionary<string, object?>();
+            queryParams.Add("c_integer", args.CInteger);
+            queryParams.Add("c_real", args.CReal);
+            queryParams.Add("c_text", args.CText);
             queryParams.Add("c_blob", args.CBlob);
             await connection.ExecuteAsync(InsertSqliteTypesSql, queryParams);
         }

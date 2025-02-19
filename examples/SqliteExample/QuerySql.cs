@@ -82,8 +82,7 @@ public class QuerySql
             {
                 command.Parameters.AddWithValue("@id", args.Id);
                 command.Parameters.AddWithValue("@name", args.Name);
-                if (args.Bio != null)
-                    command.Parameters.AddWithValue("@bio", args.Bio);
+                command.Parameters.AddWithValue("@bio", args.Bio ?? (object)DBNull.Value);
                 await command.ExecuteScalarAsync();
             }
         }
@@ -100,8 +99,7 @@ public class QuerySql
             using (var command = new SqliteCommand(CreateAuthorReturnIdSql, connection))
             {
                 command.Parameters.AddWithValue("@name", args.Name);
-                if (args.Bio != null)
-                    command.Parameters.AddWithValue("@bio", args.Bio);
+                command.Parameters.AddWithValue("@bio", args.Bio ?? (object)DBNull.Value);
                 var result = await command.ExecuteScalarAsync();
                 return Convert.ToInt32(result);
             }
@@ -137,6 +135,31 @@ public class QuerySql
         return null;
     }
 
+    private const string GetAuthorByNamePatternSql = "SELECT id, name, bio FROM authors WHERE name LIKE COALESCE(@name_pattern, '%')";
+    public readonly record struct GetAuthorByNamePatternRow(int Id, string Name, string? Bio);
+    public readonly record struct GetAuthorByNamePatternArgs(string? NamePattern);
+    public async Task<List<GetAuthorByNamePatternRow>> GetAuthorByNamePattern(GetAuthorByNamePatternArgs args)
+    {
+        using (var connection = new SqliteConnection(ConnectionString))
+        {
+            await connection.OpenAsync();
+            using (var command = new SqliteCommand(GetAuthorByNamePatternSql, connection))
+            {
+                command.Parameters.AddWithValue("@name_pattern", args.NamePattern ?? (object)DBNull.Value);
+                using (var reader = await command.ExecuteReaderAsync())
+                {
+                    var result = new List<GetAuthorByNamePatternRow>();
+                    while (await reader.ReadAsync())
+                    {
+                        result.Add(new GetAuthorByNamePatternRow { Id = reader.GetInt32(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2) });
+                    }
+
+                    return result;
+                }
+            }
+        }
+    }
+
     private const string UpdateAuthorsSql = "UPDATE authors  SET  bio  =  @bio  WHERE  bio  IS  NOT  NULL  ";  
     public readonly record struct UpdateAuthorsArgs(string? Bio);
     public async Task<long> UpdateAuthors(UpdateAuthorsArgs args)
@@ -146,8 +169,7 @@ public class QuerySql
             await connection.OpenAsync();
             using (var command = new SqliteCommand(UpdateAuthorsSql, connection))
             {
-                if (args.Bio != null)
-                    command.Parameters.AddWithValue("@bio", args.Bio);
+                command.Parameters.AddWithValue("@bio", args.Bio ?? (object)DBNull.Value);
                 return await command.ExecuteNonQueryAsync();
             }
         }
@@ -338,13 +360,10 @@ public class QuerySql
             await connection.OpenAsync();
             using (var command = new SqliteCommand(InsertSqliteTypesSql, connection))
             {
-                if (args.CInteger != null)
-                    command.Parameters.AddWithValue("@c_integer", args.CInteger);
-                if (args.CReal != null)
-                    command.Parameters.AddWithValue("@c_real", args.CReal);
-                if (args.CText != null)
-                    command.Parameters.AddWithValue("@c_text", args.CText);
-                command.Parameters.AddWithValue("@c_blob", args.CBlob);
+                command.Parameters.AddWithValue("@c_integer", args.CInteger ?? (object)DBNull.Value);
+                command.Parameters.AddWithValue("@c_real", args.CReal ?? (object)DBNull.Value);
+                command.Parameters.AddWithValue("@c_text", args.CText ?? (object)DBNull.Value);
+                command.Parameters.AddWithValue("@c_blob", args.CBlob ?? (object)DBNull.Value);
                 await command.ExecuteScalarAsync();
             }
         }

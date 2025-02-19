@@ -42,7 +42,7 @@ public class QuerySql
     {
         using (var connection = new MySqlConnection(ConnectionString))
         {
-            var queryParams = new Dictionary<string, object>();
+            var queryParams = new Dictionary<string, object?>();
             queryParams.Add("name", args.Name);
             var result = await connection.QueryFirstOrDefaultAsync<GetAuthorRow?>(GetAuthorSql, queryParams);
             return result;
@@ -76,11 +76,10 @@ public class QuerySql
     {
         using (var connection = new MySqlConnection(ConnectionString))
         {
-            var queryParams = new Dictionary<string, object>();
+            var queryParams = new Dictionary<string, object?>();
             queryParams.Add("id", args.Id);
             queryParams.Add("name", args.Name);
-            if (args.Bio != null)
-                queryParams.Add("bio", args.Bio);
+            queryParams.Add("bio", args.Bio);
             await connection.ExecuteAsync(CreateAuthorSql, queryParams);
         }
     }
@@ -95,10 +94,9 @@ public class QuerySql
     {
         using (var connection = new MySqlConnection(ConnectionString))
         {
-            var queryParams = new Dictionary<string, object>();
+            var queryParams = new Dictionary<string, object?>();
             queryParams.Add("name", args.Name);
-            if (args.Bio != null)
-                queryParams.Add("bio", args.Bio);
+            queryParams.Add("bio", args.Bio);
             return await connection.QuerySingleAsync<long>(CreateAuthorReturnIdSql, queryParams);
         }
     }
@@ -118,10 +116,32 @@ public class QuerySql
     {
         using (var connection = new MySqlConnection(ConnectionString))
         {
-            var queryParams = new Dictionary<string, object>();
+            var queryParams = new Dictionary<string, object?>();
             queryParams.Add("id", args.Id);
             var result = await connection.QueryFirstOrDefaultAsync<GetAuthorByIdRow?>(GetAuthorByIdSql, queryParams);
             return result;
+        }
+    }
+
+    private const string GetAuthorByNamePatternSql = "SELECT id, name, bio FROM authors WHERE name LIKE COALESCE(@name_pattern, '%'); SELECT LAST_INSERT_ID()";
+    public class GetAuthorByNamePatternRow
+    {
+        public required long Id { get; init; }
+        public required string Name { get; init; }
+        public string? Bio { get; init; }
+    };
+    public class GetAuthorByNamePatternArgs
+    {
+        public string? NamePattern { get; init; }
+    };
+    public async Task<List<GetAuthorByNamePatternRow>> GetAuthorByNamePattern(GetAuthorByNamePatternArgs args)
+    {
+        using (var connection = new MySqlConnection(ConnectionString))
+        {
+            var queryParams = new Dictionary<string, object?>();
+            queryParams.Add("name_pattern", args.NamePattern);
+            var result = await connection.QueryAsync<GetAuthorByNamePatternRow>(GetAuthorByNamePatternSql, queryParams);
+            return result.AsList();
         }
     }
 
@@ -134,7 +154,7 @@ public class QuerySql
     {
         using (var connection = new MySqlConnection(ConnectionString))
         {
-            var queryParams = new Dictionary<string, object>();
+            var queryParams = new Dictionary<string, object?>();
             queryParams.Add("name", args.Name);
             await connection.ExecuteAsync(DeleteAuthorSql, queryParams);
         }
@@ -158,9 +178,8 @@ public class QuerySql
     {
         using (var connection = new MySqlConnection(ConnectionString))
         {
-            var queryParams = new Dictionary<string, object>();
-            if (args.Bio != null)
-                queryParams.Add("bio", args.Bio);
+            var queryParams = new Dictionary<string, object?>();
+            queryParams.Add("bio", args.Bio);
             return await connection.ExecuteAsync(UpdateAuthorsSql, queryParams);
         }
     }
@@ -182,7 +201,7 @@ public class QuerySql
         {
             var sqlText = GetAuthorsByIdsSql;
             sqlText = Utils.GetTransformedString(sqlText, args.Ids, "Ids", "ids");
-            var queryParams = new Dictionary<string, object>();
+            var queryParams = new Dictionary<string, object?>();
             for (int i = 0; i < args.Ids.Length; i++)
                 queryParams.Add($"@IdsArg{i}", args.Ids[i]);
             var result = await connection.QueryAsync<GetAuthorsByIdsRow>(sqlText, queryParams);
@@ -209,7 +228,7 @@ public class QuerySql
             var sqlText = GetAuthorsByIdsAndNamesSql;
             sqlText = Utils.GetTransformedString(sqlText, args.Ids, "Ids", "ids");
             sqlText = Utils.GetTransformedString(sqlText, args.Names, "Names", "names");
-            var queryParams = new Dictionary<string, object>();
+            var queryParams = new Dictionary<string, object?>();
             for (int i = 0; i < args.Ids.Length; i++)
                 queryParams.Add($"@IdsArg{i}", args.Ids[i]);
             for (int i = 0; i < args.Names.Length; i++)
@@ -229,7 +248,7 @@ public class QuerySql
     {
         using (var connection = new MySqlConnection(ConnectionString))
         {
-            var queryParams = new Dictionary<string, object>();
+            var queryParams = new Dictionary<string, object?>();
             queryParams.Add("name", args.Name);
             queryParams.Add("author_id", args.AuthorId);
             return await connection.QuerySingleAsync<long>(CreateBookSql, queryParams);
@@ -340,23 +359,15 @@ public class QuerySql
     {
         using (var connection = new MySqlConnection(ConnectionString))
         {
-            var queryParams = new Dictionary<string, object>();
-            if (args.CBit != null)
-                queryParams.Add("c_bit", args.CBit);
-            if (args.CTinyint != null)
-                queryParams.Add("c_tinyint", args.CTinyint);
-            if (args.CBool != null)
-                queryParams.Add("c_bool", args.CBool);
-            if (args.CBoolean != null)
-                queryParams.Add("c_boolean", args.CBoolean);
-            if (args.CInt != null)
-                queryParams.Add("c_int", args.CInt);
-            if (args.CVarchar != null)
-                queryParams.Add("c_varchar", args.CVarchar);
-            if (args.CDate != null)
-                queryParams.Add("c_date", args.CDate);
-            if (args.CTimestamp != null)
-                queryParams.Add("c_timestamp", args.CTimestamp);
+            var queryParams = new Dictionary<string, object?>();
+            queryParams.Add("c_bit", args.CBit);
+            queryParams.Add("c_tinyint", args.CTinyint);
+            queryParams.Add("c_bool", args.CBool);
+            queryParams.Add("c_boolean", args.CBoolean);
+            queryParams.Add("c_int", args.CInt);
+            queryParams.Add("c_varchar", args.CVarchar);
+            queryParams.Add("c_date", args.CDate);
+            queryParams.Add("c_timestamp", args.CTimestamp);
             await connection.ExecuteAsync(InsertMysqlTypesSql, queryParams);
         }
     }

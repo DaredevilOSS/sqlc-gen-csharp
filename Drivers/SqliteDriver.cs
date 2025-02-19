@@ -57,10 +57,12 @@ public partial class SqliteDriver(Options options, Dictionary<string, Table> tab
     public override string TransformQueryText(Query query)
     {
         var counter = 0;
-        return QueryParamRegex().Replace(query.Text, _ => "@" + query.Params[counter++].Column.Name);
+        var transformedQueryText = QueryParamRegex().Replace(query.Text, _ => "@" + query.Params[counter++].Column.Name);
+
+        return transformedQueryText;
     }
 
-    [GeneratedRegex(@"\?")]
+    [GeneratedRegex(@"\?\d*")]
     private static partial Regex QueryParamRegex();
 
     public MemberDeclarationSyntax OneDeclare(string queryTextConstant, string argInterface,

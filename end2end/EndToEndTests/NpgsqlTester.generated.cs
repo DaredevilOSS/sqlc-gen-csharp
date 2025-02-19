@@ -320,5 +320,61 @@ namespace SqlcGenCsharpTests
         {
             return x.CBigint.Equals(y.CBigint) && x.CReal.Equals(y.CReal) && x.CNumeric.Equals(y.CNumeric) && x.CSmallint.Equals(y.CSmallint) && x.CDecimal.Equals(y.CDecimal) && x.CDate.Equals(y.CDate) && x.CTimestamp.Equals(y.CTimestamp) && x.CBoolean.Equals(y.CBoolean) && x.CChar.Equals(y.CChar) && x.CInteger.Equals(y.CInteger) && x.CText.Equals(y.CText) && x.CVarchar.Equals(y.CVarchar) && x.CCharacterVarying.Equals(y.CCharacterVarying) && x.CTextArray.SequenceEqual(y.CTextArray) && x.CIntegerArray.SequenceEqual(y.CIntegerArray);
         }
+
+        [Test]
+        public async Task TestNargNull()
+        {
+            await this.QuerySql.CreateAuthor(new QuerySql.CreateAuthorArgs { Id = 1111, Name = "Bojack Horseman", Bio = "Back in the 90s he was in a very famous TV show" });
+            await this.QuerySql.CreateAuthor(new QuerySql.CreateAuthorArgs { Id = 2222, Name = "Dr. Seuss", Bio = "You'll miss the best things if you keep your eyes shut" });
+            var expected = new List<QuerySql.GetAuthorByNamePatternRow>
+            {
+                new QuerySql.GetAuthorByNamePatternRow
+                {
+                    Id = 1111,
+                    Name = "Bojack Horseman",
+                    Bio = "Back in the 90s he was in a very famous TV show"
+                },
+                new QuerySql.GetAuthorByNamePatternRow
+                {
+                    Id = 2222,
+                    Name = "Dr. Seuss",
+                    Bio = "You'll miss the best things if you keep your eyes shut"
+                }
+            };
+            var actual = await this.QuerySql.GetAuthorByNamePattern(new QuerySql.GetAuthorByNamePatternArgs());
+            Assert.That(SequenceEquals(expected, actual));
+        }
+
+        private static bool SequenceEquals(List<QuerySql.GetAuthorByNamePatternRow> x, List<QuerySql.GetAuthorByNamePatternRow> y)
+        {
+            if (x.Count != y.Count)
+                return false;
+            x = x.OrderBy<QuerySql.GetAuthorByNamePatternRow, object>(o => o.Id).ToList();
+            y = y.OrderBy<QuerySql.GetAuthorByNamePatternRow, object>(o => o.Id).ToList();
+            return !x.Where((t, i) => !SingularEquals(t, y[i])).Any();
+        }
+
+        private static bool SingularEquals(QuerySql.GetAuthorByNamePatternRow x, QuerySql.GetAuthorByNamePatternRow y)
+        {
+            return x.Id.Equals(y.Id) && x.Name.Equals(y.Name) && x.Bio.Equals(y.Bio);
+        }
+
+        [Test]
+        public async Task TestNargNotNull()
+        {
+            await this.QuerySql.CreateAuthor(new QuerySql.CreateAuthorArgs { Id = 1111, Name = "Bojack Horseman", Bio = "Back in the 90s he was in a very famous TV show" });
+            await this.QuerySql.CreateAuthor(new QuerySql.CreateAuthorArgs { Id = 2222, Name = "Dr. Seuss", Bio = "You'll miss the best things if you keep your eyes shut" });
+            var expected = new List<QuerySql.GetAuthorByNamePatternRow>
+            {
+                new QuerySql.GetAuthorByNamePatternRow
+                {
+                    Id = 1111,
+                    Name = "Bojack Horseman",
+                    Bio = "Back in the 90s he was in a very famous TV show"
+                }
+            };
+            var actual = await this.QuerySql.GetAuthorByNamePattern(new QuerySql.GetAuthorByNamePatternArgs { NamePattern = "Bojack%" });
+            Assert.That(SequenceEquals(expected, actual));
+        }
     }
 }

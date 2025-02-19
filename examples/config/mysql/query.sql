@@ -13,6 +13,9 @@ INSERT INTO authors (name, bio) VALUES (?, ?);
 -- name: GetAuthorById :one
 SELECT * FROM authors WHERE id = ? LIMIT 1;
 
+-- name: GetAuthorByNamePattern :many
+SELECT * FROM authors WHERE name LIKE COALESCE(sqlc.narg('name_pattern'), '%');
+
 -- name: DeleteAuthor :exec
 DELETE FROM authors WHERE name = ?;
 

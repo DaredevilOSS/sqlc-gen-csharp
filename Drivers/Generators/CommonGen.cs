@@ -26,20 +26,17 @@ public class CommonGen(DbDriver dbDriver)
                              {{commandVar}}.Parameters.AddWithValue($"@{{param}}Arg{i}", {{argsVar}}.{{param}}[i]);
                          """;
 
-            var addParamToCommand = $"""{commandVar}.Parameters.AddWithValue("@{p.Column.Name}", {argsVar}.{param});""";
-            return ShouldCheckParameterForNull(p)
-                ? $"""
-                   if ({argsVar}.{param} != null) 
-                        {addParamToCommand}
-                   """
-                : addParamToCommand;
+            var nullParamCast = p.Column.NotNull ? string.Empty : " ?? (object)DBNull.Value";
+            var addParamToCommand = $"""{commandVar}.Parameters.AddWithValue("@{p.Column.Name}", {argsVar}.{param}{nullParamCast});""";
+            return addParamToCommand;
         }).JoinByNewLine();
     }
 
     public string ConstructDapperParamsDict(IList<Parameter> parameters)
     {
         if (!parameters.Any()) return string.Empty;
-        var initParamsDict = $"var {Variable.QueryParams.AsVarName()} = new Dictionary<string, object>();";
+        var objectType = dbDriver.AddNullableSuffixIfNeeded("object", false);
+        var initParamsDict = $"var {Variable.QueryParams.AsVarName()} = new Dictionary<string, {objectType}>();";
         var argsVar = Variable.Args.AsVarName();
         var queryParamsVar = Variable.QueryParams.AsVarName();
 
@@ -53,26 +50,13 @@ public class CommonGen(DbDriver dbDriver)
                         """;
 
             var addParamToDict = $"{queryParamsVar}.Add(\"{p.Column.Name}\", {argsVar}.{param});";
-            return ShouldCheckParameterForNull(p)
-                ? $"""
-                   if ({argsVar}.{param} != null) 
-                       {addParamToDict}
-                   """
-                : addParamToDict;
+            return addParamToDict;
         });
 
         return $"""
                  {initParamsDict}
                  {dapperParamsCommands.JoinByNewLine()}
                  """;
-    }
-
-    private bool ShouldCheckParameterForNull(Parameter parameter)
-    {
-        if (parameter.Column.IsArray || parameter.Column.NotNull)
-            return false;
-        var csharpType = dbDriver.GetCsharpType(parameter.Column);
-        return dbDriver.IsTypeNullable(csharpType);
     }
 
     public static string AwaitReaderRow()
