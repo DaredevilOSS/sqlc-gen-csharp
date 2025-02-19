@@ -130,7 +130,7 @@ namespace NpgsqlDapperLegacyExampleGen
             }
         }
 
-        private const string GetAuthorByNamePatternSql = "SELECT id, name, bio FROM authors WHERE name LIKE COALESCE(@name_pattern::TEXT, '%')";
+        private const string GetAuthorByNamePatternSql = "SELECT id, name, bio FROM authors WHERE name LIKE COALESCE(@name_pattern, '%')";
         public class GetAuthorByNamePatternRow
         {
             public long Id { get; set; }
