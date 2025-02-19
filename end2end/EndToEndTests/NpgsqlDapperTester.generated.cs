@@ -322,7 +322,7 @@ namespace SqlcGenCsharpTests
         }
 
         [Test]
-        public async Task TestNullableArgs()
+        public async Task TestSqlcNargNull()
         {
             await this.QuerySql.CreateAuthor(new QuerySql.CreateAuthorArgs { Id = 1111, Name = "Bojack Horseman", Bio = "Back in the 90s he was in a very famous TV show" });
             await this.QuerySql.CreateAuthor(new QuerySql.CreateAuthorArgs { Id = 2222, Name = "Dr. Seuss", Bio = "You'll miss the best things if you keep your eyes shut" });
@@ -341,21 +341,9 @@ namespace SqlcGenCsharpTests
                     Bio = "You'll miss the best things if you keep your eyes shut"
                 }
             };
-            var expectedBojackSearch = new List<QuerySql.GetAuthorByNamePatternRow>
-            {
-                new QuerySql.GetAuthorByNamePatternRow
-                {
-                    Id = 1111,
-                    Name = "Bojack Horseman",
-                    Bio = "Back in the 90s he was in a very famous TV show"
-                }
-            };
-            var actual = await this.QuerySql.GetAuthorByNamePattern(new QuerySql.GetAuthorByNamePatternArgs { NamePattern = null });
+            var actual = await this.QuerySql.GetAuthorByNamePattern(new QuerySql.GetAuthorByNamePatternArgs());
             ClassicAssert.AreEqual(2, actual.Count);
             SequenceEquals(expectedNullSearch, actual);
-            var actualBojeck = await this.QuerySql.GetAuthorByNamePattern(new QuerySql.GetAuthorByNamePatternArgs { NamePattern = "Bojack%" });
-            ClassicAssert.AreEqual(1, actualBojeck.Count);
-            SequenceEquals(expectedBojackSearch, actualBojeck);
         }
 
         private static bool SequenceEquals(List<QuerySql.GetAuthorByNamePatternRow> x, List<QuerySql.GetAuthorByNamePatternRow> y)
@@ -370,6 +358,25 @@ namespace SqlcGenCsharpTests
         private static bool SingularEquals(QuerySql.GetAuthorByNamePatternRow x, QuerySql.GetAuthorByNamePatternRow y)
         {
             return x.Id.Equals(y.Id) && x.Name.Equals(y.Name) && x.Bio.Equals(y.Bio);
+        }
+
+        [Test]
+        public async Task TestSqlcNargNotNull()
+        {
+            await this.QuerySql.CreateAuthor(new QuerySql.CreateAuthorArgs { Id = 1111, Name = "Bojack Horseman", Bio = "Back in the 90s he was in a very famous TV show" });
+            await this.QuerySql.CreateAuthor(new QuerySql.CreateAuthorArgs { Id = 2222, Name = "Dr. Seuss", Bio = "You'll miss the best things if you keep your eyes shut" });
+            var expectedBojackSearch = new List<QuerySql.GetAuthorByNamePatternRow>
+            {
+                new QuerySql.GetAuthorByNamePatternRow
+                {
+                    Id = 1111,
+                    Name = "Bojack Horseman",
+                    Bio = "Back in the 90s he was in a very famous TV show"
+                }
+            };
+            var actualBojeck = await this.QuerySql.GetAuthorByNamePattern(new QuerySql.GetAuthorByNamePatternArgs { NamePattern = "Bojack%" });
+            ClassicAssert.AreEqual(1, actualBojeck.Count);
+            SequenceEquals(expectedBojackSearch, actualBojeck);
         }
     }
 }

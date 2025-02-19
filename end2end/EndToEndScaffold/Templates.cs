@@ -730,11 +730,11 @@ public static class Templates
                    }
                    """
         },
-        [KnownTestType.NullableArgs] = new TestImpl
+        [KnownTestType.SqlcNargNull] = new TestImpl
         {
             Impl = $$"""
                     [Test]
-                    public async Task TestNullableArgs()
+                    public async Task TestSqlcNargNull()
                     {
                         {{CreateBojackAuthor}}
                         {{CreateDrSeussAuthor}}
@@ -754,22 +754,9 @@ public static class Templates
                             }
                         };
 
-                        var expectedBojackSearch = new List<QuerySql.GetAuthorByNamePatternRow>
-                        {
-                            new QuerySql.GetAuthorByNamePatternRow
-                            {
-                                Id = {{BojackId}},
-                                Name = {{BojackAuthor}},
-                                Bio = {{BojackTheme}}
-                            }
-                        };
-                        var actual = await this.QuerySql.GetAuthorByNamePattern(new QuerySql.GetAuthorByNamePatternArgs { NamePattern = null });
+                        var actual = await this.QuerySql.GetAuthorByNamePattern(new QuerySql.GetAuthorByNamePatternArgs());
                         ClassicAssert.AreEqual(2, actual.Count);
                         SequenceEquals(expectedNullSearch, actual);
-
-                        var actualBojeck = await this.QuerySql.GetAuthorByNamePattern(new QuerySql.GetAuthorByNamePatternArgs { NamePattern = "Bojack%" });
-                        ClassicAssert.AreEqual(1, actualBojeck.Count);
-                        SequenceEquals(expectedBojackSearch, actualBojeck);
                     }
 
                     private static bool SequenceEquals(List<QuerySql.GetAuthorByNamePatternRow> x, List<QuerySql.GetAuthorByNamePatternRow> y)
@@ -783,6 +770,31 @@ public static class Templates
                     private static bool SingularEquals(QuerySql.GetAuthorByNamePatternRow x, QuerySql.GetAuthorByNamePatternRow y)
                     {
                         return x.Id.Equals(y.Id) && x.Name.Equals(y.Name) && x.Bio.Equals(y.Bio);
+                    }
+                   """
+        },
+        [KnownTestType.SqlcNargNotNull] = new TestImpl
+        {
+            Impl = $$"""
+                    [Test]
+                    public async Task TestSqlcNargNotNull()
+                    {
+                        {{CreateBojackAuthor}}
+                        {{CreateDrSeussAuthor}}
+
+                        var expectedBojackSearch = new List<QuerySql.GetAuthorByNamePatternRow>
+                        {
+                            new QuerySql.GetAuthorByNamePatternRow
+                            {
+                                Id = {{BojackId}},
+                                Name = {{BojackAuthor}},
+                                Bio = {{BojackTheme}}
+                            }
+                        };
+
+                        var actualBojeck = await this.QuerySql.GetAuthorByNamePattern(new QuerySql.GetAuthorByNamePatternArgs { NamePattern = "Bojack%" });
+                        ClassicAssert.AreEqual(1, actualBojeck.Count);
+                        SequenceEquals(expectedBojackSearch, actualBojeck);
                     }
                    """
         }
