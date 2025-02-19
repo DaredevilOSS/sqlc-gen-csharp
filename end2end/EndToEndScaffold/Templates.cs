@@ -734,7 +734,7 @@ public static class Templates
         {
             Impl = $$"""
                     [Test]
-                    public async Task TestSqlcNargNull()
+                    public async Task TestNargNull()
                     {
                         {{CreateBojackAuthor}}
                         {{CreateDrSeussAuthor}}
@@ -755,8 +755,7 @@ public static class Templates
                         };
 
                         var actual = await this.QuerySql.GetAuthorByNamePattern(new QuerySql.GetAuthorByNamePatternArgs());
-                        ClassicAssert.AreEqual(2, actual.Count);
-                        SequenceEquals(expected, actual);
+                        Assert.That(SequenceEquals(expected, actual));
                     }
 
                     private static bool SequenceEquals(List<QuerySql.GetAuthorByNamePatternRow> x, List<QuerySql.GetAuthorByNamePatternRow> y)
@@ -777,7 +776,7 @@ public static class Templates
         {
             Impl = $$"""
                     [Test]
-                    public async Task TestSqlcNargNotNull()
+                    public async Task TestNargNotNull()
                     {
                         {{CreateBojackAuthor}}
                         {{CreateDrSeussAuthor}}
@@ -793,8 +792,7 @@ public static class Templates
                         };
 
                         var actual = await this.QuerySql.GetAuthorByNamePattern(new QuerySql.GetAuthorByNamePatternArgs { NamePattern = "Bojack%" });
-                        ClassicAssert.AreEqual(1, actual.Count);
-                        SequenceEquals(expected, actual);
+                        Assert.That(SequenceEquals(expected, actual));
                     }
                    """
         }
