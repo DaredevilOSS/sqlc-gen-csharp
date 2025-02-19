@@ -25,8 +25,8 @@ public enum KnownTestType
     PartialEmbed,
     Slice,
     MultipleSlices,
-    SqlcNargNull,
-    SqlcNargNotNull,
+    NargNull,
+    NargNotNull,
 
     // data types aligned tests
     ArrayAsParam,
@@ -59,8 +59,8 @@ internal static class Config
                     KnownTestType.MultipleSlices,
                     KnownTestType.MySqlCopyFrom,
                     KnownTestType.MySqlDataTypes,
-                    KnownTestType.SqlcNargNull,
-                    KnownTestType.SqlcNargNotNull
+                    KnownTestType.NargNull,
+                    KnownTestType.NargNotNull
                 ]
             }
         },
@@ -81,8 +81,8 @@ internal static class Config
                         KnownTestType.MultipleSlices,
                         KnownTestType.MySqlCopyFrom,
                         KnownTestType.MySqlDataTypes,
-                        KnownTestType.SqlcNargNull,
-                        KnownTestType.SqlcNargNotNull
+                        KnownTestType.NargNull,
+                        KnownTestType.NargNotNull
                     ]
                 }
         },
@@ -103,8 +103,8 @@ internal static class Config
                     KnownTestType.MultipleArraysAsParams,
                     KnownTestType.PostgresCopyFrom,
                     KnownTestType.PostgresDataTypes,
-                    KnownTestType.SqlcNargNull,
-                    KnownTestType.SqlcNargNotNull
+                    KnownTestType.NargNull,
+                    KnownTestType.NargNotNull
                 ]
             }
         },
@@ -125,8 +125,8 @@ internal static class Config
                     KnownTestType.MultipleArraysAsParams,
                     KnownTestType.PostgresCopyFrom,
                     KnownTestType.PostgresDataTypes,
-                    KnownTestType.SqlcNargNull,
-                    KnownTestType.SqlcNargNotNull
+                    KnownTestType.NargNull,
+                    KnownTestType.NargNotNull
                 ]
             }
         },
@@ -146,8 +146,8 @@ internal static class Config
                     KnownTestType.Slice,
                     KnownTestType.MultipleSlices,
                     KnownTestType.SqliteDataTypes,
-                    KnownTestType.SqlcNargNull,
-                    KnownTestType.SqlcNargNotNull
+                    KnownTestType.NargNull,
+                    KnownTestType.NargNotNull
                 ]
             }
         },
@@ -167,8 +167,8 @@ internal static class Config
                     KnownTestType.Slice,
                     KnownTestType.MultipleSlices,
                     KnownTestType.SqliteDataTypes,
-                    KnownTestType.SqlcNargNull,
-                    KnownTestType.SqlcNargNotNull,
+                    KnownTestType.NargNull,
+                    KnownTestType.NargNotNull,
                 ]
             }
         },

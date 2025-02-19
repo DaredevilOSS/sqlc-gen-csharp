@@ -26,8 +26,8 @@ public class CommonGen(DbDriver dbDriver)
                              {{commandVar}}.Parameters.AddWithValue($"@{{param}}Arg{i}", {{argsVar}}.{{param}}[i]);
                          """;
 
-            var nullableParamCasting = p.Column.NotNull ? "" : " ?? (object)DBNull.Value";
-            var addParamToCommand = $"""{commandVar}.Parameters.AddWithValue("@{p.Column.Name}", {argsVar}.{param}{nullableParamCasting});""";
+            var nullParamCast = p.Column.NotNull ? string.Empty : " ?? (object)DBNull.Value";
+            var addParamToCommand = $"""{commandVar}.Parameters.AddWithValue("@{p.Column.Name}", {argsVar}.{param}{nullParamCast});""";
             return addParamToCommand;
         }).JoinByNewLine();
     }

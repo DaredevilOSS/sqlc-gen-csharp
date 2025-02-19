@@ -730,7 +730,7 @@ public static class Templates
                    }
                    """
         },
-        [KnownTestType.SqlcNargNull] = new TestImpl
+        [KnownTestType.NargNull] = new TestImpl
         {
             Impl = $$"""
                     [Test]
@@ -738,7 +738,7 @@ public static class Templates
                     {
                         {{CreateBojackAuthor}}
                         {{CreateDrSeussAuthor}}
-                        var expectedNullSearch = new List<QuerySql.GetAuthorByNamePatternRow>
+                        var expected = new List<QuerySql.GetAuthorByNamePatternRow>
                         {
                             new QuerySql.GetAuthorByNamePatternRow
                             {
@@ -756,7 +756,7 @@ public static class Templates
 
                         var actual = await this.QuerySql.GetAuthorByNamePattern(new QuerySql.GetAuthorByNamePatternArgs());
                         ClassicAssert.AreEqual(2, actual.Count);
-                        SequenceEquals(expectedNullSearch, actual);
+                        SequenceEquals(expected, actual);
                     }
 
                     private static bool SequenceEquals(List<QuerySql.GetAuthorByNamePatternRow> x, List<QuerySql.GetAuthorByNamePatternRow> y)
@@ -773,7 +773,7 @@ public static class Templates
                     }
                    """
         },
-        [KnownTestType.SqlcNargNotNull] = new TestImpl
+        [KnownTestType.NargNotNull] = new TestImpl
         {
             Impl = $$"""
                     [Test]
@@ -782,7 +782,7 @@ public static class Templates
                         {{CreateBojackAuthor}}
                         {{CreateDrSeussAuthor}}
 
-                        var expectedBojackSearch = new List<QuerySql.GetAuthorByNamePatternRow>
+                        var expected = new List<QuerySql.GetAuthorByNamePatternRow>
                         {
                             new QuerySql.GetAuthorByNamePatternRow
                             {
@@ -792,9 +792,9 @@ public static class Templates
                             }
                         };
 
-                        var actualBojeck = await this.QuerySql.GetAuthorByNamePattern(new QuerySql.GetAuthorByNamePatternArgs { NamePattern = "Bojack%" });
-                        ClassicAssert.AreEqual(1, actualBojeck.Count);
-                        SequenceEquals(expectedBojackSearch, actualBojeck);
+                        var actual = await this.QuerySql.GetAuthorByNamePattern(new QuerySql.GetAuthorByNamePatternArgs { NamePattern = "Bojack%" });
+                        ClassicAssert.AreEqual(1, actual.Count);
+                        SequenceEquals(expected, actual);
                     }
                    """
         }
