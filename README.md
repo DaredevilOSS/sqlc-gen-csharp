@@ -12,8 +12,8 @@ version: "2"
 plugins:
 - name: csharp
   wasm:
-    url: https://github.com/DaredevilOSS/sqlc-gen-csharp/releases/download/v0.15.1/sqlc-gen-csharp.wasm
-    sha256: c8dd8f5eabe10bbae78ae7ba36a35a636f760e2c2e1c202da64b76a8c308f654
+    url: https://github.com/DaredevilOSS/sqlc-gen-csharp/releases/download/v0.15.2/sqlc-gen-csharp.wasm
+    sha256: 251cfaaeccaf726aa06103fcdab500006b4bc5cd0be523eb6a8894db8d520147
 sql:
   # For PostgresSQL
   - schema: schema.sql
@@ -85,7 +85,7 @@ More info can be found in [here](https://docs.sqlc.dev/en/stable/reference/query
 | Annotation  | PostgresSQL | MySQL | SQLite  |
 |-------------|-------------|-------|---------|
 | sqlc.arg    | ✅          | ✅    | ✅       |
-| sqlc.narg   | ❌          | ❌    | ❌       |
+| sqlc.narg   | ✅          | ✅    | ✅       |
 | sqlc.slice  | 🚫          | ✅    | ✅       |
 | sqlc.embed  | ✅          | ✅    | ✅       |
 
