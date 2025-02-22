@@ -33,7 +33,8 @@ public enum KnownTestType
     MultipleArraysAsParams,
     PostgresDataTypes,
     MySqlDataTypes,
-    SqliteDataTypes
+    SqliteDataTypes,
+    SqliteCopyFrom
 }
 
 internal static class Config
@@ -57,10 +58,10 @@ internal static class Config
                     KnownTestType.SelfJoinEmbed,
                     KnownTestType.Slice,
                     KnownTestType.MultipleSlices,
-                    KnownTestType.MySqlCopyFrom,
-                    KnownTestType.MySqlDataTypes,
                     KnownTestType.NargNull,
-                    KnownTestType.NargNotNull
+                    KnownTestType.NargNotNull,
+                    KnownTestType.MySqlDataTypes,
+                    KnownTestType.MySqlCopyFrom
                 ]
             }
         },
@@ -79,10 +80,10 @@ internal static class Config
                         KnownTestType.SelfJoinEmbed,
                         KnownTestType.Slice,
                         KnownTestType.MultipleSlices,
-                        KnownTestType.MySqlCopyFrom,
-                        KnownTestType.MySqlDataTypes,
                         KnownTestType.NargNull,
-                        KnownTestType.NargNotNull
+                        KnownTestType.NargNotNull,
+                        KnownTestType.MySqlDataTypes,
+                        KnownTestType.MySqlCopyFrom,
                     ]
                 }
         },
@@ -101,10 +102,10 @@ internal static class Config
                     KnownTestType.SelfJoinEmbed,
                     KnownTestType.ArrayAsParam,
                     KnownTestType.MultipleArraysAsParams,
-                    KnownTestType.PostgresCopyFrom,
-                    KnownTestType.PostgresDataTypes,
                     KnownTestType.NargNull,
-                    KnownTestType.NargNotNull
+                    KnownTestType.NargNotNull,
+                    KnownTestType.PostgresDataTypes,
+                    KnownTestType.PostgresCopyFrom
                 ]
             }
         },
@@ -123,10 +124,10 @@ internal static class Config
                     KnownTestType.SelfJoinEmbed,
                     KnownTestType.ArrayAsParam,
                     KnownTestType.MultipleArraysAsParams,
-                    KnownTestType.PostgresCopyFrom,
-                    KnownTestType.PostgresDataTypes,
                     KnownTestType.NargNull,
-                    KnownTestType.NargNotNull
+                    KnownTestType.NargNotNull,
+                    KnownTestType.PostgresDataTypes,
+                    KnownTestType.PostgresCopyFrom
                 ]
             }
         },
@@ -145,9 +146,10 @@ internal static class Config
                     KnownTestType.SelfJoinEmbed,
                     KnownTestType.Slice,
                     KnownTestType.MultipleSlices,
-                    KnownTestType.SqliteDataTypes,
                     KnownTestType.NargNull,
-                    KnownTestType.NargNotNull
+                    KnownTestType.NargNotNull,
+                    KnownTestType.SqliteDataTypes,
+                    KnownTestType.SqliteCopyFrom
                 ]
             }
         },
@@ -166,9 +168,10 @@ internal static class Config
                     KnownTestType.SelfJoinEmbed,
                     KnownTestType.Slice,
                     KnownTestType.MultipleSlices,
-                    KnownTestType.SqliteDataTypes,
                     KnownTestType.NargNull,
                     KnownTestType.NargNotNull,
+                    KnownTestType.SqliteDataTypes,
+                    KnownTestType.SqliteCopyFrom
                 ]
             }
         },

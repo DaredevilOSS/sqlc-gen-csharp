@@ -14,7 +14,7 @@ public enum Variable
 
     Args,
     QueryParams,
-    SqlText,
+    TransformedSql,
     Row,
     Result
 }

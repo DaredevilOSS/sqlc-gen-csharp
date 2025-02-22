@@ -1,7 +1,7 @@
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 using File = Plugin.File;
-
 
 namespace SqlcGenCsharp.Generators;
 
@@ -32,48 +32,73 @@ internal class UtilsGen(string namespaceName, Options options)
         [
             UsingDirective(ParseName("System")),
             UsingDirective(ParseName("System.Data")),
-            UsingDirective(ParseName("System.Linq"))
+            UsingDirective(ParseName("System.Linq")),
+            UsingDirective(ParseName("System.Text.RegularExpressions"))
         ];
     }
 
-    private static MemberDeclarationSyntax GetUtilsClass()
+    private MemberDeclarationSyntax GetUtilsClass()
     {
-        const string utilsClassDeclaration = $$"""
-                                               public static class {{ClassName}}
-                                               {
-                                                   public static byte[] GetBytes(IDataRecord reader, int ordinal)
-                                                   {
-                                                       const int bufferSize = 100000;
-                                                       if (reader is null) throw new ArgumentNullException(nameof(reader));
-                                                       var buffer = new byte[bufferSize];
-                                                         
-                                                       var (bytesRead, offset) = (0, 0);
-                                                       while (bytesRead < bufferSize)
-                                                       {
-                                                           var read = (int) reader.GetBytes(
-                                                               ordinal,
-                                                               bufferSize + bytesRead,
-                                                               buffer,
-                                                               offset,
-                                                               bufferSize - bytesRead);
-                                                           if (read == 0)
-                                                               break;
-                                                           bytesRead += read;
-                                                           offset += read;
-                                                       }
-                                                   
-                                                       if (bytesRead < bufferSize)
-                                                           Array.Resize(ref buffer, bytesRead);
-                                                       return buffer;
-                                                   }
+        var optionalTransformQueryForSqliteBatch = options.DriverName is DriverName.Sqlite
+            ? """
+              private static readonly Regex ValuesRegex = new Regex(@"VALUES\s*\((?<params>[^)]*)\)", RegexOptions.IgnoreCase);
+              
+              public static string TransformQueryForSqliteBatch(string originalSql, int cntRecords)
+              {
+                  var match = ValuesRegex.Match(originalSql);
+                  if (!match.Success)
+                      throw new ArgumentException("The query does not contain a valid VALUES clause.");
+                  
+                  var valuesParams = match.Groups["params"].Value
+                      .Split(',')
+                      .Select(p => p.Trim())
+                      .ToList();
+                  var batchRows = Enumerable.Range(0, cntRecords)
+                      .Select(i => "(" + string.Join(", ", valuesParams.Select(p => $"{p}{i}")) + ")");
+                      
+                  var batchValuesClause = "VALUES " + string.Join(",\n", batchRows);
+                  return ValuesRegex.Replace(originalSql, batchValuesClause);
+              }
+              """ :
+            string.Empty;
+        var utilsClassDeclaration = $$"""
+           public static class {{ClassName}}
+           {
+               public static byte[] GetBytes(IDataRecord reader, int ordinal)
+               {
+                   const int bufferSize = 100000;
+                   if (reader is null) throw new ArgumentNullException(nameof(reader));
+                   var buffer = new byte[bufferSize];
+                     
+                   var (bytesRead, offset) = (0, 0);
+                   while (bytesRead < bufferSize)
+                   {
+                       var read = (int) reader.GetBytes(
+                           ordinal,
+                           bufferSize + bytesRead,
+                           buffer,
+                           offset,
+                           bufferSize - bytesRead);
+                       if (read == 0)
+                           break;
+                       bytesRead += read;
+                       offset += read;
+                   }
+               
+                   if (bytesRead < bufferSize)
+                       Array.Resize(ref buffer, bytesRead);
+                   return buffer;
+               }
 
-                                                   public static string GetTransformedString<T>(string originalSql, T[] sqlParams, string csharpParamName, string sqlParamName)
-                                                   {
-                                                       var paramArgs = Enumerable.Range(0, sqlParams.Length).Select(i => $"@{csharpParamName}Arg{i}").ToList();
-                                                       return originalSql.Replace($"/*SLICE:{sqlParamName}*/@{sqlParamName}", string.Join(",", paramArgs));
-                                                   }
-                                               }
-                                               """;
-        return ParseMemberDeclaration(utilsClassDeclaration)!.AppendNewLine();
+               public static string TransformQueryForSliceArgs(string originalSql, int sliceSize, string csharpParamName, string sqlParamName)
+               {
+                   var paramArgs = Enumerable.Range(0, sliceSize).Select(i => $"@{csharpParamName}Arg{i}").ToList();
+                   return originalSql.Replace($"/*SLICE:{sqlParamName}*/@{sqlParamName}", string.Join(",", paramArgs));
+               }
+               
+               {{optionalTransformQueryForSqliteBatch}}
+           }
+           """;
+        return ParseMemberDeclaration(utilsClassDeclaration)!.NormalizeWhitespace();
     }
 }

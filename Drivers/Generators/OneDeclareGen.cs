@@ -50,7 +50,7 @@ public class OneDeclareGen(DbDriver dbDriver)
 
         string GetAsDriver()
         {
-            var createSqlCommand = dbDriver.CreateSqlCommand(sqlTextTransform != string.Empty ? Variable.SqlText.AsVarName() : queryTextConstant);
+            var createSqlCommand = dbDriver.CreateSqlCommand(sqlTextTransform != string.Empty ? Variable.TransformedSql.AsVarName() : queryTextConstant);
             var commandParameters = CommonGen.AddParametersToCommand(query.Params);
             var initDataReader = CommonGen.InitDataReader();
             var awaitReaderRow = CommonGen.AwaitReaderRow();

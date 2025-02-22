@@ -14,6 +14,7 @@ namespace SqlcGenCsharpTests
         public async Task EmptyTestsTable()
         {
             await QuerySql.DeleteAllAuthors();
+            await QuerySql.DeleteAllSqliteTypes();
         }
     }
 }

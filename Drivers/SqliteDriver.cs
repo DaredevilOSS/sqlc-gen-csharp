@@ -9,7 +9,7 @@ using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 namespace SqlcGenCsharp.Drivers;
 
 public partial class SqliteDriver(Options options, Dictionary<string, Table> tables) :
-    DbDriver(options, tables), IOne, IMany, IExec, IExecRows, IExecLastId
+    DbDriver(options, tables), IOne, IMany, IExec, IExecRows, IExecLastId, ICopyFrom
 {
     protected override List<ColumnMapping> ColumnMappings { get; } = [
         new("byte[]", new Dictionary<string, string?>
@@ -58,7 +58,6 @@ public partial class SqliteDriver(Options options, Dictionary<string, Table> tab
     {
         var counter = 0;
         var transformedQueryText = QueryParamRegex().Replace(query.Text, _ => "@" + query.Params[counter++].Column.Name);
-
         return transformedQueryText;
     }
 
@@ -90,5 +89,55 @@ public partial class SqliteDriver(Options options, Dictionary<string, Table> tab
     public MemberDeclarationSyntax ExecLastIdDeclare(string queryTextConstant, string argInterface, Query query)
     {
         return new ExecLastIdDeclareGen(this).Generate(queryTextConstant, argInterface, query);
+    }
+
+    public MemberDeclarationSyntax CopyFromDeclare(string queryTextConstant, string argInterface, Query query)
+    {
+        return new CopyFromDeclareGen(this).Generate(queryTextConstant, argInterface, query);
+    }
+
+    public string GetCopyFromImpl(Query query, string queryTextConstant)
+    {
+        var sqlTextVar = Variable.TransformedSql.AsVarName();
+        var (establishConnection, connectionOpen) = EstablishConnection(query);
+        var sqlTransformation = $"var {sqlTextVar} = Utils.TransformQueryForSqliteBatch({queryTextConstant}, {Variable.Args.AsVarName()}.Count);";
+        var commandParameters = AddParametersToCommand();
+        var createSqlCommand = CreateSqlCommand(sqlTextVar);
+        var executeScalar = $"await {Variable.Command.AsVarName()}.ExecuteScalarAsync();";
+
+        return $$"""
+                 using ({{establishConnection}})
+                 {
+                     {{connectionOpen.AppendSemicolonUnlessEmpty()}}
+                     {{sqlTransformation}}
+                     using ({{createSqlCommand}})
+                     {
+                         {{commandParameters}}
+                         {{executeScalar}}
+                     }
+                 }
+                 """;
+
+        string AddParametersToCommand()
+        {
+            var commandVar = Variable.Command.AsVarName();
+            var argsVar = Variable.Args.AsVarName();
+            var addRecordParamsToCommand = query.Params.Select(p =>
+            {
+                var param = p.Column.Name.ToPascalCase();
+                var nullParamCast = p.Column.NotNull ? string.Empty : " ?? (object)DBNull.Value";
+                var addParamToCommand = $$"""
+                    {{commandVar}}.Parameters.AddWithValue($"@{{p.Column.Name}}{i}", {{argsVar}}[i].{{param}}{{nullParamCast}});
+                    """;
+                return addParamToCommand;
+            }).JoinByNewLine();
+
+            return $$"""
+                     for (int i = 0; i < {{argsVar}}.Count; i++)
+                     {
+                         {{addRecordParamsToCommand}}
+                     }
+                     """;
+        }
     }
 }

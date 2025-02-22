@@ -37,7 +37,7 @@ public class ManyDeclareGen(DbDriver dbDriver)
             var dapperParamsSection = CommonGen.ConstructDapperParamsDict(query.Params);
             var dapperArgs = dapperParamsSection != string.Empty ? $", {Variable.QueryParams.AsVarName()}" : string.Empty;
             var returnType = dbDriver.AddNullableSuffixIfNeeded(returnInterface, true);
-            var sqlQuery = sqlTextTransform != string.Empty ? Variable.SqlText.AsVarName() : queryTextConstant;
+            var sqlQuery = sqlTextTransform != string.Empty ? Variable.TransformedSql.AsVarName() : queryTextConstant;
 
             return $$"""
                         using ({{establishConnection}})
@@ -50,7 +50,7 @@ public class ManyDeclareGen(DbDriver dbDriver)
 
         string GetAsDriver()
         {
-            var createSqlCommand = dbDriver.CreateSqlCommand(sqlTextTransform != string.Empty ? Variable.SqlText.AsVarName() : queryTextConstant);
+            var createSqlCommand = dbDriver.CreateSqlCommand(sqlTextTransform != string.Empty ? Variable.TransformedSql.AsVarName() : queryTextConstant);
             var commandParameters = CommonGen.AddParametersToCommand(query.Params);
             var initDataReader = CommonGen.InitDataReader();
             var awaitReaderRow = CommonGen.AwaitReaderRow();

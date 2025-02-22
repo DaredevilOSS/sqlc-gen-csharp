@@ -236,9 +236,9 @@ namespace SqliteLegacyExampleGen
             using (var connection = new SqliteConnection(ConnectionString))
             {
                 await connection.OpenAsync();
-                var sqlText = GetAuthorsByIdsSql;
-                sqlText = Utils.GetTransformedString(sqlText, args.Ids, "Ids", "ids");
-                using (var command = new SqliteCommand(sqlText, connection))
+                var transformedSql = GetAuthorsByIdsSql;
+                transformedSql = Utils.TransformQueryForSliceArgs(transformedSql, args.Ids.Length, "Ids", "ids");
+                using (var command = new SqliteCommand(transformedSql, connection))
                 {
                     for (int i = 0; i < args.Ids.Length; i++)
                         command.Parameters.AddWithValue($"@IdsArg{i}", args.Ids[i]);
@@ -273,10 +273,10 @@ namespace SqliteLegacyExampleGen
             using (var connection = new SqliteConnection(ConnectionString))
             {
                 await connection.OpenAsync();
-                var sqlText = GetAuthorsByIdsAndNamesSql;
-                sqlText = Utils.GetTransformedString(sqlText, args.Ids, "Ids", "ids");
-                sqlText = Utils.GetTransformedString(sqlText, args.Names, "Names", "names");
-                using (var command = new SqliteCommand(sqlText, connection))
+                var transformedSql = GetAuthorsByIdsAndNamesSql;
+                transformedSql = Utils.TransformQueryForSliceArgs(transformedSql, args.Ids.Length, "Ids", "ids");
+                transformedSql = Utils.TransformQueryForSliceArgs(transformedSql, args.Names.Length, "Names", "names");
+                using (var command = new SqliteCommand(transformedSql, connection))
                 {
                     for (int i = 0; i < args.Ids.Length; i++)
                         command.Parameters.AddWithValue($"@IdsArg{i}", args.Ids[i]);
@@ -459,6 +459,33 @@ namespace SqliteLegacyExampleGen
                     command.Parameters.AddWithValue("@c_real", args.CReal ?? (object)DBNull.Value);
                     command.Parameters.AddWithValue("@c_text", args.CText ?? (object)DBNull.Value);
                     command.Parameters.AddWithValue("@c_blob", args.CBlob ?? (object)DBNull.Value);
+                    await command.ExecuteScalarAsync();
+                }
+            }
+        }
+
+        private const string InsertSqliteTypesBatchSql = "INSERT INTO types_sqlite (c_integer, c_real, c_text) VALUES (@c_integer, @c_real, @c_text)";
+        public class InsertSqliteTypesBatchArgs
+        {
+            public int? CInteger { get; set; }
+            public float? CReal { get; set; }
+            public string CText { get; set; }
+        };
+        public async Task InsertSqliteTypesBatch(List<InsertSqliteTypesBatchArgs> args)
+        {
+            using (var connection = new SqliteConnection(ConnectionString))
+            {
+                await connection.OpenAsync();
+                var transformedSql = Utils.TransformQueryForSqliteBatch(InsertSqliteTypesBatchSql, args.Count);
+                using (var command = new SqliteCommand(transformedSql, connection))
+                {
+                    for (int i = 0; i < args.Count; i++)
+                    {
+                        command.Parameters.AddWithValue($"@c_integer{i}", args[i].CInteger ?? (object)DBNull.Value);
+                        command.Parameters.AddWithValue($"@c_real{i}", args[i].CReal ?? (object)DBNull.Value);
+                        command.Parameters.AddWithValue($"@c_text{i}", args[i].CText ?? (object)DBNull.Value);
+                    }
+
                     await command.ExecuteScalarAsync();
                 }
             }

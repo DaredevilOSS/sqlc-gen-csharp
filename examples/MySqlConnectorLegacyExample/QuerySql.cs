@@ -269,9 +269,9 @@ namespace MySqlConnectorLegacyExampleGen
             using (var connection = new MySqlConnection(ConnectionString))
             {
                 await connection.OpenAsync();
-                var sqlText = GetAuthorsByIdsSql;
-                sqlText = Utils.GetTransformedString(sqlText, args.Ids, "Ids", "ids");
-                using (var command = new MySqlCommand(sqlText, connection))
+                var transformedSql = GetAuthorsByIdsSql;
+                transformedSql = Utils.TransformQueryForSliceArgs(transformedSql, args.Ids.Length, "Ids", "ids");
+                using (var command = new MySqlCommand(transformedSql, connection))
                 {
                     for (int i = 0; i < args.Ids.Length; i++)
                         command.Parameters.AddWithValue($"@IdsArg{i}", args.Ids[i]);
@@ -306,10 +306,10 @@ namespace MySqlConnectorLegacyExampleGen
             using (var connection = new MySqlConnection(ConnectionString))
             {
                 await connection.OpenAsync();
-                var sqlText = GetAuthorsByIdsAndNamesSql;
-                sqlText = Utils.GetTransformedString(sqlText, args.Ids, "Ids", "ids");
-                sqlText = Utils.GetTransformedString(sqlText, args.Names, "Names", "names");
-                using (var command = new MySqlCommand(sqlText, connection))
+                var transformedSql = GetAuthorsByIdsAndNamesSql;
+                transformedSql = Utils.TransformQueryForSliceArgs(transformedSql, args.Ids.Length, "Ids", "ids");
+                transformedSql = Utils.TransformQueryForSliceArgs(transformedSql, args.Names.Length, "Names", "names");
+                using (var command = new MySqlCommand(transformedSql, connection))
                 {
                     for (int i = 0; i < args.Ids.Length; i++)
                         command.Parameters.AddWithValue($"@IdsArg{i}", args.Ids[i]);

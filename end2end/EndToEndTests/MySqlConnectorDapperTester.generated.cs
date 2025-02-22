@@ -250,53 +250,6 @@ namespace SqlcGenCsharpTests
         }
 
         [Test]
-        public async Task TestCopyFrom()
-        {
-            const int batchSize = 100;
-            var batchArgs = Enumerable.Range(0, batchSize).Select(_ => new QuerySql.InsertMysqlTypesBatchArgs { CInt = 1, CVarchar = "abc", CDate = new DateTime(2020, 7, 22, 11, 7, 45), CTimestamp = new DateTime(2020, 7, 22, 11, 7, 45) }).ToList();
-            await QuerySql.InsertMysqlTypesBatch(batchArgs);
-            var expected = new QuerySql.GetMysqlTypesAggRow
-            {
-                Cnt = batchSize,
-                CInt = 1,
-                CVarchar = "abc",
-                CDate = new DateTime(2020, 7, 22),
-                CTimestamp = new DateTime(2020, 7, 22, 11, 7, 45)
-            };
-            var actual = await QuerySql.GetMysqlTypesAgg();
-            Assert.That(SingularEquals(expected, actual));
-        }
-
-        private static bool SingularEquals(QuerySql.GetMysqlTypesAggRow x, QuerySql.GetMysqlTypesAggRow y)
-        {
-            return x.Cnt.Equals(y.Cnt) && x.CInt.Equals(y.CInt) && x.CVarchar.Equals(y.CVarchar) && x.CDate.Value.Equals(y.CDate.Value) && x.CTimestamp.Equals(y.CTimestamp);
-        }
-
-        [Test]
-        public async Task TestMySqlTypes()
-        {
-            await QuerySql.InsertMysqlTypes(new QuerySql.InsertMysqlTypesArgs { CBit = false, CTinyint = true, CBool = true, CBoolean = false, CInt = 312, CVarchar = "321fds", CDate = new DateTime(1985, 9, 29, 23, 59, 59), CTimestamp = new DateTime(2022, 9, 30, 23, 0, 3) });
-            var expected = new QuerySql.GetMysqlTypesRow
-            {
-                CBit = false,
-                CTinyint = true,
-                CBool = true,
-                CBoolean = false,
-                CInt = 312,
-                CVarchar = "321fds",
-                CDate = new DateTime(1985, 9, 29),
-                CTimestamp = new DateTime(2022, 9, 30, 23, 0, 3)
-            };
-            var actual = await QuerySql.GetMysqlTypes();
-            Assert.That(SingularEquals(expected, actual));
-        }
-
-        private static bool SingularEquals(QuerySql.GetMysqlTypesRow x, QuerySql.GetMysqlTypesRow y)
-        {
-            return x.CBit.Equals(y.CBit) && x.CTinyint.Equals(y.CTinyint) && x.CBool.Equals(y.CBool) && x.CBoolean.Equals(y.CBoolean) && x.CInt.Equals(y.CInt) && x.CVarchar.Equals(y.CVarchar) && x.CDate.Equals(y.CDate) && x.CTimestamp.Equals(y.CTimestamp);
-        }
-
-        [Test]
         public async Task TestNargNull()
         {
             await this.QuerySql.CreateAuthor(new QuerySql.CreateAuthorArgs { Id = 1111, Name = "Bojack Horseman", Bio = "Back in the 90s he was in a very famous TV show" });
@@ -350,6 +303,57 @@ namespace SqlcGenCsharpTests
             };
             var actual = await this.QuerySql.GetAuthorByNamePattern(new QuerySql.GetAuthorByNamePatternArgs { NamePattern = "Bojack%" });
             Assert.That(SequenceEquals(expected, actual));
+        }
+
+        [Test]
+        public async Task TestMySqlTypes()
+        {
+            await QuerySql.InsertMysqlTypes(new QuerySql.InsertMysqlTypesArgs { CBit = false, CTinyint = true, CBool = true, CBoolean = false, CInt = 312, CVarchar = "321fds", CDate = new DateTime(1985, 9, 29, 23, 59, 59), CTimestamp = new DateTime(2022, 9, 30, 23, 0, 3) });
+            var expected = new QuerySql.GetMysqlTypesRow
+            {
+                CBit = false,
+                CTinyint = true,
+                CBool = true,
+                CBoolean = false,
+                CInt = 312,
+                CVarchar = "321fds",
+                CDate = new DateTime(1985, 9, 29),
+                CTimestamp = new DateTime(2022, 9, 30, 23, 0, 3)
+            };
+            var actual = await QuerySql.GetMysqlTypes();
+            Assert.That(SingularEquals(expected, actual));
+        }
+
+        private static bool SingularEquals(QuerySql.GetMysqlTypesRow x, QuerySql.GetMysqlTypesRow y)
+        {
+            if (x == null && y == null)
+                return true;
+            if (x == null || y == null)
+                return false;
+            return x.CBit.Equals(y.CBit) && x.CTinyint.Equals(y.CTinyint) && x.CBool.Equals(y.CBool) && x.CBoolean.Equals(y.CBoolean) && x.CInt.Equals(y.CInt) && x.CVarchar.Equals(y.CVarchar) && x.CDate.Equals(y.CDate) && x.CTimestamp.Equals(y.CTimestamp);
+        }
+
+        [Test]
+        public async Task TestCopyFrom()
+        {
+            const int batchSize = 100;
+            var batchArgs = Enumerable.Range(0, batchSize).Select(_ => new QuerySql.InsertMysqlTypesBatchArgs { CInt = 1, CVarchar = "abc", CDate = new DateTime(2020, 7, 22, 11, 7, 45), CTimestamp = new DateTime(2020, 7, 22, 11, 7, 45) }).ToList();
+            await QuerySql.InsertMysqlTypesBatch(batchArgs);
+            var expected = new QuerySql.GetMysqlTypesAggRow
+            {
+                Cnt = batchSize,
+                CInt = 1,
+                CVarchar = "abc",
+                CDate = new DateTime(2020, 7, 22),
+                CTimestamp = new DateTime(2020, 7, 22, 11, 7, 45)
+            };
+            var actual = await QuerySql.GetMysqlTypesAgg();
+            Assert.That(SingularEquals(expected, actual));
+        }
+
+        private static bool SingularEquals(QuerySql.GetMysqlTypesAggRow x, QuerySql.GetMysqlTypesAggRow y)
+        {
+            return x.Cnt.Equals(y.Cnt) && x.CInt.Equals(y.CInt) && x.CVarchar.Equals(y.CVarchar) && x.CDate.Value.Equals(y.CDate.Value) && x.CTimestamp.Equals(y.CTimestamp);
         }
     }
 }

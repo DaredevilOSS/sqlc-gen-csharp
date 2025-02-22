@@ -173,12 +173,12 @@ public class QuerySql
     {
         using (var connection = new SqliteConnection(ConnectionString))
         {
-            var sqlText = GetAuthorsByIdsSql;
-            sqlText = Utils.GetTransformedString(sqlText, args.Ids, "Ids", "ids");
+            var transformedSql = GetAuthorsByIdsSql;
+            transformedSql = Utils.TransformQueryForSliceArgs(transformedSql, args.Ids.Length, "Ids", "ids");
             var queryParams = new Dictionary<string, object?>();
             for (int i = 0; i < args.Ids.Length; i++)
                 queryParams.Add($"@IdsArg{i}", args.Ids[i]);
-            var result = await connection.QueryAsync<GetAuthorsByIdsRow>(sqlText, queryParams);
+            var result = await connection.QueryAsync<GetAuthorsByIdsRow>(transformedSql, queryParams);
             return result.AsList();
         }
     }
@@ -199,15 +199,15 @@ public class QuerySql
     {
         using (var connection = new SqliteConnection(ConnectionString))
         {
-            var sqlText = GetAuthorsByIdsAndNamesSql;
-            sqlText = Utils.GetTransformedString(sqlText, args.Ids, "Ids", "ids");
-            sqlText = Utils.GetTransformedString(sqlText, args.Names, "Names", "names");
+            var transformedSql = GetAuthorsByIdsAndNamesSql;
+            transformedSql = Utils.TransformQueryForSliceArgs(transformedSql, args.Ids.Length, "Ids", "ids");
+            transformedSql = Utils.TransformQueryForSliceArgs(transformedSql, args.Names.Length, "Names", "names");
             var queryParams = new Dictionary<string, object?>();
             for (int i = 0; i < args.Ids.Length; i++)
                 queryParams.Add($"@IdsArg{i}", args.Ids[i]);
             for (int i = 0; i < args.Names.Length; i++)
                 queryParams.Add($"@NamesArg{i}", args.Names[i]);
-            var result = await connection.QueryAsync<GetAuthorsByIdsAndNamesRow>(sqlText, queryParams);
+            var result = await connection.QueryAsync<GetAuthorsByIdsAndNamesRow>(transformedSql, queryParams);
             return result.AsList();
         }
     }
@@ -363,6 +363,33 @@ public class QuerySql
             queryParams.Add("c_text", args.CText);
             queryParams.Add("c_blob", args.CBlob);
             await connection.ExecuteAsync(InsertSqliteTypesSql, queryParams);
+        }
+    }
+
+    private const string InsertSqliteTypesBatchSql = "INSERT INTO types_sqlite (c_integer, c_real, c_text) VALUES (@c_integer, @c_real, @c_text)";
+    public class InsertSqliteTypesBatchArgs
+    {
+        public int? CInteger { get; init; }
+        public float? CReal { get; init; }
+        public string? CText { get; init; }
+    };
+    public async Task InsertSqliteTypesBatch(List<InsertSqliteTypesBatchArgs> args)
+    {
+        using (var connection = new SqliteConnection(ConnectionString))
+        {
+            await connection.OpenAsync();
+            var transformedSql = Utils.TransformQueryForSqliteBatch(InsertSqliteTypesBatchSql, args.Count);
+            using (var command = new SqliteCommand(transformedSql, connection))
+            {
+                for (int i = 0; i < args.Count; i++)
+                {
+                    command.Parameters.AddWithValue($"@c_integer{i}", args[i].CInteger ?? (object)DBNull.Value);
+                    command.Parameters.AddWithValue($"@c_real{i}", args[i].CReal ?? (object)DBNull.Value);
+                    command.Parameters.AddWithValue($"@c_text{i}", args[i].CText ?? (object)DBNull.Value);
+                }
+
+                await command.ExecuteScalarAsync();
+            }
         }
     }
 

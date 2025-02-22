@@ -14,5 +14,6 @@ public partial class SqliteTester
     public async Task EmptyTestsTable()
     {
         await QuerySql.DeleteAllAuthors();
+        await QuerySql.DeleteAllSqliteTypes();
     }
 }
