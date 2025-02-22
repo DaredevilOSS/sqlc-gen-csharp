@@ -250,32 +250,6 @@ namespace SqlcGenCsharpTests
         }
 
         [Test]
-        public async Task TestSqliteTypes()
-        {
-            await QuerySql.InsertSqliteTypes(new QuerySql.InsertSqliteTypesArgs { CInteger = 312, CReal = 1.33f, CText = "fdsfsd", CBlob = new byte[] { 0x15, 0x20, 0x22 }, });
-            var expected = new QuerySql.GetSqliteTypesRow
-            {
-                CInteger = 312,
-                CReal = 1.33f,
-                CText = "fdsfsd",
-                CBlob = new byte[]
-                {
-                    0x15,
-                    0x20,
-                    0x22
-                },
-            };
-            var actual = await QuerySql.GetSqliteTypes();
-            Assert.That(SingularEquals(expected, actual));
-        }
-
-        private static bool SingularEquals(QuerySql.GetSqliteTypesRow x, QuerySql.GetSqliteTypesRow y)
-        {
-            return x.CInteger.Equals(y.CInteger) && x.CReal.Equals(y.CReal) && x.CText.Equals(y.CText);
-        // TODO add CBlob.Equals - fix impl
-        }
-
-        [Test]
         public async Task TestNargNull()
         {
             await this.QuerySql.CreateAuthor(new QuerySql.CreateAuthorArgs { Id = 1111, Name = "Bojack Horseman", Bio = "Back in the 90s he was in a very famous TV show" });
@@ -329,6 +303,62 @@ namespace SqlcGenCsharpTests
             };
             var actual = await this.QuerySql.GetAuthorByNamePattern(new QuerySql.GetAuthorByNamePatternArgs { NamePattern = "Bojack%" });
             Assert.That(SequenceEquals(expected, actual));
+        }
+
+        [Test]
+        public async Task TestSqliteTypes()
+        {
+            await QuerySql.InsertSqliteTypes(new QuerySql.InsertSqliteTypesArgs { CInteger = 312, CReal = 1.33f, CText = "fdsfsd", CBlob = new byte[] { 0x15, 0x20, 0x22 }, });
+            var expected = new QuerySql.GetSqliteTypesRow
+            {
+                CInteger = 312,
+                CReal = 1.33f,
+                CText = "fdsfsd",
+                CBlob = new byte[]
+                {
+                    0x15,
+                    0x20,
+                    0x22
+                },
+            };
+            var actual = await QuerySql.GetSqliteTypes();
+            Assert.That(SingularEquals(expected, actual));
+        }
+
+        private static bool SingularEquals(QuerySql.GetSqliteTypesRow x, QuerySql.GetSqliteTypesRow y)
+        {
+            if (x == null && y == null)
+                return true;
+            if (x == null || y == null)
+                return false;
+            return x.CInteger.Equals(y.CInteger) && x.CReal.Equals(y.CReal) && x.CText.Equals(y.CText);
+        // TODO add CBlob.Equals - fix impl
+        }
+
+        [Test]
+        public async Task TestCopyFrom()
+        {
+            const int batchSize = 100;
+            var batchArgs = Enumerable.Range(0, batchSize).Select(_ => new QuerySql.InsertSqliteTypesBatchArgs { CInteger = 312, CReal = 1.33f, CText = "fdsfsd" }).ToList();
+            await QuerySql.InsertSqliteTypesBatch(batchArgs);
+            var expected = new QuerySql.GetSqliteTypesAggRow
+            {
+                Cnt = batchSize,
+                CInteger = 312,
+                CReal = 1.33f,
+                CText = "fdsfsd"
+            };
+            var actual = await QuerySql.GetSqliteTypesAgg();
+            Assert.That(SingularEquals(expected, actual));
+        }
+
+        private static bool SingularEquals(QuerySql.GetSqliteTypesAggRow x, QuerySql.GetSqliteTypesAggRow y)
+        {
+            if (x == null && y == null)
+                return true;
+            if (x == null || y == null)
+                return false;
+            return x.Cnt.Equals(y.Cnt) && x.CInteger.Equals(y.CInteger) && x.CReal.Equals(y.CReal) && x.CText.Equals(y.CText);
         }
     }
 }

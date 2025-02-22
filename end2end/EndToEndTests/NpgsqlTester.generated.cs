@@ -251,77 +251,6 @@ namespace SqlcGenCsharpTests
         }
 
         [Test]
-        public async Task TestCopyFrom()
-        {
-            const int batchSize = 100;
-            var batchArgs = Enumerable.Range(0, batchSize).Select(_ => new QuerySql.InsertPostgresTypesBatchArgs { CBoolean = true, CSmallint = 3, CInteger = 1, CBigint = 14214231, CDecimal = 1.2f, CNumeric = 8.4f, CReal = 1.432423f, CDate = new DateTime(2020, 7, 22, 11, 7, 45, 35), CTimestamp = new DateTime(2020, 7, 22, 11, 7, 45, 35), CChar = "z", CVarchar = "abc", CCharacterVarying = "aaaa", CText = "1q1q1q" }).ToList();
-            await QuerySql.InsertPostgresTypesBatch(batchArgs);
-            var expected = new QuerySql.GetPostgresTypesAggRow
-            {
-                Cnt = batchSize,
-                CBoolean = true,
-                CSmallint = 3,
-                CInteger = 1,
-                CBigint = 14214231,
-                CDecimal = 1.2f,
-                CNumeric = 8.4f,
-                CReal = 1.432423f,
-                CDate = new DateTime(2020, 7, 22),
-                CTimestamp = new DateTime(2020, 7, 22, 11, 7, 45, 35),
-                CChar = "z",
-                CVarchar = "abc",
-                CCharacterVarying = "aaaa",
-                CText = "1q1q1q"
-            };
-            var actual = await QuerySql.GetPostgresTypesAgg();
-            Assert.That(SingularEquals(expected, actual.Value));
-        }
-
-        private static bool SingularEquals(QuerySql.GetPostgresTypesAggRow x, QuerySql.GetPostgresTypesAggRow y)
-        {
-            return x.Cnt.Equals(y.Cnt) && x.CSmallint.Equals(y.CSmallint) && x.CBoolean.Equals(y.CBoolean) && x.CInteger.Equals(y.CInteger) && x.CBigint.Equals(y.CBigint) && x.CDecimal.Equals(y.CDecimal) && x.CNumeric.Equals(y.CNumeric) && x.CReal.Equals(y.CReal) && x.CDate.Equals(y.CDate) && x.CTimestamp.Equals(y.CTimestamp) && x.CChar.Equals(y.CChar) && x.CVarchar.Equals(y.CVarchar) && x.CCharacterVarying.Equals(y.CCharacterVarying) && x.CText.Equals(y.CText);
-        }
-
-        [Test]
-        public async Task TestPostgresTypes()
-        {
-            await QuerySql.InsertPostgresTypes(new QuerySql.InsertPostgresTypesArgs { CBigint = 1, CReal = 1.0f, CNumeric = 1, CSmallint = 1, CDecimal = 1, CDate = new DateTime(1985, 9, 29), CTimestamp = new DateTime(2022, 9, 30, 23, 0, 3), CBoolean = true, CChar = "a", CInteger = 1, CText = "ab", CVarchar = "abc", CCharacterVarying = "abcd", CTextArray = new string[] { "a", "b" }, CIntegerArray = new int[] { 1, 2 } });
-            var expected = new QuerySql.GetPostgresTypesRow
-            {
-                CBigint = 1,
-                CReal = 1.0f,
-                CNumeric = 1,
-                CSmallint = 1,
-                CDecimal = 1,
-                CDate = new DateTime(1985, 9, 29),
-                CTimestamp = new DateTime(2022, 9, 30, 23, 0, 3),
-                CBoolean = true,
-                CChar = "a",
-                CInteger = 1,
-                CText = "ab",
-                CVarchar = "abc",
-                CCharacterVarying = "abcd",
-                CTextArray = new string[]
-                {
-                    "a",
-                    "b"
-                },
-                CIntegerArray = new int[]
-                {
-                    1,
-                    2
-                }
-            };
-            var actual = await QuerySql.GetPostgresTypes();
-            Assert.That(SingularEquals(expected, actual.Value));
-        }
-
-        private static bool SingularEquals(QuerySql.GetPostgresTypesRow x, QuerySql.GetPostgresTypesRow y)
-        {
-            return x.CBigint.Equals(y.CBigint) && x.CReal.Equals(y.CReal) && x.CNumeric.Equals(y.CNumeric) && x.CSmallint.Equals(y.CSmallint) && x.CDecimal.Equals(y.CDecimal) && x.CDate.Equals(y.CDate) && x.CTimestamp.Equals(y.CTimestamp) && x.CBoolean.Equals(y.CBoolean) && x.CChar.Equals(y.CChar) && x.CInteger.Equals(y.CInteger) && x.CText.Equals(y.CText) && x.CVarchar.Equals(y.CVarchar) && x.CCharacterVarying.Equals(y.CCharacterVarying) && x.CTextArray.SequenceEqual(y.CTextArray) && x.CIntegerArray.SequenceEqual(y.CIntegerArray);
-        }
-
-        [Test]
         public async Task TestNargNull()
         {
             await this.QuerySql.CreateAuthor(new QuerySql.CreateAuthorArgs { Id = 1111, Name = "Bojack Horseman", Bio = "Back in the 90s he was in a very famous TV show" });
@@ -375,6 +304,81 @@ namespace SqlcGenCsharpTests
             };
             var actual = await this.QuerySql.GetAuthorByNamePattern(new QuerySql.GetAuthorByNamePatternArgs { NamePattern = "Bojack%" });
             Assert.That(SequenceEquals(expected, actual));
+        }
+
+        [Test]
+        public async Task TestPostgresTypes()
+        {
+            await QuerySql.InsertPostgresTypes(new QuerySql.InsertPostgresTypesArgs { CBigint = 1, CReal = 1.0f, CNumeric = 1, CSmallint = 1, CDecimal = 1, CDate = new DateTime(1985, 9, 29), CTimestamp = new DateTime(2022, 9, 30, 23, 0, 3), CBoolean = true, CChar = "a", CInteger = 1, CText = "ab", CVarchar = "abc", CCharacterVarying = "abcd", CTextArray = new string[] { "a", "b" }, CIntegerArray = new int[] { 1, 2 } });
+            var expected = new QuerySql.GetPostgresTypesRow
+            {
+                CBigint = 1,
+                CReal = 1.0f,
+                CNumeric = 1,
+                CSmallint = 1,
+                CDecimal = 1,
+                CDate = new DateTime(1985, 9, 29),
+                CTimestamp = new DateTime(2022, 9, 30, 23, 0, 3),
+                CBoolean = true,
+                CChar = "a",
+                CInteger = 1,
+                CText = "ab",
+                CVarchar = "abc",
+                CCharacterVarying = "abcd",
+                CTextArray = new string[]
+                {
+                    "a",
+                    "b"
+                },
+                CIntegerArray = new int[]
+                {
+                    1,
+                    2
+                }
+            };
+            var actual = await QuerySql.GetPostgresTypes();
+            Assert.That(SingularEquals(expected, actual.Value));
+        }
+
+        private static bool SingularEquals(QuerySql.GetPostgresTypesRow x, QuerySql.GetPostgresTypesRow y)
+        {
+            if (x == null && y == null)
+                return true;
+            if (x == null || y == null)
+                return false;
+            return x.CBigint.Equals(y.CBigint) && x.CReal.Equals(y.CReal) && x.CNumeric.Equals(y.CNumeric) && x.CSmallint.Equals(y.CSmallint) && x.CDecimal.Equals(y.CDecimal) && x.CDate.Equals(y.CDate) && x.CTimestamp.Equals(y.CTimestamp) && x.CBoolean.Equals(y.CBoolean) && x.CChar.Equals(y.CChar) && x.CInteger.Equals(y.CInteger) && x.CText.Equals(y.CText) && x.CVarchar.Equals(y.CVarchar) && x.CCharacterVarying.Equals(y.CCharacterVarying) && x.CTextArray.SequenceEqual(y.CTextArray) && x.CIntegerArray.SequenceEqual(y.CIntegerArray);
+        }
+
+        [Test]
+        public async Task TestCopyFrom()
+        {
+            const int batchSize = 100;
+            var batchArgs = Enumerable.Range(0, batchSize).Select(_ => new QuerySql.InsertPostgresTypesBatchArgs { CBoolean = true, CSmallint = 3, CInteger = 1, CBigint = 14214231, CDecimal = 1.2f, CNumeric = 8.4f, CReal = 1.432423f, CDate = new DateTime(2020, 7, 22, 11, 7, 45, 35), CTimestamp = new DateTime(2020, 7, 22, 11, 7, 45, 35), CChar = "z", CVarchar = "abc", CCharacterVarying = "aaaa", CText = "1q1q1q" }).ToList();
+            await QuerySql.InsertPostgresTypesBatch(batchArgs);
+            var expected = new QuerySql.GetPostgresTypesAggRow
+            {
+                Cnt = batchSize,
+                CBoolean = true,
+                CSmallint = 3,
+                CInteger = 1,
+                CBigint = 14214231,
+                CDecimal = 1.2f,
+                CNumeric = 8.4f,
+                CReal = 1.432423f,
+                CDate = new DateTime(2020, 7, 22),
+                CTimestamp = new DateTime(2020, 7, 22, 11, 7, 45, 35),
+                CChar = "z",
+                CVarchar = "abc",
+                CCharacterVarying = "aaaa",
+                CText = "1q1q1q"
+            };
+            var actual = await QuerySql.GetPostgresTypesAgg();
+            Assert.That(SingularEquals(expected, actual.Value));
+        }
+
+        private static bool SingularEquals(QuerySql.GetPostgresTypesAggRow x, QuerySql.GetPostgresTypesAggRow y)
+        {
+            return x.Cnt.Equals(y.Cnt) && x.CSmallint.Equals(y.CSmallint) && x.CBoolean.Equals(y.CBoolean) && x.CInteger.Equals(y.CInteger) && x.CBigint.Equals(y.CBigint) && x.CDecimal.Equals(y.CDecimal) && x.CNumeric.Equals(y.CNumeric) && x.CReal.Equals(y.CReal) && x.CDate.Equals(y.CDate) && x.CTimestamp.Equals(y.CTimestamp) && x.CChar.Equals(y.CChar) && x.CVarchar.Equals(y.CVarchar) && x.CCharacterVarying.Equals(y.CCharacterVarying) && x.CText.Equals(y.CText);
         }
     }
 }

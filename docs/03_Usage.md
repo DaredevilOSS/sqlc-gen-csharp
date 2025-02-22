@@ -9,7 +9,12 @@
 | useDapper              | default: `false`<br/>values: `false`,`true`                                                                                                                                        | Yes      | Enables Dapper as a thin wrapper for the generated code. For more information, please refer to the [Dapper documentation](https://github.com/DapperLib/Dapper).                                                                                                                                                                           |
 | overrideDapperVersion  | default:<br/> `2.1.35`<br/>values: The desired Dapper version                                                                                                                      | Yes      | If `useDapper` is set to `true`, this option allows you to override the version of Dapper to be used.                                                                                                                                                                                                                                     |
 
-## Query Annotations
+## Supported Features
+- ✅ means the feature is fully supported.
+- 🚫 means the database does not support the feature.
+- ❌ means the feature is not supported by the plugin (but could be supported by the database).
+
+### Query Annotations
 Basic functionality - same for all databases:
 - `:one`          - returns 0...1 records
 - `:many`         - returns 0...n records
@@ -21,26 +26,22 @@ Advanced functionality - varies between databases:
 - `:copyfrom`     - batch insert, implementation varies greatly
 <br/>
 
-| Annotation  | PostgresSQL | MySQL | SQLite |
-|-------------|-------------|-------|--------|
+| Annotation  | PostgresSQL | MySQL | SQLite  |
+|-------------|-------------|-------|---------|
 | :one        | ✅          | ✅    | ✅      |
 | :many       | ✅          | ✅    | ✅      |
 | :exec       | ✅          | ✅    | ✅      |
 | :execrows   | ✅          | ✅    | ✅      |
 | :execlastid | ✅          | ✅    | ✅      |
-| :copyfrom   | ✅          | ✅    | ❌      |
-
-- ✅ means the feature is fully supported.
-- ❌ means the feature is not supported by the plugin (but could be supported by the database).
+| :copyfrom   | ✅          | ✅    | ✅      |
 
 More info can be found in [here](https://docs.sqlc.dev/en/stable/reference/query-annotations.html).
 
-## Macro Annotations
+### Macro Annotations
 - `sqlc.arg`       - Attach a name to a parameter in a SQL query
 - `sqlc.narg`      - The same as `sqlc.arg`, but always marks the parameter as nullable
 - `sqlc.slice`     - For databases that do not support passing arrays to the `IN` operator, generates a dynamic query at runtime with the correct number of parameters
 - `sqlc.embed`     - Embedding allows you to reuse existing model structs in more queries
-
 <br/>
 
 | Annotation  | PostgresSQL | MySQL | SQLite  |
@@ -49,9 +50,5 @@ More info can be found in [here](https://docs.sqlc.dev/en/stable/reference/query
 | sqlc.narg   | ✅          | ✅    | ✅       |
 | sqlc.slice  | 🚫          | ✅    | ✅       |
 | sqlc.embed  | ✅          | ✅    | ✅       |
-
-- ✅ means the feature is fully supported.
-- 🚫 means the database does not support the feature.
-- ❌ means the feature is not supported by the plugin (but could be supported by the database).
 
 More info can be found in [here](https://docs.sqlc.dev/en/stable/reference/macros.html#macros).

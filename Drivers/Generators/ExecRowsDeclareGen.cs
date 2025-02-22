@@ -40,7 +40,7 @@ public class ExecRowsDeclareGen(DbDriver dbDriver)
         string GetAsDriver()
         {
             var createSqlCommand = dbDriver.CreateSqlCommand(sqlTextTransform != string.Empty
-                ? Variable.SqlText.AsVarName()
+                ? Variable.TransformedSql.AsVarName()
                 : queryTextConstant);
             var commandParameters = CommonGen.AddParametersToCommand(query.Params);
             return $$"""

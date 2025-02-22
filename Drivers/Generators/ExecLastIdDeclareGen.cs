@@ -42,7 +42,7 @@ public class ExecLastIdDeclareGen(DbDriver dbDriver)
 
         string GetAsDriver()
         {
-            var sqlTextVar = sqlTextTransform == string.Empty ? queryTextConstant : Variable.SqlText.AsVarName();
+            var sqlTextVar = sqlTextTransform == string.Empty ? queryTextConstant : Variable.TransformedSql.AsVarName();
             var createSqlCommand = dbDriver.CreateSqlCommand(sqlTextVar);
             var commandParameters = CommonGen.AddParametersToCommand(query.Params);
             var returnLastId = ((IExecLastId)dbDriver).GetLastIdStatement(query).JoinByNewLine();

@@ -583,6 +583,45 @@ public static class Templates
                      }
                      """
         },
+        [KnownTestType.SqliteCopyFrom] = new TestImpl
+        {
+            Impl = $$"""
+                     [Test]
+                     public async Task TestCopyFrom()
+                     {
+                         const int batchSize = 100;
+                         var batchArgs = Enumerable.Range(0, batchSize)
+                             .Select(_ => new QuerySql.InsertSqliteTypesBatchArgs
+                             {
+                                 CInteger = 312,
+                                 CReal = 1.33f,
+                                 CText = "fdsfsd"
+                             })
+                             .ToList();
+                         await QuerySql.InsertSqliteTypesBatch(batchArgs);
+                         var expected = new QuerySql.GetSqliteTypesAggRow
+                         {
+                             Cnt = batchSize,
+                             CInteger = 312,
+                             CReal = 1.33f,
+                             CText = "fdsfsd"
+                         };
+                         var actual = await QuerySql.GetSqliteTypesAgg();
+                         Assert.That(SingularEquals(expected, actual{{UnknownRecordValuePlaceholder}}));
+                     }
+                     
+                     private static bool SingularEquals(QuerySql.GetSqliteTypesAggRow x, QuerySql.GetSqliteTypesAggRow y)
+                     {
+                         if (x == null && y == null) return true;
+                         if (x == null || y == null) return false;
+                         
+                         return x.Cnt.Equals(y.Cnt) &&
+                            x.CInteger.Equals(y.CInteger) &&
+                            x.CReal.Equals(y.CReal) &&
+                            x.CText.Equals(y.CText);
+                     }
+                     """
+        },
         [KnownTestType.PostgresDataTypes] = new TestImpl
         {
             Impl = $$"""
@@ -632,6 +671,9 @@ public static class Templates
                    
                    private static bool SingularEquals(QuerySql.GetPostgresTypesRow x, QuerySql.GetPostgresTypesRow y)
                    {
+                       if (x == null && y == null) return true;
+                       if (x == null || y == null) return false;
+                       
                        return x.CBigint.Equals(y.CBigint) &&
                            x.CReal.Equals(y.CReal) &&
                            x.CNumeric.Equals(y.CNumeric) &&
@@ -685,6 +727,9 @@ public static class Templates
                    
                    private static bool SingularEquals(QuerySql.GetMysqlTypesRow x, QuerySql.GetMysqlTypesRow y)
                    {
+                       if (x == null && y == null) return true;
+                       if (x == null || y == null) return false;
+                       
                        return x.CBit.Equals(y.CBit) &&
                            x.CTinyint.Equals(y.CTinyint) &&
                            x.CBool.Equals(y.CBool) &&
@@ -723,6 +768,9 @@ public static class Templates
                    
                    private static bool SingularEquals(QuerySql.GetSqliteTypesRow x, QuerySql.GetSqliteTypesRow y)
                    {
+                       if (x == null && y == null) return true;
+                       if (x == null || y == null) return false;
+                       
                        return x.CInteger.Equals(y.CInteger) &&
                            x.CReal.Equals(y.CReal) &&
                            x.CText.Equals(y.CText);

@@ -2,6 +2,7 @@
 using System;
 using System.Data;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace SqliteExampleGen;
 public static class Utils
@@ -27,9 +28,21 @@ public static class Utils
         return buffer;
     }
 
-    public static string GetTransformedString<T>(string originalSql, T[] sqlParams, string csharpParamName, string sqlParamName)
+    public static string TransformQueryForSliceArgs(string originalSql, int sliceSize, string csharpParamName, string sqlParamName)
     {
-        var paramArgs = Enumerable.Range(0, sqlParams.Length).Select(i => $"@{csharpParamName}Arg{i}").ToList();
+        var paramArgs = Enumerable.Range(0, sliceSize).Select(i => $"@{csharpParamName}Arg{i}").ToList();
         return originalSql.Replace($"/*SLICE:{sqlParamName}*/@{sqlParamName}", string.Join(",", paramArgs));
+    }
+
+    private static readonly Regex ValuesRegex = new Regex(@"VALUES\s*\((?<params>[^)]*)\)", RegexOptions.IgnoreCase);
+    public static string TransformQueryForSqliteBatch(string originalSql, int cntRecords)
+    {
+        var match = ValuesRegex.Match(originalSql);
+        if (!match.Success)
+            throw new ArgumentException("The query does not contain a valid VALUES clause.");
+        var valuesParams = match.Groups["params"].Value.Split(',').Select(p => p.Trim()).ToList();
+        var batchRows = Enumerable.Range(0, cntRecords).Select(i => "(" + string.Join(", ", valuesParams.Select(p => $"{p}{i}")) + ")");
+        var batchValuesClause = "VALUES " + string.Join(",\n", batchRows);
+        return ValuesRegex.Replace(originalSql, batchValuesClause);
     }
 }

@@ -13,7 +13,7 @@ public class CommonGen(DbDriver dbDriver)
             : $"{argInterface} {Variable.Args.AsVarName()}")}";
     }
 
-    public string AddParametersToCommand(IEnumerable<Parameter> parameters)
+    public static string AddParametersToCommand(IEnumerable<Parameter> parameters)
     {
         return parameters.Select(p =>
         {
@@ -72,16 +72,16 @@ public class CommonGen(DbDriver dbDriver)
     public static string GetSqlTransformations(Query query, string queryTextConstant)
     {
         if (!query.Params.Any(p => p.Column.IsSqlcSlice)) return string.Empty;
-        var initVariable = $"var {Variable.SqlText.AsVarName()} = {queryTextConstant};";
+        var initVariable = $"var {Variable.TransformedSql.AsVarName()} = {queryTextConstant};";
 
         var sqlcSliceCommands = query.Params
             .Where(p => p.Column.IsSqlcSlice)
             .Select(c =>
             {
-                var sqlTextVar = Variable.SqlText.AsVarName();
+                var sqlTextVar = Variable.TransformedSql.AsVarName();
                 var paramName = c.Column.Name.ToPascalCase();
                 return $"""
-                         {sqlTextVar} = Utils.GetTransformedString({sqlTextVar}, {Variable.Args.AsVarName()}.{paramName}, "{paramName}", "{c.Column.Name}");
+                         {sqlTextVar} = Utils.TransformQueryForSliceArgs({sqlTextVar}, {Variable.Args.AsVarName()}.{paramName}.Length, "{paramName}", "{c.Column.Name}");
                          """;
             });
 
