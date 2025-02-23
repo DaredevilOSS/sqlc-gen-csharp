@@ -201,10 +201,10 @@ namespace MySqlConnectorDapperLegacyExampleGen
             using (var connection = new MySqlConnection(ConnectionString))
             {
                 var transformedSql = GetAuthorsByIdsSql;
-                transformedSql = Utils.TransformQueryForSliceArgs(transformedSql, args.Ids.Length, "Ids", "ids");
+                transformedSql = Utils.TransformQueryForSliceArgs(transformedSql, args.Ids.Length, "ids");
                 var queryParams = new Dictionary<string, object>();
                 for (int i = 0; i < args.Ids.Length; i++)
-                    queryParams.Add($"@IdsArg{i}", args.Ids[i]);
+                    queryParams.Add($"@idsArg{i}", args.Ids[i]);
                 var result = await connection.QueryAsync<GetAuthorsByIdsRow>(transformedSql, queryParams);
                 return result.AsList();
             }
@@ -227,13 +227,13 @@ namespace MySqlConnectorDapperLegacyExampleGen
             using (var connection = new MySqlConnection(ConnectionString))
             {
                 var transformedSql = GetAuthorsByIdsAndNamesSql;
-                transformedSql = Utils.TransformQueryForSliceArgs(transformedSql, args.Ids.Length, "Ids", "ids");
-                transformedSql = Utils.TransformQueryForSliceArgs(transformedSql, args.Names.Length, "Names", "names");
+                transformedSql = Utils.TransformQueryForSliceArgs(transformedSql, args.Ids.Length, "ids");
+                transformedSql = Utils.TransformQueryForSliceArgs(transformedSql, args.Names.Length, "names");
                 var queryParams = new Dictionary<string, object>();
                 for (int i = 0; i < args.Ids.Length; i++)
-                    queryParams.Add($"@IdsArg{i}", args.Ids[i]);
+                    queryParams.Add($"@idsArg{i}", args.Ids[i]);
                 for (int i = 0; i < args.Names.Length; i++)
-                    queryParams.Add($"@NamesArg{i}", args.Names[i]);
+                    queryParams.Add($"@namesArg{i}", args.Names[i]);
                 var result = await connection.QueryAsync<GetAuthorsByIdsAndNamesRow>(transformedSql, queryParams);
                 return result.AsList();
             }

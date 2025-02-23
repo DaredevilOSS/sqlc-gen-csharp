@@ -217,11 +217,11 @@ public class QuerySql
         {
             await connection.OpenAsync();
             var transformedSql = GetAuthorsByIdsSql;
-            transformedSql = Utils.TransformQueryForSliceArgs(transformedSql, args.Ids.Length, "Ids", "ids");
+            transformedSql = Utils.TransformQueryForSliceArgs(transformedSql, args.Ids.Length, "ids");
             using (var command = new MySqlCommand(transformedSql, connection))
             {
                 for (int i = 0; i < args.Ids.Length; i++)
-                    command.Parameters.AddWithValue($"@IdsArg{i}", args.Ids[i]);
+                    command.Parameters.AddWithValue($"@idsArg{i}", args.Ids[i]);
                 using (var reader = await command.ExecuteReaderAsync())
                 {
                     var result = new List<GetAuthorsByIdsRow>();
@@ -245,14 +245,14 @@ public class QuerySql
         {
             await connection.OpenAsync();
             var transformedSql = GetAuthorsByIdsAndNamesSql;
-            transformedSql = Utils.TransformQueryForSliceArgs(transformedSql, args.Ids.Length, "Ids", "ids");
-            transformedSql = Utils.TransformQueryForSliceArgs(transformedSql, args.Names.Length, "Names", "names");
+            transformedSql = Utils.TransformQueryForSliceArgs(transformedSql, args.Ids.Length, "ids");
+            transformedSql = Utils.TransformQueryForSliceArgs(transformedSql, args.Names.Length, "names");
             using (var command = new MySqlCommand(transformedSql, connection))
             {
                 for (int i = 0; i < args.Ids.Length; i++)
-                    command.Parameters.AddWithValue($"@IdsArg{i}", args.Ids[i]);
+                    command.Parameters.AddWithValue($"@idsArg{i}", args.Ids[i]);
                 for (int i = 0; i < args.Names.Length; i++)
-                    command.Parameters.AddWithValue($"@NamesArg{i}", args.Names[i]);
+                    command.Parameters.AddWithValue($"@namesArg{i}", args.Names[i]);
                 using (var reader = await command.ExecuteReaderAsync())
                 {
                     var result = new List<GetAuthorsByIdsAndNamesRow>();

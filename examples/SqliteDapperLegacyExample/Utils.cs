@@ -29,10 +29,10 @@ namespace SqliteDapperLegacyExampleGen
             return buffer;
         }
 
-        public static string TransformQueryForSliceArgs(string originalSql, int sliceSize, string csharpParamName, string sqlParamName)
+        public static string TransformQueryForSliceArgs(string originalSql, int sliceSize, string paramName)
         {
-            var paramArgs = Enumerable.Range(0, sliceSize).Select(i => $"@{csharpParamName}Arg{i}").ToList();
-            return originalSql.Replace($"/*SLICE:{sqlParamName}*/@{sqlParamName}", string.Join(",", paramArgs));
+            var paramArgs = Enumerable.Range(0, sliceSize).Select(i => $"@{paramName}Arg{i}").ToList();
+            return originalSql.Replace($"/*SLICE:{paramName}*/@{paramName}", string.Join(",", paramArgs));
         }
 
         private static readonly Regex ValuesRegex = new Regex(@"VALUES\s*\((?<params>[^)]*)\)", RegexOptions.IgnoreCase);

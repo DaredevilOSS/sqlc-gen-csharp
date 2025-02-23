@@ -23,7 +23,7 @@ public class CommonGen(DbDriver dbDriver)
             if (p.Column.IsSqlcSlice)
                 return $$"""
                          for (int i = 0; i < {{argsVar}}.{{param}}.Length; i++)
-                             {{commandVar}}.Parameters.AddWithValue($"@{{param}}Arg{i}", {{argsVar}}.{{param}}[i]);
+                             {{commandVar}}.Parameters.AddWithValue($"@{{p.Column.Name}}Arg{i}", {{argsVar}}.{{param}}[i]);
                          """;
 
             var nullParamCast = p.Column.NotNull ? string.Empty : " ?? (object)DBNull.Value";
@@ -46,7 +46,7 @@ public class CommonGen(DbDriver dbDriver)
             if (p.Column.IsSqlcSlice)
                 return $$"""
                         for (int i = 0; i < {{argsVar}}.{{param}}.Length; i++)
-                            {{queryParamsVar}}.Add($"@{{param}}Arg{i}", {{argsVar}}.{{param}}[i]);
+                            {{queryParamsVar}}.Add($"@{{p.Column.Name}}Arg{i}", {{argsVar}}.{{param}}[i]);
                         """;
 
             var addParamToDict = $"{queryParamsVar}.Add(\"{p.Column.Name}\", {argsVar}.{param});";
@@ -79,9 +79,8 @@ public class CommonGen(DbDriver dbDriver)
             .Select(c =>
             {
                 var sqlTextVar = Variable.TransformedSql.AsVarName();
-                var paramName = c.Column.Name.ToPascalCase();
                 return $"""
-                         {sqlTextVar} = Utils.TransformQueryForSliceArgs({sqlTextVar}, {Variable.Args.AsVarName()}.{paramName}.Length, "{paramName}", "{c.Column.Name}");
+                         {sqlTextVar} = Utils.TransformQueryForSliceArgs({sqlTextVar}, {Variable.Args.AsVarName()}.{c.Column.Name.ToPascalCase()}.Length, "{c.Column.Name}");
                          """;
             });
 
