@@ -1,17 +1,20 @@
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using SqlcGenCsharp.Drivers;
+using System.Collections.Generic;
+using System.Linq;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 using File = Plugin.File;
 
 namespace SqlcGenCsharp.Generators;
 
-internal class UtilsGen(string namespaceName, Options options)
+internal class UtilsGen(DbDriver dbDriver, string namespaceName)
 {
     private const string ClassName = "Utils";
 
     private string NamespaceName { get; } = namespaceName;
 
-    private RootGen RootGen { get; } = new(options);
+    private RootGen RootGen { get; } = new(dbDriver.Options);
 
     public File GenerateFile()
     {
@@ -26,20 +29,31 @@ internal class UtilsGen(string namespaceName, Options options)
         };
     }
 
-    private static UsingDirectiveSyntax[] GetUsingDirectives()
+    private UsingDirectiveSyntax[] GetUsingDirectives()
     {
-        return
+        IEnumerable<UsingDirectiveSyntax> usingDirectives =
         [
             UsingDirective(ParseName("System")),
             UsingDirective(ParseName("System.Data")),
             UsingDirective(ParseName("System.Linq")),
             UsingDirective(ParseName("System.Text.RegularExpressions"))
         ];
+
+        if (dbDriver.Options.DriverName is DriverName.MySqlConnector)
+        {
+            usingDirectives = usingDirectives.Concat([
+                UsingDirective(ParseName("CsvHelper.TypeConversion")),
+                UsingDirective(ParseName("CsvHelper")),
+                UsingDirective(ParseName("CsvHelper.Configuration"))
+            ]);
+        }
+
+        return usingDirectives.ToArray();
     }
 
     private MemberDeclarationSyntax GetUtilsClass()
     {
-        var optionalTransformQueryForSqliteBatch = options.DriverName is DriverName.Sqlite
+        var optionalTransformQueryForSqliteBatch = dbDriver.Options.DriverName is DriverName.Sqlite
             ? """
               private static readonly Regex ValuesRegex = new Regex(@"VALUES\s*\((?<params>[^)]*)\)", RegexOptions.IgnoreCase);
               
@@ -61,9 +75,25 @@ internal class UtilsGen(string namespaceName, Options options)
               }
               """ :
             string.Empty;
+
+        var optionalNullToNStringConverter = dbDriver.Options.DriverName is DriverName.MySqlConnector
+            ? $$"""
+                public class NullToNStringConverter : DefaultTypeConverter
+                {
+                    public override {{dbDriver.AddNullableSuffixIfNeeded("string", true)}} ConvertToString(
+                        {{dbDriver.AddNullableSuffixIfNeeded("object", true)}} value, IWriterRow row, MemberMapData memberMapData)
+                    {
+                        return value == null ? @"\N" : base.ConvertToString(value, row, memberMapData);
+                    }
+                }
+                """
+            : string.Empty;
+
         var utilsClassDeclaration = $$"""
            public static class {{ClassName}}
            {
+               {{optionalNullToNStringConverter}}
+               
                public static byte[] GetBytes(IDataRecord reader, int ordinal)
                {
                    const int bufferSize = 100000;

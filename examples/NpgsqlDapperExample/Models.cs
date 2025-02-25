@@ -18,14 +18,14 @@ public class Book
 public class PostgresType
 {
     public byte[]? CBit { get; init; }
-    public int? CSmallint { get; init; }
+    public short? CSmallint { get; init; }
     public bool? CBoolean { get; init; }
     public int? CInteger { get; init; }
     public long? CBigint { get; init; }
-    public float? CDecimal { get; init; }
-    public float? CNumeric { get; init; }
+    public decimal? CDecimal { get; init; }
+    public decimal? CNumeric { get; init; }
     public float? CReal { get; init; }
-    public float? CDoublePrecision { get; init; }
+    public decimal? CDoublePrecision { get; init; }
     public DateTime? CDate { get; init; }
     public string? CTime { get; init; }
     public DateTime? CTimestamp { get; init; }

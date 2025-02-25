@@ -274,7 +274,7 @@ public class QuerySql
                     var result = new List<ListAllAuthorsBooksRow>();
                     while (await reader.ReadAsync())
                     {
-                        result.Add(new ListAllAuthorsBooksRow { Author = new Author { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2) }, Book = new Book { Id = reader.GetInt64(3), Name = reader.GetString(4), AuthorId = reader.GetInt64(5), Description = reader.IsDBNull(6) ? null : reader.GetString(6) } });
+                        result.Add(new ListAllAuthorsBooksRow { Author = new Author { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? (string? )null : reader.GetString(2) }, Book = new Book { Id = reader.GetInt64(3), Name = reader.GetString(4), AuthorId = reader.GetInt64(5), Description = reader.IsDBNull(6) ? (string? )null : reader.GetString(6) } });
                     }
 
                     return result;
@@ -300,7 +300,7 @@ public class QuerySql
                     var result = new List<GetDuplicateAuthorsRow>();
                     while (await reader.ReadAsync())
                     {
-                        result.Add(new GetDuplicateAuthorsRow { Author = new Author { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2) }, Author2 = new Author { Id = reader.GetInt64(3), Name = reader.GetString(4), Bio = reader.IsDBNull(5) ? null : reader.GetString(5) } });
+                        result.Add(new GetDuplicateAuthorsRow { Author = new Author { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? (string? )null : reader.GetString(2) }, Author2 = new Author { Id = reader.GetInt64(3), Name = reader.GetString(4), Bio = reader.IsDBNull(5) ? (string? )null : reader.GetString(5) } });
                     }
 
                     return result;
@@ -333,7 +333,7 @@ public class QuerySql
                     var result = new List<GetAuthorsByBookNameRow>();
                     while (await reader.ReadAsync())
                     {
-                        result.Add(new GetAuthorsByBookNameRow { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2), Book = new Book { Id = reader.GetInt64(3), Name = reader.GetString(4), AuthorId = reader.GetInt64(5), Description = reader.IsDBNull(6) ? null : reader.GetString(6) } });
+                        result.Add(new GetAuthorsByBookNameRow { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? (string? )null : reader.GetString(2), Book = new Book { Id = reader.GetInt64(3), Name = reader.GetString(4), AuthorId = reader.GetInt64(5), Description = reader.IsDBNull(6) ? (string? )null : reader.GetString(6) } });
                     }
 
                     return result;
@@ -345,12 +345,12 @@ public class QuerySql
     private const string InsertPostgresTypesSql = "INSERT INTO postgres_types (c_smallint, c_boolean, c_integer, c_bigint, c_decimal, c_numeric, c_real, c_date, c_timestamp, c_char, c_varchar, c_character_varying, c_text, c_text_array, c_integer_array) VALUES ( @c_smallint , @c_boolean, @c_integer, @c_bigint, @c_decimal, @c_numeric, @c_real, @c_date, @c_timestamp, @c_char, @c_varchar, @c_character_varying, @c_text, @c_text_array, @c_integer_array ) "; 
     public class InsertPostgresTypesArgs
     {
-        public int? CSmallint { get; init; }
+        public short? CSmallint { get; init; }
         public bool? CBoolean { get; init; }
         public int? CInteger { get; init; }
         public long? CBigint { get; init; }
-        public float? CDecimal { get; init; }
-        public float? CNumeric { get; init; }
+        public decimal? CDecimal { get; init; }
+        public decimal? CNumeric { get; init; }
         public float? CReal { get; init; }
         public DateTime? CDate { get; init; }
         public DateTime? CTimestamp { get; init; }
@@ -388,12 +388,12 @@ public class QuerySql
     private const string InsertPostgresTypesBatchSql = "COPY postgres_types (c_smallint, c_boolean, c_integer, c_bigint, c_decimal, c_numeric, c_real, c_date, c_timestamp, c_char, c_varchar, c_character_varying, c_text) FROM STDIN (FORMAT BINARY)";
     public class InsertPostgresTypesBatchArgs
     {
-        public int? CSmallint { get; init; }
+        public short? CSmallint { get; init; }
         public bool? CBoolean { get; init; }
         public int? CInteger { get; init; }
         public long? CBigint { get; init; }
-        public float? CDecimal { get; init; }
-        public float? CNumeric { get; init; }
+        public decimal? CDecimal { get; init; }
+        public decimal? CNumeric { get; init; }
         public float? CReal { get; init; }
         public DateTime? CDate { get; init; }
         public DateTime? CTimestamp { get; init; }
@@ -439,14 +439,14 @@ public class QuerySql
     public class GetPostgresTypesRow
     {
         public byte[]? CBit { get; init; }
-        public int? CSmallint { get; init; }
+        public short? CSmallint { get; init; }
         public bool? CBoolean { get; init; }
         public int? CInteger { get; init; }
         public long? CBigint { get; init; }
-        public float? CDecimal { get; init; }
-        public float? CNumeric { get; init; }
+        public decimal? CDecimal { get; init; }
+        public decimal? CNumeric { get; init; }
         public float? CReal { get; init; }
-        public float? CDoublePrecision { get; init; }
+        public decimal? CDoublePrecision { get; init; }
         public DateTime? CDate { get; init; }
         public string? CTime { get; init; }
         public DateTime? CTimestamp { get; init; }
@@ -472,12 +472,12 @@ public class QuerySql
     public class GetPostgresTypesAggRow
     {
         public required long Cnt { get; init; }
-        public int? CSmallint { get; init; }
+        public short? CSmallint { get; init; }
         public bool? CBoolean { get; init; }
         public int? CInteger { get; init; }
         public long? CBigint { get; init; }
-        public float? CDecimal { get; init; }
-        public float? CNumeric { get; init; }
+        public decimal? CDecimal { get; init; }
+        public decimal? CNumeric { get; init; }
         public float? CReal { get; init; }
         public DateTime? CDate { get; init; }
         public DateTime? CTimestamp { get; init; }

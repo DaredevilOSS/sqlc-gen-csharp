@@ -125,6 +125,77 @@ namespace SqlcGenCsharpTests
         }
 
         [Test]
+        [TestCase(100, 53, "Parasite", "2000-1-30", "1983-11-3 02:01:22")]
+        [TestCase(500, 6697, "Splendor in the Grass", "2012-9-20", "2012-1-20 22:12:34")]
+        [TestCase(10, null, null, null, null)]
+        public async Task TestCopyFrom(int batchSize, int? cInt, string cVarchar, DateTime? cDate, DateTime? cTimestamp)
+        {
+            var batchArgs = Enumerable.Range(0, batchSize).Select(_ => new QuerySql.InsertMysqlTypesBatchArgs { CInt = cInt, CVarchar = cVarchar, CDate = cDate, CTimestamp = cTimestamp }).ToList();
+            await QuerySql.InsertMysqlTypesBatch(batchArgs);
+            var expected = new QuerySql.GetMysqlTypesAggRow
+            {
+                Cnt = batchSize,
+                CInt = cInt,
+                CVarchar = cVarchar,
+                CDate = cDate,
+                CTimestamp = cTimestamp
+            };
+            var actual = await QuerySql.GetMysqlTypesAgg();
+            AssertSingularEquals(expected, actual);
+        }
+
+        private static void AssertSingularEquals(QuerySql.GetMysqlTypesAggRow expected, QuerySql.GetMysqlTypesAggRow actual)
+        {
+            Assert.That(actual.Cnt, Is.EqualTo(expected.Cnt));
+            Assert.That(actual.CInt, Is.EqualTo(expected.CInt));
+            Assert.That(actual.CVarchar, Is.EqualTo(expected.CVarchar));
+            Assert.That(actual.CDate, Is.EqualTo(expected.CDate));
+            if (expected.CTimestamp == null)
+                Assert.That(actual.CTimestamp, Is.EqualTo(DateTime.MinValue));
+            else
+                Assert.That(actual.CTimestamp, Is.EqualTo(expected.CTimestamp));
+        }
+
+        [Test]
+        public async Task TestSelfJoinEmbed()
+        {
+            var id1 = await this.QuerySql.CreateAuthorReturnId(new QuerySql.CreateAuthorReturnIdArgs { Name = "Albert Einstein", Bio = "Quote that everyone always attribute to Einstein" });
+            var id2 = await this.QuerySql.CreateAuthorReturnId(new QuerySql.CreateAuthorReturnIdArgs { Name = "Albert Einstein", Bio = "Only 2 things are infinite, the universe and human stupidity" });
+            var expected = new List<QuerySql.GetDuplicateAuthorsRow>()
+            {
+                new QuerySql.GetDuplicateAuthorsRow
+                {
+                    Author = new Author
+                    {
+                        Id = id1,
+                        Name = "Albert Einstein",
+                        Bio = "Quote that everyone always attribute to Einstein"
+                    },
+                    Author2 = new Author
+                    {
+                        Id = id2,
+                        Name = "Albert Einstein",
+                        Bio = "Only 2 things are infinite, the universe and human stupidity"
+                    }
+                }
+            };
+            var actual = await QuerySql.GetDuplicateAuthors();
+            Assert.That(SequenceEquals(expected, actual));
+        }
+
+        private static bool SingularEquals(QuerySql.GetDuplicateAuthorsRow x, QuerySql.GetDuplicateAuthorsRow y)
+        {
+            return SingularEquals(x.Author, y.Author) && SingularEquals(x.Author2, y.Author2);
+        }
+
+        private static bool SequenceEquals(List<QuerySql.GetDuplicateAuthorsRow> x, List<QuerySql.GetDuplicateAuthorsRow> y)
+        {
+            if (x.Count != y.Count)
+                return false;
+            return !x.Where((t, i) => !SingularEquals(t, y[i])).Any();
+        }
+
+        [Test]
         public async Task TestJoinEmbed()
         {
             var bojackId = await this.QuerySql.CreateAuthorReturnId(new QuerySql.CreateAuthorReturnIdArgs { Name = "Bojack Horseman", Bio = "Back in the 90s he was in a very famous TV show" });
@@ -190,45 +261,6 @@ namespace SqlcGenCsharpTests
         private static bool SingularEquals(Book x, Book y)
         {
             return x.Id.Equals(y.Id) && x.AuthorId.Equals(y.AuthorId) && x.Name.Equals(y.Name);
-        }
-
-        [Test]
-        public async Task TestSelfJoinEmbed()
-        {
-            var id1 = await this.QuerySql.CreateAuthorReturnId(new QuerySql.CreateAuthorReturnIdArgs { Name = "Albert Einstein", Bio = "Quote that everyone always attribute to Einstein" });
-            var id2 = await this.QuerySql.CreateAuthorReturnId(new QuerySql.CreateAuthorReturnIdArgs { Name = "Albert Einstein", Bio = "Only 2 things are infinite, the universe and human stupidity" });
-            var expected = new List<QuerySql.GetDuplicateAuthorsRow>()
-            {
-                new QuerySql.GetDuplicateAuthorsRow
-                {
-                    Author = new Author
-                    {
-                        Id = id1,
-                        Name = "Albert Einstein",
-                        Bio = "Quote that everyone always attribute to Einstein"
-                    },
-                    Author2 = new Author
-                    {
-                        Id = id2,
-                        Name = "Albert Einstein",
-                        Bio = "Only 2 things are infinite, the universe and human stupidity"
-                    }
-                }
-            };
-            var actual = await QuerySql.GetDuplicateAuthors();
-            Assert.That(SequenceEquals(expected, actual));
-        }
-
-        private static bool SingularEquals(QuerySql.GetDuplicateAuthorsRow x, QuerySql.GetDuplicateAuthorsRow y)
-        {
-            return SingularEquals(x.Author, y.Author) && SingularEquals(x.Author2, y.Author2);
-        }
-
-        private static bool SequenceEquals(List<QuerySql.GetDuplicateAuthorsRow> x, List<QuerySql.GetDuplicateAuthorsRow> y)
-        {
-            if (x.Count != y.Count)
-                return false;
-            return !x.Where((t, i) => !SingularEquals(t, y[i])).Any();
         }
 
         [Test]
@@ -321,39 +353,19 @@ namespace SqlcGenCsharpTests
                 CTimestamp = new DateTime(2022, 9, 30, 23, 0, 3)
             };
             var actual = await QuerySql.GetMysqlTypes();
-            Assert.That(SingularEquals(expected, actual));
+            AssertSingularEquals(expected, actual);
         }
 
-        private static bool SingularEquals(QuerySql.GetMysqlTypesRow x, QuerySql.GetMysqlTypesRow y)
+        private static void AssertSingularEquals(QuerySql.GetMysqlTypesRow expected, QuerySql.GetMysqlTypesRow actual)
         {
-            if (x == null && y == null)
-                return true;
-            if (x == null || y == null)
-                return false;
-            return x.CBit.Equals(y.CBit) && x.CTinyint.Equals(y.CTinyint) && x.CBool.Equals(y.CBool) && x.CBoolean.Equals(y.CBoolean) && x.CInt.Equals(y.CInt) && x.CVarchar.Equals(y.CVarchar) && x.CDate.Equals(y.CDate) && x.CTimestamp.Equals(y.CTimestamp);
-        }
-
-        [Test]
-        public async Task TestCopyFrom()
-        {
-            const int batchSize = 100;
-            var batchArgs = Enumerable.Range(0, batchSize).Select(_ => new QuerySql.InsertMysqlTypesBatchArgs { CInt = 1, CVarchar = "abc", CDate = new DateTime(2020, 7, 22, 11, 7, 45), CTimestamp = new DateTime(2020, 7, 22, 11, 7, 45) }).ToList();
-            await QuerySql.InsertMysqlTypesBatch(batchArgs);
-            var expected = new QuerySql.GetMysqlTypesAggRow
-            {
-                Cnt = batchSize,
-                CInt = 1,
-                CVarchar = "abc",
-                CDate = new DateTime(2020, 7, 22),
-                CTimestamp = new DateTime(2020, 7, 22, 11, 7, 45)
-            };
-            var actual = await QuerySql.GetMysqlTypesAgg();
-            Assert.That(SingularEquals(expected, actual));
-        }
-
-        private static bool SingularEquals(QuerySql.GetMysqlTypesAggRow x, QuerySql.GetMysqlTypesAggRow y)
-        {
-            return x.Cnt.Equals(y.Cnt) && x.CInt.Equals(y.CInt) && x.CVarchar.Equals(y.CVarchar) && x.CDate.Value.Equals(y.CDate.Value) && x.CTimestamp.Equals(y.CTimestamp);
+            Assert.That(actual.CBit, Is.EqualTo(expected.CBit));
+            Assert.That(actual.CTinyint, Is.EqualTo(expected.CTinyint));
+            Assert.That(actual.CBool, Is.EqualTo(expected.CBool));
+            Assert.That(actual.CBoolean, Is.EqualTo(expected.CBoolean));
+            Assert.That(actual.CInt, Is.EqualTo(expected.CInt));
+            Assert.That(actual.CVarchar, Is.EqualTo(expected.CVarchar));
+            Assert.That(actual.CDate, Is.EqualTo(expected.CDate));
+            Assert.That(actual.CTimestamp, Is.EqualTo(expected.CTimestamp));
         }
     }
 }

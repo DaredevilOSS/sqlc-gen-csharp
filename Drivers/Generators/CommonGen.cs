@@ -143,11 +143,7 @@ public class CommonGen(DbDriver dbDriver)
         string GetNullExpression(Column column)
         {
             var csharpType = dbDriver.GetCsharpType(column);
-            if (csharpType == "string")
-                return "string.Empty";
-            return !dbDriver.Options.DotnetFramework.IsDotnetCore() && dbDriver.IsTypeNullable(csharpType)
-                ? $"({csharpType}) null"
-                : "null";
+            return dbDriver.IsTypeNullable(csharpType) ? $"({csharpType}) null" : "null";
         }
 
         string CheckNullExpression(int ordinal)

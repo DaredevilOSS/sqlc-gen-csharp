@@ -274,7 +274,7 @@ namespace MySqlConnectorDapperLegacyExampleGen
                         var result = new List<ListAllAuthorsBooksRow>();
                         while (await reader.ReadAsync())
                         {
-                            result.Add(new ListAllAuthorsBooksRow { Author = new Author { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? string.Empty : reader.GetString(2) }, Book = new Book { Id = reader.GetInt64(3), Name = reader.GetString(4), AuthorId = reader.GetInt64(5), Description = reader.IsDBNull(6) ? string.Empty : reader.GetString(6) } });
+                            result.Add(new ListAllAuthorsBooksRow { Author = new Author { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2) }, Book = new Book { Id = reader.GetInt64(3), Name = reader.GetString(4), AuthorId = reader.GetInt64(5), Description = reader.IsDBNull(6) ? null : reader.GetString(6) } });
                         }
 
                         return result;
@@ -301,7 +301,7 @@ namespace MySqlConnectorDapperLegacyExampleGen
                         var result = new List<GetDuplicateAuthorsRow>();
                         while (await reader.ReadAsync())
                         {
-                            result.Add(new GetDuplicateAuthorsRow { Author = new Author { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? string.Empty : reader.GetString(2) }, Author2 = new Author { Id = reader.GetInt64(3), Name = reader.GetString(4), Bio = reader.IsDBNull(5) ? string.Empty : reader.GetString(5) } });
+                            result.Add(new GetDuplicateAuthorsRow { Author = new Author { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2) }, Author2 = new Author { Id = reader.GetInt64(3), Name = reader.GetString(4), Bio = reader.IsDBNull(5) ? null : reader.GetString(5) } });
                         }
 
                         return result;
@@ -335,7 +335,7 @@ namespace MySqlConnectorDapperLegacyExampleGen
                         var result = new List<GetAuthorsByBookNameRow>();
                         while (await reader.ReadAsync())
                         {
-                            result.Add(new GetAuthorsByBookNameRow { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? string.Empty : reader.GetString(2), Book = new Book { Id = reader.GetInt64(3), Name = reader.GetString(4), AuthorId = reader.GetInt64(5), Description = reader.IsDBNull(6) ? string.Empty : reader.GetString(6) } });
+                            result.Add(new GetAuthorsByBookNameRow { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2), Book = new Book { Id = reader.GetInt64(3), Name = reader.GetString(4), AuthorId = reader.GetInt64(5), Description = reader.IsDBNull(6) ? null : reader.GetString(6) } });
                         }
 
                         return result;
@@ -403,6 +403,12 @@ namespace MySqlConnectorDapperLegacyExampleGen
                 };
                 csvWriter.Context.TypeConverterOptionsCache.AddOptions<DateTime>(options);
                 csvWriter.Context.TypeConverterOptionsCache.AddOptions<DateTime?>(options);
+                csvWriter.Context.TypeConverterCache.AddConverter<bool?>(new Utils.NullToNStringConverter());
+                csvWriter.Context.TypeConverterCache.AddConverter<short?>(new Utils.NullToNStringConverter());
+                csvWriter.Context.TypeConverterCache.AddConverter<int?>(new Utils.NullToNStringConverter());
+                csvWriter.Context.TypeConverterCache.AddConverter<long?>(new Utils.NullToNStringConverter());
+                csvWriter.Context.TypeConverterCache.AddConverter<DateTime?>(new Utils.NullToNStringConverter());
+                csvWriter.Context.TypeConverterCache.AddConverter<string>(new Utils.NullToNStringConverter());
                 await csvWriter.WriteRecordsAsync(args);
             }
 
@@ -413,9 +419,10 @@ namespace MySqlConnectorDapperLegacyExampleGen
                 {
                     Local = true,
                     TableName = "mysql_types",
-                    FieldTerminator = ",",
                     FileName = "input.csv",
+                    FieldTerminator = ",",
                     FieldQuotationCharacter = '"',
+                    FieldQuotationOptional = true,
                     NumberOfLinesToSkip = 1
                 };
                 loader.Columns.AddRange(new List<string> { "c_bit", "c_tinyint", "c_bool", "c_boolean", "c_int", "c_varchar", "c_date", "c_timestamp" });

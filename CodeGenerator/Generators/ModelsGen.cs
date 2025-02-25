@@ -8,11 +8,11 @@ using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace SqlcGenCsharp.Generators;
 
-internal class ModelsGen(DbDriver dbDriver, Options options, string namespaceName)
+internal class ModelsGen(DbDriver dbDriver, string namespaceName)
 {
     private const string ClassName = "Models";
 
-    private RootGen RootGen { get; } = new(options);
+    private RootGen RootGen { get; } = new(dbDriver.Options);
 
     private DataClassesGen DataClassesGen { get; } = new(dbDriver);
 
@@ -35,7 +35,7 @@ internal class ModelsGen(DbDriver dbDriver, Options options, string namespaceNam
         return (
             from table in tables.Values
             let className = $"{table.Rel.Schema}_{table.Rel.Name}"
-            select DataClassesGen.Generate(className.ToModelName(), ClassMember.Model, table.Columns, options)
+            select DataClassesGen.Generate(className.ToModelName(), ClassMember.Model, table.Columns, dbDriver.Options)
         ).ToArray();
     }
 }

@@ -275,7 +275,7 @@ namespace NpgsqlDapperLegacyExampleGen
                         var result = new List<ListAllAuthorsBooksRow>();
                         while (await reader.ReadAsync())
                         {
-                            result.Add(new ListAllAuthorsBooksRow { Author = new Author { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? string.Empty : reader.GetString(2) }, Book = new Book { Id = reader.GetInt64(3), Name = reader.GetString(4), AuthorId = reader.GetInt64(5), Description = reader.IsDBNull(6) ? string.Empty : reader.GetString(6) } });
+                            result.Add(new ListAllAuthorsBooksRow { Author = new Author { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2) }, Book = new Book { Id = reader.GetInt64(3), Name = reader.GetString(4), AuthorId = reader.GetInt64(5), Description = reader.IsDBNull(6) ? null : reader.GetString(6) } });
                         }
 
                         return result;
@@ -301,7 +301,7 @@ namespace NpgsqlDapperLegacyExampleGen
                         var result = new List<GetDuplicateAuthorsRow>();
                         while (await reader.ReadAsync())
                         {
-                            result.Add(new GetDuplicateAuthorsRow { Author = new Author { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? string.Empty : reader.GetString(2) }, Author2 = new Author { Id = reader.GetInt64(3), Name = reader.GetString(4), Bio = reader.IsDBNull(5) ? string.Empty : reader.GetString(5) } });
+                            result.Add(new GetDuplicateAuthorsRow { Author = new Author { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2) }, Author2 = new Author { Id = reader.GetInt64(3), Name = reader.GetString(4), Bio = reader.IsDBNull(5) ? null : reader.GetString(5) } });
                         }
 
                         return result;
@@ -334,7 +334,7 @@ namespace NpgsqlDapperLegacyExampleGen
                         var result = new List<GetAuthorsByBookNameRow>();
                         while (await reader.ReadAsync())
                         {
-                            result.Add(new GetAuthorsByBookNameRow { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? string.Empty : reader.GetString(2), Book = new Book { Id = reader.GetInt64(3), Name = reader.GetString(4), AuthorId = reader.GetInt64(5), Description = reader.IsDBNull(6) ? string.Empty : reader.GetString(6) } });
+                            result.Add(new GetAuthorsByBookNameRow { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2), Book = new Book { Id = reader.GetInt64(3), Name = reader.GetString(4), AuthorId = reader.GetInt64(5), Description = reader.IsDBNull(6) ? null : reader.GetString(6) } });
                         }
 
                         return result;
@@ -346,12 +346,12 @@ namespace NpgsqlDapperLegacyExampleGen
         private const string InsertPostgresTypesSql = "INSERT INTO postgres_types (c_smallint, c_boolean, c_integer, c_bigint, c_decimal, c_numeric, c_real, c_date, c_timestamp, c_char, c_varchar, c_character_varying, c_text, c_text_array, c_integer_array) VALUES ( @c_smallint , @c_boolean, @c_integer, @c_bigint, @c_decimal, @c_numeric, @c_real, @c_date, @c_timestamp, @c_char, @c_varchar, @c_character_varying, @c_text, @c_text_array, @c_integer_array ) "; 
         public class InsertPostgresTypesArgs
         {
-            public int? CSmallint { get; set; }
+            public short? CSmallint { get; set; }
             public bool? CBoolean { get; set; }
             public int? CInteger { get; set; }
             public long? CBigint { get; set; }
-            public float? CDecimal { get; set; }
-            public float? CNumeric { get; set; }
+            public decimal? CDecimal { get; set; }
+            public decimal? CNumeric { get; set; }
             public float? CReal { get; set; }
             public DateTime? CDate { get; set; }
             public DateTime? CTimestamp { get; set; }
@@ -389,12 +389,12 @@ namespace NpgsqlDapperLegacyExampleGen
         private const string InsertPostgresTypesBatchSql = "COPY postgres_types (c_smallint, c_boolean, c_integer, c_bigint, c_decimal, c_numeric, c_real, c_date, c_timestamp, c_char, c_varchar, c_character_varying, c_text) FROM STDIN (FORMAT BINARY)";
         public class InsertPostgresTypesBatchArgs
         {
-            public int? CSmallint { get; set; }
+            public short? CSmallint { get; set; }
             public bool? CBoolean { get; set; }
             public int? CInteger { get; set; }
             public long? CBigint { get; set; }
-            public float? CDecimal { get; set; }
-            public float? CNumeric { get; set; }
+            public decimal? CDecimal { get; set; }
+            public decimal? CNumeric { get; set; }
             public float? CReal { get; set; }
             public DateTime? CDate { get; set; }
             public DateTime? CTimestamp { get; set; }
@@ -440,14 +440,14 @@ namespace NpgsqlDapperLegacyExampleGen
         public class GetPostgresTypesRow
         {
             public byte[] CBit { get; set; }
-            public int? CSmallint { get; set; }
+            public short? CSmallint { get; set; }
             public bool? CBoolean { get; set; }
             public int? CInteger { get; set; }
             public long? CBigint { get; set; }
-            public float? CDecimal { get; set; }
-            public float? CNumeric { get; set; }
+            public decimal? CDecimal { get; set; }
+            public decimal? CNumeric { get; set; }
             public float? CReal { get; set; }
-            public float? CDoublePrecision { get; set; }
+            public decimal? CDoublePrecision { get; set; }
             public DateTime? CDate { get; set; }
             public string CTime { get; set; }
             public DateTime? CTimestamp { get; set; }
@@ -473,12 +473,12 @@ namespace NpgsqlDapperLegacyExampleGen
         public class GetPostgresTypesAggRow
         {
             public long Cnt { get; set; }
-            public int? CSmallint { get; set; }
+            public short? CSmallint { get; set; }
             public bool? CBoolean { get; set; }
             public int? CInteger { get; set; }
             public long? CBigint { get; set; }
-            public float? CDecimal { get; set; }
-            public float? CNumeric { get; set; }
+            public decimal? CDecimal { get; set; }
+            public decimal? CNumeric { get; set; }
             public float? CReal { get; set; }
             public DateTime? CDate { get; set; }
             public DateTime? CTimestamp { get; set; }

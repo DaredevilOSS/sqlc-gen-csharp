@@ -10,7 +10,7 @@ using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace SqlcGenCsharp.Generators;
 
-internal class QueriesGen(DbDriver dbDriver, Options options, string namespaceName)
+internal class QueriesGen(DbDriver dbDriver, string namespaceName)
 {
     private static readonly string[] ResharperDisables =
     [
@@ -21,7 +21,7 @@ internal class QueriesGen(DbDriver dbDriver, Options options, string namespaceNa
         "UseObjectOrCollectionInitializer"
     ];
 
-    private RootGen RootGen { get; } = new(options);
+    private RootGen RootGen { get; } = new(dbDriver.Options);
 
     private DataClassesGen DataClassesGen { get; } = new(dbDriver);
 
@@ -58,7 +58,7 @@ internal class QueriesGen(DbDriver dbDriver, Options options, string namespaceNa
     private ClassDeclarationSyntax GetClassDeclaration(string className,
         IEnumerable<MemberDeclarationSyntax> classMembers)
     {
-        var optionalDapperConfig = options.UseDapper
+        var optionalDapperConfig = dbDriver.Options.UseDapper
             ? Environment.NewLine + "        Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;"
             : "";
         var classDeclaration = (ClassDeclarationSyntax)ParseMemberDeclaration(
@@ -89,14 +89,14 @@ internal class QueriesGen(DbDriver dbDriver, Options options, string namespaceNa
     private MemberDeclarationSyntax? GetQueryColumnsDataclass(Query query)
     {
         if (query.Columns.Count <= 0) return null;
-        return DataClassesGen.Generate(query.Name, ClassMember.Row, query.Columns, options);
+        return DataClassesGen.Generate(query.Name, ClassMember.Row, query.Columns, dbDriver.Options);
     }
 
     private MemberDeclarationSyntax? GetQueryParamsDataclass(Query query)
     {
         if (query.Params.Count <= 0) return null;
         var columns = query.Params.Select(dbDriver.GetColumnFromParam).ToList();
-        return DataClassesGen.Generate(query.Name, ClassMember.Args, columns, options);
+        return DataClassesGen.Generate(query.Name, ClassMember.Args, columns, dbDriver.Options);
     }
 
     private MemberDeclarationSyntax? GetQueryTextConstant(Query query)

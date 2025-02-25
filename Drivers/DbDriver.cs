@@ -17,7 +17,7 @@ public abstract class DbDriver
 
     private HashSet<string> NullableTypesInDotnetCore { get; } = ["string", "object"];
 
-    private HashSet<string> NullableTypes { get; } = ["long", "double", "int", "float", "bool", "DateTime"];
+    private HashSet<string> NullableTypes { get; } = ["short", "long", "double", "decimal", "int", "float", "bool", "DateTime"];
 
     protected abstract List<ColumnMapping> ColumnMappings { get; }
 

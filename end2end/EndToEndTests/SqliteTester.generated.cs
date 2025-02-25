@@ -125,6 +125,45 @@ namespace SqlcGenCsharpTests
         }
 
         [Test]
+        public async Task TestSelfJoinEmbed()
+        {
+            var id1 = await this.QuerySql.CreateAuthorReturnId(new QuerySql.CreateAuthorReturnIdArgs { Name = "Albert Einstein", Bio = "Quote that everyone always attribute to Einstein" });
+            var id2 = await this.QuerySql.CreateAuthorReturnId(new QuerySql.CreateAuthorReturnIdArgs { Name = "Albert Einstein", Bio = "Only 2 things are infinite, the universe and human stupidity" });
+            var expected = new List<QuerySql.GetDuplicateAuthorsRow>()
+            {
+                new QuerySql.GetDuplicateAuthorsRow
+                {
+                    Author = new Author
+                    {
+                        Id = id1,
+                        Name = "Albert Einstein",
+                        Bio = "Quote that everyone always attribute to Einstein"
+                    },
+                    Author2 = new Author
+                    {
+                        Id = id2,
+                        Name = "Albert Einstein",
+                        Bio = "Only 2 things are infinite, the universe and human stupidity"
+                    }
+                }
+            };
+            var actual = await QuerySql.GetDuplicateAuthors();
+            Assert.That(SequenceEquals(expected, actual));
+        }
+
+        private static bool SingularEquals(QuerySql.GetDuplicateAuthorsRow x, QuerySql.GetDuplicateAuthorsRow y)
+        {
+            return SingularEquals(x.Author, y.Author) && SingularEquals(x.Author2, y.Author2);
+        }
+
+        private static bool SequenceEquals(List<QuerySql.GetDuplicateAuthorsRow> x, List<QuerySql.GetDuplicateAuthorsRow> y)
+        {
+            if (x.Count != y.Count)
+                return false;
+            return !x.Where((t, i) => !SingularEquals(t, y[i])).Any();
+        }
+
+        [Test]
         public async Task TestJoinEmbed()
         {
             var bojackId = await this.QuerySql.CreateAuthorReturnId(new QuerySql.CreateAuthorReturnIdArgs { Name = "Bojack Horseman", Bio = "Back in the 90s he was in a very famous TV show" });
@@ -190,45 +229,6 @@ namespace SqlcGenCsharpTests
         private static bool SingularEquals(Book x, Book y)
         {
             return x.Id.Equals(y.Id) && x.AuthorId.Equals(y.AuthorId) && x.Name.Equals(y.Name);
-        }
-
-        [Test]
-        public async Task TestSelfJoinEmbed()
-        {
-            var id1 = await this.QuerySql.CreateAuthorReturnId(new QuerySql.CreateAuthorReturnIdArgs { Name = "Albert Einstein", Bio = "Quote that everyone always attribute to Einstein" });
-            var id2 = await this.QuerySql.CreateAuthorReturnId(new QuerySql.CreateAuthorReturnIdArgs { Name = "Albert Einstein", Bio = "Only 2 things are infinite, the universe and human stupidity" });
-            var expected = new List<QuerySql.GetDuplicateAuthorsRow>()
-            {
-                new QuerySql.GetDuplicateAuthorsRow
-                {
-                    Author = new Author
-                    {
-                        Id = id1,
-                        Name = "Albert Einstein",
-                        Bio = "Quote that everyone always attribute to Einstein"
-                    },
-                    Author2 = new Author
-                    {
-                        Id = id2,
-                        Name = "Albert Einstein",
-                        Bio = "Only 2 things are infinite, the universe and human stupidity"
-                    }
-                }
-            };
-            var actual = await QuerySql.GetDuplicateAuthors();
-            Assert.That(SequenceEquals(expected, actual));
-        }
-
-        private static bool SingularEquals(QuerySql.GetDuplicateAuthorsRow x, QuerySql.GetDuplicateAuthorsRow y)
-        {
-            return SingularEquals(x.Author, y.Author) && SingularEquals(x.Author2, y.Author2);
-        }
-
-        private static bool SequenceEquals(List<QuerySql.GetDuplicateAuthorsRow> x, List<QuerySql.GetDuplicateAuthorsRow> y)
-        {
-            if (x.Count != y.Count)
-                return false;
-            return !x.Where((t, i) => !SingularEquals(t, y[i])).Any();
         }
 
         [Test]
@@ -327,38 +327,35 @@ namespace SqlcGenCsharpTests
 
         private static bool SingularEquals(QuerySql.GetSqliteTypesRow x, QuerySql.GetSqliteTypesRow y)
         {
-            if (x == null && y == null)
-                return true;
-            if (x == null || y == null)
-                return false;
             return x.CInteger.Equals(y.CInteger) && x.CReal.Equals(y.CReal) && x.CText.Equals(y.CText);
         // TODO add CBlob.Equals - fix impl
         }
 
         [Test]
-        public async Task TestCopyFrom()
+        [TestCase(100, 312, 1.33f, "Johnny B. Good")]
+        [TestCase(500, 768, 83.56f, "Bad to the Bone")]
+        [TestCase(10, null, null, null)]
+        public async Task TestCopyFrom(int batchSize, int? cInteger, float? cReal, string? cText)
         {
-            const int batchSize = 100;
-            var batchArgs = Enumerable.Range(0, batchSize).Select(_ => new QuerySql.InsertSqliteTypesBatchArgs { CInteger = 312, CReal = 1.33f, CText = "fdsfsd" }).ToList();
+            var batchArgs = Enumerable.Range(0, batchSize).Select(_ => new QuerySql.InsertSqliteTypesBatchArgs { CInteger = cInteger, CReal = cReal, CText = cText }).ToList();
             await QuerySql.InsertSqliteTypesBatch(batchArgs);
             var expected = new QuerySql.GetSqliteTypesAggRow
             {
                 Cnt = batchSize,
-                CInteger = 312,
-                CReal = 1.33f,
-                CText = "fdsfsd"
+                CInteger = cInteger,
+                CReal = cReal,
+                CText = cText
             };
             var actual = await QuerySql.GetSqliteTypesAgg();
-            Assert.That(SingularEquals(expected, actual.Value));
+            AssertSingularEquals(expected, actual.Value);
         }
 
-        private static bool SingularEquals(QuerySql.GetSqliteTypesAggRow x, QuerySql.GetSqliteTypesAggRow y)
+        private static void AssertSingularEquals(QuerySql.GetSqliteTypesAggRow expected, QuerySql.GetSqliteTypesAggRow actual)
         {
-            if (x == null && y == null)
-                return true;
-            if (x == null || y == null)
-                return false;
-            return x.Cnt.Equals(y.Cnt) && x.CInteger.Equals(y.CInteger) && x.CReal.Equals(y.CReal) && x.CText.Equals(y.CText);
+            Assert.That(actual.Cnt, Is.EqualTo(expected.Cnt));
+            Assert.That(actual.CInteger, Is.EqualTo(expected.CInteger));
+            Assert.That(actual.CReal, Is.EqualTo(expected.CReal));
+            Assert.That(actual.CText, Is.EqualTo(expected.CText));
         }
     }
 }

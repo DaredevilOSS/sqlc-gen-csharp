@@ -46,7 +46,7 @@ CREATE TABLE mysql_types (
   c_char CHAR,
   c_nchar NCHAR,
   c_national_char NATIONAL CHAR,
-  c_varchar VARCHAR(10),
+  c_varchar VARCHAR(100),
   c_tinytext TINYTEXT,
   c_mediumtext MEDIUMTEXT,
   c_text TEXT,
