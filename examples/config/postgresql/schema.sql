@@ -18,8 +18,8 @@ CREATE TABLE postgres_types (
     c_boolean BOOLEAN,
     c_integer INTEGER,
     c_bigint BIGINT,
-    c_decimal DECIMAL(2,1),
-    c_numeric NUMERIC(2,1),
+    c_decimal DECIMAL(10,7),
+    c_numeric NUMERIC(10,7),
     c_real REAL,
     c_double_precision DOUBLE PRECISION,
     
@@ -30,8 +30,8 @@ CREATE TABLE postgres_types (
     
     /* String Data Type Syntax */
     c_char CHAR,
-    c_varchar VARCHAR(10),
-    c_character_varying CHARACTER VARYING(10),
+    c_varchar VARCHAR(100),
+    c_character_varying CHARACTER VARYING(100),
     c_bytea BYTEA,
     c_text TEXT,
     c_json JSON,

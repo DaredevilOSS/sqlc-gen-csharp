@@ -169,7 +169,7 @@ public partial class MySqlConnectorDriver(Options options, Dictionary<string, Ta
 
         var loaderColumns = query.Params.Select(p => $"\"{p.Column.Name}\"").JoinByComma();
         var (establishConnection, connectionOpen) = EstablishConnection(query);
-        return $$"""  
+        return $$"""
                  const string supportedDateTimeFormat = "yyyy-MM-dd H:mm:ss";
                  var {{Variable.Config.AsVarName()}} = new CsvConfiguration(CultureInfo.CurrentCulture) { Delimiter = "{{csvDelimiter}}" };
                  using (var {{Variable.Writer.AsVarName()}} = new StreamWriter("{{tempCsvFilename}}", false, new UTF8Encoding(false)))
@@ -178,6 +178,12 @@ public partial class MySqlConnectorDriver(Options options, Dictionary<string, Ta
                     var options = new TypeConverterOptions { Formats = new[] { supportedDateTimeFormat } };
                     {{csvWriterVar}}.Context.TypeConverterOptionsCache.AddOptions<DateTime>(options);
                     {{csvWriterVar}}.Context.TypeConverterOptionsCache.AddOptions<DateTime?>(options);
+                    {{csvWriterVar}}.Context.TypeConverterCache.AddConverter<bool?>(new Utils.NullToNStringConverter());
+                    {{csvWriterVar}}.Context.TypeConverterCache.AddConverter<short?>(new Utils.NullToNStringConverter());
+                    {{csvWriterVar}}.Context.TypeConverterCache.AddConverter<int?>(new Utils.NullToNStringConverter());
+                    {{csvWriterVar}}.Context.TypeConverterCache.AddConverter<long?>(new Utils.NullToNStringConverter());
+                    {{csvWriterVar}}.Context.TypeConverterCache.AddConverter<DateTime?>(new Utils.NullToNStringConverter());
+                    {{csvWriterVar}}.Context.TypeConverterCache.AddConverter<string>(new Utils.NullToNStringConverter());
                     await {{csvWriterVar}}.WriteRecordsAsync({{Variable.Args.AsVarName()}});
                  }
                  
@@ -188,9 +194,10 @@ public partial class MySqlConnectorDriver(Options options, Dictionary<string, Ta
                      {
                          Local = true, 
                          TableName = "{{query.InsertIntoTable.Name}}", 
-                         FieldTerminator = "{{csvDelimiter}}",
                          FileName = "{{tempCsvFilename}}",
+                         FieldTerminator = "{{csvDelimiter}}",
                          FieldQuotationCharacter = '"',
+                         FieldQuotationOptional = true,
                          NumberOfLinesToSkip = 1
                      };
                      {{loaderVar}}.Columns.AddRange(new List<string> { {{loaderColumns}} });

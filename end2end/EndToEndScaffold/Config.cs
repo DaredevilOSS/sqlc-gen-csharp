@@ -5,7 +5,7 @@ namespace EndToEndScaffold;
 public readonly record struct ClassGenConfig(
     string TestNamespace,
     string LegacyTestNamespace,
-    HashSet<KnownTestType> TestTypes
+    SortedSet<KnownTestType> TestTypes
 );
 
 public enum KnownTestType
@@ -47,8 +47,7 @@ internal static class Config
             {
                 TestNamespace = "MySqlConnectorExampleGen",
                 LegacyTestNamespace = "MySqlConnectorLegacyExampleGen",
-                TestTypes =
-                [
+                TestTypes = [
                     KnownTestType.One,
                     KnownTestType.Many,
                     KnownTestType.Exec,

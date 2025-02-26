@@ -5,9 +5,20 @@ namespace MySqlConnectorDapperLegacyExampleGen
     using System.Data;
     using System.Linq;
     using System.Text.RegularExpressions;
+    using CsvHelper.TypeConversion;
+    using CsvHelper;
+    using CsvHelper.Configuration;
 
     public static class Utils
     {
+        public class NullToNStringConverter : DefaultTypeConverter
+        {
+            public override string ConvertToString(object value, IWriterRow row, MemberMapData memberMapData)
+            {
+                return value == null ? @"\N" : base.ConvertToString(value, row, memberMapData);
+            }
+        }
+
         public static byte[] GetBytes(IDataRecord reader, int ordinal)
         {
             const int bufferSize = 100000;

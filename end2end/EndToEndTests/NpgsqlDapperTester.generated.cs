@@ -125,6 +125,92 @@ namespace SqlcGenCsharpTests
         }
 
         [Test]
+        [TestCase(100, true, 3, 453, -1445214231, 336.3431, -99.999, 666.6f, "1973-12-3", "1960-11-3 02:01:22", "z", "Sex Pistols", "Anarchy in the U.K", "Never Mind the Bollocks...")]
+        [TestCase(500, false, -4, 867, 8768769709, -662.8671, 127.4793, -64.8f, "2024-12-31", "1999-3-1 03:00:10", "1", "Fugazi", "Waiting Room", "13 Songs")]
+        [TestCase(10, null, null, null, null, null, null, null, null, null, null, null, null, null)]
+        public async Task TestCopyFrom(int batchSize, bool? cBoolean, short? cSmallint, int? cInteger, long? cBigint, decimal? cDecimal, decimal? cNumeric, float? cReal, DateTime? cDate, DateTime? cTimestamp, string? cChar, string? cVarchar, string? cCharacterVarying, string? cText)
+        {
+            var batchArgs = Enumerable.Range(0, batchSize).Select(_ => new QuerySql.InsertPostgresTypesBatchArgs { CBoolean = cBoolean, CSmallint = cSmallint, CInteger = cInteger, CBigint = cBigint, CDecimal = cDecimal, CNumeric = cNumeric, CReal = cReal, CDate = cDate, CTimestamp = cTimestamp, CChar = cChar, CVarchar = cVarchar, CCharacterVarying = cCharacterVarying, CText = cText }).ToList();
+            await QuerySql.InsertPostgresTypesBatch(batchArgs);
+            var expected = new QuerySql.GetPostgresTypesAggRow
+            {
+                Cnt = batchSize,
+                CBoolean = cBoolean,
+                CSmallint = cSmallint,
+                CInteger = cInteger,
+                CBigint = cBigint,
+                CDecimal = cDecimal,
+                CNumeric = cNumeric,
+                CReal = cReal,
+                CDate = cDate,
+                CTimestamp = cTimestamp,
+                CChar = cChar,
+                CVarchar = cVarchar,
+                CCharacterVarying = cCharacterVarying,
+                CText = cText
+            };
+            var actual = await QuerySql.GetPostgresTypesAgg();
+            AssertSingularEquals(expected, actual);
+        }
+
+        private static void AssertSingularEquals(QuerySql.GetPostgresTypesAggRow expected, QuerySql.GetPostgresTypesAggRow actual)
+        {
+            Assert.That(actual.Cnt, Is.EqualTo(expected.Cnt));
+            Assert.That(actual.CBoolean, Is.EqualTo(expected.CBoolean));
+            Assert.That(actual.CSmallint, Is.EqualTo(expected.CSmallint));
+            Assert.That(actual.CInteger, Is.EqualTo(expected.CInteger));
+            Assert.That(actual.CBigint, Is.EqualTo(expected.CBigint));
+            Assert.That(actual.CDecimal, Is.EqualTo(expected.CDecimal));
+            Assert.That(actual.CNumeric, Is.EqualTo(expected.CNumeric));
+            Assert.That(actual.CReal, Is.EqualTo(expected.CReal));
+            Assert.That(actual.CDate, Is.EqualTo(expected.CDate));
+            Assert.That(actual.CTimestamp, Is.EqualTo(expected.CTimestamp));
+            Assert.That(actual.CChar, Is.EqualTo(expected.CChar));
+            Assert.That(actual.CVarchar, Is.EqualTo(expected.CVarchar));
+            Assert.That(actual.CCharacterVarying, Is.EqualTo(expected.CCharacterVarying));
+            Assert.That(actual.CText, Is.EqualTo(expected.CText));
+        }
+
+        [Test]
+        public async Task TestSelfJoinEmbed()
+        {
+            var id1 = await this.QuerySql.CreateAuthorReturnId(new QuerySql.CreateAuthorReturnIdArgs { Name = "Albert Einstein", Bio = "Quote that everyone always attribute to Einstein" });
+            var id2 = await this.QuerySql.CreateAuthorReturnId(new QuerySql.CreateAuthorReturnIdArgs { Name = "Albert Einstein", Bio = "Only 2 things are infinite, the universe and human stupidity" });
+            var expected = new List<QuerySql.GetDuplicateAuthorsRow>()
+            {
+                new QuerySql.GetDuplicateAuthorsRow
+                {
+                    Author = new Author
+                    {
+                        Id = id1,
+                        Name = "Albert Einstein",
+                        Bio = "Quote that everyone always attribute to Einstein"
+                    },
+                    Author2 = new Author
+                    {
+                        Id = id2,
+                        Name = "Albert Einstein",
+                        Bio = "Only 2 things are infinite, the universe and human stupidity"
+                    }
+                }
+            };
+            var actual = await QuerySql.GetDuplicateAuthors();
+            Assert.That(SequenceEquals(expected, actual));
+        }
+
+        private static bool SingularEquals(QuerySql.GetDuplicateAuthorsRow x, QuerySql.GetDuplicateAuthorsRow y)
+        {
+            return SingularEquals(x.Author, y.Author) && SingularEquals(x.Author2, y.Author2);
+        }
+
+        private static bool SequenceEquals(List<QuerySql.GetDuplicateAuthorsRow> x, List<QuerySql.GetDuplicateAuthorsRow> y)
+        {
+            if (x.Count != y.Count)
+                return false;
+            return !x.Where((t, i) => !SingularEquals(t, y[i])).Any();
+        }
+
+        [Test]
         public async Task TestJoinEmbed()
         {
             var bojackId = await this.QuerySql.CreateAuthorReturnId(new QuerySql.CreateAuthorReturnIdArgs { Name = "Bojack Horseman", Bio = "Back in the 90s he was in a very famous TV show" });
@@ -193,64 +279,6 @@ namespace SqlcGenCsharpTests
         }
 
         [Test]
-        public async Task TestSelfJoinEmbed()
-        {
-            var id1 = await this.QuerySql.CreateAuthorReturnId(new QuerySql.CreateAuthorReturnIdArgs { Name = "Albert Einstein", Bio = "Quote that everyone always attribute to Einstein" });
-            var id2 = await this.QuerySql.CreateAuthorReturnId(new QuerySql.CreateAuthorReturnIdArgs { Name = "Albert Einstein", Bio = "Only 2 things are infinite, the universe and human stupidity" });
-            var expected = new List<QuerySql.GetDuplicateAuthorsRow>()
-            {
-                new QuerySql.GetDuplicateAuthorsRow
-                {
-                    Author = new Author
-                    {
-                        Id = id1,
-                        Name = "Albert Einstein",
-                        Bio = "Quote that everyone always attribute to Einstein"
-                    },
-                    Author2 = new Author
-                    {
-                        Id = id2,
-                        Name = "Albert Einstein",
-                        Bio = "Only 2 things are infinite, the universe and human stupidity"
-                    }
-                }
-            };
-            var actual = await QuerySql.GetDuplicateAuthors();
-            Assert.That(SequenceEquals(expected, actual));
-        }
-
-        private static bool SingularEquals(QuerySql.GetDuplicateAuthorsRow x, QuerySql.GetDuplicateAuthorsRow y)
-        {
-            return SingularEquals(x.Author, y.Author) && SingularEquals(x.Author2, y.Author2);
-        }
-
-        private static bool SequenceEquals(List<QuerySql.GetDuplicateAuthorsRow> x, List<QuerySql.GetDuplicateAuthorsRow> y)
-        {
-            if (x.Count != y.Count)
-                return false;
-            return !x.Where((t, i) => !SingularEquals(t, y[i])).Any();
-        }
-
-        [Test]
-        public async Task TestArray()
-        {
-            var id1 = await this.QuerySql.CreateAuthorReturnId(new QuerySql.CreateAuthorReturnIdArgs { Name = "Albert Einstein", Bio = "Quote that everyone always attribute to Einstein" });
-            var bojackId = await this.QuerySql.CreateAuthorReturnId(new QuerySql.CreateAuthorReturnIdArgs { Name = "Bojack Horseman", Bio = "Back in the 90s he was in a very famous TV show" });
-            var actual = await QuerySql.GetAuthorsByIds(new QuerySql.GetAuthorsByIdsArgs { LongArr1 = new[] { id1, bojackId } });
-            ClassicAssert.AreEqual(2, actual.Count);
-        }
-
-        [Test]
-        public async Task TestMultipleArrays()
-        {
-            var id1 = await this.QuerySql.CreateAuthorReturnId(new QuerySql.CreateAuthorReturnIdArgs { Name = "Albert Einstein", Bio = "Quote that everyone always attribute to Einstein" });
-            var id2 = await this.QuerySql.CreateAuthorReturnId(new QuerySql.CreateAuthorReturnIdArgs { Name = "Albert Einstein", Bio = "Only 2 things are infinite, the universe and human stupidity" });
-            var bojackId = await this.QuerySql.CreateAuthorReturnId(new QuerySql.CreateAuthorReturnIdArgs { Name = "Bojack Horseman", Bio = "Back in the 90s he was in a very famous TV show" });
-            var actual = await QuerySql.GetAuthorsByIdsAndNames(new QuerySql.GetAuthorsByIdsAndNamesArgs { LongArr1 = new[] { id1, bojackId }, StringArr2 = new[] { "Albert Einstein" } });
-            ClassicAssert.AreEqual(1, actual.Count);
-        }
-
-        [Test]
         public async Task TestNargNull()
         {
             await this.QuerySql.CreateAuthor(new QuerySql.CreateAuthorArgs { Id = 1111, Name = "Bojack Horseman", Bio = "Back in the 90s he was in a very famous TV show" });
@@ -307,6 +335,25 @@ namespace SqlcGenCsharpTests
         }
 
         [Test]
+        public async Task TestArray()
+        {
+            var id1 = await this.QuerySql.CreateAuthorReturnId(new QuerySql.CreateAuthorReturnIdArgs { Name = "Albert Einstein", Bio = "Quote that everyone always attribute to Einstein" });
+            var bojackId = await this.QuerySql.CreateAuthorReturnId(new QuerySql.CreateAuthorReturnIdArgs { Name = "Bojack Horseman", Bio = "Back in the 90s he was in a very famous TV show" });
+            var actual = await QuerySql.GetAuthorsByIds(new QuerySql.GetAuthorsByIdsArgs { LongArr1 = new[] { id1, bojackId } });
+            ClassicAssert.AreEqual(2, actual.Count);
+        }
+
+        [Test]
+        public async Task TestMultipleArrays()
+        {
+            var id1 = await this.QuerySql.CreateAuthorReturnId(new QuerySql.CreateAuthorReturnIdArgs { Name = "Albert Einstein", Bio = "Quote that everyone always attribute to Einstein" });
+            var id2 = await this.QuerySql.CreateAuthorReturnId(new QuerySql.CreateAuthorReturnIdArgs { Name = "Albert Einstein", Bio = "Only 2 things are infinite, the universe and human stupidity" });
+            var bojackId = await this.QuerySql.CreateAuthorReturnId(new QuerySql.CreateAuthorReturnIdArgs { Name = "Bojack Horseman", Bio = "Back in the 90s he was in a very famous TV show" });
+            var actual = await QuerySql.GetAuthorsByIdsAndNames(new QuerySql.GetAuthorsByIdsAndNamesArgs { LongArr1 = new[] { id1, bojackId }, StringArr2 = new[] { "Albert Einstein" } });
+            ClassicAssert.AreEqual(1, actual.Count);
+        }
+
+        [Test]
         public async Task TestPostgresTypes()
         {
             await QuerySql.InsertPostgresTypes(new QuerySql.InsertPostgresTypesArgs { CBigint = 1, CReal = 1.0f, CNumeric = 1, CSmallint = 1, CDecimal = 1, CDate = new DateTime(1985, 9, 29), CTimestamp = new DateTime(2022, 9, 30, 23, 0, 3), CBoolean = true, CChar = "a", CInteger = 1, CText = "ab", CVarchar = "abc", CCharacterVarying = "abcd", CTextArray = new string[] { "a", "b" }, CIntegerArray = new int[] { 1, 2 } });
@@ -337,48 +384,24 @@ namespace SqlcGenCsharpTests
                 }
             };
             var actual = await QuerySql.GetPostgresTypes();
-            Assert.That(SingularEquals(expected, actual));
+            AssertSingularEquals(expected, actual);
         }
 
-        private static bool SingularEquals(QuerySql.GetPostgresTypesRow x, QuerySql.GetPostgresTypesRow y)
+        private static void AssertSingularEquals(QuerySql.GetPostgresTypesRow expected, QuerySql.GetPostgresTypesRow actual)
         {
-            if (x == null && y == null)
-                return true;
-            if (x == null || y == null)
-                return false;
-            return x.CBigint.Equals(y.CBigint) && x.CReal.Equals(y.CReal) && x.CNumeric.Equals(y.CNumeric) && x.CSmallint.Equals(y.CSmallint) && x.CDecimal.Equals(y.CDecimal) && x.CDate.Equals(y.CDate) && x.CTimestamp.Equals(y.CTimestamp) && x.CBoolean.Equals(y.CBoolean) && x.CChar.Equals(y.CChar) && x.CInteger.Equals(y.CInteger) && x.CText.Equals(y.CText) && x.CVarchar.Equals(y.CVarchar) && x.CCharacterVarying.Equals(y.CCharacterVarying) && x.CTextArray.SequenceEqual(y.CTextArray) && x.CIntegerArray.SequenceEqual(y.CIntegerArray);
-        }
-
-        [Test]
-        public async Task TestCopyFrom()
-        {
-            const int batchSize = 100;
-            var batchArgs = Enumerable.Range(0, batchSize).Select(_ => new QuerySql.InsertPostgresTypesBatchArgs { CBoolean = true, CSmallint = 3, CInteger = 1, CBigint = 14214231, CDecimal = 1.2f, CNumeric = 8.4f, CReal = 1.432423f, CDate = new DateTime(2020, 7, 22, 11, 7, 45, 35), CTimestamp = new DateTime(2020, 7, 22, 11, 7, 45, 35), CChar = "z", CVarchar = "abc", CCharacterVarying = "aaaa", CText = "1q1q1q" }).ToList();
-            await QuerySql.InsertPostgresTypesBatch(batchArgs);
-            var expected = new QuerySql.GetPostgresTypesAggRow
-            {
-                Cnt = batchSize,
-                CBoolean = true,
-                CSmallint = 3,
-                CInteger = 1,
-                CBigint = 14214231,
-                CDecimal = 1.2f,
-                CNumeric = 8.4f,
-                CReal = 1.432423f,
-                CDate = new DateTime(2020, 7, 22),
-                CTimestamp = new DateTime(2020, 7, 22, 11, 7, 45, 35),
-                CChar = "z",
-                CVarchar = "abc",
-                CCharacterVarying = "aaaa",
-                CText = "1q1q1q"
-            };
-            var actual = await QuerySql.GetPostgresTypesAgg();
-            Assert.That(SingularEquals(expected, actual));
-        }
-
-        private static bool SingularEquals(QuerySql.GetPostgresTypesAggRow x, QuerySql.GetPostgresTypesAggRow y)
-        {
-            return x.Cnt.Equals(y.Cnt) && x.CSmallint.Equals(y.CSmallint) && x.CBoolean.Equals(y.CBoolean) && x.CInteger.Equals(y.CInteger) && x.CBigint.Equals(y.CBigint) && x.CDecimal.Equals(y.CDecimal) && x.CNumeric.Equals(y.CNumeric) && x.CReal.Equals(y.CReal) && x.CDate.Equals(y.CDate) && x.CTimestamp.Equals(y.CTimestamp) && x.CChar.Equals(y.CChar) && x.CVarchar.Equals(y.CVarchar) && x.CCharacterVarying.Equals(y.CCharacterVarying) && x.CText.Equals(y.CText);
+            Assert.That(actual.CBigint, Is.EqualTo(expected.CBigint));
+            Assert.That(actual.CReal, Is.EqualTo(expected.CReal));
+            Assert.That(actual.CNumeric, Is.EqualTo(expected.CNumeric));
+            Assert.That(actual.CDate, Is.EqualTo(expected.CDate));
+            Assert.That(actual.CTimestamp, Is.EqualTo(expected.CTimestamp));
+            Assert.That(actual.CBoolean, Is.EqualTo(expected.CBoolean));
+            Assert.That(actual.CChar, Is.EqualTo(expected.CChar));
+            Assert.That(actual.CInteger, Is.EqualTo(expected.CInteger));
+            Assert.That(actual.CText, Is.EqualTo(expected.CText));
+            Assert.That(actual.CVarchar, Is.EqualTo(expected.CVarchar));
+            Assert.That(actual.CCharacterVarying, Is.EqualTo(expected.CCharacterVarying));
+            Assert.That(actual.CTextArray.SequenceEqual(expected.CTextArray));
+            Assert.That(actual.CIntegerArray.SequenceEqual(expected.CIntegerArray));
         }
     }
 }

@@ -57,8 +57,11 @@ public static class Program
     private static string GetTestImplementation(string testClassName, bool isLegacyDotnet, KnownTestType testType)
     {
         var testGen = Templates.TestImplementations[testType];
-        return testGen.Impl.Replace(
-            Templates.UnknownRecordValuePlaceholder,
-            RecordsAreInUse(testClassName, isLegacyDotnet) ? ".Value" : string.Empty);
+        var impl = testGen.Impl
+            .Replace(Templates.UnknownRecordValuePlaceholder,
+                RecordsAreInUse(testClassName, isLegacyDotnet) ? ".Value" : string.Empty)
+            .Replace(Templates.UnknownNullableIndicatorPlaceholder,
+                isLegacyDotnet ? string.Empty : "?");
+        return impl;
     }
 }

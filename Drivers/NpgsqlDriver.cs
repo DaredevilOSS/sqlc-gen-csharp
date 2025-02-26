@@ -59,16 +59,25 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId
         new("DateTime",
             new Dictionary<string, string?>
             {
-                { "date", "NpgsqlDbType.Date" }, { "timestamp", "NpgsqlDbType.Timestamp" },
+                { "date", "NpgsqlDbType.Date" },
+                { "timestamp", "NpgsqlDbType.Timestamp" }
             }, ordinal => $"reader.GetDateTime({ordinal})"),
         new("object",
-            new Dictionary<string, string?> { { "json", null } }, ordinal => $"reader.GetString({ordinal})"),
+            new Dictionary<string, string?>
+            {
+                { "json", null }
+            }, ordinal => $"reader.GetString({ordinal})"),
+        new("short",
+            new Dictionary<string, string?>
+            {
+                { "int2", "NpgsqlDbType.Smallint" }
+            }, ordinal => $"reader.GetInt16({ordinal})",
+            ordinal => $"reader.GetFieldValue<short[]>({ordinal})"),
         new("int",
             new Dictionary<string, string?>
             {
                 { "integer", "NpgsqlDbType.Integer" },
                 { "int", "NpgsqlDbType.Integer" },
-                { "int2", "NpgsqlDbType.Smallint" },
                 { "int4", "NpgsqlDbType.Integer" },
                 { "serial", "NpgsqlDbType.Integer" }
             }, ordinal => $"reader.GetInt32({ordinal})",
@@ -76,14 +85,14 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId
         new("float",
             new Dictionary<string, string?>
             {
-                { "numeric", "NpgsqlDbType.Numeric" },
-                { "float4", "NpgsqlDbType.Real" },
-                { "float8", "NpgsqlDbType.Real" }
+                { "float4", "NpgsqlDbType.Real" }
             }, ordinal => $"reader.GetFloat({ordinal})"),
         new("decimal",
             new Dictionary<string, string?>
             {
-                { "decimal", "NpgsqlDbType.Real" }
+                { "numeric", "NpgsqlDbType.Numeric" },
+                { "float8", "NpgsqlDbType.Real" },
+                { "decimal", "NpgsqlDbType.Decimal" }
             }, ordinal => $"reader.GetDecimal({ordinal})"),
         new("bool",
             new Dictionary<string, string?>
