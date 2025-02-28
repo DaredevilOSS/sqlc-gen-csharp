@@ -349,7 +349,7 @@ public class QuerySql
     public class InsertSqliteTypesArgs
     {
         public int? CInteger { get; init; }
-        public float? CReal { get; init; }
+        public decimal? CReal { get; init; }
         public string? CText { get; init; }
         public byte[]? CBlob { get; init; }
     };
@@ -370,7 +370,7 @@ public class QuerySql
     public class InsertSqliteTypesBatchArgs
     {
         public int? CInteger { get; init; }
-        public float? CReal { get; init; }
+        public decimal? CReal { get; init; }
         public string? CText { get; init; }
     };
     public async Task InsertSqliteTypesBatch(List<InsertSqliteTypesBatchArgs> args)
@@ -397,7 +397,7 @@ public class QuerySql
     public class GetSqliteTypesRow
     {
         public int? CInteger { get; init; }
-        public float? CReal { get; init; }
+        public decimal? CReal { get; init; }
         public string? CText { get; init; }
         public byte[]? CBlob { get; init; }
     };
@@ -415,7 +415,7 @@ public class QuerySql
     {
         public required int Cnt { get; init; }
         public int? CInteger { get; init; }
-        public float? CReal { get; init; }
+        public decimal? CReal { get; init; }
         public string? CText { get; init; }
         public byte[]? CBlob { get; init; }
     };

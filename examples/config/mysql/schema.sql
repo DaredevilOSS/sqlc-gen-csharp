@@ -14,53 +14,54 @@ CREATE TABLE books (
 
 CREATE TABLE mysql_types (
   /* Boolean data types */
-  c_bit BIT,
-  c_tinyint TINYINT,
-  c_bool BOOL,
-  c_boolean BOOLEAN,
+  c_bit         BIT,
+  c_tinyint     TINYINT,
+  c_bool        BOOL,
+  c_boolean     BOOLEAN,
 
   /* Integer data types */
-  c_smallint SMALLINT,
-  c_mediumint MEDIUMINT,
-  c_int INT,
-  c_year YEAR,
-  c_integer INTEGER,
-  c_bigint BIGINT,
+  c_year        YEAR,
+  c_smallint    SMALLINT,
+  c_mediumint   MEDIUMINT,
+  c_int         INT,
+  c_integer     INTEGER,
+  c_bigint      BIGINT,
 
   /* Float data types */
-  c_decimal DECIMAL(2,1),
-  c_dec DEC(2,1),
-  c_numeric NUMERIC(2,1),
-  c_fixed FIXED(2,1),
-  c_float FLOAT,
-  c_double DOUBLE,
+  c_decimal          DECIMAL(10,7),
+  c_dec              DEC(10,7),
+  c_numeric          NUMERIC(2,1),
+  c_fixed            FIXED(2,1),
+  c_float            FLOAT,
+  c_double           DOUBLE,
   c_double_precision DOUBLE PRECISION,
 
   /* Datetime data types */
-  c_date DATE,
-  c_time TIME,
-  c_datetime DATETIME,
-  c_timestamp TIMESTAMP,
+  c_date        DATE,
+  c_time        TIME,
+  c_datetime    DATETIME,
+  c_timestamp   TIMESTAMP,
 
   /* String data types */  
-  c_char CHAR,
-  c_nchar NCHAR,
-  c_national_char NATIONAL CHAR,
-  c_varchar VARCHAR(100),
-  c_tinytext TINYTEXT,
-  c_mediumtext MEDIUMTEXT,
-  c_text TEXT,
-  c_longtext LONGTEXT,
+  c_char            CHAR,
+  c_nchar           NCHAR,
+  c_national_char   NATIONAL CHAR,
+  c_varchar         VARCHAR(100),
+  c_tinytext        TINYTEXT,
+  c_mediumtext      MEDIUMTEXT,
+  c_text            TEXT,
+  c_longtext        LONGTEXT,
     
   /* Binary data types */
-  c_binary BINARY,
-  c_varbinary VARBINARY(10),
-  c_tinyblob TINYBLOB,
-  c_blob BLOB,
-  c_mediumblob MEDIUMBLOB,
-  c_longblob LONGBLOB,
+  c_binary      BINARY(3),
+  c_varbinary   VARBINARY(10),
+  c_tinyblob    TINYBLOB,
+  c_blob        BLOB,
+  c_mediumblob  MEDIUMBLOB,
+  c_longblob    LONGBLOB,
+    
+  /* Special data types */
   /* c_enum ENUM('a', 'b', 'c'), */
   /* c_set SET('a', 'b', 'c'), */
-
   c_json JSON
 );

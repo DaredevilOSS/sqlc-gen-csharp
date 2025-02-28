@@ -43,7 +43,7 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId
                 { "mediumblob", null },
                 { "tinyblob", null },
                 { "varbinary", null }
-            }, ordinal => $"Utils.GetBytes(reader, {ordinal})"),
+            }, ordinal => $"reader.GetFieldValue<byte[]>({ordinal})"),
         new("string",
             new Dictionary<string, string?>
             {
@@ -91,9 +91,13 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId
             new Dictionary<string, string?>
             {
                 { "numeric", "NpgsqlDbType.Numeric" },
-                { "float8", "NpgsqlDbType.Real" },
-                { "decimal", "NpgsqlDbType.Decimal" }
+                { "decimal", "NpgsqlDbType.Numeric" }
             }, ordinal => $"reader.GetDecimal({ordinal})"),
+        new("double",
+            new Dictionary<string, string?>
+            {
+                { "float8", "NpgsqlDbType.Double" },
+            }, ordinal => $"reader.GetDouble({ordinal})"),
         new("bool",
             new Dictionary<string, string?>
             {

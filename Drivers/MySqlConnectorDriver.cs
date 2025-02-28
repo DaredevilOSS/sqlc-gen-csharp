@@ -28,7 +28,7 @@ public partial class MySqlConnectorDriver(Options options, Dictionary<string, Ta
                 { "mediumblob", null },
                 { "tinyblob", null },
                 { "varbinary", null }
-            }, ordinal => $"Utils.GetBytes(reader, {ordinal})"),
+            }, ordinal => $"reader.GetFieldValue<byte[]>({ordinal})"),
         new("string",
             new Dictionary<string, string?>
             {
@@ -50,13 +50,17 @@ public partial class MySqlConnectorDriver(Options options, Dictionary<string, Ta
                 { "datetime", null },
                 { "timestamp", null }
             }, ordinal => $"reader.GetDateTime({ordinal})"),
+        new("short",
+            new Dictionary<string, string?>
+            {
+                { "smallint", null },
+                { "year", null }
+            }, ordinal => $"reader.GetInt16({ordinal})"),
         new("int",
             new Dictionary<string, string?>
             {
                 { "int", null },
                 { "mediumint", null },
-                { "smallint", null },
-                { "year", null }
             }, ordinal => $"reader.GetInt32({ordinal})"),
         new("bool",
             new Dictionary<string, string?>

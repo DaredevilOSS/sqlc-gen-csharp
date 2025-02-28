@@ -21,10 +21,10 @@ public class MysqlType
     public bool? CTinyint { get; init; }
     public bool? CBool { get; init; }
     public bool? CBoolean { get; init; }
-    public int? CSmallint { get; init; }
+    public short? CYear { get; init; }
+    public short? CSmallint { get; init; }
     public int? CMediumint { get; init; }
     public int? CInt { get; init; }
-    public int? CYear { get; init; }
     public int? CInteger { get; init; }
     public long? CBigint { get; init; }
     public string? CDecimal { get; init; }

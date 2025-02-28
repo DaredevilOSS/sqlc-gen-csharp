@@ -343,17 +343,42 @@ public class QuerySql
         }
     }
 
-    private const string InsertMysqlTypesSql = "INSERT INTO mysql_types (c_bit, c_tinyint, c_bool, c_boolean, c_int, c_varchar, c_date, c_timestamp) VALUES (@c_bit, @c_tinyint, @c_bool, @c_boolean, @c_int, @c_varchar, @c_date, @c_timestamp); SELECT LAST_INSERT_ID()";
+    private const string InsertMysqlTypesSql = "INSERT INTO mysql_types (c_bit, c_tinyint, c_bool, c_boolean, c_year, c_smallint, c_mediumint, c_int, c_integer, c_bigint, c_decimal, c_dec, c_numeric, c_fixed, c_float, c_double, c_double_precision, c_char, c_nchar, c_national_char, c_varchar, c_tinytext, c_mediumtext, c_text, c_longtext, c_date, c_timestamp, c_binary, c_varbinary, c_tinyblob, c_blob, c_mediumblob, c_longblob) VALUES ( @c_bit, @c_tinyint, @c_bool, @c_boolean, @c_year, @c_smallint, @c_mediumint, @c_int, @c_integer, @c_bigint, @c_decimal, @c_dec, @c_numeric, @c_fixed, @c_float, @c_double, @c_double_precision, @c_char, @c_nchar, @c_national_char, @c_varchar, @c_tinytext, @c_mediumtext, @c_text, @c_longtext, @c_date, @c_timestamp, @c_binary, @c_varbinary, @c_tinyblob, @c_blob, @c_mediumblob, @c_longblob ); SELECT  LAST_INSERT_ID ( ) "; 
     public class InsertMysqlTypesArgs
     {
         public bool? CBit { get; init; }
         public bool? CTinyint { get; init; }
         public bool? CBool { get; init; }
         public bool? CBoolean { get; init; }
+        public short? CYear { get; init; }
+        public short? CSmallint { get; init; }
+        public int? CMediumint { get; init; }
         public int? CInt { get; init; }
+        public int? CInteger { get; init; }
+        public long? CBigint { get; init; }
+        public string? CDecimal { get; init; }
+        public string? CDec { get; init; }
+        public string? CNumeric { get; init; }
+        public string? CFixed { get; init; }
+        public double? CFloat { get; init; }
+        public double? CDouble { get; init; }
+        public double? CDoublePrecision { get; init; }
+        public string? CChar { get; init; }
+        public string? CNchar { get; init; }
+        public string? CNationalChar { get; init; }
         public string? CVarchar { get; init; }
+        public string? CTinytext { get; init; }
+        public string? CMediumtext { get; init; }
+        public string? CText { get; init; }
+        public string? CLongtext { get; init; }
         public DateTime? CDate { get; init; }
         public DateTime? CTimestamp { get; init; }
+        public byte[]? CBinary { get; init; }
+        public byte[]? CVarbinary { get; init; }
+        public byte[]? CTinyblob { get; init; }
+        public byte[]? CBlob { get; init; }
+        public byte[]? CMediumblob { get; init; }
+        public byte[]? CLongblob { get; init; }
     };
     public async Task InsertMysqlTypes(InsertMysqlTypesArgs args)
     {
@@ -364,10 +389,35 @@ public class QuerySql
             queryParams.Add("c_tinyint", args.CTinyint);
             queryParams.Add("c_bool", args.CBool);
             queryParams.Add("c_boolean", args.CBoolean);
+            queryParams.Add("c_year", args.CYear);
+            queryParams.Add("c_smallint", args.CSmallint);
+            queryParams.Add("c_mediumint", args.CMediumint);
             queryParams.Add("c_int", args.CInt);
+            queryParams.Add("c_integer", args.CInteger);
+            queryParams.Add("c_bigint", args.CBigint);
+            queryParams.Add("c_decimal", args.CDecimal);
+            queryParams.Add("c_dec", args.CDec);
+            queryParams.Add("c_numeric", args.CNumeric);
+            queryParams.Add("c_fixed", args.CFixed);
+            queryParams.Add("c_float", args.CFloat);
+            queryParams.Add("c_double", args.CDouble);
+            queryParams.Add("c_double_precision", args.CDoublePrecision);
+            queryParams.Add("c_char", args.CChar);
+            queryParams.Add("c_nchar", args.CNchar);
+            queryParams.Add("c_national_char", args.CNationalChar);
             queryParams.Add("c_varchar", args.CVarchar);
+            queryParams.Add("c_tinytext", args.CTinytext);
+            queryParams.Add("c_mediumtext", args.CMediumtext);
+            queryParams.Add("c_text", args.CText);
+            queryParams.Add("c_longtext", args.CLongtext);
             queryParams.Add("c_date", args.CDate);
             queryParams.Add("c_timestamp", args.CTimestamp);
+            queryParams.Add("c_binary", args.CBinary);
+            queryParams.Add("c_varbinary", args.CVarbinary);
+            queryParams.Add("c_tinyblob", args.CTinyblob);
+            queryParams.Add("c_blob", args.CBlob);
+            queryParams.Add("c_mediumblob", args.CMediumblob);
+            queryParams.Add("c_longblob", args.CLongblob);
             await connection.ExecuteAsync(InsertMysqlTypesSql, queryParams);
         }
     }
@@ -430,17 +480,17 @@ public class QuerySql
         }
     }
 
-    private const string GetMysqlTypesSql = "SELECT c_bit, c_tinyint, c_bool, c_boolean, c_smallint, c_mediumint, c_int, c_year, c_integer, c_bigint, c_decimal, c_dec, c_numeric, c_fixed, c_float, c_double, c_double_precision, c_date, c_time, c_datetime, c_timestamp, c_char, c_nchar, c_national_char, c_varchar, c_tinytext, c_mediumtext, c_text, c_longtext, c_binary, c_varbinary, c_tinyblob, c_blob, c_mediumblob, c_longblob, c_json FROM mysql_types LIMIT 1; SELECT LAST_INSERT_ID()";
+    private const string GetMysqlTypesSql = "SELECT c_bit, c_tinyint, c_bool, c_boolean, c_year, c_smallint, c_mediumint, c_int, c_integer, c_bigint, c_decimal, c_dec, c_numeric, c_fixed, c_float, c_double, c_double_precision, c_date, c_time, c_datetime, c_timestamp, c_char, c_nchar, c_national_char, c_varchar, c_tinytext, c_mediumtext, c_text, c_longtext, c_binary, c_varbinary, c_tinyblob, c_blob, c_mediumblob, c_longblob, c_json FROM mysql_types LIMIT 1; SELECT LAST_INSERT_ID()";
     public class GetMysqlTypesRow
     {
         public bool? CBit { get; init; }
         public bool? CTinyint { get; init; }
         public bool? CBool { get; init; }
         public bool? CBoolean { get; init; }
-        public int? CSmallint { get; init; }
+        public short? CYear { get; init; }
+        public short? CSmallint { get; init; }
         public int? CMediumint { get; init; }
         public int? CInt { get; init; }
-        public int? CYear { get; init; }
         public int? CInteger { get; init; }
         public long? CBigint { get; init; }
         public string? CDecimal { get; init; }

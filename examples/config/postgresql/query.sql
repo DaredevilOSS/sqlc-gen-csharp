@@ -50,11 +50,11 @@ FROM authors JOIN books ON authors.id = books.author_id
 WHERE books.name = $1;
 
 -- name: InsertPostgresTypes :exec
-INSERT INTO postgres_types (c_smallint, c_boolean, c_integer, c_bigint, c_decimal, c_numeric, c_real, c_date, c_timestamp, c_char, c_varchar, c_character_varying, c_text, c_text_array, c_integer_array)
-VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15);
+INSERT INTO postgres_types (c_boolean, c_bit, c_smallint, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_date, c_timestamp, c_char, c_varchar, c_character_varying, c_text, c_text_array, c_bytea, c_integer_array)
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18);
 
 -- name: InsertPostgresTypesBatch :copyfrom
-INSERT INTO postgres_types (c_smallint, c_boolean, c_integer, c_bigint, c_decimal, c_numeric, c_real, c_date, c_timestamp, c_char, c_varchar, c_character_varying, c_text)
+INSERT INTO postgres_types (c_boolean, c_smallint, c_integer, c_bigint, c_decimal, c_numeric, c_real, c_date, c_timestamp, c_char, c_varchar, c_character_varying, c_text)
 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13);
 
 -- name: GetPostgresTypes :one

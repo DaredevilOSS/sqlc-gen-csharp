@@ -354,34 +354,31 @@ namespace SqlcGenCsharpTests
         }
 
         [Test]
-        public async Task TestPostgresTypes()
+        [TestCase(true, 35, -23423, 4235235263, 3.83f, 4.5534, 998.432, -8403284.321435, "2000-1-30", "1983-11-3 02:01:22", "E", "It takes a nation of millions to hold us back", "Rebel Without a Pause", "Prophets of Rage", new byte[] { 0x45, 0x42 }, new string[] { "Party", "Fight" }, new int[] { 543, -4234 })]
+        [TestCase(null, null, null, null, null, null, null, null, null, null, null, null, null, null, new byte[] { }, new string[] { }, new int[] { })]
+        [TestCase(null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null)]
+        public async Task TestPostgresTypes(bool cBoolean, short cSmallint, int cInteger, long cBigint, float cReal, decimal cNumeric, decimal cDecimal, double cDoublePrecision, DateTime cDate, DateTime cTimestamp, string cChar, string cVarchar, string cCharacterVarying, string cText, byte[] cBytea, string[] cTextArray, int[] cIntegerArray)
         {
-            await QuerySql.InsertPostgresTypes(new QuerySql.InsertPostgresTypesArgs { CBigint = 1, CReal = 1.0f, CNumeric = 1, CSmallint = 1, CDecimal = 1, CDate = new DateTime(1985, 9, 29), CTimestamp = new DateTime(2022, 9, 30, 23, 0, 3), CBoolean = true, CChar = "a", CInteger = 1, CText = "ab", CVarchar = "abc", CCharacterVarying = "abcd", CTextArray = new string[] { "a", "b" }, CIntegerArray = new int[] { 1, 2 } });
+            await QuerySql.InsertPostgresTypes(new QuerySql.InsertPostgresTypesArgs { CBoolean = cBoolean, CSmallint = cSmallint, CInteger = cInteger, CBigint = cBigint, CReal = cReal, CNumeric = cNumeric, CDecimal = cDecimal, CDoublePrecision = cDoublePrecision, CDate = cDate, CTimestamp = cTimestamp, CChar = cChar, CVarchar = cVarchar, CCharacterVarying = cCharacterVarying, CText = cText, CBytea = cBytea, CTextArray = cTextArray, CIntegerArray = cIntegerArray });
             var expected = new QuerySql.GetPostgresTypesRow
             {
-                CBigint = 1,
-                CReal = 1.0f,
-                CNumeric = 1,
-                CSmallint = 1,
-                CDecimal = 1,
-                CDate = new DateTime(1985, 9, 29),
-                CTimestamp = new DateTime(2022, 9, 30, 23, 0, 3),
-                CBoolean = true,
-                CChar = "a",
-                CInteger = 1,
-                CText = "ab",
-                CVarchar = "abc",
-                CCharacterVarying = "abcd",
-                CTextArray = new string[]
-                {
-                    "a",
-                    "b"
-                },
-                CIntegerArray = new int[]
-                {
-                    1,
-                    2
-                }
+                CBoolean = cBoolean,
+                CSmallint = cSmallint,
+                CInteger = cInteger,
+                CBigint = cBigint,
+                CReal = cReal,
+                CNumeric = cNumeric,
+                CDecimal = cDecimal,
+                CDoublePrecision = cDoublePrecision,
+                CDate = cDate,
+                CTimestamp = cTimestamp,
+                CChar = cChar,
+                CVarchar = cVarchar,
+                CCharacterVarying = cCharacterVarying,
+                CText = cText,
+                CBytea = cBytea,
+                CTextArray = cTextArray,
+                CIntegerArray = cIntegerArray
             };
             var actual = await QuerySql.GetPostgresTypes();
             AssertSingularEquals(expected, actual.Value);
@@ -389,19 +386,23 @@ namespace SqlcGenCsharpTests
 
         private static void AssertSingularEquals(QuerySql.GetPostgresTypesRow expected, QuerySql.GetPostgresTypesRow actual)
         {
+            Assert.That(actual.CBoolean, Is.EqualTo(expected.CBoolean));
+            Assert.That(actual.CSmallint, Is.EqualTo(expected.CSmallint));
+            Assert.That(actual.CInteger, Is.EqualTo(expected.CInteger));
             Assert.That(actual.CBigint, Is.EqualTo(expected.CBigint));
             Assert.That(actual.CReal, Is.EqualTo(expected.CReal));
             Assert.That(actual.CNumeric, Is.EqualTo(expected.CNumeric));
+            Assert.That(actual.CDecimal, Is.EqualTo(expected.CDecimal));
+            Assert.That(actual.CDoublePrecision, Is.EqualTo(expected.CDoublePrecision));
             Assert.That(actual.CDate, Is.EqualTo(expected.CDate));
             Assert.That(actual.CTimestamp, Is.EqualTo(expected.CTimestamp));
-            Assert.That(actual.CBoolean, Is.EqualTo(expected.CBoolean));
             Assert.That(actual.CChar, Is.EqualTo(expected.CChar));
-            Assert.That(actual.CInteger, Is.EqualTo(expected.CInteger));
-            Assert.That(actual.CText, Is.EqualTo(expected.CText));
             Assert.That(actual.CVarchar, Is.EqualTo(expected.CVarchar));
             Assert.That(actual.CCharacterVarying, Is.EqualTo(expected.CCharacterVarying));
-            Assert.That(actual.CTextArray.SequenceEqual(expected.CTextArray));
-            Assert.That(actual.CIntegerArray.SequenceEqual(expected.CIntegerArray));
+            Assert.That(actual.CText, Is.EqualTo(expected.CText));
+            Assert.That(actual.CBytea, Is.EqualTo(expected.CBytea));
+            Assert.That(actual.CTextArray, Is.EqualTo(expected.CTextArray));
+            Assert.That(actual.CIntegerArray, Is.EqualTo(expected.CIntegerArray));
         }
     }
 }

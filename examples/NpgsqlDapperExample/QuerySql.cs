@@ -342,16 +342,18 @@ public class QuerySql
         }
     }
 
-    private const string InsertPostgresTypesSql = "INSERT INTO postgres_types (c_smallint, c_boolean, c_integer, c_bigint, c_decimal, c_numeric, c_real, c_date, c_timestamp, c_char, c_varchar, c_character_varying, c_text, c_text_array, c_integer_array) VALUES ( @c_smallint , @c_boolean, @c_integer, @c_bigint, @c_decimal, @c_numeric, @c_real, @c_date, @c_timestamp, @c_char, @c_varchar, @c_character_varying, @c_text, @c_text_array, @c_integer_array ) "; 
+    private const string InsertPostgresTypesSql = "INSERT INTO postgres_types (c_boolean, c_bit, c_smallint, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_date, c_timestamp, c_char, c_varchar, c_character_varying, c_text, c_text_array, c_bytea, c_integer_array) VALUES ( @c_boolean , @c_bit, @c_smallint, @c_integer, @c_bigint, @c_real, @c_numeric, @c_decimal, @c_double_precision, @c_date, @c_timestamp, @c_char, @c_varchar, @c_character_varying, @c_text, @c_text_array, @c_bytea, @c_integer_array ) "; 
     public class InsertPostgresTypesArgs
     {
-        public short? CSmallint { get; init; }
         public bool? CBoolean { get; init; }
+        public byte[]? CBit { get; init; }
+        public short? CSmallint { get; init; }
         public int? CInteger { get; init; }
         public long? CBigint { get; init; }
-        public decimal? CDecimal { get; init; }
-        public decimal? CNumeric { get; init; }
         public float? CReal { get; init; }
+        public decimal? CNumeric { get; init; }
+        public decimal? CDecimal { get; init; }
+        public double? CDoublePrecision { get; init; }
         public DateTime? CDate { get; init; }
         public DateTime? CTimestamp { get; init; }
         public string? CChar { get; init; }
@@ -359,6 +361,7 @@ public class QuerySql
         public string? CCharacterVarying { get; init; }
         public string? CText { get; init; }
         public string[]? CTextArray { get; init; }
+        public byte[]? CBytea { get; init; }
         public int[]? CIntegerArray { get; init; }
     };
     public async Task InsertPostgresTypes(InsertPostgresTypesArgs args)
@@ -366,13 +369,15 @@ public class QuerySql
         using (var connection = new NpgsqlConnection(ConnectionString))
         {
             var queryParams = new Dictionary<string, object?>();
-            queryParams.Add("c_smallint", args.CSmallint);
             queryParams.Add("c_boolean", args.CBoolean);
+            queryParams.Add("c_bit", args.CBit);
+            queryParams.Add("c_smallint", args.CSmallint);
             queryParams.Add("c_integer", args.CInteger);
             queryParams.Add("c_bigint", args.CBigint);
-            queryParams.Add("c_decimal", args.CDecimal);
-            queryParams.Add("c_numeric", args.CNumeric);
             queryParams.Add("c_real", args.CReal);
+            queryParams.Add("c_numeric", args.CNumeric);
+            queryParams.Add("c_decimal", args.CDecimal);
+            queryParams.Add("c_double_precision", args.CDoublePrecision);
             queryParams.Add("c_date", args.CDate);
             queryParams.Add("c_timestamp", args.CTimestamp);
             queryParams.Add("c_char", args.CChar);
@@ -380,16 +385,17 @@ public class QuerySql
             queryParams.Add("c_character_varying", args.CCharacterVarying);
             queryParams.Add("c_text", args.CText);
             queryParams.Add("c_text_array", args.CTextArray);
+            queryParams.Add("c_bytea", args.CBytea);
             queryParams.Add("c_integer_array", args.CIntegerArray);
             await connection.ExecuteAsync(InsertPostgresTypesSql, queryParams);
         }
     }
 
-    private const string InsertPostgresTypesBatchSql = "COPY postgres_types (c_smallint, c_boolean, c_integer, c_bigint, c_decimal, c_numeric, c_real, c_date, c_timestamp, c_char, c_varchar, c_character_varying, c_text) FROM STDIN (FORMAT BINARY)";
+    private const string InsertPostgresTypesBatchSql = "COPY postgres_types (c_boolean, c_smallint, c_integer, c_bigint, c_decimal, c_numeric, c_real, c_date, c_timestamp, c_char, c_varchar, c_character_varying, c_text) FROM STDIN (FORMAT BINARY)";
     public class InsertPostgresTypesBatchArgs
     {
-        public short? CSmallint { get; init; }
         public bool? CBoolean { get; init; }
+        public short? CSmallint { get; init; }
         public int? CInteger { get; init; }
         public long? CBigint { get; init; }
         public decimal? CDecimal { get; init; }
@@ -413,8 +419,8 @@ public class QuerySql
                 foreach (var row in args)
                 {
                     await writer.StartRowAsync();
-                    await writer.WriteAsync(row.CSmallint, NpgsqlDbType.Smallint);
                     await writer.WriteAsync(row.CBoolean);
+                    await writer.WriteAsync(row.CSmallint, NpgsqlDbType.Smallint);
                     await writer.WriteAsync(row.CInteger, NpgsqlDbType.Integer);
                     await writer.WriteAsync(row.CBigint, NpgsqlDbType.Bigint);
                     await writer.WriteAsync(row.CDecimal, NpgsqlDbType.Numeric);
@@ -435,18 +441,18 @@ public class QuerySql
         }
     }
 
-    private const string GetPostgresTypesSql = "SELECT c_bit, c_smallint, c_boolean, c_integer, c_bigint, c_decimal, c_numeric, c_real, c_double_precision, c_date, c_time, c_timestamp, c_char, c_varchar, c_character_varying, c_bytea, c_text, c_json, c_text_array, c_integer_array FROM postgres_types LIMIT 1";
+    private const string GetPostgresTypesSql = "SELECT c_boolean, c_bit, c_smallint, c_integer, c_bigint, c_decimal, c_numeric, c_real, c_double_precision, c_date, c_time, c_timestamp, c_char, c_varchar, c_character_varying, c_bytea, c_text, c_json, c_text_array, c_integer_array FROM postgres_types LIMIT 1";
     public class GetPostgresTypesRow
     {
+        public bool? CBoolean { get; init; }
         public byte[]? CBit { get; init; }
         public short? CSmallint { get; init; }
-        public bool? CBoolean { get; init; }
         public int? CInteger { get; init; }
         public long? CBigint { get; init; }
         public decimal? CDecimal { get; init; }
         public decimal? CNumeric { get; init; }
         public float? CReal { get; init; }
-        public decimal? CDoublePrecision { get; init; }
+        public double? CDoublePrecision { get; init; }
         public DateTime? CDate { get; init; }
         public string? CTime { get; init; }
         public DateTime? CTimestamp { get; init; }

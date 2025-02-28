@@ -352,7 +352,7 @@ public class QuerySql
     }
 
     private const string InsertSqliteTypesSql = "INSERT INTO types_sqlite (c_integer, c_real, c_text, c_blob) VALUES (@c_integer, @c_real, @c_text, @c_blob)";
-    public readonly record struct InsertSqliteTypesArgs(int? CInteger, float? CReal, string? CText, byte[]? CBlob);
+    public readonly record struct InsertSqliteTypesArgs(int? CInteger, decimal? CReal, string? CText, byte[]? CBlob);
     public async Task InsertSqliteTypes(InsertSqliteTypesArgs args)
     {
         using (var connection = new SqliteConnection(ConnectionString))
@@ -370,7 +370,7 @@ public class QuerySql
     }
 
     private const string InsertSqliteTypesBatchSql = "INSERT INTO types_sqlite (c_integer, c_real, c_text) VALUES (@c_integer, @c_real, @c_text)";
-    public readonly record struct InsertSqliteTypesBatchArgs(int? CInteger, float? CReal, string? CText);
+    public readonly record struct InsertSqliteTypesBatchArgs(int? CInteger, decimal? CReal, string? CText);
     public async Task InsertSqliteTypesBatch(List<InsertSqliteTypesBatchArgs> args)
     {
         using (var connection = new SqliteConnection(ConnectionString))
@@ -392,7 +392,7 @@ public class QuerySql
     }
 
     private const string GetSqliteTypesSql = "SELECT c_integer, c_real, c_text, c_blob FROM types_sqlite LIMIT 1";
-    public readonly record struct GetSqliteTypesRow(int? CInteger, float? CReal, string? CText, byte[]? CBlob);
+    public readonly record struct GetSqliteTypesRow(int? CInteger, decimal? CReal, string? CText, byte[]? CBlob);
     public async Task<GetSqliteTypesRow?> GetSqliteTypes()
     {
         using (var connection = new SqliteConnection(ConnectionString))
@@ -407,9 +407,9 @@ public class QuerySql
                         return new GetSqliteTypesRow
                         {
                             CInteger = reader.IsDBNull(0) ? (int? )null : reader.GetInt32(0),
-                            CReal = reader.IsDBNull(1) ? (float? )null : reader.GetFloat(1),
+                            CReal = reader.IsDBNull(1) ? (decimal? )null : reader.GetDecimal(1),
                             CText = reader.IsDBNull(2) ? (string? )null : reader.GetString(2),
-                            CBlob = reader.IsDBNull(3) ? null : Utils.GetBytes(reader, 3)
+                            CBlob = reader.IsDBNull(3) ? null : reader.GetFieldValue<byte[]>(3)
                         };
                     }
                 }
@@ -420,7 +420,7 @@ public class QuerySql
     }
 
     private const string GetSqliteTypesAggSql = "SELECT COUNT(1) AS cnt , c_integer, c_real, c_text, c_blob FROM  types_sqlite  GROUP  BY  c_integer , c_real, c_text, c_blob LIMIT  1  ";  
-    public readonly record struct GetSqliteTypesAggRow(int Cnt, int? CInteger, float? CReal, string? CText, byte[]? CBlob);
+    public readonly record struct GetSqliteTypesAggRow(int Cnt, int? CInteger, decimal? CReal, string? CText, byte[]? CBlob);
     public async Task<GetSqliteTypesAggRow?> GetSqliteTypesAgg()
     {
         using (var connection = new SqliteConnection(ConnectionString))
@@ -436,9 +436,9 @@ public class QuerySql
                         {
                             Cnt = reader.GetInt32(0),
                             CInteger = reader.IsDBNull(1) ? (int? )null : reader.GetInt32(1),
-                            CReal = reader.IsDBNull(2) ? (float? )null : reader.GetFloat(2),
+                            CReal = reader.IsDBNull(2) ? (decimal? )null : reader.GetDecimal(2),
                             CText = reader.IsDBNull(3) ? (string? )null : reader.GetString(3),
-                            CBlob = reader.IsDBNull(4) ? null : Utils.GetBytes(reader, 4)
+                            CBlob = reader.IsDBNull(4) ? null : reader.GetFieldValue<byte[]>(4)
                         };
                     }
                 }

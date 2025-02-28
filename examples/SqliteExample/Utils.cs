@@ -7,27 +7,6 @@ using System.Text.RegularExpressions;
 namespace SqliteExampleGen;
 public static class Utils
 {
-    public static byte[] GetBytes(IDataRecord reader, int ordinal)
-    {
-        const int bufferSize = 100000;
-        if (reader is null)
-            throw new ArgumentNullException(nameof(reader));
-        var buffer = new byte[bufferSize];
-        var(bytesRead, offset) = (0, 0);
-        while (bytesRead < bufferSize)
-        {
-            var read = (int)reader.GetBytes(ordinal, bufferSize + bytesRead, buffer, offset, bufferSize - bytesRead);
-            if (read == 0)
-                break;
-            bytesRead += read;
-            offset += read;
-        }
-
-        if (bytesRead < bufferSize)
-            Array.Resize(ref buffer, bytesRead);
-        return buffer;
-    }
-
     public static string TransformQueryForSliceArgs(string originalSql, int sliceSize, string paramName)
     {
         var paramArgs = Enumerable.Range(0, sliceSize).Select(i => $"@{paramName}Arg{i}").ToList();

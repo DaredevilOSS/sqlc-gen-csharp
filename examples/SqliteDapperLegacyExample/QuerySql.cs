@@ -350,7 +350,7 @@ namespace SqliteDapperLegacyExampleGen
         public class InsertSqliteTypesArgs
         {
             public int? CInteger { get; set; }
-            public float? CReal { get; set; }
+            public decimal? CReal { get; set; }
             public string CText { get; set; }
             public byte[] CBlob { get; set; }
         };
@@ -371,7 +371,7 @@ namespace SqliteDapperLegacyExampleGen
         public class InsertSqliteTypesBatchArgs
         {
             public int? CInteger { get; set; }
-            public float? CReal { get; set; }
+            public decimal? CReal { get; set; }
             public string CText { get; set; }
         };
         public async Task InsertSqliteTypesBatch(List<InsertSqliteTypesBatchArgs> args)
@@ -398,7 +398,7 @@ namespace SqliteDapperLegacyExampleGen
         public class GetSqliteTypesRow
         {
             public int? CInteger { get; set; }
-            public float? CReal { get; set; }
+            public decimal? CReal { get; set; }
             public string CText { get; set; }
             public byte[] CBlob { get; set; }
         };
@@ -416,7 +416,7 @@ namespace SqliteDapperLegacyExampleGen
         {
             public int Cnt { get; set; }
             public int? CInteger { get; set; }
-            public float? CReal { get; set; }
+            public decimal? CReal { get; set; }
             public string CText { get; set; }
             public byte[] CBlob { get; set; }
         };

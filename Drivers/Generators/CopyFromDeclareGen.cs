@@ -9,10 +9,10 @@ public class CopyFromDeclareGen(DbDriver dbDriver)
     public MemberDeclarationSyntax Generate(string queryTextConstant, string argInterface, Query query)
     {
         return ParseMemberDeclaration($$"""
-                                        public async Task {{query.Name}}(List<{{argInterface}}> args)
-                                        {
-                                            {{((ICopyFrom)dbDriver).GetCopyFromImpl(query, queryTextConstant)}}
-                                        }
-                                        """)!;
+            public async Task {{query.Name}}(List<{{argInterface}}> args)
+            {
+                {{((ICopyFrom)dbDriver).GetCopyFromImpl(query, queryTextConstant)}}
+            }
+            """)!;
     }
 }
