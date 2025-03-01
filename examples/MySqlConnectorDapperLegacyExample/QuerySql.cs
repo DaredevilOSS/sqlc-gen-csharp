@@ -347,8 +347,8 @@ namespace MySqlConnectorDapperLegacyExampleGen
         private const string InsertMysqlTypesSql = "INSERT INTO mysql_types (c_bit, c_tinyint, c_bool, c_boolean, c_year, c_smallint, c_mediumint, c_int, c_integer, c_bigint, c_decimal, c_dec, c_numeric, c_fixed, c_float, c_double, c_double_precision, c_char, c_nchar, c_national_char, c_varchar, c_tinytext, c_mediumtext, c_text, c_longtext, c_date, c_timestamp, c_binary, c_varbinary, c_tinyblob, c_blob, c_mediumblob, c_longblob) VALUES ( @c_bit, @c_tinyint, @c_bool, @c_boolean, @c_year, @c_smallint, @c_mediumint, @c_int, @c_integer, @c_bigint, @c_decimal, @c_dec, @c_numeric, @c_fixed, @c_float, @c_double, @c_double_precision, @c_char, @c_nchar, @c_national_char, @c_varchar, @c_tinytext, @c_mediumtext, @c_text, @c_longtext, @c_date, @c_timestamp, @c_binary, @c_varbinary, @c_tinyblob, @c_blob, @c_mediumblob, @c_longblob ); SELECT  LAST_INSERT_ID ( ) "; 
         public class InsertMysqlTypesArgs
         {
-            public bool? CBit { get; set; }
-            public bool? CTinyint { get; set; }
+            public byte? CBit { get; set; }
+            public short? CTinyint { get; set; }
             public bool? CBool { get; set; }
             public bool? CBoolean { get; set; }
             public short? CYear { get; set; }
@@ -425,13 +425,33 @@ namespace MySqlConnectorDapperLegacyExampleGen
 
         public class InsertMysqlTypesBatchArgs
         {
-            public bool? CBit { get; set; }
-            public bool? CTinyint { get; set; }
             public bool? CBool { get; set; }
             public bool? CBoolean { get; set; }
+            public byte? CBit { get; set; }
+            public short? CTinyint { get; set; }
+            public short? CSmallint { get; set; }
+            public int? CMediumint { get; set; }
             public int? CInt { get; set; }
+            public int? CInteger { get; set; }
+            public long? CBigint { get; set; }
+            public double? CFloat { get; set; }
+            public string CNumeric { get; set; }
+            public string CDecimal { get; set; }
+            public string CDec { get; set; }
+            public string CFixed { get; set; }
+            public double? CDouble { get; set; }
+            public double? CDoublePrecision { get; set; }
+            public string CChar { get; set; }
+            public string CNchar { get; set; }
+            public string CNationalChar { get; set; }
             public string CVarchar { get; set; }
+            public string CTinytext { get; set; }
+            public string CMediumtext { get; set; }
+            public string CText { get; set; }
+            public string CLongtext { get; set; }
+            public short? CYear { get; set; }
             public DateTime? CDate { get; set; }
+            public DateTime? CDatetime { get; set; }
             public DateTime? CTimestamp { get; set; }
         };
         public async Task InsertMysqlTypesBatch(List<InsertMysqlTypesBatchArgs> args)
@@ -441,24 +461,30 @@ namespace MySqlConnectorDapperLegacyExampleGen
             {
                 Delimiter = ","
             };
+            var nullConverterFn = new Utils.NullToStringConverter();
             using (var writer = new StreamWriter("input.csv", false, new UTF8Encoding(false)))
             using (var csvWriter = new CsvWriter(writer, config))
             {
-                var options = new TypeConverterOptions
+                var Options = new TypeConverterOptions
                 {
                     Formats = new[]
                     {
                         supportedDateTimeFormat
                     }
                 };
-                csvWriter.Context.TypeConverterOptionsCache.AddOptions<DateTime>(options);
-                csvWriter.Context.TypeConverterOptionsCache.AddOptions<DateTime?>(options);
-                csvWriter.Context.TypeConverterCache.AddConverter<bool?>(new Utils.NullToNStringConverter());
-                csvWriter.Context.TypeConverterCache.AddConverter<short?>(new Utils.NullToNStringConverter());
-                csvWriter.Context.TypeConverterCache.AddConverter<int?>(new Utils.NullToNStringConverter());
-                csvWriter.Context.TypeConverterCache.AddConverter<long?>(new Utils.NullToNStringConverter());
-                csvWriter.Context.TypeConverterCache.AddConverter<DateTime?>(new Utils.NullToNStringConverter());
-                csvWriter.Context.TypeConverterCache.AddConverter<string>(new Utils.NullToNStringConverter());
+                csvWriter.Context.TypeConverterOptionsCache.AddOptions<DateTime>(Options);
+                csvWriter.Context.TypeConverterOptionsCache.AddOptions<DateTime?>(Options);
+                csvWriter.Context.TypeConverterCache.AddConverter<bool?>(new Utils.BoolToBitConverter());
+                csvWriter.Context.TypeConverterCache.AddConverter<byte?>(nullConverterFn);
+                csvWriter.Context.TypeConverterCache.AddConverter<short?>(nullConverterFn);
+                csvWriter.Context.TypeConverterCache.AddConverter<int?>(nullConverterFn);
+                csvWriter.Context.TypeConverterCache.AddConverter<long?>(nullConverterFn);
+                csvWriter.Context.TypeConverterCache.AddConverter<float?>(nullConverterFn);
+                csvWriter.Context.TypeConverterCache.AddConverter<decimal?>(nullConverterFn);
+                csvWriter.Context.TypeConverterCache.AddConverter<double?>(nullConverterFn);
+                csvWriter.Context.TypeConverterCache.AddConverter<DateTime?>(nullConverterFn);
+                csvWriter.Context.TypeConverterCache.AddConverter<string>(nullConverterFn);
+                csvWriter.Context.TypeConverterCache.AddConverter<object>(nullConverterFn);
                 await csvWriter.WriteRecordsAsync(args);
             }
 
@@ -475,32 +501,31 @@ namespace MySqlConnectorDapperLegacyExampleGen
                     FieldQuotationOptional = true,
                     NumberOfLinesToSkip = 1
                 };
-                loader.Columns.AddRange(new List<string> { "c_bit", "c_tinyint", "c_bool", "c_boolean", "c_int", "c_varchar", "c_date", "c_timestamp" });
+                loader.Columns.AddRange(new List<string> { "c_bool", "c_boolean", "c_bit", "c_tinyint", "c_smallint", "c_mediumint", "c_int", "c_integer", "c_bigint", "c_float", "c_numeric", "c_decimal", "c_dec", "c_fixed", "c_double", "c_double_precision", "c_char", "c_nchar", "c_national_char", "c_varchar", "c_tinytext", "c_mediumtext", "c_text", "c_longtext", "c_year", "c_date", "c_datetime", "c_timestamp" });
                 await loader.LoadAsync();
                 await connection.CloseAsync();
             }
         }
 
-        private const string GetMysqlTypesSql = "SELECT c_bit, c_tinyint, c_bool, c_boolean, c_year, c_smallint, c_mediumint, c_int, c_integer, c_bigint, c_decimal, c_dec, c_numeric, c_fixed, c_float, c_double, c_double_precision, c_date, c_time, c_datetime, c_timestamp, c_char, c_nchar, c_national_char, c_varchar, c_tinytext, c_mediumtext, c_text, c_longtext, c_binary, c_varbinary, c_tinyblob, c_blob, c_mediumblob, c_longblob, c_json FROM mysql_types LIMIT 1; SELECT LAST_INSERT_ID()";
+        private const string GetMysqlTypesSql = "SELECT c_bool, c_boolean, c_tinyint, c_smallint, c_mediumint, c_int, c_integer, c_bigint, c_float, c_decimal, c_dec, c_numeric, c_fixed, c_double, c_double_precision, c_year, c_date, c_time, c_datetime, c_timestamp, c_char, c_nchar, c_national_char, c_varchar, c_tinytext, c_mediumtext, c_text, c_longtext, c_bit, c_binary, c_varbinary, c_tinyblob, c_blob, c_mediumblob, c_longblob FROM mysql_types LIMIT 1; SELECT LAST_INSERT_ID()";
         public class GetMysqlTypesRow
         {
-            public bool? CBit { get; set; }
-            public bool? CTinyint { get; set; }
             public bool? CBool { get; set; }
             public bool? CBoolean { get; set; }
-            public short? CYear { get; set; }
+            public short? CTinyint { get; set; }
             public short? CSmallint { get; set; }
             public int? CMediumint { get; set; }
             public int? CInt { get; set; }
             public int? CInteger { get; set; }
             public long? CBigint { get; set; }
+            public double? CFloat { get; set; }
             public string CDecimal { get; set; }
             public string CDec { get; set; }
             public string CNumeric { get; set; }
             public string CFixed { get; set; }
-            public double? CFloat { get; set; }
             public double? CDouble { get; set; }
             public double? CDoublePrecision { get; set; }
+            public short? CYear { get; set; }
             public DateTime? CDate { get; set; }
             public string CTime { get; set; }
             public DateTime? CDatetime { get; set; }
@@ -513,13 +538,13 @@ namespace MySqlConnectorDapperLegacyExampleGen
             public string CMediumtext { get; set; }
             public string CText { get; set; }
             public string CLongtext { get; set; }
+            public byte? CBit { get; set; }
             public byte[] CBinary { get; set; }
             public byte[] CVarbinary { get; set; }
             public byte[] CTinyblob { get; set; }
             public byte[] CBlob { get; set; }
             public byte[] CMediumblob { get; set; }
             public byte[] CLongblob { get; set; }
-            public string CJson { get; set; }
         };
         public async Task<GetMysqlTypesRow> GetMysqlTypes()
         {
@@ -530,17 +555,37 @@ namespace MySqlConnectorDapperLegacyExampleGen
             }
         }
 
-        private const string GetMysqlTypesAggSql = "SELECT COUNT(1) AS cnt , c_bit, c_tinyint, c_bool, c_boolean, c_int, c_varchar, c_date, c_timestamp FROM  mysql_types  GROUP  BY  c_bit , c_tinyint, c_bool, c_boolean, c_int, c_varchar, c_date, c_timestamp LIMIT  1 ; SELECT  LAST_INSERT_ID ( ) "; 
+        private const string GetMysqlTypesAggSql = "SELECT COUNT(1) AS cnt, c_bool, c_boolean, c_bit, c_tinyint, c_smallint, c_mediumint, c_int, c_integer, c_bigint, c_float, c_numeric, c_decimal, c_dec, c_fixed, c_double, c_double_precision, c_char, c_nchar, c_national_char, c_varchar, c_tinytext, c_mediumtext, c_text, c_longtext, c_year, c_date, c_datetime, c_timestamp FROM  mysql_types  GROUP  BY  c_bool , c_boolean, c_bit, c_tinyint, c_smallint, c_mediumint, c_int, c_integer, c_bigint, c_float, c_numeric, c_decimal, c_dec, c_fixed, c_double, c_double_precision, c_char, c_nchar, c_national_char, c_varchar, c_tinytext, c_mediumtext, c_text, c_longtext, c_year, c_date, c_datetime, c_timestamp LIMIT  1 ; SELECT  LAST_INSERT_ID ( ) "; 
         public class GetMysqlTypesAggRow
         {
             public long Cnt { get; set; }
-            public bool? CBit { get; set; }
-            public bool? CTinyint { get; set; }
             public bool? CBool { get; set; }
             public bool? CBoolean { get; set; }
+            public byte? CBit { get; set; }
+            public short? CTinyint { get; set; }
+            public short? CSmallint { get; set; }
+            public int? CMediumint { get; set; }
             public int? CInt { get; set; }
+            public int? CInteger { get; set; }
+            public long? CBigint { get; set; }
+            public double? CFloat { get; set; }
+            public string CNumeric { get; set; }
+            public string CDecimal { get; set; }
+            public string CDec { get; set; }
+            public string CFixed { get; set; }
+            public double? CDouble { get; set; }
+            public double? CDoublePrecision { get; set; }
+            public string CChar { get; set; }
+            public string CNchar { get; set; }
+            public string CNationalChar { get; set; }
             public string CVarchar { get; set; }
+            public string CTinytext { get; set; }
+            public string CMediumtext { get; set; }
+            public string CText { get; set; }
+            public string CLongtext { get; set; }
+            public short? CYear { get; set; }
             public DateTime? CDate { get; set; }
+            public DateTime? CDatetime { get; set; }
             public DateTime? CTimestamp { get; set; }
         };
         public async Task<GetMysqlTypesAggRow> GetMysqlTypesAgg()

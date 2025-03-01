@@ -437,7 +437,7 @@ namespace NpgsqlLegacyExampleGen
             }
         }
 
-        private const string InsertPostgresTypesSql = "INSERT INTO postgres_types (c_boolean, c_bit, c_smallint, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_date, c_timestamp, c_char, c_varchar, c_character_varying, c_text, c_text_array, c_bytea, c_integer_array) VALUES ( @c_boolean , @c_bit, @c_smallint, @c_integer, @c_bigint, @c_real, @c_numeric, @c_decimal, @c_double_precision, @c_date, @c_timestamp, @c_char, @c_varchar, @c_character_varying, @c_text, @c_text_array, @c_bytea, @c_integer_array ) "; 
+        private const string InsertPostgresTypesSql = "INSERT INTO postgres_types (c_boolean, c_bit, c_smallint, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_date, c_timestamp, c_char, c_varchar, c_character_varying, c_text, c_bytea, c_text_array, c_integer_array) VALUES ( @c_boolean , @c_bit, @c_smallint, @c_integer, @c_bigint, @c_real, @c_numeric, @c_decimal, @c_double_precision, @c_date, @c_timestamp, @c_char, @c_varchar, @c_character_varying, @c_text, @c_bytea, @c_text_array, @c_integer_array ) "; 
         public class InsertPostgresTypesArgs
         {
             public bool? CBoolean { get; set; }
@@ -455,8 +455,8 @@ namespace NpgsqlLegacyExampleGen
             public string CVarchar { get; set; }
             public string CCharacterVarying { get; set; }
             public string CText { get; set; }
-            public string[] CTextArray { get; set; }
             public byte[] CBytea { get; set; }
+            public string[] CTextArray { get; set; }
             public int[] CIntegerArray { get; set; }
         };
         public async Task InsertPostgresTypes(InsertPostgresTypesArgs args)
@@ -480,30 +480,32 @@ namespace NpgsqlLegacyExampleGen
                     command.Parameters.AddWithValue("@c_varchar", args.CVarchar ?? (object)DBNull.Value);
                     command.Parameters.AddWithValue("@c_character_varying", args.CCharacterVarying ?? (object)DBNull.Value);
                     command.Parameters.AddWithValue("@c_text", args.CText ?? (object)DBNull.Value);
-                    command.Parameters.AddWithValue("@c_text_array", args.CTextArray ?? (object)DBNull.Value);
                     command.Parameters.AddWithValue("@c_bytea", args.CBytea ?? (object)DBNull.Value);
+                    command.Parameters.AddWithValue("@c_text_array", args.CTextArray ?? (object)DBNull.Value);
                     command.Parameters.AddWithValue("@c_integer_array", args.CIntegerArray ?? (object)DBNull.Value);
                     await command.ExecuteScalarAsync();
                 }
             }
         }
 
-        private const string InsertPostgresTypesBatchSql = "COPY postgres_types (c_boolean, c_smallint, c_integer, c_bigint, c_decimal, c_numeric, c_real, c_date, c_timestamp, c_char, c_varchar, c_character_varying, c_text) FROM STDIN (FORMAT BINARY)";
+        private const string InsertPostgresTypesBatchSql = "COPY postgres_types (c_boolean, c_smallint, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_date, c_timestamp, c_char, c_varchar, c_character_varying, c_text, c_bytea) FROM STDIN (FORMAT BINARY)";
         public class InsertPostgresTypesBatchArgs
         {
             public bool? CBoolean { get; set; }
             public short? CSmallint { get; set; }
             public int? CInteger { get; set; }
             public long? CBigint { get; set; }
-            public decimal? CDecimal { get; set; }
-            public decimal? CNumeric { get; set; }
             public float? CReal { get; set; }
+            public decimal? CNumeric { get; set; }
+            public decimal? CDecimal { get; set; }
+            public double? CDoublePrecision { get; set; }
             public DateTime? CDate { get; set; }
             public DateTime? CTimestamp { get; set; }
             public string CChar { get; set; }
             public string CVarchar { get; set; }
             public string CCharacterVarying { get; set; }
             public string CText { get; set; }
+            public byte[] CBytea { get; set; }
         };
         public async Task InsertPostgresTypesBatch(List<InsertPostgresTypesBatchArgs> args)
         {
@@ -520,15 +522,17 @@ namespace NpgsqlLegacyExampleGen
                         await writer.WriteAsync(row.CSmallint, NpgsqlDbType.Smallint);
                         await writer.WriteAsync(row.CInteger, NpgsqlDbType.Integer);
                         await writer.WriteAsync(row.CBigint, NpgsqlDbType.Bigint);
-                        await writer.WriteAsync(row.CDecimal, NpgsqlDbType.Numeric);
-                        await writer.WriteAsync(row.CNumeric, NpgsqlDbType.Numeric);
                         await writer.WriteAsync(row.CReal, NpgsqlDbType.Real);
+                        await writer.WriteAsync(row.CNumeric, NpgsqlDbType.Numeric);
+                        await writer.WriteAsync(row.CDecimal, NpgsqlDbType.Numeric);
+                        await writer.WriteAsync(row.CDoublePrecision, NpgsqlDbType.Double);
                         await writer.WriteAsync(row.CDate, NpgsqlDbType.Date);
                         await writer.WriteAsync(row.CTimestamp, NpgsqlDbType.Timestamp);
                         await writer.WriteAsync(row.CChar);
-                        await writer.WriteAsync(row.CVarchar, NpgsqlDbType.Varchar);
-                        await writer.WriteAsync(row.CCharacterVarying, NpgsqlDbType.Varchar);
+                        await writer.WriteAsync(row.CVarchar);
+                        await writer.WriteAsync(row.CCharacterVarying);
                         await writer.WriteAsync(row.CText);
+                        await writer.WriteAsync(row.CBytea);
                     }
 
                     await writer.CompleteAsync();
@@ -603,7 +607,7 @@ namespace NpgsqlLegacyExampleGen
             return null;
         }
 
-        private const string GetPostgresTypesAggSql = "SELECT COUNT(1) AS cnt , c_smallint, c_boolean, c_integer, c_bigint, c_decimal, c_numeric, c_real, c_date, c_timestamp, c_char, c_varchar, c_character_varying, c_text FROM  postgres_types  GROUP  BY  c_smallint , c_boolean, c_integer, c_bigint, c_decimal, c_numeric, c_real, c_date, c_timestamp, c_char, c_varchar, c_character_varying, c_text LIMIT  1  ";  
+        private const string GetPostgresTypesAggSql = "SELECT COUNT(1) AS cnt , c_smallint, c_boolean, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_date, c_timestamp, c_char, c_varchar, c_character_varying, c_text, c_bytea FROM  postgres_types  GROUP  BY  c_smallint , c_boolean, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_date, c_timestamp, c_char, c_varchar, c_character_varying, c_text, c_bytea LIMIT  1  ";  
         public class GetPostgresTypesAggRow
         {
             public long Cnt { get; set; }
@@ -611,15 +615,17 @@ namespace NpgsqlLegacyExampleGen
             public bool? CBoolean { get; set; }
             public int? CInteger { get; set; }
             public long? CBigint { get; set; }
-            public decimal? CDecimal { get; set; }
-            public decimal? CNumeric { get; set; }
             public float? CReal { get; set; }
+            public decimal? CNumeric { get; set; }
+            public decimal? CDecimal { get; set; }
+            public double? CDoublePrecision { get; set; }
             public DateTime? CDate { get; set; }
             public DateTime? CTimestamp { get; set; }
             public string CChar { get; set; }
             public string CVarchar { get; set; }
             public string CCharacterVarying { get; set; }
             public string CText { get; set; }
+            public byte[] CBytea { get; set; }
         };
         public async Task<GetPostgresTypesAggRow> GetPostgresTypesAgg()
         {
@@ -638,15 +644,17 @@ namespace NpgsqlLegacyExampleGen
                                 CBoolean = reader.IsDBNull(2) ? (bool? )null : reader.GetBoolean(2),
                                 CInteger = reader.IsDBNull(3) ? (int? )null : reader.GetInt32(3),
                                 CBigint = reader.IsDBNull(4) ? (long? )null : reader.GetInt64(4),
-                                CDecimal = reader.IsDBNull(5) ? (decimal? )null : reader.GetDecimal(5),
+                                CReal = reader.IsDBNull(5) ? (float? )null : reader.GetFloat(5),
                                 CNumeric = reader.IsDBNull(6) ? (decimal? )null : reader.GetDecimal(6),
-                                CReal = reader.IsDBNull(7) ? (float? )null : reader.GetFloat(7),
-                                CDate = reader.IsDBNull(8) ? (DateTime? )null : reader.GetDateTime(8),
-                                CTimestamp = reader.IsDBNull(9) ? (DateTime? )null : reader.GetDateTime(9),
-                                CChar = reader.IsDBNull(10) ? null : reader.GetString(10),
-                                CVarchar = reader.IsDBNull(11) ? null : reader.GetString(11),
-                                CCharacterVarying = reader.IsDBNull(12) ? null : reader.GetString(12),
-                                CText = reader.IsDBNull(13) ? null : reader.GetString(13)
+                                CDecimal = reader.IsDBNull(7) ? (decimal? )null : reader.GetDecimal(7),
+                                CDoublePrecision = reader.IsDBNull(8) ? (double? )null : reader.GetDouble(8),
+                                CDate = reader.IsDBNull(9) ? (DateTime? )null : reader.GetDateTime(9),
+                                CTimestamp = reader.IsDBNull(10) ? (DateTime? )null : reader.GetDateTime(10),
+                                CChar = reader.IsDBNull(11) ? null : reader.GetString(11),
+                                CVarchar = reader.IsDBNull(12) ? null : reader.GetString(12),
+                                CCharacterVarying = reader.IsDBNull(13) ? null : reader.GetString(13),
+                                CText = reader.IsDBNull(14) ? null : reader.GetString(14),
+                                CBytea = reader.IsDBNull(15) ? null : reader.GetFieldValue<byte[]>(15)
                             };
                         }
                     }
