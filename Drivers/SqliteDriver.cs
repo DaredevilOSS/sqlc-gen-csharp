@@ -12,25 +12,25 @@ public partial class SqliteDriver(Options options, Dictionary<string, Table> tab
     DbDriver(options, tables), IOne, IMany, IExec, IExecRows, IExecLastId, ICopyFrom
 {
     protected override List<ColumnMapping> ColumnMappings { get; } = [
-        new("byte[]", new Dictionary<string, string?>
+        new("byte[]", new Dictionary<string, DbTypeInfo>
             {
-                {"blob", null}
+                {"blob", new DbTypeInfo()}
             }, ordinal => $"reader.GetFieldValue<byte[]>({ordinal})"),
         new("string",
-            new Dictionary<string, string?>
+            new Dictionary<string, DbTypeInfo>
             {
-                {"text", null}
+                {"text", new DbTypeInfo()}
             }, ordinal => $"reader.GetString({ordinal})"),
         new("int",
-            new Dictionary<string, string?>
+            new Dictionary<string, DbTypeInfo>
             {
-                { "integer", null },
-                { "integernotnulldefaultunixepoch", null } // return type of UNIXEPOCH function
+                { "integer", new DbTypeInfo() },
+                { "integernotnulldefaultunixepoch", new DbTypeInfo() } // return type of UNIXEPOCH function
             }, ordinal => $"reader.GetInt32({ordinal})"),
         new("decimal",
-            new Dictionary<string, string?>
+            new Dictionary<string, DbTypeInfo>
             {
-                {"real", null}
+                {"real", new DbTypeInfo()}
             }, ordinal => $"reader.GetDecimal({ordinal})"),
     ];
 

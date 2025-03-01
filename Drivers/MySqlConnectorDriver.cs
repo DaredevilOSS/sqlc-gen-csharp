@@ -14,70 +14,73 @@ public partial class MySqlConnectorDriver(Options options, Dictionary<string, Ta
 {
     protected override List<ColumnMapping> ColumnMappings { get; } =
     [
+        new("bool",
+            new Dictionary<string, DbTypeInfo>
+            {
+                { "tinyint", new DbTypeInfo(Length: 1) }
+            }, ordinal => $"reader.GetBoolean({ordinal})"),
+        new("short",
+            new Dictionary<string, DbTypeInfo>
+            {
+                { "tinyint", new DbTypeInfo() },
+                { "smallint", new DbTypeInfo() },
+                { "year", new DbTypeInfo() }
+            }, ordinal => $"reader.GetInt16({ordinal})"),
         new("long",
-            new Dictionary<string, string?>
+            new Dictionary<string, DbTypeInfo>
             {
-                { "bigint", null }
+                { "bigint", new DbTypeInfo() }
             }, ordinal => $"reader.GetInt64({ordinal})"),
-        new("byte[]",
-            new Dictionary<string, string?>
+        new("byte",
+            new Dictionary<string, DbTypeInfo>
             {
-                { "binary", null },
-                { "blob", null },
-                { "longblob", null },
-                { "mediumblob", null },
-                { "tinyblob", null },
-                { "varbinary", null }
+                { "bit", new DbTypeInfo() }
+            }, ordinal => $"reader.GetFieldValue<byte>({ordinal})"),
+        new("byte[]",
+            new Dictionary<string, DbTypeInfo>
+            {
+                { "binary", new DbTypeInfo() },
+                { "blob", new DbTypeInfo() },
+                { "longblob", new DbTypeInfo() },
+                { "mediumblob", new DbTypeInfo() },
+                { "tinyblob", new DbTypeInfo() },
+                { "varbinary", new DbTypeInfo() }
             }, ordinal => $"reader.GetFieldValue<byte[]>({ordinal})"),
         new("string",
-            new Dictionary<string, string?>
+            new Dictionary<string, DbTypeInfo>
             {
-                { "char", null },
-                { "decimal", null },
-                { "longtext", null },
-                { "mediumtext", null },
-                { "text", null },
-                { "time", null },
-                { "tinytext", null },
-                { "varchar", null },
-                { "var_string", null },
-                { "json", null }
+                { "char", new DbTypeInfo() },
+                { "decimal", new DbTypeInfo() },
+                { "longtext", new DbTypeInfo() },
+                { "mediumtext", new DbTypeInfo() },
+                { "text", new DbTypeInfo() },
+                { "time", new DbTypeInfo() },
+                { "tinytext", new DbTypeInfo() },
+                { "varchar", new DbTypeInfo() },
+                { "var_string", new DbTypeInfo() },
+                { "json", new DbTypeInfo() }
             }, ordinal => $"reader.GetString({ordinal})"),
         new("DateTime",
-            new Dictionary<string, string?>
+            new Dictionary<string, DbTypeInfo>
             {
-                { "date", null },
-                { "datetime", null },
-                { "timestamp", null }
+                { "date", new DbTypeInfo() },
+                { "datetime", new DbTypeInfo() },
+                { "timestamp", new DbTypeInfo() }
             }, ordinal => $"reader.GetDateTime({ordinal})"),
-        new("short",
-            new Dictionary<string, string?>
-            {
-                { "smallint", null },
-                { "year", null }
-            }, ordinal => $"reader.GetInt16({ordinal})"),
         new("int",
-            new Dictionary<string, string?>
+            new Dictionary<string, DbTypeInfo>
             {
-                { "int", null },
-                { "mediumint", null },
+                { "int", new DbTypeInfo() },
+                { "mediumint", new DbTypeInfo() },
             }, ordinal => $"reader.GetInt32({ordinal})"),
-        new("bool",
-            new Dictionary<string, string?>
-            {
-                { "bit", null },
-                { "tinyint", null },
-                { "bool", null },
-                { "boolean", null }
-            }, ordinal => $"reader.GetBoolean({ordinal})"),
         new("double",
-            new Dictionary<string, string?>
+            new Dictionary<string, DbTypeInfo>
             {
-                { "double", null },
-                { "float", null }
+                { "double", new DbTypeInfo() },
+                { "float", new DbTypeInfo() }
             }, ordinal => $"reader.GetDouble({ordinal})"),
         new("object",
-            new Dictionary<string, string?>(), ordinal => $"reader.GetValue({ordinal})")
+            new Dictionary<string, DbTypeInfo>(), ordinal => $"reader.GetValue({ordinal})")
     ];
 
     public override UsingDirectiveSyntax[] GetUsingDirectives()
@@ -170,24 +173,31 @@ public partial class MySqlConnectorDriver(Options options, Dictionary<string, Ta
         var csvWriterVar = Variable.CsvWriter.AsVarName();
         var loaderVar = Variable.Loader.AsVarName();
         var connectionVar = Variable.Connection.AsVarName();
+        var nullConverterFn = Variable.NullConverterFn.AsVarName();
 
         var loaderColumns = query.Params.Select(p => $"\"{p.Column.Name}\"").JoinByComma();
         var (establishConnection, connectionOpen) = EstablishConnection(query);
         return $$"""
                  const string supportedDateTimeFormat = "yyyy-MM-dd H:mm:ss";
                  var {{Variable.Config.AsVarName()}} = new CsvConfiguration(CultureInfo.CurrentCulture) { Delimiter = "{{csvDelimiter}}" };
+                 var {{nullConverterFn}} = new Utils.NullToStringConverter();
                  using (var {{Variable.Writer.AsVarName()}} = new StreamWriter("{{tempCsvFilename}}", false, new UTF8Encoding(false)))
                  using (var {{csvWriterVar}} = new CsvWriter({{Variable.Writer.AsVarName()}}, {{Variable.Config.AsVarName()}}))
                  {
-                    var options = new TypeConverterOptions { Formats = new[] { supportedDateTimeFormat } };
-                    {{csvWriterVar}}.Context.TypeConverterOptionsCache.AddOptions<DateTime>(options);
-                    {{csvWriterVar}}.Context.TypeConverterOptionsCache.AddOptions<DateTime?>(options);
-                    {{csvWriterVar}}.Context.TypeConverterCache.AddConverter<bool?>(new Utils.NullToNStringConverter());
-                    {{csvWriterVar}}.Context.TypeConverterCache.AddConverter<short?>(new Utils.NullToNStringConverter());
-                    {{csvWriterVar}}.Context.TypeConverterCache.AddConverter<int?>(new Utils.NullToNStringConverter());
-                    {{csvWriterVar}}.Context.TypeConverterCache.AddConverter<long?>(new Utils.NullToNStringConverter());
-                    {{csvWriterVar}}.Context.TypeConverterCache.AddConverter<DateTime?>(new Utils.NullToNStringConverter());
-                    {{csvWriterVar}}.Context.TypeConverterCache.AddConverter<string>(new Utils.NullToNStringConverter());
+                    var {{Variable.Options}} = new TypeConverterOptions { Formats = new[] { supportedDateTimeFormat } };
+                    {{csvWriterVar}}.Context.TypeConverterOptionsCache.AddOptions<DateTime>({{Variable.Options}});
+                    {{csvWriterVar}}.Context.TypeConverterOptionsCache.AddOptions<DateTime?>({{Variable.Options}});
+                    {{csvWriterVar}}.Context.TypeConverterCache.AddConverter<bool?>(new Utils.BoolToBitConverter());
+                    {{csvWriterVar}}.Context.TypeConverterCache.AddConverter<byte?>({{nullConverterFn}});
+                    {{csvWriterVar}}.Context.TypeConverterCache.AddConverter<short?>({{nullConverterFn}});
+                    {{csvWriterVar}}.Context.TypeConverterCache.AddConverter<int?>({{nullConverterFn}});
+                    {{csvWriterVar}}.Context.TypeConverterCache.AddConverter<long?>({{nullConverterFn}});
+                    {{csvWriterVar}}.Context.TypeConverterCache.AddConverter<float?>({{nullConverterFn}});
+                    {{csvWriterVar}}.Context.TypeConverterCache.AddConverter<decimal?>({{nullConverterFn}});
+                    {{csvWriterVar}}.Context.TypeConverterCache.AddConverter<double?>({{nullConverterFn}});
+                    {{csvWriterVar}}.Context.TypeConverterCache.AddConverter<DateTime?>({{nullConverterFn}});
+                    {{csvWriterVar}}.Context.TypeConverterCache.AddConverter<{{AddNullableSuffixIfNeeded("string", false)}}>({{nullConverterFn}});
+                    {{csvWriterVar}}.Context.TypeConverterCache.AddConverter<{{AddNullableSuffixIfNeeded("object", false)}}>({{nullConverterFn}});
                     await {{csvWriterVar}}.WriteRecordsAsync({{Variable.Args.AsVarName()}});
                  }
                  

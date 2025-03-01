@@ -342,7 +342,7 @@ public class QuerySql
         }
     }
 
-    private const string InsertPostgresTypesSql = "INSERT INTO postgres_types (c_boolean, c_bit, c_smallint, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_date, c_timestamp, c_char, c_varchar, c_character_varying, c_text, c_text_array, c_bytea, c_integer_array) VALUES ( @c_boolean , @c_bit, @c_smallint, @c_integer, @c_bigint, @c_real, @c_numeric, @c_decimal, @c_double_precision, @c_date, @c_timestamp, @c_char, @c_varchar, @c_character_varying, @c_text, @c_text_array, @c_bytea, @c_integer_array ) "; 
+    private const string InsertPostgresTypesSql = "INSERT INTO postgres_types (c_boolean, c_bit, c_smallint, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_date, c_timestamp, c_char, c_varchar, c_character_varying, c_text, c_bytea, c_text_array, c_integer_array) VALUES ( @c_boolean , @c_bit, @c_smallint, @c_integer, @c_bigint, @c_real, @c_numeric, @c_decimal, @c_double_precision, @c_date, @c_timestamp, @c_char, @c_varchar, @c_character_varying, @c_text, @c_bytea, @c_text_array, @c_integer_array ) "; 
     public class InsertPostgresTypesArgs
     {
         public bool? CBoolean { get; init; }
@@ -360,8 +360,8 @@ public class QuerySql
         public string? CVarchar { get; init; }
         public string? CCharacterVarying { get; init; }
         public string? CText { get; init; }
-        public string[]? CTextArray { get; init; }
         public byte[]? CBytea { get; init; }
+        public string[]? CTextArray { get; init; }
         public int[]? CIntegerArray { get; init; }
     };
     public async Task InsertPostgresTypes(InsertPostgresTypesArgs args)
@@ -384,29 +384,31 @@ public class QuerySql
             queryParams.Add("c_varchar", args.CVarchar);
             queryParams.Add("c_character_varying", args.CCharacterVarying);
             queryParams.Add("c_text", args.CText);
-            queryParams.Add("c_text_array", args.CTextArray);
             queryParams.Add("c_bytea", args.CBytea);
+            queryParams.Add("c_text_array", args.CTextArray);
             queryParams.Add("c_integer_array", args.CIntegerArray);
             await connection.ExecuteAsync(InsertPostgresTypesSql, queryParams);
         }
     }
 
-    private const string InsertPostgresTypesBatchSql = "COPY postgres_types (c_boolean, c_smallint, c_integer, c_bigint, c_decimal, c_numeric, c_real, c_date, c_timestamp, c_char, c_varchar, c_character_varying, c_text) FROM STDIN (FORMAT BINARY)";
+    private const string InsertPostgresTypesBatchSql = "COPY postgres_types (c_boolean, c_smallint, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_date, c_timestamp, c_char, c_varchar, c_character_varying, c_text, c_bytea) FROM STDIN (FORMAT BINARY)";
     public class InsertPostgresTypesBatchArgs
     {
         public bool? CBoolean { get; init; }
         public short? CSmallint { get; init; }
         public int? CInteger { get; init; }
         public long? CBigint { get; init; }
-        public decimal? CDecimal { get; init; }
-        public decimal? CNumeric { get; init; }
         public float? CReal { get; init; }
+        public decimal? CNumeric { get; init; }
+        public decimal? CDecimal { get; init; }
+        public double? CDoublePrecision { get; init; }
         public DateTime? CDate { get; init; }
         public DateTime? CTimestamp { get; init; }
         public string? CChar { get; init; }
         public string? CVarchar { get; init; }
         public string? CCharacterVarying { get; init; }
         public string? CText { get; init; }
+        public byte[]? CBytea { get; init; }
     };
     public async Task InsertPostgresTypesBatch(List<InsertPostgresTypesBatchArgs> args)
     {
@@ -423,15 +425,17 @@ public class QuerySql
                     await writer.WriteAsync(row.CSmallint, NpgsqlDbType.Smallint);
                     await writer.WriteAsync(row.CInteger, NpgsqlDbType.Integer);
                     await writer.WriteAsync(row.CBigint, NpgsqlDbType.Bigint);
-                    await writer.WriteAsync(row.CDecimal, NpgsqlDbType.Numeric);
-                    await writer.WriteAsync(row.CNumeric, NpgsqlDbType.Numeric);
                     await writer.WriteAsync(row.CReal, NpgsqlDbType.Real);
+                    await writer.WriteAsync(row.CNumeric, NpgsqlDbType.Numeric);
+                    await writer.WriteAsync(row.CDecimal, NpgsqlDbType.Numeric);
+                    await writer.WriteAsync(row.CDoublePrecision, NpgsqlDbType.Double);
                     await writer.WriteAsync(row.CDate, NpgsqlDbType.Date);
                     await writer.WriteAsync(row.CTimestamp, NpgsqlDbType.Timestamp);
                     await writer.WriteAsync(row.CChar);
-                    await writer.WriteAsync(row.CVarchar, NpgsqlDbType.Varchar);
-                    await writer.WriteAsync(row.CCharacterVarying, NpgsqlDbType.Varchar);
+                    await writer.WriteAsync(row.CVarchar);
+                    await writer.WriteAsync(row.CCharacterVarying);
                     await writer.WriteAsync(row.CText);
+                    await writer.WriteAsync(row.CBytea);
                 }
 
                 await writer.CompleteAsync();
@@ -474,7 +478,7 @@ public class QuerySql
         }
     }
 
-    private const string GetPostgresTypesAggSql = "SELECT COUNT(1) AS cnt , c_smallint, c_boolean, c_integer, c_bigint, c_decimal, c_numeric, c_real, c_date, c_timestamp, c_char, c_varchar, c_character_varying, c_text FROM  postgres_types  GROUP  BY  c_smallint , c_boolean, c_integer, c_bigint, c_decimal, c_numeric, c_real, c_date, c_timestamp, c_char, c_varchar, c_character_varying, c_text LIMIT  1  ";  
+    private const string GetPostgresTypesAggSql = "SELECT COUNT(1) AS cnt , c_smallint, c_boolean, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_date, c_timestamp, c_char, c_varchar, c_character_varying, c_text, c_bytea FROM  postgres_types  GROUP  BY  c_smallint , c_boolean, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_date, c_timestamp, c_char, c_varchar, c_character_varying, c_text, c_bytea LIMIT  1  ";  
     public class GetPostgresTypesAggRow
     {
         public required long Cnt { get; init; }
@@ -482,15 +486,17 @@ public class QuerySql
         public bool? CBoolean { get; init; }
         public int? CInteger { get; init; }
         public long? CBigint { get; init; }
-        public decimal? CDecimal { get; init; }
-        public decimal? CNumeric { get; init; }
         public float? CReal { get; init; }
+        public decimal? CNumeric { get; init; }
+        public decimal? CDecimal { get; init; }
+        public double? CDoublePrecision { get; init; }
         public DateTime? CDate { get; init; }
         public DateTime? CTimestamp { get; init; }
         public string? CChar { get; init; }
         public string? CVarchar { get; init; }
         public string? CCharacterVarying { get; init; }
         public string? CText { get; init; }
+        public byte[]? CBytea { get; init; }
     };
     public async Task<GetPostgresTypesAggRow?> GetPostgresTypesAgg()
     {

@@ -2,6 +2,7 @@ namespace SqlcGenCsharp.Drivers;
 
 public enum Variable
 {
+    Options,
     Config,
     ConnectionString,
     Connection,
@@ -11,6 +12,7 @@ public enum Variable
     Writer,
     Loader,
     CsvWriter,
+    NullConverterFn,
 
     Args,
     QueryParams,

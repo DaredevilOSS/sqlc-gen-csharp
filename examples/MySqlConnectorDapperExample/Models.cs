@@ -17,23 +17,22 @@ public class Book
 };
 public class MysqlType
 {
-    public bool? CBit { get; init; }
-    public bool? CTinyint { get; init; }
     public bool? CBool { get; init; }
     public bool? CBoolean { get; init; }
-    public short? CYear { get; init; }
+    public short? CTinyint { get; init; }
     public short? CSmallint { get; init; }
     public int? CMediumint { get; init; }
     public int? CInt { get; init; }
     public int? CInteger { get; init; }
     public long? CBigint { get; init; }
+    public double? CFloat { get; init; }
     public string? CDecimal { get; init; }
     public string? CDec { get; init; }
     public string? CNumeric { get; init; }
     public string? CFixed { get; init; }
-    public double? CFloat { get; init; }
     public double? CDouble { get; init; }
     public double? CDoublePrecision { get; init; }
+    public short? CYear { get; init; }
     public DateTime? CDate { get; init; }
     public string? CTime { get; init; }
     public DateTime? CDatetime { get; init; }
@@ -46,11 +45,11 @@ public class MysqlType
     public string? CMediumtext { get; init; }
     public string? CText { get; init; }
     public string? CLongtext { get; init; }
+    public byte? CBit { get; init; }
     public byte[]? CBinary { get; init; }
     public byte[]? CVarbinary { get; init; }
     public byte[]? CTinyblob { get; init; }
     public byte[]? CBlob { get; init; }
     public byte[]? CMediumblob { get; init; }
     public byte[]? CLongblob { get; init; }
-    public string? CJson { get; init; }
 };
