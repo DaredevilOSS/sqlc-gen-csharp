@@ -17,15 +17,15 @@ public class Book
 };
 public class PostgresType
 {
+    public bool? CBoolean { get; init; }
     public byte[]? CBit { get; init; }
     public short? CSmallint { get; init; }
-    public bool? CBoolean { get; init; }
     public int? CInteger { get; init; }
     public long? CBigint { get; init; }
     public decimal? CDecimal { get; init; }
     public decimal? CNumeric { get; init; }
     public float? CReal { get; init; }
-    public decimal? CDoublePrecision { get; init; }
+    public double? CDoublePrecision { get; init; }
     public DateTime? CDate { get; init; }
     public string? CTime { get; init; }
     public DateTime? CTimestamp { get; init; }

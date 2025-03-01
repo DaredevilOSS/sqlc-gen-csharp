@@ -444,7 +444,7 @@ namespace SqliteLegacyExampleGen
         public class InsertSqliteTypesArgs
         {
             public int? CInteger { get; set; }
-            public float? CReal { get; set; }
+            public decimal? CReal { get; set; }
             public string CText { get; set; }
             public byte[] CBlob { get; set; }
         };
@@ -468,7 +468,7 @@ namespace SqliteLegacyExampleGen
         public class InsertSqliteTypesBatchArgs
         {
             public int? CInteger { get; set; }
-            public float? CReal { get; set; }
+            public decimal? CReal { get; set; }
             public string CText { get; set; }
         };
         public async Task InsertSqliteTypesBatch(List<InsertSqliteTypesBatchArgs> args)
@@ -495,7 +495,7 @@ namespace SqliteLegacyExampleGen
         public class GetSqliteTypesRow
         {
             public int? CInteger { get; set; }
-            public float? CReal { get; set; }
+            public decimal? CReal { get; set; }
             public string CText { get; set; }
             public byte[] CBlob { get; set; }
         };
@@ -513,9 +513,9 @@ namespace SqliteLegacyExampleGen
                             return new GetSqliteTypesRow
                             {
                                 CInteger = reader.IsDBNull(0) ? (int? )null : reader.GetInt32(0),
-                                CReal = reader.IsDBNull(1) ? (float? )null : reader.GetFloat(1),
+                                CReal = reader.IsDBNull(1) ? (decimal? )null : reader.GetDecimal(1),
                                 CText = reader.IsDBNull(2) ? null : reader.GetString(2),
-                                CBlob = reader.IsDBNull(3) ? null : Utils.GetBytes(reader, 3)
+                                CBlob = reader.IsDBNull(3) ? null : reader.GetFieldValue<byte[]>(3)
                             };
                         }
                     }
@@ -530,7 +530,7 @@ namespace SqliteLegacyExampleGen
         {
             public int Cnt { get; set; }
             public int? CInteger { get; set; }
-            public float? CReal { get; set; }
+            public decimal? CReal { get; set; }
             public string CText { get; set; }
             public byte[] CBlob { get; set; }
         };
@@ -549,9 +549,9 @@ namespace SqliteLegacyExampleGen
                             {
                                 Cnt = reader.GetInt32(0),
                                 CInteger = reader.IsDBNull(1) ? (int? )null : reader.GetInt32(1),
-                                CReal = reader.IsDBNull(2) ? (float? )null : reader.GetFloat(2),
+                                CReal = reader.IsDBNull(2) ? (decimal? )null : reader.GetDecimal(2),
                                 CText = reader.IsDBNull(3) ? null : reader.GetString(3),
-                                CBlob = reader.IsDBNull(4) ? null : Utils.GetBytes(reader, 4)
+                                CBlob = reader.IsDBNull(4) ? null : reader.GetFieldValue<byte[]>(4)
                             };
                         }
                     }

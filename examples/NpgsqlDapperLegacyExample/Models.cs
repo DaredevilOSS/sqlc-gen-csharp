@@ -18,15 +18,15 @@ namespace NpgsqlDapperLegacyExampleGen
     };
     public class PostgresType
     {
+        public bool? CBoolean { get; set; }
         public byte[] CBit { get; set; }
         public short? CSmallint { get; set; }
-        public bool? CBoolean { get; set; }
         public int? CInteger { get; set; }
         public long? CBigint { get; set; }
         public decimal? CDecimal { get; set; }
         public decimal? CNumeric { get; set; }
         public float? CReal { get; set; }
-        public decimal? CDoublePrecision { get; set; }
+        public double? CDoublePrecision { get; set; }
         public DateTime? CDate { get; set; }
         public string CTime { get; set; }
         public DateTime? CTimestamp { get; set; }

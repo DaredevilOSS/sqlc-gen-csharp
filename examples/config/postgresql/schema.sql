@@ -13,9 +13,10 @@ CREATE TABLE books (
 );
 
 CREATE TABLE postgres_types (
-    c_bit BIT(1),
-    c_smallint SMALLINT,
+    /* Numeric Data Types */
     c_boolean BOOLEAN,
+    c_bit BIT(10),
+    c_smallint SMALLINT,
     c_integer INTEGER,
     c_bigint BIGINT,
     c_decimal DECIMAL(10,7),

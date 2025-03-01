@@ -52,10 +52,16 @@ FROM authors JOIN books ON authors.id = books.author_id
 WHERE books.name = ?;
 
 -- name: InsertMysqlTypes :exec
-INSERT INTO mysql_types (c_bit, c_tinyint, c_bool, c_boolean, c_int, c_varchar, c_date, c_timestamp) VALUES (?, ?, ?, ?, ?, ?, ?, ?);
+INSERT INTO mysql_types 
+(c_bit, c_tinyint, c_bool, c_boolean, c_year, c_smallint, c_mediumint, c_int, c_integer, c_bigint, 
+ c_decimal, c_dec, c_numeric, c_fixed, c_float, c_double, c_double_precision, 
+ c_char, c_nchar, c_national_char, c_varchar, c_tinytext, c_mediumtext, c_text, c_longtext, c_date, c_timestamp, 
+ c_binary, c_varbinary, c_tinyblob, c_blob, c_mediumblob, c_longblob) 
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
 
 -- name: InsertMysqlTypesBatch :copyfrom
-INSERT INTO mysql_types (c_bit, c_tinyint, c_bool, c_boolean, c_int, c_varchar, c_date, c_timestamp) VALUES (?, ?, ?, ?, ?, ?, ?, ?);
+INSERT INTO mysql_types (c_bit, c_tinyint, c_bool, c_boolean, c_int, c_varchar, c_date, c_timestamp) 
+VALUES (?, ?, ?, ?, ?, ?, ?, ?);
 
 -- name: GetMysqlTypes :one
 SELECT * FROM mysql_types LIMIT 1;

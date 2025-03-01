@@ -344,17 +344,42 @@ namespace MySqlConnectorDapperLegacyExampleGen
             }
         }
 
-        private const string InsertMysqlTypesSql = "INSERT INTO mysql_types (c_bit, c_tinyint, c_bool, c_boolean, c_int, c_varchar, c_date, c_timestamp) VALUES (@c_bit, @c_tinyint, @c_bool, @c_boolean, @c_int, @c_varchar, @c_date, @c_timestamp); SELECT LAST_INSERT_ID()";
+        private const string InsertMysqlTypesSql = "INSERT INTO mysql_types (c_bit, c_tinyint, c_bool, c_boolean, c_year, c_smallint, c_mediumint, c_int, c_integer, c_bigint, c_decimal, c_dec, c_numeric, c_fixed, c_float, c_double, c_double_precision, c_char, c_nchar, c_national_char, c_varchar, c_tinytext, c_mediumtext, c_text, c_longtext, c_date, c_timestamp, c_binary, c_varbinary, c_tinyblob, c_blob, c_mediumblob, c_longblob) VALUES ( @c_bit, @c_tinyint, @c_bool, @c_boolean, @c_year, @c_smallint, @c_mediumint, @c_int, @c_integer, @c_bigint, @c_decimal, @c_dec, @c_numeric, @c_fixed, @c_float, @c_double, @c_double_precision, @c_char, @c_nchar, @c_national_char, @c_varchar, @c_tinytext, @c_mediumtext, @c_text, @c_longtext, @c_date, @c_timestamp, @c_binary, @c_varbinary, @c_tinyblob, @c_blob, @c_mediumblob, @c_longblob ); SELECT  LAST_INSERT_ID ( ) "; 
         public class InsertMysqlTypesArgs
         {
             public bool? CBit { get; set; }
             public bool? CTinyint { get; set; }
             public bool? CBool { get; set; }
             public bool? CBoolean { get; set; }
+            public short? CYear { get; set; }
+            public short? CSmallint { get; set; }
+            public int? CMediumint { get; set; }
             public int? CInt { get; set; }
+            public int? CInteger { get; set; }
+            public long? CBigint { get; set; }
+            public string CDecimal { get; set; }
+            public string CDec { get; set; }
+            public string CNumeric { get; set; }
+            public string CFixed { get; set; }
+            public double? CFloat { get; set; }
+            public double? CDouble { get; set; }
+            public double? CDoublePrecision { get; set; }
+            public string CChar { get; set; }
+            public string CNchar { get; set; }
+            public string CNationalChar { get; set; }
             public string CVarchar { get; set; }
+            public string CTinytext { get; set; }
+            public string CMediumtext { get; set; }
+            public string CText { get; set; }
+            public string CLongtext { get; set; }
             public DateTime? CDate { get; set; }
             public DateTime? CTimestamp { get; set; }
+            public byte[] CBinary { get; set; }
+            public byte[] CVarbinary { get; set; }
+            public byte[] CTinyblob { get; set; }
+            public byte[] CBlob { get; set; }
+            public byte[] CMediumblob { get; set; }
+            public byte[] CLongblob { get; set; }
         };
         public async Task InsertMysqlTypes(InsertMysqlTypesArgs args)
         {
@@ -365,10 +390,35 @@ namespace MySqlConnectorDapperLegacyExampleGen
                 queryParams.Add("c_tinyint", args.CTinyint);
                 queryParams.Add("c_bool", args.CBool);
                 queryParams.Add("c_boolean", args.CBoolean);
+                queryParams.Add("c_year", args.CYear);
+                queryParams.Add("c_smallint", args.CSmallint);
+                queryParams.Add("c_mediumint", args.CMediumint);
                 queryParams.Add("c_int", args.CInt);
+                queryParams.Add("c_integer", args.CInteger);
+                queryParams.Add("c_bigint", args.CBigint);
+                queryParams.Add("c_decimal", args.CDecimal);
+                queryParams.Add("c_dec", args.CDec);
+                queryParams.Add("c_numeric", args.CNumeric);
+                queryParams.Add("c_fixed", args.CFixed);
+                queryParams.Add("c_float", args.CFloat);
+                queryParams.Add("c_double", args.CDouble);
+                queryParams.Add("c_double_precision", args.CDoublePrecision);
+                queryParams.Add("c_char", args.CChar);
+                queryParams.Add("c_nchar", args.CNchar);
+                queryParams.Add("c_national_char", args.CNationalChar);
                 queryParams.Add("c_varchar", args.CVarchar);
+                queryParams.Add("c_tinytext", args.CTinytext);
+                queryParams.Add("c_mediumtext", args.CMediumtext);
+                queryParams.Add("c_text", args.CText);
+                queryParams.Add("c_longtext", args.CLongtext);
                 queryParams.Add("c_date", args.CDate);
                 queryParams.Add("c_timestamp", args.CTimestamp);
+                queryParams.Add("c_binary", args.CBinary);
+                queryParams.Add("c_varbinary", args.CVarbinary);
+                queryParams.Add("c_tinyblob", args.CTinyblob);
+                queryParams.Add("c_blob", args.CBlob);
+                queryParams.Add("c_mediumblob", args.CMediumblob);
+                queryParams.Add("c_longblob", args.CLongblob);
                 await connection.ExecuteAsync(InsertMysqlTypesSql, queryParams);
             }
         }
@@ -431,17 +481,17 @@ namespace MySqlConnectorDapperLegacyExampleGen
             }
         }
 
-        private const string GetMysqlTypesSql = "SELECT c_bit, c_tinyint, c_bool, c_boolean, c_smallint, c_mediumint, c_int, c_year, c_integer, c_bigint, c_decimal, c_dec, c_numeric, c_fixed, c_float, c_double, c_double_precision, c_date, c_time, c_datetime, c_timestamp, c_char, c_nchar, c_national_char, c_varchar, c_tinytext, c_mediumtext, c_text, c_longtext, c_binary, c_varbinary, c_tinyblob, c_blob, c_mediumblob, c_longblob, c_json FROM mysql_types LIMIT 1; SELECT LAST_INSERT_ID()";
+        private const string GetMysqlTypesSql = "SELECT c_bit, c_tinyint, c_bool, c_boolean, c_year, c_smallint, c_mediumint, c_int, c_integer, c_bigint, c_decimal, c_dec, c_numeric, c_fixed, c_float, c_double, c_double_precision, c_date, c_time, c_datetime, c_timestamp, c_char, c_nchar, c_national_char, c_varchar, c_tinytext, c_mediumtext, c_text, c_longtext, c_binary, c_varbinary, c_tinyblob, c_blob, c_mediumblob, c_longblob, c_json FROM mysql_types LIMIT 1; SELECT LAST_INSERT_ID()";
         public class GetMysqlTypesRow
         {
             public bool? CBit { get; set; }
             public bool? CTinyint { get; set; }
             public bool? CBool { get; set; }
             public bool? CBoolean { get; set; }
-            public int? CSmallint { get; set; }
+            public short? CYear { get; set; }
+            public short? CSmallint { get; set; }
             public int? CMediumint { get; set; }
             public int? CInt { get; set; }
-            public int? CYear { get; set; }
             public int? CInteger { get; set; }
             public long? CBigint { get; set; }
             public string CDecimal { get; set; }

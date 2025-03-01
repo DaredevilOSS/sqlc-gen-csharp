@@ -15,7 +15,7 @@ public partial class SqliteDriver(Options options, Dictionary<string, Table> tab
         new("byte[]", new Dictionary<string, string?>
             {
                 {"blob", null}
-            }, ordinal => $"Utils.GetBytes(reader, {ordinal})"),
+            }, ordinal => $"reader.GetFieldValue<byte[]>({ordinal})"),
         new("string",
             new Dictionary<string, string?>
             {
@@ -27,11 +27,11 @@ public partial class SqliteDriver(Options options, Dictionary<string, Table> tab
                 { "integer", null },
                 { "integernotnulldefaultunixepoch", null } // return type of UNIXEPOCH function
             }, ordinal => $"reader.GetInt32({ordinal})"),
-        new("float",
+        new("decimal",
             new Dictionary<string, string?>
             {
                 {"real", null}
-            }, ordinal => $"reader.GetFloat({ordinal})"),
+            }, ordinal => $"reader.GetDecimal({ordinal})"),
     ];
 
     public override UsingDirectiveSyntax[] GetUsingDirectives()

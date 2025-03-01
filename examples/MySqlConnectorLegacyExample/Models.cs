@@ -22,10 +22,10 @@ namespace MySqlConnectorLegacyExampleGen
         public bool? CTinyint { get; set; }
         public bool? CBool { get; set; }
         public bool? CBoolean { get; set; }
-        public int? CSmallint { get; set; }
+        public short? CYear { get; set; }
+        public short? CSmallint { get; set; }
         public int? CMediumint { get; set; }
         public int? CInt { get; set; }
-        public int? CYear { get; set; }
         public int? CInteger { get; set; }
         public long? CBigint { get; set; }
         public string CDecimal { get; set; }

@@ -18,7 +18,7 @@ public class Book
 public class TypesSqlite
 {
     public int? CInteger { get; init; }
-    public float? CReal { get; init; }
+    public decimal? CReal { get; init; }
     public string? CText { get; init; }
     public byte[]? CBlob { get; init; }
 };

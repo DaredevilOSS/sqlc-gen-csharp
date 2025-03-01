@@ -343,16 +343,18 @@ namespace NpgsqlDapperLegacyExampleGen
             }
         }
 
-        private const string InsertPostgresTypesSql = "INSERT INTO postgres_types (c_smallint, c_boolean, c_integer, c_bigint, c_decimal, c_numeric, c_real, c_date, c_timestamp, c_char, c_varchar, c_character_varying, c_text, c_text_array, c_integer_array) VALUES ( @c_smallint , @c_boolean, @c_integer, @c_bigint, @c_decimal, @c_numeric, @c_real, @c_date, @c_timestamp, @c_char, @c_varchar, @c_character_varying, @c_text, @c_text_array, @c_integer_array ) "; 
+        private const string InsertPostgresTypesSql = "INSERT INTO postgres_types (c_boolean, c_bit, c_smallint, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_date, c_timestamp, c_char, c_varchar, c_character_varying, c_text, c_text_array, c_bytea, c_integer_array) VALUES ( @c_boolean , @c_bit, @c_smallint, @c_integer, @c_bigint, @c_real, @c_numeric, @c_decimal, @c_double_precision, @c_date, @c_timestamp, @c_char, @c_varchar, @c_character_varying, @c_text, @c_text_array, @c_bytea, @c_integer_array ) "; 
         public class InsertPostgresTypesArgs
         {
-            public short? CSmallint { get; set; }
             public bool? CBoolean { get; set; }
+            public byte[] CBit { get; set; }
+            public short? CSmallint { get; set; }
             public int? CInteger { get; set; }
             public long? CBigint { get; set; }
-            public decimal? CDecimal { get; set; }
-            public decimal? CNumeric { get; set; }
             public float? CReal { get; set; }
+            public decimal? CNumeric { get; set; }
+            public decimal? CDecimal { get; set; }
+            public double? CDoublePrecision { get; set; }
             public DateTime? CDate { get; set; }
             public DateTime? CTimestamp { get; set; }
             public string CChar { get; set; }
@@ -360,6 +362,7 @@ namespace NpgsqlDapperLegacyExampleGen
             public string CCharacterVarying { get; set; }
             public string CText { get; set; }
             public string[] CTextArray { get; set; }
+            public byte[] CBytea { get; set; }
             public int[] CIntegerArray { get; set; }
         };
         public async Task InsertPostgresTypes(InsertPostgresTypesArgs args)
@@ -367,13 +370,15 @@ namespace NpgsqlDapperLegacyExampleGen
             using (var connection = new NpgsqlConnection(ConnectionString))
             {
                 var queryParams = new Dictionary<string, object>();
-                queryParams.Add("c_smallint", args.CSmallint);
                 queryParams.Add("c_boolean", args.CBoolean);
+                queryParams.Add("c_bit", args.CBit);
+                queryParams.Add("c_smallint", args.CSmallint);
                 queryParams.Add("c_integer", args.CInteger);
                 queryParams.Add("c_bigint", args.CBigint);
-                queryParams.Add("c_decimal", args.CDecimal);
-                queryParams.Add("c_numeric", args.CNumeric);
                 queryParams.Add("c_real", args.CReal);
+                queryParams.Add("c_numeric", args.CNumeric);
+                queryParams.Add("c_decimal", args.CDecimal);
+                queryParams.Add("c_double_precision", args.CDoublePrecision);
                 queryParams.Add("c_date", args.CDate);
                 queryParams.Add("c_timestamp", args.CTimestamp);
                 queryParams.Add("c_char", args.CChar);
@@ -381,16 +386,17 @@ namespace NpgsqlDapperLegacyExampleGen
                 queryParams.Add("c_character_varying", args.CCharacterVarying);
                 queryParams.Add("c_text", args.CText);
                 queryParams.Add("c_text_array", args.CTextArray);
+                queryParams.Add("c_bytea", args.CBytea);
                 queryParams.Add("c_integer_array", args.CIntegerArray);
                 await connection.ExecuteAsync(InsertPostgresTypesSql, queryParams);
             }
         }
 
-        private const string InsertPostgresTypesBatchSql = "COPY postgres_types (c_smallint, c_boolean, c_integer, c_bigint, c_decimal, c_numeric, c_real, c_date, c_timestamp, c_char, c_varchar, c_character_varying, c_text) FROM STDIN (FORMAT BINARY)";
+        private const string InsertPostgresTypesBatchSql = "COPY postgres_types (c_boolean, c_smallint, c_integer, c_bigint, c_decimal, c_numeric, c_real, c_date, c_timestamp, c_char, c_varchar, c_character_varying, c_text) FROM STDIN (FORMAT BINARY)";
         public class InsertPostgresTypesBatchArgs
         {
-            public short? CSmallint { get; set; }
             public bool? CBoolean { get; set; }
+            public short? CSmallint { get; set; }
             public int? CInteger { get; set; }
             public long? CBigint { get; set; }
             public decimal? CDecimal { get; set; }
@@ -414,8 +420,8 @@ namespace NpgsqlDapperLegacyExampleGen
                     foreach (var row in args)
                     {
                         await writer.StartRowAsync();
-                        await writer.WriteAsync(row.CSmallint, NpgsqlDbType.Smallint);
                         await writer.WriteAsync(row.CBoolean);
+                        await writer.WriteAsync(row.CSmallint, NpgsqlDbType.Smallint);
                         await writer.WriteAsync(row.CInteger, NpgsqlDbType.Integer);
                         await writer.WriteAsync(row.CBigint, NpgsqlDbType.Bigint);
                         await writer.WriteAsync(row.CDecimal, NpgsqlDbType.Numeric);
@@ -436,18 +442,18 @@ namespace NpgsqlDapperLegacyExampleGen
             }
         }
 
-        private const string GetPostgresTypesSql = "SELECT c_bit, c_smallint, c_boolean, c_integer, c_bigint, c_decimal, c_numeric, c_real, c_double_precision, c_date, c_time, c_timestamp, c_char, c_varchar, c_character_varying, c_bytea, c_text, c_json, c_text_array, c_integer_array FROM postgres_types LIMIT 1";
+        private const string GetPostgresTypesSql = "SELECT c_boolean, c_bit, c_smallint, c_integer, c_bigint, c_decimal, c_numeric, c_real, c_double_precision, c_date, c_time, c_timestamp, c_char, c_varchar, c_character_varying, c_bytea, c_text, c_json, c_text_array, c_integer_array FROM postgres_types LIMIT 1";
         public class GetPostgresTypesRow
         {
+            public bool? CBoolean { get; set; }
             public byte[] CBit { get; set; }
             public short? CSmallint { get; set; }
-            public bool? CBoolean { get; set; }
             public int? CInteger { get; set; }
             public long? CBigint { get; set; }
             public decimal? CDecimal { get; set; }
             public decimal? CNumeric { get; set; }
             public float? CReal { get; set; }
-            public decimal? CDoublePrecision { get; set; }
+            public double? CDoublePrecision { get; set; }
             public DateTime? CDate { get; set; }
             public string CTime { get; set; }
             public DateTime? CTimestamp { get; set; }

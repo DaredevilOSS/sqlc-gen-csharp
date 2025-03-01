@@ -19,7 +19,7 @@ namespace SqliteDapperLegacyExampleGen
     public class TypesSqlite
     {
         public int? CInteger { get; set; }
-        public float? CReal { get; set; }
+        public decimal? CReal { get; set; }
         public string CText { get; set; }
         public byte[] CBlob { get; set; }
     };
