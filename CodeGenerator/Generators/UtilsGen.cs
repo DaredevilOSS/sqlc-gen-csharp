@@ -78,12 +78,29 @@ internal class UtilsGen(DbDriver dbDriver, string namespaceName)
 
         var optionalNullToNStringConverter = dbDriver.Options.DriverName is DriverName.MySqlConnector
             ? $$"""
-                public class NullToNStringConverter : DefaultTypeConverter
+                public class NullToStringConverter : DefaultTypeConverter
                 {
                     public override {{dbDriver.AddNullableSuffixIfNeeded("string", true)}} ConvertToString(
-                        {{dbDriver.AddNullableSuffixIfNeeded("object", true)}} value, IWriterRow row, MemberMapData memberMapData)
+                        {{dbDriver.AddNullableSuffixIfNeeded("object", false)}} value, IWriterRow row, MemberMapData memberMapData)
                     {
                         return value == null ? @"\N" : base.ConvertToString(value, row, memberMapData);
+                    }
+                }
+                
+                public class BoolToBitConverter : DefaultTypeConverter
+                {
+                    public override {{dbDriver.AddNullableSuffixIfNeeded("string", true)}} ConvertToString(
+                    {{dbDriver.AddNullableSuffixIfNeeded("object", false)}} value, IWriterRow row, MemberMapData memberMapData)
+                    {
+                        switch (value)
+                        {
+                            case null:
+                                return @"\N";
+                            case bool b:
+                                return b ? "1" : "0";
+                            default:
+                                return base.ConvertToString(value, row, memberMapData);
+                        }
                     }
                 }
                 """

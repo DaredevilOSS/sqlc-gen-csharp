@@ -11,11 +11,27 @@ namespace MySqlConnectorLegacyExampleGen
 
     public static class Utils
     {
-        public class NullToNStringConverter : DefaultTypeConverter
+        public class NullToStringConverter : DefaultTypeConverter
         {
             public override string ConvertToString(object value, IWriterRow row, MemberMapData memberMapData)
             {
                 return value == null ? @"\N" : base.ConvertToString(value, row, memberMapData);
+            }
+        }
+
+        public class BoolToBitConverter : DefaultTypeConverter
+        {
+            public override string ConvertToString(object value, IWriterRow row, MemberMapData memberMapData)
+            {
+                switch (value)
+                {
+                    case null:
+                        return @"\N";
+                    case bool b:
+                        return b ? "1" : "0";
+                    default:
+                        return base.ConvertToString(value, row, memberMapData);
+                }
             }
         }
 

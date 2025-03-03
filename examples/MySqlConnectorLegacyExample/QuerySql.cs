@@ -441,8 +441,8 @@ namespace MySqlConnectorLegacyExampleGen
         private const string InsertMysqlTypesSql = "INSERT INTO mysql_types (c_bit, c_tinyint, c_bool, c_boolean, c_year, c_smallint, c_mediumint, c_int, c_integer, c_bigint, c_decimal, c_dec, c_numeric, c_fixed, c_float, c_double, c_double_precision, c_char, c_nchar, c_national_char, c_varchar, c_tinytext, c_mediumtext, c_text, c_longtext, c_date, c_timestamp, c_binary, c_varbinary, c_tinyblob, c_blob, c_mediumblob, c_longblob) VALUES ( @c_bit, @c_tinyint, @c_bool, @c_boolean, @c_year, @c_smallint, @c_mediumint, @c_int, @c_integer, @c_bigint, @c_decimal, @c_dec, @c_numeric, @c_fixed, @c_float, @c_double, @c_double_precision, @c_char, @c_nchar, @c_national_char, @c_varchar, @c_tinytext, @c_mediumtext, @c_text, @c_longtext, @c_date, @c_timestamp, @c_binary, @c_varbinary, @c_tinyblob, @c_blob, @c_mediumblob, @c_longblob ) "; 
         public class InsertMysqlTypesArgs
         {
-            public bool? CBit { get; set; }
-            public bool? CTinyint { get; set; }
+            public byte? CBit { get; set; }
+            public short? CTinyint { get; set; }
             public bool? CBool { get; set; }
             public bool? CBoolean { get; set; }
             public short? CYear { get; set; }
@@ -522,13 +522,33 @@ namespace MySqlConnectorLegacyExampleGen
 
         public class InsertMysqlTypesBatchArgs
         {
-            public bool? CBit { get; set; }
-            public bool? CTinyint { get; set; }
             public bool? CBool { get; set; }
             public bool? CBoolean { get; set; }
+            public byte? CBit { get; set; }
+            public short? CTinyint { get; set; }
+            public short? CSmallint { get; set; }
+            public int? CMediumint { get; set; }
             public int? CInt { get; set; }
+            public int? CInteger { get; set; }
+            public long? CBigint { get; set; }
+            public double? CFloat { get; set; }
+            public string CNumeric { get; set; }
+            public string CDecimal { get; set; }
+            public string CDec { get; set; }
+            public string CFixed { get; set; }
+            public double? CDouble { get; set; }
+            public double? CDoublePrecision { get; set; }
+            public string CChar { get; set; }
+            public string CNchar { get; set; }
+            public string CNationalChar { get; set; }
             public string CVarchar { get; set; }
+            public string CTinytext { get; set; }
+            public string CMediumtext { get; set; }
+            public string CText { get; set; }
+            public string CLongtext { get; set; }
+            public short? CYear { get; set; }
             public DateTime? CDate { get; set; }
+            public DateTime? CDatetime { get; set; }
             public DateTime? CTimestamp { get; set; }
         };
         public async Task InsertMysqlTypesBatch(List<InsertMysqlTypesBatchArgs> args)
@@ -538,24 +558,30 @@ namespace MySqlConnectorLegacyExampleGen
             {
                 Delimiter = ","
             };
+            var nullConverterFn = new Utils.NullToStringConverter();
             using (var writer = new StreamWriter("input.csv", false, new UTF8Encoding(false)))
             using (var csvWriter = new CsvWriter(writer, config))
             {
-                var options = new TypeConverterOptions
+                var Options = new TypeConverterOptions
                 {
                     Formats = new[]
                     {
                         supportedDateTimeFormat
                     }
                 };
-                csvWriter.Context.TypeConverterOptionsCache.AddOptions<DateTime>(options);
-                csvWriter.Context.TypeConverterOptionsCache.AddOptions<DateTime?>(options);
-                csvWriter.Context.TypeConverterCache.AddConverter<bool?>(new Utils.NullToNStringConverter());
-                csvWriter.Context.TypeConverterCache.AddConverter<short?>(new Utils.NullToNStringConverter());
-                csvWriter.Context.TypeConverterCache.AddConverter<int?>(new Utils.NullToNStringConverter());
-                csvWriter.Context.TypeConverterCache.AddConverter<long?>(new Utils.NullToNStringConverter());
-                csvWriter.Context.TypeConverterCache.AddConverter<DateTime?>(new Utils.NullToNStringConverter());
-                csvWriter.Context.TypeConverterCache.AddConverter<string>(new Utils.NullToNStringConverter());
+                csvWriter.Context.TypeConverterOptionsCache.AddOptions<DateTime>(Options);
+                csvWriter.Context.TypeConverterOptionsCache.AddOptions<DateTime?>(Options);
+                csvWriter.Context.TypeConverterCache.AddConverter<bool?>(new Utils.BoolToBitConverter());
+                csvWriter.Context.TypeConverterCache.AddConverter<byte?>(nullConverterFn);
+                csvWriter.Context.TypeConverterCache.AddConverter<short?>(nullConverterFn);
+                csvWriter.Context.TypeConverterCache.AddConverter<int?>(nullConverterFn);
+                csvWriter.Context.TypeConverterCache.AddConverter<long?>(nullConverterFn);
+                csvWriter.Context.TypeConverterCache.AddConverter<float?>(nullConverterFn);
+                csvWriter.Context.TypeConverterCache.AddConverter<decimal?>(nullConverterFn);
+                csvWriter.Context.TypeConverterCache.AddConverter<double?>(nullConverterFn);
+                csvWriter.Context.TypeConverterCache.AddConverter<DateTime?>(nullConverterFn);
+                csvWriter.Context.TypeConverterCache.AddConverter<string>(nullConverterFn);
+                csvWriter.Context.TypeConverterCache.AddConverter<object>(nullConverterFn);
                 await csvWriter.WriteRecordsAsync(args);
             }
 
@@ -572,32 +598,31 @@ namespace MySqlConnectorLegacyExampleGen
                     FieldQuotationOptional = true,
                     NumberOfLinesToSkip = 1
                 };
-                loader.Columns.AddRange(new List<string> { "c_bit", "c_tinyint", "c_bool", "c_boolean", "c_int", "c_varchar", "c_date", "c_timestamp" });
+                loader.Columns.AddRange(new List<string> { "c_bool", "c_boolean", "c_bit", "c_tinyint", "c_smallint", "c_mediumint", "c_int", "c_integer", "c_bigint", "c_float", "c_numeric", "c_decimal", "c_dec", "c_fixed", "c_double", "c_double_precision", "c_char", "c_nchar", "c_national_char", "c_varchar", "c_tinytext", "c_mediumtext", "c_text", "c_longtext", "c_year", "c_date", "c_datetime", "c_timestamp" });
                 await loader.LoadAsync();
                 await connection.CloseAsync();
             }
         }
 
-        private const string GetMysqlTypesSql = "SELECT c_bit, c_tinyint, c_bool, c_boolean, c_year, c_smallint, c_mediumint, c_int, c_integer, c_bigint, c_decimal, c_dec, c_numeric, c_fixed, c_float, c_double, c_double_precision, c_date, c_time, c_datetime, c_timestamp, c_char, c_nchar, c_national_char, c_varchar, c_tinytext, c_mediumtext, c_text, c_longtext, c_binary, c_varbinary, c_tinyblob, c_blob, c_mediumblob, c_longblob, c_json FROM mysql_types LIMIT 1";
+        private const string GetMysqlTypesSql = "SELECT c_bool, c_boolean, c_tinyint, c_smallint, c_mediumint, c_int, c_integer, c_bigint, c_float, c_decimal, c_dec, c_numeric, c_fixed, c_double, c_double_precision, c_year, c_date, c_time, c_datetime, c_timestamp, c_char, c_nchar, c_national_char, c_varchar, c_tinytext, c_mediumtext, c_text, c_longtext, c_bit, c_binary, c_varbinary, c_tinyblob, c_blob, c_mediumblob, c_longblob FROM mysql_types LIMIT 1";
         public class GetMysqlTypesRow
         {
-            public bool? CBit { get; set; }
-            public bool? CTinyint { get; set; }
             public bool? CBool { get; set; }
             public bool? CBoolean { get; set; }
-            public short? CYear { get; set; }
+            public short? CTinyint { get; set; }
             public short? CSmallint { get; set; }
             public int? CMediumint { get; set; }
             public int? CInt { get; set; }
             public int? CInteger { get; set; }
             public long? CBigint { get; set; }
+            public double? CFloat { get; set; }
             public string CDecimal { get; set; }
             public string CDec { get; set; }
             public string CNumeric { get; set; }
             public string CFixed { get; set; }
-            public double? CFloat { get; set; }
             public double? CDouble { get; set; }
             public double? CDoublePrecision { get; set; }
+            public short? CYear { get; set; }
             public DateTime? CDate { get; set; }
             public string CTime { get; set; }
             public DateTime? CDatetime { get; set; }
@@ -610,13 +635,13 @@ namespace MySqlConnectorLegacyExampleGen
             public string CMediumtext { get; set; }
             public string CText { get; set; }
             public string CLongtext { get; set; }
+            public byte? CBit { get; set; }
             public byte[] CBinary { get; set; }
             public byte[] CVarbinary { get; set; }
             public byte[] CTinyblob { get; set; }
             public byte[] CBlob { get; set; }
             public byte[] CMediumblob { get; set; }
             public byte[] CLongblob { get; set; }
-            public string CJson { get; set; }
         };
         public async Task<GetMysqlTypesRow> GetMysqlTypes()
         {
@@ -631,42 +656,41 @@ namespace MySqlConnectorLegacyExampleGen
                         {
                             return new GetMysqlTypesRow
                             {
-                                CBit = reader.IsDBNull(0) ? (bool? )null : reader.GetBoolean(0),
-                                CTinyint = reader.IsDBNull(1) ? (bool? )null : reader.GetBoolean(1),
-                                CBool = reader.IsDBNull(2) ? (bool? )null : reader.GetBoolean(2),
-                                CBoolean = reader.IsDBNull(3) ? (bool? )null : reader.GetBoolean(3),
-                                CYear = reader.IsDBNull(4) ? (short? )null : reader.GetInt16(4),
-                                CSmallint = reader.IsDBNull(5) ? (short? )null : reader.GetInt16(5),
-                                CMediumint = reader.IsDBNull(6) ? (int? )null : reader.GetInt32(6),
-                                CInt = reader.IsDBNull(7) ? (int? )null : reader.GetInt32(7),
-                                CInteger = reader.IsDBNull(8) ? (int? )null : reader.GetInt32(8),
-                                CBigint = reader.IsDBNull(9) ? (long? )null : reader.GetInt64(9),
-                                CDecimal = reader.IsDBNull(10) ? null : reader.GetString(10),
-                                CDec = reader.IsDBNull(11) ? null : reader.GetString(11),
-                                CNumeric = reader.IsDBNull(12) ? null : reader.GetString(12),
-                                CFixed = reader.IsDBNull(13) ? null : reader.GetString(13),
-                                CFloat = reader.IsDBNull(14) ? (double? )null : reader.GetDouble(14),
-                                CDouble = reader.IsDBNull(15) ? (double? )null : reader.GetDouble(15),
-                                CDoublePrecision = reader.IsDBNull(16) ? (double? )null : reader.GetDouble(16),
-                                CDate = reader.IsDBNull(17) ? (DateTime? )null : reader.GetDateTime(17),
-                                CTime = reader.IsDBNull(18) ? null : reader.GetString(18),
-                                CDatetime = reader.IsDBNull(19) ? (DateTime? )null : reader.GetDateTime(19),
-                                CTimestamp = reader.IsDBNull(20) ? (DateTime? )null : reader.GetDateTime(20),
-                                CChar = reader.IsDBNull(21) ? null : reader.GetString(21),
-                                CNchar = reader.IsDBNull(22) ? null : reader.GetString(22),
-                                CNationalChar = reader.IsDBNull(23) ? null : reader.GetString(23),
-                                CVarchar = reader.IsDBNull(24) ? null : reader.GetString(24),
-                                CTinytext = reader.IsDBNull(25) ? null : reader.GetString(25),
-                                CMediumtext = reader.IsDBNull(26) ? null : reader.GetString(26),
-                                CText = reader.IsDBNull(27) ? null : reader.GetString(27),
-                                CLongtext = reader.IsDBNull(28) ? null : reader.GetString(28),
+                                CBool = reader.IsDBNull(0) ? (bool? )null : reader.GetBoolean(0),
+                                CBoolean = reader.IsDBNull(1) ? (bool? )null : reader.GetBoolean(1),
+                                CTinyint = reader.IsDBNull(2) ? (short? )null : reader.GetInt16(2),
+                                CSmallint = reader.IsDBNull(3) ? (short? )null : reader.GetInt16(3),
+                                CMediumint = reader.IsDBNull(4) ? (int? )null : reader.GetInt32(4),
+                                CInt = reader.IsDBNull(5) ? (int? )null : reader.GetInt32(5),
+                                CInteger = reader.IsDBNull(6) ? (int? )null : reader.GetInt32(6),
+                                CBigint = reader.IsDBNull(7) ? (long? )null : reader.GetInt64(7),
+                                CFloat = reader.IsDBNull(8) ? (double? )null : reader.GetDouble(8),
+                                CDecimal = reader.IsDBNull(9) ? null : reader.GetString(9),
+                                CDec = reader.IsDBNull(10) ? null : reader.GetString(10),
+                                CNumeric = reader.IsDBNull(11) ? null : reader.GetString(11),
+                                CFixed = reader.IsDBNull(12) ? null : reader.GetString(12),
+                                CDouble = reader.IsDBNull(13) ? (double? )null : reader.GetDouble(13),
+                                CDoublePrecision = reader.IsDBNull(14) ? (double? )null : reader.GetDouble(14),
+                                CYear = reader.IsDBNull(15) ? (short? )null : reader.GetInt16(15),
+                                CDate = reader.IsDBNull(16) ? (DateTime? )null : reader.GetDateTime(16),
+                                CTime = reader.IsDBNull(17) ? null : reader.GetString(17),
+                                CDatetime = reader.IsDBNull(18) ? (DateTime? )null : reader.GetDateTime(18),
+                                CTimestamp = reader.IsDBNull(19) ? (DateTime? )null : reader.GetDateTime(19),
+                                CChar = reader.IsDBNull(20) ? null : reader.GetString(20),
+                                CNchar = reader.IsDBNull(21) ? null : reader.GetString(21),
+                                CNationalChar = reader.IsDBNull(22) ? null : reader.GetString(22),
+                                CVarchar = reader.IsDBNull(23) ? null : reader.GetString(23),
+                                CTinytext = reader.IsDBNull(24) ? null : reader.GetString(24),
+                                CMediumtext = reader.IsDBNull(25) ? null : reader.GetString(25),
+                                CText = reader.IsDBNull(26) ? null : reader.GetString(26),
+                                CLongtext = reader.IsDBNull(27) ? null : reader.GetString(27),
+                                CBit = reader.IsDBNull(28) ? (byte? )null : reader.GetFieldValue<byte>(28),
                                 CBinary = reader.IsDBNull(29) ? null : reader.GetFieldValue<byte[]>(29),
                                 CVarbinary = reader.IsDBNull(30) ? null : reader.GetFieldValue<byte[]>(30),
                                 CTinyblob = reader.IsDBNull(31) ? null : reader.GetFieldValue<byte[]>(31),
                                 CBlob = reader.IsDBNull(32) ? null : reader.GetFieldValue<byte[]>(32),
                                 CMediumblob = reader.IsDBNull(33) ? null : reader.GetFieldValue<byte[]>(33),
-                                CLongblob = reader.IsDBNull(34) ? null : reader.GetFieldValue<byte[]>(34),
-                                CJson = reader.IsDBNull(35) ? null : reader.GetString(35)
+                                CLongblob = reader.IsDBNull(34) ? null : reader.GetFieldValue<byte[]>(34)
                             };
                         }
                     }
@@ -676,17 +700,37 @@ namespace MySqlConnectorLegacyExampleGen
             return null;
         }
 
-        private const string GetMysqlTypesAggSql = "SELECT COUNT(1) AS cnt , c_bit, c_tinyint, c_bool, c_boolean, c_int, c_varchar, c_date, c_timestamp FROM  mysql_types  GROUP  BY  c_bit , c_tinyint, c_bool, c_boolean, c_int, c_varchar, c_date, c_timestamp LIMIT  1  ";  
+        private const string GetMysqlTypesAggSql = "SELECT COUNT(1) AS cnt, c_bool, c_boolean, c_bit, c_tinyint, c_smallint, c_mediumint, c_int, c_integer, c_bigint, c_float, c_numeric, c_decimal, c_dec, c_fixed, c_double, c_double_precision, c_char, c_nchar, c_national_char, c_varchar, c_tinytext, c_mediumtext, c_text, c_longtext, c_year, c_date, c_datetime, c_timestamp FROM  mysql_types  GROUP  BY  c_bool , c_boolean, c_bit, c_tinyint, c_smallint, c_mediumint, c_int, c_integer, c_bigint, c_float, c_numeric, c_decimal, c_dec, c_fixed, c_double, c_double_precision, c_char, c_nchar, c_national_char, c_varchar, c_tinytext, c_mediumtext, c_text, c_longtext, c_year, c_date, c_datetime, c_timestamp LIMIT  1  ";  
         public class GetMysqlTypesAggRow
         {
             public long Cnt { get; set; }
-            public bool? CBit { get; set; }
-            public bool? CTinyint { get; set; }
             public bool? CBool { get; set; }
             public bool? CBoolean { get; set; }
+            public byte? CBit { get; set; }
+            public short? CTinyint { get; set; }
+            public short? CSmallint { get; set; }
+            public int? CMediumint { get; set; }
             public int? CInt { get; set; }
+            public int? CInteger { get; set; }
+            public long? CBigint { get; set; }
+            public double? CFloat { get; set; }
+            public string CNumeric { get; set; }
+            public string CDecimal { get; set; }
+            public string CDec { get; set; }
+            public string CFixed { get; set; }
+            public double? CDouble { get; set; }
+            public double? CDoublePrecision { get; set; }
+            public string CChar { get; set; }
+            public string CNchar { get; set; }
+            public string CNationalChar { get; set; }
             public string CVarchar { get; set; }
+            public string CTinytext { get; set; }
+            public string CMediumtext { get; set; }
+            public string CText { get; set; }
+            public string CLongtext { get; set; }
+            public short? CYear { get; set; }
             public DateTime? CDate { get; set; }
+            public DateTime? CDatetime { get; set; }
             public DateTime? CTimestamp { get; set; }
         };
         public async Task<GetMysqlTypesAggRow> GetMysqlTypesAgg()
@@ -703,14 +747,34 @@ namespace MySqlConnectorLegacyExampleGen
                             return new GetMysqlTypesAggRow
                             {
                                 Cnt = reader.GetInt64(0),
-                                CBit = reader.IsDBNull(1) ? (bool? )null : reader.GetBoolean(1),
-                                CTinyint = reader.IsDBNull(2) ? (bool? )null : reader.GetBoolean(2),
-                                CBool = reader.IsDBNull(3) ? (bool? )null : reader.GetBoolean(3),
-                                CBoolean = reader.IsDBNull(4) ? (bool? )null : reader.GetBoolean(4),
-                                CInt = reader.IsDBNull(5) ? (int? )null : reader.GetInt32(5),
-                                CVarchar = reader.IsDBNull(6) ? null : reader.GetString(6),
-                                CDate = reader.IsDBNull(7) ? (DateTime? )null : reader.GetDateTime(7),
-                                CTimestamp = reader.IsDBNull(8) ? (DateTime? )null : reader.GetDateTime(8)
+                                CBool = reader.IsDBNull(1) ? (bool? )null : reader.GetBoolean(1),
+                                CBoolean = reader.IsDBNull(2) ? (bool? )null : reader.GetBoolean(2),
+                                CBit = reader.IsDBNull(3) ? (byte? )null : reader.GetFieldValue<byte>(3),
+                                CTinyint = reader.IsDBNull(4) ? (short? )null : reader.GetInt16(4),
+                                CSmallint = reader.IsDBNull(5) ? (short? )null : reader.GetInt16(5),
+                                CMediumint = reader.IsDBNull(6) ? (int? )null : reader.GetInt32(6),
+                                CInt = reader.IsDBNull(7) ? (int? )null : reader.GetInt32(7),
+                                CInteger = reader.IsDBNull(8) ? (int? )null : reader.GetInt32(8),
+                                CBigint = reader.IsDBNull(9) ? (long? )null : reader.GetInt64(9),
+                                CFloat = reader.IsDBNull(10) ? (double? )null : reader.GetDouble(10),
+                                CNumeric = reader.IsDBNull(11) ? null : reader.GetString(11),
+                                CDecimal = reader.IsDBNull(12) ? null : reader.GetString(12),
+                                CDec = reader.IsDBNull(13) ? null : reader.GetString(13),
+                                CFixed = reader.IsDBNull(14) ? null : reader.GetString(14),
+                                CDouble = reader.IsDBNull(15) ? (double? )null : reader.GetDouble(15),
+                                CDoublePrecision = reader.IsDBNull(16) ? (double? )null : reader.GetDouble(16),
+                                CChar = reader.IsDBNull(17) ? null : reader.GetString(17),
+                                CNchar = reader.IsDBNull(18) ? null : reader.GetString(18),
+                                CNationalChar = reader.IsDBNull(19) ? null : reader.GetString(19),
+                                CVarchar = reader.IsDBNull(20) ? null : reader.GetString(20),
+                                CTinytext = reader.IsDBNull(21) ? null : reader.GetString(21),
+                                CMediumtext = reader.IsDBNull(22) ? null : reader.GetString(22),
+                                CText = reader.IsDBNull(23) ? null : reader.GetString(23),
+                                CLongtext = reader.IsDBNull(24) ? null : reader.GetString(24),
+                                CYear = reader.IsDBNull(25) ? (short? )null : reader.GetInt16(25),
+                                CDate = reader.IsDBNull(26) ? (DateTime? )null : reader.GetDateTime(26),
+                                CDatetime = reader.IsDBNull(27) ? (DateTime? )null : reader.GetDateTime(27),
+                                CTimestamp = reader.IsDBNull(28) ? (DateTime? )null : reader.GetDateTime(28)
                             };
                         }
                     }
