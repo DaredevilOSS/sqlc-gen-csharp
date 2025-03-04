@@ -479,176 +479,6 @@ public static class Templates
                     }
                     """
         },
-        [KnownTestType.PostgresCopyFrom] = new TestImpl
-        {
-            Impl = $$"""
-                     [Test]
-                     [TestCase(100, true, 3, 453, -1445214231, 336.3431, -99.999, 666.6f, "1973-12-3", "1960-11-3 02:01:22", "z", "Sex Pistols", "Anarchy in the U.K", "Never Mind the Bollocks...")]
-                     [TestCase(500, false, -4, 867, 8768769709, -662.8671, 127.4793, -64.8f, "2024-12-31", "1999-3-1 03:00:10", "1", "Fugazi", "Waiting Room", "13 Songs")]
-                     [TestCase(10, null, null, null, null, null, null, null, null, null, null, null, null, null)]
-                     public async Task TestCopyFrom(
-                        int batchSize, 
-                        bool? cBoolean, 
-                        short? cSmallint, 
-                        int? cInteger, 
-                        long? cBigint, 
-                        decimal? cDecimal, 
-                        decimal? cNumeric, 
-                        float? cReal, 
-                        DateTime? cDate, 
-                        DateTime? cTimestamp, 
-                        string{{UnknownNullableIndicatorPlaceholder}} cChar, 
-                        string{{UnknownNullableIndicatorPlaceholder}} cVarchar, 
-                        string{{UnknownNullableIndicatorPlaceholder}} cCharacterVarying, 
-                        string{{UnknownNullableIndicatorPlaceholder}} cText)
-                     {
-                         var batchArgs = Enumerable.Range(0, batchSize)
-                             .Select(_ => new QuerySql.InsertPostgresTypesBatchArgs
-                             {
-                                 CBoolean = cBoolean,
-                                 CSmallint = cSmallint,
-                                 CInteger = cInteger,
-                                 CBigint = cBigint,
-                                 CDecimal = cDecimal,
-                                 CNumeric = cNumeric,
-                                 CReal = cReal,
-                                 CDate = cDate,
-                                 CTimestamp = cTimestamp,
-                                 CChar = cChar,
-                                 CVarchar = cVarchar,
-                                 CCharacterVarying = cCharacterVarying,
-                                 CText = cText
-                             })
-                             .ToList();
-                         await QuerySql.InsertPostgresTypesBatch(batchArgs);
-                         var expected = new QuerySql.GetPostgresTypesAggRow
-                         {
-                             Cnt = batchSize,
-                             CBoolean = cBoolean,
-                             CSmallint = cSmallint,
-                             CInteger = cInteger,
-                             CBigint = cBigint,
-                             CDecimal = cDecimal,
-                             CNumeric = cNumeric,
-                             CReal = cReal,
-                             CDate = cDate,
-                             CTimestamp = cTimestamp,
-                             CChar = cChar,
-                             CVarchar = cVarchar,
-                             CCharacterVarying = cCharacterVarying,
-                             CText = cText
-                         };
-                         var actual = await QuerySql.GetPostgresTypesAgg();
-                         AssertSingularEquals(expected, actual{{UnknownRecordValuePlaceholder}});
-                     }
-                     
-                     private static void AssertSingularEquals(QuerySql.GetPostgresTypesAggRow expected, QuerySql.GetPostgresTypesAggRow actual)
-                     {
-                         Assert.That(actual.Cnt, Is.EqualTo(expected.Cnt));
-                         Assert.That(actual.CBoolean, Is.EqualTo(expected.CBoolean));
-                         Assert.That(actual.CSmallint, Is.EqualTo(expected.CSmallint));
-                         Assert.That(actual.CInteger, Is.EqualTo(expected.CInteger));
-                         Assert.That(actual.CBigint, Is.EqualTo(expected.CBigint));
-                         Assert.That(actual.CDecimal, Is.EqualTo(expected.CDecimal));
-                         Assert.That(actual.CNumeric, Is.EqualTo(expected.CNumeric));
-                         Assert.That(actual.CReal, Is.EqualTo(expected.CReal));
-                         Assert.That(actual.CDate, Is.EqualTo(expected.CDate));
-                         Assert.That(actual.CTimestamp, Is.EqualTo(expected.CTimestamp));
-                         Assert.That(actual.CChar, Is.EqualTo(expected.CChar));
-                         Assert.That(actual.CVarchar, Is.EqualTo(expected.CVarchar));
-                         Assert.That(actual.CCharacterVarying, Is.EqualTo(expected.CCharacterVarying));
-                         Assert.That(actual.CText, Is.EqualTo(expected.CText));
-                     }
-                     """
-        },
-        [KnownTestType.MySqlCopyFrom] = new TestImpl
-        {
-            Impl = $$"""
-                     [Test]
-                     [TestCase(100, 53, "Parasite", "2000-1-30", "1983-11-3 02:01:22")]
-                     [TestCase(500, 6697, "Splendor in the Grass", "2012-9-20", "2012-1-20 22:12:34")]
-                     [TestCase(10, null, null, null, "1970-1-1 00:00:01")]
-                     public async Task TestCopyFrom(
-                        int batchSize, 
-                        int? cInt, 
-                        string{{UnknownNullableIndicatorPlaceholder}} cVarchar, 
-                        DateTime? cDate, 
-                        DateTime? cTimestamp)
-                     {
-                         var batchArgs = Enumerable.Range(0, batchSize)
-                             .Select(_ => new QuerySql.InsertMysqlTypesBatchArgs
-                             {
-                                 CInt = cInt,
-                                 CVarchar = cVarchar,
-                                 CDate = cDate,
-                                 CTimestamp = cTimestamp
-                             })
-                             .ToList();
-                         await QuerySql.InsertMysqlTypesBatch(batchArgs);
-                         var expected = new QuerySql.GetMysqlTypesAggRow
-                         {
-                             Cnt = batchSize,
-                             CInt = cInt,
-                             CVarchar = cVarchar,
-                             CDate = cDate,
-                             CTimestamp = cTimestamp
-                         };
-                         var actual = await QuerySql.GetMysqlTypesAgg();
-                         AssertSingularEquals(expected, actual{{UnknownRecordValuePlaceholder}});
-                     }
-                     
-                     private static void AssertSingularEquals(QuerySql.GetMysqlTypesAggRow expected, QuerySql.GetMysqlTypesAggRow actual)
-                     {
-                         Assert.That(actual.Cnt, Is.EqualTo(expected.Cnt));
-                         Assert.That(actual.CInt, Is.EqualTo(expected.CInt));
-                         Assert.That(actual.CVarchar, Is.EqualTo(expected.CVarchar));
-                         Assert.That(actual.CDate, Is.EqualTo(expected.CDate));
-                         Assert.That(actual.CTimestamp, Is.EqualTo(expected.CTimestamp));
-                     }
-                     """
-        },
-        [KnownTestType.SqliteCopyFrom] = new TestImpl
-        {
-            Impl = $$"""
-                     [Test]
-                     [TestCase(100, 312, -7541.3309, "Johnny B. Good")]
-                     [TestCase(500, -768, 8453.5678, "Bad to the Bone")]
-                     [TestCase(10, null, null, null)]
-                     public async Task TestCopyFrom(
-                        int batchSize, 
-                        int? cInteger, 
-                        decimal? cReal, 
-                        string{{UnknownNullableIndicatorPlaceholder}} cText)
-                     {
-                         var batchArgs = Enumerable.Range(0, batchSize)
-                             .Select(_ => new QuerySql.InsertSqliteTypesBatchArgs
-                             {
-                                 CInteger = cInteger,
-                                 CReal = cReal,
-                                 CText = cText
-                             })
-                             .ToList();
-                         await QuerySql.InsertSqliteTypesBatch(batchArgs);
-                         var expected = new QuerySql.GetSqliteTypesAggRow
-                         {
-                             Cnt = batchSize,
-                             CInteger = cInteger,
-                             CReal = cReal,
-                             CText = cText
-                         };
-                         var actual = await QuerySql.GetSqliteTypesAgg();
-                         AssertSingularEquals(expected, actual{{UnknownRecordValuePlaceholder}});
-                     }
-                     
-                     private static void AssertSingularEquals(QuerySql.GetSqliteTypesAggRow expected, QuerySql.GetSqliteTypesAggRow actual)
-                     {
-                         Assert.That(actual.Cnt, Is.EqualTo(expected.Cnt));
-                         Assert.That(actual.CInteger, Is.EqualTo(expected.CInteger));
-                         Assert.That(actual.CReal, Is.EqualTo(expected.CReal));
-                         Assert.That(actual.CText, Is.EqualTo(expected.CText));
-                     }
-                     """
-        },
         [KnownTestType.PostgresDataTypes] = new TestImpl
         {
             Impl = $$"""
@@ -742,18 +572,110 @@ public static class Templates
                    }
                    """
         },
+        [KnownTestType.PostgresCopyFrom] = new TestImpl
+        {
+            Impl = $$"""
+                     [Test]
+                     [TestCase(100, true, 3, 453, -1445214231, 666.6f, 336.3431, -99.999, -1377.996, "1973-12-3", "1960-11-3 02:01:22", "z", "Sex Pistols", "Anarchy in the U.K", "Never Mind the Bollocks...", new byte[] { 0x53, 0x56 })]
+                     [TestCase(500, false, -4, 867, 8768769709, -64.8f, -324.8671, 127.4793, 423.9869, "2024-12-31", "1999-3-1 03:00:10", "1", "Fugazi", "Waiting Room", "13 Songs", new byte[] { 0x03 })]
+                     [TestCase(10, null, null, null, null, null, null, null, null, null, null, null, null, null, null, new byte[] { })]
+                     [TestCase(10, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null)]
+                     public async Task TestCopyFrom(
+                        int batchSize, 
+                        bool? cBoolean, 
+                        short? cSmallint, 
+                        int? cInteger, 
+                        long? cBigint, 
+                        float? cReal, 
+                        decimal? cDecimal, 
+                        decimal? cNumeric, 
+                        double? cDoublePrecision,
+                        DateTime? cDate, 
+                        DateTime? cTimestamp, 
+                        string{{UnknownNullableIndicatorPlaceholder}} cChar, 
+                        string{{UnknownNullableIndicatorPlaceholder}} cVarchar, 
+                        string{{UnknownNullableIndicatorPlaceholder}} cCharacterVarying, 
+                        string{{UnknownNullableIndicatorPlaceholder}} cText,
+                        byte[] cBytea)
+                     {
+                         var batchArgs = Enumerable.Range(0, batchSize)
+                             .Select(_ => new QuerySql.InsertPostgresTypesBatchArgs
+                             {
+                                 CBoolean = cBoolean,
+                                 CSmallint = cSmallint,
+                                 CInteger = cInteger,
+                                 CBigint = cBigint,
+                                 CReal = cReal,
+                                 CDecimal = cDecimal,
+                                 CNumeric = cNumeric,
+                                 CDoublePrecision = cDoublePrecision,
+                                 CDate = cDate,
+                                 CTimestamp = cTimestamp,
+                                 CChar = cChar,
+                                 CVarchar = cVarchar,
+                                 CCharacterVarying = cCharacterVarying,
+                                 CText = cText,
+                                 CBytea = cBytea
+                             })
+                             .ToList();
+                         await QuerySql.InsertPostgresTypesBatch(batchArgs);
+                         var expected = new QuerySql.GetPostgresTypesAggRow
+                         {
+                             Cnt = batchSize,
+                             CBoolean = cBoolean,
+                             CSmallint = cSmallint,
+                             CInteger = cInteger,
+                             CBigint = cBigint,
+                             CReal = cReal,
+                             CDecimal = cDecimal,
+                             CNumeric = cNumeric,
+                             CDoublePrecision = cDoublePrecision,
+                             CDate = cDate,
+                             CTimestamp = cTimestamp,
+                             CChar = cChar,
+                             CVarchar = cVarchar,
+                             CCharacterVarying = cCharacterVarying,
+                             CText = cText,
+                             CBytea = cBytea
+                         };
+                         var actual = await QuerySql.GetPostgresTypesAgg();
+                         AssertSingularEquals(expected, actual{{UnknownRecordValuePlaceholder}});
+                     }
+                     
+                     private static void AssertSingularEquals(QuerySql.GetPostgresTypesAggRow expected, QuerySql.GetPostgresTypesAggRow actual)
+                     {
+                         Assert.That(actual.Cnt, Is.EqualTo(expected.Cnt));
+                         Assert.That(actual.CBoolean, Is.EqualTo(expected.CBoolean));
+                         Assert.That(actual.CSmallint, Is.EqualTo(expected.CSmallint));
+                         Assert.That(actual.CInteger, Is.EqualTo(expected.CInteger));
+                         Assert.That(actual.CBigint, Is.EqualTo(expected.CBigint));
+                         Assert.That(actual.CReal, Is.EqualTo(expected.CReal));
+                         Assert.That(actual.CDecimal, Is.EqualTo(expected.CDecimal));
+                         Assert.That(actual.CNumeric, Is.EqualTo(expected.CNumeric));
+                         Assert.That(actual.CDoublePrecision, Is.EqualTo(expected.CDoublePrecision));
+                         Assert.That(actual.CDate, Is.EqualTo(expected.CDate));
+                         Assert.That(actual.CTimestamp, Is.EqualTo(expected.CTimestamp));
+                         Assert.That(actual.CChar, Is.EqualTo(expected.CChar));
+                         Assert.That(actual.CVarchar, Is.EqualTo(expected.CVarchar));
+                         Assert.That(actual.CCharacterVarying, Is.EqualTo(expected.CCharacterVarying));
+                         Assert.That(actual.CText, Is.EqualTo(expected.CText));
+                         Assert.That(actual.CBytea, Is.EqualTo(expected.CBytea));
+                     }
+                     """
+        },
+
         [KnownTestType.MySqlDataTypes] = new TestImpl
         {
             Impl = $$"""
                    [Test]
-                   [TestCase(true, false, true, false, 2084, 3124, -54355, 324245, -67865, 9787668656, "&", "\u1857", "\u2649", "Sheena is a Punk Rocker", "Holiday in Cambodia", "London's Calling", "London's Burning", "Police & Thieves", "2000-1-30", "1983-11-3 02:01:22", new byte[] { 0x15, 0x16, 0x17 }, new byte[] { 0x15, 0x22 }, new byte[] { 0x23 }, new byte[] { 0x33, 0x13 }, new byte[] { 0x11, 0x62, 0x10 }, new byte[] { 0x38, 0x45, 0x06 })]
+                   [TestCase(false, true, 0x32, 13, 2084, 3124, -54355, 324245, -67865, 9787668656, "&", "\u1857", "\u2649", "Sheena is a Punk Rocker", "Holiday in Cambodia", "London's Calling", "London's Burning", "Police & Thieves", "2000-1-30", "1983-11-3 02:01:22", new byte[] { 0x15, 0x16, 0x17 }, new byte[] { 0x15, 0x22 }, new byte[] { 0x23 }, new byte[] { 0x33, 0x13 }, new byte[] { 0x11, 0x62, 0x10 }, new byte[] { 0x38, 0x45, 0x06 })]
                    [TestCase(null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, "1970-1-1 00:00:01", new byte[] { 0x0, 0x0, 0x0 }, new byte[] { }, new byte[] { }, new byte[] { }, new byte[] { }, new byte[] { })]
                    [TestCase(null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, "1970-1-1 00:00:01", null, null, null, null, null, null)]
                    public async Task TestMySqlTypes(
-                       bool cBit, 
-                       bool cTinyint, 
                        bool cBool, 
                        bool cBoolean, 
+                       byte cBit,
+                       short cTinyint, 
                        short cYear,
                        short cSmallint,
                        int cMediumint,
@@ -779,11 +701,10 @@ public static class Templates
                    {
                        await QuerySql.InsertMysqlTypes(new QuerySql.InsertMysqlTypesArgs
                        {
-                            CBit = cBit,
-                            CTinyint = cTinyint,
                             CBool = cBool,
                             CBoolean = cBoolean,
-                            CYear = cYear,
+                            CBit = cBit,
+                            CTinyint = cTinyint,
                             CSmallint = cSmallint,
                             CMediumint = cMediumint,
                             CInt = cInt,
@@ -797,6 +718,7 @@ public static class Templates
                             CMediumtext = cMediumtext,
                             CText = cText,
                             CLongtext = cLongtext,
+                            CYear = cYear,
                             CDate = cDate,
                             CTimestamp = cTimestamp,
                             CBinary = cBinary,
@@ -809,11 +731,10 @@ public static class Templates
                    
                        var expected = new QuerySql.GetMysqlTypesRow
                        {
-                            CBit = cBit,
-                            CTinyint = cTinyint,
                             CBool = cBool,
                             CBoolean = cBoolean,
-                            CYear = cYear,
+                            CBit = cBit,
+                            CTinyint = cTinyint,
                             CSmallint = cSmallint,
                             CMediumint = cMediumint,
                             CInt = cInt,
@@ -827,6 +748,7 @@ public static class Templates
                             CMediumtext = cMediumtext,
                             CText = cText,
                             CLongtext = cLongtext,
+                            CYear = cYear,
                             CDate = cDate,
                             CTimestamp = cTimestamp,
                             CBinary = cBinary,
@@ -842,11 +764,10 @@ public static class Templates
                    
                    private static void AssertSingularEquals(QuerySql.GetMysqlTypesRow expected, QuerySql.GetMysqlTypesRow actual)
                    {
-                       Assert.That(actual.CBit, Is.EqualTo(expected.CBit));
-                       Assert.That(actual.CTinyint, Is.EqualTo(expected.CTinyint));
                        Assert.That(actual.CBool, Is.EqualTo(expected.CBool));
                        Assert.That(actual.CBoolean, Is.EqualTo(expected.CBoolean));
-                       Assert.That(actual.CYear, Is.EqualTo(expected.CYear));
+                       Assert.That(actual.CBit, Is.EqualTo(expected.CBit));
+                       Assert.That(actual.CTinyint, Is.EqualTo(expected.CTinyint));
                        Assert.That(actual.CSmallint, Is.EqualTo(expected.CSmallint));
                        Assert.That(actual.CMediumint, Is.EqualTo(expected.CMediumint));
                        Assert.That(actual.CInt, Is.EqualTo(expected.CInt));
@@ -860,6 +781,7 @@ public static class Templates
                        Assert.That(actual.CMediumtext, Is.EqualTo(expected.CMediumtext));
                        Assert.That(actual.CText, Is.EqualTo(expected.CText));
                        Assert.That(actual.CLongtext, Is.EqualTo(expected.CLongtext));
+                       Assert.That(actual.CYear, Is.EqualTo(expected.CYear));
                        Assert.That(actual.CDate, Is.EqualTo(expected.CDate));
                        Assert.That(actual.CTimestamp, Is.EqualTo(expected.CTimestamp));
                        Assert.That(actual.CBinary, Is.EqualTo(expected.CBinary));
@@ -870,6 +792,124 @@ public static class Templates
                        Assert.That(actual.CLongblob, Is.EqualTo(expected.CLongblob));
                    }
                    """
+        },
+        [KnownTestType.MySqlCopyFrom] = new TestImpl
+        {
+            Impl = $$"""
+                     [Test]
+                     [TestCase(100, true, false, 0x05, -13, 324, -98760, 987965, 3132423, -7785442, 3.4f, -31.555666, 11.098643, 34.4424, 423.2445, 998.9994542, 21.214312452534, "D", "\u4321", "\u2345", "Parasite", "Clockwork Orange", "Dr. Strangelove", "Interview with a Vampire", "Memento", 1993, "2000-1-30", "1983-11-3 02:01:22", "2010-1-30 08:11:00")]
+                     [TestCase(500, false, true, 0x12, 8, -555, 66979, -423425, -9798642, 3297398, 1.23f, 99.35542, 32.33345, -12.3456, -55.55556, -11.1123334, 33.423542356346, "3", "\u1234", "\u6543", "Splendor in the Grass", "Pulp Fiction", "Chinatown", "Repulsion", "Million Dollar Baby", 2025, "2012-9-20", "2012-1-20 22:12:34", "1984-6-5 20:12:12")]
+                     [TestCase(10, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, "1970-1-1 00:00:01")]
+                     public async Task TestCopyFrom(
+                        int batchSize, 
+                        bool? cBool,
+                        bool? cBoolean,
+                        byte? cBit,
+                        short? cTinyint,
+                        short? cSmallint,
+                        int? cMediumint,
+                        int? cInt, 
+                        int? cInteger,
+                        long? cBigint,
+                        float? cFloat,
+                        decimal? cNumeric,
+                        decimal? cDecimal,
+                        decimal? cDec,
+                        decimal? cFixed,
+                        double? cDouble,
+                        double? cDoublePrecision,
+                        string{{UnknownNullableIndicatorPlaceholder}} cChar,
+                        string{{UnknownNullableIndicatorPlaceholder}} cNchar,
+                        string{{UnknownNullableIndicatorPlaceholder}} cNationalChar,
+                        string{{UnknownNullableIndicatorPlaceholder}} cVarchar, 
+                        string{{UnknownNullableIndicatorPlaceholder}} cTinytext, 
+                        string{{UnknownNullableIndicatorPlaceholder}} cMediumtext, 
+                        string{{UnknownNullableIndicatorPlaceholder}} cText, 
+                        string{{UnknownNullableIndicatorPlaceholder}} cLongtext,
+                        short? cYear,
+                        DateTime? cDate, 
+                        DateTime? cDatetime,
+                        DateTime? cTimestamp)
+                     {
+                         var batchArgs = Enumerable.Range(0, batchSize)
+                             .Select(_ => new QuerySql.InsertMysqlTypesBatchArgs
+                             {
+                                 CBool = cBool,
+                                 CBoolean = cBoolean,
+                                 CTinyint = cTinyint,
+                                 CSmallint = cSmallint,
+                                 CMediumint = cMediumint,
+                                 CInt = cInt,
+                                 CInteger = cInteger,
+                                 CBigint = cBigint,
+                                 CChar = cChar,
+                                 CNchar = cNchar,
+                                 CNationalChar = cNationalChar,
+                                 CVarchar = cVarchar,
+                                 CTinytext = cTinytext,
+                                 CMediumtext = cMediumtext,
+                                 CText = cText,
+                                 CLongtext = cLongtext,
+                                 CYear = cYear,
+                                 CDate = cDate,
+                                 CDatetime = cDatetime,
+                                 CTimestamp = cTimestamp
+                             })
+                             .ToList();
+                         await QuerySql.InsertMysqlTypesBatch(batchArgs);
+                         var expected = new QuerySql.GetMysqlTypesAggRow
+                         {
+                             Cnt = batchSize,
+                             CBool = cBool,
+                             CBoolean = cBoolean,
+                             CTinyint = cTinyint,
+                             CSmallint = cSmallint,
+                             CMediumint = cMediumint,
+                             CInt = cInt,
+                             CInteger = cInteger,
+                             CBigint = cBigint,
+                             CChar = cChar,
+                             CNchar = cNchar,
+                             CNationalChar = cNationalChar,
+                             CVarchar = cVarchar,
+                             CTinytext = cTinytext,
+                             CMediumtext = cMediumtext,
+                             CText = cText,
+                             CLongtext = cLongtext,
+                             CYear = cYear,
+                             CDate = cDate,
+                             CDatetime = cDatetime,
+                             CTimestamp = cTimestamp
+                         };
+                         var actual = await QuerySql.GetMysqlTypesAgg();
+                         AssertSingularEquals(expected, actual{{UnknownRecordValuePlaceholder}});
+                     }
+                     
+                     private static void AssertSingularEquals(QuerySql.GetMysqlTypesAggRow expected, QuerySql.GetMysqlTypesAggRow actual)
+                     {
+                         Assert.That(actual.Cnt, Is.EqualTo(expected.Cnt));
+                         Assert.That(actual.CBool, Is.EqualTo(expected.CBool));
+                         Assert.That(actual.CBoolean, Is.EqualTo(expected.CBoolean));
+                         Assert.That(actual.CTinyint, Is.EqualTo(expected.CTinyint));
+                         Assert.That(actual.CSmallint, Is.EqualTo(expected.CSmallint));
+                         Assert.That(actual.CMediumint, Is.EqualTo(expected.CMediumint));
+                         Assert.That(actual.CInt, Is.EqualTo(expected.CInt));
+                         Assert.That(actual.CInteger, Is.EqualTo(expected.CInteger));
+                         Assert.That(actual.CBigint, Is.EqualTo(expected.CBigint));
+                         Assert.That(actual.CChar, Is.EqualTo(expected.CChar));
+                         Assert.That(actual.CNchar, Is.EqualTo(expected.CNchar));
+                         Assert.That(actual.CNationalChar, Is.EqualTo(expected.CNationalChar));
+                         Assert.That(actual.CVarchar, Is.EqualTo(expected.CVarchar));
+                         Assert.That(actual.CTinytext, Is.EqualTo(expected.CTinytext));
+                         Assert.That(actual.CMediumtext, Is.EqualTo(expected.CMediumtext));
+                         Assert.That(actual.CText, Is.EqualTo(expected.CText));
+                         Assert.That(actual.CLongtext, Is.EqualTo(expected.CLongtext));
+                         Assert.That(actual.CYear, Is.EqualTo(expected.CYear));
+                         Assert.That(actual.CDate, Is.EqualTo(expected.CDate));
+                         Assert.That(actual.CDatetime, Is.EqualTo(expected.CDatetime));
+                         Assert.That(actual.CTimestamp, Is.EqualTo(expected.CTimestamp));
+                     }
+                     """
         },
         [KnownTestType.SqliteDataTypes] = new TestImpl
         {
@@ -911,6 +951,48 @@ public static class Templates
                        Assert.That(actual.CBlob, Is.EqualTo(expected.CBlob));
                    }
                    """
+        },
+        [KnownTestType.SqliteCopyFrom] = new TestImpl
+        {
+            Impl = $$"""
+                     [Test]
+                     [TestCase(100, 312, -7541.3309, "Johnny B. Good")]
+                     [TestCase(500, -768, 8453.5678, "Bad to the Bone")]
+                     [TestCase(10, null, null, null)]
+                     public async Task TestCopyFrom(
+                        int batchSize, 
+                        int? cInteger, 
+                        decimal? cReal, 
+                        string{{UnknownNullableIndicatorPlaceholder}} cText)
+                     {
+                         var batchArgs = Enumerable.Range(0, batchSize)
+                             .Select(_ => new QuerySql.InsertSqliteTypesBatchArgs
+                             {
+                                 CInteger = cInteger,
+                                 CReal = cReal,
+                                 CText = cText
+                             })
+                             .ToList();
+                         await QuerySql.InsertSqliteTypesBatch(batchArgs);
+                         var expected = new QuerySql.GetSqliteTypesAggRow
+                         {
+                             Cnt = batchSize,
+                             CInteger = cInteger,
+                             CReal = cReal,
+                             CText = cText
+                         };
+                         var actual = await QuerySql.GetSqliteTypesAgg();
+                         AssertSingularEquals(expected, actual{{UnknownRecordValuePlaceholder}});
+                     }
+                     
+                     private static void AssertSingularEquals(QuerySql.GetSqliteTypesAggRow expected, QuerySql.GetSqliteTypesAggRow actual)
+                     {
+                         Assert.That(actual.Cnt, Is.EqualTo(expected.Cnt));
+                         Assert.That(actual.CInteger, Is.EqualTo(expected.CInteger));
+                         Assert.That(actual.CReal, Is.EqualTo(expected.CReal));
+                         Assert.That(actual.CText, Is.EqualTo(expected.CText));
+                     }
+                     """
         },
         [KnownTestType.NargNull] = new TestImpl
         {

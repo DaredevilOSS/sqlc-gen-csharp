@@ -17,7 +17,7 @@ public abstract class DbDriver
 
     private HashSet<string> NullableTypesInDotnetCore { get; } = ["string", "object"];
 
-    private HashSet<string> NullableTypes { get; } = ["bool", "short", "int", "long", "float", "double", "decimal", "DateTime"];
+    private HashSet<string> NullableTypes { get; } = ["bool", "byte", "short", "int", "long", "float", "double", "decimal", "DateTime"];
 
     protected abstract List<ColumnMapping> ColumnMappings { get; }
 
@@ -64,9 +64,8 @@ public abstract class DbDriver
 
         string GetTypeWithoutNullableSuffix()
         {
-            var columnType = column.Type.Name.ToLower();
             foreach (var columnMapping in ColumnMappings
-                         .Where(columnMapping => columnMapping.DbTypes.ContainsKey(columnType)))
+                         .Where(columnMapping => DoesColumnMappingApply(columnMapping, column)))
             {
                 if (column.IsArray || column.IsSqlcSlice) return $"{columnMapping.CsharpType}[]";
                 return columnMapping.CsharpType;
@@ -75,11 +74,20 @@ public abstract class DbDriver
         }
     }
 
-    public string GetColumnReader(Column column, int ordinal)
+    private static bool DoesColumnMappingApply(ColumnMapping columnMapping, Column column)
     {
         var columnType = column.Type.Name.ToLower();
+        if (!columnMapping.DbTypes.TryGetValue(columnType, out var typeInfo))
+            return false;
+        if (typeInfo.Length is null)
+            return true;
+        return typeInfo.Length.Value == column.Length;
+    }
+
+    public string GetColumnReader(Column column, int ordinal)
+    {
         foreach (var columnMapping in ColumnMappings
-                     .Where(columnMapping => columnMapping.DbTypes.ContainsKey(columnType)))
+                     .Where(columnMapping => DoesColumnMappingApply(columnMapping, column)))
         {
             if (column.IsArray)
                 return columnMapping.ReaderArrayFn?.Invoke(ordinal) ?? throw new InvalidOperationException("ReaderArrayFn is null");
@@ -94,7 +102,7 @@ public abstract class DbDriver
         foreach (var columnMapping in ColumnMappings)
         {
             if (columnMapping.DbTypes.TryGetValue(columnType, out var dbTypeOverride))
-                return dbTypeOverride;
+                return dbTypeOverride.NpgsqlTypeOverride;
         }
         throw new NotSupportedException($"Column {column.Name} has unsupported column type: {column.Type.Name}");
     }

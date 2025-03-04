@@ -125,12 +125,13 @@ namespace SqlcGenCsharpTests
         }
 
         [Test]
-        [TestCase(100, true, 3, 453, -1445214231, 336.3431, -99.999, 666.6f, "1973-12-3", "1960-11-3 02:01:22", "z", "Sex Pistols", "Anarchy in the U.K", "Never Mind the Bollocks...")]
-        [TestCase(500, false, -4, 867, 8768769709, -662.8671, 127.4793, -64.8f, "2024-12-31", "1999-3-1 03:00:10", "1", "Fugazi", "Waiting Room", "13 Songs")]
-        [TestCase(10, null, null, null, null, null, null, null, null, null, null, null, null, null)]
-        public async Task TestCopyFrom(int batchSize, bool? cBoolean, short? cSmallint, int? cInteger, long? cBigint, decimal? cDecimal, decimal? cNumeric, float? cReal, DateTime? cDate, DateTime? cTimestamp, string cChar, string cVarchar, string cCharacterVarying, string cText)
+        [TestCase(100, true, 3, 453, -1445214231, 666.6f, 336.3431, -99.999, -1377.996, "1973-12-3", "1960-11-3 02:01:22", "z", "Sex Pistols", "Anarchy in the U.K", "Never Mind the Bollocks...", new byte[] { 0x53, 0x56 })]
+        [TestCase(500, false, -4, 867, 8768769709, -64.8f, -324.8671, 127.4793, 423.9869, "2024-12-31", "1999-3-1 03:00:10", "1", "Fugazi", "Waiting Room", "13 Songs", new byte[] { 0x03 })]
+        [TestCase(10, null, null, null, null, null, null, null, null, null, null, null, null, null, null, new byte[] { })]
+        [TestCase(10, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null)]
+        public async Task TestCopyFrom(int batchSize, bool? cBoolean, short? cSmallint, int? cInteger, long? cBigint, float? cReal, decimal? cDecimal, decimal? cNumeric, double? cDoublePrecision, DateTime? cDate, DateTime? cTimestamp, string cChar, string cVarchar, string cCharacterVarying, string cText, byte[] cBytea)
         {
-            var batchArgs = Enumerable.Range(0, batchSize).Select(_ => new QuerySql.InsertPostgresTypesBatchArgs { CBoolean = cBoolean, CSmallint = cSmallint, CInteger = cInteger, CBigint = cBigint, CDecimal = cDecimal, CNumeric = cNumeric, CReal = cReal, CDate = cDate, CTimestamp = cTimestamp, CChar = cChar, CVarchar = cVarchar, CCharacterVarying = cCharacterVarying, CText = cText }).ToList();
+            var batchArgs = Enumerable.Range(0, batchSize).Select(_ => new QuerySql.InsertPostgresTypesBatchArgs { CBoolean = cBoolean, CSmallint = cSmallint, CInteger = cInteger, CBigint = cBigint, CReal = cReal, CDecimal = cDecimal, CNumeric = cNumeric, CDoublePrecision = cDoublePrecision, CDate = cDate, CTimestamp = cTimestamp, CChar = cChar, CVarchar = cVarchar, CCharacterVarying = cCharacterVarying, CText = cText, CBytea = cBytea }).ToList();
             await QuerySql.InsertPostgresTypesBatch(batchArgs);
             var expected = new QuerySql.GetPostgresTypesAggRow
             {
@@ -139,15 +140,17 @@ namespace SqlcGenCsharpTests
                 CSmallint = cSmallint,
                 CInteger = cInteger,
                 CBigint = cBigint,
+                CReal = cReal,
                 CDecimal = cDecimal,
                 CNumeric = cNumeric,
-                CReal = cReal,
+                CDoublePrecision = cDoublePrecision,
                 CDate = cDate,
                 CTimestamp = cTimestamp,
                 CChar = cChar,
                 CVarchar = cVarchar,
                 CCharacterVarying = cCharacterVarying,
-                CText = cText
+                CText = cText,
+                CBytea = cBytea
             };
             var actual = await QuerySql.GetPostgresTypesAgg();
             AssertSingularEquals(expected, actual);
@@ -160,15 +163,17 @@ namespace SqlcGenCsharpTests
             Assert.That(actual.CSmallint, Is.EqualTo(expected.CSmallint));
             Assert.That(actual.CInteger, Is.EqualTo(expected.CInteger));
             Assert.That(actual.CBigint, Is.EqualTo(expected.CBigint));
+            Assert.That(actual.CReal, Is.EqualTo(expected.CReal));
             Assert.That(actual.CDecimal, Is.EqualTo(expected.CDecimal));
             Assert.That(actual.CNumeric, Is.EqualTo(expected.CNumeric));
-            Assert.That(actual.CReal, Is.EqualTo(expected.CReal));
+            Assert.That(actual.CDoublePrecision, Is.EqualTo(expected.CDoublePrecision));
             Assert.That(actual.CDate, Is.EqualTo(expected.CDate));
             Assert.That(actual.CTimestamp, Is.EqualTo(expected.CTimestamp));
             Assert.That(actual.CChar, Is.EqualTo(expected.CChar));
             Assert.That(actual.CVarchar, Is.EqualTo(expected.CVarchar));
             Assert.That(actual.CCharacterVarying, Is.EqualTo(expected.CCharacterVarying));
             Assert.That(actual.CText, Is.EqualTo(expected.CText));
+            Assert.That(actual.CBytea, Is.EqualTo(expected.CBytea));
         }
 
         [Test]

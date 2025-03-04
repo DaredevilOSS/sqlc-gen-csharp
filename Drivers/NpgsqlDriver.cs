@@ -25,84 +25,84 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId
     protected sealed override List<ColumnMapping> ColumnMappings { get; } =
     [
         new("long",
-            new Dictionary<string, string?>
+            new Dictionary<string, DbTypeInfo>
             {
-                { "int8", "NpgsqlDbType.Bigint" },
-                { "bigint", "NpgsqlDbType.Bigint" },
-                { "bigserial", "NpgsqlDbType.Bigint" }
+                { "int8", new DbTypeInfo(NpgsqlTypeOverride: "NpgsqlDbType.Bigint") },
+                { "bigint", new DbTypeInfo(NpgsqlTypeOverride: "NpgsqlDbType.Bigint") },
+                { "bigserial", new DbTypeInfo(NpgsqlTypeOverride: "NpgsqlDbType.Bigint") }
             }
             , ordinal => $"reader.GetInt64({ordinal})"),
         new("byte[]",
-            new Dictionary<string, string?>
+            new Dictionary<string, DbTypeInfo>
             {
-                { "binary", null },
-                { "bit", null },
-                { "bytea", null },
-                { "blob", null },
-                { "longblob", null },
-                { "mediumblob", null },
-                { "tinyblob", null },
-                { "varbinary", null }
+                { "binary", new DbTypeInfo() },
+                { "bit", new DbTypeInfo() },
+                { "bytea", new DbTypeInfo() },
+                { "blob", new DbTypeInfo() },
+                { "longblob", new DbTypeInfo() },
+                { "mediumblob", new DbTypeInfo() },
+                { "tinyblob", new DbTypeInfo() },
+                { "varbinary", new DbTypeInfo() }
             }, ordinal => $"reader.GetFieldValue<byte[]>({ordinal})"),
         new("string",
-            new Dictionary<string, string?>
+            new Dictionary<string, DbTypeInfo>
             {
-                { "longtext", null },
-                { "mediumtext", null },
-                { "text", null },
-                { "bpchar", null },
-                { "time", null },
-                { "tinytext", null },
-                { "varchar", "NpgsqlDbType.Varchar" }
+                { "longtext", new DbTypeInfo() },
+                { "mediumtext", new DbTypeInfo() },
+                { "text", new DbTypeInfo() },
+                { "bpchar", new DbTypeInfo() },
+                { "time", new DbTypeInfo() },
+                { "tinytext", new DbTypeInfo() },
+                { "varchar", new DbTypeInfo() }
             }, ordinal => $"reader.GetString({ordinal})",
              ordinal => $"reader.GetFieldValue<string[]>({ordinal})"),
         new("DateTime",
-            new Dictionary<string, string?>
+            new Dictionary<string, DbTypeInfo>
             {
-                { "date", "NpgsqlDbType.Date" },
-                { "timestamp", "NpgsqlDbType.Timestamp" }
+                { "date", new DbTypeInfo(NpgsqlTypeOverride: "NpgsqlDbType.Date") },
+                { "timestamp", new DbTypeInfo(NpgsqlTypeOverride: "NpgsqlDbType.Timestamp") }
             }, ordinal => $"reader.GetDateTime({ordinal})"),
         new("object",
-            new Dictionary<string, string?>
+            new Dictionary<string, DbTypeInfo>
             {
-                { "json", null }
+                { "json", new DbTypeInfo() }
             }, ordinal => $"reader.GetString({ordinal})"),
         new("short",
-            new Dictionary<string, string?>
+            new Dictionary<string, DbTypeInfo>
             {
-                { "int2", "NpgsqlDbType.Smallint" }
+                { "int2", new DbTypeInfo(NpgsqlTypeOverride: "NpgsqlDbType.Smallint") }
             }, ordinal => $"reader.GetInt16({ordinal})",
             ordinal => $"reader.GetFieldValue<short[]>({ordinal})"),
         new("int",
-            new Dictionary<string, string?>
+            new Dictionary<string, DbTypeInfo>
             {
-                { "integer", "NpgsqlDbType.Integer" },
-                { "int", "NpgsqlDbType.Integer" },
-                { "int4", "NpgsqlDbType.Integer" },
-                { "serial", "NpgsqlDbType.Integer" }
+                { "integer", new DbTypeInfo(NpgsqlTypeOverride: "NpgsqlDbType.Integer") },
+                { "int", new DbTypeInfo(NpgsqlTypeOverride: "NpgsqlDbType.Integer") },
+                { "int4", new DbTypeInfo(NpgsqlTypeOverride: "NpgsqlDbType.Integer") },
+                { "serial", new DbTypeInfo(NpgsqlTypeOverride: "NpgsqlDbType.Integer") }
             }, ordinal => $"reader.GetInt32({ordinal})",
                ordinal => $"reader.GetFieldValue<int[]>({ordinal})"),
         new("float",
-            new Dictionary<string, string?>
+            new Dictionary<string, DbTypeInfo>
             {
-                { "float4", "NpgsqlDbType.Real" }
+                { "float4", new DbTypeInfo(NpgsqlTypeOverride: "NpgsqlDbType.Real") }
             }, ordinal => $"reader.GetFloat({ordinal})"),
         new("decimal",
-            new Dictionary<string, string?>
+            new Dictionary<string, DbTypeInfo>
             {
-                { "numeric", "NpgsqlDbType.Numeric" },
-                { "decimal", "NpgsqlDbType.Numeric" }
+                { "numeric", new DbTypeInfo(NpgsqlTypeOverride: "NpgsqlDbType.Numeric") },
+                { "decimal", new DbTypeInfo(NpgsqlTypeOverride: "NpgsqlDbType.Numeric") }
             }, ordinal => $"reader.GetDecimal({ordinal})"),
         new("double",
-            new Dictionary<string, string?>
+            new Dictionary<string, DbTypeInfo>
             {
-                { "float8", "NpgsqlDbType.Double" },
+                { "float8", new DbTypeInfo(NpgsqlTypeOverride: "NpgsqlDbType.Double") },
             }, ordinal => $"reader.GetDouble({ordinal})"),
         new("bool",
-            new Dictionary<string, string?>
+            new Dictionary<string, DbTypeInfo>
             {
-                { "bool", null },
-                { "boolean", null }
+                { "bool", new DbTypeInfo() },
+                { "boolean", new DbTypeInfo() }
             }, ordinal => $"reader.GetBoolean({ordinal})")
     ];
 

@@ -18,23 +18,22 @@ namespace MySqlConnectorLegacyExampleGen
     };
     public class MysqlType
     {
-        public bool? CBit { get; set; }
-        public bool? CTinyint { get; set; }
         public bool? CBool { get; set; }
         public bool? CBoolean { get; set; }
-        public short? CYear { get; set; }
+        public short? CTinyint { get; set; }
         public short? CSmallint { get; set; }
         public int? CMediumint { get; set; }
         public int? CInt { get; set; }
         public int? CInteger { get; set; }
         public long? CBigint { get; set; }
+        public double? CFloat { get; set; }
         public string CDecimal { get; set; }
         public string CDec { get; set; }
         public string CNumeric { get; set; }
         public string CFixed { get; set; }
-        public double? CFloat { get; set; }
         public double? CDouble { get; set; }
         public double? CDoublePrecision { get; set; }
+        public short? CYear { get; set; }
         public DateTime? CDate { get; set; }
         public string CTime { get; set; }
         public DateTime? CDatetime { get; set; }
@@ -47,12 +46,12 @@ namespace MySqlConnectorLegacyExampleGen
         public string CMediumtext { get; set; }
         public string CText { get; set; }
         public string CLongtext { get; set; }
+        public byte? CBit { get; set; }
         public byte[] CBinary { get; set; }
         public byte[] CVarbinary { get; set; }
         public byte[] CTinyblob { get; set; }
         public byte[] CBlob { get; set; }
         public byte[] CMediumblob { get; set; }
         public byte[] CLongblob { get; set; }
-        public string CJson { get; set; }
     };
 }

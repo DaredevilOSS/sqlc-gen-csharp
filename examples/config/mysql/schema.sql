@@ -13,14 +13,12 @@ CREATE TABLE books (
 );
 
 CREATE TABLE mysql_types (
-  /* Boolean data types */
-  c_bit         BIT,
-  c_tinyint     TINYINT,
+  /* Boolean data types - TINYINT(1) synonyms */
   c_bool        BOOL,
   c_boolean     BOOLEAN,
 
   /* Integer data types */
-  c_year        YEAR,
+  c_tinyint     TINYINT(3),
   c_smallint    SMALLINT,
   c_mediumint   MEDIUMINT,
   c_int         INT,
@@ -28,15 +26,16 @@ CREATE TABLE mysql_types (
   c_bigint      BIGINT,
 
   /* Float data types */
+  c_float            FLOAT,
   c_decimal          DECIMAL(10,7),
   c_dec              DEC(10,7),
-  c_numeric          NUMERIC(2,1),
-  c_fixed            FIXED(2,1),
-  c_float            FLOAT,
+  c_numeric          NUMERIC(10,7),
+  c_fixed            FIXED(10,7),
   c_double           DOUBLE,
   c_double_precision DOUBLE PRECISION,
 
   /* Datetime data types */
+  c_year        YEAR,
   c_date        DATE,
   c_time        TIME,
   c_datetime    DATETIME,
@@ -53,15 +52,11 @@ CREATE TABLE mysql_types (
   c_longtext        LONGTEXT,
     
   /* Binary data types */
+  c_bit         BIT(8),
   c_binary      BINARY(3),
   c_varbinary   VARBINARY(10),
   c_tinyblob    TINYBLOB,
   c_blob        BLOB,
   c_mediumblob  MEDIUMBLOB,
-  c_longblob    LONGBLOB,
-    
-  /* Special data types */
-  /* c_enum ENUM('a', 'b', 'c'), */
-  /* c_set SET('a', 'b', 'c'), */
-  c_json JSON
+  c_longblob    LONGBLOB
 );
