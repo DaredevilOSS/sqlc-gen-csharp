@@ -36,3 +36,4 @@ INSERT INTO tab1 (field1, field2) VALUES
 | blob    | ✅         |
 
 </details>
+

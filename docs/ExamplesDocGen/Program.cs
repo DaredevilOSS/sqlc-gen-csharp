@@ -45,13 +45,16 @@ public static class ExamplesDocGen
         var optionsStr = optionsWriter.ToString().Trim().TrimEnd('.');
 
         return $"""
+                <details>
+                <summary>{projectName.Replace("Example", "")}</summary>
+                
                 ## Engine `{item["engine"]}`: [{projectName}]({outputDirectory})
-
                 ### [Schema]({item["schema"]}) | [Queries]({queryFiles}) | [End2End Test](end2end/{testProject}/{testClassName}.cs)
-
                 ### Config
                 ```yaml
                 {optionsStr}```
+                
+                </details>
                 """;
     }
 }
