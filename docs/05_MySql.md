@@ -1,6 +1,7 @@
 # MySQL
+<details>
+<summary>:execlastid - Implementation</summary>
 
-## :execlastid - Implementation
 The implementation differs if we're using `Dapper` or not.
 
 ### Driver - MySqlConnector
@@ -22,14 +23,20 @@ appended to the original query like this:
 INSERT INTO tab1 (field1, field2) VALUES ('a', 1); 
 SELECT LAST_INSERT_ID();
 ```
-
 The generated method will return `int` & `long` for `serial` & `bigserial` respectively.
 
-## :copyfrom - Implementation
+</details>
+
+<details>
+<summary>:copyfrom - Implementation</summary>
 Implemented via the `LOAD DATA` command which can load data from a `CSV` file to a table.
 Requires us to first save the input batch as a CSV, and then load it via the driver.
 
-## Data Types
+</details>
+
+<details>
+<summary>Supported Data Types</summary>
+
 Since in batch insert the data is not validated by the SQL itself but written and read from a CSV,
 we consider support for the different data types separately for batch inserts and everything else.
 
@@ -73,3 +80,5 @@ we consider support for the different data types separately for batch inserts an
 | multilinestring           | ❌         | ❌                  |
 | multipolygon              | ❌         | ❌                  |
 | geometrycollection        | ❌         | ❌                  |
+
+</details>

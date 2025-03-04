@@ -1,12 +1,20 @@
 # PostgresSQL
-## :execlastid - Implementation
+<details>
+<summary>:execlastid - Implementation</summary>
+
 Implemented via a `RETURNING` clause, allowing the `INSERT` command to return the newly created id, which can be of any
 data type that can have a unique constraint.
+</details>
 
-## :copyfrom - Implementation
+<details>
+<summary>:copyfrom - Implementation</summary>
+
 Implemented via the `COPY FROM` command which can load binary data directly from `stdin`.
+</details>
 
-## Data Types
+<details>
+<summary>Supported Data Types</summary>
+
 Since in batch insert the data is not validated by the SQL itself but written in a binary format, 
 we consider support for the different data types separately for batch inserts and everything else.
 
@@ -48,3 +56,5 @@ we consider support for the different data types separately for batch inserts an
 | json                                    | ❌         | ❌                  |
 | jsonb                                   | ❌         | ❌                  |
 | jsonpath                                | ❌         | ❌                  |
+
+</details>

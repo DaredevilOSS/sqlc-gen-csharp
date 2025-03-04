@@ -92,14 +92,22 @@ More info can be found in [here](https://docs.sqlc.dev/en/stable/reference/query
 
 More info can be found in [here](https://docs.sqlc.dev/en/stable/reference/macros.html#macros).
 # PostgresSQL
-## :execlastid - Implementation
+<details>
+<summary>:execlastid - Implementation</summary>
+
 Implemented via a `RETURNING` clause, allowing the `INSERT` command to return the newly created id, which can be of any
 data type that can have a unique constraint.
+</details>
 
-## :copyfrom - Implementation
+<details>
+<summary>:copyfrom - Implementation</summary>
+
 Implemented via the `COPY FROM` command which can load binary data directly from `stdin`.
+</details>
 
-## Data Types
+<details>
+<summary>Supported Data Types</summary>
+
 Since in batch insert the data is not validated by the SQL itself but written in a binary format, 
 we consider support for the different data types separately for batch inserts and everything else.
 
@@ -141,9 +149,11 @@ we consider support for the different data types separately for batch inserts an
 | json                                    | ❌         | ❌                  |
 | jsonb                                   | ❌         | ❌                  |
 | jsonpath                                | ❌         | ❌                  |
-# MySQL
 
-## :execlastid - Implementation
+</details># MySQL
+<details>
+<summary>:execlastid - Implementation</summary>
+
 The implementation differs if we're using `Dapper` or not.
 
 ### Driver - MySqlConnector
@@ -165,14 +175,20 @@ appended to the original query like this:
 INSERT INTO tab1 (field1, field2) VALUES ('a', 1); 
 SELECT LAST_INSERT_ID();
 ```
-
 The generated method will return `int` & `long` for `serial` & `bigserial` respectively.
 
-## :copyfrom - Implementation
+</details>
+
+<details>
+<summary>:copyfrom - Implementation</summary>
 Implemented via the `LOAD DATA` command which can load data from a `CSV` file to a table.
 Requires us to first save the input batch as a CSV, and then load it via the driver.
 
-## Data Types
+</details>
+
+<details>
+<summary>Supported Data Types</summary>
+
 Since in batch insert the data is not validated by the SQL itself but written and read from a CSV,
 we consider support for the different data types separately for batch inserts and everything else.
 
@@ -216,7 +232,10 @@ we consider support for the different data types separately for batch inserts an
 | multilinestring           | ❌         | ❌                  |
 | multipolygon              | ❌         | ❌                  |
 | geometrycollection        | ❌         | ❌                  |
-# SQLite3
+
+</details># SQLite3
+<details>
+<summary>:execlastid - Implementation</summary>
 
 ## :execlastid - Implementation
 Implemented via a `RETURNING` clause, allowing the `INSERT` command to return the newly created id, which can be of any
@@ -226,7 +245,10 @@ data type that can have a unique constraint.
 INSERT INTO tab1 (field1, field2) VALUES ('a', 1) RETURNING id_field;
 ```
 
-## :copyfrom - Implementation
+</details>
+
+<details>
+<summary>:copyfrom - Implementation</summary>
 Implemented via a multi `VALUES` clause, like this:
 
 ```sql
@@ -236,14 +258,19 @@ INSERT INTO tab1 (field1, field2) VALUES
 ('c', 3);
 ```
 
-## Data Types
+</details>
+
+<details>
+<summary>Supported Data Types</summary>
 
 | DB Type | Supported? |
 |---------|------------|
 | integer | ✅         |
 | real    | ✅         |
 | text    | ✅         |
-| blob    | ✅         |# Contributing
+| blob    | ✅         |
+
+</details># Contributing
 ## Local plugin development
 ### Prerequisites
 Make sure that the following applications are installed and added to your path.
