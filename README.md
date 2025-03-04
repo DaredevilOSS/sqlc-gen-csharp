@@ -12,8 +12,8 @@ version: "2"
 plugins:
 - name: csharp
   wasm:
-    url: https://github.com/DaredevilOSS/sqlc-gen-csharp/releases/download/v0.15.2/sqlc-gen-csharp.wasm
-    sha256: 251cfaaeccaf726aa06103fcdab500006b4bc5cd0be523eb6a8894db8d520147
+    url: https://github.com/DaredevilOSS/sqlc-gen-csharp/releases/download/v0.16.0/sqlc-gen-csharp.wasm
+    sha256: 648c06737ea6050b06d2469f1c56be39dd336dec15097de01c550f7001928b91
 sql:
   # For PostgresSQL
   - schema: schema.sql
@@ -48,7 +48,12 @@ sql:
 | useDapper              | default: `false`<br/>values: `false`,`true`                                                                                                                                        | Yes      | Enables Dapper as a thin wrapper for the generated code. For more information, please refer to the [Dapper documentation](https://github.com/DapperLib/Dapper).                                                                                                                                                                           |
 | overrideDapperVersion  | default:<br/> `2.1.35`<br/>values: The desired Dapper version                                                                                                                      | Yes      | If `useDapper` is set to `true`, this option allows you to override the version of Dapper to be used.                                                                                                                                                                                                                                     |
 
-## Query Annotations
+## Supported Features
+- ✅ means the feature is fully supported.
+- 🚫 means the database does not support the feature.
+- ❌ means the feature is not supported by the plugin (but could be supported by the database).
+
+### Query Annotations
 Basic functionality - same for all databases:
 - `:one`          - returns 0...1 records
 - `:many`         - returns 0...n records
@@ -60,26 +65,22 @@ Advanced functionality - varies between databases:
 - `:copyfrom`     - batch insert, implementation varies greatly
 <br/>
 
-| Annotation  | PostgresSQL | MySQL | SQLite |
-|-------------|-------------|-------|--------|
+| Annotation  | PostgresSQL | MySQL | SQLite  |
+|-------------|-------------|-------|---------|
 | :one        | ✅          | ✅    | ✅      |
 | :many       | ✅          | ✅    | ✅      |
 | :exec       | ✅          | ✅    | ✅      |
 | :execrows   | ✅          | ✅    | ✅      |
 | :execlastid | ✅          | ✅    | ✅      |
-| :copyfrom   | ✅          | ✅    | ❌      |
-
-- ✅ means the feature is fully supported.
-- ❌ means the feature is not supported by the plugin (but could be supported by the database).
+| :copyfrom   | ✅          | ✅    | ✅      |
 
 More info can be found in [here](https://docs.sqlc.dev/en/stable/reference/query-annotations.html).
 
-## Macro Annotations
+### Macro Annotations
 - `sqlc.arg`       - Attach a name to a parameter in a SQL query
 - `sqlc.narg`      - The same as `sqlc.arg`, but always marks the parameter as nullable
 - `sqlc.slice`     - For databases that do not support passing arrays to the `IN` operator, generates a dynamic query at runtime with the correct number of parameters
 - `sqlc.embed`     - Embedding allows you to reuse existing model structs in more queries
-
 <br/>
 
 | Annotation  | PostgresSQL | MySQL | SQLite  |
@@ -89,12 +90,160 @@ More info can be found in [here](https://docs.sqlc.dev/en/stable/reference/query
 | sqlc.slice  | 🚫          | ✅    | ✅       |
 | sqlc.embed  | ✅          | ✅    | ✅       |
 
-- ✅ means the feature is fully supported.
-- 🚫 means the database does not support the feature.
-- ❌ means the feature is not supported by the plugin (but could be supported by the database).
-
 More info can be found in [here](https://docs.sqlc.dev/en/stable/reference/macros.html#macros).
-# Contributing
+# PostgresSQL
+## :execlastid - Implementation
+Implemented via a `RETURNING` clause, allowing the `INSERT` command to return the newly created id, which can be of any
+data type that can have a unique constraint.
+
+## :copyfrom - Implementation
+Implemented via the `COPY FROM` command which can load binary data directly from `stdin`.
+
+## Data Types
+Since in batch insert the data is not validated by the SQL itself but written in a binary format, 
+we consider support for the different data types separately for batch inserts and everything else.
+
+| DB Type                                 | Supported? | Supported in Batch? |
+|-----------------------------------------|-----------|---------------------|
+| boolean                                 | ✅         | ✅                  |
+| smallint                                | ✅         | ✅                  |
+| integer                                 | ✅         | ✅                  |
+| bigint                                  | ✅         | ✅                  |
+| real                                    | ✅         | ✅                  |
+| decimal, numeric                        | ✅         | ✅                  |
+| double precision                        | ✅         | ✅                  |
+| date                                    | ✅         | ✅                  |
+| timestamp, timestamp without time zone  | ✅         | ✅                  |
+| timestamp with time zone                | ❌         | ❌                  |
+| time, time without time zone            | ❌         | ❌                  |
+| time with time zone                     | ❌         | ❌                  |
+| interval                                | ❌         | ❌                  |
+| char                                    | ✅         | ✅                  |
+| bpchar                                  | ❌         | ❌                  |
+| varchar, character varying              | ✅         | ✅                  |
+| text                                    | ✅         | ✅                  |
+| bytea                                   | ✅         | ✅                  |
+| 2-dimensional arrays (e.g text[],int[]) | ✅         | ❌                  |
+| money                                   | ❌         | ❌                  |
+| line                                    | ❌         | ❌                  |
+| lseg                                    | ❌         | ❌                  |
+| box                                     | ❌         | ❌                  |
+| path                                    | ❌         | ❌                  |
+| polygon                                 | ❌         | ❌                  |
+| circle                                  | ❌         | ❌                  |
+| cidr                                    | ❌         | ❌                  |
+| inet                                    | ❌         | ❌                  |
+| macaddr                                 | ❌         | ❌                  |
+| macaddr8                                | ❌         | ❌                  |
+| tsvector                                | ❌         | ❌                  |
+| tsquery                                 | ❌         | ❌                  |
+| uuid                                    | ❌         | ❌                  |
+| json                                    | ❌         | ❌                  |
+| jsonb                                   | ❌         | ❌                  |
+| jsonpath                                | ❌         | ❌                  |
+# MySQL
+
+## :execlastid - Implementation
+The implementation differs if we're using `Dapper` or not.
+
+### Driver - MySqlConnector
+The driver provides a `LastInsertedId` property to get the latest inserted id in the DB. 
+When accessing the property, it automatically performs the below query: 
+
+```sql
+SELECT LAST_INSERT_ID();
+```
+
+That will work only when the id column is defined as `serial` or `bigserial`, and the generated method will always return
+a `long` value.
+
+### Dapper
+Since the `LastInsertedId` is DB specific and hence not available in Dapper, the `LAST_INSERT_ID` query is simply 
+appended to the original query like this:
+
+```sql
+INSERT INTO tab1 (field1, field2) VALUES ('a', 1); 
+SELECT LAST_INSERT_ID();
+```
+
+The generated method will return `int` & `long` for `serial` & `bigserial` respectively.
+
+## :copyfrom - Implementation
+Implemented via the `LOAD DATA` command which can load data from a `CSV` file to a table.
+Requires us to first save the input batch as a CSV, and then load it via the driver.
+
+## Data Types
+Since in batch insert the data is not validated by the SQL itself but written and read from a CSV,
+we consider support for the different data types separately for batch inserts and everything else.
+
+| DB Type                   | Supported? | Supported in Batch? |
+|---------------------------|------------|---------------------|
+| bool, boolean, tinyint(1) | ✅         | ✅                  |
+| bit                       | ✅         | ✅                  |
+| tinyint                   | ✅         | ✅                  |
+| smallint                  | ✅         | ✅                  |
+| mediumint                 | ✅         | ✅                  |
+| integer, int              | ✅         | ✅                  |
+| bigint                    | ✅         | ✅                  |
+| real                      | ✅         | ✅                  |
+| numeric                   | ✅         | ✅                  |
+| decimal                   | ✅         | ✅                  |
+| double precision          | ✅         | ✅                  |
+| year                      | ✅         | ✅                  |
+| date                      | ✅         | ✅                  |
+| timestamp                 | ✅         | ✅                  |
+| char                      | ✅         | ✅                  |
+| nchar, national char      | ✅         | ✅                  |
+| varchar                   | ✅         | ✅                  |
+| tinytext                  | ✅         | ✅                  |
+| mediumtext                | ✅         | ✅                  |
+| text                      | ✅         | ✅                  |
+| longtext                  | ✅         | ✅                  |
+| binary                    | ✅         | ❌                  |
+| varbinary                 | ✅         | ❌                  |
+| tinyblob                  | ✅         | ❌                  |
+| blob                      | ✅         | ❌                  |
+| mediumblob                | ✅         | ❌                  |
+| longblob                  | ✅         | ❌                  |
+| enum                      | ❌         | ❌                  |
+| set                       | ❌         | ❌                  |
+| json                      | ❌         | ❌                  |
+| geometry                  | ❌         | ❌                  |
+| point                     | ❌         | ❌                  |
+| linestring                | ❌         | ❌                  |
+| polygon                   | ❌         | ❌                  |
+| multipoint                | ❌         | ❌                  |
+| multilinestring           | ❌         | ❌                  |
+| multipolygon              | ❌         | ❌                  |
+| geometrycollection        | ❌         | ❌                  |
+# SQLite3
+
+## :execlastid - Implementation
+Implemented via a `RETURNING` clause, allowing the `INSERT` command to return the newly created id, which can be of any
+data type that can have a unique constraint.
+
+```sql
+INSERT INTO tab1 (field1, field2) VALUES ('a', 1) RETURNING id_field;
+```
+
+## :copyfrom - Implementation
+Implemented via a multi `VALUES` clause, like this:
+
+```sql
+INSERT INTO tab1 (field1, field2) VALUES 
+('a', 1),
+('b', 2),
+('c', 3);
+```
+
+## Data Types
+
+| DB Type | Supported? |
+|---------|------------|
+| integer | ✅         |
+| real    | ✅         |
+| text    | ✅         |
+| blob    | ✅         |# Contributing
 ## Local plugin development
 ### Prerequisites
 Make sure that the following applications are installed and added to your path.
