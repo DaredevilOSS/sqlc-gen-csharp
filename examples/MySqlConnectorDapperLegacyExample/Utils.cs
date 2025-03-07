@@ -35,6 +35,18 @@ namespace MySqlConnectorDapperLegacyExampleGen
             }
         }
 
+        public class ByteArrayConverter : DefaultTypeConverter
+        {
+            public override string ConvertToString(object value, IWriterRow row, MemberMapData memberMapData)
+            {
+                if (value == null)
+                    return @"\N";
+                if (value is byte[] byteArray)
+                    return System.Text.Encoding.UTF8.GetString(byteArray);
+                return base.ConvertToString(value, row, memberMapData);
+            }
+        }
+
         public static string TransformQueryForSliceArgs(string originalSql, int sliceSize, string paramName)
         {
             var paramArgs = Enumerable.Range(0, sliceSize).Select(i => $"@{paramName}Arg{i}").ToList();
