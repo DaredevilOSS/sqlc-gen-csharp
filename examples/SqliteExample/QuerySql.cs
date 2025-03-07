@@ -409,7 +409,7 @@ public class QuerySql
                             CInteger = reader.IsDBNull(0) ? (int? )null : reader.GetInt32(0),
                             CReal = reader.IsDBNull(1) ? (decimal? )null : reader.GetDecimal(1),
                             CText = reader.IsDBNull(2) ? (string? )null : reader.GetString(2),
-                            CBlob = reader.IsDBNull(3) ? null : reader.GetFieldValue<byte[]>(3)
+                            CBlob = reader.IsDBNull(3) ? (byte[]? )null : reader.GetFieldValue<byte[]>(3)
                         };
                     }
                 }
@@ -438,7 +438,7 @@ public class QuerySql
                             CInteger = reader.IsDBNull(1) ? (int? )null : reader.GetInt32(1),
                             CReal = reader.IsDBNull(2) ? (decimal? )null : reader.GetDecimal(2),
                             CText = reader.IsDBNull(3) ? (string? )null : reader.GetString(3),
-                            CBlob = reader.IsDBNull(4) ? null : reader.GetFieldValue<byte[]>(4)
+                            CBlob = reader.IsDBNull(4) ? (byte[]? )null : reader.GetFieldValue<byte[]>(4)
                         };
                     }
                 }

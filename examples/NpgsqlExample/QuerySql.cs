@@ -426,7 +426,7 @@ public class QuerySql
                         return new GetPostgresTypesRow
                         {
                             CBoolean = reader.IsDBNull(0) ? (bool? )null : reader.GetBoolean(0),
-                            CBit = reader.IsDBNull(1) ? null : reader.GetFieldValue<byte[]>(1),
+                            CBit = reader.IsDBNull(1) ? (byte[]? )null : reader.GetFieldValue<byte[]>(1),
                             CSmallint = reader.IsDBNull(2) ? (short? )null : reader.GetInt16(2),
                             CInteger = reader.IsDBNull(3) ? (int? )null : reader.GetInt32(3),
                             CBigint = reader.IsDBNull(4) ? (long? )null : reader.GetInt64(4),
@@ -440,7 +440,7 @@ public class QuerySql
                             CChar = reader.IsDBNull(12) ? (string? )null : reader.GetString(12),
                             CVarchar = reader.IsDBNull(13) ? (string? )null : reader.GetString(13),
                             CCharacterVarying = reader.IsDBNull(14) ? (string? )null : reader.GetString(14),
-                            CBytea = reader.IsDBNull(15) ? null : reader.GetFieldValue<byte[]>(15),
+                            CBytea = reader.IsDBNull(15) ? (byte[]? )null : reader.GetFieldValue<byte[]>(15),
                             CText = reader.IsDBNull(16) ? (string? )null : reader.GetString(16),
                             CJson = reader.IsDBNull(17) ? (object? )null : reader.GetString(17),
                             CTextArray = reader.IsDBNull(18) ? null : reader.GetFieldValue<string[]>(18),
@@ -483,7 +483,7 @@ public class QuerySql
                             CVarchar = reader.IsDBNull(12) ? (string? )null : reader.GetString(12),
                             CCharacterVarying = reader.IsDBNull(13) ? (string? )null : reader.GetString(13),
                             CText = reader.IsDBNull(14) ? (string? )null : reader.GetString(14),
-                            CBytea = reader.IsDBNull(15) ? null : reader.GetFieldValue<byte[]>(15)
+                            CBytea = reader.IsDBNull(15) ? (byte[]? )null : reader.GetFieldValue<byte[]>(15)
                         };
                     }
                 }

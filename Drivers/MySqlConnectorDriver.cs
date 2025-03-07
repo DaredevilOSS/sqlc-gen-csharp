@@ -177,6 +177,12 @@ public partial class MySqlConnectorDriver(Options options, Dictionary<string, Ta
 
         var loaderColumns = query.Params.Select(p => $"\"{p.Column.Name}\"").JoinByComma();
         var (establishConnection, connectionOpen) = EstablishConnection(query);
+        var loaderExpressions = query.Params
+            .Where(p => GetCsharpType(p.Column).StartsWith("byte[]"))
+            .Select(p => $"""
+               {loaderVar}.Expressions.Add("{p.Column.Name} = UNHEX(@{p.Column.Name})");
+               """);
+
         return $$"""
                  const string supportedDateTimeFormat = "yyyy-MM-dd H:mm:ss";
                  var {{Variable.Config.AsVarName()}} = new CsvConfiguration(CultureInfo.CurrentCulture) { Delimiter = "{{csvDelimiter}}" };
@@ -188,6 +194,7 @@ public partial class MySqlConnectorDriver(Options options, Dictionary<string, Ta
                     {{csvWriterVar}}.Context.TypeConverterOptionsCache.AddOptions<DateTime>({{Variable.Options}});
                     {{csvWriterVar}}.Context.TypeConverterOptionsCache.AddOptions<DateTime?>({{Variable.Options}});
                     {{csvWriterVar}}.Context.TypeConverterCache.AddConverter<bool?>(new Utils.BoolToBitConverter());
+                    {{csvWriterVar}}.Context.TypeConverterCache.AddConverter<{{AddNullableSuffixIfNeeded("byte[]", false)}}>(new Utils.ByteArrayConverter());
                     {{csvWriterVar}}.Context.TypeConverterCache.AddConverter<byte?>({{nullConverterFn}});
                     {{csvWriterVar}}.Context.TypeConverterCache.AddConverter<short?>({{nullConverterFn}});
                     {{csvWriterVar}}.Context.TypeConverterCache.AddConverter<int?>({{nullConverterFn}});
@@ -215,6 +222,7 @@ public partial class MySqlConnectorDriver(Options options, Dictionary<string, Ta
                          NumberOfLinesToSkip = 1
                      };
                      {{loaderVar}}.Columns.AddRange(new List<string> { {{loaderColumns}} });
+                     {{loaderExpressions.JoinByNewLine()}}
                      await {{loaderVar}}.LoadAsync();
                      await {{connectionVar}}.CloseAsync();
                  }
