@@ -23,6 +23,7 @@ CREATE TABLE postgres_types (
     c_numeric NUMERIC(10,7),
     c_real REAL,
     c_double_precision DOUBLE PRECISION,
+    c_money MONEY,
     
     /* Date and Time Data Types */
     c_date DATE,

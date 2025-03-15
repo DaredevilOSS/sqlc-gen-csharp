@@ -450,10 +450,10 @@ namespace MySqlConnectorLegacyExampleGen
             public int? CInt { get; set; }
             public int? CInteger { get; set; }
             public long? CBigint { get; set; }
-            public string CDecimal { get; set; }
-            public string CDec { get; set; }
-            public string CNumeric { get; set; }
-            public string CFixed { get; set; }
+            public decimal? CDecimal { get; set; }
+            public decimal? CDec { get; set; }
+            public decimal? CNumeric { get; set; }
+            public decimal? CFixed { get; set; }
             public double? CFloat { get; set; }
             public double? CDouble { get; set; }
             public double? CDoublePrecision { get; set; }
@@ -534,10 +534,10 @@ namespace MySqlConnectorLegacyExampleGen
             public int? CInteger { get; set; }
             public long? CBigint { get; set; }
             public double? CFloat { get; set; }
-            public string CNumeric { get; set; }
-            public string CDecimal { get; set; }
-            public string CDec { get; set; }
-            public string CFixed { get; set; }
+            public decimal? CNumeric { get; set; }
+            public decimal? CDecimal { get; set; }
+            public decimal? CDec { get; set; }
+            public decimal? CFixed { get; set; }
             public double? CDouble { get; set; }
             public double? CDoublePrecision { get; set; }
             public string CChar { get; set; }
@@ -627,10 +627,10 @@ namespace MySqlConnectorLegacyExampleGen
             public int? CInteger { get; set; }
             public long? CBigint { get; set; }
             public double? CFloat { get; set; }
-            public string CDecimal { get; set; }
-            public string CDec { get; set; }
-            public string CNumeric { get; set; }
-            public string CFixed { get; set; }
+            public decimal? CDecimal { get; set; }
+            public decimal? CDec { get; set; }
+            public decimal? CNumeric { get; set; }
+            public decimal? CFixed { get; set; }
             public double? CDouble { get; set; }
             public double? CDoublePrecision { get; set; }
             public short? CYear { get; set; }
@@ -676,10 +676,10 @@ namespace MySqlConnectorLegacyExampleGen
                                 CInteger = reader.IsDBNull(6) ? (int? )null : reader.GetInt32(6),
                                 CBigint = reader.IsDBNull(7) ? (long? )null : reader.GetInt64(7),
                                 CFloat = reader.IsDBNull(8) ? (double? )null : reader.GetDouble(8),
-                                CDecimal = reader.IsDBNull(9) ? null : reader.GetString(9),
-                                CDec = reader.IsDBNull(10) ? null : reader.GetString(10),
-                                CNumeric = reader.IsDBNull(11) ? null : reader.GetString(11),
-                                CFixed = reader.IsDBNull(12) ? null : reader.GetString(12),
+                                CDecimal = reader.IsDBNull(9) ? (decimal? )null : reader.GetDecimal(9),
+                                CDec = reader.IsDBNull(10) ? (decimal? )null : reader.GetDecimal(10),
+                                CNumeric = reader.IsDBNull(11) ? (decimal? )null : reader.GetDecimal(11),
+                                CFixed = reader.IsDBNull(12) ? (decimal? )null : reader.GetDecimal(12),
                                 CDouble = reader.IsDBNull(13) ? (double? )null : reader.GetDouble(13),
                                 CDoublePrecision = reader.IsDBNull(14) ? (double? )null : reader.GetDouble(14),
                                 CYear = reader.IsDBNull(15) ? (short? )null : reader.GetInt16(15),
@@ -725,10 +725,10 @@ namespace MySqlConnectorLegacyExampleGen
             public int? CInteger { get; set; }
             public long? CBigint { get; set; }
             public double? CFloat { get; set; }
-            public string CNumeric { get; set; }
-            public string CDecimal { get; set; }
-            public string CDec { get; set; }
-            public string CFixed { get; set; }
+            public decimal? CNumeric { get; set; }
+            public decimal? CDecimal { get; set; }
+            public decimal? CDec { get; set; }
+            public decimal? CFixed { get; set; }
             public double? CDouble { get; set; }
             public double? CDoublePrecision { get; set; }
             public string CChar { get; set; }
@@ -774,10 +774,10 @@ namespace MySqlConnectorLegacyExampleGen
                                 CInteger = reader.IsDBNull(8) ? (int? )null : reader.GetInt32(8),
                                 CBigint = reader.IsDBNull(9) ? (long? )null : reader.GetInt64(9),
                                 CFloat = reader.IsDBNull(10) ? (double? )null : reader.GetDouble(10),
-                                CNumeric = reader.IsDBNull(11) ? null : reader.GetString(11),
-                                CDecimal = reader.IsDBNull(12) ? null : reader.GetString(12),
-                                CDec = reader.IsDBNull(13) ? null : reader.GetString(13),
-                                CFixed = reader.IsDBNull(14) ? null : reader.GetString(14),
+                                CNumeric = reader.IsDBNull(11) ? (decimal? )null : reader.GetDecimal(11),
+                                CDecimal = reader.IsDBNull(12) ? (decimal? )null : reader.GetDecimal(12),
+                                CDec = reader.IsDBNull(13) ? (decimal? )null : reader.GetDecimal(13),
+                                CFixed = reader.IsDBNull(14) ? (decimal? )null : reader.GetDecimal(14),
                                 CDouble = reader.IsDBNull(15) ? (double? )null : reader.GetDouble(15),
                                 CDoublePrecision = reader.IsDBNull(16) ? (double? )null : reader.GetDouble(16),
                                 CChar = reader.IsDBNull(17) ? null : reader.GetString(17),

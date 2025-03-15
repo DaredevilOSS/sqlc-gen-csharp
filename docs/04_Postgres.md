@@ -39,7 +39,7 @@ we consider support for the different data types separately for batch inserts an
 | text                                    | ✅         | ✅                  |
 | bytea                                   | ✅         | ✅                  |
 | 2-dimensional arrays (e.g text[],int[]) | ✅         | ❌                  |
-| money                                   | ❌         | ❌                  |
+| money                                   | ✅         | ✅                  |
 | line                                    | ❌         | ❌                  |
 | lseg                                    | ❌         | ❌                  |
 | box                                     | ❌         | ❌                  |

@@ -91,7 +91,8 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId
             new Dictionary<string, DbTypeInfo>
             {
                 { "numeric", new DbTypeInfo(NpgsqlTypeOverride: "NpgsqlDbType.Numeric") },
-                { "decimal", new DbTypeInfo(NpgsqlTypeOverride: "NpgsqlDbType.Numeric") }
+                { "decimal", new DbTypeInfo(NpgsqlTypeOverride: "NpgsqlDbType.Numeric") },
+                { "money", new DbTypeInfo(NpgsqlTypeOverride: "NpgsqlDbType.Money") }
             }, ordinal => $"reader.GetDecimal({ordinal})"),
         new("double",
             new Dictionary<string, DbTypeInfo>

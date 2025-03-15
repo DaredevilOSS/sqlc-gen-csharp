@@ -26,6 +26,7 @@ public class PostgresType
     public decimal? CNumeric { get; init; }
     public float? CReal { get; init; }
     public double? CDoublePrecision { get; init; }
+    public decimal? CMoney { get; init; }
     public DateTime? CDate { get; init; }
     public string? CTime { get; init; }
     public DateTime? CTimestamp { get; init; }
