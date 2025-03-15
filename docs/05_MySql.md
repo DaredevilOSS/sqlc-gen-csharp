@@ -34,7 +34,7 @@ Requires us to first save the input batch as a CSV, and then load it via the dri
 
 </details>
 
-<details>
+<details open>
 <summary>Supported Data Types</summary>
 
 Since in batch insert the data is not validated by the SQL itself but written and read from a CSV,

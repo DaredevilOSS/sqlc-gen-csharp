@@ -25,7 +25,7 @@ INSERT INTO tab1 (field1, field2) VALUES
 
 </details>
 
-<details>
+<details open>
 <summary>Supported Data Types</summary>
 
 | DB Type | Supported? |
