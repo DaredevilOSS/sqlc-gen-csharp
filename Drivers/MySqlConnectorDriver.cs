@@ -50,7 +50,6 @@ public partial class MySqlConnectorDriver(Options options, Dictionary<string, Ta
             new Dictionary<string, DbTypeInfo>
             {
                 { "char", new DbTypeInfo() },
-                { "decimal", new DbTypeInfo() },
                 { "longtext", new DbTypeInfo() },
                 { "mediumtext", new DbTypeInfo() },
                 { "text", new DbTypeInfo() },
@@ -79,6 +78,11 @@ public partial class MySqlConnectorDriver(Options options, Dictionary<string, Ta
                 { "double", new DbTypeInfo() },
                 { "float", new DbTypeInfo() }
             }, ordinal => $"reader.GetDouble({ordinal})"),
+        new("decimal",
+            new Dictionary<string, DbTypeInfo>
+            {
+                { "decimal", new DbTypeInfo() }
+            }, ordinal => $"reader.GetDecimal({ordinal})"),
         new("object",
             new Dictionary<string, DbTypeInfo>(), ordinal => $"reader.GetValue({ordinal})")
     ];

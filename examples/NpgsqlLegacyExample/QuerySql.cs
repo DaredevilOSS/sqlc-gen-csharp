@@ -437,7 +437,7 @@ namespace NpgsqlLegacyExampleGen
             }
         }
 
-        private const string InsertPostgresTypesSql = "INSERT INTO postgres_types (c_boolean, c_bit, c_smallint, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_date, c_timestamp, c_char, c_varchar, c_character_varying, c_text, c_bytea, c_text_array, c_integer_array) VALUES ( @c_boolean , @c_bit, @c_smallint, @c_integer, @c_bigint, @c_real, @c_numeric, @c_decimal, @c_double_precision, @c_date, @c_timestamp, @c_char, @c_varchar, @c_character_varying, @c_text, @c_bytea, @c_text_array, @c_integer_array ) "; 
+        private const string InsertPostgresTypesSql = "INSERT INTO postgres_types (c_boolean, c_bit, c_smallint, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_money, c_date, c_timestamp, c_char, c_varchar, c_character_varying, c_text, c_bytea, c_text_array, c_integer_array) VALUES ( @c_boolean, @c_bit, @c_smallint, @c_integer, @c_bigint, @c_real, @c_numeric, @c_decimal, @c_double_precision, @c_money, @c_date, @c_timestamp, @c_char, @c_varchar, @c_character_varying, @c_text, @c_bytea, @c_text_array, @c_integer_array ) "; 
         public class InsertPostgresTypesArgs
         {
             public bool? CBoolean { get; set; }
@@ -449,6 +449,7 @@ namespace NpgsqlLegacyExampleGen
             public decimal? CNumeric { get; set; }
             public decimal? CDecimal { get; set; }
             public double? CDoublePrecision { get; set; }
+            public decimal? CMoney { get; set; }
             public DateTime? CDate { get; set; }
             public DateTime? CTimestamp { get; set; }
             public string CChar { get; set; }
@@ -474,6 +475,7 @@ namespace NpgsqlLegacyExampleGen
                     command.Parameters.AddWithValue("@c_numeric", args.CNumeric ?? (object)DBNull.Value);
                     command.Parameters.AddWithValue("@c_decimal", args.CDecimal ?? (object)DBNull.Value);
                     command.Parameters.AddWithValue("@c_double_precision", args.CDoublePrecision ?? (object)DBNull.Value);
+                    command.Parameters.AddWithValue("@c_money", args.CMoney ?? (object)DBNull.Value);
                     command.Parameters.AddWithValue("@c_date", args.CDate ?? (object)DBNull.Value);
                     command.Parameters.AddWithValue("@c_timestamp", args.CTimestamp ?? (object)DBNull.Value);
                     command.Parameters.AddWithValue("@c_char", args.CChar ?? (object)DBNull.Value);
@@ -488,7 +490,7 @@ namespace NpgsqlLegacyExampleGen
             }
         }
 
-        private const string InsertPostgresTypesBatchSql = "COPY postgres_types (c_boolean, c_smallint, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_date, c_timestamp, c_char, c_varchar, c_character_varying, c_text, c_bytea) FROM STDIN (FORMAT BINARY)";
+        private const string InsertPostgresTypesBatchSql = "COPY postgres_types (c_boolean, c_smallint, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_money, c_date, c_timestamp, c_char, c_varchar, c_character_varying, c_text, c_bytea) FROM STDIN (FORMAT BINARY)";
         public class InsertPostgresTypesBatchArgs
         {
             public bool? CBoolean { get; set; }
@@ -499,6 +501,7 @@ namespace NpgsqlLegacyExampleGen
             public decimal? CNumeric { get; set; }
             public decimal? CDecimal { get; set; }
             public double? CDoublePrecision { get; set; }
+            public decimal? CMoney { get; set; }
             public DateTime? CDate { get; set; }
             public DateTime? CTimestamp { get; set; }
             public string CChar { get; set; }
@@ -526,6 +529,7 @@ namespace NpgsqlLegacyExampleGen
                         await writer.WriteAsync(row.CNumeric, NpgsqlDbType.Numeric);
                         await writer.WriteAsync(row.CDecimal, NpgsqlDbType.Numeric);
                         await writer.WriteAsync(row.CDoublePrecision, NpgsqlDbType.Double);
+                        await writer.WriteAsync(row.CMoney, NpgsqlDbType.Money);
                         await writer.WriteAsync(row.CDate, NpgsqlDbType.Date);
                         await writer.WriteAsync(row.CTimestamp, NpgsqlDbType.Timestamp);
                         await writer.WriteAsync(row.CChar);
@@ -542,7 +546,7 @@ namespace NpgsqlLegacyExampleGen
             }
         }
 
-        private const string GetPostgresTypesSql = "SELECT c_boolean, c_bit, c_smallint, c_integer, c_bigint, c_decimal, c_numeric, c_real, c_double_precision, c_date, c_time, c_timestamp, c_char, c_varchar, c_character_varying, c_bytea, c_text, c_json, c_text_array, c_integer_array FROM postgres_types LIMIT 1";
+        private const string GetPostgresTypesSql = "SELECT c_boolean, c_bit, c_smallint, c_integer, c_bigint, c_decimal, c_numeric, c_real, c_double_precision, c_money, c_date, c_time, c_timestamp, c_char, c_varchar, c_character_varying, c_bytea, c_text, c_json, c_text_array, c_integer_array FROM postgres_types LIMIT 1";
         public class GetPostgresTypesRow
         {
             public bool? CBoolean { get; set; }
@@ -554,6 +558,7 @@ namespace NpgsqlLegacyExampleGen
             public decimal? CNumeric { get; set; }
             public float? CReal { get; set; }
             public double? CDoublePrecision { get; set; }
+            public decimal? CMoney { get; set; }
             public DateTime? CDate { get; set; }
             public string CTime { get; set; }
             public DateTime? CTimestamp { get; set; }
@@ -587,17 +592,18 @@ namespace NpgsqlLegacyExampleGen
                                 CNumeric = reader.IsDBNull(6) ? (decimal? )null : reader.GetDecimal(6),
                                 CReal = reader.IsDBNull(7) ? (float? )null : reader.GetFloat(7),
                                 CDoublePrecision = reader.IsDBNull(8) ? (double? )null : reader.GetDouble(8),
-                                CDate = reader.IsDBNull(9) ? (DateTime? )null : reader.GetDateTime(9),
-                                CTime = reader.IsDBNull(10) ? null : reader.GetString(10),
-                                CTimestamp = reader.IsDBNull(11) ? (DateTime? )null : reader.GetDateTime(11),
-                                CChar = reader.IsDBNull(12) ? null : reader.GetString(12),
-                                CVarchar = reader.IsDBNull(13) ? null : reader.GetString(13),
-                                CCharacterVarying = reader.IsDBNull(14) ? null : reader.GetString(14),
-                                CBytea = reader.IsDBNull(15) ? null : reader.GetFieldValue<byte[]>(15),
-                                CText = reader.IsDBNull(16) ? null : reader.GetString(16),
-                                CJson = reader.IsDBNull(17) ? null : reader.GetString(17),
-                                CTextArray = reader.IsDBNull(18) ? null : reader.GetFieldValue<string[]>(18),
-                                CIntegerArray = reader.IsDBNull(19) ? null : reader.GetFieldValue<int[]>(19)
+                                CMoney = reader.IsDBNull(9) ? (decimal? )null : reader.GetDecimal(9),
+                                CDate = reader.IsDBNull(10) ? (DateTime? )null : reader.GetDateTime(10),
+                                CTime = reader.IsDBNull(11) ? null : reader.GetString(11),
+                                CTimestamp = reader.IsDBNull(12) ? (DateTime? )null : reader.GetDateTime(12),
+                                CChar = reader.IsDBNull(13) ? null : reader.GetString(13),
+                                CVarchar = reader.IsDBNull(14) ? null : reader.GetString(14),
+                                CCharacterVarying = reader.IsDBNull(15) ? null : reader.GetString(15),
+                                CBytea = reader.IsDBNull(16) ? null : reader.GetFieldValue<byte[]>(16),
+                                CText = reader.IsDBNull(17) ? null : reader.GetString(17),
+                                CJson = reader.IsDBNull(18) ? null : reader.GetString(18),
+                                CTextArray = reader.IsDBNull(19) ? null : reader.GetFieldValue<string[]>(19),
+                                CIntegerArray = reader.IsDBNull(20) ? null : reader.GetFieldValue<int[]>(20)
                             };
                         }
                     }
@@ -607,7 +613,7 @@ namespace NpgsqlLegacyExampleGen
             return null;
         }
 
-        private const string GetPostgresTypesAggSql = "SELECT COUNT(1) AS cnt , c_smallint, c_boolean, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_date, c_timestamp, c_char, c_varchar, c_character_varying, c_text, c_bytea FROM  postgres_types  GROUP  BY  c_smallint , c_boolean, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_date, c_timestamp, c_char, c_varchar, c_character_varying, c_text, c_bytea LIMIT  1  ";  
+        private const string GetPostgresTypesAggSql = "SELECT COUNT(1) AS cnt ,  c_smallint , c_boolean, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_money, c_date, c_timestamp, c_char, c_varchar, c_character_varying, c_text, c_bytea FROM  postgres_types  GROUP  BY  c_smallint , c_boolean, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_money, c_date, c_timestamp, c_char, c_varchar, c_character_varying, c_text, c_bytea LIMIT  1  ";  
         public class GetPostgresTypesAggRow
         {
             public long Cnt { get; set; }
@@ -619,6 +625,7 @@ namespace NpgsqlLegacyExampleGen
             public decimal? CNumeric { get; set; }
             public decimal? CDecimal { get; set; }
             public double? CDoublePrecision { get; set; }
+            public decimal? CMoney { get; set; }
             public DateTime? CDate { get; set; }
             public DateTime? CTimestamp { get; set; }
             public string CChar { get; set; }
@@ -648,13 +655,14 @@ namespace NpgsqlLegacyExampleGen
                                 CNumeric = reader.IsDBNull(6) ? (decimal? )null : reader.GetDecimal(6),
                                 CDecimal = reader.IsDBNull(7) ? (decimal? )null : reader.GetDecimal(7),
                                 CDoublePrecision = reader.IsDBNull(8) ? (double? )null : reader.GetDouble(8),
-                                CDate = reader.IsDBNull(9) ? (DateTime? )null : reader.GetDateTime(9),
-                                CTimestamp = reader.IsDBNull(10) ? (DateTime? )null : reader.GetDateTime(10),
-                                CChar = reader.IsDBNull(11) ? null : reader.GetString(11),
-                                CVarchar = reader.IsDBNull(12) ? null : reader.GetString(12),
-                                CCharacterVarying = reader.IsDBNull(13) ? null : reader.GetString(13),
-                                CText = reader.IsDBNull(14) ? null : reader.GetString(14),
-                                CBytea = reader.IsDBNull(15) ? null : reader.GetFieldValue<byte[]>(15)
+                                CMoney = reader.IsDBNull(9) ? (decimal? )null : reader.GetDecimal(9),
+                                CDate = reader.IsDBNull(10) ? (DateTime? )null : reader.GetDateTime(10),
+                                CTimestamp = reader.IsDBNull(11) ? (DateTime? )null : reader.GetDateTime(11),
+                                CChar = reader.IsDBNull(12) ? null : reader.GetString(12),
+                                CVarchar = reader.IsDBNull(13) ? null : reader.GetString(13),
+                                CCharacterVarying = reader.IsDBNull(14) ? null : reader.GetString(14),
+                                CText = reader.IsDBNull(15) ? null : reader.GetString(15),
+                                CBytea = reader.IsDBNull(16) ? null : reader.GetFieldValue<byte[]>(16)
                             };
                         }
                     }

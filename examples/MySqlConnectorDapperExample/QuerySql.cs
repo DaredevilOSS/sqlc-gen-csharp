@@ -355,10 +355,10 @@ public class QuerySql
         public int? CInt { get; init; }
         public int? CInteger { get; init; }
         public long? CBigint { get; init; }
-        public string? CDecimal { get; init; }
-        public string? CDec { get; init; }
-        public string? CNumeric { get; init; }
-        public string? CFixed { get; init; }
+        public decimal? CDecimal { get; init; }
+        public decimal? CDec { get; init; }
+        public decimal? CNumeric { get; init; }
+        public decimal? CFixed { get; init; }
         public double? CFloat { get; init; }
         public double? CDouble { get; init; }
         public double? CDoublePrecision { get; init; }
@@ -436,10 +436,10 @@ public class QuerySql
         public int? CInteger { get; init; }
         public long? CBigint { get; init; }
         public double? CFloat { get; init; }
-        public string? CNumeric { get; init; }
-        public string? CDecimal { get; init; }
-        public string? CDec { get; init; }
-        public string? CFixed { get; init; }
+        public decimal? CNumeric { get; init; }
+        public decimal? CDecimal { get; init; }
+        public decimal? CDec { get; init; }
+        public decimal? CFixed { get; init; }
         public double? CDouble { get; init; }
         public double? CDoublePrecision { get; init; }
         public string? CChar { get; init; }
@@ -529,10 +529,10 @@ public class QuerySql
         public int? CInteger { get; init; }
         public long? CBigint { get; init; }
         public double? CFloat { get; init; }
-        public string? CDecimal { get; init; }
-        public string? CDec { get; init; }
-        public string? CNumeric { get; init; }
-        public string? CFixed { get; init; }
+        public decimal? CDecimal { get; init; }
+        public decimal? CDec { get; init; }
+        public decimal? CNumeric { get; init; }
+        public decimal? CFixed { get; init; }
         public double? CDouble { get; init; }
         public double? CDoublePrecision { get; init; }
         public short? CYear { get; init; }
@@ -579,10 +579,10 @@ public class QuerySql
         public int? CInteger { get; init; }
         public long? CBigint { get; init; }
         public double? CFloat { get; init; }
-        public string? CNumeric { get; init; }
-        public string? CDecimal { get; init; }
-        public string? CDec { get; init; }
-        public string? CFixed { get; init; }
+        public decimal? CNumeric { get; init; }
+        public decimal? CDecimal { get; init; }
+        public decimal? CDec { get; init; }
+        public decimal? CFixed { get; init; }
         public double? CDouble { get; init; }
         public double? CDoublePrecision { get; init; }
         public string? CChar { get; init; }

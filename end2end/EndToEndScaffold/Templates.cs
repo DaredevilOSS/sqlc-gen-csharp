@@ -483,9 +483,9 @@ public static class Templates
         {
             Impl = $$"""
                    [Test]
-                   [TestCase(true, 35, -23423, 4235235263, 3.83f, 4.5534, 998.432, -8403284.321435, "2000-1-30", "1983-11-3 02:01:22", "E", "It takes a nation of millions to hold us back", "Rebel Without a Pause", "Prophets of Rage", new byte[] { 0x45, 0x42 }, new string[] { "Party", "Fight" }, new int[] { 543, -4234 })]
-                   [TestCase(null, null, null, null, null, null, null, null, null, null, null, null, null, null, new byte[] { }, new string[] { }, new int[] { })]
-                   [TestCase(null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null)]
+                   [TestCase(true, 35, -23423, 4235235263, 3.83f, 4.5534, 998.432, -8403284.321435, 42332.53, "2000-1-30", "1983-11-3 02:01:22", "E", "It takes a nation of millions to hold us back", "Rebel Without a Pause", "Prophets of Rage", new byte[] { 0x45, 0x42 }, new string[] { "Party", "Fight" }, new int[] { 543, -4234 })]
+                   [TestCase(null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, new byte[] { }, new string[] { }, new int[] { })]
+                   [TestCase(null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null)]
                    public async Task TestPostgresTypes(
                        bool cBoolean,
                        short cSmallint, 
@@ -495,6 +495,7 @@ public static class Templates
                        decimal cNumeric, 
                        decimal cDecimal, 
                        double cDoublePrecision,
+                       decimal cMoney, 
                        DateTime cDate,
                        DateTime cTimestamp,
                        string cChar,
@@ -515,6 +516,7 @@ public static class Templates
                            CNumeric = cNumeric,
                            CDecimal = cDecimal,
                            CDoublePrecision = cDoublePrecision,
+                           CMoney = cMoney,
                            CDate = cDate,
                            CTimestamp = cTimestamp,
                            CChar = cChar,
@@ -536,6 +538,7 @@ public static class Templates
                            CNumeric = cNumeric,
                            CDecimal = cDecimal,
                            CDoublePrecision = cDoublePrecision,
+                           CMoney = cMoney,
                            CDate = cDate,
                            CTimestamp = cTimestamp,
                            CChar = cChar,
@@ -560,6 +563,7 @@ public static class Templates
                        Assert.That(actual.CNumeric, Is.EqualTo(expected.CNumeric));
                        Assert.That(actual.CDecimal, Is.EqualTo(expected.CDecimal));
                        Assert.That(actual.CDoublePrecision, Is.EqualTo(expected.CDoublePrecision));
+                       Assert.That(actual.CMoney, Is.EqualTo(expected.CMoney));
                        Assert.That(actual.CDate, Is.EqualTo(expected.CDate));
                        Assert.That(actual.CTimestamp, Is.EqualTo(expected.CTimestamp));
                        Assert.That(actual.CChar, Is.EqualTo(expected.CChar));
@@ -576,10 +580,10 @@ public static class Templates
         {
             Impl = $$"""
                      [Test]
-                     [TestCase(100, true, 3, 453, -1445214231, 666.6f, 336.3431, -99.999, -1377.996, "1973-12-3", "1960-11-3 02:01:22", "z", "Sex Pistols", "Anarchy in the U.K", "Never Mind the Bollocks...", new byte[] { 0x53, 0x56 })]
-                     [TestCase(500, false, -4, 867, 8768769709, -64.8f, -324.8671, 127.4793, 423.9869, "2024-12-31", "1999-3-1 03:00:10", "1", "Fugazi", "Waiting Room", "13 Songs", new byte[] { 0x03 })]
-                     [TestCase(10, null, null, null, null, null, null, null, null, null, null, null, null, null, null, new byte[] { })]
-                     [TestCase(10, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null)]
+                     [TestCase(100, true, 3, 453, -1445214231, 666.6f, 336.3431, -99.999, -1377.996, -43242.43, "1973-12-3", "1960-11-3 02:01:22", "z", "Sex Pistols", "Anarchy in the U.K", "Never Mind the Bollocks...", new byte[] { 0x53, 0x56 })]
+                     [TestCase(500, false, -4, 867, 8768769709, -64.8f, -324.8671, 127.4793, 423.9869, 32143.99, "2024-12-31", "1999-3-1 03:00:10", "1", "Fugazi", "Waiting Room", "13 Songs", new byte[] { 0x03 })]
+                     [TestCase(10, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, new byte[] { })]
+                     [TestCase(10, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null)]
                      public async Task TestCopyFrom(
                         int batchSize, 
                         bool? cBoolean, 
@@ -590,6 +594,7 @@ public static class Templates
                         decimal? cDecimal, 
                         decimal? cNumeric, 
                         double? cDoublePrecision,
+                        decimal? cMoney,
                         DateTime? cDate, 
                         DateTime? cTimestamp, 
                         string{{UnknownNullableIndicatorPlaceholder}} cChar, 
@@ -609,6 +614,7 @@ public static class Templates
                                  CDecimal = cDecimal,
                                  CNumeric = cNumeric,
                                  CDoublePrecision = cDoublePrecision,
+                                 CMoney = cMoney,
                                  CDate = cDate,
                                  CTimestamp = cTimestamp,
                                  CChar = cChar,
@@ -630,6 +636,7 @@ public static class Templates
                              CDecimal = cDecimal,
                              CNumeric = cNumeric,
                              CDoublePrecision = cDoublePrecision,
+                             CMoney = cMoney,
                              CDate = cDate,
                              CTimestamp = cTimestamp,
                              CChar = cChar,
@@ -653,6 +660,7 @@ public static class Templates
                          Assert.That(actual.CDecimal, Is.EqualTo(expected.CDecimal));
                          Assert.That(actual.CNumeric, Is.EqualTo(expected.CNumeric));
                          Assert.That(actual.CDoublePrecision, Is.EqualTo(expected.CDoublePrecision));
+                         Assert.That(actual.CMoney, Is.EqualTo(expected.CMoney));
                          Assert.That(actual.CDate, Is.EqualTo(expected.CDate));
                          Assert.That(actual.CTimestamp, Is.EqualTo(expected.CTimestamp));
                          Assert.That(actual.CChar, Is.EqualTo(expected.CChar));
