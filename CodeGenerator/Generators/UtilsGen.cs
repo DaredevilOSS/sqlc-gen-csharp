@@ -53,6 +53,7 @@ internal class UtilsGen(DbDriver dbDriver, string namespaceName)
 
     private MemberDeclarationSyntax GetUtilsClass()
     {
+        // TODO move driver specific logic to DB driver interface
         var optionalTransformQueryForSqliteBatch = dbDriver.Options.DriverName is DriverName.Sqlite
             ? """
               private static readonly Regex ValuesRegex = new Regex(@"VALUES\s*\((?<params>[^)]*)\)", RegexOptions.IgnoreCase);
