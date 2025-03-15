@@ -219,7 +219,8 @@ public partial class MySqlConnectorDriver(Options options, Dictionary<string, Ta
                          FieldTerminator = "{{csvDelimiter}}",
                          FieldQuotationCharacter = '"',
                          FieldQuotationOptional = true,
-                         NumberOfLinesToSkip = 1
+                         NumberOfLinesToSkip = 1,
+                         LineTerminator = "\n"
                      };
                      {{loaderVar}}.Columns.AddRange(new List<string> { {{loaderColumns}} });
                      await {{loaderVar}}.LoadAsync();
