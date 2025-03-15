@@ -15,7 +15,7 @@ public abstract class DbDriver
 
     public Dictionary<string, Table> Tables { get; }
 
-    private HashSet<string> NullableTypesInDotnetCore { get; } = ["string", "object"];
+    private HashSet<string> NullableTypesInDotnetCore { get; } = ["string", "object", "byte[]"]; // TODO add arrays in here in a non hard-coded manner
 
     private HashSet<string> NullableTypes { get; } = ["bool", "byte", "short", "int", "long", "float", "double", "decimal", "DateTime"];
 

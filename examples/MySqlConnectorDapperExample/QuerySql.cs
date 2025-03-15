@@ -343,14 +343,13 @@ public class QuerySql
         }
     }
 
-    private const string InsertMysqlTypesSql = "INSERT INTO mysql_types (c_bit, c_tinyint, c_bool, c_boolean, c_year, c_smallint, c_mediumint, c_int, c_integer, c_bigint, c_decimal, c_dec, c_numeric, c_fixed, c_float, c_double, c_double_precision, c_char, c_nchar, c_national_char, c_varchar, c_tinytext, c_mediumtext, c_text, c_longtext, c_date, c_timestamp, c_binary, c_varbinary, c_tinyblob, c_blob, c_mediumblob, c_longblob) VALUES ( @c_bit, @c_tinyint, @c_bool, @c_boolean, @c_year, @c_smallint, @c_mediumint, @c_int, @c_integer, @c_bigint, @c_decimal, @c_dec, @c_numeric, @c_fixed, @c_float, @c_double, @c_double_precision, @c_char, @c_nchar, @c_national_char, @c_varchar, @c_tinytext, @c_mediumtext, @c_text, @c_longtext, @c_date, @c_timestamp, @c_binary, @c_varbinary, @c_tinyblob, @c_blob, @c_mediumblob, @c_longblob ); SELECT  LAST_INSERT_ID ( ) "; 
+    private const string InsertMysqlTypesSql = "INSERT INTO mysql_types (c_bit, c_bool, c_boolean, c_tinyint, c_smallint, c_mediumint, c_int, c_integer, c_bigint, c_decimal, c_dec, c_numeric, c_fixed, c_float, c_double, c_double_precision, c_char, c_nchar, c_national_char, c_varchar, c_tinytext, c_mediumtext, c_text, c_longtext, c_year, c_date, c_datetime, c_timestamp, c_binary, c_varbinary, c_tinyblob, c_blob, c_mediumblob, c_longblob) VALUES ( @c_bit, @c_bool, @c_boolean, @c_tinyint, @c_smallint, @c_mediumint, @c_int, @c_integer, @c_bigint, @c_decimal, @c_dec, @c_numeric, @c_fixed, @c_float, @c_double, @c_double_precision, @c_char, @c_nchar, @c_national_char, @c_varchar, @c_tinytext, @c_mediumtext, @c_text, @c_longtext, @c_year, @c_date, @c_datetime, @c_timestamp, @c_binary, @c_varbinary, @c_tinyblob, @c_blob, @c_mediumblob, @c_longblob ); SELECT  LAST_INSERT_ID ( ) "; 
     public class InsertMysqlTypesArgs
     {
         public byte? CBit { get; init; }
-        public short? CTinyint { get; init; }
         public bool? CBool { get; init; }
         public bool? CBoolean { get; init; }
-        public short? CYear { get; init; }
+        public short? CTinyint { get; init; }
         public short? CSmallint { get; init; }
         public int? CMediumint { get; init; }
         public int? CInt { get; init; }
@@ -371,7 +370,9 @@ public class QuerySql
         public string? CMediumtext { get; init; }
         public string? CText { get; init; }
         public string? CLongtext { get; init; }
+        public short? CYear { get; init; }
         public DateTime? CDate { get; init; }
+        public DateTime? CDatetime { get; init; }
         public DateTime? CTimestamp { get; init; }
         public byte[]? CBinary { get; init; }
         public byte[]? CVarbinary { get; init; }
@@ -386,10 +387,9 @@ public class QuerySql
         {
             var queryParams = new Dictionary<string, object?>();
             queryParams.Add("c_bit", args.CBit);
-            queryParams.Add("c_tinyint", args.CTinyint);
             queryParams.Add("c_bool", args.CBool);
             queryParams.Add("c_boolean", args.CBoolean);
-            queryParams.Add("c_year", args.CYear);
+            queryParams.Add("c_tinyint", args.CTinyint);
             queryParams.Add("c_smallint", args.CSmallint);
             queryParams.Add("c_mediumint", args.CMediumint);
             queryParams.Add("c_int", args.CInt);
@@ -410,7 +410,9 @@ public class QuerySql
             queryParams.Add("c_mediumtext", args.CMediumtext);
             queryParams.Add("c_text", args.CText);
             queryParams.Add("c_longtext", args.CLongtext);
+            queryParams.Add("c_year", args.CYear);
             queryParams.Add("c_date", args.CDate);
+            queryParams.Add("c_datetime", args.CDatetime);
             queryParams.Add("c_timestamp", args.CTimestamp);
             queryParams.Add("c_binary", args.CBinary);
             queryParams.Add("c_varbinary", args.CVarbinary);
@@ -424,9 +426,9 @@ public class QuerySql
 
     public class InsertMysqlTypesBatchArgs
     {
+        public byte? CBit { get; init; }
         public bool? CBool { get; init; }
         public bool? CBoolean { get; init; }
-        public byte? CBit { get; init; }
         public short? CTinyint { get; init; }
         public short? CSmallint { get; init; }
         public int? CMediumint { get; init; }
@@ -452,28 +454,36 @@ public class QuerySql
         public DateTime? CDate { get; init; }
         public DateTime? CDatetime { get; init; }
         public DateTime? CTimestamp { get; init; }
+        public byte[]? CBinary { get; init; }
+        public byte[]? CVarbinary { get; init; }
+        public byte[]? CTinyblob { get; init; }
+        public byte[]? CBlob { get; init; }
+        public byte[]? CMediumblob { get; init; }
+        public byte[]? CLongblob { get; init; }
     };
     public async Task InsertMysqlTypesBatch(List<InsertMysqlTypesBatchArgs> args)
     {
         const string supportedDateTimeFormat = "yyyy-MM-dd H:mm:ss";
         var config = new CsvConfiguration(CultureInfo.CurrentCulture)
         {
-            Delimiter = ","
+            Delimiter = ",",
+            NewLine = "\n"
         };
         var nullConverterFn = new Utils.NullToStringConverter();
         using (var writer = new StreamWriter("input.csv", false, new UTF8Encoding(false)))
         using (var csvWriter = new CsvWriter(writer, config))
         {
-            var Options = new TypeConverterOptions
+            var options = new TypeConverterOptions
             {
                 Formats = new[]
                 {
                     supportedDateTimeFormat
                 }
             };
-            csvWriter.Context.TypeConverterOptionsCache.AddOptions<DateTime>(Options);
-            csvWriter.Context.TypeConverterOptionsCache.AddOptions<DateTime?>(Options);
+            csvWriter.Context.TypeConverterOptionsCache.AddOptions<DateTime>(options);
+            csvWriter.Context.TypeConverterOptionsCache.AddOptions<DateTime?>(options);
             csvWriter.Context.TypeConverterCache.AddConverter<bool?>(new Utils.BoolToBitConverter());
+            csvWriter.Context.TypeConverterCache.AddConverter<byte[]?>(new Utils.ByteArrayConverter());
             csvWriter.Context.TypeConverterCache.AddConverter<byte?>(nullConverterFn);
             csvWriter.Context.TypeConverterCache.AddConverter<short?>(nullConverterFn);
             csvWriter.Context.TypeConverterCache.AddConverter<int?>(nullConverterFn);
@@ -498,9 +508,10 @@ public class QuerySql
                 FieldTerminator = ",",
                 FieldQuotationCharacter = '"',
                 FieldQuotationOptional = true,
-                NumberOfLinesToSkip = 1
+                NumberOfLinesToSkip = 1,
+                LineTerminator = "\n"
             };
-            loader.Columns.AddRange(new List<string> { "c_bool", "c_boolean", "c_bit", "c_tinyint", "c_smallint", "c_mediumint", "c_int", "c_integer", "c_bigint", "c_float", "c_numeric", "c_decimal", "c_dec", "c_fixed", "c_double", "c_double_precision", "c_char", "c_nchar", "c_national_char", "c_varchar", "c_tinytext", "c_mediumtext", "c_text", "c_longtext", "c_year", "c_date", "c_datetime", "c_timestamp" });
+            loader.Columns.AddRange(new List<string> { "c_bit", "c_bool", "c_boolean", "c_tinyint", "c_smallint", "c_mediumint", "c_int", "c_integer", "c_bigint", "c_float", "c_numeric", "c_decimal", "c_dec", "c_fixed", "c_double", "c_double_precision", "c_char", "c_nchar", "c_national_char", "c_varchar", "c_tinytext", "c_mediumtext", "c_text", "c_longtext", "c_year", "c_date", "c_datetime", "c_timestamp", "c_binary", "c_varbinary", "c_tinyblob", "c_blob", "c_mediumblob", "c_longblob" });
             await loader.LoadAsync();
             await connection.CloseAsync();
         }
@@ -554,7 +565,7 @@ public class QuerySql
         }
     }
 
-    private const string GetMysqlTypesAggSql = "SELECT COUNT(1) AS cnt, c_bool, c_boolean, c_bit, c_tinyint, c_smallint, c_mediumint, c_int, c_integer, c_bigint, c_float, c_numeric, c_decimal, c_dec, c_fixed, c_double, c_double_precision, c_char, c_nchar, c_national_char, c_varchar, c_tinytext, c_mediumtext, c_text, c_longtext, c_year, c_date, c_datetime, c_timestamp FROM  mysql_types  GROUP  BY  c_bool , c_boolean, c_bit, c_tinyint, c_smallint, c_mediumint, c_int, c_integer, c_bigint, c_float, c_numeric, c_decimal, c_dec, c_fixed, c_double, c_double_precision, c_char, c_nchar, c_national_char, c_varchar, c_tinytext, c_mediumtext, c_text, c_longtext, c_year, c_date, c_datetime, c_timestamp LIMIT  1 ; SELECT  LAST_INSERT_ID ( ) "; 
+    private const string GetMysqlTypesAggSql = "SELECT COUNT(1) AS cnt, c_bool, c_boolean, c_bit, c_tinyint, c_smallint, c_mediumint, c_int, c_integer, c_bigint,  c_float , c_numeric, c_decimal, c_dec, c_fixed, c_double, c_double_precision, c_char, c_nchar, c_national_char, c_varchar, c_tinytext, c_mediumtext, c_text, c_longtext, c_year, c_date, c_datetime, c_timestamp, c_binary, c_varbinary, c_tinyblob, c_blob, c_mediumblob, c_longblob FROM  mysql_types  GROUP  BY  c_bool , c_boolean, c_bit, c_tinyint, c_smallint, c_mediumint, c_int, c_integer, c_bigint, c_float, c_numeric, c_decimal, c_dec, c_fixed, c_double, c_double_precision, c_char, c_nchar, c_national_char, c_varchar, c_tinytext, c_mediumtext, c_text, c_longtext, c_year, c_date, c_datetime, c_timestamp, c_binary, c_varbinary, c_tinyblob, c_blob, c_mediumblob, c_longblob LIMIT  1 ; SELECT  LAST_INSERT_ID ( ) "; 
     public class GetMysqlTypesAggRow
     {
         public required long Cnt { get; init; }
@@ -586,6 +597,12 @@ public class QuerySql
         public DateTime? CDate { get; init; }
         public DateTime? CDatetime { get; init; }
         public DateTime? CTimestamp { get; init; }
+        public byte[]? CBinary { get; init; }
+        public byte[]? CVarbinary { get; init; }
+        public byte[]? CTinyblob { get; init; }
+        public byte[]? CBlob { get; init; }
+        public byte[]? CMediumblob { get; init; }
+        public byte[]? CLongblob { get; init; }
     };
     public async Task<GetMysqlTypesAggRow?> GetMysqlTypesAgg()
     {

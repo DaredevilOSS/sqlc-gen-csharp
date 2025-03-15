@@ -53,6 +53,7 @@ internal class UtilsGen(DbDriver dbDriver, string namespaceName)
 
     private MemberDeclarationSyntax GetUtilsClass()
     {
+        // TODO move driver specific logic to DB driver interface
         var optionalTransformQueryForSqliteBatch = dbDriver.Options.DriverName is DriverName.Sqlite
             ? """
               private static readonly Regex ValuesRegex = new Regex(@"VALUES\s*\((?<params>[^)]*)\)", RegexOptions.IgnoreCase);
@@ -80,7 +81,7 @@ internal class UtilsGen(DbDriver dbDriver, string namespaceName)
             ? $$"""
                 public class NullToStringConverter : DefaultTypeConverter
                 {
-                    public override {{dbDriver.AddNullableSuffixIfNeeded("string", true)}} ConvertToString(
+                    public override {{dbDriver.AddNullableSuffixIfNeeded("string", false)}} ConvertToString(
                         {{dbDriver.AddNullableSuffixIfNeeded("object", false)}} value, IWriterRow row, MemberMapData memberMapData)
                     {
                         return value == null ? @"\N" : base.ConvertToString(value, row, memberMapData);
@@ -89,7 +90,7 @@ internal class UtilsGen(DbDriver dbDriver, string namespaceName)
                 
                 public class BoolToBitConverter : DefaultTypeConverter
                 {
-                    public override {{dbDriver.AddNullableSuffixIfNeeded("string", true)}} ConvertToString(
+                    public override {{dbDriver.AddNullableSuffixIfNeeded("string", false)}} ConvertToString(
                     {{dbDriver.AddNullableSuffixIfNeeded("object", false)}} value, IWriterRow row, MemberMapData memberMapData)
                     {
                         switch (value)
@@ -101,6 +102,19 @@ internal class UtilsGen(DbDriver dbDriver, string namespaceName)
                             default:
                                 return base.ConvertToString(value, row, memberMapData);
                         }
+                    }
+                }
+                
+                public class ByteArrayConverter : DefaultTypeConverter
+                {
+                    public override {{dbDriver.AddNullableSuffixIfNeeded("string", false)}} ConvertToString(
+                    {{dbDriver.AddNullableSuffixIfNeeded("object", false)}} value, IWriterRow row, MemberMapData memberMapData)
+                    {
+                        if (value == null)
+                            return @"\N";
+                        if (value is byte[] byteArray)
+                            return System.Text.Encoding.UTF8.GetString(byteArray);
+                        return base.ConvertToString(value, row, memberMapData);
                     }
                 }
                 """

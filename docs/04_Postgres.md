@@ -12,7 +12,7 @@ data type that can have a unique constraint.
 Implemented via the `COPY FROM` command which can load binary data directly from `stdin`.
 </details>
 
-<details>
+<details open>
 <summary>Supported Data Types</summary>
 
 Since in batch insert the data is not validated by the SQL itself but written in a binary format, 

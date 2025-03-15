@@ -306,7 +306,7 @@ namespace SqlcGenCsharpTests
         }
 
         [Test]
-        [TestCase(-54355, 9787.66, "Songs of Love and Hate", new byte[] { 0x15, 0x20, 0x22 })]
+        [TestCase(-54355, 9787.66, "Songs of Love and Hate", new byte[] { 0x15, 0x20, 0x33 })]
         [TestCase(null, null, null, new byte[] { })]
         [TestCase(null, null, null, null)]
         public async Task TestSqliteTypes(int cInteger, decimal cReal, string cText, byte[] cBlob)

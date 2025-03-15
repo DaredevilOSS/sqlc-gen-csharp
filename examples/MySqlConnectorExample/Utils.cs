@@ -12,7 +12,7 @@ public static class Utils
 {
     public class NullToStringConverter : DefaultTypeConverter
     {
-        public override string ConvertToString(object? value, IWriterRow row, MemberMapData memberMapData)
+        public override string? ConvertToString(object? value, IWriterRow row, MemberMapData memberMapData)
         {
             return value == null ? @"\N" : base.ConvertToString(value, row, memberMapData);
         }
@@ -20,7 +20,7 @@ public static class Utils
 
     public class BoolToBitConverter : DefaultTypeConverter
     {
-        public override string ConvertToString(object? value, IWriterRow row, MemberMapData memberMapData)
+        public override string? ConvertToString(object? value, IWriterRow row, MemberMapData memberMapData)
         {
             switch (value)
             {
@@ -31,6 +31,18 @@ public static class Utils
                 default:
                     return base.ConvertToString(value, row, memberMapData);
             }
+        }
+    }
+
+    public class ByteArrayConverter : DefaultTypeConverter
+    {
+        public override string? ConvertToString(object? value, IWriterRow row, MemberMapData memberMapData)
+        {
+            if (value == null)
+                return @"\N";
+            if (value is byte[] byteArray)
+                return System.Text.Encoding.UTF8.GetString(byteArray);
+            return base.ConvertToString(value, row, memberMapData);
         }
     }
 
