@@ -60,7 +60,8 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId
             new Dictionary<string, DbTypeInfo>
             {
                 { "date", new DbTypeInfo(NpgsqlTypeOverride: "NpgsqlDbType.Date") },
-                { "timestamp", new DbTypeInfo(NpgsqlTypeOverride: "NpgsqlDbType.Timestamp") }
+                { "timestamp", new DbTypeInfo(NpgsqlTypeOverride: "NpgsqlDbType.Timestamp") },
+                { "timestamptz", new DbTypeInfo(NpgsqlTypeOverride: "NpgsqlDbType.TimestampTz") },
             }, ordinal => $"reader.GetDateTime({ordinal})"),
         new("object",
             new Dictionary<string, DbTypeInfo>

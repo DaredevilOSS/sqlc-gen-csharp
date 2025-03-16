@@ -51,7 +51,9 @@ public static class Program
 
     private static bool RecordsAreInUse(string testClassName, bool isLegacyDotnet)
     {
-        return !isLegacyDotnet && !testClassName.Contains("Dapper");
+        if (isLegacyDotnet)
+            return false;
+        return !testClassName.Contains("Dapper");
     }
 
     private static string GetTestImplementation(string testClassName, bool isLegacyDotnet, KnownTestType testType)

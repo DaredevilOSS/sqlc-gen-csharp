@@ -29,7 +29,7 @@ we consider support for the different data types separately for batch inserts an
 | double precision                        | ✅         | ✅                  |
 | date                                    | ✅         | ✅                  |
 | timestamp, timestamp without time zone  | ✅         | ✅                  |
-| timestamp with time zone                | ❌         | ❌                  |
+| timestamp with time zone                | ✅         | ✅                  |
 | time, time without time zone            | ❌         | ❌                  |
 | time with time zone                     | ❌         | ❌                  |
 | interval                                | ❌         | ❌                  |

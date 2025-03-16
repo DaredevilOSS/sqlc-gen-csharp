@@ -30,6 +30,7 @@ public class PostgresType
     public DateTime? CDate { get; init; }
     public string? CTime { get; init; }
     public DateTime? CTimestamp { get; init; }
+    public DateTime? CTimestampWithTz { get; init; }
     public string? CChar { get; init; }
     public string? CVarchar { get; init; }
     public string? CCharacterVarying { get; init; }

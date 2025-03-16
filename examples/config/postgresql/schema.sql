@@ -14,31 +14,32 @@ CREATE TABLE books (
 
 CREATE TABLE postgres_types (
     /* Numeric Data Types */
-    c_boolean BOOLEAN,
-    c_bit BIT(10),
-    c_smallint SMALLINT,
-    c_integer INTEGER,
-    c_bigint BIGINT,
-    c_decimal DECIMAL(10,7),
-    c_numeric NUMERIC(10,7),
-    c_real REAL,
-    c_double_precision DOUBLE PRECISION,
-    c_money MONEY,
+    c_boolean           BOOLEAN,
+    c_bit               BIT(10),
+    c_smallint          SMALLINT,
+    c_integer           INTEGER,
+    c_bigint            BIGINT,
+    c_decimal           DECIMAL(10,7),
+    c_numeric           NUMERIC(10,7),
+    c_real              REAL,
+    c_double_precision  DOUBLE PRECISION,
+    c_money             MONEY,
     
     /* Date and Time Data Types */
-    c_date DATE,
-    c_time TIME,
-    c_timestamp TIMESTAMP,
+    c_date              DATE,
+    c_time              TIME,
+    c_timestamp         TIMESTAMP,
+    c_timestamp_with_tz TIMESTAMP WITH TIME ZONE,
     
     /* String Data Type Syntax */
-    c_char CHAR,
-    c_varchar VARCHAR(100),
+    c_char              CHAR,
+    c_varchar           VARCHAR(100),
     c_character_varying CHARACTER VARYING(100),
-    c_bytea BYTEA,
-    c_text TEXT,
-    c_json JSON,
+    c_bytea             BYTEA,
+    c_text              TEXT,
+    c_json              JSON,
 
     /* Array Data Types */
-    c_text_array TEXT[],
-    c_integer_array INTEGER[]
+    c_text_array        TEXT[],
+    c_integer_array     INTEGER[]
 );

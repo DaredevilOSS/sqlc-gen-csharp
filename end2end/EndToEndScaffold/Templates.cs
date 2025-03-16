@@ -483,9 +483,9 @@ public static class Templates
         {
             Impl = $$"""
                    [Test]
-                   [TestCase(true, 35, -23423, 4235235263, 3.83f, 4.5534, 998.432, -8403284.321435, 42332.53, "2000-1-30", "1983-11-3 02:01:22", "E", "It takes a nation of millions to hold us back", "Rebel Without a Pause", "Prophets of Rage", new byte[] { 0x45, 0x42 }, new string[] { "Party", "Fight" }, new int[] { 543, -4234 })]
-                   [TestCase(null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, new byte[] { }, new string[] { }, new int[] { })]
-                   [TestCase(null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null)]
+                   [TestCase(true, 35, -23423, 4235235263, 3.83f, 4.5534, 998.432, -8403284.321435, 42332.53, "2000-1-30", "1983-11-3 02:01:22", "2022-10-2 15:44:01+09:00", "E", "It takes a nation of millions to hold us back", "Rebel Without a Pause", "Prophets of Rage", new byte[] { 0x45, 0x42 }, new string[] { "Party", "Fight" }, new int[] { 543, -4234 })]
+                   [TestCase(null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, new byte[] { }, new string[] { }, new int[] { })]
+                   [TestCase(null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null)]
                    public async Task TestPostgresTypes(
                        bool cBoolean,
                        short cSmallint, 
@@ -498,9 +498,10 @@ public static class Templates
                        decimal cMoney, 
                        DateTime cDate,
                        DateTime cTimestamp,
-                       string cChar,
-                       string cVarchar,
-                       string cCharacterVarying,
+                       DateTime cTimestampWithTz,
+                       string cChar, 
+                       string cVarchar, 
+                       string cCharacterVarying, 
                        string cText,
                        byte[] cBytea,
                        string[] cTextArray,
@@ -519,6 +520,7 @@ public static class Templates
                            CMoney = cMoney,
                            CDate = cDate,
                            CTimestamp = cTimestamp,
+                           CTimestampWithTz = cTimestampWithTz,
                            CChar = cChar,
                            CVarchar = cVarchar,
                            CCharacterVarying = cCharacterVarying,
@@ -541,6 +543,7 @@ public static class Templates
                            CMoney = cMoney,
                            CDate = cDate,
                            CTimestamp = cTimestamp,
+                           CTimestampWithTz = cTimestampWithTz,
                            CChar = cChar,
                            CVarchar = cVarchar,
                            CCharacterVarying = cCharacterVarying,
@@ -566,6 +569,7 @@ public static class Templates
                        Assert.That(actual.CMoney, Is.EqualTo(expected.CMoney));
                        Assert.That(actual.CDate, Is.EqualTo(expected.CDate));
                        Assert.That(actual.CTimestamp, Is.EqualTo(expected.CTimestamp));
+                       Assert.That(actual.CTimestampWithTz, Is.EqualTo(expected.CTimestampWithTz));
                        Assert.That(actual.CChar, Is.EqualTo(expected.CChar));
                        Assert.That(actual.CVarchar, Is.EqualTo(expected.CVarchar));
                        Assert.That(actual.CCharacterVarying, Is.EqualTo(expected.CCharacterVarying));
@@ -580,29 +584,33 @@ public static class Templates
         {
             Impl = $$"""
                      [Test]
-                     [TestCase(100, true, 3, 453, -1445214231, 666.6f, 336.3431, -99.999, -1377.996, -43242.43, "1973-12-3", "1960-11-3 02:01:22", "z", "Sex Pistols", "Anarchy in the U.K", "Never Mind the Bollocks...", new byte[] { 0x53, 0x56 })]
-                     [TestCase(500, false, -4, 867, 8768769709, -64.8f, -324.8671, 127.4793, 423.9869, 32143.99, "2024-12-31", "1999-3-1 03:00:10", "1", "Fugazi", "Waiting Room", "13 Songs", new byte[] { 0x03 })]
-                     [TestCase(10, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, new byte[] { })]
-                     [TestCase(10, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null)]
+                     [TestCase(100, true, 3, 453, -1445214231, 666.6f, 336.3431, -99.999, -1377.996, -43242.43, "1973-12-3", "1960-11-3 02:01:22", "2030-07-20 15:44:01+09:00", "z", "Sex Pistols", "Anarchy in the U.K", "Never Mind the Bollocks...", new byte[] { 0x53, 0x56 })]
+                     [TestCase(500, false, -4, 867, 8768769709, -64.8f, -324.8671, 127.4793, 423.9869, 32143.99, "2024-12-31", "1999-3-1 03:00:10", "1999-9-13 08:30:11-04:00", "1", "Fugazi", "Waiting Room", "13 Songs", new byte[] { 0x03 })]
+                     [TestCase(10, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, new byte[] { })]
+                     [TestCase(10, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null)]
                      public async Task TestCopyFrom(
                         int batchSize, 
-                        bool? cBoolean, 
-                        short? cSmallint, 
-                        int? cInteger, 
-                        long? cBigint, 
-                        float? cReal, 
-                        decimal? cDecimal, 
-                        decimal? cNumeric, 
-                        double? cDoublePrecision,
-                        decimal? cMoney,
+                        bool cBoolean, 
+                        short cSmallint, 
+                        int cInteger, 
+                        long cBigint, 
+                        float cReal, 
+                        decimal cDecimal, 
+                        decimal cNumeric, 
+                        double cDoublePrecision,
+                        decimal cMoney,
                         DateTime? cDate, 
                         DateTime? cTimestamp, 
-                        string{{UnknownNullableIndicatorPlaceholder}} cChar, 
-                        string{{UnknownNullableIndicatorPlaceholder}} cVarchar, 
-                        string{{UnknownNullableIndicatorPlaceholder}} cCharacterVarying, 
-                        string{{UnknownNullableIndicatorPlaceholder}} cText,
+                        DateTime? cTimestampWithTz,
+                        string cChar, 
+                        string cVarchar, 
+                        string cCharacterVarying, 
+                        string cText,
                         byte[] cBytea)
                      {
+                         DateTime? cTimestampWithTzAsUtc = null;
+                         if (cTimestampWithTz != null)
+                            cTimestampWithTzAsUtc = DateTime.SpecifyKind(cTimestampWithTz.Value, DateTimeKind.Utc);
                          var batchArgs = Enumerable.Range(0, batchSize)
                              .Select(_ => new QuerySql.InsertPostgresTypesBatchArgs
                              {
@@ -617,6 +625,7 @@ public static class Templates
                                  CMoney = cMoney,
                                  CDate = cDate,
                                  CTimestamp = cTimestamp,
+                                 CTimestampWithTz = cTimestampWithTzAsUtc,
                                  CChar = cChar,
                                  CVarchar = cVarchar,
                                  CCharacterVarying = cCharacterVarying,
@@ -639,6 +648,7 @@ public static class Templates
                              CMoney = cMoney,
                              CDate = cDate,
                              CTimestamp = cTimestamp,
+                             CTimestampWithTz = cTimestampWithTz,
                              CChar = cChar,
                              CVarchar = cVarchar,
                              CCharacterVarying = cCharacterVarying,
@@ -663,6 +673,7 @@ public static class Templates
                          Assert.That(actual.CMoney, Is.EqualTo(expected.CMoney));
                          Assert.That(actual.CDate, Is.EqualTo(expected.CDate));
                          Assert.That(actual.CTimestamp, Is.EqualTo(expected.CTimestamp));
+                         Assert.That(actual.CTimestampWithTz, Is.EqualTo(expected.CTimestampWithTz));
                          Assert.That(actual.CChar, Is.EqualTo(expected.CChar));
                          Assert.That(actual.CVarchar, Is.EqualTo(expected.CVarchar));
                          Assert.That(actual.CCharacterVarying, Is.EqualTo(expected.CCharacterVarying));
