@@ -29,7 +29,7 @@ namespace NpgsqlLegacyExampleGen
         public double? CDoublePrecision { get; set; }
         public decimal? CMoney { get; set; }
         public DateTime? CDate { get; set; }
-        public string CTime { get; set; }
+        public TimeSpan? CTime { get; set; }
         public DateTime? CTimestamp { get; set; }
         public DateTime? CTimestampWithTz { get; set; }
         public string CChar { get; set; }

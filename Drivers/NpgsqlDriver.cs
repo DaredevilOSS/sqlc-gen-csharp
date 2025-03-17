@@ -51,15 +51,19 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId
                 { "mediumtext", new DbTypeInfo() },
                 { "text", new DbTypeInfo() },
                 { "bpchar", new DbTypeInfo() },
-                { "time", new DbTypeInfo() },
                 { "tinytext", new DbTypeInfo() },
                 { "varchar", new DbTypeInfo() }
             }, ordinal => $"reader.GetString({ordinal})",
              ordinal => $"reader.GetFieldValue<string[]>({ordinal})"),
+        new("TimeSpan",
+            new Dictionary<string, DbTypeInfo>
+            {
+                { "time", new DbTypeInfo(NpgsqlTypeOverride: "NpgsqlDbType.Time") }, // in .Net Core can also use TimeOnly
+            }, ordinal => $"reader.GetFieldValue<TimeSpan>({ordinal})"),
         new("DateTime",
             new Dictionary<string, DbTypeInfo>
             {
-                { "date", new DbTypeInfo(NpgsqlTypeOverride: "NpgsqlDbType.Date") },
+                { "date", new DbTypeInfo(NpgsqlTypeOverride: "NpgsqlDbType.Date") }, // in .Net Core can also use DateOnly
                 { "timestamp", new DbTypeInfo(NpgsqlTypeOverride: "NpgsqlDbType.Timestamp") },
                 { "timestamptz", new DbTypeInfo(NpgsqlTypeOverride: "NpgsqlDbType.TimestampTz") },
             }, ordinal => $"reader.GetDateTime({ordinal})"),
