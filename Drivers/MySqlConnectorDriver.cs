@@ -57,7 +57,8 @@ public partial class MySqlConnectorDriver(Options options, Dictionary<string, Ta
                 { "tinytext", new DbTypeInfo() },
                 { "varchar", new DbTypeInfo() },
                 { "var_string", new DbTypeInfo() },
-                { "json", new DbTypeInfo() }
+                { "json", new DbTypeInfo() },
+                { "mysql_types_c_enum", new DbTypeInfo() }
             }, ordinal => $"reader.GetString({ordinal})"),
         new("DateTime",
             new Dictionary<string, DbTypeInfo>
@@ -82,9 +83,7 @@ public partial class MySqlConnectorDriver(Options options, Dictionary<string, Ta
             new Dictionary<string, DbTypeInfo>
             {
                 { "decimal", new DbTypeInfo() }
-            }, ordinal => $"reader.GetDecimal({ordinal})"),
-        new("object",
-            new Dictionary<string, DbTypeInfo>(), ordinal => $"reader.GetValue({ordinal})")
+            }, ordinal => $"reader.GetDecimal({ordinal})")
     ];
 
     public override UsingDirectiveSyntax[] GetUsingDirectives()

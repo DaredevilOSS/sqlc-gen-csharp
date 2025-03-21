@@ -483,20 +483,20 @@ public static class Templates
         {
             Impl = $$"""
                    [Test]
-                   [TestCase(true, 35, -23423, 4235235263, 3.83f, 4.5534, 998.432, -8403284.321435, 42332.53, "2000-1-30", "12:13:14", "1983-11-3 02:01:22", "2022-10-2 15:44:01+09:00", "E", "It takes a nation of millions to hold us back", "Rebel Without a Pause", "Prophets of Rage", new byte[] { 0x45, 0x42 }, new string[] { "Party", "Fight" }, new int[] { 543, -4234 })]
+                   [TestCase(true, 35, -23423, 4235235263l, 3.83f, 4.5534, 998.432, -8403284.321435, 42332.53, "2000-1-30", "12:13:14", "1983-11-3 02:01:22", "2022-10-2 15:44:01+09:00", "E", "It takes a nation of millions to hold us back", "Rebel Without a Pause", "Prophets of Rage", new byte[] { 0x45, 0x42 }, new string[] { "Party", "Fight" }, new int[] { 543, -4234 })]
                    [TestCase(null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, new byte[] { }, new string[] { }, new int[] { })]
                    [TestCase(null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null)]
                    public async Task TestPostgresTypes(
-                       bool cBoolean,
-                       short cSmallint, 
-                       int cInteger,
-                       long cBigint, 
-                       float cReal, 
-                       decimal cNumeric, 
-                       decimal cDecimal, 
-                       double cDoublePrecision,
-                       decimal cMoney, 
-                       DateTime cDate,
+                       bool? cBoolean,
+                       short? cSmallint, 
+                       int? cInteger,
+                       long? cBigint, 
+                       float? cReal, 
+                       decimal? cNumeric, 
+                       decimal? cDecimal, 
+                       double? cDoublePrecision,
+                       decimal? cMoney, 
+                       DateTime? cDate,
                        TimeSpan? cTime, 
                        DateTime? cTimestamp,
                        DateTime? cTimestampWithTz,
@@ -588,21 +588,21 @@ public static class Templates
         {
             Impl = $$"""
                      [Test]
-                     [TestCase(100, true, 3, 453, -1445214231, 666.6f, 336.3431, -99.999, -1377.996, -43242.43, "1973-12-3", "00:34:00", "1960-11-3 02:01:22", "2030-07-20 15:44:01+09:00", "z", "Sex Pistols", "Anarchy in the U.K", "Never Mind the Bollocks...", new byte[] { 0x53, 0x56 })]
-                     [TestCase(500, false, -4, 867, 8768769709, -64.8f, -324.8671, 127.4793, 423.9869, 32143.99, "2024-12-31", "03:06:44", "1999-3-1 03:00:10", "1999-9-13 08:30:11-04:00", "1", "Fugazi", "Waiting Room", "13 Songs", new byte[] { 0x03 })]
+                     [TestCase(100, true, 3, 453, -1445214231l, 666.6f, 336.3431, -99.999, -1377.996, -43242.43, "1973-12-3", "00:34:00", "1960-11-3 02:01:22", "2030-07-20 15:44:01+09:00", "z", "Sex Pistols", "Anarchy in the U.K", "Never Mind the Bollocks...", new byte[] { 0x53, 0x56 })]
+                     [TestCase(500, false, -4, 867, 8768769709l, -64.8f, -324.8671, 127.4793, 423.9869, 32143.99, "2024-12-31", "03:06:44", "1999-3-1 03:00:10", "1999-9-13 08:30:11-04:00", "1", "Fugazi", "Waiting Room", "13 Songs", new byte[] { 0x03 })]
                      [TestCase(10, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, new byte[] { })]
                      [TestCase(10, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null)]
                      public async Task TestCopyFrom(
                         int batchSize, 
-                        bool cBoolean, 
-                        short cSmallint, 
-                        int cInteger, 
-                        long cBigint, 
-                        float cReal, 
-                        decimal cDecimal, 
-                        decimal cNumeric, 
-                        double cDoublePrecision,
-                        decimal cMoney,
+                        bool? cBoolean, 
+                        short? cSmallint, 
+                        int? cInteger, 
+                        long? cBigint, 
+                        float? cReal, 
+                        decimal? cDecimal, 
+                        decimal? cNumeric, 
+                        double? cDoublePrecision,
+                        decimal? cMoney,
                         DateTime? cDate, 
                         TimeSpan? cTime, 
                         DateTime? cTimestamp, 
@@ -696,20 +696,20 @@ public static class Templates
         {
             Impl = $$"""
                    [Test]
-                   [TestCase(false, true, 0x32, 13, 2084, 3124, -54355, 324245, -67865, 9787668656, "&", "\u1857", "\u2649", "Sheena is a Punk Rocker", "Holiday in Cambodia", "London's Calling", "London's Burning", "Police & Thieves", "2000-1-30", "1983-11-3 02:01:22", new byte[] { 0x15, 0x16, 0x17 }, new byte[] { 0x15, 0x24 }, new byte[] { 0x23 }, new byte[] { 0x33, 0x13 }, new byte[] { 0x11, 0x62, 0x10 }, new byte[] { 0x38, 0x45, 0x06 })]
-                   [TestCase(null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, "1970-1-1 00:00:01", new byte[] { 0x0, 0x0, 0x0 }, new byte[] { }, new byte[] { }, new byte[] { }, new byte[] { }, new byte[] { })]
-                   [TestCase(null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, "1970-1-1 00:00:01", null, null, null, null, null, null)]
+                   [TestCase(false, true, 0x32, 13, 2084, 3124, -54355, 324245, -67865, 9787668656l, "&", "\u1857", "\u2649", "Sheena is a Punk Rocker", "Holiday in Cambodia", "London's Calling", "London's Burning", "Police & Thieves", "Medium", "2000-1-30", "1983-11-3 02:01:22", new byte[] { 0x15, 0x16, 0x17 }, new byte[] { 0x15, 0x24 }, new byte[] { 0x23 }, new byte[] { 0x33, 0x13 }, new byte[] { 0x11, 0x62, 0x10 }, new byte[] { 0x38, 0x45, 0x06 })]
+                   [TestCase(null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, "1970-1-1 00:00:01", new byte[] { 0x0, 0x0, 0x0 }, new byte[] { }, new byte[] { }, new byte[] { }, new byte[] { }, new byte[] { })]
+                   [TestCase(null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, "1970-1-1 00:00:01", null, null, null, null, null, null)]
                    public async Task TestMySqlTypes(
-                       bool cBool, 
-                       bool cBoolean, 
-                       byte cBit,
-                       short cTinyint, 
-                       short cYear,
-                       short cSmallint,
-                       int cMediumint,
-                       int cInt, 
-                       int cInteger,
-                       long cBigint, 
+                       bool? cBool, 
+                       bool? cBoolean, 
+                       byte? cBit,
+                       short? cTinyint, 
+                       short? cYear,
+                       short? cSmallint,
+                       int? cMediumint,
+                       int? cInt, 
+                       int? cInteger,
+                       long? cBigint, 
                        string cChar,
                        string cNchar,
                        string cNationalChar,
@@ -718,8 +718,9 @@ public static class Templates
                        string cMediumtext,
                        string cText,
                        string cLongtext,
-                       DateTime cDate, 
-                       DateTime cTimestamp,
+                       string cEnum,
+                       DateTime? cDate, 
+                       DateTime? cTimestamp,
                        byte[] cBinary,
                        byte[] cVarbinary, 
                        byte[] cTinyblob, 
@@ -746,6 +747,7 @@ public static class Templates
                             CMediumtext = cMediumtext,
                             CText = cText,
                             CLongtext = cLongtext,
+                            CEnum = cEnum,
                             CYear = cYear,
                             CDate = cDate,
                             CTimestamp = cTimestamp,
@@ -776,6 +778,7 @@ public static class Templates
                             CMediumtext = cMediumtext,
                             CText = cText,
                             CLongtext = cLongtext,
+                            CEnum = cEnum,
                             CYear = cYear,
                             CDate = cDate,
                             CTimestamp = cTimestamp,
@@ -809,6 +812,7 @@ public static class Templates
                        Assert.That(actual.CMediumtext, Is.EqualTo(expected.CMediumtext));
                        Assert.That(actual.CText, Is.EqualTo(expected.CText));
                        Assert.That(actual.CLongtext, Is.EqualTo(expected.CLongtext));
+                       Assert.That(actual.CEnum, Is.EqualTo(expected.CEnum));
                        Assert.That(actual.CYear, Is.EqualTo(expected.CYear));
                        Assert.That(actual.CDate, Is.EqualTo(expected.CDate));
                        Assert.That(actual.CTimestamp, Is.EqualTo(expected.CTimestamp));
@@ -825,9 +829,9 @@ public static class Templates
         {
             Impl = $$"""
                      [Test]
-                     [TestCase(100, true, false, 0x05, -13, 324, -98760, 987965, 3132423, -7785442, 3.4f, -31.555666, 11.098643, 34.4424, 423.2445, 998.9994542, 21.214312452534, "D", "\u4321", "\u2345", "Parasite", "Clockwork Orange", "Dr. Strangelove", "Interview with a Vampire", "Memento", 1993, "2000-1-30", "1983-11-3 02:01:22", "2010-1-30 08:11:00", new byte[] { 0x15, 0x16, 0x17 }, new byte[] { 0x15, 0x20 }, new byte[] { 0x23 }, new byte[] { 0x33, 0x13 }, new byte[] { 0x11, 0x62, 0x10 }, new byte[] { 0x38, 0x45, 0x06, 0x04 })]
-                     [TestCase(500, false, true, 0x12, 8, -555, 66979, -423425, -9798642, 3297398, 1.23f, 99.35542, 32.33345, -12.3456, -55.55556, -11.1123334, 33.423542356346, "3", "\u1234", "\u6543", "Splendor in the Grass", "Pulp Fiction", "Chinatown", "Repulsion", "Million Dollar Baby", 2025, "2012-9-20", "2012-1-20 22:12:34", "1984-6-5 20:12:12", new byte[] { 0x0, 0x0, 0x0 }, new byte[] { }, new byte[] { }, new byte[] { }, new byte[] { }, new byte[] { })]
-                     [TestCase(10, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, "1970-1-1 00:00:01", null, null, null, null, null, null)]
+                     [TestCase(100, true, false, 0x05, -13, 324, -98760, 987965, 3132423, -7785442l, 3.4f, -31.555666, 11.098643, 34.4424, 423.2445, 998.9994542, 21.214312452534, "D", "\u4321", "\u2345", "Parasite", "Clockwork Orange", "Dr. Strangelove", "Interview with a Vampire", "Memento", "Big", 1993, "2000-1-30", "1983-11-3 02:01:22", "2010-1-30 08:11:00", new byte[] { 0x15, 0x16, 0x17 }, new byte[] { 0x15, 0x20 }, new byte[] { 0x23 }, new byte[] { 0x33, 0x13 }, new byte[] { 0x11, 0x62, 0x10 }, new byte[] { 0x38, 0x45, 0x06, 0x04 })]
+                     [TestCase(500, false, true, 0x12, 8, -555, 66979, -423425, -9798642, 3297398l, 1.23f, 99.35542, 32.33345, -12.3456, -55.55556, -11.1123334, 33.423542356346, "3", "\u1234", "\u6543", "Splendor in the Grass", "Pulp Fiction", "Chinatown", "Repulsion", "Million Dollar Baby", "Small", 2025, "2012-9-20", "2012-1-20 22:12:34", "1984-6-5 20:12:12", new byte[] { 0x0, 0x0, 0x0 }, new byte[] { }, new byte[] { }, new byte[] { }, new byte[] { }, new byte[] { })]
+                     [TestCase(10, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, "1970-1-1 00:00:01", null, null, null, null, null, null)]
                      public async Task TestCopyFrom(
                         int batchSize, 
                         bool? cBool,
@@ -846,24 +850,25 @@ public static class Templates
                         decimal? cFixed,
                         double? cDouble,
                         double? cDoublePrecision,
-                        string{{UnknownNullableIndicatorPlaceholder}} cChar,
-                        string{{UnknownNullableIndicatorPlaceholder}} cNchar,
-                        string{{UnknownNullableIndicatorPlaceholder}} cNationalChar,
-                        string{{UnknownNullableIndicatorPlaceholder}} cVarchar, 
-                        string{{UnknownNullableIndicatorPlaceholder}} cTinytext, 
-                        string{{UnknownNullableIndicatorPlaceholder}} cMediumtext, 
-                        string{{UnknownNullableIndicatorPlaceholder}} cText, 
-                        string{{UnknownNullableIndicatorPlaceholder}} cLongtext,
+                        string cChar,
+                        string cNchar,
+                        string cNationalChar,
+                        string cVarchar, 
+                        string cTinytext, 
+                        string cMediumtext, 
+                        string cText, 
+                        string cLongtext,
+                        string cEnum,
                         short? cYear,
                         DateTime? cDate, 
                         DateTime? cDatetime,
                         DateTime? cTimestamp,
-                        byte[] cBinary,
-                        byte[] cVarbinary, 
-                        byte[] cTinyblob, 
-                        byte[] cBlob, 
-                        byte[] cMediumblob, 
-                        byte[] cLongblob)
+                        byte[]{{UnknownNullableIndicatorPlaceholder}} cBinary,
+                        byte[]{{UnknownNullableIndicatorPlaceholder}} cVarbinary, 
+                        byte[]{{UnknownNullableIndicatorPlaceholder}} cTinyblob, 
+                        byte[]{{UnknownNullableIndicatorPlaceholder}} cBlob, 
+                        byte[]{{UnknownNullableIndicatorPlaceholder}} cMediumblob, 
+                        byte[]{{UnknownNullableIndicatorPlaceholder}} cLongblob)
                      {
                          var batchArgs = Enumerable.Range(0, batchSize)
                              .Select(_ => new QuerySql.InsertMysqlTypesBatchArgs
@@ -884,6 +889,7 @@ public static class Templates
                                  CMediumtext = cMediumtext,
                                  CText = cText,
                                  CLongtext = cLongtext,
+                                 CEnum = cEnum,
                                  CYear = cYear,
                                  CDate = cDate,
                                  CDatetime = cDatetime,
@@ -916,6 +922,7 @@ public static class Templates
                              CMediumtext = cMediumtext,
                              CText = cText,
                              CLongtext = cLongtext,
+                             CEnum = cEnum,
                              CYear = cYear,
                              CDate = cDate,
                              CDatetime = cDatetime,
@@ -950,6 +957,7 @@ public static class Templates
                          Assert.That(actual.CMediumtext, Is.EqualTo(expected.CMediumtext));
                          Assert.That(actual.CText, Is.EqualTo(expected.CText));
                          Assert.That(actual.CLongtext, Is.EqualTo(expected.CLongtext));
+                         Assert.That(actual.CEnum, Is.EqualTo(expected.CEnum));
                          Assert.That(actual.CYear, Is.EqualTo(expected.CYear));
                          Assert.That(actual.CDate, Is.EqualTo(expected.CDate));
                          Assert.That(actual.CDatetime, Is.EqualTo(expected.CDatetime));
