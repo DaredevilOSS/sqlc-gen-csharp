@@ -356,7 +356,7 @@ public class QuerySql
     }
 
     private const string InsertMysqlTypesSql = "INSERT INTO mysql_types (c_bit, c_bool, c_boolean, c_tinyint, c_smallint, c_mediumint, c_int, c_integer, c_bigint, c_decimal, c_dec, c_numeric, c_fixed, c_float, c_double, c_double_precision, c_char, c_nchar, c_national_char, c_varchar, c_tinytext, c_mediumtext, c_text, c_longtext, c_year, c_date, c_datetime, c_timestamp, c_binary, c_varbinary, c_tinyblob, c_blob, c_mediumblob, c_longblob) VALUES ( @c_bit, @c_bool, @c_boolean, @c_tinyint, @c_smallint, @c_mediumint, @c_int, @c_integer, @c_bigint, @c_decimal, @c_dec, @c_numeric, @c_fixed, @c_float, @c_double, @c_double_precision, @c_char, @c_nchar, @c_national_char, @c_varchar, @c_tinytext, @c_mediumtext, @c_text, @c_longtext, @c_year, @c_date, @c_datetime, @c_timestamp, @c_binary, @c_varbinary, @c_tinyblob, @c_blob, @c_mediumblob, @c_longblob ) "; 
-    public readonly record struct InsertMysqlTypesArgs(byte? CBit, bool? CBool, bool? CBoolean, short? CTinyint, short? CSmallint, int? CMediumint, int? CInt, int? CInteger, long? CBigint, string? CDecimal, string? CDec, string? CNumeric, string? CFixed, double? CFloat, double? CDouble, double? CDoublePrecision, string? CChar, string? CNchar, string? CNationalChar, string? CVarchar, string? CTinytext, string? CMediumtext, string? CText, string? CLongtext, short? CYear, DateTime? CDate, DateTime? CDatetime, DateTime? CTimestamp, byte[]? CBinary, byte[]? CVarbinary, byte[]? CTinyblob, byte[]? CBlob, byte[]? CMediumblob, byte[]? CLongblob);
+    public readonly record struct InsertMysqlTypesArgs(byte? CBit, bool? CBool, bool? CBoolean, short? CTinyint, short? CSmallint, int? CMediumint, int? CInt, int? CInteger, long? CBigint, decimal? CDecimal, decimal? CDec, decimal? CNumeric, decimal? CFixed, double? CFloat, double? CDouble, double? CDoublePrecision, string? CChar, string? CNchar, string? CNationalChar, string? CVarchar, string? CTinytext, string? CMediumtext, string? CText, string? CLongtext, short? CYear, DateTime? CDate, DateTime? CDatetime, DateTime? CTimestamp, byte[]? CBinary, byte[]? CVarbinary, byte[]? CTinyblob, byte[]? CBlob, byte[]? CMediumblob, byte[]? CLongblob);
     public async Task InsertMysqlTypes(InsertMysqlTypesArgs args)
     {
         using (var connection = new MySqlConnection(ConnectionString))
@@ -403,7 +403,7 @@ public class QuerySql
         }
     }
 
-    public readonly record struct InsertMysqlTypesBatchArgs(byte? CBit, bool? CBool, bool? CBoolean, short? CTinyint, short? CSmallint, int? CMediumint, int? CInt, int? CInteger, long? CBigint, double? CFloat, string? CNumeric, string? CDecimal, string? CDec, string? CFixed, double? CDouble, double? CDoublePrecision, string? CChar, string? CNchar, string? CNationalChar, string? CVarchar, string? CTinytext, string? CMediumtext, string? CText, string? CLongtext, short? CYear, DateTime? CDate, DateTime? CDatetime, DateTime? CTimestamp, byte[]? CBinary, byte[]? CVarbinary, byte[]? CTinyblob, byte[]? CBlob, byte[]? CMediumblob, byte[]? CLongblob);
+    public readonly record struct InsertMysqlTypesBatchArgs(byte? CBit, bool? CBool, bool? CBoolean, short? CTinyint, short? CSmallint, int? CMediumint, int? CInt, int? CInteger, long? CBigint, double? CFloat, decimal? CNumeric, decimal? CDecimal, decimal? CDec, decimal? CFixed, double? CDouble, double? CDoublePrecision, string? CChar, string? CNchar, string? CNationalChar, string? CVarchar, string? CTinytext, string? CMediumtext, string? CText, string? CLongtext, short? CYear, DateTime? CDate, DateTime? CDatetime, DateTime? CTimestamp, byte[]? CBinary, byte[]? CVarbinary, byte[]? CTinyblob, byte[]? CBlob, byte[]? CMediumblob, byte[]? CLongblob);
     public async Task InsertMysqlTypesBatch(List<InsertMysqlTypesBatchArgs> args)
     {
         const string supportedDateTimeFormat = "yyyy-MM-dd H:mm:ss";
@@ -461,7 +461,7 @@ public class QuerySql
     }
 
     private const string GetMysqlTypesSql = "SELECT c_bool, c_boolean, c_tinyint, c_smallint, c_mediumint, c_int, c_integer, c_bigint, c_float, c_decimal, c_dec, c_numeric, c_fixed, c_double, c_double_precision, c_year, c_date, c_time, c_datetime, c_timestamp, c_char, c_nchar, c_national_char, c_varchar, c_tinytext, c_mediumtext, c_text, c_longtext, c_bit, c_binary, c_varbinary, c_tinyblob, c_blob, c_mediumblob, c_longblob FROM mysql_types LIMIT 1";
-    public readonly record struct GetMysqlTypesRow(bool? CBool, bool? CBoolean, short? CTinyint, short? CSmallint, int? CMediumint, int? CInt, int? CInteger, long? CBigint, double? CFloat, string? CDecimal, string? CDec, string? CNumeric, string? CFixed, double? CDouble, double? CDoublePrecision, short? CYear, DateTime? CDate, string? CTime, DateTime? CDatetime, DateTime? CTimestamp, string? CChar, string? CNchar, string? CNationalChar, string? CVarchar, string? CTinytext, string? CMediumtext, string? CText, string? CLongtext, byte? CBit, byte[]? CBinary, byte[]? CVarbinary, byte[]? CTinyblob, byte[]? CBlob, byte[]? CMediumblob, byte[]? CLongblob);
+    public readonly record struct GetMysqlTypesRow(bool? CBool, bool? CBoolean, short? CTinyint, short? CSmallint, int? CMediumint, int? CInt, int? CInteger, long? CBigint, double? CFloat, decimal? CDecimal, decimal? CDec, decimal? CNumeric, decimal? CFixed, double? CDouble, double? CDoublePrecision, short? CYear, DateTime? CDate, string? CTime, DateTime? CDatetime, DateTime? CTimestamp, string? CChar, string? CNchar, string? CNationalChar, string? CVarchar, string? CTinytext, string? CMediumtext, string? CText, string? CLongtext, byte? CBit, byte[]? CBinary, byte[]? CVarbinary, byte[]? CTinyblob, byte[]? CBlob, byte[]? CMediumblob, byte[]? CLongblob);
     public async Task<GetMysqlTypesRow?> GetMysqlTypes()
     {
         using (var connection = new MySqlConnection(ConnectionString))
@@ -484,10 +484,10 @@ public class QuerySql
                             CInteger = reader.IsDBNull(6) ? (int? )null : reader.GetInt32(6),
                             CBigint = reader.IsDBNull(7) ? (long? )null : reader.GetInt64(7),
                             CFloat = reader.IsDBNull(8) ? (double? )null : reader.GetDouble(8),
-                            CDecimal = reader.IsDBNull(9) ? (string? )null : reader.GetString(9),
-                            CDec = reader.IsDBNull(10) ? (string? )null : reader.GetString(10),
-                            CNumeric = reader.IsDBNull(11) ? (string? )null : reader.GetString(11),
-                            CFixed = reader.IsDBNull(12) ? (string? )null : reader.GetString(12),
+                            CDecimal = reader.IsDBNull(9) ? (decimal? )null : reader.GetDecimal(9),
+                            CDec = reader.IsDBNull(10) ? (decimal? )null : reader.GetDecimal(10),
+                            CNumeric = reader.IsDBNull(11) ? (decimal? )null : reader.GetDecimal(11),
+                            CFixed = reader.IsDBNull(12) ? (decimal? )null : reader.GetDecimal(12),
                             CDouble = reader.IsDBNull(13) ? (double? )null : reader.GetDouble(13),
                             CDoublePrecision = reader.IsDBNull(14) ? (double? )null : reader.GetDouble(14),
                             CYear = reader.IsDBNull(15) ? (short? )null : reader.GetInt16(15),
@@ -520,7 +520,7 @@ public class QuerySql
     }
 
     private const string GetMysqlTypesAggSql = "SELECT COUNT(1) AS cnt, c_bool, c_boolean, c_bit, c_tinyint, c_smallint, c_mediumint, c_int, c_integer, c_bigint,  c_float , c_numeric, c_decimal, c_dec, c_fixed, c_double, c_double_precision, c_char, c_nchar, c_national_char, c_varchar, c_tinytext, c_mediumtext, c_text, c_longtext, c_year, c_date, c_datetime, c_timestamp, c_binary, c_varbinary, c_tinyblob, c_blob, c_mediumblob, c_longblob FROM  mysql_types  GROUP  BY  c_bool , c_boolean, c_bit, c_tinyint, c_smallint, c_mediumint, c_int, c_integer, c_bigint, c_float, c_numeric, c_decimal, c_dec, c_fixed, c_double, c_double_precision, c_char, c_nchar, c_national_char, c_varchar, c_tinytext, c_mediumtext, c_text, c_longtext, c_year, c_date, c_datetime, c_timestamp, c_binary, c_varbinary, c_tinyblob, c_blob, c_mediumblob, c_longblob LIMIT  1  ";  
-    public readonly record struct GetMysqlTypesAggRow(long Cnt, bool? CBool, bool? CBoolean, byte? CBit, short? CTinyint, short? CSmallint, int? CMediumint, int? CInt, int? CInteger, long? CBigint, double? CFloat, string? CNumeric, string? CDecimal, string? CDec, string? CFixed, double? CDouble, double? CDoublePrecision, string? CChar, string? CNchar, string? CNationalChar, string? CVarchar, string? CTinytext, string? CMediumtext, string? CText, string? CLongtext, short? CYear, DateTime? CDate, DateTime? CDatetime, DateTime? CTimestamp, byte[]? CBinary, byte[]? CVarbinary, byte[]? CTinyblob, byte[]? CBlob, byte[]? CMediumblob, byte[]? CLongblob);
+    public readonly record struct GetMysqlTypesAggRow(long Cnt, bool? CBool, bool? CBoolean, byte? CBit, short? CTinyint, short? CSmallint, int? CMediumint, int? CInt, int? CInteger, long? CBigint, double? CFloat, decimal? CNumeric, decimal? CDecimal, decimal? CDec, decimal? CFixed, double? CDouble, double? CDoublePrecision, string? CChar, string? CNchar, string? CNationalChar, string? CVarchar, string? CTinytext, string? CMediumtext, string? CText, string? CLongtext, short? CYear, DateTime? CDate, DateTime? CDatetime, DateTime? CTimestamp, byte[]? CBinary, byte[]? CVarbinary, byte[]? CTinyblob, byte[]? CBlob, byte[]? CMediumblob, byte[]? CLongblob);
     public async Task<GetMysqlTypesAggRow?> GetMysqlTypesAgg()
     {
         using (var connection = new MySqlConnection(ConnectionString))
@@ -545,10 +545,10 @@ public class QuerySql
                             CInteger = reader.IsDBNull(8) ? (int? )null : reader.GetInt32(8),
                             CBigint = reader.IsDBNull(9) ? (long? )null : reader.GetInt64(9),
                             CFloat = reader.IsDBNull(10) ? (double? )null : reader.GetDouble(10),
-                            CNumeric = reader.IsDBNull(11) ? (string? )null : reader.GetString(11),
-                            CDecimal = reader.IsDBNull(12) ? (string? )null : reader.GetString(12),
-                            CDec = reader.IsDBNull(13) ? (string? )null : reader.GetString(13),
-                            CFixed = reader.IsDBNull(14) ? (string? )null : reader.GetString(14),
+                            CNumeric = reader.IsDBNull(11) ? (decimal? )null : reader.GetDecimal(11),
+                            CDecimal = reader.IsDBNull(12) ? (decimal? )null : reader.GetDecimal(12),
+                            CDec = reader.IsDBNull(13) ? (decimal? )null : reader.GetDecimal(13),
+                            CFixed = reader.IsDBNull(14) ? (decimal? )null : reader.GetDecimal(14),
                             CDouble = reader.IsDBNull(15) ? (double? )null : reader.GetDouble(15),
                             CDoublePrecision = reader.IsDBNull(16) ? (double? )null : reader.GetDouble(16),
                             CChar = reader.IsDBNull(17) ? (string? )null : reader.GetString(17),

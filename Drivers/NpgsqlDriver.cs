@@ -51,16 +51,21 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId
                 { "mediumtext", new DbTypeInfo() },
                 { "text", new DbTypeInfo() },
                 { "bpchar", new DbTypeInfo() },
-                { "time", new DbTypeInfo() },
                 { "tinytext", new DbTypeInfo() },
                 { "varchar", new DbTypeInfo() }
             }, ordinal => $"reader.GetString({ordinal})",
              ordinal => $"reader.GetFieldValue<string[]>({ordinal})"),
+        new("TimeSpan",
+            new Dictionary<string, DbTypeInfo>
+            {
+                { "time", new DbTypeInfo(NpgsqlTypeOverride: "NpgsqlDbType.Time") }, // in .Net Core can also use TimeOnly
+            }, ordinal => $"reader.GetFieldValue<TimeSpan>({ordinal})"),
         new("DateTime",
             new Dictionary<string, DbTypeInfo>
             {
-                { "date", new DbTypeInfo(NpgsqlTypeOverride: "NpgsqlDbType.Date") },
-                { "timestamp", new DbTypeInfo(NpgsqlTypeOverride: "NpgsqlDbType.Timestamp") }
+                { "date", new DbTypeInfo(NpgsqlTypeOverride: "NpgsqlDbType.Date") }, // in .Net Core can also use DateOnly
+                { "timestamp", new DbTypeInfo(NpgsqlTypeOverride: "NpgsqlDbType.Timestamp") },
+                { "timestamptz", new DbTypeInfo(NpgsqlTypeOverride: "NpgsqlDbType.TimestampTz") },
             }, ordinal => $"reader.GetDateTime({ordinal})"),
         new("object",
             new Dictionary<string, DbTypeInfo>
@@ -91,7 +96,8 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId
             new Dictionary<string, DbTypeInfo>
             {
                 { "numeric", new DbTypeInfo(NpgsqlTypeOverride: "NpgsqlDbType.Numeric") },
-                { "decimal", new DbTypeInfo(NpgsqlTypeOverride: "NpgsqlDbType.Numeric") }
+                { "decimal", new DbTypeInfo(NpgsqlTypeOverride: "NpgsqlDbType.Numeric") },
+                { "money", new DbTypeInfo(NpgsqlTypeOverride: "NpgsqlDbType.Money") }
             }, ordinal => $"reader.GetDecimal({ordinal})"),
         new("double",
             new Dictionary<string, DbTypeInfo>

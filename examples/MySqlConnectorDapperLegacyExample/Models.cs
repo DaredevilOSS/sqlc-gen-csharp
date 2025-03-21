@@ -27,10 +27,10 @@ namespace MySqlConnectorDapperLegacyExampleGen
         public int? CInteger { get; set; }
         public long? CBigint { get; set; }
         public double? CFloat { get; set; }
-        public string CDecimal { get; set; }
-        public string CDec { get; set; }
-        public string CNumeric { get; set; }
-        public string CFixed { get; set; }
+        public decimal? CDecimal { get; set; }
+        public decimal? CDec { get; set; }
+        public decimal? CNumeric { get; set; }
+        public decimal? CFixed { get; set; }
         public double? CDouble { get; set; }
         public double? CDoublePrecision { get; set; }
         public short? CYear { get; set; }

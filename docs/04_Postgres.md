@@ -29,8 +29,8 @@ we consider support for the different data types separately for batch inserts an
 | double precision                        | ✅         | ✅                  |
 | date                                    | ✅         | ✅                  |
 | timestamp, timestamp without time zone  | ✅         | ✅                  |
-| timestamp with time zone                | ❌         | ❌                  |
-| time, time without time zone            | ❌         | ❌                  |
+| timestamp with time zone                | ✅         | ✅                  |
+| time, time without time zone            | ✅         | ✅                  |
 | time with time zone                     | ❌         | ❌                  |
 | interval                                | ❌         | ❌                  |
 | char                                    | ✅         | ✅                  |
@@ -39,7 +39,7 @@ we consider support for the different data types separately for batch inserts an
 | text                                    | ✅         | ✅                  |
 | bytea                                   | ✅         | ✅                  |
 | 2-dimensional arrays (e.g text[],int[]) | ✅         | ❌                  |
-| money                                   | ❌         | ❌                  |
+| money                                   | ✅         | ✅                  |
 | line                                    | ❌         | ❌                  |
 | lseg                                    | ❌         | ❌                  |
 | box                                     | ❌         | ❌                  |
