@@ -4,7 +4,7 @@ public static class Consts
 {
     public const string UnknownRecordValuePlaceholder = "#UnknownValue#";
     public const string UnknownNullableIndicatorPlaceholder = "#UnknownNullableIndicator#";
-    
+
     public const long BojackId = 1111;
     public const string BojackAuthor = "\"Bojack Horseman\"";
     public const string BojackTheme = "\"Back in the 90s he was in a very famous TV show\"";
