@@ -371,7 +371,7 @@ namespace MySqlConnectorDapperLegacyExampleGen
             public string CMediumtext { get; set; }
             public string CText { get; set; }
             public string CLongtext { get; set; }
-            public string CEnum { get; set; }
+            public MysqlTypesCEnum? CEnum { get; set; }
             public short? CYear { get; set; }
             public DateTime? CDate { get; set; }
             public DateTime? CDatetime { get; set; }
@@ -412,7 +412,7 @@ namespace MySqlConnectorDapperLegacyExampleGen
                 queryParams.Add("c_mediumtext", args.CMediumtext);
                 queryParams.Add("c_text", args.CText);
                 queryParams.Add("c_longtext", args.CLongtext);
-                queryParams.Add("c_enum", args.CEnum);
+                queryParams.Add("c_enum", args.CEnum?.ToEnumString());
                 queryParams.Add("c_year", args.CYear);
                 queryParams.Add("c_date", args.CDate);
                 queryParams.Add("c_datetime", args.CDatetime);
@@ -453,7 +453,7 @@ namespace MySqlConnectorDapperLegacyExampleGen
             public string CMediumtext { get; set; }
             public string CText { get; set; }
             public string CLongtext { get; set; }
-            public string CEnum { get; set; }
+            public MysqlTypesCEnum? CEnum { get; set; }
             public short? CYear { get; set; }
             public DateTime? CDate { get; set; }
             public DateTime? CDatetime { get; set; }
@@ -486,9 +486,11 @@ namespace MySqlConnectorDapperLegacyExampleGen
                 };
                 csvWriter.Context.TypeConverterOptionsCache.AddOptions<DateTime>(options);
                 csvWriter.Context.TypeConverterOptionsCache.AddOptions<DateTime?>(options);
+                csvWriter.Context.TypeConverterCache.AddConverter<bool>(new Utils.BoolToBitConverter());
                 csvWriter.Context.TypeConverterCache.AddConverter<bool?>(new Utils.BoolToBitConverter());
+                csvWriter.Context.TypeConverterCache.AddConverter<byte>(new Utils.ByteConverter());
+                csvWriter.Context.TypeConverterCache.AddConverter<byte?>(new Utils.ByteConverter());
                 csvWriter.Context.TypeConverterCache.AddConverter<byte[]>(new Utils.ByteArrayConverter());
-                csvWriter.Context.TypeConverterCache.AddConverter<byte?>(nullConverterFn);
                 csvWriter.Context.TypeConverterCache.AddConverter<short?>(nullConverterFn);
                 csvWriter.Context.TypeConverterCache.AddConverter<int?>(nullConverterFn);
                 csvWriter.Context.TypeConverterCache.AddConverter<long?>(nullConverterFn);
@@ -498,6 +500,7 @@ namespace MySqlConnectorDapperLegacyExampleGen
                 csvWriter.Context.TypeConverterCache.AddConverter<DateTime?>(nullConverterFn);
                 csvWriter.Context.TypeConverterCache.AddConverter<string>(nullConverterFn);
                 csvWriter.Context.TypeConverterCache.AddConverter<object>(nullConverterFn);
+                csvWriter.Context.TypeConverterCache.AddConverter<MysqlTypesCEnum?>(nullConverterFn);
                 await csvWriter.WriteRecordsAsync(args);
             }
 
@@ -552,7 +555,7 @@ namespace MySqlConnectorDapperLegacyExampleGen
             public string CMediumtext { get; set; }
             public string CText { get; set; }
             public string CLongtext { get; set; }
-            public string CEnum { get; set; }
+            public MysqlTypesCEnum? CEnum { get; set; }
             public byte? CBit { get; set; }
             public byte[] CBinary { get; set; }
             public byte[] CVarbinary { get; set; }
@@ -598,7 +601,7 @@ namespace MySqlConnectorDapperLegacyExampleGen
             public string CMediumtext { get; set; }
             public string CText { get; set; }
             public string CLongtext { get; set; }
-            public string CEnum { get; set; }
+            public MysqlTypesCEnum? CEnum { get; set; }
             public short? CYear { get; set; }
             public DateTime? CDate { get; set; }
             public DateTime? CDatetime { get; set; }

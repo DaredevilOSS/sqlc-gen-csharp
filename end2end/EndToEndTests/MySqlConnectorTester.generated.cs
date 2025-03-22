@@ -125,81 +125,6 @@ namespace SqlcGenCsharpTests
         }
 
         [Test]
-        [TestCase(100, true, false, 0x05, -13, 324, -98760, 987965, 3132423, -7785442l, 3.4f, -31.555666, 11.098643, 34.4424, 423.2445, 998.9994542, 21.214312452534, "D", "\u4321", "\u2345", "Parasite", "Clockwork Orange", "Dr. Strangelove", "Interview with a Vampire", "Memento", "Big", 1993, "2000-1-30", "1983-11-3 02:01:22", "2010-1-30 08:11:00", new byte[] { 0x15, 0x16, 0x17 }, new byte[] { 0x15, 0x20 }, new byte[] { 0x23 }, new byte[] { 0x33, 0x13 }, new byte[] { 0x11, 0x62, 0x10 }, new byte[] { 0x38, 0x45, 0x06, 0x04 })]
-        [TestCase(500, false, true, 0x12, 8, -555, 66979, -423425, -9798642, 3297398l, 1.23f, 99.35542, 32.33345, -12.3456, -55.55556, -11.1123334, 33.423542356346, "3", "\u1234", "\u6543", "Splendor in the Grass", "Pulp Fiction", "Chinatown", "Repulsion", "Million Dollar Baby", "Small", 2025, "2012-9-20", "2012-1-20 22:12:34", "1984-6-5 20:12:12", new byte[] { 0x0, 0x0, 0x0 }, new byte[] { }, new byte[] { }, new byte[] { }, new byte[] { }, new byte[] { })]
-        [TestCase(10, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, "1970-1-1 00:00:01", null, null, null, null, null, null)]
-        public async Task TestCopyFrom(int batchSize, bool? cBool, bool? cBoolean, byte? cBit, short? cTinyint, short? cSmallint, int? cMediumint, int? cInt, int? cInteger, long? cBigint, float? cFloat, decimal? cNumeric, decimal? cDecimal, decimal? cDec, decimal? cFixed, double? cDouble, double? cDoublePrecision, string cChar, string cNchar, string cNationalChar, string cVarchar, string cTinytext, string cMediumtext, string cText, string cLongtext, string cEnum, short? cYear, DateTime? cDate, DateTime? cDatetime, DateTime? cTimestamp, byte[] cBinary, byte[] cVarbinary, byte[] cTinyblob, byte[] cBlob, byte[] cMediumblob, byte[] cLongblob)
-        {
-            var batchArgs = Enumerable.Range(0, batchSize).Select(_ => new QuerySql.InsertMysqlTypesBatchArgs { CBool = cBool, CBoolean = cBoolean, CTinyint = cTinyint, CSmallint = cSmallint, CMediumint = cMediumint, CInt = cInt, CInteger = cInteger, CBigint = cBigint, CChar = cChar, CNchar = cNchar, CNationalChar = cNationalChar, CVarchar = cVarchar, CTinytext = cTinytext, CMediumtext = cMediumtext, CText = cText, CLongtext = cLongtext, CEnum = cEnum, CYear = cYear, CDate = cDate, CDatetime = cDatetime, CTimestamp = cTimestamp, CBinary = cBinary, CVarbinary = cVarbinary, CTinyblob = cTinyblob, CBlob = cBlob, CMediumblob = cMediumblob, CLongblob = cLongblob }).ToList();
-            await QuerySql.InsertMysqlTypesBatch(batchArgs);
-            var expected = new QuerySql.GetMysqlTypesAggRow
-            {
-                Cnt = batchSize,
-                CBool = cBool,
-                CBoolean = cBoolean,
-                CTinyint = cTinyint,
-                CSmallint = cSmallint,
-                CMediumint = cMediumint,
-                CInt = cInt,
-                CInteger = cInteger,
-                CBigint = cBigint,
-                CChar = cChar,
-                CNchar = cNchar,
-                CNationalChar = cNationalChar,
-                CVarchar = cVarchar,
-                CTinytext = cTinytext,
-                CMediumtext = cMediumtext,
-                CText = cText,
-                CLongtext = cLongtext,
-                CEnum = cEnum,
-                CYear = cYear,
-                CDate = cDate,
-                CDatetime = cDatetime,
-                CTimestamp = cTimestamp,
-                CBinary = cBinary,
-                CVarbinary = cVarbinary,
-                CTinyblob = cTinyblob,
-                CBlob = cBlob,
-                CMediumblob = cMediumblob,
-                CLongblob = cLongblob
-            };
-            var actual = await QuerySql.GetMysqlTypesAgg();
-            AssertSingularEquals(expected, actual.Value);
-        }
-
-        private static void AssertSingularEquals(QuerySql.GetMysqlTypesAggRow expected, QuerySql.GetMysqlTypesAggRow actual)
-        {
-            Assert.That(actual.Cnt, Is.EqualTo(expected.Cnt));
-            Assert.That(actual.CBool, Is.EqualTo(expected.CBool));
-            Assert.That(actual.CBoolean, Is.EqualTo(expected.CBoolean));
-            Assert.That(actual.CTinyint, Is.EqualTo(expected.CTinyint));
-            Assert.That(actual.CSmallint, Is.EqualTo(expected.CSmallint));
-            Assert.That(actual.CMediumint, Is.EqualTo(expected.CMediumint));
-            Assert.That(actual.CInt, Is.EqualTo(expected.CInt));
-            Assert.That(actual.CInteger, Is.EqualTo(expected.CInteger));
-            Assert.That(actual.CBigint, Is.EqualTo(expected.CBigint));
-            Assert.That(actual.CChar, Is.EqualTo(expected.CChar));
-            Assert.That(actual.CNchar, Is.EqualTo(expected.CNchar));
-            Assert.That(actual.CNationalChar, Is.EqualTo(expected.CNationalChar));
-            Assert.That(actual.CVarchar, Is.EqualTo(expected.CVarchar));
-            Assert.That(actual.CTinytext, Is.EqualTo(expected.CTinytext));
-            Assert.That(actual.CMediumtext, Is.EqualTo(expected.CMediumtext));
-            Assert.That(actual.CText, Is.EqualTo(expected.CText));
-            Assert.That(actual.CLongtext, Is.EqualTo(expected.CLongtext));
-            Assert.That(actual.CEnum, Is.EqualTo(expected.CEnum));
-            Assert.That(actual.CYear, Is.EqualTo(expected.CYear));
-            Assert.That(actual.CDate, Is.EqualTo(expected.CDate));
-            Assert.That(actual.CDatetime, Is.EqualTo(expected.CDatetime));
-            Assert.That(actual.CTimestamp, Is.EqualTo(expected.CTimestamp));
-            Assert.That(actual.CBinary, Is.EqualTo(expected.CBinary));
-            Assert.That(actual.CVarbinary, Is.EqualTo(expected.CVarbinary));
-            Assert.That(actual.CTinyblob, Is.EqualTo(expected.CTinyblob));
-            Assert.That(actual.CBlob, Is.EqualTo(expected.CBlob));
-            Assert.That(actual.CMediumblob, Is.EqualTo(expected.CMediumblob));
-            Assert.That(actual.CLongblob, Is.EqualTo(expected.CLongblob));
-        }
-
-        [Test]
         public async Task TestSelfJoinEmbed()
         {
             var id1 = await this.QuerySql.CreateAuthorReturnId(new QuerySql.CreateAuthorReturnIdArgs { Name = "Albert Einstein", Bio = "Quote that everyone always attribute to Einstein" });
@@ -228,7 +153,7 @@ namespace SqlcGenCsharpTests
 
         private static bool SingularEquals(QuerySql.GetDuplicateAuthorsRow x, QuerySql.GetDuplicateAuthorsRow y)
         {
-            return SingularEquals(x.Author, y.Author) && SingularEquals(x.Author2, y.Author2);
+            return SingularEquals(x.Author.Value, y.Author.Value) && SingularEquals(x.Author2.Value, y.Author2.Value);
         }
 
         private static bool SequenceEquals(List<QuerySql.GetDuplicateAuthorsRow> x, List<QuerySql.GetDuplicateAuthorsRow> y)
@@ -284,15 +209,15 @@ namespace SqlcGenCsharpTests
 
         private static bool SingularEquals(QuerySql.ListAllAuthorsBooksRow x, QuerySql.ListAllAuthorsBooksRow y)
         {
-            return SingularEquals(x.Author, y.Author) && SingularEquals(x.Book, y.Book);
+            return SingularEquals(x.Author.Value, y.Author.Value) && SingularEquals(x.Book.Value, y.Book.Value);
         }
 
         private static bool SequenceEquals(List<QuerySql.ListAllAuthorsBooksRow> x, List<QuerySql.ListAllAuthorsBooksRow> y)
         {
             if (x.Count != y.Count)
                 return false;
-            x = x.OrderBy<QuerySql.ListAllAuthorsBooksRow, object>(o => o.Author.Name + o.Book.Name).ToList();
-            y = y.OrderBy<QuerySql.ListAllAuthorsBooksRow, object>(o => o.Author.Name + o.Book.Name).ToList();
+            x = x.OrderBy<QuerySql.ListAllAuthorsBooksRow, object>(o => o.Author.Value.Name + o.Book.Value.Name).ToList();
+            y = y.OrderBy<QuerySql.ListAllAuthorsBooksRow, object>(o => o.Author.Value.Name + o.Book.Value.Name).ToList();
             return !x.Where((t, i) => !SingularEquals(t, y[i])).Any();
         }
 
@@ -381,11 +306,11 @@ namespace SqlcGenCsharpTests
         }
 
         [Test]
-        [TestCase("&", "\u1857", "\u2649", "Sheena is a Punk Rocker", "Holiday in Cambodia", "London's Calling", "London's Burning", "Police & Thieves", "Medium")]
-        [TestCase(null, null, null, null, null, null, null, null, null)]
-        public async Task TestMySqlStringTypes(string cChar, string cNchar, string cNationalChar, string cVarchar, string cTinytext, string cMediumtext, string cText, string cLongtext, string cEnum)
+        [TestCase("&", "\u1857", "\u2649", "Sheena is a Punk Rocker", "Holiday in Cambodia", "London's Calling", "London's Burning", "Police & Thieves")]
+        [TestCase(null, null, null, null, null, null, null, null)]
+        public async Task TestMySqlStringTypes(string cChar, string cNchar, string cNationalChar, string cVarchar, string cTinytext, string cMediumtext, string cText, string cLongtext)
         {
-            await QuerySql.InsertMysqlTypes(new QuerySql.InsertMysqlTypesArgs { CChar = cChar, CNchar = cNchar, CNationalChar = cNationalChar, CVarchar = cVarchar, CTinytext = cTinytext, CMediumtext = cMediumtext, CText = cText, CLongtext = cLongtext, CEnum = cEnum });
+            await QuerySql.InsertMysqlTypes(new QuerySql.InsertMysqlTypesArgs { CChar = cChar, CNchar = cNchar, CNationalChar = cNationalChar, CVarchar = cVarchar, CTinytext = cTinytext, CMediumtext = cMediumtext, CText = cText, CLongtext = cLongtext });
             var expected = new QuerySql.GetMysqlTypesRow
             {
                 CChar = cChar,
@@ -395,8 +320,7 @@ namespace SqlcGenCsharpTests
                 CTinytext = cTinytext,
                 CMediumtext = cMediumtext,
                 CText = cText,
-                CLongtext = cLongtext,
-                CEnum = cEnum
+                CLongtext = cLongtext
             };
             var actual = await QuerySql.GetMysqlTypes();
             Assert.That(actual.Value.CChar, Is.EqualTo(expected.CChar));
@@ -407,11 +331,10 @@ namespace SqlcGenCsharpTests
             Assert.That(actual.Value.CMediumtext, Is.EqualTo(expected.CMediumtext));
             Assert.That(actual.Value.CText, Is.EqualTo(expected.CText));
             Assert.That(actual.Value.CLongtext, Is.EqualTo(expected.CLongtext));
-            Assert.That(actual.Value.CEnum, Is.EqualTo(expected.CEnum));
         }
 
         [Test]
-        [TestCase(false, true, 13, 2084, 3124, -54355, 324245, -67865, 9787668656l)]
+        [TestCase(false, true, 13, 2084, 3124, -54355, 324245, -67865, 9787668656L)]
         [TestCase(null, null, null, null, null, null, null, null, null)]
         public async Task TestMySqlIntegerTypes(bool? cBool, bool? cBoolean, short? cTinyint, short? cYear, short? cSmallint, int? cMediumint, int? cInt, int? cInteger, long? cBigint)
         {
@@ -507,6 +430,180 @@ namespace SqlcGenCsharpTests
             Assert.That(actual.Value.CBlob, Is.EqualTo(expected.CBlob));
             Assert.That(actual.Value.CMediumblob, Is.EqualTo(expected.CMediumblob));
             Assert.That(actual.Value.CLongblob, Is.EqualTo(expected.CLongblob));
+        }
+
+        [Test]
+        [TestCase(MysqlTypesCEnum.Medium)]
+        [TestCase(null)]
+        public async Task TestMySqlStringTypes(MysqlTypesCEnum? cEnum)
+        {
+            await QuerySql.InsertMysqlTypes(new QuerySql.InsertMysqlTypesArgs { CEnum = cEnum });
+            var expected = new QuerySql.GetMysqlTypesRow
+            {
+                CEnum = cEnum
+            };
+            var actual = await QuerySql.GetMysqlTypes();
+            Assert.That(actual.Value.CEnum, Is.EqualTo(expected.CEnum));
+        }
+
+        [Test]
+        [TestCase(100, "D", "\u4321", "\u2345", "Parasite", "Clockwork Orange", "Dr. Strangelove", "Interview with a Vampire", "Memento")]
+        [TestCase(10, null, null, null, null, null, null, null, null)]
+        public async Task TestStringCopyFrom(int batchSize, string cChar, string cNchar, string cNationalChar, string cVarchar, string cTinytext, string cMediumtext, string cText, string cLongtext)
+        {
+            var batchArgs = Enumerable.Range(0, batchSize).Select(_ => new QuerySql.InsertMysqlTypesBatchArgs { CChar = cChar, CNchar = cNchar, CNationalChar = cNationalChar, CVarchar = cVarchar, CTinytext = cTinytext, CMediumtext = cMediumtext, CText = cText, CLongtext = cLongtext }).ToList();
+            await QuerySql.InsertMysqlTypesBatch(batchArgs);
+            var expected = new QuerySql.GetMysqlTypesAggRow
+            {
+                Cnt = batchSize,
+                CChar = cChar,
+                CNchar = cNchar,
+                CNationalChar = cNationalChar,
+                CVarchar = cVarchar,
+                CTinytext = cTinytext,
+                CMediumtext = cMediumtext,
+                CText = cText,
+                CLongtext = cLongtext,
+            };
+            var actual = await QuerySql.GetMysqlTypesAgg();
+            Assert.That(actual.Value.Cnt, Is.EqualTo(expected.Cnt));
+            Assert.That(actual.Value.CChar, Is.EqualTo(expected.CChar));
+            Assert.That(actual.Value.CNchar, Is.EqualTo(expected.CNchar));
+            Assert.That(actual.Value.CNationalChar, Is.EqualTo(expected.CNationalChar));
+            Assert.That(actual.Value.CVarchar, Is.EqualTo(expected.CVarchar));
+            Assert.That(actual.Value.CTinytext, Is.EqualTo(expected.CTinytext));
+            Assert.That(actual.Value.CMediumtext, Is.EqualTo(expected.CMediumtext));
+            Assert.That(actual.Value.CText, Is.EqualTo(expected.CText));
+            Assert.That(actual.Value.CLongtext, Is.EqualTo(expected.CLongtext));
+        }
+
+        [Test]
+        [TestCase(100, true, false, -13, 324, -98760, 987965, 3132423, -7785442L)]
+        [TestCase(10, null, null, null, null, null, null, null, null)]
+        public async Task TestIntegerCopyFrom(int batchSize, bool? cBool, bool? cBoolean, short? cTinyint, short? cSmallint, int? cMediumint, int? cInt, int? cInteger, long? cBigint)
+        {
+            var batchArgs = Enumerable.Range(0, batchSize).Select(_ => new QuerySql.InsertMysqlTypesBatchArgs { CBool = cBool, CBoolean = cBoolean, CTinyint = cTinyint, CSmallint = cSmallint, CMediumint = cMediumint, CInt = cInt, CInteger = cInteger, CBigint = cBigint }).ToList();
+            await QuerySql.InsertMysqlTypesBatch(batchArgs);
+            var expected = new QuerySql.GetMysqlTypesAggRow
+            {
+                Cnt = batchSize,
+                CBool = cBool,
+                CBoolean = cBoolean,
+                CTinyint = cTinyint,
+                CSmallint = cSmallint,
+                CMediumint = cMediumint,
+                CInt = cInt,
+                CInteger = cInteger,
+                CBigint = cBigint
+            };
+            var actual = await QuerySql.GetMysqlTypesAgg();
+            Assert.That(actual.Value.Cnt, Is.EqualTo(expected.Cnt));
+            Assert.That(actual.Value.CBool, Is.EqualTo(expected.CBool));
+            Assert.That(actual.Value.CBoolean, Is.EqualTo(expected.CBoolean));
+            Assert.That(actual.Value.CTinyint, Is.EqualTo(expected.CTinyint));
+            Assert.That(actual.Value.CSmallint, Is.EqualTo(expected.CSmallint));
+            Assert.That(actual.Value.CMediumint, Is.EqualTo(expected.CMediumint));
+            Assert.That(actual.Value.CInt, Is.EqualTo(expected.CInt));
+            Assert.That(actual.Value.CInteger, Is.EqualTo(expected.CInteger));
+            Assert.That(actual.Value.CBigint, Is.EqualTo(expected.CBigint));
+        }
+
+        [Test]
+        [TestCase(100, 3.4f, -31.55566, 11.09643, 34.4424, 423.2445, 998.999442, 21.214314)]
+        [TestCase(10, null, null, null, null, null, null, null)]
+        public async Task TestFloatingPointCopyFrom(int batchSize, float? cFloat, decimal? cNumeric, decimal? cDecimal, decimal? cDec, decimal? cFixed, double? cDouble, double? cDoublePrecision)
+        {
+            var batchArgs = Enumerable.Range(0, batchSize).Select(_ => new QuerySql.InsertMysqlTypesBatchArgs { CFloat = cFloat, CNumeric = cNumeric, CDecimal = cDecimal, CDec = cDec, CFixed = cFixed, CDouble = cDouble, CDoublePrecision = cDoublePrecision }).ToList();
+            await QuerySql.InsertMysqlTypesBatch(batchArgs);
+            var expected = new QuerySql.GetMysqlTypesAggRow
+            {
+                Cnt = batchSize,
+                CFloat = cFloat,
+                CNumeric = cNumeric,
+                CDecimal = cDecimal,
+                CDec = cDec,
+                CFixed = cFixed,
+                CDouble = cDouble,
+                CDoublePrecision = cDoublePrecision
+            };
+            var actual = await QuerySql.GetMysqlTypesAgg();
+            Assert.That(actual.Value.CFloat, Is.EqualTo(expected.CFloat));
+            Assert.That(actual.Value.CNumeric, Is.EqualTo(expected.CNumeric));
+            Assert.That(actual.Value.CDecimal, Is.EqualTo(expected.CDecimal));
+            Assert.That(actual.Value.CDec, Is.EqualTo(expected.CDec));
+            Assert.That(actual.Value.CFixed, Is.EqualTo(expected.CFixed));
+            Assert.That(actual.Value.CDouble, Is.EqualTo(expected.CDouble));
+            Assert.That(actual.Value.CDoublePrecision, Is.EqualTo(expected.CDoublePrecision));
+        }
+
+        [Test]
+        [TestCase(100, 1993, "2000-1-30", "1983-11-3 02:01:22", "2010-1-30 08:11:00")]
+        [TestCase(10, null, null, null, null)]
+        public async Task TestDateTimeCopyFrom(int batchSize, short? cYear, DateTime? cDate, DateTime? cDatetime, DateTime? cTimestamp)
+        {
+            var batchArgs = Enumerable.Range(0, batchSize).Select(_ => new QuerySql.InsertMysqlTypesBatchArgs { CYear = cYear, CDate = cDate, CDatetime = cDatetime, CTimestamp = cTimestamp }).ToList();
+            await QuerySql.InsertMysqlTypesBatch(batchArgs);
+            var expected = new QuerySql.GetMysqlTypesAggRow
+            {
+                Cnt = batchSize,
+                CYear = cYear,
+                CDate = cDate,
+                CDatetime = cDatetime,
+                CTimestamp = cTimestamp
+            };
+            var actual = await QuerySql.GetMysqlTypesAgg();
+            Assert.That(actual.Value.Cnt, Is.EqualTo(expected.Cnt));
+            Assert.That(actual.Value.CYear, Is.EqualTo(expected.CYear));
+            Assert.That(actual.Value.CDate, Is.EqualTo(expected.CDate));
+            Assert.That(actual.Value.CDatetime, Is.EqualTo(expected.CDatetime));
+            Assert.That(actual.Value.CTimestamp, Is.EqualTo(expected.CTimestamp));
+        }
+
+        [Test]
+        [TestCase(100, 0x05, new byte[] { 0x15, 0x16, 0x17 }, new byte[] { 0x15, 0x20 }, new byte[] { 0x23 }, new byte[] { 0x33, 0x13 }, new byte[] { 0x11, 0x62, 0x10 }, new byte[] { 0x38, 0x45, 0x06, 0x04 })]
+        [TestCase(500, null, new byte[] { 0x0, 0x0, 0x0 }, new byte[] { }, new byte[] { }, new byte[] { }, new byte[] { }, new byte[] { })]
+        [TestCase(10, null, null, null, null, null, null, null)]
+        public async Task TestBinaryCopyFrom(int batchSize, byte? cBit, byte[] cBinary, byte[] cVarbinary, byte[] cTinyblob, byte[] cBlob, byte[] cMediumblob, byte[] cLongblob)
+        {
+            var batchArgs = Enumerable.Range(0, batchSize).Select(_ => new QuerySql.InsertMysqlTypesBatchArgs { CBit = cBit, CBinary = cBinary, CVarbinary = cVarbinary, CTinyblob = cTinyblob, CBlob = cBlob, CMediumblob = cMediumblob, CLongblob = cLongblob }).ToList();
+            await QuerySql.InsertMysqlTypesBatch(batchArgs);
+            var expected = new QuerySql.GetMysqlTypesAggRow
+            {
+                Cnt = batchSize,
+                CBit = cBit,
+                CBinary = cBinary,
+                CVarbinary = cVarbinary,
+                CTinyblob = cTinyblob,
+                CBlob = cBlob,
+                CMediumblob = cMediumblob,
+                CLongblob = cLongblob
+            };
+            var actual = await QuerySql.GetMysqlTypesAgg();
+            Assert.That(actual.Value.Cnt, Is.EqualTo(expected.Cnt));
+            Assert.That(actual.Value.CBit, Is.EqualTo(expected.CBit));
+            Assert.That(actual.Value.CBinary, Is.EqualTo(expected.CBinary));
+            Assert.That(actual.Value.CVarbinary, Is.EqualTo(expected.CVarbinary));
+            Assert.That(actual.Value.CTinyblob, Is.EqualTo(expected.CTinyblob));
+            Assert.That(actual.Value.CBlob, Is.EqualTo(expected.CBlob));
+            Assert.That(actual.Value.CMediumblob, Is.EqualTo(expected.CMediumblob));
+            Assert.That(actual.Value.CLongblob, Is.EqualTo(expected.CLongblob));
+        }
+
+        [Test]
+        [TestCase(100, MysqlTypesCEnum.Big)]
+        [TestCase(500, MysqlTypesCEnum.Small)]
+        [TestCase(10, null)]
+        public async Task TestCopyFrom(int batchSize, MysqlTypesCEnum? cEnum)
+        {
+            var batchArgs = Enumerable.Range(0, batchSize).Select(_ => new QuerySql.InsertMysqlTypesBatchArgs { CEnum = cEnum }).ToList();
+            await QuerySql.InsertMysqlTypesBatch(batchArgs);
+            var expected = new QuerySql.GetMysqlTypesAggRow
+            {
+                Cnt = batchSize,
+                CEnum = cEnum
+            };
+            var actual = await QuerySql.GetMysqlTypesAgg();
+            Assert.That(actual.Value.CEnum, Is.EqualTo(expected.CEnum));
         }
     }
 }

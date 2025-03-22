@@ -49,6 +49,8 @@ public class CommonGen(DbDriver dbDriver)
                             {{queryParamsVar}}.Add($"@{{p.Column.Name}}Arg{i}", {{argsVar}}.{{param}}[i]);
                         """;
 
+            if (dbDriver.Enums.ContainsKey(p.Column.Type.Name))
+                param += "?.ToEnumString()";
             var addParamToDict = $"{queryParamsVar}.Add(\"{p.Column.Name}\", {argsVar}.{param});";
             return addParamToDict;
         });
@@ -137,12 +139,12 @@ public class CommonGen(DbDriver dbDriver)
             return column.NotNull
                 ? dbDriver.GetColumnReader(column, ordinal)
                 : $"{CheckNullExpression(ordinal)} ? {GetNullExpression(column)} : {dbDriver.GetColumnReader(column, ordinal)}";
-            ;
         }
 
         string GetNullExpression(Column column)
         {
             var csharpType = dbDriver.GetCsharpType(column);
+            if (dbDriver.Options.DotnetFramework.IsDotnetCore()) return "null";
             return dbDriver.IsTypeNullable(csharpType) ? $"({csharpType}) null" : "null";
         }
 

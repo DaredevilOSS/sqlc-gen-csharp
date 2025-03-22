@@ -44,7 +44,7 @@ public class QuerySql
                         {
                             Id = reader.GetInt64(0),
                             Name = reader.GetString(1),
-                            Bio = reader.IsDBNull(2) ? (string? )null : reader.GetString(2)
+                            Bio = reader.IsDBNull(2) ? null : reader.GetString(2)
                         };
                     }
                 }
@@ -68,7 +68,7 @@ public class QuerySql
                     var result = new List<ListAuthorsRow>();
                     while (await reader.ReadAsync())
                     {
-                        result.Add(new ListAuthorsRow { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? (string? )null : reader.GetString(2) });
+                        result.Add(new ListAuthorsRow { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2) });
                     }
 
                     return result;
@@ -130,7 +130,7 @@ public class QuerySql
                         {
                             Id = reader.GetInt64(0),
                             Name = reader.GetString(1),
-                            Bio = reader.IsDBNull(2) ? (string? )null : reader.GetString(2)
+                            Bio = reader.IsDBNull(2) ? null : reader.GetString(2)
                         };
                     }
                 }
@@ -156,7 +156,7 @@ public class QuerySql
                     var result = new List<GetAuthorByNamePatternRow>();
                     while (await reader.ReadAsync())
                     {
-                        result.Add(new GetAuthorByNamePatternRow { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? (string? )null : reader.GetString(2) });
+                        result.Add(new GetAuthorByNamePatternRow { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2) });
                     }
 
                     return result;
@@ -227,7 +227,7 @@ public class QuerySql
                     var result = new List<GetAuthorsByIdsRow>();
                     while (await reader.ReadAsync())
                     {
-                        result.Add(new GetAuthorsByIdsRow { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? (string? )null : reader.GetString(2) });
+                        result.Add(new GetAuthorsByIdsRow { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2) });
                     }
 
                     return result;
@@ -258,7 +258,7 @@ public class QuerySql
                     var result = new List<GetAuthorsByIdsAndNamesRow>();
                     while (await reader.ReadAsync())
                     {
-                        result.Add(new GetAuthorsByIdsAndNamesRow { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? (string? )null : reader.GetString(2) });
+                        result.Add(new GetAuthorsByIdsAndNamesRow { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2) });
                     }
 
                     return result;
@@ -285,7 +285,7 @@ public class QuerySql
     }
 
     private const string ListAllAuthorsBooksSql = "SELECT authors.id, authors.name, authors.bio, books.id, books.name, books.author_id, books.description  FROM  authors  JOIN  books  ON  authors . id  =  books . author_id  ORDER  BY  authors . name  ";  
-    public readonly record struct ListAllAuthorsBooksRow(Author Author, Book Book);
+    public readonly record struct ListAllAuthorsBooksRow(Author? Author, Book? Book);
     public async Task<List<ListAllAuthorsBooksRow>> ListAllAuthorsBooks()
     {
         using (var connection = new MySqlConnection(ConnectionString))
@@ -298,7 +298,7 @@ public class QuerySql
                     var result = new List<ListAllAuthorsBooksRow>();
                     while (await reader.ReadAsync())
                     {
-                        result.Add(new ListAllAuthorsBooksRow { Author = new Author { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? (string? )null : reader.GetString(2) }, Book = new Book { Id = reader.GetInt64(3), Name = reader.GetString(4), AuthorId = reader.GetInt64(5), Description = reader.IsDBNull(6) ? (string? )null : reader.GetString(6) } });
+                        result.Add(new ListAllAuthorsBooksRow { Author = new Author { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2) }, Book = new Book { Id = reader.GetInt64(3), Name = reader.GetString(4), AuthorId = reader.GetInt64(5), Description = reader.IsDBNull(6) ? null : reader.GetString(6) } });
                     }
 
                     return result;
@@ -308,7 +308,7 @@ public class QuerySql
     }
 
     private const string GetDuplicateAuthorsSql = "SELECT authors1.id, authors1.name, authors1.bio, authors2.id, authors2.name, authors2.bio FROM  authors  authors1  JOIN  authors  authors2  ON  authors1 . name  =  authors2 . name  WHERE  authors1 . id < authors2 . id  ";  
-    public readonly record struct GetDuplicateAuthorsRow(Author Author, Author Author2);
+    public readonly record struct GetDuplicateAuthorsRow(Author? Author, Author? Author2);
     public async Task<List<GetDuplicateAuthorsRow>> GetDuplicateAuthors()
     {
         using (var connection = new MySqlConnection(ConnectionString))
@@ -321,7 +321,7 @@ public class QuerySql
                     var result = new List<GetDuplicateAuthorsRow>();
                     while (await reader.ReadAsync())
                     {
-                        result.Add(new GetDuplicateAuthorsRow { Author = new Author { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? (string? )null : reader.GetString(2) }, Author2 = new Author { Id = reader.GetInt64(3), Name = reader.GetString(4), Bio = reader.IsDBNull(5) ? (string? )null : reader.GetString(5) } });
+                        result.Add(new GetDuplicateAuthorsRow { Author = new Author { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2) }, Author2 = new Author { Id = reader.GetInt64(3), Name = reader.GetString(4), Bio = reader.IsDBNull(5) ? null : reader.GetString(5) } });
                     }
 
                     return result;
@@ -331,7 +331,7 @@ public class QuerySql
     }
 
     private const string GetAuthorsByBookNameSql = "SELECT authors.id, authors.name, authors.bio, books.id, books.name, books.author_id, books.description FROM  authors  JOIN  books  ON  authors . id  =  books . author_id  WHERE  books . name  =  @name  ";  
-    public readonly record struct GetAuthorsByBookNameRow(long Id, string Name, string? Bio, Book Book);
+    public readonly record struct GetAuthorsByBookNameRow(long Id, string Name, string? Bio, Book? Book);
     public readonly record struct GetAuthorsByBookNameArgs(string Name);
     public async Task<List<GetAuthorsByBookNameRow>> GetAuthorsByBookName(GetAuthorsByBookNameArgs args)
     {
@@ -346,7 +346,7 @@ public class QuerySql
                     var result = new List<GetAuthorsByBookNameRow>();
                     while (await reader.ReadAsync())
                     {
-                        result.Add(new GetAuthorsByBookNameRow { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? (string? )null : reader.GetString(2), Book = new Book { Id = reader.GetInt64(3), Name = reader.GetString(4), AuthorId = reader.GetInt64(5), Description = reader.IsDBNull(6) ? (string? )null : reader.GetString(6) } });
+                        result.Add(new GetAuthorsByBookNameRow { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2), Book = new Book { Id = reader.GetInt64(3), Name = reader.GetString(4), AuthorId = reader.GetInt64(5), Description = reader.IsDBNull(6) ? null : reader.GetString(6) } });
                     }
 
                     return result;
@@ -356,7 +356,7 @@ public class QuerySql
     }
 
     private const string InsertMysqlTypesSql = "INSERT INTO mysql_types (c_bit, c_bool, c_boolean, c_tinyint, c_smallint, c_mediumint, c_int, c_integer, c_bigint, c_decimal, c_dec, c_numeric, c_fixed, c_float, c_double, c_double_precision, c_char, c_nchar, c_national_char, c_varchar, c_tinytext, c_mediumtext, c_text, c_longtext, c_enum, c_year, c_date, c_datetime, c_timestamp, c_binary, c_varbinary, c_tinyblob, c_blob, c_mediumblob, c_longblob) VALUES ( @c_bit, @c_bool, @c_boolean, @c_tinyint, @c_smallint, @c_mediumint, @c_int, @c_integer, @c_bigint, @c_decimal, @c_dec, @c_numeric, @c_fixed, @c_float, @c_double, @c_double_precision, @c_char, @c_nchar, @c_national_char, @c_varchar, @c_tinytext, @c_mediumtext, @c_text, @c_longtext, @c_enum, @c_year, @c_date, @c_datetime, @c_timestamp, @c_binary, @c_varbinary, @c_tinyblob, @c_blob, @c_mediumblob, @c_longblob ) "; 
-    public readonly record struct InsertMysqlTypesArgs(byte? CBit, bool? CBool, bool? CBoolean, short? CTinyint, short? CSmallint, int? CMediumint, int? CInt, int? CInteger, long? CBigint, decimal? CDecimal, decimal? CDec, decimal? CNumeric, decimal? CFixed, double? CFloat, double? CDouble, double? CDoublePrecision, string? CChar, string? CNchar, string? CNationalChar, string? CVarchar, string? CTinytext, string? CMediumtext, string? CText, string? CLongtext, string? CEnum, short? CYear, DateTime? CDate, DateTime? CDatetime, DateTime? CTimestamp, byte[]? CBinary, byte[]? CVarbinary, byte[]? CTinyblob, byte[]? CBlob, byte[]? CMediumblob, byte[]? CLongblob);
+    public readonly record struct InsertMysqlTypesArgs(byte? CBit, bool? CBool, bool? CBoolean, short? CTinyint, short? CSmallint, int? CMediumint, int? CInt, int? CInteger, long? CBigint, decimal? CDecimal, decimal? CDec, decimal? CNumeric, decimal? CFixed, double? CFloat, double? CDouble, double? CDoublePrecision, string? CChar, string? CNchar, string? CNationalChar, string? CVarchar, string? CTinytext, string? CMediumtext, string? CText, string? CLongtext, MysqlTypesCEnum? CEnum, short? CYear, DateTime? CDate, DateTime? CDatetime, DateTime? CTimestamp, byte[]? CBinary, byte[]? CVarbinary, byte[]? CTinyblob, byte[]? CBlob, byte[]? CMediumblob, byte[]? CLongblob);
     public async Task InsertMysqlTypes(InsertMysqlTypesArgs args)
     {
         using (var connection = new MySqlConnection(ConnectionString))
@@ -404,7 +404,7 @@ public class QuerySql
         }
     }
 
-    public readonly record struct InsertMysqlTypesBatchArgs(byte? CBit, bool? CBool, bool? CBoolean, short? CTinyint, short? CSmallint, int? CMediumint, int? CInt, int? CInteger, long? CBigint, double? CFloat, decimal? CNumeric, decimal? CDecimal, decimal? CDec, decimal? CFixed, double? CDouble, double? CDoublePrecision, string? CChar, string? CNchar, string? CNationalChar, string? CVarchar, string? CTinytext, string? CMediumtext, string? CText, string? CLongtext, string? CEnum, short? CYear, DateTime? CDate, DateTime? CDatetime, DateTime? CTimestamp, byte[]? CBinary, byte[]? CVarbinary, byte[]? CTinyblob, byte[]? CBlob, byte[]? CMediumblob, byte[]? CLongblob);
+    public readonly record struct InsertMysqlTypesBatchArgs(byte? CBit, bool? CBool, bool? CBoolean, short? CTinyint, short? CSmallint, int? CMediumint, int? CInt, int? CInteger, long? CBigint, double? CFloat, decimal? CNumeric, decimal? CDecimal, decimal? CDec, decimal? CFixed, double? CDouble, double? CDoublePrecision, string? CChar, string? CNchar, string? CNationalChar, string? CVarchar, string? CTinytext, string? CMediumtext, string? CText, string? CLongtext, MysqlTypesCEnum? CEnum, short? CYear, DateTime? CDate, DateTime? CDatetime, DateTime? CTimestamp, byte[]? CBinary, byte[]? CVarbinary, byte[]? CTinyblob, byte[]? CBlob, byte[]? CMediumblob, byte[]? CLongblob);
     public async Task InsertMysqlTypesBatch(List<InsertMysqlTypesBatchArgs> args)
     {
         const string supportedDateTimeFormat = "yyyy-MM-dd H:mm:ss";
@@ -426,9 +426,12 @@ public class QuerySql
             };
             csvWriter.Context.TypeConverterOptionsCache.AddOptions<DateTime>(options);
             csvWriter.Context.TypeConverterOptionsCache.AddOptions<DateTime?>(options);
+            csvWriter.Context.TypeConverterCache.AddConverter<bool>(new Utils.BoolToBitConverter());
             csvWriter.Context.TypeConverterCache.AddConverter<bool?>(new Utils.BoolToBitConverter());
+            csvWriter.Context.TypeConverterCache.AddConverter<byte>(new Utils.ByteConverter());
+            csvWriter.Context.TypeConverterCache.AddConverter<byte?>(new Utils.ByteConverter());
+            csvWriter.Context.TypeConverterCache.AddConverter<byte[]>(new Utils.ByteArrayConverter());
             csvWriter.Context.TypeConverterCache.AddConverter<byte[]?>(new Utils.ByteArrayConverter());
-            csvWriter.Context.TypeConverterCache.AddConverter<byte?>(nullConverterFn);
             csvWriter.Context.TypeConverterCache.AddConverter<short?>(nullConverterFn);
             csvWriter.Context.TypeConverterCache.AddConverter<int?>(nullConverterFn);
             csvWriter.Context.TypeConverterCache.AddConverter<long?>(nullConverterFn);
@@ -438,6 +441,7 @@ public class QuerySql
             csvWriter.Context.TypeConverterCache.AddConverter<DateTime?>(nullConverterFn);
             csvWriter.Context.TypeConverterCache.AddConverter<string?>(nullConverterFn);
             csvWriter.Context.TypeConverterCache.AddConverter<object?>(nullConverterFn);
+            csvWriter.Context.TypeConverterCache.AddConverter<MysqlTypesCEnum?>(nullConverterFn);
             await csvWriter.WriteRecordsAsync(args);
         }
 
@@ -462,7 +466,7 @@ public class QuerySql
     }
 
     private const string GetMysqlTypesSql = "SELECT c_bool, c_boolean, c_tinyint, c_smallint, c_mediumint, c_int, c_integer, c_bigint, c_float, c_decimal, c_dec, c_numeric, c_fixed, c_double, c_double_precision, c_year, c_date, c_time, c_datetime, c_timestamp, c_char, c_nchar, c_national_char, c_varchar, c_tinytext, c_mediumtext, c_text, c_longtext, c_enum, c_bit, c_binary, c_varbinary, c_tinyblob, c_blob, c_mediumblob, c_longblob FROM mysql_types LIMIT 1";
-    public readonly record struct GetMysqlTypesRow(bool? CBool, bool? CBoolean, short? CTinyint, short? CSmallint, int? CMediumint, int? CInt, int? CInteger, long? CBigint, double? CFloat, decimal? CDecimal, decimal? CDec, decimal? CNumeric, decimal? CFixed, double? CDouble, double? CDoublePrecision, short? CYear, DateTime? CDate, string? CTime, DateTime? CDatetime, DateTime? CTimestamp, string? CChar, string? CNchar, string? CNationalChar, string? CVarchar, string? CTinytext, string? CMediumtext, string? CText, string? CLongtext, string? CEnum, byte? CBit, byte[]? CBinary, byte[]? CVarbinary, byte[]? CTinyblob, byte[]? CBlob, byte[]? CMediumblob, byte[]? CLongblob);
+    public readonly record struct GetMysqlTypesRow(bool? CBool, bool? CBoolean, short? CTinyint, short? CSmallint, int? CMediumint, int? CInt, int? CInteger, long? CBigint, double? CFloat, decimal? CDecimal, decimal? CDec, decimal? CNumeric, decimal? CFixed, double? CDouble, double? CDoublePrecision, short? CYear, DateTime? CDate, string? CTime, DateTime? CDatetime, DateTime? CTimestamp, string? CChar, string? CNchar, string? CNationalChar, string? CVarchar, string? CTinytext, string? CMediumtext, string? CText, string? CLongtext, MysqlTypesCEnum? CEnum, byte? CBit, byte[]? CBinary, byte[]? CVarbinary, byte[]? CTinyblob, byte[]? CBlob, byte[]? CMediumblob, byte[]? CLongblob);
     public async Task<GetMysqlTypesRow?> GetMysqlTypes()
     {
         using (var connection = new MySqlConnection(ConnectionString))
@@ -476,42 +480,42 @@ public class QuerySql
                     {
                         return new GetMysqlTypesRow
                         {
-                            CBool = reader.IsDBNull(0) ? (bool? )null : reader.GetBoolean(0),
-                            CBoolean = reader.IsDBNull(1) ? (bool? )null : reader.GetBoolean(1),
-                            CTinyint = reader.IsDBNull(2) ? (short? )null : reader.GetInt16(2),
-                            CSmallint = reader.IsDBNull(3) ? (short? )null : reader.GetInt16(3),
-                            CMediumint = reader.IsDBNull(4) ? (int? )null : reader.GetInt32(4),
-                            CInt = reader.IsDBNull(5) ? (int? )null : reader.GetInt32(5),
-                            CInteger = reader.IsDBNull(6) ? (int? )null : reader.GetInt32(6),
-                            CBigint = reader.IsDBNull(7) ? (long? )null : reader.GetInt64(7),
-                            CFloat = reader.IsDBNull(8) ? (double? )null : reader.GetDouble(8),
-                            CDecimal = reader.IsDBNull(9) ? (decimal? )null : reader.GetDecimal(9),
-                            CDec = reader.IsDBNull(10) ? (decimal? )null : reader.GetDecimal(10),
-                            CNumeric = reader.IsDBNull(11) ? (decimal? )null : reader.GetDecimal(11),
-                            CFixed = reader.IsDBNull(12) ? (decimal? )null : reader.GetDecimal(12),
-                            CDouble = reader.IsDBNull(13) ? (double? )null : reader.GetDouble(13),
-                            CDoublePrecision = reader.IsDBNull(14) ? (double? )null : reader.GetDouble(14),
-                            CYear = reader.IsDBNull(15) ? (short? )null : reader.GetInt16(15),
-                            CDate = reader.IsDBNull(16) ? (DateTime? )null : reader.GetDateTime(16),
-                            CTime = reader.IsDBNull(17) ? (string? )null : reader.GetString(17),
-                            CDatetime = reader.IsDBNull(18) ? (DateTime? )null : reader.GetDateTime(18),
-                            CTimestamp = reader.IsDBNull(19) ? (DateTime? )null : reader.GetDateTime(19),
-                            CChar = reader.IsDBNull(20) ? (string? )null : reader.GetString(20),
-                            CNchar = reader.IsDBNull(21) ? (string? )null : reader.GetString(21),
-                            CNationalChar = reader.IsDBNull(22) ? (string? )null : reader.GetString(22),
-                            CVarchar = reader.IsDBNull(23) ? (string? )null : reader.GetString(23),
-                            CTinytext = reader.IsDBNull(24) ? (string? )null : reader.GetString(24),
-                            CMediumtext = reader.IsDBNull(25) ? (string? )null : reader.GetString(25),
-                            CText = reader.IsDBNull(26) ? (string? )null : reader.GetString(26),
-                            CLongtext = reader.IsDBNull(27) ? (string? )null : reader.GetString(27),
-                            CEnum = reader.IsDBNull(28) ? (string? )null : reader.GetString(28),
-                            CBit = reader.IsDBNull(29) ? (byte? )null : reader.GetFieldValue<byte>(29),
-                            CBinary = reader.IsDBNull(30) ? (byte[]? )null : reader.GetFieldValue<byte[]>(30),
-                            CVarbinary = reader.IsDBNull(31) ? (byte[]? )null : reader.GetFieldValue<byte[]>(31),
-                            CTinyblob = reader.IsDBNull(32) ? (byte[]? )null : reader.GetFieldValue<byte[]>(32),
-                            CBlob = reader.IsDBNull(33) ? (byte[]? )null : reader.GetFieldValue<byte[]>(33),
-                            CMediumblob = reader.IsDBNull(34) ? (byte[]? )null : reader.GetFieldValue<byte[]>(34),
-                            CLongblob = reader.IsDBNull(35) ? (byte[]? )null : reader.GetFieldValue<byte[]>(35)
+                            CBool = reader.IsDBNull(0) ? null : reader.GetBoolean(0),
+                            CBoolean = reader.IsDBNull(1) ? null : reader.GetBoolean(1),
+                            CTinyint = reader.IsDBNull(2) ? null : reader.GetInt16(2),
+                            CSmallint = reader.IsDBNull(3) ? null : reader.GetInt16(3),
+                            CMediumint = reader.IsDBNull(4) ? null : reader.GetInt32(4),
+                            CInt = reader.IsDBNull(5) ? null : reader.GetInt32(5),
+                            CInteger = reader.IsDBNull(6) ? null : reader.GetInt32(6),
+                            CBigint = reader.IsDBNull(7) ? null : reader.GetInt64(7),
+                            CFloat = reader.IsDBNull(8) ? null : reader.GetDouble(8),
+                            CDecimal = reader.IsDBNull(9) ? null : reader.GetDecimal(9),
+                            CDec = reader.IsDBNull(10) ? null : reader.GetDecimal(10),
+                            CNumeric = reader.IsDBNull(11) ? null : reader.GetDecimal(11),
+                            CFixed = reader.IsDBNull(12) ? null : reader.GetDecimal(12),
+                            CDouble = reader.IsDBNull(13) ? null : reader.GetDouble(13),
+                            CDoublePrecision = reader.IsDBNull(14) ? null : reader.GetDouble(14),
+                            CYear = reader.IsDBNull(15) ? null : reader.GetInt16(15),
+                            CDate = reader.IsDBNull(16) ? null : reader.GetDateTime(16),
+                            CTime = reader.IsDBNull(17) ? null : reader.GetString(17),
+                            CDatetime = reader.IsDBNull(18) ? null : reader.GetDateTime(18),
+                            CTimestamp = reader.IsDBNull(19) ? null : reader.GetDateTime(19),
+                            CChar = reader.IsDBNull(20) ? null : reader.GetString(20),
+                            CNchar = reader.IsDBNull(21) ? null : reader.GetString(21),
+                            CNationalChar = reader.IsDBNull(22) ? null : reader.GetString(22),
+                            CVarchar = reader.IsDBNull(23) ? null : reader.GetString(23),
+                            CTinytext = reader.IsDBNull(24) ? null : reader.GetString(24),
+                            CMediumtext = reader.IsDBNull(25) ? null : reader.GetString(25),
+                            CText = reader.IsDBNull(26) ? null : reader.GetString(26),
+                            CLongtext = reader.IsDBNull(27) ? null : reader.GetString(27),
+                            CEnum = reader.IsDBNull(28) ? null : reader.GetString(28).ToMysqlTypesCEnum(),
+                            CBit = reader.IsDBNull(29) ? null : reader.GetFieldValue<byte>(29),
+                            CBinary = reader.IsDBNull(30) ? null : reader.GetFieldValue<byte[]>(30),
+                            CVarbinary = reader.IsDBNull(31) ? null : reader.GetFieldValue<byte[]>(31),
+                            CTinyblob = reader.IsDBNull(32) ? null : reader.GetFieldValue<byte[]>(32),
+                            CBlob = reader.IsDBNull(33) ? null : reader.GetFieldValue<byte[]>(33),
+                            CMediumblob = reader.IsDBNull(34) ? null : reader.GetFieldValue<byte[]>(34),
+                            CLongblob = reader.IsDBNull(35) ? null : reader.GetFieldValue<byte[]>(35)
                         };
                     }
                 }
@@ -522,7 +526,7 @@ public class QuerySql
     }
 
     private const string GetMysqlTypesAggSql = "SELECT COUNT(1) AS cnt, c_bool, c_boolean, c_bit, c_tinyint, c_smallint, c_mediumint, c_int, c_integer, c_bigint,  c_float , c_numeric, c_decimal, c_dec, c_fixed, c_double, c_double_precision, c_char, c_nchar, c_national_char, c_varchar, c_tinytext, c_mediumtext, c_text, c_longtext, c_enum, c_year, c_date, c_datetime, c_timestamp, c_binary, c_varbinary, c_tinyblob, c_blob, c_mediumblob, c_longblob FROM  mysql_types  GROUP  BY  c_bool , c_boolean, c_bit, c_tinyint, c_smallint, c_mediumint, c_int, c_integer, c_bigint, c_float, c_numeric, c_decimal, c_dec, c_fixed, c_double, c_double_precision, c_char, c_nchar, c_national_char, c_varchar, c_tinytext, c_mediumtext, c_text, c_longtext, c_enum, c_year, c_date, c_datetime, c_timestamp, c_binary, c_varbinary, c_tinyblob, c_blob, c_mediumblob, c_longblob LIMIT  1  ";  
-    public readonly record struct GetMysqlTypesAggRow(long Cnt, bool? CBool, bool? CBoolean, byte? CBit, short? CTinyint, short? CSmallint, int? CMediumint, int? CInt, int? CInteger, long? CBigint, double? CFloat, decimal? CNumeric, decimal? CDecimal, decimal? CDec, decimal? CFixed, double? CDouble, double? CDoublePrecision, string? CChar, string? CNchar, string? CNationalChar, string? CVarchar, string? CTinytext, string? CMediumtext, string? CText, string? CLongtext, string? CEnum, short? CYear, DateTime? CDate, DateTime? CDatetime, DateTime? CTimestamp, byte[]? CBinary, byte[]? CVarbinary, byte[]? CTinyblob, byte[]? CBlob, byte[]? CMediumblob, byte[]? CLongblob);
+    public readonly record struct GetMysqlTypesAggRow(long Cnt, bool? CBool, bool? CBoolean, byte? CBit, short? CTinyint, short? CSmallint, int? CMediumint, int? CInt, int? CInteger, long? CBigint, double? CFloat, decimal? CNumeric, decimal? CDecimal, decimal? CDec, decimal? CFixed, double? CDouble, double? CDoublePrecision, string? CChar, string? CNchar, string? CNationalChar, string? CVarchar, string? CTinytext, string? CMediumtext, string? CText, string? CLongtext, MysqlTypesCEnum? CEnum, short? CYear, DateTime? CDate, DateTime? CDatetime, DateTime? CTimestamp, byte[]? CBinary, byte[]? CVarbinary, byte[]? CTinyblob, byte[]? CBlob, byte[]? CMediumblob, byte[]? CLongblob);
     public async Task<GetMysqlTypesAggRow?> GetMysqlTypesAgg()
     {
         using (var connection = new MySqlConnection(ConnectionString))
@@ -537,41 +541,41 @@ public class QuerySql
                         return new GetMysqlTypesAggRow
                         {
                             Cnt = reader.GetInt64(0),
-                            CBool = reader.IsDBNull(1) ? (bool? )null : reader.GetBoolean(1),
-                            CBoolean = reader.IsDBNull(2) ? (bool? )null : reader.GetBoolean(2),
-                            CBit = reader.IsDBNull(3) ? (byte? )null : reader.GetFieldValue<byte>(3),
-                            CTinyint = reader.IsDBNull(4) ? (short? )null : reader.GetInt16(4),
-                            CSmallint = reader.IsDBNull(5) ? (short? )null : reader.GetInt16(5),
-                            CMediumint = reader.IsDBNull(6) ? (int? )null : reader.GetInt32(6),
-                            CInt = reader.IsDBNull(7) ? (int? )null : reader.GetInt32(7),
-                            CInteger = reader.IsDBNull(8) ? (int? )null : reader.GetInt32(8),
-                            CBigint = reader.IsDBNull(9) ? (long? )null : reader.GetInt64(9),
-                            CFloat = reader.IsDBNull(10) ? (double? )null : reader.GetDouble(10),
-                            CNumeric = reader.IsDBNull(11) ? (decimal? )null : reader.GetDecimal(11),
-                            CDecimal = reader.IsDBNull(12) ? (decimal? )null : reader.GetDecimal(12),
-                            CDec = reader.IsDBNull(13) ? (decimal? )null : reader.GetDecimal(13),
-                            CFixed = reader.IsDBNull(14) ? (decimal? )null : reader.GetDecimal(14),
-                            CDouble = reader.IsDBNull(15) ? (double? )null : reader.GetDouble(15),
-                            CDoublePrecision = reader.IsDBNull(16) ? (double? )null : reader.GetDouble(16),
-                            CChar = reader.IsDBNull(17) ? (string? )null : reader.GetString(17),
-                            CNchar = reader.IsDBNull(18) ? (string? )null : reader.GetString(18),
-                            CNationalChar = reader.IsDBNull(19) ? (string? )null : reader.GetString(19),
-                            CVarchar = reader.IsDBNull(20) ? (string? )null : reader.GetString(20),
-                            CTinytext = reader.IsDBNull(21) ? (string? )null : reader.GetString(21),
-                            CMediumtext = reader.IsDBNull(22) ? (string? )null : reader.GetString(22),
-                            CText = reader.IsDBNull(23) ? (string? )null : reader.GetString(23),
-                            CLongtext = reader.IsDBNull(24) ? (string? )null : reader.GetString(24),
-                            CEnum = reader.IsDBNull(25) ? (string? )null : reader.GetString(25),
-                            CYear = reader.IsDBNull(26) ? (short? )null : reader.GetInt16(26),
-                            CDate = reader.IsDBNull(27) ? (DateTime? )null : reader.GetDateTime(27),
-                            CDatetime = reader.IsDBNull(28) ? (DateTime? )null : reader.GetDateTime(28),
-                            CTimestamp = reader.IsDBNull(29) ? (DateTime? )null : reader.GetDateTime(29),
-                            CBinary = reader.IsDBNull(30) ? (byte[]? )null : reader.GetFieldValue<byte[]>(30),
-                            CVarbinary = reader.IsDBNull(31) ? (byte[]? )null : reader.GetFieldValue<byte[]>(31),
-                            CTinyblob = reader.IsDBNull(32) ? (byte[]? )null : reader.GetFieldValue<byte[]>(32),
-                            CBlob = reader.IsDBNull(33) ? (byte[]? )null : reader.GetFieldValue<byte[]>(33),
-                            CMediumblob = reader.IsDBNull(34) ? (byte[]? )null : reader.GetFieldValue<byte[]>(34),
-                            CLongblob = reader.IsDBNull(35) ? (byte[]? )null : reader.GetFieldValue<byte[]>(35)
+                            CBool = reader.IsDBNull(1) ? null : reader.GetBoolean(1),
+                            CBoolean = reader.IsDBNull(2) ? null : reader.GetBoolean(2),
+                            CBit = reader.IsDBNull(3) ? null : reader.GetFieldValue<byte>(3),
+                            CTinyint = reader.IsDBNull(4) ? null : reader.GetInt16(4),
+                            CSmallint = reader.IsDBNull(5) ? null : reader.GetInt16(5),
+                            CMediumint = reader.IsDBNull(6) ? null : reader.GetInt32(6),
+                            CInt = reader.IsDBNull(7) ? null : reader.GetInt32(7),
+                            CInteger = reader.IsDBNull(8) ? null : reader.GetInt32(8),
+                            CBigint = reader.IsDBNull(9) ? null : reader.GetInt64(9),
+                            CFloat = reader.IsDBNull(10) ? null : reader.GetDouble(10),
+                            CNumeric = reader.IsDBNull(11) ? null : reader.GetDecimal(11),
+                            CDecimal = reader.IsDBNull(12) ? null : reader.GetDecimal(12),
+                            CDec = reader.IsDBNull(13) ? null : reader.GetDecimal(13),
+                            CFixed = reader.IsDBNull(14) ? null : reader.GetDecimal(14),
+                            CDouble = reader.IsDBNull(15) ? null : reader.GetDouble(15),
+                            CDoublePrecision = reader.IsDBNull(16) ? null : reader.GetDouble(16),
+                            CChar = reader.IsDBNull(17) ? null : reader.GetString(17),
+                            CNchar = reader.IsDBNull(18) ? null : reader.GetString(18),
+                            CNationalChar = reader.IsDBNull(19) ? null : reader.GetString(19),
+                            CVarchar = reader.IsDBNull(20) ? null : reader.GetString(20),
+                            CTinytext = reader.IsDBNull(21) ? null : reader.GetString(21),
+                            CMediumtext = reader.IsDBNull(22) ? null : reader.GetString(22),
+                            CText = reader.IsDBNull(23) ? null : reader.GetString(23),
+                            CLongtext = reader.IsDBNull(24) ? null : reader.GetString(24),
+                            CEnum = reader.IsDBNull(25) ? null : reader.GetString(25).ToMysqlTypesCEnum(),
+                            CYear = reader.IsDBNull(26) ? null : reader.GetInt16(26),
+                            CDate = reader.IsDBNull(27) ? null : reader.GetDateTime(27),
+                            CDatetime = reader.IsDBNull(28) ? null : reader.GetDateTime(28),
+                            CTimestamp = reader.IsDBNull(29) ? null : reader.GetDateTime(29),
+                            CBinary = reader.IsDBNull(30) ? null : reader.GetFieldValue<byte[]>(30),
+                            CVarbinary = reader.IsDBNull(31) ? null : reader.GetFieldValue<byte[]>(31),
+                            CTinyblob = reader.IsDBNull(32) ? null : reader.GetFieldValue<byte[]>(32),
+                            CBlob = reader.IsDBNull(33) ? null : reader.GetFieldValue<byte[]>(33),
+                            CMediumblob = reader.IsDBNull(34) ? null : reader.GetFieldValue<byte[]>(34),
+                            CLongblob = reader.IsDBNull(35) ? null : reader.GetFieldValue<byte[]>(35)
                         };
                     }
                 }

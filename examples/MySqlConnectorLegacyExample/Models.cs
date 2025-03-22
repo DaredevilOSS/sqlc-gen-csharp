@@ -2,6 +2,8 @@
 namespace MySqlConnectorLegacyExampleGen
 {
     using System;
+    using System.Collections.Generic;
+    using System.Linq;
 
     public class Author
     {
@@ -46,7 +48,7 @@ namespace MySqlConnectorLegacyExampleGen
         public string CMediumtext { get; set; }
         public string CText { get; set; }
         public string CLongtext { get; set; }
-        public string CEnum { get; set; }
+        public MysqlTypesCEnum? CEnum { get; set; }
         public byte? CBit { get; set; }
         public byte[] CBinary { get; set; }
         public byte[] CVarbinary { get; set; }
@@ -55,4 +57,26 @@ namespace MySqlConnectorLegacyExampleGen
         public byte[] CMediumblob { get; set; }
         public byte[] CLongblob { get; set; }
     };
+    public enum MysqlTypesCEnum
+    {
+        Invalid = 0, // reserved for invalid enum value
+        Small = 1,
+        Medium = 2,
+        Big = 3
+    }
+
+    public static class MysqlTypesCEnumExtensions
+    {
+        private static readonly Dictionary<string, MysqlTypesCEnum> StringToEnum = new Dictionary<string, MysqlTypesCEnum>()
+        {
+            [string.Empty] = MysqlTypesCEnum.Invalid,
+            ["small"] = MysqlTypesCEnum.Small,
+            ["medium"] = MysqlTypesCEnum.Medium,
+            ["big"] = MysqlTypesCEnum.Big
+        };
+        public static MysqlTypesCEnum ToMysqlTypesCEnum(this string me)
+        {
+            return StringToEnum[me];
+        }
+    }
 }

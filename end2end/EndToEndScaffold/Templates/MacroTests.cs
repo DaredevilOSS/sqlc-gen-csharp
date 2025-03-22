@@ -121,15 +121,17 @@ public static class MacroTests
 
                      private static bool SingularEquals(QuerySql.ListAllAuthorsBooksRow x, QuerySql.ListAllAuthorsBooksRow y)
                      {
-                         return SingularEquals(x.Author, y.Author) && SingularEquals(x.Book, y.Book);
+                         return 
+                            SingularEquals(x.Author{{Consts.UnknownRecordValuePlaceholder}}, y.Author{{Consts.UnknownRecordValuePlaceholder}}) && 
+                            SingularEquals(x.Book{{Consts.UnknownRecordValuePlaceholder}}, y.Book{{Consts.UnknownRecordValuePlaceholder}});
                      }
 
                      private static bool SequenceEquals(List<QuerySql.ListAllAuthorsBooksRow> x, List<QuerySql.ListAllAuthorsBooksRow> y)
                      {
                          if (x.Count != y.Count)
                              return false;
-                         x = x.OrderBy<QuerySql.ListAllAuthorsBooksRow, object>(o => o.Author.Name + o.Book.Name).ToList();
-                         y = y.OrderBy<QuerySql.ListAllAuthorsBooksRow, object>(o => o.Author.Name + o.Book.Name).ToList();
+                         x = x.OrderBy<QuerySql.ListAllAuthorsBooksRow, object>(o => o.Author{{Consts.UnknownRecordValuePlaceholder}}.Name + o.Book{{Consts.UnknownRecordValuePlaceholder}}.Name).ToList();
+                         y = y.OrderBy<QuerySql.ListAllAuthorsBooksRow, object>(o => o.Author{{Consts.UnknownRecordValuePlaceholder}}.Name + o.Book{{Consts.UnknownRecordValuePlaceholder}}.Name).ToList();
                          return !x.Where((t, i) => !SingularEquals(t, y[i])).Any();
                      }
 
@@ -180,7 +182,9 @@ public static class MacroTests
 
                      private static bool SingularEquals(QuerySql.GetDuplicateAuthorsRow x, QuerySql.GetDuplicateAuthorsRow y)
                      {
-                         return SingularEquals(x.Author, y.Author) && SingularEquals(x.Author2, y.Author2);
+                         return 
+                            SingularEquals(x.Author{{Consts.UnknownRecordValuePlaceholder}}, y.Author{{Consts.UnknownRecordValuePlaceholder}}) && 
+                            SingularEquals(x.Author2{{Consts.UnknownRecordValuePlaceholder}}, y.Author2{{Consts.UnknownRecordValuePlaceholder}});
                      }
 
                      private static bool SequenceEquals(List<QuerySql.GetDuplicateAuthorsRow> x, List<QuerySql.GetDuplicateAuthorsRow> y)

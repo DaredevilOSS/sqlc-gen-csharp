@@ -38,7 +38,7 @@ public class QuerySql
                         {
                             Id = reader.GetInt32(0),
                             Name = reader.GetString(1),
-                            Bio = reader.IsDBNull(2) ? (string? )null : reader.GetString(2)
+                            Bio = reader.IsDBNull(2) ? null : reader.GetString(2)
                         };
                     }
                 }
@@ -62,7 +62,7 @@ public class QuerySql
                     var result = new List<ListAuthorsRow>();
                     while (await reader.ReadAsync())
                     {
-                        result.Add(new ListAuthorsRow { Id = reader.GetInt32(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? (string? )null : reader.GetString(2) });
+                        result.Add(new ListAuthorsRow { Id = reader.GetInt32(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2) });
                     }
 
                     return result;
@@ -125,7 +125,7 @@ public class QuerySql
                         {
                             Id = reader.GetInt32(0),
                             Name = reader.GetString(1),
-                            Bio = reader.IsDBNull(2) ? (string? )null : reader.GetString(2)
+                            Bio = reader.IsDBNull(2) ? null : reader.GetString(2)
                         };
                     }
                 }
@@ -151,7 +151,7 @@ public class QuerySql
                     var result = new List<GetAuthorByNamePatternRow>();
                     while (await reader.ReadAsync())
                     {
-                        result.Add(new GetAuthorByNamePatternRow { Id = reader.GetInt32(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? (string? )null : reader.GetString(2) });
+                        result.Add(new GetAuthorByNamePatternRow { Id = reader.GetInt32(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2) });
                     }
 
                     return result;
@@ -194,7 +194,7 @@ public class QuerySql
                     var result = new List<GetAuthorsByIdsRow>();
                     while (await reader.ReadAsync())
                     {
-                        result.Add(new GetAuthorsByIdsRow { Id = reader.GetInt32(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? (string? )null : reader.GetString(2) });
+                        result.Add(new GetAuthorsByIdsRow { Id = reader.GetInt32(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2) });
                     }
 
                     return result;
@@ -225,7 +225,7 @@ public class QuerySql
                     var result = new List<GetAuthorsByIdsAndNamesRow>();
                     while (await reader.ReadAsync())
                     {
-                        result.Add(new GetAuthorsByIdsAndNamesRow { Id = reader.GetInt32(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? (string? )null : reader.GetString(2) });
+                        result.Add(new GetAuthorsByIdsAndNamesRow { Id = reader.GetInt32(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2) });
                     }
 
                     return result;
@@ -268,7 +268,7 @@ public class QuerySql
     }
 
     private const string ListAllAuthorsBooksSql = "SELECT authors.id, authors.name, authors.bio, books.id, books.name, books.author_id, books.description  FROM  authors  JOIN  books  ON  authors . id  =  books . author_id  ORDER  BY  authors . name  ";  
-    public readonly record struct ListAllAuthorsBooksRow(Author Author, Book Book);
+    public readonly record struct ListAllAuthorsBooksRow(Author? Author, Book? Book);
     public async Task<List<ListAllAuthorsBooksRow>> ListAllAuthorsBooks()
     {
         using (var connection = new SqliteConnection(ConnectionString))
@@ -281,7 +281,7 @@ public class QuerySql
                     var result = new List<ListAllAuthorsBooksRow>();
                     while (await reader.ReadAsync())
                     {
-                        result.Add(new ListAllAuthorsBooksRow { Author = new Author { Id = reader.GetInt32(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? (string? )null : reader.GetString(2) }, Book = new Book { Id = reader.GetInt32(3), Name = reader.GetString(4), AuthorId = reader.GetInt32(5), Description = reader.IsDBNull(6) ? (string? )null : reader.GetString(6) } });
+                        result.Add(new ListAllAuthorsBooksRow { Author = new Author { Id = reader.GetInt32(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2) }, Book = new Book { Id = reader.GetInt32(3), Name = reader.GetString(4), AuthorId = reader.GetInt32(5), Description = reader.IsDBNull(6) ? null : reader.GetString(6) } });
                     }
 
                     return result;
@@ -291,7 +291,7 @@ public class QuerySql
     }
 
     private const string GetDuplicateAuthorsSql = "SELECT authors1.id, authors1.name, authors1.bio, authors2.id, authors2.name, authors2.bio FROM  authors  authors1  JOIN  authors  authors2  ON  authors1 . name  =  authors2 . name  WHERE  authors1 . id < authors2 . id  ";  
-    public readonly record struct GetDuplicateAuthorsRow(Author Author, Author Author2);
+    public readonly record struct GetDuplicateAuthorsRow(Author? Author, Author? Author2);
     public async Task<List<GetDuplicateAuthorsRow>> GetDuplicateAuthors()
     {
         using (var connection = new SqliteConnection(ConnectionString))
@@ -304,7 +304,7 @@ public class QuerySql
                     var result = new List<GetDuplicateAuthorsRow>();
                     while (await reader.ReadAsync())
                     {
-                        result.Add(new GetDuplicateAuthorsRow { Author = new Author { Id = reader.GetInt32(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? (string? )null : reader.GetString(2) }, Author2 = new Author { Id = reader.GetInt32(3), Name = reader.GetString(4), Bio = reader.IsDBNull(5) ? (string? )null : reader.GetString(5) } });
+                        result.Add(new GetDuplicateAuthorsRow { Author = new Author { Id = reader.GetInt32(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2) }, Author2 = new Author { Id = reader.GetInt32(3), Name = reader.GetString(4), Bio = reader.IsDBNull(5) ? null : reader.GetString(5) } });
                     }
 
                     return result;
@@ -314,7 +314,7 @@ public class QuerySql
     }
 
     private const string GetAuthorsByBookNameSql = "SELECT authors.id, authors.name, authors.bio, books.id, books.name, books.author_id, books.description FROM  authors  JOIN  books  ON  authors . id  =  books . author_id  WHERE  books . name  =  @name  ";  
-    public readonly record struct GetAuthorsByBookNameRow(int Id, string Name, string? Bio, Book Book);
+    public readonly record struct GetAuthorsByBookNameRow(int Id, string Name, string? Bio, Book? Book);
     public readonly record struct GetAuthorsByBookNameArgs(string Name);
     public async Task<List<GetAuthorsByBookNameRow>> GetAuthorsByBookName(GetAuthorsByBookNameArgs args)
     {
@@ -329,7 +329,7 @@ public class QuerySql
                     var result = new List<GetAuthorsByBookNameRow>();
                     while (await reader.ReadAsync())
                     {
-                        result.Add(new GetAuthorsByBookNameRow { Id = reader.GetInt32(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? (string? )null : reader.GetString(2), Book = new Book { Id = reader.GetInt32(3), Name = reader.GetString(4), AuthorId = reader.GetInt32(5), Description = reader.IsDBNull(6) ? (string? )null : reader.GetString(6) } });
+                        result.Add(new GetAuthorsByBookNameRow { Id = reader.GetInt32(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2), Book = new Book { Id = reader.GetInt32(3), Name = reader.GetString(4), AuthorId = reader.GetInt32(5), Description = reader.IsDBNull(6) ? null : reader.GetString(6) } });
                     }
 
                     return result;
@@ -406,10 +406,10 @@ public class QuerySql
                     {
                         return new GetSqliteTypesRow
                         {
-                            CInteger = reader.IsDBNull(0) ? (int? )null : reader.GetInt32(0),
-                            CReal = reader.IsDBNull(1) ? (decimal? )null : reader.GetDecimal(1),
-                            CText = reader.IsDBNull(2) ? (string? )null : reader.GetString(2),
-                            CBlob = reader.IsDBNull(3) ? (byte[]? )null : reader.GetFieldValue<byte[]>(3)
+                            CInteger = reader.IsDBNull(0) ? null : reader.GetInt32(0),
+                            CReal = reader.IsDBNull(1) ? null : reader.GetDecimal(1),
+                            CText = reader.IsDBNull(2) ? null : reader.GetString(2),
+                            CBlob = reader.IsDBNull(3) ? null : reader.GetFieldValue<byte[]>(3)
                         };
                     }
                 }
@@ -435,10 +435,10 @@ public class QuerySql
                         return new GetSqliteTypesAggRow
                         {
                             Cnt = reader.GetInt32(0),
-                            CInteger = reader.IsDBNull(1) ? (int? )null : reader.GetInt32(1),
-                            CReal = reader.IsDBNull(2) ? (decimal? )null : reader.GetDecimal(2),
-                            CText = reader.IsDBNull(3) ? (string? )null : reader.GetString(3),
-                            CBlob = reader.IsDBNull(4) ? (byte[]? )null : reader.GetFieldValue<byte[]>(4)
+                            CInteger = reader.IsDBNull(1) ? null : reader.GetInt32(1),
+                            CReal = reader.IsDBNull(2) ? null : reader.GetDecimal(2),
+                            CText = reader.IsDBNull(3) ? null : reader.GetString(3),
+                            CBlob = reader.IsDBNull(4) ? null : reader.GetFieldValue<byte[]>(4)
                         };
                     }
                 }

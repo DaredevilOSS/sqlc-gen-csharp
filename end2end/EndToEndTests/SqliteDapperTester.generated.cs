@@ -309,7 +309,7 @@ namespace SqlcGenCsharpTests
         [TestCase(-54355, 9787.66, "Songs of Love and Hate", new byte[] { 0x15, 0x20, 0x33 })]
         [TestCase(null, null, null, new byte[] { })]
         [TestCase(null, null, null, null)]
-        public async Task TestSqliteTypes(int cInteger, decimal cReal, string cText, byte[] cBlob)
+        public async Task TestSqliteTypes(int cInteger, decimal? cReal, string cText, byte[] cBlob)
         {
             await QuerySql.InsertSqliteTypes(new QuerySql.InsertSqliteTypesArgs { CInteger = cInteger, CReal = cReal, CText = cText, CBlob = cBlob });
             var expected = new QuerySql.GetSqliteTypesRow
@@ -335,7 +335,7 @@ namespace SqlcGenCsharpTests
         [TestCase(100, 312, -7541.3309, "Johnny B. Good")]
         [TestCase(500, -768, 8453.5678, "Bad to the Bone")]
         [TestCase(10, null, null, null)]
-        public async Task TestCopyFrom(int batchSize, int? cInteger, decimal? cReal, string? cText)
+        public async Task TestCopyFrom(int batchSize, int? cInteger, decimal? cReal, string cText)
         {
             var batchArgs = Enumerable.Range(0, batchSize).Select(_ => new QuerySql.InsertSqliteTypesBatchArgs { CInteger = cInteger, CReal = cReal, CText = cText }).ToList();
             await QuerySql.InsertSqliteTypesBatch(batchArgs);

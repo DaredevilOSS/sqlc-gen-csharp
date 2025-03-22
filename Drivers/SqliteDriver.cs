@@ -8,8 +8,8 @@ using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace SqlcGenCsharp.Drivers;
 
-public partial class SqliteDriver(Options options, Dictionary<string, Table> tables) :
-    DbDriver(options, tables), IOne, IMany, IExec, IExecRows, IExecLastId, ICopyFrom
+public partial class SqliteDriver(Options options, Dictionary<string, Table> tables, Dictionary<string, Enum> enums) :
+    DbDriver(options, tables, enums), IOne, IMany, IExec, IExecRows, IExecLastId, ICopyFrom
 {
     protected override List<ColumnMapping> ColumnMappings { get; } = [
         new("byte[]", new Dictionary<string, DbTypeInfo>
