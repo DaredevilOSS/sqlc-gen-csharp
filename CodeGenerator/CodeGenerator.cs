@@ -70,8 +70,6 @@ public class CodeGenerator
 
     private void InitGenerators(GenerateRequest generateRequest)
     {
-        System.IO.File.WriteAllText($"/tmp/request_{generateRequest.Settings.Engine}.json", generateRequest.ToString());
-
         var outputDirectory = generateRequest.Settings.Codegen.Out;
         var projectName = new DirectoryInfo(outputDirectory).Name;
         Options = new Options(generateRequest);
