@@ -31,8 +31,20 @@ public enum KnownTestType
     // data types aligned tests
     ArrayAsParam,
     MultipleArraysAsParams,
-    PostgresDataTypes,
-    MySqlDataTypes,
+
+    // Postgres Data Types
+    PostgresStringDataTypes,
+    PostgresIntegerDataTypes,
+    PostgresFloatingPointDataTypes,
+    PostgresDateTimeDataTypes,
+    PostgresArrayDataTypes,
+
+    // MySql Data Types
+    MySqlStringDataTypes,
+    MySqlIntegerDataTypes,
+    MySqlFloatingPointDataTypes,
+    MySqlDateTimeDataTypes,
+    MySqlBinaryDataTypes,
     SqliteDataTypes,
     SqliteCopyFrom
 }
@@ -59,7 +71,12 @@ internal static class Config
                     KnownTestType.MultipleSlices,
                     KnownTestType.NargNull,
                     KnownTestType.NargNotNull,
-                    KnownTestType.MySqlDataTypes,
+
+                    KnownTestType.MySqlStringDataTypes,
+                    KnownTestType.MySqlIntegerDataTypes,
+                    KnownTestType.MySqlFloatingPointDataTypes,
+                    KnownTestType.MySqlDateTimeDataTypes,
+                    KnownTestType.MySqlBinaryDataTypes,
                     KnownTestType.MySqlCopyFrom
                 ]
             }
@@ -81,7 +98,12 @@ internal static class Config
                         KnownTestType.MultipleSlices,
                         KnownTestType.NargNull,
                         KnownTestType.NargNotNull,
-                        KnownTestType.MySqlDataTypes,
+
+                        KnownTestType.MySqlStringDataTypes,
+                        KnownTestType.MySqlIntegerDataTypes,
+                        KnownTestType.MySqlFloatingPointDataTypes,
+                        KnownTestType.MySqlDateTimeDataTypes,
+                        KnownTestType.MySqlBinaryDataTypes,
                         KnownTestType.MySqlCopyFrom,
                     ]
                 }
@@ -103,7 +125,12 @@ internal static class Config
                     KnownTestType.MultipleArraysAsParams,
                     KnownTestType.NargNull,
                     KnownTestType.NargNotNull,
-                    KnownTestType.PostgresDataTypes,
+
+                    KnownTestType.PostgresStringDataTypes,
+                    KnownTestType.PostgresIntegerDataTypes,
+                    KnownTestType.PostgresFloatingPointDataTypes,
+                    KnownTestType.PostgresDateTimeDataTypes,
+                    KnownTestType.PostgresArrayDataTypes,
                     KnownTestType.PostgresCopyFrom
                 ]
             }
@@ -125,7 +152,12 @@ internal static class Config
                     KnownTestType.MultipleArraysAsParams,
                     KnownTestType.NargNull,
                     KnownTestType.NargNotNull,
-                    KnownTestType.PostgresDataTypes,
+
+                    KnownTestType.PostgresStringDataTypes,
+                    KnownTestType.PostgresIntegerDataTypes,
+                    KnownTestType.PostgresFloatingPointDataTypes,
+                    KnownTestType.PostgresDateTimeDataTypes,
+                    KnownTestType.PostgresArrayDataTypes,
                     KnownTestType.PostgresCopyFrom
                 ]
             }

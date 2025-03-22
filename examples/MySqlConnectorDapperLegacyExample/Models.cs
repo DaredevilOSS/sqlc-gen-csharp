@@ -46,6 +46,7 @@ namespace MySqlConnectorDapperLegacyExampleGen
         public string CMediumtext { get; set; }
         public string CText { get; set; }
         public string CLongtext { get; set; }
+        public string CEnum { get; set; }
         public byte? CBit { get; set; }
         public byte[] CBinary { get; set; }
         public byte[] CVarbinary { get; set; }

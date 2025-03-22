@@ -45,6 +45,7 @@ public class MysqlType
     public string? CMediumtext { get; init; }
     public string? CText { get; init; }
     public string? CLongtext { get; init; }
+    public string? CEnum { get; init; }
     public byte? CBit { get; init; }
     public byte[]? CBinary { get; init; }
     public byte[]? CVarbinary { get; init; }
