@@ -46,7 +46,7 @@ public static class PostgresTests
         {
             Impl = $$"""
                      [Test]
-                     [TestCase(true, 35, -23423, 4235235263l)]
+                     [TestCase(true, 35, -23423, 4235235263L)]
                      [TestCase(null, null, null, null)]
                      public async Task TestPostgresIntegerTypes(
                          bool cBoolean,
