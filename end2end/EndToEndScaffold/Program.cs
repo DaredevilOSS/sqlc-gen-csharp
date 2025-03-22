@@ -1,5 +1,7 @@
+using EndToEndScaffold.Templates;
 using Microsoft.CodeAnalysis;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
@@ -7,6 +9,18 @@ namespace EndToEndScaffold;
 
 public static class Program
 {
+    private static readonly Dictionary<KnownTestType, TestImpl> TestImplementations =
+        new List<Dictionary<KnownTestType, TestImpl>>
+        {
+            AnnotationTests.TestImplementations,
+            MacroTests.TestImplementations,
+            MySqlTests.TestImplementations,
+            PostgresTests.TestImplementations,
+            SqliteTests.TestImplementations
+        }
+            .SelectMany(d => d)
+            .ToDictionary();
+
     public static void Main()
     {
         var testClassName = Environment.GetEnvironmentVariable("TEST_CLASS_NAME") ??
@@ -58,11 +72,11 @@ public static class Program
 
     private static string GetTestImplementation(string testClassName, bool isLegacyDotnet, KnownTestType testType)
     {
-        var testGen = Templates.TestImplementations[testType];
+        var testGen = TestImplementations[testType];
         var impl = testGen.Impl
-            .Replace(Templates.UnknownRecordValuePlaceholder,
+            .Replace(Consts.UnknownRecordValuePlaceholder,
                 RecordsAreInUse(testClassName, isLegacyDotnet) ? ".Value" : string.Empty)
-            .Replace(Templates.UnknownNullableIndicatorPlaceholder,
+            .Replace(Consts.UnknownNullableIndicatorPlaceholder,
                 isLegacyDotnet ? string.Empty : "?");
         return impl;
     }
