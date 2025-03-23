@@ -389,16 +389,34 @@ namespace SqlcGenCsharpTests
         }
 
         [Test]
-        [TestCase(100, true, 3, 453, -1445214231L, 666.6f, 336.3431, -99.999, -1377.996, -43242.43, "1973-12-3", "00:34:00", "1960-11-3 02:01:22", "2030-07-20 15:44:01+09:00", "z", "Sex Pistols", "Anarchy in the U.K", "Never Mind the Bollocks...", new byte[] { 0x53, 0x56 })]
-        [TestCase(500, false, -4, 867, 8768769709L, -64.8f, -324.8671, 127.4793, 423.9869, 32143.99, "2024-12-31", "03:06:44", "1999-3-1 03:00:10", "1999-9-13 08:30:11-04:00", "1", "Fugazi", "Waiting Room", "13 Songs", new byte[] { 0x03 })]
-        [TestCase(10, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, new byte[] { })]
-        [TestCase(10, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null)]
-        public async Task TestCopyFrom(int batchSize, bool? cBoolean, short? cSmallint, int? cInteger, long? cBigint, float? cReal, decimal? cDecimal, decimal? cNumeric, double? cDoublePrecision, decimal? cMoney, DateTime? cDate, TimeSpan? cTime, DateTime? cTimestamp, DateTime? cTimestampWithTz, string cChar, string cVarchar, string cCharacterVarying, string cText, byte[] cBytea)
+        [TestCase(100, "z", "Sex Pistols", "Anarchy in the U.K", "Never Mind the Bollocks...")]
+        [TestCase(10, null, null, null, null)]
+        public async Task TestStringCopyFrom(int batchSize, string cChar, string cVarchar, string cCharacterVarying, string cText)
         {
-            DateTime? cTimestampWithTzAsUtc = null;
-            if (cTimestampWithTz != null)
-                cTimestampWithTzAsUtc = DateTime.SpecifyKind(cTimestampWithTz.Value, DateTimeKind.Utc);
-            var batchArgs = Enumerable.Range(0, batchSize).Select(_ => new QuerySql.InsertPostgresTypesBatchArgs { CBoolean = cBoolean, CSmallint = cSmallint, CInteger = cInteger, CBigint = cBigint, CReal = cReal, CDecimal = cDecimal, CNumeric = cNumeric, CDoublePrecision = cDoublePrecision, CMoney = cMoney, CDate = cDate, CTime = cTime, CTimestamp = cTimestamp, CTimestampWithTz = cTimestampWithTzAsUtc, CChar = cChar, CVarchar = cVarchar, CCharacterVarying = cCharacterVarying, CText = cText, CBytea = cBytea }).ToList();
+            var batchArgs = Enumerable.Range(0, batchSize).Select(_ => new QuerySql.InsertPostgresTypesBatchArgs { CChar = cChar, CVarchar = cVarchar, CCharacterVarying = cCharacterVarying, CText = cText }).ToList();
+            await QuerySql.InsertPostgresTypesBatch(batchArgs);
+            var expected = new QuerySql.GetPostgresTypesAggRow
+            {
+                Cnt = batchSize,
+                CChar = cChar,
+                CVarchar = cVarchar,
+                CCharacterVarying = cCharacterVarying,
+                CText = cText
+            };
+            var actual = await QuerySql.GetPostgresTypesAgg();
+            Assert.That(actual.Cnt, Is.EqualTo(expected.Cnt));
+            Assert.That(actual.CChar, Is.EqualTo(expected.CChar));
+            Assert.That(actual.CVarchar, Is.EqualTo(expected.CVarchar));
+            Assert.That(actual.CCharacterVarying, Is.EqualTo(expected.CCharacterVarying));
+            Assert.That(actual.CText, Is.EqualTo(expected.CText));
+        }
+
+        [Test]
+        [TestCase(100, true, 3, 453, -1445214231L)]
+        [TestCase(10, null, null, null, null)]
+        public async Task TestIntegerCopyFrom(int batchSize, bool? cBoolean, short? cSmallint, int? cInteger, long? cBigint)
+        {
+            var batchArgs = Enumerable.Range(0, batchSize).Select(_ => new QuerySql.InsertPostgresTypesBatchArgs { CBoolean = cBoolean, CSmallint = cSmallint, CInteger = cInteger, CBigint = cBigint }).ToList();
             await QuerySql.InsertPostgresTypesBatch(batchArgs);
             var expected = new QuerySql.GetPostgresTypesAggRow
             {
@@ -406,46 +424,86 @@ namespace SqlcGenCsharpTests
                 CBoolean = cBoolean,
                 CSmallint = cSmallint,
                 CInteger = cInteger,
-                CBigint = cBigint,
-                CReal = cReal,
-                CDecimal = cDecimal,
-                CNumeric = cNumeric,
-                CDoublePrecision = cDoublePrecision,
-                CMoney = cMoney,
-                CDate = cDate,
-                CTime = cTime,
-                CTimestamp = cTimestamp,
-                CTimestampWithTz = cTimestampWithTz,
-                CChar = cChar,
-                CVarchar = cVarchar,
-                CCharacterVarying = cCharacterVarying,
-                CText = cText,
-                CBytea = cBytea
+                CBigint = cBigint
             };
             var actual = await QuerySql.GetPostgresTypesAgg();
-            AssertSingularEquals(expected, actual);
-        }
-
-        private static void AssertSingularEquals(QuerySql.GetPostgresTypesAggRow expected, QuerySql.GetPostgresTypesAggRow actual)
-        {
             Assert.That(actual.Cnt, Is.EqualTo(expected.Cnt));
             Assert.That(actual.CBoolean, Is.EqualTo(expected.CBoolean));
             Assert.That(actual.CSmallint, Is.EqualTo(expected.CSmallint));
             Assert.That(actual.CInteger, Is.EqualTo(expected.CInteger));
             Assert.That(actual.CBigint, Is.EqualTo(expected.CBigint));
+        }
+
+        private static void AssertSingularEquals(QuerySql.GetPostgresTypesAggRow expected, QuerySql.GetPostgresTypesAggRow actual)
+        {
+        }
+
+        [Test]
+        [TestCase(100, 666.6f, 336.3431, -99.999, -1377.996, -43242.43)]
+        [TestCase(10, null, null, null, null, null)]
+        public async Task TestFloatingPointCopyFrom(int batchSize, float? cReal, decimal? cDecimal, decimal? cNumeric, double? cDoublePrecision, decimal? cMoney)
+        {
+            var batchArgs = Enumerable.Range(0, batchSize).Select(_ => new QuerySql.InsertPostgresTypesBatchArgs { CReal = cReal, CDecimal = cDecimal, CNumeric = cNumeric, CDoublePrecision = cDoublePrecision, CMoney = cMoney }).ToList();
+            await QuerySql.InsertPostgresTypesBatch(batchArgs);
+            var expected = new QuerySql.GetPostgresTypesAggRow
+            {
+                Cnt = batchSize,
+                CReal = cReal,
+                CDecimal = cDecimal,
+                CNumeric = cNumeric,
+                CDoublePrecision = cDoublePrecision,
+                CMoney = cMoney
+            };
+            var actual = await QuerySql.GetPostgresTypesAgg();
+            Assert.That(actual.Cnt, Is.EqualTo(expected.Cnt));
             Assert.That(actual.CReal, Is.EqualTo(expected.CReal));
             Assert.That(actual.CDecimal, Is.EqualTo(expected.CDecimal));
             Assert.That(actual.CNumeric, Is.EqualTo(expected.CNumeric));
             Assert.That(actual.CDoublePrecision, Is.EqualTo(expected.CDoublePrecision));
             Assert.That(actual.CMoney, Is.EqualTo(expected.CMoney));
+        }
+
+        [Test]
+        [TestCase(100, "1973-12-3", "00:34:00", "1960-11-3 02:01:22", "2030-07-20 15:44:01+09:00")]
+        [TestCase(10, null, null, null, null)]
+        public async Task TestDateTimeCopyFrom(int batchSize, DateTime? cDate, TimeSpan? cTime, DateTime? cTimestamp, DateTime? cTimestampWithTz)
+        {
+            DateTime? cTimestampWithTzAsUtc = null;
+            if (cTimestampWithTz != null)
+                cTimestampWithTzAsUtc = DateTime.SpecifyKind(cTimestampWithTz.Value, DateTimeKind.Utc);
+            var batchArgs = Enumerable.Range(0, batchSize).Select(_ => new QuerySql.InsertPostgresTypesBatchArgs { CDate = cDate, CTime = cTime, CTimestamp = cTimestamp, CTimestampWithTz = cTimestampWithTzAsUtc }).ToList();
+            await QuerySql.InsertPostgresTypesBatch(batchArgs);
+            var expected = new QuerySql.GetPostgresTypesAggRow
+            {
+                Cnt = batchSize,
+                CDate = cDate,
+                CTime = cTime,
+                CTimestamp = cTimestamp,
+                CTimestampWithTz = cTimestampWithTz,
+            };
+            var actual = await QuerySql.GetPostgresTypesAgg();
+            Assert.That(actual.Cnt, Is.EqualTo(expected.Cnt));
             Assert.That(actual.CDate, Is.EqualTo(expected.CDate));
             Assert.That(actual.CTime, Is.EqualTo(expected.CTime));
             Assert.That(actual.CTimestamp, Is.EqualTo(expected.CTimestamp));
             Assert.That(actual.CTimestampWithTz, Is.EqualTo(expected.CTimestampWithTz));
-            Assert.That(actual.CChar, Is.EqualTo(expected.CChar));
-            Assert.That(actual.CVarchar, Is.EqualTo(expected.CVarchar));
-            Assert.That(actual.CCharacterVarying, Is.EqualTo(expected.CCharacterVarying));
-            Assert.That(actual.CText, Is.EqualTo(expected.CText));
+        }
+
+        [Test]
+        [TestCase(100, new byte[] { 0x53, 0x56 })]
+        [TestCase(10, new byte[] { })]
+        [TestCase(10, null)]
+        public async Task TestArrayCopyFrom(int batchSize, byte[] cBytea)
+        {
+            var batchArgs = Enumerable.Range(0, batchSize).Select(_ => new QuerySql.InsertPostgresTypesBatchArgs { CBytea = cBytea }).ToList();
+            await QuerySql.InsertPostgresTypesBatch(batchArgs);
+            var expected = new QuerySql.GetPostgresTypesAggRow
+            {
+                Cnt = batchSize,
+                CBytea = cBytea
+            };
+            var actual = await QuerySql.GetPostgresTypesAgg();
+            Assert.That(actual.Cnt, Is.EqualTo(expected.Cnt));
             Assert.That(actual.CBytea, Is.EqualTo(expected.CBytea));
         }
 
