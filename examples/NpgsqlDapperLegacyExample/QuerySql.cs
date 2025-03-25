@@ -603,21 +603,20 @@ namespace NpgsqlDapperLegacyExampleGen
             RegisterNpgsqlTypeHandler<NpgsqlCircle>();
         }
 
-        public class NpgsqlTypeHandler<T> : SqlMapper.TypeHandler<T> where T : notnull
+        public class NpgsqlTypeHandler<T> : SqlMapper.TypeHandler<T>
         {
             public override T Parse(object value)
             {
                 return (T)value;
             }
 
-            public override void SetValue(IDbDataParameter parameter, T? value)
+            public override void SetValue(IDbDataParameter parameter, T value)
             {
                 parameter.Value = value;
             }
         }
 
         private void RegisterNpgsqlTypeHandler<T>()
-            where T : notnull
         {
             SqlMapper.AddTypeHandler(typeof(T), new NpgsqlTypeHandler<T>());
         }

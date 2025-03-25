@@ -59,15 +59,17 @@ internal class QueriesGen(DbDriver dbDriver, string namespaceName)
 
     private IEnumerable<MemberDeclarationSyntax> GetPostgresConstMembers()
     {
+        var optionalDotnetCoreSuffex = dbDriver.Options.DotnetFramework != DotnetFramework.DotnetStandard20 ? " where T : notnull" : string.Empty;
+        var optionalDotnetCoreNullable = dbDriver.Options.DotnetFramework != DotnetFramework.DotnetStandard20 ? "?" : string.Empty;
         var genericMapperClass = $$"""
-        public class NpgsqlTypeHandler<T> : SqlMapper.TypeHandler<T> where T : notnull
+        public class NpgsqlTypeHandler<T> : SqlMapper.TypeHandler<T>{{optionalDotnetCoreSuffex}}
             {
                 public override T Parse(object value)
                 {
                     return (T)value;
                 }
                 
-                public override void SetValue(IDbDataParameter parameter, T? value)
+                public override void SetValue(IDbDataParameter parameter, T{{optionalDotnetCoreNullable}} value)
                 {
                     parameter.Value = value;
                 }
@@ -75,7 +77,7 @@ internal class QueriesGen(DbDriver dbDriver, string namespaceName)
             }
         """;
         var genericMapper = $$"""
-        private void RegisterNpgsqlTypeHandler<T>() where T : notnull
+        private void RegisterNpgsqlTypeHandler<T>(){{optionalDotnetCoreSuffex}}
         {
             SqlMapper.AddTypeHandler(typeof(T), new NpgsqlTypeHandler<T>());
         }
