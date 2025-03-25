@@ -329,5 +329,61 @@ public static class PostgresTests
                      }
                      """
         },
+        [KnownTestType.PostgresGeoDataTypes] = new TestImpl
+        {
+            Impl = $$"""
+                     public static IEnumerable<TestCaseData> PostgresGeoTypesTestCases
+                     {
+                         get
+                         {
+                             yield return new TestCaseData(
+                                 new NpgsqlPoint(1, 2),
+                                 new NpgsqlLine(3, 4, 5),
+                                 new NpgsqlLSeg(1, 2, 3, 4),
+                                 new NpgsqlBox(1, 2, 3, 4),
+                                 new NpgsqlPath(new NpgsqlPoint[] { new NpgsqlPoint(1, 2), new NpgsqlPoint(3, 4) }),
+                                 new NpgsqlPolygon(new NpgsqlPoint[] { new NpgsqlPoint(1, 2), new NpgsqlPoint(3, 4) }),
+                                 new NpgsqlCircle(1, 2, 3)
+                             ).SetName("Valid Geo Types");
+ 
+                             yield return new TestCaseData(
+                                 null,
+                                 null,
+                                 null,
+                                 null,
+                                 null,
+                                 null,
+                                 null
+                             ).SetName("Null Geo Types");
+                         }
+                     }
+
+                     [Test]
+                     [TestCaseSource(nameof(PostgresGeoTypesTestCases))]
+                     public async Task TestPostgresGeoTypes(NpgsqlPoint? cPoint, NpgsqlLine? cLine, NpgsqlLSeg? cLSeg, NpgsqlBox? cBox, NpgsqlPath? cPath, NpgsqlPolygon? cPolygon, NpgsqlCircle? cCircle)
+                     {
+                         await QuerySql.InsertPostgresGeoTypes(new QuerySql.InsertPostgresGeoTypesArgs { CPoint = cPoint, CLine = cLine, CLseg = cLSeg, CBox = cBox, CPath = cPath, CPolygon = cPolygon, CCircle = cCircle });
+                         var expected = new QuerySql.GetPostgresGeoTypesRow
+                         {
+                             CPoint = cPoint,
+                             CLine = cLine,
+                             CLseg = cLSeg,
+                             CBox = cBox,
+                             CPath = cPath,
+                             CPolygon = cPolygon,
+                             CCircle = cCircle
+                         };
+                         var actual = await QuerySql.GetPostgresGeoTypes();
+                         Assert.That(actual{{Consts.UnknownRecordValuePlaceholder}}.CPoint, Is.EqualTo(expected.CPoint));
+                         Assert.That(actual{{Consts.UnknownRecordValuePlaceholder}}.CLine, Is.EqualTo(expected.CLine));
+                         Assert.That(actual{{Consts.UnknownRecordValuePlaceholder}}.CLseg, Is.EqualTo(expected.CLseg));
+                         Assert.That(actual{{Consts.UnknownRecordValuePlaceholder}}.CBox, Is.EqualTo(expected.CBox));
+                         Assert.That(actual{{Consts.UnknownRecordValuePlaceholder}}.CPath, Is.EqualTo(expected.CPath));
+                         Assert.That(actual{{Consts.UnknownRecordValuePlaceholder}}.CPolygon, Is.EqualTo(expected.CPolygon));
+                         Assert.That(actual{{Consts.UnknownRecordValuePlaceholder}}.CCircle, Is.EqualTo(expected.CCircle));
+                     }
+                     """
+        },
+
     };
 }

@@ -38,6 +38,7 @@ public enum KnownTestType
     PostgresFloatingPointDataTypes,
     PostgresDateTimeDataTypes,
     PostgresArrayDataTypes,
+    PostgresGeoDataTypes,
 
     // MySql Data Types
     MySqlStringDataTypes,
@@ -131,7 +132,8 @@ internal static class Config
                     KnownTestType.PostgresFloatingPointDataTypes,
                     KnownTestType.PostgresDateTimeDataTypes,
                     KnownTestType.PostgresArrayDataTypes,
-                    KnownTestType.PostgresCopyFrom
+                    KnownTestType.PostgresCopyFrom,
+                    KnownTestType.PostgresGeoDataTypes
                 ]
             }
         },
@@ -158,7 +160,8 @@ internal static class Config
                     KnownTestType.PostgresFloatingPointDataTypes,
                     KnownTestType.PostgresDateTimeDataTypes,
                     KnownTestType.PostgresArrayDataTypes,
-                    KnownTestType.PostgresCopyFrom
+                    KnownTestType.PostgresCopyFrom,
+                    KnownTestType.PostgresGeoDataTypes
                 ]
             }
         },

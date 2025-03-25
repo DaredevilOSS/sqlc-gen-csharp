@@ -12,6 +12,7 @@ namespace NpgsqlDapperLegacyExampleGen
     using Dapper;
     using Npgsql;
     using NpgsqlTypes;
+    using System.Data;
 
     public class QuerySql
     {
@@ -19,6 +20,7 @@ namespace NpgsqlDapperLegacyExampleGen
         {
             this.ConnectionString = connectionString;
             Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
+            ConfigureSqlMapper();
         }
 
         private string ConnectionString { get; }
@@ -525,6 +527,53 @@ namespace NpgsqlDapperLegacyExampleGen
             }
         }
 
+        private const string InsertPostgresGeoTypesSql = "INSERT INTO postgres_geometric_types (c_point, c_line, c_lseg, c_box, c_path, c_polygon, c_circle) VALUES ( @c_point , @c_line, @c_lseg, @c_box, @c_path, @c_polygon, @c_circle ) "; 
+        public class InsertPostgresGeoTypesArgs
+        {
+            public NpgsqlPoint? CPoint { get; set; }
+            public NpgsqlLine? CLine { get; set; }
+            public NpgsqlLSeg? CLseg { get; set; }
+            public NpgsqlBox? CBox { get; set; }
+            public NpgsqlPath? CPath { get; set; }
+            public NpgsqlPolygon? CPolygon { get; set; }
+            public NpgsqlCircle? CCircle { get; set; }
+        };
+        public async Task InsertPostgresGeoTypes(InsertPostgresGeoTypesArgs args)
+        {
+            using (var connection = new NpgsqlConnection(ConnectionString))
+            {
+                var queryParams = new Dictionary<string, object>();
+                queryParams.Add("c_point", args.CPoint);
+                queryParams.Add("c_line", args.CLine);
+                queryParams.Add("c_lseg", args.CLseg);
+                queryParams.Add("c_box", args.CBox);
+                queryParams.Add("c_path", args.CPath);
+                queryParams.Add("c_polygon", args.CPolygon);
+                queryParams.Add("c_circle", args.CCircle);
+                await connection.ExecuteAsync(InsertPostgresGeoTypesSql, queryParams);
+            }
+        }
+
+        private const string GetPostgresGeoTypesSql = "SELECT c_point, c_line, c_lseg, c_box, c_path, c_polygon, c_circle FROM postgres_geometric_types LIMIT 1";
+        public class GetPostgresGeoTypesRow
+        {
+            public NpgsqlPoint? CPoint { get; set; }
+            public NpgsqlLine? CLine { get; set; }
+            public NpgsqlLSeg? CLseg { get; set; }
+            public NpgsqlBox? CBox { get; set; }
+            public NpgsqlPath? CPath { get; set; }
+            public NpgsqlPolygon? CPolygon { get; set; }
+            public NpgsqlCircle? CCircle { get; set; }
+        };
+        public async Task<GetPostgresGeoTypesRow> GetPostgresGeoTypes()
+        {
+            using (var connection = new NpgsqlConnection(ConnectionString))
+            {
+                var result = await connection.QueryFirstOrDefaultAsync<GetPostgresGeoTypesRow>(GetPostgresGeoTypesSql);
+                return result;
+            }
+        }
+
         private const string TruncatePostgresTypesSql = "TRUNCATE TABLE postgres_types";
         public async Task TruncatePostgresTypes()
         {
@@ -532,6 +581,45 @@ namespace NpgsqlDapperLegacyExampleGen
             {
                 await connection.ExecuteAsync(TruncatePostgresTypesSql);
             }
+        }
+
+        private const string TruncatePostgresGeoTypesSql = "TRUNCATE TABLE postgres_geometric_types";
+        public async Task TruncatePostgresGeoTypes()
+        {
+            using (var connection = new NpgsqlConnection(ConnectionString))
+            {
+                await connection.ExecuteAsync(TruncatePostgresGeoTypesSql);
+            }
+        }
+
+        private void ConfigureSqlMapper()
+        {
+            RegisterNpgsqlTypeHandler<NpgsqlPoint>();
+            RegisterNpgsqlTypeHandler<NpgsqlLine>();
+            RegisterNpgsqlTypeHandler<NpgsqlLSeg>();
+            RegisterNpgsqlTypeHandler<NpgsqlBox>();
+            RegisterNpgsqlTypeHandler<NpgsqlPath>();
+            RegisterNpgsqlTypeHandler<NpgsqlPolygon>();
+            RegisterNpgsqlTypeHandler<NpgsqlCircle>();
+        }
+
+        public class NpgsqlTypeHandler<T> : SqlMapper.TypeHandler<T> where T : notnull
+        {
+            public override T Parse(object value)
+            {
+                return (T)value;
+            }
+
+            public override void SetValue(IDbDataParameter parameter, T? value)
+            {
+                parameter.Value = value;
+            }
+        }
+
+        private void RegisterNpgsqlTypeHandler<T>()
+            where T : notnull
+        {
+            SqlMapper.AddTypeHandler(typeof(T), new NpgsqlTypeHandler<T>());
         }
     }
 }

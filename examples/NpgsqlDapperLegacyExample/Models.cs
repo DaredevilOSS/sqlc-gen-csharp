@@ -2,6 +2,7 @@
 namespace NpgsqlDapperLegacyExampleGen
 {
     using System;
+    using NpgsqlTypes;
 
     public class Author
     {
@@ -40,5 +41,15 @@ namespace NpgsqlDapperLegacyExampleGen
         public object CJson { get; set; }
         public string[] CTextArray { get; set; }
         public int[] CIntegerArray { get; set; }
+    };
+    public class PostgresGeometricType
+    {
+        public NpgsqlPoint? CPoint { get; set; }
+        public NpgsqlLine? CLine { get; set; }
+        public NpgsqlLSeg? CLseg { get; set; }
+        public NpgsqlBox? CBox { get; set; }
+        public NpgsqlPath? CPath { get; set; }
+        public NpgsqlPolygon? CPolygon { get; set; }
+        public NpgsqlCircle? CCircle { get; set; }
     };
 }

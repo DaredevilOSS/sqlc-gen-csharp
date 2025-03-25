@@ -52,7 +52,50 @@ internal class QueriesGen(DbDriver dbDriver, string namespaceName)
     {
         var usingDirectives = dbDriver.GetUsingDirectives();
         var classMembers = queries.SelectMany(GetMembersForSingleQuery);
+        if (dbDriver.Options.DriverName == DriverName.Npgsql && dbDriver.Options.UseDapper)
+            classMembers = classMembers.Concat(GetPostgresConstMembers());
         return (usingDirectives, GetClassDeclaration(className, classMembers));
+    }
+
+    private IEnumerable<MemberDeclarationSyntax> GetPostgresConstMembers()
+    {
+        var genericMapperClass = $$"""
+        public class NpgsqlTypeHandler<T> : SqlMapper.TypeHandler<T> where T : notnull
+            {
+                public override T Parse(object value)
+                {
+                    return (T)value;
+                }
+                
+                public override void SetValue(IDbDataParameter parameter, T? value)
+                {
+                    parameter.Value = value;
+                }
+
+            }
+        """;
+        var genericMapper = $$"""
+        private void RegisterNpgsqlTypeHandler<T>() where T : notnull
+        {
+            SqlMapper.AddTypeHandler(typeof(T), new NpgsqlTypeHandler<T>());
+        }
+        """;
+        var mapperConfiguration = $$"""
+        private void ConfigureSqlMapper()
+        {
+            RegisterNpgsqlTypeHandler<NpgsqlPoint>();
+            RegisterNpgsqlTypeHandler<NpgsqlLine>();
+            RegisterNpgsqlTypeHandler<NpgsqlLSeg>();
+            RegisterNpgsqlTypeHandler<NpgsqlBox>();
+            RegisterNpgsqlTypeHandler<NpgsqlPath>();
+            RegisterNpgsqlTypeHandler<NpgsqlPolygon>();
+            RegisterNpgsqlTypeHandler<NpgsqlCircle>();
+        }
+        """;
+        return new List<MemberDeclarationSyntax>()
+            .Append(ParseMemberDeclaration(mapperConfiguration)!)
+            .Append(ParseMemberDeclaration(genericMapperClass)!)
+            .Append(ParseMemberDeclaration(genericMapper)!);
     }
 
     private ClassDeclarationSyntax GetClassDeclaration(string className,
@@ -61,13 +104,17 @@ internal class QueriesGen(DbDriver dbDriver, string namespaceName)
         var optionalDapperConfig = dbDriver.Options.UseDapper
             ? Environment.NewLine + "        Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;"
             : "";
+
+        var optionalPostgresconfigurationCall = dbDriver.Options.DriverName == DriverName.Npgsql && dbDriver.Options.UseDapper
+            ? Environment.NewLine + "        ConfigureSqlMapper();"
+            : "";
         var classDeclaration = (ClassDeclarationSyntax)ParseMemberDeclaration(
                 $$"""
                   class {{className}}
                   {
                       public {{className}}(string {{Variable.ConnectionString.AsVarName()}})
                       {
-                          this.{{Variable.ConnectionString.AsPropertyName()}} = {{Variable.ConnectionString.AsVarName()}};{{optionalDapperConfig}}
+                          this.{{Variable.ConnectionString.AsPropertyName()}} = {{Variable.ConnectionString.AsVarName()}};{{optionalDapperConfig}}{{optionalPostgresconfigurationCall}}
                       }
                       private string {{Variable.ConnectionString.AsPropertyName()}} { get; }
                   }

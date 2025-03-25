@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Npgsql;
 using NpgsqlTypes;
+using System.Data;
 
 namespace NpgsqlExampleGen;
 public class QuerySql
@@ -504,12 +505,74 @@ public class QuerySql
         return null;
     }
 
+    private const string InsertPostgresGeoTypesSql = "INSERT INTO postgres_geometric_types (c_point, c_line, c_lseg, c_box, c_path, c_polygon, c_circle) VALUES ( @c_point , @c_line, @c_lseg, @c_box, @c_path, @c_polygon, @c_circle ) "; 
+    public readonly record struct InsertPostgresGeoTypesArgs(NpgsqlPoint? CPoint, NpgsqlLine? CLine, NpgsqlLSeg? CLseg, NpgsqlBox? CBox, NpgsqlPath? CPath, NpgsqlPolygon? CPolygon, NpgsqlCircle? CCircle);
+    public async Task InsertPostgresGeoTypes(InsertPostgresGeoTypesArgs args)
+    {
+        using (var connection = NpgsqlDataSource.Create(ConnectionString))
+        {
+            using (var command = connection.CreateCommand(InsertPostgresGeoTypesSql))
+            {
+                command.Parameters.AddWithValue("@c_point", args.CPoint ?? (object)DBNull.Value);
+                command.Parameters.AddWithValue("@c_line", args.CLine ?? (object)DBNull.Value);
+                command.Parameters.AddWithValue("@c_lseg", args.CLseg ?? (object)DBNull.Value);
+                command.Parameters.AddWithValue("@c_box", args.CBox ?? (object)DBNull.Value);
+                command.Parameters.AddWithValue("@c_path", args.CPath ?? (object)DBNull.Value);
+                command.Parameters.AddWithValue("@c_polygon", args.CPolygon ?? (object)DBNull.Value);
+                command.Parameters.AddWithValue("@c_circle", args.CCircle ?? (object)DBNull.Value);
+                await command.ExecuteScalarAsync();
+            }
+        }
+    }
+
+    private const string GetPostgresGeoTypesSql = "SELECT c_point, c_line, c_lseg, c_box, c_path, c_polygon, c_circle FROM postgres_geometric_types LIMIT 1";
+    public readonly record struct GetPostgresGeoTypesRow(NpgsqlPoint? CPoint, NpgsqlLine? CLine, NpgsqlLSeg? CLseg, NpgsqlBox? CBox, NpgsqlPath? CPath, NpgsqlPolygon? CPolygon, NpgsqlCircle? CCircle);
+    public async Task<GetPostgresGeoTypesRow?> GetPostgresGeoTypes()
+    {
+        using (var connection = NpgsqlDataSource.Create(ConnectionString))
+        {
+            using (var command = connection.CreateCommand(GetPostgresGeoTypesSql))
+            {
+                using (var reader = await command.ExecuteReaderAsync())
+                {
+                    if (await reader.ReadAsync())
+                    {
+                        return new GetPostgresGeoTypesRow
+                        {
+                            CPoint = reader.IsDBNull(0) ? (NpgsqlPoint? )null : reader.GetFieldValue<NpgsqlPoint>(0),
+                            CLine = reader.IsDBNull(1) ? (NpgsqlLine? )null : reader.GetFieldValue<NpgsqlLine>(1),
+                            CLseg = reader.IsDBNull(2) ? (NpgsqlLSeg? )null : reader.GetFieldValue<NpgsqlLSeg>(2),
+                            CBox = reader.IsDBNull(3) ? (NpgsqlBox? )null : reader.GetFieldValue<NpgsqlBox>(3),
+                            CPath = reader.IsDBNull(4) ? (NpgsqlPath? )null : reader.GetFieldValue<NpgsqlPath>(4),
+                            CPolygon = reader.IsDBNull(5) ? (NpgsqlPolygon? )null : reader.GetFieldValue<NpgsqlPolygon>(5),
+                            CCircle = reader.IsDBNull(6) ? (NpgsqlCircle? )null : reader.GetFieldValue<NpgsqlCircle>(6)
+                        };
+                    }
+                }
+            }
+        }
+
+        return null;
+    }
+
     private const string TruncatePostgresTypesSql = "TRUNCATE TABLE postgres_types";
     public async Task TruncatePostgresTypes()
     {
         using (var connection = NpgsqlDataSource.Create(ConnectionString))
         {
             using (var command = connection.CreateCommand(TruncatePostgresTypesSql))
+            {
+                await command.ExecuteScalarAsync();
+            }
+        }
+    }
+
+    private const string TruncatePostgresGeoTypesSql = "TRUNCATE TABLE postgres_geometric_types";
+    public async Task TruncatePostgresGeoTypes()
+    {
+        using (var connection = NpgsqlDataSource.Create(ConnectionString))
+        {
+            using (var command = connection.CreateCommand(TruncatePostgresGeoTypesSql))
             {
                 await command.ExecuteScalarAsync();
             }

@@ -43,3 +43,15 @@ CREATE TABLE postgres_types (
     c_text_array        TEXT[],
     c_integer_array     INTEGER[]
 );
+
+
+CREATE TABLE postgres_geometric_types (
+    /* Geometric Data Types */
+    c_point             POINT,
+    c_line              LINE,
+    c_lseg              LSEG,
+    c_box               BOX,
+    c_path              PATH,
+    c_polygon           POLYGON,
+    c_circle            CIRCLE
+);

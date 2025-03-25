@@ -109,7 +109,42 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId
             {
                 { "bool", new DbTypeInfo() },
                 { "boolean", new DbTypeInfo() }
-            }, ordinal => $"reader.GetBoolean({ordinal})")
+            }, ordinal => $"reader.GetBoolean({ordinal})"),
+        new("NpgsqlPoint",
+            new Dictionary<string, DbTypeInfo>
+            {
+                { "point", new DbTypeInfo(NpgsqlTypeOverride: "NpgsqlDbType.Point") }
+            }, ordinal => $"reader.GetFieldValue<NpgsqlPoint>({ordinal})"),
+        new("NpgsqlLine",
+            new Dictionary<string, DbTypeInfo>
+            {
+                { "line", new DbTypeInfo(NpgsqlTypeOverride: "NpgsqlDbType.Line") }
+            }, ordinal => $"reader.GetFieldValue<NpgsqlLine>({ordinal})"),
+        new("NpgsqlLSeg",
+            new Dictionary<string, DbTypeInfo>
+            {
+                { "lseg", new DbTypeInfo(NpgsqlTypeOverride: "NpgsqlDbType.LSeg") }
+            }, ordinal => $"reader.GetFieldValue<NpgsqlLSeg>({ordinal})"),
+        new("NpgsqlBox",
+            new Dictionary<string, DbTypeInfo>
+            {
+                { "box", new DbTypeInfo(NpgsqlTypeOverride: "NpgsqlDbType.Box") }
+            }, ordinal => $"reader.GetFieldValue<NpgsqlBox>({ordinal})"),
+        new("NpgsqlPath",
+            new Dictionary<string, DbTypeInfo>
+            {
+                { "path", new DbTypeInfo(NpgsqlTypeOverride: "NpgsqlDbType.Path") }
+            }, ordinal => $"reader.GetFieldValue<NpgsqlPath>({ordinal})"),
+        new("NpgsqlPolygon",
+            new Dictionary<string, DbTypeInfo>
+            {
+                { "polygon", new DbTypeInfo(NpgsqlTypeOverride: "NpgsqlDbType.Polygon") }
+            }, ordinal => $"reader.GetFieldValue<NpgsqlPolygon>({ordinal})"),
+        new("NpgsqlCircle",
+            new Dictionary<string, DbTypeInfo>
+            {
+                { "circle", new DbTypeInfo(NpgsqlTypeOverride: "NpgsqlDbType.Circle") }
+            }, ordinal => $"reader.GetFieldValue<NpgsqlCircle>({ordinal})")
     ];
 
     public override UsingDirectiveSyntax[] GetUsingDirectives()
@@ -117,6 +152,7 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId
         return base.GetUsingDirectives()
             .Append(UsingDirective(ParseName("Npgsql")))
             .Append(UsingDirective(ParseName("NpgsqlTypes")))
+            .Append(UsingDirective(ParseName("System.Data")))
             .ToArray();
     }
 
