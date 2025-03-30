@@ -39,7 +39,7 @@ public static class Program
             .Select(t => GetTestImplementation(testClassName, isLegacyDotnet, t))
             .ToList());
 
-        var optionalUsingPostgresTypes = config.TestNamespace.Contains("Npgsql") ? Environment.NewLine + "using NpgsqlTypes;" : string.Empty;
+        var optionalUsingPostgresTypes = config.TestNamespace.Contains("Npgsql") ? "using NpgsqlTypes;" : string.Empty;
         var namespaceToTest = isLegacyDotnet ? config.LegacyTestNamespace : config.TestNamespace;
         return ParseCompilationUnit(
             $$"""

@@ -35,11 +35,9 @@ internal class ModelsGen(DbDriver dbDriver, string namespaceName)
         IEnumerable<UsingDirectiveSyntax> usingDirectives = [UsingDirective(ParseName("System"))];
 
         if (dbDriver.Options.DriverName is DriverName.Npgsql)
-        {
             usingDirectives = usingDirectives.Concat([
                 UsingDirective(ParseName("NpgsqlTypes")),
             ]);
-        }
         return usingDirectives.ToArray();
     }
 

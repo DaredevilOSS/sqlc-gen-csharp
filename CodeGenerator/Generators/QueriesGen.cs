@@ -59,10 +59,10 @@ internal class QueriesGen(DbDriver dbDriver, string namespaceName)
 
     private IEnumerable<MemberDeclarationSyntax> GetPostgresConstMembers()
     {
-        var optionalDotnetCoreSuffex = dbDriver.Options.DotnetFramework != DotnetFramework.DotnetStandard20 ? " where T : notnull" : string.Empty;
-        var optionalDotnetCoreNullable = dbDriver.Options.DotnetFramework != DotnetFramework.DotnetStandard20 ? "?" : string.Empty;
+        var optionalDotnetCoreSuffix = dbDriver.Options.DotnetFramework.IsDotnetCore() ? " where T : notnull" : string.Empty;
+        var optionalDotnetCoreNullable = dbDriver.Options.DotnetFramework.IsDotnetCore() ? "?" : string.Empty;
         var genericMapperClass = $$"""
-        public class NpgsqlTypeHandler<T> : SqlMapper.TypeHandler<T>{{optionalDotnetCoreSuffex}}
+        public class NpgsqlTypeHandler<T> : SqlMapper.TypeHandler<T>{{optionalDotnetCoreSuffix}}
             {
                 public override T Parse(object value)
                 {
@@ -77,7 +77,7 @@ internal class QueriesGen(DbDriver dbDriver, string namespaceName)
             }
         """;
         var genericMapper = $$"""
-        private void RegisterNpgsqlTypeHandler<T>(){{optionalDotnetCoreSuffex}}
+        private void RegisterNpgsqlTypeHandler<T>(){{optionalDotnetCoreSuffix}}
         {
             SqlMapper.AddTypeHandler(typeof(T), new NpgsqlTypeHandler<T>());
         }
@@ -104,11 +104,11 @@ internal class QueriesGen(DbDriver dbDriver, string namespaceName)
         IEnumerable<MemberDeclarationSyntax> classMembers)
     {
         var optionalDapperConfig = dbDriver.Options.UseDapper
-            ? Environment.NewLine + "        Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;"
+            ? "        Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;"
             : "";
 
         var optionalPostgresconfigurationCall = dbDriver.Options.DriverName == DriverName.Npgsql && dbDriver.Options.UseDapper
-            ? Environment.NewLine + "        ConfigureSqlMapper();"
+            ? "        ConfigureSqlMapper();"
             : "";
         var classDeclaration = (ClassDeclarationSyntax)ParseMemberDeclaration(
                 $$"""
