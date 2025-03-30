@@ -36,10 +36,6 @@ public abstract class DbDriver
 
         if (!Options.DotnetFramework.IsDotnetCore()) return;
 
-        foreach (var t in Tables)
-        {
-            NullableTypes.Add(t.Key.ToModelName());
-        }
         foreach (var t in NullableTypesInDotnetCore)
         {
             NullableTypes.Add(t);
@@ -138,8 +134,7 @@ public abstract class DbDriver
     public bool IsTypeNullable(string csharpType)
     {
         if (NullableTypes.Contains(csharpType.Replace("?", ""))) return true;
-        if (!Options.DotnetFramework.IsDotnetCore()) return false;
-        return true;
+        return Options.DotnetFramework.IsDotnetCore(); // non-primitives in .Net Core are inherently nullable
     }
 
     /*

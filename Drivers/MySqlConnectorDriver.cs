@@ -195,7 +195,7 @@ public partial class MySqlConnectorDriver(Options options, Dictionary<string, Ta
                     var {{optionsVar}} = new TypeConverterOptions { Formats = new[] { supportedDateTimeFormat } };
                     {{csvWriterVar}}.Context.TypeConverterOptionsCache.AddOptions<DateTime>({{optionsVar}});
                     {{csvWriterVar}}.Context.TypeConverterOptionsCache.AddOptions<DateTime?>({{optionsVar}});
-                    {{GetOtherConverters().JoinByNewLine()}}
+                    {{GetBoolAndByteConverters().JoinByNewLine()}}
                     {{GetNullConverter("short")}}
                     {{GetNullConverter("int")}}
                     {{GetNullConverter("long")}}
@@ -235,7 +235,7 @@ public partial class MySqlConnectorDriver(Options options, Dictionary<string, Ta
             return $"{csvWriterVar}.Context.TypeConverterCache.AddConverter<{nullableCsharpType}>({nullConverterFn});";
         }
 
-        string[] GetOtherConverters()
+        IEnumerable<string> GetBoolAndByteConverters()
         {
             return new HashSet<string>([
                 $"{csvWriterVar}.Context.TypeConverterCache.AddConverter<{AddNullableSuffixIfNeeded("bool", true)}>(new Utils.BoolToBitConverter());",
@@ -244,7 +244,7 @@ public partial class MySqlConnectorDriver(Options options, Dictionary<string, Ta
                 $"{csvWriterVar}.Context.TypeConverterCache.AddConverter<{AddNullableSuffixIfNeeded("byte", false)}>(new Utils.ByteConverter());",
                 $"{csvWriterVar}.Context.TypeConverterCache.AddConverter<{AddNullableSuffixIfNeeded("byte[]", true)}>(new Utils.ByteArrayConverter());",
                 $"{csvWriterVar}.Context.TypeConverterCache.AddConverter<{AddNullableSuffixIfNeeded("byte[]", false)}>(new Utils.ByteArrayConverter());",
-            ]).ToArray();
+            ]);
         }
     }
 }

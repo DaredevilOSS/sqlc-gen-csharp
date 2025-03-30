@@ -67,22 +67,16 @@ namespace MySqlConnectorDapperLegacyExampleGen
 
     public static class MysqlTypesCEnumExtensions
     {
-        private static readonly Dictionary<string, MysqlTypesCEnum> StringToEnum = new Dictionary<string, MysqlTypesCEnum>()
+        private static readonly Dictionary<MysqlTypesCEnum, string> EnumToString = new Dictionary<MysqlTypesCEnum, string>()
         {
-            [string.Empty] = MysqlTypesCEnum.Invalid,
-            ["small"] = MysqlTypesCEnum.Small,
-            ["medium"] = MysqlTypesCEnum.Medium,
-            ["big"] = MysqlTypesCEnum.Big
+            [MysqlTypesCEnum.Invalid] = string.Empty,
+            [MysqlTypesCEnum.Small] = "small",
+            [MysqlTypesCEnum.Medium] = "medium",
+            [MysqlTypesCEnum.Big] = "big"
         };
-        private static readonly Dictionary<MysqlTypesCEnum, string> EnumToString = StringToEnum.ToDictionary((i) => i.Value, (i) => i.Key);
         public static string ToEnumString(this MysqlTypesCEnum me)
         {
             return EnumToString[me];
-        }
-
-        public static MysqlTypesCEnum ToMysqlTypesCEnum(this string me)
-        {
-            return StringToEnum[me];
         }
     }
 }

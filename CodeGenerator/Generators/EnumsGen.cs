@@ -23,38 +23,42 @@ internal class EnumsGen(DbDriver dbDriver)
                }
                """)!;
 
-        var stringToEnumDict = possibleValues
-            .Select(v => $"""["{v}"] = {enumName}.{v.ToPascalCase()}""")
-            .JoinByComma();
-        var optionalReverseDictLookup = dbDriver.Options.UseDapper ?
-            $$"""
-              private static readonly Dictionary<{{enumName}}, string> EnumToString = StringToEnum.ToDictionary((i) => i.Value, (i) => i.Key);
-              
-              public static string ToEnumString(this {{enumName}} me)
-              {
-                  return EnumToString[me];
-              }
-              """
-            : string.Empty;
+        var dictDefinitionAndLookup = dbDriver.Options.UseDapper
+            ? $$"""
+                private static readonly Dictionary<{{enumName}}, string> EnumToString = new Dictionary<{{enumName}}, string>()
+                {
+                    [{{enumName}}.Invalid] = string.Empty,
+                    {{possibleValues
+                        .Select(v => $"[{enumName}.{v.ToPascalCase()}] = \"{v}\"")
+                        .JoinByComma()}}
+                };
+                
+                public static string ToEnumString(this {{enumName}} me)
+                {
+                    return EnumToString[me];
+                }
+                """
+            : $$"""
+                private static readonly Dictionary<string, {{enumName}}> StringToEnum = new Dictionary<string, {{enumName}}>()
+                {
+                    [string.Empty] = {{enumName}}.Invalid,
+                    {{possibleValues
+                        .Select(v => $"[\"{v}\"] = {enumName}.{v.ToPascalCase()}")
+                        .JoinByComma()}}
+                };
+                
+                public static {{enumName}} To{{enumName}}(this string me)
+                {
+                    return StringToEnum[me];
+                }
+                """;
 
         var enumExtensions = ParseMemberDeclaration($$"""
                public static class {{enumName}}Extensions 
                {
-                   private static readonly Dictionary<string, {{enumName}}> StringToEnum = new Dictionary<string, {{enumName}}>()
-                   {
-                       [string.Empty] = {{enumName}}.Invalid,
-                       {{stringToEnumDict}}
-                   };
-                   
-                   {{optionalReverseDictLookup}}
-                   
-                   public static {{enumName}} To{{enumName}}(this string me)
-                   {
-                       return StringToEnum[me];
-                   }
+                   {{dictDefinitionAndLookup}}
                }
                """)!;
-
         return [enumType, enumExtensions];
     }
 }
