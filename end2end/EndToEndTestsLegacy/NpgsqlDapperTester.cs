@@ -15,6 +15,7 @@ namespace SqlcGenCsharpTests
         {
             await QuerySql.TruncateAuthors();
             await QuerySql.TruncatePostgresTypes();
+            await QuerySql.TruncatePostgresGeoTypes();
         }
     }
 }

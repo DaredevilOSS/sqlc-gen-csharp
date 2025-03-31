@@ -52,14 +52,63 @@ internal class QueriesGen(DbDriver dbDriver, string namespaceName)
     {
         var usingDirectives = dbDriver.GetUsingDirectives();
         var classMembers = queries.SelectMany(GetMembersForSingleQuery);
+        if (dbDriver.Options.DriverName == DriverName.Npgsql && dbDriver.Options.UseDapper)
+            classMembers = classMembers.Concat(GetPostgresConstMembers());
         return (usingDirectives, GetClassDeclaration(className, classMembers));
+    }
+
+    private IEnumerable<MemberDeclarationSyntax> GetPostgresConstMembers()
+    {
+        var optionalDotnetCoreSuffix = dbDriver.Options.DotnetFramework.IsDotnetCore() ? " where T : notnull" : string.Empty;
+        var optionalDotnetCoreNullable = dbDriver.Options.DotnetFramework.IsDotnetCore() ? "?" : string.Empty;
+        var genericMapperClass = $$"""
+        public class NpgsqlTypeHandler<T> : SqlMapper.TypeHandler<T>{{optionalDotnetCoreSuffix}}
+            {
+                public override T Parse(object value)
+                {
+                    return (T)value;
+                }
+                
+                public override void SetValue(IDbDataParameter parameter, T{{optionalDotnetCoreNullable}} value)
+                {
+                    parameter.Value = value;
+                }
+
+            }
+        """;
+        var genericMapper = $$"""
+        private void RegisterNpgsqlTypeHandler<T>(){{optionalDotnetCoreSuffix}}
+        {
+            SqlMapper.AddTypeHandler(typeof(T), new NpgsqlTypeHandler<T>());
+        }
+        """;
+        var mapperConfiguration = $$"""
+        private void ConfigureSqlMapper()
+        {
+            RegisterNpgsqlTypeHandler<NpgsqlPoint>();
+            RegisterNpgsqlTypeHandler<NpgsqlLine>();
+            RegisterNpgsqlTypeHandler<NpgsqlLSeg>();
+            RegisterNpgsqlTypeHandler<NpgsqlBox>();
+            RegisterNpgsqlTypeHandler<NpgsqlPath>();
+            RegisterNpgsqlTypeHandler<NpgsqlPolygon>();
+            RegisterNpgsqlTypeHandler<NpgsqlCircle>();
+        }
+        """;
+        return new List<MemberDeclarationSyntax>()
+            .Append(ParseMemberDeclaration(mapperConfiguration)!)
+            .Append(ParseMemberDeclaration(genericMapperClass)!)
+            .Append(ParseMemberDeclaration(genericMapper)!);
     }
 
     private ClassDeclarationSyntax GetClassDeclaration(string className,
         IEnumerable<MemberDeclarationSyntax> classMembers)
     {
         var optionalDapperConfig = dbDriver.Options.UseDapper
-            ? Environment.NewLine + "        Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;"
+            ? "        Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;"
+            : "";
+
+        var optionalPostgresconfigurationCall = dbDriver.Options.DriverName == DriverName.Npgsql && dbDriver.Options.UseDapper
+            ? "        ConfigureSqlMapper();"
             : "";
         var classDeclaration = (ClassDeclarationSyntax)ParseMemberDeclaration(
                 $$"""
@@ -67,7 +116,7 @@ internal class QueriesGen(DbDriver dbDriver, string namespaceName)
                   {
                       public {{className}}(string {{Variable.ConnectionString.AsVarName()}})
                       {
-                          this.{{Variable.ConnectionString.AsPropertyName()}} = {{Variable.ConnectionString.AsVarName()}};{{optionalDapperConfig}}
+                          this.{{Variable.ConnectionString.AsPropertyName()}} = {{Variable.ConnectionString.AsVarName()}};{{optionalDapperConfig}}{{optionalPostgresconfigurationCall}}
                       }
                       private string {{Variable.ConnectionString.AsPropertyName()}} { get; }
                   }

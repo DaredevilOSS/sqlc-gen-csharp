@@ -80,5 +80,15 @@ GROUP BY c_smallint, c_boolean, c_integer, c_bigint, c_real, c_numeric, c_decima
          c_bytea
 LIMIT 1;
 
+-- name: InsertPostgresGeoTypes :exec
+INSERT INTO postgres_geometric_types (c_point, c_line, c_lseg, c_box, c_path, c_polygon, c_circle)
+VALUES ($1, $2, $3, $4, $5, $6, $7);
+
+-- name: GetPostgresGeoTypes :one
+SELECT * FROM postgres_geometric_types LIMIT 1;
+
 -- name: TruncatePostgresTypes :exec
 TRUNCATE TABLE postgres_types;
+
+-- name: TruncatePostgresGeoTypes :exec
+TRUNCATE TABLE postgres_geometric_types;

@@ -42,6 +42,7 @@ public enum KnownTestType
     PostgresFloatingPointCopyFrom,
     PostgresDateTimeCopyFrom,
     PostgresArrayCopyFrom,
+    PostgresGeoDataTypes,
 
     ArrayAsParam,
     MultipleArraysAsParams,
@@ -158,6 +159,7 @@ internal static class Config
                     KnownTestType.PostgresFloatingPointDataTypes,
                     KnownTestType.PostgresDateTimeDataTypes,
                     KnownTestType.PostgresArrayDataTypes,
+                    KnownTestType.PostgresGeoDataTypes,
 
                     KnownTestType.PostgresStringCopyFrom,
                     KnownTestType.PostgresIntegerCopyFrom,
@@ -190,6 +192,7 @@ internal static class Config
                     KnownTestType.PostgresFloatingPointDataTypes,
                     KnownTestType.PostgresDateTimeDataTypes,
                     KnownTestType.PostgresArrayDataTypes,
+                    KnownTestType.PostgresGeoDataTypes,
 
                     KnownTestType.PostgresStringCopyFrom,
                     KnownTestType.PostgresIntegerCopyFrom,

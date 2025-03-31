@@ -19,7 +19,7 @@ public abstract class DbDriver
 
     private HashSet<string> NullableTypesInDotnetCore { get; } = ["string", "object", "byte[]"]; // TODO add arrays in here in a non hard-coded manner
 
-    private HashSet<string> NullableTypes { get; } = ["bool", "byte", "short", "int", "long", "float", "double", "decimal", "DateTime", "TimeSpan"];
+    private HashSet<string> NullableTypes { get; } = ["bool", "byte", "short", "int", "long", "float", "double", "decimal", "DateTime", "TimeSpan", "NpgsqlPoint", "NpgsqlLine", "NpgsqlLSeg", "NpgsqlBox", "NpgsqlPath", "NpgsqlPolygon", "NpgsqlCircle"];
 
     protected abstract List<ColumnMapping> ColumnMappings { get; }
 

@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using NpgsqlTypes;
 
 namespace NpgsqlDapperExampleGen;
 public class Author
@@ -41,4 +42,14 @@ public class PostgresType
     public object? CJson { get; init; }
     public string[]? CTextArray { get; init; }
     public int[]? CIntegerArray { get; init; }
+};
+public class PostgresGeometricType
+{
+    public NpgsqlPoint? CPoint { get; init; }
+    public NpgsqlLine? CLine { get; init; }
+    public NpgsqlLSeg? CLseg { get; init; }
+    public NpgsqlBox? CBox { get; init; }
+    public NpgsqlPath? CPath { get; init; }
+    public NpgsqlPolygon? CPolygon { get; init; }
+    public NpgsqlCircle? CCircle { get; init; }
 };

@@ -40,12 +40,13 @@ we consider support for the different data types separately for batch inserts an
 | bytea                                   | ✅         | ✅                  |
 | 2-dimensional arrays (e.g text[],int[]) | ✅         | ❌                  |
 | money                                   | ✅         | ✅                  |
-| line                                    | ❌         | ❌                  |
-| lseg                                    | ❌         | ❌                  |
-| box                                     | ❌         | ❌                  |
-| path                                    | ❌         | ❌                  |
-| polygon                                 | ❌         | ❌                  |
-| circle                                  | ❌         | ❌                  |
+| point                                   | ✅         | ❌                  |
+| line                                    | ✅         | ❌                  |
+| lseg                                    | ✅         | ❌                  |
+| box                                     | ✅         | ❌                  |
+| path                                    | ✅         | ❌                  |
+| polygon                                 | ✅         | ❌                  |
+| circle                                  | ✅         | ❌                  |
 | cidr                                    | ❌         | ❌                  |
 | inet                                    | ❌         | ❌                  |
 | macaddr                                 | ❌         | ❌                  |
