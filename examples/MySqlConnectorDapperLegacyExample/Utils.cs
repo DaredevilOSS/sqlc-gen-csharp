@@ -35,6 +35,18 @@ namespace MySqlConnectorDapperLegacyExampleGen
             }
         }
 
+        public class ByteConverter : DefaultTypeConverter
+        {
+            public override string ConvertToString(object value, IWriterRow row, MemberMapData memberMapData)
+            {
+                if (value == null)
+                    return @"\N";
+                if (value is byte byteVal)
+                    return System.Text.Encoding.UTF8.GetString(new byte[] { byteVal });
+                return base.ConvertToString(value, row, memberMapData);
+            }
+        }
+
         public class ByteArrayConverter : DefaultTypeConverter
         {
             public override string ConvertToString(object value, IWriterRow row, MemberMapData memberMapData)

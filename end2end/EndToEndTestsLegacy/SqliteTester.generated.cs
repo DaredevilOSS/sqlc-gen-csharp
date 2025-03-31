@@ -309,7 +309,7 @@ namespace SqlcGenCsharpTests
         [TestCase(-54355, 9787.66, "Songs of Love and Hate", new byte[] { 0x15, 0x20, 0x33 })]
         [TestCase(null, null, null, new byte[] { })]
         [TestCase(null, null, null, null)]
-        public async Task TestSqliteTypes(int cInteger, decimal cReal, string cText, byte[] cBlob)
+        public async Task TestSqliteTypes(int cInteger, decimal? cReal, string cText, byte[] cBlob)
         {
             await QuerySql.InsertSqliteTypes(new QuerySql.InsertSqliteTypesArgs { CInteger = cInteger, CReal = cReal, CText = cText, CBlob = cBlob });
             var expected = new QuerySql.GetSqliteTypesRow

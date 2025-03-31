@@ -465,7 +465,7 @@ namespace MySqlConnectorLegacyExampleGen
             public string CMediumtext { get; set; }
             public string CText { get; set; }
             public string CLongtext { get; set; }
-            public string CEnum { get; set; }
+            public MysqlTypesCEnum? CEnum { get; set; }
             public short? CYear { get; set; }
             public DateTime? CDate { get; set; }
             public DateTime? CDatetime { get; set; }
@@ -550,7 +550,7 @@ namespace MySqlConnectorLegacyExampleGen
             public string CMediumtext { get; set; }
             public string CText { get; set; }
             public string CLongtext { get; set; }
-            public string CEnum { get; set; }
+            public MysqlTypesCEnum? CEnum { get; set; }
             public short? CYear { get; set; }
             public DateTime? CDate { get; set; }
             public DateTime? CDatetime { get; set; }
@@ -583,9 +583,11 @@ namespace MySqlConnectorLegacyExampleGen
                 };
                 csvWriter.Context.TypeConverterOptionsCache.AddOptions<DateTime>(options);
                 csvWriter.Context.TypeConverterOptionsCache.AddOptions<DateTime?>(options);
+                csvWriter.Context.TypeConverterCache.AddConverter<bool>(new Utils.BoolToBitConverter());
                 csvWriter.Context.TypeConverterCache.AddConverter<bool?>(new Utils.BoolToBitConverter());
+                csvWriter.Context.TypeConverterCache.AddConverter<byte>(new Utils.ByteConverter());
+                csvWriter.Context.TypeConverterCache.AddConverter<byte?>(new Utils.ByteConverter());
                 csvWriter.Context.TypeConverterCache.AddConverter<byte[]>(new Utils.ByteArrayConverter());
-                csvWriter.Context.TypeConverterCache.AddConverter<byte?>(nullConverterFn);
                 csvWriter.Context.TypeConverterCache.AddConverter<short?>(nullConverterFn);
                 csvWriter.Context.TypeConverterCache.AddConverter<int?>(nullConverterFn);
                 csvWriter.Context.TypeConverterCache.AddConverter<long?>(nullConverterFn);
@@ -595,6 +597,7 @@ namespace MySqlConnectorLegacyExampleGen
                 csvWriter.Context.TypeConverterCache.AddConverter<DateTime?>(nullConverterFn);
                 csvWriter.Context.TypeConverterCache.AddConverter<string>(nullConverterFn);
                 csvWriter.Context.TypeConverterCache.AddConverter<object>(nullConverterFn);
+                csvWriter.Context.TypeConverterCache.AddConverter<MysqlTypesCEnum?>(nullConverterFn);
                 await csvWriter.WriteRecordsAsync(args);
             }
 
@@ -649,7 +652,7 @@ namespace MySqlConnectorLegacyExampleGen
             public string CMediumtext { get; set; }
             public string CText { get; set; }
             public string CLongtext { get; set; }
-            public string CEnum { get; set; }
+            public MysqlTypesCEnum? CEnum { get; set; }
             public byte? CBit { get; set; }
             public byte[] CBinary { get; set; }
             public byte[] CVarbinary { get; set; }
@@ -699,7 +702,7 @@ namespace MySqlConnectorLegacyExampleGen
                                 CMediumtext = reader.IsDBNull(25) ? null : reader.GetString(25),
                                 CText = reader.IsDBNull(26) ? null : reader.GetString(26),
                                 CLongtext = reader.IsDBNull(27) ? null : reader.GetString(27),
-                                CEnum = reader.IsDBNull(28) ? null : reader.GetString(28),
+                                CEnum = reader.IsDBNull(28) ? (MysqlTypesCEnum? )null : reader.GetString(28).ToMysqlTypesCEnum(),
                                 CBit = reader.IsDBNull(29) ? (byte? )null : reader.GetFieldValue<byte>(29),
                                 CBinary = reader.IsDBNull(30) ? null : reader.GetFieldValue<byte[]>(30),
                                 CVarbinary = reader.IsDBNull(31) ? null : reader.GetFieldValue<byte[]>(31),
@@ -744,7 +747,7 @@ namespace MySqlConnectorLegacyExampleGen
             public string CMediumtext { get; set; }
             public string CText { get; set; }
             public string CLongtext { get; set; }
-            public string CEnum { get; set; }
+            public MysqlTypesCEnum? CEnum { get; set; }
             public short? CYear { get; set; }
             public DateTime? CDate { get; set; }
             public DateTime? CDatetime { get; set; }
@@ -794,7 +797,7 @@ namespace MySqlConnectorLegacyExampleGen
                                 CMediumtext = reader.IsDBNull(22) ? null : reader.GetString(22),
                                 CText = reader.IsDBNull(23) ? null : reader.GetString(23),
                                 CLongtext = reader.IsDBNull(24) ? null : reader.GetString(24),
-                                CEnum = reader.IsDBNull(25) ? null : reader.GetString(25),
+                                CEnum = reader.IsDBNull(25) ? (MysqlTypesCEnum? )null : reader.GetString(25).ToMysqlTypesCEnum(),
                                 CYear = reader.IsDBNull(26) ? (short? )null : reader.GetInt16(26),
                                 CDate = reader.IsDBNull(27) ? (DateTime? )null : reader.GetDateTime(27),
                                 CDatetime = reader.IsDBNull(28) ? (DateTime? )null : reader.GetDateTime(28),

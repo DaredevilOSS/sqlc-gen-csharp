@@ -13,6 +13,7 @@ public class CodeGenerator
 {
     private Options? _options;
     private Dictionary<string, Table>? _tables;
+    private Dictionary<string, Plugin.Enum>? _enums;
     private DbDriver? _dbDriver;
     private QueriesGen? _queriesGen;
     private ModelsGen? _modelsGen;
@@ -29,6 +30,12 @@ public class CodeGenerator
     {
         get => _tables!;
         set => _tables = value;
+    }
+
+    private Dictionary<string, Plugin.Enum> Enums
+    {
+        get => _enums!;
+        set => _enums = value;
     }
 
     private DbDriver DbDriver
@@ -73,6 +80,11 @@ public class CodeGenerator
             .SelectMany(schema => schema.Tables)
             .ToDictionary(table => table.Rel.Name, table => table);
 
+        Enums = generateRequest.Catalog.Schemas
+            .Where(schema => schema.Name == generateRequest.Catalog.DefaultSchema)
+            .SelectMany(schema => schema.Enums)
+            .ToDictionary(e => e.Name, e => e);
+
         var namespaceName = Options.NamespaceName == string.Empty ? projectName : Options.NamespaceName;
         DbDriver = InstantiateDriver();
 
@@ -87,9 +99,9 @@ public class CodeGenerator
     {
         return Options.DriverName switch
         {
-            DriverName.MySqlConnector => new MySqlConnectorDriver(Options, Tables),
-            DriverName.Npgsql => new NpgsqlDriver(Options, Tables),
-            DriverName.Sqlite => new SqliteDriver(Options, Tables),
+            DriverName.MySqlConnector => new MySqlConnectorDriver(Options, Tables, Enums),
+            DriverName.Npgsql => new NpgsqlDriver(Options, Tables, Enums),
+            DriverName.Sqlite => new SqliteDriver(Options, Tables, Enums),
             _ => throw new ArgumentException($"unknown driver: {Options.DriverName}")
         };
     }
@@ -100,7 +112,7 @@ public class CodeGenerator
         var fileQueries = GetFileQueries();
         var files = fileQueries
             .Select(fq => QueriesGen.GenerateFile(fq.Value, fq.Key))
-            .Append(ModelsGen.GenerateFile(Tables))
+            .Append(ModelsGen.GenerateFile(Tables, Enums))
             .Append(UtilsGen.GenerateFile())
             .AppendIf(CsprojGen.GenerateFile(), Options.GenerateCsproj);
 

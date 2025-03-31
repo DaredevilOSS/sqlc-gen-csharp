@@ -10,7 +10,8 @@ namespace SqlcGenCsharp.Drivers;
 
 public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId, ICopyFrom
 {
-    public NpgsqlDriver(Options options, Dictionary<string, Table> tables) : base(options, tables)
+    public NpgsqlDriver(Options options, Dictionary<string, Table> tables, Dictionary<string, Enum> enums) :
+        base(options, tables, enums)
     {
         foreach (var columnMapping in ColumnMappings)
         {

@@ -39,7 +39,7 @@ public class QuerySql
                         {
                             Id = reader.GetInt64(0),
                             Name = reader.GetString(1),
-                            Bio = reader.IsDBNull(2) ? (string? )null : reader.GetString(2)
+                            Bio = reader.IsDBNull(2) ? null : reader.GetString(2)
                         };
                     }
                 }
@@ -62,7 +62,7 @@ public class QuerySql
                     var result = new List<ListAuthorsRow>();
                     while (await reader.ReadAsync())
                     {
-                        result.Add(new ListAuthorsRow { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? (string? )null : reader.GetString(2) });
+                        result.Add(new ListAuthorsRow { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2) });
                     }
 
                     return result;
@@ -91,7 +91,7 @@ public class QuerySql
                         {
                             Id = reader.GetInt64(0),
                             Name = reader.GetString(1),
-                            Bio = reader.IsDBNull(2) ? (string? )null : reader.GetString(2)
+                            Bio = reader.IsDBNull(2) ? null : reader.GetString(2)
                         };
                     }
                 }
@@ -136,7 +136,7 @@ public class QuerySql
                         {
                             Id = reader.GetInt64(0),
                             Name = reader.GetString(1),
-                            Bio = reader.IsDBNull(2) ? (string? )null : reader.GetString(2)
+                            Bio = reader.IsDBNull(2) ? null : reader.GetString(2)
                         };
                     }
                 }
@@ -161,7 +161,7 @@ public class QuerySql
                     var result = new List<GetAuthorByNamePatternRow>();
                     while (await reader.ReadAsync())
                     {
-                        result.Add(new GetAuthorByNamePatternRow { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? (string? )null : reader.GetString(2) });
+                        result.Add(new GetAuthorByNamePatternRow { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2) });
                     }
 
                     return result;
@@ -225,7 +225,7 @@ public class QuerySql
                     var result = new List<GetAuthorsByIdsRow>();
                     while (await reader.ReadAsync())
                     {
-                        result.Add(new GetAuthorsByIdsRow { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? (string? )null : reader.GetString(2) });
+                        result.Add(new GetAuthorsByIdsRow { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2) });
                     }
 
                     return result;
@@ -250,7 +250,7 @@ public class QuerySql
                     var result = new List<GetAuthorsByIdsAndNamesRow>();
                     while (await reader.ReadAsync())
                     {
-                        result.Add(new GetAuthorsByIdsAndNamesRow { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? (string? )null : reader.GetString(2) });
+                        result.Add(new GetAuthorsByIdsAndNamesRow { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2) });
                     }
 
                     return result;
@@ -277,7 +277,7 @@ public class QuerySql
     }
 
     private const string ListAllAuthorsBooksSql = "SELECT authors.id, authors.name, authors.bio, books.id, books.name, books.author_id, books.description FROM authors JOIN books ON authors.id = books.author_id ORDER BY authors.name";
-    public readonly record struct ListAllAuthorsBooksRow(Author Author, Book Book);
+    public readonly record struct ListAllAuthorsBooksRow(Author? Author, Book? Book);
     public async Task<List<ListAllAuthorsBooksRow>> ListAllAuthorsBooks()
     {
         using (var connection = NpgsqlDataSource.Create(ConnectionString))
@@ -289,7 +289,7 @@ public class QuerySql
                     var result = new List<ListAllAuthorsBooksRow>();
                     while (await reader.ReadAsync())
                     {
-                        result.Add(new ListAllAuthorsBooksRow { Author = new Author { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? (string? )null : reader.GetString(2) }, Book = new Book { Id = reader.GetInt64(3), Name = reader.GetString(4), AuthorId = reader.GetInt64(5), Description = reader.IsDBNull(6) ? (string? )null : reader.GetString(6) } });
+                        result.Add(new ListAllAuthorsBooksRow { Author = new Author { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2) }, Book = new Book { Id = reader.GetInt64(3), Name = reader.GetString(4), AuthorId = reader.GetInt64(5), Description = reader.IsDBNull(6) ? null : reader.GetString(6) } });
                     }
 
                     return result;
@@ -299,7 +299,7 @@ public class QuerySql
     }
 
     private const string GetDuplicateAuthorsSql = "SELECT authors1.id, authors1.name, authors1.bio, authors2.id, authors2.name, authors2.bio FROM  authors  authors1  JOIN  authors  authors2  ON  authors1 . name  =  authors2 . name  WHERE  authors1 . id < authors2 . id  ";  
-    public readonly record struct GetDuplicateAuthorsRow(Author Author, Author Author2);
+    public readonly record struct GetDuplicateAuthorsRow(Author? Author, Author? Author2);
     public async Task<List<GetDuplicateAuthorsRow>> GetDuplicateAuthors()
     {
         using (var connection = NpgsqlDataSource.Create(ConnectionString))
@@ -311,7 +311,7 @@ public class QuerySql
                     var result = new List<GetDuplicateAuthorsRow>();
                     while (await reader.ReadAsync())
                     {
-                        result.Add(new GetDuplicateAuthorsRow { Author = new Author { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? (string? )null : reader.GetString(2) }, Author2 = new Author { Id = reader.GetInt64(3), Name = reader.GetString(4), Bio = reader.IsDBNull(5) ? (string? )null : reader.GetString(5) } });
+                        result.Add(new GetDuplicateAuthorsRow { Author = new Author { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2) }, Author2 = new Author { Id = reader.GetInt64(3), Name = reader.GetString(4), Bio = reader.IsDBNull(5) ? null : reader.GetString(5) } });
                     }
 
                     return result;
@@ -321,7 +321,7 @@ public class QuerySql
     }
 
     private const string GetAuthorsByBookNameSql = "SELECT authors.id, authors.name, authors.bio, books.id, books.name, books.author_id, books.description FROM  authors  JOIN  books  ON  authors . id  =  books . author_id  WHERE  books . name  =  @name  ";  
-    public readonly record struct GetAuthorsByBookNameRow(long Id, string Name, string? Bio, Book Book);
+    public readonly record struct GetAuthorsByBookNameRow(long Id, string Name, string? Bio, Book? Book);
     public readonly record struct GetAuthorsByBookNameArgs(string Name);
     public async Task<List<GetAuthorsByBookNameRow>> GetAuthorsByBookName(GetAuthorsByBookNameArgs args)
     {
@@ -335,7 +335,7 @@ public class QuerySql
                     var result = new List<GetAuthorsByBookNameRow>();
                     while (await reader.ReadAsync())
                     {
-                        result.Add(new GetAuthorsByBookNameRow { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? (string? )null : reader.GetString(2), Book = new Book { Id = reader.GetInt64(3), Name = reader.GetString(4), AuthorId = reader.GetInt64(5), Description = reader.IsDBNull(6) ? (string? )null : reader.GetString(6) } });
+                        result.Add(new GetAuthorsByBookNameRow { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2), Book = new Book { Id = reader.GetInt64(3), Name = reader.GetString(4), AuthorId = reader.GetInt64(5), Description = reader.IsDBNull(6) ? null : reader.GetString(6) } });
                     }
 
                     return result;
@@ -432,26 +432,26 @@ public class QuerySql
                     {
                         return new GetPostgresTypesRow
                         {
-                            CBoolean = reader.IsDBNull(0) ? (bool? )null : reader.GetBoolean(0),
-                            CBit = reader.IsDBNull(1) ? (byte[]? )null : reader.GetFieldValue<byte[]>(1),
-                            CSmallint = reader.IsDBNull(2) ? (short? )null : reader.GetInt16(2),
-                            CInteger = reader.IsDBNull(3) ? (int? )null : reader.GetInt32(3),
-                            CBigint = reader.IsDBNull(4) ? (long? )null : reader.GetInt64(4),
-                            CDecimal = reader.IsDBNull(5) ? (decimal? )null : reader.GetDecimal(5),
-                            CNumeric = reader.IsDBNull(6) ? (decimal? )null : reader.GetDecimal(6),
-                            CReal = reader.IsDBNull(7) ? (float? )null : reader.GetFloat(7),
-                            CDoublePrecision = reader.IsDBNull(8) ? (double? )null : reader.GetDouble(8),
-                            CMoney = reader.IsDBNull(9) ? (decimal? )null : reader.GetDecimal(9),
-                            CDate = reader.IsDBNull(10) ? (DateTime? )null : reader.GetDateTime(10),
-                            CTime = reader.IsDBNull(11) ? (TimeSpan? )null : reader.GetFieldValue<TimeSpan>(11),
-                            CTimestamp = reader.IsDBNull(12) ? (DateTime? )null : reader.GetDateTime(12),
-                            CTimestampWithTz = reader.IsDBNull(13) ? (DateTime? )null : reader.GetDateTime(13),
-                            CChar = reader.IsDBNull(14) ? (string? )null : reader.GetString(14),
-                            CVarchar = reader.IsDBNull(15) ? (string? )null : reader.GetString(15),
-                            CCharacterVarying = reader.IsDBNull(16) ? (string? )null : reader.GetString(16),
-                            CBytea = reader.IsDBNull(17) ? (byte[]? )null : reader.GetFieldValue<byte[]>(17),
-                            CText = reader.IsDBNull(18) ? (string? )null : reader.GetString(18),
-                            CJson = reader.IsDBNull(19) ? (object? )null : reader.GetString(19),
+                            CBoolean = reader.IsDBNull(0) ? null : reader.GetBoolean(0),
+                            CBit = reader.IsDBNull(1) ? null : reader.GetFieldValue<byte[]>(1),
+                            CSmallint = reader.IsDBNull(2) ? null : reader.GetInt16(2),
+                            CInteger = reader.IsDBNull(3) ? null : reader.GetInt32(3),
+                            CBigint = reader.IsDBNull(4) ? null : reader.GetInt64(4),
+                            CDecimal = reader.IsDBNull(5) ? null : reader.GetDecimal(5),
+                            CNumeric = reader.IsDBNull(6) ? null : reader.GetDecimal(6),
+                            CReal = reader.IsDBNull(7) ? null : reader.GetFloat(7),
+                            CDoublePrecision = reader.IsDBNull(8) ? null : reader.GetDouble(8),
+                            CMoney = reader.IsDBNull(9) ? null : reader.GetDecimal(9),
+                            CDate = reader.IsDBNull(10) ? null : reader.GetDateTime(10),
+                            CTime = reader.IsDBNull(11) ? null : reader.GetFieldValue<TimeSpan>(11),
+                            CTimestamp = reader.IsDBNull(12) ? null : reader.GetDateTime(12),
+                            CTimestampWithTz = reader.IsDBNull(13) ? null : reader.GetDateTime(13),
+                            CChar = reader.IsDBNull(14) ? null : reader.GetString(14),
+                            CVarchar = reader.IsDBNull(15) ? null : reader.GetString(15),
+                            CCharacterVarying = reader.IsDBNull(16) ? null : reader.GetString(16),
+                            CBytea = reader.IsDBNull(17) ? null : reader.GetFieldValue<byte[]>(17),
+                            CText = reader.IsDBNull(18) ? null : reader.GetString(18),
+                            CJson = reader.IsDBNull(19) ? null : reader.GetString(19),
                             CTextArray = reader.IsDBNull(20) ? null : reader.GetFieldValue<string[]>(20),
                             CIntegerArray = reader.IsDBNull(21) ? null : reader.GetFieldValue<int[]>(21)
                         };
@@ -478,24 +478,24 @@ public class QuerySql
                         return new GetPostgresTypesAggRow
                         {
                             Cnt = reader.GetInt64(0),
-                            CSmallint = reader.IsDBNull(1) ? (short? )null : reader.GetInt16(1),
-                            CBoolean = reader.IsDBNull(2) ? (bool? )null : reader.GetBoolean(2),
-                            CInteger = reader.IsDBNull(3) ? (int? )null : reader.GetInt32(3),
-                            CBigint = reader.IsDBNull(4) ? (long? )null : reader.GetInt64(4),
-                            CReal = reader.IsDBNull(5) ? (float? )null : reader.GetFloat(5),
-                            CNumeric = reader.IsDBNull(6) ? (decimal? )null : reader.GetDecimal(6),
-                            CDecimal = reader.IsDBNull(7) ? (decimal? )null : reader.GetDecimal(7),
-                            CDoublePrecision = reader.IsDBNull(8) ? (double? )null : reader.GetDouble(8),
-                            CMoney = reader.IsDBNull(9) ? (decimal? )null : reader.GetDecimal(9),
-                            CDate = reader.IsDBNull(10) ? (DateTime? )null : reader.GetDateTime(10),
-                            CTime = reader.IsDBNull(11) ? (TimeSpan? )null : reader.GetFieldValue<TimeSpan>(11),
-                            CTimestamp = reader.IsDBNull(12) ? (DateTime? )null : reader.GetDateTime(12),
-                            CTimestampWithTz = reader.IsDBNull(13) ? (DateTime? )null : reader.GetDateTime(13),
-                            CChar = reader.IsDBNull(14) ? (string? )null : reader.GetString(14),
-                            CVarchar = reader.IsDBNull(15) ? (string? )null : reader.GetString(15),
-                            CCharacterVarying = reader.IsDBNull(16) ? (string? )null : reader.GetString(16),
-                            CText = reader.IsDBNull(17) ? (string? )null : reader.GetString(17),
-                            CBytea = reader.IsDBNull(18) ? (byte[]? )null : reader.GetFieldValue<byte[]>(18)
+                            CSmallint = reader.IsDBNull(1) ? null : reader.GetInt16(1),
+                            CBoolean = reader.IsDBNull(2) ? null : reader.GetBoolean(2),
+                            CInteger = reader.IsDBNull(3) ? null : reader.GetInt32(3),
+                            CBigint = reader.IsDBNull(4) ? null : reader.GetInt64(4),
+                            CReal = reader.IsDBNull(5) ? null : reader.GetFloat(5),
+                            CNumeric = reader.IsDBNull(6) ? null : reader.GetDecimal(6),
+                            CDecimal = reader.IsDBNull(7) ? null : reader.GetDecimal(7),
+                            CDoublePrecision = reader.IsDBNull(8) ? null : reader.GetDouble(8),
+                            CMoney = reader.IsDBNull(9) ? null : reader.GetDecimal(9),
+                            CDate = reader.IsDBNull(10) ? null : reader.GetDateTime(10),
+                            CTime = reader.IsDBNull(11) ? null : reader.GetFieldValue<TimeSpan>(11),
+                            CTimestamp = reader.IsDBNull(12) ? null : reader.GetDateTime(12),
+                            CTimestampWithTz = reader.IsDBNull(13) ? null : reader.GetDateTime(13),
+                            CChar = reader.IsDBNull(14) ? null : reader.GetString(14),
+                            CVarchar = reader.IsDBNull(15) ? null : reader.GetString(15),
+                            CCharacterVarying = reader.IsDBNull(16) ? null : reader.GetString(16),
+                            CText = reader.IsDBNull(17) ? null : reader.GetString(17),
+                            CBytea = reader.IsDBNull(18) ? null : reader.GetFieldValue<byte[]>(18)
                         };
                     }
                 }
@@ -539,13 +539,13 @@ public class QuerySql
                     {
                         return new GetPostgresGeoTypesRow
                         {
-                            CPoint = reader.IsDBNull(0) ? (NpgsqlPoint? )null : reader.GetFieldValue<NpgsqlPoint>(0),
-                            CLine = reader.IsDBNull(1) ? (NpgsqlLine? )null : reader.GetFieldValue<NpgsqlLine>(1),
-                            CLseg = reader.IsDBNull(2) ? (NpgsqlLSeg? )null : reader.GetFieldValue<NpgsqlLSeg>(2),
-                            CBox = reader.IsDBNull(3) ? (NpgsqlBox? )null : reader.GetFieldValue<NpgsqlBox>(3),
-                            CPath = reader.IsDBNull(4) ? (NpgsqlPath? )null : reader.GetFieldValue<NpgsqlPath>(4),
-                            CPolygon = reader.IsDBNull(5) ? (NpgsqlPolygon? )null : reader.GetFieldValue<NpgsqlPolygon>(5),
-                            CCircle = reader.IsDBNull(6) ? (NpgsqlCircle? )null : reader.GetFieldValue<NpgsqlCircle>(6)
+                            CPoint = reader.IsDBNull(0) ? null : reader.GetFieldValue<NpgsqlPoint>(0),
+                            CLine = reader.IsDBNull(1) ? null : reader.GetFieldValue<NpgsqlLine>(1),
+                            CLseg = reader.IsDBNull(2) ? null : reader.GetFieldValue<NpgsqlLSeg>(2),
+                            CBox = reader.IsDBNull(3) ? null : reader.GetFieldValue<NpgsqlBox>(3),
+                            CPath = reader.IsDBNull(4) ? null : reader.GetFieldValue<NpgsqlPath>(4),
+                            CPolygon = reader.IsDBNull(5) ? null : reader.GetFieldValue<NpgsqlPolygon>(5),
+                            CCircle = reader.IsDBNull(6) ? null : reader.GetFieldValue<NpgsqlCircle>(6)
                         };
                     }
                 }

@@ -262,8 +262,8 @@ public class QuerySql
     private const string ListAllAuthorsBooksSql = "SELECT authors.id, authors.name, authors.bio, books.id, books.name, books.author_id, books.description FROM authors JOIN books ON authors.id = books.author_id ORDER BY authors.name";
     public class ListAllAuthorsBooksRow
     {
-        public required Author Author { get; init; }
-        public required Book Book { get; init; }
+        public required Author? Author { get; init; }
+        public required Book? Book { get; init; }
     };
     public async Task<List<ListAllAuthorsBooksRow>> ListAllAuthorsBooks()
     {
@@ -276,7 +276,7 @@ public class QuerySql
                     var result = new List<ListAllAuthorsBooksRow>();
                     while (await reader.ReadAsync())
                     {
-                        result.Add(new ListAllAuthorsBooksRow { Author = new Author { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? (string? )null : reader.GetString(2) }, Book = new Book { Id = reader.GetInt64(3), Name = reader.GetString(4), AuthorId = reader.GetInt64(5), Description = reader.IsDBNull(6) ? (string? )null : reader.GetString(6) } });
+                        result.Add(new ListAllAuthorsBooksRow { Author = new Author { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2) }, Book = new Book { Id = reader.GetInt64(3), Name = reader.GetString(4), AuthorId = reader.GetInt64(5), Description = reader.IsDBNull(6) ? null : reader.GetString(6) } });
                     }
 
                     return result;
@@ -288,8 +288,8 @@ public class QuerySql
     private const string GetDuplicateAuthorsSql = "SELECT authors1.id, authors1.name, authors1.bio, authors2.id, authors2.name, authors2.bio FROM  authors  authors1  JOIN  authors  authors2  ON  authors1 . name  =  authors2 . name  WHERE  authors1 . id < authors2 . id  ";  
     public class GetDuplicateAuthorsRow
     {
-        public required Author Author { get; init; }
-        public required Author Author2 { get; init; }
+        public required Author? Author { get; init; }
+        public required Author? Author2 { get; init; }
     };
     public async Task<List<GetDuplicateAuthorsRow>> GetDuplicateAuthors()
     {
@@ -302,7 +302,7 @@ public class QuerySql
                     var result = new List<GetDuplicateAuthorsRow>();
                     while (await reader.ReadAsync())
                     {
-                        result.Add(new GetDuplicateAuthorsRow { Author = new Author { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? (string? )null : reader.GetString(2) }, Author2 = new Author { Id = reader.GetInt64(3), Name = reader.GetString(4), Bio = reader.IsDBNull(5) ? (string? )null : reader.GetString(5) } });
+                        result.Add(new GetDuplicateAuthorsRow { Author = new Author { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2) }, Author2 = new Author { Id = reader.GetInt64(3), Name = reader.GetString(4), Bio = reader.IsDBNull(5) ? null : reader.GetString(5) } });
                     }
 
                     return result;
@@ -317,7 +317,7 @@ public class QuerySql
         public required long Id { get; init; }
         public required string Name { get; init; }
         public string? Bio { get; init; }
-        public required Book Book { get; init; }
+        public required Book? Book { get; init; }
     };
     public class GetAuthorsByBookNameArgs
     {
@@ -335,7 +335,7 @@ public class QuerySql
                     var result = new List<GetAuthorsByBookNameRow>();
                     while (await reader.ReadAsync())
                     {
-                        result.Add(new GetAuthorsByBookNameRow { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? (string? )null : reader.GetString(2), Book = new Book { Id = reader.GetInt64(3), Name = reader.GetString(4), AuthorId = reader.GetInt64(5), Description = reader.IsDBNull(6) ? (string? )null : reader.GetString(6) } });
+                        result.Add(new GetAuthorsByBookNameRow { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2), Book = new Book { Id = reader.GetInt64(3), Name = reader.GetString(4), AuthorId = reader.GetInt64(5), Description = reader.IsDBNull(6) ? null : reader.GetString(6) } });
                     }
 
                     return result;
