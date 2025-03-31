@@ -15,7 +15,7 @@ public static class SqliteTests
                      [TestCase(null, null, null, null)]
                      public async Task TestSqliteTypes(
                           int cInteger,
-                          decimal cReal,
+                          decimal? cReal,
                           string cText,
                           byte[] cBlob)
                      {
@@ -58,7 +58,7 @@ public static class SqliteTests
                         int batchSize, 
                         int? cInteger, 
                         decimal? cReal, 
-                        string{{Consts.UnknownNullableIndicatorPlaceholder}} cText)
+                        string cText)
                      {
                          var batchArgs = Enumerable.Range(0, batchSize)
                              .Select(_ => new QuerySql.InsertSqliteTypesBatchArgs

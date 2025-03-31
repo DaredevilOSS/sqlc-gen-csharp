@@ -50,7 +50,7 @@ CREATE TABLE mysql_types (
   c_mediumtext      MEDIUMTEXT,
   c_text            TEXT,
   c_longtext        LONGTEXT,
-  c_enum            ENUM ('Small', 'Medium', 'Big'),
+  c_enum            ENUM ('small', 'medium', 'big'),
     
   /* Binary data types */
   c_bit         BIT(8),

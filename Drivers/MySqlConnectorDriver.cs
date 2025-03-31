@@ -9,8 +9,8 @@ using OneDeclareGen = SqlcGenCsharp.Drivers.Generators.OneDeclareGen;
 
 namespace SqlcGenCsharp.Drivers;
 
-public partial class MySqlConnectorDriver(Options options, Dictionary<string, Table> tables) :
-    DbDriver(options, tables), IOne, IMany, IExec, IExecRows, IExecLastId, ICopyFrom
+public partial class MySqlConnectorDriver(Options options, Dictionary<string, Table> tables, Dictionary<string, Enum> enums) :
+    DbDriver(options, tables, enums), IOne, IMany, IExec, IExecRows, IExecLastId, ICopyFrom
 {
     protected override List<ColumnMapping> ColumnMappings { get; } =
     [
@@ -58,7 +58,6 @@ public partial class MySqlConnectorDriver(Options options, Dictionary<string, Ta
                 { "varchar", new DbTypeInfo() },
                 { "var_string", new DbTypeInfo() },
                 { "json", new DbTypeInfo() },
-                { "mysql_types_c_enum", new DbTypeInfo() }
             }, ordinal => $"reader.GetString({ordinal})"),
         new("DateTime",
             new Dictionary<string, DbTypeInfo>
@@ -196,18 +195,17 @@ public partial class MySqlConnectorDriver(Options options, Dictionary<string, Ta
                     var {{optionsVar}} = new TypeConverterOptions { Formats = new[] { supportedDateTimeFormat } };
                     {{csvWriterVar}}.Context.TypeConverterOptionsCache.AddOptions<DateTime>({{optionsVar}});
                     {{csvWriterVar}}.Context.TypeConverterOptionsCache.AddOptions<DateTime?>({{optionsVar}});
-                    {{csvWriterVar}}.Context.TypeConverterCache.AddConverter<bool?>(new Utils.BoolToBitConverter());
-                    {{csvWriterVar}}.Context.TypeConverterCache.AddConverter<{{AddNullableSuffixIfNeeded("byte[]", false)}}>(new Utils.ByteArrayConverter());
-                    {{csvWriterVar}}.Context.TypeConverterCache.AddConverter<byte?>({{nullConverterFn}});
-                    {{csvWriterVar}}.Context.TypeConverterCache.AddConverter<short?>({{nullConverterFn}});
-                    {{csvWriterVar}}.Context.TypeConverterCache.AddConverter<int?>({{nullConverterFn}});
-                    {{csvWriterVar}}.Context.TypeConverterCache.AddConverter<long?>({{nullConverterFn}});
-                    {{csvWriterVar}}.Context.TypeConverterCache.AddConverter<float?>({{nullConverterFn}});
-                    {{csvWriterVar}}.Context.TypeConverterCache.AddConverter<decimal?>({{nullConverterFn}});
-                    {{csvWriterVar}}.Context.TypeConverterCache.AddConverter<double?>({{nullConverterFn}});
-                    {{csvWriterVar}}.Context.TypeConverterCache.AddConverter<DateTime?>({{nullConverterFn}});
-                    {{csvWriterVar}}.Context.TypeConverterCache.AddConverter<{{AddNullableSuffixIfNeeded("string", false)}}>({{nullConverterFn}});
-                    {{csvWriterVar}}.Context.TypeConverterCache.AddConverter<{{AddNullableSuffixIfNeeded("object", false)}}>({{nullConverterFn}});
+                    {{GetBoolAndByteConverters().JoinByNewLine()}}
+                    {{GetNullConverter("short")}}
+                    {{GetNullConverter("int")}}
+                    {{GetNullConverter("long")}}
+                    {{GetNullConverter("float")}}
+                    {{GetNullConverter("decimal")}}
+                    {{GetNullConverter("double")}}
+                    {{GetNullConverter("DateTime")}}
+                    {{GetNullConverter("string")}}
+                    {{GetNullConverter("object")}}
+                    {{Enums.Select(e => GetNullConverter(e.Key.ToModelName())).JoinByNewLine()}}
                     await {{csvWriterVar}}.WriteRecordsAsync({{Variable.Args.AsVarName()}});
                  }
                  
@@ -230,5 +228,23 @@ public partial class MySqlConnectorDriver(Options options, Dictionary<string, Ta
                      await {{connectionVar}}.CloseAsync();
                  }
                  """;
+
+        string GetNullConverter(string csharpType)
+        {
+            var nullableCsharpType = AddNullableSuffixIfNeeded(csharpType, false);
+            return $"{csvWriterVar}.Context.TypeConverterCache.AddConverter<{nullableCsharpType}>({nullConverterFn});";
+        }
+
+        IEnumerable<string> GetBoolAndByteConverters()
+        {
+            return new HashSet<string>([
+                $"{csvWriterVar}.Context.TypeConverterCache.AddConverter<{AddNullableSuffixIfNeeded("bool", true)}>(new Utils.BoolToBitConverter());",
+                $"{csvWriterVar}.Context.TypeConverterCache.AddConverter<{AddNullableSuffixIfNeeded("bool", false)}>(new Utils.BoolToBitConverter());",
+                $"{csvWriterVar}.Context.TypeConverterCache.AddConverter<{AddNullableSuffixIfNeeded("byte", true)}>(new Utils.ByteConverter());",
+                $"{csvWriterVar}.Context.TypeConverterCache.AddConverter<{AddNullableSuffixIfNeeded("byte", false)}>(new Utils.ByteConverter());",
+                $"{csvWriterVar}.Context.TypeConverterCache.AddConverter<{AddNullableSuffixIfNeeded("byte[]", true)}>(new Utils.ByteArrayConverter());",
+                $"{csvWriterVar}.Context.TypeConverterCache.AddConverter<{AddNullableSuffixIfNeeded("byte[]", false)}>(new Utils.ByteArrayConverter());",
+            ]);
+        }
     }
 }

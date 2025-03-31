@@ -10,16 +10,14 @@ public readonly record struct ClassGenConfig(
 
 public enum KnownTestType
 {
-    // query annotations aligned tests
+    // query annotations
     One,
     Many,
     Exec,
     ExecRows,
     ExecLastId,
-    PostgresCopyFrom,
-    MySqlCopyFrom,
 
-    // macros aligned tests
+    // macros
     SelfJoinEmbed,
     JoinEmbed,
     PartialEmbed,
@@ -28,25 +26,40 @@ public enum KnownTestType
     NargNull,
     NargNotNull,
 
-    // data types aligned tests
-    ArrayAsParam,
-    MultipleArraysAsParams,
+    // Sqlite
+    SqliteDataTypes,
+    SqliteCopyFrom,
 
-    // Postgres Data Types
+    // Postgres
     PostgresStringDataTypes,
     PostgresIntegerDataTypes,
     PostgresFloatingPointDataTypes,
     PostgresDateTimeDataTypes,
     PostgresArrayDataTypes,
 
-    // MySql Data Types
+    PostgresStringCopyFrom,
+    PostgresIntegerCopyFrom,
+    PostgresFloatingPointCopyFrom,
+    PostgresDateTimeCopyFrom,
+    PostgresArrayCopyFrom,
+
+    ArrayAsParam,
+    MultipleArraysAsParams,
+
+    // MySql
     MySqlStringDataTypes,
     MySqlIntegerDataTypes,
     MySqlFloatingPointDataTypes,
     MySqlDateTimeDataTypes,
     MySqlBinaryDataTypes,
-    SqliteDataTypes,
-    SqliteCopyFrom
+    MySqlEnumDataType,
+
+    MySqlStringCopyFrom,
+    MySqlIntegerCopyFrom,
+    MySqlFloatingPointCopyFrom,
+    MySqlDateTimeCopyFrom,
+    MySqlBinaryCopyFrom,
+    MySqlEnumCopyFrom
 }
 
 internal static class Config
@@ -77,7 +90,14 @@ internal static class Config
                     KnownTestType.MySqlFloatingPointDataTypes,
                     KnownTestType.MySqlDateTimeDataTypes,
                     KnownTestType.MySqlBinaryDataTypes,
-                    KnownTestType.MySqlCopyFrom
+                    KnownTestType.MySqlEnumDataType,
+
+                    KnownTestType.MySqlStringCopyFrom,
+                    KnownTestType.MySqlIntegerCopyFrom,
+                    KnownTestType.MySqlFloatingPointCopyFrom,
+                    KnownTestType.MySqlDateTimeCopyFrom,
+                    KnownTestType.MySqlBinaryCopyFrom,
+                    KnownTestType.MySqlEnumCopyFrom
                 ]
             }
         },
@@ -104,7 +124,14 @@ internal static class Config
                         KnownTestType.MySqlFloatingPointDataTypes,
                         KnownTestType.MySqlDateTimeDataTypes,
                         KnownTestType.MySqlBinaryDataTypes,
-                        KnownTestType.MySqlCopyFrom,
+                        KnownTestType.MySqlEnumDataType,
+
+                        KnownTestType.MySqlStringCopyFrom,
+                        KnownTestType.MySqlIntegerCopyFrom,
+                        KnownTestType.MySqlFloatingPointCopyFrom,
+                        KnownTestType.MySqlDateTimeCopyFrom,
+                        KnownTestType.MySqlBinaryCopyFrom,
+                        KnownTestType.MySqlEnumCopyFrom
                     ]
                 }
         },
@@ -131,7 +158,12 @@ internal static class Config
                     KnownTestType.PostgresFloatingPointDataTypes,
                     KnownTestType.PostgresDateTimeDataTypes,
                     KnownTestType.PostgresArrayDataTypes,
-                    KnownTestType.PostgresCopyFrom
+
+                    KnownTestType.PostgresStringCopyFrom,
+                    KnownTestType.PostgresIntegerCopyFrom,
+                    KnownTestType.PostgresFloatingPointCopyFrom,
+                    KnownTestType.PostgresDateTimeCopyFrom,
+                    KnownTestType.PostgresArrayCopyFrom,
                 ]
             }
         },
@@ -158,7 +190,12 @@ internal static class Config
                     KnownTestType.PostgresFloatingPointDataTypes,
                     KnownTestType.PostgresDateTimeDataTypes,
                     KnownTestType.PostgresArrayDataTypes,
-                    KnownTestType.PostgresCopyFrom
+
+                    KnownTestType.PostgresStringCopyFrom,
+                    KnownTestType.PostgresIntegerCopyFrom,
+                    KnownTestType.PostgresFloatingPointCopyFrom,
+                    KnownTestType.PostgresDateTimeCopyFrom,
+                    KnownTestType.PostgresArrayCopyFrom,
                 ]
             }
         },

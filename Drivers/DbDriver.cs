@@ -15,18 +15,27 @@ public abstract class DbDriver
 
     public Dictionary<string, Table> Tables { get; }
 
+    public Dictionary<string, Plugin.Enum> Enums { get; }
+
     private HashSet<string> NullableTypesInDotnetCore { get; } = ["string", "object", "byte[]"]; // TODO add arrays in here in a non hard-coded manner
 
     private HashSet<string> NullableTypes { get; } = ["bool", "byte", "short", "int", "long", "float", "double", "decimal", "DateTime", "TimeSpan"];
 
     protected abstract List<ColumnMapping> ColumnMappings { get; }
 
-    protected DbDriver(Options options, Dictionary<string, Table> tables)
+    protected DbDriver(Options options, Dictionary<string, Table> tables, Dictionary<string, Plugin.Enum> enums)
     {
         Options = options;
         Tables = tables;
+        Enums = enums;
 
-        if (!Options.DotnetFramework.IsDotnetCore()) return; // `string?` is possible only in .Net Core
+        foreach (var e in Enums)
+        {
+            NullableTypes.Add(e.Key.ToModelName());
+        }
+
+        if (!Options.DotnetFramework.IsDotnetCore()) return;
+
         foreach (var t in NullableTypesInDotnetCore)
         {
             NullableTypes.Add(t);
@@ -50,20 +59,25 @@ public abstract class DbDriver
     public string AddNullableSuffixIfNeeded(string csharpType, bool notNull)
     {
         if (notNull) return csharpType;
-        if (IsTypeNullable(csharpType)) return $"{csharpType}?";
-        return Options.DotnetFramework.IsDotnetCore() ? $"{csharpType}?" : csharpType;
+        return IsTypeNullable(csharpType) ? $"{csharpType}?" : csharpType;
     }
 
     public string GetCsharpType(Column column)
     {
-        if (column.EmbedTable != null)
-            return column.EmbedTable.Name.ToModelName();
-
-        var columnCsharpType = string.IsNullOrEmpty(column.Type.Name) ? "object" : GetTypeWithoutNullableSuffix();
-        return AddNullableSuffixIfNeeded(columnCsharpType, column.NotNull);
+        var csharpType = GetTypeWithoutNullableSuffix();
+        return AddNullableSuffixIfNeeded(csharpType, column.NotNull);
 
         string GetTypeWithoutNullableSuffix()
         {
+            if (column.EmbedTable != null)
+                return column.EmbedTable.Name.ToModelName();
+
+            if (string.IsNullOrEmpty(column.Type.Name))
+                return "object";
+
+            if (Enums.ContainsKey(column.Type.Name))
+                return column.Type.Name.ToModelName();
+
             foreach (var columnMapping in ColumnMappings
                          .Where(columnMapping => DoesColumnMappingApply(columnMapping, column)))
             {
@@ -86,6 +100,9 @@ public abstract class DbDriver
 
     public string GetColumnReader(Column column, int ordinal)
     {
+        if (Enums.ContainsKey(column.Type.Name))
+            return $"{Variable.Reader.AsVarName()}.GetString({ordinal}).To{column.Type.Name.ToModelName()}()";
+
         foreach (var columnMapping in ColumnMappings
                      .Where(columnMapping => DoesColumnMappingApply(columnMapping, column)))
         {
@@ -116,12 +133,13 @@ public abstract class DbDriver
     // TODO move out from driver + rename
     public bool IsTypeNullable(string csharpType)
     {
-        return NullableTypes.Contains(csharpType.Replace("?", ""));
+        if (NullableTypes.Contains(csharpType.Replace("?", ""))) return true;
+        return Options.DotnetFramework.IsDotnetCore(); // non-primitives in .Net Core are inherently nullable
     }
 
     /*
-    Since there is no indication of the primary key column in SQLC protobuf (assuming it is a single column even),
-    this method uses a few heuristics to assess the type of the id column
+    Since there is no indication of the primary key column in SQLC protobuf (assuming it is a single column),
+    this method uses a few heuristics to assess the data type of the id column
     */
     public string GetIdColumnType(Query query)
     {
