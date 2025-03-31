@@ -389,40 +389,6 @@ namespace SqlcGenCsharpTests
             Assert.That(actual.Value.CIntegerArray, Is.EqualTo(expected.CIntegerArray));
         }
 
-<<<<<<< HEAD
-        public static IEnumerable<TestCaseData> PostgresGeoTypesTestCases
-        {
-            get
-            {
-                yield return new TestCaseData(new NpgsqlPoint(1, 2), new NpgsqlLine(3, 4, 5), new NpgsqlLSeg(1, 2, 3, 4), new NpgsqlBox(1, 2, 3, 4), new NpgsqlPath(new NpgsqlPoint[] { new NpgsqlPoint(1, 2), new NpgsqlPoint(3, 4) }), new NpgsqlPolygon(new NpgsqlPoint[] { new NpgsqlPoint(1, 2), new NpgsqlPoint(3, 4) }), new NpgsqlCircle(1, 2, 3)).SetName("Valid Geo Types");
-                yield return new TestCaseData(null, null, null, null, null, null, null).SetName("Null Geo Types");
-            }
-        }
-
-        [Test]
-        [TestCaseSource(nameof(PostgresGeoTypesTestCases))]
-        public async Task TestPostgresGeoTypes(NpgsqlPoint? cPoint, NpgsqlLine? cLine, NpgsqlLSeg? cLSeg, NpgsqlBox? cBox, NpgsqlPath? cPath, NpgsqlPolygon? cPolygon, NpgsqlCircle? cCircle)
-        {
-            await QuerySql.InsertPostgresGeoTypes(new QuerySql.InsertPostgresGeoTypesArgs { CPoint = cPoint, CLine = cLine, CLseg = cLSeg, CBox = cBox, CPath = cPath, CPolygon = cPolygon, CCircle = cCircle });
-            var expected = new QuerySql.GetPostgresGeoTypesRow
-            {
-                CPoint = cPoint,
-                CLine = cLine,
-                CLseg = cLSeg,
-                CBox = cBox,
-                CPath = cPath,
-                CPolygon = cPolygon,
-                CCircle = cCircle
-            };
-            var actual = await QuerySql.GetPostgresGeoTypes();
-            Assert.That(actual.Value.CPoint, Is.EqualTo(expected.CPoint));
-            Assert.That(actual.Value.CLine, Is.EqualTo(expected.CLine));
-            Assert.That(actual.Value.CLseg, Is.EqualTo(expected.CLseg));
-            Assert.That(actual.Value.CBox, Is.EqualTo(expected.CBox));
-            Assert.That(actual.Value.CPath, Is.EqualTo(expected.CPath));
-            Assert.That(actual.Value.CPolygon, Is.EqualTo(expected.CPolygon));
-            Assert.That(actual.Value.CCircle, Is.EqualTo(expected.CCircle));
-=======
         [Test]
         [TestCase(100, "z", "Sex Pistols", "Anarchy in the U.K", "Never Mind the Bollocks...")]
         [TestCase(10, null, null, null, null)]
@@ -542,6 +508,40 @@ namespace SqlcGenCsharpTests
             Assert.That(actual.Value.CBytea, Is.EqualTo(expected.CBytea));
         }
 
+        public static IEnumerable<TestCaseData> PostgresGeoTypesTestCases
+        {
+            get
+            {
+                yield return new TestCaseData(new NpgsqlPoint(1, 2), new NpgsqlLine(3, 4, 5), new NpgsqlLSeg(1, 2, 3, 4), new NpgsqlBox(1, 2, 3, 4), new NpgsqlPath(new NpgsqlPoint[] { new NpgsqlPoint(1, 2), new NpgsqlPoint(3, 4) }), new NpgsqlPolygon(new NpgsqlPoint[] { new NpgsqlPoint(1, 2), new NpgsqlPoint(3, 4) }), new NpgsqlCircle(1, 2, 3)).SetName("Valid Geo Types");
+                yield return new TestCaseData(null, null, null, null, null, null, null).SetName("Null Geo Types");
+            }
+        }
+
+        [Test]
+        [TestCaseSource(nameof(PostgresGeoTypesTestCases))]
+        public async Task TestPostgresGeoTypes(NpgsqlPoint? cPoint, NpgsqlLine? cLine, NpgsqlLSeg? cLSeg, NpgsqlBox? cBox, NpgsqlPath? cPath, NpgsqlPolygon? cPolygon, NpgsqlCircle? cCircle)
+        {
+            await QuerySql.InsertPostgresGeoTypes(new QuerySql.InsertPostgresGeoTypesArgs { CPoint = cPoint, CLine = cLine, CLseg = cLSeg, CBox = cBox, CPath = cPath, CPolygon = cPolygon, CCircle = cCircle });
+            var expected = new QuerySql.GetPostgresGeoTypesRow
+            {
+                CPoint = cPoint,
+                CLine = cLine,
+                CLseg = cLSeg,
+                CBox = cBox,
+                CPath = cPath,
+                CPolygon = cPolygon,
+                CCircle = cCircle
+            };
+            var actual = await QuerySql.GetPostgresGeoTypes();
+            Assert.That(actual.Value.CPoint, Is.EqualTo(expected.CPoint));
+            Assert.That(actual.Value.CLine, Is.EqualTo(expected.CLine));
+            Assert.That(actual.Value.CLseg, Is.EqualTo(expected.CLseg));
+            Assert.That(actual.Value.CBox, Is.EqualTo(expected.CBox));
+            Assert.That(actual.Value.CPath, Is.EqualTo(expected.CPath));
+            Assert.That(actual.Value.CPolygon, Is.EqualTo(expected.CPolygon));
+            Assert.That(actual.Value.CCircle, Is.EqualTo(expected.CCircle));
+        }
+
         [Test]
         public async Task TestArray()
         {
@@ -559,7 +559,6 @@ namespace SqlcGenCsharpTests
             var bojackId = await this.QuerySql.CreateAuthorReturnId(new QuerySql.CreateAuthorReturnIdArgs { Name = "Bojack Horseman", Bio = "Back in the 90s he was in a very famous TV show" });
             var actual = await QuerySql.GetAuthorsByIdsAndNames(new QuerySql.GetAuthorsByIdsAndNamesArgs { LongArr1 = new[] { id1, bojackId }, StringArr2 = new[] { "Albert Einstein" } });
             ClassicAssert.AreEqual(1, actual.Count);
->>>>>>> origin/main
         }
     }
 }

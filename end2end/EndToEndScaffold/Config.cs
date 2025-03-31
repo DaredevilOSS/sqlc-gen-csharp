@@ -199,7 +199,6 @@ internal static class Config
                     KnownTestType.PostgresFloatingPointCopyFrom,
                     KnownTestType.PostgresDateTimeCopyFrom,
                     KnownTestType.PostgresArrayCopyFrom,
-                    KnownTestType.PostgresGeoDataTypes
                 ]
             }
         },
