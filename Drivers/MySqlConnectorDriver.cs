@@ -113,6 +113,70 @@ public partial class MySqlConnectorDriver(Options options, Dictionary<string, Ta
             .ToArray();
     }
 
+    public override MemberDeclarationSyntax[] GetMemberDeclarationsForUtils()
+    {
+        return base
+            .GetMemberDeclarationsForUtils()
+            .Append(ParseMemberDeclaration(TransformQueryForSliceArgsImpl)!)
+            .Append(ParseMemberDeclaration($$"""
+                 public class NullToStringConverter : DefaultTypeConverter
+                 {
+                     public override {{AddNullableSuffixIfNeeded("string", false)}} ConvertToString(
+                         {{AddNullableSuffixIfNeeded("object", false)}} value, IWriterRow row, MemberMapData memberMapData)
+                     {
+                         return value == null ? @"\N" : base.ConvertToString(value, row, memberMapData);
+                     }
+                 }
+                 """)!)
+            .Append(ParseMemberDeclaration($$"""
+                 public class BoolToBitConverter : DefaultTypeConverter
+                 {
+                     public override {{AddNullableSuffixIfNeeded("string", false)}} ConvertToString(
+                     {{AddNullableSuffixIfNeeded("object", false)}} value, IWriterRow row, MemberMapData memberMapData)
+                     {
+                         switch (value)
+                         {
+                             case null:
+                                 return @"\N";
+                             case bool b:
+                                 return b ? "1" : "0";
+                             default:
+                                 return base.ConvertToString(value, row, memberMapData);
+                         }
+                     }
+                 }
+                 """)!)
+            .Append(ParseMemberDeclaration($$"""
+                 public class ByteConverter : DefaultTypeConverter
+                 {
+                     public override {{AddNullableSuffixIfNeeded("string", false)}} ConvertToString(
+                     {{AddNullableSuffixIfNeeded("object", false)}} value, IWriterRow row, MemberMapData memberMapData)
+                     {
+                         if (value == null)
+                             return @"\N";
+                         if (value is byte byteVal)
+                             return System.Text.Encoding.UTF8.GetString(new byte[] { byteVal });
+                         return base.ConvertToString(value, row, memberMapData);
+                     }
+                 }
+                 """)!)
+            .Append(ParseMemberDeclaration($$"""
+                 public class ByteArrayConverter : DefaultTypeConverter
+                 {
+                     public override {{AddNullableSuffixIfNeeded("string", false)}} ConvertToString(
+                     {{AddNullableSuffixIfNeeded("object", false)}} value, IWriterRow row, MemberMapData memberMapData)
+                     {
+                         if (value == null)
+                             return @"\N";
+                         if (value is byte[] byteArray)
+                             return System.Text.Encoding.UTF8.GetString(byteArray);
+                         return base.ConvertToString(value, row, memberMapData);
+                     }
+                 }
+                 """))
+            .ToArray();
+    }
+
     public override ConnectionGenCommands EstablishConnection(Query query)
     {
         return new ConnectionGenCommands(

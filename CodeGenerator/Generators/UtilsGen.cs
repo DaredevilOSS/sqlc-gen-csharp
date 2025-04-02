@@ -29,102 +29,10 @@ internal class UtilsGen(DbDriver dbDriver, string namespaceName)
         };
     }
 
-    private MemberDeclarationSyntax GetClass()
+    private ClassDeclarationSyntax GetClass()
     {
-        // TODO move driver specific logic to DB driver interface
-        var optionalTransformQueryForSqliteBatch = dbDriver.Options.DriverName is DriverName.Sqlite
-            ? """
-              private static readonly Regex ValuesRegex = new Regex(@"VALUES\s*\((?<params>[^)]*)\)", RegexOptions.IgnoreCase);
-              
-              public static string TransformQueryForSqliteBatch(string originalSql, int cntRecords)
-              {
-                  var match = ValuesRegex.Match(originalSql);
-                  if (!match.Success)
-                      throw new ArgumentException("The query does not contain a valid VALUES clause.");
-                  
-                  var valuesParams = match.Groups["params"].Value
-                      .Split(',')
-                      .Select(p => p.Trim())
-                      .ToList();
-                  var batchRows = Enumerable.Range(0, cntRecords)
-                      .Select(i => "(" + string.Join(", ", valuesParams.Select(p => $"{p}{i}")) + ")");
-                      
-                  var batchValuesClause = "VALUES " + string.Join(",\n", batchRows);
-                  return ValuesRegex.Replace(originalSql, batchValuesClause);
-              }
-              """ :
-            string.Empty;
-
-        var optionalNullToNStringConverter = dbDriver.Options.DriverName is DriverName.MySqlConnector
-            ? $$"""
-                public class NullToStringConverter : DefaultTypeConverter
-                {
-                    public override {{dbDriver.AddNullableSuffixIfNeeded("string", false)}} ConvertToString(
-                        {{dbDriver.AddNullableSuffixIfNeeded("object", false)}} value, IWriterRow row, MemberMapData memberMapData)
-                    {
-                        return value == null ? @"\N" : base.ConvertToString(value, row, memberMapData);
-                    }
-                }
-                
-                public class BoolToBitConverter : DefaultTypeConverter
-                {
-                    public override {{dbDriver.AddNullableSuffixIfNeeded("string", false)}} ConvertToString(
-                    {{dbDriver.AddNullableSuffixIfNeeded("object", false)}} value, IWriterRow row, MemberMapData memberMapData)
-                    {
-                        switch (value)
-                        {
-                            case null:
-                                return @"\N";
-                            case bool b:
-                                return b ? "1" : "0";
-                            default:
-                                return base.ConvertToString(value, row, memberMapData);
-                        }
-                    }
-                }
-                
-                public class ByteConverter : DefaultTypeConverter
-                {
-                    public override {{dbDriver.AddNullableSuffixIfNeeded("string", false)}} ConvertToString(
-                    {{dbDriver.AddNullableSuffixIfNeeded("object", false)}} value, IWriterRow row, MemberMapData memberMapData)
-                    {
-                        if (value == null)
-                            return @"\N";
-                        if (value is byte byteVal)
-                            return System.Text.Encoding.UTF8.GetString(new byte[] { byteVal });
-                        return base.ConvertToString(value, row, memberMapData);
-                    }
-                }
-                
-                public class ByteArrayConverter : DefaultTypeConverter
-                {
-                    public override {{dbDriver.AddNullableSuffixIfNeeded("string", false)}} ConvertToString(
-                    {{dbDriver.AddNullableSuffixIfNeeded("object", false)}} value, IWriterRow row, MemberMapData memberMapData)
-                    {
-                        if (value == null)
-                            return @"\N";
-                        if (value is byte[] byteArray)
-                            return System.Text.Encoding.UTF8.GetString(byteArray);
-                        return base.ConvertToString(value, row, memberMapData);
-                    }
-                }
-                """
-            : string.Empty;
-
-        var utilsClassDeclaration = $$"""
-           public static class {{ClassName}}
-           {
-               {{optionalNullToNStringConverter}}
-
-               public static string TransformQueryForSliceArgs(string originalSql, int sliceSize, string paramName)
-               {
-                   var paramArgs = Enumerable.Range(0, sliceSize).Select(i => $"@{paramName}Arg{i}").ToList();
-                   return originalSql.Replace($"/*SLICE:{paramName}*/@{paramName}", string.Join(",", paramArgs));
-               }
-               
-               {{optionalTransformQueryForSqliteBatch}}
-           }
-           """;
-        return ParseMemberDeclaration(utilsClassDeclaration)!.NormalizeWhitespace();
+        var classDeclaration = (ClassDeclarationSyntax)ParseMemberDeclaration(
+            $$"""public static class {{ClassName}} { }""")!;
+        return classDeclaration.AddMembers(dbDriver.GetMemberDeclarationsForUtils());
     }
 }

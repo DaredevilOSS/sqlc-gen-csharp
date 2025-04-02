@@ -11,6 +11,12 @@ namespace MySqlConnectorDapperLegacyExampleGen
 
     public static class Utils
     {
+        public static string TransformQueryForSliceArgs(string originalSql, int sliceSize, string paramName)
+        {
+            var paramArgs = Enumerable.Range(0, sliceSize).Select(i => $"@{paramName}Arg{i}").ToList();
+            return originalSql.Replace($"/*SLICE:{paramName}*/@{paramName}", string.Join(",", paramArgs));
+        }
+
         public class NullToStringConverter : DefaultTypeConverter
         {
             public override string ConvertToString(object value, IWriterRow row, MemberMapData memberMapData)
@@ -57,12 +63,6 @@ namespace MySqlConnectorDapperLegacyExampleGen
                     return System.Text.Encoding.UTF8.GetString(byteArray);
                 return base.ConvertToString(value, row, memberMapData);
             }
-        }
-
-        public static string TransformQueryForSliceArgs(string originalSql, int sliceSize, string paramName)
-        {
-            var paramArgs = Enumerable.Range(0, sliceSize).Select(i => $"@{paramName}Arg{i}").ToList();
-            return originalSql.Replace($"/*SLICE:{paramName}*/@{paramName}", string.Join(",", paramArgs));
         }
     }
 }

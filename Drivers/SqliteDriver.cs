@@ -41,6 +41,35 @@ public partial class SqliteDriver(Options options, Dictionary<string, Table> tab
             .ToArray();
     }
 
+    public override MemberDeclarationSyntax[] GetMemberDeclarationsForUtils()
+    {
+        return base
+            .GetMemberDeclarationsForUtils()
+            .Append(ParseMemberDeclaration(TransformQueryForSliceArgsImpl)!)
+            .Append(ParseMemberDeclaration("""
+                   private static readonly Regex ValuesRegex = new Regex(@"VALUES\s*\((?<params>[^)]*)\)", RegexOptions.IgnoreCase);
+                   """)!)
+            .Append(ParseMemberDeclaration("""
+                   public static string TransformQueryForSqliteBatch(string originalSql, int cntRecords)
+                   {
+                       var match = ValuesRegex.Match(originalSql);
+                       if (!match.Success)
+                           throw new ArgumentException("The query does not contain a valid VALUES clause.");
+                       
+                       var valuesParams = match.Groups["params"].Value
+                           .Split(',')
+                           .Select(p => p.Trim())
+                           .ToList();
+                       var batchRows = Enumerable.Range(0, cntRecords)
+                           .Select(i => "(" + string.Join(", ", valuesParams.Select(p => $"{p}{i}")) + ")");
+                           
+                       var batchValuesClause = "VALUES " + string.Join(",\n", batchRows);
+                       return ValuesRegex.Replace(originalSql, batchValuesClause);
+                   }
+                   """)!)
+            .ToArray();
+    }
+
     public override ConnectionGenCommands EstablishConnection(Query query)
     {
         return new ConnectionGenCommands(

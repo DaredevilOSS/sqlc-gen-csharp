@@ -166,6 +166,70 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId
             .ToArray();
     }
 
+    public override UsingDirectiveSyntax[] GetUsingDirectivesForUtils()
+    {
+        return base.GetUsingDirectivesForUtils()
+            .Append(UsingDirective(ParseName("NpgsqlTypes")))
+            .AppendIf(UsingDirective(ParseName("Dapper")), Options.UseDapper)
+            .ToArray();
+    }
+
+    public override string[] GetConstructorStatements()
+    {
+        return base.GetConstructorStatements()
+            .AppendIf("Utils.ConfigureSqlMapper();", Options.UseDapper)
+            .ToArray();
+    }
+
+    public override MemberDeclarationSyntax[] GetMemberDeclarationsForUtils()
+    {
+        var memberDeclarations = base.GetMemberDeclarationsForUtils();
+        if (!Options.UseDapper)
+            return memberDeclarations;
+
+        var optionalDotnetCoreSuffix = Options.DotnetFramework.IsDotnetCore()
+            ? " where T : notnull"
+            : string.Empty;
+        var optionalDotnetCoreNullable = Options.DotnetFramework.IsDotnetCore()
+            ? "?"
+            : string.Empty;
+
+        memberDeclarations = memberDeclarations
+            .Append(ParseMemberDeclaration($$"""
+                 public class NpgsqlTypeHandler<T> : SqlMapper.TypeHandler<T>{{optionalDotnetCoreSuffix}}
+                 {
+                     public override T Parse(object value)
+                     {
+                         return (T)value;
+                     }
+                     
+                     public override void SetValue(IDbDataParameter parameter, T{{optionalDotnetCoreNullable}} value)
+                     {
+                         parameter.Value = value;
+                     }
+                 }
+                 """))
+            .Append(ParseMemberDeclaration($$"""
+                 private static void RegisterNpgsqlTypeHandler<T>(){{optionalDotnetCoreSuffix}}
+                 {
+                    SqlMapper.AddTypeHandler(typeof(T), new NpgsqlTypeHandler<T>());
+                 }
+                 """)!)
+            .Append(ParseMemberDeclaration("""
+                 public static void ConfigureSqlMapper()
+                 {
+                     RegisterNpgsqlTypeHandler<NpgsqlPoint>();
+                     RegisterNpgsqlTypeHandler<NpgsqlLine>();
+                     RegisterNpgsqlTypeHandler<NpgsqlLSeg>();
+                     RegisterNpgsqlTypeHandler<NpgsqlBox>();
+                     RegisterNpgsqlTypeHandler<NpgsqlPath>();
+                     RegisterNpgsqlTypeHandler<NpgsqlPolygon>();
+                     RegisterNpgsqlTypeHandler<NpgsqlCircle>();
+                 }
+               """)!)
+            .ToArray();
+        return memberDeclarations;
+    }
 
     // TODO different operations require different types of connections - improve code and docs to make it clearer
     public override ConnectionGenCommands EstablishConnection(Query query)

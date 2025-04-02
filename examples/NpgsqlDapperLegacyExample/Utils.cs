@@ -5,13 +5,38 @@ namespace NpgsqlDapperLegacyExampleGen
     using System.Data;
     using System.Linq;
     using System.Text.RegularExpressions;
+    using NpgsqlTypes;
+    using Dapper;
 
     public static class Utils
     {
-        public static string TransformQueryForSliceArgs(string originalSql, int sliceSize, string paramName)
+        public class NpgsqlTypeHandler<T> : SqlMapper.TypeHandler<T>
         {
-            var paramArgs = Enumerable.Range(0, sliceSize).Select(i => $"@{paramName}Arg{i}").ToList();
-            return originalSql.Replace($"/*SLICE:{paramName}*/@{paramName}", string.Join(",", paramArgs));
+            public override T Parse(object value)
+            {
+                return (T)value;
+            }
+
+            public override void SetValue(IDbDataParameter parameter, T value)
+            {
+                parameter.Value = value;
+            }
+        }
+
+        private static void RegisterNpgsqlTypeHandler<T>()
+        {
+            SqlMapper.AddTypeHandler(typeof(T), new NpgsqlTypeHandler<T>());
+        }
+
+        public static void ConfigureSqlMapper()
+        {
+            RegisterNpgsqlTypeHandler<NpgsqlPoint>();
+            RegisterNpgsqlTypeHandler<NpgsqlLine>();
+            RegisterNpgsqlTypeHandler<NpgsqlLSeg>();
+            RegisterNpgsqlTypeHandler<NpgsqlBox>();
+            RegisterNpgsqlTypeHandler<NpgsqlPath>();
+            RegisterNpgsqlTypeHandler<NpgsqlPolygon>();
+            RegisterNpgsqlTypeHandler<NpgsqlCircle>();
         }
     }
 }

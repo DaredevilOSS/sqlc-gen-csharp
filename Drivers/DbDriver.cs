@@ -42,6 +42,14 @@ public abstract class DbDriver
 
     protected abstract List<ColumnMapping> ColumnMappings { get; }
 
+    protected const string TransformQueryForSliceArgsImpl = """
+           public static string TransformQueryForSliceArgs(string originalSql, int sliceSize, string paramName)
+           {
+               var paramArgs = Enumerable.Range(0, sliceSize).Select(i => $"@{paramName}Arg{i}").ToList();
+               return originalSql.Replace($"/*SLICE:{paramName}*/@{paramName}", string.Join(",", paramArgs));
+           }
+           """;
+
     protected DbDriver(Options options, Dictionary<string, Table> tables, Dictionary<string, Plugin.Enum> enums)
     {
         Options = options;
@@ -87,14 +95,31 @@ public abstract class DbDriver
 
     public virtual UsingDirectiveSyntax[] GetUsingDirectivesForUtils()
     {
-        return
-        [
+        var usingDirectives = new List<UsingDirectiveSyntax>
+        {
             UsingDirective(ParseName("System")),
             UsingDirective(ParseName("System.Data")),
             UsingDirective(ParseName("System.Linq")),
             UsingDirective(ParseName("System.Text.RegularExpressions"))
-        ];
+        };
+        return usingDirectives.ToArray();
     }
+
+    public virtual string[] GetConstructorStatements()
+    {
+        return new List<string>
+        {
+            $"this.{Variable.ConnectionString.AsPropertyName()} = {Variable.ConnectionString.AsVarName()};"
+        }
+        .AppendIf("Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;", Options.UseDapper)
+        .ToArray();
+    }
+
+    public virtual MemberDeclarationSyntax[] GetMemberDeclarationsForUtils()
+    {
+        return [];
+    }
+
 
     public string AddNullableSuffixIfNeeded(string csharpType, bool notNull)
     {

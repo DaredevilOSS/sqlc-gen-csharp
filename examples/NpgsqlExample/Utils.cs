@@ -3,13 +3,9 @@ using System;
 using System.Data;
 using System.Linq;
 using System.Text.RegularExpressions;
+using NpgsqlTypes;
 
 namespace NpgsqlExampleGen;
 public static class Utils
 {
-    public static string TransformQueryForSliceArgs(string originalSql, int sliceSize, string paramName)
-    {
-        var paramArgs = Enumerable.Range(0, sliceSize).Select(i => $"@{paramName}Arg{i}").ToList();
-        return originalSql.Replace($"/*SLICE:{paramName}*/@{paramName}", string.Join(",", paramArgs));
-    }
 }
