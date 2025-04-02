@@ -42,7 +42,7 @@ public abstract class DbDriver
         }
     }
 
-    public virtual UsingDirectiveSyntax[] GetUsingDirectives()
+    public virtual UsingDirectiveSyntax[] GetUsingDirectivesForQueries()
     {
         var usingDirectives = new List<UsingDirectiveSyntax>
         {
@@ -54,6 +54,16 @@ public abstract class DbDriver
         if (Options.UseDapper)
             usingDirectives.Add(UsingDirective(ParseName("Dapper")));
         return usingDirectives.ToArray();
+    }
+
+    public virtual UsingDirectiveSyntax[] GetUsingDirectivesForModels()
+    {
+        return
+        [
+            UsingDirective(ParseName("System")),
+            UsingDirective(ParseName("System.Collections.Generic")),
+            UsingDirective(ParseName("System.Linq"))
+        ];
     }
 
     public string AddNullableSuffixIfNeeded(string csharpType, bool notNull)

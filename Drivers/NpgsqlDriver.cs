@@ -148,14 +148,24 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId
             }, ordinal => $"reader.GetFieldValue<NpgsqlCircle>({ordinal})")
     ];
 
-    public override UsingDirectiveSyntax[] GetUsingDirectives()
+    public override UsingDirectiveSyntax[] GetUsingDirectivesForQueries()
     {
-        return base.GetUsingDirectives()
-            .Append(UsingDirective(ParseName("Npgsql")))
+        return base.GetUsingDirectivesForQueries()
+            .Concat(
+            [
+                UsingDirective(ParseName("Npgsql")),
+                UsingDirective(ParseName("NpgsqlTypes")),
+                UsingDirective(ParseName("System.Data"))
+            ]).ToArray();
+    }
+
+    public override UsingDirectiveSyntax[] GetUsingDirectivesForModels()
+    {
+        return base.GetUsingDirectivesForModels()
             .Append(UsingDirective(ParseName("NpgsqlTypes")))
-            .Append(UsingDirective(ParseName("System.Data")))
             .ToArray();
     }
+
 
     // TODO different operations require different types of connections - improve code and docs to make it clearer
     public override ConnectionGenCommands EstablishConnection(Query query)

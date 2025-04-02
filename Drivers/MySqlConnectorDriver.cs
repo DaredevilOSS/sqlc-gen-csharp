@@ -85,9 +85,9 @@ public partial class MySqlConnectorDriver(Options options, Dictionary<string, Ta
             }, ordinal => $"reader.GetDecimal({ordinal})")
     ];
 
-    public override UsingDirectiveSyntax[] GetUsingDirectives()
+    public override UsingDirectiveSyntax[] GetUsingDirectivesForQueries()
     {
-        return base.GetUsingDirectives()
+        return base.GetUsingDirectivesForQueries()
             .Concat(
             [
                 UsingDirective(ParseName("MySqlConnector")),

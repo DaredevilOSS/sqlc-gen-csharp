@@ -34,9 +34,9 @@ public partial class SqliteDriver(Options options, Dictionary<string, Table> tab
             }, ordinal => $"reader.GetDecimal({ordinal})"),
     ];
 
-    public override UsingDirectiveSyntax[] GetUsingDirectives()
+    public override UsingDirectiveSyntax[] GetUsingDirectivesForQueries()
     {
-        return base.GetUsingDirectives()
+        return base.GetUsingDirectivesForQueries()
             .Append(UsingDirective(ParseName("Microsoft.Data.Sqlite")))
             .ToArray();
     }

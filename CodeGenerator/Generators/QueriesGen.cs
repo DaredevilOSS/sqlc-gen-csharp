@@ -50,7 +50,7 @@ internal class QueriesGen(DbDriver dbDriver, string namespaceName)
     private (IList<UsingDirectiveSyntax>, MemberDeclarationSyntax) GenerateClass(IEnumerable<Query> queries,
         string className)
     {
-        var usingDirectives = dbDriver.GetUsingDirectives();
+        var usingDirectives = dbDriver.GetUsingDirectivesForQueries();
         var classMembers = queries.SelectMany(GetMembersForSingleQuery);
         if (dbDriver.Options.DriverName == DriverName.Npgsql && dbDriver.Options.UseDapper)
             classMembers = classMembers.Concat(GetPostgresConstMembers());
