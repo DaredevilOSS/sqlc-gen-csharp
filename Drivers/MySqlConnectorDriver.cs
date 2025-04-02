@@ -101,6 +101,18 @@ public partial class MySqlConnectorDriver(Options options, Dictionary<string, Ta
             .ToArray();
     }
 
+    public override UsingDirectiveSyntax[] GetUsingDirectivesForUtils()
+    {
+        return base.GetUsingDirectivesForUtils()
+            .Concat(
+            [
+                UsingDirective(ParseName("CsvHelper.TypeConversion")),
+                UsingDirective(ParseName("CsvHelper")),
+                UsingDirective(ParseName("CsvHelper.Configuration"))
+            ])
+            .ToArray();
+    }
+
     public override ConnectionGenCommands EstablishConnection(Query query)
     {
         return new ConnectionGenCommands(

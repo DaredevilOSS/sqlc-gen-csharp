@@ -19,7 +19,26 @@ public abstract class DbDriver
 
     private HashSet<string> NullableTypesInDotnetCore { get; } = ["string", "object", "byte[]"]; // TODO add arrays in here in a non hard-coded manner
 
-    private HashSet<string> NullableTypes { get; } = ["bool", "byte", "short", "int", "long", "float", "double", "decimal", "DateTime", "TimeSpan", "NpgsqlPoint", "NpgsqlLine", "NpgsqlLSeg", "NpgsqlBox", "NpgsqlPath", "NpgsqlPolygon", "NpgsqlCircle"];
+    private HashSet<string> NullableTypes { get; } =
+    [
+        "bool",
+        "byte",
+        "short",
+        "int",
+        "long",
+        "float",
+        "double",
+        "decimal",
+        "DateTime",
+        "TimeSpan",
+        "NpgsqlPoint",
+        "NpgsqlLine",
+        "NpgsqlLSeg",
+        "NpgsqlBox",
+        "NpgsqlPath",
+        "NpgsqlPolygon",
+        "NpgsqlCircle"
+    ];
 
     protected abstract List<ColumnMapping> ColumnMappings { get; }
 
@@ -63,6 +82,17 @@ public abstract class DbDriver
             UsingDirective(ParseName("System")),
             UsingDirective(ParseName("System.Collections.Generic")),
             UsingDirective(ParseName("System.Linq"))
+        ];
+    }
+
+    public virtual UsingDirectiveSyntax[] GetUsingDirectivesForUtils()
+    {
+        return
+        [
+            UsingDirective(ParseName("System")),
+            UsingDirective(ParseName("System.Data")),
+            UsingDirective(ParseName("System.Linq")),
+            UsingDirective(ParseName("System.Text.RegularExpressions"))
         ];
     }
 
