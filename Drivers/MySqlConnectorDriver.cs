@@ -272,16 +272,7 @@ public partial class MySqlConnectorDriver(Options options, Dictionary<string, Ta
                     {{csvWriterVar}}.Context.TypeConverterOptionsCache.AddOptions<DateTime>({{optionsVar}});
                     {{csvWriterVar}}.Context.TypeConverterOptionsCache.AddOptions<DateTime?>({{optionsVar}});
                     {{GetBoolAndByteConverters().JoinByNewLine()}}
-                    {{GetNullConverter("short")}}
-                    {{GetNullConverter("int")}}
-                    {{GetNullConverter("long")}}
-                    {{GetNullConverter("float")}}
-                    {{GetNullConverter("decimal")}}
-                    {{GetNullConverter("double")}}
-                    {{GetNullConverter("DateTime")}}
-                    {{GetNullConverter("string")}}
-                    {{GetNullConverter("object")}}
-                    {{Enums.Select(e => GetNullConverter(e.Key.ToModelName())).JoinByNewLine()}}
+                    {{GetCsvNullConverters().JoinByNewLine()}}
                     await {{csvWriterVar}}.WriteRecordsAsync({{Variable.Args.AsVarName()}});
                  }
                  
@@ -305,10 +296,30 @@ public partial class MySqlConnectorDriver(Options options, Dictionary<string, Ta
                  }
                  """;
 
-        string GetNullConverter(string csharpType)
+        string GetCsvNullConverter(string csharpType)
         {
             var nullableCsharpType = AddNullableSuffixIfNeeded(csharpType, false);
             return $"{csvWriterVar}.Context.TypeConverterCache.AddConverter<{nullableCsharpType}>({nullConverterFn});";
+        }
+
+        string[] GetCsvNullConverters()
+        {
+            var primitivesConverters = new List<string>
+            {
+                GetCsvNullConverter("short"),
+                GetCsvNullConverter("int"),
+                GetCsvNullConverter("long"),
+                GetCsvNullConverter("float"),
+                GetCsvNullConverter("decimal"),
+                GetCsvNullConverter("double"),
+                GetCsvNullConverter("DateTime"),
+                GetCsvNullConverter("string"),
+                GetCsvNullConverter("object")
+            };
+            var enumConverters = Enums.Select(e => 
+                GetCsvNullConverter(e.Key.ToModelName()));
+
+            return primitivesConverters.Concat(enumConverters).ToArray();
         }
 
         IEnumerable<string> GetBoolAndByteConverters()
