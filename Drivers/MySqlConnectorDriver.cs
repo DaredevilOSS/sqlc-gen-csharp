@@ -101,6 +101,17 @@ public partial class MySqlConnectorDriver(Options options, Dictionary<string, Ta
             .ToArray();
     }
 
+    public override UsingDirectiveSyntax[] GetUsingDirectivesForModels()
+    {
+        return base.GetUsingDirectivesForModels()
+            .Concat(
+            [
+                UsingDirective(ParseName("System")),
+                UsingDirective(ParseName("System.Collections.Generic"))
+            ])
+            .ToArray();
+    }
+
     public override UsingDirectiveSyntax[] GetUsingDirectivesForUtils()
     {
         return base.GetUsingDirectivesForUtils()
@@ -316,7 +327,7 @@ public partial class MySqlConnectorDriver(Options options, Dictionary<string, Ta
                 GetCsvNullConverter("string"),
                 GetCsvNullConverter("object")
             };
-            var enumConverters = Enums.Select(e => 
+            var enumConverters = Enums.Select(e =>
                 GetCsvNullConverter(e.Key.ToModelName()));
 
             return primitivesConverters.Concat(enumConverters).ToArray();

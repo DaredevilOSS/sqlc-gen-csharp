@@ -41,6 +41,18 @@ public partial class SqliteDriver(Options options, Dictionary<string, Table> tab
             .ToArray();
     }
 
+    public override UsingDirectiveSyntax[] GetUsingDirectivesForUtils()
+    {
+        return base.GetUsingDirectivesForUtils()
+            .Concat(
+                [
+                    UsingDirective(ParseName("System")),
+                    UsingDirective(ParseName("System.Linq")),
+                    UsingDirective(ParseName("System.Text.RegularExpressions"))
+                ])
+            .ToArray();
+    }
+
     public override MemberDeclarationSyntax[] GetMemberDeclarationsForUtils()
     {
         return base

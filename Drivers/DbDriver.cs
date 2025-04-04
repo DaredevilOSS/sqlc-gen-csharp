@@ -71,38 +71,27 @@ public abstract class DbDriver
 
     public virtual UsingDirectiveSyntax[] GetUsingDirectivesForQueries()
     {
-        var usingDirectives = new List<UsingDirectiveSyntax>
-        {
-            UsingDirective(ParseName("System")),
-            UsingDirective(ParseName("System.Collections.Generic")),
-            UsingDirective(ParseName("System.Threading.Tasks"))
-        };
-
-        if (Options.UseDapper)
-            usingDirectives.Add(UsingDirective(ParseName("Dapper")));
-        return usingDirectives.ToArray();
+        return new List<UsingDirectiveSyntax>
+            {
+                UsingDirective(ParseName("System")),
+                UsingDirective(ParseName("System.Collections.Generic")),
+                UsingDirective(ParseName("System.Threading.Tasks"))
+            }
+            .AppendIf(UsingDirective(ParseName("Dapper")), Options.UseDapper)
+            .ToArray();
     }
 
     public virtual UsingDirectiveSyntax[] GetUsingDirectivesForModels()
     {
-        return
-        [
-            UsingDirective(ParseName("System")),
-            UsingDirective(ParseName("System.Collections.Generic")),
-            UsingDirective(ParseName("System.Linq"))
-        ];
+        return [];
     }
 
     public virtual UsingDirectiveSyntax[] GetUsingDirectivesForUtils()
     {
-        var usingDirectives = new List<UsingDirectiveSyntax>
-        {
-            UsingDirective(ParseName("System")),
-            UsingDirective(ParseName("System.Data")),
-            UsingDirective(ParseName("System.Linq")),
-            UsingDirective(ParseName("System.Text.RegularExpressions"))
-        };
-        return usingDirectives.ToArray();
+        return
+        [
+            UsingDirective(ParseName("System.Linq"))
+        ];
     }
 
     public virtual string[] GetConstructorStatements()
@@ -195,7 +184,6 @@ public abstract class DbDriver
 
     public abstract string CreateSqlCommand(string sqlTextConstant);
 
-    // TODO move out from driver + rename
     public bool IsTypeNullable(string csharpType)
     {
         if (NullableTypes.Contains(csharpType.Replace("?", ""))) return true;

@@ -162,14 +162,22 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId
     public override UsingDirectiveSyntax[] GetUsingDirectivesForModels()
     {
         return base.GetUsingDirectivesForModels()
-            .Append(UsingDirective(ParseName("NpgsqlTypes")))
+            .Concat(
+            [
+                UsingDirective(ParseName("NpgsqlTypes")),
+                UsingDirective(ParseName("System"))
+            ])
             .ToArray();
     }
 
     public override UsingDirectiveSyntax[] GetUsingDirectivesForUtils()
     {
         return base.GetUsingDirectivesForUtils()
-            .Append(UsingDirective(ParseName("NpgsqlTypes")))
+            .Concat(
+            [
+                UsingDirective(ParseName("NpgsqlTypes")),
+                UsingDirective(ParseName("System.Data"))
+            ])
             .AppendIf(UsingDirective(ParseName("Dapper")), Options.UseDapper)
             .ToArray();
     }
