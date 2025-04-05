@@ -121,7 +121,7 @@ public class CodeGeneratorTests
         var fileGenerated = response.Result.Files.Any(f => f.Name == "Utils.cs");
         Assert.That(fileGenerated, Is.False);
     }
-    
+
     [Test]
     public void TestSqliteCopyFromGenerateUtilsMembers()
     {
@@ -182,7 +182,7 @@ public class CodeGeneratorTests
             });
         }
     }
-    
+
     [Test]
     public void TestMysqlCopyFromGenerateUtilsMembers()
     {
@@ -193,7 +193,7 @@ public class CodeGeneratorTests
             MySqlConnectorDriver.ByteCsvConverter,
             MySqlConnectorDriver.ByteArrayCsvConverter
         };
-        
+
         // data
         var dummyColumn = new Column { Name = "col_1", Type = new Identifier { Name = "text" } };
         var query = new Query
@@ -239,7 +239,7 @@ public class CodeGeneratorTests
             }).Count();
         }
     }
-        
+
     [Test]
     public void TestSliceQueryGenerateUtilsMembers()
     {
