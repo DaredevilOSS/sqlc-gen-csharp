@@ -19,7 +19,7 @@ public class QuerySql
     {
         this.ConnectionString = connectionString;
         Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
-        ConfigureSqlMapper();
+        Utils.ConfigureSqlMapper();
     }
 
     private string ConnectionString { get; }
@@ -589,35 +589,5 @@ public class QuerySql
         {
             await connection.ExecuteAsync(TruncatePostgresGeoTypesSql);
         }
-    }
-
-    private void ConfigureSqlMapper()
-    {
-        RegisterNpgsqlTypeHandler<NpgsqlPoint>();
-        RegisterNpgsqlTypeHandler<NpgsqlLine>();
-        RegisterNpgsqlTypeHandler<NpgsqlLSeg>();
-        RegisterNpgsqlTypeHandler<NpgsqlBox>();
-        RegisterNpgsqlTypeHandler<NpgsqlPath>();
-        RegisterNpgsqlTypeHandler<NpgsqlPolygon>();
-        RegisterNpgsqlTypeHandler<NpgsqlCircle>();
-    }
-
-    public class NpgsqlTypeHandler<T> : SqlMapper.TypeHandler<T> where T : notnull
-    {
-        public override T Parse(object value)
-        {
-            return (T)value;
-        }
-
-        public override void SetValue(IDbDataParameter parameter, T? value)
-        {
-            parameter.Value = value;
-        }
-    }
-
-    private void RegisterNpgsqlTypeHandler<T>()
-        where T : notnull
-    {
-        SqlMapper.AddTypeHandler(typeof(T), new NpgsqlTypeHandler<T>());
     }
 }

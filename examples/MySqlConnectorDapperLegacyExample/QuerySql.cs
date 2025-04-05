@@ -473,7 +473,7 @@ namespace MySqlConnectorDapperLegacyExampleGen
                 Delimiter = ",",
                 NewLine = "\n"
             };
-            var nullConverterFn = new Utils.NullToStringConverter();
+            var nullConverterFn = new Utils.NullToStringCsvConverter();
             using (var writer = new StreamWriter("input.csv", false, new UTF8Encoding(false)))
             using (var csvWriter = new CsvWriter(writer, config))
             {
@@ -486,11 +486,11 @@ namespace MySqlConnectorDapperLegacyExampleGen
                 };
                 csvWriter.Context.TypeConverterOptionsCache.AddOptions<DateTime>(options);
                 csvWriter.Context.TypeConverterOptionsCache.AddOptions<DateTime?>(options);
-                csvWriter.Context.TypeConverterCache.AddConverter<bool>(new Utils.BoolToBitConverter());
-                csvWriter.Context.TypeConverterCache.AddConverter<bool?>(new Utils.BoolToBitConverter());
-                csvWriter.Context.TypeConverterCache.AddConverter<byte>(new Utils.ByteConverter());
-                csvWriter.Context.TypeConverterCache.AddConverter<byte?>(new Utils.ByteConverter());
-                csvWriter.Context.TypeConverterCache.AddConverter<byte[]>(new Utils.ByteArrayConverter());
+                csvWriter.Context.TypeConverterCache.AddConverter<bool>(new Utils.BoolToBitCsvConverter());
+                csvWriter.Context.TypeConverterCache.AddConverter<bool?>(new Utils.BoolToBitCsvConverter());
+                csvWriter.Context.TypeConverterCache.AddConverter<byte>(new Utils.ByteCsvConverter());
+                csvWriter.Context.TypeConverterCache.AddConverter<byte?>(new Utils.ByteCsvConverter());
+                csvWriter.Context.TypeConverterCache.AddConverter<byte[]>(new Utils.ByteArrayCsvConverter());
                 csvWriter.Context.TypeConverterCache.AddConverter<short?>(nullConverterFn);
                 csvWriter.Context.TypeConverterCache.AddConverter<int?>(nullConverterFn);
                 csvWriter.Context.TypeConverterCache.AddConverter<long?>(nullConverterFn);

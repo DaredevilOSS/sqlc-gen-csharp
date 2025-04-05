@@ -22,6 +22,7 @@
         <PackageReference Include="NUnit" Version="3.14.0"/>
         <PackageReference Include="NUnit.Analyzers" Version="3.9.0"/>
         <PackageReference Include="NUnit3TestAdapter" Version="4.5.0"/>
+        <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.9.2"/>
     </ItemGroup>
 
     <ItemGroup>
@@ -30,6 +31,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\CodeGenerator\CodeGenerator.csproj" />
+        <ProjectReference Include="..\Drivers\Drivers.csproj" />
       <ProjectReference Include="..\GeneratedProtobuf\GeneratedProtobuf.csproj" />
     </ItemGroup>
 
