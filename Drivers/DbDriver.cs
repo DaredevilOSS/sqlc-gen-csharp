@@ -228,4 +228,12 @@ public abstract class DbDriver
             queryParam.Column.Name = $"{GetCsharpType(queryParam.Column).Replace("[]", "Arr")}_{queryParam.Number}";
         return queryParam.Column;
     }
+
+    protected bool SliceQueryExists()
+    {
+        return Queries.Any(q =>
+        {
+            return q.Params.Any(p => p.Column.IsSqlcSlice);
+        });
+    }
 }

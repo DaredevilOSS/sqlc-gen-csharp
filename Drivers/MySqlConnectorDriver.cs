@@ -132,7 +132,7 @@ public partial class MySqlConnectorDriver(
     {
         return base
             .GetMemberDeclarationsForUtils()
-            .Append(ParseMemberDeclaration(TransformQueryForSliceArgsImpl)!)
+            .AppendIf(ParseMemberDeclaration(TransformQueryForSliceArgsImpl)!, SliceQueryExists())
             .Append(ParseMemberDeclaration($$"""
                  public class NullToStringConverter : DefaultTypeConverter
                  {
