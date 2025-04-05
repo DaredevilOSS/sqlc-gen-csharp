@@ -113,7 +113,7 @@ public class CodeGenerator
         var files = fileQueries
             .Select(fq => QueriesGen.GenerateFile(fq.Value, fq.Key))
             .Append(ModelsGen.GenerateFile(Tables, Enums))
-            .Append(UtilsGen.GenerateFile())
+            .AppendIfNotNull(UtilsGen.GenerateFile())
             .AppendIf(CsprojGen.GenerateFile(), Options.GenerateCsproj);
 
         return Task.FromResult(new GenerateResponse { Files = { files } });
