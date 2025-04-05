@@ -9,8 +9,12 @@ using OneDeclareGen = SqlcGenCsharp.Drivers.Generators.OneDeclareGen;
 
 namespace SqlcGenCsharp.Drivers;
 
-public partial class MySqlConnectorDriver(Options options, Dictionary<string, Table> tables, Dictionary<string, Enum> enums) :
-    DbDriver(options, tables, enums), IOne, IMany, IExec, IExecRows, IExecLastId, ICopyFrom
+public partial class MySqlConnectorDriver(
+    Options options,
+    Dictionary<string, Table> tables,
+    Dictionary<string, Enum> enums,
+    IList<Query> queries) :
+    DbDriver(options, tables, enums, queries), IOne, IMany, IExec, IExecRows, IExecLastId, ICopyFrom
 {
     protected override List<ColumnMapping> ColumnMappings { get; } =
     [

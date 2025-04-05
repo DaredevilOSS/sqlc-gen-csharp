@@ -8,8 +8,12 @@ using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace SqlcGenCsharp.Drivers;
 
-public partial class SqliteDriver(Options options, Dictionary<string, Table> tables, Dictionary<string, Enum> enums) :
-    DbDriver(options, tables, enums), IOne, IMany, IExec, IExecRows, IExecLastId, ICopyFrom
+public partial class SqliteDriver(
+    Options options,
+    Dictionary<string, Table> tables,
+    Dictionary<string, Enum> enums,
+    IList<Query> queries) :
+    DbDriver(options, tables, enums, queries), IOne, IMany, IExec, IExecRows, IExecLastId, ICopyFrom
 {
     protected override List<ColumnMapping> ColumnMappings { get; } = [
         new("byte[]", new Dictionary<string, DbTypeInfo>
@@ -55,9 +59,15 @@ public partial class SqliteDriver(Options options, Dictionary<string, Table> tab
 
     public override MemberDeclarationSyntax[] GetMemberDeclarationsForUtils()
     {
-        return base
+        var memberDeclarations = base
             .GetMemberDeclarationsForUtils()
-            .Append(ParseMemberDeclaration(TransformQueryForSliceArgsImpl)!)
+            .Append(ParseMemberDeclaration(TransformQueryForSliceArgsImpl)!);
+
+        var batchQueryExists = Queries.Any(q => q.Cmd is ":copyfrom");
+        if (!batchQueryExists)
+            return memberDeclarations.ToArray();
+
+        return memberDeclarations
             .Append(ParseMemberDeclaration("""
                    private static readonly Regex ValuesRegex = new Regex(@"VALUES\s*\((?<params>[^)]*)\)", RegexOptions.IgnoreCase);
                    """)!)

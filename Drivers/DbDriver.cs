@@ -17,6 +17,8 @@ public abstract class DbDriver
 
     public Dictionary<string, Plugin.Enum> Enums { get; }
 
+    protected IList<Query> Queries { get; }
+
     private HashSet<string> NullableTypesInDotnetCore { get; } = ["string", "object", "byte[]"]; // TODO add arrays in here in a non hard-coded manner
 
     private HashSet<string> NullableTypes { get; } =
@@ -50,11 +52,16 @@ public abstract class DbDriver
            }
            """;
 
-    protected DbDriver(Options options, Dictionary<string, Table> tables, Dictionary<string, Plugin.Enum> enums)
+    protected DbDriver(
+        Options options,
+        Dictionary<string, Table> tables,
+        Dictionary<string, Plugin.Enum> enums,
+        IList<Query> queries)
     {
         Options = options;
         Tables = tables;
         Enums = enums;
+        Queries = queries;
 
         foreach (var e in Enums)
         {
