@@ -2,6 +2,7 @@ using Google.Protobuf;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Plugin;
 using SqlcGenCsharp;
+using SqlcGenCsharp.Drivers;
 using System.Text;
 using System.Xml;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
@@ -103,6 +104,25 @@ public class CodeGeneratorTests
     }
 
     [Test]
+    public void TestNoQueriesDoesNotGenerateUtilsFile()
+    {
+        // data
+        var request = new GenerateRequest
+        {
+            Settings = _sqliteSettings,
+            Catalog = _emptyCatalog,
+            PluginOptions = ByteString.CopyFrom("{}", Encoding.UTF8)
+        };
+
+        // execute
+        var response = CodeGenerator.Generate(request);
+
+        // assert
+        var fileGenerated = response.Result.Files.Any(f => f.Name == "Utils.cs");
+        Assert.That(fileGenerated, Is.False);
+    }
+    
+    [Test]
     public void TestSqliteCopyFromGenerateUtilsMembers()
     {
         // data
@@ -162,17 +182,25 @@ public class CodeGeneratorTests
             });
         }
     }
-
+    
     [Test]
-    public void TestSqliteMissingCopyFromDoesNotGenerateUtilsMembers()
+    public void TestMysqlCopyFromGenerateUtilsMembers()
     {
+        var csvConverters = new HashSet<string>
+        {
+            MySqlConnectorDriver.NullToStringCsvConverter,
+            MySqlConnectorDriver.BoolToBitCsvConverter,
+            MySqlConnectorDriver.ByteCsvConverter,
+            MySqlConnectorDriver.ByteArrayCsvConverter
+        };
+        
         // data
         var dummyColumn = new Column { Name = "col_1", Type = new Identifier { Name = "text" } };
         var query = new Query
         {
             Filename = "query.sql",
-            Cmd = ":one",
-            Name = "OneQuery",
+            Cmd = ":copyfrom",
+            Name = "CopyFromQuery",
             Columns = { dummyColumn },
             Params = { new Parameter { Column = dummyColumn } },
             InsertIntoTable = new Identifier { Name = "tab_1" }
@@ -180,7 +208,7 @@ public class CodeGeneratorTests
 
         var request = new GenerateRequest
         {
-            Settings = _sqliteSettings,
+            Settings = _mysqlSettings,
             Catalog = _emptyCatalog,
             Queries = { query },
             PluginOptions = ByteString.CopyFrom("{}", Encoding.UTF8)
@@ -189,11 +217,29 @@ public class CodeGeneratorTests
         // execute
         var response = CodeGenerator.Generate(request);
 
-        // assert
-        var fileGenerated = response.Result.Files.Any(f => f.Name == "Utils.cs");
-        Assert.That(fileGenerated, Is.False);
-    }
+        // assertions
+        var generatedFile = response.Result.Files.First(f => f.Name == "Utils.cs");
+        Assert.That(generatedFile, Is.Not.Null);
 
+        var generatedFileContents = generatedFile.Contents.ToStringUtf8();
+        var utilsCode = ParseCompilationUnit(generatedFileContents);
+        var members = utilsCode.DescendantNodes().OfType<MemberDeclarationSyntax>().ToList();
+
+        var cntCsvConverters = CountCsvConverters();
+        Assert.That(cntCsvConverters, Is.EqualTo(csvConverters.Count));
+        return;
+
+        int CountCsvConverters()
+        {
+            return members.FindAll(x =>
+            {
+                if (x is ClassDeclarationSyntax f)
+                    return csvConverters.Contains(f.Identifier.Text);
+                return false;
+            }).Count();
+        }
+    }
+        
     [Test]
     public void TestSliceQueryGenerateUtilsMembers()
     {
@@ -249,42 +295,5 @@ public class CodeGeneratorTests
                 return false;
             });
         }
-    }
-
-    [Test]
-    public void TestMissingSliceQueryNotGenerateUtilsMembers()
-    {
-        // data
-        var dummyColumn = new Column { Name = "col_1", Type = new Identifier { Name = "text" } };
-        var query = new Query
-        {
-            Filename = "query.sql",
-            Cmd = ":one",
-            Name = "QueryWithSlice",
-            Columns = { dummyColumn },
-            Params =
-            {
-                new Parameter
-                {
-                    Column = dummyColumn
-                }
-            },
-            InsertIntoTable = new Identifier { Name = "tab_1" }
-        };
-
-        var request = new GenerateRequest
-        {
-            Settings = _sqliteSettings,
-            Catalog = _emptyCatalog,
-            Queries = { query },
-            PluginOptions = ByteString.CopyFrom("{}", Encoding.UTF8)
-        };
-
-        // execute
-        var response = CodeGenerator.Generate(request);
-
-        // assertions
-        var fileGenerated = response.Result.Files.Any(f => f.Name == "Utils.cs");
-        Assert.That(fileGenerated, Is.False);
     }
 }

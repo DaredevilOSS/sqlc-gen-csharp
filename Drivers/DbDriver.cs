@@ -236,4 +236,9 @@ public abstract class DbDriver
             return q.Params.Any(p => p.Column.IsSqlcSlice);
         });
     }
+
+    protected bool BatchQueryExists()
+    {
+        return Queries.Any(q => q.Cmd is ":copyfrom");
+    }
 }

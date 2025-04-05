@@ -63,8 +63,7 @@ public partial class SqliteDriver(
             .GetMemberDeclarationsForUtils()
             .AppendIf(ParseMemberDeclaration(TransformQueryForSliceArgsImpl)!, SliceQueryExists());
 
-        var batchQueryExists = Queries.Any(q => q.Cmd is ":copyfrom");
-        if (!batchQueryExists)
+        if (!BatchQueryExists())
             return memberDeclarations.ToArray();
 
         return memberDeclarations

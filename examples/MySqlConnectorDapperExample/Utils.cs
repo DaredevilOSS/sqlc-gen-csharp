@@ -13,7 +13,7 @@ public static class Utils
         return originalSql.Replace($"/*SLICE:{paramName}*/@{paramName}", string.Join(",", paramArgs));
     }
 
-    public class NullToStringConverter : DefaultTypeConverter
+    public class NullToStringCsvConverter : DefaultTypeConverter
     {
         public override string? ConvertToString(object? value, IWriterRow row, MemberMapData memberMapData)
         {
@@ -21,7 +21,7 @@ public static class Utils
         }
     }
 
-    public class BoolToBitConverter : DefaultTypeConverter
+    public class BoolToBitCsvConverter : DefaultTypeConverter
     {
         public override string? ConvertToString(object? value, IWriterRow row, MemberMapData memberMapData)
         {
@@ -37,7 +37,7 @@ public static class Utils
         }
     }
 
-    public class ByteConverter : DefaultTypeConverter
+    public class ByteCsvConverter : DefaultTypeConverter
     {
         public override string? ConvertToString(object? value, IWriterRow row, MemberMapData memberMapData)
         {
@@ -49,7 +49,7 @@ public static class Utils
         }
     }
 
-    public class ByteArrayConverter : DefaultTypeConverter
+    public class ByteArrayCsvConverter : DefaultTypeConverter
     {
         public override string? ConvertToString(object? value, IWriterRow row, MemberMapData memberMapData)
         {
