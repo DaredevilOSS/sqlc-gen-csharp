@@ -156,44 +156,27 @@ public class CodeGeneratorTests
         var utilsCode = ParseCompilationUnit(generatedFileContents);
         var members = utilsCode.DescendantNodes().OfType<MemberDeclarationSyntax>().ToList();
 
-        var valuesRegexExists = ValuesRegexMemberExists();
-        Assert.That(valuesRegexExists, Is.True);
-        var transformForBatchExists = TransformForBatchExists();
-        Assert.That(transformForBatchExists, Is.True);
-        return;
-
-        bool ValuesRegexMemberExists()
+        var expected = new HashSet<string>
         {
-            return members.Any(x =>
+            "ValuesRegex",
+            "TransformQueryForSqliteBatch"
+        };
+        var actual = members
+            .FindAll(m => m is MethodDeclarationSyntax or FieldDeclarationSyntax)
+            .SelectMany(m =>
             {
-                if (x is FieldDeclarationSyntax f)
-                    return f.Declaration.Variables.Any(v => v.Identifier.Text is "ValuesRegex");
-                return false;
-            });
-        }
+                if (m is MethodDeclarationSyntax method)
+                    return [method.Identifier.Text];
+                return ((FieldDeclarationSyntax)m).Declaration.Variables.Select(v => v.Identifier.Text);
+            })
+            .ToHashSet();
 
-        bool TransformForBatchExists()
-        {
-            return members.Any(x =>
-            {
-                if (x is MethodDeclarationSyntax m)
-                    return m.Identifier.Text is "TransformQueryForSqliteBatch";
-                return false;
-            });
-        }
+        Assert.That(actual.SetEquals(expected));
     }
 
     [Test]
     public void TestMysqlCopyFromGenerateUtilsMembers()
     {
-        var csvConverters = new HashSet<string>
-        {
-            MySqlConnectorDriver.NullToStringCsvConverter,
-            MySqlConnectorDriver.BoolToBitCsvConverter,
-            MySqlConnectorDriver.ByteCsvConverter,
-            MySqlConnectorDriver.ByteArrayCsvConverter
-        };
-
         // data
         var dummyColumn = new Column { Name = "col_1", Type = new Identifier { Name = "text" } };
         var query = new Query
@@ -225,19 +208,19 @@ public class CodeGeneratorTests
         var utilsCode = ParseCompilationUnit(generatedFileContents);
         var members = utilsCode.DescendantNodes().OfType<MemberDeclarationSyntax>().ToList();
 
-        var cntCsvConverters = CountCsvConverters();
-        Assert.That(cntCsvConverters, Is.EqualTo(csvConverters.Count));
-        return;
-
-        int CountCsvConverters()
+        var expected = new HashSet<string>
         {
-            return members.FindAll(x =>
-            {
-                if (x is ClassDeclarationSyntax f)
-                    return csvConverters.Contains(f.Identifier.Text);
-                return false;
-            }).Count();
-        }
+            MySqlConnectorDriver.NullToStringCsvConverter,
+            MySqlConnectorDriver.BoolToBitCsvConverter,
+            MySqlConnectorDriver.ByteCsvConverter,
+            MySqlConnectorDriver.ByteArrayCsvConverter
+        };
+        var actual = members
+            .FindAll(m => m is ClassDeclarationSyntax)
+            .Select(m => ((ClassDeclarationSyntax)m).Identifier.Text)
+            .ToHashSet();
+
+        Assert.That(actual.IsSupersetOf(expected));
     }
 
     [Test]
@@ -282,18 +265,12 @@ public class CodeGeneratorTests
         var utilsCode = ParseCompilationUnit(generatedFileContents);
         var members = utilsCode.DescendantNodes().OfType<MemberDeclarationSyntax>().ToList();
 
-        var memberExists = TransformQueryForSliceMemberExists();
-        Assert.That(memberExists, Is.True);
-        return;
+        var expected = new HashSet<string> { "TransformQueryForSliceArgs" };
+        var actual = members
+            .FindAll(m => m is MethodDeclarationSyntax)
+            .Select(m => ((MethodDeclarationSyntax)m).Identifier.Text)
+            .ToHashSet();
 
-        bool TransformQueryForSliceMemberExists()
-        {
-            return members.Any(x =>
-            {
-                if (x is MethodDeclarationSyntax m)
-                    return m.Identifier.Text is "TransformQueryForSliceArgs";
-                return false;
-            });
-        }
+        Assert.That(actual.SetEquals(expected));
     }
 }
