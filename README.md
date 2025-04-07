@@ -12,8 +12,8 @@ version: "2"
 plugins:
 - name: csharp
   wasm:
-    url: https://github.com/DaredevilOSS/sqlc-gen-csharp/releases/download/v0.16.0/sqlc-gen-csharp.wasm
-    sha256: 648c06737ea6050b06d2469f1c56be39dd336dec15097de01c550f7001928b91
+    url: https://github.com/DaredevilOSS/sqlc-gen-csharp/releases/download/v0.17.0/sqlc-gen-csharp.wasm
+    sha256: 39df119c6f5bd5a82f30e48f296a0e0827668fb7659e87ba5da53c0943a10986
 sql:
   # For PostgresSQL
   - schema: schema.sql
@@ -105,7 +105,7 @@ data type that can have a unique constraint.
 Implemented via the `COPY FROM` command which can load binary data directly from `stdin`.
 </details>
 
-<details>
+<details open>
 <summary>Supported Data Types</summary>
 
 Since in batch insert the data is not validated by the SQL itself but written in a binary format, 
@@ -122,8 +122,8 @@ we consider support for the different data types separately for batch inserts an
 | double precision                        | ✅         | ✅                  |
 | date                                    | ✅         | ✅                  |
 | timestamp, timestamp without time zone  | ✅         | ✅                  |
-| timestamp with time zone                | ❌         | ❌                  |
-| time, time without time zone            | ❌         | ❌                  |
+| timestamp with time zone                | ✅         | ✅                  |
+| time, time without time zone            | ✅         | ✅                  |
 | time with time zone                     | ❌         | ❌                  |
 | interval                                | ❌         | ❌                  |
 | char                                    | ✅         | ✅                  |
@@ -132,13 +132,14 @@ we consider support for the different data types separately for batch inserts an
 | text                                    | ✅         | ✅                  |
 | bytea                                   | ✅         | ✅                  |
 | 2-dimensional arrays (e.g text[],int[]) | ✅         | ❌                  |
-| money                                   | ❌         | ❌                  |
-| line                                    | ❌         | ❌                  |
-| lseg                                    | ❌         | ❌                  |
-| box                                     | ❌         | ❌                  |
-| path                                    | ❌         | ❌                  |
-| polygon                                 | ❌         | ❌                  |
-| circle                                  | ❌         | ❌                  |
+| money                                   | ✅         | ✅                  |
+| point                                   | ✅         | ❌                  |
+| line                                    | ✅         | ❌                  |
+| lseg                                    | ✅         | ❌                  |
+| box                                     | ✅         | ❌                  |
+| path                                    | ✅         | ❌                  |
+| polygon                                 | ✅         | ❌                  |
+| circle                                  | ✅         | ❌                  |
 | cidr                                    | ❌         | ❌                  |
 | inet                                    | ❌         | ❌                  |
 | macaddr                                 | ❌         | ❌                  |
@@ -188,7 +189,7 @@ Requires us to first save the input batch as a CSV, and then load it via the dri
 
 </details>
 
-<details>
+<details open>
 <summary>Supported Data Types</summary>
 
 Since in batch insert the data is not validated by the SQL itself but written and read from a CSV,
@@ -217,12 +218,12 @@ we consider support for the different data types separately for batch inserts an
 | mediumtext                | ✅         | ✅                  |
 | text                      | ✅         | ✅                  |
 | longtext                  | ✅         | ✅                  |
-| binary                    | ✅         | ❌                  |
-| varbinary                 | ✅         | ❌                  |
-| tinyblob                  | ✅         | ❌                  |
-| blob                      | ✅         | ❌                  |
-| mediumblob                | ✅         | ❌                  |
-| longblob                  | ✅         | ❌                  |
+| binary                    | ✅         | ✅                  |
+| varbinary                 | ✅         | ✅                  |
+| tinyblob                  | ✅         | ✅                  |
+| blob                      | ✅         | ✅                  |
+| mediumblob                | ✅         | ✅                  |
+| longblob                  | ✅         | ✅                  |
 | enum                      | ❌         | ❌                  |
 | set                       | ❌         | ❌                  |
 | json                      | ❌         | ❌                  |
@@ -264,7 +265,7 @@ INSERT INTO tab1 (field1, field2) VALUES
 
 </details>
 
-<details>
+<details open>
 <summary>Supported Data Types</summary>
 
 | DB Type | Supported? |
