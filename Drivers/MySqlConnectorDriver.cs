@@ -9,9 +9,18 @@ using OneDeclareGen = SqlcGenCsharp.Drivers.Generators.OneDeclareGen;
 
 namespace SqlcGenCsharp.Drivers;
 
-public partial class MySqlConnectorDriver(Options options, Dictionary<string, Table> tables, Dictionary<string, Enum> enums) :
-    DbDriver(options, tables, enums), IOne, IMany, IExec, IExecRows, IExecLastId, ICopyFrom
+public partial class MySqlConnectorDriver(
+    Options options,
+    Dictionary<string, Table> tables,
+    Dictionary<string, Enum> enums,
+    IList<Query> queries) :
+    DbDriver(options, tables, enums, queries), IOne, IMany, IExec, IExecRows, IExecLastId, ICopyFrom
 {
+    public const string NullToStringCsvConverter = "NullToStringCsvConverter";
+    public const string BoolToBitCsvConverter = "BoolToBitCsvConverter";
+    public const string ByteCsvConverter = "ByteCsvConverter";
+    public const string ByteArrayCsvConverter = "ByteArrayCsvConverter";
+
     protected override List<ColumnMapping> ColumnMappings { get; } =
     [
         new("bool",
@@ -85,9 +94,9 @@ public partial class MySqlConnectorDriver(Options options, Dictionary<string, Ta
             }, ordinal => $"reader.GetDecimal({ordinal})")
     ];
 
-    public override UsingDirectiveSyntax[] GetUsingDirectives()
+    public override UsingDirectiveSyntax[] GetUsingDirectivesForQueries()
     {
-        return base.GetUsingDirectives()
+        return base.GetUsingDirectivesForQueries()
             .Concat(
             [
                 UsingDirective(ParseName("MySqlConnector")),
@@ -98,6 +107,106 @@ public partial class MySqlConnectorDriver(Options options, Dictionary<string, Ta
                 UsingDirective(ParseName("CsvHelper.TypeConversion")),
                 UsingDirective(ParseName("System.Text"))
             ])
+            .ToArray();
+    }
+
+    public override UsingDirectiveSyntax[] GetUsingDirectivesForModels()
+    {
+        return base.GetUsingDirectivesForModels()
+            .Concat(
+            [
+                UsingDirective(ParseName("System")),
+                UsingDirective(ParseName("System.Collections.Generic"))
+            ])
+            .ToArray();
+    }
+
+    public override UsingDirectiveSyntax[] GetUsingDirectivesForUtils()
+    {
+        var usingDirectives = base.GetUsingDirectivesForUtils();
+        if (!BatchQueryExists())
+            return usingDirectives.ToArray();
+
+        return usingDirectives
+            .Concat(
+            [
+                UsingDirective(ParseName("CsvHelper.TypeConversion")),
+                UsingDirective(ParseName("CsvHelper")),
+                UsingDirective(ParseName("CsvHelper.Configuration"))
+            ])
+            .ToArray();
+    }
+
+    public override MemberDeclarationSyntax[] GetMemberDeclarationsForUtils()
+    {
+        var memberDeclarations = base
+            .GetMemberDeclarationsForUtils()
+            .AppendIf(ParseMemberDeclaration(TransformQueryForSliceArgsImpl)!, SliceQueryExists());
+        if (!BatchQueryExists())
+            return memberDeclarations.ToArray();
+
+        var csvConverters = new List<MemberDeclarationSyntax>
+        {
+            ParseMemberDeclaration($$"""
+                 public class {{NullToStringCsvConverter}} : DefaultTypeConverter
+                 {
+                     public override {{AddNullableSuffixIfNeeded("string", false)}} ConvertToString(
+                         {{AddNullableSuffixIfNeeded("object", false)}} value, IWriterRow row, MemberMapData memberMapData)
+                     {
+                         return value == null ? @"\N" : base.ConvertToString(value, row, memberMapData);
+                     }
+                 }
+                 """)!,
+            ParseMemberDeclaration($$"""
+                 public class BoolToBitCsvConverter : DefaultTypeConverter
+                 {
+                     public override {{AddNullableSuffixIfNeeded("string", false)}} ConvertToString(
+                     {{AddNullableSuffixIfNeeded("object", false)}} value, IWriterRow row, MemberMapData memberMapData)
+                     {
+                         switch (value)
+                         {
+                             case null:
+                                 return @"\N";
+                             case bool b:
+                                 return b ? "1" : "0";
+                             default:
+                                 return base.ConvertToString(value, row, memberMapData);
+                         }
+                     }
+                 }
+                 """)!,
+            ParseMemberDeclaration($$"""
+                 public class ByteCsvConverter : DefaultTypeConverter
+                 {
+                     public override {{AddNullableSuffixIfNeeded("string", false)}} ConvertToString(
+                     {{AddNullableSuffixIfNeeded("object", false)}} value, IWriterRow row, MemberMapData memberMapData)
+                     {
+                         if (value == null)
+                             return @"\N";
+                         if (value is byte byteVal)
+                             return System.Text.Encoding.UTF8.GetString(new byte[] { byteVal });
+                         return base.ConvertToString(value, row, memberMapData);
+                     }
+                 }
+                 """)!,
+            ParseMemberDeclaration($$"""
+                 public class ByteArrayCsvConverter : DefaultTypeConverter
+                 {
+                     public override {{AddNullableSuffixIfNeeded("string", false)}} ConvertToString(
+                     {{AddNullableSuffixIfNeeded("object", false)}} value, IWriterRow row, MemberMapData memberMapData)
+                     {
+                         if (value == null)
+                             return @"\N";
+                         if (value is byte[] byteArray)
+                             return System.Text.Encoding.UTF8.GetString(byteArray);
+                         return base.ConvertToString(value, row, memberMapData);
+                     }
+                 }
+                 """)!
+        };
+
+        return memberDeclarations
+            .Concat(csvConverters)
             .ToArray();
     }
 
@@ -188,7 +297,7 @@ public partial class MySqlConnectorDriver(Options options, Dictionary<string, Ta
                     Delimiter = "{{csvDelimiter}}",
                     NewLine = "\n"
                  };
-                 var {{nullConverterFn}} = new Utils.NullToStringConverter();
+                 var {{nullConverterFn}} = new Utils.{{NullToStringCsvConverter}}();
                  using (var {{Variable.Writer.AsVarName()}} = new StreamWriter("{{tempCsvFilename}}", false, new UTF8Encoding(false)))
                  using (var {{csvWriterVar}} = new CsvWriter({{Variable.Writer.AsVarName()}}, {{Variable.Config.AsVarName()}}))
                  {
@@ -196,16 +305,7 @@ public partial class MySqlConnectorDriver(Options options, Dictionary<string, Ta
                     {{csvWriterVar}}.Context.TypeConverterOptionsCache.AddOptions<DateTime>({{optionsVar}});
                     {{csvWriterVar}}.Context.TypeConverterOptionsCache.AddOptions<DateTime?>({{optionsVar}});
                     {{GetBoolAndByteConverters().JoinByNewLine()}}
-                    {{GetNullConverter("short")}}
-                    {{GetNullConverter("int")}}
-                    {{GetNullConverter("long")}}
-                    {{GetNullConverter("float")}}
-                    {{GetNullConverter("decimal")}}
-                    {{GetNullConverter("double")}}
-                    {{GetNullConverter("DateTime")}}
-                    {{GetNullConverter("string")}}
-                    {{GetNullConverter("object")}}
-                    {{Enums.Select(e => GetNullConverter(e.Key.ToModelName())).JoinByNewLine()}}
+                    {{GetCsvNullConverters().JoinByNewLine()}}
                     await {{csvWriterVar}}.WriteRecordsAsync({{Variable.Args.AsVarName()}});
                  }
                  
@@ -229,21 +329,42 @@ public partial class MySqlConnectorDriver(Options options, Dictionary<string, Ta
                  }
                  """;
 
-        string GetNullConverter(string csharpType)
+        string GetCsvNullConverter(string csharpType)
         {
             var nullableCsharpType = AddNullableSuffixIfNeeded(csharpType, false);
             return $"{csvWriterVar}.Context.TypeConverterCache.AddConverter<{nullableCsharpType}>({nullConverterFn});";
         }
 
+        string[] GetCsvNullConverters()
+        {
+            var primitivesConverters = new List<string>
+            {
+                GetCsvNullConverter("short"),
+                GetCsvNullConverter("int"),
+                GetCsvNullConverter("long"),
+                GetCsvNullConverter("float"),
+                GetCsvNullConverter("decimal"),
+                GetCsvNullConverter("double"),
+                GetCsvNullConverter("DateTime"),
+                GetCsvNullConverter("string"),
+                GetCsvNullConverter("object")
+            };
+            var enumConverters = Enums.Select(e =>
+                GetCsvNullConverter(e.Key.ToModelName()));
+
+            return primitivesConverters.Concat(enumConverters).ToArray();
+        }
+
         IEnumerable<string> GetBoolAndByteConverters()
         {
+            // TODO refactor
             return new HashSet<string>([
-                $"{csvWriterVar}.Context.TypeConverterCache.AddConverter<{AddNullableSuffixIfNeeded("bool", true)}>(new Utils.BoolToBitConverter());",
-                $"{csvWriterVar}.Context.TypeConverterCache.AddConverter<{AddNullableSuffixIfNeeded("bool", false)}>(new Utils.BoolToBitConverter());",
-                $"{csvWriterVar}.Context.TypeConverterCache.AddConverter<{AddNullableSuffixIfNeeded("byte", true)}>(new Utils.ByteConverter());",
-                $"{csvWriterVar}.Context.TypeConverterCache.AddConverter<{AddNullableSuffixIfNeeded("byte", false)}>(new Utils.ByteConverter());",
-                $"{csvWriterVar}.Context.TypeConverterCache.AddConverter<{AddNullableSuffixIfNeeded("byte[]", true)}>(new Utils.ByteArrayConverter());",
-                $"{csvWriterVar}.Context.TypeConverterCache.AddConverter<{AddNullableSuffixIfNeeded("byte[]", false)}>(new Utils.ByteArrayConverter());",
+                $"{csvWriterVar}.Context.TypeConverterCache.AddConverter<{AddNullableSuffixIfNeeded("bool", true)}>(new Utils.{BoolToBitCsvConverter}());",
+                $"{csvWriterVar}.Context.TypeConverterCache.AddConverter<{AddNullableSuffixIfNeeded("bool", false)}>(new Utils.{BoolToBitCsvConverter}());",
+                $"{csvWriterVar}.Context.TypeConverterCache.AddConverter<{AddNullableSuffixIfNeeded("byte", true)}>(new Utils.{ByteCsvConverter}());",
+                $"{csvWriterVar}.Context.TypeConverterCache.AddConverter<{AddNullableSuffixIfNeeded("byte", false)}>(new Utils.{ByteCsvConverter}());",
+                $"{csvWriterVar}.Context.TypeConverterCache.AddConverter<{AddNullableSuffixIfNeeded("byte[]", true)}>(new Utils.{ByteArrayCsvConverter}());",
+                $"{csvWriterVar}.Context.TypeConverterCache.AddConverter<{AddNullableSuffixIfNeeded("byte[]", false)}>(new Utils.{ByteArrayCsvConverter}());",
             ]);
         }
     }

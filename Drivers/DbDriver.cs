@@ -17,17 +17,51 @@ public abstract class DbDriver
 
     public Dictionary<string, Plugin.Enum> Enums { get; }
 
+    protected IList<Query> Queries { get; }
+
     private HashSet<string> NullableTypesInDotnetCore { get; } = ["string", "object", "byte[]"]; // TODO add arrays in here in a non hard-coded manner
 
-    private HashSet<string> NullableTypes { get; } = ["bool", "byte", "short", "int", "long", "float", "double", "decimal", "DateTime", "TimeSpan", "NpgsqlPoint", "NpgsqlLine", "NpgsqlLSeg", "NpgsqlBox", "NpgsqlPath", "NpgsqlPolygon", "NpgsqlCircle"];
+    private HashSet<string> NullableTypes { get; } =
+    [
+        "bool",
+        "byte",
+        "short",
+        "int",
+        "long",
+        "float",
+        "double",
+        "decimal",
+        "DateTime",
+        "TimeSpan",
+        "NpgsqlPoint",
+        "NpgsqlLine",
+        "NpgsqlLSeg",
+        "NpgsqlBox",
+        "NpgsqlPath",
+        "NpgsqlPolygon",
+        "NpgsqlCircle"
+    ];
 
     protected abstract List<ColumnMapping> ColumnMappings { get; }
 
-    protected DbDriver(Options options, Dictionary<string, Table> tables, Dictionary<string, Plugin.Enum> enums)
+    protected const string TransformQueryForSliceArgsImpl = """
+           public static string TransformQueryForSliceArgs(string originalSql, int sliceSize, string paramName)
+           {
+               var paramArgs = Enumerable.Range(0, sliceSize).Select(i => $"@{paramName}Arg{i}").ToList();
+               return originalSql.Replace($"/*SLICE:{paramName}*/@{paramName}", string.Join(",", paramArgs));
+           }
+           """;
+
+    protected DbDriver(
+        Options options,
+        Dictionary<string, Table> tables,
+        Dictionary<string, Plugin.Enum> enums,
+        IList<Query> queries)
     {
         Options = options;
         Tables = tables;
         Enums = enums;
+        Queries = queries;
 
         foreach (var e in Enums)
         {
@@ -42,19 +76,46 @@ public abstract class DbDriver
         }
     }
 
-    public virtual UsingDirectiveSyntax[] GetUsingDirectives()
+    public virtual UsingDirectiveSyntax[] GetUsingDirectivesForQueries()
     {
-        var usingDirectives = new List<UsingDirectiveSyntax>
-        {
-            UsingDirective(ParseName("System")),
-            UsingDirective(ParseName("System.Collections.Generic")),
-            UsingDirective(ParseName("System.Threading.Tasks"))
-        };
-
-        if (Options.UseDapper)
-            usingDirectives.Add(UsingDirective(ParseName("Dapper")));
-        return usingDirectives.ToArray();
+        return new List<UsingDirectiveSyntax>
+            {
+                UsingDirective(ParseName("System")),
+                UsingDirective(ParseName("System.Collections.Generic")),
+                UsingDirective(ParseName("System.Threading.Tasks"))
+            }
+            .AppendIf(UsingDirective(ParseName("Dapper")), Options.UseDapper)
+            .ToArray();
     }
+
+    public virtual UsingDirectiveSyntax[] GetUsingDirectivesForModels()
+    {
+        return [];
+    }
+
+    public virtual UsingDirectiveSyntax[] GetUsingDirectivesForUtils()
+    {
+        return
+        [
+            UsingDirective(ParseName("System.Linq"))
+        ];
+    }
+
+    public virtual string[] GetConstructorStatements()
+    {
+        return new List<string>
+        {
+            $"this.{Variable.ConnectionString.AsPropertyName()} = {Variable.ConnectionString.AsVarName()};"
+        }
+        .AppendIf("Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;", Options.UseDapper)
+        .ToArray();
+    }
+
+    public virtual MemberDeclarationSyntax[] GetMemberDeclarationsForUtils()
+    {
+        return [];
+    }
+
 
     public string AddNullableSuffixIfNeeded(string csharpType, bool notNull)
     {
@@ -130,7 +191,6 @@ public abstract class DbDriver
 
     public abstract string CreateSqlCommand(string sqlTextConstant);
 
-    // TODO move out from driver + rename
     public bool IsTypeNullable(string csharpType)
     {
         if (NullableTypes.Contains(csharpType.Replace("?", ""))) return true;
@@ -167,5 +227,18 @@ public abstract class DbDriver
         if (string.IsNullOrEmpty(queryParam.Column.Name))
             queryParam.Column.Name = $"{GetCsharpType(queryParam.Column).Replace("[]", "Arr")}_{queryParam.Number}";
         return queryParam.Column;
+    }
+
+    protected bool SliceQueryExists()
+    {
+        return Queries.Any(q =>
+        {
+            return q.Params.Any(p => p.Column.IsSqlcSlice);
+        });
+    }
+
+    protected bool BatchQueryExists()
+    {
+        return Queries.Any(q => q.Cmd is ":copyfrom");
     }
 }
