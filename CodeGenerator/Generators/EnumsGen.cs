@@ -22,40 +22,24 @@ internal class EnumsGen(DbDriver dbDriver)
                }
                """)!;
 
-        var dictDefinitionAndLookup = dbDriver.Options.UseDapper
-            ? $$"""
-                private static readonly Dictionary<{{name}}, string> EnumToString = new Dictionary<{{name}}, string>()
-                {
-                    [{{name}}.Invalid] = string.Empty,
-                    {{possibleValues
-                        .Select(v => $"[{name}.{v.ToPascalCase()}] = \"{v}\"")
-                        .JoinByComma()}}
-                };
-                
-                public static string ToEnumString(this {{name}} me)
-                {
-                    return EnumToString[me];
-                }
-                """
-            : $$"""
-                private static readonly Dictionary<string, {{name}}> StringToEnum = new Dictionary<string, {{name}}>()
-                {
-                    [string.Empty] = {{name}}.Invalid,
-                    {{possibleValues
-                        .Select(v => $"[\"{v}\"] = {name}.{v.ToPascalCase()}")
-                        .JoinByComma()}}
-                };
-                
-                public static {{name}} To{{name}}(this string me)
-                {
-                    return StringToEnum[me];
-                }
-                """;
+        if (dbDriver.Options.UseDapper)
+            return [enumType];
 
         var enumExtensions = ParseMemberDeclaration($$"""
                public static class {{name}}Extensions 
                {
-                   {{dictDefinitionAndLookup}}
+                   private static readonly Dictionary<string, {{name}}> StringToEnum = new Dictionary<string, {{name}}>()
+                   {
+                       [string.Empty] = {{name}}.Invalid,
+                       {{possibleValues
+                            .Select(v => $"[\"{v}\"] = {name}.{v.ToPascalCase()}")
+                            .JoinByComma()}}
+                   };
+                   
+                   public static {{name}} To{{name}}(this string me)
+                   {
+                       return StringToEnum[me];
+                   }
                }
                """)!;
         return [enumType, enumExtensions];
