@@ -13,11 +13,13 @@ public abstract class DbDriver
 {
     public Options Options { get; }
 
-    public Dictionary<string, Table> Tables { get; }
+    public string DefaultSchema { get; }
 
-    public Dictionary<string, Plugin.Enum> Enums { get; }
+    public Dictionary<string, Dictionary<string, Table>> Tables { get; }
 
-    protected IList<Query> Queries { get; }
+    public Dictionary<string, Dictionary<string, Plugin.Enum>> Enums { get; }
+
+    private IList<Query> Queries { get; }
 
     private HashSet<string> NullableTypesInDotnetCore { get; } = ["string", "object", "byte[]"]; // TODO add arrays in here in a non hard-coded manner
 
@@ -54,18 +56,23 @@ public abstract class DbDriver
 
     protected DbDriver(
         Options options,
-        Dictionary<string, Table> tables,
-        Dictionary<string, Plugin.Enum> enums,
+        string defaultSchema,
+        Dictionary<string, Dictionary<string, Table>> tables,
+        Dictionary<string, Dictionary<string, Plugin.Enum>> enums,
         IList<Query> queries)
     {
         Options = options;
+        DefaultSchema = defaultSchema;
         Tables = tables;
         Enums = enums;
         Queries = queries;
 
-        foreach (var e in Enums)
+        foreach (var schemaEnums in Enums)
         {
-            NullableTypes.Add(e.Key.ToModelName());
+            foreach (var e in schemaEnums.Value)
+            {
+                NullableTypes.Add($"{schemaEnums.Key}_{e.Key}".ToModelName());
+            }
         }
 
         if (!Options.DotnetFramework.IsDotnetCore()) return;
@@ -125,28 +132,41 @@ public abstract class DbDriver
 
     public string GetCsharpType(Column column)
     {
-        var csharpType = GetTypeWithoutNullableSuffix();
+        var csharpType = GetCsharpTypeWithoutNullableSuffix(column);
         return AddNullableSuffixIfNeeded(csharpType, column.NotNull);
+    }
 
-        string GetTypeWithoutNullableSuffix()
+    private static void DebugWriteColumn(Column column)
+    {
+        System.IO.File.WriteAllText($"/tmp/column_{column.Name}.json", column.ToString());
+    }
+
+    private string GetCsharpTypeWithoutNullableSuffix(Column column)
+    {
+        var schemaName = string.Empty;
+        if (column.EmbedTable != null)
         {
-            if (column.EmbedTable != null)
-                return column.EmbedTable.Name.ToModelName();
-
-            if (string.IsNullOrEmpty(column.Type.Name))
-                return "object";
-
-            if (Enums.ContainsKey(column.Type.Name))
-                return column.Type.Name.ToModelName();
-
-            foreach (var columnMapping in ColumnMappings
-                         .Where(columnMapping => DoesColumnMappingApply(columnMapping, column)))
-            {
-                if (column.IsArray || column.IsSqlcSlice) return $"{columnMapping.CsharpType}[]";
-                return columnMapping.CsharpType;
-            }
-            throw new NotSupportedException($"Column {column.Name} has unsupported column type: {column.Type.Name}");
+            schemaName = column.EmbedTable.Schema == DefaultSchema ? string.Empty : column.EmbedTable.Schema;
+            return $"{schemaName}_{column.EmbedTable.Name}".ToModelName();
         }
+
+        if (string.IsNullOrEmpty(column.Type.Name))
+            return "object";
+
+        if (column.Table != null)
+            schemaName = column.Table.Schema == DefaultSchema ? string.Empty : column.Table.Schema;
+        if (Enums[schemaName].ContainsKey(column.Type.Name))
+            return $"{schemaName}_{column.Type.Name}".ToModelName();
+
+        foreach (var columnMapping in ColumnMappings
+                     .Where(columnMapping => DoesColumnMappingApply(columnMapping, column)))
+        {
+            if (column.IsArray || column.IsSqlcSlice) return $"{columnMapping.CsharpType}[]";
+            return columnMapping.CsharpType;
+        }
+
+        DebugWriteColumn(column);
+        throw new NotSupportedException($"Column {column.Name} has unsupported column type: {column.Type.Name}");
     }
 
     private static bool DoesColumnMappingApply(ColumnMapping columnMapping, Column column)
@@ -161,8 +181,15 @@ public abstract class DbDriver
 
     public string GetColumnReader(Column column, int ordinal)
     {
-        if (Enums.ContainsKey(column.Type.Name))
-            return $"{Variable.Reader.AsVarName()}.GetString({ordinal}).To{column.Type.Name.ToModelName()}()";
+        var schemaName = string.Empty;
+        if (column.Table != null)
+            schemaName = column.Table.Schema == DefaultSchema ? string.Empty : column.Table.Schema;
+
+        if (Enums[schemaName].ContainsKey(column.Type.Name))
+        {
+            var enumName = $"{schemaName}_{column.Type.Name}".ToModelName();
+            return $"{Variable.Reader.AsVarName()}.GetString({ordinal}).To{enumName}()";
+        }
 
         foreach (var columnMapping in ColumnMappings
                      .Where(columnMapping => DoesColumnMappingApply(columnMapping, column)))
@@ -203,7 +230,8 @@ public abstract class DbDriver
     */
     public string GetIdColumnType(Query query)
     {
-        var tableColumns = Tables[query.InsertIntoTable.Name].Columns;
+        var tableSchema = query.InsertIntoTable.Schema == string.Empty ? string.Empty : query.InsertIntoTable.Schema;
+        var tableColumns = Tables[tableSchema][query.InsertIntoTable.Name].Columns;
         var idColumn = tableColumns.First(c => c.Name.Equals("id", StringComparison.OrdinalIgnoreCase));
         if (idColumn is not null)
             return GetCsharpType(idColumn);

@@ -1,3 +1,4 @@
+using Google.Protobuf;
 using Plugin;
 using SqlcGenCsharp.Drivers;
 using SqlcGenCsharp.Generators;
@@ -12,14 +13,20 @@ namespace SqlcGenCsharp;
 public class CodeGenerator
 {
     private Options? _options;
-    private Dictionary<string, Table>? _tables;
-    private Dictionary<string, Plugin.Enum>? _enums;
-    private IList<Query>? _queries;
+    private Dictionary<string, Dictionary<string, Table>> _tables;
+    private Dictionary<string, Dictionary<string, Plugin.Enum>> _enums;
+    private List<Query>? _queries;
     private DbDriver? _dbDriver;
     private QueriesGen? _queriesGen;
     private ModelsGen? _modelsGen;
     private UtilsGen? _utilsGen;
     private CsprojGen? _csprojGen;
+
+    private readonly HashSet<string> _excludedSchemas =
+    [
+        "pg_catalog",
+        "information_schema"
+    ];
 
     private Options Options
     {
@@ -27,19 +34,19 @@ public class CodeGenerator
         set => _options = value;
     }
 
-    private Dictionary<string, Table> Tables
+    private Dictionary<string, Dictionary<string, Table>> Tables
     {
         get => _tables!;
         set => _tables = value;
     }
 
-    private Dictionary<string, Plugin.Enum> Enums
+    private Dictionary<string, Dictionary<string, Plugin.Enum>> Enums
     {
         get => _enums!;
         set => _enums = value;
     }
 
-    private IList<Query> Queries
+    private List<Query> Queries
     {
         get => _queries!;
         set => _queries = value;
@@ -75,27 +82,35 @@ public class CodeGenerator
         set => _csprojGen = value;
     }
 
+    private static void DebugWriteRequest(GenerateRequest generateRequest)
+    {
+        System.IO.File.WriteAllText($"/tmp/request_{generateRequest.Settings.Engine}.json", generateRequest.ToString());
+    }
+
     private void InitGenerators(GenerateRequest generateRequest)
     {
+        // DebugWriteRequest(generateRequest);
+
         var outputDirectory = generateRequest.Settings.Codegen.Out;
         var projectName = new DirectoryInfo(outputDirectory).Name;
         Options = new Options(generateRequest);
 
-        // TODO currently only default schema is considered - should consider all non-internal schemas
         Tables = generateRequest.Catalog.Schemas
-            .Where(schema => schema.Name == generateRequest.Catalog.DefaultSchema)
-            .SelectMany(schema => schema.Tables)
-            .ToDictionary(table => table.Rel.Name, table => table);
+            .Where(s => !_excludedSchemas.Contains(s.Name))
+            .ToDictionary(
+                s => s.Name == generateRequest.Catalog.DefaultSchema ? string.Empty : s.Name,
+                s => s.Tables.ToDictionary(t => t.Rel.Name, t => t));
 
         Enums = generateRequest.Catalog.Schemas
-            .Where(schema => schema.Name == generateRequest.Catalog.DefaultSchema)
-            .SelectMany(schema => schema.Enums)
-            .ToDictionary(e => e.Name, e => e);
+            .Where(s => !_excludedSchemas.Contains(s.Name))
+            .ToDictionary(
+                s => s.Name == generateRequest.Catalog.DefaultSchema ? string.Empty : s.Name,
+                s => s.Enums.ToDictionary(e => e.Name, e => e));
 
         Queries = generateRequest.Queries.ToList();
 
         var namespaceName = Options.NamespaceName == string.Empty ? projectName : Options.NamespaceName;
-        DbDriver = InstantiateDriver();
+        DbDriver = InstantiateDriver(generateRequest.Catalog.DefaultSchema);
 
         // initialize file generators
         CsprojGen = new CsprojGen(outputDirectory, projectName, namespaceName, Options);
@@ -104,13 +119,13 @@ public class CodeGenerator
         UtilsGen = new UtilsGen(DbDriver, namespaceName);
     }
 
-    private DbDriver InstantiateDriver()
+    private DbDriver InstantiateDriver(string defaultSchema)
     {
         return Options.DriverName switch
         {
-            DriverName.MySqlConnector => new MySqlConnectorDriver(Options, Tables, Enums, Queries),
-            DriverName.Npgsql => new NpgsqlDriver(Options, Tables, Enums, Queries),
-            DriverName.Sqlite => new SqliteDriver(Options, Tables, Enums, Queries),
+            DriverName.MySqlConnector => new MySqlConnectorDriver(Options, defaultSchema, Tables, Enums, Queries),
+            DriverName.Npgsql => new NpgsqlDriver(Options, defaultSchema, Tables, Enums, Queries),
+            DriverName.Sqlite => new SqliteDriver(Options, defaultSchema, Tables, Enums, Queries),
             _ => throw new ArgumentException($"unknown driver: {Options.DriverName}")
         };
     }

@@ -7,7 +7,7 @@ using Dapper;
 namespace NpgsqlDapperExampleGen;
 public static class Utils
 {
-    public class NpgsqlTypeHandler<T> : SqlMapper.TypeHandler<T> where T : notnull
+    private class NpgsqlTypeHandler<T> : SqlMapper.TypeHandler<T> where T : notnull
     {
         public override T Parse(object value)
         {

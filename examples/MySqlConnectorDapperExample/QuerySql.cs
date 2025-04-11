@@ -411,7 +411,7 @@ public class QuerySql
             queryParams.Add("c_mediumtext", args.CMediumtext);
             queryParams.Add("c_text", args.CText);
             queryParams.Add("c_longtext", args.CLongtext);
-            queryParams.Add("c_enum", args.CEnum?.ToEnumString());
+            queryParams.Add("c_enum", args.CEnum);
             queryParams.Add("c_year", args.CYear);
             queryParams.Add("c_date", args.CDate);
             queryParams.Add("c_datetime", args.CDatetime);

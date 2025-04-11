@@ -12,10 +12,11 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId
 {
     public NpgsqlDriver(
         Options options,
-        Dictionary<string, Table> tables,
-        Dictionary<string, Enum> enums,
+        string defaultSchema,
+        Dictionary<string, Dictionary<string, Table>> tables,
+        Dictionary<string, Dictionary<string, Enum>> enums,
         IList<Query> queries) :
-        base(options, tables, enums, queries)
+        base(options, defaultSchema, tables, enums, queries)
     {
         foreach (var columnMapping in ColumnMappings)
         {
@@ -212,7 +213,7 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId
 
         memberDeclarations = memberDeclarations
             .Append(ParseMemberDeclaration($$"""
-                 public class NpgsqlTypeHandler<T> : SqlMapper.TypeHandler<T>{{optionalDotnetCoreSuffix}}
+                 private class NpgsqlTypeHandler<T> : SqlMapper.TypeHandler<T>{{optionalDotnetCoreSuffix}}
                  {
                      public override T Parse(object value)
                      {

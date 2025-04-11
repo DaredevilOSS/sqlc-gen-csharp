@@ -62,18 +62,3 @@ public enum MysqlTypesCEnum
     Medium = 2,
     Big = 3
 }
-
-public static class MysqlTypesCEnumExtensions
-{
-    private static readonly Dictionary<MysqlTypesCEnum, string> EnumToString = new Dictionary<MysqlTypesCEnum, string>()
-    {
-        [MysqlTypesCEnum.Invalid] = string.Empty,
-        [MysqlTypesCEnum.Small] = "small",
-        [MysqlTypesCEnum.Medium] = "medium",
-        [MysqlTypesCEnum.Big] = "big"
-    };
-    public static string ToEnumString(this MysqlTypesCEnum me)
-    {
-        return EnumToString[me];
-    }
-}
