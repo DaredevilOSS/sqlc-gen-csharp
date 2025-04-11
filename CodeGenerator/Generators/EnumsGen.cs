@@ -10,7 +10,6 @@ internal class EnumsGen(DbDriver dbDriver)
 {
     public MemberDeclarationSyntax[] Generate(string name, IList<string> possibleValues)
     {
-        var enumName = name.ToModelName();
         var enumValuesDef = possibleValues
             .Select((v, i) => $"{v.ToPascalCase()} = {i + 1}")
             .JoinByComma();
@@ -25,36 +24,36 @@ internal class EnumsGen(DbDriver dbDriver)
 
         var dictDefinitionAndLookup = dbDriver.Options.UseDapper
             ? $$"""
-                private static readonly Dictionary<{{enumName}}, string> EnumToString = new Dictionary<{{enumName}}, string>()
+                private static readonly Dictionary<{{name}}, string> EnumToString = new Dictionary<{{name}}, string>()
                 {
-                    [{{enumName}}.Invalid] = string.Empty,
+                    [{{name}}.Invalid] = string.Empty,
                     {{possibleValues
-                        .Select(v => $"[{enumName}.{v.ToPascalCase()}] = \"{v}\"")
+                        .Select(v => $"[{name}.{v.ToPascalCase()}] = \"{v}\"")
                         .JoinByComma()}}
                 };
                 
-                public static string ToEnumString(this {{enumName}} me)
+                public static string ToEnumString(this {{name}} me)
                 {
                     return EnumToString[me];
                 }
                 """
             : $$"""
-                private static readonly Dictionary<string, {{enumName}}> StringToEnum = new Dictionary<string, {{enumName}}>()
+                private static readonly Dictionary<string, {{name}}> StringToEnum = new Dictionary<string, {{name}}>()
                 {
-                    [string.Empty] = {{enumName}}.Invalid,
+                    [string.Empty] = {{name}}.Invalid,
                     {{possibleValues
-                        .Select(v => $"[\"{v}\"] = {enumName}.{v.ToPascalCase()}")
+                        .Select(v => $"[\"{v}\"] = {name}.{v.ToPascalCase()}")
                         .JoinByComma()}}
                 };
                 
-                public static {{enumName}} To{{enumName}}(this string me)
+                public static {{name}} To{{name}}(this string me)
                 {
                     return StringToEnum[me];
                 }
                 """;
 
         var enumExtensions = ParseMemberDeclaration($$"""
-               public static class {{enumName}}Extensions 
+               public static class {{name}}Extensions 
                {
                    {{dictDefinitionAndLookup}}
                }

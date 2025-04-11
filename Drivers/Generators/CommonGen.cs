@@ -122,7 +122,8 @@ public class CommonGen(DbDriver dbDriver)
 
         string[] GetAsEmbeddedTableColumnAssignment(Column tableColumn, int ordinal)
         {
-            var tableColumns = dbDriver.Tables[tableColumn.EmbedTable.Name].Columns;
+            var schemaName = tableColumn.EmbedTable.Schema == dbDriver.DefaultSchema ? string.Empty : tableColumn.EmbedTable.Schema;
+            var tableColumns = dbDriver.Tables[schemaName][tableColumn.EmbedTable.Name].Columns;
             return tableColumns
                 .Select((c, o) => GetAsSimpleAssignment(c, o + ordinal))
                 .ToArray();

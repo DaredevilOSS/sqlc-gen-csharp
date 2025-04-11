@@ -23,7 +23,18 @@ public class CodeGeneratorTests
         Codegen = new Codegen { Out = "DummyProject" }
     };
 
-    private readonly Catalog _emptyCatalog = new() { Schemas = { Capacity = 0 } };
+    private readonly Catalog _emptyCatalog = new()
+    {
+        Schemas =
+        {
+            new Schema
+            {
+                Name = string.Empty,
+                Tables = { Capacity = 0 },
+                Enums = { Capacity = 0 },
+            }
+        }
+    };
 
     private CodeGenerator CodeGenerator { get; } = new();
 

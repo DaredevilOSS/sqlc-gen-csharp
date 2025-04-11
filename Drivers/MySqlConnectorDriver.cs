@@ -11,10 +11,11 @@ namespace SqlcGenCsharp.Drivers;
 
 public partial class MySqlConnectorDriver(
     Options options,
-    Dictionary<string, Table> tables,
-    Dictionary<string, Enum> enums,
+    string defaultSchema,
+    Dictionary<string, Dictionary<string, Table>> tables,
+    Dictionary<string, Dictionary<string, Enum>> enums,
     IList<Query> queries) :
-    DbDriver(options, tables, enums, queries), IOne, IMany, IExec, IExecRows, IExecLastId, ICopyFrom
+    DbDriver(options, defaultSchema, tables, enums, queries), IOne, IMany, IExec, IExecRows, IExecLastId, ICopyFrom
 {
     public const string NullToStringCsvConverter = "NullToStringCsvConverter";
     public const string BoolToBitCsvConverter = "BoolToBitCsvConverter";
@@ -349,8 +350,11 @@ public partial class MySqlConnectorDriver(
                 GetCsvNullConverter("string"),
                 GetCsvNullConverter("object")
             };
-            var enumConverters = Enums.Select(e =>
-                GetCsvNullConverter(e.Key.ToModelName()));
+            var enumConverters = Enums.SelectMany(s =>
+            {
+                return s.Value.Select(e =>
+                    GetCsvNullConverter($"{s.Key}_{e.Key}".ToModelName()));
+            });
 
             return primitivesConverters.Concat(enumConverters).ToArray();
         }
