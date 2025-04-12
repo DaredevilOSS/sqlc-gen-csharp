@@ -225,7 +225,7 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId
                          parameter.Value = value;
                      }
                  }
-                 """))
+                 """)!)
             .Append(ParseMemberDeclaration($$"""
                  private static void RegisterNpgsqlTypeHandler<T>(){{optionalDotnetCoreSuffix}}
                  {
