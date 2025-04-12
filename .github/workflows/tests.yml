@@ -2,9 +2,10 @@ name: .Net Core Tests
 defaults:
   run:
     shell: bash
-
+    
 env:
   DOTNET_VERSION: '8.0.x'
+  SQLC_VERSION: 1.27.0
 
 on:
   push:
