@@ -12,6 +12,16 @@ CREATE TABLE books (
   FOREIGN KEY (author_id) REFERENCES authors (id) ON DELETE CASCADE
 );
 
+CREATE SCHEMA finance;
+
+CREATE TABLE finance.sales (
+  book_id       BIGINT,
+  copies        INT,
+  revenue       DOUBLE PRECISION,
+  print_type    ENUM ('Paperback', 'Hardcover', 'Kindle'),
+  fiscal_year   YEAR
+);
+
 CREATE TABLE mysql_types (
   /* Boolean data types - TINYINT(1) synonyms */
   c_bool        BOOL,

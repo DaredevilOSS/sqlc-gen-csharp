@@ -11,7 +11,9 @@ dotnet-build:
 	dotnet build
 
 unit-tests:
-	dotnet test SqlcGenCsharpTests
+	dotnet test RepositoryTests
+	sqlc generate -f sqlc.unit.test.yaml
+	dotnet test CodegenTests
 
 generate-end2end-tests:
 	./end2end/scripts/generate_tests.sh

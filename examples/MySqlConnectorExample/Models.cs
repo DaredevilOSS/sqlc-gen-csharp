@@ -6,6 +6,30 @@ namespace MySqlConnectorExampleGen;
 public readonly record struct Author(long Id, string Name, string? Bio);
 public readonly record struct Book(long Id, string Name, long AuthorId, string? Description);
 public readonly record struct MysqlType(bool? CBool, bool? CBoolean, short? CTinyint, short? CSmallint, int? CMediumint, int? CInt, int? CInteger, long? CBigint, double? CFloat, decimal? CDecimal, decimal? CDec, decimal? CNumeric, decimal? CFixed, double? CDouble, double? CDoublePrecision, short? CYear, DateTime? CDate, string? CTime, DateTime? CDatetime, DateTime? CTimestamp, string? CChar, string? CNchar, string? CNationalChar, string? CVarchar, string? CTinytext, string? CMediumtext, string? CText, string? CLongtext, MysqlTypesCEnum? CEnum, byte? CBit, byte[]? CBinary, byte[]? CVarbinary, byte[]? CTinyblob, byte[]? CBlob, byte[]? CMediumblob, byte[]? CLongblob);
+public readonly record struct FinanceSale(long? BookId, int? Copies, double? Revenue, FinanceSalesPrintType? PrintType, short? FiscalYear);
+public enum FinanceSalesPrintType
+{
+    Invalid = 0, // reserved for invalid enum value
+    Paperback = 1,
+    Hardcover = 2,
+    Kindle = 3
+}
+
+public static class FinanceSalesPrintTypeExtensions
+{
+    private static readonly Dictionary<string, FinanceSalesPrintType> StringToEnum = new Dictionary<string, FinanceSalesPrintType>()
+    {
+        [string.Empty] = FinanceSalesPrintType.Invalid,
+        ["Paperback"] = FinanceSalesPrintType.Paperback,
+        ["Hardcover"] = FinanceSalesPrintType.Hardcover,
+        ["Kindle"] = FinanceSalesPrintType.Kindle
+    };
+    public static FinanceSalesPrintType ToFinanceSalesPrintType(this string me)
+    {
+        return StringToEnum[me];
+    }
+}
+
 public enum MysqlTypesCEnum
 {
     Invalid = 0, // reserved for invalid enum value

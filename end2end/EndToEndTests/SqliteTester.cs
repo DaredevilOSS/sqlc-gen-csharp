@@ -3,7 +3,7 @@ using SqliteExampleGen;
 using System;
 using System.Threading.Tasks;
 
-namespace SqlcGenCsharpTests;
+namespace EndToEndTests;
 
 public partial class SqliteTester
 {

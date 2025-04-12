@@ -24,7 +24,10 @@ jobs:
       - uses: actions/checkout@v4
   
       - name: Run Tests
-        run: dotnet test SqlcGenCsharpTests
+        run: |
+          dotnet test RepositoryTests
+          sqlc generate -f sqlc.unit.test.yaml
+          dotnet test CodegenTests
     
   end2end-tests:
     name: End-to-End Tests

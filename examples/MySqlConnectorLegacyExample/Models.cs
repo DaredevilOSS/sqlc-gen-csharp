@@ -56,6 +56,37 @@ namespace MySqlConnectorLegacyExampleGen
         public byte[] CMediumblob { get; set; }
         public byte[] CLongblob { get; set; }
     };
+    public class FinanceSale
+    {
+        public long? BookId { get; set; }
+        public int? Copies { get; set; }
+        public double? Revenue { get; set; }
+        public FinanceSalesPrintType? PrintType { get; set; }
+        public short? FiscalYear { get; set; }
+    };
+    public enum FinanceSalesPrintType
+    {
+        Invalid = 0, // reserved for invalid enum value
+        Paperback = 1,
+        Hardcover = 2,
+        Kindle = 3
+    }
+
+    public static class FinanceSalesPrintTypeExtensions
+    {
+        private static readonly Dictionary<string, FinanceSalesPrintType> StringToEnum = new Dictionary<string, FinanceSalesPrintType>()
+        {
+            [string.Empty] = FinanceSalesPrintType.Invalid,
+            ["Paperback"] = FinanceSalesPrintType.Paperback,
+            ["Hardcover"] = FinanceSalesPrintType.Hardcover,
+            ["Kindle"] = FinanceSalesPrintType.Kindle
+        };
+        public static FinanceSalesPrintType ToFinanceSalesPrintType(this string me)
+        {
+            return StringToEnum[me];
+        }
+    }
+
     public enum MysqlTypesCEnum
     {
         Invalid = 0, // reserved for invalid enum value

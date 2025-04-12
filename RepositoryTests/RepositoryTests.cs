@@ -1,6 +1,6 @@
 using dotenv.net;
 
-namespace SqlcGenCsharpTests;
+namespace RepositoryTests;
 
 public class RepositoryTests
 {

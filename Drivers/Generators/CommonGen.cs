@@ -107,7 +107,7 @@ public class CommonGen(DbDriver dbDriver)
                 continue;
             }
 
-            var tableFieldType = column.EmbedTable.Name.ToModelName();
+            var tableFieldType = column.EmbedTable.Name.ToModelName(column.EmbedTable.Schema, dbDriver.DefaultSchema);
             var tableFieldName = seenEmbed.TryGetValue(tableFieldType, out var value)
                 ? $"{tableFieldType}{value}" : tableFieldType;
             seenEmbed.TryAdd(tableFieldType, 1);

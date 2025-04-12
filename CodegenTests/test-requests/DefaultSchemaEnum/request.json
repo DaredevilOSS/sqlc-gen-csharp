@@ -1,0 +1,105 @@
+{
+  "settings": {
+    "version": "2",
+    "engine": "mysql",
+    "schema": [
+      "CodegenTests/test-requests/DefaultSchemaEnum/schema.sql"
+    ],
+    "queries": [
+      "CodegenTests/test-requests/DefaultSchemaEnum/query.sql"
+    ],
+    "codegen": {
+      "out": "./CodegenTests//test-requests/DefaultSchemaEnum",
+      "plugin": "csharp",
+      "options": "eyJkZWJ1Z1JlcXVlc3QiOnRydWV9",
+      "process": {
+        "cmd": "./dist/LocalRunner"
+      }
+    }
+  },
+  "catalog": {
+    "defaultSchema": "public",
+    "schemas": [
+      {
+        "name": "public",
+        "tables": [
+          {
+            "rel": {
+              "name": "dummy_table"
+            },
+            "columns": [
+              {
+                "name": "dummy_column",
+                "length": 1,
+                "table": {
+                  "name": "dummy_table"
+                },
+                "type": {
+                  "name": "dummy_table_dummy_column"
+                }
+              }
+            ]
+          }
+        ],
+        "enums": [
+          {
+            "name": "dummy_table_dummy_column",
+            "vals": [
+              "x",
+              "y"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "queries": [
+    {
+      "text": "SELECT dummy_column FROM dummy_table LIMIT 1",
+      "name": "TestOne",
+      "cmd": ":one",
+      "columns": [
+        {
+          "name": "dummy_column",
+          "length": 1,
+          "table": {
+            "name": "dummy_table"
+          },
+          "type": {
+            "name": "dummy_table_dummy_column"
+          },
+          "originalName": "dummy_column"
+        }
+      ],
+      "filename": "query.sql"
+    },
+    {
+      "text": "INSERT INTO dummy_table (dummy_column) VALUES (?)",
+      "name": "TestInsert",
+      "cmd": ":exec",
+      "parameters": [
+        {
+          "number": 1,
+          "column": {
+            "name": "dummy_column",
+            "length": 1,
+            "table": {
+              "schema": "public",
+              "name": "dummy_table"
+            },
+            "type": {
+              "name": "dummy_table_dummy_column"
+            },
+            "originalName": "dummy_column"
+          }
+        }
+      ],
+      "filename": "query.sql",
+      "insert_into_table": {
+        "name": "dummy_table"
+      }
+    }
+  ],
+  "sqlc_version": "v1.27.0",
+  "plugin_options": "e30="
+}

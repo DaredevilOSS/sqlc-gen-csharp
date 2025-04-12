@@ -45,8 +45,8 @@ internal class ModelsGen(DbDriver dbDriver, string namespaceName)
         return (
             from schemaTables in tables
             from table in schemaTables.Value
-            let className = $"{table.Value.Rel.Schema}_{table.Value.Rel.Name}".ToModelName()
-            select DataClassesGen.Generate(className, ClassMember.Model, table.Value.Columns, dbDriver.Options)
+            let className = table.Value.Rel.Name.ToModelName(table.Value.Rel.Schema, dbDriver.DefaultSchema)
+            select DataClassesGen.Generate(className, null, table.Value.Columns, dbDriver.Options)
         ).ToArray();
     }
 
@@ -54,10 +54,9 @@ internal class ModelsGen(DbDriver dbDriver, string namespaceName)
     {
         return enums.SelectMany(s =>
         {
-            var schemaName = s.Key == dbDriver.DefaultSchema ? string.Empty : s.Key;
             return s.Value.SelectMany(e =>
             {
-                var enumName = $"{schemaName}_{e.Value.Name}".ToModelName();
+                var enumName = e.Value.Name.ToModelName(s.Key, dbDriver.DefaultSchema);
                 return EnumsGen.Generate(enumName, e.Value.Vals);
             });
         }).ToArray();

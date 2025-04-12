@@ -353,7 +353,7 @@ public partial class MySqlConnectorDriver(
             var enumConverters = Enums.SelectMany(s =>
             {
                 return s.Value.Select(e =>
-                    GetCsvNullConverter($"{s.Key}_{e.Key}".ToModelName()));
+                    GetCsvNullConverter(e.Key.ToModelName(s.Key, DefaultSchema)));
             });
 
             return primitivesConverters.Concat(enumConverters).ToArray();

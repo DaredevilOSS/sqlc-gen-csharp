@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace SqlcGenCsharp;
@@ -13,8 +14,6 @@ namespace SqlcGenCsharp;
 public class CodeGenerator
 {
     private Options? _options;
-    private Dictionary<string, Dictionary<string, Table>> _tables;
-    private Dictionary<string, Dictionary<string, Plugin.Enum>> _enums;
     private List<Query>? _queries;
     private DbDriver? _dbDriver;
     private QueriesGen? _queriesGen;
@@ -34,17 +33,9 @@ public class CodeGenerator
         set => _options = value;
     }
 
-    private Dictionary<string, Dictionary<string, Table>> Tables
-    {
-        get => _tables!;
-        set => _tables = value;
-    }
+    private Dictionary<string, Dictionary<string, Table>> Tables { get; set; }
 
-    private Dictionary<string, Dictionary<string, Plugin.Enum>> Enums
-    {
-        get => _enums!;
-        set => _enums = value;
-    }
+    private Dictionary<string, Dictionary<string, Plugin.Enum>> Enums { get; set; }
 
     private List<Query> Queries
     {
@@ -82,32 +73,17 @@ public class CodeGenerator
         set => _csprojGen = value;
     }
 
-    private static void DebugWriteRequest(GenerateRequest generateRequest)
-    {
-        System.IO.File.WriteAllText($"/tmp/request_{generateRequest.Settings.Engine}.json", generateRequest.ToString());
-    }
-
     private void InitGenerators(GenerateRequest generateRequest)
     {
-        // DebugWriteRequest(generateRequest);
-
         var outputDirectory = generateRequest.Settings.Codegen.Out;
         var projectName = new DirectoryInfo(outputDirectory).Name;
         Options = new Options(generateRequest);
-
-        Tables = generateRequest.Catalog.Schemas
-            .Where(s => !_excludedSchemas.Contains(s.Name))
-            .ToDictionary(
-                s => s.Name == generateRequest.Catalog.DefaultSchema ? string.Empty : s.Name,
-                s => s.Tables.ToDictionary(t => t.Rel.Name, t => t));
-
-        Enums = generateRequest.Catalog.Schemas
-            .Where(s => !_excludedSchemas.Contains(s.Name))
-            .ToDictionary(
-                s => s.Name == generateRequest.Catalog.DefaultSchema ? string.Empty : s.Name,
-                s => s.Enums.ToDictionary(e => e.Name, e => e));
+        if (Options.DebugRequest)
+            return;
 
         Queries = generateRequest.Queries.ToList();
+        Tables = ConstructTablesLookup(generateRequest.Catalog);
+        Enums = ConstructEnumsLookup(generateRequest.Catalog);
 
         var namespaceName = Options.NamespaceName == string.Empty ? projectName : Options.NamespaceName;
         DbDriver = InstantiateDriver(generateRequest.Catalog.DefaultSchema);
@@ -117,6 +93,55 @@ public class CodeGenerator
         QueriesGen = new QueriesGen(DbDriver, namespaceName);
         ModelsGen = new ModelsGen(DbDriver, namespaceName);
         UtilsGen = new UtilsGen(DbDriver, namespaceName);
+    }
+
+    private Dictionary<string, Dictionary<string, Table>> ConstructTablesLookup(Catalog catalog)
+    {
+        return catalog.Schemas
+            .Where(s => !_excludedSchemas.Contains(s.Name))
+            .ToDictionary(
+                s => s.Name == catalog.DefaultSchema ? string.Empty : s.Name,
+                s => s.Tables.ToDictionary(t => t.Rel.Name, t => t));
+    }
+
+    /// <summary>
+    /// Enums in the request exist only in the default schema (in mysql), this remaps enums to their original schema.
+    /// Unusual behavior we might have to fix in the future - TODO
+    /// </summary>
+    /// <param name="catalog"></param>
+    /// <returns></returns>
+    private Dictionary<string, Dictionary<string, Plugin.Enum>> ConstructEnumsLookup(Catalog catalog)
+    {
+        var defaultSchemaCatalog = catalog.Schemas.First(s => s.Name == catalog.DefaultSchema);
+        var schemaEnumTuples = defaultSchemaCatalog.Enums
+            .Select(e => new
+            {
+                EnumItem = e,
+                Schema = FindEnumSchema(e)
+            });
+        var schemaToEnums = schemaEnumTuples
+            .GroupBy(x => x.Schema)
+            .ToDictionary(
+                group => group.Key,
+                group => group.ToDictionary(
+                    x => x.EnumItem.Name,
+                    x => x.EnumItem)
+            );
+        return schemaToEnums;
+    }
+
+    private string FindEnumSchema(Plugin.Enum e)
+    {
+        foreach (var schemaTables in Tables)
+        {
+            foreach (var table in schemaTables.Value)
+            {
+                var isEnumColumn = table.Value.Columns.Any(c => c.Type.Name == e.Name);
+                if (isEnumColumn)
+                    return schemaTables.Key; ;
+            }
+        }
+        throw new InvalidDataException($"No enum {e.Name} schema found.");
     }
 
     private DbDriver InstantiateDriver(string defaultSchema)
@@ -133,6 +158,12 @@ public class CodeGenerator
     public Task<GenerateResponse> Generate(GenerateRequest generateRequest)
     {
         InitGenerators(generateRequest); // the request is necessary in order to know which generators are needed
+        if (Options.DebugRequest)
+            return Task.FromResult(new GenerateResponse
+            {
+                Files = { RequestToFile(generateRequest) }
+            });
+
         var fileQueries = GetFileQueries();
         var files = fileQueries
             .Select(fq => QueriesGen.GenerateFile(fq.Value, fq.Key))
@@ -157,5 +188,12 @@ public class CodeGenerator
                 Path.GetFileNameWithoutExtension(filenameWithExtension).ToPascalCase(),
                 Path.GetExtension(filenameWithExtension)[1..].ToPascalCase());
         }
+    }
+
+    private static Plugin.File RequestToFile(GenerateRequest request)
+    {
+        var formatter = new JsonFormatter(JsonFormatter.Settings.Default.WithIndentation());
+        request.PluginOptions = ByteString.CopyFrom("{}", Encoding.UTF8);
+        return new Plugin.File { Name = "request.json", Contents = ByteString.CopyFromUtf8(formatter.Format(request)) };
     }
 }

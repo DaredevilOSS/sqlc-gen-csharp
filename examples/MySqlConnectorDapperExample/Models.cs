@@ -55,6 +55,22 @@ public class MysqlType
     public byte[]? CMediumblob { get; init; }
     public byte[]? CLongblob { get; init; }
 };
+public class FinanceSale
+{
+    public long? BookId { get; init; }
+    public int? Copies { get; init; }
+    public double? Revenue { get; init; }
+    public FinanceSalesPrintType? PrintType { get; init; }
+    public short? FiscalYear { get; init; }
+};
+public enum FinanceSalesPrintType
+{
+    Invalid = 0, // reserved for invalid enum value
+    Paperback = 1,
+    Hardcover = 2,
+    Kindle = 3
+}
+
 public enum MysqlTypesCEnum
 {
     Invalid = 0, // reserved for invalid enum value

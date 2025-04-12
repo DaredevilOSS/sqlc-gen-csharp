@@ -10,9 +10,9 @@ namespace SqlcGenCsharp.Generators;
 
 internal class DataClassesGen(DbDriver dbDriver)
 {
-    public MemberDeclarationSyntax Generate(string name, ClassMember classMember, IList<Column> columns, Options options)
+    public MemberDeclarationSyntax Generate(string name, ClassMember? classMember, IList<Column> columns, Options options)
     {
-        var className = classMember.Name(name);
+        var className = classMember is null ? name : classMember.Value.Name(name);
         if (options.DotnetFramework.IsDotnetCore() && !options.UseDapper)
             return GenerateAsRecord(className, columns);
         return GenerateAsCLass(className, columns);
@@ -62,12 +62,12 @@ internal class DataClassesGen(DbDriver dbDriver)
         }
     }
 
-    private static string GetFieldName(Column column, Dictionary<string, int> seenEmbed)
+    private string GetFieldName(Column column, Dictionary<string, int> seenEmbed)
     {
         if (column.EmbedTable is null)
             return column.Name.ToPascalCase();
 
-        var fieldName = column.Name.ToModelName();
+        var fieldName = column.Name.ToModelName(column.EmbedTable.Schema, dbDriver.DefaultSchema);
         fieldName = seenEmbed.TryGetValue(fieldName, out var value)
             ? $"{fieldName}{value}" : fieldName;
         seenEmbed.TryAdd(fieldName, 1);

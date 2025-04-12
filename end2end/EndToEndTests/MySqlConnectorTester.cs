@@ -3,7 +3,7 @@ using NUnit.Framework;
 using System;
 using System.Threading.Tasks;
 
-namespace SqlcGenCsharpTests;
+namespace EndToEndTests;
 
 public partial class MySqlConnectorTester
 {

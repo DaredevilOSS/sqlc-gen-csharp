@@ -500,6 +500,7 @@ public class QuerySql
             csvWriter.Context.TypeConverterCache.AddConverter<DateTime?>(nullConverterFn);
             csvWriter.Context.TypeConverterCache.AddConverter<string?>(nullConverterFn);
             csvWriter.Context.TypeConverterCache.AddConverter<object?>(nullConverterFn);
+            csvWriter.Context.TypeConverterCache.AddConverter<FinanceSalesPrintType?>(nullConverterFn);
             csvWriter.Context.TypeConverterCache.AddConverter<MysqlTypesCEnum?>(nullConverterFn);
             await csvWriter.WriteRecordsAsync(args);
         }

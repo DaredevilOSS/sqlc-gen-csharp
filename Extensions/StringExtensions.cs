@@ -35,9 +35,10 @@ public static partial class StringExtensions
         return string.Concat(newValue[0].ToString().ToLower(), newValue.AsSpan(1));
     }
 
-    public static string ToModelName(this string value)
+    public static string ToModelName(this string value, string schema, string defaultSchema)
     {
-        return value.TrimEnd('s').ToPascalCase();
+        var schemaName = schema == defaultSchema ? string.Empty : schema;
+        return $"{schemaName}_{value.TrimEnd('s')}".ToPascalCase();
     }
 
     public static string AppendSemicolonUnlessEmpty(this string input)

@@ -2,7 +2,7 @@
 
     <PropertyGroup>
         <TargetFramework>net472</TargetFramework>
-        <RootNamespace>SqlcGenCsharpTests</RootNamespace>
+        <RootNamespace>EndToEndTests</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>

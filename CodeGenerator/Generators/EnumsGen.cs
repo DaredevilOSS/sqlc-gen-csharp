@@ -15,7 +15,7 @@ internal class EnumsGen(DbDriver dbDriver)
             .JoinByComma();
 
         var enumType = ParseMemberDeclaration($$"""
-               public enum {{name.ToModelName()}} 
+               public enum {{name}} 
                {
                    Invalid = 0, // reserved for invalid enum value
                    {{enumValuesDef}}

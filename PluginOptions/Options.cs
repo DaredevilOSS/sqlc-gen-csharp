@@ -20,6 +20,7 @@ public class Options
         OverrideDapperVersion = rawOptions.OverrideDapperVersion;
         NamespaceName = rawOptions.NamespaceName;
         DotnetFramework = DotnetFrameworkExtensions.ParseName(rawOptions.TargetFramework);
+        DebugRequest = rawOptions.DebugRequest;
     }
 
     public DriverName DriverName { get; }
@@ -35,6 +36,8 @@ public class Options
     public string OverrideDapperVersion { get; }
 
     public string NamespaceName { get; }
+
+    public bool DebugRequest { get; }
 
     private static readonly Dictionary<string, DriverName> EngineToDriverMapping = new()
     {
