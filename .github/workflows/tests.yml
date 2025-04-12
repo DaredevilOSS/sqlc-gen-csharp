@@ -22,11 +22,18 @@ jobs:
       
     steps:
       - uses: actions/checkout@v4
-  
+
+      - uses: sqlc-dev/setup-sqlc@v4
+        with:
+          sqlc-version: '${{ env.SQLC_VERSION }}'
+
+      - name: Verify pushed generated code is synced
+        run: |
+          sqlc -f sqlc.unit.test.yaml diff
+          
       - name: Run Tests
         run: |
           dotnet test RepositoryTests
-          sqlc generate -f sqlc.unit.test.yaml
           dotnet test CodegenTests
     
   end2end-tests:
