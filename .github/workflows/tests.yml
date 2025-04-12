@@ -28,6 +28,9 @@ jobs:
         with:
           sqlc-version: '${{ env.SQLC_VERSION }}'
 
+      - name: Dotnet publish
+        run: dotnet publish LocalRunner -c release --output dist/
+        
       - name: Verify pushed generated code is synced
         run: |
           sqlc -f sqlc.unit.test.yaml diff
