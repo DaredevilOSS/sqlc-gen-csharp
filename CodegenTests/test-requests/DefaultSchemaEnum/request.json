@@ -9,7 +9,7 @@
       "CodegenTests/test-requests/DefaultSchemaEnum/query.sql"
     ],
     "codegen": {
-      "out": "./CodegenTests//test-requests/DefaultSchemaEnum",
+      "out": "./CodegenTests/test-requests/DefaultSchemaEnum",
       "plugin": "csharp",
       "options": "eyJkZWJ1Z1JlcXVlc3QiOnRydWV9",
       "process": {

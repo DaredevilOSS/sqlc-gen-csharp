@@ -152,6 +152,7 @@ public class CodeGenerator
                     return schemaTables.Key;
             }
         }
+        // TODO fix why not mapping default schema to string.Empty
         throw new InvalidDataException($"No enum {e.Name} schema found.");
     }
 
@@ -204,7 +205,7 @@ public class CodeGenerator
     private static Plugin.File RequestToFile(GenerateRequest request)
     {
         var formatter = new JsonFormatter(JsonFormatter.Settings.Default.WithIndentation());
-        request.PluginOptions = ByteString.CopyFrom("{}", Encoding.UTF8);
+        request.PluginOptions = ByteString.CopyFrom("{}", Encoding.UTF8); // TODO this resets all of the options - should reset only DebugRequest option
         return new Plugin.File { Name = "request.json", Contents = ByteString.CopyFromUtf8(formatter.Format(request)) };
     }
 }

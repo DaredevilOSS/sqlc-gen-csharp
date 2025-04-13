@@ -9,7 +9,7 @@ sql:
     engine: "mysql"
     codegen:
       - plugin: csharp
-        out: ./CodegenTests//test-requests/DefaultSchemaEnum
+        out: ./CodegenTests/test-requests/DefaultSchemaEnum
         options:
           debugRequest: true
           
@@ -18,6 +18,6 @@ sql:
     engine: "mysql"
     codegen:
       - plugin: csharp
-        out: ./CodegenTests//test-requests/SchemaScopedEnum
+        out: ./CodegenTests/test-requests/SchemaScopedEnum
         options:
           debugRequest: true

@@ -38,7 +38,7 @@ public static partial class StringExtensions
     public static string ToModelName(this string value, string schema, string defaultSchema)
     {
         var schemaName = schema == defaultSchema ? string.Empty : schema;
-        return $"{schemaName}_{value.TrimEnd('s')}".ToPascalCase();
+        return $"{schemaName}_{value.TrimEnd('s')}".ToPascalCase(); // TODO implement better way to turn words to singular
     }
 
     public static string AppendSemicolonUnlessEmpty(this string input)
