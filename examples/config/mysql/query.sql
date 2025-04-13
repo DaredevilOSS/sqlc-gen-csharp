@@ -90,10 +90,10 @@ LIMIT 1;
 TRUNCATE TABLE mysql_types;
 
 -- name: CreateExtendedBio :exec
-INSERT INTO extended.biographies (author_name, name, bio_type) VALUES (?, ?, ?);
+INSERT INTO extended.bios (author_name, name, bio_type) VALUES (?, ?, ?);
 
 -- name: GetFirstExtendedBioByType :one
-SELECT * FROM extended.biographies WHERE bio_type = ? LIMIT 1;
+SELECT * FROM extended.bios WHERE bio_type = ? LIMIT 1;
 
--- name: TruncateExtendedBiographies :exec
-TRUNCATE TABLE extended.biographies;
+-- name: TruncateExtendedBios :exec
+TRUNCATE TABLE extended.bios;

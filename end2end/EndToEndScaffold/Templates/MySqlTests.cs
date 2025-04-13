@@ -559,18 +559,18 @@ public static class MySqlTests
                          {
                              AuthorName = {{Consts.BojackAuthor}},
                              Name = {{Consts.BojackBookTitle}},
-                             BioType = ExtendedBiographiesBioType.Memoir
+                             BioType = ExtendedBiosBioType.Memoir
                          });
                          var expected = new QuerySql.GetFirstExtendedBioByTypeRow
                          {
                              AuthorName = {{Consts.BojackAuthor}},
                              Name = {{Consts.BojackBookTitle}},
-                             BioType = ExtendedBiographiesBioType.Memoir
+                             BioType = ExtendedBiosBioType.Memoir
                          };
                      
                          var actual = await this.QuerySql.GetFirstExtendedBioByType(new QuerySql.GetFirstExtendedBioByTypeArgs
                          {
-                             BioType = ExtendedBiographiesBioType.Memoir
+                             BioType = ExtendedBiosBioType.Memoir
                          });
                          Assert.That(SingularEquals(expected, actual{{Consts.UnknownRecordValuePlaceholder}}));
                      }

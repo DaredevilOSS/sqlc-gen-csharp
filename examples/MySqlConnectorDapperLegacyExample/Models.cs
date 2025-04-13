@@ -56,11 +56,11 @@ namespace MySqlConnectorDapperLegacyExampleGen
         public byte[] CMediumblob { get; set; }
         public byte[] CLongblob { get; set; }
     };
-    public class ExtendedBiographie
+    public class ExtendedBio
     {
         public string AuthorName { get; set; }
         public string Name { get; set; }
-        public ExtendedBiographiesBioType? BioType { get; set; }
+        public ExtendedBiosBioType? BioType { get; set; }
     };
     public enum MysqlTypesCEnum
     {
@@ -70,7 +70,7 @@ namespace MySqlConnectorDapperLegacyExampleGen
         Big = 3
     }
 
-    public enum ExtendedBiographiesBioType
+    public enum ExtendedBiosBioType
     {
         Invalid = 0, // reserved for invalid enum value
         Autobiography = 1,

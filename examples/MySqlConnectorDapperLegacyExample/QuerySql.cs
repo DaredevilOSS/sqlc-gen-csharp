@@ -501,7 +501,7 @@ namespace MySqlConnectorDapperLegacyExampleGen
                 csvWriter.Context.TypeConverterCache.AddConverter<string>(nullConverterFn);
                 csvWriter.Context.TypeConverterCache.AddConverter<object>(nullConverterFn);
                 csvWriter.Context.TypeConverterCache.AddConverter<MysqlTypesCEnum?>(nullConverterFn);
-                csvWriter.Context.TypeConverterCache.AddConverter<ExtendedBiographiesBioType?>(nullConverterFn);
+                csvWriter.Context.TypeConverterCache.AddConverter<ExtendedBiosBioType?>(nullConverterFn);
                 await csvWriter.WriteRecordsAsync(args);
             }
 
@@ -632,12 +632,12 @@ namespace MySqlConnectorDapperLegacyExampleGen
             }
         }
 
-        private const string CreateExtendedBioSql = "INSERT INTO extended.biographies (author_name, name, bio_type) VALUES (@author_name, @name, @bio_type); SELECT LAST_INSERT_ID()";
+        private const string CreateExtendedBioSql = "INSERT INTO extended.bios (author_name, name, bio_type) VALUES (@author_name, @name, @bio_type); SELECT LAST_INSERT_ID()";
         public class CreateExtendedBioArgs
         {
             public string AuthorName { get; set; }
             public string Name { get; set; }
-            public ExtendedBiographiesBioType? BioType { get; set; }
+            public ExtendedBiosBioType? BioType { get; set; }
         };
         public async Task CreateExtendedBio(CreateExtendedBioArgs args)
         {
@@ -651,16 +651,16 @@ namespace MySqlConnectorDapperLegacyExampleGen
             }
         }
 
-        private const string GetFirstExtendedBioByTypeSql = "SELECT author_name, name, bio_type FROM extended.biographies WHERE bio_type = @bio_type LIMIT 1; SELECT LAST_INSERT_ID()";
+        private const string GetFirstExtendedBioByTypeSql = "SELECT author_name, name, bio_type FROM extended.bios WHERE bio_type = @bio_type LIMIT 1; SELECT LAST_INSERT_ID()";
         public class GetFirstExtendedBioByTypeRow
         {
             public string AuthorName { get; set; }
             public string Name { get; set; }
-            public ExtendedBiographiesBioType? BioType { get; set; }
+            public ExtendedBiosBioType? BioType { get; set; }
         };
         public class GetFirstExtendedBioByTypeArgs
         {
-            public ExtendedBiographiesBioType? BioType { get; set; }
+            public ExtendedBiosBioType? BioType { get; set; }
         };
         public async Task<GetFirstExtendedBioByTypeRow> GetFirstExtendedBioByType(GetFirstExtendedBioByTypeArgs args)
         {
@@ -673,12 +673,12 @@ namespace MySqlConnectorDapperLegacyExampleGen
             }
         }
 
-        private const string TruncateExtendedBiographiesSql = "TRUNCATE TABLE extended.biographies; SELECT LAST_INSERT_ID()";
-        public async Task TruncateExtendedBiographies()
+        private const string TruncateExtendedBiosSql = "TRUNCATE TABLE extended.bios; SELECT LAST_INSERT_ID()";
+        public async Task TruncateExtendedBios()
         {
             using (var connection = new MySqlConnection(ConnectionString))
             {
-                await connection.ExecuteAsync(TruncateExtendedBiographiesSql);
+                await connection.ExecuteAsync(TruncateExtendedBiosSql);
             }
         }
     }

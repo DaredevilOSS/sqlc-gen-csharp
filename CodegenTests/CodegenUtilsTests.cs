@@ -4,9 +4,7 @@ using Plugin;
 using SqlcGenCsharp;
 using SqlcGenCsharp.Drivers;
 using System.Text;
-using System.Xml;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
-using Enum = Plugin.Enum;
 
 namespace CodegenTests;
 

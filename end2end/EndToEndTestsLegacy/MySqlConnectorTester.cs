@@ -15,7 +15,7 @@ namespace EndToEndTests
         {
             await QuerySql.DeleteAllAuthors();
             await QuerySql.TruncateMysqlTypes();
-            await QuerySql.TruncateExtendedBiographies();
+            await QuerySql.TruncateExtendedBios();
         }
     }
 }

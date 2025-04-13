@@ -63,7 +63,7 @@ CREATE TABLE mysql_types (
 
 CREATE SCHEMA extended; 
 
-CREATE TABLE extended.biographies (
+CREATE TABLE extended.bios (
   author_name   VARCHAR(100),
   name          VARCHAR(100),
   bio_type      ENUM ('Autobiography', 'Biography', 'Memoir'),

@@ -442,7 +442,7 @@ public class QuerySql
             csvWriter.Context.TypeConverterCache.AddConverter<string?>(nullConverterFn);
             csvWriter.Context.TypeConverterCache.AddConverter<object?>(nullConverterFn);
             csvWriter.Context.TypeConverterCache.AddConverter<MysqlTypesCEnum?>(nullConverterFn);
-            csvWriter.Context.TypeConverterCache.AddConverter<ExtendedBiographiesBioType?>(nullConverterFn);
+            csvWriter.Context.TypeConverterCache.AddConverter<ExtendedBiosBioType?>(nullConverterFn);
             await csvWriter.WriteRecordsAsync(args);
         }
 
@@ -599,8 +599,8 @@ public class QuerySql
         }
     }
 
-    private const string CreateExtendedBioSql = "INSERT INTO extended.biographies (author_name, name, bio_type) VALUES (@author_name, @name, @bio_type)";
-    public readonly record struct CreateExtendedBioArgs(string? AuthorName, string? Name, ExtendedBiographiesBioType? BioType);
+    private const string CreateExtendedBioSql = "INSERT INTO extended.bios (author_name, name, bio_type) VALUES (@author_name, @name, @bio_type)";
+    public readonly record struct CreateExtendedBioArgs(string? AuthorName, string? Name, ExtendedBiosBioType? BioType);
     public async Task CreateExtendedBio(CreateExtendedBioArgs args)
     {
         using (var connection = new MySqlConnection(ConnectionString))
@@ -616,9 +616,9 @@ public class QuerySql
         }
     }
 
-    private const string GetFirstExtendedBioByTypeSql = "SELECT author_name, name, bio_type FROM extended.biographies WHERE bio_type = @bio_type LIMIT 1";
-    public readonly record struct GetFirstExtendedBioByTypeRow(string? AuthorName, string? Name, ExtendedBiographiesBioType? BioType);
-    public readonly record struct GetFirstExtendedBioByTypeArgs(ExtendedBiographiesBioType? BioType);
+    private const string GetFirstExtendedBioByTypeSql = "SELECT author_name, name, bio_type FROM extended.bios WHERE bio_type = @bio_type LIMIT 1";
+    public readonly record struct GetFirstExtendedBioByTypeRow(string? AuthorName, string? Name, ExtendedBiosBioType? BioType);
+    public readonly record struct GetFirstExtendedBioByTypeArgs(ExtendedBiosBioType? BioType);
     public async Task<GetFirstExtendedBioByTypeRow?> GetFirstExtendedBioByType(GetFirstExtendedBioByTypeArgs args)
     {
         using (var connection = new MySqlConnection(ConnectionString))
@@ -635,7 +635,7 @@ public class QuerySql
                         {
                             AuthorName = reader.IsDBNull(0) ? null : reader.GetString(0),
                             Name = reader.IsDBNull(1) ? null : reader.GetString(1),
-                            BioType = reader.IsDBNull(2) ? null : reader.GetString(2).ToExtendedBiographiesBioType()
+                            BioType = reader.IsDBNull(2) ? null : reader.GetString(2).ToExtendedBiosBioType()
                         };
                     }
                 }
@@ -645,13 +645,13 @@ public class QuerySql
         return null;
     }
 
-    private const string TruncateExtendedBiographiesSql = "TRUNCATE TABLE extended.biographies";
-    public async Task TruncateExtendedBiographies()
+    private const string TruncateExtendedBiosSql = "TRUNCATE TABLE extended.bios";
+    public async Task TruncateExtendedBios()
     {
         using (var connection = new MySqlConnection(ConnectionString))
         {
             await connection.OpenAsync();
-            using (var command = new MySqlCommand(TruncateExtendedBiographiesSql, connection))
+            using (var command = new MySqlCommand(TruncateExtendedBiosSql, connection))
             {
                 await command.ExecuteScalarAsync();
             }

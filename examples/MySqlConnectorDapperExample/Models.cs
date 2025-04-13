@@ -55,11 +55,11 @@ public class MysqlType
     public byte[]? CMediumblob { get; init; }
     public byte[]? CLongblob { get; init; }
 };
-public class ExtendedBiographie
+public class ExtendedBio
 {
     public string? AuthorName { get; init; }
     public string? Name { get; init; }
-    public ExtendedBiographiesBioType? BioType { get; init; }
+    public ExtendedBiosBioType? BioType { get; init; }
 };
 public enum MysqlTypesCEnum
 {
@@ -69,7 +69,7 @@ public enum MysqlTypesCEnum
     Big = 3
 }
 
-public enum ExtendedBiographiesBioType
+public enum ExtendedBiosBioType
 {
     Invalid = 0, // reserved for invalid enum value
     Autobiography = 1,

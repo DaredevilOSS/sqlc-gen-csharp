@@ -6,7 +6,7 @@ namespace MySqlConnectorExampleGen;
 public readonly record struct Author(long Id, string Name, string? Bio);
 public readonly record struct Book(long Id, string Name, long AuthorId, string? Description);
 public readonly record struct MysqlType(bool? CBool, bool? CBoolean, short? CTinyint, short? CSmallint, int? CMediumint, int? CInt, int? CInteger, long? CBigint, double? CFloat, decimal? CDecimal, decimal? CDec, decimal? CNumeric, decimal? CFixed, double? CDouble, double? CDoublePrecision, short? CYear, DateTime? CDate, string? CTime, DateTime? CDatetime, DateTime? CTimestamp, string? CChar, string? CNchar, string? CNationalChar, string? CVarchar, string? CTinytext, string? CMediumtext, string? CText, string? CLongtext, MysqlTypesCEnum? CEnum, byte? CBit, byte[]? CBinary, byte[]? CVarbinary, byte[]? CTinyblob, byte[]? CBlob, byte[]? CMediumblob, byte[]? CLongblob);
-public readonly record struct ExtendedBiographie(string? AuthorName, string? Name, ExtendedBiographiesBioType? BioType);
+public readonly record struct ExtendedBio(string? AuthorName, string? Name, ExtendedBiosBioType? BioType);
 public enum MysqlTypesCEnum
 {
     Invalid = 0, // reserved for invalid enum value
@@ -30,7 +30,7 @@ public static class MysqlTypesCEnumExtensions
     }
 }
 
-public enum ExtendedBiographiesBioType
+public enum ExtendedBiosBioType
 {
     Invalid = 0, // reserved for invalid enum value
     Autobiography = 1,
@@ -38,16 +38,16 @@ public enum ExtendedBiographiesBioType
     Memoir = 3
 }
 
-public static class ExtendedBiographiesBioTypeExtensions
+public static class ExtendedBiosBioTypeExtensions
 {
-    private static readonly Dictionary<string, ExtendedBiographiesBioType> StringToEnum = new Dictionary<string, ExtendedBiographiesBioType>()
+    private static readonly Dictionary<string, ExtendedBiosBioType> StringToEnum = new Dictionary<string, ExtendedBiosBioType>()
     {
-        [string.Empty] = ExtendedBiographiesBioType.Invalid,
-        ["Autobiography"] = ExtendedBiographiesBioType.Autobiography,
-        ["Biography"] = ExtendedBiographiesBioType.Biography,
-        ["Memoir"] = ExtendedBiographiesBioType.Memoir
+        [string.Empty] = ExtendedBiosBioType.Invalid,
+        ["Autobiography"] = ExtendedBiosBioType.Autobiography,
+        ["Biography"] = ExtendedBiosBioType.Biography,
+        ["Memoir"] = ExtendedBiosBioType.Memoir
     };
-    public static ExtendedBiographiesBioType ToExtendedBiographiesBioType(this string me)
+    public static ExtendedBiosBioType ToExtendedBiosBioType(this string me)
     {
         return StringToEnum[me];
     }
