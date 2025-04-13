@@ -20,6 +20,9 @@ public class Options
         OverrideDapperVersion = rawOptions.OverrideDapperVersion;
         NamespaceName = rawOptions.NamespaceName;
         DotnetFramework = DotnetFrameworkExtensions.ParseName(rawOptions.TargetFramework);
+
+        if (rawOptions.DebugRequest && generateRequest.Settings.Codegen.Wasm is not null)
+            throw new ArgumentException("debug request mode cannot be used with WASM plugin");
         DebugRequest = rawOptions.DebugRequest;
     }
 
