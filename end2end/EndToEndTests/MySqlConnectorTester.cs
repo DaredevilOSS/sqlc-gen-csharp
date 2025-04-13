@@ -15,5 +15,6 @@ public partial class MySqlConnectorTester
     {
         await QuerySql.DeleteAllAuthors();
         await QuerySql.TruncateMysqlTypes();
+        await QuerySql.TruncateExtendedBiographies();
     }
 }

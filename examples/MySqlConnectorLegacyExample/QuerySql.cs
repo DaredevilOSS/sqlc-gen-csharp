@@ -597,8 +597,8 @@ namespace MySqlConnectorLegacyExampleGen
                 csvWriter.Context.TypeConverterCache.AddConverter<DateTime?>(nullConverterFn);
                 csvWriter.Context.TypeConverterCache.AddConverter<string>(nullConverterFn);
                 csvWriter.Context.TypeConverterCache.AddConverter<object>(nullConverterFn);
-                csvWriter.Context.TypeConverterCache.AddConverter<FinanceSalesPrintType?>(nullConverterFn);
                 csvWriter.Context.TypeConverterCache.AddConverter<MysqlTypesCEnum?>(nullConverterFn);
+                csvWriter.Context.TypeConverterCache.AddConverter<ExtendedBiographiesBioType?>(nullConverterFn);
                 await csvWriter.WriteRecordsAsync(args);
             }
 
@@ -825,6 +825,78 @@ namespace MySqlConnectorLegacyExampleGen
             {
                 await connection.OpenAsync();
                 using (var command = new MySqlCommand(TruncateMysqlTypesSql, connection))
+                {
+                    await command.ExecuteScalarAsync();
+                }
+            }
+        }
+
+        private const string CreateExtendedBioSql = "INSERT INTO extended.biographies (author_name, name, bio_type) VALUES (@author_name, @name, @bio_type)";
+        public class CreateExtendedBioArgs
+        {
+            public string AuthorName { get; set; }
+            public string Name { get; set; }
+            public ExtendedBiographiesBioType? BioType { get; set; }
+        };
+        public async Task CreateExtendedBio(CreateExtendedBioArgs args)
+        {
+            using (var connection = new MySqlConnection(ConnectionString))
+            {
+                await connection.OpenAsync();
+                using (var command = new MySqlCommand(CreateExtendedBioSql, connection))
+                {
+                    command.Parameters.AddWithValue("@author_name", args.AuthorName ?? (object)DBNull.Value);
+                    command.Parameters.AddWithValue("@name", args.Name ?? (object)DBNull.Value);
+                    command.Parameters.AddWithValue("@bio_type", args.BioType ?? (object)DBNull.Value);
+                    await command.ExecuteScalarAsync();
+                }
+            }
+        }
+
+        private const string GetFirstExtendedBioByTypeSql = "SELECT author_name, name, bio_type FROM extended.biographies WHERE bio_type = @bio_type LIMIT 1";
+        public class GetFirstExtendedBioByTypeRow
+        {
+            public string AuthorName { get; set; }
+            public string Name { get; set; }
+            public ExtendedBiographiesBioType? BioType { get; set; }
+        };
+        public class GetFirstExtendedBioByTypeArgs
+        {
+            public ExtendedBiographiesBioType? BioType { get; set; }
+        };
+        public async Task<GetFirstExtendedBioByTypeRow> GetFirstExtendedBioByType(GetFirstExtendedBioByTypeArgs args)
+        {
+            using (var connection = new MySqlConnection(ConnectionString))
+            {
+                await connection.OpenAsync();
+                using (var command = new MySqlCommand(GetFirstExtendedBioByTypeSql, connection))
+                {
+                    command.Parameters.AddWithValue("@bio_type", args.BioType ?? (object)DBNull.Value);
+                    using (var reader = await command.ExecuteReaderAsync())
+                    {
+                        if (await reader.ReadAsync())
+                        {
+                            return new GetFirstExtendedBioByTypeRow
+                            {
+                                AuthorName = reader.IsDBNull(0) ? null : reader.GetString(0),
+                                Name = reader.IsDBNull(1) ? null : reader.GetString(1),
+                                BioType = reader.IsDBNull(2) ? (ExtendedBiographiesBioType? )null : reader.GetString(2).ToExtendedBiographiesBioType()
+                            };
+                        }
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        private const string TruncateExtendedBiographiesSql = "TRUNCATE TABLE extended.biographies";
+        public async Task TruncateExtendedBiographies()
+        {
+            using (var connection = new MySqlConnection(ConnectionString))
+            {
+                await connection.OpenAsync();
+                using (var command = new MySqlCommand(TruncateExtendedBiographiesSql, connection))
                 {
                     await command.ExecuteScalarAsync();
                 }

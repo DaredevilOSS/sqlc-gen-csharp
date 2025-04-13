@@ -8,12 +8,21 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Enum = Plugin.Enum;
 
 namespace SqlcGenCsharp;
 
 public class CodeGenerator
 {
+    private readonly HashSet<string> _excludedSchemas =
+    [
+        "pg_catalog",
+        "information_schema"
+    ];
+
     private Options? _options;
+    private Dictionary<string, Dictionary<string, Table>>? _tables;
+    private Dictionary<string, Dictionary<string, Enum>>? _enums;
     private List<Query>? _queries;
     private DbDriver? _dbDriver;
     private QueriesGen? _queriesGen;
@@ -21,21 +30,23 @@ public class CodeGenerator
     private UtilsGen? _utilsGen;
     private CsprojGen? _csprojGen;
 
-    private readonly HashSet<string> _excludedSchemas =
-    [
-        "pg_catalog",
-        "information_schema"
-    ];
-
     private Options Options
     {
         get => _options!;
         set => _options = value;
     }
 
-    private Dictionary<string, Dictionary<string, Table>> Tables { get; set; }
+    private Dictionary<string, Dictionary<string, Table>> Tables
+    {
+        get => _tables!;
+        set => _tables = value;
+    }
 
-    private Dictionary<string, Dictionary<string, Plugin.Enum>> Enums { get; set; }
+    private Dictionary<string, Dictionary<string, Enum>> Enums
+    {
+        get => _enums!;
+        set => _enums = value;
+    }
 
     private List<Query> Queries
     {
@@ -110,7 +121,7 @@ public class CodeGenerator
     /// </summary>
     /// <param name="catalog"></param>
     /// <returns></returns>
-    private Dictionary<string, Dictionary<string, Plugin.Enum>> ConstructEnumsLookup(Catalog catalog)
+    private Dictionary<string, Dictionary<string, Enum>> ConstructEnumsLookup(Catalog catalog)
     {
         var defaultSchemaCatalog = catalog.Schemas.First(s => s.Name == catalog.DefaultSchema);
         var schemaEnumTuples = defaultSchemaCatalog.Enums
@@ -130,7 +141,7 @@ public class CodeGenerator
         return schemaToEnums;
     }
 
-    private string FindEnumSchema(Plugin.Enum e)
+    private string FindEnumSchema(Enum e)
     {
         foreach (var schemaTables in Tables)
         {
@@ -138,7 +149,7 @@ public class CodeGenerator
             {
                 var isEnumColumn = table.Value.Columns.Any(c => c.Type.Name == e.Name);
                 if (isEnumColumn)
-                    return schemaTables.Key; ;
+                    return schemaTables.Key;
             }
         }
         throw new InvalidDataException($"No enum {e.Name} schema found.");

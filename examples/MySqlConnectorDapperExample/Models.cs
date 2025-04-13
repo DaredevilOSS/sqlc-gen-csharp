@@ -55,26 +55,24 @@ public class MysqlType
     public byte[]? CMediumblob { get; init; }
     public byte[]? CLongblob { get; init; }
 };
-public class FinanceSale
+public class ExtendedBiographie
 {
-    public long? BookId { get; init; }
-    public int? Copies { get; init; }
-    public double? Revenue { get; init; }
-    public FinanceSalesPrintType? PrintType { get; init; }
-    public short? FiscalYear { get; init; }
+    public string? AuthorName { get; init; }
+    public string? Name { get; init; }
+    public ExtendedBiographiesBioType? BioType { get; init; }
 };
-public enum FinanceSalesPrintType
-{
-    Invalid = 0, // reserved for invalid enum value
-    Paperback = 1,
-    Hardcover = 2,
-    Kindle = 3
-}
-
 public enum MysqlTypesCEnum
 {
     Invalid = 0, // reserved for invalid enum value
     Small = 1,
     Medium = 2,
     Big = 3
+}
+
+public enum ExtendedBiographiesBioType
+{
+    Invalid = 0, // reserved for invalid enum value
+    Autobiography = 1,
+    Biography = 2,
+    Memoir = 3
 }

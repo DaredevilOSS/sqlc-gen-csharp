@@ -52,7 +52,6 @@ public partial class SqliteDriver(
             .Concat(
                 [
                     UsingDirective(ParseName("System")),
-                    UsingDirective(ParseName("System.Linq")),
                     UsingDirective(ParseName("System.Text.RegularExpressions"))
                 ])
             .ToArray();

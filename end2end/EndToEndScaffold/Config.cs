@@ -54,6 +54,7 @@ public enum KnownTestType
     MySqlDateTimeDataTypes,
     MySqlBinaryDataTypes,
     MySqlEnumDataType,
+    MySqlScopedSchemaEnum,
 
     MySqlStringCopyFrom,
     MySqlIntegerCopyFrom,
@@ -92,6 +93,7 @@ internal static class Config
                     KnownTestType.MySqlDateTimeDataTypes,
                     KnownTestType.MySqlBinaryDataTypes,
                     KnownTestType.MySqlEnumDataType,
+                    KnownTestType.MySqlScopedSchemaEnum,
 
                     KnownTestType.MySqlStringCopyFrom,
                     KnownTestType.MySqlIntegerCopyFrom,
@@ -126,6 +128,7 @@ internal static class Config
                         KnownTestType.MySqlDateTimeDataTypes,
                         KnownTestType.MySqlBinaryDataTypes,
                         KnownTestType.MySqlEnumDataType,
+                        KnownTestType.MySqlScopedSchemaEnum,
 
                         KnownTestType.MySqlStringCopyFrom,
                         KnownTestType.MySqlIntegerCopyFrom,

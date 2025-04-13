@@ -8,18 +8,7 @@ CREATE TABLE books (
   id            BIGINT      PRIMARY KEY AUTO_INCREMENT,
   name          TEXT        NOT NULL,
   author_id     BIGINT      NOT NULL,
-  description   TEXT,
-  FOREIGN KEY (author_id) REFERENCES authors (id) ON DELETE CASCADE
-);
-
-CREATE SCHEMA finance;
-
-CREATE TABLE finance.sales (
-  book_id       BIGINT,
-  copies        INT,
-  revenue       DOUBLE PRECISION,
-  print_type    ENUM ('Paperback', 'Hardcover', 'Kindle'),
-  fiscal_year   YEAR
+  description   TEXT
 );
 
 CREATE TABLE mysql_types (
@@ -70,4 +59,13 @@ CREATE TABLE mysql_types (
   c_blob        BLOB,
   c_mediumblob  MEDIUMBLOB,
   c_longblob    LONGBLOB
+);
+
+CREATE SCHEMA extended; 
+
+CREATE TABLE extended.biographies (
+  author_name   VARCHAR(100),
+  name          VARCHAR(100),
+  bio_type      ENUM ('Autobiography', 'Biography', 'Memoir'),
+  PRIMARY KEY (author_name, name)
 );

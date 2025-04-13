@@ -56,37 +56,12 @@ namespace MySqlConnectorLegacyExampleGen
         public byte[] CMediumblob { get; set; }
         public byte[] CLongblob { get; set; }
     };
-    public class FinanceSale
+    public class ExtendedBiographie
     {
-        public long? BookId { get; set; }
-        public int? Copies { get; set; }
-        public double? Revenue { get; set; }
-        public FinanceSalesPrintType? PrintType { get; set; }
-        public short? FiscalYear { get; set; }
+        public string AuthorName { get; set; }
+        public string Name { get; set; }
+        public ExtendedBiographiesBioType? BioType { get; set; }
     };
-    public enum FinanceSalesPrintType
-    {
-        Invalid = 0, // reserved for invalid enum value
-        Paperback = 1,
-        Hardcover = 2,
-        Kindle = 3
-    }
-
-    public static class FinanceSalesPrintTypeExtensions
-    {
-        private static readonly Dictionary<string, FinanceSalesPrintType> StringToEnum = new Dictionary<string, FinanceSalesPrintType>()
-        {
-            [string.Empty] = FinanceSalesPrintType.Invalid,
-            ["Paperback"] = FinanceSalesPrintType.Paperback,
-            ["Hardcover"] = FinanceSalesPrintType.Hardcover,
-            ["Kindle"] = FinanceSalesPrintType.Kindle
-        };
-        public static FinanceSalesPrintType ToFinanceSalesPrintType(this string me)
-        {
-            return StringToEnum[me];
-        }
-    }
-
     public enum MysqlTypesCEnum
     {
         Invalid = 0, // reserved for invalid enum value
@@ -105,6 +80,29 @@ namespace MySqlConnectorLegacyExampleGen
             ["big"] = MysqlTypesCEnum.Big
         };
         public static MysqlTypesCEnum ToMysqlTypesCEnum(this string me)
+        {
+            return StringToEnum[me];
+        }
+    }
+
+    public enum ExtendedBiographiesBioType
+    {
+        Invalid = 0, // reserved for invalid enum value
+        Autobiography = 1,
+        Biography = 2,
+        Memoir = 3
+    }
+
+    public static class ExtendedBiographiesBioTypeExtensions
+    {
+        private static readonly Dictionary<string, ExtendedBiographiesBioType> StringToEnum = new Dictionary<string, ExtendedBiographiesBioType>()
+        {
+            [string.Empty] = ExtendedBiographiesBioType.Invalid,
+            ["Autobiography"] = ExtendedBiographiesBioType.Autobiography,
+            ["Biography"] = ExtendedBiographiesBioType.Biography,
+            ["Memoir"] = ExtendedBiographiesBioType.Memoir
+        };
+        public static ExtendedBiographiesBioType ToExtendedBiographiesBioType(this string me)
         {
             return StringToEnum[me];
         }

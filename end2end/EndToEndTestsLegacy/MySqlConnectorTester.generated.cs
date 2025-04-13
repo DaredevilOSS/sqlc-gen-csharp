@@ -447,6 +447,25 @@ namespace EndToEndTests
         }
 
         [Test]
+        public async Task TestMySqlScopedSchemaEnum()
+        {
+            await this.QuerySql.CreateExtendedBio(new QuerySql.CreateExtendedBioArgs { AuthorName = "Bojack Horseman", Name = "One Trick Pony", BioType = ExtendedBiographiesBioType.Memoir });
+            var expected = new QuerySql.GetFirstExtendedBioByTypeRow
+            {
+                AuthorName = "Bojack Horseman",
+                Name = "One Trick Pony",
+                BioType = ExtendedBiographiesBioType.Memoir
+            };
+            var actual = await this.QuerySql.GetFirstExtendedBioByType(new QuerySql.GetFirstExtendedBioByTypeArgs { BioType = ExtendedBiographiesBioType.Memoir });
+            Assert.That(SingularEquals(expected, actual));
+        }
+
+        private static bool SingularEquals(QuerySql.GetFirstExtendedBioByTypeRow x, QuerySql.GetFirstExtendedBioByTypeRow y)
+        {
+            return x.AuthorName.Equals(y.AuthorName) && x.Name.Equals(y.Name) && x.BioType.Equals(y.BioType);
+        }
+
+        [Test]
         [TestCase(100, "D", "\u4321", "\u2345", "Parasite", "Clockwork Orange", "Dr. Strangelove", "Interview with a Vampire", "Memento")]
         [TestCase(10, null, null, null, null, null, null, null, null)]
         public async Task TestStringCopyFrom(int batchSize, string cChar, string cNchar, string cNationalChar, string cVarchar, string cTinytext, string cMediumtext, string cText, string cLongtext)

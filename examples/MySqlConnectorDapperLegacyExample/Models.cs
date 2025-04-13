@@ -56,27 +56,25 @@ namespace MySqlConnectorDapperLegacyExampleGen
         public byte[] CMediumblob { get; set; }
         public byte[] CLongblob { get; set; }
     };
-    public class FinanceSale
+    public class ExtendedBiographie
     {
-        public long? BookId { get; set; }
-        public int? Copies { get; set; }
-        public double? Revenue { get; set; }
-        public FinanceSalesPrintType? PrintType { get; set; }
-        public short? FiscalYear { get; set; }
+        public string AuthorName { get; set; }
+        public string Name { get; set; }
+        public ExtendedBiographiesBioType? BioType { get; set; }
     };
-    public enum FinanceSalesPrintType
-    {
-        Invalid = 0, // reserved for invalid enum value
-        Paperback = 1,
-        Hardcover = 2,
-        Kindle = 3
-    }
-
     public enum MysqlTypesCEnum
     {
         Invalid = 0, // reserved for invalid enum value
         Small = 1,
         Medium = 2,
         Big = 3
+    }
+
+    public enum ExtendedBiographiesBioType
+    {
+        Invalid = 0, // reserved for invalid enum value
+        Autobiography = 1,
+        Biography = 2,
+        Memoir = 3
     }
 }

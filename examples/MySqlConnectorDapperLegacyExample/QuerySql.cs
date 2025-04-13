@@ -500,8 +500,8 @@ namespace MySqlConnectorDapperLegacyExampleGen
                 csvWriter.Context.TypeConverterCache.AddConverter<DateTime?>(nullConverterFn);
                 csvWriter.Context.TypeConverterCache.AddConverter<string>(nullConverterFn);
                 csvWriter.Context.TypeConverterCache.AddConverter<object>(nullConverterFn);
-                csvWriter.Context.TypeConverterCache.AddConverter<FinanceSalesPrintType?>(nullConverterFn);
                 csvWriter.Context.TypeConverterCache.AddConverter<MysqlTypesCEnum?>(nullConverterFn);
+                csvWriter.Context.TypeConverterCache.AddConverter<ExtendedBiographiesBioType?>(nullConverterFn);
                 await csvWriter.WriteRecordsAsync(args);
             }
 
@@ -629,6 +629,56 @@ namespace MySqlConnectorDapperLegacyExampleGen
             using (var connection = new MySqlConnection(ConnectionString))
             {
                 await connection.ExecuteAsync(TruncateMysqlTypesSql);
+            }
+        }
+
+        private const string CreateExtendedBioSql = "INSERT INTO extended.biographies (author_name, name, bio_type) VALUES (@author_name, @name, @bio_type); SELECT LAST_INSERT_ID()";
+        public class CreateExtendedBioArgs
+        {
+            public string AuthorName { get; set; }
+            public string Name { get; set; }
+            public ExtendedBiographiesBioType? BioType { get; set; }
+        };
+        public async Task CreateExtendedBio(CreateExtendedBioArgs args)
+        {
+            using (var connection = new MySqlConnection(ConnectionString))
+            {
+                var queryParams = new Dictionary<string, object>();
+                queryParams.Add("author_name", args.AuthorName);
+                queryParams.Add("name", args.Name);
+                queryParams.Add("bio_type", args.BioType);
+                await connection.ExecuteAsync(CreateExtendedBioSql, queryParams);
+            }
+        }
+
+        private const string GetFirstExtendedBioByTypeSql = "SELECT author_name, name, bio_type FROM extended.biographies WHERE bio_type = @bio_type LIMIT 1; SELECT LAST_INSERT_ID()";
+        public class GetFirstExtendedBioByTypeRow
+        {
+            public string AuthorName { get; set; }
+            public string Name { get; set; }
+            public ExtendedBiographiesBioType? BioType { get; set; }
+        };
+        public class GetFirstExtendedBioByTypeArgs
+        {
+            public ExtendedBiographiesBioType? BioType { get; set; }
+        };
+        public async Task<GetFirstExtendedBioByTypeRow> GetFirstExtendedBioByType(GetFirstExtendedBioByTypeArgs args)
+        {
+            using (var connection = new MySqlConnection(ConnectionString))
+            {
+                var queryParams = new Dictionary<string, object>();
+                queryParams.Add("bio_type", args.BioType);
+                var result = await connection.QueryFirstOrDefaultAsync<GetFirstExtendedBioByTypeRow>(GetFirstExtendedBioByTypeSql, queryParams);
+                return result;
+            }
+        }
+
+        private const string TruncateExtendedBiographiesSql = "TRUNCATE TABLE extended.biographies; SELECT LAST_INSERT_ID()";
+        public async Task TruncateExtendedBiographies()
+        {
+            using (var connection = new MySqlConnection(ConnectionString))
+            {
+                await connection.ExecuteAsync(TruncateExtendedBiographiesSql);
             }
         }
     }
