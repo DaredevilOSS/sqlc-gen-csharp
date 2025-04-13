@@ -80,9 +80,9 @@ internal class QueriesGen(DbDriver dbDriver, string namespaceName)
                 .AppendIfNotNull(GetQueryParamsDataclass(query))
                 .Append(AddMethodDeclaration(query));
         }
-        catch (Exception e)
+        catch (NotSupportedException e)
         {
-            throw new Exception($"Failed to get members for query: {query.Name}", e);
+            throw new SystemException($"Failed to get members for query: {query.Name}", e);
         }
     }
 

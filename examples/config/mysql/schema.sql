@@ -8,7 +8,8 @@ CREATE TABLE books (
   id            BIGINT      PRIMARY KEY AUTO_INCREMENT,
   name          TEXT        NOT NULL,
   author_id     BIGINT      NOT NULL,
-  description   TEXT
+  description   TEXT,
+  FOREIGN KEY (author_id) REFERENCES authors (id) ON DELETE CASCADE
 );
 
 CREATE TABLE mysql_types (

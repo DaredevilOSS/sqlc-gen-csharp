@@ -6,19 +6,8 @@ using File = System.IO.File;
 
 namespace CodegenTests;
 
-public static class RequestHelper
+public static class TestRequestHelper
 {
-    public static void GenerateRequestFile(string filename)
-    {
-        var process = new System.Diagnostics.Process();
-        var startInfo = new System.Diagnostics.ProcessStartInfo();
-        startInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
-        startInfo.FileName = "cmd.exe";
-        startInfo.Arguments = "/C copy /b Image1.jpg + Archive.rar Image2.jpg";
-        process.StartInfo = startInfo;
-        process.Start();
-    }
-
     public static GenerateRequest ParseRequestFile(string filename)
     {
 

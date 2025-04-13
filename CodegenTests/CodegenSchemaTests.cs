@@ -12,7 +12,7 @@ public class CodegenSchemaTests
     public void TestDefaultSchemaEnum()
     {
         const string filename = "DefaultSchemaEnum/request.json";
-        var request = RequestHelper.ParseRequestFile(filename);
+        var request = TestRequestHelper.ParseRequestFile(filename);
         var response = CodeGenerator.Generate(request);
 
         var generatedModelsFile = response.Result.Files.First(f => f.Name == "Models.cs");
@@ -35,7 +35,7 @@ public class CodegenSchemaTests
     public void TestSchemaScopedEnum()
     {
         const string filename = "SchemaScopedEnum/request.json";
-        var request = RequestHelper.ParseRequestFile(filename);
+        var request = TestRequestHelper.ParseRequestFile(filename);
         var response = CodeGenerator.Generate(request);
 
         var generatedModelsFile = response.Result.Files.First(f => f.Name == "Models.cs");
