@@ -20,7 +20,7 @@ public class CodegenSchemaTests
 
         var generatedModelsFileContents = generatedModelsFile.Contents.ToStringUtf8();
         var modelsCode = ParseCompilationUnit(generatedModelsFileContents);
-        
+
         var expected = new HashSet<string>
         {
             "DummyTable",
