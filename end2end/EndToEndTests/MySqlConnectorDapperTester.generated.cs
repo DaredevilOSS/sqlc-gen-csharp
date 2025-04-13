@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace SqlcGenCsharpTests
+namespace EndToEndTests
 {
     [TestFixture]
     public partial class MySqlConnectorDapperTester
@@ -444,6 +444,25 @@ namespace SqlcGenCsharpTests
             };
             var actual = await QuerySql.GetMysqlTypes();
             Assert.That(actual.CEnum, Is.EqualTo(expected.CEnum));
+        }
+
+        [Test]
+        public async Task TestMySqlScopedSchemaEnum()
+        {
+            await this.QuerySql.CreateExtendedBio(new QuerySql.CreateExtendedBioArgs { AuthorName = "Bojack Horseman", Name = "One Trick Pony", BioType = ExtendedBiosBioType.Memoir });
+            var expected = new QuerySql.GetFirstExtendedBioByTypeRow
+            {
+                AuthorName = "Bojack Horseman",
+                Name = "One Trick Pony",
+                BioType = ExtendedBiosBioType.Memoir
+            };
+            var actual = await this.QuerySql.GetFirstExtendedBioByType(new QuerySql.GetFirstExtendedBioByTypeArgs { BioType = ExtendedBiosBioType.Memoir });
+            Assert.That(SingularEquals(expected, actual));
+        }
+
+        private static bool SingularEquals(QuerySql.GetFirstExtendedBioByTypeRow x, QuerySql.GetFirstExtendedBioByTypeRow y)
+        {
+            return x.AuthorName.Equals(y.AuthorName) && x.Name.Equals(y.Name) && x.BioType.Equals(y.BioType);
         }
 
         [Test]

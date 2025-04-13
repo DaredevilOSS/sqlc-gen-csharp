@@ -72,11 +72,18 @@ internal class QueriesGen(DbDriver dbDriver, string namespaceName)
 
     private IEnumerable<MemberDeclarationSyntax> GetMembersForSingleQuery(Query query)
     {
-        return new List<MemberDeclarationSyntax>()
-            .AppendIfNotNull(GetQueryTextConstant(query))
-            .AppendIfNotNull(GetQueryColumnsDataclass(query))
-            .AppendIfNotNull(GetQueryParamsDataclass(query))
-            .Append(AddMethodDeclaration(query));
+        try
+        {
+            return new List<MemberDeclarationSyntax>()
+                .AppendIfNotNull(GetQueryTextConstant(query))
+                .AppendIfNotNull(GetQueryColumnsDataclass(query))
+                .AppendIfNotNull(GetQueryParamsDataclass(query))
+                .Append(AddMethodDeclaration(query));
+        }
+        catch (NotSupportedException e)
+        {
+            throw new SystemException($"Failed to get members for query: {query.Name}", e);
+        }
     }
 
     private MemberDeclarationSyntax? GetQueryColumnsDataclass(Query query)

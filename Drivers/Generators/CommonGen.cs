@@ -107,7 +107,7 @@ public class CommonGen(DbDriver dbDriver)
                 continue;
             }
 
-            var tableFieldType = column.EmbedTable.Name.ToModelName();
+            var tableFieldType = column.EmbedTable.Name.ToModelName(column.EmbedTable.Schema, dbDriver.DefaultSchema);
             var tableFieldName = seenEmbed.TryGetValue(tableFieldType, out var value)
                 ? $"{tableFieldType}{value}" : tableFieldType;
             seenEmbed.TryAdd(tableFieldType, 1);
@@ -122,7 +122,8 @@ public class CommonGen(DbDriver dbDriver)
 
         string[] GetAsEmbeddedTableColumnAssignment(Column tableColumn, int ordinal)
         {
-            var tableColumns = dbDriver.Tables[tableColumn.EmbedTable.Name].Columns;
+            var schemaName = tableColumn.EmbedTable.Schema == dbDriver.DefaultSchema ? string.Empty : tableColumn.EmbedTable.Schema;
+            var tableColumns = dbDriver.Tables[schemaName][tableColumn.EmbedTable.Name].Columns;
             return tableColumns
                 .Select((c, o) => GetAsSimpleAssignment(c, o + ordinal))
                 .ToArray();

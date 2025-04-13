@@ -1,6 +1,7 @@
+using EndToEndTests;
 using NUnit.Framework;
 
-namespace SqlcGenCsharpTests
+namespace EndToEndTests
 {
     [SetUpFixture]
     public class GlobalSetup

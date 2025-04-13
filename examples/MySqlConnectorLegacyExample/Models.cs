@@ -56,6 +56,12 @@ namespace MySqlConnectorLegacyExampleGen
         public byte[] CMediumblob { get; set; }
         public byte[] CLongblob { get; set; }
     };
+    public class ExtendedBio
+    {
+        public string AuthorName { get; set; }
+        public string Name { get; set; }
+        public ExtendedBiosBioType? BioType { get; set; }
+    };
     public enum MysqlTypesCEnum
     {
         Invalid = 0, // reserved for invalid enum value
@@ -74,6 +80,29 @@ namespace MySqlConnectorLegacyExampleGen
             ["big"] = MysqlTypesCEnum.Big
         };
         public static MysqlTypesCEnum ToMysqlTypesCEnum(this string me)
+        {
+            return StringToEnum[me];
+        }
+    }
+
+    public enum ExtendedBiosBioType
+    {
+        Invalid = 0, // reserved for invalid enum value
+        Autobiography = 1,
+        Biography = 2,
+        Memoir = 3
+    }
+
+    public static class ExtendedBiosBioTypeExtensions
+    {
+        private static readonly Dictionary<string, ExtendedBiosBioType> StringToEnum = new Dictionary<string, ExtendedBiosBioType>()
+        {
+            [string.Empty] = ExtendedBiosBioType.Invalid,
+            ["Autobiography"] = ExtendedBiosBioType.Autobiography,
+            ["Biography"] = ExtendedBiosBioType.Biography,
+            ["Memoir"] = ExtendedBiosBioType.Memoir
+        };
+        public static ExtendedBiosBioType ToExtendedBiosBioType(this string me)
         {
             return StringToEnum[me];
         }

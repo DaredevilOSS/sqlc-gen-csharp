@@ -61,3 +61,12 @@ CREATE TABLE mysql_types (
   c_mediumblob  MEDIUMBLOB,
   c_longblob    LONGBLOB
 );
+
+CREATE SCHEMA extended; 
+
+CREATE TABLE extended.bios (
+  author_name   VARCHAR(100),
+  name          VARCHAR(100),
+  bio_type      ENUM ('Autobiography', 'Biography', 'Memoir'),
+  PRIMARY KEY (author_name, name)
+);

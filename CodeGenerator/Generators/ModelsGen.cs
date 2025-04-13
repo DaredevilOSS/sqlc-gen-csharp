@@ -19,7 +19,9 @@ internal class ModelsGen(DbDriver dbDriver, string namespaceName)
 
     private EnumsGen EnumsGen { get; } = new(dbDriver);
 
-    public File GenerateFile(Dictionary<string, Table> tables, Dictionary<string, Enum> enums)
+    public File GenerateFile(
+        Dictionary<string, Dictionary<string, Table>> tables,
+        Dictionary<string, Dictionary<string, Enum>> enums)
     {
         var usingDirectives = dbDriver.GetUsingDirectivesForModels();
         var dataclassModels = GenerateDataClasses(tables);
@@ -38,17 +40,25 @@ internal class ModelsGen(DbDriver dbDriver, string namespaceName)
         };
     }
 
-    private MemberDeclarationSyntax[] GenerateDataClasses(Dictionary<string, Table> tables)
+    private MemberDeclarationSyntax[] GenerateDataClasses(Dictionary<string, Dictionary<string, Table>> tables)
     {
         return (
-            from table in tables.Values
-            let className = $"{table.Rel.Schema}_{table.Rel.Name}"
-            select DataClassesGen.Generate(className.ToModelName(), ClassMember.Model, table.Columns, dbDriver.Options)
+            from schemaTables in tables
+            from table in schemaTables.Value
+            let className = table.Value.Rel.Name.ToModelName(table.Value.Rel.Schema, dbDriver.DefaultSchema)
+            select DataClassesGen.Generate(className, null, table.Value.Columns, dbDriver.Options)
         ).ToArray();
     }
 
-    private MemberDeclarationSyntax[] GenerateEnums(Dictionary<string, Enum> enums)
+    private MemberDeclarationSyntax[] GenerateEnums(Dictionary<string, Dictionary<string, Enum>> enums)
     {
-        return enums.Values.SelectMany(e => EnumsGen.Generate(e.Name, e.Vals)).ToArray();
+        return enums.SelectMany(s =>
+        {
+            return s.Value.SelectMany(e =>
+            {
+                var enumName = e.Value.Name.ToModelName(s.Key, dbDriver.DefaultSchema);
+                return EnumsGen.Generate(enumName, e.Value.Vals);
+            });
+        }).ToArray();
     }
 }

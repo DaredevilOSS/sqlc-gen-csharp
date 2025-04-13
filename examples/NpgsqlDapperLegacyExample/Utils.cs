@@ -8,7 +8,7 @@ namespace NpgsqlDapperLegacyExampleGen
 
     public static class Utils
     {
-        public class NpgsqlTypeHandler<T> : SqlMapper.TypeHandler<T>
+        private class NpgsqlTypeHandler<T> : SqlMapper.TypeHandler<T>
         {
             public override T Parse(object value)
             {

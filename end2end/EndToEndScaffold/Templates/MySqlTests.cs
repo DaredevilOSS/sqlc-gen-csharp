@@ -549,5 +549,37 @@ public static class MySqlTests
                      }
                      """
         },
+        [KnownTestType.MySqlScopedSchemaEnum] = new TestImpl
+        {
+            Impl = $$"""
+                     [Test]
+                     public async Task TestMySqlScopedSchemaEnum()
+                     {
+                         await this.QuerySql.CreateExtendedBio(new QuerySql.CreateExtendedBioArgs
+                         {
+                             AuthorName = {{Consts.BojackAuthor}},
+                             Name = {{Consts.BojackBookTitle}},
+                             BioType = ExtendedBiosBioType.Memoir
+                         });
+                         var expected = new QuerySql.GetFirstExtendedBioByTypeRow
+                         {
+                             AuthorName = {{Consts.BojackAuthor}},
+                             Name = {{Consts.BojackBookTitle}},
+                             BioType = ExtendedBiosBioType.Memoir
+                         };
+                     
+                         var actual = await this.QuerySql.GetFirstExtendedBioByType(new QuerySql.GetFirstExtendedBioByTypeArgs
+                         {
+                             BioType = ExtendedBiosBioType.Memoir
+                         });
+                         Assert.That(SingularEquals(expected, actual{{Consts.UnknownRecordValuePlaceholder}}));
+                     }
+
+                     private static bool SingularEquals(QuerySql.GetFirstExtendedBioByTypeRow x, QuerySql.GetFirstExtendedBioByTypeRow y)
+                     {
+                         return x.AuthorName.Equals(y.AuthorName) && x.Name.Equals(y.Name) && x.BioType.Equals(y.BioType);
+                     }
+                     """
+        }
     };
 }

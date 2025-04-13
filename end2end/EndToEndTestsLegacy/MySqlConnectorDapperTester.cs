@@ -3,7 +3,7 @@ using NUnit.Framework;
 using System;
 using System.Threading.Tasks;
 
-namespace SqlcGenCsharpTests
+namespace EndToEndTests
 {
     public partial class MySqlConnectorDapperTester
     {
@@ -15,6 +15,7 @@ namespace SqlcGenCsharpTests
         {
             await QuerySql.DeleteAllAuthors();
             await QuerySql.TruncateMysqlTypes();
+            await QuerySql.TruncateExtendedBios();
         }
     }
 }

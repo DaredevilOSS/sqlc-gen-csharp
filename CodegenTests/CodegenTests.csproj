@@ -4,13 +4,12 @@
         <TargetFramework>net8.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
-
         <IsPackable>false</IsPackable>
         <IsTestProject>true</IsTestProject>
     </PropertyGroup>
 
     <ItemGroup>
-        <Content Include="../.env">
+        <Content Include="test-requests/**">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </Content>
     </ItemGroup>
@@ -31,7 +30,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\CodeGenerator\CodeGenerator.csproj" />
-        <ProjectReference Include="..\Drivers\Drivers.csproj" />
+      <ProjectReference Include="..\Drivers\Drivers.csproj" />
       <ProjectReference Include="..\GeneratedProtobuf\GeneratedProtobuf.csproj" />
     </ItemGroup>
 

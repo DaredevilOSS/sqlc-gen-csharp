@@ -10,10 +10,11 @@ namespace SqlcGenCsharp.Drivers;
 
 public partial class SqliteDriver(
     Options options,
-    Dictionary<string, Table> tables,
-    Dictionary<string, Enum> enums,
+    string defaultSchema,
+    Dictionary<string, Dictionary<string, Table>> tables,
+    Dictionary<string, Dictionary<string, Enum>> enums,
     IList<Query> queries) :
-    DbDriver(options, tables, enums, queries), IOne, IMany, IExec, IExecRows, IExecLastId, ICopyFrom
+    DbDriver(options, defaultSchema, tables, enums, queries), IOne, IMany, IExec, IExecRows, IExecLastId, ICopyFrom
 {
     protected override List<ColumnMapping> ColumnMappings { get; } = [
         new("byte[]", new Dictionary<string, DbTypeInfo>
@@ -51,7 +52,6 @@ public partial class SqliteDriver(
             .Concat(
                 [
                     UsingDirective(ParseName("System")),
-                    UsingDirective(ParseName("System.Linq")),
                     UsingDirective(ParseName("System.Text.RegularExpressions"))
                 ])
             .ToArray();

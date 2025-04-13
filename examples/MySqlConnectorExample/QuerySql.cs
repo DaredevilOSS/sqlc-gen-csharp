@@ -442,6 +442,7 @@ public class QuerySql
             csvWriter.Context.TypeConverterCache.AddConverter<string?>(nullConverterFn);
             csvWriter.Context.TypeConverterCache.AddConverter<object?>(nullConverterFn);
             csvWriter.Context.TypeConverterCache.AddConverter<MysqlTypesCEnum?>(nullConverterFn);
+            csvWriter.Context.TypeConverterCache.AddConverter<ExtendedBiosBioType?>(nullConverterFn);
             await csvWriter.WriteRecordsAsync(args);
         }
 
@@ -592,6 +593,65 @@ public class QuerySql
         {
             await connection.OpenAsync();
             using (var command = new MySqlCommand(TruncateMysqlTypesSql, connection))
+            {
+                await command.ExecuteScalarAsync();
+            }
+        }
+    }
+
+    private const string CreateExtendedBioSql = "INSERT INTO extended.bios (author_name, name, bio_type) VALUES (@author_name, @name, @bio_type)";
+    public readonly record struct CreateExtendedBioArgs(string? AuthorName, string? Name, ExtendedBiosBioType? BioType);
+    public async Task CreateExtendedBio(CreateExtendedBioArgs args)
+    {
+        using (var connection = new MySqlConnection(ConnectionString))
+        {
+            await connection.OpenAsync();
+            using (var command = new MySqlCommand(CreateExtendedBioSql, connection))
+            {
+                command.Parameters.AddWithValue("@author_name", args.AuthorName ?? (object)DBNull.Value);
+                command.Parameters.AddWithValue("@name", args.Name ?? (object)DBNull.Value);
+                command.Parameters.AddWithValue("@bio_type", args.BioType ?? (object)DBNull.Value);
+                await command.ExecuteScalarAsync();
+            }
+        }
+    }
+
+    private const string GetFirstExtendedBioByTypeSql = "SELECT author_name, name, bio_type FROM extended.bios WHERE bio_type = @bio_type LIMIT 1";
+    public readonly record struct GetFirstExtendedBioByTypeRow(string? AuthorName, string? Name, ExtendedBiosBioType? BioType);
+    public readonly record struct GetFirstExtendedBioByTypeArgs(ExtendedBiosBioType? BioType);
+    public async Task<GetFirstExtendedBioByTypeRow?> GetFirstExtendedBioByType(GetFirstExtendedBioByTypeArgs args)
+    {
+        using (var connection = new MySqlConnection(ConnectionString))
+        {
+            await connection.OpenAsync();
+            using (var command = new MySqlCommand(GetFirstExtendedBioByTypeSql, connection))
+            {
+                command.Parameters.AddWithValue("@bio_type", args.BioType ?? (object)DBNull.Value);
+                using (var reader = await command.ExecuteReaderAsync())
+                {
+                    if (await reader.ReadAsync())
+                    {
+                        return new GetFirstExtendedBioByTypeRow
+                        {
+                            AuthorName = reader.IsDBNull(0) ? null : reader.GetString(0),
+                            Name = reader.IsDBNull(1) ? null : reader.GetString(1),
+                            BioType = reader.IsDBNull(2) ? null : reader.GetString(2).ToExtendedBiosBioType()
+                        };
+                    }
+                }
+            }
+        }
+
+        return null;
+    }
+
+    private const string TruncateExtendedBiosSql = "TRUNCATE TABLE extended.bios";
+    public async Task TruncateExtendedBios()
+    {
+        using (var connection = new MySqlConnection(ConnectionString))
+        {
+            await connection.OpenAsync();
+            using (var command = new MySqlCommand(TruncateExtendedBiosSql, connection))
             {
                 await command.ExecuteScalarAsync();
             }

@@ -1,0 +1,85 @@
+{
+  "settings": {
+    "version": "2",
+    "engine": "mysql",
+    "schema": [
+      "./CodegenTests/test-requests/SchemaScopedEnum/schema.sql"
+    ],
+    "queries": [
+      "./CodegenTests/test-requests/SchemaScopedEnum/query.sql"
+    ],
+    "codegen": {
+      "out": "./CodegenTests/test-requests/SchemaScopedEnum",
+      "plugin": "csharp",
+      "options": "eyJkZWJ1Z1JlcXVlc3QiOnRydWV9",
+      "process": {
+        "cmd": "./dist/LocalRunner"
+      }
+    }
+  },
+  "catalog": {
+    "defaultSchema": "public",
+    "schemas": [
+      {
+        "name": "public",
+        "enums": [
+          {
+            "name": "dummy_table_dummy_column",
+            "vals": [
+              "x",
+              "y"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "dummy_schema",
+        "tables": [
+          {
+            "rel": {
+              "schema": "dummy_schema",
+              "name": "dummy_table"
+            },
+            "columns": [
+              {
+                "name": "dummy_column",
+                "length": 1,
+                "table": {
+                  "schema": "dummy_schema",
+                  "name": "dummy_table"
+                },
+                "type": {
+                  "name": "dummy_table_dummy_column"
+                }
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "queries": [
+    {
+      "text": "SELECT dummy_column FROM dummy_schema.dummy_table LIMIT 1",
+      "name": "Test",
+      "cmd": ":one",
+      "columns": [
+        {
+          "name": "dummy_column",
+          "length": 1,
+          "table": {
+            "schema": "dummy_schema",
+            "name": "dummy_table"
+          },
+          "type": {
+            "name": "dummy_table_dummy_column"
+          },
+          "originalName": "dummy_column"
+        }
+      ],
+      "filename": "query.sql"
+    }
+  ],
+  "sqlc_version": "v1.27.0",
+  "plugin_options": "e30="
+}

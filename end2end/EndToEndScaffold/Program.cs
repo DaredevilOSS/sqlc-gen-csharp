@@ -51,7 +51,7 @@ public static class Program
                  using System.Linq;
                  using System.Threading.Tasks;
 
-                 namespace SqlcGenCsharpTests
+                 namespace EndToEndTests
                  {
                      [TestFixture]
                      public partial class {{testClassName}}

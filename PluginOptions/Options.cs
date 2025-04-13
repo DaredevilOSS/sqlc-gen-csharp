@@ -20,6 +20,10 @@ public class Options
         OverrideDapperVersion = rawOptions.OverrideDapperVersion;
         NamespaceName = rawOptions.NamespaceName;
         DotnetFramework = DotnetFrameworkExtensions.ParseName(rawOptions.TargetFramework);
+
+        if (rawOptions.DebugRequest && generateRequest.Settings.Codegen.Wasm is not null)
+            throw new ArgumentException("debug request mode cannot be used with WASM plugin");
+        DebugRequest = rawOptions.DebugRequest;
     }
 
     public DriverName DriverName { get; }
@@ -35,6 +39,8 @@ public class Options
     public string OverrideDapperVersion { get; }
 
     public string NamespaceName { get; }
+
+    public bool DebugRequest { get; }
 
     private static readonly Dictionary<string, DriverName> EngineToDriverMapping = new()
     {

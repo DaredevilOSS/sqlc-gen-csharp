@@ -1,3 +1,4 @@
+using Google.Protobuf;
 using Plugin;
 using SqlcGenCsharp.Drivers;
 using SqlcGenCsharp.Generators;
@@ -5,16 +6,24 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
+using Enum = Plugin.Enum;
 
 namespace SqlcGenCsharp;
 
 public class CodeGenerator
 {
+    private readonly HashSet<string> _excludedSchemas =
+    [
+        "pg_catalog",
+        "information_schema"
+    ];
+
     private Options? _options;
-    private Dictionary<string, Table>? _tables;
-    private Dictionary<string, Plugin.Enum>? _enums;
-    private IList<Query>? _queries;
+    private Dictionary<string, Dictionary<string, Table>>? _tables;
+    private Dictionary<string, Dictionary<string, Enum>>? _enums;
+    private List<Query>? _queries;
     private DbDriver? _dbDriver;
     private QueriesGen? _queriesGen;
     private ModelsGen? _modelsGen;
@@ -27,19 +36,19 @@ public class CodeGenerator
         set => _options = value;
     }
 
-    private Dictionary<string, Table> Tables
+    private Dictionary<string, Dictionary<string, Table>> Tables
     {
         get => _tables!;
         set => _tables = value;
     }
 
-    private Dictionary<string, Plugin.Enum> Enums
+    private Dictionary<string, Dictionary<string, Enum>> Enums
     {
         get => _enums!;
         set => _enums = value;
     }
 
-    private IList<Query> Queries
+    private List<Query> Queries
     {
         get => _queries!;
         set => _queries = value;
@@ -80,22 +89,15 @@ public class CodeGenerator
         var outputDirectory = generateRequest.Settings.Codegen.Out;
         var projectName = new DirectoryInfo(outputDirectory).Name;
         Options = new Options(generateRequest);
-
-        // TODO currently only default schema is considered - should consider all non-internal schemas
-        Tables = generateRequest.Catalog.Schemas
-            .Where(schema => schema.Name == generateRequest.Catalog.DefaultSchema)
-            .SelectMany(schema => schema.Tables)
-            .ToDictionary(table => table.Rel.Name, table => table);
-
-        Enums = generateRequest.Catalog.Schemas
-            .Where(schema => schema.Name == generateRequest.Catalog.DefaultSchema)
-            .SelectMany(schema => schema.Enums)
-            .ToDictionary(e => e.Name, e => e);
+        if (Options.DebugRequest)
+            return;
 
         Queries = generateRequest.Queries.ToList();
+        Tables = ConstructTablesLookup(generateRequest.Catalog);
+        Enums = ConstructEnumsLookup(generateRequest.Catalog);
 
         var namespaceName = Options.NamespaceName == string.Empty ? projectName : Options.NamespaceName;
-        DbDriver = InstantiateDriver();
+        DbDriver = InstantiateDriver(generateRequest.Catalog.DefaultSchema);
 
         // initialize file generators
         CsprojGen = new CsprojGen(outputDirectory, projectName, namespaceName, Options);
@@ -104,13 +106,63 @@ public class CodeGenerator
         UtilsGen = new UtilsGen(DbDriver, namespaceName);
     }
 
-    private DbDriver InstantiateDriver()
+    private Dictionary<string, Dictionary<string, Table>> ConstructTablesLookup(Catalog catalog)
+    {
+        return catalog.Schemas
+            .Where(s => !_excludedSchemas.Contains(s.Name))
+            .ToDictionary(
+                s => s.Name == catalog.DefaultSchema ? string.Empty : s.Name,
+                s => s.Tables.ToDictionary(t => t.Rel.Name, t => t));
+    }
+
+    /// <summary>
+    /// Enums in the request exist only in the default schema (in mysql), this remaps enums to their original schema.
+    /// Unusual behavior we might have to fix in the future - TODO
+    /// </summary>
+    /// <param name="catalog"></param>
+    /// <returns></returns>
+    private Dictionary<string, Dictionary<string, Enum>> ConstructEnumsLookup(Catalog catalog)
+    {
+        var defaultSchemaCatalog = catalog.Schemas.First(s => s.Name == catalog.DefaultSchema);
+        var schemaEnumTuples = defaultSchemaCatalog.Enums
+            .Select(e => new
+            {
+                EnumItem = e,
+                Schema = FindEnumSchema(e)
+            });
+        var schemaToEnums = schemaEnumTuples
+            .GroupBy(x => x.Schema)
+            .ToDictionary(
+                group => group.Key,
+                group => group.ToDictionary(
+                    x => x.EnumItem.Name,
+                    x => x.EnumItem)
+            );
+        return schemaToEnums;
+    }
+
+    private string FindEnumSchema(Enum e)
+    {
+        foreach (var schemaTables in Tables)
+        {
+            foreach (var table in schemaTables.Value)
+            {
+                var isEnumColumn = table.Value.Columns.Any(c => c.Type.Name == e.Name);
+                if (isEnumColumn)
+                    return schemaTables.Key;
+            }
+        }
+        // TODO fix why not mapping default schema to string.Empty
+        throw new InvalidDataException($"No enum {e.Name} schema found.");
+    }
+
+    private DbDriver InstantiateDriver(string defaultSchema)
     {
         return Options.DriverName switch
         {
-            DriverName.MySqlConnector => new MySqlConnectorDriver(Options, Tables, Enums, Queries),
-            DriverName.Npgsql => new NpgsqlDriver(Options, Tables, Enums, Queries),
-            DriverName.Sqlite => new SqliteDriver(Options, Tables, Enums, Queries),
+            DriverName.MySqlConnector => new MySqlConnectorDriver(Options, defaultSchema, Tables, Enums, Queries),
+            DriverName.Npgsql => new NpgsqlDriver(Options, defaultSchema, Tables, Enums, Queries),
+            DriverName.Sqlite => new SqliteDriver(Options, defaultSchema, Tables, Enums, Queries),
             _ => throw new ArgumentException($"unknown driver: {Options.DriverName}")
         };
     }
@@ -118,6 +170,12 @@ public class CodeGenerator
     public Task<GenerateResponse> Generate(GenerateRequest generateRequest)
     {
         InitGenerators(generateRequest); // the request is necessary in order to know which generators are needed
+        if (Options.DebugRequest)
+            return Task.FromResult(new GenerateResponse
+            {
+                Files = { RequestToFile(generateRequest) }
+            });
+
         var fileQueries = GetFileQueries();
         var files = fileQueries
             .Select(fq => QueriesGen.GenerateFile(fq.Value, fq.Key))
@@ -142,5 +200,12 @@ public class CodeGenerator
                 Path.GetFileNameWithoutExtension(filenameWithExtension).ToPascalCase(),
                 Path.GetExtension(filenameWithExtension)[1..].ToPascalCase());
         }
+    }
+
+    private static Plugin.File RequestToFile(GenerateRequest request)
+    {
+        var formatter = new JsonFormatter(JsonFormatter.Settings.Default.WithIndentation());
+        request.PluginOptions = ByteString.CopyFrom("{}", Encoding.UTF8); // TODO this resets all of the options - should reset only DebugRequest option
+        return new Plugin.File { Name = "request.json", Contents = ByteString.CopyFromUtf8(formatter.Format(request)) };
     }
 }

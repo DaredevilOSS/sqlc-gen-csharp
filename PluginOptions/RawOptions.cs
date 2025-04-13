@@ -21,4 +21,7 @@ internal class RawOptions
 
     [JsonPropertyName("overrideDapperVersion")]
     public string OverrideDapperVersion { get; init; } = string.Empty;
+
+    [JsonPropertyName("debugRequest")]
+    public bool DebugRequest { get; init; }
 }

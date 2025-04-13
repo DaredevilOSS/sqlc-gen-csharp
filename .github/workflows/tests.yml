@@ -2,9 +2,10 @@ name: .Net Core Tests
 defaults:
   run:
     shell: bash
-
+    
 env:
   DOTNET_VERSION: '8.0.x'
+  SQLC_VERSION: 1.27.0
 
 on:
   push:
@@ -22,9 +23,22 @@ jobs:
       
     steps:
       - uses: actions/checkout@v4
-  
+
+      - uses: sqlc-dev/setup-sqlc@v4
+        with:
+          sqlc-version: '${{ env.SQLC_VERSION }}'
+
+      - name: Dotnet publish
+        run: dotnet publish LocalRunner -c release --output dist/
+        
+      - name: Verify pushed generated code is synced
+        run: |
+          sqlc -f sqlc.unit.test.yaml diff
+          
       - name: Run Tests
-        run: dotnet test SqlcGenCsharpTests
+        run: |
+          dotnet test RepositoryTests
+          dotnet test CodegenTests
     
   end2end-tests:
     name: End-to-End Tests

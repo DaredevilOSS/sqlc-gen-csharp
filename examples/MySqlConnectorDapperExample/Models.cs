@@ -55,6 +55,12 @@ public class MysqlType
     public byte[]? CMediumblob { get; init; }
     public byte[]? CLongblob { get; init; }
 };
+public class ExtendedBio
+{
+    public string? AuthorName { get; init; }
+    public string? Name { get; init; }
+    public ExtendedBiosBioType? BioType { get; init; }
+};
 public enum MysqlTypesCEnum
 {
     Invalid = 0, // reserved for invalid enum value
@@ -63,17 +69,10 @@ public enum MysqlTypesCEnum
     Big = 3
 }
 
-public static class MysqlTypesCEnumExtensions
+public enum ExtendedBiosBioType
 {
-    private static readonly Dictionary<MysqlTypesCEnum, string> EnumToString = new Dictionary<MysqlTypesCEnum, string>()
-    {
-        [MysqlTypesCEnum.Invalid] = string.Empty,
-        [MysqlTypesCEnum.Small] = "small",
-        [MysqlTypesCEnum.Medium] = "medium",
-        [MysqlTypesCEnum.Big] = "big"
-    };
-    public static string ToEnumString(this MysqlTypesCEnum me)
-    {
-        return EnumToString[me];
-    }
+    Invalid = 0, // reserved for invalid enum value
+    Autobiography = 1,
+    Biography = 2,
+    Memoir = 3
 }

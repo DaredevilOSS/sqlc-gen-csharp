@@ -132,7 +132,8 @@ $RECYCLE.BIN/
 
 _NCrunch*
 
-dist/*
+dist
+**/dist
 output/*
 docker-upload/*
 
