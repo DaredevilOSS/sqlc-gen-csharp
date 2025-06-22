@@ -472,7 +472,7 @@ namespace EndToEndTests
         {
             var batchArgs = Enumerable.Range(0, batchSize).Select(_ => new QuerySql.InsertMysqlTypesBatchArgs { CChar = cChar, CNchar = cNchar, CNationalChar = cNationalChar, CVarchar = cVarchar, CTinytext = cTinytext, CMediumtext = cMediumtext, CText = cText, CLongtext = cLongtext }).ToList();
             await QuerySql.InsertMysqlTypesBatch(batchArgs);
-            var expected = new QuerySql.GetMysqlTypesAggRow
+            var expected = new QuerySql.GetMysqlTypesCntRow
             {
                 Cnt = batchSize,
                 CChar = cChar,
@@ -484,7 +484,7 @@ namespace EndToEndTests
                 CText = cText,
                 CLongtext = cLongtext,
             };
-            var actual = await QuerySql.GetMysqlTypesAgg();
+            var actual = await QuerySql.GetMysqlTypesCnt();
             Assert.That(actual.Cnt, Is.EqualTo(expected.Cnt));
             Assert.That(actual.CChar, Is.EqualTo(expected.CChar));
             Assert.That(actual.CNchar, Is.EqualTo(expected.CNchar));
@@ -503,7 +503,7 @@ namespace EndToEndTests
         {
             var batchArgs = Enumerable.Range(0, batchSize).Select(_ => new QuerySql.InsertMysqlTypesBatchArgs { CBool = cBool, CBoolean = cBoolean, CTinyint = cTinyint, CSmallint = cSmallint, CMediumint = cMediumint, CInt = cInt, CInteger = cInteger, CBigint = cBigint }).ToList();
             await QuerySql.InsertMysqlTypesBatch(batchArgs);
-            var expected = new QuerySql.GetMysqlTypesAggRow
+            var expected = new QuerySql.GetMysqlTypesCntRow
             {
                 Cnt = batchSize,
                 CBool = cBool,
@@ -515,7 +515,7 @@ namespace EndToEndTests
                 CInteger = cInteger,
                 CBigint = cBigint
             };
-            var actual = await QuerySql.GetMysqlTypesAgg();
+            var actual = await QuerySql.GetMysqlTypesCnt();
             Assert.That(actual.Cnt, Is.EqualTo(expected.Cnt));
             Assert.That(actual.CBool, Is.EqualTo(expected.CBool));
             Assert.That(actual.CBoolean, Is.EqualTo(expected.CBoolean));
@@ -534,7 +534,7 @@ namespace EndToEndTests
         {
             var batchArgs = Enumerable.Range(0, batchSize).Select(_ => new QuerySql.InsertMysqlTypesBatchArgs { CFloat = cFloat, CNumeric = cNumeric, CDecimal = cDecimal, CDec = cDec, CFixed = cFixed, CDouble = cDouble, CDoublePrecision = cDoublePrecision }).ToList();
             await QuerySql.InsertMysqlTypesBatch(batchArgs);
-            var expected = new QuerySql.GetMysqlTypesAggRow
+            var expected = new QuerySql.GetMysqlTypesCntRow
             {
                 Cnt = batchSize,
                 CFloat = cFloat,
@@ -545,7 +545,7 @@ namespace EndToEndTests
                 CDouble = cDouble,
                 CDoublePrecision = cDoublePrecision
             };
-            var actual = await QuerySql.GetMysqlTypesAgg();
+            var actual = await QuerySql.GetMysqlTypesCnt();
             Assert.That(actual.CFloat, Is.EqualTo(expected.CFloat));
             Assert.That(actual.CNumeric, Is.EqualTo(expected.CNumeric));
             Assert.That(actual.CDecimal, Is.EqualTo(expected.CDecimal));
@@ -562,7 +562,7 @@ namespace EndToEndTests
         {
             var batchArgs = Enumerable.Range(0, batchSize).Select(_ => new QuerySql.InsertMysqlTypesBatchArgs { CYear = cYear, CDate = cDate, CDatetime = cDatetime, CTimestamp = cTimestamp }).ToList();
             await QuerySql.InsertMysqlTypesBatch(batchArgs);
-            var expected = new QuerySql.GetMysqlTypesAggRow
+            var expected = new QuerySql.GetMysqlTypesCntRow
             {
                 Cnt = batchSize,
                 CYear = cYear,
@@ -570,7 +570,7 @@ namespace EndToEndTests
                 CDatetime = cDatetime,
                 CTimestamp = cTimestamp
             };
-            var actual = await QuerySql.GetMysqlTypesAgg();
+            var actual = await QuerySql.GetMysqlTypesCnt();
             Assert.That(actual.Cnt, Is.EqualTo(expected.Cnt));
             Assert.That(actual.CYear, Is.EqualTo(expected.CYear));
             Assert.That(actual.CDate, Is.EqualTo(expected.CDate));
@@ -586,7 +586,7 @@ namespace EndToEndTests
         {
             var batchArgs = Enumerable.Range(0, batchSize).Select(_ => new QuerySql.InsertMysqlTypesBatchArgs { CBit = cBit, CBinary = cBinary, CVarbinary = cVarbinary, CTinyblob = cTinyblob, CBlob = cBlob, CMediumblob = cMediumblob, CLongblob = cLongblob }).ToList();
             await QuerySql.InsertMysqlTypesBatch(batchArgs);
-            var expected = new QuerySql.GetMysqlTypesAggRow
+            var expected = new QuerySql.GetMysqlTypesCntRow
             {
                 Cnt = batchSize,
                 CBit = cBit,
@@ -597,7 +597,7 @@ namespace EndToEndTests
                 CMediumblob = cMediumblob,
                 CLongblob = cLongblob
             };
-            var actual = await QuerySql.GetMysqlTypesAgg();
+            var actual = await QuerySql.GetMysqlTypesCnt();
             Assert.That(actual.Cnt, Is.EqualTo(expected.Cnt));
             Assert.That(actual.CBit, Is.EqualTo(expected.CBit));
             Assert.That(actual.CBinary, Is.EqualTo(expected.CBinary));
@@ -616,12 +616,12 @@ namespace EndToEndTests
         {
             var batchArgs = Enumerable.Range(0, batchSize).Select(_ => new QuerySql.InsertMysqlTypesBatchArgs { CEnum = cEnum }).ToList();
             await QuerySql.InsertMysqlTypesBatch(batchArgs);
-            var expected = new QuerySql.GetMysqlTypesAggRow
+            var expected = new QuerySql.GetMysqlTypesCntRow
             {
                 Cnt = batchSize,
                 CEnum = cEnum
             };
-            var actual = await QuerySql.GetMysqlTypesAgg();
+            var actual = await QuerySql.GetMysqlTypesCnt();
             Assert.That(actual.CEnum, Is.EqualTo(expected.CEnum));
         }
     }

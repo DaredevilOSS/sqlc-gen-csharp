@@ -69,7 +69,7 @@ VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9,
 -- name: GetPostgresTypes :one
 SELECT * FROM postgres_types LIMIT 1;
 
--- name: GetPostgresTypesAgg :one
+-- name: GetPostgresTypesCnt :one
 SELECT COUNT(1) AS cnt , 
        c_smallint, c_boolean, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_money, 
        c_date, c_time, c_timestamp, c_timestamp_with_tz, c_char, c_varchar, c_character_varying, c_text, 

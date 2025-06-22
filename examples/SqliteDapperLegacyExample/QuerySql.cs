@@ -411,8 +411,8 @@ namespace SqliteDapperLegacyExampleGen
             }
         }
 
-        private const string GetSqliteTypesAggSql = "SELECT COUNT(1) AS cnt , c_integer, c_real, c_text, c_blob FROM  types_sqlite  GROUP  BY  c_integer , c_real, c_text, c_blob LIMIT  1  ";  
-        public class GetSqliteTypesAggRow
+        private const string GetSqliteTypesCntSql = "SELECT COUNT(1) AS cnt , c_integer, c_real, c_text, c_blob FROM  types_sqlite  GROUP  BY  c_integer , c_real, c_text, c_blob LIMIT  1  ";  
+        public class GetSqliteTypesCntRow
         {
             public int Cnt { get; set; }
             public int? CInteger { get; set; }
@@ -420,11 +420,11 @@ namespace SqliteDapperLegacyExampleGen
             public string CText { get; set; }
             public byte[] CBlob { get; set; }
         };
-        public async Task<GetSqliteTypesAggRow> GetSqliteTypesAgg()
+        public async Task<GetSqliteTypesCntRow> GetSqliteTypesCnt()
         {
             using (var connection = new SqliteConnection(ConnectionString))
             {
-                var result = await connection.QueryFirstOrDefaultAsync<GetSqliteTypesAggRow>(GetSqliteTypesAggSql);
+                var result = await connection.QueryFirstOrDefaultAsync<GetSqliteTypesCntRow>(GetSqliteTypesCntSql);
                 return result;
             }
         }

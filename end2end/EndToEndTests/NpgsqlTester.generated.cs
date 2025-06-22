@@ -396,7 +396,7 @@ namespace EndToEndTests
         {
             var batchArgs = Enumerable.Range(0, batchSize).Select(_ => new QuerySql.InsertPostgresTypesBatchArgs { CChar = cChar, CVarchar = cVarchar, CCharacterVarying = cCharacterVarying, CText = cText }).ToList();
             await QuerySql.InsertPostgresTypesBatch(batchArgs);
-            var expected = new QuerySql.GetPostgresTypesAggRow
+            var expected = new QuerySql.GetPostgresTypesCntRow
             {
                 Cnt = batchSize,
                 CChar = cChar,
@@ -404,7 +404,7 @@ namespace EndToEndTests
                 CCharacterVarying = cCharacterVarying,
                 CText = cText
             };
-            var actual = await QuerySql.GetPostgresTypesAgg();
+            var actual = await QuerySql.GetPostgresTypesCnt();
             Assert.That(actual.Value.Cnt, Is.EqualTo(expected.Cnt));
             Assert.That(actual.Value.CChar, Is.EqualTo(expected.CChar));
             Assert.That(actual.Value.CVarchar, Is.EqualTo(expected.CVarchar));
@@ -419,7 +419,7 @@ namespace EndToEndTests
         {
             var batchArgs = Enumerable.Range(0, batchSize).Select(_ => new QuerySql.InsertPostgresTypesBatchArgs { CBoolean = cBoolean, CSmallint = cSmallint, CInteger = cInteger, CBigint = cBigint }).ToList();
             await QuerySql.InsertPostgresTypesBatch(batchArgs);
-            var expected = new QuerySql.GetPostgresTypesAggRow
+            var expected = new QuerySql.GetPostgresTypesCntRow
             {
                 Cnt = batchSize,
                 CBoolean = cBoolean,
@@ -427,7 +427,7 @@ namespace EndToEndTests
                 CInteger = cInteger,
                 CBigint = cBigint
             };
-            var actual = await QuerySql.GetPostgresTypesAgg();
+            var actual = await QuerySql.GetPostgresTypesCnt();
             Assert.That(actual.Value.Cnt, Is.EqualTo(expected.Cnt));
             Assert.That(actual.Value.CBoolean, Is.EqualTo(expected.CBoolean));
             Assert.That(actual.Value.CSmallint, Is.EqualTo(expected.CSmallint));
@@ -435,7 +435,7 @@ namespace EndToEndTests
             Assert.That(actual.Value.CBigint, Is.EqualTo(expected.CBigint));
         }
 
-        private static void AssertSingularEquals(QuerySql.GetPostgresTypesAggRow expected, QuerySql.GetPostgresTypesAggRow actual)
+        private static void AssertSingularEquals(QuerySql.GetPostgresTypesCntRow expected, QuerySql.GetPostgresTypesCntRow actual)
         {
         }
 
@@ -446,7 +446,7 @@ namespace EndToEndTests
         {
             var batchArgs = Enumerable.Range(0, batchSize).Select(_ => new QuerySql.InsertPostgresTypesBatchArgs { CReal = cReal, CDecimal = cDecimal, CNumeric = cNumeric, CDoublePrecision = cDoublePrecision, CMoney = cMoney }).ToList();
             await QuerySql.InsertPostgresTypesBatch(batchArgs);
-            var expected = new QuerySql.GetPostgresTypesAggRow
+            var expected = new QuerySql.GetPostgresTypesCntRow
             {
                 Cnt = batchSize,
                 CReal = cReal,
@@ -455,7 +455,7 @@ namespace EndToEndTests
                 CDoublePrecision = cDoublePrecision,
                 CMoney = cMoney
             };
-            var actual = await QuerySql.GetPostgresTypesAgg();
+            var actual = await QuerySql.GetPostgresTypesCnt();
             Assert.That(actual.Value.Cnt, Is.EqualTo(expected.Cnt));
             Assert.That(actual.Value.CReal, Is.EqualTo(expected.CReal));
             Assert.That(actual.Value.CDecimal, Is.EqualTo(expected.CDecimal));
@@ -474,7 +474,7 @@ namespace EndToEndTests
                 cTimestampWithTzAsUtc = DateTime.SpecifyKind(cTimestampWithTz.Value, DateTimeKind.Utc);
             var batchArgs = Enumerable.Range(0, batchSize).Select(_ => new QuerySql.InsertPostgresTypesBatchArgs { CDate = cDate, CTime = cTime, CTimestamp = cTimestamp, CTimestampWithTz = cTimestampWithTzAsUtc }).ToList();
             await QuerySql.InsertPostgresTypesBatch(batchArgs);
-            var expected = new QuerySql.GetPostgresTypesAggRow
+            var expected = new QuerySql.GetPostgresTypesCntRow
             {
                 Cnt = batchSize,
                 CDate = cDate,
@@ -482,7 +482,7 @@ namespace EndToEndTests
                 CTimestamp = cTimestamp,
                 CTimestampWithTz = cTimestampWithTz,
             };
-            var actual = await QuerySql.GetPostgresTypesAgg();
+            var actual = await QuerySql.GetPostgresTypesCnt();
             Assert.That(actual.Value.Cnt, Is.EqualTo(expected.Cnt));
             Assert.That(actual.Value.CDate, Is.EqualTo(expected.CDate));
             Assert.That(actual.Value.CTime, Is.EqualTo(expected.CTime));
@@ -498,12 +498,12 @@ namespace EndToEndTests
         {
             var batchArgs = Enumerable.Range(0, batchSize).Select(_ => new QuerySql.InsertPostgresTypesBatchArgs { CBytea = cBytea }).ToList();
             await QuerySql.InsertPostgresTypesBatch(batchArgs);
-            var expected = new QuerySql.GetPostgresTypesAggRow
+            var expected = new QuerySql.GetPostgresTypesCntRow
             {
                 Cnt = batchSize,
                 CBytea = cBytea
             };
-            var actual = await QuerySql.GetPostgresTypesAgg();
+            var actual = await QuerySql.GetPostgresTypesCnt();
             Assert.That(actual.Value.Cnt, Is.EqualTo(expected.Cnt));
             Assert.That(actual.Value.CBytea, Is.EqualTo(expected.CBytea));
         }

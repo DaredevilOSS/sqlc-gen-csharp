@@ -463,19 +463,19 @@ public class QuerySql
         return null;
     }
 
-    private const string GetPostgresTypesAggSql = "SELECT COUNT(1) AS cnt ,  c_smallint , c_boolean, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_money, c_date, c_time, c_timestamp, c_timestamp_with_tz, c_char, c_varchar, c_character_varying, c_text, c_bytea FROM  postgres_types  GROUP  BY  c_smallint , c_boolean, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_money, c_date, c_time, c_timestamp, c_timestamp_with_tz, c_char, c_varchar, c_character_varying, c_text, c_bytea LIMIT  1  ";  
-    public readonly record struct GetPostgresTypesAggRow(long Cnt, short? CSmallint, bool? CBoolean, int? CInteger, long? CBigint, float? CReal, decimal? CNumeric, decimal? CDecimal, double? CDoublePrecision, decimal? CMoney, DateTime? CDate, TimeSpan? CTime, DateTime? CTimestamp, DateTime? CTimestampWithTz, string? CChar, string? CVarchar, string? CCharacterVarying, string? CText, byte[]? CBytea);
-    public async Task<GetPostgresTypesAggRow?> GetPostgresTypesAgg()
+    private const string GetPostgresTypesCntSql = "SELECT COUNT(1) AS cnt ,  c_smallint , c_boolean, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_money, c_date, c_time, c_timestamp, c_timestamp_with_tz, c_char, c_varchar, c_character_varying, c_text, c_bytea FROM  postgres_types  GROUP  BY  c_smallint , c_boolean, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_money, c_date, c_time, c_timestamp, c_timestamp_with_tz, c_char, c_varchar, c_character_varying, c_text, c_bytea LIMIT  1  ";  
+    public readonly record struct GetPostgresTypesCntRow(long Cnt, short? CSmallint, bool? CBoolean, int? CInteger, long? CBigint, float? CReal, decimal? CNumeric, decimal? CDecimal, double? CDoublePrecision, decimal? CMoney, DateTime? CDate, TimeSpan? CTime, DateTime? CTimestamp, DateTime? CTimestampWithTz, string? CChar, string? CVarchar, string? CCharacterVarying, string? CText, byte[]? CBytea);
+    public async Task<GetPostgresTypesCntRow?> GetPostgresTypesCnt()
     {
         using (var connection = NpgsqlDataSource.Create(ConnectionString))
         {
-            using (var command = connection.CreateCommand(GetPostgresTypesAggSql))
+            using (var command = connection.CreateCommand(GetPostgresTypesCntSql))
             {
                 using (var reader = await command.ExecuteReaderAsync())
                 {
                     if (await reader.ReadAsync())
                     {
-                        return new GetPostgresTypesAggRow
+                        return new GetPostgresTypesCntRow
                         {
                             Cnt = reader.GetInt64(0),
                             CSmallint = reader.IsDBNull(1) ? null : reader.GetInt16(1),

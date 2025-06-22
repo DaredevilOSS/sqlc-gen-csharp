@@ -526,20 +526,20 @@ public class QuerySql
         return null;
     }
 
-    private const string GetMysqlTypesAggSql = "SELECT COUNT(1) AS cnt, c_bool, c_boolean, c_bit, c_tinyint, c_smallint, c_mediumint, c_int, c_integer, c_bigint,  c_float , c_numeric, c_decimal, c_dec, c_fixed, c_double, c_double_precision, c_char, c_nchar, c_national_char, c_varchar, c_tinytext, c_mediumtext, c_text, c_longtext, c_enum, c_year, c_date, c_datetime, c_timestamp, c_binary, c_varbinary, c_tinyblob, c_blob, c_mediumblob, c_longblob FROM  mysql_types  GROUP  BY  c_bool , c_boolean, c_bit, c_tinyint, c_smallint, c_mediumint, c_int, c_integer, c_bigint, c_float, c_numeric, c_decimal, c_dec, c_fixed, c_double, c_double_precision, c_char, c_nchar, c_national_char, c_varchar, c_tinytext, c_mediumtext, c_text, c_longtext, c_enum, c_year, c_date, c_datetime, c_timestamp, c_binary, c_varbinary, c_tinyblob, c_blob, c_mediumblob, c_longblob LIMIT  1  ";  
-    public readonly record struct GetMysqlTypesAggRow(long Cnt, bool? CBool, bool? CBoolean, byte? CBit, short? CTinyint, short? CSmallint, int? CMediumint, int? CInt, int? CInteger, long? CBigint, double? CFloat, decimal? CNumeric, decimal? CDecimal, decimal? CDec, decimal? CFixed, double? CDouble, double? CDoublePrecision, string? CChar, string? CNchar, string? CNationalChar, string? CVarchar, string? CTinytext, string? CMediumtext, string? CText, string? CLongtext, MysqlTypesCEnum? CEnum, short? CYear, DateTime? CDate, DateTime? CDatetime, DateTime? CTimestamp, byte[]? CBinary, byte[]? CVarbinary, byte[]? CTinyblob, byte[]? CBlob, byte[]? CMediumblob, byte[]? CLongblob);
-    public async Task<GetMysqlTypesAggRow?> GetMysqlTypesAgg()
+    private const string GetMysqlTypesCntSql = "SELECT COUNT(1) AS cnt, c_bool, c_boolean, c_bit, c_tinyint, c_smallint, c_mediumint, c_int, c_integer, c_bigint,  c_float , c_numeric, c_decimal, c_dec, c_fixed, c_double, c_double_precision, c_char, c_nchar, c_national_char, c_varchar, c_tinytext, c_mediumtext, c_text, c_longtext, c_enum, c_year, c_date, c_datetime, c_timestamp, c_binary, c_varbinary, c_tinyblob, c_blob, c_mediumblob, c_longblob FROM  mysql_types  GROUP  BY  c_bool , c_boolean, c_bit, c_tinyint, c_smallint, c_mediumint, c_int, c_integer, c_bigint, c_float, c_numeric, c_decimal, c_dec, c_fixed, c_double, c_double_precision, c_char, c_nchar, c_national_char, c_varchar, c_tinytext, c_mediumtext, c_text, c_longtext, c_enum, c_year, c_date, c_datetime, c_timestamp, c_binary, c_varbinary, c_tinyblob, c_blob, c_mediumblob, c_longblob LIMIT  1  ";  
+    public readonly record struct GetMysqlTypesCntRow(long Cnt, bool? CBool, bool? CBoolean, byte? CBit, short? CTinyint, short? CSmallint, int? CMediumint, int? CInt, int? CInteger, long? CBigint, double? CFloat, decimal? CNumeric, decimal? CDecimal, decimal? CDec, decimal? CFixed, double? CDouble, double? CDoublePrecision, string? CChar, string? CNchar, string? CNationalChar, string? CVarchar, string? CTinytext, string? CMediumtext, string? CText, string? CLongtext, MysqlTypesCEnum? CEnum, short? CYear, DateTime? CDate, DateTime? CDatetime, DateTime? CTimestamp, byte[]? CBinary, byte[]? CVarbinary, byte[]? CTinyblob, byte[]? CBlob, byte[]? CMediumblob, byte[]? CLongblob);
+    public async Task<GetMysqlTypesCntRow?> GetMysqlTypesCnt()
     {
         using (var connection = new MySqlConnection(ConnectionString))
         {
             await connection.OpenAsync();
-            using (var command = new MySqlCommand(GetMysqlTypesAggSql, connection))
+            using (var command = new MySqlCommand(GetMysqlTypesCntSql, connection))
             {
                 using (var reader = await command.ExecuteReaderAsync())
                 {
                     if (await reader.ReadAsync())
                     {
-                        return new GetMysqlTypesAggRow
+                        return new GetMysqlTypesCntRow
                         {
                             Cnt = reader.GetInt64(0),
                             CBool = reader.IsDBNull(1) ? null : reader.GetBoolean(1),

@@ -624,8 +624,8 @@ namespace NpgsqlLegacyExampleGen
             return null;
         }
 
-        private const string GetPostgresTypesAggSql = "SELECT COUNT(1) AS cnt ,  c_smallint , c_boolean, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_money, c_date, c_time, c_timestamp, c_timestamp_with_tz, c_char, c_varchar, c_character_varying, c_text, c_bytea FROM  postgres_types  GROUP  BY  c_smallint , c_boolean, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_money, c_date, c_time, c_timestamp, c_timestamp_with_tz, c_char, c_varchar, c_character_varying, c_text, c_bytea LIMIT  1  ";  
-        public class GetPostgresTypesAggRow
+        private const string GetPostgresTypesCntSql = "SELECT COUNT(1) AS cnt ,  c_smallint , c_boolean, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_money, c_date, c_time, c_timestamp, c_timestamp_with_tz, c_char, c_varchar, c_character_varying, c_text, c_bytea FROM  postgres_types  GROUP  BY  c_smallint , c_boolean, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_money, c_date, c_time, c_timestamp, c_timestamp_with_tz, c_char, c_varchar, c_character_varying, c_text, c_bytea LIMIT  1  ";  
+        public class GetPostgresTypesCntRow
         {
             public long Cnt { get; set; }
             public short? CSmallint { get; set; }
@@ -647,17 +647,17 @@ namespace NpgsqlLegacyExampleGen
             public string CText { get; set; }
             public byte[] CBytea { get; set; }
         };
-        public async Task<GetPostgresTypesAggRow> GetPostgresTypesAgg()
+        public async Task<GetPostgresTypesCntRow> GetPostgresTypesCnt()
         {
             using (var connection = NpgsqlDataSource.Create(ConnectionString))
             {
-                using (var command = connection.CreateCommand(GetPostgresTypesAggSql))
+                using (var command = connection.CreateCommand(GetPostgresTypesCntSql))
                 {
                     using (var reader = await command.ExecuteReaderAsync())
                     {
                         if (await reader.ReadAsync())
                         {
-                            return new GetPostgresTypesAggRow
+                            return new GetPostgresTypesCntRow
                             {
                                 Cnt = reader.GetInt64(0),
                                 CSmallint = reader.IsDBNull(1) ? (short? )null : reader.GetInt16(1),

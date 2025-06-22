@@ -69,18 +69,18 @@ public static class SqliteTests
                              })
                              .ToList();
                          await QuerySql.InsertSqliteTypesBatch(batchArgs);
-                         var expected = new QuerySql.GetSqliteTypesAggRow
+                         var expected = new QuerySql.GetSqliteTypesCntRow
                          {
                              Cnt = batchSize,
                              CInteger = cInteger,
                              CReal = cReal,
                              CText = cText
                          };
-                         var actual = await QuerySql.GetSqliteTypesAgg();
+                         var actual = await QuerySql.GetSqliteTypesCnt();
                          AssertSingularEquals(expected, actual{{Consts.UnknownRecordValuePlaceholder}});
                      }
 
-                     private static void AssertSingularEquals(QuerySql.GetSqliteTypesAggRow expected, QuerySql.GetSqliteTypesAggRow actual)
+                     private static void AssertSingularEquals(QuerySql.GetSqliteTypesCntRow expected, QuerySql.GetSqliteTypesCntRow actual)
                      {
                          Assert.That(actual.Cnt, Is.EqualTo(expected.Cnt));
                          Assert.That(actual.CInteger, Is.EqualTo(expected.CInteger));

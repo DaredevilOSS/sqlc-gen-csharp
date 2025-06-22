@@ -525,8 +525,8 @@ namespace SqliteLegacyExampleGen
             return null;
         }
 
-        private const string GetSqliteTypesAggSql = "SELECT COUNT(1) AS cnt , c_integer, c_real, c_text, c_blob FROM  types_sqlite  GROUP  BY  c_integer , c_real, c_text, c_blob LIMIT  1  ";  
-        public class GetSqliteTypesAggRow
+        private const string GetSqliteTypesCntSql = "SELECT COUNT(1) AS cnt , c_integer, c_real, c_text, c_blob FROM  types_sqlite  GROUP  BY  c_integer , c_real, c_text, c_blob LIMIT  1  ";  
+        public class GetSqliteTypesCntRow
         {
             public int Cnt { get; set; }
             public int? CInteger { get; set; }
@@ -534,18 +534,18 @@ namespace SqliteLegacyExampleGen
             public string CText { get; set; }
             public byte[] CBlob { get; set; }
         };
-        public async Task<GetSqliteTypesAggRow> GetSqliteTypesAgg()
+        public async Task<GetSqliteTypesCntRow> GetSqliteTypesCnt()
         {
             using (var connection = new SqliteConnection(ConnectionString))
             {
                 await connection.OpenAsync();
-                using (var command = new SqliteCommand(GetSqliteTypesAggSql, connection))
+                using (var command = new SqliteCommand(GetSqliteTypesCntSql, connection))
                 {
                     using (var reader = await command.ExecuteReaderAsync())
                     {
                         if (await reader.ReadAsync())
                         {
-                            return new GetSqliteTypesAggRow
+                            return new GetSqliteTypesCntRow
                             {
                                 Cnt = reader.GetInt32(0),
                                 CInteger = reader.IsDBNull(1) ? (int? )null : reader.GetInt32(1),

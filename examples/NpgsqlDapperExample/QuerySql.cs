@@ -494,8 +494,8 @@ public class QuerySql
         }
     }
 
-    private const string GetPostgresTypesAggSql = "SELECT COUNT(1) AS cnt ,  c_smallint , c_boolean, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_money, c_date, c_time, c_timestamp, c_timestamp_with_tz, c_char, c_varchar, c_character_varying, c_text, c_bytea FROM  postgres_types  GROUP  BY  c_smallint , c_boolean, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_money, c_date, c_time, c_timestamp, c_timestamp_with_tz, c_char, c_varchar, c_character_varying, c_text, c_bytea LIMIT  1  ";  
-    public class GetPostgresTypesAggRow
+    private const string GetPostgresTypesCntSql = "SELECT COUNT(1) AS cnt ,  c_smallint , c_boolean, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_money, c_date, c_time, c_timestamp, c_timestamp_with_tz, c_char, c_varchar, c_character_varying, c_text, c_bytea FROM  postgres_types  GROUP  BY  c_smallint , c_boolean, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_money, c_date, c_time, c_timestamp, c_timestamp_with_tz, c_char, c_varchar, c_character_varying, c_text, c_bytea LIMIT  1  ";  
+    public class GetPostgresTypesCntRow
     {
         public required long Cnt { get; init; }
         public short? CSmallint { get; init; }
@@ -517,11 +517,11 @@ public class QuerySql
         public string? CText { get; init; }
         public byte[]? CBytea { get; init; }
     };
-    public async Task<GetPostgresTypesAggRow?> GetPostgresTypesAgg()
+    public async Task<GetPostgresTypesCntRow?> GetPostgresTypesCnt()
     {
         using (var connection = new NpgsqlConnection(ConnectionString))
         {
-            var result = await connection.QueryFirstOrDefaultAsync<GetPostgresTypesAggRow?>(GetPostgresTypesAggSql);
+            var result = await connection.QueryFirstOrDefaultAsync<GetPostgresTypesCntRow?>(GetPostgresTypesCntSql);
             return result;
         }
     }

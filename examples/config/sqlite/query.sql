@@ -60,7 +60,7 @@ INSERT INTO types_sqlite (c_integer, c_real, c_text) VALUES (?, ?, ?);
 -- name: GetSqliteTypes :one
 SELECT * FROM types_sqlite LIMIT 1;
 
--- name: GetSqliteTypesAgg :one
+-- name: GetSqliteTypesCnt :one
 SELECT COUNT(1) AS cnt , c_integer, c_real, c_text, c_blob
 FROM types_sqlite
 GROUP BY c_integer, c_real, c_text, c_blob
