@@ -93,29 +93,37 @@ jobs:
      steps:
        - uses: actions/checkout@v4
 
-       - name: Verify pushed generated tests code is synced
-         run: |
-           ./end2end/scripts/generate_tests.sh
-           git diff --quiet
-           
-       - uses: actions/download-artifact@v4
-         with:
-           name: wasm-file
-           path: dist
-
        - name: Load .env file
          uses: xom9ikk/dotenv@v2.3.0
          with:
            load-mode: strict
+      
+       - name: Setup Dotnet
+         uses: actions/setup-dotnet@v4
+         with:
+           dotnet-version: ${{ env.DOTNET_VERSION }}
 
        - uses: sqlc-dev/setup-sqlc@v4
          with:
            sqlc-version: '${{ env.SQLC_VERSION }}'
 
+       - name: Verify pushed generated tests code is synced
+         run: |
+           ./end2end/scripts/generate_tests.sh
+           git diff --quiet
+
+       - uses: actions/download-artifact@v4
+         with:
+           name: wasm-file
+           path: dist
+
        - name: Updating plugin sha
          run: ./scripts/wasm/update_sha.sh sqlc.ci.yaml
 
        - name: Verify pushed generated code is synced
+         run: sqlc -f sqlc.ci.yaml diff
+
+       - name: Verify pushed codegen requests are synced
          run: |
-           ./scripts/wasm/update_sha.sh sqlc.ci.yaml
-           sqlc -f sqlc.ci.yaml diff
+           dotnet publish LocalRunner -c release --output dist/
+           sqlc -f sqlc.local.yaml diff
