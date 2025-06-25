@@ -29,6 +29,7 @@ public enum KnownTestType
     // Sqlite
     SqliteDataTypes,
     SqliteCopyFrom,
+    SqliteTransaction,
 
     // Postgres
     PostgresStringDataTypes,
@@ -38,6 +39,7 @@ public enum KnownTestType
     PostgresArrayDataTypes,
 
     PostgresStringCopyFrom,
+    PostgresTransaction,
     PostgresIntegerCopyFrom,
     PostgresFloatingPointCopyFrom,
     PostgresDateTimeCopyFrom,
@@ -160,6 +162,7 @@ internal static class Config
                     KnownTestType.NargNull,
                     KnownTestType.NargNotNull,
 
+                    KnownTestType.PostgresTransaction,
                     KnownTestType.PostgresStringDataTypes,
                     KnownTestType.PostgresIntegerDataTypes,
                     KnownTestType.PostgresFloatingPointDataTypes,
@@ -192,6 +195,7 @@ internal static class Config
                     KnownTestType.MultipleArraysAsParams,
                     KnownTestType.NargNull,
                     KnownTestType.NargNotNull,
+                    KnownTestType.PostgresTransaction,
 
                     KnownTestType.PostgresStringDataTypes,
                     KnownTestType.PostgresIntegerDataTypes,
@@ -225,6 +229,7 @@ internal static class Config
                     KnownTestType.MultipleSlices,
                     KnownTestType.NargNull,
                     KnownTestType.NargNotNull,
+                    KnownTestType.SqliteTransaction,
                     KnownTestType.SqliteDataTypes,
                     KnownTestType.SqliteCopyFrom
                 ]
@@ -247,6 +252,7 @@ internal static class Config
                     KnownTestType.MultipleSlices,
                     KnownTestType.NargNull,
                     KnownTestType.NargNotNull,
+                    KnownTestType.SqliteTransaction,
                     KnownTestType.SqliteDataTypes,
                     KnownTestType.SqliteCopyFrom
                 ]

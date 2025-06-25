@@ -89,5 +89,35 @@ public static class SqliteTests
                      }
                      """
         },
+        [KnownTestType.SqliteTransaction] = new TestImpl
+        {
+            Impl = $$"""
+                     [Test]
+                     public async Task TestSqliteTransaction()
+                     {
+                         var connection = new Microsoft.Data.Sqlite.SqliteConnection(Environment.GetEnvironmentVariable(EndToEndCommon.SqliteConnectionStringEnv));
+                         await connection.OpenAsync();
+                         var transaction = connection.BeginTransaction();
+
+                         var sqlQueryWithTx = new QuerySql(transaction);
+                         await sqlQueryWithTx.CreateAuthor(new QuerySql.CreateAuthorArgs { Id = 1111, Name = "Bojack Horseman", Bio = "Back in the 90s he was in a very famous TV show" });
+
+                         // The GetAuthor method in SqliteExampleGen returns QuerySql.GetAuthorRow? (nullable record struct/class)
+                         var actualNull = await this.QuerySql.GetAuthor(new QuerySql.GetAuthorArgs { Name = "Bojack Horseman" });
+                         Assert.That(actualNull == null, "there is author"); // This is correct for nullable types
+
+                         await transaction.CommitAsync();
+
+                         var expected = new QuerySql.GetAuthorRow
+                         {
+                             Id = 1111,
+                             Name = "Bojack Horseman",
+                             Bio = "Back in the 90s he was in a very famous TV show"
+                         };
+                         var actual = await this.QuerySql.GetAuthor(new QuerySql.GetAuthorArgs { Name = "Bojack Horseman" });
+                         Assert.That(SingularEquals(expected, actual{{Consts.UnknownRecordValuePlaceholder}})); // Apply placeholder here
+                     }
+                     """
+        },
     };
 }
