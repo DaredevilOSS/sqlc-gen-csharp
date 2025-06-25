@@ -16,6 +16,7 @@ sql:
           targetFramework: net8.0
           generateCsproj: true
           namespaceName: NpgsqlExampleGen
+          debugRequest: true
   - schema: "examples/config/postgresql/schema.sql"
     queries: "examples/config/postgresql/query.sql"
     engine: "postgresql"
@@ -27,6 +28,7 @@ sql:
           targetFramework: net8.0
           generateCsproj: true
           namespaceName: NpgsqlDapperExampleGen
+          debugRequest: true
   - schema: "examples/config/postgresql/schema.sql"
     queries: "examples/config/postgresql/query.sql"
     engine: "postgresql"
@@ -38,6 +40,7 @@ sql:
           targetFramework: netstandard2.0
           generateCsproj: true
           namespaceName: NpgsqlLegacyExampleGen
+          debugRequest: true
   - schema: "examples/config/postgresql/schema.sql"
     queries: "examples/config/postgresql/query.sql"
     engine: "postgresql"
@@ -49,6 +52,7 @@ sql:
           targetFramework: netstandard2.0
           generateCsproj: true
           namespaceName: NpgsqlDapperLegacyExampleGen
+          debugRequest: true
   
   # MySQL
   - schema: "examples/config/mysql/schema.sql"
@@ -62,6 +66,7 @@ sql:
           targetFramework: net8.0
           generateCsproj: true
           namespaceName: MySqlConnectorExampleGen
+          debugRequest: true
   - schema: "examples/config/mysql/schema.sql"
     queries: "examples/config/mysql/query.sql"
     engine: "mysql"
@@ -73,6 +78,7 @@ sql:
           targetFramework: net8.0
           generateCsproj: true
           namespaceName: MySqlConnectorDapperExampleGen
+          debugRequest: true
   - schema: "examples/config/mysql/schema.sql"
     queries: "examples/config/mysql/query.sql"
     engine: "mysql"
@@ -84,6 +90,7 @@ sql:
           targetFramework: netstandard2.0
           generateCsproj: true
           namespaceName: MySqlConnectorLegacyExampleGen
+          debugRequest: true
   - schema: "examples/config/mysql/schema.sql"
     queries: "examples/config/mysql/query.sql"
     engine: "mysql"
@@ -95,6 +102,7 @@ sql:
           targetFramework: netstandard2.0
           generateCsproj: true
           namespaceName: MySqlConnectorDapperLegacyExampleGen
+          debugRequest: true
   
   # Sqlite
   - schema: "examples/config/sqlite/schema.sql"
@@ -108,6 +116,7 @@ sql:
           targetFramework: net8.0
           generateCsproj: true
           namespaceName: SqliteExampleGen
+          debugRequest: true
   - schema: "examples/config/sqlite/schema.sql"
     queries: "examples/config/sqlite/query.sql"
     engine: "sqlite"
@@ -119,6 +128,7 @@ sql:
           targetFramework: net8.0
           generateCsproj: true
           namespaceName: SqliteDapperExampleGen
+          debugRequest: true
   - schema: "examples/config/sqlite/schema.sql"
     queries: "examples/config/sqlite/query.sql"
     engine: "sqlite"
@@ -130,6 +140,7 @@ sql:
           targetFramework: netstandard2.0
           generateCsproj: true
           namespaceName: SqliteLegacyExampleGen
+          debugRequest: true
   - schema: "examples/config/sqlite/schema.sql"
     queries: "examples/config/sqlite/query.sql"
     engine: "sqlite"
@@ -141,3 +152,4 @@ sql:
           targetFramework: netstandard2.0
           generateCsproj: true
           namespaceName: SqliteDapperLegacyExampleGen
+          debugRequest: true

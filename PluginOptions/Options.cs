@@ -22,7 +22,7 @@ public class Options
         DotnetFramework = DotnetFrameworkExtensions.ParseName(rawOptions.TargetFramework);
 
         if (rawOptions.DebugRequest && generateRequest.Settings.Codegen.Wasm is not null)
-            throw new ArgumentException("debug request mode cannot be used with WASM plugin");
+            throw new ArgumentException("Debug request mode cannot be used with WASM plugin");
         DebugRequest = rawOptions.DebugRequest;
     }
 
