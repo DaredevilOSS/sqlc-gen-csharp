@@ -52,3 +52,50 @@ More info can be found in [here](https://docs.sqlc.dev/en/stable/reference/query
 | sqlc.embed  | ✅          | ✅    | ✅       |
 
 More info can be found in [here](https://docs.sqlc.dev/en/stable/reference/macros.html#macros).
+
+
+### Transactions
+Transactions are supported by the plugin.
+<br/>
+
+| Feature     | PostgresSQL | MySQL | SQLite  |
+|-------------|-------------|-------|---------|
+| Transactions| ✅          | ✅    | ✅       | 
+
+#### Example using a transaction
+```c#
+public async Task ExampleTransaction(IDbConnection connection)
+{
+    // Begin a transaction
+    using (var transaction = connection.BeginTransaction())
+    {
+        try
+        {
+            // Create a new Queries object with the transaction instead of the connection
+            var queries = new QuerySql(transaction);
+
+            // Example: Insert a new author
+            var newAuthor = await queries.CreateAuthor(new CreateAuthorParams { Name = "Jane Doe", Bio = "Another author" });
+
+            // Example: Get the author by ID within the same transaction
+            var author = await queries.GetAuthor(newAuthor.AuthorID);
+
+            // Example: Update the author's bio
+            await queries.UpdateAuthorBio(new UpdateAuthorBioParams { AuthorID = author.AuthorID, Bio = "Updated bio for Jane Doe" });
+
+            // Commit the transaction if all operations are successful
+            transaction.Commit();
+            Console.WriteLine("Transaction committed successfully.");
+        }
+        catch (Exception ex)
+        {
+            // Rollback the transaction if any error occurs
+            transaction.Rollback();
+            Console.WriteLine($"Transaction rolled back due to error: {ex.Message}");
+            throw;
+        }
+    }
+}
+```
+
+More info can be found in [here](https://docs.sqlc.dev/en/stable/howto/transactions.html).
