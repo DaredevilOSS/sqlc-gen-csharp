@@ -369,7 +369,7 @@ namespace EndToEndTests
             // The GetAuthor method in SqliteExampleGen returns QuerySql.GetAuthorRow? (nullable record struct/class)
             var actualNull = await this.QuerySql.GetAuthor(new QuerySql.GetAuthorArgs { Name = "Bojack Horseman" });
             Assert.That(actualNull == null, "there is author"); // This is correct for nullable types
-            await transaction.CommitAsync();
+            transaction.Commit();
             var expected = new QuerySql.GetAuthorRow
             {
                 Id = 1111,
