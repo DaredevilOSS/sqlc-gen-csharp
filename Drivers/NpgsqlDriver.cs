@@ -153,6 +153,8 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId
             }, ordinal => $"reader.GetFieldValue<NpgsqlCircle>({ordinal})")
     ];
 
+    public override string TransactionClassName => "NpgsqlTransaction";
+
     public override UsingDirectiveSyntax[] GetUsingDirectivesForQueries()
     {
         return base.GetUsingDirectivesForQueries()
@@ -194,6 +196,13 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId
     public override string[] GetConstructorStatements()
     {
         return base.GetConstructorStatements()
+            .AppendIf("Utils.ConfigureSqlMapper();", Options.UseDapper)
+            .ToArray();
+    }
+
+    public override string[] GetTransactionConstructorStatements()
+    {
+        return base.GetTransactionConstructorStatements()
             .AppendIf("Utils.ConfigureSqlMapper();", Options.UseDapper)
             .ToArray();
     }

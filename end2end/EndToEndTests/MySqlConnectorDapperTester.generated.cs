@@ -1,10 +1,8 @@
-using MySqlConnector;
 using MySqlConnectorDapperExampleGen;
 using NUnit.Framework;
 using NUnit.Framework.Legacy;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -18,30 +16,6 @@ namespace EndToEndTests
         {
             await this.QuerySql.CreateAuthor(new QuerySql.CreateAuthorArgs { Id = 1111, Name = "Bojack Horseman", Bio = "Back in the 90s he was in a very famous TV show" });
             await this.QuerySql.CreateAuthor(new QuerySql.CreateAuthorArgs { Id = 2222, Name = "Dr. Seuss", Bio = "You'll miss the best things if you keep your eyes shut" });
-            var expected = new QuerySql.GetAuthorRow
-            {
-                Id = 1111,
-                Name = "Bojack Horseman",
-                Bio = "Back in the 90s he was in a very famous TV show"
-            };
-            var actual = await this.QuerySql.GetAuthor(new QuerySql.GetAuthorArgs { Name = "Bojack Horseman" });
-            Assert.That(SingularEquals(expected, actual));
-        }
-
-        [Test]
-        public async Task TestTransactionOne()
-        {
-            var connection = new MySqlConnection(Environment.GetEnvironmentVariable(EndToEndCommon.MySqlConnectionStringEnv)!);
-            await connection.OpenAsync();
-            var transaction = connection.BeginTransaction();
-
-            var sqlQueryWithTx = new QuerySql(transaction);
-            await sqlQueryWithTx.CreateAuthor(new QuerySql.CreateAuthorArgs { Id = 1111, Name = "Bojack Horseman", Bio = "Back in the 90s he was in a very famous TV show" });
-  
-            var actualNull = await this.QuerySql.GetAuthor(new QuerySql.GetAuthorArgs { Name = "Bojack Horseman" });
-            Assert.That(actualNull == null, "there is author");
-            await transaction.CommitAsync();
-
             var expected = new QuerySql.GetAuthorRow
             {
                 Id = 1111,

@@ -5,6 +5,7 @@ public enum Variable
     Options,
     Config,
     ConnectionString,
+    Transaction,
     Connection,
     Command,
 

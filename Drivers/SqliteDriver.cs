@@ -39,6 +39,8 @@ public partial class SqliteDriver(
             }, ordinal => $"reader.GetDecimal({ordinal})"),
     ];
 
+    public override string TransactionClassName => "SqliteTransaction";
+
     public override UsingDirectiveSyntax[] GetUsingDirectivesForQueries()
     {
         return base.GetUsingDirectivesForQueries()

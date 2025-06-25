@@ -95,6 +95,8 @@ public partial class MySqlConnectorDriver(
             }, ordinal => $"reader.GetDecimal({ordinal})")
     ];
 
+    public override string TransactionClassName => "MySqlTransaction";
+
     public override UsingDirectiveSyntax[] GetUsingDirectivesForQueries()
     {
         return base.GetUsingDirectivesForQueries()
