@@ -523,6 +523,39 @@ public static class MySqlTests
                      }
                      """
         },
+        [KnownTestType.MySqlTransaction] = new TestImpl
+        {
+            Impl = $$"""
+                     [Test]
+                     public async Task TestMySqlTransaction()
+                     {
+                         var connection = new MySqlConnector.MySqlConnection(Environment.GetEnvironmentVariable(EndToEndCommon.MySqlConnectionStringEnv)!);
+                         await connection.OpenAsync();
+                         var transaction = connection.BeginTransaction();
+
+                         var sqlQueryWithTx = new QuerySql(transaction);
+                         await sqlQueryWithTx.CreateAuthor(new QuerySql.CreateAuthorArgs { Id = 1111, Name = "Bojack Horseman", Bio = "Back in the 90s he was in a very famous TV show" });
+
+                         // The GetAuthor method in MySqlConnectorExampleGen (non-Dapper) returns QuerySql.GetAuthorRow (non-nullable struct/record)
+                         // if it were a non-nullable struct/record, actualNull == null would always be false.
+                         // However, MySqlConnectorTester.generated.cs uses actual.Value, implying it's nullable.
+                         // Let's assume QuerySql.GetAuthor returns QuerySql.GetAuthorRow? (nullable record struct) for MySqlConnectorExampleGen.
+                         var actualNull = await this.QuerySql.GetAuthor(new QuerySql.GetAuthorArgs { Name = "Bojack Horseman" });
+                         Assert.That(actualNull == null, "there is author"); // This is correct for nullable types
+
+                         await transaction.CommitAsync();
+
+                         var expected = new QuerySql.GetAuthorRow
+                         {
+                             Id = 1111,
+                             Name = "Bojack Horseman",
+                             Bio = "Back in the 90s he was in a very famous TV show"
+                         };
+                         var actual = await this.QuerySql.GetAuthor(new QuerySql.GetAuthorArgs { Name = "Bojack Horseman" });
+                         Assert.That(SingularEquals(expected, actual{{Consts.UnknownRecordValuePlaceholder}})); // Apply placeholder here
+                     }
+                     """
+        },
         [KnownTestType.MySqlEnumCopyFrom] = new TestImpl
         {
             Impl = $$"""

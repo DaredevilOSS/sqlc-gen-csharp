@@ -50,6 +50,7 @@ public enum KnownTestType
     // MySql
     MySqlStringDataTypes,
     MySqlIntegerDataTypes,
+    MySqlTransaction,
     MySqlFloatingPointDataTypes,
     MySqlDateTimeDataTypes,
     MySqlBinaryDataTypes,
@@ -89,6 +90,7 @@ internal static class Config
 
                     KnownTestType.MySqlStringDataTypes,
                     KnownTestType.MySqlIntegerDataTypes,
+                    KnownTestType.MySqlTransaction,
                     KnownTestType.MySqlFloatingPointDataTypes,
                     KnownTestType.MySqlDateTimeDataTypes,
                     KnownTestType.MySqlBinaryDataTypes,
@@ -124,6 +126,7 @@ internal static class Config
 
                         KnownTestType.MySqlStringDataTypes,
                         KnownTestType.MySqlIntegerDataTypes,
+                        KnownTestType.MySqlTransaction,
                         KnownTestType.MySqlFloatingPointDataTypes,
                         KnownTestType.MySqlDateTimeDataTypes,
                         KnownTestType.MySqlBinaryDataTypes,
