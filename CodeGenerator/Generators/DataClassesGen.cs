@@ -10,24 +10,24 @@ namespace SqlcGenCsharp.Generators;
 
 internal class DataClassesGen(DbDriver dbDriver)
 {
-    public MemberDeclarationSyntax Generate(string name, ClassMember? classMember, IList<Column> columns, Options options)
+    public MemberDeclarationSyntax Generate(string name, ClassMember? classMember, IList<Column> columns, Options options, Query? query = null)
     {
         var className = classMember is null ? name : classMember.Value.Name(name);
         if (options.DotnetFramework.IsDotnetCore() && !options.UseDapper)
-            return GenerateAsRecord(className, columns);
-        return GenerateAsCLass(className, columns);
+            return GenerateAsRecord(className, columns, query);
+        return GenerateAsCLass(className, columns, query);
     }
 
-    private MemberDeclarationSyntax GenerateAsRecord(string className, IList<Column> columns)
+    private MemberDeclarationSyntax GenerateAsRecord(string className, IList<Column> columns, Query? query)
     {
         var seenEmbed = new Dictionary<string, int>();
         var recordParameters = columns
-            .Select(column => $"{dbDriver.GetCsharpType(column)} {GetFieldName(column, seenEmbed)}")
+            .Select(column => $"{dbDriver.GetCsharpType(column, query)} {GetFieldName(column, seenEmbed)}")
             .JoinByComma();
         return ParseMemberDeclaration($"public readonly record struct {className} ({recordParameters});")!;
     }
 
-    private ClassDeclarationSyntax GenerateAsCLass(string className, IList<Column> columns)
+    private ClassDeclarationSyntax GenerateAsCLass(string className, IList<Column> columns, Query? query)
     {
         var modernDotnetSupported = dbDriver.Options.DotnetFramework.IsDotnetCore();
         return ClassDeclaration(className)
@@ -40,7 +40,7 @@ internal class DataClassesGen(DbDriver dbDriver)
             var seenEmbed = new Dictionary<string, int>();
             return columns.Select(column =>
                 {
-                    var csharpType = dbDriver.GetCsharpType(column);
+                    var csharpType = dbDriver.GetCsharpType(column, query);
                     var optionalRequiredModifier = RequiredModifierNeeded(column) ? "required" : string.Empty;
                     var setterMethod = modernDotnetSupported ? "init" : "set";
                     return ParseMemberDeclaration(

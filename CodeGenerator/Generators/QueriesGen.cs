@@ -95,7 +95,7 @@ internal class QueriesGen(DbDriver dbDriver, string namespaceName)
     private MemberDeclarationSyntax? GetQueryParamsDataclass(Query query)
     {
         if (query.Params.Count <= 0) return null;
-        var columns = query.Params.Select(dbDriver.GetColumnFromParam).ToList();
+        var columns = query.Params.Select(p => dbDriver.GetColumnFromParam(p, query)).ToList();
         return DataClassesGen.Generate(query.Name, ClassMember.Args, columns, dbDriver.Options);
     }
 

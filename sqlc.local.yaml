@@ -12,11 +12,21 @@ sql:
       - plugin: csharp
         out: examples/NpgsqlExample
         options:
+          debugRequest: true
           useDapper: false
           targetFramework: net8.0
           generateCsproj: true
           namespaceName: NpgsqlExampleGen
-          debugRequest: true
+          overrides:
+            - column: "GetPostgresFunctions:max_integer"
+              csharp_type:
+                type: "int"
+            - column: "GetPostgresFunctions:max_varchar"
+              csharp_type:
+                type: "string"
+            - column: "GetPostgresFunctions:max_timestamp"
+              csharp_type:
+                type: "DateTime"
   - schema: "examples/config/postgresql/schema.sql"
     queries: "examples/config/postgresql/query.sql"
     engine: "postgresql"
@@ -24,11 +34,21 @@ sql:
       - plugin: csharp
         out: examples/NpgsqlDapperExample
         options:
+          debugRequest: true
           useDapper: true
           targetFramework: net8.0
           generateCsproj: true
           namespaceName: NpgsqlDapperExampleGen
-          debugRequest: true
+          overrides:
+            - column: "GetPostgresFunctions:max_integer"
+              csharp_type:
+                type: "int"
+            - column: "GetPostgresFunctions:max_varchar"
+              csharp_type:
+                type: "string"
+            - column: "GetPostgresFunctions:max_timestamp"
+              csharp_type:
+                type: "DateTime"
   - schema: "examples/config/postgresql/schema.sql"
     queries: "examples/config/postgresql/query.sql"
     engine: "postgresql"
@@ -36,11 +56,21 @@ sql:
       - plugin: csharp
         out: examples/NpgsqlLegacyExample
         options:
+          debugRequest: true
           useDapper: false
           targetFramework: netstandard2.0
           generateCsproj: true
           namespaceName: NpgsqlLegacyExampleGen
-          debugRequest: true
+          overrides:
+            - column: "GetPostgresFunctions:max_integer"
+              csharp_type:
+                type: "int"
+            - column: "GetPostgresFunctions:max_varchar"
+              csharp_type:
+                type: "string"
+            - column: "GetPostgresFunctions:max_timestamp"
+              csharp_type:
+                type: "DateTime"
   - schema: "examples/config/postgresql/schema.sql"
     queries: "examples/config/postgresql/query.sql"
     engine: "postgresql"
@@ -48,12 +78,22 @@ sql:
       - plugin: csharp
         out: examples/NpgsqlDapperLegacyExample
         options:
+          debugRequest: true
           useDapper: true
           targetFramework: netstandard2.0
           generateCsproj: true
           namespaceName: NpgsqlDapperLegacyExampleGen
-          debugRequest: true
-  
+          overrides:
+            - column: "GetPostgresFunctions:max_integer"
+              csharp_type:
+                type: "int"
+            - column: "GetPostgresFunctions:max_varchar"
+              csharp_type:
+                type: "string"
+            - column: "GetPostgresFunctions:max_timestamp"
+              csharp_type:
+                type: "DateTime"
+
   # MySQL
   - schema: "examples/config/mysql/schema.sql"
     queries: "examples/config/mysql/query.sql"
@@ -62,11 +102,24 @@ sql:
       - plugin: csharp
         out: examples/MySqlConnectorExample
         options:
+          debugRequest: true
           useDapper: false
           targetFramework: net8.0
           generateCsproj: true
           namespaceName: MySqlConnectorExampleGen
-          debugRequest: true
+          overrides:
+            - column: "GetMysqlFunctions:max_int"
+              csharp_type:
+                type: "int"
+            - column: "GetMysqlFunctions:max_varchar"
+              csharp_type:
+                type: "string"
+            - column: "GetMysqlFunctions:max_timestamp"
+              csharp_type:
+                type: "DateTime"
+            - column: "GetMysqlFunctions:max_bigint"
+              csharp_type:
+                type: "long"
   - schema: "examples/config/mysql/schema.sql"
     queries: "examples/config/mysql/query.sql"
     engine: "mysql"
@@ -74,11 +127,24 @@ sql:
       - plugin: csharp
         out: examples/MySqlConnectorDapperExample
         options:
+          debugRequest: true
           useDapper: true
           targetFramework: net8.0
           generateCsproj: true
           namespaceName: MySqlConnectorDapperExampleGen
-          debugRequest: true
+          overrides:
+            - column: "GetMysqlFunctions:max_int"
+              csharp_type:
+                type: "int"
+            - column: "GetMysqlFunctions:max_varchar"
+              csharp_type:
+                type: "string"
+            - column: "GetMysqlFunctions:max_timestamp"
+              csharp_type:
+                type: "DateTime"
+            - column: "GetMysqlFunctions:max_bigint"
+              csharp_type:
+                type: "long"
   - schema: "examples/config/mysql/schema.sql"
     queries: "examples/config/mysql/query.sql"
     engine: "mysql"
@@ -86,11 +152,24 @@ sql:
       - plugin: csharp
         out: examples/MySqlConnectorLegacyExample
         options:
+          debugRequest: true
           useDapper: false
           targetFramework: netstandard2.0
           generateCsproj: true
           namespaceName: MySqlConnectorLegacyExampleGen
-          debugRequest: true
+          overrides:
+            - column: "GetMysqlFunctions:max_int"
+              csharp_type:
+                type: "int"
+            - column: "GetMysqlFunctions:max_varchar"
+              csharp_type:
+                type: "string"
+            - column: "GetMysqlFunctions:max_timestamp"
+              csharp_type:
+                type: "DateTime"
+            - column: "GetMysqlFunctions:max_bigint"
+              csharp_type:
+                type: "long"
   - schema: "examples/config/mysql/schema.sql"
     queries: "examples/config/mysql/query.sql"
     engine: "mysql"
@@ -98,11 +177,24 @@ sql:
       - plugin: csharp
         out: examples/MySqlConnectorDapperLegacyExample
         options:
+          debugRequest: true
           useDapper: true
           targetFramework: netstandard2.0
           generateCsproj: true
           namespaceName: MySqlConnectorDapperLegacyExampleGen
-          debugRequest: true
+          overrides:
+            - column: "GetMysqlFunctions:max_int"
+              csharp_type:
+                type: "int"
+            - column: "GetMysqlFunctions:max_varchar"
+              csharp_type:
+                type: "string"
+            - column: "GetMysqlFunctions:max_timestamp"
+              csharp_type:
+                type: "DateTime"
+            - column: "GetMysqlFunctions:max_bigint"
+              csharp_type:
+                type: "long"
   
   # Sqlite
   - schema: "examples/config/sqlite/schema.sql"
@@ -112,11 +204,18 @@ sql:
       - plugin: csharp
         out: examples/SqliteExample
         options:
+          debugRequest: true
           useDapper: false
           targetFramework: net8.0
           generateCsproj: true
           namespaceName: SqliteExampleGen
-          debugRequest: true
+          overrides:
+            - column: "GetSqliteFunctions:max_integer"
+              csharp_type:
+                type: "int"
+            - column: "GetSqliteFunctions:max_varchar"
+              csharp_type:
+                type: "string"
   - schema: "examples/config/sqlite/schema.sql"
     queries: "examples/config/sqlite/query.sql"
     engine: "sqlite"
@@ -124,11 +223,18 @@ sql:
       - plugin: csharp
         out: examples/SqliteDapperExample
         options:
+          debugRequest: true
           useDapper: true
           targetFramework: net8.0
           generateCsproj: true
           namespaceName: SqliteDapperExampleGen
-          debugRequest: true
+          overrides:
+            - column: "GetSqliteFunctions:max_integer"
+              csharp_type:
+                type: "int"
+            - column: "GetSqliteFunctions:max_varchar"
+              csharp_type:
+                type: "string"
   - schema: "examples/config/sqlite/schema.sql"
     queries: "examples/config/sqlite/query.sql"
     engine: "sqlite"
@@ -136,11 +242,18 @@ sql:
       - plugin: csharp
         out: examples/SqliteLegacyExample
         options:
+          debugRequest: true
           useDapper: false
           targetFramework: netstandard2.0
           generateCsproj: true
           namespaceName: SqliteLegacyExampleGen
-          debugRequest: true
+          overrides:
+            - column: "GetSqliteFunctions:max_integer"
+              csharp_type:
+                type: "int"
+            - column: "GetSqliteFunctions:max_varchar"
+              csharp_type:
+                type: "string"
   - schema: "examples/config/sqlite/schema.sql"
     queries: "examples/config/sqlite/query.sql"
     engine: "sqlite"
@@ -148,8 +261,15 @@ sql:
       - plugin: csharp
         out: examples/SqliteDapperLegacyExample
         options:
+          debugRequest: true
           useDapper: true
           targetFramework: netstandard2.0
           generateCsproj: true
           namespaceName: SqliteDapperLegacyExampleGen
-          debugRequest: true
+          overrides:
+            - column: "GetSqliteFunctions:max_integer"
+              csharp_type:
+                type: "int"
+            - column: "GetSqliteFunctions:max_varchar"
+              csharp_type:
+                type: "string"

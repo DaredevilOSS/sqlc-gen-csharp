@@ -623,6 +623,23 @@ public class QuerySql
         }
     }
 
+    private const string GetMysqlFunctionsSql = "SELECT MAX(c_int) AS max_int, MAX(c_varchar) AS max_varchar, MAX(c_timestamp) AS max_timestamp, max(c_bigint) as max_bigint FROM  mysql_types ; SELECT  LAST_INSERT_ID ( ) "; 
+    public class GetMysqlFunctionsRow
+    {
+        public required object MaxInt { get; init; }
+        public required object MaxVarchar { get; init; }
+        public required object MaxTimestamp { get; init; }
+        public required object MaxBigint { get; init; }
+    };
+    public async Task<GetMysqlFunctionsRow?> GetMysqlFunctions()
+    {
+        using (var connection = new MySqlConnection(ConnectionString))
+        {
+            var result = await connection.QueryFirstOrDefaultAsync<GetMysqlFunctionsRow?>(GetMysqlFunctionsSql);
+            return result;
+        }
+    }
+
     private const string TruncateMysqlTypesSql = "TRUNCATE TABLE mysql_types; SELECT LAST_INSERT_ID()";
     public async Task TruncateMysqlTypes()
     {

@@ -687,6 +687,37 @@ namespace NpgsqlLegacyExampleGen
             return null;
         }
 
+        private const string GetPostgresFunctionsSql = "SELECT MAX(c_integer) AS max_integer, MAX(c_varchar) AS max_varchar, MAX(c_timestamp) AS max_timestamp FROM  postgres_types  ";  
+        public class GetPostgresFunctionsRow
+        {
+            public object MaxInteger { get; set; }
+            public object MaxVarchar { get; set; }
+            public object MaxTimestamp { get; set; }
+        };
+        public async Task<GetPostgresFunctionsRow> GetPostgresFunctions()
+        {
+            using (var connection = NpgsqlDataSource.Create(ConnectionString))
+            {
+                using (var command = connection.CreateCommand(GetPostgresFunctionsSql))
+                {
+                    using (var reader = await command.ExecuteReaderAsync())
+                    {
+                        if (await reader.ReadAsync())
+                        {
+                            return new GetPostgresFunctionsRow
+                            {
+                                MaxInteger = reader.GetInt32(0),
+                                MaxVarchar = reader.GetString(1),
+                                MaxTimestamp = reader.GetDateTime(2)
+                            };
+                        }
+                    }
+                }
+            }
+
+            return null;
+        }
+
         private const string InsertPostgresGeoTypesSql = "INSERT INTO postgres_geometric_types (c_point, c_line, c_lseg, c_box, c_path, c_polygon, c_circle) VALUES ( @c_point , @c_line, @c_lseg, @c_box, @c_path, @c_polygon, @c_circle ) "; 
         public class InsertPostgresGeoTypesArgs
         {

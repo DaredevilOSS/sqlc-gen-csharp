@@ -428,6 +428,21 @@ public class QuerySql
         }
     }
 
+    private const string GetSqliteFunctionsSql = "SELECT MAX(c_integer) AS max_integer, MAX(c_text) AS max_text FROM  types_sqlite  ";  
+    public class GetSqliteFunctionsRow
+    {
+        public object? MaxInteger { get; init; }
+        public object? MaxText { get; init; }
+    };
+    public async Task<GetSqliteFunctionsRow?> GetSqliteFunctions()
+    {
+        using (var connection = new SqliteConnection(ConnectionString))
+        {
+            var result = await connection.QueryFirstOrDefaultAsync<GetSqliteFunctionsRow?>(GetSqliteFunctionsSql);
+            return result;
+        }
+    }
+
     private const string DeleteAllSqliteTypesSql = "DELETE FROM types_sqlite";
     public async Task DeleteAllSqliteTypes()
     {

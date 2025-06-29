@@ -623,6 +623,23 @@ namespace MySqlConnectorDapperLegacyExampleGen
             }
         }
 
+        private const string GetMysqlFunctionsSql = "SELECT MAX(c_int) AS max_int, MAX(c_varchar) AS max_varchar, MAX(c_timestamp) AS max_timestamp, max(c_bigint) as max_bigint FROM  mysql_types ; SELECT  LAST_INSERT_ID ( ) "; 
+        public class GetMysqlFunctionsRow
+        {
+            public object MaxInt { get; set; }
+            public object MaxVarchar { get; set; }
+            public object MaxTimestamp { get; set; }
+            public object MaxBigint { get; set; }
+        };
+        public async Task<GetMysqlFunctionsRow> GetMysqlFunctions()
+        {
+            using (var connection = new MySqlConnection(ConnectionString))
+            {
+                var result = await connection.QueryFirstOrDefaultAsync<GetMysqlFunctionsRow>(GetMysqlFunctionsSql);
+                return result;
+            }
+        }
+
         private const string TruncateMysqlTypesSql = "TRUNCATE TABLE mysql_types; SELECT LAST_INSERT_ID()";
         public async Task TruncateMysqlTypes()
         {

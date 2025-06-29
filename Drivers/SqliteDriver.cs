@@ -37,6 +37,12 @@ public partial class SqliteDriver(
             {
                 {"real", new DbTypeInfo()}
             }, ordinal => $"reader.GetDecimal({ordinal})"),
+        // last item in the dictionary - enforce TODO
+        new("object",
+            new Dictionary<string, DbTypeInfo>
+            {
+                { "any", new DbTypeInfo() }
+            }, ordinal => $"reader.GetValue({ordinal})")
     ];
 
     public override UsingDirectiveSyntax[] GetUsingDirectivesForQueries()

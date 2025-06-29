@@ -586,6 +586,34 @@ public class QuerySql
         return null;
     }
 
+    private const string GetMysqlFunctionsSql = "SELECT MAX(c_int) AS max_int, MAX(c_varchar) AS max_varchar, MAX(c_timestamp) AS max_timestamp, max(c_bigint) as max_bigint FROM  mysql_types  ";  
+    public readonly record struct GetMysqlFunctionsRow(object MaxInt, object MaxVarchar, object MaxTimestamp, object MaxBigint);
+    public async Task<GetMysqlFunctionsRow?> GetMysqlFunctions()
+    {
+        using (var connection = new MySqlConnection(ConnectionString))
+        {
+            await connection.OpenAsync();
+            using (var command = new MySqlCommand(GetMysqlFunctionsSql, connection))
+            {
+                using (var reader = await command.ExecuteReaderAsync())
+                {
+                    if (await reader.ReadAsync())
+                    {
+                        return new GetMysqlFunctionsRow
+                        {
+                            MaxInt = reader.GetInt32(0),
+                            MaxVarchar = reader.GetString(1),
+                            MaxTimestamp = reader.GetDateTime(2),
+                            MaxBigint = reader.GetInt64(3)
+                        };
+                    }
+                }
+            }
+        }
+
+        return null;
+    }
+
     private const string TruncateMysqlTypesSql = "TRUNCATE TABLE mysql_types";
     public async Task TruncateMysqlTypes()
     {

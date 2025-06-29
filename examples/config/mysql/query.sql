@@ -86,6 +86,10 @@ GROUP BY c_bool, c_boolean, c_bit, c_tinyint, c_smallint, c_mediumint, c_int, c_
          c_binary, c_varbinary, c_tinyblob, c_blob, c_mediumblob, c_longblob
 LIMIT 1;
 
+-- name: GetMysqlFunctions :one
+SELECT MAX(c_int) AS max_int, MAX(c_varchar) AS max_varchar, MAX(c_timestamp) AS max_timestamp, max(c_bigint) as max_bigint
+FROM mysql_types;
+
 -- name: TruncateMysqlTypes :exec
 TRUNCATE TABLE mysql_types;
 

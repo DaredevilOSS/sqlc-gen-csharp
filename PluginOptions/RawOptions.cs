@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
 namespace SqlcGenCsharp;
@@ -22,6 +23,24 @@ internal class RawOptions
     [JsonPropertyName("overrideDapperVersion")]
     public string OverrideDapperVersion { get; init; } = string.Empty;
 
+    [JsonPropertyName("overrides")]
+    public List<OverrideOption>? Overrides { get; init; }
+
     [JsonPropertyName("debugRequest")]
     public bool DebugRequest { get; init; }
+}
+
+public class OverrideOption
+{
+    [JsonPropertyName("column")]
+    public string Column { get; init; } = string.Empty;
+
+    [JsonPropertyName("csharp_type")]
+    public CsharpTypeOption CsharpType { get; init; } = new();
+}
+
+public class CsharpTypeOption
+{
+    [JsonPropertyName("type")]
+    public string Type { get; init; } = string.Empty;
 }
