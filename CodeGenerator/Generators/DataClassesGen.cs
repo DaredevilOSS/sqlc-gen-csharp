@@ -10,7 +10,7 @@ namespace SqlcGenCsharp.Generators;
 
 internal class DataClassesGen(DbDriver dbDriver)
 {
-    public MemberDeclarationSyntax Generate(string name, ClassMember? classMember, IList<Column> columns, Options options, Query? query = null)
+    public MemberDeclarationSyntax Generate(string name, ClassMember? classMember, IList<Column> columns, Options options, Query? query)
     {
         var className = classMember is null ? name : classMember.Value.Name(name);
         if (options.DotnetFramework.IsDotnetCore() && !options.UseDapper)
@@ -58,7 +58,7 @@ internal class DataClassesGen(DbDriver dbDriver)
                 return false;
             if (column.EmbedTable != null)
                 return true;
-            return column.NotNull;
+            return dbDriver.IsColumnNotNull(column, query);
         }
     }
 

@@ -89,14 +89,14 @@ internal class QueriesGen(DbDriver dbDriver, string namespaceName)
     private MemberDeclarationSyntax? GetQueryColumnsDataclass(Query query)
     {
         if (query.Columns.Count <= 0) return null;
-        return DataClassesGen.Generate(query.Name, ClassMember.Row, query.Columns, dbDriver.Options);
+        return DataClassesGen.Generate(query.Name, ClassMember.Row, query.Columns, dbDriver.Options, query);
     }
 
     private MemberDeclarationSyntax? GetQueryParamsDataclass(Query query)
     {
         if (query.Params.Count <= 0) return null;
         var columns = query.Params.Select(p => dbDriver.GetColumnFromParam(p, query)).ToList();
-        return DataClassesGen.Generate(query.Name, ClassMember.Args, columns, dbDriver.Options);
+        return DataClassesGen.Generate(query.Name, ClassMember.Args, columns, dbDriver.Options, query);
     }
 
     private MemberDeclarationSyntax? GetQueryTextConstant(Query query)

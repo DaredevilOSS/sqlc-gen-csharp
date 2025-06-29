@@ -447,6 +447,31 @@ namespace EndToEndTests
         }
 
         [Test]
+        [TestCase(-54355, 9787876578, "Scream of the Butterfly", "2025-06-29 12:00:00")]
+        [TestCase(null, null, null, null)]
+        public async Task TestMySqlDataTypesOverride(int? cInt, long? cBigint, string cVarchar, DateTime? cTimestamp)
+        {
+            await QuerySql.InsertMysqlTypes(new QuerySql.InsertMysqlTypesArgs { CInt = cInt, CBigint = cBigint, CVarchar = cVarchar, CTimestamp = cTimestamp });
+            var expected = new QuerySql.GetMysqlFunctionsRow
+            {
+                MaxInt = cInt,
+                MaxBigint = cBigint,
+                MaxVarchar = cVarchar,
+                MaxTimestamp = cTimestamp
+            };
+            var actual = await QuerySql.GetMysqlFunctions();
+            AssertSingularEquals(expected, actual.Value);
+        }
+
+        private static void AssertSingularEquals(QuerySql.GetMysqlFunctionsRow expected, QuerySql.GetMysqlFunctionsRow actual)
+        {
+            Assert.That(actual.MaxInt, Is.EqualTo(expected.MaxInt));
+            Assert.That(actual.MaxBigint, Is.EqualTo(expected.MaxBigint));
+            Assert.That(actual.MaxVarchar, Is.EqualTo(expected.MaxVarchar));
+            Assert.That(actual.MaxTimestamp, Is.EqualTo(expected.MaxTimestamp));
+        }
+
+        [Test]
         public async Task TestMySqlScopedSchemaEnum()
         {
             await this.QuerySql.CreateExtendedBio(new QuerySql.CreateExtendedBioArgs { AuthorName = "Bojack Horseman", Name = "One Trick Pony", BioType = ExtendedBiosBioType.Memoir });

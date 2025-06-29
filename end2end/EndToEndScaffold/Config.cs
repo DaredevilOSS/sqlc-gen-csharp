@@ -97,6 +97,7 @@ internal static class Config
                     KnownTestType.MySqlBinaryDataTypes,
                     KnownTestType.MySqlEnumDataType,
                     KnownTestType.MySqlScopedSchemaEnum,
+                    KnownTestType.MySqlDataTypesOverride,
 
                     KnownTestType.MySqlStringCopyFrom,
                     KnownTestType.MySqlIntegerCopyFrom,
@@ -132,6 +133,7 @@ internal static class Config
                         KnownTestType.MySqlBinaryDataTypes,
                         KnownTestType.MySqlEnumDataType,
                         KnownTestType.MySqlScopedSchemaEnum,
+                        KnownTestType.MySqlDataTypesOverride,
 
                         KnownTestType.MySqlStringCopyFrom,
                         KnownTestType.MySqlIntegerCopyFrom,
@@ -166,6 +168,7 @@ internal static class Config
                     KnownTestType.PostgresDateTimeDataTypes,
                     KnownTestType.PostgresArrayDataTypes,
                     KnownTestType.PostgresGeoDataTypes,
+                    KnownTestType.PostgresDataTypesOverride,
 
                     KnownTestType.PostgresStringCopyFrom,
                     KnownTestType.PostgresIntegerCopyFrom,
@@ -199,6 +202,7 @@ internal static class Config
                     KnownTestType.PostgresDateTimeDataTypes,
                     KnownTestType.PostgresArrayDataTypes,
                     KnownTestType.PostgresGeoDataTypes,
+                    KnownTestType.PostgresDataTypesOverride,
 
                     KnownTestType.PostgresStringCopyFrom,
                     KnownTestType.PostgresIntegerCopyFrom,
@@ -226,7 +230,8 @@ internal static class Config
                     KnownTestType.NargNull,
                     KnownTestType.NargNotNull,
                     KnownTestType.SqliteDataTypes,
-                    KnownTestType.SqliteCopyFrom
+                    KnownTestType.SqliteCopyFrom,
+                    KnownTestType.SqliteDataTypesOverride
                 ]
             }
         },
@@ -248,7 +253,8 @@ internal static class Config
                     KnownTestType.NargNull,
                     KnownTestType.NargNotNull,
                     KnownTestType.SqliteDataTypes,
-                    KnownTestType.SqliteCopyFrom
+                    KnownTestType.SqliteCopyFrom,
+                    KnownTestType.SqliteDataTypesOverride
                 ]
             }
         },

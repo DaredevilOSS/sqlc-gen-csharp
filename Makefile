@@ -29,6 +29,7 @@ dotnet-publish-process: dotnet-build-process
 	dotnet publish LocalRunner -c release --output dist/
 
 sqlc-generate-process: dotnet-publish-process
+	./scripts/sync_sqlc_options.sh
 	sqlc -f sqlc.local.yaml generate
 
 # WASM type plugin

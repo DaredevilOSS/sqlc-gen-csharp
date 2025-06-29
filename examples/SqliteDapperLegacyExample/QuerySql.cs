@@ -429,10 +429,11 @@ namespace SqliteDapperLegacyExampleGen
             }
         }
 
-        private const string GetSqliteFunctionsSql = "SELECT MAX(c_integer) AS max_integer, MAX(c_text) AS max_text FROM  types_sqlite  ";  
+        private const string GetSqliteFunctionsSql = "SELECT MAX(c_integer) AS max_integer, MAX(c_real) AS max_real, MAX(c_text) AS max_text FROM  types_sqlite  ";  
         public class GetSqliteFunctionsRow
         {
-            public object MaxInteger { get; set; }
+            public int? MaxInteger { get; set; }
+            public decimal? MaxReal { get; set; }
             public object MaxText { get; set; }
         };
         public async Task<GetSqliteFunctionsRow> GetSqliteFunctions()

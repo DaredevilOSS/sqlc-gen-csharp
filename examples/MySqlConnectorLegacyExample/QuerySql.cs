@@ -821,10 +821,10 @@ namespace MySqlConnectorLegacyExampleGen
         private const string GetMysqlFunctionsSql = "SELECT MAX(c_int) AS max_int, MAX(c_varchar) AS max_varchar, MAX(c_timestamp) AS max_timestamp, max(c_bigint) as max_bigint FROM  mysql_types  ";  
         public class GetMysqlFunctionsRow
         {
-            public object MaxInt { get; set; }
-            public object MaxVarchar { get; set; }
-            public object MaxTimestamp { get; set; }
-            public object MaxBigint { get; set; }
+            public int? MaxInt { get; set; }
+            public string MaxVarchar { get; set; }
+            public DateTime? MaxTimestamp { get; set; }
+            public long? MaxBigint { get; set; }
         };
         public async Task<GetMysqlFunctionsRow> GetMysqlFunctions()
         {
@@ -839,10 +839,10 @@ namespace MySqlConnectorLegacyExampleGen
                         {
                             return new GetMysqlFunctionsRow
                             {
-                                MaxInt = reader.GetInt32(0),
-                                MaxVarchar = reader.GetString(1),
-                                MaxTimestamp = reader.GetDateTime(2),
-                                MaxBigint = reader.GetInt64(3)
+                                MaxInt = reader.IsDBNull(0) ? (int? )null : reader.GetInt32(0),
+                                MaxVarchar = reader.IsDBNull(1) ? null : reader.GetString(1),
+                                MaxTimestamp = reader.IsDBNull(2) ? (DateTime? )null : reader.GetDateTime(2),
+                                MaxBigint = reader.IsDBNull(3) ? (long? )null : reader.GetInt64(3)
                             };
                         }
                     }

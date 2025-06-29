@@ -626,10 +626,10 @@ public class QuerySql
     private const string GetMysqlFunctionsSql = "SELECT MAX(c_int) AS max_int, MAX(c_varchar) AS max_varchar, MAX(c_timestamp) AS max_timestamp, max(c_bigint) as max_bigint FROM  mysql_types ; SELECT  LAST_INSERT_ID ( ) "; 
     public class GetMysqlFunctionsRow
     {
-        public required object MaxInt { get; init; }
-        public required object MaxVarchar { get; init; }
-        public required object MaxTimestamp { get; init; }
-        public required object MaxBigint { get; init; }
+        public int? MaxInt { get; init; }
+        public string? MaxVarchar { get; init; }
+        public DateTime? MaxTimestamp { get; init; }
+        public long? MaxBigint { get; init; }
     };
     public async Task<GetMysqlFunctionsRow?> GetMysqlFunctions()
     {

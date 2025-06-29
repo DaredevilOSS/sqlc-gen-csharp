@@ -448,8 +448,8 @@ public class QuerySql
         return null;
     }
 
-    private const string GetSqliteFunctionsSql = "SELECT MAX(c_integer) AS max_integer, MAX(c_text) AS max_text FROM  types_sqlite  ";  
-    public readonly record struct GetSqliteFunctionsRow(object? MaxInteger, object? MaxText);
+    private const string GetSqliteFunctionsSql = "SELECT MAX(c_integer) AS max_integer, MAX(c_real) AS max_real, MAX(c_text) AS max_text FROM  types_sqlite  ";  
+    public readonly record struct GetSqliteFunctionsRow(int? MaxInteger, decimal? MaxReal, object? MaxText);
     public async Task<GetSqliteFunctionsRow?> GetSqliteFunctions()
     {
         using (var connection = new SqliteConnection(ConnectionString))
@@ -464,7 +464,8 @@ public class QuerySql
                         return new GetSqliteFunctionsRow
                         {
                             MaxInteger = reader.IsDBNull(0) ? null : reader.GetInt32(0),
-                            MaxText = reader.IsDBNull(1) ? null : reader.GetValue(1)
+                            MaxReal = reader.IsDBNull(1) ? null : reader.GetDecimal(1),
+                            MaxText = reader.IsDBNull(2) ? null : reader.GetValue(2)
                         };
                     }
                 }

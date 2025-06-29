@@ -529,9 +529,9 @@ public class QuerySql
     private const string GetPostgresFunctionsSql = "SELECT MAX(c_integer) AS max_integer, MAX(c_varchar) AS max_varchar, MAX(c_timestamp) AS max_timestamp FROM  postgres_types  ";  
     public class GetPostgresFunctionsRow
     {
-        public required object MaxInteger { get; init; }
-        public required object MaxVarchar { get; init; }
-        public required object MaxTimestamp { get; init; }
+        public int? MaxInteger { get; init; }
+        public string? MaxVarchar { get; init; }
+        public DateTime? MaxTimestamp { get; init; }
     };
     public async Task<GetPostgresFunctionsRow?> GetPostgresFunctions()
     {

@@ -390,6 +390,29 @@ namespace EndToEndTests
         }
 
         [Test]
+        [TestCase(-54355, "White Light from the Mouth of Infinity", "2022-10-2 15:44:01+09:00")]
+        [TestCase(null, null, null)]
+        public async Task TestPostgresDataTypesOverride(int? cInteger, string cVarchar, DateTime? cTimestamp)
+        {
+            await QuerySql.InsertPostgresTypes(new QuerySql.InsertPostgresTypesArgs { CInteger = cInteger, CVarchar = cVarchar, CTimestamp = cTimestamp });
+            var expected = new QuerySql.GetPostgresFunctionsRow
+            {
+                MaxInteger = cInteger,
+                MaxVarchar = cVarchar,
+                MaxTimestamp = cTimestamp
+            };
+            var actual = await QuerySql.GetPostgresFunctions();
+            AssertSingularEquals(expected, actual);
+        }
+
+        private static void AssertSingularEquals(QuerySql.GetPostgresFunctionsRow expected, QuerySql.GetPostgresFunctionsRow actual)
+        {
+            Assert.That(actual.MaxInteger, Is.EqualTo(expected.MaxInteger));
+            Assert.That(actual.MaxVarchar, Is.EqualTo(expected.MaxVarchar));
+            Assert.That(actual.MaxTimestamp, Is.EqualTo(expected.MaxTimestamp));
+        }
+
+        [Test]
         [TestCase(100, "z", "Sex Pistols", "Anarchy in the U.K", "Never Mind the Bollocks...")]
         [TestCase(10, null, null, null, null)]
         public async Task TestStringCopyFrom(int batchSize, string cChar, string cVarchar, string cCharacterVarying, string cText)

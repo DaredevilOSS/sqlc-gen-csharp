@@ -561,10 +561,11 @@ namespace SqliteLegacyExampleGen
             return null;
         }
 
-        private const string GetSqliteFunctionsSql = "SELECT MAX(c_integer) AS max_integer, MAX(c_text) AS max_text FROM  types_sqlite  ";  
+        private const string GetSqliteFunctionsSql = "SELECT MAX(c_integer) AS max_integer, MAX(c_real) AS max_real, MAX(c_text) AS max_text FROM  types_sqlite  ";  
         public class GetSqliteFunctionsRow
         {
-            public object MaxInteger { get; set; }
+            public int? MaxInteger { get; set; }
+            public decimal? MaxReal { get; set; }
             public object MaxText { get; set; }
         };
         public async Task<GetSqliteFunctionsRow> GetSqliteFunctions()
@@ -581,7 +582,8 @@ namespace SqliteLegacyExampleGen
                             return new GetSqliteFunctionsRow
                             {
                                 MaxInteger = reader.IsDBNull(0) ? (int? )null : reader.GetInt32(0),
-                                MaxText = reader.IsDBNull(1) ? null : reader.GetValue(1)
+                                MaxReal = reader.IsDBNull(1) ? (decimal? )null : reader.GetDecimal(1),
+                                MaxText = reader.IsDBNull(2) ? null : reader.GetValue(2)
                             };
                         }
                     }

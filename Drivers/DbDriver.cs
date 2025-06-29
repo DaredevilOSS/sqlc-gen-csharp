@@ -133,7 +133,7 @@ public abstract class DbDriver
     public string GetCsharpType(Column column, Query? query)
     {
         var csharpType = GetCsharpTypeWithoutNullableSuffix(column, query);
-        return AddNullableSuffixIfNeeded(csharpType, column.NotNull);
+        return AddNullableSuffixIfNeeded(csharpType, IsColumnNotNull(column, query));
     }
 
     private string GetCsharpTypeWithoutNullableSuffix(Column column, Query? query)
@@ -285,8 +285,21 @@ public abstract class DbDriver
         return Queries.Any(q => q.Cmd is ":copyfrom");
     }
 
-    private OverrideOption? FindOverrideForQueryColumn(Query query, Column column)
+    public OverrideOption? FindOverrideForQueryColumn(Query query, Column column)
     {
         return Options.Overrides.FirstOrDefault(o => o.Column.Equals($"{query.Name}:{column.Name}"));
+    }
+
+    /// <summary>
+    /// If the column data type is overridden, we need to check for nulls in generated code
+    /// </summary>
+    /// <param name="column"></param>
+    /// <param name="query"></param>
+    /// <returns>Adjusted not null value</returns>
+    public bool IsColumnNotNull(Column column, Query? query)
+    {
+        if (query is null)
+            return column.NotNull;
+        return column.NotNull && FindOverrideForQueryColumn(query, column) is null;
     }
 }

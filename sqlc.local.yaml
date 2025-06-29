@@ -12,7 +12,6 @@ sql:
       - plugin: csharp
         out: examples/NpgsqlExample
         options:
-          debugRequest: true
           useDapper: false
           targetFramework: net8.0
           generateCsproj: true
@@ -27,6 +26,7 @@ sql:
             - column: "GetPostgresFunctions:max_timestamp"
               csharp_type:
                 type: "DateTime"
+          debugRequest: true
   - schema: "examples/config/postgresql/schema.sql"
     queries: "examples/config/postgresql/query.sql"
     engine: "postgresql"
@@ -34,7 +34,6 @@ sql:
       - plugin: csharp
         out: examples/NpgsqlDapperExample
         options:
-          debugRequest: true
           useDapper: true
           targetFramework: net8.0
           generateCsproj: true
@@ -49,6 +48,7 @@ sql:
             - column: "GetPostgresFunctions:max_timestamp"
               csharp_type:
                 type: "DateTime"
+          debugRequest: true
   - schema: "examples/config/postgresql/schema.sql"
     queries: "examples/config/postgresql/query.sql"
     engine: "postgresql"
@@ -56,7 +56,6 @@ sql:
       - plugin: csharp
         out: examples/NpgsqlLegacyExample
         options:
-          debugRequest: true
           useDapper: false
           targetFramework: netstandard2.0
           generateCsproj: true
@@ -71,6 +70,7 @@ sql:
             - column: "GetPostgresFunctions:max_timestamp"
               csharp_type:
                 type: "DateTime"
+          debugRequest: true
   - schema: "examples/config/postgresql/schema.sql"
     queries: "examples/config/postgresql/query.sql"
     engine: "postgresql"
@@ -78,7 +78,6 @@ sql:
       - plugin: csharp
         out: examples/NpgsqlDapperLegacyExample
         options:
-          debugRequest: true
           useDapper: true
           targetFramework: netstandard2.0
           generateCsproj: true
@@ -93,7 +92,7 @@ sql:
             - column: "GetPostgresFunctions:max_timestamp"
               csharp_type:
                 type: "DateTime"
-
+          debugRequest: true
   # MySQL
   - schema: "examples/config/mysql/schema.sql"
     queries: "examples/config/mysql/query.sql"
@@ -102,7 +101,6 @@ sql:
       - plugin: csharp
         out: examples/MySqlConnectorExample
         options:
-          debugRequest: true
           useDapper: false
           targetFramework: net8.0
           generateCsproj: true
@@ -120,6 +118,7 @@ sql:
             - column: "GetMysqlFunctions:max_bigint"
               csharp_type:
                 type: "long"
+          debugRequest: true
   - schema: "examples/config/mysql/schema.sql"
     queries: "examples/config/mysql/query.sql"
     engine: "mysql"
@@ -127,7 +126,6 @@ sql:
       - plugin: csharp
         out: examples/MySqlConnectorDapperExample
         options:
-          debugRequest: true
           useDapper: true
           targetFramework: net8.0
           generateCsproj: true
@@ -145,6 +143,7 @@ sql:
             - column: "GetMysqlFunctions:max_bigint"
               csharp_type:
                 type: "long"
+          debugRequest: true
   - schema: "examples/config/mysql/schema.sql"
     queries: "examples/config/mysql/query.sql"
     engine: "mysql"
@@ -152,7 +151,6 @@ sql:
       - plugin: csharp
         out: examples/MySqlConnectorLegacyExample
         options:
-          debugRequest: true
           useDapper: false
           targetFramework: netstandard2.0
           generateCsproj: true
@@ -170,6 +168,7 @@ sql:
             - column: "GetMysqlFunctions:max_bigint"
               csharp_type:
                 type: "long"
+          debugRequest: true
   - schema: "examples/config/mysql/schema.sql"
     queries: "examples/config/mysql/query.sql"
     engine: "mysql"
@@ -177,7 +176,6 @@ sql:
       - plugin: csharp
         out: examples/MySqlConnectorDapperLegacyExample
         options:
-          debugRequest: true
           useDapper: true
           targetFramework: netstandard2.0
           generateCsproj: true
@@ -195,7 +193,7 @@ sql:
             - column: "GetMysqlFunctions:max_bigint"
               csharp_type:
                 type: "long"
-  
+          debugRequest: true
   # Sqlite
   - schema: "examples/config/sqlite/schema.sql"
     queries: "examples/config/sqlite/query.sql"
@@ -204,7 +202,6 @@ sql:
       - plugin: csharp
         out: examples/SqliteExample
         options:
-          debugRequest: true
           useDapper: false
           targetFramework: net8.0
           generateCsproj: true
@@ -216,6 +213,10 @@ sql:
             - column: "GetSqliteFunctions:max_varchar"
               csharp_type:
                 type: "string"
+            - column: "GetSqliteFunctions:max_real"
+              csharp_type:
+                type: "decimal"
+          debugRequest: true
   - schema: "examples/config/sqlite/schema.sql"
     queries: "examples/config/sqlite/query.sql"
     engine: "sqlite"
@@ -223,7 +224,6 @@ sql:
       - plugin: csharp
         out: examples/SqliteDapperExample
         options:
-          debugRequest: true
           useDapper: true
           targetFramework: net8.0
           generateCsproj: true
@@ -235,6 +235,10 @@ sql:
             - column: "GetSqliteFunctions:max_varchar"
               csharp_type:
                 type: "string"
+            - column: "GetSqliteFunctions:max_real"
+              csharp_type:
+                type: "decimal"
+          debugRequest: true
   - schema: "examples/config/sqlite/schema.sql"
     queries: "examples/config/sqlite/query.sql"
     engine: "sqlite"
@@ -242,7 +246,6 @@ sql:
       - plugin: csharp
         out: examples/SqliteLegacyExample
         options:
-          debugRequest: true
           useDapper: false
           targetFramework: netstandard2.0
           generateCsproj: true
@@ -254,6 +257,10 @@ sql:
             - column: "GetSqliteFunctions:max_varchar"
               csharp_type:
                 type: "string"
+            - column: "GetSqliteFunctions:max_real"
+              csharp_type:
+                type: "decimal"
+          debugRequest: true
   - schema: "examples/config/sqlite/schema.sql"
     queries: "examples/config/sqlite/query.sql"
     engine: "sqlite"
@@ -261,7 +268,6 @@ sql:
       - plugin: csharp
         out: examples/SqliteDapperLegacyExample
         options:
-          debugRequest: true
           useDapper: true
           targetFramework: netstandard2.0
           generateCsproj: true
@@ -273,3 +279,7 @@ sql:
             - column: "GetSqliteFunctions:max_varchar"
               csharp_type:
                 type: "string"
+            - column: "GetSqliteFunctions:max_real"
+              csharp_type:
+                type: "decimal"
+          debugRequest: true

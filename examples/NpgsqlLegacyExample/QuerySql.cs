@@ -690,9 +690,9 @@ namespace NpgsqlLegacyExampleGen
         private const string GetPostgresFunctionsSql = "SELECT MAX(c_integer) AS max_integer, MAX(c_varchar) AS max_varchar, MAX(c_timestamp) AS max_timestamp FROM  postgres_types  ";  
         public class GetPostgresFunctionsRow
         {
-            public object MaxInteger { get; set; }
-            public object MaxVarchar { get; set; }
-            public object MaxTimestamp { get; set; }
+            public int? MaxInteger { get; set; }
+            public string MaxVarchar { get; set; }
+            public DateTime? MaxTimestamp { get; set; }
         };
         public async Task<GetPostgresFunctionsRow> GetPostgresFunctions()
         {
@@ -706,9 +706,9 @@ namespace NpgsqlLegacyExampleGen
                         {
                             return new GetPostgresFunctionsRow
                             {
-                                MaxInteger = reader.GetInt32(0),
-                                MaxVarchar = reader.GetString(1),
-                                MaxTimestamp = reader.GetDateTime(2)
+                                MaxInteger = reader.IsDBNull(0) ? (int? )null : reader.GetInt32(0),
+                                MaxVarchar = reader.IsDBNull(1) ? null : reader.GetString(1),
+                                MaxTimestamp = reader.IsDBNull(2) ? (DateTime? )null : reader.GetDateTime(2)
                             };
                         }
                     }

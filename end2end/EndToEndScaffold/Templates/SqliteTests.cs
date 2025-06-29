@@ -14,7 +14,7 @@ public static class SqliteTests
                      [TestCase(null, null, null, new byte[] { })]
                      [TestCase(null, null, null, null)]
                      public async Task TestSqliteTypes(
-                          int cInteger,
+                          int? cInteger,
                           decimal? cReal,
                           string cText,
                           byte[] cBlob)
@@ -93,9 +93,35 @@ public static class SqliteTests
         {
             Impl = $$"""
                      [Test]
-                     public async Task TestSqliteDataTypesOverride()
+                     [TestCase(-54355, 9787.66, "Have One On Me")]
+                     [TestCase(null, null, null)]
+                     public async Task TestSqliteDataTypesOverride(
+                        int? cInteger,
+                        decimal? cReal,
+                        string cText)
                      {
-                         var actual = await QuerySql.GetSqliteTypes();
+                         await QuerySql.InsertSqliteTypes(new QuerySql.InsertSqliteTypesArgs
+                         {
+                             CInteger = cInteger,
+                             CReal = cReal,
+                             CText = cText
+                         });
+                     
+                         var expected = new QuerySql.GetSqliteFunctionsRow
+                         {
+                             MaxInteger = cInteger,
+                             MaxReal = cReal,
+                             MaxText = cText
+                         };
+                         var actual = await QuerySql.GetSqliteFunctions();
+                         AssertSingularEquals(expected, actual{{Consts.UnknownRecordValuePlaceholder}});
+                     }
+
+                     private static void AssertSingularEquals(QuerySql.GetSqliteFunctionsRow expected, QuerySql.GetSqliteFunctionsRow actual)
+                     {
+                         Assert.That(actual.MaxInteger, Is.EqualTo(expected.MaxInteger));
+                         Assert.That(actual.MaxReal, Is.EqualTo(expected.MaxReal));
+                         Assert.That(actual.MaxText, Is.EqualTo(expected.MaxText));
                      }
                      """
         }

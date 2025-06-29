@@ -530,9 +530,9 @@ namespace NpgsqlDapperLegacyExampleGen
         private const string GetPostgresFunctionsSql = "SELECT MAX(c_integer) AS max_integer, MAX(c_varchar) AS max_varchar, MAX(c_timestamp) AS max_timestamp FROM  postgres_types  ";  
         public class GetPostgresFunctionsRow
         {
-            public object MaxInteger { get; set; }
-            public object MaxVarchar { get; set; }
-            public object MaxTimestamp { get; set; }
+            public int? MaxInteger { get; set; }
+            public string MaxVarchar { get; set; }
+            public DateTime? MaxTimestamp { get; set; }
         };
         public async Task<GetPostgresFunctionsRow> GetPostgresFunctions()
         {

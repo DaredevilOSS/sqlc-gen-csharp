@@ -135,25 +135,6 @@ public class CommonGen(DbDriver dbDriver)
             return $"{column.Name.ToPascalCase()} = {readExpression}";
         }
 
-        string GetReadExpression(Column column, int ordinal, Query query)
-        {
-            return column.NotNull
-                ? dbDriver.GetColumnReader(column, ordinal, query)
-                : $"{CheckNullExpression(ordinal)} ? {GetNullExpression(column, query)} : {dbDriver.GetColumnReader(column, ordinal, query)}";
-        }
-
-        string GetNullExpression(Column column, Query? query)
-        {
-            var csharpType = dbDriver.GetCsharpType(column, query);
-            if (dbDriver.Options.DotnetFramework.IsDotnetCore()) return "null";
-            return dbDriver.IsTypeNullable(csharpType) ? $"({csharpType}) null" : "null";
-        }
-
-        string CheckNullExpression(int ordinal)
-        {
-            return $"{Variable.Reader.AsVarName()}.IsDBNull({ordinal})";
-        }
-
         string InstantiateDataclassInternal(string name, IEnumerable<string> fieldsInit)
         {
             return $$"""
@@ -163,5 +144,24 @@ public class CommonGen(DbDriver dbDriver)
                      }
                      """;
         }
+    }
+
+    private string GetNullExpression(Column column, Query? query)
+    {
+        var csharpType = dbDriver.GetCsharpType(column, query);
+        if (dbDriver.Options.DotnetFramework.IsDotnetCore()) return "null";
+        return dbDriver.IsTypeNullable(csharpType) ? $"({csharpType}) null" : "null";
+    }
+
+    private static string CheckNullExpression(int ordinal)
+    {
+        return $"{Variable.Reader.AsVarName()}.IsDBNull({ordinal})";
+    }
+
+    private string GetReadExpression(Column column, int ordinal, Query query)
+    {
+        if (dbDriver.IsColumnNotNull(column, query))
+            return dbDriver.GetColumnReader(column, ordinal, query);
+        return $"{CheckNullExpression(ordinal)} ? {GetNullExpression(column, query)} : {dbDriver.GetColumnReader(column, ordinal, query)}";
     }
 }

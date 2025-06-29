@@ -309,7 +309,7 @@ namespace EndToEndTests
         [TestCase(-54355, 9787.66, "Songs of Love and Hate", new byte[] { 0x15, 0x20, 0x33 })]
         [TestCase(null, null, null, new byte[] { })]
         [TestCase(null, null, null, null)]
-        public async Task TestSqliteTypes(int cInteger, decimal? cReal, string cText, byte[] cBlob)
+        public async Task TestSqliteTypes(int? cInteger, decimal? cReal, string cText, byte[] cBlob)
         {
             await QuerySql.InsertSqliteTypes(new QuerySql.InsertSqliteTypesArgs { CInteger = cInteger, CReal = cReal, CText = cText, CBlob = cBlob });
             var expected = new QuerySql.GetSqliteTypesRow
@@ -329,6 +329,29 @@ namespace EndToEndTests
             Assert.That(actual.CReal, Is.EqualTo(expected.CReal));
             Assert.That(actual.CText, Is.EqualTo(expected.CText));
             Assert.That(actual.CBlob, Is.EqualTo(expected.CBlob));
+        }
+
+        [Test]
+        [TestCase(-54355, 9787.66, "Have One On Me")]
+        [TestCase(null, null, null)]
+        public async Task TestSqliteDataTypesOverride(int? cInteger, decimal? cReal, string cText)
+        {
+            await QuerySql.InsertSqliteTypes(new QuerySql.InsertSqliteTypesArgs { CInteger = cInteger, CReal = cReal, CText = cText });
+            var expected = new QuerySql.GetSqliteFunctionsRow
+            {
+                MaxInteger = cInteger,
+                MaxReal = cReal,
+                MaxText = cText
+            };
+            var actual = await QuerySql.GetSqliteFunctions();
+            AssertSingularEquals(expected, actual);
+        }
+
+        private static void AssertSingularEquals(QuerySql.GetSqliteFunctionsRow expected, QuerySql.GetSqliteFunctionsRow actual)
+        {
+            Assert.That(actual.MaxInteger, Is.EqualTo(expected.MaxInteger));
+            Assert.That(actual.MaxReal, Is.EqualTo(expected.MaxReal));
+            Assert.That(actual.MaxText, Is.EqualTo(expected.MaxText));
         }
 
         [Test]

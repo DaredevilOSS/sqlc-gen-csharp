@@ -67,7 +67,7 @@ GROUP BY c_integer, c_real, c_text, c_blob
 LIMIT 1;
 
 -- name: GetSqliteFunctions :one
-SELECT MAX(c_integer) AS max_integer, MAX(c_text) AS max_text
+SELECT MAX(c_integer) AS max_integer, MAX(c_real) AS max_real, MAX(c_text) AS max_text
 FROM types_sqlite;
 
 -- name: DeleteAllSqliteTypes :exec

@@ -428,10 +428,11 @@ public class QuerySql
         }
     }
 
-    private const string GetSqliteFunctionsSql = "SELECT MAX(c_integer) AS max_integer, MAX(c_text) AS max_text FROM  types_sqlite  ";  
+    private const string GetSqliteFunctionsSql = "SELECT MAX(c_integer) AS max_integer, MAX(c_real) AS max_real, MAX(c_text) AS max_text FROM  types_sqlite  ";  
     public class GetSqliteFunctionsRow
     {
-        public object? MaxInteger { get; init; }
+        public int? MaxInteger { get; init; }
+        public decimal? MaxReal { get; init; }
         public object? MaxText { get; init; }
     };
     public async Task<GetSqliteFunctionsRow?> GetSqliteFunctions()

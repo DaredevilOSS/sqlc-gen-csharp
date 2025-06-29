@@ -3,7 +3,7 @@ plugins:
   - name: csharp
     wasm:
       url: file://dist/plugin.wasm
-      sha256: 8cbd0d3e392bf0ed85871e0f532a56063ecac7caff9c979255f56f8d92022874
+      sha256: f2829a9ca1ca403db4349dc2d069c7f4804089c4cd96ca1503cac0cfbb37b32c
 sql:
   # PostgresSQL
   - schema: "examples/config/postgresql/schema.sql"
@@ -206,6 +206,9 @@ sql:
             - column: "GetSqliteFunctions:max_varchar"
               csharp_type:
                 type: "string"
+            - column: "GetSqliteFunctions:max_real"
+              csharp_type:
+                type: "decimal"
   - schema: "examples/config/sqlite/schema.sql"
     queries: "examples/config/sqlite/query.sql"
     engine: "sqlite"
@@ -224,6 +227,9 @@ sql:
             - column: "GetSqliteFunctions:max_varchar"
               csharp_type:
                 type: "string"
+            - column: "GetSqliteFunctions:max_real"
+              csharp_type:
+                type: "decimal"
   - schema: "examples/config/sqlite/schema.sql"
     queries: "examples/config/sqlite/query.sql"
     engine: "sqlite"
@@ -242,6 +248,9 @@ sql:
             - column: "GetSqliteFunctions:max_varchar"
               csharp_type:
                 type: "string"
+            - column: "GetSqliteFunctions:max_real"
+              csharp_type:
+                type: "decimal"
   - schema: "examples/config/sqlite/schema.sql"
     queries: "examples/config/sqlite/query.sql"
     engine: "sqlite"
@@ -260,3 +269,6 @@ sql:
             - column: "GetSqliteFunctions:max_varchar"
               csharp_type:
                 type: "string"
+            - column: "GetSqliteFunctions:max_real"
+              csharp_type:
+                type: "decimal"
