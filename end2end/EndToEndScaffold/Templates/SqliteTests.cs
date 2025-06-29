@@ -89,5 +89,15 @@ public static class SqliteTests
                      }
                      """
         },
+        [KnownTestType.SqliteDataTypesOverride] = new TestImpl
+        {
+            Impl = $$"""
+                     [Test]
+                     public async Task TestSqliteDataTypesOverride()
+                     {
+                         var actual = await QuerySql.GetSqliteTypes();
+                     }
+                     """
+        }
     };
 }

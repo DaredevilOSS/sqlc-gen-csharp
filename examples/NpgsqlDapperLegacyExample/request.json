@@ -11,7 +11,7 @@
     "codegen": {
       "out": "examples/NpgsqlDapperLegacyExample",
       "plugin": "csharp",
-      "options": "eyJkZWJ1Z1JlcXVlc3QiOnRydWUsImdlbmVyYXRlQ3Nwcm9qIjp0cnVlLCJuYW1lc3BhY2VOYW1lIjoiTnBnc3FsRGFwcGVyTGVnYWN5RXhhbXBsZUdlbiIsInRhcmdldEZyYW1ld29yayI6Im5ldHN0YW5kYXJkMi4wIiwidXNlRGFwcGVyIjp0cnVlfQ==",
+      "options": "eyJkZWJ1Z1JlcXVlc3QiOnRydWUsImdlbmVyYXRlQ3Nwcm9qIjp0cnVlLCJuYW1lc3BhY2VOYW1lIjoiTnBnc3FsRGFwcGVyTGVnYWN5RXhhbXBsZUdlbiIsIm92ZXJyaWRlcyI6W3siY29sdW1uIjoiR2V0UG9zdGdyZXNGdW5jdGlvbnM6bWF4X2ludGVnZXIiLCJjc2hhcnBfdHlwZSI6eyJ0eXBlIjoiaW50In19LHsiY29sdW1uIjoiR2V0UG9zdGdyZXNGdW5jdGlvbnM6bWF4X3ZhcmNoYXIiLCJjc2hhcnBfdHlwZSI6eyJ0eXBlIjoic3RyaW5nIn19LHsiY29sdW1uIjoiR2V0UG9zdGdyZXNGdW5jdGlvbnM6bWF4X3RpbWVzdGFtcCIsImNzaGFycF90eXBlIjp7InR5cGUiOiJEYXRlVGltZSJ9fV0sInRhcmdldEZyYW1ld29yayI6Im5ldHN0YW5kYXJkMi4wIiwidXNlRGFwcGVyIjp0cnVlfQ==",
       "process": {
         "cmd": "./dist/LocalRunner"
       }
@@ -33894,7 +33894,7 @@
     },
     {
       "text": "SELECT COUNT(1) AS cnt , \n       c_smallint, c_boolean, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_money, \n       c_date, c_time, c_timestamp, c_timestamp_with_tz, c_char, c_varchar, c_character_varying, c_text, \n       c_bytea\nFROM postgres_types\nGROUP BY c_smallint, c_boolean, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_money, \n         c_date, c_time, c_timestamp, c_timestamp_with_tz, c_char, c_varchar, c_character_varying, c_text, \n         c_bytea\nLIMIT 1",
-      "name": "GetPostgresTypesAgg",
+      "name": "GetPostgresTypesCnt",
       "cmd": ":one",
       "columns": [
         {
@@ -34117,6 +34117,41 @@
             "name": "bytea"
           },
           "originalName": "c_bytea"
+        }
+      ],
+      "filename": "query.sql"
+    },
+    {
+      "text": "SELECT MAX(c_integer) AS max_integer, MAX(c_varchar) AS max_varchar, MAX(c_timestamp) AS max_timestamp\nFROM postgres_types",
+      "name": "GetPostgresFunctions",
+      "cmd": ":one",
+      "columns": [
+        {
+          "name": "max_integer",
+          "notNull": true,
+          "length": -1,
+          "isFuncCall": true,
+          "type": {
+            "name": "anyarray"
+          }
+        },
+        {
+          "name": "max_varchar",
+          "notNull": true,
+          "length": -1,
+          "isFuncCall": true,
+          "type": {
+            "name": "anyarray"
+          }
+        },
+        {
+          "name": "max_timestamp",
+          "notNull": true,
+          "length": -1,
+          "isFuncCall": true,
+          "type": {
+            "name": "anyarray"
+          }
         }
       ],
       "filename": "query.sql"

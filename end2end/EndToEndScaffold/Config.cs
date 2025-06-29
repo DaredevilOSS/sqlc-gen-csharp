@@ -28,6 +28,7 @@ public enum KnownTestType
 
     // Sqlite
     SqliteDataTypes,
+    SqliteDataTypesOverride,
     SqliteCopyFrom,
 
     // Postgres
@@ -36,6 +37,7 @@ public enum KnownTestType
     PostgresFloatingPointDataTypes,
     PostgresDateTimeDataTypes,
     PostgresArrayDataTypes,
+    PostgresDataTypesOverride,
 
     PostgresStringCopyFrom,
     PostgresIntegerCopyFrom,
@@ -54,6 +56,7 @@ public enum KnownTestType
     MySqlDateTimeDataTypes,
     MySqlBinaryDataTypes,
     MySqlEnumDataType,
+    MySqlDataTypesOverride,
     MySqlScopedSchemaEnum,
 
     MySqlStringCopyFrom,

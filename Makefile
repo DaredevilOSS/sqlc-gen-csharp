@@ -31,8 +31,6 @@ dotnet-publish-process: dotnet-build-process
 sqlc-generate-process: dotnet-publish-process
 	sqlc -f sqlc.local.yaml generate
 
-test-process-plugin: unit-tests sqlc-generate-process dotnet-build run-end2end-tests
-
 # WASM type plugin
 dotnet-publish-wasm: protobuf-generate
 	dotnet publish WasmRunner -c release --output dist/
@@ -44,4 +42,4 @@ update-wasm-plugin:
 sqlc-generate-wasm: dotnet-publish-wasm update-wasm-plugin
 	SQLCCACHE=./; sqlc -f sqlc.ci.yaml generate
 
-test-wasm-plugin: unit-tests sqlc-generate-wasm update-wasm-plugin dotnet-build run-end2end-tests
+test-wasm-plugin: sqlc-generate-process unit-tests sqlc-generate-wasm update-wasm-plugin dotnet-build run-end2end-tests

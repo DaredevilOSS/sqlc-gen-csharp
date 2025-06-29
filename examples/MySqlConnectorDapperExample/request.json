@@ -11,7 +11,7 @@
     "codegen": {
       "out": "examples/MySqlConnectorDapperExample",
       "plugin": "csharp",
-      "options": "eyJkZWJ1Z1JlcXVlc3QiOnRydWUsImdlbmVyYXRlQ3Nwcm9qIjp0cnVlLCJuYW1lc3BhY2VOYW1lIjoiTXlTcWxDb25uZWN0b3JEYXBwZXJFeGFtcGxlR2VuIiwidGFyZ2V0RnJhbWV3b3JrIjoibmV0OC4wIiwidXNlRGFwcGVyIjp0cnVlfQ==",
+      "options": "eyJkZWJ1Z1JlcXVlc3QiOnRydWUsImdlbmVyYXRlQ3Nwcm9qIjp0cnVlLCJuYW1lc3BhY2VOYW1lIjoiTXlTcWxDb25uZWN0b3JEYXBwZXJFeGFtcGxlR2VuIiwib3ZlcnJpZGVzIjpbeyJjb2x1bW4iOiJHZXRNeXNxbEZ1bmN0aW9uczptYXhfaW50IiwiY3NoYXJwX3R5cGUiOnsidHlwZSI6ImludCJ9fSx7ImNvbHVtbiI6IkdldE15c3FsRnVuY3Rpb25zOm1heF92YXJjaGFyIiwiY3NoYXJwX3R5cGUiOnsidHlwZSI6InN0cmluZyJ9fSx7ImNvbHVtbiI6IkdldE15c3FsRnVuY3Rpb25zOm1heF90aW1lc3RhbXAiLCJjc2hhcnBfdHlwZSI6eyJ0eXBlIjoiRGF0ZVRpbWUifX0seyJjb2x1bW4iOiJHZXRNeXNxbEZ1bmN0aW9uczptYXhfYmlnaW50IiwiY3NoYXJwX3R5cGUiOnsidHlwZSI6ImxvbmcifX1dLCJ0YXJnZXRGcmFtZXdvcmsiOiJuZXQ4LjAiLCJ1c2VEYXBwZXIiOnRydWV9",
       "process": {
         "cmd": "./dist/LocalRunner"
       }
@@ -2702,7 +2702,7 @@
     },
     {
       "text": "SELECT COUNT(1) AS cnt, c_bool, c_boolean, c_bit, c_tinyint, c_smallint, c_mediumint, c_int, c_integer, c_bigint, \n       c_float, c_numeric, c_decimal, c_dec, c_fixed, c_double, c_double_precision, \n       c_char, c_nchar, c_national_char, c_varchar, c_tinytext, c_mediumtext, c_text, c_longtext, c_enum,\n       c_year, c_date, c_datetime, c_timestamp, \n       c_binary, c_varbinary, c_tinyblob, c_blob, c_mediumblob, c_longblob\nFROM mysql_types\nGROUP BY c_bool, c_boolean, c_bit, c_tinyint, c_smallint, c_mediumint, c_int, c_integer, c_bigint, \n         c_float, c_numeric, c_decimal, c_dec, c_fixed, c_double, c_double_precision, \n         c_char, c_nchar, c_national_char, c_varchar, c_tinytext, c_mediumtext, c_text, c_longtext, c_enum,\n         c_year, c_date, c_datetime, c_timestamp, \n         c_binary, c_varbinary, c_tinyblob, c_blob, c_mediumblob, c_longblob\nLIMIT 1",
-      "name": "GetMysqlTypesAgg",
+      "name": "GetMysqlTypesCnt",
       "cmd": ":one",
       "columns": [
         {
@@ -3098,6 +3098,50 @@
             "name": "longblob"
           },
           "originalName": "c_longblob"
+        }
+      ],
+      "filename": "query.sql"
+    },
+    {
+      "text": "SELECT MAX(c_int) AS max_int, MAX(c_varchar) AS max_varchar, MAX(c_timestamp) AS max_timestamp, max(c_bigint) as max_bigint\nFROM mysql_types",
+      "name": "GetMysqlFunctions",
+      "cmd": ":one",
+      "columns": [
+        {
+          "name": "max_int",
+          "notNull": true,
+          "length": -1,
+          "isFuncCall": true,
+          "type": {
+            "name": "any"
+          }
+        },
+        {
+          "name": "max_varchar",
+          "notNull": true,
+          "length": -1,
+          "isFuncCall": true,
+          "type": {
+            "name": "any"
+          }
+        },
+        {
+          "name": "max_timestamp",
+          "notNull": true,
+          "length": -1,
+          "isFuncCall": true,
+          "type": {
+            "name": "any"
+          }
+        },
+        {
+          "name": "max_bigint",
+          "notNull": true,
+          "length": -1,
+          "isFuncCall": true,
+          "type": {
+            "name": "any"
+          }
         }
       ],
       "filename": "query.sql"
