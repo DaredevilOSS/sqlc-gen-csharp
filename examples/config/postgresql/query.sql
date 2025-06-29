@@ -92,3 +92,4 @@ TRUNCATE TABLE postgres_types;
 
 -- name: TruncatePostgresGeoTypes :exec
 TRUNCATE TABLE postgres_geometric_types;
+
