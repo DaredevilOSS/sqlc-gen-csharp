@@ -63,7 +63,7 @@ namespace MySqlConnectorLegacyExampleGen
             return null;
         }
 
-        private const string ListAuthorsSql = "SELECT id, name, bio FROM authors ORDER BY name";
+        private const string ListAuthorsSql = "SELECT id, name, bio FROM authors ORDER  BY  name  ";  
         public class ListAuthorsRow
         {
             public long Id { get; set; }
@@ -171,7 +171,7 @@ namespace MySqlConnectorLegacyExampleGen
             return null;
         }
 
-        private const string GetAuthorByNamePatternSql = "SELECT id, name, bio FROM authors WHERE name LIKE COALESCE(@name_pattern, '%')";
+        private const string GetAuthorByNamePatternSql = "SELECT id, name, bio FROM authors WHERE  name  LIKE  COALESCE ( @name_pattern ,  '%' ) ";  
         public class GetAuthorByNamePatternRow
         {
             public long Id { get; set; }
@@ -204,7 +204,7 @@ namespace MySqlConnectorLegacyExampleGen
             }
         }
 
-        private const string DeleteAuthorSql = "DELETE FROM authors WHERE name = @name";
+        private const string DeleteAuthorSql = "DELETE FROM authors WHERE  name  =  @name  ";  
         public class DeleteAuthorArgs
         {
             public string Name { get; set; }

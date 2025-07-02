@@ -609,7 +609,7 @@
       "filename": "query.sql"
     },
     {
-      "text": "SELECT id, name, bio FROM authors ORDER BY name",
+      "text": "SELECT id, name, bio FROM authors\nORDER BY name",
       "name": "ListAuthors",
       "cmd": ":many",
       "columns": [
@@ -812,7 +812,7 @@
       "filename": "query.sql"
     },
     {
-      "text": "SELECT id, name, bio FROM authors WHERE name LIKE COALESCE(?, '%')",
+      "text": "SELECT id, name, bio FROM authors\nWHERE name LIKE COALESCE(?, '%')",
       "name": "GetAuthorByNamePattern",
       "cmd": ":many",
       "columns": [
@@ -872,7 +872,7 @@
       "filename": "query.sql"
     },
     {
-      "text": "DELETE FROM authors WHERE name = ?",
+      "text": "DELETE FROM authors\nWHERE name = ?",
       "name": "DeleteAuthor",
       "cmd": ":exec",
       "parameters": [

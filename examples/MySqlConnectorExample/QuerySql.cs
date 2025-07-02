@@ -54,7 +54,7 @@ public class QuerySql
         return null;
     }
 
-    private const string ListAuthorsSql = "SELECT id, name, bio FROM authors ORDER BY name";
+    private const string ListAuthorsSql = "SELECT id, name, bio FROM authors ORDER  BY  name  ";  
     public readonly record struct ListAuthorsRow(long Id, string Name, string? Bio);
     public async Task<List<ListAuthorsRow>> ListAuthors()
     {
@@ -140,7 +140,7 @@ public class QuerySql
         return null;
     }
 
-    private const string GetAuthorByNamePatternSql = "SELECT id, name, bio FROM authors WHERE name LIKE COALESCE(@name_pattern, '%')";
+    private const string GetAuthorByNamePatternSql = "SELECT id, name, bio FROM authors WHERE  name  LIKE  COALESCE ( @name_pattern ,  '%' ) ";  
     public readonly record struct GetAuthorByNamePatternRow(long Id, string Name, string? Bio);
     public readonly record struct GetAuthorByNamePatternArgs(string? NamePattern);
     public async Task<List<GetAuthorByNamePatternRow>> GetAuthorByNamePattern(GetAuthorByNamePatternArgs args)
@@ -165,7 +165,7 @@ public class QuerySql
         }
     }
 
-    private const string DeleteAuthorSql = "DELETE FROM authors WHERE name = @name";
+    private const string DeleteAuthorSql = "DELETE FROM authors WHERE  name  =  @name  ";  
     public readonly record struct DeleteAuthorArgs(string Name);
     public async Task DeleteAuthor(DeleteAuthorArgs args)
     {

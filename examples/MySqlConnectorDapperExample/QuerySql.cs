@@ -49,7 +49,7 @@ public class QuerySql
         }
     }
 
-    private const string ListAuthorsSql = "SELECT id, name, bio FROM authors ORDER BY name; SELECT LAST_INSERT_ID()";
+    private const string ListAuthorsSql = "SELECT id, name, bio FROM authors ORDER  BY  name ; SELECT  LAST_INSERT_ID ( ) "; 
     public class ListAuthorsRow
     {
         public required long Id { get; init; }
@@ -123,7 +123,7 @@ public class QuerySql
         }
     }
 
-    private const string GetAuthorByNamePatternSql = "SELECT id, name, bio FROM authors WHERE name LIKE COALESCE(@name_pattern, '%'); SELECT LAST_INSERT_ID()";
+    private const string GetAuthorByNamePatternSql = "SELECT id, name, bio FROM authors WHERE  name  LIKE  COALESCE ( @name_pattern ,  '%' ) ; SELECT  LAST_INSERT_ID ( ) "; 
     public class GetAuthorByNamePatternRow
     {
         public required long Id { get; init; }
@@ -145,7 +145,7 @@ public class QuerySql
         }
     }
 
-    private const string DeleteAuthorSql = "DELETE FROM authors WHERE name = @name; SELECT LAST_INSERT_ID()";
+    private const string DeleteAuthorSql = "DELETE FROM authors WHERE  name  =  @name ; SELECT  LAST_INSERT_ID ( ) "; 
     public class DeleteAuthorArgs
     {
         public required string Name { get; init; }
