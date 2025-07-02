@@ -1,8 +1,11 @@
 [sqlfluff]
-exclude_rules = LT14,LT01,LT02,LT05,LT09,AM04,AL03,RF02,RF04,AM05,AL01,ST06,CV04,CP01,CP03
+exclude_rules = AM04,AL03,RF02,RF04,AM05,AL01,ST06
 dialect = ansi
 
 [sqlfluff:rules]
+
+[sqlfluff:rules:LT02]
+capitalisation_policy = upper
 
 [sqlfluff:paths:examples/config/postgresql/]
 dialect = postgres

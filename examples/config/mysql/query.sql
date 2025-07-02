@@ -2,7 +2,8 @@
 SELECT * FROM authors WHERE name = ? LIMIT 1;
 
 -- name: ListAuthors :many
-SELECT * FROM authors ORDER BY name;
+SELECT * FROM authors
+ORDER BY name;
 
 -- name: CreateAuthor :exec
 INSERT INTO authors (id, name, bio) VALUES (?, ?, ?);
@@ -14,10 +15,12 @@ INSERT INTO authors (name, bio) VALUES (?, ?);
 SELECT * FROM authors WHERE id = ? LIMIT 1;
 
 -- name: GetAuthorByNamePattern :many
-SELECT * FROM authors WHERE name LIKE COALESCE(sqlc.narg('name_pattern'), '%');
+SELECT * FROM authors
+WHERE name LIKE COALESCE(sqlc.narg('name_pattern'), '%');
 
 -- name: DeleteAuthor :exec
-DELETE FROM authors WHERE name = ?;
+DELETE FROM authors
+WHERE name = ?;
 
 -- name: DeleteAllAuthors :exec
 DELETE FROM authors;
