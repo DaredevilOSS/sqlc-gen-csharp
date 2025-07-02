@@ -367,7 +367,7 @@ namespace EndToEndTests
             var connection = new MySqlConnector.MySqlConnection(Environment.GetEnvironmentVariable(EndToEndCommon.MySqlConnectionStringEnv));
             await connection.OpenAsync();
             var transaction = connection.BeginTransaction();
-            var sqlQueryWithTx = new QuerySql(transaction);
+            var sqlQueryWithTx = QuerySql.WithTransaction(transaction);
             await sqlQueryWithTx.CreateAuthor(new QuerySql.CreateAuthorArgs { Id = 1111, Name = "Bojack Horseman", Bio = "Back in the 90s he was in a very famous TV show" });
             var actualNull = await this.QuerySql.GetAuthor(new QuerySql.GetAuthorArgs { Name = "Bojack Horseman" });
             Assert.That(actualNull == null, "there is author"); // This is correct for nullable types

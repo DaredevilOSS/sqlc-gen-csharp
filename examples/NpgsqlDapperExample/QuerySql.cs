@@ -22,11 +22,16 @@ public class QuerySql
         Utils.ConfigureSqlMapper();
     }
 
-    public QuerySql(NpgsqlTransaction transaction)
+    private QuerySql(NpgsqlTransaction transaction)
     {
         this.Transaction = transaction;
         Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
         Utils.ConfigureSqlMapper();
+    }
+
+    public static QuerySql WithTransaction(NpgsqlTransaction transaction)
+    {
+        return new QuerySql(transaction);
     }
 
     private NpgsqlTransaction? Transaction { get; }

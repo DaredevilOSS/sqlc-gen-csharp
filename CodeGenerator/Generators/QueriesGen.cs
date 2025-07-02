@@ -65,9 +65,14 @@ internal class QueriesGen(DbDriver dbDriver, string namespaceName)
                           {{dbDriver.GetConstructorStatements().JoinByNewLine()}}
                       }
 
-                      public {{className}}({{dbDriver.TransactionClassName}} {{Variable.Transaction.AsVarName()}})
+                      private {{className}}({{dbDriver.TransactionClassName}} {{Variable.Transaction.AsVarName()}})
                       {
                           {{dbDriver.GetTransactionConstructorStatements().JoinByNewLine()}}
+                      }
+
+                      public static {{className}} WithTransaction({{dbDriver.TransactionClassName}} {{Variable.Transaction.AsVarName()}})
+                      {
+                          return new {{className}}({{Variable.Transaction.AsVarName()}});
                       }
 
                       private {{dbDriver.AddNullableSuffixIfNeeded(dbDriver.TransactionClassName, false)}} {{Variable.Transaction.AsPropertyName()}} { get; }

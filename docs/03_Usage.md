@@ -72,7 +72,7 @@ public async Task ExampleTransaction(IDbConnection connection)
         try
         {
             // Create a new Queries object with the transaction instead of the connection
-            var queries = new QuerySql(transaction);
+            var queries = QuerySql.WithTransaction(transaction);
 
             // Example: Insert a new author
             var newAuthor = await queries.CreateAuthor(new CreateAuthorParams { Name = "Jane Doe", Bio = "Another author" });

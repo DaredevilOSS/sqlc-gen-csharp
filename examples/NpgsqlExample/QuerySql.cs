@@ -19,9 +19,14 @@ public class QuerySql
         this.ConnectionString = connectionString;
     }
 
-    public QuerySql(NpgsqlTransaction transaction)
+    private QuerySql(NpgsqlTransaction transaction)
     {
         this.Transaction = transaction;
+    }
+
+    public static QuerySql WithTransaction(NpgsqlTransaction transaction)
+    {
+        return new QuerySql(transaction);
     }
 
     private NpgsqlTransaction? Transaction { get; }

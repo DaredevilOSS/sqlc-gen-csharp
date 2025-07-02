@@ -494,7 +494,7 @@ public static class PostgresTests
                          await connection.OpenAsync();
                          var transaction = connection.BeginTransaction();
 
-                         var sqlQueryWithTx = new QuerySql(transaction);
+                         var sqlQueryWithTx = QuerySql.WithTransaction(transaction);
                          await sqlQueryWithTx.CreateAuthor(new QuerySql.CreateAuthorArgs { Id = 1111, Name = "Bojack Horseman", Bio = "Back in the 90s he was in a very famous TV show" });
 
                          // The GetAuthor method in NpgsqlExampleGen returns QuerySql.GetAuthorRow? (nullable record struct)

@@ -24,9 +24,14 @@ namespace MySqlConnectorLegacyExampleGen
             this.ConnectionString = connectionString;
         }
 
-        public QuerySql(MySqlTransaction transaction)
+        private QuerySql(MySqlTransaction transaction)
         {
             this.Transaction = transaction;
+        }
+
+        public static QuerySql WithTransaction(MySqlTransaction transaction)
+        {
+            return new QuerySql(transaction);
         }
 
         private MySqlTransaction Transaction { get; }

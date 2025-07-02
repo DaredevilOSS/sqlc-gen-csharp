@@ -20,10 +20,15 @@ namespace SqliteDapperLegacyExampleGen
             Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
         }
 
-        public QuerySql(SqliteTransaction transaction)
+        private QuerySql(SqliteTransaction transaction)
         {
             this.Transaction = transaction;
             Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
+        }
+
+        public static QuerySql WithTransaction(SqliteTransaction transaction)
+        {
+            return new QuerySql(transaction);
         }
 
         private SqliteTransaction Transaction { get; }

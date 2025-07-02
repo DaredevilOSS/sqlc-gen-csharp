@@ -17,9 +17,14 @@ public class QuerySql
         this.ConnectionString = connectionString;
     }
 
-    public QuerySql(SqliteTransaction transaction)
+    private QuerySql(SqliteTransaction transaction)
     {
         this.Transaction = transaction;
+    }
+
+    public static QuerySql WithTransaction(SqliteTransaction transaction)
+    {
+        return new QuerySql(transaction);
     }
 
     private SqliteTransaction? Transaction { get; }
