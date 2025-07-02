@@ -119,6 +119,26 @@ public static class SqliteTests
                      }
                      """
         },
+        [KnownTestType.SqliteTransactionRollback] = new TestImpl
+        {
+            Impl = $$"""
+                     [Test]
+                     public async Task TestSqliteTransactionRollback()
+                     {
+                         var connection = new Microsoft.Data.Sqlite.SqliteConnection(Environment.GetEnvironmentVariable(EndToEndCommon.SqliteConnectionStringEnv));
+                         await connection.OpenAsync();
+                         var transaction = connection.BeginTransaction();
+
+                         var sqlQueryWithTx = QuerySql.WithTransaction(transaction);
+                         await sqlQueryWithTx.CreateAuthor(new QuerySql.CreateAuthorArgs { Id = 1111, Name = "Bojack Horseman", Bio = "Back in the 90s he was in a very famous TV show" });
+
+                         transaction.Rollback();
+
+                         var actual = await this.QuerySql.GetAuthor(new QuerySql.GetAuthorArgs { Name = "Bojack Horseman" });
+                         Assert.That(actual == null, "author should not exist after rollback");
+                     }
+                     """
+        },
         [KnownTestType.SqliteDataTypesOverride] = new TestImpl
         {
             Impl = $$"""

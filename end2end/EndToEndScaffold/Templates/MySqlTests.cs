@@ -552,6 +552,26 @@ public static class MySqlTests
                      }
                      """
         },
+        [KnownTestType.MySqlTransactionRollback] = new TestImpl
+        {
+            Impl = $$"""
+                     [Test]
+                     public async Task TestMySqlTransactionRollback()
+                     {
+                         var connection = new MySqlConnector.MySqlConnection(Environment.GetEnvironmentVariable(EndToEndCommon.MySqlConnectionStringEnv));
+                         await connection.OpenAsync();
+                         var transaction = connection.BeginTransaction();
+
+                         var sqlQueryWithTx = QuerySql.WithTransaction(transaction);
+                         await sqlQueryWithTx.CreateAuthor(new QuerySql.CreateAuthorArgs { Id = 1111, Name = "Bojack Horseman", Bio = "Back in the 90s he was in a very famous TV show" });
+
+                         await transaction.RollbackAsync();
+
+                         var actual = await this.QuerySql.GetAuthor(new QuerySql.GetAuthorArgs { Name = "Bojack Horseman" });
+                         Assert.That(actual == null, "author should not exist after rollback");
+                     }
+                     """
+        },
         [KnownTestType.MySqlEnumCopyFrom] = new TestImpl
         {
             Impl = $$"""

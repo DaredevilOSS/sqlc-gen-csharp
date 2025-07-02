@@ -31,6 +31,7 @@ public enum KnownTestType
     SqliteDataTypesOverride,
     SqliteCopyFrom,
     SqliteTransaction,
+    SqliteTransactionRollback,
 
     // Postgres
     PostgresStringDataTypes,
@@ -42,6 +43,7 @@ public enum KnownTestType
 
     PostgresStringCopyFrom,
     PostgresTransaction,
+    PostgresTransactionRollback,
     PostgresIntegerCopyFrom,
     PostgresFloatingPointCopyFrom,
     PostgresDateTimeCopyFrom,
@@ -55,6 +57,7 @@ public enum KnownTestType
     MySqlStringDataTypes,
     MySqlIntegerDataTypes,
     MySqlTransaction,
+    MySqlTransactionRollback,
     MySqlFloatingPointDataTypes,
     MySqlDateTimeDataTypes,
     MySqlBinaryDataTypes,
@@ -96,6 +99,7 @@ internal static class Config
                     KnownTestType.MySqlStringDataTypes,
                     KnownTestType.MySqlIntegerDataTypes,
                     KnownTestType.MySqlTransaction,
+                    KnownTestType.MySqlTransactionRollback,
                     KnownTestType.MySqlFloatingPointDataTypes,
                     KnownTestType.MySqlDateTimeDataTypes,
                     KnownTestType.MySqlBinaryDataTypes,
@@ -133,6 +137,7 @@ internal static class Config
                         KnownTestType.MySqlStringDataTypes,
                         KnownTestType.MySqlIntegerDataTypes,
                         KnownTestType.MySqlTransaction,
+                        KnownTestType.MySqlTransactionRollback,
                         KnownTestType.MySqlFloatingPointDataTypes,
                         KnownTestType.MySqlDateTimeDataTypes,
                         KnownTestType.MySqlBinaryDataTypes,
@@ -168,6 +173,7 @@ internal static class Config
                     KnownTestType.NargNotNull,
 
                     KnownTestType.PostgresTransaction,
+                    KnownTestType.PostgresTransactionRollback,
                     KnownTestType.PostgresStringDataTypes,
                     KnownTestType.PostgresIntegerDataTypes,
                     KnownTestType.PostgresFloatingPointDataTypes,
@@ -202,6 +208,7 @@ internal static class Config
                     KnownTestType.NargNull,
                     KnownTestType.NargNotNull,
                     KnownTestType.PostgresTransaction,
+                    KnownTestType.PostgresTransactionRollback,
 
                     KnownTestType.PostgresStringDataTypes,
                     KnownTestType.PostgresIntegerDataTypes,
@@ -237,6 +244,7 @@ internal static class Config
                     KnownTestType.NargNull,
                     KnownTestType.NargNotNull,
                     KnownTestType.SqliteTransaction,
+                    KnownTestType.SqliteTransactionRollback,
                     KnownTestType.SqliteDataTypes,
                     KnownTestType.SqliteCopyFrom,
                     KnownTestType.SqliteDataTypesOverride
@@ -261,6 +269,7 @@ internal static class Config
                     KnownTestType.NargNull,
                     KnownTestType.NargNotNull,
                     KnownTestType.SqliteTransaction,
+                    KnownTestType.SqliteTransactionRollback,
                     KnownTestType.SqliteDataTypes,
                     KnownTestType.SqliteCopyFrom,
                     KnownTestType.SqliteDataTypesOverride

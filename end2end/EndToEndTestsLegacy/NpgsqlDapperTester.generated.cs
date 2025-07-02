@@ -458,6 +458,19 @@ namespace EndToEndTests
         }
 
         [Test]
+        public async Task TestPostgresTransactionRollback()
+        {
+            var connection = new Npgsql.NpgsqlConnection(Environment.GetEnvironmentVariable(EndToEndCommon.PostgresConnectionStringEnv));
+            await connection.OpenAsync();
+            var transaction = connection.BeginTransaction();
+            var sqlQueryWithTx = QuerySql.WithTransaction(transaction);
+            await sqlQueryWithTx.CreateAuthor(new QuerySql.CreateAuthorArgs { Id = 1111, Name = "Bojack Horseman", Bio = "Back in the 90s he was in a very famous TV show" });
+            await transaction.RollbackAsync();
+            var actual = await this.QuerySql.GetAuthor(new QuerySql.GetAuthorArgs { Name = "Bojack Horseman" });
+            Assert.That(actual == null, "author should not exist after rollback");
+        }
+
+        [Test]
         [TestCase(100, true, 3, 453, -1445214231L)]
         [TestCase(10, null, null, null, null)]
         public async Task TestIntegerCopyFrom(int batchSize, bool? cBoolean, short? cSmallint, int? cInteger, long? cBigint)
