@@ -24,7 +24,7 @@ public class QuerySql
 
     private string ConnectionString { get; }
 
-    private const string GetAuthorSql = "SELECT id, name, bio FROM authors WHERE name = @name LIMIT 1";
+    private const string GetAuthorSql = "SELECT id, name, bio FROM authors WHERE  name  =  @name  LIMIT  1  ";  
     public class GetAuthorRow
     {
         public required long Id { get; init; }
@@ -46,7 +46,7 @@ public class QuerySql
         }
     }
 
-    private const string ListAuthorsSql = "SELECT id, name, bio FROM authors ORDER BY name";
+    private const string ListAuthorsSql = "SELECT id, name, bio FROM authors ORDER  BY  name  ";  
     public class ListAuthorsRow
     {
         public required long Id { get; init; }
@@ -109,7 +109,7 @@ public class QuerySql
         }
     }
 
-    private const string GetAuthorByIdSql = "SELECT id, name, bio FROM authors WHERE id = @id LIMIT 1";
+    private const string GetAuthorByIdSql = "SELECT id, name, bio FROM authors WHERE  id  =  @id  LIMIT  1  ";  
     public class GetAuthorByIdRow
     {
         public required long Id { get; init; }
@@ -131,7 +131,7 @@ public class QuerySql
         }
     }
 
-    private const string GetAuthorByNamePatternSql = "SELECT id, name, bio FROM authors WHERE name LIKE COALESCE(@name_pattern, '%')";
+    private const string GetAuthorByNamePatternSql = "SELECT id, name, bio FROM authors WHERE  name  LIKE  COALESCE ( @name_pattern ,  '%' ) ";  
     public class GetAuthorByNamePatternRow
     {
         public required long Id { get; init; }
@@ -153,7 +153,7 @@ public class QuerySql
         }
     }
 
-    private const string DeleteAuthorSql = "DELETE FROM authors WHERE name = @name";
+    private const string DeleteAuthorSql = "DELETE FROM authors WHERE  name  =  @name  ";  
     public class DeleteAuthorArgs
     {
         public required string Name { get; init; }
@@ -177,7 +177,7 @@ public class QuerySql
         }
     }
 
-    private const string UpdateAuthorsSql = "UPDATE authors  SET  bio  =  @bio  WHERE  bio  IS  NOT  NULL  ";  
+    private const string UpdateAuthorsSql = "UPDATE authors SET  bio  =  @bio  WHERE  bio  IS  NOT  NULL  ";  
     public class UpdateAuthorsArgs
     {
         public string? Bio { get; init; }
@@ -192,7 +192,7 @@ public class QuerySql
         }
     }
 
-    private const string GetAuthorsByIdsSql = "SELECT id, name, bio FROM authors WHERE id = ANY(@longArr_1::BIGINT[])";
+    private const string GetAuthorsByIdsSql = "SELECT id, name, bio FROM authors WHERE  id  =  ANY ( @longArr_1 :: BIGINT [ ] ) ";  
     public class GetAuthorsByIdsRow
     {
         public required long Id { get; init; }
@@ -214,7 +214,7 @@ public class QuerySql
         }
     }
 
-    private const string GetAuthorsByIdsAndNamesSql = "SELECT id, name, bio FROM authors WHERE id = ANY(@longArr_1::BIGINT[]) AND name = ANY(@stringArr_2::TEXT[])";
+    private const string GetAuthorsByIdsAndNamesSql = "SELECT id, name, bio FROM  authors  WHERE  id  =  ANY ( @longArr_1 :: BIGINT [ ] ) AND  name  =  ANY ( @stringArr_2 :: TEXT [ ] ) ";  
     public class GetAuthorsByIdsAndNamesRow
     {
         public required long Id { get; init; }
@@ -259,7 +259,7 @@ public class QuerySql
         }
     }
 
-    private const string ListAllAuthorsBooksSql = "SELECT authors.id, authors.name, authors.bio, books.id, books.name, books.author_id, books.description FROM authors JOIN books ON authors.id = books.author_id ORDER BY authors.name";
+    private const string ListAllAuthorsBooksSql = "SELECT authors . id , authors . name, authors . bio, books . id, books . name, books . author_id, books . description  FROM  authors  INNER  JOIN  books  ON  authors . id  =  books . author_id  ORDER  BY  authors . name  "; 
     public class ListAllAuthorsBooksRow
     {
         public required Author? Author { get; init; }
@@ -285,7 +285,7 @@ public class QuerySql
         }
     }
 
-    private const string GetDuplicateAuthorsSql = "SELECT authors1.id, authors1.name, authors1.bio, authors2.id, authors2.name, authors2.bio FROM  authors  authors1  JOIN  authors  authors2  ON  authors1 . name  =  authors2 . name  WHERE  authors1 . id < authors2 . id  ";  
+    private const string GetDuplicateAuthorsSql = "SELECT authors1 . id , authors1 . name, authors1 . bio, authors2 . id, authors2 . name, authors2 . bio  FROM  authors  AS  authors1  INNER  JOIN  authors  AS  authors2  ON  authors1 . name  =  authors2 . name  WHERE  authors1 . id < authors2 . id  "; 
     public class GetDuplicateAuthorsRow
     {
         public required Author? Author { get; init; }
@@ -311,7 +311,7 @@ public class QuerySql
         }
     }
 
-    private const string GetAuthorsByBookNameSql = "SELECT authors.id, authors.name, authors.bio, books.id, books.name, books.author_id, books.description FROM  authors  JOIN  books  ON  authors . id  =  books . author_id  WHERE  books . name  =  @name  ";  
+    private const string GetAuthorsByBookNameSql = "SELECT authors . id , authors . name, authors . bio, books . id, books . name, books . author_id, books . description  FROM  authors  INNER  JOIN  books  ON  authors . id  =  books . author_id  WHERE  books . name  =  @name  "; 
     public class GetAuthorsByBookNameRow
     {
         public required long Id { get; init; }
@@ -344,7 +344,7 @@ public class QuerySql
         }
     }
 
-    private const string InsertPostgresTypesSql = "INSERT INTO postgres_types (c_boolean, c_bit, c_smallint, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_money, c_date, c_time, c_timestamp, c_timestamp_with_tz, c_char, c_varchar, c_character_varying, c_text, c_bytea, c_text_array, c_integer_array) VALUES ( @c_boolean, @c_bit, @c_smallint, @c_integer, @c_bigint, @c_real, @c_numeric, @c_decimal, @c_double_precision, @c_money, @c_date, @c_time, @c_timestamp, @c_timestamp_with_tz, @c_char, @c_varchar, @c_character_varying, @c_text, @c_bytea, @c_text_array, @c_integer_array ) "; 
+    private const string InsertPostgresTypesSql = "INSERT INTO postgres_types(c_boolean, c_bit, c_smallint, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_money, c_date, c_time, c_timestamp, c_timestamp_with_tz, c_char, c_varchar, c_character_varying, c_text, c_bytea, c_text_array, c_integer_array) VALUES ( @c_boolean, @c_bit, @c_smallint, @c_integer, @c_bigint, @c_real, @c_numeric, @c_decimal, @c_double_precision, @c_money, @c_date, @c_time, @c_timestamp, @c_timestamp_with_tz, @c_char, @c_varchar, @c_character_varying, @c_text, @c_bytea, @c_text_array, @c_integer_array ) "; 
     public class InsertPostgresTypesArgs
     {
         public bool? CBoolean { get; init; }
@@ -494,10 +494,9 @@ public class QuerySql
         }
     }
 
-    private const string GetPostgresTypesAggSql = "SELECT COUNT(1) AS cnt ,  c_smallint , c_boolean, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_money, c_date, c_time, c_timestamp, c_timestamp_with_tz, c_char, c_varchar, c_character_varying, c_text, c_bytea FROM  postgres_types  GROUP  BY  c_smallint , c_boolean, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_money, c_date, c_time, c_timestamp, c_timestamp_with_tz, c_char, c_varchar, c_character_varying, c_text, c_bytea LIMIT  1  ";  
-    public class GetPostgresTypesAggRow
+    private const string GetPostgresTypesCntSql = "SELECT c_smallint , c_boolean, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_money, c_date, c_time, c_timestamp, c_timestamp_with_tz, c_char, c_varchar, c_character_varying, c_text, c_bytea, COUNT (* ) AS  cnt  FROM  postgres_types  GROUP  BY  c_smallint, c_boolean, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_money, c_date, c_time, c_timestamp, c_timestamp_with_tz, c_char, c_varchar, c_character_varying, c_text, c_bytea LIMIT  1  ";  
+    public class GetPostgresTypesCntRow
     {
-        public required long Cnt { get; init; }
         public short? CSmallint { get; init; }
         public bool? CBoolean { get; init; }
         public int? CInteger { get; init; }
@@ -516,17 +515,34 @@ public class QuerySql
         public string? CCharacterVarying { get; init; }
         public string? CText { get; init; }
         public byte[]? CBytea { get; init; }
+        public required long Cnt { get; init; }
     };
-    public async Task<GetPostgresTypesAggRow?> GetPostgresTypesAgg()
+    public async Task<GetPostgresTypesCntRow?> GetPostgresTypesCnt()
     {
         using (var connection = new NpgsqlConnection(ConnectionString))
         {
-            var result = await connection.QueryFirstOrDefaultAsync<GetPostgresTypesAggRow?>(GetPostgresTypesAggSql);
+            var result = await connection.QueryFirstOrDefaultAsync<GetPostgresTypesCntRow?>(GetPostgresTypesCntSql);
             return result;
         }
     }
 
-    private const string InsertPostgresGeoTypesSql = "INSERT INTO postgres_geometric_types (c_point, c_line, c_lseg, c_box, c_path, c_polygon, c_circle) VALUES ( @c_point , @c_line, @c_lseg, @c_box, @c_path, @c_polygon, @c_circle ) "; 
+    private const string GetPostgresFunctionsSql = "SELECT MAX ( c_integer ) AS  max_integer , MAX (c_varchar ) AS  max_varchar, MAX (c_timestamp ) AS  max_timestamp  FROM  postgres_types  "; 
+    public class GetPostgresFunctionsRow
+    {
+        public int? MaxInteger { get; init; }
+        public string? MaxVarchar { get; init; }
+        public required DateTime MaxTimestamp { get; init; }
+    };
+    public async Task<GetPostgresFunctionsRow?> GetPostgresFunctions()
+    {
+        using (var connection = new NpgsqlConnection(ConnectionString))
+        {
+            var result = await connection.QueryFirstOrDefaultAsync<GetPostgresFunctionsRow?>(GetPostgresFunctionsSql);
+            return result;
+        }
+    }
+
+    private const string InsertPostgresGeoTypesSql = "INSERT INTO postgres_geometric_types ( c_point , c_line, c_lseg, c_box, c_path, c_polygon, c_circle ) VALUES ( @c_point, @c_line, @c_lseg, @c_box, @c_path, @c_polygon, @c_circle ) "; 
     public class InsertPostgresGeoTypesArgs
     {
         public NpgsqlPoint? CPoint { get; init; }

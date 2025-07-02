@@ -130,13 +130,13 @@ public abstract class DbDriver
         return IsTypeNullable(csharpType) ? $"{csharpType}?" : csharpType;
     }
 
-    public string GetCsharpType(Column column)
+    public string GetCsharpType(Column column, Query? query)
     {
-        var csharpType = GetCsharpTypeWithoutNullableSuffix(column);
-        return AddNullableSuffixIfNeeded(csharpType, column.NotNull);
+        var csharpType = GetCsharpTypeWithoutNullableSuffix(column, query);
+        return AddNullableSuffixIfNeeded(csharpType, IsColumnNotNull(column, query));
     }
 
-    private string GetCsharpTypeWithoutNullableSuffix(Column column)
+    private string GetCsharpTypeWithoutNullableSuffix(Column column, Query? query)
     {
         if (column.EmbedTable != null)
             return column.EmbedTable.Name.ToModelName(column.EmbedTable.Schema, DefaultSchema);
@@ -146,6 +146,13 @@ public abstract class DbDriver
 
         if (IsEnumType(column))
             return column.Type.Name.ToModelName(column.Table.Schema, DefaultSchema);
+
+        if (query is not null)
+        {
+            var foundOverride = FindOverrideForQueryColumn(query, column);
+            if (foundOverride is not null)
+                return foundOverride.CsharpType.Type;
+        }
 
         foreach (var columnMapping in ColumnMappings
                      .Where(columnMapping => DoesColumnMappingApply(columnMapping, column)))
@@ -177,12 +184,27 @@ public abstract class DbDriver
         return typeInfo.Length.Value == column.Length;
     }
 
-    public string GetColumnReader(Column column, int ordinal)
+    private string GetColumnReader(OverrideOption overrideOption, int ordinal)
+    {
+        var columnMapping = ColumnMappings.Find(c => c.CsharpType == overrideOption.CsharpType.Type);
+        if (columnMapping is not null)
+            return columnMapping.ReaderFn(ordinal);
+        throw new NotSupportedException($"Column {overrideOption.Column} has unsupported column type: {overrideOption.CsharpType.Type}");
+    }
+
+    public string GetColumnReader(Column column, int ordinal, Query? query)
     {
         if (IsEnumType(column))
         {
             var enumName = column.Type.Name.ToModelName(column.Table.Schema, DefaultSchema);
             return $"{Variable.Reader.AsVarName()}.GetString({ordinal}).To{enumName}()";
+        }
+
+        if (query is not null)
+        {
+            var foundOverride = FindOverrideForQueryColumn(query, column);
+            if (foundOverride is not null)
+                return GetColumnReader(foundOverride, ordinal);
         }
 
         foreach (var columnMapping in ColumnMappings
@@ -227,10 +249,10 @@ public abstract class DbDriver
         var tableColumns = Tables[query.InsertIntoTable.Schema][query.InsertIntoTable.Name].Columns;
         var idColumn = tableColumns.First(c => c.Name.Equals("id", StringComparison.OrdinalIgnoreCase));
         if (idColumn is not null)
-            return GetCsharpType(idColumn);
+            return GetCsharpType(idColumn, query);
 
         idColumn = tableColumns.First(c => c.Name.Contains("id", StringComparison.CurrentCultureIgnoreCase));
-        return GetCsharpType(idColumn ?? tableColumns[0]);
+        return GetCsharpType(idColumn ?? tableColumns[0], query);
     }
 
     public virtual string[] GetLastIdStatement(Query query)
@@ -243,10 +265,10 @@ public abstract class DbDriver
         ];
     }
 
-    public Column GetColumnFromParam(Parameter queryParam)
+    public Column GetColumnFromParam(Parameter queryParam, Query query)
     {
         if (string.IsNullOrEmpty(queryParam.Column.Name))
-            queryParam.Column.Name = $"{GetCsharpType(queryParam.Column).Replace("[]", "Arr")}_{queryParam.Number}";
+            queryParam.Column.Name = $"{GetCsharpType(queryParam.Column, query).Replace("[]", "Arr")}_{queryParam.Number}";
         return queryParam.Column;
     }
 
@@ -261,5 +283,26 @@ public abstract class DbDriver
     protected bool BatchQueryExists()
     {
         return Queries.Any(q => q.Cmd is ":copyfrom");
+    }
+
+    public OverrideOption? FindOverrideForQueryColumn(Query query, Column column)
+    {
+        return Options.Overrides.FirstOrDefault(o => o.Column.Equals($"{query.Name}:{column.Name}"));
+    }
+
+    /// <summary>
+    /// If the column data type is overridden, we need to check for nulls in generated code
+    /// </summary>
+    /// <param name="column"></param>
+    /// <param name="query"></param>
+    /// <returns>Adjusted not null value</returns>
+    public bool IsColumnNotNull(Column column, Query? query)
+    {
+        if (query is null)
+            return column.NotNull;
+        var overrideColumn = FindOverrideForQueryColumn(query, column);
+        if (overrideColumn is not null)
+            return overrideColumn.CsharpType.NotNull;
+        return column.NotNull;
     }
 }

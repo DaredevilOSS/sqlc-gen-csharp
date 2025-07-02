@@ -14,7 +14,7 @@ public static class SqliteTests
                      [TestCase(null, null, null, new byte[] { })]
                      [TestCase(null, null, null, null)]
                      public async Task TestSqliteTypes(
-                          int cInteger,
+                          int? cInteger,
                           decimal? cReal,
                           string cText,
                           byte[] cBlob)
@@ -69,18 +69,18 @@ public static class SqliteTests
                              })
                              .ToList();
                          await QuerySql.InsertSqliteTypesBatch(batchArgs);
-                         var expected = new QuerySql.GetSqliteTypesAggRow
+                         var expected = new QuerySql.GetSqliteTypesCntRow
                          {
                              Cnt = batchSize,
                              CInteger = cInteger,
                              CReal = cReal,
                              CText = cText
                          };
-                         var actual = await QuerySql.GetSqliteTypesAgg();
+                         var actual = await QuerySql.GetSqliteTypesCnt();
                          AssertSingularEquals(expected, actual{{Consts.UnknownRecordValuePlaceholder}});
                      }
 
-                     private static void AssertSingularEquals(QuerySql.GetSqliteTypesAggRow expected, QuerySql.GetSqliteTypesAggRow actual)
+                     private static void AssertSingularEquals(QuerySql.GetSqliteTypesCntRow expected, QuerySql.GetSqliteTypesCntRow actual)
                      {
                          Assert.That(actual.Cnt, Is.EqualTo(expected.Cnt));
                          Assert.That(actual.CInteger, Is.EqualTo(expected.CInteger));
@@ -89,5 +89,41 @@ public static class SqliteTests
                      }
                      """
         },
+        [KnownTestType.SqliteDataTypesOverride] = new TestImpl
+        {
+            Impl = $$"""
+                     [Test]
+                     [TestCase(-54355, 9787.66, "Have One On Me")]
+                     [TestCase(null, 0.0, null)]
+                     public async Task TestSqliteDataTypesOverride(
+                        int? cInteger,
+                        decimal cReal,
+                        string cText)
+                     {
+                         await QuerySql.InsertSqliteTypes(new QuerySql.InsertSqliteTypesArgs
+                         {
+                             CInteger = cInteger,
+                             CReal = cReal,
+                             CText = cText
+                         });
+                     
+                         var expected = new QuerySql.GetSqliteFunctionsRow
+                         {
+                             MaxInteger = cInteger,
+                             MaxReal = cReal,
+                             MaxText = cText
+                         };
+                         var actual = await QuerySql.GetSqliteFunctions();
+                         AssertSingularEquals(expected, actual{{Consts.UnknownRecordValuePlaceholder}});
+                     }
+
+                     private static void AssertSingularEquals(QuerySql.GetSqliteFunctionsRow expected, QuerySql.GetSqliteFunctionsRow actual)
+                     {
+                         Assert.That(actual.MaxInteger, Is.EqualTo(expected.MaxInteger));
+                         Assert.That(actual.MaxReal, Is.EqualTo(expected.MaxReal));
+                         Assert.That(actual.MaxText, Is.EqualTo(expected.MaxText));
+                     }
+                     """
+        }
     };
 }

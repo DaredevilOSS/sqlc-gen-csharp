@@ -1,0 +1,6 @@
+repos:
+- repo: https://github.com/sqlfluff/sqlfluff
+  rev: 3.4.1
+  hooks:
+    - id: sqlfluff-fix
+      args: [--FIX-EVEN-UNPARSABLE]

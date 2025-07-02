@@ -1,4 +1,3 @@
-using EndToEndTests;
 using NUnit.Framework;
 
 namespace EndToEndTests

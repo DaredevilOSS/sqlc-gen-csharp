@@ -150,7 +150,13 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId
             new Dictionary<string, DbTypeInfo>
             {
                 { "circle", new DbTypeInfo(NpgsqlTypeOverride: "NpgsqlDbType.Circle") }
-            }, ordinal => $"reader.GetFieldValue<NpgsqlCircle>({ordinal})")
+            }, ordinal => $"reader.GetFieldValue<NpgsqlCircle>({ordinal})"),
+        // last item in the dictionary - enforce TODO
+        new("object",
+            new Dictionary<string, DbTypeInfo>
+            {
+                { "anyarray", new DbTypeInfo() }
+            }, ordinal => $"reader.GetValue({ordinal})")
     ];
 
     public override UsingDirectiveSyntax[] GetUsingDirectivesForQueries()
@@ -286,7 +292,7 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId
         for (var i = 0; i < query.Params.Count; i++)
         {
             var currentParameter = query.Params[i];
-            var column = GetColumnFromParam(currentParameter);
+            var column = GetColumnFromParam(currentParameter, query);
             queryText = Regex.Replace(queryText, $@"\$\s*{i + 1}\b", $"@{column.Name}");
         }
 

@@ -50,7 +50,7 @@ namespace MySqlConnectorDapperLegacyExampleGen
             }
         }
 
-        private const string ListAuthorsSql = "SELECT id, name, bio FROM authors ORDER BY name; SELECT LAST_INSERT_ID()";
+        private const string ListAuthorsSql = "SELECT id, name, bio FROM authors ORDER  BY  name ; SELECT  LAST_INSERT_ID ( ) "; 
         public class ListAuthorsRow
         {
             public long Id { get; set; }
@@ -124,7 +124,7 @@ namespace MySqlConnectorDapperLegacyExampleGen
             }
         }
 
-        private const string GetAuthorByNamePatternSql = "SELECT id, name, bio FROM authors WHERE name LIKE COALESCE(@name_pattern, '%'); SELECT LAST_INSERT_ID()";
+        private const string GetAuthorByNamePatternSql = "SELECT id, name, bio FROM authors WHERE  name  LIKE  COALESCE ( @name_pattern ,  '%' ) ; SELECT  LAST_INSERT_ID ( ) "; 
         public class GetAuthorByNamePatternRow
         {
             public long Id { get; set; }
@@ -146,7 +146,7 @@ namespace MySqlConnectorDapperLegacyExampleGen
             }
         }
 
-        private const string DeleteAuthorSql = "DELETE FROM authors WHERE name = @name; SELECT LAST_INSERT_ID()";
+        private const string DeleteAuthorSql = "DELETE FROM authors WHERE  name  =  @name ; SELECT  LAST_INSERT_ID ( ) "; 
         public class DeleteAuthorArgs
         {
             public string Name { get; set; }
@@ -574,8 +574,8 @@ namespace MySqlConnectorDapperLegacyExampleGen
             }
         }
 
-        private const string GetMysqlTypesAggSql = "SELECT COUNT(1) AS cnt, c_bool, c_boolean, c_bit, c_tinyint, c_smallint, c_mediumint, c_int, c_integer, c_bigint,  c_float , c_numeric, c_decimal, c_dec, c_fixed, c_double, c_double_precision, c_char, c_nchar, c_national_char, c_varchar, c_tinytext, c_mediumtext, c_text, c_longtext, c_enum, c_year, c_date, c_datetime, c_timestamp, c_binary, c_varbinary, c_tinyblob, c_blob, c_mediumblob, c_longblob FROM  mysql_types  GROUP  BY  c_bool , c_boolean, c_bit, c_tinyint, c_smallint, c_mediumint, c_int, c_integer, c_bigint, c_float, c_numeric, c_decimal, c_dec, c_fixed, c_double, c_double_precision, c_char, c_nchar, c_national_char, c_varchar, c_tinytext, c_mediumtext, c_text, c_longtext, c_enum, c_year, c_date, c_datetime, c_timestamp, c_binary, c_varbinary, c_tinyblob, c_blob, c_mediumblob, c_longblob LIMIT  1 ; SELECT  LAST_INSERT_ID ( ) "; 
-        public class GetMysqlTypesAggRow
+        private const string GetMysqlTypesCntSql = "SELECT COUNT(1) AS cnt, c_bool, c_boolean, c_bit, c_tinyint, c_smallint, c_mediumint, c_int, c_integer, c_bigint,  c_float , c_numeric, c_decimal, c_dec, c_fixed, c_double, c_double_precision, c_char, c_nchar, c_national_char, c_varchar, c_tinytext, c_mediumtext, c_text, c_longtext, c_enum, c_year, c_date, c_datetime, c_timestamp, c_binary, c_varbinary, c_tinyblob, c_blob, c_mediumblob, c_longblob FROM  mysql_types  GROUP  BY  c_bool , c_boolean, c_bit, c_tinyint, c_smallint, c_mediumint, c_int, c_integer, c_bigint, c_float, c_numeric, c_decimal, c_dec, c_fixed, c_double, c_double_precision, c_char, c_nchar, c_national_char, c_varchar, c_tinytext, c_mediumtext, c_text, c_longtext, c_enum, c_year, c_date, c_datetime, c_timestamp, c_binary, c_varbinary, c_tinyblob, c_blob, c_mediumblob, c_longblob LIMIT  1 ; SELECT  LAST_INSERT_ID ( ) "; 
+        public class GetMysqlTypesCntRow
         {
             public long Cnt { get; set; }
             public bool? CBool { get; set; }
@@ -614,11 +614,28 @@ namespace MySqlConnectorDapperLegacyExampleGen
             public byte[] CMediumblob { get; set; }
             public byte[] CLongblob { get; set; }
         };
-        public async Task<GetMysqlTypesAggRow> GetMysqlTypesAgg()
+        public async Task<GetMysqlTypesCntRow> GetMysqlTypesCnt()
         {
             using (var connection = new MySqlConnection(ConnectionString))
             {
-                var result = await connection.QueryFirstOrDefaultAsync<GetMysqlTypesAggRow>(GetMysqlTypesAggSql);
+                var result = await connection.QueryFirstOrDefaultAsync<GetMysqlTypesCntRow>(GetMysqlTypesCntSql);
+                return result;
+            }
+        }
+
+        private const string GetMysqlFunctionsSql = "SELECT MAX(c_int) AS max_int, MAX(c_varchar) AS max_varchar, MAX(c_timestamp) AS max_timestamp, max(c_bigint) as max_bigint FROM  mysql_types ; SELECT  LAST_INSERT_ID ( ) "; 
+        public class GetMysqlFunctionsRow
+        {
+            public int? MaxInt { get; set; }
+            public string MaxVarchar { get; set; }
+            public DateTime MaxTimestamp { get; set; }
+            public long MaxBigint { get; set; }
+        };
+        public async Task<GetMysqlFunctionsRow> GetMysqlFunctions()
+        {
+            using (var connection = new MySqlConnection(ConnectionString))
+            {
+                var result = await connection.QueryFirstOrDefaultAsync<GetMysqlFunctionsRow>(GetMysqlFunctionsSql);
                 return result;
             }
         }

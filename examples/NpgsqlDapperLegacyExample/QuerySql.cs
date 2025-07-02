@@ -25,7 +25,7 @@ namespace NpgsqlDapperLegacyExampleGen
 
         private string ConnectionString { get; }
 
-        private const string GetAuthorSql = "SELECT id, name, bio FROM authors WHERE name = @name LIMIT 1";
+        private const string GetAuthorSql = "SELECT id, name, bio FROM authors WHERE  name  =  @name  LIMIT  1  ";  
         public class GetAuthorRow
         {
             public long Id { get; set; }
@@ -47,7 +47,7 @@ namespace NpgsqlDapperLegacyExampleGen
             }
         }
 
-        private const string ListAuthorsSql = "SELECT id, name, bio FROM authors ORDER BY name";
+        private const string ListAuthorsSql = "SELECT id, name, bio FROM authors ORDER  BY  name  ";  
         public class ListAuthorsRow
         {
             public long Id { get; set; }
@@ -110,7 +110,7 @@ namespace NpgsqlDapperLegacyExampleGen
             }
         }
 
-        private const string GetAuthorByIdSql = "SELECT id, name, bio FROM authors WHERE id = @id LIMIT 1";
+        private const string GetAuthorByIdSql = "SELECT id, name, bio FROM authors WHERE  id  =  @id  LIMIT  1  ";  
         public class GetAuthorByIdRow
         {
             public long Id { get; set; }
@@ -132,7 +132,7 @@ namespace NpgsqlDapperLegacyExampleGen
             }
         }
 
-        private const string GetAuthorByNamePatternSql = "SELECT id, name, bio FROM authors WHERE name LIKE COALESCE(@name_pattern, '%')";
+        private const string GetAuthorByNamePatternSql = "SELECT id, name, bio FROM authors WHERE  name  LIKE  COALESCE ( @name_pattern ,  '%' ) ";  
         public class GetAuthorByNamePatternRow
         {
             public long Id { get; set; }
@@ -154,7 +154,7 @@ namespace NpgsqlDapperLegacyExampleGen
             }
         }
 
-        private const string DeleteAuthorSql = "DELETE FROM authors WHERE name = @name";
+        private const string DeleteAuthorSql = "DELETE FROM authors WHERE  name  =  @name  ";  
         public class DeleteAuthorArgs
         {
             public string Name { get; set; }
@@ -178,7 +178,7 @@ namespace NpgsqlDapperLegacyExampleGen
             }
         }
 
-        private const string UpdateAuthorsSql = "UPDATE authors  SET  bio  =  @bio  WHERE  bio  IS  NOT  NULL  ";  
+        private const string UpdateAuthorsSql = "UPDATE authors SET  bio  =  @bio  WHERE  bio  IS  NOT  NULL  ";  
         public class UpdateAuthorsArgs
         {
             public string Bio { get; set; }
@@ -193,7 +193,7 @@ namespace NpgsqlDapperLegacyExampleGen
             }
         }
 
-        private const string GetAuthorsByIdsSql = "SELECT id, name, bio FROM authors WHERE id = ANY(@longArr_1::BIGINT[])";
+        private const string GetAuthorsByIdsSql = "SELECT id, name, bio FROM authors WHERE  id  =  ANY ( @longArr_1 :: BIGINT [ ] ) ";  
         public class GetAuthorsByIdsRow
         {
             public long Id { get; set; }
@@ -215,7 +215,7 @@ namespace NpgsqlDapperLegacyExampleGen
             }
         }
 
-        private const string GetAuthorsByIdsAndNamesSql = "SELECT id, name, bio FROM authors WHERE id = ANY(@longArr_1::BIGINT[]) AND name = ANY(@stringArr_2::TEXT[])";
+        private const string GetAuthorsByIdsAndNamesSql = "SELECT id, name, bio FROM  authors  WHERE  id  =  ANY ( @longArr_1 :: BIGINT [ ] ) AND  name  =  ANY ( @stringArr_2 :: TEXT [ ] ) ";  
         public class GetAuthorsByIdsAndNamesRow
         {
             public long Id { get; set; }
@@ -260,7 +260,7 @@ namespace NpgsqlDapperLegacyExampleGen
             }
         }
 
-        private const string ListAllAuthorsBooksSql = "SELECT authors.id, authors.name, authors.bio, books.id, books.name, books.author_id, books.description FROM authors JOIN books ON authors.id = books.author_id ORDER BY authors.name";
+        private const string ListAllAuthorsBooksSql = "SELECT authors . id , authors . name, authors . bio, books . id, books . name, books . author_id, books . description  FROM  authors  INNER  JOIN  books  ON  authors . id  =  books . author_id  ORDER  BY  authors . name  "; 
         public class ListAllAuthorsBooksRow
         {
             public Author Author { get; set; }
@@ -286,7 +286,7 @@ namespace NpgsqlDapperLegacyExampleGen
             }
         }
 
-        private const string GetDuplicateAuthorsSql = "SELECT authors1.id, authors1.name, authors1.bio, authors2.id, authors2.name, authors2.bio FROM  authors  authors1  JOIN  authors  authors2  ON  authors1 . name  =  authors2 . name  WHERE  authors1 . id < authors2 . id  ";  
+        private const string GetDuplicateAuthorsSql = "SELECT authors1 . id , authors1 . name, authors1 . bio, authors2 . id, authors2 . name, authors2 . bio  FROM  authors  AS  authors1  INNER  JOIN  authors  AS  authors2  ON  authors1 . name  =  authors2 . name  WHERE  authors1 . id < authors2 . id  "; 
         public class GetDuplicateAuthorsRow
         {
             public Author Author { get; set; }
@@ -312,7 +312,7 @@ namespace NpgsqlDapperLegacyExampleGen
             }
         }
 
-        private const string GetAuthorsByBookNameSql = "SELECT authors.id, authors.name, authors.bio, books.id, books.name, books.author_id, books.description FROM  authors  JOIN  books  ON  authors . id  =  books . author_id  WHERE  books . name  =  @name  ";  
+        private const string GetAuthorsByBookNameSql = "SELECT authors . id , authors . name, authors . bio, books . id, books . name, books . author_id, books . description  FROM  authors  INNER  JOIN  books  ON  authors . id  =  books . author_id  WHERE  books . name  =  @name  "; 
         public class GetAuthorsByBookNameRow
         {
             public long Id { get; set; }
@@ -345,7 +345,7 @@ namespace NpgsqlDapperLegacyExampleGen
             }
         }
 
-        private const string InsertPostgresTypesSql = "INSERT INTO postgres_types (c_boolean, c_bit, c_smallint, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_money, c_date, c_time, c_timestamp, c_timestamp_with_tz, c_char, c_varchar, c_character_varying, c_text, c_bytea, c_text_array, c_integer_array) VALUES ( @c_boolean, @c_bit, @c_smallint, @c_integer, @c_bigint, @c_real, @c_numeric, @c_decimal, @c_double_precision, @c_money, @c_date, @c_time, @c_timestamp, @c_timestamp_with_tz, @c_char, @c_varchar, @c_character_varying, @c_text, @c_bytea, @c_text_array, @c_integer_array ) "; 
+        private const string InsertPostgresTypesSql = "INSERT INTO postgres_types(c_boolean, c_bit, c_smallint, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_money, c_date, c_time, c_timestamp, c_timestamp_with_tz, c_char, c_varchar, c_character_varying, c_text, c_bytea, c_text_array, c_integer_array) VALUES ( @c_boolean, @c_bit, @c_smallint, @c_integer, @c_bigint, @c_real, @c_numeric, @c_decimal, @c_double_precision, @c_money, @c_date, @c_time, @c_timestamp, @c_timestamp_with_tz, @c_char, @c_varchar, @c_character_varying, @c_text, @c_bytea, @c_text_array, @c_integer_array ) "; 
         public class InsertPostgresTypesArgs
         {
             public bool? CBoolean { get; set; }
@@ -495,10 +495,9 @@ namespace NpgsqlDapperLegacyExampleGen
             }
         }
 
-        private const string GetPostgresTypesAggSql = "SELECT COUNT(1) AS cnt ,  c_smallint , c_boolean, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_money, c_date, c_time, c_timestamp, c_timestamp_with_tz, c_char, c_varchar, c_character_varying, c_text, c_bytea FROM  postgres_types  GROUP  BY  c_smallint , c_boolean, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_money, c_date, c_time, c_timestamp, c_timestamp_with_tz, c_char, c_varchar, c_character_varying, c_text, c_bytea LIMIT  1  ";  
-        public class GetPostgresTypesAggRow
+        private const string GetPostgresTypesCntSql = "SELECT c_smallint , c_boolean, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_money, c_date, c_time, c_timestamp, c_timestamp_with_tz, c_char, c_varchar, c_character_varying, c_text, c_bytea, COUNT (* ) AS  cnt  FROM  postgres_types  GROUP  BY  c_smallint, c_boolean, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_money, c_date, c_time, c_timestamp, c_timestamp_with_tz, c_char, c_varchar, c_character_varying, c_text, c_bytea LIMIT  1  ";  
+        public class GetPostgresTypesCntRow
         {
-            public long Cnt { get; set; }
             public short? CSmallint { get; set; }
             public bool? CBoolean { get; set; }
             public int? CInteger { get; set; }
@@ -517,17 +516,34 @@ namespace NpgsqlDapperLegacyExampleGen
             public string CCharacterVarying { get; set; }
             public string CText { get; set; }
             public byte[] CBytea { get; set; }
+            public long Cnt { get; set; }
         };
-        public async Task<GetPostgresTypesAggRow> GetPostgresTypesAgg()
+        public async Task<GetPostgresTypesCntRow> GetPostgresTypesCnt()
         {
             using (var connection = new NpgsqlConnection(ConnectionString))
             {
-                var result = await connection.QueryFirstOrDefaultAsync<GetPostgresTypesAggRow>(GetPostgresTypesAggSql);
+                var result = await connection.QueryFirstOrDefaultAsync<GetPostgresTypesCntRow>(GetPostgresTypesCntSql);
                 return result;
             }
         }
 
-        private const string InsertPostgresGeoTypesSql = "INSERT INTO postgres_geometric_types (c_point, c_line, c_lseg, c_box, c_path, c_polygon, c_circle) VALUES ( @c_point , @c_line, @c_lseg, @c_box, @c_path, @c_polygon, @c_circle ) "; 
+        private const string GetPostgresFunctionsSql = "SELECT MAX ( c_integer ) AS  max_integer , MAX (c_varchar ) AS  max_varchar, MAX (c_timestamp ) AS  max_timestamp  FROM  postgres_types  "; 
+        public class GetPostgresFunctionsRow
+        {
+            public int? MaxInteger { get; set; }
+            public string MaxVarchar { get; set; }
+            public DateTime MaxTimestamp { get; set; }
+        };
+        public async Task<GetPostgresFunctionsRow> GetPostgresFunctions()
+        {
+            using (var connection = new NpgsqlConnection(ConnectionString))
+            {
+                var result = await connection.QueryFirstOrDefaultAsync<GetPostgresFunctionsRow>(GetPostgresFunctionsSql);
+                return result;
+            }
+        }
+
+        private const string InsertPostgresGeoTypesSql = "INSERT INTO postgres_geometric_types ( c_point , c_line, c_lseg, c_box, c_path, c_polygon, c_circle ) VALUES ( @c_point, @c_line, @c_lseg, @c_box, @c_path, @c_polygon, @c_circle ) "; 
         public class InsertPostgresGeoTypesArgs
         {
             public NpgsqlPoint? CPoint { get; set; }

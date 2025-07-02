@@ -11,7 +11,7 @@
     "codegen": {
       "out": "examples/NpgsqlLegacyExample",
       "plugin": "csharp",
-      "options": "eyJkZWJ1Z1JlcXVlc3QiOnRydWUsImdlbmVyYXRlQ3Nwcm9qIjp0cnVlLCJuYW1lc3BhY2VOYW1lIjoiTnBnc3FsTGVnYWN5RXhhbXBsZUdlbiIsInRhcmdldEZyYW1ld29yayI6Im5ldHN0YW5kYXJkMi4wIiwidXNlRGFwcGVyIjpmYWxzZX0=",
+      "options": "eyJkZWJ1Z1JlcXVlc3QiOnRydWUsImdlbmVyYXRlQ3Nwcm9qIjp0cnVlLCJuYW1lc3BhY2VOYW1lIjoiTnBnc3FsTGVnYWN5RXhhbXBsZUdlbiIsIm92ZXJyaWRlcyI6W3siY29sdW1uIjoiR2V0UG9zdGdyZXNGdW5jdGlvbnM6bWF4X2ludGVnZXIiLCJjc2hhcnBfdHlwZSI6eyJub3ROdWxsIjpmYWxzZSwidHlwZSI6ImludCJ9fSx7ImNvbHVtbiI6IkdldFBvc3RncmVzRnVuY3Rpb25zOm1heF92YXJjaGFyIiwiY3NoYXJwX3R5cGUiOnsibm90TnVsbCI6ZmFsc2UsInR5cGUiOiJzdHJpbmcifX0seyJjb2x1bW4iOiJHZXRQb3N0Z3Jlc0Z1bmN0aW9uczptYXhfdGltZXN0YW1wIiwiY3NoYXJwX3R5cGUiOnsibm90TnVsbCI6dHJ1ZSwidHlwZSI6IkRhdGVUaW1lIn19XSwidGFyZ2V0RnJhbWV3b3JrIjoibmV0c3RhbmRhcmQyLjAiLCJ1c2VEYXBwZXIiOmZhbHNlfQ==",
       "process": {
         "cmd": "./dist/LocalRunner"
       }
@@ -32285,7 +32285,7 @@
   },
   "queries": [
     {
-      "text": "SELECT id, name, bio FROM authors WHERE name = $1 LIMIT 1",
+      "text": "SELECT id, name, bio FROM authors\nWHERE name = $1 LIMIT 1",
       "name": "GetAuthor",
       "cmd": ":one",
       "columns": [
@@ -32345,7 +32345,7 @@
       "filename": "query.sql"
     },
     {
-      "text": "SELECT id, name, bio FROM authors ORDER BY name",
+      "text": "SELECT id, name, bio FROM authors\nORDER BY name",
       "name": "ListAuthors",
       "cmd": ":many",
       "columns": [
@@ -32539,7 +32539,7 @@
       }
     },
     {
-      "text": "SELECT id, name, bio FROM authors WHERE id = $1 LIMIT 1",
+      "text": "SELECT id, name, bio FROM authors\nWHERE id = $1 LIMIT 1",
       "name": "GetAuthorById",
       "cmd": ":one",
       "columns": [
@@ -32599,7 +32599,7 @@
       "filename": "query.sql"
     },
     {
-      "text": "SELECT id, name, bio FROM authors WHERE name LIKE COALESCE($1, '%')",
+      "text": "SELECT id, name, bio FROM authors\nWHERE name LIKE COALESCE($1, '%')",
       "name": "GetAuthorByNamePattern",
       "cmd": ":many",
       "columns": [
@@ -32659,7 +32659,7 @@
       "filename": "query.sql"
     },
     {
-      "text": "DELETE FROM authors WHERE name = $1",
+      "text": "DELETE FROM authors\nWHERE name = $1",
       "name": "DeleteAuthor",
       "cmd": ":exec",
       "parameters": [
@@ -32688,7 +32688,7 @@
       "filename": "query.sql"
     },
     {
-      "text": "UPDATE authors \n   SET bio = $1\n WHERE bio IS NOT NULL",
+      "text": "UPDATE authors\nSET bio = $1\nWHERE bio IS NOT NULL",
       "name": "UpdateAuthors",
       "cmd": ":execrows",
       "parameters": [
@@ -32711,7 +32711,7 @@
       "filename": "query.sql"
     },
     {
-      "text": "SELECT id, name, bio FROM authors WHERE id = ANY($1::BIGINT[])",
+      "text": "SELECT id, name, bio FROM authors\nWHERE id = ANY($1::BIGINT [])",
       "name": "GetAuthorsByIds",
       "cmd": ":many",
       "columns": [
@@ -32769,7 +32769,7 @@
       "filename": "query.sql"
     },
     {
-      "text": "SELECT id, name, bio FROM authors WHERE id = ANY($1::BIGINT[]) AND name = ANY($2::TEXT[])",
+      "text": "SELECT id, name, bio\nFROM authors\nWHERE id = ANY($1::BIGINT []) AND name = ANY($2::TEXT [])",
       "name": "GetAuthorsByIdsAndNames",
       "cmd": ":many",
       "columns": [
@@ -32896,7 +32896,7 @@
       }
     },
     {
-      "text": "SELECT authors.id, authors.name, authors.bio, books.id, books.name, books.author_id, books.description FROM authors JOIN books ON authors.id = books.author_id ORDER BY authors.name",
+      "text": "SELECT\n    authors.id, authors.name, authors.bio,\n    books.id, books.name, books.author_id, books.description\nFROM authors\nINNER JOIN books ON authors.id = books.author_id\nORDER BY authors.name",
       "name": "ListAllAuthorsBooks",
       "cmd": ":many",
       "columns": [
@@ -32920,7 +32920,7 @@
       "filename": "query.sql"
     },
     {
-      "text": "SELECT authors1.id, authors1.name, authors1.bio, authors2.id, authors2.name, authors2.bio\nFROM authors authors1 JOIN authors authors2 ON authors1.name = authors2.name\nWHERE authors1.id \u003c authors2.id",
+      "text": "SELECT\n    authors1.id, authors1.name, authors1.bio,\n    authors2.id, authors2.name, authors2.bio\nFROM authors AS authors1\nINNER JOIN authors AS authors2 ON authors1.name = authors2.name\nWHERE authors1.id \u003c authors2.id",
       "name": "GetDuplicateAuthors",
       "cmd": ":many",
       "columns": [
@@ -32944,7 +32944,7 @@
       "filename": "query.sql"
     },
     {
-      "text": "SELECT authors.id, authors.name, authors.bio, books.id, books.name, books.author_id, books.description\nFROM authors JOIN books ON authors.id = books.author_id\nWHERE books.name = $1",
+      "text": "SELECT\n    authors.id, authors.name, authors.bio,\n    books.id, books.name, books.author_id, books.description\nFROM authors INNER JOIN books ON authors.id = books.author_id\nWHERE books.name = $1",
       "name": "GetAuthorsByBookName",
       "cmd": ":many",
       "columns": [
@@ -33012,7 +33012,7 @@
       "filename": "query.sql"
     },
     {
-      "text": "INSERT INTO postgres_types \n    (c_boolean, c_bit, c_smallint, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_money,\n     c_date, c_time, c_timestamp, c_timestamp_with_tz, c_char, c_varchar, c_character_varying, c_text, \n     c_bytea, c_text_array, c_integer_array)\nVALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, \n        $11, $12, $13, $14, $15, $16, $17, $18, $19, \n        $20, $21)",
+      "text": "INSERT INTO postgres_types\n(\n    c_boolean,\n    c_bit,\n    c_smallint,\n    c_integer,\n    c_bigint,\n    c_real,\n    c_numeric,\n    c_decimal,\n    c_double_precision,\n    c_money,\n    c_date,\n    c_time,\n    c_timestamp,\n    c_timestamp_with_tz,\n    c_char,\n    c_varchar,\n    c_character_varying,\n    c_text,\n    c_bytea, c_text_array, c_integer_array\n)\nVALUES (\n    $1, $2, $3, $4, $5, $6, $7, $8, $9, $10,\n    $11, $12, $13, $14, $15, $16, $17, $18, $19,\n    $20, $21\n)",
       "name": "InsertPostgresTypes",
       "cmd": ":exec",
       "parameters": [
@@ -33342,7 +33342,7 @@
       }
     },
     {
-      "text": "INSERT INTO postgres_types \n    (c_boolean, c_smallint, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_money, \n     c_date, c_time, c_timestamp, c_timestamp_with_tz, c_char, c_varchar, c_character_varying, c_text, \n     c_bytea)\nVALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, \n        $10, $11, $12, $13, $14, $15, $16, $17, $18)",
+      "text": "INSERT INTO postgres_types\n(\n    c_boolean,\n    c_smallint,\n    c_integer,\n    c_bigint,\n    c_real,\n    c_numeric,\n    c_decimal,\n    c_double_precision,\n    c_money,\n    c_date,\n    c_time,\n    c_timestamp,\n    c_timestamp_with_tz,\n    c_char,\n    c_varchar,\n    c_character_varying,\n    c_text,\n    c_bytea\n)\nVALUES (\n    $1, $2, $3, $4, $5, $6, $7, $8, $9,\n    $10, $11, $12, $13, $14, $15, $16, $17, $18\n)",
       "name": "InsertPostgresTypesBatch",
       "cmd": ":copyfrom",
       "parameters": [
@@ -33893,19 +33893,10 @@
       "filename": "query.sql"
     },
     {
-      "text": "SELECT COUNT(1) AS cnt , \n       c_smallint, c_boolean, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_money, \n       c_date, c_time, c_timestamp, c_timestamp_with_tz, c_char, c_varchar, c_character_varying, c_text, \n       c_bytea\nFROM postgres_types\nGROUP BY c_smallint, c_boolean, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_money, \n         c_date, c_time, c_timestamp, c_timestamp_with_tz, c_char, c_varchar, c_character_varying, c_text, \n         c_bytea\nLIMIT 1",
-      "name": "GetPostgresTypesAgg",
+      "text": "SELECT\n    c_smallint,\n    c_boolean,\n    c_integer,\n    c_bigint,\n    c_real,\n    c_numeric,\n    c_decimal,\n    c_double_precision,\n    c_money,\n    c_date,\n    c_time,\n    c_timestamp,\n    c_timestamp_with_tz,\n    c_char,\n    c_varchar,\n    c_character_varying,\n    c_text,\n    c_bytea,\n    COUNT(*) AS cnt\nFROM postgres_types\nGROUP BY\n    c_smallint,\n    c_boolean,\n    c_integer,\n    c_bigint,\n    c_real,\n    c_numeric,\n    c_decimal,\n    c_double_precision,\n    c_money,\n    c_date,\n    c_time,\n    c_timestamp,\n    c_timestamp_with_tz,\n    c_char,\n    c_varchar,\n    c_character_varying,\n    c_text,\n    c_bytea\nLIMIT 1",
+      "name": "GetPostgresTypesCnt",
       "cmd": ":one",
       "columns": [
-        {
-          "name": "cnt",
-          "notNull": true,
-          "length": -1,
-          "isFuncCall": true,
-          "type": {
-            "name": "bigint"
-          }
-        },
         {
           "name": "c_smallint",
           "length": -1,
@@ -34117,12 +34108,56 @@
             "name": "bytea"
           },
           "originalName": "c_bytea"
+        },
+        {
+          "name": "cnt",
+          "notNull": true,
+          "length": -1,
+          "isFuncCall": true,
+          "type": {
+            "name": "bigint"
+          }
         }
       ],
       "filename": "query.sql"
     },
     {
-      "text": "INSERT INTO postgres_geometric_types (c_point, c_line, c_lseg, c_box, c_path, c_polygon, c_circle)\nVALUES ($1, $2, $3, $4, $5, $6, $7)",
+      "text": "SELECT\n    MAX(c_integer) AS max_integer,\n    MAX(c_varchar) AS max_varchar,\n    MAX(c_timestamp) AS max_timestamp\nFROM postgres_types",
+      "name": "GetPostgresFunctions",
+      "cmd": ":one",
+      "columns": [
+        {
+          "name": "max_integer",
+          "notNull": true,
+          "length": -1,
+          "isFuncCall": true,
+          "type": {
+            "name": "anyarray"
+          }
+        },
+        {
+          "name": "max_varchar",
+          "notNull": true,
+          "length": -1,
+          "isFuncCall": true,
+          "type": {
+            "name": "anyarray"
+          }
+        },
+        {
+          "name": "max_timestamp",
+          "notNull": true,
+          "length": -1,
+          "isFuncCall": true,
+          "type": {
+            "name": "anyarray"
+          }
+        }
+      ],
+      "filename": "query.sql"
+    },
+    {
+      "text": "INSERT INTO postgres_geometric_types (\n    c_point, c_line, c_lseg, c_box, c_path, c_polygon, c_circle\n)\nVALUES ($1, $2, $3, $4, $5, $6, $7)",
       "name": "InsertPostgresGeoTypes",
       "cmd": ":exec",
       "parameters": [

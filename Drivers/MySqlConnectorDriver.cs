@@ -92,7 +92,13 @@ public partial class MySqlConnectorDriver(
             new Dictionary<string, DbTypeInfo>
             {
                 { "decimal", new DbTypeInfo() }
-            }, ordinal => $"reader.GetDecimal({ordinal})")
+            }, ordinal => $"reader.GetDecimal({ordinal})"),
+        // last item in the dictionary - enforce TODO
+        new("object",
+                new Dictionary<string, DbTypeInfo>
+                {
+                    { "any", new DbTypeInfo() }
+                }, ordinal => $"reader.GetValue({ordinal})")
     ];
 
     public override UsingDirectiveSyntax[] GetUsingDirectivesForQueries()
