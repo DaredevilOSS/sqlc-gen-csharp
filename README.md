@@ -47,7 +47,17 @@ sql:
 | namespaceName        | default: the generated project name | Yes | Allows you to override the namespace name to be different than the project name |
 | useDapper           | default: `false`<br/>values: `false`,`true` | Yes | Enables Dapper as a thin wrapper for the generated code. For more information, please refer to the [Dapper documentation](https://github.com/DapperLib/Dapper). |
 | overrideDapperVersion| default:<br/> `2.1.35`<br/>values: The desired Dapper version | Yes | If `useDapper` is set to `true`, this option allows you to override the version of Dapper to be used. |
-| Override            | values: N/A | Yes | Allows you to override the generated C# data types for specific columns in specific queries. This option accepts a `query_name:column_name` mapping and the overriden data type. |
+| Override            | values: A nested override value like [this](#override-option). | Yes | Allows you to override the generated C# data types for specific columns in specific queries. This option accepts a `query_name:column_name` mapping and the overriden data type. |
+
+### Override option
+```
+yaml
+overrides:
+  - column: "<query-name>:<field-name>"
+    csharp_type:
+      type: "<csharp-datatype>"
+      notNull: true|false
+```
 
 ## Supported Features
 - ✅ means the feature is fully supported.
