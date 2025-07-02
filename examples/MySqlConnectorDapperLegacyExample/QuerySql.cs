@@ -628,8 +628,8 @@ namespace MySqlConnectorDapperLegacyExampleGen
         {
             public int? MaxInt { get; set; }
             public string MaxVarchar { get; set; }
-            public DateTime? MaxTimestamp { get; set; }
-            public long? MaxBigint { get; set; }
+            public DateTime MaxTimestamp { get; set; }
+            public long MaxBigint { get; set; }
         };
         public async Task<GetMysqlFunctionsRow> GetMysqlFunctions()
         {

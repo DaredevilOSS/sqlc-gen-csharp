@@ -565,7 +565,7 @@ namespace SqliteLegacyExampleGen
         public class GetSqliteFunctionsRow
         {
             public int? MaxInteger { get; set; }
-            public decimal? MaxReal { get; set; }
+            public decimal MaxReal { get; set; }
             public object MaxText { get; set; }
         };
         public async Task<GetSqliteFunctionsRow> GetSqliteFunctions()
@@ -582,7 +582,7 @@ namespace SqliteLegacyExampleGen
                             return new GetSqliteFunctionsRow
                             {
                                 MaxInteger = reader.IsDBNull(0) ? (int? )null : reader.GetInt32(0),
-                                MaxReal = reader.IsDBNull(1) ? (decimal? )null : reader.GetDecimal(1),
+                                MaxReal = reader.GetDecimal(1),
                                 MaxText = reader.IsDBNull(2) ? null : reader.GetValue(2)
                             };
                         }

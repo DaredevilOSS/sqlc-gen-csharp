@@ -432,7 +432,7 @@ public class QuerySql
     public class GetSqliteFunctionsRow
     {
         public int? MaxInteger { get; init; }
-        public decimal? MaxReal { get; init; }
+        public required decimal MaxReal { get; init; }
         public object? MaxText { get; init; }
     };
     public async Task<GetSqliteFunctionsRow?> GetSqliteFunctions()

@@ -489,11 +489,11 @@ public static class PostgresTests
             Impl = $$"""
                      [Test]
                      [TestCase(-54355, "White Light from the Mouth of Infinity", "2022-10-2 15:44:01+09:00")]
-                     [TestCase(null, null, null)]
+                     [TestCase(null, null, "1970-01-01 00:00:00")]
                      public async Task TestPostgresDataTypesOverride(
                         int? cInteger,
                         string cVarchar,
-                        DateTime? cTimestamp)
+                        DateTime cTimestamp)
                      {
                          await QuerySql.InsertPostgresTypes(new QuerySql.InsertPostgresTypesArgs
                          {

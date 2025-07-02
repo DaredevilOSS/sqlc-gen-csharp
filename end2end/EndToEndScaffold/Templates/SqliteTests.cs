@@ -94,10 +94,10 @@ public static class SqliteTests
             Impl = $$"""
                      [Test]
                      [TestCase(-54355, 9787.66, "Have One On Me")]
-                     [TestCase(null, null, null)]
+                     [TestCase(null, 0.0, null)]
                      public async Task TestSqliteDataTypesOverride(
                         int? cInteger,
-                        decimal? cReal,
+                        decimal cReal,
                         string cText)
                      {
                          await QuerySql.InsertSqliteTypes(new QuerySql.InsertSqliteTypesArgs

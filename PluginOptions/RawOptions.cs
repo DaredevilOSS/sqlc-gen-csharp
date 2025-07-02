@@ -43,4 +43,7 @@ public class CsharpTypeOption
 {
     [JsonPropertyName("type")]
     public string Type { get; init; } = string.Empty;
+
+    [JsonPropertyName("notNull")]
+    public bool NotNull { get; init; } = false;
 }

@@ -586,12 +586,12 @@ public static class MySqlTests
             Impl = $$"""
                      [Test]
                      [TestCase(-54355, 9787876578, "Scream of the Butterfly", "2025-06-29 12:00:00")]
-                     [TestCase(null, null, null, null)]
+                     [TestCase(null, 0, null, "1971-01-01 00:00:00")]
                      public async Task TestMySqlDataTypesOverride(
                         int? cInt,
-                        long? cBigint,
+                        long cBigint,
                         string cVarchar,
-                        DateTime? cTimestamp)
+                        DateTime cTimestamp)
                      {
                          await QuerySql.InsertMysqlTypes(new QuerySql.InsertMysqlTypesArgs
                          {

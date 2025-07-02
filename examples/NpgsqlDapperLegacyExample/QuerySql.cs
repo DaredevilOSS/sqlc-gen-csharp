@@ -532,7 +532,7 @@ namespace NpgsqlDapperLegacyExampleGen
         {
             public int? MaxInteger { get; set; }
             public string MaxVarchar { get; set; }
-            public DateTime? MaxTimestamp { get; set; }
+            public DateTime MaxTimestamp { get; set; }
         };
         public async Task<GetPostgresFunctionsRow> GetPostgresFunctions()
         {

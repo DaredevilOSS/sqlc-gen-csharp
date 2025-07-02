@@ -506,7 +506,7 @@ public class QuerySql
     }
 
     private const string GetPostgresFunctionsSql = "SELECT MAX(c_integer) AS max_integer, MAX(c_varchar) AS max_varchar, MAX(c_timestamp) AS max_timestamp FROM  postgres_types  ";  
-    public readonly record struct GetPostgresFunctionsRow(int? MaxInteger, string? MaxVarchar, DateTime? MaxTimestamp);
+    public readonly record struct GetPostgresFunctionsRow(int? MaxInteger, string? MaxVarchar, DateTime MaxTimestamp);
     public async Task<GetPostgresFunctionsRow?> GetPostgresFunctions()
     {
         using (var connection = NpgsqlDataSource.Create(ConnectionString))
@@ -521,7 +521,7 @@ public class QuerySql
                         {
                             MaxInteger = reader.IsDBNull(0) ? null : reader.GetInt32(0),
                             MaxVarchar = reader.IsDBNull(1) ? null : reader.GetString(1),
-                            MaxTimestamp = reader.IsDBNull(2) ? null : reader.GetDateTime(2)
+                            MaxTimestamp = reader.GetDateTime(2)
                         };
                     }
                 }

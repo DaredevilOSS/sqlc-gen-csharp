@@ -20,12 +20,15 @@ sql:
             - column: "GetPostgresFunctions:max_integer"
               csharp_type:
                 type: "int"
+                notNull: false
             - column: "GetPostgresFunctions:max_varchar"
               csharp_type:
                 type: "string"
+                notNull: false
             - column: "GetPostgresFunctions:max_timestamp"
               csharp_type:
                 type: "DateTime"
+                notNull: true
           debugRequest: true
   - schema: "examples/config/postgresql/schema.sql"
     queries: "examples/config/postgresql/query.sql"
@@ -42,12 +45,15 @@ sql:
             - column: "GetPostgresFunctions:max_integer"
               csharp_type:
                 type: "int"
+                notNull: false
             - column: "GetPostgresFunctions:max_varchar"
               csharp_type:
                 type: "string"
+                notNull: false
             - column: "GetPostgresFunctions:max_timestamp"
               csharp_type:
                 type: "DateTime"
+                notNull: true
           debugRequest: true
   - schema: "examples/config/postgresql/schema.sql"
     queries: "examples/config/postgresql/query.sql"
@@ -64,12 +70,15 @@ sql:
             - column: "GetPostgresFunctions:max_integer"
               csharp_type:
                 type: "int"
+                notNull: false
             - column: "GetPostgresFunctions:max_varchar"
               csharp_type:
                 type: "string"
+                notNull: false
             - column: "GetPostgresFunctions:max_timestamp"
               csharp_type:
                 type: "DateTime"
+                notNull: true
           debugRequest: true
   - schema: "examples/config/postgresql/schema.sql"
     queries: "examples/config/postgresql/query.sql"
@@ -86,12 +95,15 @@ sql:
             - column: "GetPostgresFunctions:max_integer"
               csharp_type:
                 type: "int"
+                notNull: false
             - column: "GetPostgresFunctions:max_varchar"
               csharp_type:
                 type: "string"
+                notNull: false
             - column: "GetPostgresFunctions:max_timestamp"
               csharp_type:
                 type: "DateTime"
+                notNull: true
           debugRequest: true
   # MySQL
   - schema: "examples/config/mysql/schema.sql"
@@ -109,15 +121,19 @@ sql:
             - column: "GetMysqlFunctions:max_int"
               csharp_type:
                 type: "int"
+                notNull: false
             - column: "GetMysqlFunctions:max_varchar"
               csharp_type:
                 type: "string"
+                notNull: false
             - column: "GetMysqlFunctions:max_timestamp"
               csharp_type:
                 type: "DateTime"
+                notNull: true
             - column: "GetMysqlFunctions:max_bigint"
               csharp_type:
                 type: "long"
+                notNull: true
           debugRequest: true
   - schema: "examples/config/mysql/schema.sql"
     queries: "examples/config/mysql/query.sql"
@@ -134,15 +150,19 @@ sql:
             - column: "GetMysqlFunctions:max_int"
               csharp_type:
                 type: "int"
+                notNull: false
             - column: "GetMysqlFunctions:max_varchar"
               csharp_type:
                 type: "string"
+                notNull: false
             - column: "GetMysqlFunctions:max_timestamp"
               csharp_type:
                 type: "DateTime"
+                notNull: true
             - column: "GetMysqlFunctions:max_bigint"
               csharp_type:
                 type: "long"
+                notNull: true
           debugRequest: true
   - schema: "examples/config/mysql/schema.sql"
     queries: "examples/config/mysql/query.sql"
@@ -159,15 +179,19 @@ sql:
             - column: "GetMysqlFunctions:max_int"
               csharp_type:
                 type: "int"
+                notNull: false
             - column: "GetMysqlFunctions:max_varchar"
               csharp_type:
                 type: "string"
+                notNull: false
             - column: "GetMysqlFunctions:max_timestamp"
               csharp_type:
                 type: "DateTime"
+                notNull: true
             - column: "GetMysqlFunctions:max_bigint"
               csharp_type:
                 type: "long"
+                notNull: true
           debugRequest: true
   - schema: "examples/config/mysql/schema.sql"
     queries: "examples/config/mysql/query.sql"
@@ -184,15 +208,19 @@ sql:
             - column: "GetMysqlFunctions:max_int"
               csharp_type:
                 type: "int"
+                notNull: false
             - column: "GetMysqlFunctions:max_varchar"
               csharp_type:
                 type: "string"
+                notNull: false
             - column: "GetMysqlFunctions:max_timestamp"
               csharp_type:
                 type: "DateTime"
+                notNull: true
             - column: "GetMysqlFunctions:max_bigint"
               csharp_type:
                 type: "long"
+                notNull: true
           debugRequest: true
   # Sqlite
   - schema: "examples/config/sqlite/schema.sql"
@@ -210,12 +238,15 @@ sql:
             - column: "GetSqliteFunctions:max_integer"
               csharp_type:
                 type: "int"
+                notNull: false
             - column: "GetSqliteFunctions:max_varchar"
               csharp_type:
                 type: "string"
+                notNull: false
             - column: "GetSqliteFunctions:max_real"
               csharp_type:
                 type: "decimal"
+                notNull: true
           debugRequest: true
   - schema: "examples/config/sqlite/schema.sql"
     queries: "examples/config/sqlite/query.sql"
@@ -232,12 +263,15 @@ sql:
             - column: "GetSqliteFunctions:max_integer"
               csharp_type:
                 type: "int"
+                notNull: false
             - column: "GetSqliteFunctions:max_varchar"
               csharp_type:
                 type: "string"
+                notNull: false
             - column: "GetSqliteFunctions:max_real"
               csharp_type:
                 type: "decimal"
+                notNull: true
           debugRequest: true
   - schema: "examples/config/sqlite/schema.sql"
     queries: "examples/config/sqlite/query.sql"
@@ -254,12 +288,15 @@ sql:
             - column: "GetSqliteFunctions:max_integer"
               csharp_type:
                 type: "int"
+                notNull: false
             - column: "GetSqliteFunctions:max_varchar"
               csharp_type:
                 type: "string"
+                notNull: false
             - column: "GetSqliteFunctions:max_real"
               csharp_type:
                 type: "decimal"
+                notNull: true
           debugRequest: true
   - schema: "examples/config/sqlite/schema.sql"
     queries: "examples/config/sqlite/query.sql"
@@ -276,10 +313,13 @@ sql:
             - column: "GetSqliteFunctions:max_integer"
               csharp_type:
                 type: "int"
+                notNull: false
             - column: "GetSqliteFunctions:max_varchar"
               csharp_type:
                 type: "string"
+                notNull: false
             - column: "GetSqliteFunctions:max_real"
               csharp_type:
                 type: "decimal"
+                notNull: true
           debugRequest: true

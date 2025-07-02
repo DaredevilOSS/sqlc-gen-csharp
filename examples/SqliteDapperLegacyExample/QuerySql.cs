@@ -433,7 +433,7 @@ namespace SqliteDapperLegacyExampleGen
         public class GetSqliteFunctionsRow
         {
             public int? MaxInteger { get; set; }
-            public decimal? MaxReal { get; set; }
+            public decimal MaxReal { get; set; }
             public object MaxText { get; set; }
         };
         public async Task<GetSqliteFunctionsRow> GetSqliteFunctions()

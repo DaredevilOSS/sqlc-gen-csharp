@@ -628,8 +628,8 @@ public class QuerySql
     {
         public int? MaxInt { get; init; }
         public string? MaxVarchar { get; init; }
-        public DateTime? MaxTimestamp { get; init; }
-        public long? MaxBigint { get; init; }
+        public required DateTime MaxTimestamp { get; init; }
+        public required long MaxBigint { get; init; }
     };
     public async Task<GetMysqlFunctionsRow?> GetMysqlFunctions()
     {

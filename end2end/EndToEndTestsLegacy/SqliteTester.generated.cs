@@ -333,8 +333,8 @@ namespace EndToEndTests
 
         [Test]
         [TestCase(-54355, 9787.66, "Have One On Me")]
-        [TestCase(null, null, null)]
-        public async Task TestSqliteDataTypesOverride(int? cInteger, decimal? cReal, string cText)
+        [TestCase(null, 0.0, null)]
+        public async Task TestSqliteDataTypesOverride(int? cInteger, decimal cReal, string cText)
         {
             await QuerySql.InsertSqliteTypes(new QuerySql.InsertSqliteTypesArgs { CInteger = cInteger, CReal = cReal, CText = cText });
             var expected = new QuerySql.GetSqliteFunctionsRow

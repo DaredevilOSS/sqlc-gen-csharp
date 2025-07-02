@@ -41,6 +41,8 @@ public class Options
 
     public string NamespaceName { get; }
 
+    public bool NotNull { get; }
+
     public List<OverrideOption> Overrides { get; }
 
     public bool DebugRequest { get; }

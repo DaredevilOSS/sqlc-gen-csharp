@@ -11,7 +11,7 @@
     "codegen": {
       "out": "examples/SqliteExample",
       "plugin": "csharp",
-      "options": "eyJkZWJ1Z1JlcXVlc3QiOnRydWUsImdlbmVyYXRlQ3Nwcm9qIjp0cnVlLCJuYW1lc3BhY2VOYW1lIjoiU3FsaXRlRXhhbXBsZUdlbiIsIm92ZXJyaWRlcyI6W3siY29sdW1uIjoiR2V0U3FsaXRlRnVuY3Rpb25zOm1heF9pbnRlZ2VyIiwiY3NoYXJwX3R5cGUiOnsidHlwZSI6ImludCJ9fSx7ImNvbHVtbiI6IkdldFNxbGl0ZUZ1bmN0aW9uczptYXhfdmFyY2hhciIsImNzaGFycF90eXBlIjp7InR5cGUiOiJzdHJpbmcifX0seyJjb2x1bW4iOiJHZXRTcWxpdGVGdW5jdGlvbnM6bWF4X3JlYWwiLCJjc2hhcnBfdHlwZSI6eyJ0eXBlIjoiZGVjaW1hbCJ9fV0sInRhcmdldEZyYW1ld29yayI6Im5ldDguMCIsInVzZURhcHBlciI6ZmFsc2V9",
+      "options": "eyJkZWJ1Z1JlcXVlc3QiOnRydWUsImdlbmVyYXRlQ3Nwcm9qIjp0cnVlLCJuYW1lc3BhY2VOYW1lIjoiU3FsaXRlRXhhbXBsZUdlbiIsIm92ZXJyaWRlcyI6W3siY29sdW1uIjoiR2V0U3FsaXRlRnVuY3Rpb25zOm1heF9pbnRlZ2VyIiwiY3NoYXJwX3R5cGUiOnsibm90TnVsbCI6ZmFsc2UsInR5cGUiOiJpbnQifX0seyJjb2x1bW4iOiJHZXRTcWxpdGVGdW5jdGlvbnM6bWF4X3ZhcmNoYXIiLCJjc2hhcnBfdHlwZSI6eyJub3ROdWxsIjpmYWxzZSwidHlwZSI6InN0cmluZyJ9fSx7ImNvbHVtbiI6IkdldFNxbGl0ZUZ1bmN0aW9uczptYXhfcmVhbCIsImNzaGFycF90eXBlIjp7Im5vdE51bGwiOnRydWUsInR5cGUiOiJkZWNpbWFsIn19XSwidGFyZ2V0RnJhbWV3b3JrIjoibmV0OC4wIiwidXNlRGFwcGVyIjpmYWxzZX0=",
       "process": {
         "cmd": "./dist/LocalRunner"
       }

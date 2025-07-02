@@ -587,7 +587,7 @@ public class QuerySql
     }
 
     private const string GetMysqlFunctionsSql = "SELECT MAX(c_int) AS max_int, MAX(c_varchar) AS max_varchar, MAX(c_timestamp) AS max_timestamp, max(c_bigint) as max_bigint FROM  mysql_types  ";  
-    public readonly record struct GetMysqlFunctionsRow(int? MaxInt, string? MaxVarchar, DateTime? MaxTimestamp, long? MaxBigint);
+    public readonly record struct GetMysqlFunctionsRow(int? MaxInt, string? MaxVarchar, DateTime MaxTimestamp, long MaxBigint);
     public async Task<GetMysqlFunctionsRow?> GetMysqlFunctions()
     {
         using (var connection = new MySqlConnection(ConnectionString))
@@ -603,8 +603,8 @@ public class QuerySql
                         {
                             MaxInt = reader.IsDBNull(0) ? null : reader.GetInt32(0),
                             MaxVarchar = reader.IsDBNull(1) ? null : reader.GetString(1),
-                            MaxTimestamp = reader.IsDBNull(2) ? null : reader.GetDateTime(2),
-                            MaxBigint = reader.IsDBNull(3) ? null : reader.GetInt64(3)
+                            MaxTimestamp = reader.GetDateTime(2),
+                            MaxBigint = reader.GetInt64(3)
                         };
                     }
                 }

@@ -300,6 +300,9 @@ public abstract class DbDriver
     {
         if (query is null)
             return column.NotNull;
-        return column.NotNull && FindOverrideForQueryColumn(query, column) is null;
+        var overrideColumn = FindOverrideForQueryColumn(query, column);
+        if (overrideColumn is not null)
+            return overrideColumn.CsharpType.NotNull;
+        return column.NotNull;
     }
 }

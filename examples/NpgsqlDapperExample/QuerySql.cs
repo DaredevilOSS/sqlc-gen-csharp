@@ -531,7 +531,7 @@ public class QuerySql
     {
         public int? MaxInteger { get; init; }
         public string? MaxVarchar { get; init; }
-        public DateTime? MaxTimestamp { get; init; }
+        public required DateTime MaxTimestamp { get; init; }
     };
     public async Task<GetPostgresFunctionsRow?> GetPostgresFunctions()
     {

@@ -692,7 +692,7 @@ namespace NpgsqlLegacyExampleGen
         {
             public int? MaxInteger { get; set; }
             public string MaxVarchar { get; set; }
-            public DateTime? MaxTimestamp { get; set; }
+            public DateTime MaxTimestamp { get; set; }
         };
         public async Task<GetPostgresFunctionsRow> GetPostgresFunctions()
         {
@@ -708,7 +708,7 @@ namespace NpgsqlLegacyExampleGen
                             {
                                 MaxInteger = reader.IsDBNull(0) ? (int? )null : reader.GetInt32(0),
                                 MaxVarchar = reader.IsDBNull(1) ? null : reader.GetString(1),
-                                MaxTimestamp = reader.IsDBNull(2) ? (DateTime? )null : reader.GetDateTime(2)
+                                MaxTimestamp = reader.GetDateTime(2)
                             };
                         }
                     }

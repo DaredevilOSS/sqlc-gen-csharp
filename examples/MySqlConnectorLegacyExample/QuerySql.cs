@@ -823,8 +823,8 @@ namespace MySqlConnectorLegacyExampleGen
         {
             public int? MaxInt { get; set; }
             public string MaxVarchar { get; set; }
-            public DateTime? MaxTimestamp { get; set; }
-            public long? MaxBigint { get; set; }
+            public DateTime MaxTimestamp { get; set; }
+            public long MaxBigint { get; set; }
         };
         public async Task<GetMysqlFunctionsRow> GetMysqlFunctions()
         {
@@ -841,8 +841,8 @@ namespace MySqlConnectorLegacyExampleGen
                             {
                                 MaxInt = reader.IsDBNull(0) ? (int? )null : reader.GetInt32(0),
                                 MaxVarchar = reader.IsDBNull(1) ? null : reader.GetString(1),
-                                MaxTimestamp = reader.IsDBNull(2) ? (DateTime? )null : reader.GetDateTime(2),
-                                MaxBigint = reader.IsDBNull(3) ? (long? )null : reader.GetInt64(3)
+                                MaxTimestamp = reader.GetDateTime(2),
+                                MaxBigint = reader.GetInt64(3)
                             };
                         }
                     }
