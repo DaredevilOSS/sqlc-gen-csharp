@@ -29,6 +29,7 @@ sql:
               csharp_type:
                 type: "DateTime"
                 notNull: true
+          debugRequest: true
   - schema: "examples/config/postgresql/schema.sql"
     queries: "examples/config/postgresql/query.sql"
     engine: "postgresql"
@@ -53,6 +54,7 @@ sql:
               csharp_type:
                 type: "DateTime"
                 notNull: true
+          debugRequest: true
   - schema: "examples/config/postgresql/schema.sql"
     queries: "examples/config/postgresql/query.sql"
     engine: "postgresql"
@@ -77,6 +79,7 @@ sql:
               csharp_type:
                 type: "DateTime"
                 notNull: true
+          debugRequest: true
   - schema: "examples/config/postgresql/schema.sql"
     queries: "examples/config/postgresql/query.sql"
     engine: "postgresql"
@@ -101,6 +104,7 @@ sql:
               csharp_type:
                 type: "DateTime"
                 notNull: true
+          debugRequest: true
   # MySQL
   - schema: "examples/config/mysql/schema.sql"
     queries: "examples/config/mysql/query.sql"
@@ -130,6 +134,7 @@ sql:
               csharp_type:
                 type: "long"
                 notNull: true
+          debugRequest: true
   - schema: "examples/config/mysql/schema.sql"
     queries: "examples/config/mysql/query.sql"
     engine: "mysql"
@@ -158,6 +163,7 @@ sql:
               csharp_type:
                 type: "long"
                 notNull: true
+          debugRequest: true
   - schema: "examples/config/mysql/schema.sql"
     queries: "examples/config/mysql/query.sql"
     engine: "mysql"
@@ -186,6 +192,7 @@ sql:
               csharp_type:
                 type: "long"
                 notNull: true
+          debugRequest: true
   - schema: "examples/config/mysql/schema.sql"
     queries: "examples/config/mysql/query.sql"
     engine: "mysql"
@@ -214,6 +221,7 @@ sql:
               csharp_type:
                 type: "long"
                 notNull: true
+          debugRequest: true
   # Sqlite
   - schema: "examples/config/sqlite/schema.sql"
     queries: "examples/config/sqlite/query.sql"
@@ -239,6 +247,7 @@ sql:
               csharp_type:
                 type: "decimal"
                 notNull: true
+          debugRequest: true
   - schema: "examples/config/sqlite/schema.sql"
     queries: "examples/config/sqlite/query.sql"
     engine: "sqlite"
@@ -263,6 +272,7 @@ sql:
               csharp_type:
                 type: "decimal"
                 notNull: true
+          debugRequest: true
   - schema: "examples/config/sqlite/schema.sql"
     queries: "examples/config/sqlite/query.sql"
     engine: "sqlite"
@@ -287,6 +297,7 @@ sql:
               csharp_type:
                 type: "decimal"
                 notNull: true
+          debugRequest: true
   - schema: "examples/config/sqlite/schema.sql"
     queries: "examples/config/sqlite/query.sql"
     engine: "sqlite"
@@ -311,3 +322,4 @@ sql:
               csharp_type:
                 type: "decimal"
                 notNull: true
+          debugRequest: true

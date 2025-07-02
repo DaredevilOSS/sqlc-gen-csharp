@@ -86,7 +86,7 @@ public class OneDeclareGen(DbDriver dbDriver)
         var commandParameters = CommonGen.AddParametersToCommand(query.Params);
         var initDataReader = CommonGen.InitDataReader();
         var awaitReaderRow = CommonGen.AwaitReaderRow();
-        var returnDataclass = CommonGen.InstantiateDataclass(query.Columns.ToArray(), returnInterface);
+        var returnDataclass = CommonGen.InstantiateDataclass(query.Columns.ToArray(), returnInterface, query);
 
         return $$"""
                     using ({{establishConnection}})
@@ -115,7 +115,7 @@ public class OneDeclareGen(DbDriver dbDriver)
         var commandParameters = CommonGen.AddParametersToCommand(query.Params);
         var initDataReader = CommonGen.InitDataReader();
         var awaitReaderRow = CommonGen.AwaitReaderRow();
-        var returnDataclass = CommonGen.InstantiateDataclass(query.Columns.ToArray(), returnInterface);
+        var returnDataclass = CommonGen.InstantiateDataclass(query.Columns.ToArray(), returnInterface, query);
 
         return $$"""
                     if (this.{{transactionProperty}}?.Connection == null || this.{{transactionProperty}}?.Connection.State != System.Data.ConnectionState.Open)

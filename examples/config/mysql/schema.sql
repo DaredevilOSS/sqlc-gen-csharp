@@ -1,15 +1,15 @@
 CREATE TABLE authors (
-  id      BIGINT    PRIMARY KEY AUTO_INCREMENT,
-  name    TEXT      NOT NULL,
-  bio     TEXT
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    name TEXT NOT NULL,
+    bio TEXT
 );
 
 CREATE TABLE books (
-  id            BIGINT      PRIMARY KEY AUTO_INCREMENT,
-  name          TEXT        NOT NULL,
-  author_id     BIGINT      NOT NULL,
-  description   TEXT,
-  FOREIGN KEY (author_id) REFERENCES authors (id) ON DELETE CASCADE
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    name TEXT NOT NULL,
+    author_id BIGINT NOT NULL,
+    description TEXT,
+    FOREIGN KEY (author_id) REFERENCES authors (id) ON DELETE CASCADE
 );
 
 CREATE TABLE mysql_types (

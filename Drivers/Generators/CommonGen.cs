@@ -92,7 +92,7 @@ public class CommonGen(DbDriver dbDriver)
                  """;
     }
 
-    public string InstantiateDataclass(Column[] columns, string returnInterface)
+    public string InstantiateDataclass(Column[] columns, string returnInterface, Query? query)
     {
         var columnsInit = new List<string>();
         var actualOrdinal = 0;
@@ -102,7 +102,7 @@ public class CommonGen(DbDriver dbDriver)
         {
             if (column.EmbedTable is null)
             {
-                columnsInit.Add(GetAsSimpleAssignment(column, actualOrdinal));
+                columnsInit.Add(GetAsSimpleAssignment(column, actualOrdinal, query));
                 actualOrdinal++;
                 continue;
             }
@@ -113,45 +113,26 @@ public class CommonGen(DbDriver dbDriver)
             seenEmbed.TryAdd(tableFieldType, 1);
             seenEmbed[tableFieldType]++;
 
-            var tableColumnsInit = GetAsEmbeddedTableColumnAssignment(column, actualOrdinal);
+            var tableColumnsInit = GetAsEmbeddedTableColumnAssignment(column, actualOrdinal, query);
             columnsInit.Add($"{tableFieldName} = {InstantiateDataclassInternal(tableFieldType, tableColumnsInit)}");
             actualOrdinal += tableColumnsInit.Length;
         }
 
         return InstantiateDataclassInternal(returnInterface, columnsInit);
 
-        string[] GetAsEmbeddedTableColumnAssignment(Column tableColumn, int ordinal)
+        string[] GetAsEmbeddedTableColumnAssignment(Column tableColumn, int ordinal, Query? query)
         {
             var schemaName = tableColumn.EmbedTable.Schema == dbDriver.DefaultSchema ? string.Empty : tableColumn.EmbedTable.Schema;
             var tableColumns = dbDriver.Tables[schemaName][tableColumn.EmbedTable.Name].Columns;
             return tableColumns
-                .Select((c, o) => GetAsSimpleAssignment(c, o + ordinal))
+                .Select((c, o) => GetAsSimpleAssignment(c, o + ordinal, query))
                 .ToArray();
         }
 
-        string GetAsSimpleAssignment(Column column, int ordinal)
+        string GetAsSimpleAssignment(Column column, int ordinal, Query query)
         {
-            var readExpression = GetReadExpression(column, ordinal);
+            var readExpression = GetReadExpression(column, ordinal, query);
             return $"{column.Name.ToPascalCase()} = {readExpression}";
-        }
-
-        string GetReadExpression(Column column, int ordinal)
-        {
-            return column.NotNull
-                ? dbDriver.GetColumnReader(column, ordinal)
-                : $"{CheckNullExpression(ordinal)} ? {GetNullExpression(column)} : {dbDriver.GetColumnReader(column, ordinal)}";
-        }
-
-        string GetNullExpression(Column column)
-        {
-            var csharpType = dbDriver.GetCsharpType(column);
-            if (dbDriver.Options.DotnetFramework.IsDotnetCore()) return "null";
-            return dbDriver.IsTypeNullable(csharpType) ? $"({csharpType}) null" : "null";
-        }
-
-        string CheckNullExpression(int ordinal)
-        {
-            return $"{Variable.Reader.AsVarName()}.IsDBNull({ordinal})";
         }
 
         string InstantiateDataclassInternal(string name, IEnumerable<string> fieldsInit)
@@ -163,5 +144,24 @@ public class CommonGen(DbDriver dbDriver)
                      }
                      """;
         }
+    }
+
+    private string GetNullExpression(Column column, Query? query)
+    {
+        var csharpType = dbDriver.GetCsharpType(column, query);
+        if (dbDriver.Options.DotnetFramework.IsDotnetCore()) return "null";
+        return dbDriver.IsTypeNullable(csharpType) ? $"({csharpType}) null" : "null";
+    }
+
+    private static string CheckNullExpression(int ordinal)
+    {
+        return $"{Variable.Reader.AsVarName()}.IsDBNull({ordinal})";
+    }
+
+    private string GetReadExpression(Column column, int ordinal, Query query)
+    {
+        if (dbDriver.IsColumnNotNull(column, query))
+            return dbDriver.GetColumnReader(column, ordinal, query);
+        return $"{CheckNullExpression(ordinal)} ? {GetNullExpression(column, query)} : {dbDriver.GetColumnReader(column, ordinal, query)}";
     }
 }

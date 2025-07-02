@@ -309,7 +309,7 @@ namespace EndToEndTests
         [TestCase(-54355, 9787.66, "Songs of Love and Hate", new byte[] { 0x15, 0x20, 0x33 })]
         [TestCase(null, null, null, new byte[] { })]
         [TestCase(null, null, null, null)]
-        public async Task TestSqliteTypes(int cInteger, decimal? cReal, string cText, byte[] cBlob)
+        public async Task TestSqliteTypes(int? cInteger, decimal? cReal, string cText, byte[] cBlob)
         {
             await QuerySql.InsertSqliteTypes(new QuerySql.InsertSqliteTypesArgs { CInteger = cInteger, CReal = cReal, CText = cText, CBlob = cBlob });
             var expected = new QuerySql.GetSqliteTypesRow
@@ -332,6 +332,29 @@ namespace EndToEndTests
         }
 
         [Test]
+        [TestCase(-54355, 9787.66, "Have One On Me")]
+        [TestCase(null, 0.0, null)]
+        public async Task TestSqliteDataTypesOverride(int? cInteger, decimal cReal, string cText)
+        {
+            await QuerySql.InsertSqliteTypes(new QuerySql.InsertSqliteTypesArgs { CInteger = cInteger, CReal = cReal, CText = cText });
+            var expected = new QuerySql.GetSqliteFunctionsRow
+            {
+                MaxInteger = cInteger,
+                MaxReal = cReal,
+                MaxText = cText
+            };
+            var actual = await QuerySql.GetSqliteFunctions();
+            AssertSingularEquals(expected, actual);
+        }
+
+        private static void AssertSingularEquals(QuerySql.GetSqliteFunctionsRow expected, QuerySql.GetSqliteFunctionsRow actual)
+        {
+            Assert.That(actual.MaxInteger, Is.EqualTo(expected.MaxInteger));
+            Assert.That(actual.MaxReal, Is.EqualTo(expected.MaxReal));
+            Assert.That(actual.MaxText, Is.EqualTo(expected.MaxText));
+        }
+
+        [Test]
         [TestCase(100, 312, -7541.3309, "Johnny B. Good")]
         [TestCase(500, -768, 8453.5678, "Bad to the Bone")]
         [TestCase(10, null, null, null)]
@@ -339,18 +362,18 @@ namespace EndToEndTests
         {
             var batchArgs = Enumerable.Range(0, batchSize).Select(_ => new QuerySql.InsertSqliteTypesBatchArgs { CInteger = cInteger, CReal = cReal, CText = cText }).ToList();
             await QuerySql.InsertSqliteTypesBatch(batchArgs);
-            var expected = new QuerySql.GetSqliteTypesAggRow
+            var expected = new QuerySql.GetSqliteTypesCntRow
             {
                 Cnt = batchSize,
                 CInteger = cInteger,
                 CReal = cReal,
                 CText = cText
             };
-            var actual = await QuerySql.GetSqliteTypesAgg();
+            var actual = await QuerySql.GetSqliteTypesCnt();
             AssertSingularEquals(expected, actual);
         }
 
-        private static void AssertSingularEquals(QuerySql.GetSqliteTypesAggRow expected, QuerySql.GetSqliteTypesAggRow actual)
+        private static void AssertSingularEquals(QuerySql.GetSqliteTypesCntRow expected, QuerySql.GetSqliteTypesCntRow actual)
         {
             Assert.That(actual.Cnt, Is.EqualTo(expected.Cnt));
             Assert.That(actual.CInteger, Is.EqualTo(expected.CInteger));

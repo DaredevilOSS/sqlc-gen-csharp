@@ -26,7 +26,7 @@ namespace SqliteLegacyExampleGen
         private SqliteTransaction Transaction { get; }
         private string ConnectionString { get; }
 
-        private const string GetAuthorSql = "SELECT id, name, bio FROM authors WHERE name = @name LIMIT 1";
+        private const string GetAuthorSql = "SELECT id, name, bio FROM authors WHERE  name  =  @name  LIMIT  1  ";  
         public class GetAuthorRow
         {
             public int Id { get; set; }
@@ -92,7 +92,7 @@ namespace SqliteLegacyExampleGen
             return null;
         }
 
-        private const string ListAuthorsSql = "SELECT id, name, bio FROM authors ORDER BY name";
+        private const string ListAuthorsSql = "SELECT id, name, bio FROM authors ORDER  BY  name  ";  
         public class ListAuthorsRow
         {
             public int Id { get; set; }
@@ -229,7 +229,7 @@ namespace SqliteLegacyExampleGen
             }
         }
 
-        private const string GetAuthorByIdSql = "SELECT id, name, bio FROM authors WHERE id = @id LIMIT 1";
+        private const string GetAuthorByIdSql = "SELECT id, name, bio FROM authors WHERE  id  =  @id  LIMIT  1  ";  
         public class GetAuthorByIdRow
         {
             public int Id { get; set; }
@@ -295,7 +295,7 @@ namespace SqliteLegacyExampleGen
             return null;
         }
 
-        private const string GetAuthorByNamePatternSql = "SELECT id, name, bio FROM authors WHERE name LIKE COALESCE(@name_pattern, '%')";
+        private const string GetAuthorByNamePatternSql = "SELECT id, name, bio FROM authors WHERE  name  LIKE  COALESCE ( @name_pattern ,  '%' ) ";  
         public class GetAuthorByNamePatternRow
         {
             public int Id { get; set; }
@@ -353,7 +353,7 @@ namespace SqliteLegacyExampleGen
             }
         }
 
-        private const string UpdateAuthorsSql = "UPDATE authors  SET  bio  =  @bio  WHERE  bio  IS  NOT  NULL  ";  
+        private const string UpdateAuthorsSql = "UPDATE authors SET  bio  =  @bio  WHERE  bio  IS  NOT  NULL  ";  
         public class UpdateAuthorsArgs
         {
             public string Bio { get; set; }
@@ -517,7 +517,7 @@ namespace SqliteLegacyExampleGen
             }
         }
 
-        private const string DeleteAuthorSql = "DELETE FROM authors WHERE name = @name";
+        private const string DeleteAuthorSql = "DELETE FROM authors WHERE  name  =  @name  ";  
         public class DeleteAuthorArgs
         {
             public string Name { get; set; }
@@ -596,7 +596,7 @@ namespace SqliteLegacyExampleGen
             }
         }
 
-        private const string ListAllAuthorsBooksSql = "SELECT authors.id, authors.name, authors.bio, books.id, books.name, books.author_id, books.description  FROM  authors  JOIN  books  ON  authors . id  =  books . author_id  ORDER  BY  authors . name  ";  
+        private const string ListAllAuthorsBooksSql = "SELECT authors . id , authors . name, authors . bio, books . id, books . name, books . author_id, books . description  FROM  authors  INNER  JOIN  books  ON  authors . id  =  books . author_id  ORDER  BY  authors . name  "; 
         public class ListAllAuthorsBooksRow
         {
             public Author Author { get; set; }
@@ -647,7 +647,7 @@ namespace SqliteLegacyExampleGen
             }
         }
 
-        private const string GetDuplicateAuthorsSql = "SELECT authors1.id, authors1.name, authors1.bio, authors2.id, authors2.name, authors2.bio FROM  authors  authors1  JOIN  authors  authors2  ON  authors1 . name  =  authors2 . name  WHERE  authors1 . id < authors2 . id  ";  
+        private const string GetDuplicateAuthorsSql = "SELECT authors1 . id , authors1 . name, authors1 . bio, authors2 . id, authors2 . name, authors2 . bio  FROM  authors  AS  authors1  INNER  JOIN  authors  AS  authors2  ON  authors1 . name  =  authors2 . name  WHERE  authors1 . id < authors2 . id  "; 
         public class GetDuplicateAuthorsRow
         {
             public Author Author { get; set; }
@@ -698,7 +698,7 @@ namespace SqliteLegacyExampleGen
             }
         }
 
-        private const string GetAuthorsByBookNameSql = "SELECT authors.id, authors.name, authors.bio, books.id, books.name, books.author_id, books.description FROM  authors  JOIN  books  ON  authors . id  =  books . author_id  WHERE  books . name  =  @name  ";  
+        private const string GetAuthorsByBookNameSql = "SELECT authors . id , authors . name, authors . bio, books . id, books . name, books . author_id, books . description  FROM  authors  INNER  JOIN  books  ON  authors . id  =  books . author_id  WHERE  books . name  =  @name  "; 
         public class GetAuthorsByBookNameRow
         {
             public int Id { get; set; }
@@ -787,7 +787,7 @@ namespace SqliteLegacyExampleGen
             }
         }
 
-        private const string InsertSqliteTypesSql = "INSERT INTO types_sqlite (c_integer, c_real, c_text, c_blob) VALUES (@c_integer, @c_real, @c_text, @c_blob)";
+        private const string InsertSqliteTypesSql = "INSERT INTO types_sqlite (c_integer, c_real, c_text, c_blob) VALUES ( @c_integer , @c_real, @c_text, @c_blob ) "; 
         public class InsertSqliteTypesArgs
         {
             public int? CInteger { get; set; }
@@ -922,35 +922,35 @@ namespace SqliteLegacyExampleGen
             return null;
         }
 
-        private const string GetSqliteTypesAggSql = "SELECT COUNT(1) AS cnt , c_integer, c_real, c_text, c_blob FROM  types_sqlite  GROUP  BY  c_integer , c_real, c_text, c_blob LIMIT  1  ";  
-        public class GetSqliteTypesAggRow
+        private const string GetSqliteTypesCntSql = "SELECT c_integer , c_real, c_text, c_blob, COUNT (* ) AS  cnt  FROM  types_sqlite  GROUP  BY  c_integer, c_real, c_text, c_blob LIMIT  1  ";  
+        public class GetSqliteTypesCntRow
         {
-            public int Cnt { get; set; }
             public int? CInteger { get; set; }
             public decimal? CReal { get; set; }
             public string CText { get; set; }
             public byte[] CBlob { get; set; }
+            public int Cnt { get; set; }
         };
-        public async Task<GetSqliteTypesAggRow> GetSqliteTypesAgg()
+        public async Task<GetSqliteTypesCntRow> GetSqliteTypesCnt()
         {
             if (this.Transaction == null)
             {
                 using (var connection = new SqliteConnection(ConnectionString))
                 {
                     await connection.OpenAsync();
-                    using (var command = new SqliteCommand(GetSqliteTypesAggSql, connection))
+                    using (var command = new SqliteCommand(GetSqliteTypesCntSql, connection))
                     {
                         using (var reader = await command.ExecuteReaderAsync())
                         {
                             if (await reader.ReadAsync())
                             {
-                                return new GetSqliteTypesAggRow
+                                return new GetSqliteTypesCntRow
                                 {
-                                    Cnt = reader.GetInt32(0),
-                                    CInteger = reader.IsDBNull(1) ? (int? )null : reader.GetInt32(1),
-                                    CReal = reader.IsDBNull(2) ? (decimal? )null : reader.GetDecimal(2),
-                                    CText = reader.IsDBNull(3) ? null : reader.GetString(3),
-                                    CBlob = reader.IsDBNull(4) ? null : reader.GetFieldValue<byte[]>(4)
+                                    CInteger = reader.IsDBNull(0) ? (int? )null : reader.GetInt32(0),
+                                    CReal = reader.IsDBNull(1) ? (decimal? )null : reader.GetDecimal(1),
+                                    CText = reader.IsDBNull(2) ? null : reader.GetString(2),
+                                    CBlob = reader.IsDBNull(3) ? null : reader.GetFieldValue<byte[]>(3),
+                                    Cnt = reader.GetInt32(4)
                                 };
                             }
                         }
@@ -967,19 +967,79 @@ namespace SqliteLegacyExampleGen
 
             using (var command = this.Transaction.Connection.CreateCommand())
             {
-                command.CommandText = GetSqliteTypesAggSql;
+                command.CommandText = GetSqliteTypesCntSql;
                 command.Transaction = this.Transaction;
                 using (var reader = await command.ExecuteReaderAsync())
                 {
                     if (await reader.ReadAsync())
                     {
-                        return new GetSqliteTypesAggRow
+                        return new GetSqliteTypesCntRow
                         {
-                            Cnt = reader.GetInt32(0),
-                            CInteger = reader.IsDBNull(1) ? (int? )null : reader.GetInt32(1),
-                            CReal = reader.IsDBNull(2) ? (decimal? )null : reader.GetDecimal(2),
-                            CText = reader.IsDBNull(3) ? null : reader.GetString(3),
-                            CBlob = reader.IsDBNull(4) ? null : reader.GetFieldValue<byte[]>(4)
+                            CInteger = reader.IsDBNull(0) ? (int? )null : reader.GetInt32(0),
+                            CReal = reader.IsDBNull(1) ? (decimal? )null : reader.GetDecimal(1),
+                            CText = reader.IsDBNull(2) ? null : reader.GetString(2),
+                            CBlob = reader.IsDBNull(3) ? null : reader.GetFieldValue<byte[]>(3),
+                            Cnt = reader.GetInt32(4)
+                        };
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        private const string GetSqliteFunctionsSql = "SELECT MAX ( c_integer ) AS  max_integer , MAX (c_real ) AS  max_real, MAX (c_text ) AS  max_text  FROM  types_sqlite  "; 
+        public class GetSqliteFunctionsRow
+        {
+            public int? MaxInteger { get; set; }
+            public decimal MaxReal { get; set; }
+            public object MaxText { get; set; }
+        };
+        public async Task<GetSqliteFunctionsRow> GetSqliteFunctions()
+        {
+            if (this.Transaction == null)
+            {
+                using (var connection = new SqliteConnection(ConnectionString))
+                {
+                    await connection.OpenAsync();
+                    using (var command = new SqliteCommand(GetSqliteFunctionsSql, connection))
+                    {
+                        using (var reader = await command.ExecuteReaderAsync())
+                        {
+                            if (await reader.ReadAsync())
+                            {
+                                return new GetSqliteFunctionsRow
+                                {
+                                    MaxInteger = reader.IsDBNull(0) ? (int? )null : reader.GetInt32(0),
+                                    MaxReal = reader.GetDecimal(1),
+                                    MaxText = reader.IsDBNull(2) ? null : reader.GetValue(2)
+                                };
+                            }
+                        }
+                    }
+                }
+
+                return null;
+            }
+
+            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+            {
+                throw new System.InvalidOperationException("Transaction is provided, but its connection is null.");
+            }
+
+            using (var command = this.Transaction.Connection.CreateCommand())
+            {
+                command.CommandText = GetSqliteFunctionsSql;
+                command.Transaction = this.Transaction;
+                using (var reader = await command.ExecuteReaderAsync())
+                {
+                    if (await reader.ReadAsync())
+                    {
+                        return new GetSqliteFunctionsRow
+                        {
+                            MaxInteger = reader.IsDBNull(0) ? (int? )null : reader.GetInt32(0),
+                            MaxReal = reader.GetDecimal(1),
+                            MaxText = reader.IsDBNull(2) ? null : reader.GetValue(2)
                         };
                     }
                 }

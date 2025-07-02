@@ -28,7 +28,7 @@ namespace NpgsqlLegacyExampleGen
         private NpgsqlTransaction Transaction { get; }
         private string ConnectionString { get; }
 
-        private const string GetAuthorSql = "SELECT id, name, bio FROM authors WHERE name = @name LIMIT 1";
+        private const string GetAuthorSql = "SELECT id, name, bio FROM authors WHERE  name  =  @name  LIMIT  1  ";  
         public class GetAuthorRow
         {
             public long Id { get; set; }
@@ -93,7 +93,7 @@ namespace NpgsqlLegacyExampleGen
             return null;
         }
 
-        private const string ListAuthorsSql = "SELECT id, name, bio FROM authors ORDER BY name";
+        private const string ListAuthorsSql = "SELECT id, name, bio FROM authors ORDER  BY  name  ";  
         public class ListAuthorsRow
         {
             public long Id { get; set; }
@@ -257,7 +257,7 @@ namespace NpgsqlLegacyExampleGen
             }
         }
 
-        private const string GetAuthorByIdSql = "SELECT id, name, bio FROM authors WHERE id = @id LIMIT 1";
+        private const string GetAuthorByIdSql = "SELECT id, name, bio FROM authors WHERE  id  =  @id  LIMIT  1  ";  
         public class GetAuthorByIdRow
         {
             public long Id { get; set; }
@@ -322,7 +322,7 @@ namespace NpgsqlLegacyExampleGen
             return null;
         }
 
-        private const string GetAuthorByNamePatternSql = "SELECT id, name, bio FROM authors WHERE name LIKE COALESCE(@name_pattern, '%')";
+        private const string GetAuthorByNamePatternSql = "SELECT id, name, bio FROM authors WHERE  name  LIKE  COALESCE ( @name_pattern ,  '%' ) ";  
         public class GetAuthorByNamePatternRow
         {
             public long Id { get; set; }
@@ -379,7 +379,7 @@ namespace NpgsqlLegacyExampleGen
             }
         }
 
-        private const string DeleteAuthorSql = "DELETE FROM authors WHERE name = @name";
+        private const string DeleteAuthorSql = "DELETE FROM authors WHERE  name  =  @name  ";  
         public class DeleteAuthorArgs
         {
             public string Name { get; set; }
@@ -443,7 +443,7 @@ namespace NpgsqlLegacyExampleGen
             }
         }
 
-        private const string UpdateAuthorsSql = "UPDATE authors  SET  bio  =  @bio  WHERE  bio  IS  NOT  NULL  ";  
+        private const string UpdateAuthorsSql = "UPDATE authors SET  bio  =  @bio  WHERE  bio  IS  NOT  NULL  ";  
         public class UpdateAuthorsArgs
         {
             public string Bio { get; set; }
@@ -476,7 +476,7 @@ namespace NpgsqlLegacyExampleGen
             }
         }
 
-        private const string GetAuthorsByIdsSql = "SELECT id, name, bio FROM authors WHERE id = ANY(@longArr_1::BIGINT[])";
+        private const string GetAuthorsByIdsSql = "SELECT id, name, bio FROM authors WHERE  id  =  ANY ( @longArr_1 :: BIGINT [ ] ) ";  
         public class GetAuthorsByIdsRow
         {
             public long Id { get; set; }
@@ -533,7 +533,7 @@ namespace NpgsqlLegacyExampleGen
             }
         }
 
-        private const string GetAuthorsByIdsAndNamesSql = "SELECT id, name, bio FROM authors WHERE id = ANY(@longArr_1::BIGINT[]) AND name = ANY(@stringArr_2::TEXT[])";
+        private const string GetAuthorsByIdsAndNamesSql = "SELECT id, name, bio FROM  authors  WHERE  id  =  ANY ( @longArr_1 :: BIGINT [ ] ) AND  name  =  ANY ( @stringArr_2 :: TEXT [ ] ) ";  
         public class GetAuthorsByIdsAndNamesRow
         {
             public long Id { get; set; }
@@ -635,7 +635,7 @@ namespace NpgsqlLegacyExampleGen
             }
         }
 
-        private const string ListAllAuthorsBooksSql = "SELECT authors.id, authors.name, authors.bio, books.id, books.name, books.author_id, books.description FROM authors JOIN books ON authors.id = books.author_id ORDER BY authors.name";
+        private const string ListAllAuthorsBooksSql = "SELECT authors . id , authors . name, authors . bio, books . id, books . name, books . author_id, books . description  FROM  authors  INNER  JOIN  books  ON  authors . id  =  books . author_id  ORDER  BY  authors . name  "; 
         public class ListAllAuthorsBooksRow
         {
             public Author Author { get; set; }
@@ -685,7 +685,7 @@ namespace NpgsqlLegacyExampleGen
             }
         }
 
-        private const string GetDuplicateAuthorsSql = "SELECT authors1.id, authors1.name, authors1.bio, authors2.id, authors2.name, authors2.bio FROM  authors  authors1  JOIN  authors  authors2  ON  authors1 . name  =  authors2 . name  WHERE  authors1 . id < authors2 . id  ";  
+        private const string GetDuplicateAuthorsSql = "SELECT authors1 . id , authors1 . name, authors1 . bio, authors2 . id, authors2 . name, authors2 . bio  FROM  authors  AS  authors1  INNER  JOIN  authors  AS  authors2  ON  authors1 . name  =  authors2 . name  WHERE  authors1 . id < authors2 . id  "; 
         public class GetDuplicateAuthorsRow
         {
             public Author Author { get; set; }
@@ -735,7 +735,7 @@ namespace NpgsqlLegacyExampleGen
             }
         }
 
-        private const string GetAuthorsByBookNameSql = "SELECT authors.id, authors.name, authors.bio, books.id, books.name, books.author_id, books.description FROM  authors  JOIN  books  ON  authors . id  =  books . author_id  WHERE  books . name  =  @name  ";  
+        private const string GetAuthorsByBookNameSql = "SELECT authors . id , authors . name, authors . bio, books . id, books . name, books . author_id, books . description  FROM  authors  INNER  JOIN  books  ON  authors . id  =  books . author_id  WHERE  books . name  =  @name  "; 
         public class GetAuthorsByBookNameRow
         {
             public long Id { get; set; }
@@ -793,7 +793,7 @@ namespace NpgsqlLegacyExampleGen
             }
         }
 
-        private const string InsertPostgresTypesSql = "INSERT INTO postgres_types (c_boolean, c_bit, c_smallint, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_money, c_date, c_time, c_timestamp, c_timestamp_with_tz, c_char, c_varchar, c_character_varying, c_text, c_bytea, c_text_array, c_integer_array) VALUES ( @c_boolean, @c_bit, @c_smallint, @c_integer, @c_bigint, @c_real, @c_numeric, @c_decimal, @c_double_precision, @c_money, @c_date, @c_time, @c_timestamp, @c_timestamp_with_tz, @c_char, @c_varchar, @c_character_varying, @c_text, @c_bytea, @c_text_array, @c_integer_array ) "; 
+        private const string InsertPostgresTypesSql = "INSERT INTO postgres_types(c_boolean, c_bit, c_smallint, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_money, c_date, c_time, c_timestamp, c_timestamp_with_tz, c_char, c_varchar, c_character_varying, c_text, c_bytea, c_text_array, c_integer_array) VALUES ( @c_boolean, @c_bit, @c_smallint, @c_integer, @c_bigint, @c_real, @c_numeric, @c_decimal, @c_double_precision, @c_money, @c_date, @c_time, @c_timestamp, @c_timestamp_with_tz, @c_char, @c_varchar, @c_character_varying, @c_text, @c_bytea, @c_text_array, @c_integer_array ) "; 
         public class InsertPostgresTypesArgs
         {
             public bool? CBoolean { get; set; }
@@ -1064,10 +1064,9 @@ namespace NpgsqlLegacyExampleGen
             return null;
         }
 
-        private const string GetPostgresTypesAggSql = "SELECT COUNT(1) AS cnt ,  c_smallint , c_boolean, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_money, c_date, c_time, c_timestamp, c_timestamp_with_tz, c_char, c_varchar, c_character_varying, c_text, c_bytea FROM  postgres_types  GROUP  BY  c_smallint , c_boolean, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_money, c_date, c_time, c_timestamp, c_timestamp_with_tz, c_char, c_varchar, c_character_varying, c_text, c_bytea LIMIT  1  ";  
-        public class GetPostgresTypesAggRow
+        private const string GetPostgresTypesCntSql = "SELECT c_smallint , c_boolean, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_money, c_date, c_time, c_timestamp, c_timestamp_with_tz, c_char, c_varchar, c_character_varying, c_text, c_bytea, COUNT (* ) AS  cnt  FROM  postgres_types  GROUP  BY  c_smallint, c_boolean, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_money, c_date, c_time, c_timestamp, c_timestamp_with_tz, c_char, c_varchar, c_character_varying, c_text, c_bytea LIMIT  1  ";  
+        public class GetPostgresTypesCntRow
         {
-            public long Cnt { get; set; }
             public short? CSmallint { get; set; }
             public bool? CBoolean { get; set; }
             public int? CInteger { get; set; }
@@ -1086,40 +1085,41 @@ namespace NpgsqlLegacyExampleGen
             public string CCharacterVarying { get; set; }
             public string CText { get; set; }
             public byte[] CBytea { get; set; }
+            public long Cnt { get; set; }
         };
-        public async Task<GetPostgresTypesAggRow> GetPostgresTypesAgg()
+        public async Task<GetPostgresTypesCntRow> GetPostgresTypesCnt()
         {
             if (this.Transaction == null)
             {
                 using (var connection = NpgsqlDataSource.Create(ConnectionString))
                 {
-                    using (var command = connection.CreateCommand(GetPostgresTypesAggSql))
+                    using (var command = connection.CreateCommand(GetPostgresTypesCntSql))
                     {
                         using (var reader = await command.ExecuteReaderAsync())
                         {
                             if (await reader.ReadAsync())
                             {
-                                return new GetPostgresTypesAggRow
+                                return new GetPostgresTypesCntRow
                                 {
-                                    Cnt = reader.GetInt64(0),
-                                    CSmallint = reader.IsDBNull(1) ? (short? )null : reader.GetInt16(1),
-                                    CBoolean = reader.IsDBNull(2) ? (bool? )null : reader.GetBoolean(2),
-                                    CInteger = reader.IsDBNull(3) ? (int? )null : reader.GetInt32(3),
-                                    CBigint = reader.IsDBNull(4) ? (long? )null : reader.GetInt64(4),
-                                    CReal = reader.IsDBNull(5) ? (float? )null : reader.GetFloat(5),
-                                    CNumeric = reader.IsDBNull(6) ? (decimal? )null : reader.GetDecimal(6),
-                                    CDecimal = reader.IsDBNull(7) ? (decimal? )null : reader.GetDecimal(7),
-                                    CDoublePrecision = reader.IsDBNull(8) ? (double? )null : reader.GetDouble(8),
-                                    CMoney = reader.IsDBNull(9) ? (decimal? )null : reader.GetDecimal(9),
-                                    CDate = reader.IsDBNull(10) ? (DateTime? )null : reader.GetDateTime(10),
-                                    CTime = reader.IsDBNull(11) ? (TimeSpan? )null : reader.GetFieldValue<TimeSpan>(11),
-                                    CTimestamp = reader.IsDBNull(12) ? (DateTime? )null : reader.GetDateTime(12),
-                                    CTimestampWithTz = reader.IsDBNull(13) ? (DateTime? )null : reader.GetDateTime(13),
-                                    CChar = reader.IsDBNull(14) ? null : reader.GetString(14),
-                                    CVarchar = reader.IsDBNull(15) ? null : reader.GetString(15),
-                                    CCharacterVarying = reader.IsDBNull(16) ? null : reader.GetString(16),
-                                    CText = reader.IsDBNull(17) ? null : reader.GetString(17),
-                                    CBytea = reader.IsDBNull(18) ? null : reader.GetFieldValue<byte[]>(18)
+                                    CSmallint = reader.IsDBNull(0) ? (short? )null : reader.GetInt16(0),
+                                    CBoolean = reader.IsDBNull(1) ? (bool? )null : reader.GetBoolean(1),
+                                    CInteger = reader.IsDBNull(2) ? (int? )null : reader.GetInt32(2),
+                                    CBigint = reader.IsDBNull(3) ? (long? )null : reader.GetInt64(3),
+                                    CReal = reader.IsDBNull(4) ? (float? )null : reader.GetFloat(4),
+                                    CNumeric = reader.IsDBNull(5) ? (decimal? )null : reader.GetDecimal(5),
+                                    CDecimal = reader.IsDBNull(6) ? (decimal? )null : reader.GetDecimal(6),
+                                    CDoublePrecision = reader.IsDBNull(7) ? (double? )null : reader.GetDouble(7),
+                                    CMoney = reader.IsDBNull(8) ? (decimal? )null : reader.GetDecimal(8),
+                                    CDate = reader.IsDBNull(9) ? (DateTime? )null : reader.GetDateTime(9),
+                                    CTime = reader.IsDBNull(10) ? (TimeSpan? )null : reader.GetFieldValue<TimeSpan>(10),
+                                    CTimestamp = reader.IsDBNull(11) ? (DateTime? )null : reader.GetDateTime(11),
+                                    CTimestampWithTz = reader.IsDBNull(12) ? (DateTime? )null : reader.GetDateTime(12),
+                                    CChar = reader.IsDBNull(13) ? null : reader.GetString(13),
+                                    CVarchar = reader.IsDBNull(14) ? null : reader.GetString(14),
+                                    CCharacterVarying = reader.IsDBNull(15) ? null : reader.GetString(15),
+                                    CText = reader.IsDBNull(16) ? null : reader.GetString(16),
+                                    CBytea = reader.IsDBNull(17) ? null : reader.GetFieldValue<byte[]>(17),
+                                    Cnt = reader.GetInt64(18)
                                 };
                             }
                         }
@@ -1136,33 +1136,33 @@ namespace NpgsqlLegacyExampleGen
 
             using (var command = this.Transaction.Connection.CreateCommand())
             {
-                command.CommandText = GetPostgresTypesAggSql;
+                command.CommandText = GetPostgresTypesCntSql;
                 command.Transaction = this.Transaction;
                 using (var reader = await command.ExecuteReaderAsync())
                 {
                     if (await reader.ReadAsync())
                     {
-                        return new GetPostgresTypesAggRow
+                        return new GetPostgresTypesCntRow
                         {
-                            Cnt = reader.GetInt64(0),
-                            CSmallint = reader.IsDBNull(1) ? (short? )null : reader.GetInt16(1),
-                            CBoolean = reader.IsDBNull(2) ? (bool? )null : reader.GetBoolean(2),
-                            CInteger = reader.IsDBNull(3) ? (int? )null : reader.GetInt32(3),
-                            CBigint = reader.IsDBNull(4) ? (long? )null : reader.GetInt64(4),
-                            CReal = reader.IsDBNull(5) ? (float? )null : reader.GetFloat(5),
-                            CNumeric = reader.IsDBNull(6) ? (decimal? )null : reader.GetDecimal(6),
-                            CDecimal = reader.IsDBNull(7) ? (decimal? )null : reader.GetDecimal(7),
-                            CDoublePrecision = reader.IsDBNull(8) ? (double? )null : reader.GetDouble(8),
-                            CMoney = reader.IsDBNull(9) ? (decimal? )null : reader.GetDecimal(9),
-                            CDate = reader.IsDBNull(10) ? (DateTime? )null : reader.GetDateTime(10),
-                            CTime = reader.IsDBNull(11) ? (TimeSpan? )null : reader.GetFieldValue<TimeSpan>(11),
-                            CTimestamp = reader.IsDBNull(12) ? (DateTime? )null : reader.GetDateTime(12),
-                            CTimestampWithTz = reader.IsDBNull(13) ? (DateTime? )null : reader.GetDateTime(13),
-                            CChar = reader.IsDBNull(14) ? null : reader.GetString(14),
-                            CVarchar = reader.IsDBNull(15) ? null : reader.GetString(15),
-                            CCharacterVarying = reader.IsDBNull(16) ? null : reader.GetString(16),
-                            CText = reader.IsDBNull(17) ? null : reader.GetString(17),
-                            CBytea = reader.IsDBNull(18) ? null : reader.GetFieldValue<byte[]>(18)
+                            CSmallint = reader.IsDBNull(0) ? (short? )null : reader.GetInt16(0),
+                            CBoolean = reader.IsDBNull(1) ? (bool? )null : reader.GetBoolean(1),
+                            CInteger = reader.IsDBNull(2) ? (int? )null : reader.GetInt32(2),
+                            CBigint = reader.IsDBNull(3) ? (long? )null : reader.GetInt64(3),
+                            CReal = reader.IsDBNull(4) ? (float? )null : reader.GetFloat(4),
+                            CNumeric = reader.IsDBNull(5) ? (decimal? )null : reader.GetDecimal(5),
+                            CDecimal = reader.IsDBNull(6) ? (decimal? )null : reader.GetDecimal(6),
+                            CDoublePrecision = reader.IsDBNull(7) ? (double? )null : reader.GetDouble(7),
+                            CMoney = reader.IsDBNull(8) ? (decimal? )null : reader.GetDecimal(8),
+                            CDate = reader.IsDBNull(9) ? (DateTime? )null : reader.GetDateTime(9),
+                            CTime = reader.IsDBNull(10) ? (TimeSpan? )null : reader.GetFieldValue<TimeSpan>(10),
+                            CTimestamp = reader.IsDBNull(11) ? (DateTime? )null : reader.GetDateTime(11),
+                            CTimestampWithTz = reader.IsDBNull(12) ? (DateTime? )null : reader.GetDateTime(12),
+                            CChar = reader.IsDBNull(13) ? null : reader.GetString(13),
+                            CVarchar = reader.IsDBNull(14) ? null : reader.GetString(14),
+                            CCharacterVarying = reader.IsDBNull(15) ? null : reader.GetString(15),
+                            CText = reader.IsDBNull(16) ? null : reader.GetString(16),
+                            CBytea = reader.IsDBNull(17) ? null : reader.GetFieldValue<byte[]>(17),
+                            Cnt = reader.GetInt64(18)
                         };
                     }
                 }
@@ -1171,7 +1171,66 @@ namespace NpgsqlLegacyExampleGen
             return null;
         }
 
-        private const string InsertPostgresGeoTypesSql = "INSERT INTO postgres_geometric_types (c_point, c_line, c_lseg, c_box, c_path, c_polygon, c_circle) VALUES ( @c_point , @c_line, @c_lseg, @c_box, @c_path, @c_polygon, @c_circle ) "; 
+        private const string GetPostgresFunctionsSql = "SELECT MAX ( c_integer ) AS  max_integer , MAX (c_varchar ) AS  max_varchar, MAX (c_timestamp ) AS  max_timestamp  FROM  postgres_types  "; 
+        public class GetPostgresFunctionsRow
+        {
+            public int? MaxInteger { get; set; }
+            public string MaxVarchar { get; set; }
+            public DateTime MaxTimestamp { get; set; }
+        };
+        public async Task<GetPostgresFunctionsRow> GetPostgresFunctions()
+        {
+            if (this.Transaction == null)
+            {
+                using (var connection = NpgsqlDataSource.Create(ConnectionString))
+                {
+                    using (var command = connection.CreateCommand(GetPostgresFunctionsSql))
+                    {
+                        using (var reader = await command.ExecuteReaderAsync())
+                        {
+                            if (await reader.ReadAsync())
+                            {
+                                return new GetPostgresFunctionsRow
+                                {
+                                    MaxInteger = reader.IsDBNull(0) ? (int? )null : reader.GetInt32(0),
+                                    MaxVarchar = reader.IsDBNull(1) ? null : reader.GetString(1),
+                                    MaxTimestamp = reader.GetDateTime(2)
+                                };
+                            }
+                        }
+                    }
+                }
+
+                return null;
+            }
+
+            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+            {
+                throw new System.InvalidOperationException("Transaction is provided, but its connection is null.");
+            }
+
+            using (var command = this.Transaction.Connection.CreateCommand())
+            {
+                command.CommandText = GetPostgresFunctionsSql;
+                command.Transaction = this.Transaction;
+                using (var reader = await command.ExecuteReaderAsync())
+                {
+                    if (await reader.ReadAsync())
+                    {
+                        return new GetPostgresFunctionsRow
+                        {
+                            MaxInteger = reader.IsDBNull(0) ? (int? )null : reader.GetInt32(0),
+                            MaxVarchar = reader.IsDBNull(1) ? null : reader.GetString(1),
+                            MaxTimestamp = reader.GetDateTime(2)
+                        };
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        private const string InsertPostgresGeoTypesSql = "INSERT INTO postgres_geometric_types ( c_point , c_line, c_lseg, c_box, c_path, c_polygon, c_circle ) VALUES ( @c_point, @c_line, @c_lseg, @c_box, @c_path, @c_polygon, @c_circle ) "; 
         public class InsertPostgresGeoTypesArgs
         {
             public NpgsqlPoint? CPoint { get; set; }

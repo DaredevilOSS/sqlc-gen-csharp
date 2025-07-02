@@ -66,7 +66,7 @@ public class QuerySql
         return await this.Transaction.Connection.QueryFirstOrDefaultAsync<GetAuthorRow?>(GetAuthorSql, queryParams, transaction: this.Transaction);
     }
 
-    private const string ListAuthorsSql = "SELECT id, name, bio FROM authors ORDER BY name; SELECT LAST_INSERT_ID()";
+    private const string ListAuthorsSql = "SELECT id, name, bio FROM authors ORDER  BY  name ; SELECT  LAST_INSERT_ID ( ) "; 
     public class ListAuthorsRow
     {
         public required long Id { get; init; }
@@ -182,7 +182,7 @@ public class QuerySql
         return await this.Transaction.Connection.QueryFirstOrDefaultAsync<GetAuthorByIdRow?>(GetAuthorByIdSql, queryParams, transaction: this.Transaction);
     }
 
-    private const string GetAuthorByNamePatternSql = "SELECT id, name, bio FROM authors WHERE name LIKE COALESCE(@name_pattern, '%'); SELECT LAST_INSERT_ID()";
+    private const string GetAuthorByNamePatternSql = "SELECT id, name, bio FROM authors WHERE  name  LIKE  COALESCE ( @name_pattern ,  '%' ) ; SELECT  LAST_INSERT_ID ( ) "; 
     public class GetAuthorByNamePatternRow
     {
         public required long Id { get; init; }
@@ -214,7 +214,7 @@ public class QuerySql
         return (await this.Transaction.Connection.QueryAsync<GetAuthorByNamePatternRow>(GetAuthorByNamePatternSql, queryParams, transaction: this.Transaction)).AsList();
     }
 
-    private const string DeleteAuthorSql = "DELETE FROM authors WHERE name = @name; SELECT LAST_INSERT_ID()";
+    private const string DeleteAuthorSql = "DELETE FROM authors WHERE  name  =  @name ; SELECT  LAST_INSERT_ID ( ) "; 
     public class DeleteAuthorArgs
     {
         public required string Name { get; init; }
@@ -802,8 +802,8 @@ public class QuerySql
         return await this.Transaction.Connection.QueryFirstOrDefaultAsync<GetMysqlTypesRow?>(GetMysqlTypesSql, transaction: this.Transaction);
     }
 
-    private const string GetMysqlTypesAggSql = "SELECT COUNT(1) AS cnt, c_bool, c_boolean, c_bit, c_tinyint, c_smallint, c_mediumint, c_int, c_integer, c_bigint,  c_float , c_numeric, c_decimal, c_dec, c_fixed, c_double, c_double_precision, c_char, c_nchar, c_national_char, c_varchar, c_tinytext, c_mediumtext, c_text, c_longtext, c_enum, c_year, c_date, c_datetime, c_timestamp, c_binary, c_varbinary, c_tinyblob, c_blob, c_mediumblob, c_longblob FROM  mysql_types  GROUP  BY  c_bool , c_boolean, c_bit, c_tinyint, c_smallint, c_mediumint, c_int, c_integer, c_bigint, c_float, c_numeric, c_decimal, c_dec, c_fixed, c_double, c_double_precision, c_char, c_nchar, c_national_char, c_varchar, c_tinytext, c_mediumtext, c_text, c_longtext, c_enum, c_year, c_date, c_datetime, c_timestamp, c_binary, c_varbinary, c_tinyblob, c_blob, c_mediumblob, c_longblob LIMIT  1 ; SELECT  LAST_INSERT_ID ( ) "; 
-    public class GetMysqlTypesAggRow
+    private const string GetMysqlTypesCntSql = "SELECT COUNT(1) AS cnt, c_bool, c_boolean, c_bit, c_tinyint, c_smallint, c_mediumint, c_int, c_integer, c_bigint,  c_float , c_numeric, c_decimal, c_dec, c_fixed, c_double, c_double_precision, c_char, c_nchar, c_national_char, c_varchar, c_tinytext, c_mediumtext, c_text, c_longtext, c_enum, c_year, c_date, c_datetime, c_timestamp, c_binary, c_varbinary, c_tinyblob, c_blob, c_mediumblob, c_longblob FROM  mysql_types  GROUP  BY  c_bool , c_boolean, c_bit, c_tinyint, c_smallint, c_mediumint, c_int, c_integer, c_bigint, c_float, c_numeric, c_decimal, c_dec, c_fixed, c_double, c_double_precision, c_char, c_nchar, c_national_char, c_varchar, c_tinytext, c_mediumtext, c_text, c_longtext, c_enum, c_year, c_date, c_datetime, c_timestamp, c_binary, c_varbinary, c_tinyblob, c_blob, c_mediumblob, c_longblob LIMIT  1 ; SELECT  LAST_INSERT_ID ( ) "; 
+    public class GetMysqlTypesCntRow
     {
         public required long Cnt { get; init; }
         public bool? CBool { get; init; }
@@ -842,13 +842,13 @@ public class QuerySql
         public byte[]? CMediumblob { get; init; }
         public byte[]? CLongblob { get; init; }
     };
-    public async Task<GetMysqlTypesAggRow?> GetMysqlTypesAgg()
+    public async Task<GetMysqlTypesCntRow?> GetMysqlTypesCnt()
     {
         if (this.Transaction == null)
         {
             using (var connection = new MySqlConnection(ConnectionString))
             {
-                var result = await connection.QueryFirstOrDefaultAsync<GetMysqlTypesAggRow?>(GetMysqlTypesAggSql);
+                var result = await connection.QueryFirstOrDefaultAsync<GetMysqlTypesCntRow?>(GetMysqlTypesCntSql);
                 return result;
             }
         }
@@ -858,7 +858,34 @@ public class QuerySql
             throw new System.InvalidOperationException("Transaction is provided, but its connection is null.");
         }
 
-        return await this.Transaction.Connection.QueryFirstOrDefaultAsync<GetMysqlTypesAggRow?>(GetMysqlTypesAggSql, transaction: this.Transaction);
+        return await this.Transaction.Connection.QueryFirstOrDefaultAsync<GetMysqlTypesCntRow?>(GetMysqlTypesCntSql, transaction: this.Transaction);
+    }
+
+    private const string GetMysqlFunctionsSql = "SELECT MAX(c_int) AS max_int, MAX(c_varchar) AS max_varchar, MAX(c_timestamp) AS max_timestamp, max(c_bigint) as max_bigint FROM  mysql_types ; SELECT  LAST_INSERT_ID ( ) "; 
+    public class GetMysqlFunctionsRow
+    {
+        public int? MaxInt { get; init; }
+        public string? MaxVarchar { get; init; }
+        public required DateTime MaxTimestamp { get; init; }
+        public required long MaxBigint { get; init; }
+    };
+    public async Task<GetMysqlFunctionsRow?> GetMysqlFunctions()
+    {
+        if (this.Transaction == null)
+        {
+            using (var connection = new MySqlConnection(ConnectionString))
+            {
+                var result = await connection.QueryFirstOrDefaultAsync<GetMysqlFunctionsRow?>(GetMysqlFunctionsSql);
+                return result;
+            }
+        }
+
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+        {
+            throw new System.InvalidOperationException("Transaction is provided, but its connection is null.");
+        }
+
+        return await this.Transaction.Connection.QueryFirstOrDefaultAsync<GetMysqlFunctionsRow?>(GetMysqlFunctionsSql, transaction: this.Transaction);
     }
 
     private const string TruncateMysqlTypesSql = "TRUNCATE TABLE mysql_types; SELECT LAST_INSERT_ID()";

@@ -98,7 +98,7 @@ namespace MySqlConnectorLegacyExampleGen
             return null;
         }
 
-        private const string ListAuthorsSql = "SELECT id, name, bio FROM authors ORDER BY name";
+        private const string ListAuthorsSql = "SELECT id, name, bio FROM authors ORDER  BY  name  ";  
         public class ListAuthorsRow
         {
             public long Id { get; set; }
@@ -297,7 +297,7 @@ namespace MySqlConnectorLegacyExampleGen
             return null;
         }
 
-        private const string GetAuthorByNamePatternSql = "SELECT id, name, bio FROM authors WHERE name LIKE COALESCE(@name_pattern, '%')";
+        private const string GetAuthorByNamePatternSql = "SELECT id, name, bio FROM authors WHERE  name  LIKE  COALESCE ( @name_pattern ,  '%' ) ";  
         public class GetAuthorByNamePatternRow
         {
             public long Id { get; set; }
@@ -355,7 +355,7 @@ namespace MySqlConnectorLegacyExampleGen
             }
         }
 
-        private const string DeleteAuthorSql = "DELETE FROM authors WHERE name = @name";
+        private const string DeleteAuthorSql = "DELETE FROM authors WHERE  name  =  @name  ";  
         public class DeleteAuthorArgs
         {
             public string Name { get; set; }
@@ -1180,8 +1180,8 @@ namespace MySqlConnectorLegacyExampleGen
             return null;
         }
 
-        private const string GetMysqlTypesAggSql = "SELECT COUNT(1) AS cnt, c_bool, c_boolean, c_bit, c_tinyint, c_smallint, c_mediumint, c_int, c_integer, c_bigint,  c_float , c_numeric, c_decimal, c_dec, c_fixed, c_double, c_double_precision, c_char, c_nchar, c_national_char, c_varchar, c_tinytext, c_mediumtext, c_text, c_longtext, c_enum, c_year, c_date, c_datetime, c_timestamp, c_binary, c_varbinary, c_tinyblob, c_blob, c_mediumblob, c_longblob FROM  mysql_types  GROUP  BY  c_bool , c_boolean, c_bit, c_tinyint, c_smallint, c_mediumint, c_int, c_integer, c_bigint, c_float, c_numeric, c_decimal, c_dec, c_fixed, c_double, c_double_precision, c_char, c_nchar, c_national_char, c_varchar, c_tinytext, c_mediumtext, c_text, c_longtext, c_enum, c_year, c_date, c_datetime, c_timestamp, c_binary, c_varbinary, c_tinyblob, c_blob, c_mediumblob, c_longblob LIMIT  1  ";  
-        public class GetMysqlTypesAggRow
+        private const string GetMysqlTypesCntSql = "SELECT COUNT(1) AS cnt, c_bool, c_boolean, c_bit, c_tinyint, c_smallint, c_mediumint, c_int, c_integer, c_bigint,  c_float , c_numeric, c_decimal, c_dec, c_fixed, c_double, c_double_precision, c_char, c_nchar, c_national_char, c_varchar, c_tinytext, c_mediumtext, c_text, c_longtext, c_enum, c_year, c_date, c_datetime, c_timestamp, c_binary, c_varbinary, c_tinyblob, c_blob, c_mediumblob, c_longblob FROM  mysql_types  GROUP  BY  c_bool , c_boolean, c_bit, c_tinyint, c_smallint, c_mediumint, c_int, c_integer, c_bigint, c_float, c_numeric, c_decimal, c_dec, c_fixed, c_double, c_double_precision, c_char, c_nchar, c_national_char, c_varchar, c_tinytext, c_mediumtext, c_text, c_longtext, c_enum, c_year, c_date, c_datetime, c_timestamp, c_binary, c_varbinary, c_tinyblob, c_blob, c_mediumblob, c_longblob LIMIT  1  ";  
+        public class GetMysqlTypesCntRow
         {
             public long Cnt { get; set; }
             public bool? CBool { get; set; }
@@ -1220,20 +1220,20 @@ namespace MySqlConnectorLegacyExampleGen
             public byte[] CMediumblob { get; set; }
             public byte[] CLongblob { get; set; }
         };
-        public async Task<GetMysqlTypesAggRow> GetMysqlTypesAgg()
+        public async Task<GetMysqlTypesCntRow> GetMysqlTypesCnt()
         {
             if (this.Transaction == null)
             {
                 using (var connection = new MySqlConnection(ConnectionString))
                 {
                     await connection.OpenAsync();
-                    using (var command = new MySqlCommand(GetMysqlTypesAggSql, connection))
+                    using (var command = new MySqlCommand(GetMysqlTypesCntSql, connection))
                     {
                         using (var reader = await command.ExecuteReaderAsync())
                         {
                             if (await reader.ReadAsync())
                             {
-                                return new GetMysqlTypesAggRow
+                                return new GetMysqlTypesCntRow
                                 {
                                     Cnt = reader.GetInt64(0),
                                     CBool = reader.IsDBNull(1) ? (bool? )null : reader.GetBoolean(1),
@@ -1287,13 +1287,13 @@ namespace MySqlConnectorLegacyExampleGen
 
             using (var command = this.Transaction.Connection.CreateCommand())
             {
-                command.CommandText = GetMysqlTypesAggSql;
+                command.CommandText = GetMysqlTypesCntSql;
                 command.Transaction = this.Transaction;
                 using (var reader = await command.ExecuteReaderAsync())
                 {
                     if (await reader.ReadAsync())
                     {
-                        return new GetMysqlTypesAggRow
+                        return new GetMysqlTypesCntRow
                         {
                             Cnt = reader.GetInt64(0),
                             CBool = reader.IsDBNull(1) ? (bool? )null : reader.GetBoolean(1),
@@ -1331,6 +1331,69 @@ namespace MySqlConnectorLegacyExampleGen
                             CBlob = reader.IsDBNull(33) ? null : reader.GetFieldValue<byte[]>(33),
                             CMediumblob = reader.IsDBNull(34) ? null : reader.GetFieldValue<byte[]>(34),
                             CLongblob = reader.IsDBNull(35) ? null : reader.GetFieldValue<byte[]>(35)
+                        };
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        private const string GetMysqlFunctionsSql = "SELECT MAX(c_int) AS max_int, MAX(c_varchar) AS max_varchar, MAX(c_timestamp) AS max_timestamp, max(c_bigint) as max_bigint FROM  mysql_types  ";  
+        public class GetMysqlFunctionsRow
+        {
+            public int? MaxInt { get; set; }
+            public string MaxVarchar { get; set; }
+            public DateTime MaxTimestamp { get; set; }
+            public long MaxBigint { get; set; }
+        };
+        public async Task<GetMysqlFunctionsRow> GetMysqlFunctions()
+        {
+            if (this.Transaction == null)
+            {
+                using (var connection = new MySqlConnection(ConnectionString))
+                {
+                    await connection.OpenAsync();
+                    using (var command = new MySqlCommand(GetMysqlFunctionsSql, connection))
+                    {
+                        using (var reader = await command.ExecuteReaderAsync())
+                        {
+                            if (await reader.ReadAsync())
+                            {
+                                return new GetMysqlFunctionsRow
+                                {
+                                    MaxInt = reader.IsDBNull(0) ? (int? )null : reader.GetInt32(0),
+                                    MaxVarchar = reader.IsDBNull(1) ? null : reader.GetString(1),
+                                    MaxTimestamp = reader.GetDateTime(2),
+                                    MaxBigint = reader.GetInt64(3)
+                                };
+                            }
+                        }
+                    }
+                }
+
+                return null;
+            }
+
+            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+            {
+                throw new System.InvalidOperationException("Transaction is provided, but its connection is null.");
+            }
+
+            using (var command = this.Transaction.Connection.CreateCommand())
+            {
+                command.CommandText = GetMysqlFunctionsSql;
+                command.Transaction = this.Transaction;
+                using (var reader = await command.ExecuteReaderAsync())
+                {
+                    if (await reader.ReadAsync())
+                    {
+                        return new GetMysqlFunctionsRow
+                        {
+                            MaxInt = reader.IsDBNull(0) ? (int? )null : reader.GetInt32(0),
+                            MaxVarchar = reader.IsDBNull(1) ? null : reader.GetString(1),
+                            MaxTimestamp = reader.GetDateTime(2),
+                            MaxBigint = reader.GetInt64(3)
                         };
                     }
                 }

@@ -11,7 +11,7 @@
     "codegen": {
       "out": "examples/MySqlConnectorExample",
       "plugin": "csharp",
-      "options": "eyJkZWJ1Z1JlcXVlc3QiOnRydWUsImdlbmVyYXRlQ3Nwcm9qIjp0cnVlLCJuYW1lc3BhY2VOYW1lIjoiTXlTcWxDb25uZWN0b3JFeGFtcGxlR2VuIiwidGFyZ2V0RnJhbWV3b3JrIjoibmV0OC4wIiwidXNlRGFwcGVyIjpmYWxzZX0=",
+      "options": "eyJkZWJ1Z1JlcXVlc3QiOnRydWUsImdlbmVyYXRlQ3Nwcm9qIjp0cnVlLCJuYW1lc3BhY2VOYW1lIjoiTXlTcWxDb25uZWN0b3JFeGFtcGxlR2VuIiwib3ZlcnJpZGVzIjpbeyJjb2x1bW4iOiJHZXRNeXNxbEZ1bmN0aW9uczptYXhfaW50IiwiY3NoYXJwX3R5cGUiOnsibm90TnVsbCI6ZmFsc2UsInR5cGUiOiJpbnQifX0seyJjb2x1bW4iOiJHZXRNeXNxbEZ1bmN0aW9uczptYXhfdmFyY2hhciIsImNzaGFycF90eXBlIjp7Im5vdE51bGwiOmZhbHNlLCJ0eXBlIjoic3RyaW5nIn19LHsiY29sdW1uIjoiR2V0TXlzcWxGdW5jdGlvbnM6bWF4X3RpbWVzdGFtcCIsImNzaGFycF90eXBlIjp7Im5vdE51bGwiOnRydWUsInR5cGUiOiJEYXRlVGltZSJ9fSx7ImNvbHVtbiI6IkdldE15c3FsRnVuY3Rpb25zOm1heF9iaWdpbnQiLCJjc2hhcnBfdHlwZSI6eyJub3ROdWxsIjp0cnVlLCJ0eXBlIjoibG9uZyJ9fV0sInRhcmdldEZyYW1ld29yayI6Im5ldDguMCIsInVzZURhcHBlciI6ZmFsc2V9",
       "process": {
         "cmd": "./dist/LocalRunner"
       }
@@ -609,7 +609,7 @@
       "filename": "query.sql"
     },
     {
-      "text": "SELECT id, name, bio FROM authors ORDER BY name",
+      "text": "SELECT id, name, bio FROM authors\nORDER BY name",
       "name": "ListAuthors",
       "cmd": ":many",
       "columns": [
@@ -812,7 +812,7 @@
       "filename": "query.sql"
     },
     {
-      "text": "SELECT id, name, bio FROM authors WHERE name LIKE COALESCE(?, '%')",
+      "text": "SELECT id, name, bio FROM authors\nWHERE name LIKE COALESCE(?, '%')",
       "name": "GetAuthorByNamePattern",
       "cmd": ":many",
       "columns": [
@@ -872,7 +872,7 @@
       "filename": "query.sql"
     },
     {
-      "text": "DELETE FROM authors WHERE name = ?",
+      "text": "DELETE FROM authors\nWHERE name = ?",
       "name": "DeleteAuthor",
       "cmd": ":exec",
       "parameters": [
@@ -2702,7 +2702,7 @@
     },
     {
       "text": "SELECT COUNT(1) AS cnt, c_bool, c_boolean, c_bit, c_tinyint, c_smallint, c_mediumint, c_int, c_integer, c_bigint, \n       c_float, c_numeric, c_decimal, c_dec, c_fixed, c_double, c_double_precision, \n       c_char, c_nchar, c_national_char, c_varchar, c_tinytext, c_mediumtext, c_text, c_longtext, c_enum,\n       c_year, c_date, c_datetime, c_timestamp, \n       c_binary, c_varbinary, c_tinyblob, c_blob, c_mediumblob, c_longblob\nFROM mysql_types\nGROUP BY c_bool, c_boolean, c_bit, c_tinyint, c_smallint, c_mediumint, c_int, c_integer, c_bigint, \n         c_float, c_numeric, c_decimal, c_dec, c_fixed, c_double, c_double_precision, \n         c_char, c_nchar, c_national_char, c_varchar, c_tinytext, c_mediumtext, c_text, c_longtext, c_enum,\n         c_year, c_date, c_datetime, c_timestamp, \n         c_binary, c_varbinary, c_tinyblob, c_blob, c_mediumblob, c_longblob\nLIMIT 1",
-      "name": "GetMysqlTypesAgg",
+      "name": "GetMysqlTypesCnt",
       "cmd": ":one",
       "columns": [
         {
@@ -3098,6 +3098,50 @@
             "name": "longblob"
           },
           "originalName": "c_longblob"
+        }
+      ],
+      "filename": "query.sql"
+    },
+    {
+      "text": "SELECT MAX(c_int) AS max_int, MAX(c_varchar) AS max_varchar, MAX(c_timestamp) AS max_timestamp, max(c_bigint) as max_bigint\nFROM mysql_types",
+      "name": "GetMysqlFunctions",
+      "cmd": ":one",
+      "columns": [
+        {
+          "name": "max_int",
+          "notNull": true,
+          "length": -1,
+          "isFuncCall": true,
+          "type": {
+            "name": "any"
+          }
+        },
+        {
+          "name": "max_varchar",
+          "notNull": true,
+          "length": -1,
+          "isFuncCall": true,
+          "type": {
+            "name": "any"
+          }
+        },
+        {
+          "name": "max_timestamp",
+          "notNull": true,
+          "length": -1,
+          "isFuncCall": true,
+          "type": {
+            "name": "any"
+          }
+        },
+        {
+          "name": "max_bigint",
+          "notNull": true,
+          "length": -1,
+          "isFuncCall": true,
+          "type": {
+            "name": "any"
+          }
         }
       ],
       "filename": "query.sql"

@@ -28,6 +28,7 @@ public enum KnownTestType
 
     // Sqlite
     SqliteDataTypes,
+    SqliteDataTypesOverride,
     SqliteCopyFrom,
     SqliteTransaction,
 
@@ -37,6 +38,7 @@ public enum KnownTestType
     PostgresFloatingPointDataTypes,
     PostgresDateTimeDataTypes,
     PostgresArrayDataTypes,
+    PostgresDataTypesOverride,
 
     PostgresStringCopyFrom,
     PostgresTransaction,
@@ -57,6 +59,7 @@ public enum KnownTestType
     MySqlDateTimeDataTypes,
     MySqlBinaryDataTypes,
     MySqlEnumDataType,
+    MySqlDataTypesOverride,
     MySqlScopedSchemaEnum,
 
     MySqlStringCopyFrom,
@@ -98,6 +101,7 @@ internal static class Config
                     KnownTestType.MySqlBinaryDataTypes,
                     KnownTestType.MySqlEnumDataType,
                     KnownTestType.MySqlScopedSchemaEnum,
+                    KnownTestType.MySqlDataTypesOverride,
 
                     KnownTestType.MySqlStringCopyFrom,
                     KnownTestType.MySqlIntegerCopyFrom,
@@ -134,6 +138,7 @@ internal static class Config
                         KnownTestType.MySqlBinaryDataTypes,
                         KnownTestType.MySqlEnumDataType,
                         KnownTestType.MySqlScopedSchemaEnum,
+                        KnownTestType.MySqlDataTypesOverride,
 
                         KnownTestType.MySqlStringCopyFrom,
                         KnownTestType.MySqlIntegerCopyFrom,
@@ -169,6 +174,7 @@ internal static class Config
                     KnownTestType.PostgresDateTimeDataTypes,
                     KnownTestType.PostgresArrayDataTypes,
                     KnownTestType.PostgresGeoDataTypes,
+                    KnownTestType.PostgresDataTypesOverride,
 
                     KnownTestType.PostgresStringCopyFrom,
                     KnownTestType.PostgresIntegerCopyFrom,
@@ -203,6 +209,7 @@ internal static class Config
                     KnownTestType.PostgresDateTimeDataTypes,
                     KnownTestType.PostgresArrayDataTypes,
                     KnownTestType.PostgresGeoDataTypes,
+                    KnownTestType.PostgresDataTypesOverride,
 
                     KnownTestType.PostgresStringCopyFrom,
                     KnownTestType.PostgresIntegerCopyFrom,
@@ -231,7 +238,8 @@ internal static class Config
                     KnownTestType.NargNotNull,
                     KnownTestType.SqliteTransaction,
                     KnownTestType.SqliteDataTypes,
-                    KnownTestType.SqliteCopyFrom
+                    KnownTestType.SqliteCopyFrom,
+                    KnownTestType.SqliteDataTypesOverride
                 ]
             }
         },
@@ -254,7 +262,8 @@ internal static class Config
                     KnownTestType.NargNotNull,
                     KnownTestType.SqliteTransaction,
                     KnownTestType.SqliteDataTypes,
-                    KnownTestType.SqliteCopyFrom
+                    KnownTestType.SqliteCopyFrom,
+                    KnownTestType.SqliteDataTypesOverride
                 ]
             }
         },

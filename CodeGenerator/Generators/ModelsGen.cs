@@ -46,7 +46,7 @@ internal class ModelsGen(DbDriver dbDriver, string namespaceName)
             from schemaTables in tables
             from table in schemaTables.Value
             let className = table.Value.Rel.Name.ToModelName(table.Value.Rel.Schema, dbDriver.DefaultSchema)
-            select DataClassesGen.Generate(className, null, table.Value.Columns, dbDriver.Options)
+            select DataClassesGen.Generate(className, null, table.Value.Columns, dbDriver.Options, null)
         ).ToArray();
     }
 

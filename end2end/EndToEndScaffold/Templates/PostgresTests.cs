@@ -210,7 +210,7 @@ public static class PostgresTests
                              })
                              .ToList();
                          await QuerySql.InsertPostgresTypesBatch(batchArgs);
-                         var expected = new QuerySql.GetPostgresTypesAggRow
+                         var expected = new QuerySql.GetPostgresTypesCntRow
                          {
                              Cnt = batchSize,
                              CChar = cChar,
@@ -218,7 +218,7 @@ public static class PostgresTests
                              CCharacterVarying = cCharacterVarying,
                              CText = cText
                          };
-                         var actual = await QuerySql.GetPostgresTypesAgg();
+                         var actual = await QuerySql.GetPostgresTypesCnt();
                          
                          Assert.That(actual{{Consts.UnknownRecordValuePlaceholder}}.Cnt, Is.EqualTo(expected.Cnt));
                          Assert.That(actual{{Consts.UnknownRecordValuePlaceholder}}.CChar, Is.EqualTo(expected.CChar));
@@ -251,7 +251,7 @@ public static class PostgresTests
                              })
                              .ToList();
                          await QuerySql.InsertPostgresTypesBatch(batchArgs);
-                         var expected = new QuerySql.GetPostgresTypesAggRow
+                         var expected = new QuerySql.GetPostgresTypesCntRow
                          {
                              Cnt = batchSize,
                              CBoolean = cBoolean,
@@ -259,7 +259,7 @@ public static class PostgresTests
                              CInteger = cInteger,
                              CBigint = cBigint
                          };
-                         var actual = await QuerySql.GetPostgresTypesAgg();
+                         var actual = await QuerySql.GetPostgresTypesCnt();
 
                          Assert.That(actual{{Consts.UnknownRecordValuePlaceholder}}.Cnt, Is.EqualTo(expected.Cnt));
                          Assert.That(actual{{Consts.UnknownRecordValuePlaceholder}}.CBoolean, Is.EqualTo(expected.CBoolean));
@@ -268,7 +268,7 @@ public static class PostgresTests
                          Assert.That(actual{{Consts.UnknownRecordValuePlaceholder}}.CBigint, Is.EqualTo(expected.CBigint));
                      }
 
-                     private static void AssertSingularEquals(QuerySql.GetPostgresTypesAggRow expected, QuerySql.GetPostgresTypesAggRow actual)
+                     private static void AssertSingularEquals(QuerySql.GetPostgresTypesCntRow expected, QuerySql.GetPostgresTypesCntRow actual)
                      {
 
                      }
@@ -299,7 +299,7 @@ public static class PostgresTests
                              })
                              .ToList();
                          await QuerySql.InsertPostgresTypesBatch(batchArgs);
-                         var expected = new QuerySql.GetPostgresTypesAggRow
+                         var expected = new QuerySql.GetPostgresTypesCntRow
                          {
                              Cnt = batchSize,
                              CReal = cReal,
@@ -308,7 +308,7 @@ public static class PostgresTests
                              CDoublePrecision = cDoublePrecision,
                              CMoney = cMoney
                          };
-                         var actual = await QuerySql.GetPostgresTypesAgg();
+                         var actual = await QuerySql.GetPostgresTypesCnt();
                          
                          Assert.That(actual{{Consts.UnknownRecordValuePlaceholder}}.Cnt, Is.EqualTo(expected.Cnt));
                          Assert.That(actual{{Consts.UnknownRecordValuePlaceholder}}.CReal, Is.EqualTo(expected.CReal));
@@ -346,7 +346,7 @@ public static class PostgresTests
                              })
                              .ToList();
                          await QuerySql.InsertPostgresTypesBatch(batchArgs);
-                         var expected = new QuerySql.GetPostgresTypesAggRow
+                         var expected = new QuerySql.GetPostgresTypesCntRow
                          {
                              Cnt = batchSize,
                              CDate = cDate,
@@ -354,7 +354,7 @@ public static class PostgresTests
                              CTimestamp = cTimestamp,
                              CTimestampWithTz = cTimestampWithTz,
                          };
-                         var actual = await QuerySql.GetPostgresTypesAgg();
+                         var actual = await QuerySql.GetPostgresTypesCnt();
                          
                          Assert.That(actual{{Consts.UnknownRecordValuePlaceholder}}.Cnt, Is.EqualTo(expected.Cnt));
                          Assert.That(actual{{Consts.UnknownRecordValuePlaceholder}}.CDate, Is.EqualTo(expected.CDate));
@@ -382,12 +382,12 @@ public static class PostgresTests
                              })
                              .ToList();
                          await QuerySql.InsertPostgresTypesBatch(batchArgs);
-                         var expected = new QuerySql.GetPostgresTypesAggRow
+                         var expected = new QuerySql.GetPostgresTypesCntRow
                          {
                              Cnt = batchSize,
                              CBytea = cBytea
                          };
-                         var actual = await QuerySql.GetPostgresTypesAgg();
+                         var actual = await QuerySql.GetPostgresTypesCnt();
 
                          Assert.That(actual{{Consts.UnknownRecordValuePlaceholder}}.Cnt, Is.EqualTo(expected.Cnt));
                          Assert.That(actual{{Consts.UnknownRecordValuePlaceholder}}.CBytea, Is.EqualTo(expected.CBytea));
@@ -514,6 +514,42 @@ public static class PostgresTests
                      }
                      """
         },
+        [KnownTestType.PostgresDataTypesOverride] = new TestImpl
+        {
+            Impl = $$"""
+                     [Test]
+                     [TestCase(-54355, "White Light from the Mouth of Infinity", "2022-10-2 15:44:01+09:00")]
+                     [TestCase(null, null, "1970-01-01 00:00:00")]
+                     public async Task TestPostgresDataTypesOverride(
+                        int? cInteger,
+                        string cVarchar,
+                        DateTime cTimestamp)
+                     {
+                         await QuerySql.InsertPostgresTypes(new QuerySql.InsertPostgresTypesArgs
+                         {
+                             CInteger = cInteger,
+                             CVarchar = cVarchar,
+                             CTimestamp = cTimestamp
+                         });
+                     
+                         var expected = new QuerySql.GetPostgresFunctionsRow
+                         {
+                             MaxInteger = cInteger,
+                             MaxVarchar = cVarchar,
+                             MaxTimestamp = cTimestamp
+                         };
 
+                         var actual = await QuerySql.GetPostgresFunctions();
+                         AssertSingularEquals(expected, actual{{Consts.UnknownRecordValuePlaceholder}});
+                     }
+
+                     private static void AssertSingularEquals(QuerySql.GetPostgresFunctionsRow expected, QuerySql.GetPostgresFunctionsRow actual)
+                     {
+                         Assert.That(actual.MaxInteger, Is.EqualTo(expected.MaxInteger));
+                         Assert.That(actual.MaxVarchar, Is.EqualTo(expected.MaxVarchar));
+                         Assert.That(actual.MaxTimestamp, Is.EqualTo(expected.MaxTimestamp));
+                     }
+                     """
+        }
     };
 }
