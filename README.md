@@ -287,6 +287,15 @@ Follow the instructions in each of these:
 - Buf build - [Buf Build](https://buf.build/docs/installation) <br/>
 - WASM (follow this guide) - [WASM libs](https://www.strathweb.com/2023/09/dotnet-wasi-applications-in-net-8-0/)
 
+## Pre-commit Setup
+
+This repository uses [pre-commit](https://pre-commit.com/). To set up pre-commit hooks, run:
+
+```sh
+pip install pre-commit
+pre-commit install
+```
+
 ### Protobuf
 SQLC protobuf are defined in sqlc-dev/sqlc repository.
 Generating C# code from protocol buffer files:

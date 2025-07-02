@@ -165,7 +165,7 @@
   },
   "queries": [
     {
-      "text": "SELECT id, name, bio FROM authors WHERE name = ? LIMIT 1",
+      "text": "SELECT id, name, bio FROM authors\nWHERE name = ? LIMIT 1",
       "name": "GetAuthor",
       "cmd": ":one",
       "columns": [
@@ -225,7 +225,7 @@
       "filename": "query.sql"
     },
     {
-      "text": "SELECT id, name, bio FROM authors ORDER BY name",
+      "text": "SELECT id, name, bio FROM authors\nORDER BY name",
       "name": "ListAuthors",
       "cmd": ":many",
       "columns": [
@@ -382,7 +382,7 @@
       }
     },
     {
-      "text": "SELECT id, name, bio FROM authors WHERE id = ? LIMIT 1",
+      "text": "SELECT id, name, bio FROM authors\nWHERE id = ? LIMIT 1",
       "name": "GetAuthorById",
       "cmd": ":one",
       "columns": [
@@ -442,7 +442,7 @@
       "filename": "query.sql"
     },
     {
-      "text": "SELECT id, name, bio FROM authors WHERE name LIKE COALESCE(?1, '%')",
+      "text": "SELECT id, name, bio FROM authors\nWHERE name LIKE COALESCE(?1, '%')",
       "name": "GetAuthorByNamePattern",
       "cmd": ":many",
       "columns": [
@@ -502,7 +502,7 @@
       "filename": "query.sql"
     },
     {
-      "text": "UPDATE authors \nSET bio = ?\nWHERE bio IS NOT NULL",
+      "text": "UPDATE authors\nSET bio = ?\nWHERE bio IS NOT NULL",
       "name": "UpdateAuthors",
       "cmd": ":execrows",
       "parameters": [
@@ -666,7 +666,7 @@
       "filename": "query.sql"
     },
     {
-      "text": "DELETE FROM authors WHERE name = ?",
+      "text": "DELETE FROM authors\nWHERE name = ?",
       "name": "DeleteAuthor",
       "cmd": ":exec",
       "parameters": [
@@ -746,7 +746,7 @@
       }
     },
     {
-      "text": "SELECT authors.id, authors.name, authors.bio, books.id, books.name, books.author_id, books.description \nFROM authors JOIN books ON authors.id = books.author_id \nORDER BY authors.name",
+      "text": "SELECT\n    authors.id, authors.name, authors.bio,\n    books.id, books.name, books.author_id, books.description\nFROM authors INNER JOIN books ON authors.id = books.author_id\nORDER BY authors.name",
       "name": "ListAllAuthorsBooks",
       "cmd": ":many",
       "columns": [
@@ -770,7 +770,7 @@
       "filename": "query.sql"
     },
     {
-      "text": "SELECT authors1.id, authors1.name, authors1.bio, authors2.id, authors2.name, authors2.bio\nFROM authors authors1 JOIN authors authors2 ON authors1.name = authors2.name\nWHERE authors1.id \u003c authors2.id",
+      "text": "SELECT\n    authors1.id, authors1.name, authors1.bio,\n    authors2.id, authors2.name, authors2.bio\nFROM authors AS authors1\nINNER JOIN authors AS authors2 ON authors1.name = authors2.name\nWHERE authors1.id \u003c authors2.id",
       "name": "GetDuplicateAuthors",
       "cmd": ":many",
       "columns": [
@@ -794,7 +794,7 @@
       "filename": "query.sql"
     },
     {
-      "text": "SELECT authors.id, authors.name, authors.bio, books.id, books.name, books.author_id, books.description\nFROM authors JOIN books ON authors.id = books.author_id\nWHERE books.name = ?",
+      "text": "SELECT\n    authors.id, authors.name, authors.bio,\n    books.id, books.name, books.author_id, books.description\nFROM authors INNER JOIN books ON authors.id = books.author_id\nWHERE books.name = ?",
       "name": "GetAuthorsByBookName",
       "cmd": ":many",
       "columns": [
@@ -868,7 +868,7 @@
       "filename": "query.sql"
     },
     {
-      "text": "INSERT INTO types_sqlite (c_integer, c_real, c_text, c_blob) VALUES (?, ?, ?, ?)",
+      "text": "INSERT INTO types_sqlite (c_integer, c_real, c_text, c_blob) VALUES (\n    ?, ?, ?, ?\n)",
       "name": "InsertSqliteTypes",
       "cmd": ":exec",
       "parameters": [
@@ -1047,19 +1047,10 @@
       "filename": "query.sql"
     },
     {
-      "text": "SELECT COUNT(1) AS cnt , c_integer, c_real, c_text, c_blob\nFROM types_sqlite\nGROUP BY c_integer, c_real, c_text, c_blob\nLIMIT 1",
+      "text": "SELECT\n    c_integer,\n    c_real,\n    c_text,\n    c_blob,\n    COUNT(*) AS cnt\nFROM types_sqlite\nGROUP BY c_integer, c_real, c_text, c_blob\nLIMIT 1",
       "name": "GetSqliteTypesCnt",
       "cmd": ":one",
       "columns": [
-        {
-          "name": "cnt",
-          "notNull": true,
-          "length": -1,
-          "isFuncCall": true,
-          "type": {
-            "name": "integer"
-          }
-        },
         {
           "name": "c_integer",
           "length": -1,
@@ -1103,12 +1094,21 @@
             "name": "BLOB"
           },
           "originalName": "c_blob"
+        },
+        {
+          "name": "cnt",
+          "notNull": true,
+          "length": -1,
+          "isFuncCall": true,
+          "type": {
+            "name": "integer"
+          }
         }
       ],
       "filename": "query.sql"
     },
     {
-      "text": "SELECT MAX(c_integer) AS max_integer, MAX(c_real) AS max_real, MAX(c_text) AS max_text\nFROM types_sqlite",
+      "text": "SELECT\n    MAX(c_integer) AS max_integer,\n    MAX(c_real) AS max_real,\n    MAX(c_text) AS max_text\nFROM types_sqlite",
       "name": "GetSqliteFunctions",
       "cmd": ":one",
       "columns": [

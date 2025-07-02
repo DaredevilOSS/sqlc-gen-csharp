@@ -21,7 +21,7 @@ public class QuerySql
 
     private string ConnectionString { get; }
 
-    private const string GetAuthorSql = "SELECT id, name, bio FROM authors WHERE name = @name LIMIT 1";
+    private const string GetAuthorSql = "SELECT id, name, bio FROM authors WHERE  name  =  @name  LIMIT  1  ";  
     public readonly record struct GetAuthorRow(long Id, string Name, string? Bio);
     public readonly record struct GetAuthorArgs(string Name);
     public async Task<GetAuthorRow?> GetAuthor(GetAuthorArgs args)
@@ -49,7 +49,7 @@ public class QuerySql
         return null;
     }
 
-    private const string ListAuthorsSql = "SELECT id, name, bio FROM authors ORDER BY name";
+    private const string ListAuthorsSql = "SELECT id, name, bio FROM authors ORDER  BY  name  ";  
     public readonly record struct ListAuthorsRow(long Id, string Name, string? Bio);
     public async Task<List<ListAuthorsRow>> ListAuthors()
     {
@@ -118,7 +118,7 @@ public class QuerySql
         }
     }
 
-    private const string GetAuthorByIdSql = "SELECT id, name, bio FROM authors WHERE id = @id LIMIT 1";
+    private const string GetAuthorByIdSql = "SELECT id, name, bio FROM authors WHERE  id  =  @id  LIMIT  1  ";  
     public readonly record struct GetAuthorByIdRow(long Id, string Name, string? Bio);
     public readonly record struct GetAuthorByIdArgs(long Id);
     public async Task<GetAuthorByIdRow?> GetAuthorById(GetAuthorByIdArgs args)
@@ -146,7 +146,7 @@ public class QuerySql
         return null;
     }
 
-    private const string GetAuthorByNamePatternSql = "SELECT id, name, bio FROM authors WHERE name LIKE COALESCE(@name_pattern, '%')";
+    private const string GetAuthorByNamePatternSql = "SELECT id, name, bio FROM authors WHERE  name  LIKE  COALESCE ( @name_pattern ,  '%' ) ";  
     public readonly record struct GetAuthorByNamePatternRow(long Id, string Name, string? Bio);
     public readonly record struct GetAuthorByNamePatternArgs(string? NamePattern);
     public async Task<List<GetAuthorByNamePatternRow>> GetAuthorByNamePattern(GetAuthorByNamePatternArgs args)
@@ -170,7 +170,7 @@ public class QuerySql
         }
     }
 
-    private const string DeleteAuthorSql = "DELETE FROM authors WHERE name = @name";
+    private const string DeleteAuthorSql = "DELETE FROM authors WHERE  name  =  @name  ";  
     public readonly record struct DeleteAuthorArgs(string Name);
     public async Task DeleteAuthor(DeleteAuthorArgs args)
     {
@@ -196,7 +196,7 @@ public class QuerySql
         }
     }
 
-    private const string UpdateAuthorsSql = "UPDATE authors  SET  bio  =  @bio  WHERE  bio  IS  NOT  NULL  ";  
+    private const string UpdateAuthorsSql = "UPDATE authors SET  bio  =  @bio  WHERE  bio  IS  NOT  NULL  ";  
     public readonly record struct UpdateAuthorsArgs(string? Bio);
     public async Task<long> UpdateAuthors(UpdateAuthorsArgs args)
     {
@@ -210,7 +210,7 @@ public class QuerySql
         }
     }
 
-    private const string GetAuthorsByIdsSql = "SELECT id, name, bio FROM authors WHERE id = ANY(@longArr_1::BIGINT[])";
+    private const string GetAuthorsByIdsSql = "SELECT id, name, bio FROM authors WHERE  id  =  ANY ( @longArr_1 :: BIGINT [ ] ) ";  
     public readonly record struct GetAuthorsByIdsRow(long Id, string Name, string? Bio);
     public readonly record struct GetAuthorsByIdsArgs(long[] LongArr1);
     public async Task<List<GetAuthorsByIdsRow>> GetAuthorsByIds(GetAuthorsByIdsArgs args)
@@ -234,7 +234,7 @@ public class QuerySql
         }
     }
 
-    private const string GetAuthorsByIdsAndNamesSql = "SELECT id, name, bio FROM authors WHERE id = ANY(@longArr_1::BIGINT[]) AND name = ANY(@stringArr_2::TEXT[])";
+    private const string GetAuthorsByIdsAndNamesSql = "SELECT id, name, bio FROM  authors  WHERE  id  =  ANY ( @longArr_1 :: BIGINT [ ] ) AND  name  =  ANY ( @stringArr_2 :: TEXT [ ] ) ";  
     public readonly record struct GetAuthorsByIdsAndNamesRow(long Id, string Name, string? Bio);
     public readonly record struct GetAuthorsByIdsAndNamesArgs(long[] LongArr1, string[] StringArr2);
     public async Task<List<GetAuthorsByIdsAndNamesRow>> GetAuthorsByIdsAndNames(GetAuthorsByIdsAndNamesArgs args)
@@ -276,7 +276,7 @@ public class QuerySql
         }
     }
 
-    private const string ListAllAuthorsBooksSql = "SELECT authors.id, authors.name, authors.bio, books.id, books.name, books.author_id, books.description FROM authors JOIN books ON authors.id = books.author_id ORDER BY authors.name";
+    private const string ListAllAuthorsBooksSql = "SELECT authors . id , authors . name, authors . bio, books . id, books . name, books . author_id, books . description  FROM  authors  INNER  JOIN  books  ON  authors . id  =  books . author_id  ORDER  BY  authors . name  "; 
     public readonly record struct ListAllAuthorsBooksRow(Author? Author, Book? Book);
     public async Task<List<ListAllAuthorsBooksRow>> ListAllAuthorsBooks()
     {
@@ -298,7 +298,7 @@ public class QuerySql
         }
     }
 
-    private const string GetDuplicateAuthorsSql = "SELECT authors1.id, authors1.name, authors1.bio, authors2.id, authors2.name, authors2.bio FROM  authors  authors1  JOIN  authors  authors2  ON  authors1 . name  =  authors2 . name  WHERE  authors1 . id < authors2 . id  ";  
+    private const string GetDuplicateAuthorsSql = "SELECT authors1 . id , authors1 . name, authors1 . bio, authors2 . id, authors2 . name, authors2 . bio  FROM  authors  AS  authors1  INNER  JOIN  authors  AS  authors2  ON  authors1 . name  =  authors2 . name  WHERE  authors1 . id < authors2 . id  "; 
     public readonly record struct GetDuplicateAuthorsRow(Author? Author, Author? Author2);
     public async Task<List<GetDuplicateAuthorsRow>> GetDuplicateAuthors()
     {
@@ -320,7 +320,7 @@ public class QuerySql
         }
     }
 
-    private const string GetAuthorsByBookNameSql = "SELECT authors.id, authors.name, authors.bio, books.id, books.name, books.author_id, books.description FROM  authors  JOIN  books  ON  authors . id  =  books . author_id  WHERE  books . name  =  @name  ";  
+    private const string GetAuthorsByBookNameSql = "SELECT authors . id , authors . name, authors . bio, books . id, books . name, books . author_id, books . description  FROM  authors  INNER  JOIN  books  ON  authors . id  =  books . author_id  WHERE  books . name  =  @name  "; 
     public readonly record struct GetAuthorsByBookNameRow(long Id, string Name, string? Bio, Book? Book);
     public readonly record struct GetAuthorsByBookNameArgs(string Name);
     public async Task<List<GetAuthorsByBookNameRow>> GetAuthorsByBookName(GetAuthorsByBookNameArgs args)
@@ -344,7 +344,7 @@ public class QuerySql
         }
     }
 
-    private const string InsertPostgresTypesSql = "INSERT INTO postgres_types (c_boolean, c_bit, c_smallint, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_money, c_date, c_time, c_timestamp, c_timestamp_with_tz, c_char, c_varchar, c_character_varying, c_text, c_bytea, c_text_array, c_integer_array) VALUES ( @c_boolean, @c_bit, @c_smallint, @c_integer, @c_bigint, @c_real, @c_numeric, @c_decimal, @c_double_precision, @c_money, @c_date, @c_time, @c_timestamp, @c_timestamp_with_tz, @c_char, @c_varchar, @c_character_varying, @c_text, @c_bytea, @c_text_array, @c_integer_array ) "; 
+    private const string InsertPostgresTypesSql = "INSERT INTO postgres_types(c_boolean, c_bit, c_smallint, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_money, c_date, c_time, c_timestamp, c_timestamp_with_tz, c_char, c_varchar, c_character_varying, c_text, c_bytea, c_text_array, c_integer_array) VALUES ( @c_boolean, @c_bit, @c_smallint, @c_integer, @c_bigint, @c_real, @c_numeric, @c_decimal, @c_double_precision, @c_money, @c_date, @c_time, @c_timestamp, @c_timestamp_with_tz, @c_char, @c_varchar, @c_character_varying, @c_text, @c_bytea, @c_text_array, @c_integer_array ) "; 
     public readonly record struct InsertPostgresTypesArgs(bool? CBoolean, byte[]? CBit, short? CSmallint, int? CInteger, long? CBigint, float? CReal, decimal? CNumeric, decimal? CDecimal, double? CDoublePrecision, decimal? CMoney, DateTime? CDate, TimeSpan? CTime, DateTime? CTimestamp, DateTime? CTimestampWithTz, string? CChar, string? CVarchar, string? CCharacterVarying, string? CText, byte[]? CBytea, string[]? CTextArray, int[]? CIntegerArray);
     public async Task InsertPostgresTypes(InsertPostgresTypesArgs args)
     {
@@ -463,8 +463,8 @@ public class QuerySql
         return null;
     }
 
-    private const string GetPostgresTypesCntSql = "SELECT COUNT(1) AS cnt ,  c_smallint , c_boolean, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_money, c_date, c_time, c_timestamp, c_timestamp_with_tz, c_char, c_varchar, c_character_varying, c_text, c_bytea FROM  postgres_types  GROUP  BY  c_smallint , c_boolean, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_money, c_date, c_time, c_timestamp, c_timestamp_with_tz, c_char, c_varchar, c_character_varying, c_text, c_bytea LIMIT  1  ";  
-    public readonly record struct GetPostgresTypesCntRow(long Cnt, short? CSmallint, bool? CBoolean, int? CInteger, long? CBigint, float? CReal, decimal? CNumeric, decimal? CDecimal, double? CDoublePrecision, decimal? CMoney, DateTime? CDate, TimeSpan? CTime, DateTime? CTimestamp, DateTime? CTimestampWithTz, string? CChar, string? CVarchar, string? CCharacterVarying, string? CText, byte[]? CBytea);
+    private const string GetPostgresTypesCntSql = "SELECT c_smallint , c_boolean, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_money, c_date, c_time, c_timestamp, c_timestamp_with_tz, c_char, c_varchar, c_character_varying, c_text, c_bytea, COUNT (* ) AS  cnt  FROM  postgres_types  GROUP  BY  c_smallint, c_boolean, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_money, c_date, c_time, c_timestamp, c_timestamp_with_tz, c_char, c_varchar, c_character_varying, c_text, c_bytea LIMIT  1  ";  
+    public readonly record struct GetPostgresTypesCntRow(short? CSmallint, bool? CBoolean, int? CInteger, long? CBigint, float? CReal, decimal? CNumeric, decimal? CDecimal, double? CDoublePrecision, decimal? CMoney, DateTime? CDate, TimeSpan? CTime, DateTime? CTimestamp, DateTime? CTimestampWithTz, string? CChar, string? CVarchar, string? CCharacterVarying, string? CText, byte[]? CBytea, long Cnt);
     public async Task<GetPostgresTypesCntRow?> GetPostgresTypesCnt()
     {
         using (var connection = NpgsqlDataSource.Create(ConnectionString))
@@ -477,25 +477,25 @@ public class QuerySql
                     {
                         return new GetPostgresTypesCntRow
                         {
-                            Cnt = reader.GetInt64(0),
-                            CSmallint = reader.IsDBNull(1) ? null : reader.GetInt16(1),
-                            CBoolean = reader.IsDBNull(2) ? null : reader.GetBoolean(2),
-                            CInteger = reader.IsDBNull(3) ? null : reader.GetInt32(3),
-                            CBigint = reader.IsDBNull(4) ? null : reader.GetInt64(4),
-                            CReal = reader.IsDBNull(5) ? null : reader.GetFloat(5),
-                            CNumeric = reader.IsDBNull(6) ? null : reader.GetDecimal(6),
-                            CDecimal = reader.IsDBNull(7) ? null : reader.GetDecimal(7),
-                            CDoublePrecision = reader.IsDBNull(8) ? null : reader.GetDouble(8),
-                            CMoney = reader.IsDBNull(9) ? null : reader.GetDecimal(9),
-                            CDate = reader.IsDBNull(10) ? null : reader.GetDateTime(10),
-                            CTime = reader.IsDBNull(11) ? null : reader.GetFieldValue<TimeSpan>(11),
-                            CTimestamp = reader.IsDBNull(12) ? null : reader.GetDateTime(12),
-                            CTimestampWithTz = reader.IsDBNull(13) ? null : reader.GetDateTime(13),
-                            CChar = reader.IsDBNull(14) ? null : reader.GetString(14),
-                            CVarchar = reader.IsDBNull(15) ? null : reader.GetString(15),
-                            CCharacterVarying = reader.IsDBNull(16) ? null : reader.GetString(16),
-                            CText = reader.IsDBNull(17) ? null : reader.GetString(17),
-                            CBytea = reader.IsDBNull(18) ? null : reader.GetFieldValue<byte[]>(18)
+                            CSmallint = reader.IsDBNull(0) ? null : reader.GetInt16(0),
+                            CBoolean = reader.IsDBNull(1) ? null : reader.GetBoolean(1),
+                            CInteger = reader.IsDBNull(2) ? null : reader.GetInt32(2),
+                            CBigint = reader.IsDBNull(3) ? null : reader.GetInt64(3),
+                            CReal = reader.IsDBNull(4) ? null : reader.GetFloat(4),
+                            CNumeric = reader.IsDBNull(5) ? null : reader.GetDecimal(5),
+                            CDecimal = reader.IsDBNull(6) ? null : reader.GetDecimal(6),
+                            CDoublePrecision = reader.IsDBNull(7) ? null : reader.GetDouble(7),
+                            CMoney = reader.IsDBNull(8) ? null : reader.GetDecimal(8),
+                            CDate = reader.IsDBNull(9) ? null : reader.GetDateTime(9),
+                            CTime = reader.IsDBNull(10) ? null : reader.GetFieldValue<TimeSpan>(10),
+                            CTimestamp = reader.IsDBNull(11) ? null : reader.GetDateTime(11),
+                            CTimestampWithTz = reader.IsDBNull(12) ? null : reader.GetDateTime(12),
+                            CChar = reader.IsDBNull(13) ? null : reader.GetString(13),
+                            CVarchar = reader.IsDBNull(14) ? null : reader.GetString(14),
+                            CCharacterVarying = reader.IsDBNull(15) ? null : reader.GetString(15),
+                            CText = reader.IsDBNull(16) ? null : reader.GetString(16),
+                            CBytea = reader.IsDBNull(17) ? null : reader.GetFieldValue<byte[]>(17),
+                            Cnt = reader.GetInt64(18)
                         };
                     }
                 }
@@ -505,7 +505,7 @@ public class QuerySql
         return null;
     }
 
-    private const string GetPostgresFunctionsSql = "SELECT MAX(c_integer) AS max_integer, MAX(c_varchar) AS max_varchar, MAX(c_timestamp) AS max_timestamp FROM  postgres_types  ";  
+    private const string GetPostgresFunctionsSql = "SELECT MAX ( c_integer ) AS  max_integer , MAX (c_varchar ) AS  max_varchar, MAX (c_timestamp ) AS  max_timestamp  FROM  postgres_types  "; 
     public readonly record struct GetPostgresFunctionsRow(int? MaxInteger, string? MaxVarchar, DateTime MaxTimestamp);
     public async Task<GetPostgresFunctionsRow?> GetPostgresFunctions()
     {
@@ -531,7 +531,7 @@ public class QuerySql
         return null;
     }
 
-    private const string InsertPostgresGeoTypesSql = "INSERT INTO postgres_geometric_types (c_point, c_line, c_lseg, c_box, c_path, c_polygon, c_circle) VALUES ( @c_point , @c_line, @c_lseg, @c_box, @c_path, @c_polygon, @c_circle ) "; 
+    private const string InsertPostgresGeoTypesSql = "INSERT INTO postgres_geometric_types ( c_point , c_line, c_lseg, c_box, c_path, c_polygon, c_circle ) VALUES ( @c_point, @c_line, @c_lseg, @c_box, @c_path, @c_polygon, @c_circle ) "; 
     public readonly record struct InsertPostgresGeoTypesArgs(NpgsqlPoint? CPoint, NpgsqlLine? CLine, NpgsqlLSeg? CLseg, NpgsqlBox? CBox, NpgsqlPath? CPath, NpgsqlPolygon? CPolygon, NpgsqlCircle? CCircle);
     public async Task InsertPostgresGeoTypes(InsertPostgresGeoTypesArgs args)
     {

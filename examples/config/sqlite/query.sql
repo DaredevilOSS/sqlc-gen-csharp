@@ -1,8 +1,10 @@
 -- name: GetAuthor :one
-SELECT * FROM authors WHERE name = ? LIMIT 1;
+SELECT * FROM authors
+WHERE name = ? LIMIT 1;
 
 -- name: ListAuthors :many
-SELECT * FROM authors ORDER BY name;
+SELECT * FROM authors
+ORDER BY name;
 
 -- name: CreateAuthor :exec
 INSERT INTO authors (id, name, bio) VALUES (?, ?, ?);
@@ -11,13 +13,15 @@ INSERT INTO authors (id, name, bio) VALUES (?, ?, ?);
 INSERT INTO authors (name, bio) VALUES (?, ?) RETURNING id;
 
 -- name: GetAuthorById :one
-SELECT * FROM authors WHERE id = ? LIMIT 1;
+SELECT * FROM authors
+WHERE id = ? LIMIT 1;
 
 -- name: GetAuthorByNamePattern :many
-SELECT * FROM authors WHERE name LIKE COALESCE(sqlc.narg('name_pattern'), '%');
+SELECT * FROM authors
+WHERE name LIKE COALESCE(sqlc.narg('name_pattern'), '%');
 
 -- name: UpdateAuthors :execrows
-UPDATE authors 
+UPDATE authors
 SET bio = ?
 WHERE bio IS NOT NULL;
 
@@ -28,31 +32,41 @@ SELECT * FROM authors WHERE id IN (sqlc.slice('ids'));
 SELECT * FROM authors WHERE id IN (sqlc.slice('ids')) AND name IN (sqlc.slice('names'));
 
 -- name: DeleteAuthor :exec
-DELETE FROM authors WHERE name = ?;
+DELETE FROM authors
+WHERE name = ?;
 
 -- name: CreateBook :execlastid
 INSERT INTO books (name, author_id) VALUES (?, ?) RETURNING id;
 
 -- name: ListAllAuthorsBooks :many 
-SELECT sqlc.embed(authors), sqlc.embed(books) 
-FROM authors JOIN books ON authors.id = books.author_id 
+SELECT
+    sqlc.embed(authors),
+    sqlc.embed(books)
+FROM authors INNER JOIN books ON authors.id = books.author_id
 ORDER BY authors.name;
 
 -- name: GetDuplicateAuthors :many 
-SELECT sqlc.embed(authors1), sqlc.embed(authors2)
-FROM authors authors1 JOIN authors authors2 ON authors1.name = authors2.name
+SELECT
+    sqlc.embed(authors1),
+    sqlc.embed(authors2)
+FROM authors AS authors1
+INNER JOIN authors AS authors2 ON authors1.name = authors2.name
 WHERE authors1.id < authors2.id;
 
 -- name: GetAuthorsByBookName :many 
-SELECT authors.*, sqlc.embed(books)
-FROM authors JOIN books ON authors.id = books.author_id
+SELECT
+    authors.*,
+    sqlc.embed(books)
+FROM authors INNER JOIN books ON authors.id = books.author_id
 WHERE books.name = ?;
 
 -- name: DeleteAllAuthors :exec
 DELETE FROM authors;
 
 -- name: InsertSqliteTypes :exec
-INSERT INTO types_sqlite (c_integer, c_real, c_text, c_blob) VALUES (?, ?, ?, ?);
+INSERT INTO types_sqlite (c_integer, c_real, c_text, c_blob) VALUES (
+    ?, ?, ?, ?
+);
 
 -- name: InsertSqliteTypesBatch :copyfrom
 INSERT INTO types_sqlite (c_integer, c_real, c_text) VALUES (?, ?, ?);
@@ -61,13 +75,21 @@ INSERT INTO types_sqlite (c_integer, c_real, c_text) VALUES (?, ?, ?);
 SELECT * FROM types_sqlite LIMIT 1;
 
 -- name: GetSqliteTypesCnt :one
-SELECT COUNT(1) AS cnt , c_integer, c_real, c_text, c_blob
+SELECT
+    c_integer,
+    c_real,
+    c_text,
+    c_blob,
+    COUNT(*) AS cnt
 FROM types_sqlite
 GROUP BY c_integer, c_real, c_text, c_blob
 LIMIT 1;
 
 -- name: GetSqliteFunctions :one
-SELECT MAX(c_integer) AS max_integer, MAX(c_real) AS max_real, MAX(c_text) AS max_text
+SELECT
+    MAX(c_integer) AS max_integer,
+    MAX(c_real) AS max_real,
+    MAX(c_text) AS max_text
 FROM types_sqlite;
 
 -- name: DeleteAllSqliteTypes :exec
