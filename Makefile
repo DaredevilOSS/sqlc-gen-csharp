@@ -18,29 +18,26 @@ unit-tests:
 generate-end2end-tests:
 	./end2end/scripts/generate_tests.sh
     
-run-end2end-tests: generate-end2end-tests
+run-end2end-tests:
 	./end2end/scripts/run_tests.sh
 
 # process type plugin
-dotnet-build-process: protobuf-generate dotnet-format
-	dotnet build LocalRunner -c Release
-
-dotnet-publish-process: dotnet-build-process
+dotnet-publish-process:
 	dotnet publish LocalRunner -c release --output dist/
 
-sqlc-generate-process: dotnet-publish-process
+sync-sqlc-options:
 	./scripts/sync_sqlc_options.sh
-	sqlc -f sqlc.local.yaml generate
+
+sqlc-generate-requests:
+	SQLCCACHE=./; sqlc -f sqlc.requests.yaml generate
+
+sqlc-generate:
+	SQLCCACHE=./; sqlc -f sqlc.local.yaml generate
+
+test-plugin: protobuf-generate sync-sqlc-options dotnet-publish-process sqlc-generate-requests unit-tests sqlc-generate generate-end2end-tests dotnet-build run-end2end-tests update-wasm-plugin
 
 # WASM type plugin
-dotnet-publish-wasm: protobuf-generate
+setup-ci-wasm-plugin:
 	dotnet publish WasmRunner -c release --output dist/
 	./scripts/wasm/copy_plugin_to.sh dist
-
-update-wasm-plugin:
 	./scripts/wasm/update_sha.sh sqlc.ci.yaml
-
-sqlc-generate-wasm: dotnet-publish-wasm update-wasm-plugin
-	SQLCCACHE=./; sqlc -f sqlc.ci.yaml generate
-
-test-wasm-plugin: sqlc-generate-process unit-tests sqlc-generate-wasm update-wasm-plugin dotnet-build run-end2end-tests
