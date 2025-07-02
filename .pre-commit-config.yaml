@@ -4,3 +4,11 @@ repos:
   hooks:
     - id: sqlfluff-fix
       args: [--FIX-EVEN-UNPARSABLE]
+- repo: local
+  hooks:
+    - id: dotnet-format
+      name: dotnet format
+      entry: dotnet format sqlc-gen-csharp.sln --include
+      language: system
+      pass_filenames: true
+      files: ^((?!GeneratedProtobuf/|examples/).)*\.cs$

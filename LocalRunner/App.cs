@@ -1,3 +1,5 @@
+using System;
+
 namespace SqlcGenCsharp;
 
 public static class App
