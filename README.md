@@ -47,7 +47,7 @@ sql:
 | namespaceName        | default: the generated project name | Yes | Allows you to override the namespace name to be different than the project name |
 | useDapper           | default: `false`<br/>values: `false`,`true` | Yes | Enables Dapper as a thin wrapper for the generated code. For more information, please refer to the [Dapper documentation](https://github.com/DapperLib/Dapper). |
 | overrideDapperVersion| default:<br/> `2.1.35`<br/>values: The desired Dapper version | Yes | If `useDapper` is set to `true`, this option allows you to override the version of Dapper to be used. |
-| Override            | values: A nested override value like [this](#override-option). | Yes | Allows you to override the generated C# data types for specific columns in specific queries. This option accepts a `query_name:column_name` mapping and the overriden data type. |
+| Override            | values: A nested override value like [this](#override-option). | Yes | Allows you to override the generated C# data types for specific columns in specific queries. This option accepts a `query_name:column_name` mapping and the overriden data type. |                                                                                     |
 
 ### Override option
 ```yaml
@@ -298,10 +298,9 @@ Follow the instructions in each of these:
 - WASM (follow this guide) - [WASM libs](https://www.strathweb.com/2023/09/dotnet-wasi-applications-in-net-8-0/)
 
 ## Pre-commit Setup
-
 This repository uses [pre-commit](https://pre-commit.com/). To set up pre-commit hooks, run:
 
-```sh
+```bash
 pip install pre-commit
 pre-commit install
 ```
@@ -350,6 +349,19 @@ useDapper: false
 targetFramework: net8.0
 generateCsproj: true
 namespaceName: NpgsqlExampleGen
+overrides:
+- column: "GetPostgresFunctions:max_integer"
+  csharp_type:
+    type: "int"
+    notNull: false
+- column: "GetPostgresFunctions:max_varchar"
+  csharp_type:
+    type: "string"
+    notNull: false
+- column: "GetPostgresFunctions:max_timestamp"
+  csharp_type:
+    type: "DateTime"
+    notNull: true
 ```
 
 </details>
@@ -364,6 +376,19 @@ useDapper: true
 targetFramework: net8.0
 generateCsproj: true
 namespaceName: NpgsqlDapperExampleGen
+overrides:
+- column: "GetPostgresFunctions:max_integer"
+  csharp_type:
+    type: "int"
+    notNull: false
+- column: "GetPostgresFunctions:max_varchar"
+  csharp_type:
+    type: "string"
+    notNull: false
+- column: "GetPostgresFunctions:max_timestamp"
+  csharp_type:
+    type: "DateTime"
+    notNull: true
 ```
 
 </details>
@@ -378,6 +403,19 @@ useDapper: false
 targetFramework: netstandard2.0
 generateCsproj: true
 namespaceName: NpgsqlLegacyExampleGen
+overrides:
+- column: "GetPostgresFunctions:max_integer"
+  csharp_type:
+    type: "int"
+    notNull: false
+- column: "GetPostgresFunctions:max_varchar"
+  csharp_type:
+    type: "string"
+    notNull: false
+- column: "GetPostgresFunctions:max_timestamp"
+  csharp_type:
+    type: "DateTime"
+    notNull: true
 ```
 
 </details>
@@ -392,6 +430,19 @@ useDapper: true
 targetFramework: netstandard2.0
 generateCsproj: true
 namespaceName: NpgsqlDapperLegacyExampleGen
+overrides:
+- column: "GetPostgresFunctions:max_integer"
+  csharp_type:
+    type: "int"
+    notNull: false
+- column: "GetPostgresFunctions:max_varchar"
+  csharp_type:
+    type: "string"
+    notNull: false
+- column: "GetPostgresFunctions:max_timestamp"
+  csharp_type:
+    type: "DateTime"
+    notNull: true
 ```
 
 </details>
@@ -406,6 +457,23 @@ useDapper: false
 targetFramework: net8.0
 generateCsproj: true
 namespaceName: MySqlConnectorExampleGen
+overrides:
+- column: "GetMysqlFunctions:max_int"
+  csharp_type:
+    type: "int"
+    notNull: false
+- column: "GetMysqlFunctions:max_varchar"
+  csharp_type:
+    type: "string"
+    notNull: false
+- column: "GetMysqlFunctions:max_timestamp"
+  csharp_type:
+    type: "DateTime"
+    notNull: true
+- column: "GetMysqlFunctions:max_bigint"
+  csharp_type:
+    type: "long"
+    notNull: true
 ```
 
 </details>
@@ -420,6 +488,23 @@ useDapper: true
 targetFramework: net8.0
 generateCsproj: true
 namespaceName: MySqlConnectorDapperExampleGen
+overrides:
+- column: "GetMysqlFunctions:max_int"
+  csharp_type:
+    type: "int"
+    notNull: false
+- column: "GetMysqlFunctions:max_varchar"
+  csharp_type:
+    type: "string"
+    notNull: false
+- column: "GetMysqlFunctions:max_timestamp"
+  csharp_type:
+    type: "DateTime"
+    notNull: true
+- column: "GetMysqlFunctions:max_bigint"
+  csharp_type:
+    type: "long"
+    notNull: true
 ```
 
 </details>
@@ -434,6 +519,23 @@ useDapper: false
 targetFramework: netstandard2.0
 generateCsproj: true
 namespaceName: MySqlConnectorLegacyExampleGen
+overrides:
+- column: "GetMysqlFunctions:max_int"
+  csharp_type:
+    type: "int"
+    notNull: false
+- column: "GetMysqlFunctions:max_varchar"
+  csharp_type:
+    type: "string"
+    notNull: false
+- column: "GetMysqlFunctions:max_timestamp"
+  csharp_type:
+    type: "DateTime"
+    notNull: true
+- column: "GetMysqlFunctions:max_bigint"
+  csharp_type:
+    type: "long"
+    notNull: true
 ```
 
 </details>
@@ -448,6 +550,23 @@ useDapper: true
 targetFramework: netstandard2.0
 generateCsproj: true
 namespaceName: MySqlConnectorDapperLegacyExampleGen
+overrides:
+- column: "GetMysqlFunctions:max_int"
+  csharp_type:
+    type: "int"
+    notNull: false
+- column: "GetMysqlFunctions:max_varchar"
+  csharp_type:
+    type: "string"
+    notNull: false
+- column: "GetMysqlFunctions:max_timestamp"
+  csharp_type:
+    type: "DateTime"
+    notNull: true
+- column: "GetMysqlFunctions:max_bigint"
+  csharp_type:
+    type: "long"
+    notNull: true
 ```
 
 </details>
@@ -462,6 +581,19 @@ useDapper: false
 targetFramework: net8.0
 generateCsproj: true
 namespaceName: SqliteExampleGen
+overrides:
+- column: "GetSqliteFunctions:max_integer"
+  csharp_type:
+    type: "int"
+    notNull: false
+- column: "GetSqliteFunctions:max_varchar"
+  csharp_type:
+    type: "string"
+    notNull: false
+- column: "GetSqliteFunctions:max_real"
+  csharp_type:
+    type: "decimal"
+    notNull: true
 ```
 
 </details>
@@ -476,6 +608,19 @@ useDapper: true
 targetFramework: net8.0
 generateCsproj: true
 namespaceName: SqliteDapperExampleGen
+overrides:
+- column: "GetSqliteFunctions:max_integer"
+  csharp_type:
+    type: "int"
+    notNull: false
+- column: "GetSqliteFunctions:max_varchar"
+  csharp_type:
+    type: "string"
+    notNull: false
+- column: "GetSqliteFunctions:max_real"
+  csharp_type:
+    type: "decimal"
+    notNull: true
 ```
 
 </details>
@@ -490,6 +635,19 @@ useDapper: false
 targetFramework: netstandard2.0
 generateCsproj: true
 namespaceName: SqliteLegacyExampleGen
+overrides:
+- column: "GetSqliteFunctions:max_integer"
+  csharp_type:
+    type: "int"
+    notNull: false
+- column: "GetSqliteFunctions:max_varchar"
+  csharp_type:
+    type: "string"
+    notNull: false
+- column: "GetSqliteFunctions:max_real"
+  csharp_type:
+    type: "decimal"
+    notNull: true
 ```
 
 </details>
@@ -504,6 +662,19 @@ useDapper: true
 targetFramework: netstandard2.0
 generateCsproj: true
 namespaceName: SqliteDapperLegacyExampleGen
+overrides:
+- column: "GetSqliteFunctions:max_integer"
+  csharp_type:
+    type: "int"
+    notNull: false
+- column: "GetSqliteFunctions:max_varchar"
+  csharp_type:
+    type: "string"
+    notNull: false
+- column: "GetSqliteFunctions:max_real"
+  csharp_type:
+    type: "decimal"
+    notNull: true
 ```
 
 </details>
