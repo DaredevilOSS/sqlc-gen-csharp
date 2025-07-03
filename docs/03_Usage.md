@@ -68,12 +68,8 @@ More info can be found in [here](https://docs.sqlc.dev/en/stable/reference/macro
 Transactions are supported by the plugin.
 <br/>
 
-| Feature     | PostgresSQL | MySQL | SQLite  |
-|-------------|-------------|-------|---------|
-| Transactions| ✅          | ✅    | ✅       | 
-
 #### Example using a transaction
-```c#
+```C#
 public async Task ExampleTransaction(IDbConnection connection)
 {
     // Begin a transaction

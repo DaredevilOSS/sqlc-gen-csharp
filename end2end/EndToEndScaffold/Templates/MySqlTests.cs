@@ -533,21 +533,21 @@ public static class MySqlTests
                          await connection.OpenAsync();
                          var transaction = connection.BeginTransaction();
 
-                         var sqlQueryWithTx = QuerySql.WithTransaction(transaction);
-                         await sqlQueryWithTx.CreateAuthor(new QuerySql.CreateAuthorArgs { Id = 1111, Name = "Bojack Horseman", Bio = "Back in the 90s he was in a very famous TV show" });
+                         var querySqlWithTx = QuerySql.WithTransaction(transaction);
+                         await querySqlWithTx.CreateAuthor(new QuerySql.CreateAuthorArgs { Id = {{Consts.BojackId}}, Name = {{Consts.BojackAuthor}}, Bio = {{Consts.BojackTheme}} });
 
-                         var actualNull = await this.QuerySql.GetAuthor(new QuerySql.GetAuthorArgs { Name = "Bojack Horseman" });
+                         var actualNull = await QuerySql.GetAuthor(new QuerySql.GetAuthorArgs { Name = {{Consts.BojackAuthor}} });
                          Assert.That(actualNull == null, "there is author"); // This is correct for nullable types
 
                          await transaction.CommitAsync();
 
                          var expected = new QuerySql.GetAuthorRow
                          {
-                             Id = 1111,
-                             Name = "Bojack Horseman",
-                             Bio = "Back in the 90s he was in a very famous TV show"
+                             Id = {{Consts.BojackId}},
+                             Name = {{Consts.BojackAuthor}},
+                             Bio = {{Consts.BojackTheme}}
                          };
-                         var actual = await this.QuerySql.GetAuthor(new QuerySql.GetAuthorArgs { Name = "Bojack Horseman" });
+                         var actual = await QuerySql.GetAuthor(new QuerySql.GetAuthorArgs { Name = {{Consts.BojackAuthor}} });
                          Assert.That(SingularEquals(expected, actual{{Consts.UnknownRecordValuePlaceholder}})); // Apply placeholder here
                      }
                      """
@@ -562,12 +562,12 @@ public static class MySqlTests
                          await connection.OpenAsync();
                          var transaction = connection.BeginTransaction();
 
-                         var sqlQueryWithTx = QuerySql.WithTransaction(transaction);
-                         await sqlQueryWithTx.CreateAuthor(new QuerySql.CreateAuthorArgs { Id = 1111, Name = "Bojack Horseman", Bio = "Back in the 90s he was in a very famous TV show" });
+                         var querySqlWithTx = QuerySql.WithTransaction(transaction);
+                         await querySqlWithTx.CreateAuthor(new QuerySql.CreateAuthorArgs { Id = {{Consts.BojackId}}, Name = {{Consts.BojackAuthor}}, Bio = {{Consts.BojackTheme}} });
 
                          await transaction.RollbackAsync();
 
-                         var actual = await this.QuerySql.GetAuthor(new QuerySql.GetAuthorArgs { Name = "Bojack Horseman" });
+                         var actual = await QuerySql.GetAuthor(new QuerySql.GetAuthorArgs { Name = {{Consts.BojackAuthor}} });
                          Assert.That(actual == null, "author should not exist after rollback");
                      }
                      """
