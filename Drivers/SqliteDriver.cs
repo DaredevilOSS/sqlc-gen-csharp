@@ -16,34 +16,53 @@ public partial class SqliteDriver(
     IList<Query> queries) :
     DbDriver(options, defaultSchema, tables, enums, queries), IOne, IMany, IExec, IExecRows, IExecLastId, ICopyFrom
 {
-    protected override List<ColumnMapping> ColumnMappings { get; } = [
-        new("byte[]", new Dictionary<string, DbTypeInfo>
-            {
-                {"blob", new DbTypeInfo()}
-            }, ordinal => $"reader.GetFieldValue<byte[]>({ordinal})"),
-        new("string",
-            new Dictionary<string, DbTypeInfo>
-            {
-                {"text", new DbTypeInfo()}
-            }, ordinal => $"reader.GetString({ordinal})"),
-        new("int",
-            new Dictionary<string, DbTypeInfo>
-            {
-                { "integer", new DbTypeInfo() },
-                { "integernotnulldefaultunixepoch", new DbTypeInfo() } // return type of UNIXEPOCH function
-            }, ordinal => $"reader.GetInt32({ordinal})"),
-        new("decimal",
-            new Dictionary<string, DbTypeInfo>
-            {
-                {"real", new DbTypeInfo()}
-            }, ordinal => $"reader.GetDecimal({ordinal})"),
-        // last item in the dictionary - enforce TODO
-        new("object",
-            new Dictionary<string, DbTypeInfo>
-            {
-                { "any", new DbTypeInfo() }
-            }, ordinal => $"reader.GetValue({ordinal})")
-    ];
+    protected override Dictionary<string, ColumnMapping> ColumnMappings { get; } =
+        new()
+        {
+            ["byte[]"] = new ColumnMapping(
+                new Dictionary<string, DbTypeInfo>
+                {
+                    {"blob", new DbTypeInfo()}
+                },
+                ordinal => $"reader.GetFieldValue<byte[]>({ordinal})"
+            ),
+            ["string"] = new ColumnMapping(
+                new Dictionary<string, DbTypeInfo>
+                {
+                    {"text", new DbTypeInfo()}
+                },
+                ordinal => $"reader.GetString({ordinal})"
+            ),
+            ["int"] = new ColumnMapping(
+                new Dictionary<string, DbTypeInfo>
+                {
+                    { "integer", new DbTypeInfo() },
+                    { "integernotnulldefaultunixepoch", new DbTypeInfo() }
+                },
+                ordinal => $"reader.GetInt32({ordinal})"
+            ),
+            ["decimal"] = new ColumnMapping(
+                new Dictionary<string, DbTypeInfo>
+                {
+                    {"real", new DbTypeInfo()}
+                },
+                ordinal => $"reader.GetDecimal({ordinal})"
+            ),
+            ["object"] = new ColumnMapping(
+                new Dictionary<string, DbTypeInfo>
+                {
+                    { "any", new DbTypeInfo() }
+                },
+                ordinal => $"reader.GetValue({ordinal})"
+            ),
+            ["long"] = new ColumnMapping(
+                new Dictionary<string, DbTypeInfo>
+                {
+                    { "bigint", new DbTypeInfo() }
+                },
+                ordinal => $"reader.GetInt64({ordinal})"
+            ),
+        };
 
     public override UsingDirectiveSyntax[] GetUsingDirectivesForQueries()
     {

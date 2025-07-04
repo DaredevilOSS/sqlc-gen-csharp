@@ -92,7 +92,7 @@ public class CommonGen(DbDriver dbDriver)
                  """;
     }
 
-    public string InstantiateDataclass(Column[] columns, string returnInterface, Query? query)
+    public string InstantiateDataclass(Column[] columns, string returnInterface, Query query)
     {
         var columnsInit = new List<string>();
         var actualOrdinal = 0;
@@ -120,7 +120,7 @@ public class CommonGen(DbDriver dbDriver)
 
         return InstantiateDataclassInternal(returnInterface, columnsInit);
 
-        string[] GetAsEmbeddedTableColumnAssignment(Column tableColumn, int ordinal, Query? query)
+        string[] GetAsEmbeddedTableColumnAssignment(Column tableColumn, int ordinal, Query query)
         {
             var schemaName = tableColumn.EmbedTable.Schema == dbDriver.DefaultSchema ? string.Empty : tableColumn.EmbedTable.Schema;
             var tableColumns = dbDriver.Tables[schemaName][tableColumn.EmbedTable.Name].Columns;
