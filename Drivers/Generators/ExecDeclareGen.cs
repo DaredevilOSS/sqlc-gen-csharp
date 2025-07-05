@@ -25,7 +25,7 @@ public class ExecDeclareGen(DbDriver dbDriver)
         var sqlTextTransform = CommonGen.GetSqlTransformations(query, queryTextConstant);
         var useDapper = dbDriver.Options.UseDapper;
 
-        var dapperParams = useDapper ? CommonGen.ConstructDapperParamsDict(query.Params) : string.Empty;
+        var dapperParams = useDapper ? CommonGen.ConstructDapperParamsDict(query) : string.Empty;
         var sqlVar = sqlTextTransform != string.Empty ? Variable.TransformedSql.AsVarName() : queryTextConstant;
         var transactionProperty = Variable.Transaction.AsPropertyName();
 
@@ -76,7 +76,7 @@ public class ExecDeclareGen(DbDriver dbDriver)
     {
         var (establishConnection, connectionOpen) = dbDriver.EstablishConnection(query);
         var createSqlCommand = dbDriver.CreateSqlCommand(sqlVar);
-        var commandParameters = CommonGen.AddParametersToCommand(query.Params);
+        var commandParameters = CommonGen.AddParametersToCommand(query);
         return $$"""
                     using ({{establishConnection}})
                     {
@@ -95,7 +95,7 @@ public class ExecDeclareGen(DbDriver dbDriver)
     {
         var transactionProperty = Variable.Transaction.AsPropertyName();
         var commandVar = Variable.Command.AsVarName();
-        var commandParameters = CommonGen.AddParametersToCommand(query.Params);
+        var commandParameters = CommonGen.AddParametersToCommand(query);
 
         return $$"""
                     if (this.{{transactionProperty}}?.Connection == null || this.{{transactionProperty}}?.Connection.State != System.Data.ConnectionState.Open)

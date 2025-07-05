@@ -2,11 +2,17 @@
 namespace SqliteDapperLegacyExampleGen
 {
     using System.Linq;
+    using System.Data;
+    using Dapper;
     using System;
     using System.Text.RegularExpressions;
 
     public static class Utils
     {
+        public static void ConfigureSqlMapper()
+        {
+        }
+
         public static string TransformQueryForSliceArgs(string originalSql, int sliceSize, string paramName)
         {
             var paramArgs = Enumerable.Range(0, sliceSize).Select(i => $"@{paramName}Arg{i}").ToList();

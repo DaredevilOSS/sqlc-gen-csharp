@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Text.Json;
 
 namespace EndToEndScaffold.Templates;
 
@@ -630,6 +631,39 @@ public static class MySqlTests
                      }
                      """
         },
+        [KnownTestType.MySqlJsonDataTypes] = new TestImpl
+        {
+            Impl = $$"""
+                     [Test]
+                     [TestCase("{\"age\": 42, \"name\": \"The Hitchhiker's Guide to the Galaxy\"}")]
+                     [TestCase(null)]
+                     public async Task TestMySqlJsonDataType(string json)
+                     {
+                         JsonElement? jsonElement = null;
+                         if (json != null)
+                             jsonElement = JsonDocument.Parse(json).RootElement;
+                             
+                         await QuerySql.InsertMysqlTypes(new QuerySql.InsertMysqlTypesArgs
+                         {
+                             CJson = jsonElement
+                         });
+                         var expected = new QuerySql.GetMysqlTypesRow
+                         {
+                             CJson = jsonElement
+                         };
+                         var actual = await QuerySql.GetMysqlTypes();
+                         AssertSingularEquals(expected, actual{{Consts.UnknownRecordValuePlaceholder}});
+                     }
+
+                     private static void AssertSingularEquals(QuerySql.GetMysqlTypesRow x, QuerySql.GetMysqlTypesRow y)
+                     {
+                        Assert.That(x.CJson.HasValue, Is.EqualTo(y.CJson.HasValue));
+                        if (x.CJson.HasValue)
+                            Assert.That(x.CJson.Value.GetRawText(), Is.EqualTo(y.CJson.Value.GetRawText()));
+                     }
+                     """
+        },
+
         [KnownTestType.MySqlDataTypesOverride] = new TestImpl
         {
             Impl = $$"""

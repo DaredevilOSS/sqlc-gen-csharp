@@ -28,10 +28,10 @@ sync-sqlc-options:
 sqlc-generate-requests:
 	SQLCCACHE=./; sqlc -f sqlc.requests.yaml generate
 
-sqlc-generate:
+sqlc-generate: sync-sqlc-options protobuf-generate dotnet-publish-process sqlc-generate-requests
 	SQLCCACHE=./; sqlc -f sqlc.local.yaml generate
 
-test-plugin: protobuf-generate sync-sqlc-options dotnet-publish-process sqlc-generate-requests unit-tests sqlc-generate generate-end2end-tests dotnet-build run-end2end-tests
+test-plugin: unit-tests sqlc-generate generate-end2end-tests dotnet-build run-end2end-tests
 
 # WASM type plugin
 setup-ci-wasm-plugin:

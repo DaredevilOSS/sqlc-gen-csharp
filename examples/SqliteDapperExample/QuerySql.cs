@@ -16,13 +16,13 @@ public class QuerySql
     public QuerySql(string connectionString)
     {
         this.ConnectionString = connectionString;
+        Utils.ConfigureSqlMapper();
         Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
     }
 
     private QuerySql(SqliteTransaction transaction)
     {
         this.Transaction = transaction;
-        Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
     }
 
     public static QuerySql WithTransaction(SqliteTransaction transaction)

@@ -1,4 +1,5 @@
 using Plugin;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -13,34 +14,47 @@ public class CommonGen(DbDriver dbDriver)
             : $"{argInterface} {Variable.Args.AsVarName()}")}";
     }
 
-    public static string AddParametersToCommand(IEnumerable<Parameter> parameters)
+    private Func<string, bool, bool, string>? GetWriterFn(Column column, Query query)
     {
-        return parameters.Select(p =>
+        var csharpType = dbDriver.GetCsharpTypeWithoutNullableSuffix(column, query);
+        var writerFn = dbDriver.ColumnMappings.GetValueOrDefault(csharpType)?.WriterFn;
+        if (writerFn is not null)
+            return writerFn;
+
+        var defaultWriterFn = (string el, bool notNull, bool isDapper) => notNull ? el : $"{el} ?? (object)DBNull.Value";
+        return dbDriver.Options.UseDapper ? null : defaultWriterFn;
+    }
+
+    public string AddParametersToCommand(Query query)
+    {
+        return query.Params.Select(p =>
         {
             var commandVar = Variable.Command.AsVarName();
-            var param = p.Column.Name.ToPascalCase();
-            var argsVar = Variable.Args.AsVarName();
+            var param = $"{Variable.Args.AsVarName()}.{p.Column.Name.ToPascalCase()}";
             if (p.Column.IsSqlcSlice)
                 return $$"""
-                         for (int i = 0; i < {{argsVar}}.{{param}}.Length; i++)
-                             {{commandVar}}.Parameters.AddWithValue($"@{{p.Column.Name}}Arg{i}", {{argsVar}}.{{param}}[i]);
+                         for (int i = 0; i < {{param}}.Length; i++)
+                             {{commandVar}}.Parameters.AddWithValue($"@{{p.Column.Name}}Arg{i}", {{param}}[i]);
                          """;
 
-            var nullParamCast = p.Column.NotNull ? string.Empty : " ?? (object)DBNull.Value";
-            var addParamToCommand = $"""{commandVar}.Parameters.AddWithValue("@{p.Column.Name}", {argsVar}.{param}{nullParamCast});""";
+            var notNull = dbDriver.IsColumnNotNull(p.Column, query);
+            var writerFn = GetWriterFn(p.Column, query);
+            var paramToWrite = writerFn is null ? param : writerFn(param, notNull, dbDriver.Options.UseDapper);
+            var addParamToCommand = $"""{commandVar}.Parameters.AddWithValue("@{p.Column.Name}", {paramToWrite});""";
             return addParamToCommand;
         }).JoinByNewLine();
     }
 
-    public string ConstructDapperParamsDict(IList<Parameter> parameters)
+    public string ConstructDapperParamsDict(Query query)
     {
-        if (!parameters.Any()) return string.Empty;
+        if (!query.Params.Any()) return string.Empty;
+
         var objectType = dbDriver.AddNullableSuffixIfNeeded("object", false);
         var initParamsDict = $"var {Variable.QueryParams.AsVarName()} = new Dictionary<string, {objectType}>();";
         var argsVar = Variable.Args.AsVarName();
         var queryParamsVar = Variable.QueryParams.AsVarName();
 
-        var dapperParamsCommands = parameters.Select(p =>
+        var dapperParamsCommands = query.Params.Select(p =>
         {
             var param = p.Column.Name.ToPascalCase();
             if (p.Column.IsSqlcSlice)
@@ -51,7 +65,11 @@ public class CommonGen(DbDriver dbDriver)
 
             if (dbDriver.Enums.ContainsKey(p.Column.Type.Name))
                 param += "?.ToEnumString()";
-            var addParamToDict = $"{queryParamsVar}.Add(\"{p.Column.Name}\", {argsVar}.{param});";
+
+            var notNull = dbDriver.IsColumnNotNull(p.Column, query);
+            var writerFn = GetWriterFn(p.Column, query);
+            var paramToWrite = writerFn is null ? $"{argsVar}.{param}" : writerFn($"{argsVar}.{param}", notNull, dbDriver.Options.UseDapper);
+            var addParamToDict = $"{queryParamsVar}.Add(\"{p.Column.Name}\", {paramToWrite});";
             return addParamToDict;
         });
 

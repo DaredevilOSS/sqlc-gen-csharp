@@ -9,6 +9,7 @@ namespace NpgsqlLegacyExampleGen
     using System;
     using System.Collections.Generic;
     using System.Threading.Tasks;
+    using System.Text.Json;
     using Npgsql;
     using NpgsqlTypes;
     using System.Data;
@@ -975,7 +976,7 @@ namespace NpgsqlLegacyExampleGen
             public string CCharacterVarying { get; set; }
             public byte[] CBytea { get; set; }
             public string CText { get; set; }
-            public object CJson { get; set; }
+            public JsonElement? CJson { get; set; }
             public string[] CTextArray { get; set; }
             public int[] CIntegerArray { get; set; }
         };
@@ -1012,7 +1013,7 @@ namespace NpgsqlLegacyExampleGen
                                     CCharacterVarying = reader.IsDBNull(16) ? null : reader.GetString(16),
                                     CBytea = reader.IsDBNull(17) ? null : reader.GetFieldValue<byte[]>(17),
                                     CText = reader.IsDBNull(18) ? null : reader.GetString(18),
-                                    CJson = reader.IsDBNull(19) ? null : reader.GetString(19),
+                                    CJson = reader.IsDBNull(19) ? (JsonElement? )null : JsonSerializer.Deserialize<JsonElement>(reader.GetString(19)),
                                     CTextArray = reader.IsDBNull(20) ? null : reader.GetFieldValue<string[]>(20),
                                     CIntegerArray = reader.IsDBNull(21) ? null : reader.GetFieldValue<int[]>(21)
                                 };
@@ -1058,7 +1059,7 @@ namespace NpgsqlLegacyExampleGen
                             CCharacterVarying = reader.IsDBNull(16) ? null : reader.GetString(16),
                             CBytea = reader.IsDBNull(17) ? null : reader.GetFieldValue<byte[]>(17),
                             CText = reader.IsDBNull(18) ? null : reader.GetString(18),
-                            CJson = reader.IsDBNull(19) ? null : reader.GetString(19),
+                            CJson = reader.IsDBNull(19) ? (JsonElement? )null : JsonSerializer.Deserialize<JsonElement>(reader.GetString(19)),
                             CTextArray = reader.IsDBNull(20) ? null : reader.GetFieldValue<string[]>(20),
                             CIntegerArray = reader.IsDBNull(21) ? null : reader.GetFieldValue<int[]>(21)
                         };

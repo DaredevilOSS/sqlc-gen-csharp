@@ -28,7 +28,7 @@ public class OneDeclareGen(DbDriver dbDriver)
         var anyEmbeddedTableExists = query.Columns.Any(c => c.EmbedTable is not null);
         var useDapper = dbDriver.Options.UseDapper && !anyEmbeddedTableExists;
 
-        var dapperParams = useDapper ? CommonGen.ConstructDapperParamsDict(query.Params) : string.Empty;
+        var dapperParams = useDapper ? CommonGen.ConstructDapperParamsDict(query) : string.Empty;
         var sqlVar = sqlTextTransform != string.Empty ? Variable.TransformedSql.AsVarName() : queryTextConstant;
         var transactionProperty = Variable.Transaction.AsPropertyName();
 
@@ -83,7 +83,7 @@ public class OneDeclareGen(DbDriver dbDriver)
     {
         var (establishConnection, connectionOpen) = dbDriver.EstablishConnection(query);
         var createSqlCommand = dbDriver.CreateSqlCommand(sqlVar);
-        var commandParameters = CommonGen.AddParametersToCommand(query.Params);
+        var commandParameters = CommonGen.AddParametersToCommand(query);
         var initDataReader = CommonGen.InitDataReader();
         var awaitReaderRow = CommonGen.AwaitReaderRow();
         var returnDataclass = CommonGen.InstantiateDataclass(query.Columns.ToArray(), returnInterface, query);
@@ -112,7 +112,7 @@ public class OneDeclareGen(DbDriver dbDriver)
     {
         var transactionProperty = Variable.Transaction.AsPropertyName();
         var commandVar = Variable.Command.AsVarName();
-        var commandParameters = CommonGen.AddParametersToCommand(query.Params);
+        var commandParameters = CommonGen.AddParametersToCommand(query);
         var initDataReader = CommonGen.InitDataReader();
         var awaitReaderRow = CommonGen.AwaitReaderRow();
         var returnDataclass = CommonGen.InstantiateDataclass(query.Columns.ToArray(), returnInterface, query);

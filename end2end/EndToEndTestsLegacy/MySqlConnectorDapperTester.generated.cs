@@ -1,4 +1,5 @@
 using MySqlConnectorDapperLegacyExampleGen;
+using System.Text.Json;
 using NUnit.Framework;
 using NUnit.Framework.Legacy;
 using System;
@@ -522,6 +523,30 @@ namespace EndToEndTests
         private static bool SingularEquals(QuerySql.GetFirstExtendedBioByTypeRow x, QuerySql.GetFirstExtendedBioByTypeRow y)
         {
             return x.AuthorName.Equals(y.AuthorName) && x.Name.Equals(y.Name) && x.BioType.Equals(y.BioType);
+        }
+
+        [Test]
+        [TestCase("{\"age\": 42, \"name\": \"The Hitchhiker's Guide to the Galaxy\"}")]
+        [TestCase(null)]
+        public async Task TestMySqlJsonDataType(string json)
+        {
+            JsonElement? jsonElement = null;
+            if (json != null)
+                jsonElement = JsonDocument.Parse(json).RootElement;
+            await QuerySql.InsertMysqlTypes(new QuerySql.InsertMysqlTypesArgs { CJson = jsonElement });
+            var expected = new QuerySql.GetMysqlTypesRow
+            {
+                CJson = jsonElement
+            };
+            var actual = await QuerySql.GetMysqlTypes();
+            AssertSingularEquals(expected, actual);
+        }
+
+        private static void AssertSingularEquals(QuerySql.GetMysqlTypesRow x, QuerySql.GetMysqlTypesRow y)
+        {
+            Assert.That(x.CJson.HasValue, Is.EqualTo(y.CJson.HasValue));
+            if (x.CJson.HasValue)
+                Assert.That(x.CJson.Value.GetRawText(), Is.EqualTo(y.CJson.Value.GetRawText()));
         }
 
         [Test]

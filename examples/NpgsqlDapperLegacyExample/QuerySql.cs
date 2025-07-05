@@ -10,6 +10,7 @@ namespace NpgsqlDapperLegacyExampleGen
     using System.Collections.Generic;
     using System.Threading.Tasks;
     using Dapper;
+    using System.Text.Json;
     using Npgsql;
     using NpgsqlTypes;
     using System.Data;
@@ -19,15 +20,13 @@ namespace NpgsqlDapperLegacyExampleGen
         public QuerySql(string connectionString)
         {
             this.ConnectionString = connectionString;
-            Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
             Utils.ConfigureSqlMapper();
+            Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
         }
 
         private QuerySql(NpgsqlTransaction transaction)
         {
             this.Transaction = transaction;
-            Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
-            Utils.ConfigureSqlMapper();
         }
 
         public static QuerySql WithTransaction(NpgsqlTransaction transaction)
@@ -704,7 +703,7 @@ namespace NpgsqlDapperLegacyExampleGen
             public string CCharacterVarying { get; set; }
             public byte[] CBytea { get; set; }
             public string CText { get; set; }
-            public object CJson { get; set; }
+            public JsonElement? CJson { get; set; }
             public string[] CTextArray { get; set; }
             public int[] CIntegerArray { get; set; }
         };
