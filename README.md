@@ -12,8 +12,8 @@ version: "2"
 plugins:
 - name: csharp
   wasm:
-    url: https://github.com/DaredevilOSS/sqlc-gen-csharp/releases/download/v0.17.0/sqlc-gen-csharp.wasm
-    sha256: 39df119c6f5bd5a82f30e48f296a0e0827668fb7659e87ba5da53c0943a10986
+    url: https://github.com/DaredevilOSS/sqlc-gen-csharp/releases/download/v0.18.0/sqlc-gen-csharp.wasm
+    sha256: 5564052d3133c4127c067b7528e2b62e78ccf03cb99c7fc2aade0764b9455125
 sql:
   # For PostgresSQL
   - schema: schema.sql
@@ -101,7 +101,49 @@ More info can be found in [here](https://docs.sqlc.dev/en/stable/reference/query
 | sqlc.embed  | ✅          | ✅    | ✅       |
 
 More info can be found in [here](https://docs.sqlc.dev/en/stable/reference/macros.html#macros).
-# PostgresSQL
+
+
+### Transactions
+Transactions are supported by the plugin.
+<br/>
+
+#### Example using a transaction
+```C#
+public async Task ExampleTransaction(IDbConnection connection)
+{
+    // Begin a transaction
+    using (var transaction = connection.BeginTransaction())
+    {
+        try
+        {
+            // Create a new Queries object with the transaction instead of the connection
+            var queries = QuerySql.WithTransaction(transaction);
+
+            // Example: Insert a new author
+            var newAuthor = await queries.CreateAuthor(new CreateAuthorParams { Name = "Jane Doe", Bio = "Another author" });
+
+            // Example: Get the author by ID within the same transaction
+            var author = await queries.GetAuthor(newAuthor.AuthorID);
+
+            // Example: Update the author's bio
+            await queries.UpdateAuthorBio(new UpdateAuthorBioParams { AuthorID = author.AuthorID, Bio = "Updated bio for Jane Doe" });
+
+            // Commit the transaction if all operations are successful
+            transaction.Commit();
+            Console.WriteLine("Transaction committed successfully.");
+        }
+        catch (Exception ex)
+        {
+            // Rollback the transaction if any error occurs
+            transaction.Rollback();
+            Console.WriteLine($"Transaction rolled back due to error: {ex.Message}");
+            throw;
+        }
+    }
+}
+```
+
+More info can be found in [here](https://docs.sqlc.dev/en/stable/howto/transactions.html).# PostgresSQL
 <details>
 <summary>:execlastid - Implementation</summary>
 
