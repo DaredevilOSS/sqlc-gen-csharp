@@ -49,7 +49,10 @@ internal class QueriesGen(DbDriver dbDriver, string namespaceName)
     private (UsingDirectiveSyntax[], MemberDeclarationSyntax) GenerateClass(IEnumerable<Query> queries,
         string className)
     {
-        var usingDirectives = dbDriver.GetUsingDirectivesForQueries();
+        var usingDirectives = dbDriver
+            .GetUsingDirectivesForQueries()
+            .Select(x => UsingDirective(ParseName(x)))
+            .ToArray();
         var classMembers = queries.SelectMany(GetMembersForSingleQuery);
         return (usingDirectives, GetClassDeclaration(className, classMembers));
     }

@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Dapper;
+using System.Text.Json;
 using Npgsql;
 using NpgsqlTypes;
 using System.Data;
@@ -18,15 +19,13 @@ public class QuerySql
     public QuerySql(string connectionString)
     {
         this.ConnectionString = connectionString;
-        Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
         Utils.ConfigureSqlMapper();
+        Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
     }
 
     private QuerySql(NpgsqlTransaction transaction)
     {
         this.Transaction = transaction;
-        Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
-        Utils.ConfigureSqlMapper();
     }
 
     public static QuerySql WithTransaction(NpgsqlTransaction transaction)
@@ -703,7 +702,7 @@ public class QuerySql
         public string? CCharacterVarying { get; init; }
         public byte[]? CBytea { get; init; }
         public string? CText { get; init; }
-        public object? CJson { get; init; }
+        public JsonElement? CJson { get; init; }
         public string[]? CTextArray { get; init; }
         public int[]? CIntegerArray { get; init; }
     };

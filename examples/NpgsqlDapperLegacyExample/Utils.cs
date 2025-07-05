@@ -2,12 +2,42 @@
 namespace NpgsqlDapperLegacyExampleGen
 {
     using System.Linq;
-    using NpgsqlTypes;
     using System.Data;
     using Dapper;
+    using System.Text.Json;
+    using NpgsqlTypes;
 
     public static class Utils
     {
+        public class JsonElementTypeHandler : SqlMapper.TypeHandler<JsonElement>
+        {
+            public override JsonElement Parse(object value)
+            {
+                if (value is string s)
+                    return JsonDocument.Parse(s).RootElement;
+                if (value is null)
+                    return default;
+                throw new DataException($"Cannot convert {value?.GetType()} to JsonElement");
+            }
+
+            public override void SetValue(IDbDataParameter parameter, JsonElement value)
+            {
+                parameter.Value = value.GetRawText();
+            }
+        }
+
+        public static void ConfigureSqlMapper()
+        {
+            SqlMapper.AddTypeHandler(typeof(JsonElement), new JsonElementTypeHandler());
+            RegisterNpgsqlTypeHandler<NpgsqlPoint>();
+            RegisterNpgsqlTypeHandler<NpgsqlLine>();
+            RegisterNpgsqlTypeHandler<NpgsqlLSeg>();
+            RegisterNpgsqlTypeHandler<NpgsqlBox>();
+            RegisterNpgsqlTypeHandler<NpgsqlPath>();
+            RegisterNpgsqlTypeHandler<NpgsqlPolygon>();
+            RegisterNpgsqlTypeHandler<NpgsqlCircle>();
+        }
+
         private class NpgsqlTypeHandler<T> : SqlMapper.TypeHandler<T>
         {
             public override T Parse(object value)
@@ -24,17 +54,6 @@ namespace NpgsqlDapperLegacyExampleGen
         private static void RegisterNpgsqlTypeHandler<T>()
         {
             SqlMapper.AddTypeHandler(typeof(T), new NpgsqlTypeHandler<T>());
-        }
-
-        public static void ConfigureSqlMapper()
-        {
-            RegisterNpgsqlTypeHandler<NpgsqlPoint>();
-            RegisterNpgsqlTypeHandler<NpgsqlLine>();
-            RegisterNpgsqlTypeHandler<NpgsqlLSeg>();
-            RegisterNpgsqlTypeHandler<NpgsqlBox>();
-            RegisterNpgsqlTypeHandler<NpgsqlPath>();
-            RegisterNpgsqlTypeHandler<NpgsqlPolygon>();
-            RegisterNpgsqlTypeHandler<NpgsqlCircle>();
         }
     }
 }

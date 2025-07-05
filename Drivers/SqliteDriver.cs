@@ -16,7 +16,7 @@ public partial class SqliteDriver(
     IList<Query> queries) :
     DbDriver(options, defaultSchema, tables, enums, queries), IOne, IMany, IExec, IExecRows, IExecLastId, ICopyFrom
 {
-    protected override Dictionary<string, ColumnMapping> ColumnMappings { get; } =
+    public override Dictionary<string, ColumnMapping> ColumnMappings { get; } =
         new()
         {
             ["byte[]"] = new ColumnMapping(
@@ -66,22 +66,25 @@ public partial class SqliteDriver(
 
     public override string TransactionClassName => "SqliteTransaction";
 
-    public override UsingDirectiveSyntax[] GetUsingDirectivesForQueries()
+    public override ISet<string> GetUsingDirectivesForQueries()
     {
-        return base.GetUsingDirectivesForQueries()
-            .Append(UsingDirective(ParseName("Microsoft.Data.Sqlite")))
-            .ToArray();
+        var usingDirectives = base.GetUsingDirectivesForQueries();
+        return usingDirectives.AddRange(
+            [
+                "Microsoft.Data.Sqlite"
+            ]
+        );
     }
 
-    public override UsingDirectiveSyntax[] GetUsingDirectivesForUtils()
+    public override ISet<string> GetUsingDirectivesForUtils()
     {
-        return base.GetUsingDirectivesForUtils()
-            .Concat(
-                [
-                    UsingDirective(ParseName("System")),
-                    UsingDirective(ParseName("System.Text.RegularExpressions"))
-                ])
-            .ToArray();
+        var usingDirectives = base.GetUsingDirectivesForUtils();
+        return usingDirectives.AddRange(
+            [
+                "System",
+                "System.Text.RegularExpressions"
+            ]
+        );
     }
 
     public override MemberDeclarationSyntax[] GetMemberDeclarationsForUtils()
@@ -90,7 +93,7 @@ public partial class SqliteDriver(
             .GetMemberDeclarationsForUtils()
             .AppendIf(ParseMemberDeclaration(TransformQueryForSliceArgsImpl)!, SliceQueryExists());
 
-        if (!BatchQueryExists())
+        if (!CopyFromQueryExists())
             return memberDeclarations.ToArray();
 
         return memberDeclarations

@@ -22,7 +22,7 @@ public partial class MySqlConnectorDriver(
     public const string ByteCsvConverter = "ByteCsvConverter";
     public const string ByteArrayCsvConverter = "ByteArrayCsvConverter";
 
-    protected override Dictionary<string, ColumnMapping> ColumnMappings { get; } =
+    public override Dictionary<string, ColumnMapping> ColumnMappings { get; } =
         new()
         {
             ["bool"] = new ColumnMapping(
@@ -78,7 +78,6 @@ public partial class MySqlConnectorDriver(
                     { "tinytext", new DbTypeInfo() },
                     { "varchar", new DbTypeInfo() },
                     { "var_string", new DbTypeInfo() },
-                    { "json", new DbTypeInfo() }
                 },
                 ordinal => $"reader.GetString({ordinal})"
             ),
@@ -114,6 +113,21 @@ public partial class MySqlConnectorDriver(
                 },
                 ordinal => $"reader.GetDecimal({ordinal})"
             ),
+            ["JsonElement"] = new ColumnMapping(
+                new Dictionary<string, DbTypeInfo>
+                {
+                    { "json", new DbTypeInfo() }
+                },
+                readerFn: ordinal => $"JsonSerializer.Deserialize<JsonElement>(reader.GetString({ordinal}))",
+                writerFn: (el, notNull, isDapper) =>
+                {
+                    if (notNull)
+                        return $"{el}.GetRawText()";
+                    var nullValue = isDapper ? "null" : "(object)DBNull.Value";
+                    return $"{el}.HasValue ? {el}.Value.GetRawText() : {nullValue}";
+                },
+                usingDirective: "System.Text.Json"
+            ),
             ["object"] = new ColumnMapping(
                 new Dictionary<string, DbTypeInfo>
                 {
@@ -125,47 +139,46 @@ public partial class MySqlConnectorDriver(
 
     public override string TransactionClassName => "MySqlTransaction";
 
-    public override UsingDirectiveSyntax[] GetUsingDirectivesForQueries()
+    public override ISet<string> GetUsingDirectivesForQueries()
     {
-        return base.GetUsingDirectivesForQueries()
-            .Concat(
+        var usingDirectives = base.GetUsingDirectivesForQueries();
+        return usingDirectives.AddRange(
             [
-                UsingDirective(ParseName("MySqlConnector")),
-                UsingDirective(ParseName("System.Globalization")),
-                UsingDirective(ParseName("System.IO")),
-                UsingDirective(ParseName("CsvHelper")),
-                UsingDirective(ParseName("CsvHelper.Configuration")),
-                UsingDirective(ParseName("CsvHelper.TypeConversion")),
-                UsingDirective(ParseName("System.Text"))
-            ])
-            .ToArray();
+                "MySqlConnector",
+                "System.Globalization",
+                "System.IO",
+                "CsvHelper",
+                "CsvHelper.Configuration",
+                "CsvHelper.TypeConversion",
+                "System.Text"
+            ]
+        );
     }
 
-    public override UsingDirectiveSyntax[] GetUsingDirectivesForModels()
+    public override ISet<string> GetUsingDirectivesForModels()
     {
-        return base.GetUsingDirectivesForModels()
-            .Concat(
+        var usingDirectives = base.GetUsingDirectivesForModels();
+        return usingDirectives.AddRange(
             [
-                UsingDirective(ParseName("System")),
-                UsingDirective(ParseName("System.Collections.Generic"))
-            ])
-            .ToArray();
+                "System",
+                "System.Collections.Generic"
+            ]
+        );
     }
 
-    public override UsingDirectiveSyntax[] GetUsingDirectivesForUtils()
+    public override ISet<string> GetUsingDirectivesForUtils()
     {
         var usingDirectives = base.GetUsingDirectivesForUtils();
-        if (!BatchQueryExists())
-            return usingDirectives.ToArray();
+        if (!CopyFromQueryExists())
+            return usingDirectives;
 
-        return usingDirectives
-            .Concat(
+        return usingDirectives.AddRange(
             [
-                UsingDirective(ParseName("CsvHelper.TypeConversion")),
-                UsingDirective(ParseName("CsvHelper")),
-                UsingDirective(ParseName("CsvHelper.Configuration"))
-            ])
-            .ToArray();
+                "CsvHelper.TypeConversion",
+                "CsvHelper",
+                "CsvHelper.Configuration"
+            ]
+        );
     }
 
     public override MemberDeclarationSyntax[] GetMemberDeclarationsForUtils()
@@ -173,8 +186,9 @@ public partial class MySqlConnectorDriver(
         var memberDeclarations = base
             .GetMemberDeclarationsForUtils()
             .AppendIf(ParseMemberDeclaration(TransformQueryForSliceArgsImpl)!, SliceQueryExists());
-        if (!BatchQueryExists())
-            return memberDeclarations.ToArray();
+
+        if (!CopyFromQueryExists())
+            return [.. memberDeclarations];
 
         var csvConverters = new List<MemberDeclarationSyntax>
         {
@@ -236,9 +250,7 @@ public partial class MySqlConnectorDriver(
                  """)!
         };
 
-        return memberDeclarations
-            .Concat(csvConverters)
-            .ToArray();
+        return [.. memberDeclarations, .. csvConverters];
     }
 
     public override ConnectionGenCommands EstablishConnection(Query query)
@@ -378,7 +390,8 @@ public partial class MySqlConnectorDriver(
                 GetCsvNullConverter("double"),
                 GetCsvNullConverter("DateTime"),
                 GetCsvNullConverter("string"),
-                GetCsvNullConverter("object")
+                GetCsvNullConverter("JsonElement"),
+                GetCsvNullConverter("object"),
             };
             var enumConverters = Enums.SelectMany(s =>
             {
@@ -386,7 +399,7 @@ public partial class MySqlConnectorDriver(
                     GetCsvNullConverter(e.Key.ToModelName(s.Key, DefaultSchema)));
             });
 
-            return primitivesConverters.Concat(enumConverters).ToArray();
+            return [.. primitivesConverters, .. enumConverters];
         }
 
         IEnumerable<string> GetBoolAndByteConverters()

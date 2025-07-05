@@ -23,7 +23,12 @@ public abstract class DbDriver
 
     private IList<Query> Queries { get; }
 
-    private HashSet<string> NullableTypesInDotnetCore { get; } = ["string", "object", "byte[]"]; // TODO add arrays in here in a non hard-coded manner
+    private HashSet<string> NullableTypesInDotnetCore { get; } =
+    [
+        "string",
+        "object",
+        "byte[]"
+    ]; // TODO add arrays in here in a non hard-coded manner
 
     private HashSet<string> NullableTypes { get; } =
     [
@@ -43,10 +48,39 @@ public abstract class DbDriver
         "NpgsqlBox",
         "NpgsqlPath",
         "NpgsqlPolygon",
-        "NpgsqlCircle"
+        "NpgsqlCircle",
+        "JsonElement"
     ];
 
-    protected abstract Dictionary<string, ColumnMapping> ColumnMappings { get; }
+    public abstract Dictionary<string, ColumnMapping> ColumnMappings { get; }
+
+    private Dictionary<string, Tuple<string, string>> KnownMappings { get; } = new()
+    {
+        {
+            "JsonElement",
+            new (
+                $"SqlMapper.AddTypeHandler(typeof(JsonElement), new JsonElementTypeHandler());",
+                """
+                    public class JsonElementTypeHandler : SqlMapper.TypeHandler<JsonElement>
+                    {
+                        public override JsonElement Parse(object value)
+                        {
+                            if (value is string s)
+                                return JsonDocument.Parse(s).RootElement;
+                            if (value is null)
+                                return default;
+                            throw new DataException($"Cannot convert {value?.GetType()} to JsonElement");
+                        }
+
+                        public override void SetValue(IDbDataParameter parameter, JsonElement value)
+                        {
+                            parameter.Value = value.GetRawText();
+                        }
+                    }
+                """
+            )
+        }
+    };
 
     protected const string TransformQueryForSliceArgsImpl = """
            public static string TransformQueryForSliceArgs(string originalSql, int sliceSize, string paramName)
@@ -85,60 +119,122 @@ public abstract class DbDriver
         }
     }
 
-    public virtual UsingDirectiveSyntax[] GetUsingDirectivesForQueries()
+    public virtual ISet<string> GetUsingDirectivesForQueries()
     {
-        return new List<UsingDirectiveSyntax>
+        var usingDirectives = new HashSet<string>
             {
-                UsingDirective(ParseName("System")),
-                UsingDirective(ParseName("System.Collections.Generic")),
-                UsingDirective(ParseName("System.Threading.Tasks"))
+                "System",
+                "System.Collections.Generic",
+                "System.Threading.Tasks"
+            }.AddIf("Dapper", Options.UseDapper);
+
+        foreach (var query in Queries)
+        {
+            foreach (var column in query.Columns)
+            {
+                var csharpType = GetCsharpTypeWithoutNullableSuffix(column, query);
+                if (!ColumnMappings.ContainsKey(csharpType))
+                    continue;
+
+                var columnMapping = ColumnMappings[GetCsharpTypeWithoutNullableSuffix(column, query)];
+                usingDirectives.AddIfNotNull(columnMapping.UsingDirective);
             }
-            .AppendIf(UsingDirective(ParseName("Dapper")), Options.UseDapper)
-            .ToArray();
+        }
+        return usingDirectives;
     }
 
-    public virtual UsingDirectiveSyntax[] GetUsingDirectivesForModels()
+    public virtual ISet<string> GetUsingDirectivesForModels()
     {
-        return [];
+        return GetUsingDirectivesForColumnMappings();
     }
 
-    public virtual UsingDirectiveSyntax[] GetUsingDirectivesForUtils()
+    private ISet<string> GetUsingDirectivesForColumnMappings()
     {
-        return
-        [
-            UsingDirective(ParseName("System.Linq"))
-        ];
+        var usingDirectives = new HashSet<string>();
+        foreach (var schemaTables in Tables)
+        {
+            foreach (var table in schemaTables.Value)
+            {
+                foreach (var column in table.Value.Columns)
+                {
+                    var csharpType = GetCsharpTypeWithoutNullableSuffix(column, null);
+                    if (!ColumnMappings.ContainsKey(csharpType))
+                        continue;
+
+                    var columnMapping = ColumnMappings[GetCsharpTypeWithoutNullableSuffix(column, null)];
+                    usingDirectives.AddIfNotNull(columnMapping.UsingDirective);
+                }
+            }
+        }
+        return usingDirectives;
+    }
+
+    public virtual ISet<string> GetUsingDirectivesForUtils()
+    {
+        return new HashSet<string>()
+            {
+                "System.Linq"
+            }
+            .AddRangeIf(["System.Data", "Dapper"], Options.UseDapper)
+            .AddRangeIf(GetUsingDirectivesForColumnMappings(), Options.UseDapper);
     }
 
     public virtual string[] GetConstructorStatements()
     {
-        return new List<string>
-        {
-            $"this.{Variable.ConnectionString.AsPropertyName()} = {Variable.ConnectionString.AsVarName()};"
-        }
-        .AppendIf("Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;", Options.UseDapper)
-        .ToArray();
+        return [.. new List<string>
+            {
+                $"this.{Variable.ConnectionString.AsPropertyName()} = {Variable.ConnectionString.AsVarName()};"
+            }
+            .AppendIf("Utils.ConfigureSqlMapper();", Options.UseDapper)
+            .AppendIf("Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;", Options.UseDapper)];
     }
 
     public virtual string[] GetTransactionConstructorStatements()
     {
-        return new List<string>
+        return [.. new List<string>
         {
             $"this.{Variable.Transaction.AsPropertyName()} = {Variable.Transaction.AsVarName()};"
-        }
-        .AppendIf("Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;", Options.UseDapper)
-        .ToArray();
+        }];
+    }
+
+    protected virtual ISet<string> GetConfigureSqlMappings()
+    {
+        return KnownMappings
+            .Where(m => TypeExistsInQueries(m.Key))
+            .Select(m => m.Value.Item1)
+            .ToHashSet();
     }
 
     public virtual MemberDeclarationSyntax[] GetMemberDeclarationsForUtils()
     {
-        return [];
+        var memberDeclarations = new List<MemberDeclarationSyntax>();
+        if (!Options.UseDapper)
+            return [.. memberDeclarations];
+
+        memberDeclarations.AddRange(KnownMappings
+            .Where(m => TypeExistsInQueries(m.Key))
+            .Select(m => ParseMemberDeclaration(m.Value.Item2)!));
+
+        return [.. memberDeclarations,
+            ParseMemberDeclaration($$"""
+                 public static void ConfigureSqlMapper()
+                 {
+                     {{GetConfigureSqlMappings().JoinByNewLine()}}
+                 }
+               """)!];
     }
 
+    protected bool TypeExistsInQueries(string csharpType)
+    {
+        return Queries
+            .SelectMany(query => query.Columns)
+            .Any(column => csharpType == GetCsharpTypeWithoutNullableSuffix(column, null));
+    }
 
     public string AddNullableSuffixIfNeeded(string csharpType, bool notNull)
     {
-        if (notNull) return csharpType;
+        if (notNull)
+            return csharpType;
         return IsTypeNullable(csharpType) ? $"{csharpType}?" : csharpType;
     }
 
@@ -148,7 +244,7 @@ public abstract class DbDriver
         return AddNullableSuffixIfNeeded(csharpType, IsColumnNotNull(column, query));
     }
 
-    private string GetCsharpTypeWithoutNullableSuffix(Column column, Query? query)
+    public string GetCsharpTypeWithoutNullableSuffix(Column column, Query? query)
     {
         if (column.EmbedTable != null)
             return column.EmbedTable.Name.ToModelName(column.EmbedTable.Schema, DefaultSchema);
@@ -159,12 +255,8 @@ public abstract class DbDriver
         if (IsEnumType(column))
             return column.Type.Name.ToModelName(column.Table.Schema, DefaultSchema);
 
-        if (query is not null)
-        {
-            var foundOverride = FindOverrideForQueryColumn(query, column);
-            if (foundOverride is not null)
-                return foundOverride.CsharpType.Type;
-        }
+        if (FindOverrideForQueryColumn(query, column) is { CsharpType: var csharpType })
+            return csharpType.Type;
 
         foreach (var columnMapping in ColumnMappings
                      .Where(columnMapping => DoesColumnMappingApply(columnMapping.Value, column)))
@@ -196,28 +288,26 @@ public abstract class DbDriver
         return typeInfo.Length.Value == column.Length;
     }
 
-    private string GetColumnReader(OverrideOption overrideOption, int ordinal)
+    private string GetColumnReader(CsharpTypeOption csharpTypeOption, int ordinal)
     {
-        var columnMapping = ColumnMappings.GetValueOrDefault(overrideOption.CsharpType.Type);
-        if (columnMapping is not null)
-            return columnMapping.ReaderFn(ordinal);
-        throw new NotSupportedException($"Column {overrideOption.Column} has unsupported column type: {overrideOption.CsharpType.Type}");
+        if (ColumnMappings.TryGetValue(csharpTypeOption.Type, out var value))
+            return value.ReaderFn(ordinal);
+        throw new NotSupportedException($"Could not find column mapping for type override: {csharpTypeOption.Type}");
+    }
+
+    private string GetEnumReader(Column column, int ordinal)
+    {
+        var enumName = column.Type.Name.ToModelName(column.Table.Schema, DefaultSchema);
+        return $"{Variable.Reader.AsVarName()}.GetString({ordinal}).To{enumName}()";
     }
 
     public string GetColumnReader(Column column, int ordinal, Query? query)
     {
         if (IsEnumType(column))
-        {
-            var enumName = column.Type.Name.ToModelName(column.Table.Schema, DefaultSchema);
-            return $"{Variable.Reader.AsVarName()}.GetString({ordinal}).To{enumName}()";
-        }
+            return GetEnumReader(column, ordinal);
 
-        if (query is not null)
-        {
-            var foundOverride = FindOverrideForQueryColumn(query, column);
-            if (foundOverride is not null)
-                return GetColumnReader(foundOverride, ordinal);
-        }
+        if (FindOverrideForQueryColumn(query, column) is { CsharpType: var csharpType })
+            return GetColumnReader(csharpType, ordinal);
 
         foreach (var columnMapping in ColumnMappings.Values
                      .Where(columnMapping => DoesColumnMappingApply(columnMapping, column)))
@@ -294,13 +384,15 @@ public abstract class DbDriver
         });
     }
 
-    protected bool BatchQueryExists()
+    protected bool CopyFromQueryExists()
     {
         return Queries.Any(q => q.Cmd is ":copyfrom");
     }
 
-    public OverrideOption? FindOverrideForQueryColumn(Query query, Column column)
+    public OverrideOption? FindOverrideForQueryColumn(Query? query, Column column)
     {
+        if (query is null)
+            return null;
         return Options.Overrides.FirstOrDefault(o => o.Column.Equals($"{query.Name}:{column.Name}"));
     }
 
@@ -312,11 +404,8 @@ public abstract class DbDriver
     /// <returns>Adjusted not null value</returns>
     public bool IsColumnNotNull(Column column, Query? query)
     {
-        if (query is null)
-            return column.NotNull;
-        var overrideColumn = FindOverrideForQueryColumn(query, column);
-        if (overrideColumn is not null)
-            return overrideColumn.CsharpType.NotNull;
+        if (FindOverrideForQueryColumn(query, column) is { CsharpType: var csharpType })
+            return csharpType.NotNull;
         return column.NotNull;
     }
 }

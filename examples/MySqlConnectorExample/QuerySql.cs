@@ -7,6 +7,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Text.Json;
 using MySqlConnector;
 using System.Globalization;
 using System.IO;
@@ -707,8 +708,8 @@ public class QuerySql
         }
     }
 
-    private const string InsertMysqlTypesSql = "INSERT INTO mysql_types (c_bit, c_bool, c_boolean, c_tinyint, c_smallint, c_mediumint, c_int, c_integer, c_bigint, c_decimal, c_dec, c_numeric, c_fixed, c_float, c_double, c_double_precision, c_char, c_nchar, c_national_char, c_varchar, c_tinytext, c_mediumtext, c_text, c_longtext, c_enum, c_year, c_date, c_datetime, c_timestamp, c_binary, c_varbinary, c_tinyblob, c_blob, c_mediumblob, c_longblob) VALUES ( @c_bit, @c_bool, @c_boolean, @c_tinyint, @c_smallint, @c_mediumint, @c_int, @c_integer, @c_bigint, @c_decimal, @c_dec, @c_numeric, @c_fixed, @c_float, @c_double, @c_double_precision, @c_char, @c_nchar, @c_national_char, @c_varchar, @c_tinytext, @c_mediumtext, @c_text, @c_longtext, @c_enum, @c_year, @c_date, @c_datetime, @c_timestamp, @c_binary, @c_varbinary, @c_tinyblob, @c_blob, @c_mediumblob, @c_longblob ) "; 
-    public readonly record struct InsertMysqlTypesArgs(byte? CBit, bool? CBool, bool? CBoolean, short? CTinyint, short? CSmallint, int? CMediumint, int? CInt, int? CInteger, long? CBigint, decimal? CDecimal, decimal? CDec, decimal? CNumeric, decimal? CFixed, double? CFloat, double? CDouble, double? CDoublePrecision, string? CChar, string? CNchar, string? CNationalChar, string? CVarchar, string? CTinytext, string? CMediumtext, string? CText, string? CLongtext, MysqlTypesCEnum? CEnum, short? CYear, DateTime? CDate, DateTime? CDatetime, DateTime? CTimestamp, byte[]? CBinary, byte[]? CVarbinary, byte[]? CTinyblob, byte[]? CBlob, byte[]? CMediumblob, byte[]? CLongblob);
+    private const string InsertMysqlTypesSql = "INSERT INTO mysql_types (c_bit, c_bool, c_boolean, c_tinyint, c_smallint, c_mediumint, c_int, c_integer, c_bigint, c_decimal, c_dec, c_numeric, c_fixed, c_float, c_double, c_double_precision, c_char, c_nchar, c_national_char, c_varchar, c_tinytext, c_mediumtext, c_text, c_longtext, c_enum, c_json, c_year, c_date, c_datetime, c_timestamp, c_binary, c_varbinary, c_tinyblob, c_blob, c_mediumblob, c_longblob) VALUES ( @c_bit, @c_bool, @c_boolean, @c_tinyint, @c_smallint, @c_mediumint, @c_int, @c_integer, @c_bigint, @c_decimal, @c_dec, @c_numeric, @c_fixed, @c_float, @c_double, @c_double_precision, @c_char, @c_nchar, @c_national_char, @c_varchar, @c_tinytext, @c_mediumtext, @c_text, @c_longtext, @c_enum, @c_json, @c_year, @c_date, @c_datetime, @c_timestamp, @c_binary, @c_varbinary, @c_tinyblob, @c_blob, @c_mediumblob, @c_longblob ) "; 
+    public readonly record struct InsertMysqlTypesArgs(byte? CBit, bool? CBool, bool? CBoolean, short? CTinyint, short? CSmallint, int? CMediumint, int? CInt, int? CInteger, long? CBigint, decimal? CDecimal, decimal? CDec, decimal? CNumeric, decimal? CFixed, double? CFloat, double? CDouble, double? CDoublePrecision, string? CChar, string? CNchar, string? CNationalChar, string? CVarchar, string? CTinytext, string? CMediumtext, string? CText, string? CLongtext, MysqlTypesCEnum? CEnum, JsonElement? CJson, short? CYear, DateTime? CDate, DateTime? CDatetime, DateTime? CTimestamp, byte[]? CBinary, byte[]? CVarbinary, byte[]? CTinyblob, byte[]? CBlob, byte[]? CMediumblob, byte[]? CLongblob);
     public async Task InsertMysqlTypes(InsertMysqlTypesArgs args)
     {
         if (this.Transaction == null)
@@ -743,6 +744,7 @@ public class QuerySql
                     command.Parameters.AddWithValue("@c_text", args.CText ?? (object)DBNull.Value);
                     command.Parameters.AddWithValue("@c_longtext", args.CLongtext ?? (object)DBNull.Value);
                     command.Parameters.AddWithValue("@c_enum", args.CEnum ?? (object)DBNull.Value);
+                    command.Parameters.AddWithValue("@c_json", args.CJson.HasValue ? args.CJson.Value.GetRawText() : (object)DBNull.Value);
                     command.Parameters.AddWithValue("@c_year", args.CYear ?? (object)DBNull.Value);
                     command.Parameters.AddWithValue("@c_date", args.CDate ?? (object)DBNull.Value);
                     command.Parameters.AddWithValue("@c_datetime", args.CDatetime ?? (object)DBNull.Value);
@@ -794,6 +796,7 @@ public class QuerySql
             command.Parameters.AddWithValue("@c_text", args.CText ?? (object)DBNull.Value);
             command.Parameters.AddWithValue("@c_longtext", args.CLongtext ?? (object)DBNull.Value);
             command.Parameters.AddWithValue("@c_enum", args.CEnum ?? (object)DBNull.Value);
+            command.Parameters.AddWithValue("@c_json", args.CJson.HasValue ? args.CJson.Value.GetRawText() : (object)DBNull.Value);
             command.Parameters.AddWithValue("@c_year", args.CYear ?? (object)DBNull.Value);
             command.Parameters.AddWithValue("@c_date", args.CDate ?? (object)DBNull.Value);
             command.Parameters.AddWithValue("@c_datetime", args.CDatetime ?? (object)DBNull.Value);
@@ -808,7 +811,7 @@ public class QuerySql
         }
     }
 
-    public readonly record struct InsertMysqlTypesBatchArgs(byte? CBit, bool? CBool, bool? CBoolean, short? CTinyint, short? CSmallint, int? CMediumint, int? CInt, int? CInteger, long? CBigint, double? CFloat, decimal? CNumeric, decimal? CDecimal, decimal? CDec, decimal? CFixed, double? CDouble, double? CDoublePrecision, string? CChar, string? CNchar, string? CNationalChar, string? CVarchar, string? CTinytext, string? CMediumtext, string? CText, string? CLongtext, MysqlTypesCEnum? CEnum, short? CYear, DateTime? CDate, DateTime? CDatetime, DateTime? CTimestamp, byte[]? CBinary, byte[]? CVarbinary, byte[]? CTinyblob, byte[]? CBlob, byte[]? CMediumblob, byte[]? CLongblob);
+    public readonly record struct InsertMysqlTypesBatchArgs(byte? CBit, bool? CBool, bool? CBoolean, short? CTinyint, short? CSmallint, int? CMediumint, int? CInt, int? CInteger, long? CBigint, double? CFloat, decimal? CNumeric, decimal? CDecimal, decimal? CDec, decimal? CFixed, double? CDouble, double? CDoublePrecision, string? CChar, string? CNchar, string? CNationalChar, string? CVarchar, string? CTinytext, string? CMediumtext, string? CText, string? CLongtext, MysqlTypesCEnum? CEnum, JsonElement? CJson, short? CYear, DateTime? CDate, DateTime? CDatetime, DateTime? CTimestamp, byte[]? CBinary, byte[]? CVarbinary, byte[]? CTinyblob, byte[]? CBlob, byte[]? CMediumblob, byte[]? CLongblob);
     public async Task InsertMysqlTypesBatch(List<InsertMysqlTypesBatchArgs> args)
     {
         const string supportedDateTimeFormat = "yyyy-MM-dd H:mm:ss";
@@ -844,6 +847,7 @@ public class QuerySql
             csvWriter.Context.TypeConverterCache.AddConverter<double?>(nullConverterFn);
             csvWriter.Context.TypeConverterCache.AddConverter<DateTime?>(nullConverterFn);
             csvWriter.Context.TypeConverterCache.AddConverter<string?>(nullConverterFn);
+            csvWriter.Context.TypeConverterCache.AddConverter<JsonElement?>(nullConverterFn);
             csvWriter.Context.TypeConverterCache.AddConverter<object?>(nullConverterFn);
             csvWriter.Context.TypeConverterCache.AddConverter<MysqlTypesCEnum?>(nullConverterFn);
             csvWriter.Context.TypeConverterCache.AddConverter<ExtendedBiosBioType?>(nullConverterFn);
@@ -864,14 +868,14 @@ public class QuerySql
                 NumberOfLinesToSkip = 1,
                 LineTerminator = "\n"
             };
-            loader.Columns.AddRange(new List<string> { "c_bit", "c_bool", "c_boolean", "c_tinyint", "c_smallint", "c_mediumint", "c_int", "c_integer", "c_bigint", "c_float", "c_numeric", "c_decimal", "c_dec", "c_fixed", "c_double", "c_double_precision", "c_char", "c_nchar", "c_national_char", "c_varchar", "c_tinytext", "c_mediumtext", "c_text", "c_longtext", "c_enum", "c_year", "c_date", "c_datetime", "c_timestamp", "c_binary", "c_varbinary", "c_tinyblob", "c_blob", "c_mediumblob", "c_longblob" });
+            loader.Columns.AddRange(new List<string> { "c_bit", "c_bool", "c_boolean", "c_tinyint", "c_smallint", "c_mediumint", "c_int", "c_integer", "c_bigint", "c_float", "c_numeric", "c_decimal", "c_dec", "c_fixed", "c_double", "c_double_precision", "c_char", "c_nchar", "c_national_char", "c_varchar", "c_tinytext", "c_mediumtext", "c_text", "c_longtext", "c_enum", "c_json", "c_year", "c_date", "c_datetime", "c_timestamp", "c_binary", "c_varbinary", "c_tinyblob", "c_blob", "c_mediumblob", "c_longblob" });
             await loader.LoadAsync();
             await connection.CloseAsync();
         }
     }
 
-    private const string GetMysqlTypesSql = "SELECT c_bool, c_boolean, c_tinyint, c_smallint, c_mediumint, c_int, c_integer, c_bigint, c_float, c_decimal, c_dec, c_numeric, c_fixed, c_double, c_double_precision, c_year, c_date, c_time, c_datetime, c_timestamp, c_char, c_nchar, c_national_char, c_varchar, c_tinytext, c_mediumtext, c_text, c_longtext, c_enum, c_bit, c_binary, c_varbinary, c_tinyblob, c_blob, c_mediumblob, c_longblob FROM mysql_types LIMIT 1";
-    public readonly record struct GetMysqlTypesRow(bool? CBool, bool? CBoolean, short? CTinyint, short? CSmallint, int? CMediumint, int? CInt, int? CInteger, long? CBigint, double? CFloat, decimal? CDecimal, decimal? CDec, decimal? CNumeric, decimal? CFixed, double? CDouble, double? CDoublePrecision, short? CYear, DateTime? CDate, string? CTime, DateTime? CDatetime, DateTime? CTimestamp, string? CChar, string? CNchar, string? CNationalChar, string? CVarchar, string? CTinytext, string? CMediumtext, string? CText, string? CLongtext, MysqlTypesCEnum? CEnum, byte? CBit, byte[]? CBinary, byte[]? CVarbinary, byte[]? CTinyblob, byte[]? CBlob, byte[]? CMediumblob, byte[]? CLongblob);
+    private const string GetMysqlTypesSql = "SELECT c_bool, c_boolean, c_tinyint, c_smallint, c_mediumint, c_int, c_integer, c_bigint, c_float, c_decimal, c_dec, c_numeric, c_fixed, c_double, c_double_precision, c_year, c_date, c_time, c_datetime, c_timestamp, c_char, c_nchar, c_national_char, c_varchar, c_tinytext, c_mediumtext, c_text, c_longtext, c_enum, c_json, c_bit, c_binary, c_varbinary, c_tinyblob, c_blob, c_mediumblob, c_longblob FROM mysql_types LIMIT 1";
+    public readonly record struct GetMysqlTypesRow(bool? CBool, bool? CBoolean, short? CTinyint, short? CSmallint, int? CMediumint, int? CInt, int? CInteger, long? CBigint, double? CFloat, decimal? CDecimal, decimal? CDec, decimal? CNumeric, decimal? CFixed, double? CDouble, double? CDoublePrecision, short? CYear, DateTime? CDate, string? CTime, DateTime? CDatetime, DateTime? CTimestamp, string? CChar, string? CNchar, string? CNationalChar, string? CVarchar, string? CTinytext, string? CMediumtext, string? CText, string? CLongtext, MysqlTypesCEnum? CEnum, JsonElement? CJson, byte? CBit, byte[]? CBinary, byte[]? CVarbinary, byte[]? CTinyblob, byte[]? CBlob, byte[]? CMediumblob, byte[]? CLongblob);
     public async Task<GetMysqlTypesRow?> GetMysqlTypes()
     {
         if (this.Transaction == null)
@@ -916,13 +920,14 @@ public class QuerySql
                                 CText = reader.IsDBNull(26) ? null : reader.GetString(26),
                                 CLongtext = reader.IsDBNull(27) ? null : reader.GetString(27),
                                 CEnum = reader.IsDBNull(28) ? null : reader.GetString(28).ToMysqlTypesCEnum(),
-                                CBit = reader.IsDBNull(29) ? null : reader.GetFieldValue<byte>(29),
-                                CBinary = reader.IsDBNull(30) ? null : reader.GetFieldValue<byte[]>(30),
-                                CVarbinary = reader.IsDBNull(31) ? null : reader.GetFieldValue<byte[]>(31),
-                                CTinyblob = reader.IsDBNull(32) ? null : reader.GetFieldValue<byte[]>(32),
-                                CBlob = reader.IsDBNull(33) ? null : reader.GetFieldValue<byte[]>(33),
-                                CMediumblob = reader.IsDBNull(34) ? null : reader.GetFieldValue<byte[]>(34),
-                                CLongblob = reader.IsDBNull(35) ? null : reader.GetFieldValue<byte[]>(35)
+                                CJson = reader.IsDBNull(29) ? null : JsonSerializer.Deserialize<JsonElement>(reader.GetString(29)),
+                                CBit = reader.IsDBNull(30) ? null : reader.GetFieldValue<byte>(30),
+                                CBinary = reader.IsDBNull(31) ? null : reader.GetFieldValue<byte[]>(31),
+                                CVarbinary = reader.IsDBNull(32) ? null : reader.GetFieldValue<byte[]>(32),
+                                CTinyblob = reader.IsDBNull(33) ? null : reader.GetFieldValue<byte[]>(33),
+                                CBlob = reader.IsDBNull(34) ? null : reader.GetFieldValue<byte[]>(34),
+                                CMediumblob = reader.IsDBNull(35) ? null : reader.GetFieldValue<byte[]>(35),
+                                CLongblob = reader.IsDBNull(36) ? null : reader.GetFieldValue<byte[]>(36)
                             };
                         }
                     }
@@ -976,13 +981,14 @@ public class QuerySql
                         CText = reader.IsDBNull(26) ? null : reader.GetString(26),
                         CLongtext = reader.IsDBNull(27) ? null : reader.GetString(27),
                         CEnum = reader.IsDBNull(28) ? null : reader.GetString(28).ToMysqlTypesCEnum(),
-                        CBit = reader.IsDBNull(29) ? null : reader.GetFieldValue<byte>(29),
-                        CBinary = reader.IsDBNull(30) ? null : reader.GetFieldValue<byte[]>(30),
-                        CVarbinary = reader.IsDBNull(31) ? null : reader.GetFieldValue<byte[]>(31),
-                        CTinyblob = reader.IsDBNull(32) ? null : reader.GetFieldValue<byte[]>(32),
-                        CBlob = reader.IsDBNull(33) ? null : reader.GetFieldValue<byte[]>(33),
-                        CMediumblob = reader.IsDBNull(34) ? null : reader.GetFieldValue<byte[]>(34),
-                        CLongblob = reader.IsDBNull(35) ? null : reader.GetFieldValue<byte[]>(35)
+                        CJson = reader.IsDBNull(29) ? null : JsonSerializer.Deserialize<JsonElement>(reader.GetString(29)),
+                        CBit = reader.IsDBNull(30) ? null : reader.GetFieldValue<byte>(30),
+                        CBinary = reader.IsDBNull(31) ? null : reader.GetFieldValue<byte[]>(31),
+                        CVarbinary = reader.IsDBNull(32) ? null : reader.GetFieldValue<byte[]>(32),
+                        CTinyblob = reader.IsDBNull(33) ? null : reader.GetFieldValue<byte[]>(33),
+                        CBlob = reader.IsDBNull(34) ? null : reader.GetFieldValue<byte[]>(34),
+                        CMediumblob = reader.IsDBNull(35) ? null : reader.GetFieldValue<byte[]>(35),
+                        CLongblob = reader.IsDBNull(36) ? null : reader.GetFieldValue<byte[]>(36)
                     };
                 }
             }

@@ -2,12 +2,37 @@
 namespace MySqlConnectorDapperLegacyExampleGen
 {
     using System.Linq;
+    using System.Data;
+    using Dapper;
+    using System.Text.Json;
     using CsvHelper.TypeConversion;
     using CsvHelper;
     using CsvHelper.Configuration;
 
     public static class Utils
     {
+        public class JsonElementTypeHandler : SqlMapper.TypeHandler<JsonElement>
+        {
+            public override JsonElement Parse(object value)
+            {
+                if (value is string s)
+                    return JsonDocument.Parse(s).RootElement;
+                if (value is null)
+                    return default;
+                throw new DataException($"Cannot convert {value?.GetType()} to JsonElement");
+            }
+
+            public override void SetValue(IDbDataParameter parameter, JsonElement value)
+            {
+                parameter.Value = value.GetRawText();
+            }
+        }
+
+        public static void ConfigureSqlMapper()
+        {
+            SqlMapper.AddTypeHandler(typeof(JsonElement), new JsonElementTypeHandler());
+        }
+
         public static string TransformQueryForSliceArgs(string originalSql, int sliceSize, string paramName)
         {
             var paramArgs = Enumerable.Range(0, sliceSize).Select(i => $"@{paramName}Arg{i}").ToList();
