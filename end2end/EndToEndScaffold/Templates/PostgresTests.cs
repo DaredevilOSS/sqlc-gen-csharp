@@ -484,6 +484,56 @@ public static class PostgresTests
                      }
                      """
         },
+        [KnownTestType.PostgresTransaction] = new TestImpl
+        {
+            Impl = $$"""
+                     [Test]
+                     public async Task TestPostgresTransaction()
+                     {
+                         var connection = new Npgsql.NpgsqlConnection(Environment.GetEnvironmentVariable(EndToEndCommon.PostgresConnectionStringEnv));
+                         await connection.OpenAsync();
+                         var transaction = connection.BeginTransaction();
+
+                         var querySqlWithTx = QuerySql.WithTransaction(transaction);
+                         await querySqlWithTx.CreateAuthor(new QuerySql.CreateAuthorArgs { Id = {{Consts.BojackId}}, Name = {{Consts.BojackAuthor}}, Bio = {{Consts.BojackTheme}} });
+
+                         // The GetAuthor method in NpgsqlExampleGen returns QuerySql.GetAuthorRow? (nullable record struct)
+                         var actualNull = await QuerySql.GetAuthor(new QuerySql.GetAuthorArgs { Name = {{Consts.BojackAuthor}} });
+                         Assert.That(actualNull == null, "there is author"); // This is correct for nullable types
+
+                         await transaction.CommitAsync();
+
+                         var expected = new QuerySql.GetAuthorRow
+                         {
+                             Id = {{Consts.BojackId}},
+                             Name = {{Consts.BojackAuthor}},
+                             Bio = {{Consts.BojackTheme}}
+                         };
+                         var actual = await QuerySql.GetAuthor(new QuerySql.GetAuthorArgs { Name = {{Consts.BojackAuthor}} });
+                         Assert.That(SingularEquals(expected, actual{{Consts.UnknownRecordValuePlaceholder}})); // Apply placeholder here
+                     }
+                     """
+        },
+        [KnownTestType.PostgresTransactionRollback] = new TestImpl
+        {
+            Impl = $$"""
+                     [Test]
+                     public async Task TestPostgresTransactionRollback()
+                     {
+                         var connection = new Npgsql.NpgsqlConnection(Environment.GetEnvironmentVariable(EndToEndCommon.PostgresConnectionStringEnv));
+                         await connection.OpenAsync();
+                         var transaction = connection.BeginTransaction();
+
+                         var sqlQueryWithTx = QuerySql.WithTransaction(transaction);
+                         await sqlQueryWithTx.CreateAuthor(new QuerySql.CreateAuthorArgs { Id = {{Consts.BojackId}}, Name = {{Consts.BojackAuthor}}, Bio = {{Consts.BojackTheme}} });
+
+                         await transaction.RollbackAsync();
+
+                         var actual = await QuerySql.GetAuthor(new QuerySql.GetAuthorArgs { Name = {{Consts.BojackAuthor}} });
+                         Assert.That(actual == null, "author should not exist after rollback");
+                     }
+                     """
+        },
         [KnownTestType.PostgresDataTypesOverride] = new TestImpl
         {
             Impl = $$"""

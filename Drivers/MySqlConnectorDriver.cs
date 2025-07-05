@@ -123,6 +123,8 @@ public partial class MySqlConnectorDriver(
             )
         };
 
+    public override string TransactionClassName => "MySqlTransaction";
+
     public override UsingDirectiveSyntax[] GetUsingDirectivesForQueries()
     {
         return base.GetUsingDirectivesForQueries()

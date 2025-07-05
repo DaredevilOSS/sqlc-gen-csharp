@@ -26,6 +26,18 @@ namespace MySqlConnectorDapperLegacyExampleGen
             Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
         }
 
+        private QuerySql(MySqlTransaction transaction)
+        {
+            this.Transaction = transaction;
+            Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
+        }
+
+        public static QuerySql WithTransaction(MySqlTransaction transaction)
+        {
+            return new QuerySql(transaction);
+        }
+
+        private MySqlTransaction Transaction { get; }
         private string ConnectionString { get; }
 
         private const string GetAuthorSql = "SELECT id, name, bio FROM authors WHERE name = @name LIMIT 1; SELECT LAST_INSERT_ID()";
@@ -41,13 +53,23 @@ namespace MySqlConnectorDapperLegacyExampleGen
         };
         public async Task<GetAuthorRow> GetAuthor(GetAuthorArgs args)
         {
-            using (var connection = new MySqlConnection(ConnectionString))
+            var queryParams = new Dictionary<string, object>();
+            queryParams.Add("name", args.Name);
+            if (this.Transaction == null)
             {
-                var queryParams = new Dictionary<string, object>();
-                queryParams.Add("name", args.Name);
-                var result = await connection.QueryFirstOrDefaultAsync<GetAuthorRow>(GetAuthorSql, queryParams);
-                return result;
+                using (var connection = new MySqlConnection(ConnectionString))
+                {
+                    var result = await connection.QueryFirstOrDefaultAsync<GetAuthorRow>(GetAuthorSql, queryParams);
+                    return result;
+                }
             }
+
+            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+            {
+                throw new System.InvalidOperationException("Transaction is provided, but its connection is null.");
+            }
+
+            return await this.Transaction.Connection.QueryFirstOrDefaultAsync<GetAuthorRow>(GetAuthorSql, queryParams, transaction: this.Transaction);
         }
 
         private const string ListAuthorsSql = "SELECT id, name, bio FROM authors ORDER  BY  name ; SELECT  LAST_INSERT_ID ( ) "; 
@@ -59,11 +81,21 @@ namespace MySqlConnectorDapperLegacyExampleGen
         };
         public async Task<List<ListAuthorsRow>> ListAuthors()
         {
-            using (var connection = new MySqlConnection(ConnectionString))
+            if (this.Transaction == null)
             {
-                var result = await connection.QueryAsync<ListAuthorsRow>(ListAuthorsSql);
-                return result.AsList();
+                using (var connection = new MySqlConnection(ConnectionString))
+                {
+                    var result = await connection.QueryAsync<ListAuthorsRow>(ListAuthorsSql);
+                    return result.AsList();
+                }
             }
+
+            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+            {
+                throw new System.InvalidOperationException("Transaction is provided, but its connection is null.");
+            }
+
+            return (await this.Transaction.Connection.QueryAsync<ListAuthorsRow>(ListAuthorsSql, transaction: this.Transaction)).AsList();
         }
 
         private const string CreateAuthorSql = "INSERT INTO authors (id, name, bio) VALUES (@id, @name, @bio); SELECT LAST_INSERT_ID()";
@@ -75,14 +107,26 @@ namespace MySqlConnectorDapperLegacyExampleGen
         };
         public async Task CreateAuthor(CreateAuthorArgs args)
         {
-            using (var connection = new MySqlConnection(ConnectionString))
+            var queryParams = new Dictionary<string, object>();
+            queryParams.Add("id", args.Id);
+            queryParams.Add("name", args.Name);
+            queryParams.Add("bio", args.Bio);
+            if (this.Transaction == null)
             {
-                var queryParams = new Dictionary<string, object>();
-                queryParams.Add("id", args.Id);
-                queryParams.Add("name", args.Name);
-                queryParams.Add("bio", args.Bio);
-                await connection.ExecuteAsync(CreateAuthorSql, queryParams);
+                using (var connection = new MySqlConnection(ConnectionString))
+                {
+                    await connection.ExecuteAsync(CreateAuthorSql, queryParams);
+                }
+
+                return;
             }
+
+            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+            {
+                throw new System.InvalidOperationException("Transaction is provided, but its connection is null.");
+            }
+
+            await this.Transaction.Connection.ExecuteAsync(CreateAuthorSql, queryParams, transaction: this.Transaction);
         }
 
         private const string CreateAuthorReturnIdSql = "INSERT INTO authors (name, bio) VALUES (@name, @bio); SELECT LAST_INSERT_ID()";
@@ -93,13 +137,23 @@ namespace MySqlConnectorDapperLegacyExampleGen
         };
         public async Task<long> CreateAuthorReturnId(CreateAuthorReturnIdArgs args)
         {
-            using (var connection = new MySqlConnection(ConnectionString))
+            var queryParams = new Dictionary<string, object>();
+            queryParams.Add("name", args.Name);
+            queryParams.Add("bio", args.Bio);
+            if (this.Transaction == null)
             {
-                var queryParams = new Dictionary<string, object>();
-                queryParams.Add("name", args.Name);
-                queryParams.Add("bio", args.Bio);
-                return await connection.QuerySingleAsync<long>(CreateAuthorReturnIdSql, queryParams);
+                using (var connection = new MySqlConnection(ConnectionString))
+                {
+                    return await connection.QuerySingleAsync<long>(CreateAuthorReturnIdSql, queryParams);
+                }
             }
+
+            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+            {
+                throw new System.InvalidOperationException("Transaction is provided, but its connection is null.");
+            }
+
+            return await this.Transaction.Connection.QuerySingleAsync<long>(CreateAuthorReturnIdSql, queryParams, transaction: this.Transaction);
         }
 
         private const string GetAuthorByIdSql = "SELECT id, name, bio FROM authors WHERE id = @id LIMIT 1; SELECT LAST_INSERT_ID()";
@@ -115,13 +169,23 @@ namespace MySqlConnectorDapperLegacyExampleGen
         };
         public async Task<GetAuthorByIdRow> GetAuthorById(GetAuthorByIdArgs args)
         {
-            using (var connection = new MySqlConnection(ConnectionString))
+            var queryParams = new Dictionary<string, object>();
+            queryParams.Add("id", args.Id);
+            if (this.Transaction == null)
             {
-                var queryParams = new Dictionary<string, object>();
-                queryParams.Add("id", args.Id);
-                var result = await connection.QueryFirstOrDefaultAsync<GetAuthorByIdRow>(GetAuthorByIdSql, queryParams);
-                return result;
+                using (var connection = new MySqlConnection(ConnectionString))
+                {
+                    var result = await connection.QueryFirstOrDefaultAsync<GetAuthorByIdRow>(GetAuthorByIdSql, queryParams);
+                    return result;
+                }
             }
+
+            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+            {
+                throw new System.InvalidOperationException("Transaction is provided, but its connection is null.");
+            }
+
+            return await this.Transaction.Connection.QueryFirstOrDefaultAsync<GetAuthorByIdRow>(GetAuthorByIdSql, queryParams, transaction: this.Transaction);
         }
 
         private const string GetAuthorByNamePatternSql = "SELECT id, name, bio FROM authors WHERE  name  LIKE  COALESCE ( @name_pattern ,  '%' ) ; SELECT  LAST_INSERT_ID ( ) "; 
@@ -137,13 +201,23 @@ namespace MySqlConnectorDapperLegacyExampleGen
         };
         public async Task<List<GetAuthorByNamePatternRow>> GetAuthorByNamePattern(GetAuthorByNamePatternArgs args)
         {
-            using (var connection = new MySqlConnection(ConnectionString))
+            var queryParams = new Dictionary<string, object>();
+            queryParams.Add("name_pattern", args.NamePattern);
+            if (this.Transaction == null)
             {
-                var queryParams = new Dictionary<string, object>();
-                queryParams.Add("name_pattern", args.NamePattern);
-                var result = await connection.QueryAsync<GetAuthorByNamePatternRow>(GetAuthorByNamePatternSql, queryParams);
-                return result.AsList();
+                using (var connection = new MySqlConnection(ConnectionString))
+                {
+                    var result = await connection.QueryAsync<GetAuthorByNamePatternRow>(GetAuthorByNamePatternSql, queryParams);
+                    return result.AsList();
+                }
             }
+
+            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+            {
+                throw new System.InvalidOperationException("Transaction is provided, but its connection is null.");
+            }
+
+            return (await this.Transaction.Connection.QueryAsync<GetAuthorByNamePatternRow>(GetAuthorByNamePatternSql, queryParams, transaction: this.Transaction)).AsList();
         }
 
         private const string DeleteAuthorSql = "DELETE FROM authors WHERE  name  =  @name ; SELECT  LAST_INSERT_ID ( ) "; 
@@ -153,21 +227,45 @@ namespace MySqlConnectorDapperLegacyExampleGen
         };
         public async Task DeleteAuthor(DeleteAuthorArgs args)
         {
-            using (var connection = new MySqlConnection(ConnectionString))
+            var queryParams = new Dictionary<string, object>();
+            queryParams.Add("name", args.Name);
+            if (this.Transaction == null)
             {
-                var queryParams = new Dictionary<string, object>();
-                queryParams.Add("name", args.Name);
-                await connection.ExecuteAsync(DeleteAuthorSql, queryParams);
+                using (var connection = new MySqlConnection(ConnectionString))
+                {
+                    await connection.ExecuteAsync(DeleteAuthorSql, queryParams);
+                }
+
+                return;
             }
+
+            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+            {
+                throw new System.InvalidOperationException("Transaction is provided, but its connection is null.");
+            }
+
+            await this.Transaction.Connection.ExecuteAsync(DeleteAuthorSql, queryParams, transaction: this.Transaction);
         }
 
         private const string DeleteAllAuthorsSql = "DELETE FROM authors; SELECT LAST_INSERT_ID()";
         public async Task DeleteAllAuthors()
         {
-            using (var connection = new MySqlConnection(ConnectionString))
+            if (this.Transaction == null)
             {
-                await connection.ExecuteAsync(DeleteAllAuthorsSql);
+                using (var connection = new MySqlConnection(ConnectionString))
+                {
+                    await connection.ExecuteAsync(DeleteAllAuthorsSql);
+                }
+
+                return;
             }
+
+            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+            {
+                throw new System.InvalidOperationException("Transaction is provided, but its connection is null.");
+            }
+
+            await this.Transaction.Connection.ExecuteAsync(DeleteAllAuthorsSql, transaction: this.Transaction);
         }
 
         private const string UpdateAuthorsSql = "UPDATE authors SET  bio  =  @bio  WHERE  bio  IS  NOT  NULL ; SELECT  LAST_INSERT_ID ( ) "; 
@@ -177,12 +275,22 @@ namespace MySqlConnectorDapperLegacyExampleGen
         };
         public async Task<long> UpdateAuthors(UpdateAuthorsArgs args)
         {
-            using (var connection = new MySqlConnection(ConnectionString))
+            var queryParams = new Dictionary<string, object>();
+            queryParams.Add("bio", args.Bio);
+            if (this.Transaction == null)
             {
-                var queryParams = new Dictionary<string, object>();
-                queryParams.Add("bio", args.Bio);
-                return await connection.ExecuteAsync(UpdateAuthorsSql, queryParams);
+                using (var connection = new MySqlConnection(ConnectionString))
+                {
+                    return await connection.ExecuteAsync(UpdateAuthorsSql, queryParams);
+                }
             }
+
+            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+            {
+                throw new System.InvalidOperationException("Transaction is provided, but its connection is null.");
+            }
+
+            return await this.Transaction.Connection.ExecuteAsync(UpdateAuthorsSql, queryParams, transaction: this.Transaction);
         }
 
         private const string GetAuthorsByIdsSql = "SELECT id, name, bio FROM authors WHERE id IN (/*SLICE:ids*/@ids); SELECT LAST_INSERT_ID()";
@@ -198,16 +306,26 @@ namespace MySqlConnectorDapperLegacyExampleGen
         };
         public async Task<List<GetAuthorsByIdsRow>> GetAuthorsByIds(GetAuthorsByIdsArgs args)
         {
-            using (var connection = new MySqlConnection(ConnectionString))
+            var transformedSql = GetAuthorsByIdsSql;
+            transformedSql = Utils.TransformQueryForSliceArgs(transformedSql, args.Ids.Length, "ids");
+            var queryParams = new Dictionary<string, object>();
+            for (int i = 0; i < args.Ids.Length; i++)
+                queryParams.Add($"@idsArg{i}", args.Ids[i]);
+            if (this.Transaction == null)
             {
-                var transformedSql = GetAuthorsByIdsSql;
-                transformedSql = Utils.TransformQueryForSliceArgs(transformedSql, args.Ids.Length, "ids");
-                var queryParams = new Dictionary<string, object>();
-                for (int i = 0; i < args.Ids.Length; i++)
-                    queryParams.Add($"@idsArg{i}", args.Ids[i]);
-                var result = await connection.QueryAsync<GetAuthorsByIdsRow>(transformedSql, queryParams);
-                return result.AsList();
+                using (var connection = new MySqlConnection(ConnectionString))
+                {
+                    var result = await connection.QueryAsync<GetAuthorsByIdsRow>(transformedSql, queryParams);
+                    return result.AsList();
+                }
             }
+
+            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+            {
+                throw new System.InvalidOperationException("Transaction is provided, but its connection is null.");
+            }
+
+            return (await this.Transaction.Connection.QueryAsync<GetAuthorsByIdsRow>(transformedSql, queryParams, transaction: this.Transaction)).AsList();
         }
 
         private const string GetAuthorsByIdsAndNamesSql = "SELECT id, name, bio FROM authors WHERE id IN (/*SLICE:ids*/@ids) AND name IN (/*SLICE:names*/@names); SELECT LAST_INSERT_ID()";
@@ -224,19 +342,29 @@ namespace MySqlConnectorDapperLegacyExampleGen
         };
         public async Task<List<GetAuthorsByIdsAndNamesRow>> GetAuthorsByIdsAndNames(GetAuthorsByIdsAndNamesArgs args)
         {
-            using (var connection = new MySqlConnection(ConnectionString))
+            var transformedSql = GetAuthorsByIdsAndNamesSql;
+            transformedSql = Utils.TransformQueryForSliceArgs(transformedSql, args.Ids.Length, "ids");
+            transformedSql = Utils.TransformQueryForSliceArgs(transformedSql, args.Names.Length, "names");
+            var queryParams = new Dictionary<string, object>();
+            for (int i = 0; i < args.Ids.Length; i++)
+                queryParams.Add($"@idsArg{i}", args.Ids[i]);
+            for (int i = 0; i < args.Names.Length; i++)
+                queryParams.Add($"@namesArg{i}", args.Names[i]);
+            if (this.Transaction == null)
             {
-                var transformedSql = GetAuthorsByIdsAndNamesSql;
-                transformedSql = Utils.TransformQueryForSliceArgs(transformedSql, args.Ids.Length, "ids");
-                transformedSql = Utils.TransformQueryForSliceArgs(transformedSql, args.Names.Length, "names");
-                var queryParams = new Dictionary<string, object>();
-                for (int i = 0; i < args.Ids.Length; i++)
-                    queryParams.Add($"@idsArg{i}", args.Ids[i]);
-                for (int i = 0; i < args.Names.Length; i++)
-                    queryParams.Add($"@namesArg{i}", args.Names[i]);
-                var result = await connection.QueryAsync<GetAuthorsByIdsAndNamesRow>(transformedSql, queryParams);
-                return result.AsList();
+                using (var connection = new MySqlConnection(ConnectionString))
+                {
+                    var result = await connection.QueryAsync<GetAuthorsByIdsAndNamesRow>(transformedSql, queryParams);
+                    return result.AsList();
+                }
             }
+
+            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+            {
+                throw new System.InvalidOperationException("Transaction is provided, but its connection is null.");
+            }
+
+            return (await this.Transaction.Connection.QueryAsync<GetAuthorsByIdsAndNamesRow>(transformedSql, queryParams, transaction: this.Transaction)).AsList();
         }
 
         private const string CreateBookSql = "INSERT INTO books (name, author_id) VALUES (@name, @author_id); SELECT LAST_INSERT_ID()";
@@ -247,13 +375,23 @@ namespace MySqlConnectorDapperLegacyExampleGen
         };
         public async Task<long> CreateBook(CreateBookArgs args)
         {
-            using (var connection = new MySqlConnection(ConnectionString))
+            var queryParams = new Dictionary<string, object>();
+            queryParams.Add("name", args.Name);
+            queryParams.Add("author_id", args.AuthorId);
+            if (this.Transaction == null)
             {
-                var queryParams = new Dictionary<string, object>();
-                queryParams.Add("name", args.Name);
-                queryParams.Add("author_id", args.AuthorId);
-                return await connection.QuerySingleAsync<long>(CreateBookSql, queryParams);
+                using (var connection = new MySqlConnection(ConnectionString))
+                {
+                    return await connection.QuerySingleAsync<long>(CreateBookSql, queryParams);
+                }
             }
+
+            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+            {
+                throw new System.InvalidOperationException("Transaction is provided, but its connection is null.");
+            }
+
+            return await this.Transaction.Connection.QuerySingleAsync<long>(CreateBookSql, queryParams, transaction: this.Transaction);
         }
 
         private const string ListAllAuthorsBooksSql = "SELECT authors.id, authors.name, authors.bio, books.id, books.name, books.author_id, books.description  FROM  authors  JOIN  books  ON  authors . id  =  books . author_id  ORDER  BY  authors . name ; SELECT  LAST_INSERT_ID ( ) "; 
@@ -264,21 +402,45 @@ namespace MySqlConnectorDapperLegacyExampleGen
         };
         public async Task<List<ListAllAuthorsBooksRow>> ListAllAuthorsBooks()
         {
-            using (var connection = new MySqlConnection(ConnectionString))
+            if (this.Transaction == null)
             {
-                await connection.OpenAsync();
-                using (var command = new MySqlCommand(ListAllAuthorsBooksSql, connection))
+                using (var connection = new MySqlConnection(ConnectionString))
                 {
-                    using (var reader = await command.ExecuteReaderAsync())
+                    await connection.OpenAsync();
+                    using (var command = new MySqlCommand(ListAllAuthorsBooksSql, connection))
                     {
-                        var result = new List<ListAllAuthorsBooksRow>();
-                        while (await reader.ReadAsync())
+                        using (var reader = await command.ExecuteReaderAsync())
                         {
-                            result.Add(new ListAllAuthorsBooksRow { Author = new Author { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2) }, Book = new Book { Id = reader.GetInt64(3), Name = reader.GetString(4), AuthorId = reader.GetInt64(5), Description = reader.IsDBNull(6) ? null : reader.GetString(6) } });
-                        }
+                            var result = new List<ListAllAuthorsBooksRow>();
+                            while (await reader.ReadAsync())
+                            {
+                                result.Add(new ListAllAuthorsBooksRow { Author = new Author { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2) }, Book = new Book { Id = reader.GetInt64(3), Name = reader.GetString(4), AuthorId = reader.GetInt64(5), Description = reader.IsDBNull(6) ? null : reader.GetString(6) } });
+                            }
 
-                        return result;
+                            return result;
+                        }
                     }
+                }
+            }
+
+            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+            {
+                throw new System.InvalidOperationException("Transaction is provided, but its connection is null.");
+            }
+
+            using (var command = this.Transaction.Connection.CreateCommand())
+            {
+                command.CommandText = ListAllAuthorsBooksSql;
+                command.Transaction = this.Transaction;
+                using (var reader = await command.ExecuteReaderAsync())
+                {
+                    var result = new List<ListAllAuthorsBooksRow>();
+                    while (await reader.ReadAsync())
+                    {
+                        result.Add(new ListAllAuthorsBooksRow { Author = new Author { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2) }, Book = new Book { Id = reader.GetInt64(3), Name = reader.GetString(4), AuthorId = reader.GetInt64(5), Description = reader.IsDBNull(6) ? null : reader.GetString(6) } });
+                    }
+
+                    return result;
                 }
             }
         }
@@ -291,21 +453,45 @@ namespace MySqlConnectorDapperLegacyExampleGen
         };
         public async Task<List<GetDuplicateAuthorsRow>> GetDuplicateAuthors()
         {
-            using (var connection = new MySqlConnection(ConnectionString))
+            if (this.Transaction == null)
             {
-                await connection.OpenAsync();
-                using (var command = new MySqlCommand(GetDuplicateAuthorsSql, connection))
+                using (var connection = new MySqlConnection(ConnectionString))
                 {
-                    using (var reader = await command.ExecuteReaderAsync())
+                    await connection.OpenAsync();
+                    using (var command = new MySqlCommand(GetDuplicateAuthorsSql, connection))
                     {
-                        var result = new List<GetDuplicateAuthorsRow>();
-                        while (await reader.ReadAsync())
+                        using (var reader = await command.ExecuteReaderAsync())
                         {
-                            result.Add(new GetDuplicateAuthorsRow { Author = new Author { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2) }, Author2 = new Author { Id = reader.GetInt64(3), Name = reader.GetString(4), Bio = reader.IsDBNull(5) ? null : reader.GetString(5) } });
-                        }
+                            var result = new List<GetDuplicateAuthorsRow>();
+                            while (await reader.ReadAsync())
+                            {
+                                result.Add(new GetDuplicateAuthorsRow { Author = new Author { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2) }, Author2 = new Author { Id = reader.GetInt64(3), Name = reader.GetString(4), Bio = reader.IsDBNull(5) ? null : reader.GetString(5) } });
+                            }
 
-                        return result;
+                            return result;
+                        }
                     }
+                }
+            }
+
+            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+            {
+                throw new System.InvalidOperationException("Transaction is provided, but its connection is null.");
+            }
+
+            using (var command = this.Transaction.Connection.CreateCommand())
+            {
+                command.CommandText = GetDuplicateAuthorsSql;
+                command.Transaction = this.Transaction;
+                using (var reader = await command.ExecuteReaderAsync())
+                {
+                    var result = new List<GetDuplicateAuthorsRow>();
+                    while (await reader.ReadAsync())
+                    {
+                        result.Add(new GetDuplicateAuthorsRow { Author = new Author { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2) }, Author2 = new Author { Id = reader.GetInt64(3), Name = reader.GetString(4), Bio = reader.IsDBNull(5) ? null : reader.GetString(5) } });
+                    }
+
+                    return result;
                 }
             }
         }
@@ -324,22 +510,47 @@ namespace MySqlConnectorDapperLegacyExampleGen
         };
         public async Task<List<GetAuthorsByBookNameRow>> GetAuthorsByBookName(GetAuthorsByBookNameArgs args)
         {
-            using (var connection = new MySqlConnection(ConnectionString))
+            if (this.Transaction == null)
             {
-                await connection.OpenAsync();
-                using (var command = new MySqlCommand(GetAuthorsByBookNameSql, connection))
+                using (var connection = new MySqlConnection(ConnectionString))
                 {
-                    command.Parameters.AddWithValue("@name", args.Name);
-                    using (var reader = await command.ExecuteReaderAsync())
+                    await connection.OpenAsync();
+                    using (var command = new MySqlCommand(GetAuthorsByBookNameSql, connection))
                     {
-                        var result = new List<GetAuthorsByBookNameRow>();
-                        while (await reader.ReadAsync())
+                        command.Parameters.AddWithValue("@name", args.Name);
+                        using (var reader = await command.ExecuteReaderAsync())
                         {
-                            result.Add(new GetAuthorsByBookNameRow { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2), Book = new Book { Id = reader.GetInt64(3), Name = reader.GetString(4), AuthorId = reader.GetInt64(5), Description = reader.IsDBNull(6) ? null : reader.GetString(6) } });
-                        }
+                            var result = new List<GetAuthorsByBookNameRow>();
+                            while (await reader.ReadAsync())
+                            {
+                                result.Add(new GetAuthorsByBookNameRow { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2), Book = new Book { Id = reader.GetInt64(3), Name = reader.GetString(4), AuthorId = reader.GetInt64(5), Description = reader.IsDBNull(6) ? null : reader.GetString(6) } });
+                            }
 
-                        return result;
+                            return result;
+                        }
                     }
+                }
+            }
+
+            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+            {
+                throw new System.InvalidOperationException("Transaction is provided, but its connection is null.");
+            }
+
+            using (var command = this.Transaction.Connection.CreateCommand())
+            {
+                command.CommandText = GetAuthorsByBookNameSql;
+                command.Transaction = this.Transaction;
+                command.Parameters.AddWithValue("@name", args.Name);
+                using (var reader = await command.ExecuteReaderAsync())
+                {
+                    var result = new List<GetAuthorsByBookNameRow>();
+                    while (await reader.ReadAsync())
+                    {
+                        result.Add(new GetAuthorsByBookNameRow { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2), Book = new Book { Id = reader.GetInt64(3), Name = reader.GetString(4), AuthorId = reader.GetInt64(5), Description = reader.IsDBNull(6) ? null : reader.GetString(6) } });
+                    }
+
+                    return result;
                 }
             }
         }
@@ -385,46 +596,58 @@ namespace MySqlConnectorDapperLegacyExampleGen
         };
         public async Task InsertMysqlTypes(InsertMysqlTypesArgs args)
         {
-            using (var connection = new MySqlConnection(ConnectionString))
+            var queryParams = new Dictionary<string, object>();
+            queryParams.Add("c_bit", args.CBit);
+            queryParams.Add("c_bool", args.CBool);
+            queryParams.Add("c_boolean", args.CBoolean);
+            queryParams.Add("c_tinyint", args.CTinyint);
+            queryParams.Add("c_smallint", args.CSmallint);
+            queryParams.Add("c_mediumint", args.CMediumint);
+            queryParams.Add("c_int", args.CInt);
+            queryParams.Add("c_integer", args.CInteger);
+            queryParams.Add("c_bigint", args.CBigint);
+            queryParams.Add("c_decimal", args.CDecimal);
+            queryParams.Add("c_dec", args.CDec);
+            queryParams.Add("c_numeric", args.CNumeric);
+            queryParams.Add("c_fixed", args.CFixed);
+            queryParams.Add("c_float", args.CFloat);
+            queryParams.Add("c_double", args.CDouble);
+            queryParams.Add("c_double_precision", args.CDoublePrecision);
+            queryParams.Add("c_char", args.CChar);
+            queryParams.Add("c_nchar", args.CNchar);
+            queryParams.Add("c_national_char", args.CNationalChar);
+            queryParams.Add("c_varchar", args.CVarchar);
+            queryParams.Add("c_tinytext", args.CTinytext);
+            queryParams.Add("c_mediumtext", args.CMediumtext);
+            queryParams.Add("c_text", args.CText);
+            queryParams.Add("c_longtext", args.CLongtext);
+            queryParams.Add("c_enum", args.CEnum);
+            queryParams.Add("c_year", args.CYear);
+            queryParams.Add("c_date", args.CDate);
+            queryParams.Add("c_datetime", args.CDatetime);
+            queryParams.Add("c_timestamp", args.CTimestamp);
+            queryParams.Add("c_binary", args.CBinary);
+            queryParams.Add("c_varbinary", args.CVarbinary);
+            queryParams.Add("c_tinyblob", args.CTinyblob);
+            queryParams.Add("c_blob", args.CBlob);
+            queryParams.Add("c_mediumblob", args.CMediumblob);
+            queryParams.Add("c_longblob", args.CLongblob);
+            if (this.Transaction == null)
             {
-                var queryParams = new Dictionary<string, object>();
-                queryParams.Add("c_bit", args.CBit);
-                queryParams.Add("c_bool", args.CBool);
-                queryParams.Add("c_boolean", args.CBoolean);
-                queryParams.Add("c_tinyint", args.CTinyint);
-                queryParams.Add("c_smallint", args.CSmallint);
-                queryParams.Add("c_mediumint", args.CMediumint);
-                queryParams.Add("c_int", args.CInt);
-                queryParams.Add("c_integer", args.CInteger);
-                queryParams.Add("c_bigint", args.CBigint);
-                queryParams.Add("c_decimal", args.CDecimal);
-                queryParams.Add("c_dec", args.CDec);
-                queryParams.Add("c_numeric", args.CNumeric);
-                queryParams.Add("c_fixed", args.CFixed);
-                queryParams.Add("c_float", args.CFloat);
-                queryParams.Add("c_double", args.CDouble);
-                queryParams.Add("c_double_precision", args.CDoublePrecision);
-                queryParams.Add("c_char", args.CChar);
-                queryParams.Add("c_nchar", args.CNchar);
-                queryParams.Add("c_national_char", args.CNationalChar);
-                queryParams.Add("c_varchar", args.CVarchar);
-                queryParams.Add("c_tinytext", args.CTinytext);
-                queryParams.Add("c_mediumtext", args.CMediumtext);
-                queryParams.Add("c_text", args.CText);
-                queryParams.Add("c_longtext", args.CLongtext);
-                queryParams.Add("c_enum", args.CEnum);
-                queryParams.Add("c_year", args.CYear);
-                queryParams.Add("c_date", args.CDate);
-                queryParams.Add("c_datetime", args.CDatetime);
-                queryParams.Add("c_timestamp", args.CTimestamp);
-                queryParams.Add("c_binary", args.CBinary);
-                queryParams.Add("c_varbinary", args.CVarbinary);
-                queryParams.Add("c_tinyblob", args.CTinyblob);
-                queryParams.Add("c_blob", args.CBlob);
-                queryParams.Add("c_mediumblob", args.CMediumblob);
-                queryParams.Add("c_longblob", args.CLongblob);
-                await connection.ExecuteAsync(InsertMysqlTypesSql, queryParams);
+                using (var connection = new MySqlConnection(ConnectionString))
+                {
+                    await connection.ExecuteAsync(InsertMysqlTypesSql, queryParams);
+                }
+
+                return;
             }
+
+            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+            {
+                throw new System.InvalidOperationException("Transaction is provided, but its connection is null.");
+            }
+
+            await this.Transaction.Connection.ExecuteAsync(InsertMysqlTypesSql, queryParams, transaction: this.Transaction);
         }
 
         public class InsertMysqlTypesBatchArgs
@@ -567,11 +790,21 @@ namespace MySqlConnectorDapperLegacyExampleGen
         };
         public async Task<GetMysqlTypesRow> GetMysqlTypes()
         {
-            using (var connection = new MySqlConnection(ConnectionString))
+            if (this.Transaction == null)
             {
-                var result = await connection.QueryFirstOrDefaultAsync<GetMysqlTypesRow>(GetMysqlTypesSql);
-                return result;
+                using (var connection = new MySqlConnection(ConnectionString))
+                {
+                    var result = await connection.QueryFirstOrDefaultAsync<GetMysqlTypesRow>(GetMysqlTypesSql);
+                    return result;
+                }
             }
+
+            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+            {
+                throw new System.InvalidOperationException("Transaction is provided, but its connection is null.");
+            }
+
+            return await this.Transaction.Connection.QueryFirstOrDefaultAsync<GetMysqlTypesRow>(GetMysqlTypesSql, transaction: this.Transaction);
         }
 
         private const string GetMysqlTypesCntSql = "SELECT COUNT(1) AS cnt, c_bool, c_boolean, c_bit, c_tinyint, c_smallint, c_mediumint, c_int, c_integer, c_bigint,  c_float , c_numeric, c_decimal, c_dec, c_fixed, c_double, c_double_precision, c_char, c_nchar, c_national_char, c_varchar, c_tinytext, c_mediumtext, c_text, c_longtext, c_enum, c_year, c_date, c_datetime, c_timestamp, c_binary, c_varbinary, c_tinyblob, c_blob, c_mediumblob, c_longblob FROM  mysql_types  GROUP  BY  c_bool , c_boolean, c_bit, c_tinyint, c_smallint, c_mediumint, c_int, c_integer, c_bigint, c_float, c_numeric, c_decimal, c_dec, c_fixed, c_double, c_double_precision, c_char, c_nchar, c_national_char, c_varchar, c_tinytext, c_mediumtext, c_text, c_longtext, c_enum, c_year, c_date, c_datetime, c_timestamp, c_binary, c_varbinary, c_tinyblob, c_blob, c_mediumblob, c_longblob LIMIT  1 ; SELECT  LAST_INSERT_ID ( ) "; 
@@ -616,11 +849,21 @@ namespace MySqlConnectorDapperLegacyExampleGen
         };
         public async Task<GetMysqlTypesCntRow> GetMysqlTypesCnt()
         {
-            using (var connection = new MySqlConnection(ConnectionString))
+            if (this.Transaction == null)
             {
-                var result = await connection.QueryFirstOrDefaultAsync<GetMysqlTypesCntRow>(GetMysqlTypesCntSql);
-                return result;
+                using (var connection = new MySqlConnection(ConnectionString))
+                {
+                    var result = await connection.QueryFirstOrDefaultAsync<GetMysqlTypesCntRow>(GetMysqlTypesCntSql);
+                    return result;
+                }
             }
+
+            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+            {
+                throw new System.InvalidOperationException("Transaction is provided, but its connection is null.");
+            }
+
+            return await this.Transaction.Connection.QueryFirstOrDefaultAsync<GetMysqlTypesCntRow>(GetMysqlTypesCntSql, transaction: this.Transaction);
         }
 
         private const string GetMysqlFunctionsSql = "SELECT MAX(c_int) AS max_int, MAX(c_varchar) AS max_varchar, MAX(c_timestamp) AS max_timestamp, max(c_bigint) as max_bigint FROM  mysql_types ; SELECT  LAST_INSERT_ID ( ) "; 
@@ -633,20 +876,42 @@ namespace MySqlConnectorDapperLegacyExampleGen
         };
         public async Task<GetMysqlFunctionsRow> GetMysqlFunctions()
         {
-            using (var connection = new MySqlConnection(ConnectionString))
+            if (this.Transaction == null)
             {
-                var result = await connection.QueryFirstOrDefaultAsync<GetMysqlFunctionsRow>(GetMysqlFunctionsSql);
-                return result;
+                using (var connection = new MySqlConnection(ConnectionString))
+                {
+                    var result = await connection.QueryFirstOrDefaultAsync<GetMysqlFunctionsRow>(GetMysqlFunctionsSql);
+                    return result;
+                }
             }
+
+            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+            {
+                throw new System.InvalidOperationException("Transaction is provided, but its connection is null.");
+            }
+
+            return await this.Transaction.Connection.QueryFirstOrDefaultAsync<GetMysqlFunctionsRow>(GetMysqlFunctionsSql, transaction: this.Transaction);
         }
 
         private const string TruncateMysqlTypesSql = "TRUNCATE TABLE mysql_types; SELECT LAST_INSERT_ID()";
         public async Task TruncateMysqlTypes()
         {
-            using (var connection = new MySqlConnection(ConnectionString))
+            if (this.Transaction == null)
             {
-                await connection.ExecuteAsync(TruncateMysqlTypesSql);
+                using (var connection = new MySqlConnection(ConnectionString))
+                {
+                    await connection.ExecuteAsync(TruncateMysqlTypesSql);
+                }
+
+                return;
             }
+
+            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+            {
+                throw new System.InvalidOperationException("Transaction is provided, but its connection is null.");
+            }
+
+            await this.Transaction.Connection.ExecuteAsync(TruncateMysqlTypesSql, transaction: this.Transaction);
         }
 
         private const string CreateExtendedBioSql = "INSERT INTO extended.bios (author_name, name, bio_type) VALUES (@author_name, @name, @bio_type); SELECT LAST_INSERT_ID()";
@@ -658,14 +923,26 @@ namespace MySqlConnectorDapperLegacyExampleGen
         };
         public async Task CreateExtendedBio(CreateExtendedBioArgs args)
         {
-            using (var connection = new MySqlConnection(ConnectionString))
+            var queryParams = new Dictionary<string, object>();
+            queryParams.Add("author_name", args.AuthorName);
+            queryParams.Add("name", args.Name);
+            queryParams.Add("bio_type", args.BioType);
+            if (this.Transaction == null)
             {
-                var queryParams = new Dictionary<string, object>();
-                queryParams.Add("author_name", args.AuthorName);
-                queryParams.Add("name", args.Name);
-                queryParams.Add("bio_type", args.BioType);
-                await connection.ExecuteAsync(CreateExtendedBioSql, queryParams);
+                using (var connection = new MySqlConnection(ConnectionString))
+                {
+                    await connection.ExecuteAsync(CreateExtendedBioSql, queryParams);
+                }
+
+                return;
             }
+
+            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+            {
+                throw new System.InvalidOperationException("Transaction is provided, but its connection is null.");
+            }
+
+            await this.Transaction.Connection.ExecuteAsync(CreateExtendedBioSql, queryParams, transaction: this.Transaction);
         }
 
         private const string GetFirstExtendedBioByTypeSql = "SELECT author_name, name, bio_type FROM extended.bios WHERE bio_type = @bio_type LIMIT 1; SELECT LAST_INSERT_ID()";
@@ -681,22 +958,44 @@ namespace MySqlConnectorDapperLegacyExampleGen
         };
         public async Task<GetFirstExtendedBioByTypeRow> GetFirstExtendedBioByType(GetFirstExtendedBioByTypeArgs args)
         {
-            using (var connection = new MySqlConnection(ConnectionString))
+            var queryParams = new Dictionary<string, object>();
+            queryParams.Add("bio_type", args.BioType);
+            if (this.Transaction == null)
             {
-                var queryParams = new Dictionary<string, object>();
-                queryParams.Add("bio_type", args.BioType);
-                var result = await connection.QueryFirstOrDefaultAsync<GetFirstExtendedBioByTypeRow>(GetFirstExtendedBioByTypeSql, queryParams);
-                return result;
+                using (var connection = new MySqlConnection(ConnectionString))
+                {
+                    var result = await connection.QueryFirstOrDefaultAsync<GetFirstExtendedBioByTypeRow>(GetFirstExtendedBioByTypeSql, queryParams);
+                    return result;
+                }
             }
+
+            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+            {
+                throw new System.InvalidOperationException("Transaction is provided, but its connection is null.");
+            }
+
+            return await this.Transaction.Connection.QueryFirstOrDefaultAsync<GetFirstExtendedBioByTypeRow>(GetFirstExtendedBioByTypeSql, queryParams, transaction: this.Transaction);
         }
 
         private const string TruncateExtendedBiosSql = "TRUNCATE TABLE extended.bios; SELECT LAST_INSERT_ID()";
         public async Task TruncateExtendedBios()
         {
-            using (var connection = new MySqlConnection(ConnectionString))
+            if (this.Transaction == null)
             {
-                await connection.ExecuteAsync(TruncateExtendedBiosSql);
+                using (var connection = new MySqlConnection(ConnectionString))
+                {
+                    await connection.ExecuteAsync(TruncateExtendedBiosSql);
+                }
+
+                return;
             }
+
+            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+            {
+                throw new System.InvalidOperationException("Transaction is provided, but its connection is null.");
+            }
+
+            await this.Transaction.Connection.ExecuteAsync(TruncateExtendedBiosSql, transaction: this.Transaction);
         }
     }
 }

@@ -15,6 +15,8 @@ public abstract class DbDriver
 
     public string DefaultSchema { get; }
 
+    public abstract string TransactionClassName { get; }
+
     public Dictionary<string, Dictionary<string, Table>> Tables { get; }
 
     public Dictionary<string, Dictionary<string, Plugin.Enum>> Enums { get; }
@@ -113,6 +115,16 @@ public abstract class DbDriver
         return new List<string>
         {
             $"this.{Variable.ConnectionString.AsPropertyName()} = {Variable.ConnectionString.AsVarName()};"
+        }
+        .AppendIf("Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;", Options.UseDapper)
+        .ToArray();
+    }
+
+    public virtual string[] GetTransactionConstructorStatements()
+    {
+        return new List<string>
+        {
+            $"this.{Variable.Transaction.AsPropertyName()} = {Variable.Transaction.AsVarName()};"
         }
         .AppendIf("Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;", Options.UseDapper)
         .ToArray();

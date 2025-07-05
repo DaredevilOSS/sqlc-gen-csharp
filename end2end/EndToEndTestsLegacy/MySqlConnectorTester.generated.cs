@@ -362,6 +362,40 @@ namespace EndToEndTests
         }
 
         [Test]
+        public async Task TestMySqlTransaction()
+        {
+            var connection = new MySqlConnector.MySqlConnection(Environment.GetEnvironmentVariable(EndToEndCommon.MySqlConnectionStringEnv));
+            await connection.OpenAsync();
+            var transaction = connection.BeginTransaction();
+            var querySqlWithTx = QuerySql.WithTransaction(transaction);
+            await querySqlWithTx.CreateAuthor(new QuerySql.CreateAuthorArgs { Id = 1111, Name = "Bojack Horseman", Bio = "Back in the 90s he was in a very famous TV show" });
+            var actualNull = await QuerySql.GetAuthor(new QuerySql.GetAuthorArgs { Name = "Bojack Horseman" });
+            Assert.That(actualNull == null, "there is author"); // This is correct for nullable types
+            await transaction.CommitAsync();
+            var expected = new QuerySql.GetAuthorRow
+            {
+                Id = 1111,
+                Name = "Bojack Horseman",
+                Bio = "Back in the 90s he was in a very famous TV show"
+            };
+            var actual = await QuerySql.GetAuthor(new QuerySql.GetAuthorArgs { Name = "Bojack Horseman" });
+            Assert.That(SingularEquals(expected, actual)); // Apply placeholder here
+        }
+
+        [Test]
+        public async Task TestMySqlTransactionRollback()
+        {
+            var connection = new MySqlConnector.MySqlConnection(Environment.GetEnvironmentVariable(EndToEndCommon.MySqlConnectionStringEnv));
+            await connection.OpenAsync();
+            var transaction = connection.BeginTransaction();
+            var querySqlWithTx = QuerySql.WithTransaction(transaction);
+            await querySqlWithTx.CreateAuthor(new QuerySql.CreateAuthorArgs { Id = 1111, Name = "Bojack Horseman", Bio = "Back in the 90s he was in a very famous TV show" });
+            await transaction.RollbackAsync();
+            var actual = await QuerySql.GetAuthor(new QuerySql.GetAuthorArgs { Name = "Bojack Horseman" });
+            Assert.That(actual == null, "author should not exist after rollback");
+        }
+
+        [Test]
         [TestCase(3.4f, -31.555666, 11.098643, 34.4424, 423.2445, 998.9994542, 21.214312452534)]
         [TestCase(null, null, null, null, null, null, null)]
         public async Task TestMySqlFloatingPointTypes(float? cFloat, decimal? cNumeric, decimal? cDecimal, decimal? cDec, decimal? cFixed, double? cDouble, double? cDoublePrecision)

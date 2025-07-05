@@ -380,5 +380,40 @@ namespace EndToEndTests
             Assert.That(actual.CReal, Is.EqualTo(expected.CReal));
             Assert.That(actual.CText, Is.EqualTo(expected.CText));
         }
+
+        [Test]
+        public async Task TestSqliteTransaction()
+        {
+            var connection = new Microsoft.Data.Sqlite.SqliteConnection(Environment.GetEnvironmentVariable(EndToEndCommon.SqliteConnectionStringEnv));
+            await connection.OpenAsync();
+            var transaction = connection.BeginTransaction();
+            var querySqlWithTx = QuerySql.WithTransaction(transaction);
+            await querySqlWithTx.CreateAuthor(new QuerySql.CreateAuthorArgs { Id = 1111, Name = "Bojack Horseman", Bio = "Back in the 90s he was in a very famous TV show" });
+            // The GetAuthor method in SqliteExampleGen returns QuerySql.GetAuthorRow? (nullable record struct/class)
+            var actualNull = await QuerySql.GetAuthor(new QuerySql.GetAuthorArgs { Name = "Bojack Horseman" });
+            Assert.That(actualNull == null, "there is author"); // This is correct for nullable types
+            transaction.Commit();
+            var expected = new QuerySql.GetAuthorRow
+            {
+                Id = 1111,
+                Name = "Bojack Horseman",
+                Bio = "Back in the 90s he was in a very famous TV show"
+            };
+            var actual = await QuerySql.GetAuthor(new QuerySql.GetAuthorArgs { Name = "Bojack Horseman" });
+            Assert.That(SingularEquals(expected, actual)); // Apply placeholder here
+        }
+
+        [Test]
+        public async Task TestSqliteTransactionRollback()
+        {
+            var connection = new Microsoft.Data.Sqlite.SqliteConnection(Environment.GetEnvironmentVariable(EndToEndCommon.SqliteConnectionStringEnv));
+            await connection.OpenAsync();
+            var transaction = connection.BeginTransaction();
+            var sqlQueryWithTx = QuerySql.WithTransaction(transaction);
+            await sqlQueryWithTx.CreateAuthor(new QuerySql.CreateAuthorArgs { Id = 1111, Name = "Bojack Horseman", Bio = "Back in the 90s he was in a very famous TV show" });
+            transaction.Rollback();
+            var actual = await this.QuerySql.GetAuthor(new QuerySql.GetAuthorArgs { Name = "Bojack Horseman" });
+            Assert.That(actual == null, "author should not exist after rollback");
+        }
     }
 }

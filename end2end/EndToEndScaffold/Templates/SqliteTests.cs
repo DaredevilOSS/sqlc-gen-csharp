@@ -89,6 +89,56 @@ public static class SqliteTests
                      }
                      """
         },
+        [KnownTestType.SqliteTransaction] = new TestImpl
+        {
+            Impl = $$"""
+                     [Test]
+                     public async Task TestSqliteTransaction()
+                     {
+                         var connection = new Microsoft.Data.Sqlite.SqliteConnection(Environment.GetEnvironmentVariable(EndToEndCommon.SqliteConnectionStringEnv));
+                         await connection.OpenAsync();
+                         var transaction = connection.BeginTransaction();
+
+                         var querySqlWithTx = QuerySql.WithTransaction(transaction);
+                         await querySqlWithTx.CreateAuthor(new QuerySql.CreateAuthorArgs { Id = {{Consts.BojackId}}, Name = {{Consts.BojackAuthor}}, Bio = {{Consts.BojackTheme}} });
+
+                         // The GetAuthor method in SqliteExampleGen returns QuerySql.GetAuthorRow? (nullable record struct/class)
+                         var actualNull = await QuerySql.GetAuthor(new QuerySql.GetAuthorArgs { Name = {{Consts.BojackAuthor}} });
+                         Assert.That(actualNull == null, "there is author"); // This is correct for nullable types
+
+                         transaction.Commit();
+
+                         var expected = new QuerySql.GetAuthorRow
+                         {
+                             Id = {{Consts.BojackId}},
+                             Name = {{Consts.BojackAuthor}},
+                             Bio = {{Consts.BojackTheme}}
+                         };
+                         var actual = await QuerySql.GetAuthor(new QuerySql.GetAuthorArgs { Name = {{Consts.BojackAuthor}} });
+                         Assert.That(SingularEquals(expected, actual{{Consts.UnknownRecordValuePlaceholder}})); // Apply placeholder here
+                     }
+                     """
+        },
+        [KnownTestType.SqliteTransactionRollback] = new TestImpl
+        {
+            Impl = $$"""
+                     [Test]
+                     public async Task TestSqliteTransactionRollback()
+                     {
+                         var connection = new Microsoft.Data.Sqlite.SqliteConnection(Environment.GetEnvironmentVariable(EndToEndCommon.SqliteConnectionStringEnv));
+                         await connection.OpenAsync();
+                         var transaction = connection.BeginTransaction();
+
+                         var sqlQueryWithTx = QuerySql.WithTransaction(transaction);
+                         await sqlQueryWithTx.CreateAuthor(new QuerySql.CreateAuthorArgs { Id = {{Consts.BojackId}}, Name = {{Consts.BojackAuthor}}, Bio = {{Consts.BojackTheme}} });
+
+                         transaction.Rollback();
+
+                         var actual = await this.QuerySql.GetAuthor(new QuerySql.GetAuthorArgs { Name = {{Consts.BojackAuthor}} });
+                         Assert.That(actual == null, "author should not exist after rollback");
+                     }
+                     """
+        },
         [KnownTestType.SqliteDataTypesOverride] = new TestImpl
         {
             Impl = $$"""

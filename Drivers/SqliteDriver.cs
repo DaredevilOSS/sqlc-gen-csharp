@@ -64,6 +64,8 @@ public partial class SqliteDriver(
             ),
         };
 
+    public override string TransactionClassName => "SqliteTransaction";
+
     public override UsingDirectiveSyntax[] GetUsingDirectivesForQueries()
     {
         return base.GetUsingDirectivesForQueries()
