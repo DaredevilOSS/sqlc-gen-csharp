@@ -63,7 +63,6 @@ More info can be found in [here](https://docs.sqlc.dev/en/stable/reference/query
 
 More info can be found in [here](https://docs.sqlc.dev/en/stable/reference/macros.html#macros).
 
-
 ### Transactions
 Transactions are supported by the plugin.
 <br/>
@@ -105,3 +104,4 @@ public async Task ExampleTransaction(IDbConnection connection)
 ```
 
 More info can be found in [here](https://docs.sqlc.dev/en/stable/howto/transactions.html).
+
