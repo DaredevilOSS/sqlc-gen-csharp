@@ -44,7 +44,7 @@ public abstract class DbDriver
         "NpgsqlCircle"
     ];
 
-    protected abstract List<ColumnMapping> ColumnMappings { get; }
+    protected abstract Dictionary<string, ColumnMapping> ColumnMappings { get; }
 
     protected const string TransformQueryForSliceArgsImpl = """
            public static string TransformQueryForSliceArgs(string originalSql, int sliceSize, string paramName)
@@ -155,10 +155,10 @@ public abstract class DbDriver
         }
 
         foreach (var columnMapping in ColumnMappings
-                     .Where(columnMapping => DoesColumnMappingApply(columnMapping, column)))
+                     .Where(columnMapping => DoesColumnMappingApply(columnMapping.Value, column)))
         {
-            if (column.IsArray || column.IsSqlcSlice) return $"{columnMapping.CsharpType}[]";
-            return columnMapping.CsharpType;
+            if (column.IsArray || column.IsSqlcSlice) return $"{columnMapping.Key}[]";
+            return columnMapping.Key;
         }
 
         throw new NotSupportedException($"Column {column.Name} has unsupported column type: {column.Type.Name}");
@@ -186,7 +186,7 @@ public abstract class DbDriver
 
     private string GetColumnReader(OverrideOption overrideOption, int ordinal)
     {
-        var columnMapping = ColumnMappings.Find(c => c.CsharpType == overrideOption.CsharpType.Type);
+        var columnMapping = ColumnMappings.GetValueOrDefault(overrideOption.CsharpType.Type);
         if (columnMapping is not null)
             return columnMapping.ReaderFn(ordinal);
         throw new NotSupportedException($"Column {overrideOption.Column} has unsupported column type: {overrideOption.CsharpType.Type}");
@@ -207,7 +207,7 @@ public abstract class DbDriver
                 return GetColumnReader(foundOverride, ordinal);
         }
 
-        foreach (var columnMapping in ColumnMappings
+        foreach (var columnMapping in ColumnMappings.Values
                      .Where(columnMapping => DoesColumnMappingApply(columnMapping, column)))
         {
             if (column.IsArray)
@@ -220,7 +220,7 @@ public abstract class DbDriver
     protected string? GetColumnDbTypeOverride(Column column)
     {
         var columnType = column.Type.Name.ToLower();
-        foreach (var columnMapping in ColumnMappings)
+        foreach (var columnMapping in ColumnMappings.Values)
         {
             if (columnMapping.DbTypes.TryGetValue(columnType, out var dbTypeOverride))
                 return dbTypeOverride.NpgsqlTypeOverride;
@@ -240,10 +240,12 @@ public abstract class DbDriver
         return Options.DotnetFramework.IsDotnetCore(); // non-primitives in .Net Core are inherently nullable
     }
 
-    /*
-    Since there is no indication of the primary key column in SQLC protobuf (assuming it is a single column),
-    this method uses a few heuristics to assess the data type of the id column
-    */
+    /// <summary>
+    /// Since there is no indication of the primary key column in SQLC protobuf (assuming it is a single column),
+    /// this method uses a few heuristics to assess the data type of the id column
+    /// </summary>
+    /// <param name="query"></param>
+    /// <returns>The data type of the id column</returns>
     public string GetIdColumnType(Query query)
     {
         var tableColumns = Tables[query.InsertIntoTable.Schema][query.InsertIntoTable.Name].Columns;

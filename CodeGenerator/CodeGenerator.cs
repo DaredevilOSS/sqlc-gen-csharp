@@ -152,7 +152,6 @@ public class CodeGenerator
                     return schemaTables.Key;
             }
         }
-        // TODO fix why not mapping default schema to string.Empty
         throw new InvalidDataException($"No enum {e.Name} schema found.");
     }
 

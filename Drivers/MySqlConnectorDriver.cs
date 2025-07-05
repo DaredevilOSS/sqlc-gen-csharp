@@ -22,84 +22,106 @@ public partial class MySqlConnectorDriver(
     public const string ByteCsvConverter = "ByteCsvConverter";
     public const string ByteArrayCsvConverter = "ByteArrayCsvConverter";
 
-    protected override List<ColumnMapping> ColumnMappings { get; } =
-    [
-        new("bool",
-            new Dictionary<string, DbTypeInfo>
-            {
-                { "tinyint", new DbTypeInfo(Length: 1) }
-            }, ordinal => $"reader.GetBoolean({ordinal})"),
-        new("short",
-            new Dictionary<string, DbTypeInfo>
-            {
-                { "tinyint", new DbTypeInfo() },
-                { "smallint", new DbTypeInfo() },
-                { "year", new DbTypeInfo() }
-            }, ordinal => $"reader.GetInt16({ordinal})"),
-        new("long",
-            new Dictionary<string, DbTypeInfo>
-            {
-                { "bigint", new DbTypeInfo() }
-            }, ordinal => $"reader.GetInt64({ordinal})"),
-        new("byte",
-            new Dictionary<string, DbTypeInfo>
-            {
-                { "bit", new DbTypeInfo() }
-            }, ordinal => $"reader.GetFieldValue<byte>({ordinal})"),
-        new("byte[]",
-            new Dictionary<string, DbTypeInfo>
-            {
-                { "binary", new DbTypeInfo() },
-                { "blob", new DbTypeInfo() },
-                { "longblob", new DbTypeInfo() },
-                { "mediumblob", new DbTypeInfo() },
-                { "tinyblob", new DbTypeInfo() },
-                { "varbinary", new DbTypeInfo() }
-            }, ordinal => $"reader.GetFieldValue<byte[]>({ordinal})"),
-        new("string",
-            new Dictionary<string, DbTypeInfo>
-            {
-                { "char", new DbTypeInfo() },
-                { "longtext", new DbTypeInfo() },
-                { "mediumtext", new DbTypeInfo() },
-                { "text", new DbTypeInfo() },
-                { "time", new DbTypeInfo() },
-                { "tinytext", new DbTypeInfo() },
-                { "varchar", new DbTypeInfo() },
-                { "var_string", new DbTypeInfo() },
-                { "json", new DbTypeInfo() },
-            }, ordinal => $"reader.GetString({ordinal})"),
-        new("DateTime",
-            new Dictionary<string, DbTypeInfo>
-            {
-                { "date", new DbTypeInfo() },
-                { "datetime", new DbTypeInfo() },
-                { "timestamp", new DbTypeInfo() }
-            }, ordinal => $"reader.GetDateTime({ordinal})"),
-        new("int",
-            new Dictionary<string, DbTypeInfo>
-            {
-                { "int", new DbTypeInfo() },
-                { "mediumint", new DbTypeInfo() },
-            }, ordinal => $"reader.GetInt32({ordinal})"),
-        new("double",
-            new Dictionary<string, DbTypeInfo>
-            {
-                { "double", new DbTypeInfo() },
-                { "float", new DbTypeInfo() }
-            }, ordinal => $"reader.GetDouble({ordinal})"),
-        new("decimal",
-            new Dictionary<string, DbTypeInfo>
-            {
-                { "decimal", new DbTypeInfo() }
-            }, ordinal => $"reader.GetDecimal({ordinal})"),
-        // last item in the dictionary - enforce TODO
-        new("object",
+    protected override Dictionary<string, ColumnMapping> ColumnMappings { get; } =
+        new()
+        {
+            ["bool"] = new ColumnMapping(
+                new Dictionary<string, DbTypeInfo>
+                {
+                    { "tinyint", new DbTypeInfo(Length: 1) }
+                },
+                ordinal => $"reader.GetBoolean({ordinal})"
+            ),
+            ["short"] = new ColumnMapping(
+                new Dictionary<string, DbTypeInfo>
+                {
+                    { "tinyint", new DbTypeInfo() },
+                    { "smallint", new DbTypeInfo() },
+                    { "year", new DbTypeInfo() }
+                },
+                ordinal => $"reader.GetInt16({ordinal})"
+            ),
+            ["long"] = new ColumnMapping(
+                new Dictionary<string, DbTypeInfo>
+                {
+                    { "bigint", new DbTypeInfo() }
+                },
+                ordinal => $"reader.GetInt64({ordinal})"
+            ),
+            ["byte"] = new ColumnMapping(
+                new Dictionary<string, DbTypeInfo>
+                {
+                    { "bit", new DbTypeInfo() }
+                },
+                ordinal => $"reader.GetFieldValue<byte>({ordinal})"
+            ),
+            ["byte[]"] = new ColumnMapping(
+                new Dictionary<string, DbTypeInfo>
+                {
+                    { "binary", new DbTypeInfo() },
+                    { "blob", new DbTypeInfo() },
+                    { "longblob", new DbTypeInfo() },
+                    { "mediumblob", new DbTypeInfo() },
+                    { "tinyblob", new DbTypeInfo() },
+                    { "varbinary", new DbTypeInfo() }
+                },
+                ordinal => $"reader.GetFieldValue<byte[]>({ordinal})"
+            ),
+            ["string"] = new ColumnMapping(
+                new Dictionary<string, DbTypeInfo>
+                {
+                    { "char", new DbTypeInfo() },
+                    { "longtext", new DbTypeInfo() },
+                    { "mediumtext", new DbTypeInfo() },
+                    { "text", new DbTypeInfo() },
+                    { "time", new DbTypeInfo() },
+                    { "tinytext", new DbTypeInfo() },
+                    { "varchar", new DbTypeInfo() },
+                    { "var_string", new DbTypeInfo() },
+                    { "json", new DbTypeInfo() }
+                },
+                ordinal => $"reader.GetString({ordinal})"
+            ),
+            ["DateTime"] = new ColumnMapping(
+                new Dictionary<string, DbTypeInfo>
+                {
+                    { "date", new DbTypeInfo() },
+                    { "datetime", new DbTypeInfo() },
+                    { "timestamp", new DbTypeInfo() }
+                },
+                ordinal => $"reader.GetDateTime({ordinal})"
+            ),
+            ["int"] = new ColumnMapping(
+                new Dictionary<string, DbTypeInfo>
+                {
+                    { "int", new DbTypeInfo() },
+                    { "mediumint", new DbTypeInfo() }
+                },
+                ordinal => $"reader.GetInt32({ordinal})"
+            ),
+            ["double"] = new ColumnMapping(
+                new Dictionary<string, DbTypeInfo>
+                {
+                    { "double", new DbTypeInfo() },
+                    { "float", new DbTypeInfo() }
+                },
+                ordinal => $"reader.GetDouble({ordinal})"
+            ),
+            ["decimal"] = new ColumnMapping(
+                new Dictionary<string, DbTypeInfo>
+                {
+                    { "decimal", new DbTypeInfo() }
+                },
+                ordinal => $"reader.GetDecimal({ordinal})"
+            ),
+            ["object"] = new ColumnMapping(
                 new Dictionary<string, DbTypeInfo>
                 {
                     { "any", new DbTypeInfo() }
-                }, ordinal => $"reader.GetValue({ordinal})")
-    ];
+                },
+                ordinal => $"reader.GetValue({ordinal})"
+            )
+        };
 
     public override UsingDirectiveSyntax[] GetUsingDirectivesForQueries()
     {
