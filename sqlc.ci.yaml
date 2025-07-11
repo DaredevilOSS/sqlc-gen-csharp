@@ -128,10 +128,6 @@ sql:
               csharp_type:
                 type: "DateTime"
                 notNull: true
-            - column: "GetMysqlFunctions:max_bigint"
-              csharp_type:
-                type: "long"
-                notNull: true
             - column: "GetMysqlTypes:c_json_string_override"
               csharp_type:
                 type: "string"
@@ -140,7 +136,11 @@ sql:
               csharp_type:
                 type: "string"
                 notNull: false
-            - column: "GetMysqlTypes:c_json_string_override"
+            - column: "InsertMysqlTypesBatch:c_json_string_override"
+              csharp_type:
+                type: "string"
+                notNull: false
+            - column: "GetMysqlTypesCnt:c_json_string_override"
               csharp_type:
                 type: "string"
                 notNull: false
@@ -168,10 +168,6 @@ sql:
               csharp_type:
                 type: "DateTime"
                 notNull: true
-            - column: "GetMysqlFunctions:max_bigint"
-              csharp_type:
-                type: "long"
-                notNull: true
             - column: "GetMysqlTypes:c_json_string_override"
               csharp_type:
                 type: "string"
@@ -180,7 +176,11 @@ sql:
               csharp_type:
                 type: "string"
                 notNull: false
-            - column: "GetMysqlTypes:c_json_string_override"
+            - column: "InsertMysqlTypesBatch:c_json_string_override"
+              csharp_type:
+                type: "string"
+                notNull: false
+            - column: "GetMysqlTypesCnt:c_json_string_override"
               csharp_type:
                 type: "string"
                 notNull: false
@@ -208,10 +208,6 @@ sql:
               csharp_type:
                 type: "DateTime"
                 notNull: true
-            - column: "GetMysqlFunctions:max_bigint"
-              csharp_type:
-                type: "long"
-                notNull: true
             - column: "GetMysqlTypes:c_json_string_override"
               csharp_type:
                 type: "string"
@@ -220,7 +216,11 @@ sql:
               csharp_type:
                 type: "string"
                 notNull: false
-            - column: "GetMysqlTypes:c_json_string_override"
+            - column: "InsertMysqlTypesBatch:c_json_string_override"
+              csharp_type:
+                type: "string"
+                notNull: false
+            - column: "GetMysqlTypesCnt:c_json_string_override"
               csharp_type:
                 type: "string"
                 notNull: false
@@ -248,15 +248,15 @@ sql:
               csharp_type:
                 type: "DateTime"
                 notNull: true
-            - column: "GetMysqlFunctions:max_bigint"
-              csharp_type:
-                type: "long"
-                notNull: true
             - column: "InsertMysqlTypes:c_json_string_override"
               csharp_type:
                 type: "string"
                 notNull: false
-            - column: "GetMysqlTypes:c_json_string_override"
+            - column: "InsertMysqlTypesBatch:c_json_string_override"
+              csharp_type:
+                type: "string"
+                notNull: false
+            - column: "GetMysqlTypesCnt:c_json_string_override"
               csharp_type:
                 type: "string"
                 notNull: false
