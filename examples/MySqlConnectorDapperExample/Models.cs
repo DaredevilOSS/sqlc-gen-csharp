@@ -49,6 +49,7 @@ public class MysqlType
     public string? CLongtext { get; init; }
     public MysqlTypesCEnum? CEnum { get; init; }
     public JsonElement? CJson { get; init; }
+    public JsonElement? CJsonStringOverride { get; init; }
     public byte? CBit { get; init; }
     public byte[]? CBinary { get; init; }
     public byte[]? CVarbinary { get; init; }

@@ -130,6 +130,18 @@ sql:
               csharp_type:
                 type: "long"
                 notNull: true
+            - column: "GetMysqlTypes:c_json_string_override"
+              csharp_type:
+                type: "string"
+                notNull: false
+            - column: "InsertMysqlTypes:c_json_string_override"
+              csharp_type:
+                type: "string"
+                notNull: false
+            - column: "GetMysqlTypes:c_json_string_override"
+              csharp_type:
+                type: "string"
+                notNull: false
   - schema: "examples/config/mysql/schema.sql"
     queries: "examples/config/mysql/query.sql"
     engine: "mysql"
@@ -158,6 +170,18 @@ sql:
               csharp_type:
                 type: "long"
                 notNull: true
+            - column: "GetMysqlTypes:c_json_string_override"
+              csharp_type:
+                type: "string"
+                notNull: false
+            - column: "InsertMysqlTypes:c_json_string_override"
+              csharp_type:
+                type: "string"
+                notNull: false
+            - column: "GetMysqlTypes:c_json_string_override"
+              csharp_type:
+                type: "string"
+                notNull: false
   - schema: "examples/config/mysql/schema.sql"
     queries: "examples/config/mysql/query.sql"
     engine: "mysql"
@@ -186,6 +210,18 @@ sql:
               csharp_type:
                 type: "long"
                 notNull: true
+            - column: "GetMysqlTypes:c_json_string_override"
+              csharp_type:
+                type: "string"
+                notNull: false
+            - column: "InsertMysqlTypes:c_json_string_override"
+              csharp_type:
+                type: "string"
+                notNull: false
+            - column: "GetMysqlTypes:c_json_string_override"
+              csharp_type:
+                type: "string"
+                notNull: false
   - schema: "examples/config/mysql/schema.sql"
     queries: "examples/config/mysql/query.sql"
     engine: "mysql"
@@ -214,6 +250,14 @@ sql:
               csharp_type:
                 type: "long"
                 notNull: true
+            - column: "InsertMysqlTypes:c_json_string_override"
+              csharp_type:
+                type: "string"
+                notNull: false
+            - column: "GetMysqlTypes:c_json_string_override"
+              csharp_type:
+                type: "string"
+                notNull: false
   # Sqlite
   - schema: "examples/config/sqlite/schema.sql"
     queries: "examples/config/sqlite/query.sql"

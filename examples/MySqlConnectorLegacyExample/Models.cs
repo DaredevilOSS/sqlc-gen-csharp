@@ -50,6 +50,7 @@ namespace MySqlConnectorLegacyExampleGen
         public string CLongtext { get; set; }
         public MysqlTypesCEnum? CEnum { get; set; }
         public JsonElement? CJson { get; set; }
+        public JsonElement? CJsonStringOverride { get; set; }
         public byte? CBit { get; set; }
         public byte[] CBinary { get; set; }
         public byte[] CVarbinary { get; set; }

@@ -528,15 +528,16 @@ namespace EndToEndTests
         [Test]
         [TestCase("{\"age\": 42, \"name\": \"The Hitchhiker's Guide to the Galaxy\"}")]
         [TestCase(null)]
-        public async Task TestMySqlJsonDataType(string json)
+        public async Task TestMySqlJsonDataType(string cJson)
         {
-            JsonElement? jsonElement = null;
-            if (json != null)
-                jsonElement = JsonDocument.Parse(json).RootElement;
-            await QuerySql.InsertMysqlTypes(new QuerySql.InsertMysqlTypesArgs { CJson = jsonElement });
+            JsonElement? cParsedJson = null;
+            if (cJson != null)
+                cParsedJson = JsonDocument.Parse(cJson).RootElement;
+            await QuerySql.InsertMysqlTypes(new QuerySql.InsertMysqlTypesArgs { CJson = cParsedJson, CJsonStringOverride = cJson });
             var expected = new QuerySql.GetMysqlTypesRow
             {
-                CJson = jsonElement
+                CJson = cParsedJson,
+                CJsonStringOverride = cJson
             };
             var actual = await QuerySql.GetMysqlTypes();
             AssertSingularEquals(expected, actual.Value);
@@ -547,6 +548,7 @@ namespace EndToEndTests
             Assert.That(x.CJson.HasValue, Is.EqualTo(y.CJson.HasValue));
             if (x.CJson.HasValue)
                 Assert.That(x.CJson.Value.GetRawText(), Is.EqualTo(y.CJson.Value.GetRawText()));
+            Assert.That(x.CJsonStringOverride, Is.EqualTo(y.CJsonStringOverride));
         }
 
         [Test]

@@ -1,8 +1,5 @@
 SHELL 		:= /bin/bash
 PWD 		:= $(shell pwd)
-        
-protobuf-generate:
-	./scripts/generate_protobuf.sh
 
 dotnet-build:
 	dotnet build
@@ -25,10 +22,10 @@ dotnet-publish-process:
 sync-sqlc-options:
 	./scripts/sync_sqlc_options.sh
 
-sqlc-generate-requests:
+sqlc-generate-requests: dotnet-publish-process
 	SQLCCACHE=./; sqlc -f sqlc.requests.yaml generate
 
-sqlc-generate: sync-sqlc-options protobuf-generate dotnet-publish-process sqlc-generate-requests
+sqlc-generate: sync-sqlc-options dotnet-publish-process sqlc-generate-requests
 	SQLCCACHE=./; sqlc -f sqlc.local.yaml generate
 
 test-plugin: unit-tests sqlc-generate generate-end2end-tests dotnet-build run-end2end-tests
