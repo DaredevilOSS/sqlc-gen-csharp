@@ -27,6 +27,7 @@ public static class Utils
 
     public static void ConfigureSqlMapper()
     {
+        SqlMapper.AddTypeHandler(typeof(JsonElement), new JsonElementTypeHandler());
         RegisterNpgsqlTypeHandler<NpgsqlPoint>();
         RegisterNpgsqlTypeHandler<NpgsqlLine>();
         RegisterNpgsqlTypeHandler<NpgsqlLSeg>();
@@ -34,7 +35,6 @@ public static class Utils
         RegisterNpgsqlTypeHandler<NpgsqlPath>();
         RegisterNpgsqlTypeHandler<NpgsqlPolygon>();
         RegisterNpgsqlTypeHandler<NpgsqlCircle>();
-        SqlMapper.AddTypeHandler(typeof(JsonElement), new JsonElementTypeHandler());
     }
 
     private class NpgsqlTypeHandler<T> : SqlMapper.TypeHandler<T> where T : notnull

@@ -728,14 +728,12 @@ public class QuerySql
             csvWriter.Context.TypeConverterCache.AddConverter<short?>(nullConverterFn);
             csvWriter.Context.TypeConverterCache.AddConverter<int?>(nullConverterFn);
             csvWriter.Context.TypeConverterCache.AddConverter<long?>(nullConverterFn);
-            csvWriter.Context.TypeConverterCache.AddConverter<decimal?>(nullConverterFn);
             csvWriter.Context.TypeConverterCache.AddConverter<double?>(nullConverterFn);
-            csvWriter.Context.TypeConverterCache.AddConverter<DateTime?>(nullConverterFn);
+            csvWriter.Context.TypeConverterCache.AddConverter<decimal?>(nullConverterFn);
             csvWriter.Context.TypeConverterCache.AddConverter<string?>(nullConverterFn);
-            csvWriter.Context.TypeConverterCache.AddConverter<JsonElement?>(nullConverterFn);
-            csvWriter.Context.TypeConverterCache.AddConverter<object?>(nullConverterFn);
             csvWriter.Context.TypeConverterCache.AddConverter<MysqlTypesCEnum?>(nullConverterFn);
-            csvWriter.Context.TypeConverterCache.AddConverter<ExtendedBiosBioType?>(nullConverterFn);
+            csvWriter.Context.TypeConverterCache.AddConverter<JsonElement?>(nullConverterFn);
+            csvWriter.Context.TypeConverterCache.AddConverter<DateTime?>(nullConverterFn);
             await csvWriter.WriteRecordsAsync(args);
         }
 

@@ -933,7 +933,7 @@ namespace NpgsqlLegacyExampleGen
                         await writer.WriteAsync(row.CBoolean);
                         await writer.WriteAsync(row.CSmallint, NpgsqlDbType.Smallint);
                         await writer.WriteAsync(row.CInteger, NpgsqlDbType.Integer);
-                        await writer.WriteAsync(row.CBigint, NpgsqlDbType.Bigint);
+                        await writer.WriteAsync(row.CBigint);
                         await writer.WriteAsync(row.CReal, NpgsqlDbType.Real);
                         await writer.WriteAsync(row.CNumeric, NpgsqlDbType.Numeric);
                         await writer.WriteAsync(row.CDecimal, NpgsqlDbType.Numeric);

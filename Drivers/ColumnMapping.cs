@@ -10,11 +10,15 @@ public class ColumnMapping(
     Func<int, string> readerFn,
     Func<int, string>? readerArrayFn = null,
     string? usingDirective = null,
-    Func<string, bool, bool, string>? writerFn = null)
+    Func<string, bool, bool, string>? writerFn = null,
+    string? sqlMapper = null,
+    string? sqlMapperImpl = null)
 {
+    public Dictionary<string, DbTypeInfo> DbTypes { get; } = dbTypes;
     public Func<int, string> ReaderFn { get; } = readerFn;
     public Func<int, string>? ReaderArrayFn { get; } = readerArrayFn;
     public string? UsingDirective { get; } = usingDirective;
     public Func<string, bool, bool, string>? WriterFn { get; } = writerFn;
-    public Dictionary<string, DbTypeInfo> DbTypes { get; } = dbTypes;
+    public string? SqlMapper { get; } = sqlMapper;
+    public string? SqlMapperImpl { get; } = sqlMapperImpl;
 }

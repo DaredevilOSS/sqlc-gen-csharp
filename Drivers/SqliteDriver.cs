@@ -19,54 +19,52 @@ public partial class SqliteDriver(
     public override Dictionary<string, ColumnMapping> ColumnMappings { get; } =
         new()
         {
-            ["byte[]"] = new ColumnMapping(
-                new Dictionary<string, DbTypeInfo>
+            ["byte[]"] = new(
+                new()
                 {
-                    {"blob", new DbTypeInfo()}
+                    {"blob", new()}
                 },
                 ordinal => $"reader.GetFieldValue<byte[]>({ordinal})"
             ),
-            ["string"] = new ColumnMapping(
-                new Dictionary<string, DbTypeInfo>
+            ["string"] = new(
+                new()
                 {
-                    {"text", new DbTypeInfo()}
+                    {"text", new()}
                 },
                 ordinal => $"reader.GetString({ordinal})"
             ),
-            ["int"] = new ColumnMapping(
-                new Dictionary<string, DbTypeInfo>
+            ["int"] = new(
+                new()
                 {
-                    { "integer", new DbTypeInfo() },
-                    { "integernotnulldefaultunixepoch", new DbTypeInfo() }
+                    { "integer", new() },
+                    { "integernotnulldefaultunixepoch", new() }
                 },
                 ordinal => $"reader.GetInt32({ordinal})"
             ),
-            ["decimal"] = new ColumnMapping(
-                new Dictionary<string, DbTypeInfo>
+            ["decimal"] = new(
+                new()
                 {
-                    {"real", new DbTypeInfo()}
+                    {"real", new()}
                 },
                 ordinal => $"reader.GetDecimal({ordinal})"
             ),
-            ["object"] = new ColumnMapping(
-                new Dictionary<string, DbTypeInfo>
+            ["object"] = new(
+                new()
                 {
-                    { "any", new DbTypeInfo() }
+                    { "any", new() }
                 },
                 ordinal => $"reader.GetValue({ordinal})"
             ),
-            ["long"] = new ColumnMapping(
-                new Dictionary<string, DbTypeInfo>
+            ["long"] = new(
+                new()
                 {
-                    { "bigint", new DbTypeInfo() }
+                    { "bigint", new() }
                 },
                 ordinal => $"reader.GetInt64({ordinal})"
             ),
         };
 
     public override string TransactionClassName => "SqliteTransaction";
-
-    protected override Dictionary<string, System.Tuple<string, string?>> KnownMappings => [];
 
     public override ISet<string> GetUsingDirectivesForQueries()
     {

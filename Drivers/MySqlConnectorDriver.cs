@@ -26,98 +26,98 @@ public partial class MySqlConnectorDriver(
     public override Dictionary<string, ColumnMapping> ColumnMappings { get; } =
         new()
         {
-            ["bool"] = new ColumnMapping(
-                new Dictionary<string, DbTypeInfo>
+            ["bool"] = new(
+                new()
                 {
-                    { "tinyint", new DbTypeInfo(Length: 1) }
+                    { "tinyint", new(Length: 1) }
                 },
                 ordinal => $"reader.GetBoolean({ordinal})"
             ),
-            ["short"] = new ColumnMapping(
-                new Dictionary<string, DbTypeInfo>
+            ["short"] = new(
+                new()
                 {
-                    { "tinyint", new DbTypeInfo() },
-                    { "smallint", new DbTypeInfo() },
-                    { "year", new DbTypeInfo() }
+                    { "tinyint", new() },
+                    { "smallint", new() },
+                    { "year", new() }
                 },
                 ordinal => $"reader.GetInt16({ordinal})"
             ),
-            ["long"] = new ColumnMapping(
-                new Dictionary<string, DbTypeInfo>
+            ["long"] = new(
+                new()
                 {
-                    { "bigint", new DbTypeInfo() }
+                    { "bigint", new() }
                 },
                 ordinal => $"reader.GetInt64({ordinal})"
             ),
             ["byte"] = new ColumnMapping(
-                new Dictionary<string, DbTypeInfo>
+                new()
                 {
-                    { "bit", new DbTypeInfo() }
+                    { "bit", new() }
                 },
                 ordinal => $"reader.GetFieldValue<byte>({ordinal})"
             ),
-            ["byte[]"] = new ColumnMapping(
-                new Dictionary<string, DbTypeInfo>
+            ["byte[]"] = new(
+                new()
                 {
-                    { "binary", new DbTypeInfo() },
-                    { "blob", new DbTypeInfo() },
-                    { "longblob", new DbTypeInfo() },
-                    { "mediumblob", new DbTypeInfo() },
-                    { "tinyblob", new DbTypeInfo() },
-                    { "varbinary", new DbTypeInfo() }
+                    { "binary", new() },
+                    { "blob", new() },
+                    { "longblob", new() },
+                    { "mediumblob", new() },
+                    { "tinyblob", new() },
+                    { "varbinary", new() }
                 },
                 ordinal => $"reader.GetFieldValue<byte[]>({ordinal})"
             ),
-            ["string"] = new ColumnMapping(
-                new Dictionary<string, DbTypeInfo>
+            ["string"] = new(
+                new()
                 {
-                    { "char", new DbTypeInfo() },
-                    { "longtext", new DbTypeInfo() },
-                    { "mediumtext", new DbTypeInfo() },
-                    { "text", new DbTypeInfo() },
-                    { "time", new DbTypeInfo() },
-                    { "tinytext", new DbTypeInfo() },
-                    { "varchar", new DbTypeInfo() },
-                    { "var_string", new DbTypeInfo() },
+                    { "char", new() },
+                    { "longtext", new() },
+                    { "mediumtext", new() },
+                    { "text", new() },
+                    { "time", new() },
+                    { "tinytext", new() },
+                    { "varchar", new() },
+                    { "var_string", new() },
                 },
                 ordinal => $"reader.GetString({ordinal})"
             ),
-            ["DateTime"] = new ColumnMapping(
-                new Dictionary<string, DbTypeInfo>
+            ["DateTime"] = new(
+                new()
                 {
-                    { "date", new DbTypeInfo() },
-                    { "datetime", new DbTypeInfo() },
-                    { "timestamp", new DbTypeInfo() }
+                    { "date", new() },
+                    { "datetime", new() },
+                    { "timestamp", new() }
                 },
                 ordinal => $"reader.GetDateTime({ordinal})"
             ),
-            ["int"] = new ColumnMapping(
-                new Dictionary<string, DbTypeInfo>
+            ["int"] = new(
+                new()
                 {
-                    { "int", new DbTypeInfo() },
-                    { "mediumint", new DbTypeInfo() }
+                    { "int", new() },
+                    { "mediumint", new() }
                 },
                 ordinal => $"reader.GetInt32({ordinal})"
             ),
-            ["double"] = new ColumnMapping(
-                new Dictionary<string, DbTypeInfo>
+            ["double"] = new(
+                new()
                 {
-                    { "double", new DbTypeInfo() },
-                    { "float", new DbTypeInfo() }
+                    { "double", new() },
+                    { "float", new() }
                 },
                 ordinal => $"reader.GetDouble({ordinal})"
             ),
-            ["decimal"] = new ColumnMapping(
-                new Dictionary<string, DbTypeInfo>
+            ["decimal"] = new(
+                new()
                 {
-                    { "decimal", new DbTypeInfo() }
+                    { "decimal", new() }
                 },
                 ordinal => $"reader.GetDecimal({ordinal})"
             ),
-            ["JsonElement"] = new ColumnMapping(
-                new Dictionary<string, DbTypeInfo>
+            ["JsonElement"] = new(
+                new()
                 {
-                    { "json", new DbTypeInfo() }
+                    { "json", new() }
                 },
                 readerFn: ordinal => $"JsonSerializer.Deserialize<JsonElement>(reader.GetString({ordinal}))",
                 writerFn: (el, notNull, isDapper) =>
@@ -127,27 +127,19 @@ public partial class MySqlConnectorDriver(
                     var nullValue = isDapper ? "null" : "(object)DBNull.Value";
                     return $"{el}.HasValue ? {el}.Value.GetRawText() : {nullValue}";
                 },
-                usingDirective: "System.Text.Json"
+                usingDirective: "System.Text.Json",
+                sqlMapper: "SqlMapper.AddTypeHandler(typeof(JsonElement), new JsonElementTypeHandler());",
+                sqlMapperImpl: JsonElementTypeHandler
             ),
-            ["object"] = new ColumnMapping(
-                new Dictionary<string, DbTypeInfo>
+            ["object"] = new(
+                new()
                 {
-                    { "any", new DbTypeInfo() }
+                    { "any", new() }
                 },
                 ordinal => $"reader.GetValue({ordinal})"
             )
         };
 
-    protected sealed override Dictionary<string, Tuple<string, string?>> KnownMappings { get; } = new()
-    {
-        {
-            "JsonElement",
-            new (
-                $"SqlMapper.AddTypeHandler(typeof(JsonElement), new JsonElementTypeHandler());",
-                JsonElementTypeHandler
-            )
-        }
-    };
     public override string TransactionClassName => "MySqlTransaction";
 
     public override ISet<string> GetUsingDirectivesForQueries()
@@ -365,7 +357,7 @@ public partial class MySqlConnectorDriver(
                     {{csvWriterVar}}.Context.TypeConverterOptionsCache.AddOptions<DateTime>({{optionsVar}});
                     {{csvWriterVar}}.Context.TypeConverterOptionsCache.AddOptions<DateTime?>({{optionsVar}});
                     {{GetBoolAndByteConverters().JoinByNewLine()}}
-                    {{GetCsvNullConverters().JoinByNewLine()}}
+                    {{GetCsvNullConverters(query).JoinByNewLine()}}
                     await {{csvWriterVar}}.WriteRecordsAsync({{Variable.Args.AsVarName()}});
                  }
                  
@@ -388,90 +380,55 @@ public partial class MySqlConnectorDriver(
                      await {{connectionVar}}.CloseAsync();
                  }
                  """;
+    }
 
-        string GetCsvNullConverter(string csharpType)
+    private readonly ISet<string> BoolAndByteTypes = new HashSet<string>
+    {
+        "bool",
+        "byte",
+        "byte[]"
+    };
+
+    private ISet<string> GetCsvNullConverters(Query query)
+    {
+        var nullConverterFn = Variable.NullConverterFn.AsVarName();
+        var converters = new HashSet<string>();
+        foreach (var p in query.Params)
         {
-            var nullableCsharpType = AddNullableSuffixIfNeeded(csharpType, false);
-            return $"{csvWriterVar}.Context.TypeConverterCache.AddConverter<{nullableCsharpType}>({nullConverterFn});";
-        }
-
-        string[] GetCsvNullConverters()
-        {
-            var primitivesConverters = new HashSet<string>()
-                .AddRangeIf(
-                    [GetCsvNullConverter("short")],
-                    TypeExistsInQueries("short")
-                )
-                .AddRangeIf(
-                    [GetCsvNullConverter("int")],
-                    TypeExistsInQueries("int")
-                )
-                .AddRangeIf(
-                    [GetCsvNullConverter("long")],
-                    TypeExistsInQueries("long")
-                )
-                .AddRangeIf(
-                    [GetCsvNullConverter("float")],
-                    TypeExistsInQueries("float")
-                )
-                .AddRangeIf(
-                    [GetCsvNullConverter("decimal")],
-                    TypeExistsInQueries("decimal")
-                )
-                .AddRangeIf(
-                    [GetCsvNullConverter("double")],
-                    TypeExistsInQueries("double")
-                )
-                .AddRangeIf(
-                    [GetCsvNullConverter("DateTime")],
-                    TypeExistsInQueries("DateTime")
-                )
-                .AddRangeIf(
-                    [GetCsvNullConverter("string")],
-                    TypeExistsInQueries("string")
-                )
-                .AddRangeIf(
-                    [GetCsvNullConverter("JsonElement")],
-                    TypeExistsInQueries("JsonElement")
-                )
-                .AddRangeIf(
-                    [GetCsvNullConverter("object")],
-                    TypeExistsInQueries("object")
-                );
-
-            var enumConverters = Enums.SelectMany(s =>
+            var csharpType = GetCsharpTypeWithoutNullableSuffix(p.Column, query);
+            if (!BoolAndByteTypes.Contains(csharpType) && TypeExistsInQueries(csharpType))
             {
-                return s.Value.Select(e =>
-                    GetCsvNullConverter(e.Key.ToModelName(s.Key, DefaultSchema)));
-            });
-
-            return [.. primitivesConverters, .. enumConverters];
+                var nullableCsharpType = AddNullableSuffixIfNeeded(csharpType, false);
+                converters.Add($"{Variable.CsvWriter.AsVarName()}.Context.TypeConverterCache.AddConverter<{nullableCsharpType}>({nullConverterFn});");
+            }
         }
+        return converters;
+    }
 
-        ISet<string> GetBoolAndByteConverters()
-        {
-            return new HashSet<string>()
-                .AddRangeIf(
-                    [
-                        $"{csvWriterVar}.Context.TypeConverterCache.AddConverter<{AddNullableSuffixIfNeeded("bool", true)}>(new Utils.{BoolToBitCsvConverter}());",
-                        $"{csvWriterVar}.Context.TypeConverterCache.AddConverter<{AddNullableSuffixIfNeeded("bool", false)}>(new Utils.{BoolToBitCsvConverter}());"
-                    ],
-                    TypeExistsInQueries("bool")
-                )
-                .AddRangeIf(
-                    [
-                        $"{csvWriterVar}.Context.TypeConverterCache.AddConverter<{AddNullableSuffixIfNeeded("byte", true)}>(new Utils.{ByteCsvConverter}());",
-                        $"{csvWriterVar}.Context.TypeConverterCache.AddConverter<{AddNullableSuffixIfNeeded("byte", false)}>(new Utils.{ByteCsvConverter}());",
-                    ],
-                    TypeExistsInQueries("byte")
-                )
-                .AddRangeIf(
-                    [
-                        $"{csvWriterVar}.Context.TypeConverterCache.AddConverter<{AddNullableSuffixIfNeeded("byte[]", true)}>(new Utils.{ByteArrayCsvConverter}());",
-                        $"{csvWriterVar}.Context.TypeConverterCache.AddConverter<{AddNullableSuffixIfNeeded("byte[]", false)}>(new Utils.{ByteArrayCsvConverter}());",
-                    ],
-                    TypeExistsInQueries("byte[]")
-                );
-        }
+    private ISet<string> GetBoolAndByteConverters()
+    {
+        var csvWriterVar = Variable.CsvWriter.AsVarName();
+        return new HashSet<string>()
+            .AddRangeIf(
+                [
+                    $"{csvWriterVar}.Context.TypeConverterCache.AddConverter<{AddNullableSuffixIfNeeded("bool", true)}>(new Utils.{BoolToBitCsvConverter}());",
+                    $"{csvWriterVar}.Context.TypeConverterCache.AddConverter<{AddNullableSuffixIfNeeded("bool", false)}>(new Utils.{BoolToBitCsvConverter}());"
+                ],
+                TypeExistsInQueries("bool")
+            )
+            .AddRangeIf(
+                [
+                    $"{csvWriterVar}.Context.TypeConverterCache.AddConverter<{AddNullableSuffixIfNeeded("byte", true)}>(new Utils.{ByteCsvConverter}());",
+                    $"{csvWriterVar}.Context.TypeConverterCache.AddConverter<{AddNullableSuffixIfNeeded("byte", false)}>(new Utils.{ByteCsvConverter}());",
+                ],
+                TypeExistsInQueries("byte")
+            )
+            .AddRangeIf(
+                [
+                    $"{csvWriterVar}.Context.TypeConverterCache.AddConverter<{AddNullableSuffixIfNeeded("byte[]", true)}>(new Utils.{ByteArrayCsvConverter}());",
+                    $"{csvWriterVar}.Context.TypeConverterCache.AddConverter<{AddNullableSuffixIfNeeded("byte[]", false)}>(new Utils.{ByteArrayCsvConverter}());",
+                ],
+                TypeExistsInQueries("byte[]")
+            );
     }
 }

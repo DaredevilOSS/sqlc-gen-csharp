@@ -73,8 +73,6 @@ public abstract class DbDriver
         }
     """;
 
-    protected abstract Dictionary<string, Tuple<string, string?>> KnownMappings { get; }
-
     protected const string TransformQueryForSliceArgsImpl = """
            public static string TransformQueryForSliceArgs(string originalSql, int sliceSize, string paramName)
            {
@@ -160,9 +158,7 @@ public abstract class DbDriver
 
     public virtual string[] GetConstructorStatements()
     {
-        return [
-            $"this.{Variable.ConnectionString.AsPropertyName()} = {Variable.ConnectionString.AsVarName()};"
-        ];
+        return [$"this.{Variable.ConnectionString.AsPropertyName()} = {Variable.ConnectionString.AsVarName()};"];
     }
 
     public virtual string[] GetTransactionConstructorStatements()
@@ -170,11 +166,11 @@ public abstract class DbDriver
         return [$"this.{Variable.Transaction.AsPropertyName()} = {Variable.Transaction.AsVarName()};"];
     }
 
-    protected virtual ISet<string> GetConfigureSqlMappings()
+    protected ISet<string> GetConfigureSqlMappings()
     {
-        return KnownMappings
-            .Where(m => TypeExistsInQueries(m.Key))
-            .Select(m => m.Value.Item1)
+        return ColumnMappings
+            .Where(m => TypeExistsInQueries(m.Key) && m.Value.SqlMapper is not null)
+            .Select(m => m.Value.SqlMapper!)
             .ToHashSet();
     }
 
@@ -184,9 +180,9 @@ public abstract class DbDriver
         if (!Options.UseDapper)
             return [.. memberDeclarations];
 
-        memberDeclarations.AddRange(KnownMappings
-            .Where(m => TypeExistsInQueries(m.Key) && m.Value.Item2 is not null)
-            .Select(m => ParseMemberDeclaration(m.Value.Item2!)!));
+        memberDeclarations.AddRange(ColumnMappings
+            .Where(m => TypeExistsInQueries(m.Key) && m.Value.SqlMapperImpl is not null)
+            .Select(m => ParseMemberDeclaration(m.Value.SqlMapperImpl!)!));
 
         return [.. memberDeclarations,
             ParseMemberDeclaration($$"""
