@@ -102,6 +102,7 @@ sql:
               csharp_type:
                 type: "DateTime"
                 notNull: true
+                
   # MySQL
   - schema: "examples/config/mysql/schema.sql"
     queries: "examples/config/mysql/query.sql"
@@ -127,10 +128,22 @@ sql:
               csharp_type:
                 type: "DateTime"
                 notNull: true
-            - column: "GetMysqlFunctions:max_bigint"
+            - column: "GetMysqlTypes:c_json_string_override"
               csharp_type:
-                type: "long"
-                notNull: true
+                type: "string"
+                notNull: false
+            - column: "InsertMysqlTypes:c_json_string_override"
+              csharp_type:
+                type: "string"
+                notNull: false
+            - column: "InsertMysqlTypesBatch:c_json_string_override"
+              csharp_type:
+                type: "string"
+                notNull: false
+            - column: "GetMysqlTypesCnt:c_json_string_override"
+              csharp_type:
+                type: "string"
+                notNull: false
   - schema: "examples/config/mysql/schema.sql"
     queries: "examples/config/mysql/query.sql"
     engine: "mysql"
@@ -155,10 +168,22 @@ sql:
               csharp_type:
                 type: "DateTime"
                 notNull: true
-            - column: "GetMysqlFunctions:max_bigint"
+            - column: "GetMysqlTypes:c_json_string_override"
               csharp_type:
-                type: "long"
-                notNull: true
+                type: "string"
+                notNull: false
+            - column: "InsertMysqlTypes:c_json_string_override"
+              csharp_type:
+                type: "string"
+                notNull: false
+            - column: "InsertMysqlTypesBatch:c_json_string_override"
+              csharp_type:
+                type: "string"
+                notNull: false
+            - column: "GetMysqlTypesCnt:c_json_string_override"
+              csharp_type:
+                type: "string"
+                notNull: false
   - schema: "examples/config/mysql/schema.sql"
     queries: "examples/config/mysql/query.sql"
     engine: "mysql"
@@ -183,10 +208,22 @@ sql:
               csharp_type:
                 type: "DateTime"
                 notNull: true
-            - column: "GetMysqlFunctions:max_bigint"
+            - column: "GetMysqlTypes:c_json_string_override"
               csharp_type:
-                type: "long"
-                notNull: true
+                type: "string"
+                notNull: false
+            - column: "InsertMysqlTypes:c_json_string_override"
+              csharp_type:
+                type: "string"
+                notNull: false
+            - column: "InsertMysqlTypesBatch:c_json_string_override"
+              csharp_type:
+                type: "string"
+                notNull: false
+            - column: "GetMysqlTypesCnt:c_json_string_override"
+              csharp_type:
+                type: "string"
+                notNull: false
   - schema: "examples/config/mysql/schema.sql"
     queries: "examples/config/mysql/query.sql"
     engine: "mysql"
@@ -211,10 +248,19 @@ sql:
               csharp_type:
                 type: "DateTime"
                 notNull: true
-            - column: "GetMysqlFunctions:max_bigint"
+            - column: "InsertMysqlTypes:c_json_string_override"
               csharp_type:
-                type: "long"
-                notNull: true
+                type: "string"
+                notNull: false
+            - column: "InsertMysqlTypesBatch:c_json_string_override"
+              csharp_type:
+                type: "string"
+                notNull: false
+            - column: "GetMysqlTypesCnt:c_json_string_override"
+              csharp_type:
+                type: "string"
+                notNull: false
+
   # Sqlite
   - schema: "examples/config/sqlite/schema.sql"
     queries: "examples/config/sqlite/query.sql"

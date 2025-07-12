@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 
 namespace SqlcGenCsharp;
 
-internal class RawOptions
+public record RawOptions
 {
     [JsonPropertyName("overrideDriverVersion")]
     public string OverrideDriverVersion { get; init; } = string.Empty;

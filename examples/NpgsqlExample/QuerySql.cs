@@ -7,6 +7,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Text.Json;
 using Npgsql;
 using NpgsqlTypes;
 using System.Data;
@@ -817,7 +818,7 @@ public class QuerySql
     }
 
     private const string GetPostgresTypesSql = "SELECT c_boolean, c_bit, c_smallint, c_integer, c_bigint, c_decimal, c_numeric, c_real, c_double_precision, c_money, c_date, c_time, c_timestamp, c_timestamp_with_tz, c_char, c_varchar, c_character_varying, c_bytea, c_text, c_json, c_text_array, c_integer_array FROM postgres_types LIMIT 1";
-    public readonly record struct GetPostgresTypesRow(bool? CBoolean, byte[]? CBit, short? CSmallint, int? CInteger, long? CBigint, decimal? CDecimal, decimal? CNumeric, float? CReal, double? CDoublePrecision, decimal? CMoney, DateTime? CDate, TimeSpan? CTime, DateTime? CTimestamp, DateTime? CTimestampWithTz, string? CChar, string? CVarchar, string? CCharacterVarying, byte[]? CBytea, string? CText, object? CJson, string[]? CTextArray, int[]? CIntegerArray);
+    public readonly record struct GetPostgresTypesRow(bool? CBoolean, byte[]? CBit, short? CSmallint, int? CInteger, long? CBigint, decimal? CDecimal, decimal? CNumeric, float? CReal, double? CDoublePrecision, decimal? CMoney, DateTime? CDate, TimeSpan? CTime, DateTime? CTimestamp, DateTime? CTimestampWithTz, string? CChar, string? CVarchar, string? CCharacterVarying, byte[]? CBytea, string? CText, JsonElement? CJson, string[]? CTextArray, int[]? CIntegerArray);
     public async Task<GetPostgresTypesRow?> GetPostgresTypes()
     {
         if (this.Transaction == null)
@@ -851,7 +852,7 @@ public class QuerySql
                                 CCharacterVarying = reader.IsDBNull(16) ? null : reader.GetString(16),
                                 CBytea = reader.IsDBNull(17) ? null : reader.GetFieldValue<byte[]>(17),
                                 CText = reader.IsDBNull(18) ? null : reader.GetString(18),
-                                CJson = reader.IsDBNull(19) ? null : reader.GetString(19),
+                                CJson = reader.IsDBNull(19) ? null : JsonSerializer.Deserialize<JsonElement>(reader.GetString(19)),
                                 CTextArray = reader.IsDBNull(20) ? null : reader.GetFieldValue<string[]>(20),
                                 CIntegerArray = reader.IsDBNull(21) ? null : reader.GetFieldValue<int[]>(21)
                             };
@@ -897,7 +898,7 @@ public class QuerySql
                         CCharacterVarying = reader.IsDBNull(16) ? null : reader.GetString(16),
                         CBytea = reader.IsDBNull(17) ? null : reader.GetFieldValue<byte[]>(17),
                         CText = reader.IsDBNull(18) ? null : reader.GetString(18),
-                        CJson = reader.IsDBNull(19) ? null : reader.GetString(19),
+                        CJson = reader.IsDBNull(19) ? null : JsonSerializer.Deserialize<JsonElement>(reader.GetString(19)),
                         CTextArray = reader.IsDBNull(20) ? null : reader.GetFieldValue<string[]>(20),
                         CIntegerArray = reader.IsDBNull(21) ? null : reader.GetFieldValue<int[]>(21)
                     };

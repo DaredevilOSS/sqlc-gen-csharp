@@ -1,4 +1,5 @@
 using MySqlConnectorDapperLegacyExampleGen;
+using System.Text.Json;
 using NUnit.Framework;
 using NUnit.Framework.Legacy;
 using System;
@@ -457,13 +458,17 @@ namespace EndToEndTests
                 CLongblob = cLongblob
             };
             var actual = await QuerySql.GetMysqlTypes();
-            Assert.That(actual.CBit, Is.EqualTo(expected.CBit));
-            Assert.That(actual.CBinary, Is.EqualTo(expected.CBinary));
-            Assert.That(actual.CVarbinary, Is.EqualTo(expected.CVarbinary));
-            Assert.That(actual.CTinyblob, Is.EqualTo(expected.CTinyblob));
-            Assert.That(actual.CBlob, Is.EqualTo(expected.CBlob));
-            Assert.That(actual.CMediumblob, Is.EqualTo(expected.CMediumblob));
-            Assert.That(actual.CLongblob, Is.EqualTo(expected.CLongblob));
+            AssertSingularEquals(expected, actual);
+            void AssertSingularEquals(QuerySql.GetMysqlTypesRow x, QuerySql.GetMysqlTypesRow y)
+            {
+                Assert.That(x.CBit, Is.EqualTo(y.CBit));
+                Assert.That(x.CBinary, Is.EqualTo(y.CBinary));
+                Assert.That(x.CVarbinary, Is.EqualTo(y.CVarbinary));
+                Assert.That(x.CTinyblob, Is.EqualTo(y.CTinyblob));
+                Assert.That(x.CBlob, Is.EqualTo(y.CBlob));
+                Assert.That(x.CMediumblob, Is.EqualTo(y.CMediumblob));
+                Assert.That(x.CLongblob, Is.EqualTo(y.CLongblob));
+            }
         }
 
         [Test]
@@ -481,15 +486,14 @@ namespace EndToEndTests
         }
 
         [Test]
-        [TestCase(-54355, 9787876578, "Scream of the Butterfly", "2025-06-29 12:00:00")]
-        [TestCase(null, 0, null, "1971-01-01 00:00:00")]
-        public async Task TestMySqlDataTypesOverride(int? cInt, long cBigint, string cVarchar, DateTime cTimestamp)
+        [TestCase(-54355, "Scream of the Butterfly", "2025-06-29 12:00:00")]
+        [TestCase(null, null, "1971-01-01 00:00:00")]
+        public async Task TestMySqlDataTypesOverride(int? cInt, string cVarchar, DateTime cTimestamp)
         {
-            await QuerySql.InsertMysqlTypes(new QuerySql.InsertMysqlTypesArgs { CInt = cInt, CBigint = cBigint, CVarchar = cVarchar, CTimestamp = cTimestamp });
+            await QuerySql.InsertMysqlTypes(new QuerySql.InsertMysqlTypesArgs { CInt = cInt, CVarchar = cVarchar, CTimestamp = cTimestamp });
             var expected = new QuerySql.GetMysqlFunctionsRow
             {
                 MaxInt = cInt,
-                MaxBigint = cBigint,
                 MaxVarchar = cVarchar,
                 MaxTimestamp = cTimestamp
             };
@@ -500,7 +504,6 @@ namespace EndToEndTests
         private static void AssertSingularEquals(QuerySql.GetMysqlFunctionsRow expected, QuerySql.GetMysqlFunctionsRow actual)
         {
             Assert.That(actual.MaxInt, Is.EqualTo(expected.MaxInt));
-            Assert.That(actual.MaxBigint, Is.EqualTo(expected.MaxBigint));
             Assert.That(actual.MaxVarchar, Is.EqualTo(expected.MaxVarchar));
             Assert.That(actual.MaxTimestamp, Is.EqualTo(expected.MaxTimestamp));
         }
@@ -525,11 +528,60 @@ namespace EndToEndTests
         }
 
         [Test]
-        [TestCase(100, "D", "\u4321", "\u2345", "Parasite", "Clockwork Orange", "Dr. Strangelove", "Interview with a Vampire", "Memento")]
-        [TestCase(10, null, null, null, null, null, null, null, null)]
-        public async Task TestStringCopyFrom(int batchSize, string cChar, string cNchar, string cNationalChar, string cVarchar, string cTinytext, string cMediumtext, string cText, string cLongtext)
+        [TestCase("{\"age\": 42, \"name\": \"The Hitchhiker's Guide to the Galaxy\"}")]
+        [TestCase(null)]
+        public async Task TestMySqlJsonDataType(string cJson)
         {
-            var batchArgs = Enumerable.Range(0, batchSize).Select(_ => new QuerySql.InsertMysqlTypesBatchArgs { CChar = cChar, CNchar = cNchar, CNationalChar = cNationalChar, CVarchar = cVarchar, CTinytext = cTinytext, CMediumtext = cMediumtext, CText = cText, CLongtext = cLongtext }).ToList();
+            JsonElement? cParsedJson = null;
+            if (cJson != null)
+                cParsedJson = JsonDocument.Parse(cJson).RootElement;
+            await QuerySql.InsertMysqlTypes(new QuerySql.InsertMysqlTypesArgs { CJson = cParsedJson });
+            var expected = new QuerySql.GetMysqlTypesRow
+            {
+                CJson = cParsedJson
+            };
+            var actual = await QuerySql.GetMysqlTypes();
+            AssertSingularEquals(expected, actual);
+            void AssertSingularEquals(QuerySql.GetMysqlTypesRow x, QuerySql.GetMysqlTypesRow y)
+            {
+                Assert.That(x.CJson.HasValue, Is.EqualTo(y.CJson.HasValue));
+                if (x.CJson.HasValue)
+                    Assert.That(x.CJson.Value.GetRawText(), Is.EqualTo(y.CJson.Value.GetRawText()));
+            }
+        }
+
+        [Test]
+        [TestCase(100, "{\"name\": \"Swordfishtrombones\", \"year\": 1983}")]
+        [TestCase(10, null)]
+        public async Task TestJsonCopyFrom(int batchSize, string cJson)
+        {
+            JsonElement? cParsedJson = null;
+            if (cJson != null)
+                cParsedJson = JsonDocument.Parse(cJson).RootElement;
+            var batchArgs = Enumerable.Range(0, batchSize).Select(_ => new QuerySql.InsertMysqlTypesBatchArgs { CJson = cParsedJson }).ToList();
+            await QuerySql.InsertMysqlTypesBatch(batchArgs);
+            var expected = new QuerySql.GetMysqlTypesCntRow
+            {
+                Cnt = batchSize,
+                CJson = cParsedJson
+            };
+            var actual = await QuerySql.GetMysqlTypesCnt();
+            AssertSingularEquals(expected, actual);
+            void AssertSingularEquals(QuerySql.GetMysqlTypesCntRow x, QuerySql.GetMysqlTypesCntRow y)
+            {
+                Assert.That(x.Cnt, Is.EqualTo(y.Cnt));
+                Assert.That(x.CJson.HasValue, Is.EqualTo(y.CJson.HasValue));
+                if (x.CJson.HasValue)
+                    Assert.That(x.CJson.Value.GetRawText(), Is.EqualTo(y.CJson.Value.GetRawText()));
+            }
+        }
+
+        [Test]
+        [TestCase(100, "D", "\u4321", "\u2345", "Parasite", "Clockwork Orange", "Dr. Strangelove", "Interview with a Vampire", "Memento", "{\"age\": 420, \"name\": \"Dazed and Confused\"}")]
+        [TestCase(10, null, null, null, null, null, null, null, null, null)]
+        public async Task TestStringCopyFrom(int batchSize, string cChar, string cNchar, string cNationalChar, string cVarchar, string cTinytext, string cMediumtext, string cText, string cLongtext, string cJsonStringOverride)
+        {
+            var batchArgs = Enumerable.Range(0, batchSize).Select(_ => new QuerySql.InsertMysqlTypesBatchArgs { CChar = cChar, CNchar = cNchar, CNationalChar = cNationalChar, CVarchar = cVarchar, CTinytext = cTinytext, CMediumtext = cMediumtext, CText = cText, CLongtext = cLongtext, CJsonStringOverride = cJsonStringOverride }).ToList();
             await QuerySql.InsertMysqlTypesBatch(batchArgs);
             var expected = new QuerySql.GetMysqlTypesCntRow
             {
@@ -542,17 +594,23 @@ namespace EndToEndTests
                 CMediumtext = cMediumtext,
                 CText = cText,
                 CLongtext = cLongtext,
+                CJsonStringOverride = cJsonStringOverride
             };
             var actual = await QuerySql.GetMysqlTypesCnt();
-            Assert.That(actual.Cnt, Is.EqualTo(expected.Cnt));
-            Assert.That(actual.CChar, Is.EqualTo(expected.CChar));
-            Assert.That(actual.CNchar, Is.EqualTo(expected.CNchar));
-            Assert.That(actual.CNationalChar, Is.EqualTo(expected.CNationalChar));
-            Assert.That(actual.CVarchar, Is.EqualTo(expected.CVarchar));
-            Assert.That(actual.CTinytext, Is.EqualTo(expected.CTinytext));
-            Assert.That(actual.CMediumtext, Is.EqualTo(expected.CMediumtext));
-            Assert.That(actual.CText, Is.EqualTo(expected.CText));
-            Assert.That(actual.CLongtext, Is.EqualTo(expected.CLongtext));
+            AssertSingularEquals(expected, actual);
+            void AssertSingularEquals(QuerySql.GetMysqlTypesCntRow x, QuerySql.GetMysqlTypesCntRow y)
+            {
+                Assert.That(x.Cnt, Is.EqualTo(y.Cnt));
+                Assert.That(x.CChar, Is.EqualTo(y.CChar));
+                Assert.That(x.CNchar, Is.EqualTo(y.CNchar));
+                Assert.That(x.CNationalChar, Is.EqualTo(y.CNationalChar));
+                Assert.That(x.CVarchar, Is.EqualTo(y.CVarchar));
+                Assert.That(x.CTinytext, Is.EqualTo(y.CTinytext));
+                Assert.That(x.CMediumtext, Is.EqualTo(y.CMediumtext));
+                Assert.That(x.CText, Is.EqualTo(y.CText));
+                Assert.That(x.CLongtext, Is.EqualTo(y.CLongtext));
+                Assert.That(x.CJsonStringOverride, Is.EqualTo(y.CJsonStringOverride));
+            }
         }
 
         [Test]
@@ -575,15 +633,19 @@ namespace EndToEndTests
                 CBigint = cBigint
             };
             var actual = await QuerySql.GetMysqlTypesCnt();
-            Assert.That(actual.Cnt, Is.EqualTo(expected.Cnt));
-            Assert.That(actual.CBool, Is.EqualTo(expected.CBool));
-            Assert.That(actual.CBoolean, Is.EqualTo(expected.CBoolean));
-            Assert.That(actual.CTinyint, Is.EqualTo(expected.CTinyint));
-            Assert.That(actual.CSmallint, Is.EqualTo(expected.CSmallint));
-            Assert.That(actual.CMediumint, Is.EqualTo(expected.CMediumint));
-            Assert.That(actual.CInt, Is.EqualTo(expected.CInt));
-            Assert.That(actual.CInteger, Is.EqualTo(expected.CInteger));
-            Assert.That(actual.CBigint, Is.EqualTo(expected.CBigint));
+            AssertSingularEquals(expected, actual);
+            void AssertSingularEquals(QuerySql.GetMysqlTypesCntRow x, QuerySql.GetMysqlTypesCntRow y)
+            {
+                Assert.That(x.Cnt, Is.EqualTo(y.Cnt));
+                Assert.That(x.CBool, Is.EqualTo(y.CBool));
+                Assert.That(x.CBoolean, Is.EqualTo(y.CBoolean));
+                Assert.That(x.CTinyint, Is.EqualTo(y.CTinyint));
+                Assert.That(x.CSmallint, Is.EqualTo(y.CSmallint));
+                Assert.That(x.CMediumint, Is.EqualTo(y.CMediumint));
+                Assert.That(x.CInt, Is.EqualTo(y.CInt));
+                Assert.That(x.CInteger, Is.EqualTo(y.CInteger));
+                Assert.That(x.CBigint, Is.EqualTo(y.CBigint));
+            }
         }
 
         [Test]

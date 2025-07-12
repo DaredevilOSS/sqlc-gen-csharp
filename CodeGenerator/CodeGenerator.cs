@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Enum = Plugin.Enum;
 
@@ -172,7 +173,11 @@ public class CodeGenerator
         if (Options.DebugRequest)
             return Task.FromResult(new GenerateResponse
             {
-                Files = { RequestToFile(generateRequest) }
+                Files =
+                {
+                    RequestToJsonFile(generateRequest),
+                    RequestToProtobufFile(generateRequest)
+                }
             });
 
         var fileQueries = GetFileQueries();
@@ -201,10 +206,25 @@ public class CodeGenerator
         }
     }
 
-    private static Plugin.File RequestToFile(GenerateRequest request)
+    private static ByteString GetOptionsWithoutDebugRequest(GenerateRequest request)
+    {
+        var text = Encoding.UTF8.GetString(request.PluginOptions.ToByteArray());
+        var rawOptions = JsonSerializer.Deserialize<RawOptions>(text) ?? throw new InvalidOperationException();
+        var newOptions = rawOptions with { DebugRequest = false };
+        return ByteString.CopyFromUtf8(JsonSerializer.Serialize(request));
+    }
+
+
+    private static Plugin.File RequestToJsonFile(GenerateRequest request)
     {
         var formatter = new JsonFormatter(JsonFormatter.Settings.Default.WithIndentation());
-        request.PluginOptions = ByteString.CopyFrom("{}", Encoding.UTF8); // TODO this resets all of the options - should reset only DebugRequest option
+        request.PluginOptions = GetOptionsWithoutDebugRequest(request);
         return new Plugin.File { Name = "request.json", Contents = ByteString.CopyFromUtf8(formatter.Format(request)) };
+    }
+
+    private static Plugin.File RequestToProtobufFile(GenerateRequest request)
+    {
+        request.PluginOptions = GetOptionsWithoutDebugRequest(request);
+        return new Plugin.File { Name = "request.message", Contents = request.ToByteString() };
     }
 }

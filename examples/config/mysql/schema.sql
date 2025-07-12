@@ -51,6 +51,8 @@ CREATE TABLE mysql_types (
   c_text            TEXT,
   c_longtext        LONGTEXT,
   c_enum            ENUM ('small', 'medium', 'big'),
+  c_json                 JSON,
+  c_json_string_override JSON,
     
   /* Binary data types */
   c_bit         BIT(8),

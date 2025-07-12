@@ -7,11 +7,13 @@ namespace SqlcGenCsharp.Generators;
 
 internal class CsprojGen(string outputDirectory, string projectName, string namespaceName, Options options)
 {
+    // TODO this logic needs to be moved to the Drivers project
     private const string DefaultDapperVersion = "2.1.66";
     private const string DefaultNpgsqlVersion = "8.0.6";
     private const string DefaultMysqlConnectorVersion = "2.4.0";
     private const string DefaultSqliteVersion = "9.0.0";
     private const string DefaultCsvHelperVersion = "33.0.1";
+    private const string DefaultSystemTextJsonVersion = "9.0.6";
 
     public File GenerateFile()
     {
@@ -48,16 +50,26 @@ internal class CsprojGen(string outputDirectory, string projectName, string name
         {
             var optionalDapperPackageReference = options.UseDapper
                 ? Environment.NewLine + $"""        <PackageReference Include="Dapper" Version="{GetDapperVersion(options)}"/>"""
-                : "";
-            var optionalCsvHelper = options.DriverName == DriverName.MySqlConnector
+                : string.Empty;
+            var optionalCsvHelper = options.DriverName is DriverName.MySqlConnector
                 ? Environment.NewLine + $"""        <PackageReference Include="CsvHelper" Version="{DefaultCsvHelperVersion}"/>"""
-                : "";
+                : string.Empty;
+            var optionalSystemTextJson = IsSystemTextJsonNeeded()
+                ? Environment.NewLine + $"""        <PackageReference Include="System.Text.Json" Version="{DefaultSystemTextJsonVersion}"/>"""
+                : string.Empty;
             return $"""
                 <ItemGroup>
-                    <PackageReference Include="{options.DriverName.ToName()}" Version="{GetDriverVersion(options)}"/>{optionalDapperPackageReference}{optionalCsvHelper}
+                    <PackageReference Include="{options.DriverName.ToName()}" Version="{GetDriverVersion(options)}"/>{optionalDapperPackageReference}{optionalCsvHelper}{optionalSystemTextJson}
                 </ItemGroup>
             """;
         }
+    }
+
+    private bool IsSystemTextJsonNeeded()
+    {
+        if (options.DotnetFramework.IsDotnetCore())
+            return false;
+        return options.DriverName is DriverName.MySqlConnector or DriverName.Npgsql;
     }
 
     private static string GetDriverVersion(Options options)

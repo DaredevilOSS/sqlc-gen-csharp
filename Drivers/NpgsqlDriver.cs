@@ -28,7 +28,7 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId
         }
     }
 
-    protected sealed override Dictionary<string, ColumnMapping> ColumnMappings { get; } =
+    public sealed override Dictionary<string, ColumnMapping> ColumnMappings { get; } =
         new()
         {
             ["long"] = new ColumnMapping(
@@ -64,8 +64,8 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId
                     { "tinytext", new DbTypeInfo() },
                     { "varchar", new DbTypeInfo() }
                 },
-                ordinal => $"reader.GetString({ordinal})",
-                ordinal => $"reader.GetFieldValue<string[]>({ordinal})"
+                readerFn: ordinal => $"reader.GetString({ordinal})",
+                readerArrayFn: ordinal => $"reader.GetFieldValue<string[]>({ordinal})"
             ),
             ["TimeSpan"] = new ColumnMapping(
                 new Dictionary<string, DbTypeInfo>
@@ -83,12 +83,20 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId
                 },
                 ordinal => $"reader.GetDateTime({ordinal})"
             ),
-            ["object"] = new ColumnMapping(
+            ["JsonElement"] = new ColumnMapping(
                 new Dictionary<string, DbTypeInfo>
                 {
                     { "json", new DbTypeInfo() }
                 },
-                ordinal => $"reader.GetString({ordinal})"
+                readerFn: ordinal => $"JsonSerializer.Deserialize<JsonElement>(reader.GetString({ordinal}))",
+                writerFn: (el, notNull, isDapper) =>
+                {
+                    if (notNull)
+                        return $"{el}.GetRawText()";
+                    var nullValue = isDapper ? "null" : "(object)DBNull.Value";
+                    return $"{el}.HasValue ? {el}.Value.GetRawText() : {nullValue}";
+                },
+                usingDirective: "System.Text.Json"
             ),
             ["short"] = new ColumnMapping(
                 new Dictionary<string, DbTypeInfo>
@@ -200,56 +208,35 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId
 
     public override string TransactionClassName => "NpgsqlTransaction";
 
-    public override UsingDirectiveSyntax[] GetUsingDirectivesForQueries()
+    public override ISet<string> GetUsingDirectivesForQueries()
     {
-        return base.GetUsingDirectivesForQueries()
-            .Concat(
-            [
-                UsingDirective(ParseName("Npgsql")),
-                UsingDirective(ParseName("NpgsqlTypes")),
-                UsingDirective(ParseName("System.Data"))
-            ]).ToArray();
+        return base.GetUsingDirectivesForQueries().AddRange(
+        [
+            "Npgsql",
+            "NpgsqlTypes",
+            "System.Data"
+        ]);
     }
 
-    public override UsingDirectiveSyntax[] GetUsingDirectivesForModels()
+    public override ISet<string> GetUsingDirectivesForModels()
     {
-        return base.GetUsingDirectivesForModels()
-            .Concat(
-            [
-                UsingDirective(ParseName("NpgsqlTypes")),
-                UsingDirective(ParseName("System"))
-            ])
-            .ToArray();
+        return base.GetUsingDirectivesForModels().AddRange(
+        [
+            "NpgsqlTypes",
+            "System"
+        ]);
     }
 
-    public override UsingDirectiveSyntax[] GetUsingDirectivesForUtils()
+    public override ISet<string> GetUsingDirectivesForUtils()
     {
         var usingDirectives = base.GetUsingDirectivesForUtils();
         if (!Options.UseDapper)
             return usingDirectives;
 
-        return usingDirectives
-            .Concat(
-            [
-                UsingDirective(ParseName("NpgsqlTypes")),
-                UsingDirective(ParseName("System.Data")),
-                UsingDirective(ParseName("Dapper"))
-            ])
-            .ToArray();
-    }
-
-    public override string[] GetConstructorStatements()
-    {
-        return base.GetConstructorStatements()
-            .AppendIf("Utils.ConfigureSqlMapper();", Options.UseDapper)
-            .ToArray();
-    }
-
-    public override string[] GetTransactionConstructorStatements()
-    {
-        return base.GetTransactionConstructorStatements()
-            .AppendIf("Utils.ConfigureSqlMapper();", Options.UseDapper)
-            .ToArray();
+        return usingDirectives.AddRange(
+        [
+            "NpgsqlTypes"
+        ]);
     }
 
     public override MemberDeclarationSyntax[] GetMemberDeclarationsForUtils()
@@ -265,8 +252,10 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId
             ? "?"
             : string.Empty;
 
-        memberDeclarations = memberDeclarations
-            .Append(ParseMemberDeclaration($$"""
+        return
+        [
+            .. memberDeclarations,
+            ParseMemberDeclaration($$"""
                  private class NpgsqlTypeHandler<T> : SqlMapper.TypeHandler<T>{{optionalDotnetCoreSuffix}}
                  {
                      public override T Parse(object value)
@@ -279,27 +268,29 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId
                          parameter.Value = value;
                      }
                  }
-                 """)!)
-            .Append(ParseMemberDeclaration($$"""
+                 """)!,
+            ParseMemberDeclaration($$"""
                  private static void RegisterNpgsqlTypeHandler<T>(){{optionalDotnetCoreSuffix}}
                  {
                     SqlMapper.AddTypeHandler(typeof(T), new NpgsqlTypeHandler<T>());
                  }
-                 """)!)
-            .Append(ParseMemberDeclaration("""
-                 public static void ConfigureSqlMapper()
-                 {
-                     RegisterNpgsqlTypeHandler<NpgsqlPoint>();
-                     RegisterNpgsqlTypeHandler<NpgsqlLine>();
-                     RegisterNpgsqlTypeHandler<NpgsqlLSeg>();
-                     RegisterNpgsqlTypeHandler<NpgsqlBox>();
-                     RegisterNpgsqlTypeHandler<NpgsqlPath>();
-                     RegisterNpgsqlTypeHandler<NpgsqlPolygon>();
-                     RegisterNpgsqlTypeHandler<NpgsqlCircle>();
-                 }
-               """)!)
-            .ToArray();
-        return memberDeclarations;
+                 """)!,
+        ];
+    }
+
+    protected override ISet<string> GetConfigureSqlMappings()
+    {
+        return base.GetConfigureSqlMappings().AddRange(
+        [
+            "RegisterNpgsqlTypeHandler<NpgsqlPoint>();",
+            "RegisterNpgsqlTypeHandler<NpgsqlLine>();",
+            "RegisterNpgsqlTypeHandler<NpgsqlLSeg>();",
+            "RegisterNpgsqlTypeHandler<NpgsqlBox>();",
+            "RegisterNpgsqlTypeHandler<NpgsqlPath>();",
+            "RegisterNpgsqlTypeHandler<NpgsqlPolygon>();",
+            "RegisterNpgsqlTypeHandler<NpgsqlCircle>();",
+            "SqlMapper.AddTypeHandler(typeof(JsonElement), new JsonElementTypeHandler());"
+        ]);
     }
 
     // TODO different operations require different types of connections - improve code and docs to make it clearer

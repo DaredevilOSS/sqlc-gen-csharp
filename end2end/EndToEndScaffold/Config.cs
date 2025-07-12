@@ -64,6 +64,8 @@ public enum KnownTestType
     MySqlEnumDataType,
     MySqlDataTypesOverride,
     MySqlScopedSchemaEnum,
+    MySqlJsonDataTypes,
+    MySqlJsonCopyFrom,
 
     MySqlStringCopyFrom,
     MySqlIntegerCopyFrom,
@@ -105,6 +107,8 @@ internal static class Config
                     KnownTestType.MySqlBinaryDataTypes,
                     KnownTestType.MySqlEnumDataType,
                     KnownTestType.MySqlScopedSchemaEnum,
+                    KnownTestType.MySqlJsonDataTypes,
+                    KnownTestType.MySqlJsonCopyFrom,
                     KnownTestType.MySqlDataTypesOverride,
 
                     KnownTestType.MySqlStringCopyFrom,
@@ -143,6 +147,8 @@ internal static class Config
                         KnownTestType.MySqlBinaryDataTypes,
                         KnownTestType.MySqlEnumDataType,
                         KnownTestType.MySqlScopedSchemaEnum,
+                        KnownTestType.MySqlJsonDataTypes,
+                        KnownTestType.MySqlJsonCopyFrom,
                         KnownTestType.MySqlDataTypesOverride,
 
                         KnownTestType.MySqlStringCopyFrom,

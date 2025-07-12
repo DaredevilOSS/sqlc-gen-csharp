@@ -1,8 +1,5 @@
 SHELL 		:= /bin/bash
 PWD 		:= $(shell pwd)
-        
-protobuf-generate:
-	./scripts/generate_protobuf.sh
 
 dotnet-build:
 	dotnet build
@@ -25,16 +22,20 @@ dotnet-publish-process:
 sync-sqlc-options:
 	./scripts/sync_sqlc_options.sh
 
-sqlc-generate-requests:
+sqlc-generate-requests: dotnet-publish-process
 	SQLCCACHE=./; sqlc -f sqlc.requests.yaml generate
 
-sqlc-generate:
+sqlc-generate: sync-sqlc-options dotnet-publish-process sqlc-generate-requests
 	SQLCCACHE=./; sqlc -f sqlc.local.yaml generate
 
-test-plugin: protobuf-generate sync-sqlc-options dotnet-publish-process sqlc-generate-requests unit-tests sqlc-generate generate-end2end-tests dotnet-build run-end2end-tests
+test-plugin: unit-tests sqlc-generate generate-end2end-tests dotnet-build run-end2end-tests
 
 # WASM type plugin
 setup-ci-wasm-plugin:
 	dotnet publish WasmRunner -c release --output dist/
 	./scripts/wasm/copy_plugin_to.sh dist
 	./scripts/wasm/update_sha.sh sqlc.ci.yaml
+
+# Manual
+generate-protobuf:
+	./scripts/generate_protobuf.sh
