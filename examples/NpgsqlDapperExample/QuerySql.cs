@@ -26,6 +26,7 @@ public class QuerySql
     private QuerySql(NpgsqlTransaction transaction)
     {
         this.Transaction = transaction;
+        Utils.ConfigureSqlMapper();
         Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
     }
 

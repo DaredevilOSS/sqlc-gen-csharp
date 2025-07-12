@@ -195,6 +195,7 @@ public abstract class DbDriver
             {
                 $"this.{Variable.Transaction.AsPropertyName()} = {Variable.Transaction.AsVarName()};"
             }
+            .AppendIf("Utils.ConfigureSqlMapper();", Options.UseDapper)
             .AppendIf("Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;", Options.UseDapper)];
     }
 

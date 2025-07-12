@@ -23,6 +23,7 @@ public class QuerySql
     private QuerySql(SqliteTransaction transaction)
     {
         this.Transaction = transaction;
+        Utils.ConfigureSqlMapper();
         Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
     }
 

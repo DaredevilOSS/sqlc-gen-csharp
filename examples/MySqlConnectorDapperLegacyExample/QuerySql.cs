@@ -31,6 +31,7 @@ namespace MySqlConnectorDapperLegacyExampleGen
         private QuerySql(MySqlTransaction transaction)
         {
             this.Transaction = transaction;
+            Utils.ConfigureSqlMapper();
             Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
         }
 
