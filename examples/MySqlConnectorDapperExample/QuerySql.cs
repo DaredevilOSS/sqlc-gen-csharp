@@ -20,18 +20,20 @@ using System.Threading.Tasks;
 namespace MySqlConnectorDapperExampleGen;
 public class QuerySql
 {
-    public QuerySql(string connectionString)
+    public QuerySql()
     {
-        this.ConnectionString = connectionString;
         Utils.ConfigureSqlMapper();
         Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
     }
 
-    private QuerySql(MySqlTransaction transaction)
+    public QuerySql(string connectionString) : this()
+    {
+        this.ConnectionString = connectionString;
+    }
+
+    private QuerySql(MySqlTransaction transaction) : this()
     {
         this.Transaction = transaction;
-        Utils.ConfigureSqlMapper();
-        Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
     }
 
     public static QuerySql WithTransaction(MySqlTransaction transaction)
@@ -726,7 +728,6 @@ public class QuerySql
             csvWriter.Context.TypeConverterCache.AddConverter<short?>(nullConverterFn);
             csvWriter.Context.TypeConverterCache.AddConverter<int?>(nullConverterFn);
             csvWriter.Context.TypeConverterCache.AddConverter<long?>(nullConverterFn);
-            csvWriter.Context.TypeConverterCache.AddConverter<float?>(nullConverterFn);
             csvWriter.Context.TypeConverterCache.AddConverter<decimal?>(nullConverterFn);
             csvWriter.Context.TypeConverterCache.AddConverter<double?>(nullConverterFn);
             csvWriter.Context.TypeConverterCache.AddConverter<DateTime?>(nullConverterFn);

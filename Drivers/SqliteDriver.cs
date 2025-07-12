@@ -66,10 +66,12 @@ public partial class SqliteDriver(
 
     public override string TransactionClassName => "SqliteTransaction";
 
+    protected override Dictionary<string, System.Tuple<string, string?>> KnownMappings => [];
+
     public override ISet<string> GetUsingDirectivesForQueries()
     {
         var usingDirectives = base.GetUsingDirectivesForQueries();
-        return usingDirectives.AddRange(
+        return usingDirectives.AddRangeExcludeNulls(
             [
                 "Microsoft.Data.Sqlite"
             ]
@@ -79,7 +81,7 @@ public partial class SqliteDriver(
     public override ISet<string> GetUsingDirectivesForUtils()
     {
         var usingDirectives = base.GetUsingDirectivesForUtils();
-        return usingDirectives.AddRange(
+        return usingDirectives.AddRangeExcludeNulls(
             [
                 "System",
                 "System.Text.RegularExpressions"
@@ -91,7 +93,7 @@ public partial class SqliteDriver(
     {
         var memberDeclarations = base
             .GetMemberDeclarationsForUtils()
-            .AppendIf(ParseMemberDeclaration(TransformQueryForSliceArgsImpl)!, SliceQueryExists());
+            .AddRangeIf([ParseMemberDeclaration(TransformQueryForSliceArgsImpl)!], SliceQueryExists());
 
         if (!CopyFromQueryExists())
             return memberDeclarations.ToArray();

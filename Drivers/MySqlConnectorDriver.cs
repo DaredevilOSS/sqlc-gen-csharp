@@ -1,6 +1,7 @@
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Plugin;
 using SqlcGenCsharp.Drivers.Generators;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -13,7 +14,7 @@ public partial class MySqlConnectorDriver(
     Options options,
     string defaultSchema,
     Dictionary<string, Dictionary<string, Table>> tables,
-    Dictionary<string, Dictionary<string, Enum>> enums,
+    Dictionary<string, Dictionary<string, Plugin.Enum>> enums,
     IList<Query> queries) :
     DbDriver(options, defaultSchema, tables, enums, queries), IOne, IMany, IExec, IExecRows, IExecLastId, ICopyFrom
 {
@@ -137,28 +138,45 @@ public partial class MySqlConnectorDriver(
             )
         };
 
+    protected sealed override Dictionary<string, Tuple<string, string?>> KnownMappings { get; } = new()
+    {
+        {
+            "JsonElement",
+            new (
+                $"SqlMapper.AddTypeHandler(typeof(JsonElement), new JsonElementTypeHandler());",
+                JsonElementTypeHandler
+            )
+        }
+    };
     public override string TransactionClassName => "MySqlTransaction";
 
     public override ISet<string> GetUsingDirectivesForQueries()
     {
-        var usingDirectives = base.GetUsingDirectivesForQueries();
-        return usingDirectives.AddRange(
-            [
-                "MySqlConnector",
-                "System.Globalization",
-                "System.IO",
-                "CsvHelper",
-                "CsvHelper.Configuration",
-                "CsvHelper.TypeConversion",
-                "System.Text"
-            ]
-        );
+        return base
+            .GetUsingDirectivesForQueries()
+            .AddRangeExcludeNulls(
+                [
+                    "MySqlConnector",
+                    "System.Globalization",
+                    "System.IO",
+                    "System.Text"
+                ]
+            )
+            .AddRangeIf(
+                [
+                    "CsvHelper",
+                    "CsvHelper.Configuration",
+                    "CsvHelper.TypeConversion"
+                ],
+                CopyFromQueryExists()
+            );
     }
 
     public override ISet<string> GetUsingDirectivesForModels()
     {
-        var usingDirectives = base.GetUsingDirectivesForModels();
-        return usingDirectives.AddRange(
+        return base
+            .GetUsingDirectivesForModels()
+            .AddRangeExcludeNulls(
             [
                 "System",
                 "System.Collections.Generic"
@@ -168,24 +186,23 @@ public partial class MySqlConnectorDriver(
 
     public override ISet<string> GetUsingDirectivesForUtils()
     {
-        var usingDirectives = base.GetUsingDirectivesForUtils();
-        if (!CopyFromQueryExists())
-            return usingDirectives;
-
-        return usingDirectives.AddRange(
-            [
-                "CsvHelper.TypeConversion",
-                "CsvHelper",
-                "CsvHelper.Configuration"
-            ]
-        );
+        return base
+            .GetUsingDirectivesForUtils()
+            .AddRangeIf(
+                [
+                    "CsvHelper.TypeConversion",
+                    "CsvHelper",
+                    "CsvHelper.Configuration"
+                ],
+                CopyFromQueryExists()
+            );
     }
 
     public override MemberDeclarationSyntax[] GetMemberDeclarationsForUtils()
     {
         var memberDeclarations = base
             .GetMemberDeclarationsForUtils()
-            .AppendIf(ParseMemberDeclaration(TransformQueryForSliceArgsImpl)!, SliceQueryExists());
+            .AddRangeIf([ParseMemberDeclaration(TransformQueryForSliceArgsImpl)!], SliceQueryExists());
 
         if (!CopyFromQueryExists())
             return [.. memberDeclarations];
@@ -380,19 +397,48 @@ public partial class MySqlConnectorDriver(
 
         string[] GetCsvNullConverters()
         {
-            var primitivesConverters = new List<string>
-            {
-                GetCsvNullConverter("short"),
-                GetCsvNullConverter("int"),
-                GetCsvNullConverter("long"),
-                GetCsvNullConverter("float"),
-                GetCsvNullConverter("decimal"),
-                GetCsvNullConverter("double"),
-                GetCsvNullConverter("DateTime"),
-                GetCsvNullConverter("string"),
-                GetCsvNullConverter("JsonElement"),
-                GetCsvNullConverter("object"),
-            };
+            var primitivesConverters = new HashSet<string>()
+                .AddRangeIf(
+                    [GetCsvNullConverter("short")],
+                    TypeExistsInQueries("short")
+                )
+                .AddRangeIf(
+                    [GetCsvNullConverter("int")],
+                    TypeExistsInQueries("int")
+                )
+                .AddRangeIf(
+                    [GetCsvNullConverter("long")],
+                    TypeExistsInQueries("long")
+                )
+                .AddRangeIf(
+                    [GetCsvNullConverter("float")],
+                    TypeExistsInQueries("float")
+                )
+                .AddRangeIf(
+                    [GetCsvNullConverter("decimal")],
+                    TypeExistsInQueries("decimal")
+                )
+                .AddRangeIf(
+                    [GetCsvNullConverter("double")],
+                    TypeExistsInQueries("double")
+                )
+                .AddRangeIf(
+                    [GetCsvNullConverter("DateTime")],
+                    TypeExistsInQueries("DateTime")
+                )
+                .AddRangeIf(
+                    [GetCsvNullConverter("string")],
+                    TypeExistsInQueries("string")
+                )
+                .AddRangeIf(
+                    [GetCsvNullConverter("JsonElement")],
+                    TypeExistsInQueries("JsonElement")
+                )
+                .AddRangeIf(
+                    [GetCsvNullConverter("object")],
+                    TypeExistsInQueries("object")
+                );
+
             var enumConverters = Enums.SelectMany(s =>
             {
                 return s.Value.Select(e =>
@@ -402,17 +448,30 @@ public partial class MySqlConnectorDriver(
             return [.. primitivesConverters, .. enumConverters];
         }
 
-        IEnumerable<string> GetBoolAndByteConverters()
+        ISet<string> GetBoolAndByteConverters()
         {
-            // TODO refactor
-            return new HashSet<string>([
-                $"{csvWriterVar}.Context.TypeConverterCache.AddConverter<{AddNullableSuffixIfNeeded("bool", true)}>(new Utils.{BoolToBitCsvConverter}());",
-                $"{csvWriterVar}.Context.TypeConverterCache.AddConverter<{AddNullableSuffixIfNeeded("bool", false)}>(new Utils.{BoolToBitCsvConverter}());",
-                $"{csvWriterVar}.Context.TypeConverterCache.AddConverter<{AddNullableSuffixIfNeeded("byte", true)}>(new Utils.{ByteCsvConverter}());",
-                $"{csvWriterVar}.Context.TypeConverterCache.AddConverter<{AddNullableSuffixIfNeeded("byte", false)}>(new Utils.{ByteCsvConverter}());",
-                $"{csvWriterVar}.Context.TypeConverterCache.AddConverter<{AddNullableSuffixIfNeeded("byte[]", true)}>(new Utils.{ByteArrayCsvConverter}());",
-                $"{csvWriterVar}.Context.TypeConverterCache.AddConverter<{AddNullableSuffixIfNeeded("byte[]", false)}>(new Utils.{ByteArrayCsvConverter}());",
-            ]);
+            return new HashSet<string>()
+                .AddRangeIf(
+                    [
+                        $"{csvWriterVar}.Context.TypeConverterCache.AddConverter<{AddNullableSuffixIfNeeded("bool", true)}>(new Utils.{BoolToBitCsvConverter}());",
+                        $"{csvWriterVar}.Context.TypeConverterCache.AddConverter<{AddNullableSuffixIfNeeded("bool", false)}>(new Utils.{BoolToBitCsvConverter}());"
+                    ],
+                    TypeExistsInQueries("bool")
+                )
+                .AddRangeIf(
+                    [
+                        $"{csvWriterVar}.Context.TypeConverterCache.AddConverter<{AddNullableSuffixIfNeeded("byte", true)}>(new Utils.{ByteCsvConverter}());",
+                        $"{csvWriterVar}.Context.TypeConverterCache.AddConverter<{AddNullableSuffixIfNeeded("byte", false)}>(new Utils.{ByteCsvConverter}());",
+                    ],
+                    TypeExistsInQueries("byte")
+                )
+                .AddRangeIf(
+                    [
+                        $"{csvWriterVar}.Context.TypeConverterCache.AddConverter<{AddNullableSuffixIfNeeded("byte[]", true)}>(new Utils.{ByteArrayCsvConverter}());",
+                        $"{csvWriterVar}.Context.TypeConverterCache.AddConverter<{AddNullableSuffixIfNeeded("byte[]", false)}>(new Utils.{ByteArrayCsvConverter}());",
+                    ],
+                    TypeExistsInQueries("byte[]")
+                );
         }
     }
 }

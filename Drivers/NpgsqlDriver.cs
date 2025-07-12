@@ -243,6 +243,13 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId
         {
             "NpgsqlCircle",
             new("RegisterNpgsqlTypeHandler<NpgsqlCircle>();", null)
+        },
+        {
+            "JsonElement",
+            new (
+                $"SqlMapper.AddTypeHandler(typeof(JsonElement), new JsonElementTypeHandler());",
+                JsonElementTypeHandler
+            )
         }
     };
 
@@ -250,7 +257,7 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId
 
     public override ISet<string> GetUsingDirectivesForQueries()
     {
-        return base.GetUsingDirectivesForQueries().AddRange(
+        return base.GetUsingDirectivesForQueries().AddRangeExcludeNulls(
         [
             "Npgsql",
             "System.Data"
@@ -259,7 +266,7 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId
 
     public override ISet<string> GetUsingDirectivesForModels()
     {
-        return base.GetUsingDirectivesForModels().AddRange(
+        return base.GetUsingDirectivesForModels().AddRangeExcludeNulls(
         [
             "System"
         ]);
@@ -271,7 +278,7 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId
         if (!Options.UseDapper)
             return usingDirectives;
 
-        return usingDirectives.AddRange(
+        return usingDirectives.AddRangeExcludeNulls(
         [
             "NpgsqlTypes"
         ]);
@@ -318,7 +325,7 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId
 
     protected override ISet<string> GetConfigureSqlMappings()
     {
-        return base.GetConfigureSqlMappings().AddRange(KnownMappings.Values.Select(x => x.Item1));
+        return base.GetConfigureSqlMappings().AddRangeExcludeNulls(KnownMappings.Values.Select(x => x.Item1));
     }
 
     // TODO different operations require different types of connections - improve code and docs to make it clearer
@@ -326,23 +333,18 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId
     {
         var connectionStringVar = Variable.ConnectionString.AsPropertyName();
         var connectionVar = Variable.Connection.AsVarName();
-
-        if (query.Cmd == ":copyfrom")
-            return new ConnectionGenCommands(
-                $"var ds = NpgsqlDataSource.Create({connectionStringVar})",
-                $"var {connectionVar} = ds.CreateConnection()"
-            );
-
         var embedTableExists = query.Columns.Any(c => c.EmbedTable is not null);
-        if (Options.UseDapper && !embedTableExists)
-            return new ConnectionGenCommands(
+        var useOpenConnection = query.Cmd == ":copyfrom" || (Options.UseDapper && !embedTableExists);
+
+        return useOpenConnection
+            ? new ConnectionGenCommands(
                 $"var {connectionVar} = new NpgsqlConnection({connectionStringVar})",
                 string.Empty
+            )
+            : new ConnectionGenCommands(
+                $"var {connectionVar} = NpgsqlDataSource.Create({connectionStringVar})",
+                string.Empty
             );
-        return new ConnectionGenCommands(
-            $"var {connectionVar} = NpgsqlDataSource.Create({connectionStringVar})",
-            string.Empty
-        );
     }
 
     public override string CreateSqlCommand(string sqlTextConstant)

@@ -9,6 +9,23 @@ namespace NpgsqlDapperLegacyExampleGen
 
     public static class Utils
     {
+        public class JsonElementTypeHandler : SqlMapper.TypeHandler<JsonElement>
+        {
+            public override JsonElement Parse(object value)
+            {
+                if (value is string s)
+                    return JsonDocument.Parse(s).RootElement;
+                if (value is null)
+                    return default;
+                throw new DataException($"Cannot convert {value?.GetType()} to JsonElement");
+            }
+
+            public override void SetValue(IDbDataParameter parameter, JsonElement value)
+            {
+                parameter.Value = value.GetRawText();
+            }
+        }
+
         public static void ConfigureSqlMapper()
         {
             RegisterNpgsqlTypeHandler<NpgsqlPoint>();
@@ -18,6 +35,7 @@ namespace NpgsqlDapperLegacyExampleGen
             RegisterNpgsqlTypeHandler<NpgsqlPath>();
             RegisterNpgsqlTypeHandler<NpgsqlPolygon>();
             RegisterNpgsqlTypeHandler<NpgsqlCircle>();
+            SqlMapper.AddTypeHandler(typeof(JsonElement), new JsonElementTypeHandler());
         }
 
         private class NpgsqlTypeHandler<T> : SqlMapper.TypeHandler<T>

@@ -20,12 +20,16 @@ namespace MySqlConnectorLegacyExampleGen
 
     public class QuerySql
     {
-        public QuerySql(string connectionString)
+        public QuerySql()
+        {
+        }
+
+        public QuerySql(string connectionString) : this()
         {
             this.ConnectionString = connectionString;
         }
 
-        private QuerySql(MySqlTransaction transaction)
+        private QuerySql(MySqlTransaction transaction) : this()
         {
             this.Transaction = transaction;
         }
@@ -1004,7 +1008,6 @@ namespace MySqlConnectorLegacyExampleGen
                 csvWriter.Context.TypeConverterCache.AddConverter<short?>(nullConverterFn);
                 csvWriter.Context.TypeConverterCache.AddConverter<int?>(nullConverterFn);
                 csvWriter.Context.TypeConverterCache.AddConverter<long?>(nullConverterFn);
-                csvWriter.Context.TypeConverterCache.AddConverter<float?>(nullConverterFn);
                 csvWriter.Context.TypeConverterCache.AddConverter<decimal?>(nullConverterFn);
                 csvWriter.Context.TypeConverterCache.AddConverter<double?>(nullConverterFn);
                 csvWriter.Context.TypeConverterCache.AddConverter<DateTime?>(nullConverterFn);

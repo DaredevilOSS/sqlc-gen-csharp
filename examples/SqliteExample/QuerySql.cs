@@ -12,12 +12,16 @@ using System.Threading.Tasks;
 namespace SqliteExampleGen;
 public class QuerySql
 {
-    public QuerySql(string connectionString)
+    public QuerySql()
+    {
+    }
+
+    public QuerySql(string connectionString) : this()
     {
         this.ConnectionString = connectionString;
     }
 
-    private QuerySql(SqliteTransaction transaction)
+    private QuerySql(SqliteTransaction transaction) : this()
     {
         this.Transaction = transaction;
     }

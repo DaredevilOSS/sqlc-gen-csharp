@@ -60,16 +60,27 @@ internal class QueriesGen(DbDriver dbDriver, string namespaceName)
 
     private ClassDeclarationSyntax GetClassDeclaration(string className, IEnumerable<MemberDeclarationSyntax> classMembers)
     {
+        var dapperStatements = dbDriver.Options.UseDapper
+            ? $$"""
+                Utils.ConfigureSqlMapper();
+                Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
+              """
+            : string.Empty;
         var classDeclaration = (ClassDeclarationSyntax)ParseMemberDeclaration(
                 $$"""
                   public class {{className}}
                   {
-                      public {{className}}(string {{Variable.ConnectionString.AsVarName()}})
+                      public {{className}}()
+                      {
+                          {{dapperStatements}}
+                      }
+
+                      public {{className}}(string {{Variable.ConnectionString.AsVarName()}}) : this()
                       {
                           {{dbDriver.GetConstructorStatements().JoinByNewLine()}}
                       }
 
-                      private {{className}}({{dbDriver.TransactionClassName}} {{Variable.Transaction.AsVarName()}})
+                      private {{className}}({{dbDriver.TransactionClassName}} {{Variable.Transaction.AsVarName()}}) : this()
                       {
                           {{dbDriver.GetTransactionConstructorStatements().JoinByNewLine()}}
                       }
@@ -91,10 +102,14 @@ internal class QueriesGen(DbDriver dbDriver, string namespaceName)
         try
         {
             return new List<MemberDeclarationSyntax>()
-                .AppendIfNotNull(GetQueryTextConstant(query))
-                .AppendIfNotNull(GetQueryColumnsDataclass(query))
-                .AppendIfNotNull(GetQueryParamsDataclass(query))
-                .Append(AddMethodDeclaration(query));
+                .AddRangeExcludeNulls(
+                    [
+                        GetQueryTextConstant(query),
+                        GetQueryColumnsDataclass(query),
+                        GetQueryParamsDataclass(query),
+                        AddMethodDeclaration(query)
+                    ]
+                );
         }
         catch (NotSupportedException e)
         {

@@ -17,18 +17,20 @@ namespace NpgsqlDapperLegacyExampleGen
 
     public class QuerySql
     {
-        public QuerySql(string connectionString)
+        public QuerySql()
         {
-            this.ConnectionString = connectionString;
             Utils.ConfigureSqlMapper();
             Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
         }
 
-        private QuerySql(NpgsqlTransaction transaction)
+        public QuerySql(string connectionString) : this()
+        {
+            this.ConnectionString = connectionString;
+        }
+
+        private QuerySql(NpgsqlTransaction transaction) : this()
         {
             this.Transaction = transaction;
-            Utils.ConfigureSqlMapper();
-            Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
         }
 
         public static QuerySql WithTransaction(NpgsqlTransaction transaction)
@@ -647,9 +649,8 @@ namespace NpgsqlDapperLegacyExampleGen
         };
         public async Task InsertPostgresTypesBatch(List<InsertPostgresTypesBatchArgs> args)
         {
-            using (var ds = NpgsqlDataSource.Create(ConnectionString))
+            using (var connection = new NpgsqlConnection(ConnectionString))
             {
-                var connection = ds.CreateConnection();
                 await connection.OpenAsync();
                 using (var writer = await connection.BeginBinaryImportAsync(InsertPostgresTypesBatchSql))
                 {
