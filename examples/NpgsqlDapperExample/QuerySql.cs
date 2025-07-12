@@ -4,30 +4,32 @@
 // ReSharper disable ConvertToUsingDeclaration
 // ReSharper disable NotAccessedPositionalProperty.Global
 // ReSharper disable UnusedAutoPropertyAccessor.Global
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using Dapper;
-using System.Text.Json;
 using Npgsql;
 using NpgsqlTypes;
+using System;
+using System.Collections.Generic;
 using System.Data;
+using System.Text.Json;
+using System.Threading.Tasks;
 
 namespace NpgsqlDapperExampleGen;
 public class QuerySql
 {
-    public QuerySql(string connectionString)
+    public QuerySql()
     {
-        this.ConnectionString = connectionString;
         Utils.ConfigureSqlMapper();
         Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
     }
 
-    private QuerySql(NpgsqlTransaction transaction)
+    public QuerySql(string connectionString) : this()
+    {
+        this.ConnectionString = connectionString;
+    }
+
+    private QuerySql(NpgsqlTransaction transaction) : this()
     {
         this.Transaction = transaction;
-        Utils.ConfigureSqlMapper();
-        Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
     }
 
     public static QuerySql WithTransaction(NpgsqlTransaction transaction)
@@ -646,9 +648,8 @@ public class QuerySql
     };
     public async Task InsertPostgresTypesBatch(List<InsertPostgresTypesBatchArgs> args)
     {
-        using (var ds = NpgsqlDataSource.Create(ConnectionString))
+        using (var connection = new NpgsqlConnection(ConnectionString))
         {
-            var connection = ds.CreateConnection();
             await connection.OpenAsync();
             using (var writer = await connection.BeginBinaryImportAsync(InsertPostgresTypesBatchSql))
             {

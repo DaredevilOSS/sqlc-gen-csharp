@@ -6,33 +6,35 @@
 // ReSharper disable UnusedAutoPropertyAccessor.Global
 namespace MySqlConnectorDapperLegacyExampleGen
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Threading.Tasks;
-    using Dapper;
-    using System.Text.Json;
-    using MySqlConnector;
-    using System.Globalization;
-    using System.IO;
     using CsvHelper;
     using CsvHelper.Configuration;
     using CsvHelper.TypeConversion;
+    using Dapper;
+    using MySqlConnector;
+    using System;
+    using System.Collections.Generic;
+    using System.Globalization;
+    using System.IO;
     using System.Text;
+    using System.Text.Json;
+    using System.Threading.Tasks;
 
     public class QuerySql
     {
-        public QuerySql(string connectionString)
+        public QuerySql()
         {
-            this.ConnectionString = connectionString;
             Utils.ConfigureSqlMapper();
             Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
         }
 
-        private QuerySql(MySqlTransaction transaction)
+        public QuerySql(string connectionString) : this()
+        {
+            this.ConnectionString = connectionString;
+        }
+
+        private QuerySql(MySqlTransaction transaction) : this()
         {
             this.Transaction = transaction;
-            Utils.ConfigureSqlMapper();
-            Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
         }
 
         public static QuerySql WithTransaction(MySqlTransaction transaction)
@@ -726,7 +728,6 @@ namespace MySqlConnectorDapperLegacyExampleGen
                 csvWriter.Context.TypeConverterCache.AddConverter<short?>(nullConverterFn);
                 csvWriter.Context.TypeConverterCache.AddConverter<int?>(nullConverterFn);
                 csvWriter.Context.TypeConverterCache.AddConverter<long?>(nullConverterFn);
-                csvWriter.Context.TypeConverterCache.AddConverter<float?>(nullConverterFn);
                 csvWriter.Context.TypeConverterCache.AddConverter<decimal?>(nullConverterFn);
                 csvWriter.Context.TypeConverterCache.AddConverter<double?>(nullConverterFn);
                 csvWriter.Context.TypeConverterCache.AddConverter<DateTime?>(nullConverterFn);

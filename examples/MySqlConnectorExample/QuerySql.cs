@@ -4,27 +4,31 @@
 // ReSharper disable ConvertToUsingDeclaration
 // ReSharper disable NotAccessedPositionalProperty.Global
 // ReSharper disable UnusedAutoPropertyAccessor.Global
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using System.Text.Json;
-using MySqlConnector;
-using System.Globalization;
-using System.IO;
 using CsvHelper;
 using CsvHelper.Configuration;
 using CsvHelper.TypeConversion;
+using MySqlConnector;
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
 using System.Text;
+using System.Text.Json;
+using System.Threading.Tasks;
 
 namespace MySqlConnectorExampleGen;
 public class QuerySql
 {
-    public QuerySql(string connectionString)
+    public QuerySql()
+    {
+    }
+
+    public QuerySql(string connectionString) : this()
     {
         this.ConnectionString = connectionString;
     }
 
-    private QuerySql(MySqlTransaction transaction)
+    private QuerySql(MySqlTransaction transaction) : this()
     {
         this.Transaction = transaction;
     }
@@ -844,7 +848,6 @@ public class QuerySql
             csvWriter.Context.TypeConverterCache.AddConverter<short?>(nullConverterFn);
             csvWriter.Context.TypeConverterCache.AddConverter<int?>(nullConverterFn);
             csvWriter.Context.TypeConverterCache.AddConverter<long?>(nullConverterFn);
-            csvWriter.Context.TypeConverterCache.AddConverter<float?>(nullConverterFn);
             csvWriter.Context.TypeConverterCache.AddConverter<decimal?>(nullConverterFn);
             csvWriter.Context.TypeConverterCache.AddConverter<double?>(nullConverterFn);
             csvWriter.Context.TypeConverterCache.AddConverter<DateTime?>(nullConverterFn);

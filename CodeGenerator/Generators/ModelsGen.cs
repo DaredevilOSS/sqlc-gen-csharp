@@ -2,6 +2,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Plugin;
 using SqlcGenCsharp.Drivers;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
@@ -25,6 +26,7 @@ internal class ModelsGen(DbDriver dbDriver, string namespaceName)
     {
         var usingDirectives = dbDriver
             .GetUsingDirectivesForModels()
+            .OrderBy(x => x)
             .Select(x => UsingDirective(ParseName(x)))
             .ToArray();
         var dataclassModels = GenerateDataClasses(tables);

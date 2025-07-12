@@ -6,22 +6,26 @@
 // ReSharper disable UnusedAutoPropertyAccessor.Global
 namespace NpgsqlLegacyExampleGen
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Threading.Tasks;
-    using System.Text.Json;
     using Npgsql;
     using NpgsqlTypes;
+    using System;
+    using System.Collections.Generic;
     using System.Data;
+    using System.Text.Json;
+    using System.Threading.Tasks;
 
     public class QuerySql
     {
-        public QuerySql(string connectionString)
+        public QuerySql()
+        {
+        }
+
+        public QuerySql(string connectionString) : this()
         {
             this.ConnectionString = connectionString;
         }
 
-        private QuerySql(NpgsqlTransaction transaction)
+        private QuerySql(NpgsqlTransaction transaction) : this()
         {
             this.Transaction = transaction;
         }
@@ -918,9 +922,8 @@ namespace NpgsqlLegacyExampleGen
         };
         public async Task InsertPostgresTypesBatch(List<InsertPostgresTypesBatchArgs> args)
         {
-            using (var ds = NpgsqlDataSource.Create(ConnectionString))
+            using (var connection = new NpgsqlConnection(ConnectionString))
             {
-                var connection = ds.CreateConnection();
                 await connection.OpenAsync();
                 using (var writer = await connection.BeginBinaryImportAsync(InsertPostgresTypesBatchSql))
                 {

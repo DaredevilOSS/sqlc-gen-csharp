@@ -4,20 +4,24 @@
 // ReSharper disable ConvertToUsingDeclaration
 // ReSharper disable NotAccessedPositionalProperty.Global
 // ReSharper disable UnusedAutoPropertyAccessor.Global
+using Microsoft.Data.Sqlite;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.Data.Sqlite;
 
 namespace SqliteExampleGen;
 public class QuerySql
 {
-    public QuerySql(string connectionString)
+    public QuerySql()
+    {
+    }
+
+    public QuerySql(string connectionString) : this()
     {
         this.ConnectionString = connectionString;
     }
 
-    private QuerySql(SqliteTransaction transaction)
+    private QuerySql(SqliteTransaction transaction) : this()
     {
         this.Transaction = transaction;
     }

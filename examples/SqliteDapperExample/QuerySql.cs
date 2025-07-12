@@ -4,27 +4,29 @@
 // ReSharper disable ConvertToUsingDeclaration
 // ReSharper disable NotAccessedPositionalProperty.Global
 // ReSharper disable UnusedAutoPropertyAccessor.Global
+using Dapper;
+using Microsoft.Data.Sqlite;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Dapper;
-using Microsoft.Data.Sqlite;
 
 namespace SqliteDapperExampleGen;
 public class QuerySql
 {
-    public QuerySql(string connectionString)
+    public QuerySql()
     {
-        this.ConnectionString = connectionString;
         Utils.ConfigureSqlMapper();
         Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
     }
 
-    private QuerySql(SqliteTransaction transaction)
+    public QuerySql(string connectionString) : this()
+    {
+        this.ConnectionString = connectionString;
+    }
+
+    private QuerySql(SqliteTransaction transaction) : this()
     {
         this.Transaction = transaction;
-        Utils.ConfigureSqlMapper();
-        Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
     }
 
     public static QuerySql WithTransaction(SqliteTransaction transaction)
