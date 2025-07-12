@@ -7,6 +7,7 @@ namespace SqlcGenCsharp.Generators;
 
 internal class CsprojGen(string outputDirectory, string projectName, string namespaceName, Options options)
 {
+    // TODO this logic needs to be moved to the Drivers project
     private const string DefaultDapperVersion = "2.1.66";
     private const string DefaultNpgsqlVersion = "8.0.6";
     private const string DefaultMysqlConnectorVersion = "2.4.0";
