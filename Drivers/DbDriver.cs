@@ -26,9 +26,8 @@ public abstract class DbDriver
     private HashSet<string> NullableTypesInDotnetCore { get; } =
     [
         "string",
-        "object",
-        "byte[]"
-    ]; // TODO add arrays in here in a non hard-coded manner
+        "object"
+    ];
 
     private HashSet<string> NullableTypes { get; } =
     [
@@ -54,7 +53,7 @@ public abstract class DbDriver
 
     public abstract Dictionary<string, ColumnMapping> ColumnMappings { get; }
 
-    private Dictionary<string, Tuple<string, string>> KnownMappings { get; } = new()
+    protected virtual Dictionary<string, Tuple<string, string?>> KnownMappings { get; } = new()
     {
         {
             "JsonElement",
@@ -121,26 +120,14 @@ public abstract class DbDriver
 
     public virtual ISet<string> GetUsingDirectivesForQueries()
     {
-        var usingDirectives = new HashSet<string>
+        return new HashSet<string>
             {
                 "System",
                 "System.Collections.Generic",
                 "System.Threading.Tasks"
-            }.AddIf("Dapper", Options.UseDapper);
-
-        foreach (var query in Queries)
-        {
-            foreach (var column in query.Columns)
-            {
-                var csharpType = GetCsharpTypeWithoutNullableSuffix(column, query);
-                if (!ColumnMappings.ContainsKey(csharpType))
-                    continue;
-
-                var columnMapping = ColumnMappings[GetCsharpTypeWithoutNullableSuffix(column, query)];
-                usingDirectives.AddIfNotNull(columnMapping.UsingDirective);
             }
-        }
-        return usingDirectives;
+            .AddIf("Dapper", Options.UseDapper)
+            .AddRange(GetUsingDirectivesForColumnMappings());
     }
 
     public virtual ISet<string> GetUsingDirectivesForModels()
@@ -214,8 +201,8 @@ public abstract class DbDriver
             return [.. memberDeclarations];
 
         memberDeclarations.AddRange(KnownMappings
-            .Where(m => TypeExistsInQueries(m.Key))
-            .Select(m => ParseMemberDeclaration(m.Value.Item2)!));
+            .Where(m => TypeExistsInQueries(m.Key) && m.Value.Item2 is not null)
+            .Select(m => ParseMemberDeclaration(m.Value.Item2!)!));
 
         return [.. memberDeclarations,
             ParseMemberDeclaration($$"""

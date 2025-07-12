@@ -6,11 +6,11 @@
 // ReSharper disable UnusedAutoPropertyAccessor.Global
 namespace SqliteDapperLegacyExampleGen
 {
+    using Dapper;
+    using Microsoft.Data.Sqlite;
     using System;
     using System.Collections.Generic;
     using System.Threading.Tasks;
-    using Dapper;
-    using Microsoft.Data.Sqlite;
 
     public class QuerySql
     {

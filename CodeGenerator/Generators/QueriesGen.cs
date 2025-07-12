@@ -51,6 +51,7 @@ internal class QueriesGen(DbDriver dbDriver, string namespaceName)
     {
         var usingDirectives = dbDriver
             .GetUsingDirectivesForQueries()
+            .OrderBy(x => x)
             .Select(x => UsingDirective(ParseName(x)))
             .ToArray();
         var classMembers = queries.SelectMany(GetMembersForSingleQuery);

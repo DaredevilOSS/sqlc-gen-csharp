@@ -23,10 +23,10 @@ sync-sqlc-options:
 	./scripts/sync_sqlc_options.sh
 
 sqlc-generate-requests: dotnet-publish-process
-	SQLCCACHE=./; sqlc -f sqlc.requests.yaml generate
+	SQLCCACHE=./; sqlc -f sqlc.request.generated.yaml generate
 
 sqlc-generate: sync-sqlc-options dotnet-publish-process sqlc-generate-requests
-	SQLCCACHE=./; sqlc -f sqlc.local.yaml generate
+	SQLCCACHE=./; sqlc -f sqlc.local.generated.yaml generate
 
 test-plugin: unit-tests sqlc-generate generate-end2end-tests dotnet-build run-end2end-tests
 

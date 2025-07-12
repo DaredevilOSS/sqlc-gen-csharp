@@ -1,6 +1,7 @@
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Plugin;
 using SqlcGenCsharp.Drivers.Generators;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -14,7 +15,7 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId
         Options options,
         string defaultSchema,
         Dictionary<string, Dictionary<string, Table>> tables,
-        Dictionary<string, Dictionary<string, Enum>> enums,
+        Dictionary<string, Dictionary<string, Plugin.Enum>> enums,
         IList<Query> queries) :
         base(options, defaultSchema, tables, enums, queries)
     {
@@ -153,51 +154,58 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId
                 {
                     { "point", new DbTypeInfo(NpgsqlTypeOverride: "NpgsqlDbType.Point") }
                 },
-                ordinal => $"reader.GetFieldValue<NpgsqlPoint>({ordinal})"
+                ordinal => $"reader.GetFieldValue<NpgsqlPoint>({ordinal})",
+                usingDirective: "NpgsqlTypes"
             ),
             ["NpgsqlLine"] = new ColumnMapping(
                 new Dictionary<string, DbTypeInfo>
                 {
                     { "line", new DbTypeInfo(NpgsqlTypeOverride: "NpgsqlDbType.Line") }
                 },
-                ordinal => $"reader.GetFieldValue<NpgsqlLine>({ordinal})"
+                ordinal => $"reader.GetFieldValue<NpgsqlLine>({ordinal})",
+                usingDirective: "NpgsqlTypes"
             ),
             ["NpgsqlLSeg"] = new ColumnMapping(
                 new Dictionary<string, DbTypeInfo>
                 {
                     { "lseg", new DbTypeInfo(NpgsqlTypeOverride: "NpgsqlDbType.LSeg") }
                 },
-                ordinal => $"reader.GetFieldValue<NpgsqlLSeg>({ordinal})"
+                ordinal => $"reader.GetFieldValue<NpgsqlLSeg>({ordinal})",
+                usingDirective: "NpgsqlTypes"
             ),
             ["NpgsqlBox"] = new ColumnMapping(
                 new Dictionary<string, DbTypeInfo>
                 {
                     { "box", new DbTypeInfo(NpgsqlTypeOverride: "NpgsqlDbType.Box") }
                 },
-                ordinal => $"reader.GetFieldValue<NpgsqlBox>({ordinal})"
+                ordinal => $"reader.GetFieldValue<NpgsqlBox>({ordinal})",
+                usingDirective: "NpgsqlTypes"
             ),
             ["NpgsqlPath"] = new ColumnMapping(
                 new Dictionary<string, DbTypeInfo>
                 {
                     { "path", new DbTypeInfo(NpgsqlTypeOverride: "NpgsqlDbType.Path") }
                 },
-                ordinal => $"reader.GetFieldValue<NpgsqlPath>({ordinal})"
+                ordinal => $"reader.GetFieldValue<NpgsqlPath>({ordinal})",
+                usingDirective: "NpgsqlTypes"
             ),
             ["NpgsqlPolygon"] = new ColumnMapping(
                 new Dictionary<string, DbTypeInfo>
                 {
                     { "polygon", new DbTypeInfo(NpgsqlTypeOverride: "NpgsqlDbType.Polygon") }
                 },
-                ordinal => $"reader.GetFieldValue<NpgsqlPolygon>({ordinal})"
+                ordinal => $"reader.GetFieldValue<NpgsqlPolygon>({ordinal})",
+                usingDirective: "NpgsqlTypes"
             ),
             ["NpgsqlCircle"] = new ColumnMapping(
                 new Dictionary<string, DbTypeInfo>
                 {
                     { "circle", new DbTypeInfo(NpgsqlTypeOverride: "NpgsqlDbType.Circle") }
                 },
-                ordinal => $"reader.GetFieldValue<NpgsqlCircle>({ordinal})"
+                ordinal => $"reader.GetFieldValue<NpgsqlCircle>({ordinal})",
+                usingDirective: "NpgsqlTypes"
             ),
-            ["object[]"] = new ColumnMapping(
+            ["object"] = new ColumnMapping(
                 new Dictionary<string, DbTypeInfo>
                 {
                     { "anyarray", new DbTypeInfo() }
@@ -206,6 +214,38 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId
             )
         };
 
+    protected sealed override Dictionary<string, Tuple<string, string?>> KnownMappings { get; } = new()
+    {
+        {
+            "NpgsqlPoint",
+            new("RegisterNpgsqlTypeHandler<NpgsqlPoint>();", null)
+        },
+        {
+            "NpgsqlLine",
+            new("RegisterNpgsqlTypeHandler<NpgsqlLine>();", null)
+        },
+        {
+            "NpgsqlLSeg",
+            new("RegisterNpgsqlTypeHandler<NpgsqlLSeg>();", null)
+        },
+        {
+            "NpgsqlBox",
+            new("RegisterNpgsqlTypeHandler<NpgsqlBox>();", null)
+        },
+        {
+            "NpgsqlPath",
+            new("RegisterNpgsqlTypeHandler<NpgsqlPath>();", null)
+        },
+        {
+            "NpgsqlPolygon",
+            new("RegisterNpgsqlTypeHandler<NpgsqlPolygon>();", null)
+        },
+        {
+            "NpgsqlCircle",
+            new("RegisterNpgsqlTypeHandler<NpgsqlCircle>();", null)
+        }
+    };
+
     public override string TransactionClassName => "NpgsqlTransaction";
 
     public override ISet<string> GetUsingDirectivesForQueries()
@@ -213,7 +253,6 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId
         return base.GetUsingDirectivesForQueries().AddRange(
         [
             "Npgsql",
-            "NpgsqlTypes",
             "System.Data"
         ]);
     }
@@ -222,7 +261,6 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId
     {
         return base.GetUsingDirectivesForModels().AddRange(
         [
-            "NpgsqlTypes",
             "System"
         ]);
     }
@@ -280,17 +318,7 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId
 
     protected override ISet<string> GetConfigureSqlMappings()
     {
-        return base.GetConfigureSqlMappings().AddRange(
-        [
-            "RegisterNpgsqlTypeHandler<NpgsqlPoint>();",
-            "RegisterNpgsqlTypeHandler<NpgsqlLine>();",
-            "RegisterNpgsqlTypeHandler<NpgsqlLSeg>();",
-            "RegisterNpgsqlTypeHandler<NpgsqlBox>();",
-            "RegisterNpgsqlTypeHandler<NpgsqlPath>();",
-            "RegisterNpgsqlTypeHandler<NpgsqlPolygon>();",
-            "RegisterNpgsqlTypeHandler<NpgsqlCircle>();",
-            "SqlMapper.AddTypeHandler(typeof(JsonElement), new JsonElementTypeHandler());"
-        ]);
+        return base.GetConfigureSqlMappings().AddRange(KnownMappings.Values.Select(x => x.Item1));
     }
 
     // TODO different operations require different types of connections - improve code and docs to make it clearer

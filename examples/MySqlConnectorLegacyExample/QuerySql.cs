@@ -6,17 +6,17 @@
 // ReSharper disable UnusedAutoPropertyAccessor.Global
 namespace MySqlConnectorLegacyExampleGen
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Threading.Tasks;
-    using System.Text.Json;
-    using MySqlConnector;
-    using System.Globalization;
-    using System.IO;
     using CsvHelper;
     using CsvHelper.Configuration;
     using CsvHelper.TypeConversion;
+    using MySqlConnector;
+    using System;
+    using System.Collections.Generic;
+    using System.Globalization;
+    using System.IO;
     using System.Text;
+    using System.Text.Json;
+    using System.Threading.Tasks;
 
     public class QuerySql
     {

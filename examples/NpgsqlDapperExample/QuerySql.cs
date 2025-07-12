@@ -4,14 +4,14 @@
 // ReSharper disable ConvertToUsingDeclaration
 // ReSharper disable NotAccessedPositionalProperty.Global
 // ReSharper disable UnusedAutoPropertyAccessor.Global
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using Dapper;
-using System.Text.Json;
 using Npgsql;
 using NpgsqlTypes;
+using System;
+using System.Collections.Generic;
 using System.Data;
+using System.Text.Json;
+using System.Threading.Tasks;
 
 namespace NpgsqlDapperExampleGen;
 public class QuerySql

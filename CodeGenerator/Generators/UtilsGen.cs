@@ -22,6 +22,7 @@ internal class UtilsGen(DbDriver dbDriver, string namespaceName)
 
         var usingDirectives = dbDriver
             .GetUsingDirectivesForUtils()
+            .OrderBy(x => x)
             .Select(x => UsingDirective(ParseName(x)))
             .ToArray();
         var root = RootGen.CompilationRootGen(

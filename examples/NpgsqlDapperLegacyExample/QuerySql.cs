@@ -6,14 +6,14 @@
 // ReSharper disable UnusedAutoPropertyAccessor.Global
 namespace NpgsqlDapperLegacyExampleGen
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Threading.Tasks;
     using Dapper;
-    using System.Text.Json;
     using Npgsql;
     using NpgsqlTypes;
+    using System;
+    using System.Collections.Generic;
     using System.Data;
+    using System.Text.Json;
+    using System.Threading.Tasks;
 
     public class QuerySql
     {

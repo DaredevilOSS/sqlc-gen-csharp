@@ -6,10 +6,10 @@
 // ReSharper disable UnusedAutoPropertyAccessor.Global
 namespace SqliteLegacyExampleGen
 {
+    using Microsoft.Data.Sqlite;
     using System;
     using System.Collections.Generic;
     using System.Threading.Tasks;
-    using Microsoft.Data.Sqlite;
 
     public class QuerySql
     {
