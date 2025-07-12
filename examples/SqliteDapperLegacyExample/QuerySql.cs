@@ -24,6 +24,7 @@ namespace SqliteDapperLegacyExampleGen
         private QuerySql(SqliteTransaction transaction)
         {
             this.Transaction = transaction;
+            Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
         }
 
         public static QuerySql WithTransaction(SqliteTransaction transaction)

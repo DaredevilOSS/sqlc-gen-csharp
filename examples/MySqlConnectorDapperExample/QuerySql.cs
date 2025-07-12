@@ -30,6 +30,7 @@ public class QuerySql
     private QuerySql(MySqlTransaction transaction)
     {
         this.Transaction = transaction;
+        Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
     }
 
     public static QuerySql WithTransaction(MySqlTransaction transaction)

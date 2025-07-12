@@ -27,6 +27,7 @@ namespace NpgsqlDapperLegacyExampleGen
         private QuerySql(NpgsqlTransaction transaction)
         {
             this.Transaction = transaction;
+            Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
         }
 
         public static QuerySql WithTransaction(NpgsqlTransaction transaction)

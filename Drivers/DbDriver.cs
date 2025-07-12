@@ -192,9 +192,10 @@ public abstract class DbDriver
     public virtual string[] GetTransactionConstructorStatements()
     {
         return [.. new List<string>
-        {
-            $"this.{Variable.Transaction.AsPropertyName()} = {Variable.Transaction.AsVarName()};"
-        }];
+            {
+                $"this.{Variable.Transaction.AsPropertyName()} = {Variable.Transaction.AsVarName()};"
+            }
+            .AppendIf("Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;", Options.UseDapper)];
     }
 
     protected virtual ISet<string> GetConfigureSqlMappings()
