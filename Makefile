@@ -35,3 +35,7 @@ setup-ci-wasm-plugin:
 	dotnet publish WasmRunner -c release --output dist/
 	./scripts/wasm/copy_plugin_to.sh dist
 	./scripts/wasm/update_sha.sh sqlc.ci.yaml
+
+# Manual
+generate-protobuf:
+	./scripts/generate_protobuf.sh
