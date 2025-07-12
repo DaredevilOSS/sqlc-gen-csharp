@@ -11,4 +11,5 @@
     <ItemGroup>
         <ProjectReference Include="..\SqlcGenCsharp\SqlcGenCsharp.csproj"/>
     </ItemGroup>
+
 </Project>
