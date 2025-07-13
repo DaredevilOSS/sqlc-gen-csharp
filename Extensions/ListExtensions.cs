@@ -6,12 +6,6 @@ public static class ListExtensions
     {
         return item is not null ? me.Append(item) : me;
     }
-    private static ISet<T> AddIfNotNull<T>(this ISet<T> me, T? item)
-    {
-        if (item is not null)
-            me.Add(item);
-        return me;
-    }
 
     public static IEnumerable<T> AddRangeExcludeNulls<T>(this IEnumerable<T> me, IEnumerable<T?> items)
     {
@@ -20,21 +14,7 @@ public static class ListExtensions
         return me;
     }
 
-    public static ISet<T> AddRangeExcludeNulls<T>(this ISet<T> me, IEnumerable<T?> items)
-    {
-        foreach (var item in items)
-            me.AddIfNotNull(item);
-        return me;
-    }
-
     public static IEnumerable<T> AddRangeIf<T>(this IEnumerable<T> me, IEnumerable<T?> items, bool condition)
-    {
-        if (condition)
-            return me.AddRangeExcludeNulls(items);
-        return me;
-    }
-
-    public static ISet<T> AddRangeIf<T>(this ISet<T> me, IEnumerable<T?> items, bool condition)
     {
         if (condition)
             return me.AddRangeExcludeNulls(items);

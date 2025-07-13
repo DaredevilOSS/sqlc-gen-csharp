@@ -92,10 +92,7 @@ namespace NpgsqlDapperLegacyExampleGen
             }
 
             if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
-            {
-                throw new System.InvalidOperationException("Transaction is provided, but its connection is null.");
-            }
-
+                throw new InvalidOperationException("Transaction is provided, but its connection is null.");
             return (await this.Transaction.Connection.QueryAsync<ListAuthorsRow>(ListAuthorsSql, transaction: this.Transaction)).AsList();
         }
 
@@ -223,10 +220,7 @@ namespace NpgsqlDapperLegacyExampleGen
             }
 
             if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
-            {
-                throw new System.InvalidOperationException("Transaction is provided, but its connection is null.");
-            }
-
+                throw new InvalidOperationException("Transaction is provided, but its connection is null.");
             return (await this.Transaction.Connection.QueryAsync<GetAuthorByNamePatternRow>(GetAuthorByNamePatternSql, queryParams, transaction: this.Transaction)).AsList();
         }
 
@@ -328,10 +322,7 @@ namespace NpgsqlDapperLegacyExampleGen
             }
 
             if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
-            {
-                throw new System.InvalidOperationException("Transaction is provided, but its connection is null.");
-            }
-
+                throw new InvalidOperationException("Transaction is provided, but its connection is null.");
             return (await this.Transaction.Connection.QueryAsync<GetAuthorsByIdsRow>(GetAuthorsByIdsSql, queryParams, transaction: this.Transaction)).AsList();
         }
 
@@ -362,10 +353,7 @@ namespace NpgsqlDapperLegacyExampleGen
             }
 
             if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
-            {
-                throw new System.InvalidOperationException("Transaction is provided, but its connection is null.");
-            }
-
+                throw new InvalidOperationException("Transaction is provided, but its connection is null.");
             return (await this.Transaction.Connection.QueryAsync<GetAuthorsByIdsAndNamesRow>(GetAuthorsByIdsAndNamesSql, queryParams, transaction: this.Transaction)).AsList();
         }
 
@@ -418,10 +406,7 @@ namespace NpgsqlDapperLegacyExampleGen
                         {
                             var result = new List<ListAllAuthorsBooksRow>();
                             while (await reader.ReadAsync())
-                            {
                                 result.Add(new ListAllAuthorsBooksRow { Author = new Author { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2) }, Book = new Book { Id = reader.GetInt64(3), Name = reader.GetString(4), AuthorId = reader.GetInt64(5), Description = reader.IsDBNull(6) ? null : reader.GetString(6) } });
-                            }
-
                             return result;
                         }
                     }
@@ -429,10 +414,7 @@ namespace NpgsqlDapperLegacyExampleGen
             }
 
             if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
-            {
-                throw new System.InvalidOperationException("Transaction is provided, but its connection is null.");
-            }
-
+                throw new InvalidOperationException("Transaction is provided, but its connection is null.");
             using (var command = this.Transaction.Connection.CreateCommand())
             {
                 command.CommandText = ListAllAuthorsBooksSql;
@@ -441,10 +423,7 @@ namespace NpgsqlDapperLegacyExampleGen
                 {
                     var result = new List<ListAllAuthorsBooksRow>();
                     while (await reader.ReadAsync())
-                    {
                         result.Add(new ListAllAuthorsBooksRow { Author = new Author { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2) }, Book = new Book { Id = reader.GetInt64(3), Name = reader.GetString(4), AuthorId = reader.GetInt64(5), Description = reader.IsDBNull(6) ? null : reader.GetString(6) } });
-                    }
-
                     return result;
                 }
             }
@@ -468,10 +447,7 @@ namespace NpgsqlDapperLegacyExampleGen
                         {
                             var result = new List<GetDuplicateAuthorsRow>();
                             while (await reader.ReadAsync())
-                            {
                                 result.Add(new GetDuplicateAuthorsRow { Author = new Author { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2) }, Author2 = new Author { Id = reader.GetInt64(3), Name = reader.GetString(4), Bio = reader.IsDBNull(5) ? null : reader.GetString(5) } });
-                            }
-
                             return result;
                         }
                     }
@@ -479,10 +455,7 @@ namespace NpgsqlDapperLegacyExampleGen
             }
 
             if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
-            {
-                throw new System.InvalidOperationException("Transaction is provided, but its connection is null.");
-            }
-
+                throw new InvalidOperationException("Transaction is provided, but its connection is null.");
             using (var command = this.Transaction.Connection.CreateCommand())
             {
                 command.CommandText = GetDuplicateAuthorsSql;
@@ -491,10 +464,7 @@ namespace NpgsqlDapperLegacyExampleGen
                 {
                     var result = new List<GetDuplicateAuthorsRow>();
                     while (await reader.ReadAsync())
-                    {
                         result.Add(new GetDuplicateAuthorsRow { Author = new Author { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2) }, Author2 = new Author { Id = reader.GetInt64(3), Name = reader.GetString(4), Bio = reader.IsDBNull(5) ? null : reader.GetString(5) } });
-                    }
-
                     return result;
                 }
             }
@@ -525,10 +495,7 @@ namespace NpgsqlDapperLegacyExampleGen
                         {
                             var result = new List<GetAuthorsByBookNameRow>();
                             while (await reader.ReadAsync())
-                            {
                                 result.Add(new GetAuthorsByBookNameRow { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2), Book = new Book { Id = reader.GetInt64(3), Name = reader.GetString(4), AuthorId = reader.GetInt64(5), Description = reader.IsDBNull(6) ? null : reader.GetString(6) } });
-                            }
-
                             return result;
                         }
                     }
@@ -536,10 +503,7 @@ namespace NpgsqlDapperLegacyExampleGen
             }
 
             if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
-            {
-                throw new System.InvalidOperationException("Transaction is provided, but its connection is null.");
-            }
-
+                throw new InvalidOperationException("Transaction is provided, but its connection is null.");
             using (var command = this.Transaction.Connection.CreateCommand())
             {
                 command.CommandText = GetAuthorsByBookNameSql;
@@ -549,10 +513,7 @@ namespace NpgsqlDapperLegacyExampleGen
                 {
                     var result = new List<GetAuthorsByBookNameRow>();
                     while (await reader.ReadAsync())
-                    {
                         result.Add(new GetAuthorsByBookNameRow { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2), Book = new Book { Id = reader.GetInt64(3), Name = reader.GetString(4), AuthorId = reader.GetInt64(5), Description = reader.IsDBNull(6) ? null : reader.GetString(6) } });
-                    }
-
                     return result;
                 }
             }
