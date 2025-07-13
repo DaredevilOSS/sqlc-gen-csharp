@@ -39,7 +39,8 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId
                     { "bigint", new() },
                     { "bigserial", new() }
                 },
-                ordinal => $"reader.GetInt64({ordinal})"
+                ordinal => $"reader.GetInt64({ordinal})",
+                convertFunc: IntTo64
             ),
             ["byte[]"] = new(
                 new()
@@ -118,7 +119,8 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId
                     { "serial", new(NpgsqlTypeOverride: "NpgsqlDbType.Integer") }
                 },
                 ordinal => $"reader.GetInt32({ordinal})",
-                ordinal => $"reader.GetFieldValue<int[]>({ordinal})"
+                ordinal => $"reader.GetFieldValue<int[]>({ordinal})",
+                convertFunc: IntTo32
             ),
             ["float"] = new(
                 new()

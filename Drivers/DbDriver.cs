@@ -51,6 +51,10 @@ public abstract class DbDriver
         "JsonElement"
     ];
 
+    protected const string IntTo32 = "Convert.ToInt32";
+    protected const string IntTo64 = "Convert.ToInt64";
+
+
     public abstract Dictionary<string, ColumnMapping> ColumnMappings { get; }
 
     protected const string JsonElementTypeHandler =
@@ -330,11 +334,12 @@ public abstract class DbDriver
 
     public virtual string[] GetLastIdStatement(Query query)
     {
-        var convertFunc = GetIdColumnType(query) == "int" ? "ToInt32" : "ToInt64"; // TODO refactor
+        var idColumnType = GetIdColumnType(query);
+        var convertFunc = ColumnMappings[idColumnType].ConvertFunc ?? throw new InvalidOperationException($"ConvertFunc is missing for id column type {idColumnType}");
         return
         [
             $"var {Variable.Result.AsVarName()} = await {Variable.Command.AsVarName()}.ExecuteScalarAsync();",
-            $"return Convert.{convertFunc}({Variable.Result.AsVarName()});"
+            $"return {convertFunc}({Variable.Result.AsVarName()});"
         ];
     }
 

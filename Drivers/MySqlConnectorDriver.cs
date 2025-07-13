@@ -47,7 +47,8 @@ public partial class MySqlConnectorDriver(
                 {
                     { "bigint", new() }
                 },
-                ordinal => $"reader.GetInt64({ordinal})"
+                ordinal => $"reader.GetInt64({ordinal})",
+                convertFunc: IntTo64
             ),
             ["byte"] = new ColumnMapping(
                 new()
@@ -97,7 +98,8 @@ public partial class MySqlConnectorDriver(
                     { "int", new() },
                     { "mediumint", new() }
                 },
-                ordinal => $"reader.GetInt32({ordinal})"
+                ordinal => $"reader.GetInt32({ordinal})",
+                convertFunc: IntTo32
             ),
             ["double"] = new(
                 new()

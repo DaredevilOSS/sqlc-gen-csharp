@@ -11,6 +11,7 @@ public class ColumnMapping(
     Func<int, string>? readerArrayFn = null,
     string? usingDirective = null,
     Func<string, bool, bool, string>? writerFn = null,
+    string? convertFunc = null,
     string? sqlMapper = null,
     string? sqlMapperImpl = null)
 {
@@ -19,6 +20,7 @@ public class ColumnMapping(
     public Func<int, string>? ReaderArrayFn { get; } = readerArrayFn;
     public string? UsingDirective { get; } = usingDirective;
     public Func<string, bool, bool, string>? WriterFn { get; } = writerFn;
+    public string? ConvertFunc { get; } = convertFunc;
     public string? SqlMapper { get; } = sqlMapper;
     public string? SqlMapperImpl { get; } = sqlMapperImpl;
 }

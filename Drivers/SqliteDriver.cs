@@ -39,7 +39,8 @@ public partial class SqliteDriver(
                     { "integer", new() },
                     { "integernotnulldefaultunixepoch", new() }
                 },
-                ordinal => $"reader.GetInt32({ordinal})"
+                ordinal => $"reader.GetInt32({ordinal})",
+                convertFunc: IntTo32
             ),
             ["decimal"] = new(
                 new()
@@ -54,14 +55,7 @@ public partial class SqliteDriver(
                     { "any", new() }
                 },
                 ordinal => $"reader.GetValue({ordinal})"
-            ),
-            ["long"] = new(
-                new()
-                {
-                    { "bigint", new() }
-                },
-                ordinal => $"reader.GetInt64({ordinal})"
-            ),
+            )
         };
 
     public override string TransactionClassName => "SqliteTransaction";
