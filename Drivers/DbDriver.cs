@@ -364,7 +364,8 @@ public abstract class DbDriver
     {
         if (query is null)
             return null;
-        return Options.Overrides.FirstOrDefault(o => o.Column.Equals($"{query.Name}:{column.Name}"));
+        return Options.Overrides.FirstOrDefault(o =>
+            o.Column == $"{query.Name}:{column.Name}" || o.Column == $"*:{column.Name}");
     }
 
     /// <summary>
