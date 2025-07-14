@@ -40,6 +40,7 @@ namespace NpgsqlLegacyExampleGen
         public byte[] CBytea { get; set; }
         public string CText { get; set; }
         public JsonElement? CJson { get; set; }
+        public JsonElement? CJsonStringOverride { get; set; }
         public string[] CTextArray { get; set; }
         public int[] CIntegerArray { get; set; }
     };

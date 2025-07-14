@@ -88,12 +88,36 @@ INSERT INTO postgres_types
     c_varchar,
     c_character_varying,
     c_text,
-    c_bytea, c_text_array, c_integer_array
+    c_json,
+    c_json_string_override,
+    c_bytea, 
+    c_text_array, 
+    c_integer_array
 )
 VALUES (
-    $1, $2, $3, $4, $5, $6, $7, $8, $9, $10,
-    $11, $12, $13, $14, $15, $16, $17, $18, $19,
-    $20, $21
+    sqlc.narg('c_boolean'),
+    sqlc.narg('c_bit'),
+    sqlc.narg('c_smallint'),
+    sqlc.narg('c_integer'),
+    sqlc.narg('c_bigint'),
+    sqlc.narg('c_real'),
+    sqlc.narg('c_numeric'),
+    sqlc.narg('c_decimal'),
+    sqlc.narg('c_double_precision'),
+    sqlc.narg('c_money'),
+    sqlc.narg('c_date'),
+    sqlc.narg('c_time'),
+    sqlc.narg('c_timestamp'),
+    sqlc.narg('c_timestamp_with_tz'),
+    sqlc.narg('c_char'),
+    sqlc.narg('c_varchar'),
+    sqlc.narg('c_character_varying'),
+    sqlc.narg('c_text'),
+    sqlc.narg('c_json')::json, 
+    sqlc.narg('c_json_string_override')::json, 
+    sqlc.narg('c_bytea'), 
+    sqlc.narg('c_text_array'), 
+    sqlc.narg('c_integer_array')
 );
 
 -- name: InsertPostgresTypesBatch :copyfrom
@@ -119,8 +143,24 @@ INSERT INTO postgres_types
     c_bytea
 )
 VALUES (
-    $1, $2, $3, $4, $5, $6, $7, $8, $9,
-    $10, $11, $12, $13, $14, $15, $16, $17, $18
+    $1, 
+    $2, 
+    $3, 
+    $4, 
+    $5, 
+    $6, 
+    $7, 
+    $8, 
+    $9, 
+    $10, 
+    $11, 
+    $12, 
+    $13, 
+    $14, 
+    $15, 
+    $16, 
+    $17, 
+    $18
 );
 
 -- name: GetPostgresTypes :one

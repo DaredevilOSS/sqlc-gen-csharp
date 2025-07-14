@@ -29,6 +29,10 @@ sql:
               csharp_type:
                 type: "DateTime"
                 notNull: true
+            - column: "*:c_json_string_override"
+              csharp_type:
+                type: "string"
+                notNull: false
   - schema: "examples/config/postgresql/schema.sql"
     queries: "examples/config/postgresql/query.sql"
     engine: "postgresql"
@@ -53,6 +57,10 @@ sql:
               csharp_type:
                 type: "DateTime"
                 notNull: true
+            - column: "*:c_json_string_override"
+              csharp_type:
+                type: "string"
+                notNull: false
   - schema: "examples/config/postgresql/schema.sql"
     queries: "examples/config/postgresql/query.sql"
     engine: "postgresql"
@@ -77,6 +85,10 @@ sql:
               csharp_type:
                 type: "DateTime"
                 notNull: true
+            - column: "*:c_json_string_override"
+              csharp_type:
+                type: "string"
+                notNull: false
   - schema: "examples/config/postgresql/schema.sql"
     queries: "examples/config/postgresql/query.sql"
     engine: "postgresql"
@@ -101,6 +113,10 @@ sql:
               csharp_type:
                 type: "DateTime"
                 notNull: true
+            - column: "*:c_json_string_override"
+              csharp_type:
+                type: "string"
+                notNull: false
   # MySQL
   - schema: "examples/config/mysql/schema.sql"
     queries: "examples/config/mysql/query.sql"

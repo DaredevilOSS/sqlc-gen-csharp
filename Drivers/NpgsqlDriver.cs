@@ -1,7 +1,6 @@
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Plugin;
 using SqlcGenCsharp.Drivers.Generators;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -27,7 +26,10 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId
                 columnMapping.DbTypes.Add(dbTypeToAdd, dbType.Value);
             }
         }
+        CommonGen = new CommonGen(this);
     }
+
+    private CommonGen CommonGen { get; }
 
     public sealed override Dictionary<string, ColumnMapping> ColumnMappings { get; } =
         new()
@@ -88,7 +90,7 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId
             ["JsonElement"] = new(
                 new()
                 {
-                    { "json", new() }
+                    { "json", new(NpgsqlTypeOverride: "NpgsqlDbType.Jsonb") }
                 },
                 readerFn: ordinal => $"JsonSerializer.Deserialize<JsonElement>(reader.GetString({ordinal}))",
                 writerFn: (el, notNull, isDapper) =>
@@ -119,8 +121,7 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId
                     { "serial", new(NpgsqlTypeOverride: "NpgsqlDbType.Integer") }
                 },
                 ordinal => $"reader.GetInt32({ordinal})",
-                ordinal => $"reader.GetFieldValue<int[]>({ordinal})",
-                convertFunc: IntTo32
+                ordinal => $"reader.GetFieldValue<int[]>({ordinal})"
             ),
             ["float"] = new(
                 new()
@@ -401,7 +402,10 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId
                     .Select(p =>
                     {
                         var typeOverride = GetColumnDbTypeOverride(p.Column);
-                        var partialStmt = $"await {writerVar}.WriteAsync({rowVar}.{p.Column.Name.ToPascalCase()}";
+                        var param = $"{rowVar}.{p.Column.Name.ToPascalCase()}";
+                        var writerFn = CommonGen.GetWriterFn(p.Column, query);
+                        var paramToWrite = writerFn is null ? param : writerFn(param, p.Column.NotNull, false);
+                        var partialStmt = $"await {writerVar}.WriteAsync({paramToWrite}";
                         return typeOverride is null
                             ? $"{partialStmt});"
                             : $"{partialStmt}, {typeOverride});";

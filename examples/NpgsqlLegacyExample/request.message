@@ -1,9 +1,9 @@
 
-Ï
+¥
 2
-postgresql%examples/config/postgresql/schema.sql"$examples/config/postgresql/query.sqlbð
-examples/NpgsqlLegacyExamplecsharp±{"debugRequest":true,"generateCsproj":true,"namespaceName":"NpgsqlLegacyExampleGen","overrides":[{"column":"GetPostgresFunctions:max_integer","csharp_type":{"notNull":false,"type":"int"}},{"column":"GetPostgresFunctions:max_varchar","csharp_type":{"notNull":false,"type":"string"}},{"column":"GetPostgresFunctions:max_timestamp","csharp_type":{"notNull":true,"type":"DateTime"}}],"targetFramework":"netstandard2.0","useDapper":false}*
-./dist/LocalRunner‡ßpublic"Ûpublicƒ
+postgresql%examples/config/postgresql/schema.sql"$examples/config/postgresql/query.sqlbÆ
+examples/NpgsqlLegacyExamplecsharp‡{"debugRequest":true,"generateCsproj":true,"namespaceName":"NpgsqlLegacyExampleGen","overrides":[{"column":"GetPostgresFunctions:max_integer","csharp_type":{"notNull":false,"type":"int"}},{"column":"GetPostgresFunctions:max_varchar","csharp_type":{"notNull":false,"type":"string"}},{"column":"GetPostgresFunctions:max_timestamp","csharp_type":{"notNull":true,"type":"DateTime"}},{"column":"*:c_json_string_override","csharp_type":{"notNull":false,"type":"string"}}],"targetFramework":"netstandard2.0","useDapper":false}*
+./dist/LocalRunnerÆßpublic"špublicƒ
 	authors)
 id0ÿÿÿÿÿÿÿÿÿR	authorsb	bigserial&
 name0ÿÿÿÿÿÿÿÿÿR	authorsbtext#
@@ -13,8 +13,7 @@ postgresql%examples/config/postgresql/schema.sql"$examples/config/postgresql/qu
 name0ÿÿÿÿÿÿÿÿÿRbooksbtext5
 	author_id0ÿÿÿÿÿÿÿÿÿRbooksb
 pg_catalogint8)
-description0ÿÿÿÿÿÿÿÿÿRbooksbtextÕ
-
+description0ÿÿÿÿÿÿÿÿÿRbooksbtext”
 postgres_types<
 	c_boolean0ÿÿÿÿÿÿÿÿÿRpostgres_typesb
 pg_catalogbool7
@@ -51,7 +50,8 @@ pg_catalogvarcharI
 pg_catalogvarchar/
 c_bytea0ÿÿÿÿÿÿÿÿÿRpostgres_typesbbytea-
 c_text0ÿÿÿÿÿÿÿÿÿRpostgres_typesbtext-
-c_json0ÿÿÿÿÿÿÿÿÿRpostgres_typesbjson8
+c_json0ÿÿÿÿÿÿÿÿÿRpostgres_typesbjson=
+c_json_string_override0ÿÿÿÿÿÿÿÿÿRpostgres_typesbjson8
 c_text_array 0ÿÿÿÿÿÿÿÿÿRpostgres_typesbtextˆG
 c_integer_array 0ÿÿÿÿÿÿÿÿÿRpostgres_typesb
 pg_catalogint4ˆµ
@@ -10269,8 +10269,8 @@ WHERE books.name = $1GetAuthorsByBookName:many"-
 name0ÿÿÿÿÿÿÿÿÿR	authorsbtextzname"(
 bio0ÿÿÿÿÿÿÿÿÿR	authorsbtextzbio"
 books0ÿÿÿÿÿÿÿÿÿb rbooks*.*
-name0ÿÿÿÿÿÿÿÿÿRbooksbtextzname:	query.sql‹
-×INSERT INTO postgres_types
+name0ÿÿÿÿÿÿÿÿÿRbooksbtextzname:	query.sql£
+óINSERT INTO postgres_types
 (
     c_boolean,
     c_bit,
@@ -10290,38 +10290,64 @@ WHERE books.name = $1GetAuthorsByBookName:many"-
     c_varchar,
     c_character_varying,
     c_text,
-    c_bytea, c_text_array, c_integer_array
+    c_json,
+    c_json_string_override,
+    c_bytea, 
+    c_text_array, 
+    c_integer_array
 )
 VALUES (
-    $1, $2, $3, $4, $5, $6, $7, $8, $9, $10,
-    $11, $12, $13, $14, $15, $16, $17, $18, $19,
-    $20, $21
-)InsertPostgresTypes:exec*RN
-	c_boolean0ÿÿÿÿÿÿÿÿÿRpublicpostgres_typesbpg_catalog.boolz	c_boolean*IE
-c_bit0ÿÿÿÿÿÿÿÿÿRpublicpostgres_typesbpg_catalog.bitzc_bit*TP
+    $1,
+    $2,
+    $3,
+    $4,
+    $5,
+    $6,
+    $7,
+    $8,
+    $9,
+    $10,
+    $11,
+    $12,
+    $13,
+    $14,
+    $15,
+    $16,
+    $17,
+    $18,
+    $19::json, 
+    $20::json, 
+    $21, 
+    $22, 
+    $23
+)InsertPostgresTypes:exec*TP
+	c_boolean0ÿÿÿÿÿÿÿÿÿ8Rpublicpostgres_typesbpg_catalog.boolz	c_boolean*KG
+c_bit0ÿÿÿÿÿÿÿÿÿ8Rpublicpostgres_typesbpg_catalog.bitzc_bit*VR
 
-c_smallint0ÿÿÿÿÿÿÿÿÿRpublicpostgres_typesbpg_catalog.int2z
-c_smallint*RN
-	c_integer0ÿÿÿÿÿÿÿÿÿRpublicpostgres_typesbpg_catalog.int4z	c_integer*PL
-c_bigint0ÿÿÿÿÿÿÿÿÿRpublicpostgres_typesbpg_catalog.int8zc_bigint*NJ
-c_real0ÿÿÿÿÿÿÿÿÿRpublicpostgres_typesbpg_catalog.float4zc_real*UQ
-	c_numeric0ÿÿÿÿÿÿÿÿÿRpublicpostgres_typesbpg_catalog.numericz	c_numeric*UQ
-	c_decimal0ÿÿÿÿÿÿÿÿÿRpublicpostgres_typesbpg_catalog.numericz	c_decimal*f	b
-c_double_precision0ÿÿÿÿÿÿÿÿÿRpublicpostgres_typesbpg_catalog.float8zc_double_precision*D
-@
-c_money0ÿÿÿÿÿÿÿÿÿRpublicpostgres_typesbmoneyzc_money*A=
-c_date0ÿÿÿÿÿÿÿÿÿRpublicpostgres_typesbdatezc_date*LH
-c_time0ÿÿÿÿÿÿÿÿÿRpublicpostgres_typesbpg_catalog.timezc_time*[W
-c_timestamp0ÿÿÿÿÿÿÿÿÿRpublicpostgres_typesbpg_catalog.timestampzc_timestamp*mi
-c_timestamp_with_tz0ÿÿÿÿÿÿÿÿÿRpublicpostgres_typesbpg_catalog.timestamptzzc_timestamp_with_tz*NJ
-c_char0ÿÿÿÿÿÿÿÿÿRpublicpostgres_typesbpg_catalog.bpcharzc_char*UQ
-	c_varchar0ÿÿÿÿÿÿÿÿÿRpublicpostgres_typesbpg_catalog.varcharz	c_varchar*ie
-c_character_varying0ÿÿÿÿÿÿÿÿÿRpublicpostgres_typesbpg_catalog.varcharzc_character_varying*A=
-c_text0ÿÿÿÿÿÿÿÿÿRpublicpostgres_typesbtextzc_text*D@
-c_bytea0ÿÿÿÿÿÿÿÿÿRpublicpostgres_typesbbyteazc_bytea*RN
-c_text_array 0ÿÿÿÿÿÿÿÿÿRpublicpostgres_typesbtextzc_text_arrayˆ*c_
-c_integer_array 0ÿÿÿÿÿÿÿÿÿRpublicpostgres_typesbpg_catalog.int4zc_integer_arrayˆ:	query.sqlBpostgres_typesÓ
-šINSERT INTO postgres_types
+c_smallint0ÿÿÿÿÿÿÿÿÿ8Rpublicpostgres_typesbpg_catalog.int2z
+c_smallint*TP
+	c_integer0ÿÿÿÿÿÿÿÿÿ8Rpublicpostgres_typesbpg_catalog.int4z	c_integer*RN
+c_bigint0ÿÿÿÿÿÿÿÿÿ8Rpublicpostgres_typesbpg_catalog.int8zc_bigint*PL
+c_real0ÿÿÿÿÿÿÿÿÿ8Rpublicpostgres_typesbpg_catalog.float4zc_real*WS
+	c_numeric0ÿÿÿÿÿÿÿÿÿ8Rpublicpostgres_typesbpg_catalog.numericz	c_numeric*WS
+	c_decimal0ÿÿÿÿÿÿÿÿÿ8Rpublicpostgres_typesbpg_catalog.numericz	c_decimal*h	d
+c_double_precision0ÿÿÿÿÿÿÿÿÿ8Rpublicpostgres_typesbpg_catalog.float8zc_double_precision*F
+B
+c_money0ÿÿÿÿÿÿÿÿÿ8Rpublicpostgres_typesbmoneyzc_money*C?
+c_date0ÿÿÿÿÿÿÿÿÿ8Rpublicpostgres_typesbdatezc_date*NJ
+c_time0ÿÿÿÿÿÿÿÿÿ8Rpublicpostgres_typesbpg_catalog.timezc_time*]Y
+c_timestamp0ÿÿÿÿÿÿÿÿÿ8Rpublicpostgres_typesbpg_catalog.timestampzc_timestamp*ok
+c_timestamp_with_tz0ÿÿÿÿÿÿÿÿÿ8Rpublicpostgres_typesbpg_catalog.timestamptzzc_timestamp_with_tz*PL
+c_char0ÿÿÿÿÿÿÿÿÿ8Rpublicpostgres_typesbpg_catalog.bpcharzc_char*WS
+	c_varchar0ÿÿÿÿÿÿÿÿÿ8Rpublicpostgres_typesbpg_catalog.varcharz	c_varchar*kg
+c_character_varying0ÿÿÿÿÿÿÿÿÿ8Rpublicpostgres_typesbpg_catalog.varcharzc_character_varying*C?
+c_text0ÿÿÿÿÿÿÿÿÿ8Rpublicpostgres_typesbtextzc_text*
+c_json0ÿÿÿÿÿÿÿÿÿbjson*/+
+c_json_string_override0ÿÿÿÿÿÿÿÿÿbjson*FB
+c_bytea0ÿÿÿÿÿÿÿÿÿ8Rpublicpostgres_typesbbyteazc_bytea*TP
+c_text_array 0ÿÿÿÿÿÿÿÿÿ8Rpublicpostgres_typesbtextzc_text_arrayˆ*ea
+c_integer_array 0ÿÿÿÿÿÿÿÿÿ8Rpublicpostgres_typesbpg_catalog.int4zc_integer_arrayˆ:	query.sqlBpostgres_types¤
+ëINSERT INTO postgres_types
 (
     c_boolean,
     c_smallint,
@@ -10343,8 +10369,24 @@ c_smallint*RN
     c_bytea
 )
 VALUES (
-    $1, $2, $3, $4, $5, $6, $7, $8, $9,
-    $10, $11, $12, $13, $14, $15, $16, $17, $18
+    $1, 
+    $2, 
+    $3, 
+    $4, 
+    $5, 
+    $6, 
+    $7, 
+    $8, 
+    $9, 
+    $10, 
+    $11, 
+    $12, 
+    $13, 
+    $14, 
+    $15, 
+    $16, 
+    $17, 
+    $18
 )InsertPostgresTypesBatch	:copyfrom*RN
 	c_boolean0ÿÿÿÿÿÿÿÿÿRpublicpostgres_typesbpg_catalog.boolz	c_boolean*TP
 
@@ -10366,8 +10408,8 @@ c_smallint*RN
 	c_varchar0ÿÿÿÿÿÿÿÿÿRpublicpostgres_typesbpg_catalog.varcharz	c_varchar*ie
 c_character_varying0ÿÿÿÿÿÿÿÿÿRpublicpostgres_typesbpg_catalog.varcharzc_character_varying*A=
 c_text0ÿÿÿÿÿÿÿÿÿRpublicpostgres_typesbtextzc_text*D@
-c_bytea0ÿÿÿÿÿÿÿÿÿRpublicpostgres_typesbbyteazc_bytea:	query.sqlBpostgres_typesŠ
-¡SELECT c_boolean, c_bit, c_smallint, c_integer, c_bigint, c_decimal, c_numeric, c_real, c_double_precision, c_money, c_date, c_time, c_timestamp, c_timestamp_with_tz, c_char, c_varchar, c_character_varying, c_bytea, c_text, c_json, c_text_array, c_integer_array FROM postgres_types LIMIT 1GetPostgresTypes:one"G
+c_bytea0ÿÿÿÿÿÿÿÿÿRpublicpostgres_typesbbyteazc_bytea:	query.sqlBpostgres_typesù
+¹SELECT c_boolean, c_bit, c_smallint, c_integer, c_bigint, c_decimal, c_numeric, c_real, c_double_precision, c_money, c_date, c_time, c_timestamp, c_timestamp_with_tz, c_char, c_varchar, c_character_varying, c_bytea, c_text, c_json, c_json_string_override, c_text_array, c_integer_array FROM postgres_types LIMIT 1GetPostgresTypes:one"G
 	c_boolean0ÿÿÿÿÿÿÿÿÿRpostgres_typesb
 pg_catalogboolz	c_boolean">
 c_bit0ÿÿÿÿÿÿÿÿÿRpostgres_typesb
@@ -10404,7 +10446,8 @@ pg_catalogvarcharz	c_varchar"^
 pg_catalogvarcharzc_character_varying"8
 c_bytea0ÿÿÿÿÿÿÿÿÿRpostgres_typesbbyteazc_bytea"5
 c_text0ÿÿÿÿÿÿÿÿÿRpostgres_typesbtextzc_text"5
-c_json0ÿÿÿÿÿÿÿÿÿRpostgres_typesbjsonzc_json"F
+c_json0ÿÿÿÿÿÿÿÿÿRpostgres_typesbjsonzc_json"U
+c_json_string_override0ÿÿÿÿÿÿÿÿÿRpostgres_typesbjsonzc_json_string_override"F
 c_text_array 0ÿÿÿÿÿÿÿÿÿRpostgres_typesbtextzc_text_arrayˆ"X
 c_integer_array 0ÿÿÿÿÿÿÿÿÿRpostgres_typesb
 pg_catalogint4zc_integer_arrayˆ:	query.sqlå
@@ -10515,4 +10558,4 @@ hSELECT c_point, c_line, c_lseg, c_box, c_path, c_polygon, c_circle FROM postgre
 	c_polygon0ÿÿÿÿÿÿÿÿÿRpostgres_geometric_typesb	polygonz	c_polygon"E
 c_circle0ÿÿÿÿÿÿÿÿÿRpostgres_geometric_typesbcirclezc_circle:	query.sqlH
 TRUNCATE TABLE postgres_typesTruncatePostgresTypes:exec:	query.sqlU
-'TRUNCATE TABLE postgres_geometric_typesTruncatePostgresGeoTypes:exec:	query.sql"v1.27.0*è{"overrideDriverVersion":"","generateCsproj":true,"targetFramework":"netstandard2.0","namespaceName":"NpgsqlLegacyExampleGen","useDapper":false,"overrideDapperVersion":"","overrides":[{"column":"GetPostgresFunctions:max_integer","csharp_type":{"type":"int","notNull":false}},{"column":"GetPostgresFunctions:max_varchar","csharp_type":{"type":"string","notNull":false}},{"column":"GetPostgresFunctions:max_timestamp","csharp_type":{"type":"DateTime","notNull":true}}],"debugRequest":false}
+'TRUNCATE TABLE postgres_geometric_typesTruncatePostgresGeoTypes:exec:	query.sql"v1.27.0*¾{"overrideDriverVersion":"","generateCsproj":true,"targetFramework":"netstandard2.0","namespaceName":"NpgsqlLegacyExampleGen","useDapper":false,"overrideDapperVersion":"","overrides":[{"column":"GetPostgresFunctions:max_integer","csharp_type":{"type":"int","notNull":false}},{"column":"GetPostgresFunctions:max_varchar","csharp_type":{"type":"string","notNull":false}},{"column":"GetPostgresFunctions:max_timestamp","csharp_type":{"type":"DateTime","notNull":true}},{"column":"*:c_json_string_override","csharp_type":{"type":"string","notNull":false}}],"debugRequest":false}

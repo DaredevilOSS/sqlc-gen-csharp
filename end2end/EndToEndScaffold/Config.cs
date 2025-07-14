@@ -49,6 +49,8 @@ public enum KnownTestType
     PostgresDateTimeCopyFrom,
     PostgresArrayCopyFrom,
     PostgresGeoDataTypes,
+    PostgresJsonDataTypes,
+    PostgresInvalidJson,
 
     ArrayAsParam,
     MultipleArraysAsParams,
@@ -66,6 +68,7 @@ public enum KnownTestType
     MySqlScopedSchemaEnum,
     MySqlJsonDataTypes,
     MySqlJsonCopyFrom,
+    MySqlInvalidJson,
 
     MySqlStringCopyFrom,
     MySqlIntegerCopyFrom,
@@ -108,6 +111,7 @@ internal static class Config
                     KnownTestType.MySqlEnumDataType,
                     KnownTestType.MySqlScopedSchemaEnum,
                     KnownTestType.MySqlJsonDataTypes,
+                    KnownTestType.MySqlInvalidJson,
                     KnownTestType.MySqlJsonCopyFrom,
                     KnownTestType.MySqlDataTypesOverride,
 
@@ -148,6 +152,7 @@ internal static class Config
                         KnownTestType.MySqlEnumDataType,
                         KnownTestType.MySqlScopedSchemaEnum,
                         KnownTestType.MySqlJsonDataTypes,
+                        KnownTestType.MySqlInvalidJson,
                         KnownTestType.MySqlJsonCopyFrom,
                         KnownTestType.MySqlDataTypesOverride,
 
@@ -187,6 +192,8 @@ internal static class Config
                     KnownTestType.PostgresArrayDataTypes,
                     KnownTestType.PostgresGeoDataTypes,
                     KnownTestType.PostgresDataTypesOverride,
+                    KnownTestType.PostgresJsonDataTypes,
+                    KnownTestType.PostgresInvalidJson,
 
                     KnownTestType.PostgresStringCopyFrom,
                     KnownTestType.PostgresIntegerCopyFrom,
@@ -223,6 +230,8 @@ internal static class Config
                     KnownTestType.PostgresArrayDataTypes,
                     KnownTestType.PostgresGeoDataTypes,
                     KnownTestType.PostgresDataTypesOverride,
+                    KnownTestType.PostgresJsonDataTypes,
+                    KnownTestType.PostgresInvalidJson,
 
                     KnownTestType.PostgresStringCopyFrom,
                     KnownTestType.PostgresIntegerCopyFrom,

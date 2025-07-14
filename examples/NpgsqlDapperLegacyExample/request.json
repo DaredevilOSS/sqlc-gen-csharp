@@ -11,7 +11,7 @@
     "codegen": {
       "out": "examples/NpgsqlDapperLegacyExample",
       "plugin": "csharp",
-      "options": "eyJkZWJ1Z1JlcXVlc3QiOnRydWUsImdlbmVyYXRlQ3Nwcm9qIjp0cnVlLCJuYW1lc3BhY2VOYW1lIjoiTnBnc3FsRGFwcGVyTGVnYWN5RXhhbXBsZUdlbiIsIm92ZXJyaWRlcyI6W3siY29sdW1uIjoiR2V0UG9zdGdyZXNGdW5jdGlvbnM6bWF4X2ludGVnZXIiLCJjc2hhcnBfdHlwZSI6eyJub3ROdWxsIjpmYWxzZSwidHlwZSI6ImludCJ9fSx7ImNvbHVtbiI6IkdldFBvc3RncmVzRnVuY3Rpb25zOm1heF92YXJjaGFyIiwiY3NoYXJwX3R5cGUiOnsibm90TnVsbCI6ZmFsc2UsInR5cGUiOiJzdHJpbmcifX0seyJjb2x1bW4iOiJHZXRQb3N0Z3Jlc0Z1bmN0aW9uczptYXhfdGltZXN0YW1wIiwiY3NoYXJwX3R5cGUiOnsibm90TnVsbCI6dHJ1ZSwidHlwZSI6IkRhdGVUaW1lIn19XSwidGFyZ2V0RnJhbWV3b3JrIjoibmV0c3RhbmRhcmQyLjAiLCJ1c2VEYXBwZXIiOnRydWV9",
+      "options": "eyJkZWJ1Z1JlcXVlc3QiOnRydWUsImdlbmVyYXRlQ3Nwcm9qIjp0cnVlLCJuYW1lc3BhY2VOYW1lIjoiTnBnc3FsRGFwcGVyTGVnYWN5RXhhbXBsZUdlbiIsIm92ZXJyaWRlcyI6W3siY29sdW1uIjoiR2V0UG9zdGdyZXNGdW5jdGlvbnM6bWF4X2ludGVnZXIiLCJjc2hhcnBfdHlwZSI6eyJub3ROdWxsIjpmYWxzZSwidHlwZSI6ImludCJ9fSx7ImNvbHVtbiI6IkdldFBvc3RncmVzRnVuY3Rpb25zOm1heF92YXJjaGFyIiwiY3NoYXJwX3R5cGUiOnsibm90TnVsbCI6ZmFsc2UsInR5cGUiOiJzdHJpbmcifX0seyJjb2x1bW4iOiJHZXRQb3N0Z3Jlc0Z1bmN0aW9uczptYXhfdGltZXN0YW1wIiwiY3NoYXJwX3R5cGUiOnsibm90TnVsbCI6dHJ1ZSwidHlwZSI6IkRhdGVUaW1lIn19LHsiY29sdW1uIjoiKjpjX2pzb25fc3RyaW5nX292ZXJyaWRlIiwiY3NoYXJwX3R5cGUiOnsibm90TnVsbCI6ZmFsc2UsInR5cGUiOiJzdHJpbmcifX1dLCJ0YXJnZXRGcmFtZXdvcmsiOiJuZXRzdGFuZGFyZDIuMCIsInVzZURhcHBlciI6dHJ1ZX0=",
       "process": {
         "cmd": "./dist/LocalRunner"
       }
@@ -325,6 +325,16 @@
               },
               {
                 "name": "c_json",
+                "length": -1,
+                "table": {
+                  "name": "postgres_types"
+                },
+                "type": {
+                  "name": "json"
+                }
+              },
+              {
+                "name": "c_json_string_override",
                 "length": -1,
                 "table": {
                   "name": "postgres_types"
@@ -33012,7 +33022,7 @@
       "filename": "query.sql"
     },
     {
-      "text": "INSERT INTO postgres_types\n(\n    c_boolean,\n    c_bit,\n    c_smallint,\n    c_integer,\n    c_bigint,\n    c_real,\n    c_numeric,\n    c_decimal,\n    c_double_precision,\n    c_money,\n    c_date,\n    c_time,\n    c_timestamp,\n    c_timestamp_with_tz,\n    c_char,\n    c_varchar,\n    c_character_varying,\n    c_text,\n    c_bytea, c_text_array, c_integer_array\n)\nVALUES (\n    $1, $2, $3, $4, $5, $6, $7, $8, $9, $10,\n    $11, $12, $13, $14, $15, $16, $17, $18, $19,\n    $20, $21\n)",
+      "text": "INSERT INTO postgres_types\n(\n    c_boolean,\n    c_bit,\n    c_smallint,\n    c_integer,\n    c_bigint,\n    c_real,\n    c_numeric,\n    c_decimal,\n    c_double_precision,\n    c_money,\n    c_date,\n    c_time,\n    c_timestamp,\n    c_timestamp_with_tz,\n    c_char,\n    c_varchar,\n    c_character_varying,\n    c_text,\n    c_json,\n    c_json_string_override,\n    c_bytea, \n    c_text_array, \n    c_integer_array\n)\nVALUES (\n    $1,\n    $2,\n    $3,\n    $4,\n    $5,\n    $6,\n    $7,\n    $8,\n    $9,\n    $10,\n    $11,\n    $12,\n    $13,\n    $14,\n    $15,\n    $16,\n    $17,\n    $18,\n    $19::json, \n    $20::json, \n    $21, \n    $22, \n    $23\n)",
       "name": "InsertPostgresTypes",
       "cmd": ":exec",
       "parameters": [
@@ -33021,6 +33031,7 @@
           "column": {
             "name": "c_boolean",
             "length": -1,
+            "isNamedParam": true,
             "table": {
               "schema": "public",
               "name": "postgres_types"
@@ -33036,6 +33047,7 @@
           "column": {
             "name": "c_bit",
             "length": -1,
+            "isNamedParam": true,
             "table": {
               "schema": "public",
               "name": "postgres_types"
@@ -33051,6 +33063,7 @@
           "column": {
             "name": "c_smallint",
             "length": -1,
+            "isNamedParam": true,
             "table": {
               "schema": "public",
               "name": "postgres_types"
@@ -33066,6 +33079,7 @@
           "column": {
             "name": "c_integer",
             "length": -1,
+            "isNamedParam": true,
             "table": {
               "schema": "public",
               "name": "postgres_types"
@@ -33081,6 +33095,7 @@
           "column": {
             "name": "c_bigint",
             "length": -1,
+            "isNamedParam": true,
             "table": {
               "schema": "public",
               "name": "postgres_types"
@@ -33096,6 +33111,7 @@
           "column": {
             "name": "c_real",
             "length": -1,
+            "isNamedParam": true,
             "table": {
               "schema": "public",
               "name": "postgres_types"
@@ -33111,6 +33127,7 @@
           "column": {
             "name": "c_numeric",
             "length": -1,
+            "isNamedParam": true,
             "table": {
               "schema": "public",
               "name": "postgres_types"
@@ -33126,6 +33143,7 @@
           "column": {
             "name": "c_decimal",
             "length": -1,
+            "isNamedParam": true,
             "table": {
               "schema": "public",
               "name": "postgres_types"
@@ -33141,6 +33159,7 @@
           "column": {
             "name": "c_double_precision",
             "length": -1,
+            "isNamedParam": true,
             "table": {
               "schema": "public",
               "name": "postgres_types"
@@ -33156,6 +33175,7 @@
           "column": {
             "name": "c_money",
             "length": -1,
+            "isNamedParam": true,
             "table": {
               "schema": "public",
               "name": "postgres_types"
@@ -33171,6 +33191,7 @@
           "column": {
             "name": "c_date",
             "length": -1,
+            "isNamedParam": true,
             "table": {
               "schema": "public",
               "name": "postgres_types"
@@ -33186,6 +33207,7 @@
           "column": {
             "name": "c_time",
             "length": -1,
+            "isNamedParam": true,
             "table": {
               "schema": "public",
               "name": "postgres_types"
@@ -33201,6 +33223,7 @@
           "column": {
             "name": "c_timestamp",
             "length": -1,
+            "isNamedParam": true,
             "table": {
               "schema": "public",
               "name": "postgres_types"
@@ -33216,6 +33239,7 @@
           "column": {
             "name": "c_timestamp_with_tz",
             "length": -1,
+            "isNamedParam": true,
             "table": {
               "schema": "public",
               "name": "postgres_types"
@@ -33231,6 +33255,7 @@
           "column": {
             "name": "c_char",
             "length": -1,
+            "isNamedParam": true,
             "table": {
               "schema": "public",
               "name": "postgres_types"
@@ -33246,6 +33271,7 @@
           "column": {
             "name": "c_varchar",
             "length": -1,
+            "isNamedParam": true,
             "table": {
               "schema": "public",
               "name": "postgres_types"
@@ -33261,6 +33287,7 @@
           "column": {
             "name": "c_character_varying",
             "length": -1,
+            "isNamedParam": true,
             "table": {
               "schema": "public",
               "name": "postgres_types"
@@ -33276,6 +33303,7 @@
           "column": {
             "name": "c_text",
             "length": -1,
+            "isNamedParam": true,
             "table": {
               "schema": "public",
               "name": "postgres_types"
@@ -33289,8 +33317,29 @@
         {
           "number": 19,
           "column": {
+            "name": "c_json",
+            "length": -1,
+            "type": {
+              "name": "json"
+            }
+          }
+        },
+        {
+          "number": 20,
+          "column": {
+            "name": "c_json_string_override",
+            "length": -1,
+            "type": {
+              "name": "json"
+            }
+          }
+        },
+        {
+          "number": 21,
+          "column": {
             "name": "c_bytea",
             "length": -1,
+            "isNamedParam": true,
             "table": {
               "schema": "public",
               "name": "postgres_types"
@@ -33302,11 +33351,12 @@
           }
         },
         {
-          "number": 20,
+          "number": 22,
           "column": {
             "name": "c_text_array",
             "isArray": true,
             "length": -1,
+            "isNamedParam": true,
             "table": {
               "schema": "public",
               "name": "postgres_types"
@@ -33319,11 +33369,12 @@
           }
         },
         {
-          "number": 21,
+          "number": 23,
           "column": {
             "name": "c_integer_array",
             "isArray": true,
             "length": -1,
+            "isNamedParam": true,
             "table": {
               "schema": "public",
               "name": "postgres_types"
@@ -33342,7 +33393,7 @@
       }
     },
     {
-      "text": "INSERT INTO postgres_types\n(\n    c_boolean,\n    c_smallint,\n    c_integer,\n    c_bigint,\n    c_real,\n    c_numeric,\n    c_decimal,\n    c_double_precision,\n    c_money,\n    c_date,\n    c_time,\n    c_timestamp,\n    c_timestamp_with_tz,\n    c_char,\n    c_varchar,\n    c_character_varying,\n    c_text,\n    c_bytea\n)\nVALUES (\n    $1, $2, $3, $4, $5, $6, $7, $8, $9,\n    $10, $11, $12, $13, $14, $15, $16, $17, $18\n)",
+      "text": "INSERT INTO postgres_types\n(\n    c_boolean,\n    c_smallint,\n    c_integer,\n    c_bigint,\n    c_real,\n    c_numeric,\n    c_decimal,\n    c_double_precision,\n    c_money,\n    c_date,\n    c_time,\n    c_timestamp,\n    c_timestamp_with_tz,\n    c_char,\n    c_varchar,\n    c_character_varying,\n    c_text,\n    c_bytea\n)\nVALUES (\n    $1, \n    $2, \n    $3, \n    $4, \n    $5, \n    $6, \n    $7, \n    $8, \n    $9, \n    $10, \n    $11, \n    $12, \n    $13, \n    $14, \n    $15, \n    $16, \n    $17, \n    $18\n)",
       "name": "InsertPostgresTypesBatch",
       "cmd": ":copyfrom",
       "parameters": [
@@ -33623,7 +33674,7 @@
       }
     },
     {
-      "text": "SELECT c_boolean, c_bit, c_smallint, c_integer, c_bigint, c_decimal, c_numeric, c_real, c_double_precision, c_money, c_date, c_time, c_timestamp, c_timestamp_with_tz, c_char, c_varchar, c_character_varying, c_bytea, c_text, c_json, c_text_array, c_integer_array FROM postgres_types LIMIT 1",
+      "text": "SELECT c_boolean, c_bit, c_smallint, c_integer, c_bigint, c_decimal, c_numeric, c_real, c_double_precision, c_money, c_date, c_time, c_timestamp, c_timestamp_with_tz, c_char, c_varchar, c_character_varying, c_bytea, c_text, c_json, c_json_string_override, c_text_array, c_integer_array FROM postgres_types LIMIT 1",
       "name": "GetPostgresTypes",
       "cmd": ":one",
       "columns": [
@@ -33861,6 +33912,17 @@
             "name": "json"
           },
           "originalName": "c_json"
+        },
+        {
+          "name": "c_json_string_override",
+          "length": -1,
+          "table": {
+            "name": "postgres_types"
+          },
+          "type": {
+            "name": "json"
+          },
+          "originalName": "c_json_string_override"
         },
         {
           "name": "c_text_array",
@@ -34371,5 +34433,5 @@
     }
   ],
   "sqlc_version": "v1.27.0",
-  "plugin_options": "eyJvdmVycmlkZURyaXZlclZlcnNpb24iOiIiLCJnZW5lcmF0ZUNzcHJvaiI6dHJ1ZSwidGFyZ2V0RnJhbWV3b3JrIjoibmV0c3RhbmRhcmQyLjAiLCJuYW1lc3BhY2VOYW1lIjoiTnBnc3FsRGFwcGVyTGVnYWN5RXhhbXBsZUdlbiIsInVzZURhcHBlciI6dHJ1ZSwib3ZlcnJpZGVEYXBwZXJWZXJzaW9uIjoiIiwib3ZlcnJpZGVzIjpbeyJjb2x1bW4iOiJHZXRQb3N0Z3Jlc0Z1bmN0aW9uczptYXhfaW50ZWdlciIsImNzaGFycF90eXBlIjp7InR5cGUiOiJpbnQiLCJub3ROdWxsIjpmYWxzZX19LHsiY29sdW1uIjoiR2V0UG9zdGdyZXNGdW5jdGlvbnM6bWF4X3ZhcmNoYXIiLCJjc2hhcnBfdHlwZSI6eyJ0eXBlIjoic3RyaW5nIiwibm90TnVsbCI6ZmFsc2V9fSx7ImNvbHVtbiI6IkdldFBvc3RncmVzRnVuY3Rpb25zOm1heF90aW1lc3RhbXAiLCJjc2hhcnBfdHlwZSI6eyJ0eXBlIjoiRGF0ZVRpbWUiLCJub3ROdWxsIjp0cnVlfX1dLCJkZWJ1Z1JlcXVlc3QiOmZhbHNlfQ=="
+  "plugin_options": "eyJvdmVycmlkZURyaXZlclZlcnNpb24iOiIiLCJnZW5lcmF0ZUNzcHJvaiI6dHJ1ZSwidGFyZ2V0RnJhbWV3b3JrIjoibmV0c3RhbmRhcmQyLjAiLCJuYW1lc3BhY2VOYW1lIjoiTnBnc3FsRGFwcGVyTGVnYWN5RXhhbXBsZUdlbiIsInVzZURhcHBlciI6dHJ1ZSwib3ZlcnJpZGVEYXBwZXJWZXJzaW9uIjoiIiwib3ZlcnJpZGVzIjpbeyJjb2x1bW4iOiJHZXRQb3N0Z3Jlc0Z1bmN0aW9uczptYXhfaW50ZWdlciIsImNzaGFycF90eXBlIjp7InR5cGUiOiJpbnQiLCJub3ROdWxsIjpmYWxzZX19LHsiY29sdW1uIjoiR2V0UG9zdGdyZXNGdW5jdGlvbnM6bWF4X3ZhcmNoYXIiLCJjc2hhcnBfdHlwZSI6eyJ0eXBlIjoic3RyaW5nIiwibm90TnVsbCI6ZmFsc2V9fSx7ImNvbHVtbiI6IkdldFBvc3RncmVzRnVuY3Rpb25zOm1heF90aW1lc3RhbXAiLCJjc2hhcnBfdHlwZSI6eyJ0eXBlIjoiRGF0ZVRpbWUiLCJub3ROdWxsIjp0cnVlfX0seyJjb2x1bW4iOiIqOmNfanNvbl9zdHJpbmdfb3ZlcnJpZGUiLCJjc2hhcnBfdHlwZSI6eyJ0eXBlIjoic3RyaW5nIiwibm90TnVsbCI6ZmFsc2V9fV0sImRlYnVnUmVxdWVzdCI6ZmFsc2V9"
 }

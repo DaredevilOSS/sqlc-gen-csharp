@@ -260,17 +260,16 @@ public static class PostgresTests
                              CBigint = cBigint
                          };
                          var actual = await QuerySql.GetPostgresTypesCnt();
+                         AssertSingularEquals(expected, actual{{Consts.UnknownRecordValuePlaceholder}});
 
-                         Assert.That(actual{{Consts.UnknownRecordValuePlaceholder}}.Cnt, Is.EqualTo(expected.Cnt));
-                         Assert.That(actual{{Consts.UnknownRecordValuePlaceholder}}.CBoolean, Is.EqualTo(expected.CBoolean));
-                         Assert.That(actual{{Consts.UnknownRecordValuePlaceholder}}.CSmallint, Is.EqualTo(expected.CSmallint));
-                         Assert.That(actual{{Consts.UnknownRecordValuePlaceholder}}.CInteger, Is.EqualTo(expected.CInteger));
-                         Assert.That(actual{{Consts.UnknownRecordValuePlaceholder}}.CBigint, Is.EqualTo(expected.CBigint));
-                     }
-
-                     private static void AssertSingularEquals(QuerySql.GetPostgresTypesCntRow expected, QuerySql.GetPostgresTypesCntRow actual)
-                     {
-
+                         void AssertSingularEquals(QuerySql.GetPostgresTypesCntRow x, QuerySql.GetPostgresTypesCntRow y)
+                         {
+                             Assert.That(x.Cnt, Is.EqualTo(y.Cnt));
+                             Assert.That(x.CBoolean, Is.EqualTo(y.CBoolean));
+                             Assert.That(x.CSmallint, Is.EqualTo(y.CSmallint));
+                             Assert.That(x.CInteger, Is.EqualTo(y.CInteger));
+                             Assert.That(x.CBigint, Is.EqualTo(y.CBigint));
+                         }
                      }
                      """
         },
@@ -361,6 +360,57 @@ public static class PostgresTests
                          Assert.That(actual{{Consts.UnknownRecordValuePlaceholder}}.CTime, Is.EqualTo(expected.CTime));
                          Assert.That(actual{{Consts.UnknownRecordValuePlaceholder}}.CTimestamp, Is.EqualTo(expected.CTimestamp));
                          Assert.That(actual{{Consts.UnknownRecordValuePlaceholder}}.CTimestampWithTz, Is.EqualTo(expected.CTimestampWithTz));
+                     }
+                     """
+        },
+        [KnownTestType.PostgresJsonDataTypes] = new TestImpl
+        {
+            Impl = $$"""
+                     [Test]
+                     [TestCase("{\"name\": \"Swordfishtrombones\", \"year\": 1983}")]
+                     [TestCase(null)]
+                     public async Task TestPostgresJsonDataTypes(string cJson)
+                     {
+                         JsonElement? cParsedJson = null;
+                         if (cJson != null)
+                            cParsedJson = JsonDocument.Parse(cJson).RootElement;
+
+                         await QuerySql.InsertPostgresTypes(new QuerySql.InsertPostgresTypesArgs
+                         {
+                             CJson = cParsedJson,
+                             CJsonStringOverride = cJson
+                         });
+
+                         var expected = new QuerySql.GetPostgresTypesRow
+                         {
+                             CJson = cParsedJson,
+                             CJsonStringOverride = cJson
+                         };
+
+                         var actual = await QuerySql.GetPostgresTypes();
+                         AssertSingularEquals(expected, actual{{Consts.UnknownRecordValuePlaceholder}});
+
+                         void AssertSingularEquals(QuerySql.GetPostgresTypesRow x, QuerySql.GetPostgresTypesRow y)
+                         {
+                             Assert.That(x.CJson.HasValue, Is.EqualTo(y.CJson.HasValue));
+                             if (x.CJson.HasValue)
+                                Assert.That(x.CJson.Value.GetRawText(), Is.EqualTo(y.CJson.Value.GetRawText()));
+                             Assert.That(x.CJsonStringOverride, Is.EqualTo(y.CJsonStringOverride));
+                         }
+                     }
+                     """
+        },
+        [KnownTestType.PostgresInvalidJson] = new TestImpl
+        {
+            Impl = $$"""
+                     [Test]
+                     public void TestPostgresInvalidJson()
+                     {
+                         Assert.ThrowsAsync<Npgsql.PostgresException>(async () => await 
+                            QuerySql.InsertPostgresTypes(new QuerySql.InsertPostgresTypesArgs
+                            {
+                                CJsonStringOverride = "SOME INVALID JSON"
+                            }));
                      }
                      """
         },

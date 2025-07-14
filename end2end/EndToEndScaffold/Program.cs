@@ -41,7 +41,7 @@ public static class Program
 
         var optionalUsingPostgresTypes = config.TestNamespace.Contains("Npgsql") ? "using NpgsqlTypes;" : string.Empty;
         var namespaceToTest = isLegacyDotnet ? config.LegacyTestNamespace : config.TestNamespace;
-        var optionalUsingSystemTextJson = config.TestNamespace.Contains("MySqlConnector") ? "using System.Text.Json;" : string.Empty;
+        var optionalUsingSystemTextJson = config.TestNamespace.Contains("MySqlConnector") || config.TestNamespace.Contains("Npgsql") ? "using System.Text.Json;" : string.Empty;
 
         return ParseCompilationUnit(
             $$"""

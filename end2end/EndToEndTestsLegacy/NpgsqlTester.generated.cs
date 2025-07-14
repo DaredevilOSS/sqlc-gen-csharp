@@ -1,5 +1,6 @@
 using NpgsqlLegacyExampleGen;
 using NpgsqlTypes;
+using System.Text.Json;
 using NUnit.Framework;
 using NUnit.Framework.Legacy;
 using System;
@@ -486,15 +487,15 @@ namespace EndToEndTests
                 CBigint = cBigint
             };
             var actual = await QuerySql.GetPostgresTypesCnt();
-            Assert.That(actual.Cnt, Is.EqualTo(expected.Cnt));
-            Assert.That(actual.CBoolean, Is.EqualTo(expected.CBoolean));
-            Assert.That(actual.CSmallint, Is.EqualTo(expected.CSmallint));
-            Assert.That(actual.CInteger, Is.EqualTo(expected.CInteger));
-            Assert.That(actual.CBigint, Is.EqualTo(expected.CBigint));
-        }
-
-        private static void AssertSingularEquals(QuerySql.GetPostgresTypesCntRow expected, QuerySql.GetPostgresTypesCntRow actual)
-        {
+            AssertSingularEquals(expected, actual);
+            void AssertSingularEquals(QuerySql.GetPostgresTypesCntRow x, QuerySql.GetPostgresTypesCntRow y)
+            {
+                Assert.That(x.Cnt, Is.EqualTo(y.Cnt));
+                Assert.That(x.CBoolean, Is.EqualTo(y.CBoolean));
+                Assert.That(x.CSmallint, Is.EqualTo(y.CSmallint));
+                Assert.That(x.CInteger, Is.EqualTo(y.CInteger));
+                Assert.That(x.CBigint, Is.EqualTo(y.CBigint));
+            }
         }
 
         [Test]
@@ -598,6 +599,37 @@ namespace EndToEndTests
             Assert.That(actual.CPath, Is.EqualTo(expected.CPath));
             Assert.That(actual.CPolygon, Is.EqualTo(expected.CPolygon));
             Assert.That(actual.CCircle, Is.EqualTo(expected.CCircle));
+        }
+
+        [Test]
+        [TestCase("{\"name\": \"Swordfishtrombones\", \"year\": 1983}")]
+        [TestCase(null)]
+        public async Task TestPostgresJsonDataTypes(string cJson)
+        {
+            JsonElement? cParsedJson = null;
+            if (cJson != null)
+                cParsedJson = JsonDocument.Parse(cJson).RootElement;
+            await QuerySql.InsertPostgresTypes(new QuerySql.InsertPostgresTypesArgs { CJson = cParsedJson, CJsonStringOverride = cJson });
+            var expected = new QuerySql.GetPostgresTypesRow
+            {
+                CJson = cParsedJson,
+                CJsonStringOverride = cJson
+            };
+            var actual = await QuerySql.GetPostgresTypes();
+            AssertSingularEquals(expected, actual);
+            void AssertSingularEquals(QuerySql.GetPostgresTypesRow x, QuerySql.GetPostgresTypesRow y)
+            {
+                Assert.That(x.CJson.HasValue, Is.EqualTo(y.CJson.HasValue));
+                if (x.CJson.HasValue)
+                    Assert.That(x.CJson.Value.GetRawText(), Is.EqualTo(y.CJson.Value.GetRawText()));
+                Assert.That(x.CJsonStringOverride, Is.EqualTo(y.CJsonStringOverride));
+            }
+        }
+
+        [Test]
+        public void TestPostgresInvalidJson()
+        {
+            Assert.ThrowsAsync<Npgsql.PostgresException>(async () => await QuerySql.InsertPostgresTypes(new QuerySql.InsertPostgresTypesArgs { CJsonStringOverride = "SOME INVALID JSON" }));
         }
 
         [Test]

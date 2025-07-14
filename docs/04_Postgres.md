@@ -54,7 +54,7 @@ we consider support for the different data types separately for batch inserts an
 | tsvector                                | ❌         | ❌                  |
 | tsquery                                 | ❌         | ❌                  |
 | uuid                                    | ❌         | ❌                  |
-| json                                    | ❌         | ❌                  |
+| json                                    | ✅         | 🚫                   |
 | jsonb                                   | ❌         | ❌                  |
 | jsonpath                                | ❌         | ❌                  |
 

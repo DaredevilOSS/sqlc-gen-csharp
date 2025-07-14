@@ -38,6 +38,7 @@ CREATE TABLE postgres_types (
     c_bytea BYTEA,
     c_text TEXT,
     c_json JSON,
+    c_json_string_override JSON,
 
     /* Array Data Types */
     c_text_array TEXT [],
