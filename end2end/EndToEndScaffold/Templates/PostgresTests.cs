@@ -524,13 +524,100 @@ public static class PostgresTests
                              CCircle = cCircle
                          };
                          var actual = await QuerySql.GetPostgresGeoTypes();
-                         Assert.That(actual{{Consts.UnknownRecordValuePlaceholder}}.CPoint, Is.EqualTo(expected.CPoint));
-                         Assert.That(actual{{Consts.UnknownRecordValuePlaceholder}}.CLine, Is.EqualTo(expected.CLine));
-                         Assert.That(actual{{Consts.UnknownRecordValuePlaceholder}}.CLseg, Is.EqualTo(expected.CLseg));
-                         Assert.That(actual{{Consts.UnknownRecordValuePlaceholder}}.CBox, Is.EqualTo(expected.CBox));
-                         Assert.That(actual{{Consts.UnknownRecordValuePlaceholder}}.CPath, Is.EqualTo(expected.CPath));
-                         Assert.That(actual{{Consts.UnknownRecordValuePlaceholder}}.CPolygon, Is.EqualTo(expected.CPolygon));
-                         Assert.That(actual{{Consts.UnknownRecordValuePlaceholder}}.CCircle, Is.EqualTo(expected.CCircle));
+                         AssertSingularEquals(expected, actual{{Consts.UnknownRecordValuePlaceholder}});
+
+                         void AssertSingularEquals(QuerySql.GetPostgresGeoTypesRow x, QuerySql.GetPostgresGeoTypesRow y)
+                         {
+                             Assert.That(x.CPoint, Is.EqualTo(y.CPoint));
+                             Assert.That(x.CLine, Is.EqualTo(y.CLine));
+                             Assert.That(x.CLseg, Is.EqualTo(y.CLseg));
+                             Assert.That(x.CBox, Is.EqualTo(y.CBox));
+                             Assert.That(x.CPath, Is.EqualTo(y.CPath));
+                             Assert.That(x.CPolygon, Is.EqualTo(y.CPolygon));
+                             Assert.That(x.CCircle, Is.EqualTo(y.CCircle));
+                         }
+                     }
+                     """
+        },
+        [KnownTestType.PostgresGeoCopyFrom] = new TestImpl
+        {
+            Impl = $$"""
+                     public static IEnumerable<TestCaseData> PostgresGeoCopyFromTestCases
+                     {
+                         get
+                         {
+                             yield return new TestCaseData(
+                                 200,
+                                 new NpgsqlPoint(1, 2),
+                                 new NpgsqlLine(3, 4, 5),
+                                 new NpgsqlLSeg(1, 2, 3, 4),
+                                 new NpgsqlBox(1, 2, 3, 4),
+                                 new NpgsqlPath(new NpgsqlPoint[] { new NpgsqlPoint(1, 2), new NpgsqlPoint(3, 4) }),
+                                 new NpgsqlPolygon(new NpgsqlPoint[] { new NpgsqlPoint(1, 2), new NpgsqlPoint(3, 4) }),
+                                 new NpgsqlCircle(1, 2, 3)
+                             ).SetName("Valid Geo Types Copy From");
+ 
+                             yield return new TestCaseData(
+                                 10, 
+                                 null,
+                                 null,
+                                 null,
+                                 null,
+                                 null,
+                                 null,
+                                 null
+                             ).SetName("Null Geo Types Copy From");
+                         }
+                     }
+
+                     [Test]
+                     [TestCaseSource(nameof(PostgresGeoCopyFromTestCases))]
+                     public async Task TestPostgresGeoCopyFrom(
+                         int batchSize,
+                         NpgsqlPoint? cPoint, 
+                         NpgsqlLine? cLine, 
+                         NpgsqlLSeg? cLSeg, 
+                         NpgsqlBox? cBox, 
+                         NpgsqlPath? cPath, 
+                         NpgsqlPolygon? cPolygon, 
+                         NpgsqlCircle? cCircle)
+                     {
+                         var batchArgs = Enumerable.Range(0, batchSize)
+                             .Select(_ => new QuerySql.InsertPostgresGeoTypesBatchArgs
+                             {
+                                 CPoint = cPoint,
+                                 CLine = cLine,
+                                 CLseg = cLSeg,
+                                 CBox = cBox,
+                                 CPath = cPath,
+                                 CPolygon = cPolygon,
+                                 CCircle = cCircle
+                             })
+                             .ToList();
+                         await QuerySql.InsertPostgresGeoTypesBatch(batchArgs);
+                         var expected = new QuerySql.GetPostgresGeoTypesRow
+                         {
+                             CPoint = cPoint,
+                             CLine = cLine,
+                             CLseg = cLSeg,
+                             CBox = cBox,
+                             CPath = cPath,
+                             CPolygon = cPolygon,
+                             CCircle = cCircle
+                         };
+                         var actual = await QuerySql.GetPostgresGeoTypes();
+                         AssertSingularEquals(expected, actual{{Consts.UnknownRecordValuePlaceholder}});
+
+                         void AssertSingularEquals(QuerySql.GetPostgresGeoTypesRow x, QuerySql.GetPostgresGeoTypesRow y)
+                         {
+                             Assert.That(x.CPoint, Is.EqualTo(y.CPoint));
+                             Assert.That(x.CLine, Is.EqualTo(y.CLine));
+                             Assert.That(x.CLseg, Is.EqualTo(y.CLseg));
+                             Assert.That(x.CBox, Is.EqualTo(y.CBox));
+                             Assert.That(x.CPath, Is.EqualTo(y.CPath));
+                             Assert.That(x.CPolygon, Is.EqualTo(y.CPolygon));
+                             Assert.That(x.CCircle, Is.EqualTo(y.CCircle));
+                         }
                      }
                      """
         },

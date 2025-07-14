@@ -801,6 +801,43 @@ public class QuerySql
         await this.Transaction.Connection.ExecuteAsync(InsertPostgresGeoTypesSql, queryParams, transaction: this.Transaction);
     }
 
+    private const string InsertPostgresGeoTypesBatchSql = "COPY postgres_geometric_types (c_point, c_line, c_lseg, c_box, c_path, c_polygon, c_circle) FROM STDIN (FORMAT BINARY)";
+    public class InsertPostgresGeoTypesBatchArgs
+    {
+        public NpgsqlPoint? CPoint { get; init; }
+        public NpgsqlLine? CLine { get; init; }
+        public NpgsqlLSeg? CLseg { get; init; }
+        public NpgsqlBox? CBox { get; init; }
+        public NpgsqlPath? CPath { get; init; }
+        public NpgsqlPolygon? CPolygon { get; init; }
+        public NpgsqlCircle? CCircle { get; init; }
+    };
+    public async Task InsertPostgresGeoTypesBatch(List<InsertPostgresGeoTypesBatchArgs> args)
+    {
+        using (var connection = new NpgsqlConnection(ConnectionString))
+        {
+            await connection.OpenAsync();
+            using (var writer = await connection.BeginBinaryImportAsync(InsertPostgresGeoTypesBatchSql))
+            {
+                foreach (var row in args)
+                {
+                    await writer.StartRowAsync();
+                    await writer.WriteAsync(row.CPoint, NpgsqlDbType.Point);
+                    await writer.WriteAsync(row.CLine, NpgsqlDbType.Line);
+                    await writer.WriteAsync(row.CLseg, NpgsqlDbType.LSeg);
+                    await writer.WriteAsync(row.CBox, NpgsqlDbType.Box);
+                    await writer.WriteAsync(row.CPath, NpgsqlDbType.Path);
+                    await writer.WriteAsync(row.CPolygon, NpgsqlDbType.Polygon);
+                    await writer.WriteAsync(row.CCircle, NpgsqlDbType.Circle);
+                }
+
+                await writer.CompleteAsync();
+            }
+
+            await connection.CloseAsync();
+        }
+    }
+
     private const string GetPostgresGeoTypesSql = "SELECT c_point, c_line, c_lseg, c_box, c_path, c_polygon, c_circle FROM postgres_geometric_types LIMIT 1";
     public class GetPostgresGeoTypesRow
     {

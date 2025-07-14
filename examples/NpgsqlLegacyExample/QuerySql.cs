@@ -1238,6 +1238,43 @@ namespace NpgsqlLegacyExampleGen
             }
         }
 
+        private const string InsertPostgresGeoTypesBatchSql = "COPY postgres_geometric_types (c_point, c_line, c_lseg, c_box, c_path, c_polygon, c_circle) FROM STDIN (FORMAT BINARY)";
+        public class InsertPostgresGeoTypesBatchArgs
+        {
+            public NpgsqlPoint? CPoint { get; set; }
+            public NpgsqlLine? CLine { get; set; }
+            public NpgsqlLSeg? CLseg { get; set; }
+            public NpgsqlBox? CBox { get; set; }
+            public NpgsqlPath? CPath { get; set; }
+            public NpgsqlPolygon? CPolygon { get; set; }
+            public NpgsqlCircle? CCircle { get; set; }
+        };
+        public async Task InsertPostgresGeoTypesBatch(List<InsertPostgresGeoTypesBatchArgs> args)
+        {
+            using (var connection = new NpgsqlConnection(ConnectionString))
+            {
+                await connection.OpenAsync();
+                using (var writer = await connection.BeginBinaryImportAsync(InsertPostgresGeoTypesBatchSql))
+                {
+                    foreach (var row in args)
+                    {
+                        await writer.StartRowAsync();
+                        await writer.WriteAsync(row.CPoint ?? (object)DBNull.Value, NpgsqlDbType.Point);
+                        await writer.WriteAsync(row.CLine ?? (object)DBNull.Value, NpgsqlDbType.Line);
+                        await writer.WriteAsync(row.CLseg ?? (object)DBNull.Value, NpgsqlDbType.LSeg);
+                        await writer.WriteAsync(row.CBox ?? (object)DBNull.Value, NpgsqlDbType.Box);
+                        await writer.WriteAsync(row.CPath ?? (object)DBNull.Value, NpgsqlDbType.Path);
+                        await writer.WriteAsync(row.CPolygon ?? (object)DBNull.Value, NpgsqlDbType.Polygon);
+                        await writer.WriteAsync(row.CCircle ?? (object)DBNull.Value, NpgsqlDbType.Circle);
+                    }
+
+                    await writer.CompleteAsync();
+                }
+
+                await connection.CloseAsync();
+            }
+        }
+
         private const string GetPostgresGeoTypesSql = "SELECT c_point, c_line, c_lseg, c_box, c_path, c_polygon, c_circle FROM postgres_geometric_types LIMIT 1";
         public class GetPostgresGeoTypesRow
         {

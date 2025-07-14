@@ -10548,6 +10548,17 @@ VALUES ($1, $2, $3, $4, $5, $6, $7)InsertPostgresGeoTypes:exec*NJ
 c_box0ÿÿÿÿÿÿÿÿÿR"publicpostgres_geometric_typesbboxzc_box*KG
 c_path0ÿÿÿÿÿÿÿÿÿR"publicpostgres_geometric_typesbpathzc_path*TP
 	c_polygon0ÿÿÿÿÿÿÿÿÿR"publicpostgres_geometric_typesb	polygonz	c_polygon*QM
+c_circle0ÿÿÿÿÿÿÿÿÿR"publicpostgres_geometric_typesbcirclezc_circle:	query.sqlBpostgres_geometric_typesˆ
+ŒINSERT INTO postgres_geometric_types (
+    c_point, c_line, c_lseg, c_box, c_path, c_polygon, c_circle
+)
+VALUES ($1, $2, $3, $4, $5, $6, $7)InsertPostgresGeoTypesBatch	:copyfrom*NJ
+c_point0ÿÿÿÿÿÿÿÿÿR"publicpostgres_geometric_typesbpointzc_point*KG
+c_line0ÿÿÿÿÿÿÿÿÿR"publicpostgres_geometric_typesblinezc_line*KG
+c_lseg0ÿÿÿÿÿÿÿÿÿR"publicpostgres_geometric_typesblsegzc_lseg*HD
+c_box0ÿÿÿÿÿÿÿÿÿR"publicpostgres_geometric_typesbboxzc_box*KG
+c_path0ÿÿÿÿÿÿÿÿÿR"publicpostgres_geometric_typesbpathzc_path*TP
+	c_polygon0ÿÿÿÿÿÿÿÿÿR"publicpostgres_geometric_typesb	polygonz	c_polygon*QM
 c_circle0ÿÿÿÿÿÿÿÿÿR"publicpostgres_geometric_typesbcirclezc_circle:	query.sqlBpostgres_geometric_typesæ
 hSELECT c_point, c_line, c_lseg, c_box, c_path, c_polygon, c_circle FROM postgres_geometric_types LIMIT 1GetPostgresGeoTypes:one"B
 c_point0ÿÿÿÿÿÿÿÿÿRpostgres_geometric_typesbpointzc_point"?

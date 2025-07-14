@@ -222,6 +222,12 @@ INSERT INTO postgres_geometric_types (
 )
 VALUES ($1, $2, $3, $4, $5, $6, $7);
 
+-- name: InsertPostgresGeoTypesBatch :copyfrom
+INSERT INTO postgres_geometric_types (
+    c_point, c_line, c_lseg, c_box, c_path, c_polygon, c_circle
+)
+VALUES ($1, $2, $3, $4, $5, $6, $7);
+
 -- name: GetPostgresGeoTypes :one
 SELECT * FROM postgres_geometric_types LIMIT 1;
 

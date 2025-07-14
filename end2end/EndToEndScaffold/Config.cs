@@ -49,6 +49,7 @@ public enum KnownTestType
     PostgresDateTimeCopyFrom,
     PostgresArrayCopyFrom,
     PostgresGeoDataTypes,
+    PostgresGeoCopyFrom,
     PostgresJsonDataTypes,
     PostgresInvalidJson,
 
@@ -191,6 +192,7 @@ internal static class Config
                     KnownTestType.PostgresDateTimeDataTypes,
                     KnownTestType.PostgresArrayDataTypes,
                     KnownTestType.PostgresGeoDataTypes,
+                    KnownTestType.PostgresGeoCopyFrom,
                     KnownTestType.PostgresDataTypesOverride,
                     KnownTestType.PostgresJsonDataTypes,
                     KnownTestType.PostgresInvalidJson,
@@ -229,6 +231,7 @@ internal static class Config
                     KnownTestType.PostgresDateTimeDataTypes,
                     KnownTestType.PostgresArrayDataTypes,
                     KnownTestType.PostgresGeoDataTypes,
+                    KnownTestType.PostgresGeoCopyFrom,
                     KnownTestType.PostgresDataTypesOverride,
                     KnownTestType.PostgresJsonDataTypes,
                     KnownTestType.PostgresInvalidJson,

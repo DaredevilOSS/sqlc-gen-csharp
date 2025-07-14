@@ -34335,6 +34335,122 @@
       }
     },
     {
+      "text": "INSERT INTO postgres_geometric_types (\n    c_point, c_line, c_lseg, c_box, c_path, c_polygon, c_circle\n)\nVALUES ($1, $2, $3, $4, $5, $6, $7)",
+      "name": "InsertPostgresGeoTypesBatch",
+      "cmd": ":copyfrom",
+      "parameters": [
+        {
+          "number": 1,
+          "column": {
+            "name": "c_point",
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "postgres_geometric_types"
+            },
+            "type": {
+              "name": "point"
+            },
+            "originalName": "c_point"
+          }
+        },
+        {
+          "number": 2,
+          "column": {
+            "name": "c_line",
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "postgres_geometric_types"
+            },
+            "type": {
+              "name": "line"
+            },
+            "originalName": "c_line"
+          }
+        },
+        {
+          "number": 3,
+          "column": {
+            "name": "c_lseg",
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "postgres_geometric_types"
+            },
+            "type": {
+              "name": "lseg"
+            },
+            "originalName": "c_lseg"
+          }
+        },
+        {
+          "number": 4,
+          "column": {
+            "name": "c_box",
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "postgres_geometric_types"
+            },
+            "type": {
+              "name": "box"
+            },
+            "originalName": "c_box"
+          }
+        },
+        {
+          "number": 5,
+          "column": {
+            "name": "c_path",
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "postgres_geometric_types"
+            },
+            "type": {
+              "name": "path"
+            },
+            "originalName": "c_path"
+          }
+        },
+        {
+          "number": 6,
+          "column": {
+            "name": "c_polygon",
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "postgres_geometric_types"
+            },
+            "type": {
+              "name": "polygon"
+            },
+            "originalName": "c_polygon"
+          }
+        },
+        {
+          "number": 7,
+          "column": {
+            "name": "c_circle",
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "postgres_geometric_types"
+            },
+            "type": {
+              "name": "circle"
+            },
+            "originalName": "c_circle"
+          }
+        }
+      ],
+      "filename": "query.sql",
+      "insert_into_table": {
+        "name": "postgres_geometric_types"
+      }
+    },
+    {
       "text": "SELECT c_point, c_line, c_lseg, c_box, c_path, c_polygon, c_circle FROM postgres_geometric_types LIMIT 1",
       "name": "GetPostgresGeoTypes",
       "cmd": ":one",
