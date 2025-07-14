@@ -350,11 +350,15 @@ namespace EndToEndTests
                 CMoney = cMoney
             };
             var actual = await QuerySql.GetPostgresTypes();
-            Assert.That(actual.CReal, Is.EqualTo(expected.CReal));
-            Assert.That(actual.CNumeric, Is.EqualTo(expected.CNumeric));
-            Assert.That(actual.CDecimal, Is.EqualTo(expected.CDecimal));
-            Assert.That(actual.CDoublePrecision, Is.EqualTo(expected.CDoublePrecision));
-            Assert.That(actual.CMoney, Is.EqualTo(expected.CMoney));
+            AssertSingularEquals(expected, actual);
+            void AssertSingularEquals(QuerySql.GetPostgresTypesRow x, QuerySql.GetPostgresTypesRow y)
+            {
+                Assert.That(x.CReal, Is.EqualTo(y.CReal));
+                Assert.That(x.CNumeric, Is.EqualTo(y.CNumeric));
+                Assert.That(x.CDecimal, Is.EqualTo(y.CDecimal));
+                Assert.That(x.CDoublePrecision, Is.EqualTo(y.CDoublePrecision));
+                Assert.That(x.CMoney, Is.EqualTo(y.CMoney));
+            }
         }
 
         [Test]
@@ -664,10 +668,11 @@ namespace EndToEndTests
             JsonElement? cParsedJson = null;
             if (cJson != null)
                 cParsedJson = JsonDocument.Parse(cJson).RootElement;
-            await QuerySql.InsertPostgresTypes(new QuerySql.InsertPostgresTypesArgs { CJson = cParsedJson, CJsonStringOverride = cJson });
+            await QuerySql.InsertPostgresTypes(new QuerySql.InsertPostgresTypesArgs { CJson = cParsedJson, CJsonb = cParsedJson, CJsonStringOverride = cJson });
             var expected = new QuerySql.GetPostgresTypesRow
             {
                 CJson = cParsedJson,
+                CJsonb = cParsedJson,
                 CJsonStringOverride = cJson
             };
             var actual = await QuerySql.GetPostgresTypes();
@@ -677,6 +682,9 @@ namespace EndToEndTests
                 Assert.That(x.CJson.HasValue, Is.EqualTo(y.CJson.HasValue));
                 if (x.CJson.HasValue)
                     Assert.That(x.CJson.Value.GetRawText(), Is.EqualTo(y.CJson.Value.GetRawText()));
+                Assert.That(x.CJsonb.HasValue, Is.EqualTo(y.CJsonb.HasValue));
+                if (x.CJsonb.HasValue)
+                    Assert.That(x.CJsonb.Value.GetRawText(), Is.EqualTo(y.CJsonb.Value.GetRawText()));
                 Assert.That(x.CJsonStringOverride, Is.EqualTo(y.CJsonStringOverride));
             }
         }

@@ -3,7 +3,7 @@
 2
 postgresql%examples/config/postgresql/schema.sql"$examples/config/postgresql/query.sqlb²
 examples/NpgsqlExamplecsharpù{"debugRequest":true,"generateCsproj":true,"namespaceName":"NpgsqlExampleGen","overrides":[{"column":"GetPostgresFunctions:max_integer","csharp_type":{"notNull":false,"type":"int"}},{"column":"GetPostgresFunctions:max_varchar","csharp_type":{"notNull":false,"type":"string"}},{"column":"GetPostgresFunctions:max_timestamp","csharp_type":{"notNull":true,"type":"DateTime"}},{"column":"*:c_json_string_override","csharp_type":{"notNull":false,"type":"string"}}],"targetFramework":"net8.0","useDapper":false}*
-./dist/LocalRunnerùßpublic"Ípublicƒ
+./dist/LocalRunnerªàpublic"þpublicƒ
 	authors)
 id0ÿÿÿÿÿÿÿÿÿR	authorsb	bigserial&
 name0ÿÿÿÿÿÿÿÿÿR	authorsbtext#
@@ -13,7 +13,7 @@ postgresql%examples/config/postgresql/schema.sql"$examples/config/postgresql/qu
 name0ÿÿÿÿÿÿÿÿÿRbooksbtext5
 	author_id0ÿÿÿÿÿÿÿÿÿRbooksb
 pg_catalogint8)
-description0ÿÿÿÿÿÿÿÿÿRbooksbtextÇ
+description0ÿÿÿÿÿÿÿÿÿRbooksbtextø
 postgres_types<
 	c_boolean0ÿÿÿÿÿÿÿÿÿRpostgres_typesb
 pg_catalogbool7
@@ -52,7 +52,8 @@ pg_catalogvarchar1
 c_bytea0ÿÿÿÿÿÿÿÿÿRpostgres_typesbbytea-
 c_text0ÿÿÿÿÿÿÿÿÿRpostgres_typesbtext-
 c_json0ÿÿÿÿÿÿÿÿÿRpostgres_typesbjson=
-c_json_string_override0ÿÿÿÿÿÿÿÿÿRpostgres_typesbjson8
+c_json_string_override0ÿÿÿÿÿÿÿÿÿRpostgres_typesbjson/
+c_jsonb0ÿÿÿÿÿÿÿÿÿRpostgres_typesbjsonb8
 c_text_array 0ÿÿÿÿÿÿÿÿÿRpostgres_typesbtextˆG
 c_integer_array 0ÿÿÿÿÿÿÿÿÿRpostgres_typesb
 pg_catalogint4ˆµ
@@ -10270,8 +10271,8 @@ WHERE books.name = $1GetAuthorsByBookName:many"-
 name0ÿÿÿÿÿÿÿÿÿR	authorsbtextzname"(
 bio0ÿÿÿÿÿÿÿÿÿR	authorsbtextzbio"
 books0ÿÿÿÿÿÿÿÿÿb rbooks*.*
-name0ÿÿÿÿÿÿÿÿÿRbooksbtextzname:	query.sql…
-ŠINSERT INTO postgres_types
+name0ÿÿÿÿÿÿÿÿÿRbooksbtextzname:	query.sqlÅ
+§INSERT INTO postgres_types
 (
     c_boolean,
     c_bit,
@@ -10294,6 +10295,7 @@ WHERE books.name = $1GetAuthorsByBookName:many"-
     c_text,
     c_json,
     c_json_string_override,
+    c_jsonb,
     c_bytea, 
     c_text_array, 
     c_integer_array
@@ -10320,9 +10322,10 @@ VALUES (
     $19,
     $20::json, 
     $21::json, 
-    $22, 
+    $22::jsonb,
     $23, 
-    $24
+    $24, 
+    $25
 )InsertPostgresTypes:exec*TP
 	c_boolean0ÿÿÿÿÿÿÿÿÿ8Rpublicpostgres_typesbpg_catalog.boolz	c_boolean*KG
 c_bit0ÿÿÿÿÿÿÿÿÿ8Rpublicpostgres_typesbpg_catalog.bitzc_bit*VR
@@ -10347,9 +10350,10 @@ c_smallint*TP
 c_bpchar0ÿÿÿÿÿÿÿÿÿ8Rpublicpostgres_typesbbpcharzc_bpchar*C?
 c_text0ÿÿÿÿÿÿÿÿÿ8Rpublicpostgres_typesbtextzc_text*
 c_json0ÿÿÿÿÿÿÿÿÿbjson*/+
-c_json_string_override0ÿÿÿÿÿÿÿÿÿbjson*FB
-c_bytea0ÿÿÿÿÿÿÿÿÿ8Rpublicpostgres_typesbbyteazc_bytea*TP
-c_text_array 0ÿÿÿÿÿÿÿÿÿ8Rpublicpostgres_typesbtextzc_text_arrayˆ*ea
+c_json_string_override0ÿÿÿÿÿÿÿÿÿbjson*!
+c_jsonb0ÿÿÿÿÿÿÿÿÿbjsonb*FB
+c_bytea0ÿÿÿÿÿÿÿÿÿ8Rpublicpostgres_typesbbyteazc_bytea*TP
+c_text_array 0ÿÿÿÿÿÿÿÿÿ8Rpublicpostgres_typesbtextzc_text_arrayˆ*ea
 c_integer_array 0ÿÿÿÿÿÿÿÿÿ8Rpublicpostgres_typesbpg_catalog.int4zc_integer_arrayˆ:	query.sqlBpostgres_types„
 ‚INSERT INTO postgres_types
 (
@@ -10415,8 +10419,8 @@ c_smallint*RN
 c_character_varying0ÿÿÿÿÿÿÿÿÿRpublicpostgres_typesbpg_catalog.varcharzc_character_varying*GC
 c_bpchar0ÿÿÿÿÿÿÿÿÿRpublicpostgres_typesbbpcharzc_bpchar*A=
 c_text0ÿÿÿÿÿÿÿÿÿRpublicpostgres_typesbtextzc_text*D@
-c_bytea0ÿÿÿÿÿÿÿÿÿRpublicpostgres_typesbbyteazc_bytea:	query.sqlBpostgres_typesÀ
-ÃSELECT c_boolean, c_bit, c_smallint, c_integer, c_bigint, c_decimal, c_numeric, c_real, c_double_precision, c_money, c_date, c_time, c_timestamp, c_timestamp_with_tz, c_char, c_varchar, c_character_varying, c_bpchar, c_bytea, c_text, c_json, c_json_string_override, c_text_array, c_integer_array FROM postgres_types LIMIT 1GetPostgresTypes:one"G
+c_bytea0ÿÿÿÿÿÿÿÿÿRpublicpostgres_typesbbyteazc_bytea:	query.sqlBpostgres_typesƒ
+ÌSELECT c_boolean, c_bit, c_smallint, c_integer, c_bigint, c_decimal, c_numeric, c_real, c_double_precision, c_money, c_date, c_time, c_timestamp, c_timestamp_with_tz, c_char, c_varchar, c_character_varying, c_bpchar, c_bytea, c_text, c_json, c_json_string_override, c_jsonb, c_text_array, c_integer_array FROM postgres_types LIMIT 1GetPostgresTypes:one"G
 	c_boolean0ÿÿÿÿÿÿÿÿÿRpostgres_typesb
 pg_catalogboolz	c_boolean">
 c_bit0ÿÿÿÿÿÿÿÿÿRpostgres_typesb
@@ -10455,7 +10459,8 @@ pg_catalogvarcharzc_character_varying";
 c_bytea0ÿÿÿÿÿÿÿÿÿRpostgres_typesbbyteazc_bytea"5
 c_text0ÿÿÿÿÿÿÿÿÿRpostgres_typesbtextzc_text"5
 c_json0ÿÿÿÿÿÿÿÿÿRpostgres_typesbjsonzc_json"U
-c_json_string_override0ÿÿÿÿÿÿÿÿÿRpostgres_typesbjsonzc_json_string_override"F
+c_json_string_override0ÿÿÿÿÿÿÿÿÿRpostgres_typesbjsonzc_json_string_override"8
+c_jsonb0ÿÿÿÿÿÿÿÿÿRpostgres_typesbjsonbzc_jsonb"F
 c_text_array 0ÿÿÿÿÿÿÿÿÿRpostgres_typesbtextzc_text_arrayˆ"X
 c_integer_array 0ÿÿÿÿÿÿÿÿÿRpostgres_typesb
 pg_catalogint4zc_integer_arrayˆ:	query.sql¾

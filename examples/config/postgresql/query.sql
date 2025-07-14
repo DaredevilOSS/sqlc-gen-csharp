@@ -91,6 +91,7 @@ INSERT INTO postgres_types
     c_text,
     c_json,
     c_json_string_override,
+    c_jsonb,
     c_bytea, 
     c_text_array, 
     c_integer_array
@@ -117,6 +118,7 @@ VALUES (
     sqlc.narg('c_text'),
     sqlc.narg('c_json')::json, 
     sqlc.narg('c_json_string_override')::json, 
+    sqlc.narg('c_jsonb')::jsonb,
     sqlc.narg('c_bytea'), 
     sqlc.narg('c_text_array'), 
     sqlc.narg('c_integer_array')

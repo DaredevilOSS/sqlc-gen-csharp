@@ -90,7 +90,8 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId
             ["JsonElement"] = new(
                 new()
                 {
-                    { "json", new(NpgsqlTypeOverride: "NpgsqlDbType.Jsonb") }
+                    { "json", new() },
+                    { "jsonb", new() }
                 },
                 readerFn: ordinal => $"JsonSerializer.Deserialize<JsonElement>(reader.GetString({ordinal}))",
                 writerFn: (el, notNull, isDapper) =>

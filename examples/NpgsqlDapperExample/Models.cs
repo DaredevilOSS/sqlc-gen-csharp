@@ -41,6 +41,7 @@ public class PostgresType
     public string? CText { get; init; }
     public JsonElement? CJson { get; init; }
     public JsonElement? CJsonStringOverride { get; init; }
+    public JsonElement? CJsonb { get; init; }
     public string[]? CTextArray { get; init; }
     public int[]? CIntegerArray { get; init; }
 };

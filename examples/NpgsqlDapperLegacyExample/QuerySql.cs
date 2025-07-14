@@ -519,7 +519,7 @@ namespace NpgsqlDapperLegacyExampleGen
             }
         }
 
-        private const string InsertPostgresTypesSql = "INSERT INTO postgres_types(c_boolean, c_bit, c_smallint, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_money, c_date, c_time, c_timestamp, c_timestamp_with_tz, c_char, c_varchar, c_character_varying, c_bpchar, c_text, c_json, c_json_string_override, c_bytea, c_text_array, c_integer_array) VALUES ( @c_boolean, @c_bit, @c_smallint, @c_integer, @c_bigint, @c_real, @c_numeric, @c_decimal, @c_double_precision, @c_money, @c_date, @c_time, @c_timestamp, @c_timestamp_with_tz, @c_char, @c_varchar, @c_character_varying, @c_bpchar, @c_text, @c_json :: json, @c_json_string_override :: json, @c_bytea, @c_text_array, @c_integer_array ) "; 
+        private const string InsertPostgresTypesSql = "INSERT INTO postgres_types(c_boolean, c_bit, c_smallint, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_money, c_date, c_time, c_timestamp, c_timestamp_with_tz, c_char, c_varchar, c_character_varying, c_bpchar, c_text, c_json, c_json_string_override, c_jsonb, c_bytea, c_text_array, c_integer_array) VALUES ( @c_boolean, @c_bit, @c_smallint, @c_integer, @c_bigint, @c_real, @c_numeric, @c_decimal, @c_double_precision, @c_money, @c_date, @c_time, @c_timestamp, @c_timestamp_with_tz, @c_char, @c_varchar, @c_character_varying, @c_bpchar, @c_text, @c_json :: json, @c_json_string_override :: json, @c_jsonb :: jsonb, @c_bytea, @c_text_array, @c_integer_array ) "; 
         public class InsertPostgresTypesArgs
         {
             public bool? CBoolean { get; set; }
@@ -543,6 +543,7 @@ namespace NpgsqlDapperLegacyExampleGen
             public string CText { get; set; }
             public JsonElement? CJson { get; set; }
             public string CJsonStringOverride { get; set; }
+            public JsonElement? CJsonb { get; set; }
             public byte[] CBytea { get; set; }
             public string[] CTextArray { get; set; }
             public int[] CIntegerArray { get; set; }
@@ -571,6 +572,7 @@ namespace NpgsqlDapperLegacyExampleGen
             queryParams.Add("c_text", args.CText);
             queryParams.Add("c_json", args.CJson.HasValue ? args.CJson.Value.GetRawText() : null);
             queryParams.Add("c_json_string_override", args.CJsonStringOverride);
+            queryParams.Add("c_jsonb", args.CJsonb.HasValue ? args.CJsonb.Value.GetRawText() : null);
             queryParams.Add("c_bytea", args.CBytea);
             queryParams.Add("c_text_array", args.CTextArray);
             queryParams.Add("c_integer_array", args.CIntegerArray);
@@ -653,7 +655,7 @@ namespace NpgsqlDapperLegacyExampleGen
             }
         }
 
-        private const string GetPostgresTypesSql = "SELECT c_boolean, c_bit, c_smallint, c_integer, c_bigint, c_decimal, c_numeric, c_real, c_double_precision, c_money, c_date, c_time, c_timestamp, c_timestamp_with_tz, c_char, c_varchar, c_character_varying, c_bpchar, c_bytea, c_text, c_json, c_json_string_override, c_text_array, c_integer_array FROM postgres_types LIMIT 1";
+        private const string GetPostgresTypesSql = "SELECT c_boolean, c_bit, c_smallint, c_integer, c_bigint, c_decimal, c_numeric, c_real, c_double_precision, c_money, c_date, c_time, c_timestamp, c_timestamp_with_tz, c_char, c_varchar, c_character_varying, c_bpchar, c_bytea, c_text, c_json, c_json_string_override, c_jsonb, c_text_array, c_integer_array FROM postgres_types LIMIT 1";
         public class GetPostgresTypesRow
         {
             public bool? CBoolean { get; set; }
@@ -678,6 +680,7 @@ namespace NpgsqlDapperLegacyExampleGen
             public string CText { get; set; }
             public JsonElement? CJson { get; set; }
             public string CJsonStringOverride { get; set; }
+            public JsonElement? CJsonb { get; set; }
             public string[] CTextArray { get; set; }
             public int[] CIntegerArray { get; set; }
         };

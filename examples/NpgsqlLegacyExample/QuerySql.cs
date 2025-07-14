@@ -740,7 +740,7 @@ namespace NpgsqlLegacyExampleGen
             }
         }
 
-        private const string InsertPostgresTypesSql = "INSERT INTO postgres_types(c_boolean, c_bit, c_smallint, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_money, c_date, c_time, c_timestamp, c_timestamp_with_tz, c_char, c_varchar, c_character_varying, c_bpchar, c_text, c_json, c_json_string_override, c_bytea, c_text_array, c_integer_array) VALUES ( @c_boolean, @c_bit, @c_smallint, @c_integer, @c_bigint, @c_real, @c_numeric, @c_decimal, @c_double_precision, @c_money, @c_date, @c_time, @c_timestamp, @c_timestamp_with_tz, @c_char, @c_varchar, @c_character_varying, @c_bpchar, @c_text, @c_json :: json, @c_json_string_override :: json, @c_bytea, @c_text_array, @c_integer_array ) "; 
+        private const string InsertPostgresTypesSql = "INSERT INTO postgres_types(c_boolean, c_bit, c_smallint, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_money, c_date, c_time, c_timestamp, c_timestamp_with_tz, c_char, c_varchar, c_character_varying, c_bpchar, c_text, c_json, c_json_string_override, c_jsonb, c_bytea, c_text_array, c_integer_array) VALUES ( @c_boolean, @c_bit, @c_smallint, @c_integer, @c_bigint, @c_real, @c_numeric, @c_decimal, @c_double_precision, @c_money, @c_date, @c_time, @c_timestamp, @c_timestamp_with_tz, @c_char, @c_varchar, @c_character_varying, @c_bpchar, @c_text, @c_json :: json, @c_json_string_override :: json, @c_jsonb :: jsonb, @c_bytea, @c_text_array, @c_integer_array ) "; 
         public class InsertPostgresTypesArgs
         {
             public bool? CBoolean { get; set; }
@@ -764,6 +764,7 @@ namespace NpgsqlLegacyExampleGen
             public string CText { get; set; }
             public JsonElement? CJson { get; set; }
             public string CJsonStringOverride { get; set; }
+            public JsonElement? CJsonb { get; set; }
             public byte[] CBytea { get; set; }
             public string[] CTextArray { get; set; }
             public int[] CIntegerArray { get; set; }
@@ -797,6 +798,7 @@ namespace NpgsqlLegacyExampleGen
                         command.Parameters.AddWithValue("@c_text", args.CText ?? (object)DBNull.Value);
                         command.Parameters.AddWithValue("@c_json", args.CJson.HasValue ? args.CJson.Value.GetRawText() : (object)DBNull.Value);
                         command.Parameters.AddWithValue("@c_json_string_override", args.CJsonStringOverride ?? (object)DBNull.Value);
+                        command.Parameters.AddWithValue("@c_jsonb", args.CJsonb.HasValue ? args.CJsonb.Value.GetRawText() : (object)DBNull.Value);
                         command.Parameters.AddWithValue("@c_bytea", args.CBytea ?? (object)DBNull.Value);
                         command.Parameters.AddWithValue("@c_text_array", args.CTextArray ?? (object)DBNull.Value);
                         command.Parameters.AddWithValue("@c_integer_array", args.CIntegerArray ?? (object)DBNull.Value);
@@ -837,6 +839,7 @@ namespace NpgsqlLegacyExampleGen
                 command.Parameters.AddWithValue("@c_text", args.CText ?? (object)DBNull.Value);
                 command.Parameters.AddWithValue("@c_json", args.CJson.HasValue ? args.CJson.Value.GetRawText() : (object)DBNull.Value);
                 command.Parameters.AddWithValue("@c_json_string_override", args.CJsonStringOverride ?? (object)DBNull.Value);
+                command.Parameters.AddWithValue("@c_jsonb", args.CJsonb.HasValue ? args.CJsonb.Value.GetRawText() : (object)DBNull.Value);
                 command.Parameters.AddWithValue("@c_bytea", args.CBytea ?? (object)DBNull.Value);
                 command.Parameters.AddWithValue("@c_text_array", args.CTextArray ?? (object)DBNull.Value);
                 command.Parameters.AddWithValue("@c_integer_array", args.CIntegerArray ?? (object)DBNull.Value);
@@ -905,7 +908,7 @@ namespace NpgsqlLegacyExampleGen
             }
         }
 
-        private const string GetPostgresTypesSql = "SELECT c_boolean, c_bit, c_smallint, c_integer, c_bigint, c_decimal, c_numeric, c_real, c_double_precision, c_money, c_date, c_time, c_timestamp, c_timestamp_with_tz, c_char, c_varchar, c_character_varying, c_bpchar, c_bytea, c_text, c_json, c_json_string_override, c_text_array, c_integer_array FROM postgres_types LIMIT 1";
+        private const string GetPostgresTypesSql = "SELECT c_boolean, c_bit, c_smallint, c_integer, c_bigint, c_decimal, c_numeric, c_real, c_double_precision, c_money, c_date, c_time, c_timestamp, c_timestamp_with_tz, c_char, c_varchar, c_character_varying, c_bpchar, c_bytea, c_text, c_json, c_json_string_override, c_jsonb, c_text_array, c_integer_array FROM postgres_types LIMIT 1";
         public class GetPostgresTypesRow
         {
             public bool? CBoolean { get; set; }
@@ -930,6 +933,7 @@ namespace NpgsqlLegacyExampleGen
             public string CText { get; set; }
             public JsonElement? CJson { get; set; }
             public string CJsonStringOverride { get; set; }
+            public JsonElement? CJsonb { get; set; }
             public string[] CTextArray { get; set; }
             public int[] CIntegerArray { get; set; }
         };
@@ -969,8 +973,9 @@ namespace NpgsqlLegacyExampleGen
                                     CText = reader.IsDBNull(19) ? null : reader.GetString(19),
                                     CJson = reader.IsDBNull(20) ? (JsonElement? )null : JsonSerializer.Deserialize<JsonElement>(reader.GetString(20)),
                                     CJsonStringOverride = reader.IsDBNull(21) ? null : reader.GetString(21),
-                                    CTextArray = reader.IsDBNull(22) ? null : reader.GetFieldValue<string[]>(22),
-                                    CIntegerArray = reader.IsDBNull(23) ? null : reader.GetFieldValue<int[]>(23)
+                                    CJsonb = reader.IsDBNull(22) ? (JsonElement? )null : JsonSerializer.Deserialize<JsonElement>(reader.GetString(22)),
+                                    CTextArray = reader.IsDBNull(23) ? null : reader.GetFieldValue<string[]>(23),
+                                    CIntegerArray = reader.IsDBNull(24) ? null : reader.GetFieldValue<int[]>(24)
                                 };
                             }
                         }
@@ -1017,8 +1022,9 @@ namespace NpgsqlLegacyExampleGen
                             CText = reader.IsDBNull(19) ? null : reader.GetString(19),
                             CJson = reader.IsDBNull(20) ? (JsonElement? )null : JsonSerializer.Deserialize<JsonElement>(reader.GetString(20)),
                             CJsonStringOverride = reader.IsDBNull(21) ? null : reader.GetString(21),
-                            CTextArray = reader.IsDBNull(22) ? null : reader.GetFieldValue<string[]>(22),
-                            CIntegerArray = reader.IsDBNull(23) ? null : reader.GetFieldValue<int[]>(23)
+                            CJsonb = reader.IsDBNull(22) ? (JsonElement? )null : JsonSerializer.Deserialize<JsonElement>(reader.GetString(22)),
+                            CTextArray = reader.IsDBNull(23) ? null : reader.GetFieldValue<string[]>(23),
+                            CIntegerArray = reader.IsDBNull(24) ? null : reader.GetFieldValue<int[]>(24)
                         };
                     }
                 }
