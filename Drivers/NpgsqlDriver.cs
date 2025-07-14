@@ -41,7 +41,8 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId
                     { "bigint", new() },
                     { "bigserial", new() }
                 },
-                ordinal => $"reader.GetInt64({ordinal})",
+                readerFn: ordinal => $"reader.GetInt64({ordinal})",
+                readerArrayFn: ordinal => $"reader.GetFieldValue<long[]>({ordinal})",
                 convertFunc: IntTo64
             ),
             ["byte[]"] = new(
@@ -56,7 +57,8 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId
                     { "tinyblob", new() },
                     { "varbinary", new() }
                 },
-                ordinal => $"reader.GetFieldValue<byte[]>({ordinal})"
+                readerFn: ordinal => $"reader.GetFieldValue<byte[]>({ordinal})",
+                readerArrayFn: ordinal => $"reader.GetFieldValue<byte[][]>({ordinal})"
             ),
             ["string"] = new(
                 new()
@@ -76,7 +78,8 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId
                 {
                     { "time", new(NpgsqlTypeOverride: "NpgsqlDbType.Time") }
                 },
-                ordinal => $"reader.GetFieldValue<TimeSpan>({ordinal})"
+                readerFn: ordinal => $"reader.GetFieldValue<TimeSpan>({ordinal})",
+                readerArrayFn: ordinal => $"reader.GetFieldValue<TimeSpan[]>({ordinal})"
             ),
             ["DateTime"] = new(
                 new()
@@ -85,7 +88,8 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId
                     { "timestamp", new(NpgsqlTypeOverride: "NpgsqlDbType.Timestamp") },
                     { "timestamptz", new(NpgsqlTypeOverride: "NpgsqlDbType.TimestampTz") }
                 },
-                ordinal => $"reader.GetDateTime({ordinal})"
+                readerFn: ordinal => $"reader.GetDateTime({ordinal})",
+                readerArrayFn: ordinal => $"reader.GetFieldValue<DateTime[]>({ordinal})"
             ),
             ["JsonElement"] = new(
                 new()
@@ -110,8 +114,8 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId
                 {
                     { "int2", new(NpgsqlTypeOverride: "NpgsqlDbType.Smallint") }
                 },
-                ordinal => $"reader.GetInt16({ordinal})",
-                ordinal => $"reader.GetFieldValue<short[]>({ordinal})"
+                readerFn: ordinal => $"reader.GetInt16({ordinal})",
+                readerArrayFn: ordinal => $"reader.GetFieldValue<short[]>({ordinal})"
             ),
             ["int"] = new(
                 new()
@@ -121,15 +125,16 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId
                     { "int4", new(NpgsqlTypeOverride: "NpgsqlDbType.Integer") },
                     { "serial", new(NpgsqlTypeOverride: "NpgsqlDbType.Integer") }
                 },
-                ordinal => $"reader.GetInt32({ordinal})",
-                ordinal => $"reader.GetFieldValue<int[]>({ordinal})"
+                readerFn: ordinal => $"reader.GetInt32({ordinal})",
+                readerArrayFn: ordinal => $"reader.GetFieldValue<int[]>({ordinal})"
             ),
             ["float"] = new(
                 new()
                 {
                     { "float4", new(NpgsqlTypeOverride: "NpgsqlDbType.Real") }
                 },
-                ordinal => $"reader.GetFloat({ordinal})"
+                readerFn: ordinal => $"reader.GetFloat({ordinal})",
+                readerArrayFn: ordinal => $"reader.GetFieldValue<float[]>({ordinal})"
             ),
             ["decimal"] = new(
                 new()
@@ -138,14 +143,16 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId
                     { "decimal", new(NpgsqlTypeOverride: "NpgsqlDbType.Numeric") },
                     { "money", new(NpgsqlTypeOverride: "NpgsqlDbType.Money") }
                 },
-                ordinal => $"reader.GetDecimal({ordinal})"
+                readerFn: ordinal => $"reader.GetDecimal({ordinal})",
+                readerArrayFn: ordinal => $"reader.GetFieldValue<decimal[]>({ordinal})"
             ),
             ["double"] = new(
                 new()
                 {
                     { "float8", new(NpgsqlTypeOverride: "NpgsqlDbType.Double") }
                 },
-                ordinal => $"reader.GetDouble({ordinal})"
+                readerFn: ordinal => $"reader.GetDouble({ordinal})",
+                readerArrayFn: ordinal => $"reader.GetFieldValue<double[]>({ordinal})"
             ),
             ["bool"] = new(
                 new()
@@ -153,14 +160,15 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId
                     { "bool", new() },
                     { "boolean", new() }
                 },
-                ordinal => $"reader.GetBoolean({ordinal})"
+                readerFn: ordinal => $"reader.GetBoolean({ordinal})",
+                readerArrayFn: ordinal => $"reader.GetFieldValue<bool[]>({ordinal})"
             ),
             ["NpgsqlPoint"] = new(
                 new()
                 {
                     { "point", new(NpgsqlTypeOverride: "NpgsqlDbType.Point") }
                 },
-                ordinal => $"reader.GetFieldValue<NpgsqlPoint>({ordinal})",
+                readerFn: ordinal => $"reader.GetFieldValue<NpgsqlPoint>({ordinal})",
                 usingDirective: "NpgsqlTypes",
                 sqlMapper: "RegisterNpgsqlTypeHandler<NpgsqlPoint>();"
             ),

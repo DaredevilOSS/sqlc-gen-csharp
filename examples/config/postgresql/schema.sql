@@ -43,8 +43,12 @@ CREATE TABLE postgres_types (
     c_jsonb JSONB,
 
     /* Array Data Types */
+    c_boolean_array BOOLEAN [],
     c_text_array TEXT [],
-    c_integer_array INTEGER []
+    c_integer_array INTEGER [],
+    c_decimal_array DECIMAL(10, 7) [],
+    c_date_array DATE [],
+    c_timestamp_array TIMESTAMP []
 );
 
 

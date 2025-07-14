@@ -381,23 +381,43 @@ namespace EndToEndTests
             Assert.That(actual.CTimestampWithTz, Is.EqualTo(expected.CTimestampWithTz));
         }
 
-        [Test]
-        [TestCase(new byte[] { 0x45, 0x42 }, new string[] { "Party", "Fight" }, new int[] { 543, -4234 })]
-        [TestCase(new byte[] { }, new string[] { }, new int[] { })]
-        [TestCase(null, null, null)]
-        public async Task TestPostgresArrayTypes(byte[] cBytea, string[] cTextArray, int[] cIntegerArray)
+        public static IEnumerable<TestCaseData> PostgresArrayTypesTestCases
         {
-            await QuerySql.InsertPostgresTypes(new QuerySql.InsertPostgresTypesArgs { CBytea = cBytea, CTextArray = cTextArray, CIntegerArray = cIntegerArray });
+            get
+            {
+                yield return new TestCaseData(new byte[] { 0x45, 0x42 }, new bool[] { true, false }, new string[] { "Makeshift", "Swahili" }, new int[] { 543, -4234 }, new decimal[] { 1.2345678m, 2.3456789m }, new DateTime[] { new DateTime(2021, 1, 1), new DateTime(2022, 2, 2) }, new DateTime[] { new DateTime(2023, 3, 3), new DateTime(2024, 4, 4) }).SetName("Arrays with values");
+                yield return new TestCaseData(new byte[] { }, new bool[] { }, new string[] { }, new int[] { }, new decimal[] { }, new DateTime[] { }, new DateTime[] { }).SetName("Arrays with null values");
+                yield return new TestCaseData(null, null, null, null, null, null, null).SetName("Null Array Types");
+            }
+        }
+
+        [Test]
+        [TestCaseSource(nameof(PostgresArrayTypesTestCases))]
+        public async Task TestPostgresArrayTypes(byte[] cBytea, bool[] cBooleanArray, string[] cTextArray, int[] cIntegerArray, decimal[] cDecimalArray, DateTime[] cDateArray, DateTime[] cTimestampArray)
+        {
+            await QuerySql.InsertPostgresTypes(new QuerySql.InsertPostgresTypesArgs { CBytea = cBytea, CBooleanArray = cBooleanArray, CTextArray = cTextArray, CIntegerArray = cIntegerArray, CDecimalArray = cDecimalArray, CDateArray = cDateArray, CTimestampArray = cTimestampArray });
             var expected = new QuerySql.GetPostgresTypesRow
             {
                 CBytea = cBytea,
+                CBooleanArray = cBooleanArray,
                 CTextArray = cTextArray,
-                CIntegerArray = cIntegerArray
+                CIntegerArray = cIntegerArray,
+                CDecimalArray = cDecimalArray,
+                CDateArray = cDateArray,
+                CTimestampArray = cTimestampArray
             };
             var actual = await QuerySql.GetPostgresTypes();
-            Assert.That(actual.CBytea, Is.EqualTo(expected.CBytea));
-            Assert.That(actual.CTextArray, Is.EqualTo(expected.CTextArray));
-            Assert.That(actual.CIntegerArray, Is.EqualTo(expected.CIntegerArray));
+            AssertSingularEquals(expected, actual);
+            void AssertSingularEquals(QuerySql.GetPostgresTypesRow x, QuerySql.GetPostgresTypesRow y)
+            {
+                Assert.That(x.CBytea, Is.EqualTo(y.CBytea));
+                Assert.That(x.CTextArray, Is.EqualTo(y.CTextArray));
+                Assert.That(x.CIntegerArray, Is.EqualTo(y.CIntegerArray));
+                Assert.That(x.CBooleanArray, Is.EqualTo(y.CBooleanArray));
+                Assert.That(x.CDecimalArray, Is.EqualTo(y.CDecimalArray));
+                Assert.That(x.CDateArray, Is.EqualTo(y.CDateArray));
+                Assert.That(x.CTimestampArray, Is.EqualTo(y.CTimestampArray));
+            }
         }
 
         [Test]
@@ -531,12 +551,16 @@ namespace EndToEndTests
                 CMoney = cMoney
             };
             var actual = await QuerySql.GetPostgresTypesCnt();
-            Assert.That(actual.Cnt, Is.EqualTo(expected.Cnt));
-            Assert.That(actual.CReal, Is.EqualTo(expected.CReal));
-            Assert.That(actual.CDecimal, Is.EqualTo(expected.CDecimal));
-            Assert.That(actual.CNumeric, Is.EqualTo(expected.CNumeric));
-            Assert.That(actual.CDoublePrecision, Is.EqualTo(expected.CDoublePrecision));
-            Assert.That(actual.CMoney, Is.EqualTo(expected.CMoney));
+            AssertSingularEquals(expected, actual);
+            void AssertSingularEquals(QuerySql.GetPostgresTypesCntRow x, QuerySql.GetPostgresTypesCntRow y)
+            {
+                Assert.That(x.Cnt, Is.EqualTo(y.Cnt));
+                Assert.That(x.CReal, Is.EqualTo(y.CReal));
+                Assert.That(x.CDecimal, Is.EqualTo(y.CDecimal));
+                Assert.That(x.CNumeric, Is.EqualTo(y.CNumeric));
+                Assert.That(x.CDoublePrecision, Is.EqualTo(y.CDoublePrecision));
+                Assert.That(x.CMoney, Is.EqualTo(y.CMoney));
+            }
         }
 
         [Test]
@@ -558,11 +582,15 @@ namespace EndToEndTests
                 CTimestampWithTz = cTimestampWithTz,
             };
             var actual = await QuerySql.GetPostgresTypesCnt();
-            Assert.That(actual.Cnt, Is.EqualTo(expected.Cnt));
-            Assert.That(actual.CDate, Is.EqualTo(expected.CDate));
-            Assert.That(actual.CTime, Is.EqualTo(expected.CTime));
-            Assert.That(actual.CTimestamp, Is.EqualTo(expected.CTimestamp));
-            Assert.That(actual.CTimestampWithTz, Is.EqualTo(expected.CTimestampWithTz));
+            AssertSingularEquals(expected, actual);
+            void AssertSingularEquals(QuerySql.GetPostgresTypesCntRow x, QuerySql.GetPostgresTypesCntRow y)
+            {
+                Assert.That(x.Cnt, Is.EqualTo(y.Cnt));
+                Assert.That(x.CDate, Is.EqualTo(y.CDate));
+                Assert.That(x.CTime, Is.EqualTo(y.CTime));
+                Assert.That(x.CTimestamp, Is.EqualTo(y.CTimestamp));
+                Assert.That(x.CTimestampWithTz, Is.EqualTo(y.CTimestampWithTz));
+            }
         }
 
         [Test]

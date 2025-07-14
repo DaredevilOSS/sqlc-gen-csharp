@@ -42,8 +42,12 @@ public class PostgresType
     public JsonElement? CJson { get; init; }
     public JsonElement? CJsonStringOverride { get; init; }
     public JsonElement? CJsonb { get; init; }
+    public bool[]? CBooleanArray { get; init; }
     public string[]? CTextArray { get; init; }
     public int[]? CIntegerArray { get; init; }
+    public decimal[]? CDecimalArray { get; init; }
+    public DateTime[]? CDateArray { get; init; }
+    public DateTime[]? CTimestampArray { get; init; }
 };
 public class PostgresGeometricType
 {

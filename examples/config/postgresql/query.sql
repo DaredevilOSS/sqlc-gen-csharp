@@ -93,8 +93,12 @@ INSERT INTO postgres_types
     c_json_string_override,
     c_jsonb,
     c_bytea, 
+    c_boolean_array,
     c_text_array, 
-    c_integer_array
+    c_integer_array,
+    c_decimal_array,
+    c_date_array,
+    c_timestamp_array
 )
 VALUES (
     sqlc.narg('c_boolean'),
@@ -120,8 +124,12 @@ VALUES (
     sqlc.narg('c_json_string_override')::json, 
     sqlc.narg('c_jsonb')::jsonb,
     sqlc.narg('c_bytea'), 
+    sqlc.narg('c_boolean_array'),
     sqlc.narg('c_text_array'), 
-    sqlc.narg('c_integer_array')
+    sqlc.narg('c_integer_array'),
+    sqlc.narg('c_decimal_array'),
+    sqlc.narg('c_date_array'),
+    sqlc.narg('c_timestamp_array')
 );
 
 -- name: InsertPostgresTypesBatch :copyfrom

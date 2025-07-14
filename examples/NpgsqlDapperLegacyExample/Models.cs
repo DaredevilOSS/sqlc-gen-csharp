@@ -43,8 +43,12 @@ namespace NpgsqlDapperLegacyExampleGen
         public JsonElement? CJson { get; set; }
         public JsonElement? CJsonStringOverride { get; set; }
         public JsonElement? CJsonb { get; set; }
+        public bool[] CBooleanArray { get; set; }
         public string[] CTextArray { get; set; }
         public int[] CIntegerArray { get; set; }
+        public decimal[] CDecimalArray { get; set; }
+        public DateTime[] CDateArray { get; set; }
+        public DateTime[] CTimestampArray { get; set; }
     };
     public class PostgresGeometricType
     {
