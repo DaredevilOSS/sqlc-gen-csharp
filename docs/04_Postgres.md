@@ -19,7 +19,7 @@ Since in batch insert the data is not validated by the SQL itself but written in
 we consider support for the different data types separately for batch inserts and everything else.
 
 | DB Type                                 | Supported? | Supported in Batch? |
-|-----------------------------------------|-----------|---------------------|
+|-----------------------------------------|------------|-------------------- |
 | boolean                                 | ✅         | ✅                  |
 | smallint                                | ✅         | ✅                  |
 | integer                                 | ✅         | ✅                  |
@@ -40,13 +40,13 @@ we consider support for the different data types separately for batch inserts an
 | bytea                                   | ✅         | ✅                  |
 | 2-dimensional arrays (e.g text[],int[]) | ✅         | ❌                  |
 | money                                   | ✅         | ✅                  |
-| point                                   | ✅         | ❌                  |
-| line                                    | ✅         | ❌                  |
-| lseg                                    | ✅         | ❌                  |
-| box                                     | ✅         | ❌                  |
-| path                                    | ✅         | ❌                  |
-| polygon                                 | ✅         | ❌                  |
-| circle                                  | ✅         | ❌                  |
+| point                                   | ✅         | ✅                  |
+| line                                    | ✅         | ✅                  |
+| lseg                                    | ✅         | ✅                  |
+| box                                     | ✅         | ✅                  |
+| path                                    | ✅         | ✅                  |
+| polygon                                 | ✅         | ✅                  |
+| circle                                  | ✅         | ✅                  |
 | cidr                                    | ❌         | ❌                  |
 | inet                                    | ❌         | ❌                  |
 | macaddr                                 | ❌         | ❌                  |
@@ -54,7 +54,7 @@ we consider support for the different data types separately for batch inserts an
 | tsvector                                | ❌         | ❌                  |
 | tsquery                                 | ❌         | ❌                  |
 | uuid                                    | ❌         | ❌                  |
-| json                                    | ✅         | 🚫                   |
+| json                                    | ✅         | 🚫                  |
 | jsonb                                   | ❌         | ❌                  |
 | jsonpath                                | ❌         | ❌                  |
 
