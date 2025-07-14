@@ -34,7 +34,7 @@ we consider support for the different data types separately for batch inserts an
 | time with time zone                     | ❌         | ❌                  |
 | interval                                | ❌         | ❌                  |
 | char                                    | ✅         | ✅                  |
-| bpchar                                  | ❌         | ❌                  |
+| bpchar                                  | ✅         | ✅                  |
 | varchar, character varying              | ✅         | ✅                  |
 | text                                    | ✅         | ✅                  |
 | bytea                                   | ✅         | ✅                  |

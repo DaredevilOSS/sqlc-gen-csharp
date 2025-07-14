@@ -518,7 +518,7 @@ public class QuerySql
         }
     }
 
-    private const string InsertPostgresTypesSql = "INSERT INTO postgres_types(c_boolean, c_bit, c_smallint, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_money, c_date, c_time, c_timestamp, c_timestamp_with_tz, c_char, c_varchar, c_character_varying, c_text, c_json, c_json_string_override, c_bytea, c_text_array, c_integer_array) VALUES ( @c_boolean, @c_bit, @c_smallint, @c_integer, @c_bigint, @c_real, @c_numeric, @c_decimal, @c_double_precision, @c_money, @c_date, @c_time, @c_timestamp, @c_timestamp_with_tz, @c_char, @c_varchar, @c_character_varying, @c_text, @c_json :: json, @c_json_string_override :: json, @c_bytea, @c_text_array, @c_integer_array ) "; 
+    private const string InsertPostgresTypesSql = "INSERT INTO postgres_types(c_boolean, c_bit, c_smallint, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_money, c_date, c_time, c_timestamp, c_timestamp_with_tz, c_char, c_varchar, c_character_varying, c_bpchar, c_text, c_json, c_json_string_override, c_bytea, c_text_array, c_integer_array) VALUES ( @c_boolean, @c_bit, @c_smallint, @c_integer, @c_bigint, @c_real, @c_numeric, @c_decimal, @c_double_precision, @c_money, @c_date, @c_time, @c_timestamp, @c_timestamp_with_tz, @c_char, @c_varchar, @c_character_varying, @c_bpchar, @c_text, @c_json :: json, @c_json_string_override :: json, @c_bytea, @c_text_array, @c_integer_array ) "; 
     public class InsertPostgresTypesArgs
     {
         public bool? CBoolean { get; init; }
@@ -538,6 +538,7 @@ public class QuerySql
         public string? CChar { get; init; }
         public string? CVarchar { get; init; }
         public string? CCharacterVarying { get; init; }
+        public string? CBpchar { get; init; }
         public string? CText { get; init; }
         public JsonElement? CJson { get; init; }
         public string? CJsonStringOverride { get; init; }
@@ -565,6 +566,7 @@ public class QuerySql
         queryParams.Add("c_char", args.CChar);
         queryParams.Add("c_varchar", args.CVarchar);
         queryParams.Add("c_character_varying", args.CCharacterVarying);
+        queryParams.Add("c_bpchar", args.CBpchar);
         queryParams.Add("c_text", args.CText);
         queryParams.Add("c_json", args.CJson.HasValue ? args.CJson.Value.GetRawText() : null);
         queryParams.Add("c_json_string_override", args.CJsonStringOverride);
@@ -589,7 +591,7 @@ public class QuerySql
         await this.Transaction.Connection.ExecuteAsync(InsertPostgresTypesSql, queryParams, transaction: this.Transaction);
     }
 
-    private const string InsertPostgresTypesBatchSql = "COPY postgres_types (c_boolean, c_smallint, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_money, c_date, c_time, c_timestamp, c_timestamp_with_tz, c_char, c_varchar, c_character_varying, c_text, c_bytea) FROM STDIN (FORMAT BINARY)";
+    private const string InsertPostgresTypesBatchSql = "COPY postgres_types (c_boolean, c_smallint, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_money, c_date, c_time, c_timestamp, c_timestamp_with_tz, c_char, c_varchar, c_character_varying, c_bpchar, c_text, c_bytea) FROM STDIN (FORMAT BINARY)";
     public class InsertPostgresTypesBatchArgs
     {
         public bool? CBoolean { get; init; }
@@ -608,6 +610,7 @@ public class QuerySql
         public string? CChar { get; init; }
         public string? CVarchar { get; init; }
         public string? CCharacterVarying { get; init; }
+        public string? CBpchar { get; init; }
         public string? CText { get; init; }
         public byte[]? CBytea { get; init; }
     };
@@ -637,6 +640,7 @@ public class QuerySql
                     await writer.WriteAsync(row.CChar);
                     await writer.WriteAsync(row.CVarchar);
                     await writer.WriteAsync(row.CCharacterVarying);
+                    await writer.WriteAsync(row.CBpchar);
                     await writer.WriteAsync(row.CText);
                     await writer.WriteAsync(row.CBytea);
                 }
@@ -648,7 +652,7 @@ public class QuerySql
         }
     }
 
-    private const string GetPostgresTypesSql = "SELECT c_boolean, c_bit, c_smallint, c_integer, c_bigint, c_decimal, c_numeric, c_real, c_double_precision, c_money, c_date, c_time, c_timestamp, c_timestamp_with_tz, c_char, c_varchar, c_character_varying, c_bytea, c_text, c_json, c_json_string_override, c_text_array, c_integer_array FROM postgres_types LIMIT 1";
+    private const string GetPostgresTypesSql = "SELECT c_boolean, c_bit, c_smallint, c_integer, c_bigint, c_decimal, c_numeric, c_real, c_double_precision, c_money, c_date, c_time, c_timestamp, c_timestamp_with_tz, c_char, c_varchar, c_character_varying, c_bpchar, c_bytea, c_text, c_json, c_json_string_override, c_text_array, c_integer_array FROM postgres_types LIMIT 1";
     public class GetPostgresTypesRow
     {
         public bool? CBoolean { get; init; }
@@ -668,6 +672,7 @@ public class QuerySql
         public string? CChar { get; init; }
         public string? CVarchar { get; init; }
         public string? CCharacterVarying { get; init; }
+        public string? CBpchar { get; init; }
         public byte[]? CBytea { get; init; }
         public string? CText { get; init; }
         public JsonElement? CJson { get; init; }
@@ -694,7 +699,7 @@ public class QuerySql
         return await this.Transaction.Connection.QueryFirstOrDefaultAsync<GetPostgresTypesRow?>(GetPostgresTypesSql, transaction: this.Transaction);
     }
 
-    private const string GetPostgresTypesCntSql = "SELECT c_smallint , c_boolean, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_money, c_date, c_time, c_timestamp, c_timestamp_with_tz, c_char, c_varchar, c_character_varying, c_text, c_bytea, COUNT (* ) AS  cnt  FROM  postgres_types  GROUP  BY  c_smallint, c_boolean, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_money, c_date, c_time, c_timestamp, c_timestamp_with_tz, c_char, c_varchar, c_character_varying, c_text, c_bytea LIMIT  1  ";  
+    private const string GetPostgresTypesCntSql = "SELECT c_smallint , c_boolean, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_money, c_date, c_time, c_timestamp, c_timestamp_with_tz, c_char, c_varchar, c_character_varying, c_bpchar, c_text, c_bytea, COUNT (* ) AS  cnt  FROM  postgres_types  GROUP  BY  c_smallint, c_boolean, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_money, c_date, c_time, c_timestamp, c_timestamp_with_tz, c_char, c_varchar, c_character_varying, c_bpchar, c_text, c_bytea LIMIT  1  ";  
     public class GetPostgresTypesCntRow
     {
         public short? CSmallint { get; init; }
@@ -713,6 +718,7 @@ public class QuerySql
         public string? CChar { get; init; }
         public string? CVarchar { get; init; }
         public string? CCharacterVarying { get; init; }
+        public string? CBpchar { get; init; }
         public string? CText { get; init; }
         public byte[]? CBytea { get; init; }
         public required long Cnt { get; init; }

@@ -87,6 +87,7 @@ INSERT INTO postgres_types
     c_char,
     c_varchar,
     c_character_varying,
+    c_bpchar,
     c_text,
     c_json,
     c_json_string_override,
@@ -112,6 +113,7 @@ VALUES (
     sqlc.narg('c_char'),
     sqlc.narg('c_varchar'),
     sqlc.narg('c_character_varying'),
+    sqlc.narg('c_bpchar'),
     sqlc.narg('c_text'),
     sqlc.narg('c_json')::json, 
     sqlc.narg('c_json_string_override')::json, 
@@ -139,6 +141,7 @@ INSERT INTO postgres_types
     c_char,
     c_varchar,
     c_character_varying,
+    c_bpchar,
     c_text,
     c_bytea
 )
@@ -160,7 +163,8 @@ VALUES (
     $15, 
     $16, 
     $17, 
-    $18
+    $18,
+    $19
 );
 
 -- name: GetPostgresTypes :one
@@ -184,6 +188,7 @@ SELECT
     c_char,
     c_varchar,
     c_character_varying,
+    c_bpchar,
     c_text,
     c_bytea,
     COUNT(*) AS cnt
@@ -205,6 +210,7 @@ GROUP BY
     c_char,
     c_varchar,
     c_character_varying,
+    c_bpchar,
     c_text,
     c_bytea
 LIMIT 1;

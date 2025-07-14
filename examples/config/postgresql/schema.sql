@@ -35,6 +35,7 @@ CREATE TABLE postgres_types (
     c_char CHAR,
     c_varchar VARCHAR(100),
     c_character_varying CHARACTER VARYING(100),
+    c_bpchar BPCHAR(100),
     c_bytea BYTEA,
     c_text TEXT,
     c_json JSON,

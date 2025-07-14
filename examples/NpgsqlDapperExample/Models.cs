@@ -36,6 +36,7 @@ public class PostgresType
     public string? CChar { get; init; }
     public string? CVarchar { get; init; }
     public string? CCharacterVarying { get; init; }
+    public string? CBpchar { get; init; }
     public byte[]? CBytea { get; init; }
     public string? CText { get; init; }
     public JsonElement? CJson { get; init; }

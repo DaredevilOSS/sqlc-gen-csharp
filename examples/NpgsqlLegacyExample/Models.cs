@@ -37,6 +37,7 @@ namespace NpgsqlLegacyExampleGen
         public string CChar { get; set; }
         public string CVarchar { get; set; }
         public string CCharacterVarying { get; set; }
+        public string CBpchar { get; set; }
         public byte[] CBytea { get; set; }
         public string CText { get; set; }
         public JsonElement? CJson { get; set; }

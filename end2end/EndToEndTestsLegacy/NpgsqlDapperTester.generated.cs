@@ -290,23 +290,29 @@ namespace EndToEndTests
         }
 
         [Test]
-        [TestCase("E", "It takes a nation of millions to hold us back", "Rebel Without a Pause", "Prophets of Rage")]
-        [TestCase(null, null, null, null)]
-        public async Task TestPostgresStringTypes(string cChar, string cVarchar, string cCharacterVarying, string cText)
+        [TestCase("E", "It takes a nation of millions to hold us back", "Rebel Without a Pause", "Master of Puppets", "Prophets of Rage")]
+        [TestCase(null, null, null, null, null)]
+        public async Task TestPostgresStringTypes(string cChar, string cVarchar, string cCharacterVarying, string cBpchar, string cText)
         {
-            await QuerySql.InsertPostgresTypes(new QuerySql.InsertPostgresTypesArgs { CChar = cChar, CVarchar = cVarchar, CCharacterVarying = cCharacterVarying, CText = cText, });
+            await QuerySql.InsertPostgresTypes(new QuerySql.InsertPostgresTypesArgs { CChar = cChar, CVarchar = cVarchar, CCharacterVarying = cCharacterVarying, CBpchar = cBpchar, CText = cText, });
             var expected = new QuerySql.GetPostgresTypesRow
             {
                 CChar = cChar,
                 CVarchar = cVarchar,
                 CCharacterVarying = cCharacterVarying,
+                CBpchar = cBpchar,
                 CText = cText,
             };
             var actual = await QuerySql.GetPostgresTypes();
-            Assert.That(actual.CChar, Is.EqualTo(expected.CChar));
-            Assert.That(actual.CVarchar, Is.EqualTo(expected.CVarchar));
-            Assert.That(actual.CCharacterVarying, Is.EqualTo(expected.CCharacterVarying));
-            Assert.That(actual.CText, Is.EqualTo(expected.CText));
+            AssertSingularEquals(expected, actual);
+            void AssertSingularEquals(QuerySql.GetPostgresTypesRow x, QuerySql.GetPostgresTypesRow y)
+            {
+                Assert.That(x.CChar, Is.EqualTo(y.CChar));
+                Assert.That(x.CVarchar, Is.EqualTo(y.CVarchar));
+                Assert.That(x.CCharacterVarying, Is.EqualTo(y.CCharacterVarying));
+                Assert.That(x.CBpchar?.Trim(), Is.EqualTo(y.CBpchar?.Trim()));
+                Assert.That(x.CText, Is.EqualTo(y.CText));
+            }
         }
 
         [Test]
@@ -414,11 +420,11 @@ namespace EndToEndTests
         }
 
         [Test]
-        [TestCase(100, "z", "Sex Pistols", "Anarchy in the U.K", "Never Mind the Bollocks...")]
-        [TestCase(10, null, null, null, null)]
-        public async Task TestStringCopyFrom(int batchSize, string cChar, string cVarchar, string cCharacterVarying, string cText)
+        [TestCase(100, "z", "Sex Pistols", "Anarchy in the U.K", "Yoshimi Battles the Pink Robots", "Never Mind the Bollocks...")]
+        [TestCase(10, null, null, null, null, null)]
+        public async Task TestStringCopyFrom(int batchSize, string cChar, string cVarchar, string cCharacterVarying, string cBpchar, string cText)
         {
-            var batchArgs = Enumerable.Range(0, batchSize).Select(_ => new QuerySql.InsertPostgresTypesBatchArgs { CChar = cChar, CVarchar = cVarchar, CCharacterVarying = cCharacterVarying, CText = cText }).ToList();
+            var batchArgs = Enumerable.Range(0, batchSize).Select(_ => new QuerySql.InsertPostgresTypesBatchArgs { CChar = cChar, CVarchar = cVarchar, CCharacterVarying = cCharacterVarying, CBpchar = cBpchar, CText = cText }).ToList();
             await QuerySql.InsertPostgresTypesBatch(batchArgs);
             var expected = new QuerySql.GetPostgresTypesCntRow
             {
@@ -426,14 +432,20 @@ namespace EndToEndTests
                 CChar = cChar,
                 CVarchar = cVarchar,
                 CCharacterVarying = cCharacterVarying,
+                CBpchar = cBpchar,
                 CText = cText
             };
             var actual = await QuerySql.GetPostgresTypesCnt();
-            Assert.That(actual.Cnt, Is.EqualTo(expected.Cnt));
-            Assert.That(actual.CChar, Is.EqualTo(expected.CChar));
-            Assert.That(actual.CVarchar, Is.EqualTo(expected.CVarchar));
-            Assert.That(actual.CCharacterVarying, Is.EqualTo(expected.CCharacterVarying));
-            Assert.That(actual.CText, Is.EqualTo(expected.CText));
+            AssertSingularEquals(expected, actual);
+            void AssertSingularEquals(QuerySql.GetPostgresTypesCntRow x, QuerySql.GetPostgresTypesCntRow y)
+            {
+                Assert.That(x.Cnt, Is.EqualTo(y.Cnt));
+                Assert.That(x.CChar, Is.EqualTo(y.CChar));
+                Assert.That(x.CVarchar, Is.EqualTo(y.CVarchar));
+                Assert.That(x.CCharacterVarying, Is.EqualTo(y.CCharacterVarying));
+                Assert.That(x.CBpchar?.Trim(), Is.EqualTo(y.CBpchar?.Trim()));
+                Assert.That(x.CText, Is.EqualTo(y.CText));
+            }
         }
 
         [Test]

@@ -304,6 +304,16 @@
                 }
               },
               {
+                "name": "c_bpchar",
+                "length": -1,
+                "table": {
+                  "name": "postgres_types"
+                },
+                "type": {
+                  "name": "bpchar"
+                }
+              },
+              {
                 "name": "c_bytea",
                 "length": -1,
                 "table": {
@@ -33022,7 +33032,7 @@
       "filename": "query.sql"
     },
     {
-      "text": "INSERT INTO postgres_types\n(\n    c_boolean,\n    c_bit,\n    c_smallint,\n    c_integer,\n    c_bigint,\n    c_real,\n    c_numeric,\n    c_decimal,\n    c_double_precision,\n    c_money,\n    c_date,\n    c_time,\n    c_timestamp,\n    c_timestamp_with_tz,\n    c_char,\n    c_varchar,\n    c_character_varying,\n    c_text,\n    c_json,\n    c_json_string_override,\n    c_bytea, \n    c_text_array, \n    c_integer_array\n)\nVALUES (\n    $1,\n    $2,\n    $3,\n    $4,\n    $5,\n    $6,\n    $7,\n    $8,\n    $9,\n    $10,\n    $11,\n    $12,\n    $13,\n    $14,\n    $15,\n    $16,\n    $17,\n    $18,\n    $19::json, \n    $20::json, \n    $21, \n    $22, \n    $23\n)",
+      "text": "INSERT INTO postgres_types\n(\n    c_boolean,\n    c_bit,\n    c_smallint,\n    c_integer,\n    c_bigint,\n    c_real,\n    c_numeric,\n    c_decimal,\n    c_double_precision,\n    c_money,\n    c_date,\n    c_time,\n    c_timestamp,\n    c_timestamp_with_tz,\n    c_char,\n    c_varchar,\n    c_character_varying,\n    c_bpchar,\n    c_text,\n    c_json,\n    c_json_string_override,\n    c_bytea, \n    c_text_array, \n    c_integer_array\n)\nVALUES (\n    $1,\n    $2,\n    $3,\n    $4,\n    $5,\n    $6,\n    $7,\n    $8,\n    $9,\n    $10,\n    $11,\n    $12,\n    $13,\n    $14,\n    $15,\n    $16,\n    $17,\n    $18,\n    $19,\n    $20::json, \n    $21::json, \n    $22, \n    $23, \n    $24\n)",
       "name": "InsertPostgresTypes",
       "cmd": ":exec",
       "parameters": [
@@ -33301,6 +33311,22 @@
         {
           "number": 18,
           "column": {
+            "name": "c_bpchar",
+            "length": -1,
+            "isNamedParam": true,
+            "table": {
+              "schema": "public",
+              "name": "postgres_types"
+            },
+            "type": {
+              "name": "bpchar"
+            },
+            "originalName": "c_bpchar"
+          }
+        },
+        {
+          "number": 19,
+          "column": {
             "name": "c_text",
             "length": -1,
             "isNamedParam": true,
@@ -33315,7 +33341,7 @@
           }
         },
         {
-          "number": 19,
+          "number": 20,
           "column": {
             "name": "c_json",
             "length": -1,
@@ -33325,7 +33351,7 @@
           }
         },
         {
-          "number": 20,
+          "number": 21,
           "column": {
             "name": "c_json_string_override",
             "length": -1,
@@ -33335,7 +33361,7 @@
           }
         },
         {
-          "number": 21,
+          "number": 22,
           "column": {
             "name": "c_bytea",
             "length": -1,
@@ -33351,7 +33377,7 @@
           }
         },
         {
-          "number": 22,
+          "number": 23,
           "column": {
             "name": "c_text_array",
             "isArray": true,
@@ -33369,7 +33395,7 @@
           }
         },
         {
-          "number": 23,
+          "number": 24,
           "column": {
             "name": "c_integer_array",
             "isArray": true,
@@ -33393,7 +33419,7 @@
       }
     },
     {
-      "text": "INSERT INTO postgres_types\n(\n    c_boolean,\n    c_smallint,\n    c_integer,\n    c_bigint,\n    c_real,\n    c_numeric,\n    c_decimal,\n    c_double_precision,\n    c_money,\n    c_date,\n    c_time,\n    c_timestamp,\n    c_timestamp_with_tz,\n    c_char,\n    c_varchar,\n    c_character_varying,\n    c_text,\n    c_bytea\n)\nVALUES (\n    $1, \n    $2, \n    $3, \n    $4, \n    $5, \n    $6, \n    $7, \n    $8, \n    $9, \n    $10, \n    $11, \n    $12, \n    $13, \n    $14, \n    $15, \n    $16, \n    $17, \n    $18\n)",
+      "text": "INSERT INTO postgres_types\n(\n    c_boolean,\n    c_smallint,\n    c_integer,\n    c_bigint,\n    c_real,\n    c_numeric,\n    c_decimal,\n    c_double_precision,\n    c_money,\n    c_date,\n    c_time,\n    c_timestamp,\n    c_timestamp_with_tz,\n    c_char,\n    c_varchar,\n    c_character_varying,\n    c_bpchar,\n    c_text,\n    c_bytea\n)\nVALUES (\n    $1, \n    $2, \n    $3, \n    $4, \n    $5, \n    $6, \n    $7, \n    $8, \n    $9, \n    $10, \n    $11, \n    $12, \n    $13, \n    $14, \n    $15, \n    $16, \n    $17, \n    $18,\n    $19\n)",
       "name": "InsertPostgresTypesBatch",
       "cmd": ":copyfrom",
       "parameters": [
@@ -33640,6 +33666,21 @@
         {
           "number": 17,
           "column": {
+            "name": "c_bpchar",
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "postgres_types"
+            },
+            "type": {
+              "name": "bpchar"
+            },
+            "originalName": "c_bpchar"
+          }
+        },
+        {
+          "number": 18,
+          "column": {
             "name": "c_text",
             "length": -1,
             "table": {
@@ -33653,7 +33694,7 @@
           }
         },
         {
-          "number": 18,
+          "number": 19,
           "column": {
             "name": "c_bytea",
             "length": -1,
@@ -33674,7 +33715,7 @@
       }
     },
     {
-      "text": "SELECT c_boolean, c_bit, c_smallint, c_integer, c_bigint, c_decimal, c_numeric, c_real, c_double_precision, c_money, c_date, c_time, c_timestamp, c_timestamp_with_tz, c_char, c_varchar, c_character_varying, c_bytea, c_text, c_json, c_json_string_override, c_text_array, c_integer_array FROM postgres_types LIMIT 1",
+      "text": "SELECT c_boolean, c_bit, c_smallint, c_integer, c_bigint, c_decimal, c_numeric, c_real, c_double_precision, c_money, c_date, c_time, c_timestamp, c_timestamp_with_tz, c_char, c_varchar, c_character_varying, c_bpchar, c_bytea, c_text, c_json, c_json_string_override, c_text_array, c_integer_array FROM postgres_types LIMIT 1",
       "name": "GetPostgresTypes",
       "cmd": ":one",
       "columns": [
@@ -33881,6 +33922,17 @@
           "originalName": "c_character_varying"
         },
         {
+          "name": "c_bpchar",
+          "length": -1,
+          "table": {
+            "name": "postgres_types"
+          },
+          "type": {
+            "name": "bpchar"
+          },
+          "originalName": "c_bpchar"
+        },
+        {
           "name": "c_bytea",
           "length": -1,
           "table": {
@@ -33955,7 +34007,7 @@
       "filename": "query.sql"
     },
     {
-      "text": "SELECT\n    c_smallint,\n    c_boolean,\n    c_integer,\n    c_bigint,\n    c_real,\n    c_numeric,\n    c_decimal,\n    c_double_precision,\n    c_money,\n    c_date,\n    c_time,\n    c_timestamp,\n    c_timestamp_with_tz,\n    c_char,\n    c_varchar,\n    c_character_varying,\n    c_text,\n    c_bytea,\n    COUNT(*) AS cnt\nFROM postgres_types\nGROUP BY\n    c_smallint,\n    c_boolean,\n    c_integer,\n    c_bigint,\n    c_real,\n    c_numeric,\n    c_decimal,\n    c_double_precision,\n    c_money,\n    c_date,\n    c_time,\n    c_timestamp,\n    c_timestamp_with_tz,\n    c_char,\n    c_varchar,\n    c_character_varying,\n    c_text,\n    c_bytea\nLIMIT 1",
+      "text": "SELECT\n    c_smallint,\n    c_boolean,\n    c_integer,\n    c_bigint,\n    c_real,\n    c_numeric,\n    c_decimal,\n    c_double_precision,\n    c_money,\n    c_date,\n    c_time,\n    c_timestamp,\n    c_timestamp_with_tz,\n    c_char,\n    c_varchar,\n    c_character_varying,\n    c_bpchar,\n    c_text,\n    c_bytea,\n    COUNT(*) AS cnt\nFROM postgres_types\nGROUP BY\n    c_smallint,\n    c_boolean,\n    c_integer,\n    c_bigint,\n    c_real,\n    c_numeric,\n    c_decimal,\n    c_double_precision,\n    c_money,\n    c_date,\n    c_time,\n    c_timestamp,\n    c_timestamp_with_tz,\n    c_char,\n    c_varchar,\n    c_character_varying,\n    c_bpchar,\n    c_text,\n    c_bytea\nLIMIT 1",
       "name": "GetPostgresTypesCnt",
       "cmd": ":one",
       "columns": [
@@ -34148,6 +34200,17 @@
             "name": "varchar"
           },
           "originalName": "c_character_varying"
+        },
+        {
+          "name": "c_bpchar",
+          "length": -1,
+          "table": {
+            "name": "postgres_types"
+          },
+          "type": {
+            "name": "bpchar"
+          },
+          "originalName": "c_bpchar"
         },
         {
           "name": "c_text",
