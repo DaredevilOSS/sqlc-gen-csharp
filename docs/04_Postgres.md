@@ -31,7 +31,7 @@ we consider support for the different data types separately for batch inserts an
 | timestamp, timestamp without time zone  | ✅         | ✅                  |
 | timestamp with time zone                | ✅         | ✅                  |
 | time, time without time zone            | ✅         | ✅                  |
-| time with time zone                     | ❌         | ❌                  |
+| time with time zone                     | 🚫         | 🚫                  |
 | interval                                | ❌         | ❌                  |
 | char                                    | ✅         | ✅                  |
 | bpchar                                  | ✅         | ✅                  |
@@ -57,6 +57,8 @@ we consider support for the different data types separately for batch inserts an
 | json                                    | ✅         | ❌                  |
 | jsonb                                   | ✅         | ❌                  |
 | jsonpath                                | ❌         | ❌                  |
+
+*** Time with time zone is not useful and not recommended to use by Postgres themselves - see [here](https://www.postgresql.org/docs/current/datatype-datetime.html#DATATYPE-DATETIME).
 
 </details>
 
