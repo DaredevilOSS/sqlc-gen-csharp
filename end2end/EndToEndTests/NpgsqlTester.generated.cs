@@ -381,7 +381,7 @@ namespace EndToEndTests
             Assert.That(actual.Value.CTimestampWithTz, Is.EqualTo(expected.CTimestampWithTz));
         }
 
-        public static IEnumerable<TestCaseData> PostgresArrayTypesTestCases
+        private static IEnumerable<TestCaseData> PostgresArrayTypesTestCases
         {
             get
             {
@@ -441,6 +441,32 @@ namespace EndToEndTests
             Assert.That(actual.MaxInteger, Is.EqualTo(expected.MaxInteger));
             Assert.That(actual.MaxVarchar, Is.EqualTo(expected.MaxVarchar));
             Assert.That(actual.MaxTimestamp, Is.EqualTo(expected.MaxTimestamp));
+        }
+
+        private static IEnumerable<TestCaseData> PostgresGuidDataTypesTestCases
+        {
+            get
+            {
+                yield return new TestCaseData(Guid.NewGuid()).SetName("Valid Guid");
+                yield return new TestCaseData(null).SetName("Null Guid");
+            }
+        }
+
+        [Test]
+        [TestCaseSource(nameof(PostgresGuidDataTypesTestCases))]
+        public async Task TestPostgresGuidDataTypes(Guid? cUuid)
+        {
+            await QuerySql.InsertPostgresTypes(new QuerySql.InsertPostgresTypesArgs { CUuid = cUuid });
+            var expected = new QuerySql.GetPostgresTypesRow
+            {
+                CUuid = cUuid
+            };
+            var actual = await QuerySql.GetPostgresTypes();
+            AssertSingularEquals(expected, actual.Value);
+            void AssertSingularEquals(QuerySql.GetPostgresTypesRow x, QuerySql.GetPostgresTypesRow y)
+            {
+                Assert.That(x.CUuid, Is.EqualTo(y.CUuid));
+            }
         }
 
         [Test]
@@ -611,7 +637,7 @@ namespace EndToEndTests
             Assert.That(actual.Value.CBytea, Is.EqualTo(expected.CBytea));
         }
 
-        public static IEnumerable<TestCaseData> PostgresGeoTypesTestCases
+        private static IEnumerable<TestCaseData> PostgresGeoTypesTestCases
         {
             get
             {
@@ -649,7 +675,7 @@ namespace EndToEndTests
             }
         }
 
-        public static IEnumerable<TestCaseData> PostgresGeoCopyFromTestCases
+        private static IEnumerable<TestCaseData> PostgresGeoCopyFromTestCases
         {
             get
             {

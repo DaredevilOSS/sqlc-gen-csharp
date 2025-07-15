@@ -40,6 +40,7 @@ public enum KnownTestType
     PostgresDateTimeDataTypes,
     PostgresArrayDataTypes,
     PostgresDataTypesOverride,
+    PostgresGuidDataTypes,
 
     PostgresStringCopyFrom,
     PostgresTransaction,
@@ -190,6 +191,7 @@ internal static class Config
                     KnownTestType.PostgresIntegerDataTypes,
                     KnownTestType.PostgresFloatingPointDataTypes,
                     KnownTestType.PostgresDateTimeDataTypes,
+                    KnownTestType.PostgresGuidDataTypes,
                     KnownTestType.PostgresArrayDataTypes,
                     KnownTestType.PostgresGeoDataTypes,
                     KnownTestType.PostgresGeoCopyFrom,
@@ -229,6 +231,7 @@ internal static class Config
                     KnownTestType.PostgresIntegerDataTypes,
                     KnownTestType.PostgresFloatingPointDataTypes,
                     KnownTestType.PostgresDateTimeDataTypes,
+                    KnownTestType.PostgresGuidDataTypes,
                     KnownTestType.PostgresArrayDataTypes,
                     KnownTestType.PostgresGeoDataTypes,
                     KnownTestType.PostgresGeoCopyFrom,

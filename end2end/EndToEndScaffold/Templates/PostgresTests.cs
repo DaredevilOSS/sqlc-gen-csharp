@@ -170,7 +170,7 @@ public static class PostgresTests
         [KnownTestType.PostgresArrayDataTypes] = new TestImpl
         {
             Impl = $$"""
-                     public static IEnumerable<TestCaseData> PostgresArrayTypesTestCases
+                     private static IEnumerable<TestCaseData> PostgresArrayTypesTestCases
                      {
                          get
                          {
@@ -570,7 +570,7 @@ public static class PostgresTests
         [KnownTestType.PostgresGeoDataTypes] = new TestImpl
         {
             Impl = $$"""
-                     public static IEnumerable<TestCaseData> PostgresGeoTypesTestCases
+                     private static IEnumerable<TestCaseData> PostgresGeoTypesTestCases
                      {
                          get
                          {
@@ -630,7 +630,7 @@ public static class PostgresTests
         [KnownTestType.PostgresGeoCopyFrom] = new TestImpl
         {
             Impl = $$"""
-                     public static IEnumerable<TestCaseData> PostgresGeoCopyFromTestCases
+                     private static IEnumerable<TestCaseData> PostgresGeoCopyFromTestCases
                      {
                          get
                          {
@@ -793,6 +793,41 @@ public static class PostgresTests
                          Assert.That(actual.MaxInteger, Is.EqualTo(expected.MaxInteger));
                          Assert.That(actual.MaxVarchar, Is.EqualTo(expected.MaxVarchar));
                          Assert.That(actual.MaxTimestamp, Is.EqualTo(expected.MaxTimestamp));
+                     }
+                     """
+        },
+        [KnownTestType.PostgresGuidDataTypes] = new TestImpl
+        {
+            Impl = $$"""
+                     private static IEnumerable<TestCaseData> PostgresGuidDataTypesTestCases
+                     {
+                         get
+                         {
+                             yield return new TestCaseData(Guid.NewGuid()).SetName("Valid Guid");
+                             yield return new TestCaseData(null).SetName("Null Guid");
+                         }
+                     }
+
+                     [Test]
+                     [TestCaseSource(nameof(PostgresGuidDataTypesTestCases))]
+                     public async Task TestPostgresGuidDataTypes(Guid? cUuid)
+                     {
+                         await QuerySql.InsertPostgresTypes(new QuerySql.InsertPostgresTypesArgs
+                         {
+                            CUuid = cUuid
+                         });
+
+                         var expected = new QuerySql.GetPostgresTypesRow
+                         {
+                             CUuid = cUuid
+                         };
+                         var actual = await QuerySql.GetPostgresTypes();
+                         AssertSingularEquals(expected, actual{{Consts.UnknownRecordValuePlaceholder}});
+
+                         void AssertSingularEquals(QuerySql.GetPostgresTypesRow x, QuerySql.GetPostgresTypesRow y)
+                         {
+                             Assert.That(x.CUuid, Is.EqualTo(y.CUuid));
+                         }
                      }
                      """
         }

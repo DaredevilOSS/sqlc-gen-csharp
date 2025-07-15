@@ -36,13 +36,18 @@ CREATE TABLE postgres_types (
     c_varchar VARCHAR(100),
     c_character_varying CHARACTER VARYING(100),
     c_bpchar BPCHAR(100),
-    c_bytea BYTEA,
     c_text TEXT,
+
+    /* JSON Data Types */
     c_json JSON,
     c_json_string_override JSON,
     c_jsonb JSONB,
 
+    /* Special Data Types */
+    c_uuid UUID,
+
     /* Array Data Types */
+    c_bytea BYTEA,
     c_boolean_array BOOLEAN [],
     c_text_array TEXT [],
     c_integer_array INTEGER [],

@@ -73,6 +73,14 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId
                 readerFn: ordinal => $"reader.GetString({ordinal})",
                 readerArrayFn: ordinal => $"reader.GetFieldValue<string[]>({ordinal})"
             ),
+            ["Guid"] = new(
+                new()
+                {
+                    { "uuid", new(NpgsqlTypeOverride: "NpgsqlDbType.Uuid") }
+                },
+                readerFn: ordinal => $"reader.GetFieldValue<Guid>({ordinal})",
+                readerArrayFn: ordinal => $"reader.GetFieldValue<Guid[]>({ordinal})"
+            ),
             ["TimeSpan"] = new(
                 new()
                 {

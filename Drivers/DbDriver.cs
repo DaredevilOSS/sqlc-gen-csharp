@@ -41,6 +41,7 @@ public abstract class DbDriver
         "decimal",
         "DateTime",
         "TimeSpan",
+        "Guid",
         "NpgsqlPoint",
         "NpgsqlLine",
         "NpgsqlLSeg",

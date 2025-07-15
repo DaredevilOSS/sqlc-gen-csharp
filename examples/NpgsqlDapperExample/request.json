@@ -314,16 +314,6 @@
                 }
               },
               {
-                "name": "c_bytea",
-                "length": -1,
-                "table": {
-                  "name": "postgres_types"
-                },
-                "type": {
-                  "name": "bytea"
-                }
-              },
-              {
                 "name": "c_text",
                 "length": -1,
                 "table": {
@@ -361,6 +351,26 @@
                 },
                 "type": {
                   "name": "jsonb"
+                }
+              },
+              {
+                "name": "c_uuid",
+                "length": -1,
+                "table": {
+                  "name": "postgres_types"
+                },
+                "type": {
+                  "name": "uuid"
+                }
+              },
+              {
+                "name": "c_bytea",
+                "length": -1,
+                "table": {
+                  "name": "postgres_types"
+                },
+                "type": {
+                  "name": "bytea"
                 }
               },
               {
@@ -33093,7 +33103,7 @@
       "filename": "query.sql"
     },
     {
-      "text": "INSERT INTO postgres_types\n(\n    c_boolean,\n    c_bit,\n    c_smallint,\n    c_integer,\n    c_bigint,\n    c_real,\n    c_numeric,\n    c_decimal,\n    c_double_precision,\n    c_money,\n    c_date,\n    c_time,\n    c_timestamp,\n    c_timestamp_with_tz,\n    c_char,\n    c_varchar,\n    c_character_varying,\n    c_bpchar,\n    c_text,\n    c_json,\n    c_json_string_override,\n    c_jsonb,\n    c_bytea, \n    c_boolean_array,\n    c_text_array, \n    c_integer_array,\n    c_decimal_array,\n    c_date_array,\n    c_timestamp_array\n)\nVALUES (\n    $1,\n    $2,\n    $3,\n    $4,\n    $5,\n    $6,\n    $7,\n    $8,\n    $9,\n    $10,\n    $11,\n    $12,\n    $13,\n    $14,\n    $15,\n    $16,\n    $17,\n    $18,\n    $19,\n    $20::json, \n    $21::json, \n    $22::jsonb,\n    $23, \n    $24,\n    $25, \n    $26,\n    $27,\n    $28,\n    $29\n)",
+      "text": "INSERT INTO postgres_types\n(\n    c_boolean,\n    c_bit,\n    c_smallint,\n    c_integer,\n    c_bigint,\n    c_real,\n    c_numeric,\n    c_decimal,\n    c_double_precision,\n    c_money,\n    c_date,\n    c_time,\n    c_timestamp,\n    c_timestamp_with_tz,\n    c_char,\n    c_varchar,\n    c_character_varying,\n    c_bpchar,\n    c_text,\n    c_uuid,\n    c_json,\n    c_json_string_override,\n    c_jsonb,\n    c_bytea, \n    c_boolean_array,\n    c_text_array, \n    c_integer_array,\n    c_decimal_array,\n    c_date_array,\n    c_timestamp_array\n)\nVALUES (\n    $1,\n    $2,\n    $3,\n    $4,\n    $5,\n    $6,\n    $7,\n    $8,\n    $9,\n    $10,\n    $11,\n    $12,\n    $13,\n    $14,\n    $15,\n    $16,\n    $17,\n    $18,\n    $19,\n    $20,\n    $21::json, \n    $22::json, \n    $23::jsonb,\n    $24, \n    $25,\n    $26, \n    $27,\n    $28,\n    $29,\n    $30\n)",
       "name": "InsertPostgresTypes",
       "cmd": ":exec",
       "parameters": [
@@ -33404,17 +33414,23 @@
         {
           "number": 20,
           "column": {
-            "name": "c_json",
+            "name": "c_uuid",
             "length": -1,
+            "isNamedParam": true,
+            "table": {
+              "schema": "public",
+              "name": "postgres_types"
+            },
             "type": {
-              "name": "json"
-            }
+              "name": "uuid"
+            },
+            "originalName": "c_uuid"
           }
         },
         {
           "number": 21,
           "column": {
-            "name": "c_json_string_override",
+            "name": "c_json",
             "length": -1,
             "type": {
               "name": "json"
@@ -33424,6 +33440,16 @@
         {
           "number": 22,
           "column": {
+            "name": "c_json_string_override",
+            "length": -1,
+            "type": {
+              "name": "json"
+            }
+          }
+        },
+        {
+          "number": 23,
+          "column": {
             "name": "c_jsonb",
             "length": -1,
             "type": {
@@ -33432,7 +33458,7 @@
           }
         },
         {
-          "number": 23,
+          "number": 24,
           "column": {
             "name": "c_bytea",
             "length": -1,
@@ -33448,7 +33474,7 @@
           }
         },
         {
-          "number": 24,
+          "number": 25,
           "column": {
             "name": "c_boolean_array",
             "isArray": true,
@@ -33466,7 +33492,7 @@
           }
         },
         {
-          "number": 25,
+          "number": 26,
           "column": {
             "name": "c_text_array",
             "isArray": true,
@@ -33484,7 +33510,7 @@
           }
         },
         {
-          "number": 26,
+          "number": 27,
           "column": {
             "name": "c_integer_array",
             "isArray": true,
@@ -33502,7 +33528,7 @@
           }
         },
         {
-          "number": 27,
+          "number": 28,
           "column": {
             "name": "c_decimal_array",
             "isArray": true,
@@ -33520,7 +33546,7 @@
           }
         },
         {
-          "number": 28,
+          "number": 29,
           "column": {
             "name": "c_date_array",
             "isArray": true,
@@ -33538,7 +33564,7 @@
           }
         },
         {
-          "number": 29,
+          "number": 30,
           "column": {
             "name": "c_timestamp_array",
             "isArray": true,
@@ -33858,7 +33884,7 @@
       }
     },
     {
-      "text": "SELECT c_boolean, c_bit, c_smallint, c_integer, c_bigint, c_decimal, c_numeric, c_real, c_double_precision, c_money, c_date, c_time, c_timestamp, c_timestamp_with_tz, c_char, c_varchar, c_character_varying, c_bpchar, c_bytea, c_text, c_json, c_json_string_override, c_jsonb, c_boolean_array, c_text_array, c_integer_array, c_decimal_array, c_date_array, c_timestamp_array FROM postgres_types LIMIT 1",
+      "text": "SELECT c_boolean, c_bit, c_smallint, c_integer, c_bigint, c_decimal, c_numeric, c_real, c_double_precision, c_money, c_date, c_time, c_timestamp, c_timestamp_with_tz, c_char, c_varchar, c_character_varying, c_bpchar, c_text, c_json, c_json_string_override, c_jsonb, c_uuid, c_bytea, c_boolean_array, c_text_array, c_integer_array, c_decimal_array, c_date_array, c_timestamp_array FROM postgres_types LIMIT 1",
       "name": "GetPostgresTypes",
       "cmd": ":one",
       "columns": [
@@ -34076,17 +34102,6 @@
           "originalName": "c_bpchar"
         },
         {
-          "name": "c_bytea",
-          "length": -1,
-          "table": {
-            "name": "postgres_types"
-          },
-          "type": {
-            "name": "bytea"
-          },
-          "originalName": "c_bytea"
-        },
-        {
           "name": "c_text",
           "length": -1,
           "table": {
@@ -34129,6 +34144,28 @@
             "name": "jsonb"
           },
           "originalName": "c_jsonb"
+        },
+        {
+          "name": "c_uuid",
+          "length": -1,
+          "table": {
+            "name": "postgres_types"
+          },
+          "type": {
+            "name": "uuid"
+          },
+          "originalName": "c_uuid"
+        },
+        {
+          "name": "c_bytea",
+          "length": -1,
+          "table": {
+            "name": "postgres_types"
+          },
+          "type": {
+            "name": "bytea"
+          },
+          "originalName": "c_bytea"
         },
         {
           "name": "c_boolean_array",
