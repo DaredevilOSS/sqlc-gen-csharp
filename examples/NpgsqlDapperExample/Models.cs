@@ -42,6 +42,7 @@ public class PostgresType
     public JsonElement? CJson { get; init; }
     public JsonElement? CJsonStringOverride { get; init; }
     public JsonElement? CJsonb { get; init; }
+    public string? CJsonpath { get; init; }
     public Guid? CUuid { get; init; }
     public byte[]? CBytea { get; init; }
     public bool[]? CBooleanArray { get; init; }

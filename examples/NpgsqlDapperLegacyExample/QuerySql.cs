@@ -519,7 +519,7 @@ namespace NpgsqlDapperLegacyExampleGen
             }
         }
 
-        private const string InsertPostgresTypesSql = "INSERT INTO postgres_types(c_boolean, c_bit, c_smallint, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_money, c_date, c_time, c_timestamp, c_timestamp_with_tz, c_interval, c_char, c_varchar, c_character_varying, c_bpchar, c_text, c_uuid, c_json, c_json_string_override, c_jsonb, c_bytea, c_boolean_array, c_text_array, c_integer_array, c_decimal_array, c_date_array, c_timestamp_array) VALUES ( @c_boolean, @c_bit, @c_smallint, @c_integer, @c_bigint, @c_real, @c_numeric, @c_decimal, @c_double_precision, @c_money, @c_date, @c_time, @c_timestamp, @c_timestamp_with_tz, @c_interval, @c_char, @c_varchar, @c_character_varying, @c_bpchar, @c_text, @c_uuid, @c_json :: json, @c_json_string_override :: json, @c_jsonb :: jsonb, @c_bytea, @c_boolean_array, @c_text_array, @c_integer_array, @c_decimal_array, @c_date_array, @c_timestamp_array ) "; 
+        private const string InsertPostgresTypesSql = "INSERT INTO postgres_types(c_boolean, c_bit, c_smallint, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_money, c_date, c_time, c_timestamp, c_timestamp_with_tz, c_interval, c_char, c_varchar, c_character_varying, c_bpchar, c_text, c_uuid, c_json, c_json_string_override, c_jsonb, c_jsonpath, c_bytea, c_boolean_array, c_text_array, c_integer_array, c_decimal_array, c_date_array, c_timestamp_array) VALUES ( @c_boolean, @c_bit, @c_smallint, @c_integer, @c_bigint, @c_real, @c_numeric, @c_decimal, @c_double_precision, @c_money, @c_date, @c_time, @c_timestamp, @c_timestamp_with_tz, @c_interval, @c_char, @c_varchar, @c_character_varying, @c_bpchar, @c_text, @c_uuid, @c_json :: json, @c_json_string_override :: json, @c_jsonb :: jsonb, @c_jsonpath :: jsonpath, @c_bytea, @c_boolean_array, @c_text_array, @c_integer_array, @c_decimal_array, @c_date_array, @c_timestamp_array ) "; 
         public class InsertPostgresTypesArgs
         {
             public bool? CBoolean { get; set; }
@@ -546,6 +546,7 @@ namespace NpgsqlDapperLegacyExampleGen
             public JsonElement? CJson { get; set; }
             public string CJsonStringOverride { get; set; }
             public JsonElement? CJsonb { get; set; }
+            public string CJsonpath { get; set; }
             public byte[] CBytea { get; set; }
             public bool[] CBooleanArray { get; set; }
             public string[] CTextArray { get; set; }
@@ -581,6 +582,7 @@ namespace NpgsqlDapperLegacyExampleGen
             queryParams.Add("c_json", args.CJson.HasValue ? args.CJson.Value.GetRawText() : null);
             queryParams.Add("c_json_string_override", args.CJsonStringOverride);
             queryParams.Add("c_jsonb", args.CJsonb.HasValue ? args.CJsonb.Value.GetRawText() : null);
+            queryParams.Add("c_jsonpath", args.CJsonpath);
             queryParams.Add("c_bytea", args.CBytea);
             queryParams.Add("c_boolean_array", args.CBooleanArray);
             queryParams.Add("c_text_array", args.CTextArray);
@@ -671,7 +673,7 @@ namespace NpgsqlDapperLegacyExampleGen
             }
         }
 
-        private const string GetPostgresTypesSql = "SELECT c_boolean, c_bit, c_smallint, c_integer, c_bigint, c_decimal, c_numeric, c_real, c_double_precision, c_money, c_date, c_time, c_timestamp, c_timestamp_with_tz, c_interval, c_char, c_varchar, c_character_varying, c_bpchar, c_text, c_json, c_json_string_override, c_jsonb, c_uuid, c_bytea, c_boolean_array, c_text_array, c_integer_array, c_decimal_array, c_date_array, c_timestamp_array FROM postgres_types LIMIT 1";
+        private const string GetPostgresTypesSql = "SELECT c_boolean, c_bit, c_smallint, c_integer, c_bigint, c_decimal, c_numeric, c_real, c_double_precision, c_money, c_date, c_time, c_timestamp, c_timestamp_with_tz, c_interval, c_char, c_varchar, c_character_varying, c_bpchar, c_text, c_json, c_json_string_override, c_jsonb, c_jsonpath, c_uuid, c_bytea, c_boolean_array, c_text_array, c_integer_array, c_decimal_array, c_date_array, c_timestamp_array FROM postgres_types LIMIT 1";
         public class GetPostgresTypesRow
         {
             public bool? CBoolean { get; set; }
@@ -697,6 +699,7 @@ namespace NpgsqlDapperLegacyExampleGen
             public JsonElement? CJson { get; set; }
             public string CJsonStringOverride { get; set; }
             public JsonElement? CJsonb { get; set; }
+            public string CJsonpath { get; set; }
             public Guid? CUuid { get; set; }
             public byte[] CBytea { get; set; }
             public bool[] CBooleanArray { get; set; }

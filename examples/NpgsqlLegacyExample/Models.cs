@@ -43,6 +43,7 @@ namespace NpgsqlLegacyExampleGen
         public JsonElement? CJson { get; set; }
         public JsonElement? CJsonStringOverride { get; set; }
         public JsonElement? CJsonb { get; set; }
+        public string CJsonpath { get; set; }
         public Guid? CUuid { get; set; }
         public byte[] CBytea { get; set; }
         public bool[] CBooleanArray { get; set; }

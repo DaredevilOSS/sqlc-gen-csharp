@@ -518,7 +518,7 @@ public class QuerySql
         }
     }
 
-    private const string InsertPostgresTypesSql = "INSERT INTO postgres_types(c_boolean, c_bit, c_smallint, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_money, c_date, c_time, c_timestamp, c_timestamp_with_tz, c_interval, c_char, c_varchar, c_character_varying, c_bpchar, c_text, c_uuid, c_json, c_json_string_override, c_jsonb, c_bytea, c_boolean_array, c_text_array, c_integer_array, c_decimal_array, c_date_array, c_timestamp_array) VALUES ( @c_boolean, @c_bit, @c_smallint, @c_integer, @c_bigint, @c_real, @c_numeric, @c_decimal, @c_double_precision, @c_money, @c_date, @c_time, @c_timestamp, @c_timestamp_with_tz, @c_interval, @c_char, @c_varchar, @c_character_varying, @c_bpchar, @c_text, @c_uuid, @c_json :: json, @c_json_string_override :: json, @c_jsonb :: jsonb, @c_bytea, @c_boolean_array, @c_text_array, @c_integer_array, @c_decimal_array, @c_date_array, @c_timestamp_array ) "; 
+    private const string InsertPostgresTypesSql = "INSERT INTO postgres_types(c_boolean, c_bit, c_smallint, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_money, c_date, c_time, c_timestamp, c_timestamp_with_tz, c_interval, c_char, c_varchar, c_character_varying, c_bpchar, c_text, c_uuid, c_json, c_json_string_override, c_jsonb, c_jsonpath, c_bytea, c_boolean_array, c_text_array, c_integer_array, c_decimal_array, c_date_array, c_timestamp_array) VALUES ( @c_boolean, @c_bit, @c_smallint, @c_integer, @c_bigint, @c_real, @c_numeric, @c_decimal, @c_double_precision, @c_money, @c_date, @c_time, @c_timestamp, @c_timestamp_with_tz, @c_interval, @c_char, @c_varchar, @c_character_varying, @c_bpchar, @c_text, @c_uuid, @c_json :: json, @c_json_string_override :: json, @c_jsonb :: jsonb, @c_jsonpath :: jsonpath, @c_bytea, @c_boolean_array, @c_text_array, @c_integer_array, @c_decimal_array, @c_date_array, @c_timestamp_array ) "; 
     public class InsertPostgresTypesArgs
     {
         public bool? CBoolean { get; init; }
@@ -545,6 +545,7 @@ public class QuerySql
         public JsonElement? CJson { get; init; }
         public string? CJsonStringOverride { get; init; }
         public JsonElement? CJsonb { get; init; }
+        public string? CJsonpath { get; init; }
         public byte[]? CBytea { get; init; }
         public bool[]? CBooleanArray { get; init; }
         public string[]? CTextArray { get; init; }
@@ -580,6 +581,7 @@ public class QuerySql
         queryParams.Add("c_json", args.CJson.HasValue ? args.CJson.Value.GetRawText() : null);
         queryParams.Add("c_json_string_override", args.CJsonStringOverride);
         queryParams.Add("c_jsonb", args.CJsonb.HasValue ? args.CJsonb.Value.GetRawText() : null);
+        queryParams.Add("c_jsonpath", args.CJsonpath);
         queryParams.Add("c_bytea", args.CBytea);
         queryParams.Add("c_boolean_array", args.CBooleanArray);
         queryParams.Add("c_text_array", args.CTextArray);
@@ -670,7 +672,7 @@ public class QuerySql
         }
     }
 
-    private const string GetPostgresTypesSql = "SELECT c_boolean, c_bit, c_smallint, c_integer, c_bigint, c_decimal, c_numeric, c_real, c_double_precision, c_money, c_date, c_time, c_timestamp, c_timestamp_with_tz, c_interval, c_char, c_varchar, c_character_varying, c_bpchar, c_text, c_json, c_json_string_override, c_jsonb, c_uuid, c_bytea, c_boolean_array, c_text_array, c_integer_array, c_decimal_array, c_date_array, c_timestamp_array FROM postgres_types LIMIT 1";
+    private const string GetPostgresTypesSql = "SELECT c_boolean, c_bit, c_smallint, c_integer, c_bigint, c_decimal, c_numeric, c_real, c_double_precision, c_money, c_date, c_time, c_timestamp, c_timestamp_with_tz, c_interval, c_char, c_varchar, c_character_varying, c_bpchar, c_text, c_json, c_json_string_override, c_jsonb, c_jsonpath, c_uuid, c_bytea, c_boolean_array, c_text_array, c_integer_array, c_decimal_array, c_date_array, c_timestamp_array FROM postgres_types LIMIT 1";
     public class GetPostgresTypesRow
     {
         public bool? CBoolean { get; init; }
@@ -696,6 +698,7 @@ public class QuerySql
         public JsonElement? CJson { get; init; }
         public string? CJsonStringOverride { get; init; }
         public JsonElement? CJsonb { get; init; }
+        public string? CJsonpath { get; init; }
         public Guid? CUuid { get; init; }
         public byte[]? CBytea { get; init; }
         public bool[]? CBooleanArray { get; init; }

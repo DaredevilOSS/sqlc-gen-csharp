@@ -43,6 +43,7 @@ CREATE TABLE postgres_types (
     c_json JSON,
     c_json_string_override JSON,
     c_jsonb JSONB,
+    c_jsonpath JSONPATH,
 
     /* Special Data Types */
     c_uuid UUID,

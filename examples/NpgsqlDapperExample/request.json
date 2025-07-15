@@ -365,6 +365,16 @@
                 }
               },
               {
+                "name": "c_jsonpath",
+                "length": -1,
+                "table": {
+                  "name": "postgres_types"
+                },
+                "type": {
+                  "name": "jsonpath"
+                }
+              },
+              {
                 "name": "c_uuid",
                 "length": -1,
                 "table": {
@@ -33114,7 +33124,7 @@
       "filename": "query.sql"
     },
     {
-      "text": "INSERT INTO postgres_types\n(\n    c_boolean,\n    c_bit,\n    c_smallint,\n    c_integer,\n    c_bigint,\n    c_real,\n    c_numeric,\n    c_decimal,\n    c_double_precision,\n    c_money,\n    c_date,\n    c_time,\n    c_timestamp,\n    c_timestamp_with_tz,\n    c_interval,\n    c_char,\n    c_varchar,\n    c_character_varying,\n    c_bpchar,\n    c_text,\n    c_uuid,\n    c_json,\n    c_json_string_override,\n    c_jsonb,\n    c_bytea, \n    c_boolean_array,\n    c_text_array, \n    c_integer_array,\n    c_decimal_array,\n    c_date_array,\n    c_timestamp_array\n)\nVALUES (\n    $1,\n    $2,\n    $3,\n    $4,\n    $5,\n    $6,\n    $7,\n    $8,\n    $9,\n    $10,\n    $11,\n    $12,\n    $13,\n    $14,\n    $15,\n    $16,\n    $17,\n    $18,\n    $19,\n    $20,\n    $21,\n    $22::json, \n    $23::json, \n    $24::jsonb,\n    $25, \n    $26,\n    $27, \n    $28,\n    $29,\n    $30,\n    $31\n)",
+      "text": "INSERT INTO postgres_types\n(\n    c_boolean,\n    c_bit,\n    c_smallint,\n    c_integer,\n    c_bigint,\n    c_real,\n    c_numeric,\n    c_decimal,\n    c_double_precision,\n    c_money,\n    c_date,\n    c_time,\n    c_timestamp,\n    c_timestamp_with_tz,\n    c_interval,\n    c_char,\n    c_varchar,\n    c_character_varying,\n    c_bpchar,\n    c_text,\n    c_uuid,\n    c_json,\n    c_json_string_override,\n    c_jsonb,\n    c_jsonpath,\n    c_bytea, \n    c_boolean_array,\n    c_text_array, \n    c_integer_array,\n    c_decimal_array,\n    c_date_array,\n    c_timestamp_array\n)\nVALUES (\n    $1,\n    $2,\n    $3,\n    $4,\n    $5,\n    $6,\n    $7,\n    $8,\n    $9,\n    $10,\n    $11,\n    $12,\n    $13,\n    $14,\n    $15,\n    $16,\n    $17,\n    $18,\n    $19,\n    $20,\n    $21,\n    $22::json, \n    $23::json, \n    $24::jsonb,\n    $25::jsonpath,\n    $26, \n    $27,\n    $28, \n    $29,\n    $30,\n    $31,\n    $32\n)",
       "name": "InsertPostgresTypes",
       "cmd": ":exec",
       "parameters": [
@@ -33487,6 +33497,16 @@
         {
           "number": 25,
           "column": {
+            "name": "c_jsonpath",
+            "length": -1,
+            "type": {
+              "name": "jsonpath"
+            }
+          }
+        },
+        {
+          "number": 26,
+          "column": {
             "name": "c_bytea",
             "length": -1,
             "isNamedParam": true,
@@ -33501,7 +33521,7 @@
           }
         },
         {
-          "number": 26,
+          "number": 27,
           "column": {
             "name": "c_boolean_array",
             "isArray": true,
@@ -33519,7 +33539,7 @@
           }
         },
         {
-          "number": 27,
+          "number": 28,
           "column": {
             "name": "c_text_array",
             "isArray": true,
@@ -33537,7 +33557,7 @@
           }
         },
         {
-          "number": 28,
+          "number": 29,
           "column": {
             "name": "c_integer_array",
             "isArray": true,
@@ -33555,7 +33575,7 @@
           }
         },
         {
-          "number": 29,
+          "number": 30,
           "column": {
             "name": "c_decimal_array",
             "isArray": true,
@@ -33573,7 +33593,7 @@
           }
         },
         {
-          "number": 30,
+          "number": 31,
           "column": {
             "name": "c_date_array",
             "isArray": true,
@@ -33591,7 +33611,7 @@
           }
         },
         {
-          "number": 31,
+          "number": 32,
           "column": {
             "name": "c_timestamp_array",
             "isArray": true,
@@ -33941,7 +33961,7 @@
       }
     },
     {
-      "text": "SELECT c_boolean, c_bit, c_smallint, c_integer, c_bigint, c_decimal, c_numeric, c_real, c_double_precision, c_money, c_date, c_time, c_timestamp, c_timestamp_with_tz, c_interval, c_char, c_varchar, c_character_varying, c_bpchar, c_text, c_json, c_json_string_override, c_jsonb, c_uuid, c_bytea, c_boolean_array, c_text_array, c_integer_array, c_decimal_array, c_date_array, c_timestamp_array FROM postgres_types LIMIT 1",
+      "text": "SELECT c_boolean, c_bit, c_smallint, c_integer, c_bigint, c_decimal, c_numeric, c_real, c_double_precision, c_money, c_date, c_time, c_timestamp, c_timestamp_with_tz, c_interval, c_char, c_varchar, c_character_varying, c_bpchar, c_text, c_json, c_json_string_override, c_jsonb, c_jsonpath, c_uuid, c_bytea, c_boolean_array, c_text_array, c_integer_array, c_decimal_array, c_date_array, c_timestamp_array FROM postgres_types LIMIT 1",
       "name": "GetPostgresTypes",
       "cmd": ":one",
       "columns": [
@@ -34213,6 +34233,17 @@
             "name": "jsonb"
           },
           "originalName": "c_jsonb"
+        },
+        {
+          "name": "c_jsonpath",
+          "length": -1,
+          "table": {
+            "name": "postgres_types"
+          },
+          "type": {
+            "name": "jsonpath"
+          },
+          "originalName": "c_jsonpath"
         },
         {
           "name": "c_uuid",

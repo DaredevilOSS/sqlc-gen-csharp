@@ -462,9 +462,11 @@ public static class PostgresTests
         {
             Impl = $$"""
                      [Test]
-                     [TestCase("{\"name\": \"Swordfishtrombones\", \"year\": 1983}")]
-                     [TestCase(null)]
-                     public async Task TestPostgresJsonDataTypes(string cJson)
+                     [TestCase("{\"name\": \"Swordfishtrombones\", \"year\": 1983}", "$.\"name\"")]
+                     [TestCase(null, null)]
+                     public async Task TestPostgresJsonDataTypes(
+                        string cJson,
+                        string cJsonpath)
                      {
                          JsonElement? cParsedJson = null;
                          if (cJson != null)
@@ -474,14 +476,16 @@ public static class PostgresTests
                          {
                              CJson = cParsedJson,
                              CJsonb = cParsedJson,
-                             CJsonStringOverride = cJson
+                             CJsonStringOverride = cJson,
+                             CJsonpath = cJsonpath
                          });
 
                          var expected = new QuerySql.GetPostgresTypesRow
                          {
                              CJson = cParsedJson,
                              CJsonb = cParsedJson,
-                             CJsonStringOverride = cJson
+                             CJsonStringOverride = cJson,
+                             CJsonpath = cJsonpath
                          };
 
                          var actual = await QuerySql.GetPostgresTypes();
@@ -496,6 +500,7 @@ public static class PostgresTests
                              if (x.CJsonb.HasValue)
                                 Assert.That(x.CJsonb.Value.GetRawText(), Is.EqualTo(y.CJsonb.Value.GetRawText()));
                              Assert.That(x.CJsonStringOverride, Is.EqualTo(y.CJsonStringOverride));
+                             Assert.That(x.CJsonpath, Is.EqualTo(y.CJsonpath));
                          }
                      }
                      """
@@ -510,6 +515,12 @@ public static class PostgresTests
                             QuerySql.InsertPostgresTypes(new QuerySql.InsertPostgresTypesArgs
                             {
                                 CJsonStringOverride = "SOME INVALID JSON"
+                            }));
+                        
+                        Assert.ThrowsAsync<Npgsql.PostgresException>(async () => await 
+                            QuerySql.InsertPostgresTypes(new QuerySql.InsertPostgresTypesArgs
+                            {
+                                CJsonpath = "SOME INVALID JSONPATH"
                             }));
                      }
                      """
