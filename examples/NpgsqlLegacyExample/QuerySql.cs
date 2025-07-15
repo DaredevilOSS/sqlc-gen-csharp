@@ -862,7 +862,7 @@ namespace NpgsqlLegacyExampleGen
             }
         }
 
-        private const string InsertPostgresTypesBatchSql = "COPY postgres_types (c_boolean, c_smallint, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_money, c_date, c_time, c_timestamp, c_timestamp_with_tz, c_char, c_varchar, c_character_varying, c_bpchar, c_text, c_bytea) FROM STDIN (FORMAT BINARY)";
+        private const string InsertPostgresTypesBatchSql = "COPY postgres_types (c_boolean, c_smallint, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_money, c_date, c_time, c_timestamp, c_timestamp_with_tz, c_char, c_varchar, c_character_varying, c_bpchar, c_text, c_uuid, c_bytea) FROM STDIN (FORMAT BINARY)";
         public class InsertPostgresTypesBatchArgs
         {
             public bool? CBoolean { get; set; }
@@ -883,6 +883,7 @@ namespace NpgsqlLegacyExampleGen
             public string CCharacterVarying { get; set; }
             public string CBpchar { get; set; }
             public string CText { get; set; }
+            public Guid? CUuid { get; set; }
             public byte[] CBytea { get; set; }
         };
         public async Task InsertPostgresTypesBatch(List<InsertPostgresTypesBatchArgs> args)
@@ -913,6 +914,7 @@ namespace NpgsqlLegacyExampleGen
                         await writer.WriteAsync(row.CCharacterVarying ?? (object)DBNull.Value);
                         await writer.WriteAsync(row.CBpchar ?? (object)DBNull.Value);
                         await writer.WriteAsync(row.CText ?? (object)DBNull.Value);
+                        await writer.WriteAsync(row.CUuid ?? (object)DBNull.Value, NpgsqlDbType.Uuid);
                         await writer.WriteAsync(row.CBytea ?? (object)DBNull.Value);
                     }
 
@@ -1063,7 +1065,7 @@ namespace NpgsqlLegacyExampleGen
             return null;
         }
 
-        private const string GetPostgresTypesCntSql = "SELECT c_smallint , c_boolean, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_money, c_date, c_time, c_timestamp, c_timestamp_with_tz, c_char, c_varchar, c_character_varying, c_bpchar, c_text, c_bytea, COUNT (* ) AS  cnt  FROM  postgres_types  GROUP  BY  c_smallint, c_boolean, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_money, c_date, c_time, c_timestamp, c_timestamp_with_tz, c_char, c_varchar, c_character_varying, c_bpchar, c_text, c_bytea LIMIT  1  ";  
+        private const string GetPostgresTypesCntSql = "SELECT c_smallint , c_boolean, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_money, c_date, c_time, c_timestamp, c_timestamp_with_tz, c_char, c_varchar, c_character_varying, c_bpchar, c_text, c_uuid, c_bytea, COUNT (* ) AS  cnt  FROM  postgres_types  GROUP  BY  c_smallint, c_boolean, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_money, c_date, c_time, c_timestamp, c_timestamp_with_tz, c_char, c_varchar, c_character_varying, c_bpchar, c_text, c_uuid, c_bytea LIMIT  1  ";  
         public class GetPostgresTypesCntRow
         {
             public short? CSmallint { get; set; }
@@ -1084,6 +1086,7 @@ namespace NpgsqlLegacyExampleGen
             public string CCharacterVarying { get; set; }
             public string CBpchar { get; set; }
             public string CText { get; set; }
+            public Guid? CUuid { get; set; }
             public byte[] CBytea { get; set; }
             public long Cnt { get; set; }
         };
@@ -1119,8 +1122,9 @@ namespace NpgsqlLegacyExampleGen
                                     CCharacterVarying = reader.IsDBNull(15) ? null : reader.GetString(15),
                                     CBpchar = reader.IsDBNull(16) ? null : reader.GetString(16),
                                     CText = reader.IsDBNull(17) ? null : reader.GetString(17),
-                                    CBytea = reader.IsDBNull(18) ? null : reader.GetFieldValue<byte[]>(18),
-                                    Cnt = reader.GetInt64(19)
+                                    CUuid = reader.IsDBNull(18) ? (Guid? )null : reader.GetFieldValue<Guid>(18),
+                                    CBytea = reader.IsDBNull(19) ? null : reader.GetFieldValue<byte[]>(19),
+                                    Cnt = reader.GetInt64(20)
                                 };
                             }
                         }
@@ -1163,8 +1167,9 @@ namespace NpgsqlLegacyExampleGen
                             CCharacterVarying = reader.IsDBNull(15) ? null : reader.GetString(15),
                             CBpchar = reader.IsDBNull(16) ? null : reader.GetString(16),
                             CText = reader.IsDBNull(17) ? null : reader.GetString(17),
-                            CBytea = reader.IsDBNull(18) ? null : reader.GetFieldValue<byte[]>(18),
-                            Cnt = reader.GetInt64(19)
+                            CUuid = reader.IsDBNull(18) ? (Guid? )null : reader.GetFieldValue<Guid>(18),
+                            CBytea = reader.IsDBNull(19) ? null : reader.GetFieldValue<byte[]>(19),
+                            Cnt = reader.GetInt64(20)
                         };
                     }
                 }

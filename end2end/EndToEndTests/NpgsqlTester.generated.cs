@@ -619,6 +619,35 @@ namespace EndToEndTests
             }
         }
 
+        private static IEnumerable<TestCaseData> PostgresGuidCopyFromTestCases
+        {
+            get
+            {
+                yield return new TestCaseData(200, Guid.NewGuid()).SetName("Valid Guid Copy From");
+                yield return new TestCaseData(10, null).SetName("Null Guid Copy From");
+            }
+        }
+
+        [Test]
+        [TestCaseSource(nameof(PostgresGuidCopyFromTestCases))]
+        public async Task TestPostgresGuidCopyFrom(int batchSize, Guid? cUuid)
+        {
+            var batchArgs = Enumerable.Range(0, batchSize).Select(_ => new QuerySql.InsertPostgresTypesBatchArgs { CUuid = cUuid }).ToList();
+            await QuerySql.InsertPostgresTypesBatch(batchArgs);
+            var expected = new QuerySql.GetPostgresTypesCntRow
+            {
+                Cnt = batchSize,
+                CUuid = cUuid
+            };
+            var actual = await QuerySql.GetPostgresTypesCnt();
+            Assert.That(actual.Value.Cnt, Is.EqualTo(expected.Cnt));
+            void AssertSingularEquals(QuerySql.GetPostgresTypesCntRow x, QuerySql.GetPostgresTypesCntRow y)
+            {
+                Assert.That(x.Cnt, Is.EqualTo(y.Cnt));
+                Assert.That(x.CUuid, Is.EqualTo(y.CUuid));
+            }
+        }
+
         [Test]
         [TestCase(100, new byte[] { 0x53, 0x56 })]
         [TestCase(10, new byte[] { })]

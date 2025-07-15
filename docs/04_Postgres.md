@@ -53,7 +53,7 @@ we consider support for the different data types separately for batch inserts an
 | macaddr8                                | ❌         | ❌                  |
 | tsvector                                | ❌         | ❌                  |
 | tsquery                                 | ❌         | ❌                  |
-| uuid                                    | ✅         | ❌                  |
+| uuid                                    | ✅         | ✅                  |
 | json                                    | ✅         | ❌                  |
 | jsonb                                   | ✅         | ❌                  |
 | jsonpath                                | ❌         | ❌                  |

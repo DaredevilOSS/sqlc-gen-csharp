@@ -155,6 +155,7 @@ INSERT INTO postgres_types
     c_character_varying,
     c_bpchar,
     c_text,
+    c_uuid,
     c_bytea
 )
 VALUES (
@@ -176,7 +177,8 @@ VALUES (
     $16, 
     $17, 
     $18,
-    $19
+    $19,
+    $20
 );
 
 -- name: GetPostgresTypes :one
@@ -202,6 +204,7 @@ SELECT
     c_character_varying,
     c_bpchar,
     c_text,
+    c_uuid,
     c_bytea,
     COUNT(*) AS cnt
 FROM postgres_types
@@ -224,6 +227,7 @@ GROUP BY
     c_character_varying,
     c_bpchar,
     c_text,
+    c_uuid,
     c_bytea
 LIMIT 1;
 
