@@ -30,6 +30,7 @@ CREATE TABLE postgres_types (
     c_time TIME,
     c_timestamp TIMESTAMP,
     c_timestamp_with_tz TIMESTAMP WITH TIME ZONE,
+    c_interval INTERVAL,
 
     /* String Data Type Syntax */
     c_char CHAR,

@@ -84,7 +84,8 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId
             ["TimeSpan"] = new(
                 new()
                 {
-                    { "time", new(NpgsqlTypeOverride: "NpgsqlDbType.Time") }
+                    { "time", new(NpgsqlTypeOverride: "NpgsqlDbType.Time") },
+                    { "interval", new(NpgsqlTypeOverride: "NpgsqlDbType.Interval") }
                 },
                 readerFn: ordinal => $"reader.GetFieldValue<TimeSpan>({ordinal})",
                 readerArrayFn: ordinal => $"reader.GetFieldValue<TimeSpan[]>({ordinal})"

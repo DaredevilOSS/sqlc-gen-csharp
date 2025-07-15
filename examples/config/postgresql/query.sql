@@ -84,6 +84,7 @@ INSERT INTO postgres_types
     c_time,
     c_timestamp,
     c_timestamp_with_tz,
+    c_interval,
     c_char,
     c_varchar,
     c_character_varying,
@@ -116,6 +117,7 @@ VALUES (
     sqlc.narg('c_time'),
     sqlc.narg('c_timestamp'),
     sqlc.narg('c_timestamp_with_tz'),
+    sqlc.narg('c_interval'),
     sqlc.narg('c_char'),
     sqlc.narg('c_varchar'),
     sqlc.narg('c_character_varying'),
@@ -150,6 +152,7 @@ INSERT INTO postgres_types
     c_time,
     c_timestamp,
     c_timestamp_with_tz,
+    c_interval,
     c_char,
     c_varchar,
     c_character_varying,
@@ -178,7 +181,8 @@ VALUES (
     $17, 
     $18,
     $19,
-    $20
+    $20,
+    $21
 );
 
 -- name: GetPostgresTypes :one
@@ -199,6 +203,7 @@ SELECT
     c_time,
     c_timestamp,
     c_timestamp_with_tz,
+    c_interval,
     c_char,
     c_varchar,
     c_character_varying,
@@ -222,6 +227,7 @@ GROUP BY
     c_time,
     c_timestamp,
     c_timestamp_with_tz,
+    c_interval,
     c_char,
     c_varchar,
     c_character_varying,

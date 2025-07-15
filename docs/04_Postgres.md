@@ -32,7 +32,7 @@ we consider support for the different data types separately for batch inserts an
 | timestamp with time zone                | ✅         | ✅                  |
 | time, time without time zone            | ✅         | ✅                  |
 | time with time zone                     | 🚫         | 🚫                  |
-| interval                                | ❌         | ❌                  |
+| interval                                | ✅         | ✅                  |
 | char                                    | ✅         | ✅                  |
 | bpchar                                  | ✅         | ✅                  |
 | varchar, character varying              | ✅         | ✅                  |

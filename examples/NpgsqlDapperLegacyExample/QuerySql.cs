@@ -519,7 +519,7 @@ namespace NpgsqlDapperLegacyExampleGen
             }
         }
 
-        private const string InsertPostgresTypesSql = "INSERT INTO postgres_types(c_boolean, c_bit, c_smallint, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_money, c_date, c_time, c_timestamp, c_timestamp_with_tz, c_char, c_varchar, c_character_varying, c_bpchar, c_text, c_uuid, c_json, c_json_string_override, c_jsonb, c_bytea, c_boolean_array, c_text_array, c_integer_array, c_decimal_array, c_date_array, c_timestamp_array) VALUES ( @c_boolean, @c_bit, @c_smallint, @c_integer, @c_bigint, @c_real, @c_numeric, @c_decimal, @c_double_precision, @c_money, @c_date, @c_time, @c_timestamp, @c_timestamp_with_tz, @c_char, @c_varchar, @c_character_varying, @c_bpchar, @c_text, @c_uuid, @c_json :: json, @c_json_string_override :: json, @c_jsonb :: jsonb, @c_bytea, @c_boolean_array, @c_text_array, @c_integer_array, @c_decimal_array, @c_date_array, @c_timestamp_array ) "; 
+        private const string InsertPostgresTypesSql = "INSERT INTO postgres_types(c_boolean, c_bit, c_smallint, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_money, c_date, c_time, c_timestamp, c_timestamp_with_tz, c_interval, c_char, c_varchar, c_character_varying, c_bpchar, c_text, c_uuid, c_json, c_json_string_override, c_jsonb, c_bytea, c_boolean_array, c_text_array, c_integer_array, c_decimal_array, c_date_array, c_timestamp_array) VALUES ( @c_boolean, @c_bit, @c_smallint, @c_integer, @c_bigint, @c_real, @c_numeric, @c_decimal, @c_double_precision, @c_money, @c_date, @c_time, @c_timestamp, @c_timestamp_with_tz, @c_interval, @c_char, @c_varchar, @c_character_varying, @c_bpchar, @c_text, @c_uuid, @c_json :: json, @c_json_string_override :: json, @c_jsonb :: jsonb, @c_bytea, @c_boolean_array, @c_text_array, @c_integer_array, @c_decimal_array, @c_date_array, @c_timestamp_array ) "; 
         public class InsertPostgresTypesArgs
         {
             public bool? CBoolean { get; set; }
@@ -536,6 +536,7 @@ namespace NpgsqlDapperLegacyExampleGen
             public TimeSpan? CTime { get; set; }
             public DateTime? CTimestamp { get; set; }
             public DateTime? CTimestampWithTz { get; set; }
+            public TimeSpan? CInterval { get; set; }
             public string CChar { get; set; }
             public string CVarchar { get; set; }
             public string CCharacterVarying { get; set; }
@@ -570,6 +571,7 @@ namespace NpgsqlDapperLegacyExampleGen
             queryParams.Add("c_time", args.CTime);
             queryParams.Add("c_timestamp", args.CTimestamp);
             queryParams.Add("c_timestamp_with_tz", args.CTimestampWithTz);
+            queryParams.Add("c_interval", args.CInterval);
             queryParams.Add("c_char", args.CChar);
             queryParams.Add("c_varchar", args.CVarchar);
             queryParams.Add("c_character_varying", args.CCharacterVarying);
@@ -604,7 +606,7 @@ namespace NpgsqlDapperLegacyExampleGen
             await this.Transaction.Connection.ExecuteAsync(InsertPostgresTypesSql, queryParams, transaction: this.Transaction);
         }
 
-        private const string InsertPostgresTypesBatchSql = "COPY postgres_types (c_boolean, c_smallint, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_money, c_date, c_time, c_timestamp, c_timestamp_with_tz, c_char, c_varchar, c_character_varying, c_bpchar, c_text, c_uuid, c_bytea) FROM STDIN (FORMAT BINARY)";
+        private const string InsertPostgresTypesBatchSql = "COPY postgres_types (c_boolean, c_smallint, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_money, c_date, c_time, c_timestamp, c_timestamp_with_tz, c_interval, c_char, c_varchar, c_character_varying, c_bpchar, c_text, c_uuid, c_bytea) FROM STDIN (FORMAT BINARY)";
         public class InsertPostgresTypesBatchArgs
         {
             public bool? CBoolean { get; set; }
@@ -620,6 +622,7 @@ namespace NpgsqlDapperLegacyExampleGen
             public TimeSpan? CTime { get; set; }
             public DateTime? CTimestamp { get; set; }
             public DateTime? CTimestampWithTz { get; set; }
+            public TimeSpan? CInterval { get; set; }
             public string CChar { get; set; }
             public string CVarchar { get; set; }
             public string CCharacterVarying { get; set; }
@@ -651,6 +654,7 @@ namespace NpgsqlDapperLegacyExampleGen
                         await writer.WriteAsync(row.CTime, NpgsqlDbType.Time);
                         await writer.WriteAsync(row.CTimestamp, NpgsqlDbType.Timestamp);
                         await writer.WriteAsync(row.CTimestampWithTz, NpgsqlDbType.TimestampTz);
+                        await writer.WriteAsync(row.CInterval, NpgsqlDbType.Interval);
                         await writer.WriteAsync(row.CChar);
                         await writer.WriteAsync(row.CVarchar);
                         await writer.WriteAsync(row.CCharacterVarying);
@@ -667,7 +671,7 @@ namespace NpgsqlDapperLegacyExampleGen
             }
         }
 
-        private const string GetPostgresTypesSql = "SELECT c_boolean, c_bit, c_smallint, c_integer, c_bigint, c_decimal, c_numeric, c_real, c_double_precision, c_money, c_date, c_time, c_timestamp, c_timestamp_with_tz, c_char, c_varchar, c_character_varying, c_bpchar, c_text, c_json, c_json_string_override, c_jsonb, c_uuid, c_bytea, c_boolean_array, c_text_array, c_integer_array, c_decimal_array, c_date_array, c_timestamp_array FROM postgres_types LIMIT 1";
+        private const string GetPostgresTypesSql = "SELECT c_boolean, c_bit, c_smallint, c_integer, c_bigint, c_decimal, c_numeric, c_real, c_double_precision, c_money, c_date, c_time, c_timestamp, c_timestamp_with_tz, c_interval, c_char, c_varchar, c_character_varying, c_bpchar, c_text, c_json, c_json_string_override, c_jsonb, c_uuid, c_bytea, c_boolean_array, c_text_array, c_integer_array, c_decimal_array, c_date_array, c_timestamp_array FROM postgres_types LIMIT 1";
         public class GetPostgresTypesRow
         {
             public bool? CBoolean { get; set; }
@@ -684,6 +688,7 @@ namespace NpgsqlDapperLegacyExampleGen
             public TimeSpan? CTime { get; set; }
             public DateTime? CTimestamp { get; set; }
             public DateTime? CTimestampWithTz { get; set; }
+            public TimeSpan? CInterval { get; set; }
             public string CChar { get; set; }
             public string CVarchar { get; set; }
             public string CCharacterVarying { get; set; }
@@ -720,7 +725,7 @@ namespace NpgsqlDapperLegacyExampleGen
             return await this.Transaction.Connection.QueryFirstOrDefaultAsync<GetPostgresTypesRow>(GetPostgresTypesSql, transaction: this.Transaction);
         }
 
-        private const string GetPostgresTypesCntSql = "SELECT c_smallint , c_boolean, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_money, c_date, c_time, c_timestamp, c_timestamp_with_tz, c_char, c_varchar, c_character_varying, c_bpchar, c_text, c_uuid, c_bytea, COUNT (* ) AS  cnt  FROM  postgres_types  GROUP  BY  c_smallint, c_boolean, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_money, c_date, c_time, c_timestamp, c_timestamp_with_tz, c_char, c_varchar, c_character_varying, c_bpchar, c_text, c_uuid, c_bytea LIMIT  1  ";  
+        private const string GetPostgresTypesCntSql = "SELECT c_smallint , c_boolean, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_money, c_date, c_time, c_timestamp, c_timestamp_with_tz, c_interval, c_char, c_varchar, c_character_varying, c_bpchar, c_text, c_uuid, c_bytea, COUNT (* ) AS  cnt  FROM  postgres_types  GROUP  BY  c_smallint, c_boolean, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_money, c_date, c_time, c_timestamp, c_timestamp_with_tz, c_interval, c_char, c_varchar, c_character_varying, c_bpchar, c_text, c_uuid, c_bytea LIMIT  1  ";  
         public class GetPostgresTypesCntRow
         {
             public short? CSmallint { get; set; }
@@ -736,6 +741,7 @@ namespace NpgsqlDapperLegacyExampleGen
             public TimeSpan? CTime { get; set; }
             public DateTime? CTimestamp { get; set; }
             public DateTime? CTimestampWithTz { get; set; }
+            public TimeSpan? CInterval { get; set; }
             public string CChar { get; set; }
             public string CVarchar { get; set; }
             public string CCharacterVarying { get; set; }

@@ -34,6 +34,7 @@ namespace NpgsqlLegacyExampleGen
         public TimeSpan? CTime { get; set; }
         public DateTime? CTimestamp { get; set; }
         public DateTime? CTimestampWithTz { get; set; }
+        public TimeSpan? CInterval { get; set; }
         public string CChar { get; set; }
         public string CVarchar { get; set; }
         public string CCharacterVarying { get; set; }

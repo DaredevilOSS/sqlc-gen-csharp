@@ -362,23 +362,29 @@ namespace EndToEndTests
         }
 
         [Test]
-        [TestCase("2000-1-30", "12:13:14", "1983-11-3 02:01:22", "2022-10-2 15:44:01+09:00")]
-        [TestCase(null, null, null, null)]
-        public async Task TestPostgresDateTimeTypes(DateTime? cDate, TimeSpan? cTime, DateTime? cTimestamp, DateTime? cTimestampWithTz)
+        [TestCase("2000-1-30", "12:13:14", "1983-11-3 02:01:22", "2022-10-2 15:44:01+09:00", "02:03:04")]
+        [TestCase(null, null, null, null, null)]
+        public async Task TestPostgresDateTimeTypes(DateTime? cDate, TimeSpan? cTime, DateTime? cTimestamp, DateTime? cTimestampWithTz, TimeSpan? cInterval)
         {
-            await QuerySql.InsertPostgresTypes(new QuerySql.InsertPostgresTypesArgs { CDate = cDate, CTime = cTime, CTimestamp = cTimestamp, CTimestampWithTz = cTimestampWithTz });
+            await QuerySql.InsertPostgresTypes(new QuerySql.InsertPostgresTypesArgs { CDate = cDate, CTime = cTime, CTimestamp = cTimestamp, CTimestampWithTz = cTimestampWithTz, CInterval = cInterval });
             var expected = new QuerySql.GetPostgresTypesRow
             {
                 CDate = cDate,
                 CTime = cTime,
                 CTimestamp = cTimestamp,
-                CTimestampWithTz = cTimestampWithTz
+                CTimestampWithTz = cTimestampWithTz,
+                CInterval = cInterval
             };
             var actual = await QuerySql.GetPostgresTypes();
-            Assert.That(actual.Value.CDate, Is.EqualTo(expected.CDate));
-            Assert.That(actual.Value.CTime, Is.EqualTo(expected.CTime));
-            Assert.That(actual.Value.CTimestamp, Is.EqualTo(expected.CTimestamp));
-            Assert.That(actual.Value.CTimestampWithTz, Is.EqualTo(expected.CTimestampWithTz));
+            AssertSingularEquals(expected, actual.Value);
+            void AssertSingularEquals(QuerySql.GetPostgresTypesRow x, QuerySql.GetPostgresTypesRow y)
+            {
+                Assert.That(x.CDate, Is.EqualTo(y.CDate));
+                Assert.That(x.CTime, Is.EqualTo(y.CTime));
+                Assert.That(x.CTimestamp, Is.EqualTo(y.CTimestamp));
+                Assert.That(x.CTimestampWithTz, Is.EqualTo(y.CTimestampWithTz));
+                Assert.That(x.CInterval, Is.EqualTo(y.CInterval));
+            }
         }
 
         private static IEnumerable<TestCaseData> PostgresArrayTypesTestCases
@@ -590,14 +596,14 @@ namespace EndToEndTests
         }
 
         [Test]
-        [TestCase(100, "1973-12-3", "00:34:00", "1960-11-3 02:01:22", "2030-07-20 15:44:01+09:00")]
-        [TestCase(10, null, null, null, null)]
-        public async Task TestDateTimeCopyFrom(int batchSize, DateTime? cDate, TimeSpan? cTime, DateTime? cTimestamp, DateTime? cTimestampWithTz)
+        [TestCase(100, "1973-12-3", "00:34:00", "1960-11-3 02:01:22", "2030-07-20 15:44:01+09:00", "02:03:04")]
+        [TestCase(10, null, null, null, null, null)]
+        public async Task TestDateTimeCopyFrom(int batchSize, DateTime? cDate, TimeSpan? cTime, DateTime? cTimestamp, DateTime? cTimestampWithTz, TimeSpan? cInterval)
         {
             DateTime? cTimestampWithTzAsUtc = null;
             if (cTimestampWithTz != null)
                 cTimestampWithTzAsUtc = DateTime.SpecifyKind(cTimestampWithTz.Value, DateTimeKind.Utc);
-            var batchArgs = Enumerable.Range(0, batchSize).Select(_ => new QuerySql.InsertPostgresTypesBatchArgs { CDate = cDate, CTime = cTime, CTimestamp = cTimestamp, CTimestampWithTz = cTimestampWithTzAsUtc }).ToList();
+            var batchArgs = Enumerable.Range(0, batchSize).Select(_ => new QuerySql.InsertPostgresTypesBatchArgs { CDate = cDate, CTime = cTime, CTimestamp = cTimestamp, CTimestampWithTz = cTimestampWithTzAsUtc, CInterval = cInterval }).ToList();
             await QuerySql.InsertPostgresTypesBatch(batchArgs);
             var expected = new QuerySql.GetPostgresTypesCntRow
             {
@@ -606,6 +612,7 @@ namespace EndToEndTests
                 CTime = cTime,
                 CTimestamp = cTimestamp,
                 CTimestampWithTz = cTimestampWithTz,
+                CInterval = cInterval
             };
             var actual = await QuerySql.GetPostgresTypesCnt();
             AssertSingularEquals(expected, actual.Value);
@@ -616,6 +623,7 @@ namespace EndToEndTests
                 Assert.That(x.CTime, Is.EqualTo(y.CTime));
                 Assert.That(x.CTimestamp, Is.EqualTo(y.CTimestamp));
                 Assert.That(x.CTimestampWithTz, Is.EqualTo(y.CTimestampWithTz));
+                Assert.That(x.CInterval, Is.EqualTo(y.CInterval));
             }
         }
 

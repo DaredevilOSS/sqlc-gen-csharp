@@ -135,20 +135,22 @@ public static class PostgresTests
         {
             Impl = $$"""
                      [Test]
-                     [TestCase("2000-1-30", "12:13:14", "1983-11-3 02:01:22", "2022-10-2 15:44:01+09:00")]
-                     [TestCase(null, null, null, null)]
+                     [TestCase("2000-1-30", "12:13:14", "1983-11-3 02:01:22", "2022-10-2 15:44:01+09:00", "02:03:04")]
+                     [TestCase(null, null, null, null, null)]
                      public async Task TestPostgresDateTimeTypes(
                          DateTime? cDate,
                          TimeSpan? cTime, 
                          DateTime? cTimestamp,
-                         DateTime? cTimestampWithTz)
+                         DateTime? cTimestampWithTz,
+                         TimeSpan? cInterval)
                      {
                          await QuerySql.InsertPostgresTypes(new QuerySql.InsertPostgresTypesArgs
                          {
                              CDate = cDate,
                              CTime = cTime,
                              CTimestamp = cTimestamp,
-                             CTimestampWithTz = cTimestampWithTz
+                             CTimestampWithTz = cTimestampWithTz,
+                             CInterval = cInterval
                          });
                      
                          var expected = new QuerySql.GetPostgresTypesRow
@@ -156,14 +158,20 @@ public static class PostgresTests
                              CDate = cDate,
                              CTime = cTime,
                              CTimestamp = cTimestamp,
-                             CTimestampWithTz = cTimestampWithTz
+                             CTimestampWithTz = cTimestampWithTz,
+                             CInterval = cInterval
                          };
                          var actual = await QuerySql.GetPostgresTypes();
-                     
-                         Assert.That(actual{{Consts.UnknownRecordValuePlaceholder}}.CDate, Is.EqualTo(expected.CDate));
-                         Assert.That(actual{{Consts.UnknownRecordValuePlaceholder}}.CTime, Is.EqualTo(expected.CTime));
-                         Assert.That(actual{{Consts.UnknownRecordValuePlaceholder}}.CTimestamp, Is.EqualTo(expected.CTimestamp));
-                         Assert.That(actual{{Consts.UnknownRecordValuePlaceholder}}.CTimestampWithTz, Is.EqualTo(expected.CTimestampWithTz));
+                         AssertSingularEquals(expected, actual{{Consts.UnknownRecordValuePlaceholder}});
+
+                         void AssertSingularEquals(QuerySql.GetPostgresTypesRow x, QuerySql.GetPostgresTypesRow y)
+                         {
+                             Assert.That(x.CDate, Is.EqualTo(y.CDate));
+                             Assert.That(x.CTime, Is.EqualTo(y.CTime));
+                             Assert.That(x.CTimestamp, Is.EqualTo(y.CTimestamp));
+                             Assert.That(x.CTimestampWithTz, Is.EqualTo(y.CTimestampWithTz));
+                             Assert.That(x.CInterval, Is.EqualTo(y.CInterval));
+                         }  
                      }
                      """
         },
@@ -401,14 +409,15 @@ public static class PostgresTests
         {
             Impl = $$"""
                      [Test]
-                     [TestCase(100, "1973-12-3", "00:34:00", "1960-11-3 02:01:22", "2030-07-20 15:44:01+09:00")]
-                     [TestCase(10, null, null, null, null)]
+                     [TestCase(100, "1973-12-3", "00:34:00", "1960-11-3 02:01:22", "2030-07-20 15:44:01+09:00", "02:03:04")]
+                     [TestCase(10, null, null, null, null, null)]
                      public async Task TestDateTimeCopyFrom(
                         int batchSize, 
                         DateTime? cDate, 
                         TimeSpan? cTime, 
                         DateTime? cTimestamp, 
-                        DateTime? cTimestampWithTz)
+                        DateTime? cTimestampWithTz,
+                        TimeSpan? cInterval)
                      {
                          DateTime? cTimestampWithTzAsUtc = null;
                          if (cTimestampWithTz != null)
@@ -420,7 +429,8 @@ public static class PostgresTests
                                  CDate = cDate,
                                  CTime = cTime,
                                  CTimestamp = cTimestamp,
-                                 CTimestampWithTz = cTimestampWithTzAsUtc
+                                 CTimestampWithTz = cTimestampWithTzAsUtc,  
+                                 CInterval = cInterval
                              })
                              .ToList();
                          await QuerySql.InsertPostgresTypesBatch(batchArgs);
@@ -431,6 +441,7 @@ public static class PostgresTests
                              CTime = cTime,
                              CTimestamp = cTimestamp,
                              CTimestampWithTz = cTimestampWithTz,
+                             CInterval = cInterval
                          };
                          var actual = await QuerySql.GetPostgresTypesCnt();
                          AssertSingularEquals(expected, actual{{Consts.UnknownRecordValuePlaceholder}});
@@ -442,6 +453,7 @@ public static class PostgresTests
                              Assert.That(x.CTime, Is.EqualTo(y.CTime));
                              Assert.That(x.CTimestamp, Is.EqualTo(y.CTimestamp));
                              Assert.That(x.CTimestampWithTz, Is.EqualTo(y.CTimestampWithTz));
+                             Assert.That(x.CInterval, Is.EqualTo(y.CInterval));
                          }
                      }
                      """
