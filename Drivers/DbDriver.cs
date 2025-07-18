@@ -26,7 +26,9 @@ public abstract class DbDriver
     private HashSet<string> NullableTypesInDotnetCore { get; } =
     [
         "string",
-        "object"
+        "object",
+        "PhysicalAddress",
+        "IPAddress"
     ];
 
     private HashSet<string> NullableTypes { get; } =
@@ -49,7 +51,8 @@ public abstract class DbDriver
         "NpgsqlPath",
         "NpgsqlPolygon",
         "NpgsqlCircle",
-        "JsonElement"
+        "JsonElement",
+        "NpgsqlCidr",
     ];
 
     protected const string IntTo32 = "Convert.ToInt32";

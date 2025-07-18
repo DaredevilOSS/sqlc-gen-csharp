@@ -40,6 +40,8 @@ public static class Program
             .ToList());
 
         var optionalUsingPostgresTypes = config.TestNamespace.Contains("Npgsql") ? "using NpgsqlTypes;" : string.Empty;
+        var optionalUsingSystemNet = config.TestNamespace.Contains("Npgsql") ? "using System.Net;" : string.Empty;
+        var optionalUsingSystemNetNetworkInformation = config.TestNamespace.Contains("Npgsql") ? "using System.Net.NetworkInformation;" : string.Empty;
         var namespaceToTest = isLegacyDotnet ? config.LegacyTestNamespace : config.TestNamespace;
         var optionalUsingSystemTextJson = config.TestNamespace.Contains("MySqlConnector") || config.TestNamespace.Contains("Npgsql") ? "using System.Text.Json;" : string.Empty;
 
@@ -47,6 +49,8 @@ public static class Program
             $$"""
                  using {{namespaceToTest}};
                  {{optionalUsingPostgresTypes}}
+                 {{optionalUsingSystemNet}}
+                 {{optionalUsingSystemNetNetworkInformation}}
                  {{optionalUsingSystemTextJson}}
                  using NUnit.Framework;
                  using NUnit.Framework.Legacy;

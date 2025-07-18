@@ -3,6 +3,8 @@ using Dapper;
 using NpgsqlTypes;
 using System.Data;
 using System.Linq;
+using System.Net;
+using System.Net.NetworkInformation;
 using System.Text.Json;
 
 namespace NpgsqlDapperExampleGen;
@@ -35,6 +37,9 @@ public static class Utils
         RegisterNpgsqlTypeHandler<NpgsqlPath>();
         RegisterNpgsqlTypeHandler<NpgsqlPolygon>();
         RegisterNpgsqlTypeHandler<NpgsqlCircle>();
+        RegisterNpgsqlTypeHandler<NpgsqlCidr>();
+        RegisterNpgsqlTypeHandler<IPAddress>();
+        RegisterNpgsqlTypeHandler<PhysicalAddress>();
     }
 
     private class NpgsqlTypeHandler<T> : SqlMapper.TypeHandler<T> where T : notnull

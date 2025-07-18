@@ -69,7 +69,8 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId
                     { "bpchar", new() },
                     { "tinytext", new() },
                     { "varchar", new() },
-                    { "jsonpath", new(NpgsqlTypeOverride: "NpgsqlDbType.JsonPath") }
+                    { "jsonpath", new(NpgsqlTypeOverride: "NpgsqlDbType.JsonPath") },
+                    { "macaddr8", new(NpgsqlTypeOverride: "NpgsqlDbType.MacAddr8") }
                 },
                 readerFn: ordinal => $"reader.GetString({ordinal})",
                 readerArrayFn: ordinal => $"reader.GetFieldValue<string[]>({ordinal})"
@@ -179,6 +180,7 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId
                     { "point", new(NpgsqlTypeOverride: "NpgsqlDbType.Point") }
                 },
                 readerFn: ordinal => $"reader.GetFieldValue<NpgsqlPoint>({ordinal})",
+                readerArrayFn: ordinal => $"reader.GetFieldValue<NpgsqlPoint[]>({ordinal})",
                 usingDirective: "NpgsqlTypes",
                 sqlMapper: "RegisterNpgsqlTypeHandler<NpgsqlPoint>();"
             ),
@@ -187,7 +189,8 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId
                 {
                     { "line", new(NpgsqlTypeOverride: "NpgsqlDbType.Line") }
                 },
-                ordinal => $"reader.GetFieldValue<NpgsqlLine>({ordinal})",
+                readerFn: ordinal => $"reader.GetFieldValue<NpgsqlLine>({ordinal})",
+                readerArrayFn: ordinal => $"reader.GetFieldValue<NpgsqlLine[]>({ordinal})",
                 usingDirective: "NpgsqlTypes",
                 sqlMapper: "RegisterNpgsqlTypeHandler<NpgsqlLine>();"
             ),
@@ -196,7 +199,8 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId
                 {
                     { "lseg", new(NpgsqlTypeOverride: "NpgsqlDbType.LSeg") }
                 },
-                ordinal => $"reader.GetFieldValue<NpgsqlLSeg>({ordinal})",
+                readerFn: ordinal => $"reader.GetFieldValue<NpgsqlLSeg>({ordinal})",
+                readerArrayFn: ordinal => $"reader.GetFieldValue<NpgsqlLSeg[]>({ordinal})",
                 usingDirective: "NpgsqlTypes",
                 sqlMapper: "RegisterNpgsqlTypeHandler<NpgsqlLSeg>();"
             ),
@@ -205,7 +209,8 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId
                 {
                     { "box", new(NpgsqlTypeOverride: "NpgsqlDbType.Box") }
                 },
-                ordinal => $"reader.GetFieldValue<NpgsqlBox>({ordinal})",
+                readerFn: ordinal => $"reader.GetFieldValue<NpgsqlBox>({ordinal})",
+                readerArrayFn: ordinal => $"reader.GetFieldValue<NpgsqlBox[]>({ordinal})",
                 usingDirective: "NpgsqlTypes",
                 sqlMapper: "RegisterNpgsqlTypeHandler<NpgsqlBox>();"
             ),
@@ -214,7 +219,8 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId
                 {
                     { "path", new(NpgsqlTypeOverride: "NpgsqlDbType.Path") }
                 },
-                ordinal => $"reader.GetFieldValue<NpgsqlPath>({ordinal})",
+                readerFn: ordinal => $"reader.GetFieldValue<NpgsqlPath>({ordinal})",
+                readerArrayFn: ordinal => $"reader.GetFieldValue<NpgsqlPath[]>({ordinal})",
                 usingDirective: "NpgsqlTypes",
                 sqlMapper: "RegisterNpgsqlTypeHandler<NpgsqlPath>();"
             ),
@@ -223,7 +229,8 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId
                 {
                     { "polygon", new(NpgsqlTypeOverride: "NpgsqlDbType.Polygon") }
                 },
-                ordinal => $"reader.GetFieldValue<NpgsqlPolygon>({ordinal})",
+                readerFn: ordinal => $"reader.GetFieldValue<NpgsqlPolygon>({ordinal})",
+                readerArrayFn: ordinal => $"reader.GetFieldValue<NpgsqlPolygon[]>({ordinal})",
                 usingDirective: "NpgsqlTypes",
                 sqlMapper: "RegisterNpgsqlTypeHandler<NpgsqlPolygon>();"
             ),
@@ -232,9 +239,40 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId
                 {
                     { "circle", new(NpgsqlTypeOverride: "NpgsqlDbType.Circle") }
                 },
-                ordinal => $"reader.GetFieldValue<NpgsqlCircle>({ordinal})",
+                readerFn: ordinal => $"reader.GetFieldValue<NpgsqlCircle>({ordinal})",
+                readerArrayFn: ordinal => $"reader.GetFieldValue<NpgsqlCircle[]>({ordinal})",
                 usingDirective: "NpgsqlTypes",
                 sqlMapper: "RegisterNpgsqlTypeHandler<NpgsqlCircle>();"
+            ),
+            ["NpgsqlCidr"] = new(
+                new()
+                {
+                    { "cidr", new(NpgsqlTypeOverride: "NpgsqlDbType.Cidr") }
+                },
+                readerFn: ordinal => $"reader.GetFieldValue<NpgsqlCidr>({ordinal})",
+                readerArrayFn: ordinal => $"reader.GetFieldValue<NpgsqlCidr[]>({ordinal})",
+                usingDirective: "NpgsqlTypes",
+                sqlMapper: "RegisterNpgsqlTypeHandler<NpgsqlCidr>();"
+            ),
+            ["IPAddress"] = new(
+                new()
+                {
+                    { "inet", new(NpgsqlTypeOverride: "NpgsqlDbType.Inet") }
+                },
+                readerFn: ordinal => $"reader.GetFieldValue<IPAddress>({ordinal})",
+                readerArrayFn: ordinal => $"reader.GetFieldValue<IPAddress[]>({ordinal})",
+                usingDirective: "System.Net",
+                sqlMapper: "RegisterNpgsqlTypeHandler<IPAddress>();"
+            ),
+            ["PhysicalAddress"] = new(
+                new()
+                {
+                    { "macaddr", new(NpgsqlTypeOverride: "NpgsqlDbType.MacAddr") }
+                },
+                readerFn: ordinal => $"reader.GetFieldValue<PhysicalAddress>({ordinal})",
+                readerArrayFn: ordinal => $"reader.GetFieldValue<PhysicalAddress[]>({ordinal})",
+                usingDirective: "System.Net.NetworkInformation",
+                sqlMapper: "RegisterNpgsqlTypeHandler<PhysicalAddress>();"
             ),
             ["object"] = new(
                 new()

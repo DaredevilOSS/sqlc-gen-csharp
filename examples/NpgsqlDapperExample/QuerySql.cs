@@ -10,6 +10,8 @@ using NpgsqlTypes;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Net;
+using System.Net.NetworkInformation;
 using System.Text.Json;
 using System.Threading.Tasks;
 
@@ -518,7 +520,7 @@ public class QuerySql
         }
     }
 
-    private const string InsertPostgresTypesSql = "INSERT INTO postgres_types(c_boolean, c_bit, c_smallint, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_money, c_date, c_time, c_timestamp, c_timestamp_with_tz, c_interval, c_char, c_varchar, c_character_varying, c_bpchar, c_text, c_uuid, c_json, c_json_string_override, c_jsonb, c_jsonpath, c_bytea, c_boolean_array, c_text_array, c_integer_array, c_decimal_array, c_date_array, c_timestamp_array) VALUES ( @c_boolean, @c_bit, @c_smallint, @c_integer, @c_bigint, @c_real, @c_numeric, @c_decimal, @c_double_precision, @c_money, @c_date, @c_time, @c_timestamp, @c_timestamp_with_tz, @c_interval, @c_char, @c_varchar, @c_character_varying, @c_bpchar, @c_text, @c_uuid, @c_json :: json, @c_json_string_override :: json, @c_jsonb :: jsonb, @c_jsonpath :: jsonpath, @c_bytea, @c_boolean_array, @c_text_array, @c_integer_array, @c_decimal_array, @c_date_array, @c_timestamp_array ) "; 
+    private const string InsertPostgresTypesSql = "INSERT INTO postgres_types(c_boolean, c_bit, c_smallint, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_money, c_date, c_time, c_timestamp, c_timestamp_with_tz, c_interval, c_char, c_varchar, c_character_varying, c_bpchar, c_text, c_uuid, c_json, c_json_string_override, c_jsonb, c_jsonpath, c_cidr, c_inet, c_macaddr, c_macaddr8, c_bytea, c_boolean_array, c_text_array, c_integer_array, c_decimal_array, c_date_array, c_timestamp_array) VALUES ( @c_boolean, @c_bit, @c_smallint, @c_integer, @c_bigint, @c_real, @c_numeric, @c_decimal, @c_double_precision, @c_money, @c_date, @c_time, @c_timestamp, @c_timestamp_with_tz, @c_interval, @c_char, @c_varchar, @c_character_varying, @c_bpchar, @c_text, @c_uuid, @c_json :: json, @c_json_string_override :: json, @c_jsonb :: jsonb, @c_jsonpath :: jsonpath, @c_cidr, @c_inet, @c_macaddr :: macaddr, @c_macaddr8 :: macaddr8, @c_bytea, @c_boolean_array, @c_text_array, @c_integer_array, @c_decimal_array, @c_date_array, @c_timestamp_array ) "; 
     public class InsertPostgresTypesArgs
     {
         public bool? CBoolean { get; init; }
@@ -546,6 +548,10 @@ public class QuerySql
         public string? CJsonStringOverride { get; init; }
         public JsonElement? CJsonb { get; init; }
         public string? CJsonpath { get; init; }
+        public NpgsqlCidr? CCidr { get; init; }
+        public IPAddress? CInet { get; init; }
+        public PhysicalAddress? CMacaddr { get; init; }
+        public string? CMacaddr8 { get; init; }
         public byte[]? CBytea { get; init; }
         public bool[]? CBooleanArray { get; init; }
         public string[]? CTextArray { get; init; }
@@ -582,6 +588,10 @@ public class QuerySql
         queryParams.Add("c_json_string_override", args.CJsonStringOverride);
         queryParams.Add("c_jsonb", args.CJsonb.HasValue ? args.CJsonb.Value.GetRawText() : null);
         queryParams.Add("c_jsonpath", args.CJsonpath);
+        queryParams.Add("c_cidr", args.CCidr);
+        queryParams.Add("c_inet", args.CInet);
+        queryParams.Add("c_macaddr", args.CMacaddr);
+        queryParams.Add("c_macaddr8", args.CMacaddr8);
         queryParams.Add("c_bytea", args.CBytea);
         queryParams.Add("c_boolean_array", args.CBooleanArray);
         queryParams.Add("c_text_array", args.CTextArray);
@@ -672,7 +682,7 @@ public class QuerySql
         }
     }
 
-    private const string GetPostgresTypesSql = "SELECT c_boolean, c_bit, c_smallint, c_integer, c_bigint, c_decimal, c_numeric, c_real, c_double_precision, c_money, c_date, c_time, c_timestamp, c_timestamp_with_tz, c_interval, c_char, c_varchar, c_character_varying, c_bpchar, c_text, c_json, c_json_string_override, c_jsonb, c_jsonpath, c_uuid, c_bytea, c_boolean_array, c_text_array, c_integer_array, c_decimal_array, c_date_array, c_timestamp_array FROM postgres_types LIMIT 1";
+    private const string GetPostgresTypesSql = "SELECT      c_boolean , c_bit, c_smallint, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_money, c_date, c_time, c_timestamp, c_timestamp_with_tz, c_interval, c_char, c_varchar, c_character_varying, c_bpchar, c_text, c_uuid, c_json, c_json_string_override, c_jsonb, c_jsonpath, c_cidr, c_inet, c_macaddr, c_macaddr8 :: TEXT  AS  c_macaddr8, c_bytea, c_boolean_array, c_text_array, c_integer_array, c_decimal_array, c_date_array, c_timestamp_array FROM  postgres_types  LIMIT  1  ";  
     public class GetPostgresTypesRow
     {
         public bool? CBoolean { get; init; }
@@ -680,9 +690,9 @@ public class QuerySql
         public short? CSmallint { get; init; }
         public int? CInteger { get; init; }
         public long? CBigint { get; init; }
-        public decimal? CDecimal { get; init; }
-        public decimal? CNumeric { get; init; }
         public float? CReal { get; init; }
+        public decimal? CNumeric { get; init; }
+        public decimal? CDecimal { get; init; }
         public double? CDoublePrecision { get; init; }
         public decimal? CMoney { get; init; }
         public DateTime? CDate { get; init; }
@@ -695,11 +705,15 @@ public class QuerySql
         public string? CCharacterVarying { get; init; }
         public string? CBpchar { get; init; }
         public string? CText { get; init; }
+        public Guid? CUuid { get; init; }
         public JsonElement? CJson { get; init; }
         public string? CJsonStringOverride { get; init; }
         public JsonElement? CJsonb { get; init; }
         public string? CJsonpath { get; init; }
-        public Guid? CUuid { get; init; }
+        public NpgsqlCidr? CCidr { get; init; }
+        public IPAddress? CInet { get; init; }
+        public PhysicalAddress? CMacaddr { get; init; }
+        public string? CMacaddr8 { get; init; }
         public byte[]? CBytea { get; init; }
         public bool[]? CBooleanArray { get; init; }
         public string[]? CTextArray { get; init; }

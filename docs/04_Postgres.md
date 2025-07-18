@@ -47,10 +47,10 @@ we consider support for the different data types separately for batch inserts an
 | path                                    | ✅         | ✅                  |
 | polygon                                 | ✅         | ✅                  |
 | circle                                  | ✅         | ✅                  |
-| cidr                                    | ❌         | ❌                  |
-| inet                                    | ❌         | ❌                  |
-| macaddr                                 | ❌         | ❌                  |
-| macaddr8                                | ❌         | ❌                  |
+| cidr                                    | ✅         | ❌                  |
+| inet                                    | ✅         | ❌                  |
+| macaddr                                 | ✅         | ❌                  |
+| macaddr8                                | ✅         | ❌                  |
 | tsvector                                | ❌         | ❌                  |
 | tsquery                                 | ❌         | ❌                  |
 | uuid                                    | ✅         | ✅                  |

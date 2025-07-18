@@ -525,6 +525,67 @@ public static class PostgresTests
                      }
                      """
         },
+
+        [KnownTestType.PostgresNetworkDataTypes] = new TestImpl
+        {
+            Impl = $$"""
+                     private static IEnumerable<TestCaseData> PostgresNetworkDataTypesTestCases
+                     {
+                         get
+                         {
+                             yield return new TestCaseData(
+                                new NpgsqlCidr("192.168.1.0/24"),
+                                new IPAddress(new byte[] { 192, 168, 1, 1 }),
+                                new PhysicalAddress(new byte[] { 0x00, 0x1A, 0x2B, 0x3C, 0x4D, 0x5E }),
+                                "00:1a:2b:ff:fe:3c:4d:5e"
+                            ).SetName("Valid Network Data Types");
+
+                             yield return new TestCaseData(
+                                null,
+                                null,
+                                null,
+                                null
+                            ).SetName("Null Network Data Types");
+                         }
+                     }
+
+                     [Test]
+                     [TestCaseSource(nameof(PostgresNetworkDataTypesTestCases))]
+                     public async Task TestPostgresNetworkDataTypes(
+                        NpgsqlCidr? cCidr,
+                        IPAddress cInet,
+                        PhysicalAddress cMacaddr,
+                        string cMacaddr8)
+                     {
+                         await QuerySql.InsertPostgresTypes(new QuerySql.InsertPostgresTypesArgs 
+                         { 
+                             CCidr = cCidr,
+                             CInet = cInet, 
+                             CMacaddr = cMacaddr, 
+                             CMacaddr8 = cMacaddr8 
+                         });
+
+                         var expected = new QuerySql.GetPostgresTypesRow
+                         {
+                             CCidr = cCidr,
+                             CInet = cInet,
+                             CMacaddr = cMacaddr,
+                             CMacaddr8 = cMacaddr8
+                         };
+
+                         var actual = await QuerySql.GetPostgresTypes();
+                         AssertSingularEquals(expected, actual{{Consts.UnknownRecordValuePlaceholder}});
+
+                         void AssertSingularEquals(QuerySql.GetPostgresTypesRow x, QuerySql.GetPostgresTypesRow y)
+                         {
+                             Assert.That(x.CCidr, Is.EqualTo(y.CCidr));
+                             Assert.That(x.CInet, Is.EqualTo(y.CInet));
+                             Assert.That(x.CMacaddr, Is.EqualTo(y.CMacaddr));
+                             Assert.That(x.CMacaddr8, Is.EqualTo(y.CMacaddr8));
+                         }
+                     }
+                     """
+        },
         [KnownTestType.PostgresArrayCopyFrom] = new TestImpl
         {
             Impl = $$"""

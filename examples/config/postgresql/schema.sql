@@ -45,6 +45,12 @@ CREATE TABLE postgres_types (
     c_jsonb JSONB,
     c_jsonpath JSONPATH,
 
+    /* Network Address Data Types */
+    c_cidr CIDR,
+    c_inet INET,
+    c_macaddr MACADDR,
+    c_macaddr8 MACADDR8,
+
     /* Special Data Types */
     c_uuid UUID,
 

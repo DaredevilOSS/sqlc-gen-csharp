@@ -5,6 +5,8 @@ namespace NpgsqlDapperLegacyExampleGen
     using NpgsqlTypes;
     using System.Data;
     using System.Linq;
+    using System.Net;
+    using System.Net.NetworkInformation;
     using System.Text.Json;
 
     public static class Utils
@@ -36,6 +38,9 @@ namespace NpgsqlDapperLegacyExampleGen
             RegisterNpgsqlTypeHandler<NpgsqlPath>();
             RegisterNpgsqlTypeHandler<NpgsqlPolygon>();
             RegisterNpgsqlTypeHandler<NpgsqlCircle>();
+            RegisterNpgsqlTypeHandler<NpgsqlCidr>();
+            RegisterNpgsqlTypeHandler<IPAddress>();
+            RegisterNpgsqlTypeHandler<PhysicalAddress>();
         }
 
         private class NpgsqlTypeHandler<T> : SqlMapper.TypeHandler<T>

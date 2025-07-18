@@ -95,6 +95,10 @@ INSERT INTO postgres_types
     c_json_string_override,
     c_jsonb,
     c_jsonpath,
+    c_cidr,
+    c_inet,
+    c_macaddr,
+    c_macaddr8,
     c_bytea, 
     c_boolean_array,
     c_text_array, 
@@ -129,6 +133,10 @@ VALUES (
     sqlc.narg('c_json_string_override')::json, 
     sqlc.narg('c_jsonb')::jsonb,
     sqlc.narg('c_jsonpath')::jsonpath,
+    sqlc.narg('c_cidr'),
+    sqlc.narg('c_inet'),
+    sqlc.narg('c_macaddr')::macaddr,
+    sqlc.narg('c_macaddr8')::macaddr8,
     sqlc.narg('c_bytea'), 
     sqlc.narg('c_boolean_array'),
     sqlc.narg('c_text_array'), 
@@ -188,7 +196,45 @@ VALUES (
 );
 
 -- name: GetPostgresTypes :one
-SELECT * FROM postgres_types LIMIT 1;
+SELECT     
+    c_boolean,
+    c_bit,
+    c_smallint,
+    c_integer,
+    c_bigint,
+    c_real,
+    c_numeric,
+    c_decimal,
+    c_double_precision,
+    c_money,
+    c_date,
+    c_time,
+    c_timestamp,
+    c_timestamp_with_tz,
+    c_interval,
+    c_char,
+    c_varchar,
+    c_character_varying,
+    c_bpchar,
+    c_text,
+    c_uuid,
+    c_json,
+    c_json_string_override,
+    c_jsonb,
+    c_jsonpath,
+    c_cidr,
+    c_inet,
+    c_macaddr,
+    c_macaddr8::TEXT AS c_macaddr8,
+    c_bytea, 
+    c_boolean_array,
+    c_text_array, 
+    c_integer_array,
+    c_decimal_array,
+    c_date_array,
+    c_timestamp_array
+FROM postgres_types 
+LIMIT 1;
 
 -- name: GetPostgresTypesCnt :one
 SELECT

@@ -9,6 +9,8 @@ using NpgsqlTypes;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Net;
+using System.Net.NetworkInformation;
 using System.Text.Json;
 using System.Threading.Tasks;
 
@@ -646,8 +648,8 @@ public class QuerySql
         }
     }
 
-    private const string InsertPostgresTypesSql = "INSERT INTO postgres_types(c_boolean, c_bit, c_smallint, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_money, c_date, c_time, c_timestamp, c_timestamp_with_tz, c_interval, c_char, c_varchar, c_character_varying, c_bpchar, c_text, c_uuid, c_json, c_json_string_override, c_jsonb, c_jsonpath, c_bytea, c_boolean_array, c_text_array, c_integer_array, c_decimal_array, c_date_array, c_timestamp_array) VALUES ( @c_boolean, @c_bit, @c_smallint, @c_integer, @c_bigint, @c_real, @c_numeric, @c_decimal, @c_double_precision, @c_money, @c_date, @c_time, @c_timestamp, @c_timestamp_with_tz, @c_interval, @c_char, @c_varchar, @c_character_varying, @c_bpchar, @c_text, @c_uuid, @c_json :: json, @c_json_string_override :: json, @c_jsonb :: jsonb, @c_jsonpath :: jsonpath, @c_bytea, @c_boolean_array, @c_text_array, @c_integer_array, @c_decimal_array, @c_date_array, @c_timestamp_array ) "; 
-    public readonly record struct InsertPostgresTypesArgs(bool? CBoolean, byte[]? CBit, short? CSmallint, int? CInteger, long? CBigint, float? CReal, decimal? CNumeric, decimal? CDecimal, double? CDoublePrecision, decimal? CMoney, DateTime? CDate, TimeSpan? CTime, DateTime? CTimestamp, DateTime? CTimestampWithTz, TimeSpan? CInterval, string? CChar, string? CVarchar, string? CCharacterVarying, string? CBpchar, string? CText, Guid? CUuid, JsonElement? CJson, string? CJsonStringOverride, JsonElement? CJsonb, string? CJsonpath, byte[]? CBytea, bool[]? CBooleanArray, string[]? CTextArray, int[]? CIntegerArray, decimal[]? CDecimalArray, DateTime[]? CDateArray, DateTime[]? CTimestampArray);
+    private const string InsertPostgresTypesSql = "INSERT INTO postgres_types(c_boolean, c_bit, c_smallint, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_money, c_date, c_time, c_timestamp, c_timestamp_with_tz, c_interval, c_char, c_varchar, c_character_varying, c_bpchar, c_text, c_uuid, c_json, c_json_string_override, c_jsonb, c_jsonpath, c_cidr, c_inet, c_macaddr, c_macaddr8, c_bytea, c_boolean_array, c_text_array, c_integer_array, c_decimal_array, c_date_array, c_timestamp_array) VALUES ( @c_boolean, @c_bit, @c_smallint, @c_integer, @c_bigint, @c_real, @c_numeric, @c_decimal, @c_double_precision, @c_money, @c_date, @c_time, @c_timestamp, @c_timestamp_with_tz, @c_interval, @c_char, @c_varchar, @c_character_varying, @c_bpchar, @c_text, @c_uuid, @c_json :: json, @c_json_string_override :: json, @c_jsonb :: jsonb, @c_jsonpath :: jsonpath, @c_cidr, @c_inet, @c_macaddr :: macaddr, @c_macaddr8 :: macaddr8, @c_bytea, @c_boolean_array, @c_text_array, @c_integer_array, @c_decimal_array, @c_date_array, @c_timestamp_array ) "; 
+    public readonly record struct InsertPostgresTypesArgs(bool? CBoolean, byte[]? CBit, short? CSmallint, int? CInteger, long? CBigint, float? CReal, decimal? CNumeric, decimal? CDecimal, double? CDoublePrecision, decimal? CMoney, DateTime? CDate, TimeSpan? CTime, DateTime? CTimestamp, DateTime? CTimestampWithTz, TimeSpan? CInterval, string? CChar, string? CVarchar, string? CCharacterVarying, string? CBpchar, string? CText, Guid? CUuid, JsonElement? CJson, string? CJsonStringOverride, JsonElement? CJsonb, string? CJsonpath, NpgsqlCidr? CCidr, IPAddress? CInet, PhysicalAddress? CMacaddr, string? CMacaddr8, byte[]? CBytea, bool[]? CBooleanArray, string[]? CTextArray, int[]? CIntegerArray, decimal[]? CDecimalArray, DateTime[]? CDateArray, DateTime[]? CTimestampArray);
     public async Task InsertPostgresTypes(InsertPostgresTypesArgs args)
     {
         if (this.Transaction == null)
@@ -681,6 +683,10 @@ public class QuerySql
                     command.Parameters.AddWithValue("@c_json_string_override", args.CJsonStringOverride ?? (object)DBNull.Value);
                     command.Parameters.AddWithValue("@c_jsonb", args.CJsonb.HasValue ? args.CJsonb.Value.GetRawText() : (object)DBNull.Value);
                     command.Parameters.AddWithValue("@c_jsonpath", args.CJsonpath ?? (object)DBNull.Value);
+                    command.Parameters.AddWithValue("@c_cidr", args.CCidr ?? (object)DBNull.Value);
+                    command.Parameters.AddWithValue("@c_inet", args.CInet ?? (object)DBNull.Value);
+                    command.Parameters.AddWithValue("@c_macaddr", args.CMacaddr ?? (object)DBNull.Value);
+                    command.Parameters.AddWithValue("@c_macaddr8", args.CMacaddr8 ?? (object)DBNull.Value);
                     command.Parameters.AddWithValue("@c_bytea", args.CBytea ?? (object)DBNull.Value);
                     command.Parameters.AddWithValue("@c_boolean_array", args.CBooleanArray ?? (object)DBNull.Value);
                     command.Parameters.AddWithValue("@c_text_array", args.CTextArray ?? (object)DBNull.Value);
@@ -729,6 +735,10 @@ public class QuerySql
             command.Parameters.AddWithValue("@c_json_string_override", args.CJsonStringOverride ?? (object)DBNull.Value);
             command.Parameters.AddWithValue("@c_jsonb", args.CJsonb.HasValue ? args.CJsonb.Value.GetRawText() : (object)DBNull.Value);
             command.Parameters.AddWithValue("@c_jsonpath", args.CJsonpath ?? (object)DBNull.Value);
+            command.Parameters.AddWithValue("@c_cidr", args.CCidr ?? (object)DBNull.Value);
+            command.Parameters.AddWithValue("@c_inet", args.CInet ?? (object)DBNull.Value);
+            command.Parameters.AddWithValue("@c_macaddr", args.CMacaddr ?? (object)DBNull.Value);
+            command.Parameters.AddWithValue("@c_macaddr8", args.CMacaddr8 ?? (object)DBNull.Value);
             command.Parameters.AddWithValue("@c_bytea", args.CBytea ?? (object)DBNull.Value);
             command.Parameters.AddWithValue("@c_boolean_array", args.CBooleanArray ?? (object)DBNull.Value);
             command.Parameters.AddWithValue("@c_text_array", args.CTextArray ?? (object)DBNull.Value);
@@ -782,8 +792,8 @@ public class QuerySql
         }
     }
 
-    private const string GetPostgresTypesSql = "SELECT c_boolean, c_bit, c_smallint, c_integer, c_bigint, c_decimal, c_numeric, c_real, c_double_precision, c_money, c_date, c_time, c_timestamp, c_timestamp_with_tz, c_interval, c_char, c_varchar, c_character_varying, c_bpchar, c_text, c_json, c_json_string_override, c_jsonb, c_jsonpath, c_uuid, c_bytea, c_boolean_array, c_text_array, c_integer_array, c_decimal_array, c_date_array, c_timestamp_array FROM postgres_types LIMIT 1";
-    public readonly record struct GetPostgresTypesRow(bool? CBoolean, byte[]? CBit, short? CSmallint, int? CInteger, long? CBigint, decimal? CDecimal, decimal? CNumeric, float? CReal, double? CDoublePrecision, decimal? CMoney, DateTime? CDate, TimeSpan? CTime, DateTime? CTimestamp, DateTime? CTimestampWithTz, TimeSpan? CInterval, string? CChar, string? CVarchar, string? CCharacterVarying, string? CBpchar, string? CText, JsonElement? CJson, string? CJsonStringOverride, JsonElement? CJsonb, string? CJsonpath, Guid? CUuid, byte[]? CBytea, bool[]? CBooleanArray, string[]? CTextArray, int[]? CIntegerArray, decimal[]? CDecimalArray, DateTime[]? CDateArray, DateTime[]? CTimestampArray);
+    private const string GetPostgresTypesSql = "SELECT      c_boolean , c_bit, c_smallint, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_money, c_date, c_time, c_timestamp, c_timestamp_with_tz, c_interval, c_char, c_varchar, c_character_varying, c_bpchar, c_text, c_uuid, c_json, c_json_string_override, c_jsonb, c_jsonpath, c_cidr, c_inet, c_macaddr, c_macaddr8 :: TEXT  AS  c_macaddr8, c_bytea, c_boolean_array, c_text_array, c_integer_array, c_decimal_array, c_date_array, c_timestamp_array FROM  postgres_types  LIMIT  1  ";  
+    public readonly record struct GetPostgresTypesRow(bool? CBoolean, byte[]? CBit, short? CSmallint, int? CInteger, long? CBigint, float? CReal, decimal? CNumeric, decimal? CDecimal, double? CDoublePrecision, decimal? CMoney, DateTime? CDate, TimeSpan? CTime, DateTime? CTimestamp, DateTime? CTimestampWithTz, TimeSpan? CInterval, string? CChar, string? CVarchar, string? CCharacterVarying, string? CBpchar, string? CText, Guid? CUuid, JsonElement? CJson, string? CJsonStringOverride, JsonElement? CJsonb, string? CJsonpath, NpgsqlCidr? CCidr, IPAddress? CInet, PhysicalAddress? CMacaddr, string? CMacaddr8, byte[]? CBytea, bool[]? CBooleanArray, string[]? CTextArray, int[]? CIntegerArray, decimal[]? CDecimalArray, DateTime[]? CDateArray, DateTime[]? CTimestampArray);
     public async Task<GetPostgresTypesRow?> GetPostgresTypes()
     {
         if (this.Transaction == null)
@@ -803,9 +813,9 @@ public class QuerySql
                                 CSmallint = reader.IsDBNull(2) ? null : reader.GetInt16(2),
                                 CInteger = reader.IsDBNull(3) ? null : reader.GetInt32(3),
                                 CBigint = reader.IsDBNull(4) ? null : reader.GetInt64(4),
-                                CDecimal = reader.IsDBNull(5) ? null : reader.GetDecimal(5),
+                                CReal = reader.IsDBNull(5) ? null : reader.GetFloat(5),
                                 CNumeric = reader.IsDBNull(6) ? null : reader.GetDecimal(6),
-                                CReal = reader.IsDBNull(7) ? null : reader.GetFloat(7),
+                                CDecimal = reader.IsDBNull(7) ? null : reader.GetDecimal(7),
                                 CDoublePrecision = reader.IsDBNull(8) ? null : reader.GetDouble(8),
                                 CMoney = reader.IsDBNull(9) ? null : reader.GetDecimal(9),
                                 CDate = reader.IsDBNull(10) ? null : reader.GetDateTime(10),
@@ -818,18 +828,22 @@ public class QuerySql
                                 CCharacterVarying = reader.IsDBNull(17) ? null : reader.GetString(17),
                                 CBpchar = reader.IsDBNull(18) ? null : reader.GetString(18),
                                 CText = reader.IsDBNull(19) ? null : reader.GetString(19),
-                                CJson = reader.IsDBNull(20) ? null : JsonSerializer.Deserialize<JsonElement>(reader.GetString(20)),
-                                CJsonStringOverride = reader.IsDBNull(21) ? null : reader.GetString(21),
-                                CJsonb = reader.IsDBNull(22) ? null : JsonSerializer.Deserialize<JsonElement>(reader.GetString(22)),
-                                CJsonpath = reader.IsDBNull(23) ? null : reader.GetString(23),
-                                CUuid = reader.IsDBNull(24) ? null : reader.GetFieldValue<Guid>(24),
-                                CBytea = reader.IsDBNull(25) ? null : reader.GetFieldValue<byte[]>(25),
-                                CBooleanArray = reader.IsDBNull(26) ? null : reader.GetFieldValue<bool[]>(26),
-                                CTextArray = reader.IsDBNull(27) ? null : reader.GetFieldValue<string[]>(27),
-                                CIntegerArray = reader.IsDBNull(28) ? null : reader.GetFieldValue<int[]>(28),
-                                CDecimalArray = reader.IsDBNull(29) ? null : reader.GetFieldValue<decimal[]>(29),
-                                CDateArray = reader.IsDBNull(30) ? null : reader.GetFieldValue<DateTime[]>(30),
-                                CTimestampArray = reader.IsDBNull(31) ? null : reader.GetFieldValue<DateTime[]>(31)
+                                CUuid = reader.IsDBNull(20) ? null : reader.GetFieldValue<Guid>(20),
+                                CJson = reader.IsDBNull(21) ? null : JsonSerializer.Deserialize<JsonElement>(reader.GetString(21)),
+                                CJsonStringOverride = reader.IsDBNull(22) ? null : reader.GetString(22),
+                                CJsonb = reader.IsDBNull(23) ? null : JsonSerializer.Deserialize<JsonElement>(reader.GetString(23)),
+                                CJsonpath = reader.IsDBNull(24) ? null : reader.GetString(24),
+                                CCidr = reader.IsDBNull(25) ? null : reader.GetFieldValue<NpgsqlCidr>(25),
+                                CInet = reader.IsDBNull(26) ? null : reader.GetFieldValue<IPAddress>(26),
+                                CMacaddr = reader.IsDBNull(27) ? null : reader.GetFieldValue<PhysicalAddress>(27),
+                                CMacaddr8 = reader.IsDBNull(28) ? null : reader.GetString(28),
+                                CBytea = reader.IsDBNull(29) ? null : reader.GetFieldValue<byte[]>(29),
+                                CBooleanArray = reader.IsDBNull(30) ? null : reader.GetFieldValue<bool[]>(30),
+                                CTextArray = reader.IsDBNull(31) ? null : reader.GetFieldValue<string[]>(31),
+                                CIntegerArray = reader.IsDBNull(32) ? null : reader.GetFieldValue<int[]>(32),
+                                CDecimalArray = reader.IsDBNull(33) ? null : reader.GetFieldValue<decimal[]>(33),
+                                CDateArray = reader.IsDBNull(34) ? null : reader.GetFieldValue<DateTime[]>(34),
+                                CTimestampArray = reader.IsDBNull(35) ? null : reader.GetFieldValue<DateTime[]>(35)
                             };
                         }
                     }
@@ -859,9 +873,9 @@ public class QuerySql
                         CSmallint = reader.IsDBNull(2) ? null : reader.GetInt16(2),
                         CInteger = reader.IsDBNull(3) ? null : reader.GetInt32(3),
                         CBigint = reader.IsDBNull(4) ? null : reader.GetInt64(4),
-                        CDecimal = reader.IsDBNull(5) ? null : reader.GetDecimal(5),
+                        CReal = reader.IsDBNull(5) ? null : reader.GetFloat(5),
                         CNumeric = reader.IsDBNull(6) ? null : reader.GetDecimal(6),
-                        CReal = reader.IsDBNull(7) ? null : reader.GetFloat(7),
+                        CDecimal = reader.IsDBNull(7) ? null : reader.GetDecimal(7),
                         CDoublePrecision = reader.IsDBNull(8) ? null : reader.GetDouble(8),
                         CMoney = reader.IsDBNull(9) ? null : reader.GetDecimal(9),
                         CDate = reader.IsDBNull(10) ? null : reader.GetDateTime(10),
@@ -874,18 +888,22 @@ public class QuerySql
                         CCharacterVarying = reader.IsDBNull(17) ? null : reader.GetString(17),
                         CBpchar = reader.IsDBNull(18) ? null : reader.GetString(18),
                         CText = reader.IsDBNull(19) ? null : reader.GetString(19),
-                        CJson = reader.IsDBNull(20) ? null : JsonSerializer.Deserialize<JsonElement>(reader.GetString(20)),
-                        CJsonStringOverride = reader.IsDBNull(21) ? null : reader.GetString(21),
-                        CJsonb = reader.IsDBNull(22) ? null : JsonSerializer.Deserialize<JsonElement>(reader.GetString(22)),
-                        CJsonpath = reader.IsDBNull(23) ? null : reader.GetString(23),
-                        CUuid = reader.IsDBNull(24) ? null : reader.GetFieldValue<Guid>(24),
-                        CBytea = reader.IsDBNull(25) ? null : reader.GetFieldValue<byte[]>(25),
-                        CBooleanArray = reader.IsDBNull(26) ? null : reader.GetFieldValue<bool[]>(26),
-                        CTextArray = reader.IsDBNull(27) ? null : reader.GetFieldValue<string[]>(27),
-                        CIntegerArray = reader.IsDBNull(28) ? null : reader.GetFieldValue<int[]>(28),
-                        CDecimalArray = reader.IsDBNull(29) ? null : reader.GetFieldValue<decimal[]>(29),
-                        CDateArray = reader.IsDBNull(30) ? null : reader.GetFieldValue<DateTime[]>(30),
-                        CTimestampArray = reader.IsDBNull(31) ? null : reader.GetFieldValue<DateTime[]>(31)
+                        CUuid = reader.IsDBNull(20) ? null : reader.GetFieldValue<Guid>(20),
+                        CJson = reader.IsDBNull(21) ? null : JsonSerializer.Deserialize<JsonElement>(reader.GetString(21)),
+                        CJsonStringOverride = reader.IsDBNull(22) ? null : reader.GetString(22),
+                        CJsonb = reader.IsDBNull(23) ? null : JsonSerializer.Deserialize<JsonElement>(reader.GetString(23)),
+                        CJsonpath = reader.IsDBNull(24) ? null : reader.GetString(24),
+                        CCidr = reader.IsDBNull(25) ? null : reader.GetFieldValue<NpgsqlCidr>(25),
+                        CInet = reader.IsDBNull(26) ? null : reader.GetFieldValue<IPAddress>(26),
+                        CMacaddr = reader.IsDBNull(27) ? null : reader.GetFieldValue<PhysicalAddress>(27),
+                        CMacaddr8 = reader.IsDBNull(28) ? null : reader.GetString(28),
+                        CBytea = reader.IsDBNull(29) ? null : reader.GetFieldValue<byte[]>(29),
+                        CBooleanArray = reader.IsDBNull(30) ? null : reader.GetFieldValue<bool[]>(30),
+                        CTextArray = reader.IsDBNull(31) ? null : reader.GetFieldValue<string[]>(31),
+                        CIntegerArray = reader.IsDBNull(32) ? null : reader.GetFieldValue<int[]>(32),
+                        CDecimalArray = reader.IsDBNull(33) ? null : reader.GetFieldValue<decimal[]>(33),
+                        CDateArray = reader.IsDBNull(34) ? null : reader.GetFieldValue<DateTime[]>(34),
+                        CTimestampArray = reader.IsDBNull(35) ? null : reader.GetFieldValue<DateTime[]>(35)
                     };
                 }
             }

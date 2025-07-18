@@ -33,6 +33,10 @@ sql:
               csharp_type:
                 type: "string"
                 notNull: false
+            - column: "*:c_macaddr8"
+              csharp_type:
+                type: "string"
+                notNull: false
           debugRequest: true
   - schema: "examples/config/postgresql/schema.sql"
     queries: "examples/config/postgresql/query.sql"
@@ -59,6 +63,10 @@ sql:
                 type: "DateTime"
                 notNull: true
             - column: "*:c_json_string_override"
+              csharp_type:
+                type: "string"
+                notNull: false
+            - column: "*:c_macaddr8"
               csharp_type:
                 type: "string"
                 notNull: false
@@ -91,6 +99,10 @@ sql:
               csharp_type:
                 type: "string"
                 notNull: false
+            - column: "*:c_macaddr8"
+              csharp_type:
+                type: "string"
+                notNull: false
           debugRequest: true
   - schema: "examples/config/postgresql/schema.sql"
     queries: "examples/config/postgresql/query.sql"
@@ -117,6 +129,10 @@ sql:
                 type: "DateTime"
                 notNull: true
             - column: "*:c_json_string_override"
+              csharp_type:
+                type: "string"
+                notNull: false
+            - column: "*:c_macaddr8"
               csharp_type:
                 type: "string"
                 notNull: false
