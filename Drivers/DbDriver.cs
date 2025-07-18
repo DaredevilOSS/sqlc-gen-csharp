@@ -27,8 +27,9 @@ public abstract class DbDriver
     [
         "string",
         "object",
-        "byte[]"
-    ]; // TODO add arrays in here in a non hard-coded manner
+        "PhysicalAddress",
+        "IPAddress"
+    ];
 
     private HashSet<string> NullableTypes { get; } =
     [
@@ -42,6 +43,7 @@ public abstract class DbDriver
         "decimal",
         "DateTime",
         "TimeSpan",
+        "Guid",
         "NpgsqlPoint",
         "NpgsqlLine",
         "NpgsqlLSeg",
@@ -49,38 +51,35 @@ public abstract class DbDriver
         "NpgsqlPath",
         "NpgsqlPolygon",
         "NpgsqlCircle",
-        "JsonElement"
+        "JsonElement",
+        "NpgsqlCidr",
     ];
+
+    protected const string IntTo32 = "Convert.ToInt32";
+    protected const string IntTo64 = "Convert.ToInt64";
+
 
     public abstract Dictionary<string, ColumnMapping> ColumnMappings { get; }
 
-    private Dictionary<string, Tuple<string, string>> KnownMappings { get; } = new()
-    {
+    protected const string JsonElementTypeHandler =
+    """
+        public class JsonElementTypeHandler : SqlMapper.TypeHandler<JsonElement>
         {
-            "JsonElement",
-            new (
-                $"SqlMapper.AddTypeHandler(typeof(JsonElement), new JsonElementTypeHandler());",
-                """
-                    public class JsonElementTypeHandler : SqlMapper.TypeHandler<JsonElement>
-                    {
-                        public override JsonElement Parse(object value)
-                        {
-                            if (value is string s)
-                                return JsonDocument.Parse(s).RootElement;
-                            if (value is null)
-                                return default;
-                            throw new DataException($"Cannot convert {value?.GetType()} to JsonElement");
-                        }
+            public override JsonElement Parse(object value)
+            {
+                if (value is string s)
+                    return JsonDocument.Parse(s).RootElement;
+                if (value is null)
+                    return default;
+                throw new DataException($"Cannot convert {value?.GetType()} to JsonElement");
+            }
 
-                        public override void SetValue(IDbDataParameter parameter, JsonElement value)
-                        {
-                            parameter.Value = value.GetRawText();
-                        }
-                    }
-                """
-            )
+            public override void SetValue(IDbDataParameter parameter, JsonElement value)
+            {
+                parameter.Value = value.GetRawText();
+            }
         }
-    };
+    """;
 
     protected const string TransformQueryForSliceArgsImpl = """
            public static string TransformQueryForSliceArgs(string originalSql, int sliceSize, string paramName)
@@ -121,51 +120,32 @@ public abstract class DbDriver
 
     public virtual ISet<string> GetUsingDirectivesForQueries()
     {
-        var usingDirectives = new HashSet<string>
+        return new HashSet<string>
             {
                 "System",
                 "System.Collections.Generic",
                 "System.Threading.Tasks"
-            }.AddIf("Dapper", Options.UseDapper);
-
-        foreach (var query in Queries)
-        {
-            foreach (var column in query.Columns)
-            {
-                var csharpType = GetCsharpTypeWithoutNullableSuffix(column, query);
-                if (!ColumnMappings.ContainsKey(csharpType))
-                    continue;
-
-                var columnMapping = ColumnMappings[GetCsharpTypeWithoutNullableSuffix(column, query)];
-                usingDirectives.AddIfNotNull(columnMapping.UsingDirective);
             }
-        }
-        return usingDirectives;
-    }
-
-    public virtual ISet<string> GetUsingDirectivesForModels()
-    {
-        return GetUsingDirectivesForColumnMappings();
+            .AddRangeIf([
+                "Dapper"
+            ], Options.UseDapper)
+            .AddRangeExcludeNulls(GetUsingDirectivesForColumnMappings());
     }
 
     private ISet<string> GetUsingDirectivesForColumnMappings()
     {
         var usingDirectives = new HashSet<string>();
-        foreach (var schemaTables in Tables)
-        {
-            foreach (var table in schemaTables.Value)
-            {
-                foreach (var column in table.Value.Columns)
+        foreach (var schemaTables in Tables.Values)
+            foreach (var table in schemaTables.Values)
+                foreach (var column in table.Columns)
                 {
                     var csharpType = GetCsharpTypeWithoutNullableSuffix(column, null);
                     if (!ColumnMappings.ContainsKey(csharpType))
                         continue;
 
-                    var columnMapping = ColumnMappings[GetCsharpTypeWithoutNullableSuffix(column, null)];
-                    usingDirectives.AddIfNotNull(columnMapping.UsingDirective);
+                    var columnMapping = ColumnMappings[csharpType];
+                    usingDirectives.AddRangeExcludeNulls([columnMapping.UsingDirective]);
                 }
-            }
-        }
         return usingDirectives;
     }
 
@@ -179,31 +159,26 @@ public abstract class DbDriver
             .AddRangeIf(GetUsingDirectivesForColumnMappings(), Options.UseDapper);
     }
 
+    public virtual ISet<string> GetUsingDirectivesForModels()
+    {
+        return GetUsingDirectivesForColumnMappings();
+    }
+
     public virtual string[] GetConstructorStatements()
     {
-        return [.. new List<string>
-            {
-                $"this.{Variable.ConnectionString.AsPropertyName()} = {Variable.ConnectionString.AsVarName()};"
-            }
-            .AppendIf("Utils.ConfigureSqlMapper();", Options.UseDapper)
-            .AppendIf("Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;", Options.UseDapper)];
+        return [$"this.{Variable.ConnectionString.AsPropertyName()} = {Variable.ConnectionString.AsVarName()};"];
     }
 
     public virtual string[] GetTransactionConstructorStatements()
     {
-        return [.. new List<string>
-            {
-                $"this.{Variable.Transaction.AsPropertyName()} = {Variable.Transaction.AsVarName()};"
-            }
-            .AppendIf("Utils.ConfigureSqlMapper();", Options.UseDapper)
-            .AppendIf("Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;", Options.UseDapper)];
+        return [$"this.{Variable.Transaction.AsPropertyName()} = {Variable.Transaction.AsVarName()};"];
     }
 
-    protected virtual ISet<string> GetConfigureSqlMappings()
+    protected ISet<string> GetConfigureSqlMappings()
     {
-        return KnownMappings
-            .Where(m => TypeExistsInQueries(m.Key))
-            .Select(m => m.Value.Item1)
+        return ColumnMappings
+            .Where(m => TypeExistsInQueries(m.Key) && m.Value.SqlMapper is not null)
+            .Select(m => m.Value.SqlMapper!)
             .ToHashSet();
     }
 
@@ -213,9 +188,9 @@ public abstract class DbDriver
         if (!Options.UseDapper)
             return [.. memberDeclarations];
 
-        memberDeclarations.AddRange(KnownMappings
-            .Where(m => TypeExistsInQueries(m.Key))
-            .Select(m => ParseMemberDeclaration(m.Value.Item2)!));
+        memberDeclarations.AddRange(ColumnMappings
+            .Where(m => TypeExistsInQueries(m.Key) && m.Value.SqlMapperImpl is not null)
+            .Select(m => ParseMemberDeclaration(m.Value.SqlMapperImpl!)!));
 
         return [.. memberDeclarations,
             ParseMemberDeclaration($$"""
@@ -363,11 +338,12 @@ public abstract class DbDriver
 
     public virtual string[] GetLastIdStatement(Query query)
     {
-        var convertFunc = GetIdColumnType(query) == "int" ? "ToInt32" : "ToInt64"; // TODO refactor
+        var idColumnType = GetIdColumnType(query);
+        var convertFunc = ColumnMappings[idColumnType].ConvertFunc ?? throw new InvalidOperationException($"ConvertFunc is missing for id column type {idColumnType}");
         return
         [
             $"var {Variable.Result.AsVarName()} = await {Variable.Command.AsVarName()}.ExecuteScalarAsync();",
-            $"return Convert.{convertFunc}({Variable.Result.AsVarName()});"
+            $"return {convertFunc}({Variable.Result.AsVarName()});"
         ];
     }
 
@@ -380,10 +356,7 @@ public abstract class DbDriver
 
     protected bool SliceQueryExists()
     {
-        return Queries.Any(q =>
-        {
-            return q.Params.Any(p => p.Column.IsSqlcSlice);
-        });
+        return Queries.Any(q => q.Params.Any(p => p.Column.IsSqlcSlice));
     }
 
     protected bool CopyFromQueryExists()
@@ -395,7 +368,8 @@ public abstract class DbDriver
     {
         if (query is null)
             return null;
-        return Options.Overrides.FirstOrDefault(o => o.Column.Equals($"{query.Name}:{column.Name}"));
+        return Options.Overrides.FirstOrDefault(o =>
+            o.Column == $"{query.Name}:{column.Name}" || o.Column == $"*:{column.Name}");
     }
 
     /// <summary>

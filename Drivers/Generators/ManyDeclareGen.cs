@@ -69,9 +69,7 @@ public class ManyDeclareGen(DbDriver dbDriver)
 
         return $$"""
                     if (this.{{transactionProperty}}?.Connection == null || this.{{transactionProperty}}?.Connection.State != System.Data.ConnectionState.Open)
-                    {
-                        throw new System.InvalidOperationException("Transaction is provided, but its connection is null.");
-                    }
+                        throw new InvalidOperationException("Transaction is provided, but its connection is null.");
                     
                     return (await this.{{transactionProperty}}.Connection.QueryAsync<{{returnType}}>(
                             {{sqlVar}}{{dapperArgs}},
@@ -89,11 +87,9 @@ public class ManyDeclareGen(DbDriver dbDriver)
         var dataclassInit = CommonGen.InstantiateDataclass(query.Columns.ToArray(), returnInterface, query);
         var resultVar = Variable.Result.AsVarName();
         var readWhileExists = $$"""
-                                    while ({{awaitReaderRow}})
-                                    {
-                                        {{resultVar}}.Add({{dataclassInit}});
-                                    }
-                                    """;
+                                while ({{awaitReaderRow}})
+                                    {{resultVar}}.Add({{dataclassInit}});
+                                """;
         // TODO: add return null at end of code run so transaction code will not run?
         return $$"""
                      using ({{establishConnection}})
@@ -123,17 +119,13 @@ public class ManyDeclareGen(DbDriver dbDriver)
         var dataclassInit = CommonGen.InstantiateDataclass(query.Columns.ToArray(), returnInterface, query);
         var resultVar = Variable.Result.AsVarName();
         var readWhileExists = $$"""
-                                    while ({{awaitReaderRow}})
-                                    {
-                                        {{resultVar}}.Add({{dataclassInit}});
-                                    }
-                                    """;
+                                while ({{awaitReaderRow}})
+                                    {{resultVar}}.Add({{dataclassInit}});
+                                """;
 
         return $$"""
                     if (this.{{transactionProperty}}?.Connection == null || this.{{transactionProperty}}?.Connection.State != System.Data.ConnectionState.Open)
-                    {
-                        throw new System.InvalidOperationException("Transaction is provided, but its connection is null.");
-                    }
+                        throw new InvalidOperationException("Transaction is provided, but its connection is null.");
 
                     using (var {{commandVar}} = this.{{transactionProperty}}.Connection.CreateCommand())
                     {

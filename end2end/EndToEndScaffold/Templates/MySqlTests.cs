@@ -272,8 +272,8 @@ public static class MySqlTests
         {
             Impl = $$"""
                      [Test]
-                     [TestCase(100, "D", "\u4321", "\u2345", "Parasite", "Clockwork Orange", "Dr. Strangelove", "Interview with a Vampire", "Memento", "{\"age\": 420, \"name\": \"Dazed and Confused\"}")]
-                     [TestCase(10, null, null, null, null, null, null, null, null, null)]
+                     [TestCase(100, "D", "\u4321", "\u2345", "Parasite", "Clockwork Orange", "Dr. Strangelove", "Interview with a Vampire", "Memento")]
+                     [TestCase(10, null, null, null, null, null, null, null, null)]
                      public async Task TestStringCopyFrom(
                         int batchSize, 
                         string cChar,
@@ -283,8 +283,7 @@ public static class MySqlTests
                         string cTinytext, 
                         string cMediumtext, 
                         string cText, 
-                        string cLongtext,
-                        string cJsonStringOverride)
+                        string cLongtext)
                      {
                          var batchArgs = Enumerable.Range(0, batchSize)
                              .Select(_ => new QuerySql.InsertMysqlTypesBatchArgs
@@ -296,8 +295,7 @@ public static class MySqlTests
                                  CTinytext = cTinytext,
                                  CMediumtext = cMediumtext,
                                  CText = cText,
-                                 CLongtext = cLongtext,
-                                 CJsonStringOverride = cJsonStringOverride
+                                 CLongtext = cLongtext
                              })
                              .ToList();
                          await QuerySql.InsertMysqlTypesBatch(batchArgs);
@@ -311,8 +309,7 @@ public static class MySqlTests
                              CTinytext = cTinytext,
                              CMediumtext = cMediumtext,
                              CText = cText,
-                             CLongtext = cLongtext,
-                             CJsonStringOverride = cJsonStringOverride
+                             CLongtext = cLongtext
                          };
 
                          var actual = await QuerySql.GetMysqlTypesCnt();
@@ -329,7 +326,6 @@ public static class MySqlTests
                              Assert.That(x.CMediumtext, Is.EqualTo(y.CMediumtext));
                              Assert.That(x.CText, Is.EqualTo(y.CText));
                              Assert.That(x.CLongtext, Is.EqualTo(y.CLongtext));
-                             Assert.That(x.CJsonStringOverride, Is.EqualTo(y.CJsonStringOverride));
                          }
                      }
                      """
@@ -656,7 +652,8 @@ public static class MySqlTests
                      [Test]
                      [TestCase("{\"age\": 42, \"name\": \"The Hitchhiker's Guide to the Galaxy\"}")]
                      [TestCase(null)]
-                     public async Task TestMySqlJsonDataType(string cJson)
+                     public async Task TestMySqlJsonDataType(
+                        string cJson)
                      {
                          JsonElement? cParsedJson = null;
                          if (cJson != null)
@@ -664,11 +661,13 @@ public static class MySqlTests
                              
                          await QuerySql.InsertMysqlTypes(new QuerySql.InsertMysqlTypesArgs
                          {
-                             CJson = cParsedJson
+                             CJson = cParsedJson,
+                             CJsonStringOverride = cJson
                          });
                          var expected = new QuerySql.GetMysqlTypesRow
                          {
-                             CJson = cParsedJson
+                             CJson = cParsedJson,
+                             CJsonStringOverride = cJson
                          };
                          var actual = await QuerySql.GetMysqlTypes();
                          AssertSingularEquals(expected, actual{{Consts.UnknownRecordValuePlaceholder}});
@@ -678,7 +677,22 @@ public static class MySqlTests
                              Assert.That(x.CJson.HasValue, Is.EqualTo(y.CJson.HasValue));
                              if (x.CJson.HasValue)
                                  Assert.That(x.CJson.Value.GetRawText(), Is.EqualTo(y.CJson.Value.GetRawText()));
+                             Assert.That(x.CJsonStringOverride, Is.EqualTo(y.CJsonStringOverride));
                          }
+                     }
+                     """
+        },
+        [KnownTestType.MySqlInvalidJson] = new TestImpl
+        {
+            Impl = $$"""
+                     [Test]
+                     public void TestMySqlInvalidJson()
+                     {
+                         Assert.ThrowsAsync<MySqlConnector.MySqlException>(async () => await 
+                            QuerySql.InsertMysqlTypes(new QuerySql.InsertMysqlTypesArgs
+                            {
+                                CJsonStringOverride = "SOME INVALID JSON"
+                            }));
                      }
                      """
         },

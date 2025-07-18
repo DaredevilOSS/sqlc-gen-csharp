@@ -6,26 +6,30 @@
 // ReSharper disable UnusedAutoPropertyAccessor.Global
 namespace MySqlConnectorLegacyExampleGen
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Threading.Tasks;
-    using System.Text.Json;
-    using MySqlConnector;
-    using System.Globalization;
-    using System.IO;
     using CsvHelper;
     using CsvHelper.Configuration;
     using CsvHelper.TypeConversion;
+    using MySqlConnector;
+    using System;
+    using System.Collections.Generic;
+    using System.Globalization;
+    using System.IO;
     using System.Text;
+    using System.Text.Json;
+    using System.Threading.Tasks;
 
     public class QuerySql
     {
-        public QuerySql(string connectionString)
+        public QuerySql()
+        {
+        }
+
+        public QuerySql(string connectionString) : this()
         {
             this.ConnectionString = connectionString;
         }
 
-        private QuerySql(MySqlTransaction transaction)
+        private QuerySql(MySqlTransaction transaction) : this()
         {
             this.Transaction = transaction;
         }
@@ -124,10 +128,7 @@ namespace MySqlConnectorLegacyExampleGen
                         {
                             var result = new List<ListAuthorsRow>();
                             while (await reader.ReadAsync())
-                            {
                                 result.Add(new ListAuthorsRow { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2) });
-                            }
-
                             return result;
                         }
                     }
@@ -135,10 +136,7 @@ namespace MySqlConnectorLegacyExampleGen
             }
 
             if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
-            {
-                throw new System.InvalidOperationException("Transaction is provided, but its connection is null.");
-            }
-
+                throw new InvalidOperationException("Transaction is provided, but its connection is null.");
             using (var command = this.Transaction.Connection.CreateCommand())
             {
                 command.CommandText = ListAuthorsSql;
@@ -147,10 +145,7 @@ namespace MySqlConnectorLegacyExampleGen
                 {
                     var result = new List<ListAuthorsRow>();
                     while (await reader.ReadAsync())
-                    {
                         result.Add(new ListAuthorsRow { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2) });
-                    }
-
                     return result;
                 }
             }
@@ -328,10 +323,7 @@ namespace MySqlConnectorLegacyExampleGen
                         {
                             var result = new List<GetAuthorByNamePatternRow>();
                             while (await reader.ReadAsync())
-                            {
                                 result.Add(new GetAuthorByNamePatternRow { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2) });
-                            }
-
                             return result;
                         }
                     }
@@ -339,10 +331,7 @@ namespace MySqlConnectorLegacyExampleGen
             }
 
             if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
-            {
-                throw new System.InvalidOperationException("Transaction is provided, but its connection is null.");
-            }
-
+                throw new InvalidOperationException("Transaction is provided, but its connection is null.");
             using (var command = this.Transaction.Connection.CreateCommand())
             {
                 command.CommandText = GetAuthorByNamePatternSql;
@@ -352,10 +341,7 @@ namespace MySqlConnectorLegacyExampleGen
                 {
                     var result = new List<GetAuthorByNamePatternRow>();
                     while (await reader.ReadAsync())
-                    {
                         result.Add(new GetAuthorByNamePatternRow { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2) });
-                    }
-
                     return result;
                 }
             }
@@ -489,10 +475,7 @@ namespace MySqlConnectorLegacyExampleGen
                         {
                             var result = new List<GetAuthorsByIdsRow>();
                             while (await reader.ReadAsync())
-                            {
                                 result.Add(new GetAuthorsByIdsRow { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2) });
-                            }
-
                             return result;
                         }
                     }
@@ -500,10 +483,7 @@ namespace MySqlConnectorLegacyExampleGen
             }
 
             if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
-            {
-                throw new System.InvalidOperationException("Transaction is provided, but its connection is null.");
-            }
-
+                throw new InvalidOperationException("Transaction is provided, but its connection is null.");
             using (var command = this.Transaction.Connection.CreateCommand())
             {
                 command.CommandText = transformedSql;
@@ -514,10 +494,7 @@ namespace MySqlConnectorLegacyExampleGen
                 {
                     var result = new List<GetAuthorsByIdsRow>();
                     while (await reader.ReadAsync())
-                    {
                         result.Add(new GetAuthorsByIdsRow { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2) });
-                    }
-
                     return result;
                 }
             }
@@ -555,10 +532,7 @@ namespace MySqlConnectorLegacyExampleGen
                         {
                             var result = new List<GetAuthorsByIdsAndNamesRow>();
                             while (await reader.ReadAsync())
-                            {
                                 result.Add(new GetAuthorsByIdsAndNamesRow { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2) });
-                            }
-
                             return result;
                         }
                     }
@@ -566,10 +540,7 @@ namespace MySqlConnectorLegacyExampleGen
             }
 
             if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
-            {
-                throw new System.InvalidOperationException("Transaction is provided, but its connection is null.");
-            }
-
+                throw new InvalidOperationException("Transaction is provided, but its connection is null.");
             using (var command = this.Transaction.Connection.CreateCommand())
             {
                 command.CommandText = transformedSql;
@@ -582,10 +553,7 @@ namespace MySqlConnectorLegacyExampleGen
                 {
                     var result = new List<GetAuthorsByIdsAndNamesRow>();
                     while (await reader.ReadAsync())
-                    {
                         result.Add(new GetAuthorsByIdsAndNamesRow { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2) });
-                    }
-
                     return result;
                 }
             }
@@ -649,10 +617,7 @@ namespace MySqlConnectorLegacyExampleGen
                         {
                             var result = new List<ListAllAuthorsBooksRow>();
                             while (await reader.ReadAsync())
-                            {
                                 result.Add(new ListAllAuthorsBooksRow { Author = new Author { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2) }, Book = new Book { Id = reader.GetInt64(3), Name = reader.GetString(4), AuthorId = reader.GetInt64(5), Description = reader.IsDBNull(6) ? null : reader.GetString(6) } });
-                            }
-
                             return result;
                         }
                     }
@@ -660,10 +625,7 @@ namespace MySqlConnectorLegacyExampleGen
             }
 
             if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
-            {
-                throw new System.InvalidOperationException("Transaction is provided, but its connection is null.");
-            }
-
+                throw new InvalidOperationException("Transaction is provided, but its connection is null.");
             using (var command = this.Transaction.Connection.CreateCommand())
             {
                 command.CommandText = ListAllAuthorsBooksSql;
@@ -672,10 +634,7 @@ namespace MySqlConnectorLegacyExampleGen
                 {
                     var result = new List<ListAllAuthorsBooksRow>();
                     while (await reader.ReadAsync())
-                    {
                         result.Add(new ListAllAuthorsBooksRow { Author = new Author { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2) }, Book = new Book { Id = reader.GetInt64(3), Name = reader.GetString(4), AuthorId = reader.GetInt64(5), Description = reader.IsDBNull(6) ? null : reader.GetString(6) } });
-                    }
-
                     return result;
                 }
             }
@@ -700,10 +659,7 @@ namespace MySqlConnectorLegacyExampleGen
                         {
                             var result = new List<GetDuplicateAuthorsRow>();
                             while (await reader.ReadAsync())
-                            {
                                 result.Add(new GetDuplicateAuthorsRow { Author = new Author { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2) }, Author2 = new Author { Id = reader.GetInt64(3), Name = reader.GetString(4), Bio = reader.IsDBNull(5) ? null : reader.GetString(5) } });
-                            }
-
                             return result;
                         }
                     }
@@ -711,10 +667,7 @@ namespace MySqlConnectorLegacyExampleGen
             }
 
             if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
-            {
-                throw new System.InvalidOperationException("Transaction is provided, but its connection is null.");
-            }
-
+                throw new InvalidOperationException("Transaction is provided, but its connection is null.");
             using (var command = this.Transaction.Connection.CreateCommand())
             {
                 command.CommandText = GetDuplicateAuthorsSql;
@@ -723,10 +676,7 @@ namespace MySqlConnectorLegacyExampleGen
                 {
                     var result = new List<GetDuplicateAuthorsRow>();
                     while (await reader.ReadAsync())
-                    {
                         result.Add(new GetDuplicateAuthorsRow { Author = new Author { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2) }, Author2 = new Author { Id = reader.GetInt64(3), Name = reader.GetString(4), Bio = reader.IsDBNull(5) ? null : reader.GetString(5) } });
-                    }
-
                     return result;
                 }
             }
@@ -758,10 +708,7 @@ namespace MySqlConnectorLegacyExampleGen
                         {
                             var result = new List<GetAuthorsByBookNameRow>();
                             while (await reader.ReadAsync())
-                            {
                                 result.Add(new GetAuthorsByBookNameRow { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2), Book = new Book { Id = reader.GetInt64(3), Name = reader.GetString(4), AuthorId = reader.GetInt64(5), Description = reader.IsDBNull(6) ? null : reader.GetString(6) } });
-                            }
-
                             return result;
                         }
                     }
@@ -769,10 +716,7 @@ namespace MySqlConnectorLegacyExampleGen
             }
 
             if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
-            {
-                throw new System.InvalidOperationException("Transaction is provided, but its connection is null.");
-            }
-
+                throw new InvalidOperationException("Transaction is provided, but its connection is null.");
             using (var command = this.Transaction.Connection.CreateCommand())
             {
                 command.CommandText = GetAuthorsByBookNameSql;
@@ -782,10 +726,7 @@ namespace MySqlConnectorLegacyExampleGen
                 {
                     var result = new List<GetAuthorsByBookNameRow>();
                     while (await reader.ReadAsync())
-                    {
                         result.Add(new GetAuthorsByBookNameRow { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2), Book = new Book { Id = reader.GetInt64(3), Name = reader.GetString(4), AuthorId = reader.GetInt64(5), Description = reader.IsDBNull(6) ? null : reader.GetString(6) } });
-                    }
-
                     return result;
                 }
             }
@@ -1004,15 +945,12 @@ namespace MySqlConnectorLegacyExampleGen
                 csvWriter.Context.TypeConverterCache.AddConverter<short?>(nullConverterFn);
                 csvWriter.Context.TypeConverterCache.AddConverter<int?>(nullConverterFn);
                 csvWriter.Context.TypeConverterCache.AddConverter<long?>(nullConverterFn);
-                csvWriter.Context.TypeConverterCache.AddConverter<float?>(nullConverterFn);
-                csvWriter.Context.TypeConverterCache.AddConverter<decimal?>(nullConverterFn);
                 csvWriter.Context.TypeConverterCache.AddConverter<double?>(nullConverterFn);
-                csvWriter.Context.TypeConverterCache.AddConverter<DateTime?>(nullConverterFn);
+                csvWriter.Context.TypeConverterCache.AddConverter<decimal?>(nullConverterFn);
                 csvWriter.Context.TypeConverterCache.AddConverter<string>(nullConverterFn);
-                csvWriter.Context.TypeConverterCache.AddConverter<JsonElement?>(nullConverterFn);
-                csvWriter.Context.TypeConverterCache.AddConverter<object>(nullConverterFn);
                 csvWriter.Context.TypeConverterCache.AddConverter<MysqlTypesCEnum?>(nullConverterFn);
-                csvWriter.Context.TypeConverterCache.AddConverter<ExtendedBiosBioType?>(nullConverterFn);
+                csvWriter.Context.TypeConverterCache.AddConverter<JsonElement?>(nullConverterFn);
+                csvWriter.Context.TypeConverterCache.AddConverter<DateTime?>(nullConverterFn);
                 await csvWriter.WriteRecordsAsync(args);
             }
 

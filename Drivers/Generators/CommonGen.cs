@@ -14,7 +14,7 @@ public class CommonGen(DbDriver dbDriver)
             : $"{argInterface} {Variable.Args.AsVarName()}")}";
     }
 
-    private Func<string, bool, bool, string>? GetWriterFn(Column column, Query query)
+    public Func<string, bool, bool, string>? GetWriterFn(Column column, Query query)
     {
         var csharpType = dbDriver.GetCsharpTypeWithoutNullableSuffix(column, query);
         var writerFn = dbDriver.ColumnMappings.GetValueOrDefault(csharpType)?.WriterFn;

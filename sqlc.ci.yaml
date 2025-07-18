@@ -30,6 +30,14 @@ sql:
               csharp_type:
                 type: "DateTime"
                 notNull: true
+            - column: "*:c_json_string_override"
+              csharp_type:
+                type: "string"
+                notNull: false
+            - column: "*:c_macaddr8"
+              csharp_type:
+                type: "string"
+                notNull: false
   - schema: "examples/config/postgresql/schema.sql"
     queries: "examples/config/postgresql/query.sql"
     engine: "postgresql"
@@ -54,6 +62,14 @@ sql:
               csharp_type:
                 type: "DateTime"
                 notNull: true
+            - column: "*:c_json_string_override"
+              csharp_type:
+                type: "string"
+                notNull: false
+            - column: "*:c_macaddr8"
+              csharp_type:
+                type: "string"
+                notNull: false
   - schema: "examples/config/postgresql/schema.sql"
     queries: "examples/config/postgresql/query.sql"
     engine: "postgresql"
@@ -78,6 +94,14 @@ sql:
               csharp_type:
                 type: "DateTime"
                 notNull: true
+            - column: "*:c_json_string_override"
+              csharp_type:
+                type: "string"
+                notNull: false
+            - column: "*:c_macaddr8"
+              csharp_type:
+                type: "string"
+                notNull: false
   - schema: "examples/config/postgresql/schema.sql"
     queries: "examples/config/postgresql/query.sql"
     engine: "postgresql"
@@ -102,6 +126,14 @@ sql:
               csharp_type:
                 type: "DateTime"
                 notNull: true
+            - column: "*:c_json_string_override"
+              csharp_type:
+                type: "string"
+                notNull: false
+            - column: "*:c_macaddr8"
+              csharp_type:
+                type: "string"
+                notNull: false
                 
   # MySQL
   - schema: "examples/config/mysql/schema.sql"
@@ -128,19 +160,7 @@ sql:
               csharp_type:
                 type: "DateTime"
                 notNull: true
-            - column: "GetMysqlTypes:c_json_string_override"
-              csharp_type:
-                type: "string"
-                notNull: false
-            - column: "InsertMysqlTypes:c_json_string_override"
-              csharp_type:
-                type: "string"
-                notNull: false
-            - column: "InsertMysqlTypesBatch:c_json_string_override"
-              csharp_type:
-                type: "string"
-                notNull: false
-            - column: "GetMysqlTypesCnt:c_json_string_override"
+            - column: "*:c_json_string_override"
               csharp_type:
                 type: "string"
                 notNull: false
@@ -168,19 +188,7 @@ sql:
               csharp_type:
                 type: "DateTime"
                 notNull: true
-            - column: "GetMysqlTypes:c_json_string_override"
-              csharp_type:
-                type: "string"
-                notNull: false
-            - column: "InsertMysqlTypes:c_json_string_override"
-              csharp_type:
-                type: "string"
-                notNull: false
-            - column: "InsertMysqlTypesBatch:c_json_string_override"
-              csharp_type:
-                type: "string"
-                notNull: false
-            - column: "GetMysqlTypesCnt:c_json_string_override"
+            - column: "*:c_json_string_override"
               csharp_type:
                 type: "string"
                 notNull: false
@@ -208,19 +216,7 @@ sql:
               csharp_type:
                 type: "DateTime"
                 notNull: true
-            - column: "GetMysqlTypes:c_json_string_override"
-              csharp_type:
-                type: "string"
-                notNull: false
-            - column: "InsertMysqlTypes:c_json_string_override"
-              csharp_type:
-                type: "string"
-                notNull: false
-            - column: "InsertMysqlTypesBatch:c_json_string_override"
-              csharp_type:
-                type: "string"
-                notNull: false
-            - column: "GetMysqlTypesCnt:c_json_string_override"
+            - column: "*:c_json_string_override"
               csharp_type:
                 type: "string"
                 notNull: false
@@ -248,15 +244,7 @@ sql:
               csharp_type:
                 type: "DateTime"
                 notNull: true
-            - column: "InsertMysqlTypes:c_json_string_override"
-              csharp_type:
-                type: "string"
-                notNull: false
-            - column: "InsertMysqlTypesBatch:c_json_string_override"
-              csharp_type:
-                type: "string"
-                notNull: false
-            - column: "GetMysqlTypesCnt:c_json_string_override"
+            - column: "*:c_json_string_override"
               csharp_type:
                 type: "string"
                 notNull: false

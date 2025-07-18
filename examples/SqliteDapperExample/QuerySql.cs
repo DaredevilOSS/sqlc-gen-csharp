@@ -4,27 +4,29 @@
 // ReSharper disable ConvertToUsingDeclaration
 // ReSharper disable NotAccessedPositionalProperty.Global
 // ReSharper disable UnusedAutoPropertyAccessor.Global
+using Dapper;
+using Microsoft.Data.Sqlite;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Dapper;
-using Microsoft.Data.Sqlite;
 
 namespace SqliteDapperExampleGen;
 public class QuerySql
 {
-    public QuerySql(string connectionString)
+    public QuerySql()
     {
-        this.ConnectionString = connectionString;
         Utils.ConfigureSqlMapper();
         Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
     }
 
-    private QuerySql(SqliteTransaction transaction)
+    public QuerySql(string connectionString) : this()
+    {
+        this.ConnectionString = connectionString;
+    }
+
+    private QuerySql(SqliteTransaction transaction) : this()
     {
         this.Transaction = transaction;
-        Utils.ConfigureSqlMapper();
-        Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
     }
 
     public static QuerySql WithTransaction(SqliteTransaction transaction)
@@ -86,10 +88,7 @@ public class QuerySql
         }
 
         if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
-        {
-            throw new System.InvalidOperationException("Transaction is provided, but its connection is null.");
-        }
-
+            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
         return (await this.Transaction.Connection.QueryAsync<ListAuthorsRow>(ListAuthorsSql, transaction: this.Transaction)).AsList();
     }
 
@@ -212,10 +211,7 @@ public class QuerySql
         }
 
         if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
-        {
-            throw new System.InvalidOperationException("Transaction is provided, but its connection is null.");
-        }
-
+            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
         return (await this.Transaction.Connection.QueryAsync<GetAuthorByNamePatternRow>(GetAuthorByNamePatternSql, queryParams, transaction: this.Transaction)).AsList();
     }
 
@@ -272,10 +268,7 @@ public class QuerySql
         }
 
         if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
-        {
-            throw new System.InvalidOperationException("Transaction is provided, but its connection is null.");
-        }
-
+            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
         return (await this.Transaction.Connection.QueryAsync<GetAuthorsByIdsRow>(transformedSql, queryParams, transaction: this.Transaction)).AsList();
     }
 
@@ -311,10 +304,7 @@ public class QuerySql
         }
 
         if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
-        {
-            throw new System.InvalidOperationException("Transaction is provided, but its connection is null.");
-        }
-
+            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
         return (await this.Transaction.Connection.QueryAsync<GetAuthorsByIdsAndNamesRow>(transformedSql, queryParams, transaction: this.Transaction)).AsList();
     }
 
@@ -395,10 +385,7 @@ public class QuerySql
                     {
                         var result = new List<ListAllAuthorsBooksRow>();
                         while (await reader.ReadAsync())
-                        {
                             result.Add(new ListAllAuthorsBooksRow { Author = new Author { Id = reader.GetInt32(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2) }, Book = new Book { Id = reader.GetInt32(3), Name = reader.GetString(4), AuthorId = reader.GetInt32(5), Description = reader.IsDBNull(6) ? null : reader.GetString(6) } });
-                        }
-
                         return result;
                     }
                 }
@@ -406,10 +393,7 @@ public class QuerySql
         }
 
         if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
-        {
-            throw new System.InvalidOperationException("Transaction is provided, but its connection is null.");
-        }
-
+            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
         using (var command = this.Transaction.Connection.CreateCommand())
         {
             command.CommandText = ListAllAuthorsBooksSql;
@@ -418,10 +402,7 @@ public class QuerySql
             {
                 var result = new List<ListAllAuthorsBooksRow>();
                 while (await reader.ReadAsync())
-                {
                     result.Add(new ListAllAuthorsBooksRow { Author = new Author { Id = reader.GetInt32(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2) }, Book = new Book { Id = reader.GetInt32(3), Name = reader.GetString(4), AuthorId = reader.GetInt32(5), Description = reader.IsDBNull(6) ? null : reader.GetString(6) } });
-                }
-
                 return result;
             }
         }
@@ -446,10 +427,7 @@ public class QuerySql
                     {
                         var result = new List<GetDuplicateAuthorsRow>();
                         while (await reader.ReadAsync())
-                        {
                             result.Add(new GetDuplicateAuthorsRow { Author = new Author { Id = reader.GetInt32(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2) }, Author2 = new Author { Id = reader.GetInt32(3), Name = reader.GetString(4), Bio = reader.IsDBNull(5) ? null : reader.GetString(5) } });
-                        }
-
                         return result;
                     }
                 }
@@ -457,10 +435,7 @@ public class QuerySql
         }
 
         if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
-        {
-            throw new System.InvalidOperationException("Transaction is provided, but its connection is null.");
-        }
-
+            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
         using (var command = this.Transaction.Connection.CreateCommand())
         {
             command.CommandText = GetDuplicateAuthorsSql;
@@ -469,10 +444,7 @@ public class QuerySql
             {
                 var result = new List<GetDuplicateAuthorsRow>();
                 while (await reader.ReadAsync())
-                {
                     result.Add(new GetDuplicateAuthorsRow { Author = new Author { Id = reader.GetInt32(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2) }, Author2 = new Author { Id = reader.GetInt32(3), Name = reader.GetString(4), Bio = reader.IsDBNull(5) ? null : reader.GetString(5) } });
-                }
-
                 return result;
             }
         }
@@ -504,10 +476,7 @@ public class QuerySql
                     {
                         var result = new List<GetAuthorsByBookNameRow>();
                         while (await reader.ReadAsync())
-                        {
                             result.Add(new GetAuthorsByBookNameRow { Id = reader.GetInt32(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2), Book = new Book { Id = reader.GetInt32(3), Name = reader.GetString(4), AuthorId = reader.GetInt32(5), Description = reader.IsDBNull(6) ? null : reader.GetString(6) } });
-                        }
-
                         return result;
                     }
                 }
@@ -515,10 +484,7 @@ public class QuerySql
         }
 
         if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
-        {
-            throw new System.InvalidOperationException("Transaction is provided, but its connection is null.");
-        }
-
+            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
         using (var command = this.Transaction.Connection.CreateCommand())
         {
             command.CommandText = GetAuthorsByBookNameSql;
@@ -528,10 +494,7 @@ public class QuerySql
             {
                 var result = new List<GetAuthorsByBookNameRow>();
                 while (await reader.ReadAsync())
-                {
                     result.Add(new GetAuthorsByBookNameRow { Id = reader.GetInt32(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2), Book = new Book { Id = reader.GetInt32(3), Name = reader.GetString(4), AuthorId = reader.GetInt32(5), Description = reader.IsDBNull(6) ? null : reader.GetString(6) } });
-                }
-
                 return result;
             }
         }

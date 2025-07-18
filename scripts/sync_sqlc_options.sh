@@ -3,8 +3,8 @@
 set -e
 
 CI_YAML="sqlc.ci.yaml"
-REQUESTS_YAML="sqlc.requests.yaml"
-LOCAL_YAML="sqlc.local.yaml"
+REQUESTS_YAML="sqlc.request.generated.yaml"
+LOCAL_YAML="sqlc.local.generated.yaml"
 TMP_REQUESTS_YML="${REQUESTS_YAML}.tmp"
 TMP_LOCAL_YML="${LOCAL_YAML}.tmp"
 

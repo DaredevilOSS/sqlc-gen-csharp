@@ -19,7 +19,7 @@ Since in batch insert the data is not validated by the SQL itself but written in
 we consider support for the different data types separately for batch inserts and everything else.
 
 | DB Type                                 | Supported? | Supported in Batch? |
-|-----------------------------------------|-----------|---------------------|
+|-----------------------------------------|------------|-------------------- |
 | boolean                                 | ✅         | ✅                  |
 | smallint                                | ✅         | ✅                  |
 | integer                                 | ✅         | ✅                  |
@@ -31,32 +31,38 @@ we consider support for the different data types separately for batch inserts an
 | timestamp, timestamp without time zone  | ✅         | ✅                  |
 | timestamp with time zone                | ✅         | ✅                  |
 | time, time without time zone            | ✅         | ✅                  |
-| time with time zone                     | ❌         | ❌                  |
-| interval                                | ❌         | ❌                  |
+| time with time zone                     | 🚫         | 🚫                  |
+| interval                                | ✅         | ✅                  |
 | char                                    | ✅         | ✅                  |
-| bpchar                                  | ❌         | ❌                  |
+| bpchar                                  | ✅         | ✅                  |
 | varchar, character varying              | ✅         | ✅                  |
 | text                                    | ✅         | ✅                  |
 | bytea                                   | ✅         | ✅                  |
 | 2-dimensional arrays (e.g text[],int[]) | ✅         | ❌                  |
 | money                                   | ✅         | ✅                  |
-| point                                   | ✅         | ❌                  |
-| line                                    | ✅         | ❌                  |
-| lseg                                    | ✅         | ❌                  |
-| box                                     | ✅         | ❌                  |
-| path                                    | ✅         | ❌                  |
-| polygon                                 | ✅         | ❌                  |
-| circle                                  | ✅         | ❌                  |
-| cidr                                    | ❌         | ❌                  |
-| inet                                    | ❌         | ❌                  |
-| macaddr                                 | ❌         | ❌                  |
-| macaddr8                                | ❌         | ❌                  |
+| point                                   | ✅         | ✅                  |
+| line                                    | ✅         | ✅                  |
+| lseg                                    | ✅         | ✅                  |
+| box                                     | ✅         | ✅                  |
+| path                                    | ✅         | ✅                  |
+| polygon                                 | ✅         | ✅                  |
+| circle                                  | ✅         | ✅                  |
+| cidr                                    | ✅         | ❌                  |
+| inet                                    | ✅         | ❌                  |
+| macaddr                                 | ✅         | ❌                  |
+| macaddr8                                | ✅         | ❌                  |
 | tsvector                                | ❌         | ❌                  |
 | tsquery                                 | ❌         | ❌                  |
-| uuid                                    | ❌         | ❌                  |
-| json                                    | ❌         | ❌                  |
-| jsonb                                   | ❌         | ❌                  |
-| jsonpath                                | ❌         | ❌                  |
+| uuid                                    | ✅         | ✅                  |
+| json                                    | ✅         | ❌                  |
+| jsonb                                   | ✅         | ❌                  |
+| jsonpath                                | ✅         | ❌                  |
+| xml                                     | ❌         | ❌                  |
+| enum                                    | ❌         | ❌                  |
+
+*** `time with time zone` is not useful and not recommended to use by Postgres themselves - 
+see [here](https://www.postgresql.org/docs/current/datatype-datetime.html#DATATYPE-DATETIME) -
+so we decided not to implement support for it.
 
 </details>
 

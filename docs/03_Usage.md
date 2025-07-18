@@ -11,9 +11,19 @@
 | Override            | values: A nested override value like [this](#override-option). | Yes | Allows you to override the generated C# data types for specific columns in specific queries. This option accepts a `query_name:column_name` mapping and the overriden data type. |                                                                                     |
 
 ### Override option
+Override for a specific query:
 ```yaml
 overrides:
   - column: "<query-name>:<field-name>"
+    csharp_type:
+      type: "<csharp-datatype>"
+      notNull: true|false
+```
+
+Override for all queries:
+```yaml
+overrides:
+  - column: "*:<field-name>"
     csharp_type:
       type: "<csharp-datatype>"
       notNull: true|false
