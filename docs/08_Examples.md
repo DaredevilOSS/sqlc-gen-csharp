@@ -23,6 +23,14 @@ overrides:
   csharp_type:
     type: "DateTime"
     notNull: true
+- column: "*:c_json_string_override"
+  csharp_type:
+    type: "string"
+    notNull: false
+- column: "*:c_macaddr8"
+  csharp_type:
+    type: "string"
+    notNull: false
 ```
 
 </details>
@@ -50,6 +58,14 @@ overrides:
   csharp_type:
     type: "DateTime"
     notNull: true
+- column: "*:c_json_string_override"
+  csharp_type:
+    type: "string"
+    notNull: false
+- column: "*:c_macaddr8"
+  csharp_type:
+    type: "string"
+    notNull: false
 ```
 
 </details>
@@ -77,6 +93,14 @@ overrides:
   csharp_type:
     type: "DateTime"
     notNull: true
+- column: "*:c_json_string_override"
+  csharp_type:
+    type: "string"
+    notNull: false
+- column: "*:c_macaddr8"
+  csharp_type:
+    type: "string"
+    notNull: false
 ```
 
 </details>
@@ -104,6 +128,14 @@ overrides:
   csharp_type:
     type: "DateTime"
     notNull: true
+- column: "*:c_json_string_override"
+  csharp_type:
+    type: "string"
+    notNull: false
+- column: "*:c_macaddr8"
+  csharp_type:
+    type: "string"
+    notNull: false
 ```
 
 </details>
@@ -131,10 +163,10 @@ overrides:
   csharp_type:
     type: "DateTime"
     notNull: true
-- column: "GetMysqlFunctions:max_bigint"
+- column: "*:c_json_string_override"
   csharp_type:
-    type: "long"
-    notNull: true
+    type: "string"
+    notNull: false
 ```
 
 </details>
@@ -162,10 +194,10 @@ overrides:
   csharp_type:
     type: "DateTime"
     notNull: true
-- column: "GetMysqlFunctions:max_bigint"
+- column: "*:c_json_string_override"
   csharp_type:
-    type: "long"
-    notNull: true
+    type: "string"
+    notNull: false
 ```
 
 </details>
@@ -193,10 +225,10 @@ overrides:
   csharp_type:
     type: "DateTime"
     notNull: true
-- column: "GetMysqlFunctions:max_bigint"
+- column: "*:c_json_string_override"
   csharp_type:
-    type: "long"
-    notNull: true
+    type: "string"
+    notNull: false
 ```
 
 </details>
@@ -224,10 +256,10 @@ overrides:
   csharp_type:
     type: "DateTime"
     notNull: true
-- column: "GetMysqlFunctions:max_bigint"
+- column: "*:c_json_string_override"
   csharp_type:
-    type: "long"
-    notNull: true
+    type: "string"
+    notNull: false
 ```
 
 </details>
