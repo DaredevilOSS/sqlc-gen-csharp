@@ -12,8 +12,8 @@ version: "2"
 plugins:
 - name: csharp
   wasm:
-    url: https://github.com/DaredevilOSS/sqlc-gen-csharp/releases/download/v0.18.0/sqlc-gen-csharp.wasm
-    sha256: 5564052d3133c4127c067b7528e2b62e78ccf03cb99c7fc2aade0764b9455125
+    url: https://github.com/DaredevilOSS/sqlc-gen-csharp/releases/download/v0.19.0/sqlc-gen-csharp.wasm
+    sha256: 82e1a2dfc44ba5052c1e310aa2cda82d2825b8dc57000ce4dd6519249e5ea0fe
 sql:
   # For PostgresSQL
   - schema: schema.sql
@@ -50,9 +50,19 @@ sql:
 | Override            | values: A nested override value like [this](#override-option). | Yes | Allows you to override the generated C# data types for specific columns in specific queries. This option accepts a `query_name:column_name` mapping and the overriden data type. |                                                                                     |
 
 ### Override option
+Override for a specific query:
 ```yaml
 overrides:
   - column: "<query-name>:<field-name>"
+    csharp_type:
+      type: "<csharp-datatype>"
+      notNull: true|false
+```
+
+Override for all queries:
+```yaml
+overrides:
+  - column: "*:<field-name>"
     csharp_type:
       type: "<csharp-datatype>"
       notNull: true|false
@@ -165,7 +175,7 @@ Since in batch insert the data is not validated by the SQL itself but written in
 we consider support for the different data types separately for batch inserts and everything else.
 
 | DB Type                                 | Supported? | Supported in Batch? |
-|-----------------------------------------|-----------|---------------------|
+|-----------------------------------------|------------|-------------------- |
 | boolean                                 | ✅         | ✅                  |
 | smallint                                | ✅         | ✅                  |
 | integer                                 | ✅         | ✅                  |
@@ -177,32 +187,38 @@ we consider support for the different data types separately for batch inserts an
 | timestamp, timestamp without time zone  | ✅         | ✅                  |
 | timestamp with time zone                | ✅         | ✅                  |
 | time, time without time zone            | ✅         | ✅                  |
-| time with time zone                     | ❌         | ❌                  |
-| interval                                | ❌         | ❌                  |
+| time with time zone                     | 🚫         | 🚫                  |
+| interval                                | ✅         | ✅                  |
 | char                                    | ✅         | ✅                  |
-| bpchar                                  | ❌         | ❌                  |
+| bpchar                                  | ✅         | ✅                  |
 | varchar, character varying              | ✅         | ✅                  |
 | text                                    | ✅         | ✅                  |
 | bytea                                   | ✅         | ✅                  |
 | 2-dimensional arrays (e.g text[],int[]) | ✅         | ❌                  |
 | money                                   | ✅         | ✅                  |
-| point                                   | ✅         | ❌                  |
-| line                                    | ✅         | ❌                  |
-| lseg                                    | ✅         | ❌                  |
-| box                                     | ✅         | ❌                  |
-| path                                    | ✅         | ❌                  |
-| polygon                                 | ✅         | ❌                  |
-| circle                                  | ✅         | ❌                  |
-| cidr                                    | ❌         | ❌                  |
-| inet                                    | ❌         | ❌                  |
-| macaddr                                 | ❌         | ❌                  |
-| macaddr8                                | ❌         | ❌                  |
+| point                                   | ✅         | ✅                  |
+| line                                    | ✅         | ✅                  |
+| lseg                                    | ✅         | ✅                  |
+| box                                     | ✅         | ✅                  |
+| path                                    | ✅         | ✅                  |
+| polygon                                 | ✅         | ✅                  |
+| circle                                  | ✅         | ✅                  |
+| cidr                                    | ✅         | ❌                  |
+| inet                                    | ✅         | ❌                  |
+| macaddr                                 | ✅         | ❌                  |
+| macaddr8                                | ✅         | ❌                  |
 | tsvector                                | ❌         | ❌                  |
 | tsquery                                 | ❌         | ❌                  |
-| uuid                                    | ❌         | ❌                  |
-| json                                    | ❌         | ❌                  |
-| jsonb                                   | ❌         | ❌                  |
-| jsonpath                                | ❌         | ❌                  |
+| uuid                                    | ✅         | ✅                  |
+| json                                    | ✅         | ❌                  |
+| jsonb                                   | ✅         | ❌                  |
+| jsonpath                                | ✅         | ❌                  |
+| xml                                     | ❌         | ❌                  |
+| enum                                    | ❌         | ❌                  |
+
+*** `time with time zone` is not useful and not recommended to use by Postgres themselves - 
+see [here](https://www.postgresql.org/docs/current/datatype-datetime.html#DATATYPE-DATETIME) -
+so we decided not to implement support for it.
 
 </details>
 
@@ -277,9 +293,9 @@ we consider support for the different data types separately for batch inserts an
 | blob                      | ✅         | ✅                  |
 | mediumblob                | ✅         | ✅                  |
 | longblob                  | ✅         | ✅                  |
-| enum                      | ❌         | ❌                  |
+| enum                      | ✅         | ✅                  |
 | set                       | ❌         | ❌                  |
-| json                      | ❌         | ❌                  |
+| json                      | ✅         | ✅                  |
 | geometry                  | ❌         | ❌                  |
 | point                     | ❌         | ❌                  |
 | linestring                | ❌         | ❌                  |
@@ -405,6 +421,14 @@ overrides:
   csharp_type:
     type: "DateTime"
     notNull: true
+- column: "*:c_json_string_override"
+  csharp_type:
+    type: "string"
+    notNull: false
+- column: "*:c_macaddr8"
+  csharp_type:
+    type: "string"
+    notNull: false
 ```
 
 </details>
@@ -432,6 +456,14 @@ overrides:
   csharp_type:
     type: "DateTime"
     notNull: true
+- column: "*:c_json_string_override"
+  csharp_type:
+    type: "string"
+    notNull: false
+- column: "*:c_macaddr8"
+  csharp_type:
+    type: "string"
+    notNull: false
 ```
 
 </details>
@@ -459,6 +491,14 @@ overrides:
   csharp_type:
     type: "DateTime"
     notNull: true
+- column: "*:c_json_string_override"
+  csharp_type:
+    type: "string"
+    notNull: false
+- column: "*:c_macaddr8"
+  csharp_type:
+    type: "string"
+    notNull: false
 ```
 
 </details>
@@ -486,6 +526,14 @@ overrides:
   csharp_type:
     type: "DateTime"
     notNull: true
+- column: "*:c_json_string_override"
+  csharp_type:
+    type: "string"
+    notNull: false
+- column: "*:c_macaddr8"
+  csharp_type:
+    type: "string"
+    notNull: false
 ```
 
 </details>
@@ -513,10 +561,10 @@ overrides:
   csharp_type:
     type: "DateTime"
     notNull: true
-- column: "GetMysqlFunctions:max_bigint"
+- column: "*:c_json_string_override"
   csharp_type:
-    type: "long"
-    notNull: true
+    type: "string"
+    notNull: false
 ```
 
 </details>
@@ -544,10 +592,10 @@ overrides:
   csharp_type:
     type: "DateTime"
     notNull: true
-- column: "GetMysqlFunctions:max_bigint"
+- column: "*:c_json_string_override"
   csharp_type:
-    type: "long"
-    notNull: true
+    type: "string"
+    notNull: false
 ```
 
 </details>
@@ -575,10 +623,10 @@ overrides:
   csharp_type:
     type: "DateTime"
     notNull: true
-- column: "GetMysqlFunctions:max_bigint"
+- column: "*:c_json_string_override"
   csharp_type:
-    type: "long"
-    notNull: true
+    type: "string"
+    notNull: false
 ```
 
 </details>
@@ -606,10 +654,10 @@ overrides:
   csharp_type:
     type: "DateTime"
     notNull: true
-- column: "GetMysqlFunctions:max_bigint"
+- column: "*:c_json_string_override"
   csharp_type:
-    type: "long"
-    notNull: true
+    type: "string"
+    notNull: false
 ```
 
 </details>
