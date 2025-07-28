@@ -1,15 +1,16 @@
 using System;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace SqlcGenCsharp;
 
 public static class App
 {
-    public static void Main(string[] requestFiles)
+    public static async Task Main(string[] requestFiles)
     {
-        for (int i = 0; i < requestFiles.Length; i++)
-            ProcessRequestFile(requestFiles[i]);
+        foreach (var requestFile in requestFiles)
+            await ProcessRequestFile(requestFile);
     }
 
     private static async Task ProcessRequestFile(string requestFile)
@@ -19,6 +20,7 @@ public static class App
         Console.WriteLine($"Processing request file {requestFile}");
         var request = Plugin.GenerateRequest.Parser.ParseFrom(File.ReadAllBytes(requestFile));
         var response = await new CodeGenerator().Generate(request);
-        Console.WriteLine($"Response: {response.Files.Count} output files");
+        Console.WriteLine($"Response files: {response.Files.Select(f => f.Name).JoinByComma()}");
+        Console.WriteLine("--------------------------------");
     }
 }

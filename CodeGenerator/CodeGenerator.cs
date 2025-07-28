@@ -118,7 +118,6 @@ public class CodeGenerator
 
     /// <summary>
     /// Enums in the request exist only in the default schema (in mysql), this remaps enums to their original schema.
-    /// Unusual behavior we might have to fix in the future - TODO
     /// </summary>
     /// <param name="catalog"></param>
     /// <returns></returns>
@@ -180,12 +179,13 @@ public class CodeGenerator
                 }
             });
 
-        var fileQueries = GetFileQueries();
-        var files = fileQueries
+        var files = GetFileQueries()
             .Select(fq => QueriesGen.GenerateFile(fq.Value, fq.Key))
-            .Append(ModelsGen.GenerateFile(Tables, Enums))
-            .AppendIfNotNull(UtilsGen.GenerateFile())
-            .AppendIf(CsprojGen.GenerateFile(), Options.GenerateCsproj);
+            .AddRangeExcludeNulls([
+                ModelsGen.GenerateFile(Tables, Enums),
+                UtilsGen.GenerateFile()
+            ])
+            .AddRangeIf([CsprojGen.GenerateFile()], Options.GenerateCsproj);
 
         return Task.FromResult(new GenerateResponse { Files = { files } });
 
@@ -211,9 +211,8 @@ public class CodeGenerator
         var text = Encoding.UTF8.GetString(request.PluginOptions.ToByteArray());
         var rawOptions = JsonSerializer.Deserialize<RawOptions>(text) ?? throw new InvalidOperationException();
         var newOptions = rawOptions with { DebugRequest = false };
-        return ByteString.CopyFromUtf8(JsonSerializer.Serialize(request));
+        return ByteString.CopyFromUtf8(JsonSerializer.Serialize(newOptions));
     }
-
 
     private static Plugin.File RequestToJsonFile(GenerateRequest request)
     {

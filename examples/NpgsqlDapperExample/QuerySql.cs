@@ -4,30 +4,34 @@
 // ReSharper disable ConvertToUsingDeclaration
 // ReSharper disable NotAccessedPositionalProperty.Global
 // ReSharper disable UnusedAutoPropertyAccessor.Global
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using Dapper;
-using System.Text.Json;
 using Npgsql;
 using NpgsqlTypes;
+using System;
+using System.Collections.Generic;
 using System.Data;
+using System.Net;
+using System.Net.NetworkInformation;
+using System.Text.Json;
+using System.Threading.Tasks;
 
 namespace NpgsqlDapperExampleGen;
 public class QuerySql
 {
-    public QuerySql(string connectionString)
+    public QuerySql()
     {
-        this.ConnectionString = connectionString;
         Utils.ConfigureSqlMapper();
         Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
     }
 
-    private QuerySql(NpgsqlTransaction transaction)
+    public QuerySql(string connectionString) : this()
+    {
+        this.ConnectionString = connectionString;
+    }
+
+    private QuerySql(NpgsqlTransaction transaction) : this()
     {
         this.Transaction = transaction;
-        Utils.ConfigureSqlMapper();
-        Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
     }
 
     public static QuerySql WithTransaction(NpgsqlTransaction transaction)
@@ -89,10 +93,7 @@ public class QuerySql
         }
 
         if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
-        {
-            throw new System.InvalidOperationException("Transaction is provided, but its connection is null.");
-        }
-
+            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
         return (await this.Transaction.Connection.QueryAsync<ListAuthorsRow>(ListAuthorsSql, transaction: this.Transaction)).AsList();
     }
 
@@ -220,10 +221,7 @@ public class QuerySql
         }
 
         if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
-        {
-            throw new System.InvalidOperationException("Transaction is provided, but its connection is null.");
-        }
-
+            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
         return (await this.Transaction.Connection.QueryAsync<GetAuthorByNamePatternRow>(GetAuthorByNamePatternSql, queryParams, transaction: this.Transaction)).AsList();
     }
 
@@ -325,10 +323,7 @@ public class QuerySql
         }
 
         if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
-        {
-            throw new System.InvalidOperationException("Transaction is provided, but its connection is null.");
-        }
-
+            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
         return (await this.Transaction.Connection.QueryAsync<GetAuthorsByIdsRow>(GetAuthorsByIdsSql, queryParams, transaction: this.Transaction)).AsList();
     }
 
@@ -359,10 +354,7 @@ public class QuerySql
         }
 
         if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
-        {
-            throw new System.InvalidOperationException("Transaction is provided, but its connection is null.");
-        }
-
+            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
         return (await this.Transaction.Connection.QueryAsync<GetAuthorsByIdsAndNamesRow>(GetAuthorsByIdsAndNamesSql, queryParams, transaction: this.Transaction)).AsList();
     }
 
@@ -415,10 +407,7 @@ public class QuerySql
                     {
                         var result = new List<ListAllAuthorsBooksRow>();
                         while (await reader.ReadAsync())
-                        {
                             result.Add(new ListAllAuthorsBooksRow { Author = new Author { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2) }, Book = new Book { Id = reader.GetInt64(3), Name = reader.GetString(4), AuthorId = reader.GetInt64(5), Description = reader.IsDBNull(6) ? null : reader.GetString(6) } });
-                        }
-
                         return result;
                     }
                 }
@@ -426,10 +415,7 @@ public class QuerySql
         }
 
         if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
-        {
-            throw new System.InvalidOperationException("Transaction is provided, but its connection is null.");
-        }
-
+            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
         using (var command = this.Transaction.Connection.CreateCommand())
         {
             command.CommandText = ListAllAuthorsBooksSql;
@@ -438,10 +424,7 @@ public class QuerySql
             {
                 var result = new List<ListAllAuthorsBooksRow>();
                 while (await reader.ReadAsync())
-                {
                     result.Add(new ListAllAuthorsBooksRow { Author = new Author { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2) }, Book = new Book { Id = reader.GetInt64(3), Name = reader.GetString(4), AuthorId = reader.GetInt64(5), Description = reader.IsDBNull(6) ? null : reader.GetString(6) } });
-                }
-
                 return result;
             }
         }
@@ -465,10 +448,7 @@ public class QuerySql
                     {
                         var result = new List<GetDuplicateAuthorsRow>();
                         while (await reader.ReadAsync())
-                        {
                             result.Add(new GetDuplicateAuthorsRow { Author = new Author { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2) }, Author2 = new Author { Id = reader.GetInt64(3), Name = reader.GetString(4), Bio = reader.IsDBNull(5) ? null : reader.GetString(5) } });
-                        }
-
                         return result;
                     }
                 }
@@ -476,10 +456,7 @@ public class QuerySql
         }
 
         if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
-        {
-            throw new System.InvalidOperationException("Transaction is provided, but its connection is null.");
-        }
-
+            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
         using (var command = this.Transaction.Connection.CreateCommand())
         {
             command.CommandText = GetDuplicateAuthorsSql;
@@ -488,10 +465,7 @@ public class QuerySql
             {
                 var result = new List<GetDuplicateAuthorsRow>();
                 while (await reader.ReadAsync())
-                {
                     result.Add(new GetDuplicateAuthorsRow { Author = new Author { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2) }, Author2 = new Author { Id = reader.GetInt64(3), Name = reader.GetString(4), Bio = reader.IsDBNull(5) ? null : reader.GetString(5) } });
-                }
-
                 return result;
             }
         }
@@ -522,10 +496,7 @@ public class QuerySql
                     {
                         var result = new List<GetAuthorsByBookNameRow>();
                         while (await reader.ReadAsync())
-                        {
                             result.Add(new GetAuthorsByBookNameRow { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2), Book = new Book { Id = reader.GetInt64(3), Name = reader.GetString(4), AuthorId = reader.GetInt64(5), Description = reader.IsDBNull(6) ? null : reader.GetString(6) } });
-                        }
-
                         return result;
                     }
                 }
@@ -533,10 +504,7 @@ public class QuerySql
         }
 
         if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
-        {
-            throw new System.InvalidOperationException("Transaction is provided, but its connection is null.");
-        }
-
+            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
         using (var command = this.Transaction.Connection.CreateCommand())
         {
             command.CommandText = GetAuthorsByBookNameSql;
@@ -546,16 +514,13 @@ public class QuerySql
             {
                 var result = new List<GetAuthorsByBookNameRow>();
                 while (await reader.ReadAsync())
-                {
                     result.Add(new GetAuthorsByBookNameRow { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2), Book = new Book { Id = reader.GetInt64(3), Name = reader.GetString(4), AuthorId = reader.GetInt64(5), Description = reader.IsDBNull(6) ? null : reader.GetString(6) } });
-                }
-
                 return result;
             }
         }
     }
 
-    private const string InsertPostgresTypesSql = "INSERT INTO postgres_types(c_boolean, c_bit, c_smallint, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_money, c_date, c_time, c_timestamp, c_timestamp_with_tz, c_char, c_varchar, c_character_varying, c_text, c_bytea, c_text_array, c_integer_array) VALUES ( @c_boolean, @c_bit, @c_smallint, @c_integer, @c_bigint, @c_real, @c_numeric, @c_decimal, @c_double_precision, @c_money, @c_date, @c_time, @c_timestamp, @c_timestamp_with_tz, @c_char, @c_varchar, @c_character_varying, @c_text, @c_bytea, @c_text_array, @c_integer_array ) "; 
+    private const string InsertPostgresTypesSql = "INSERT INTO postgres_types(c_boolean, c_bit, c_smallint, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_money, c_date, c_time, c_timestamp, c_timestamp_with_tz, c_interval, c_char, c_varchar, c_character_varying, c_bpchar, c_text, c_uuid, c_json, c_json_string_override, c_jsonb, c_jsonpath, c_cidr, c_inet, c_macaddr, c_macaddr8, c_bytea, c_boolean_array, c_text_array, c_integer_array, c_decimal_array, c_date_array, c_timestamp_array) VALUES ( @c_boolean, @c_bit, @c_smallint, @c_integer, @c_bigint, @c_real, @c_numeric, @c_decimal, @c_double_precision, @c_money, @c_date, @c_time, @c_timestamp, @c_timestamp_with_tz, @c_interval, @c_char, @c_varchar, @c_character_varying, @c_bpchar, @c_text, @c_uuid, @c_json :: json, @c_json_string_override :: json, @c_jsonb :: jsonb, @c_jsonpath :: jsonpath, @c_cidr, @c_inet, @c_macaddr :: macaddr, @c_macaddr8 :: macaddr8, @c_bytea, @c_boolean_array, @c_text_array, @c_integer_array, @c_decimal_array, @c_date_array, @c_timestamp_array ) "; 
     public class InsertPostgresTypesArgs
     {
         public bool? CBoolean { get; init; }
@@ -572,13 +537,28 @@ public class QuerySql
         public TimeSpan? CTime { get; init; }
         public DateTime? CTimestamp { get; init; }
         public DateTime? CTimestampWithTz { get; init; }
+        public TimeSpan? CInterval { get; init; }
         public string? CChar { get; init; }
         public string? CVarchar { get; init; }
         public string? CCharacterVarying { get; init; }
+        public string? CBpchar { get; init; }
         public string? CText { get; init; }
+        public Guid? CUuid { get; init; }
+        public JsonElement? CJson { get; init; }
+        public string? CJsonStringOverride { get; init; }
+        public JsonElement? CJsonb { get; init; }
+        public string? CJsonpath { get; init; }
+        public NpgsqlCidr? CCidr { get; init; }
+        public IPAddress? CInet { get; init; }
+        public PhysicalAddress? CMacaddr { get; init; }
+        public string? CMacaddr8 { get; init; }
         public byte[]? CBytea { get; init; }
+        public bool[]? CBooleanArray { get; init; }
         public string[]? CTextArray { get; init; }
         public int[]? CIntegerArray { get; init; }
+        public decimal[]? CDecimalArray { get; init; }
+        public DateTime[]? CDateArray { get; init; }
+        public DateTime[]? CTimestampArray { get; init; }
     };
     public async Task InsertPostgresTypes(InsertPostgresTypesArgs args)
     {
@@ -597,13 +577,28 @@ public class QuerySql
         queryParams.Add("c_time", args.CTime);
         queryParams.Add("c_timestamp", args.CTimestamp);
         queryParams.Add("c_timestamp_with_tz", args.CTimestampWithTz);
+        queryParams.Add("c_interval", args.CInterval);
         queryParams.Add("c_char", args.CChar);
         queryParams.Add("c_varchar", args.CVarchar);
         queryParams.Add("c_character_varying", args.CCharacterVarying);
+        queryParams.Add("c_bpchar", args.CBpchar);
         queryParams.Add("c_text", args.CText);
+        queryParams.Add("c_uuid", args.CUuid);
+        queryParams.Add("c_json", args.CJson.HasValue ? args.CJson.Value.GetRawText() : null);
+        queryParams.Add("c_json_string_override", args.CJsonStringOverride);
+        queryParams.Add("c_jsonb", args.CJsonb.HasValue ? args.CJsonb.Value.GetRawText() : null);
+        queryParams.Add("c_jsonpath", args.CJsonpath);
+        queryParams.Add("c_cidr", args.CCidr);
+        queryParams.Add("c_inet", args.CInet);
+        queryParams.Add("c_macaddr", args.CMacaddr);
+        queryParams.Add("c_macaddr8", args.CMacaddr8);
         queryParams.Add("c_bytea", args.CBytea);
+        queryParams.Add("c_boolean_array", args.CBooleanArray);
         queryParams.Add("c_text_array", args.CTextArray);
         queryParams.Add("c_integer_array", args.CIntegerArray);
+        queryParams.Add("c_decimal_array", args.CDecimalArray);
+        queryParams.Add("c_date_array", args.CDateArray);
+        queryParams.Add("c_timestamp_array", args.CTimestampArray);
         if (this.Transaction == null)
         {
             using (var connection = new NpgsqlConnection(ConnectionString))
@@ -622,7 +617,7 @@ public class QuerySql
         await this.Transaction.Connection.ExecuteAsync(InsertPostgresTypesSql, queryParams, transaction: this.Transaction);
     }
 
-    private const string InsertPostgresTypesBatchSql = "COPY postgres_types (c_boolean, c_smallint, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_money, c_date, c_time, c_timestamp, c_timestamp_with_tz, c_char, c_varchar, c_character_varying, c_text, c_bytea) FROM STDIN (FORMAT BINARY)";
+    private const string InsertPostgresTypesBatchSql = "COPY postgres_types (c_boolean, c_smallint, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_money, c_date, c_time, c_timestamp, c_timestamp_with_tz, c_interval, c_char, c_varchar, c_character_varying, c_bpchar, c_text, c_uuid, c_bytea) FROM STDIN (FORMAT BINARY)";
     public class InsertPostgresTypesBatchArgs
     {
         public bool? CBoolean { get; init; }
@@ -638,17 +633,19 @@ public class QuerySql
         public TimeSpan? CTime { get; init; }
         public DateTime? CTimestamp { get; init; }
         public DateTime? CTimestampWithTz { get; init; }
+        public TimeSpan? CInterval { get; init; }
         public string? CChar { get; init; }
         public string? CVarchar { get; init; }
         public string? CCharacterVarying { get; init; }
+        public string? CBpchar { get; init; }
         public string? CText { get; init; }
+        public Guid? CUuid { get; init; }
         public byte[]? CBytea { get; init; }
     };
     public async Task InsertPostgresTypesBatch(List<InsertPostgresTypesBatchArgs> args)
     {
-        using (var ds = NpgsqlDataSource.Create(ConnectionString))
+        using (var connection = new NpgsqlConnection(ConnectionString))
         {
-            var connection = ds.CreateConnection();
             await connection.OpenAsync();
             using (var writer = await connection.BeginBinaryImportAsync(InsertPostgresTypesBatchSql))
             {
@@ -658,7 +655,7 @@ public class QuerySql
                     await writer.WriteAsync(row.CBoolean);
                     await writer.WriteAsync(row.CSmallint, NpgsqlDbType.Smallint);
                     await writer.WriteAsync(row.CInteger, NpgsqlDbType.Integer);
-                    await writer.WriteAsync(row.CBigint, NpgsqlDbType.Bigint);
+                    await writer.WriteAsync(row.CBigint);
                     await writer.WriteAsync(row.CReal, NpgsqlDbType.Real);
                     await writer.WriteAsync(row.CNumeric, NpgsqlDbType.Numeric);
                     await writer.WriteAsync(row.CDecimal, NpgsqlDbType.Numeric);
@@ -668,10 +665,13 @@ public class QuerySql
                     await writer.WriteAsync(row.CTime, NpgsqlDbType.Time);
                     await writer.WriteAsync(row.CTimestamp, NpgsqlDbType.Timestamp);
                     await writer.WriteAsync(row.CTimestampWithTz, NpgsqlDbType.TimestampTz);
+                    await writer.WriteAsync(row.CInterval, NpgsqlDbType.Interval);
                     await writer.WriteAsync(row.CChar);
                     await writer.WriteAsync(row.CVarchar);
                     await writer.WriteAsync(row.CCharacterVarying);
+                    await writer.WriteAsync(row.CBpchar);
                     await writer.WriteAsync(row.CText);
+                    await writer.WriteAsync(row.CUuid, NpgsqlDbType.Uuid);
                     await writer.WriteAsync(row.CBytea);
                 }
 
@@ -682,7 +682,7 @@ public class QuerySql
         }
     }
 
-    private const string GetPostgresTypesSql = "SELECT c_boolean, c_bit, c_smallint, c_integer, c_bigint, c_decimal, c_numeric, c_real, c_double_precision, c_money, c_date, c_time, c_timestamp, c_timestamp_with_tz, c_char, c_varchar, c_character_varying, c_bytea, c_text, c_json, c_text_array, c_integer_array FROM postgres_types LIMIT 1";
+    private const string GetPostgresTypesSql = "SELECT      c_boolean , c_bit, c_smallint, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_money, c_date, c_time, c_timestamp, c_timestamp_with_tz, c_interval, c_char, c_varchar, c_character_varying, c_bpchar, c_text, c_uuid, c_json, c_json_string_override, c_jsonb, c_jsonpath, c_cidr, c_inet, c_macaddr, c_macaddr8 :: TEXT  AS  c_macaddr8, c_bytea, c_boolean_array, c_text_array, c_integer_array, c_decimal_array, c_date_array, c_timestamp_array FROM  postgres_types  LIMIT  1  ";  
     public class GetPostgresTypesRow
     {
         public bool? CBoolean { get; init; }
@@ -690,23 +690,37 @@ public class QuerySql
         public short? CSmallint { get; init; }
         public int? CInteger { get; init; }
         public long? CBigint { get; init; }
-        public decimal? CDecimal { get; init; }
-        public decimal? CNumeric { get; init; }
         public float? CReal { get; init; }
+        public decimal? CNumeric { get; init; }
+        public decimal? CDecimal { get; init; }
         public double? CDoublePrecision { get; init; }
         public decimal? CMoney { get; init; }
         public DateTime? CDate { get; init; }
         public TimeSpan? CTime { get; init; }
         public DateTime? CTimestamp { get; init; }
         public DateTime? CTimestampWithTz { get; init; }
+        public TimeSpan? CInterval { get; init; }
         public string? CChar { get; init; }
         public string? CVarchar { get; init; }
         public string? CCharacterVarying { get; init; }
-        public byte[]? CBytea { get; init; }
+        public string? CBpchar { get; init; }
         public string? CText { get; init; }
+        public Guid? CUuid { get; init; }
         public JsonElement? CJson { get; init; }
+        public string? CJsonStringOverride { get; init; }
+        public JsonElement? CJsonb { get; init; }
+        public string? CJsonpath { get; init; }
+        public NpgsqlCidr? CCidr { get; init; }
+        public IPAddress? CInet { get; init; }
+        public PhysicalAddress? CMacaddr { get; init; }
+        public string? CMacaddr8 { get; init; }
+        public byte[]? CBytea { get; init; }
+        public bool[]? CBooleanArray { get; init; }
         public string[]? CTextArray { get; init; }
         public int[]? CIntegerArray { get; init; }
+        public decimal[]? CDecimalArray { get; init; }
+        public DateTime[]? CDateArray { get; init; }
+        public DateTime[]? CTimestampArray { get; init; }
     };
     public async Task<GetPostgresTypesRow?> GetPostgresTypes()
     {
@@ -727,7 +741,7 @@ public class QuerySql
         return await this.Transaction.Connection.QueryFirstOrDefaultAsync<GetPostgresTypesRow?>(GetPostgresTypesSql, transaction: this.Transaction);
     }
 
-    private const string GetPostgresTypesCntSql = "SELECT c_smallint , c_boolean, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_money, c_date, c_time, c_timestamp, c_timestamp_with_tz, c_char, c_varchar, c_character_varying, c_text, c_bytea, COUNT (* ) AS  cnt  FROM  postgres_types  GROUP  BY  c_smallint, c_boolean, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_money, c_date, c_time, c_timestamp, c_timestamp_with_tz, c_char, c_varchar, c_character_varying, c_text, c_bytea LIMIT  1  ";  
+    private const string GetPostgresTypesCntSql = "SELECT c_smallint , c_boolean, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_money, c_date, c_time, c_timestamp, c_timestamp_with_tz, c_interval, c_char, c_varchar, c_character_varying, c_bpchar, c_text, c_uuid, c_bytea, COUNT (* ) AS  cnt  FROM  postgres_types  GROUP  BY  c_smallint, c_boolean, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_money, c_date, c_time, c_timestamp, c_timestamp_with_tz, c_interval, c_char, c_varchar, c_character_varying, c_bpchar, c_text, c_uuid, c_bytea LIMIT  1  ";  
     public class GetPostgresTypesCntRow
     {
         public short? CSmallint { get; init; }
@@ -743,10 +757,13 @@ public class QuerySql
         public TimeSpan? CTime { get; init; }
         public DateTime? CTimestamp { get; init; }
         public DateTime? CTimestampWithTz { get; init; }
+        public TimeSpan? CInterval { get; init; }
         public string? CChar { get; init; }
         public string? CVarchar { get; init; }
         public string? CCharacterVarying { get; init; }
+        public string? CBpchar { get; init; }
         public string? CText { get; init; }
+        public Guid? CUuid { get; init; }
         public byte[]? CBytea { get; init; }
         public required long Cnt { get; init; }
     };
@@ -832,6 +849,43 @@ public class QuerySql
         }
 
         await this.Transaction.Connection.ExecuteAsync(InsertPostgresGeoTypesSql, queryParams, transaction: this.Transaction);
+    }
+
+    private const string InsertPostgresGeoTypesBatchSql = "COPY postgres_geometric_types (c_point, c_line, c_lseg, c_box, c_path, c_polygon, c_circle) FROM STDIN (FORMAT BINARY)";
+    public class InsertPostgresGeoTypesBatchArgs
+    {
+        public NpgsqlPoint? CPoint { get; init; }
+        public NpgsqlLine? CLine { get; init; }
+        public NpgsqlLSeg? CLseg { get; init; }
+        public NpgsqlBox? CBox { get; init; }
+        public NpgsqlPath? CPath { get; init; }
+        public NpgsqlPolygon? CPolygon { get; init; }
+        public NpgsqlCircle? CCircle { get; init; }
+    };
+    public async Task InsertPostgresGeoTypesBatch(List<InsertPostgresGeoTypesBatchArgs> args)
+    {
+        using (var connection = new NpgsqlConnection(ConnectionString))
+        {
+            await connection.OpenAsync();
+            using (var writer = await connection.BeginBinaryImportAsync(InsertPostgresGeoTypesBatchSql))
+            {
+                foreach (var row in args)
+                {
+                    await writer.StartRowAsync();
+                    await writer.WriteAsync(row.CPoint, NpgsqlDbType.Point);
+                    await writer.WriteAsync(row.CLine, NpgsqlDbType.Line);
+                    await writer.WriteAsync(row.CLseg, NpgsqlDbType.LSeg);
+                    await writer.WriteAsync(row.CBox, NpgsqlDbType.Box);
+                    await writer.WriteAsync(row.CPath, NpgsqlDbType.Path);
+                    await writer.WriteAsync(row.CPolygon, NpgsqlDbType.Polygon);
+                    await writer.WriteAsync(row.CCircle, NpgsqlDbType.Circle);
+                }
+
+                await writer.CompleteAsync();
+            }
+
+            await connection.CloseAsync();
+        }
     }
 
     private const string GetPostgresGeoTypesSql = "SELECT c_point, c_line, c_lseg, c_box, c_path, c_polygon, c_circle FROM postgres_geometric_types LIMIT 1";

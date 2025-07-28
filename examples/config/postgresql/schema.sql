@@ -30,18 +30,38 @@ CREATE TABLE postgres_types (
     c_time TIME,
     c_timestamp TIMESTAMP,
     c_timestamp_with_tz TIMESTAMP WITH TIME ZONE,
+    c_interval INTERVAL,
 
     /* String Data Type Syntax */
     c_char CHAR,
     c_varchar VARCHAR(100),
     c_character_varying CHARACTER VARYING(100),
-    c_bytea BYTEA,
+    c_bpchar BPCHAR(100),
     c_text TEXT,
+
+    /* JSON Data Types */
     c_json JSON,
+    c_json_string_override JSON,
+    c_jsonb JSONB,
+    c_jsonpath JSONPATH,
+
+    /* Network Address Data Types */
+    c_cidr CIDR,
+    c_inet INET,
+    c_macaddr MACADDR,
+    c_macaddr8 MACADDR8,
+
+    /* Special Data Types */
+    c_uuid UUID,
 
     /* Array Data Types */
+    c_bytea BYTEA,
+    c_boolean_array BOOLEAN [],
     c_text_array TEXT [],
-    c_integer_array INTEGER []
+    c_integer_array INTEGER [],
+    c_decimal_array DECIMAL(10, 7) [],
+    c_date_array DATE [],
+    c_timestamp_array TIMESTAMP []
 );
 
 

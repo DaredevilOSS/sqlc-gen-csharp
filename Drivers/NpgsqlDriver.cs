@@ -14,7 +14,7 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId
         Options options,
         string defaultSchema,
         Dictionary<string, Dictionary<string, Table>> tables,
-        Dictionary<string, Dictionary<string, Enum>> enums,
+        Dictionary<string, Dictionary<string, Plugin.Enum>> enums,
         IList<Query> queries) :
         base(options, defaultSchema, tables, enums, queries)
     {
@@ -26,67 +26,87 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId
                 columnMapping.DbTypes.Add(dbTypeToAdd, dbType.Value);
             }
         }
+        CommonGen = new CommonGen(this);
     }
+
+    private CommonGen CommonGen { get; }
 
     public sealed override Dictionary<string, ColumnMapping> ColumnMappings { get; } =
         new()
         {
-            ["long"] = new ColumnMapping(
-                new Dictionary<string, DbTypeInfo>
+            ["long"] = new(
+                new()
                 {
-                    { "int8", new DbTypeInfo(NpgsqlTypeOverride: "NpgsqlDbType.Bigint") },
-                    { "bigint", new DbTypeInfo(NpgsqlTypeOverride: "NpgsqlDbType.Bigint") },
-                    { "bigserial", new DbTypeInfo(NpgsqlTypeOverride: "NpgsqlDbType.Bigint") }
+                    { "int8", new() },
+                    { "bigint", new() },
+                    { "bigserial", new() }
                 },
-                ordinal => $"reader.GetInt64({ordinal})"
+                readerFn: ordinal => $"reader.GetInt64({ordinal})",
+                readerArrayFn: ordinal => $"reader.GetFieldValue<long[]>({ordinal})",
+                convertFunc: IntTo64
             ),
-            ["byte[]"] = new ColumnMapping(
-                new Dictionary<string, DbTypeInfo>
+            ["byte[]"] = new(
+                new()
                 {
-                    { "binary", new DbTypeInfo() },
-                    { "bit", new DbTypeInfo() },
-                    { "bytea", new DbTypeInfo() },
-                    { "blob", new DbTypeInfo() },
-                    { "longblob", new DbTypeInfo() },
-                    { "mediumblob", new DbTypeInfo() },
-                    { "tinyblob", new DbTypeInfo() },
-                    { "varbinary", new DbTypeInfo() }
+                    { "binary", new() },
+                    { "bit", new() },
+                    { "bytea", new() },
+                    { "blob", new() },
+                    { "longblob", new() },
+                    { "mediumblob", new() },
+                    { "tinyblob", new() },
+                    { "varbinary", new() }
                 },
-                ordinal => $"reader.GetFieldValue<byte[]>({ordinal})"
+                readerFn: ordinal => $"reader.GetFieldValue<byte[]>({ordinal})",
+                readerArrayFn: ordinal => $"reader.GetFieldValue<byte[][]>({ordinal})"
             ),
-            ["string"] = new ColumnMapping(
-                new Dictionary<string, DbTypeInfo>
+            ["string"] = new(
+                new()
                 {
-                    { "longtext", new DbTypeInfo() },
-                    { "mediumtext", new DbTypeInfo() },
-                    { "text", new DbTypeInfo() },
-                    { "bpchar", new DbTypeInfo() },
-                    { "tinytext", new DbTypeInfo() },
-                    { "varchar", new DbTypeInfo() }
+                    { "longtext", new() },
+                    { "mediumtext", new() },
+                    { "text", new() },
+                    { "bpchar", new() },
+                    { "tinytext", new() },
+                    { "varchar", new() },
+                    { "jsonpath", new(NpgsqlTypeOverride: "NpgsqlDbType.JsonPath") },
+                    { "macaddr8", new(NpgsqlTypeOverride: "NpgsqlDbType.MacAddr8") }
                 },
                 readerFn: ordinal => $"reader.GetString({ordinal})",
                 readerArrayFn: ordinal => $"reader.GetFieldValue<string[]>({ordinal})"
             ),
-            ["TimeSpan"] = new ColumnMapping(
-                new Dictionary<string, DbTypeInfo>
+            ["Guid"] = new(
+                new()
                 {
-                    { "time", new DbTypeInfo(NpgsqlTypeOverride: "NpgsqlDbType.Time") }
+                    { "uuid", new(NpgsqlTypeOverride: "NpgsqlDbType.Uuid") }
                 },
-                ordinal => $"reader.GetFieldValue<TimeSpan>({ordinal})"
+                readerFn: ordinal => $"reader.GetFieldValue<Guid>({ordinal})",
+                readerArrayFn: ordinal => $"reader.GetFieldValue<Guid[]>({ordinal})"
             ),
-            ["DateTime"] = new ColumnMapping(
-                new Dictionary<string, DbTypeInfo>
+            ["TimeSpan"] = new(
+                new()
                 {
-                    { "date", new DbTypeInfo(NpgsqlTypeOverride: "NpgsqlDbType.Date") },
-                    { "timestamp", new DbTypeInfo(NpgsqlTypeOverride: "NpgsqlDbType.Timestamp") },
-                    { "timestamptz", new DbTypeInfo(NpgsqlTypeOverride: "NpgsqlDbType.TimestampTz") }
+                    { "time", new(NpgsqlTypeOverride: "NpgsqlDbType.Time") },
+                    { "interval", new(NpgsqlTypeOverride: "NpgsqlDbType.Interval") }
                 },
-                ordinal => $"reader.GetDateTime({ordinal})"
+                readerFn: ordinal => $"reader.GetFieldValue<TimeSpan>({ordinal})",
+                readerArrayFn: ordinal => $"reader.GetFieldValue<TimeSpan[]>({ordinal})"
             ),
-            ["JsonElement"] = new ColumnMapping(
-                new Dictionary<string, DbTypeInfo>
+            ["DateTime"] = new(
+                new()
                 {
-                    { "json", new DbTypeInfo() }
+                    { "date", new(NpgsqlTypeOverride: "NpgsqlDbType.Date") },
+                    { "timestamp", new(NpgsqlTypeOverride: "NpgsqlDbType.Timestamp") },
+                    { "timestamptz", new(NpgsqlTypeOverride: "NpgsqlDbType.TimestampTz") }
+                },
+                readerFn: ordinal => $"reader.GetDateTime({ordinal})",
+                readerArrayFn: ordinal => $"reader.GetFieldValue<DateTime[]>({ordinal})"
+            ),
+            ["JsonElement"] = new(
+                new()
+                {
+                    { "json", new() },
+                    { "jsonb", new() }
                 },
                 readerFn: ordinal => $"JsonSerializer.Deserialize<JsonElement>(reader.GetString({ordinal}))",
                 writerFn: (el, notNull, isDapper) =>
@@ -96,111 +116,168 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId
                     var nullValue = isDapper ? "null" : "(object)DBNull.Value";
                     return $"{el}.HasValue ? {el}.Value.GetRawText() : {nullValue}";
                 },
-                usingDirective: "System.Text.Json"
+                usingDirective: "System.Text.Json",
+                sqlMapper: "SqlMapper.AddTypeHandler(typeof(JsonElement), new JsonElementTypeHandler());",
+                sqlMapperImpl: JsonElementTypeHandler
             ),
-            ["short"] = new ColumnMapping(
-                new Dictionary<string, DbTypeInfo>
+            ["short"] = new(
+                new()
                 {
-                    { "int2", new DbTypeInfo(NpgsqlTypeOverride: "NpgsqlDbType.Smallint") }
+                    { "int2", new(NpgsqlTypeOverride: "NpgsqlDbType.Smallint") }
                 },
-                ordinal => $"reader.GetInt16({ordinal})",
-                ordinal => $"reader.GetFieldValue<short[]>({ordinal})"
+                readerFn: ordinal => $"reader.GetInt16({ordinal})",
+                readerArrayFn: ordinal => $"reader.GetFieldValue<short[]>({ordinal})"
             ),
-            ["int"] = new ColumnMapping(
-                new Dictionary<string, DbTypeInfo>
+            ["int"] = new(
+                new()
                 {
-                    { "integer", new DbTypeInfo(NpgsqlTypeOverride: "NpgsqlDbType.Integer") },
-                    { "int", new DbTypeInfo(NpgsqlTypeOverride: "NpgsqlDbType.Integer") },
-                    { "int4", new DbTypeInfo(NpgsqlTypeOverride: "NpgsqlDbType.Integer") },
-                    { "serial", new DbTypeInfo(NpgsqlTypeOverride: "NpgsqlDbType.Integer") }
+                    { "integer", new(NpgsqlTypeOverride: "NpgsqlDbType.Integer") },
+                    { "int", new(NpgsqlTypeOverride: "NpgsqlDbType.Integer") },
+                    { "int4", new(NpgsqlTypeOverride: "NpgsqlDbType.Integer") },
+                    { "serial", new(NpgsqlTypeOverride: "NpgsqlDbType.Integer") }
                 },
-                ordinal => $"reader.GetInt32({ordinal})",
-                ordinal => $"reader.GetFieldValue<int[]>({ordinal})"
+                readerFn: ordinal => $"reader.GetInt32({ordinal})",
+                readerArrayFn: ordinal => $"reader.GetFieldValue<int[]>({ordinal})"
             ),
-            ["float"] = new ColumnMapping(
-                new Dictionary<string, DbTypeInfo>
+            ["float"] = new(
+                new()
                 {
-                    { "float4", new DbTypeInfo(NpgsqlTypeOverride: "NpgsqlDbType.Real") }
+                    { "float4", new(NpgsqlTypeOverride: "NpgsqlDbType.Real") }
                 },
-                ordinal => $"reader.GetFloat({ordinal})"
+                readerFn: ordinal => $"reader.GetFloat({ordinal})",
+                readerArrayFn: ordinal => $"reader.GetFieldValue<float[]>({ordinal})"
             ),
-            ["decimal"] = new ColumnMapping(
-                new Dictionary<string, DbTypeInfo>
+            ["decimal"] = new(
+                new()
                 {
-                    { "numeric", new DbTypeInfo(NpgsqlTypeOverride: "NpgsqlDbType.Numeric") },
-                    { "decimal", new DbTypeInfo(NpgsqlTypeOverride: "NpgsqlDbType.Numeric") },
-                    { "money", new DbTypeInfo(NpgsqlTypeOverride: "NpgsqlDbType.Money") }
+                    { "numeric", new(NpgsqlTypeOverride: "NpgsqlDbType.Numeric") },
+                    { "decimal", new(NpgsqlTypeOverride: "NpgsqlDbType.Numeric") },
+                    { "money", new(NpgsqlTypeOverride: "NpgsqlDbType.Money") }
                 },
-                ordinal => $"reader.GetDecimal({ordinal})"
+                readerFn: ordinal => $"reader.GetDecimal({ordinal})",
+                readerArrayFn: ordinal => $"reader.GetFieldValue<decimal[]>({ordinal})"
             ),
-            ["double"] = new ColumnMapping(
-                new Dictionary<string, DbTypeInfo>
+            ["double"] = new(
+                new()
                 {
-                    { "float8", new DbTypeInfo(NpgsqlTypeOverride: "NpgsqlDbType.Double") }
+                    { "float8", new(NpgsqlTypeOverride: "NpgsqlDbType.Double") }
                 },
-                ordinal => $"reader.GetDouble({ordinal})"
+                readerFn: ordinal => $"reader.GetDouble({ordinal})",
+                readerArrayFn: ordinal => $"reader.GetFieldValue<double[]>({ordinal})"
             ),
-            ["bool"] = new ColumnMapping(
-                new Dictionary<string, DbTypeInfo>
+            ["bool"] = new(
+                new()
                 {
-                    { "bool", new DbTypeInfo() },
-                    { "boolean", new DbTypeInfo() }
+                    { "bool", new() },
+                    { "boolean", new() }
                 },
-                ordinal => $"reader.GetBoolean({ordinal})"
+                readerFn: ordinal => $"reader.GetBoolean({ordinal})",
+                readerArrayFn: ordinal => $"reader.GetFieldValue<bool[]>({ordinal})"
             ),
-            ["NpgsqlPoint"] = new ColumnMapping(
-                new Dictionary<string, DbTypeInfo>
+            ["NpgsqlPoint"] = new(
+                new()
                 {
-                    { "point", new DbTypeInfo(NpgsqlTypeOverride: "NpgsqlDbType.Point") }
+                    { "point", new(NpgsqlTypeOverride: "NpgsqlDbType.Point") }
                 },
-                ordinal => $"reader.GetFieldValue<NpgsqlPoint>({ordinal})"
+                readerFn: ordinal => $"reader.GetFieldValue<NpgsqlPoint>({ordinal})",
+                readerArrayFn: ordinal => $"reader.GetFieldValue<NpgsqlPoint[]>({ordinal})",
+                usingDirective: "NpgsqlTypes",
+                sqlMapper: "RegisterNpgsqlTypeHandler<NpgsqlPoint>();"
             ),
-            ["NpgsqlLine"] = new ColumnMapping(
-                new Dictionary<string, DbTypeInfo>
+            ["NpgsqlLine"] = new(
+                new()
                 {
-                    { "line", new DbTypeInfo(NpgsqlTypeOverride: "NpgsqlDbType.Line") }
+                    { "line", new(NpgsqlTypeOverride: "NpgsqlDbType.Line") }
                 },
-                ordinal => $"reader.GetFieldValue<NpgsqlLine>({ordinal})"
+                readerFn: ordinal => $"reader.GetFieldValue<NpgsqlLine>({ordinal})",
+                readerArrayFn: ordinal => $"reader.GetFieldValue<NpgsqlLine[]>({ordinal})",
+                usingDirective: "NpgsqlTypes",
+                sqlMapper: "RegisterNpgsqlTypeHandler<NpgsqlLine>();"
             ),
-            ["NpgsqlLSeg"] = new ColumnMapping(
-                new Dictionary<string, DbTypeInfo>
+            ["NpgsqlLSeg"] = new(
+                new()
                 {
-                    { "lseg", new DbTypeInfo(NpgsqlTypeOverride: "NpgsqlDbType.LSeg") }
+                    { "lseg", new(NpgsqlTypeOverride: "NpgsqlDbType.LSeg") }
                 },
-                ordinal => $"reader.GetFieldValue<NpgsqlLSeg>({ordinal})"
+                readerFn: ordinal => $"reader.GetFieldValue<NpgsqlLSeg>({ordinal})",
+                readerArrayFn: ordinal => $"reader.GetFieldValue<NpgsqlLSeg[]>({ordinal})",
+                usingDirective: "NpgsqlTypes",
+                sqlMapper: "RegisterNpgsqlTypeHandler<NpgsqlLSeg>();"
             ),
-            ["NpgsqlBox"] = new ColumnMapping(
-                new Dictionary<string, DbTypeInfo>
+            ["NpgsqlBox"] = new(
+                new()
                 {
-                    { "box", new DbTypeInfo(NpgsqlTypeOverride: "NpgsqlDbType.Box") }
+                    { "box", new(NpgsqlTypeOverride: "NpgsqlDbType.Box") }
                 },
-                ordinal => $"reader.GetFieldValue<NpgsqlBox>({ordinal})"
+                readerFn: ordinal => $"reader.GetFieldValue<NpgsqlBox>({ordinal})",
+                readerArrayFn: ordinal => $"reader.GetFieldValue<NpgsqlBox[]>({ordinal})",
+                usingDirective: "NpgsqlTypes",
+                sqlMapper: "RegisterNpgsqlTypeHandler<NpgsqlBox>();"
             ),
-            ["NpgsqlPath"] = new ColumnMapping(
-                new Dictionary<string, DbTypeInfo>
+            ["NpgsqlPath"] = new(
+                new()
                 {
-                    { "path", new DbTypeInfo(NpgsqlTypeOverride: "NpgsqlDbType.Path") }
+                    { "path", new(NpgsqlTypeOverride: "NpgsqlDbType.Path") }
                 },
-                ordinal => $"reader.GetFieldValue<NpgsqlPath>({ordinal})"
+                readerFn: ordinal => $"reader.GetFieldValue<NpgsqlPath>({ordinal})",
+                readerArrayFn: ordinal => $"reader.GetFieldValue<NpgsqlPath[]>({ordinal})",
+                usingDirective: "NpgsqlTypes",
+                sqlMapper: "RegisterNpgsqlTypeHandler<NpgsqlPath>();"
             ),
-            ["NpgsqlPolygon"] = new ColumnMapping(
-                new Dictionary<string, DbTypeInfo>
+            ["NpgsqlPolygon"] = new(
+                new()
                 {
-                    { "polygon", new DbTypeInfo(NpgsqlTypeOverride: "NpgsqlDbType.Polygon") }
+                    { "polygon", new(NpgsqlTypeOverride: "NpgsqlDbType.Polygon") }
                 },
-                ordinal => $"reader.GetFieldValue<NpgsqlPolygon>({ordinal})"
+                readerFn: ordinal => $"reader.GetFieldValue<NpgsqlPolygon>({ordinal})",
+                readerArrayFn: ordinal => $"reader.GetFieldValue<NpgsqlPolygon[]>({ordinal})",
+                usingDirective: "NpgsqlTypes",
+                sqlMapper: "RegisterNpgsqlTypeHandler<NpgsqlPolygon>();"
             ),
-            ["NpgsqlCircle"] = new ColumnMapping(
-                new Dictionary<string, DbTypeInfo>
+            ["NpgsqlCircle"] = new(
+                new()
                 {
-                    { "circle", new DbTypeInfo(NpgsqlTypeOverride: "NpgsqlDbType.Circle") }
+                    { "circle", new(NpgsqlTypeOverride: "NpgsqlDbType.Circle") }
                 },
-                ordinal => $"reader.GetFieldValue<NpgsqlCircle>({ordinal})"
+                readerFn: ordinal => $"reader.GetFieldValue<NpgsqlCircle>({ordinal})",
+                readerArrayFn: ordinal => $"reader.GetFieldValue<NpgsqlCircle[]>({ordinal})",
+                usingDirective: "NpgsqlTypes",
+                sqlMapper: "RegisterNpgsqlTypeHandler<NpgsqlCircle>();"
             ),
-            ["object[]"] = new ColumnMapping(
-                new Dictionary<string, DbTypeInfo>
+            ["NpgsqlCidr"] = new(
+                new()
                 {
-                    { "anyarray", new DbTypeInfo() }
+                    { "cidr", new(NpgsqlTypeOverride: "NpgsqlDbType.Cidr") }
+                },
+                readerFn: ordinal => $"reader.GetFieldValue<NpgsqlCidr>({ordinal})",
+                readerArrayFn: ordinal => $"reader.GetFieldValue<NpgsqlCidr[]>({ordinal})",
+                usingDirective: "NpgsqlTypes",
+                sqlMapper: "RegisterNpgsqlTypeHandler<NpgsqlCidr>();"
+            ),
+            ["IPAddress"] = new(
+                new()
+                {
+                    { "inet", new(NpgsqlTypeOverride: "NpgsqlDbType.Inet") }
+                },
+                readerFn: ordinal => $"reader.GetFieldValue<IPAddress>({ordinal})",
+                readerArrayFn: ordinal => $"reader.GetFieldValue<IPAddress[]>({ordinal})",
+                usingDirective: "System.Net",
+                sqlMapper: "RegisterNpgsqlTypeHandler<IPAddress>();"
+            ),
+            ["PhysicalAddress"] = new(
+                new()
+                {
+                    { "macaddr", new(NpgsqlTypeOverride: "NpgsqlDbType.MacAddr") }
+                },
+                readerFn: ordinal => $"reader.GetFieldValue<PhysicalAddress>({ordinal})",
+                readerArrayFn: ordinal => $"reader.GetFieldValue<PhysicalAddress[]>({ordinal})",
+                usingDirective: "System.Net.NetworkInformation",
+                sqlMapper: "RegisterNpgsqlTypeHandler<PhysicalAddress>();"
+            ),
+            ["object"] = new(
+                new()
+                {
+                    { "anyarray", new() }
                 },
                 ordinal => $"reader.GetValue({ordinal})"
             )
@@ -210,19 +287,17 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId
 
     public override ISet<string> GetUsingDirectivesForQueries()
     {
-        return base.GetUsingDirectivesForQueries().AddRange(
+        return base.GetUsingDirectivesForQueries().AddRangeExcludeNulls(
         [
             "Npgsql",
-            "NpgsqlTypes",
             "System.Data"
         ]);
     }
 
     public override ISet<string> GetUsingDirectivesForModels()
     {
-        return base.GetUsingDirectivesForModels().AddRange(
+        return base.GetUsingDirectivesForModels().AddRangeExcludeNulls(
         [
-            "NpgsqlTypes",
             "System"
         ]);
     }
@@ -233,7 +308,7 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId
         if (!Options.UseDapper)
             return usingDirectives;
 
-        return usingDirectives.AddRange(
+        return usingDirectives.AddRangeExcludeNulls(
         [
             "NpgsqlTypes"
         ]);
@@ -278,43 +353,22 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId
         ];
     }
 
-    protected override ISet<string> GetConfigureSqlMappings()
-    {
-        return base.GetConfigureSqlMappings().AddRange(
-        [
-            "RegisterNpgsqlTypeHandler<NpgsqlPoint>();",
-            "RegisterNpgsqlTypeHandler<NpgsqlLine>();",
-            "RegisterNpgsqlTypeHandler<NpgsqlLSeg>();",
-            "RegisterNpgsqlTypeHandler<NpgsqlBox>();",
-            "RegisterNpgsqlTypeHandler<NpgsqlPath>();",
-            "RegisterNpgsqlTypeHandler<NpgsqlPolygon>();",
-            "RegisterNpgsqlTypeHandler<NpgsqlCircle>();",
-            "SqlMapper.AddTypeHandler(typeof(JsonElement), new JsonElementTypeHandler());"
-        ]);
-    }
-
-    // TODO different operations require different types of connections - improve code and docs to make it clearer
     public override ConnectionGenCommands EstablishConnection(Query query)
     {
         var connectionStringVar = Variable.ConnectionString.AsPropertyName();
         var connectionVar = Variable.Connection.AsVarName();
-
-        if (query.Cmd == ":copyfrom")
-            return new ConnectionGenCommands(
-                $"var ds = NpgsqlDataSource.Create({connectionStringVar})",
-                $"var {connectionVar} = ds.CreateConnection()"
-            );
-
         var embedTableExists = query.Columns.Any(c => c.EmbedTable is not null);
-        if (Options.UseDapper && !embedTableExists)
-            return new ConnectionGenCommands(
+        var useOpenConnection = query.Cmd == ":copyfrom" || (Options.UseDapper && !embedTableExists);
+
+        return useOpenConnection
+            ? new ConnectionGenCommands(
                 $"var {connectionVar} = new NpgsqlConnection({connectionStringVar})",
                 string.Empty
+            )
+            : new ConnectionGenCommands(
+                $"var {connectionVar} = NpgsqlDataSource.Create({connectionStringVar})",
+                string.Empty
             );
-        return new ConnectionGenCommands(
-            $"var {connectionVar} = NpgsqlDataSource.Create({connectionStringVar})",
-            string.Empty
-        );
     }
 
     public override string CreateSqlCommand(string sqlTextConstant)
@@ -405,7 +459,10 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId
                     .Select(p =>
                     {
                         var typeOverride = GetColumnDbTypeOverride(p.Column);
-                        var partialStmt = $"await {writerVar}.WriteAsync({rowVar}.{p.Column.Name.ToPascalCase()}";
+                        var param = $"{rowVar}.{p.Column.Name.ToPascalCase()}";
+                        var writerFn = CommonGen.GetWriterFn(p.Column, query);
+                        var paramToWrite = writerFn is null ? param : writerFn(param, p.Column.NotNull, false);
+                        var partialStmt = $"await {writerVar}.WriteAsync({paramToWrite}";
                         return typeOverride is null
                             ? $"{partialStmt});"
                             : $"{partialStmt}, {typeOverride});";

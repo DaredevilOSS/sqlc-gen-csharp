@@ -40,6 +40,7 @@ public enum KnownTestType
     PostgresDateTimeDataTypes,
     PostgresArrayDataTypes,
     PostgresDataTypesOverride,
+    PostgresGuidDataTypes,
 
     PostgresStringCopyFrom,
     PostgresTransaction,
@@ -47,8 +48,13 @@ public enum KnownTestType
     PostgresIntegerCopyFrom,
     PostgresFloatingPointCopyFrom,
     PostgresDateTimeCopyFrom,
+    PostgresGuidCopyFrom,
     PostgresArrayCopyFrom,
     PostgresGeoDataTypes,
+    PostgresGeoCopyFrom,
+    PostgresNetworkDataTypes,
+    PostgresJsonDataTypes,
+    PostgresInvalidJson,
 
     ArrayAsParam,
     MultipleArraysAsParams,
@@ -66,6 +72,7 @@ public enum KnownTestType
     MySqlScopedSchemaEnum,
     MySqlJsonDataTypes,
     MySqlJsonCopyFrom,
+    MySqlInvalidJson,
 
     MySqlStringCopyFrom,
     MySqlIntegerCopyFrom,
@@ -108,6 +115,7 @@ internal static class Config
                     KnownTestType.MySqlEnumDataType,
                     KnownTestType.MySqlScopedSchemaEnum,
                     KnownTestType.MySqlJsonDataTypes,
+                    KnownTestType.MySqlInvalidJson,
                     KnownTestType.MySqlJsonCopyFrom,
                     KnownTestType.MySqlDataTypesOverride,
 
@@ -148,6 +156,7 @@ internal static class Config
                         KnownTestType.MySqlEnumDataType,
                         KnownTestType.MySqlScopedSchemaEnum,
                         KnownTestType.MySqlJsonDataTypes,
+                        KnownTestType.MySqlInvalidJson,
                         KnownTestType.MySqlJsonCopyFrom,
                         KnownTestType.MySqlDataTypesOverride,
 
@@ -184,14 +193,20 @@ internal static class Config
                     KnownTestType.PostgresIntegerDataTypes,
                     KnownTestType.PostgresFloatingPointDataTypes,
                     KnownTestType.PostgresDateTimeDataTypes,
+                    KnownTestType.PostgresGuidDataTypes,
                     KnownTestType.PostgresArrayDataTypes,
                     KnownTestType.PostgresGeoDataTypes,
+                    KnownTestType.PostgresGeoCopyFrom,
                     KnownTestType.PostgresDataTypesOverride,
+                    KnownTestType.PostgresJsonDataTypes,
+                    KnownTestType.PostgresInvalidJson,
+                    KnownTestType.PostgresNetworkDataTypes,
 
                     KnownTestType.PostgresStringCopyFrom,
                     KnownTestType.PostgresIntegerCopyFrom,
                     KnownTestType.PostgresFloatingPointCopyFrom,
                     KnownTestType.PostgresDateTimeCopyFrom,
+                    KnownTestType.PostgresGuidCopyFrom,
                     KnownTestType.PostgresArrayCopyFrom,
                 ]
             }
@@ -220,14 +235,20 @@ internal static class Config
                     KnownTestType.PostgresIntegerDataTypes,
                     KnownTestType.PostgresFloatingPointDataTypes,
                     KnownTestType.PostgresDateTimeDataTypes,
+                    KnownTestType.PostgresGuidDataTypes,
                     KnownTestType.PostgresArrayDataTypes,
                     KnownTestType.PostgresGeoDataTypes,
+                    KnownTestType.PostgresGeoCopyFrom,
                     KnownTestType.PostgresDataTypesOverride,
+                    KnownTestType.PostgresJsonDataTypes,
+                    KnownTestType.PostgresInvalidJson,
+                    KnownTestType.PostgresNetworkDataTypes,
 
                     KnownTestType.PostgresStringCopyFrom,
                     KnownTestType.PostgresIntegerCopyFrom,
                     KnownTestType.PostgresFloatingPointCopyFrom,
                     KnownTestType.PostgresDateTimeCopyFrom,
+                    KnownTestType.PostgresGuidCopyFrom,
                     KnownTestType.PostgresArrayCopyFrom,
                 ]
             }

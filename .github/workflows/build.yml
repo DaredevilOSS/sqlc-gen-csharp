@@ -126,4 +126,4 @@ jobs:
        - name: Verify pushed codegen requests are synced
          run: |
            dotnet publish LocalRunner -c release --output dist/
-           sqlc -f sqlc.requests.yaml diff
+           sqlc -f sqlc.request.generated.yaml diff

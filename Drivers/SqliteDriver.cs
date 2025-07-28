@@ -19,49 +19,43 @@ public partial class SqliteDriver(
     public override Dictionary<string, ColumnMapping> ColumnMappings { get; } =
         new()
         {
-            ["byte[]"] = new ColumnMapping(
-                new Dictionary<string, DbTypeInfo>
+            ["byte[]"] = new(
+                new()
                 {
-                    {"blob", new DbTypeInfo()}
+                    {"blob", new()}
                 },
                 ordinal => $"reader.GetFieldValue<byte[]>({ordinal})"
             ),
-            ["string"] = new ColumnMapping(
-                new Dictionary<string, DbTypeInfo>
+            ["string"] = new(
+                new()
                 {
-                    {"text", new DbTypeInfo()}
+                    {"text", new()}
                 },
                 ordinal => $"reader.GetString({ordinal})"
             ),
-            ["int"] = new ColumnMapping(
-                new Dictionary<string, DbTypeInfo>
+            ["int"] = new(
+                new()
                 {
-                    { "integer", new DbTypeInfo() },
-                    { "integernotnulldefaultunixepoch", new DbTypeInfo() }
+                    { "integer", new() },
+                    { "integernotnulldefaultunixepoch", new() }
                 },
-                ordinal => $"reader.GetInt32({ordinal})"
+                ordinal => $"reader.GetInt32({ordinal})",
+                convertFunc: IntTo32
             ),
-            ["decimal"] = new ColumnMapping(
-                new Dictionary<string, DbTypeInfo>
+            ["decimal"] = new(
+                new()
                 {
-                    {"real", new DbTypeInfo()}
+                    {"real", new()}
                 },
                 ordinal => $"reader.GetDecimal({ordinal})"
             ),
-            ["object"] = new ColumnMapping(
-                new Dictionary<string, DbTypeInfo>
+            ["object"] = new(
+                new()
                 {
-                    { "any", new DbTypeInfo() }
+                    { "any", new() }
                 },
                 ordinal => $"reader.GetValue({ordinal})"
-            ),
-            ["long"] = new ColumnMapping(
-                new Dictionary<string, DbTypeInfo>
-                {
-                    { "bigint", new DbTypeInfo() }
-                },
-                ordinal => $"reader.GetInt64({ordinal})"
-            ),
+            )
         };
 
     public override string TransactionClassName => "SqliteTransaction";
@@ -69,7 +63,7 @@ public partial class SqliteDriver(
     public override ISet<string> GetUsingDirectivesForQueries()
     {
         var usingDirectives = base.GetUsingDirectivesForQueries();
-        return usingDirectives.AddRange(
+        return usingDirectives.AddRangeExcludeNulls(
             [
                 "Microsoft.Data.Sqlite"
             ]
@@ -79,7 +73,7 @@ public partial class SqliteDriver(
     public override ISet<string> GetUsingDirectivesForUtils()
     {
         var usingDirectives = base.GetUsingDirectivesForUtils();
-        return usingDirectives.AddRange(
+        return usingDirectives.AddRangeExcludeNulls(
             [
                 "System",
                 "System.Text.RegularExpressions"
@@ -91,7 +85,7 @@ public partial class SqliteDriver(
     {
         var memberDeclarations = base
             .GetMemberDeclarationsForUtils()
-            .AppendIf(ParseMemberDeclaration(TransformQueryForSliceArgsImpl)!, SliceQueryExists());
+            .AddRangeIf([ParseMemberDeclaration(TransformQueryForSliceArgsImpl)!], SliceQueryExists());
 
         if (!CopyFromQueryExists())
             return memberDeclarations.ToArray();

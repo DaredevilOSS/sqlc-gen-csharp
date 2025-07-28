@@ -535,10 +535,11 @@ namespace EndToEndTests
             JsonElement? cParsedJson = null;
             if (cJson != null)
                 cParsedJson = JsonDocument.Parse(cJson).RootElement;
-            await QuerySql.InsertMysqlTypes(new QuerySql.InsertMysqlTypesArgs { CJson = cParsedJson });
+            await QuerySql.InsertMysqlTypes(new QuerySql.InsertMysqlTypesArgs { CJson = cParsedJson, CJsonStringOverride = cJson });
             var expected = new QuerySql.GetMysqlTypesRow
             {
-                CJson = cParsedJson
+                CJson = cParsedJson,
+                CJsonStringOverride = cJson
             };
             var actual = await QuerySql.GetMysqlTypes();
             AssertSingularEquals(expected, actual.Value);
@@ -547,6 +548,7 @@ namespace EndToEndTests
                 Assert.That(x.CJson.HasValue, Is.EqualTo(y.CJson.HasValue));
                 if (x.CJson.HasValue)
                     Assert.That(x.CJson.Value.GetRawText(), Is.EqualTo(y.CJson.Value.GetRawText()));
+                Assert.That(x.CJsonStringOverride, Is.EqualTo(y.CJsonStringOverride));
             }
         }
 
@@ -577,11 +579,17 @@ namespace EndToEndTests
         }
 
         [Test]
-        [TestCase(100, "D", "\u4321", "\u2345", "Parasite", "Clockwork Orange", "Dr. Strangelove", "Interview with a Vampire", "Memento", "{\"age\": 420, \"name\": \"Dazed and Confused\"}")]
-        [TestCase(10, null, null, null, null, null, null, null, null, null)]
-        public async Task TestStringCopyFrom(int batchSize, string cChar, string cNchar, string cNationalChar, string cVarchar, string cTinytext, string cMediumtext, string cText, string cLongtext, string cJsonStringOverride)
+        public void TestMySqlInvalidJson()
         {
-            var batchArgs = Enumerable.Range(0, batchSize).Select(_ => new QuerySql.InsertMysqlTypesBatchArgs { CChar = cChar, CNchar = cNchar, CNationalChar = cNationalChar, CVarchar = cVarchar, CTinytext = cTinytext, CMediumtext = cMediumtext, CText = cText, CLongtext = cLongtext, CJsonStringOverride = cJsonStringOverride }).ToList();
+            Assert.ThrowsAsync<MySqlConnector.MySqlException>(async () => await QuerySql.InsertMysqlTypes(new QuerySql.InsertMysqlTypesArgs { CJsonStringOverride = "SOME INVALID JSON" }));
+        }
+
+        [Test]
+        [TestCase(100, "D", "\u4321", "\u2345", "Parasite", "Clockwork Orange", "Dr. Strangelove", "Interview with a Vampire", "Memento")]
+        [TestCase(10, null, null, null, null, null, null, null, null)]
+        public async Task TestStringCopyFrom(int batchSize, string cChar, string cNchar, string cNationalChar, string cVarchar, string cTinytext, string cMediumtext, string cText, string cLongtext)
+        {
+            var batchArgs = Enumerable.Range(0, batchSize).Select(_ => new QuerySql.InsertMysqlTypesBatchArgs { CChar = cChar, CNchar = cNchar, CNationalChar = cNationalChar, CVarchar = cVarchar, CTinytext = cTinytext, CMediumtext = cMediumtext, CText = cText, CLongtext = cLongtext }).ToList();
             await QuerySql.InsertMysqlTypesBatch(batchArgs);
             var expected = new QuerySql.GetMysqlTypesCntRow
             {
@@ -593,8 +601,7 @@ namespace EndToEndTests
                 CTinytext = cTinytext,
                 CMediumtext = cMediumtext,
                 CText = cText,
-                CLongtext = cLongtext,
-                CJsonStringOverride = cJsonStringOverride
+                CLongtext = cLongtext
             };
             var actual = await QuerySql.GetMysqlTypesCnt();
             AssertSingularEquals(expected, actual.Value);
@@ -609,7 +616,6 @@ namespace EndToEndTests
                 Assert.That(x.CMediumtext, Is.EqualTo(y.CMediumtext));
                 Assert.That(x.CText, Is.EqualTo(y.CText));
                 Assert.That(x.CLongtext, Is.EqualTo(y.CLongtext));
-                Assert.That(x.CJsonStringOverride, Is.EqualTo(y.CJsonStringOverride));
             }
         }
 
