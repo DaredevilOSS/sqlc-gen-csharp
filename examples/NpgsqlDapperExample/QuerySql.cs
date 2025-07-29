@@ -653,25 +653,25 @@ public class QuerySql
                 {
                     await writer.StartRowAsync();
                     await writer.WriteAsync(row.CBoolean);
-                    await writer.WriteAsync(row.CSmallint, NpgsqlDbType.Smallint);
-                    await writer.WriteAsync(row.CInteger, NpgsqlDbType.Integer);
+                    await writer.WriteAsync(row.CSmallint);
+                    await writer.WriteAsync(row.CInteger);
                     await writer.WriteAsync(row.CBigint);
-                    await writer.WriteAsync(row.CReal, NpgsqlDbType.Real);
-                    await writer.WriteAsync(row.CNumeric, NpgsqlDbType.Numeric);
-                    await writer.WriteAsync(row.CDecimal, NpgsqlDbType.Numeric);
-                    await writer.WriteAsync(row.CDoublePrecision, NpgsqlDbType.Double);
+                    await writer.WriteAsync(row.CReal);
+                    await writer.WriteAsync(row.CNumeric);
+                    await writer.WriteAsync(row.CDecimal);
+                    await writer.WriteAsync(row.CDoublePrecision);
                     await writer.WriteAsync(row.CMoney, NpgsqlDbType.Money);
                     await writer.WriteAsync(row.CDate, NpgsqlDbType.Date);
                     await writer.WriteAsync(row.CTime, NpgsqlDbType.Time);
-                    await writer.WriteAsync(row.CTimestamp, NpgsqlDbType.Timestamp);
-                    await writer.WriteAsync(row.CTimestampWithTz, NpgsqlDbType.TimestampTz);
+                    await writer.WriteAsync(row.CTimestamp);
+                    await writer.WriteAsync(row.CTimestampWithTz);
                     await writer.WriteAsync(row.CInterval, NpgsqlDbType.Interval);
                     await writer.WriteAsync(row.CChar);
                     await writer.WriteAsync(row.CVarchar);
                     await writer.WriteAsync(row.CCharacterVarying);
                     await writer.WriteAsync(row.CBpchar);
                     await writer.WriteAsync(row.CText);
-                    await writer.WriteAsync(row.CUuid, NpgsqlDbType.Uuid);
+                    await writer.WriteAsync(row.CUuid);
                     await writer.WriteAsync(row.CBytea);
                 }
 
@@ -872,13 +872,13 @@ public class QuerySql
                 foreach (var row in args)
                 {
                     await writer.StartRowAsync();
-                    await writer.WriteAsync(row.CPoint, NpgsqlDbType.Point);
-                    await writer.WriteAsync(row.CLine, NpgsqlDbType.Line);
-                    await writer.WriteAsync(row.CLseg, NpgsqlDbType.LSeg);
-                    await writer.WriteAsync(row.CBox, NpgsqlDbType.Box);
-                    await writer.WriteAsync(row.CPath, NpgsqlDbType.Path);
-                    await writer.WriteAsync(row.CPolygon, NpgsqlDbType.Polygon);
-                    await writer.WriteAsync(row.CCircle, NpgsqlDbType.Circle);
+                    await writer.WriteAsync(row.CPoint);
+                    await writer.WriteAsync(row.CLine);
+                    await writer.WriteAsync(row.CLseg);
+                    await writer.WriteAsync(row.CBox);
+                    await writer.WriteAsync(row.CPath);
+                    await writer.WriteAsync(row.CPolygon);
+                    await writer.WriteAsync(row.CCircle);
                 }
 
                 await writer.CompleteAsync();

@@ -763,25 +763,25 @@ public class QuerySql
                 {
                     await writer.StartRowAsync();
                     await writer.WriteAsync(row.CBoolean ?? (object)DBNull.Value);
-                    await writer.WriteAsync(row.CSmallint ?? (object)DBNull.Value, NpgsqlDbType.Smallint);
-                    await writer.WriteAsync(row.CInteger ?? (object)DBNull.Value, NpgsqlDbType.Integer);
+                    await writer.WriteAsync(row.CSmallint ?? (object)DBNull.Value);
+                    await writer.WriteAsync(row.CInteger ?? (object)DBNull.Value);
                     await writer.WriteAsync(row.CBigint ?? (object)DBNull.Value);
-                    await writer.WriteAsync(row.CReal ?? (object)DBNull.Value, NpgsqlDbType.Real);
-                    await writer.WriteAsync(row.CNumeric ?? (object)DBNull.Value, NpgsqlDbType.Numeric);
-                    await writer.WriteAsync(row.CDecimal ?? (object)DBNull.Value, NpgsqlDbType.Numeric);
-                    await writer.WriteAsync(row.CDoublePrecision ?? (object)DBNull.Value, NpgsqlDbType.Double);
+                    await writer.WriteAsync(row.CReal ?? (object)DBNull.Value);
+                    await writer.WriteAsync(row.CNumeric ?? (object)DBNull.Value);
+                    await writer.WriteAsync(row.CDecimal ?? (object)DBNull.Value);
+                    await writer.WriteAsync(row.CDoublePrecision ?? (object)DBNull.Value);
                     await writer.WriteAsync(row.CMoney ?? (object)DBNull.Value, NpgsqlDbType.Money);
                     await writer.WriteAsync(row.CDate ?? (object)DBNull.Value, NpgsqlDbType.Date);
                     await writer.WriteAsync(row.CTime ?? (object)DBNull.Value, NpgsqlDbType.Time);
-                    await writer.WriteAsync(row.CTimestamp ?? (object)DBNull.Value, NpgsqlDbType.Timestamp);
-                    await writer.WriteAsync(row.CTimestampWithTz ?? (object)DBNull.Value, NpgsqlDbType.TimestampTz);
+                    await writer.WriteAsync(row.CTimestamp ?? (object)DBNull.Value);
+                    await writer.WriteAsync(row.CTimestampWithTz ?? (object)DBNull.Value);
                     await writer.WriteAsync(row.CInterval ?? (object)DBNull.Value, NpgsqlDbType.Interval);
                     await writer.WriteAsync(row.CChar ?? (object)DBNull.Value);
                     await writer.WriteAsync(row.CVarchar ?? (object)DBNull.Value);
                     await writer.WriteAsync(row.CCharacterVarying ?? (object)DBNull.Value);
                     await writer.WriteAsync(row.CBpchar ?? (object)DBNull.Value);
                     await writer.WriteAsync(row.CText ?? (object)DBNull.Value);
-                    await writer.WriteAsync(row.CUuid ?? (object)DBNull.Value, NpgsqlDbType.Uuid);
+                    await writer.WriteAsync(row.CUuid ?? (object)DBNull.Value);
                     await writer.WriteAsync(row.CBytea ?? (object)DBNull.Value);
                 }
 
@@ -1114,13 +1114,13 @@ public class QuerySql
                 foreach (var row in args)
                 {
                     await writer.StartRowAsync();
-                    await writer.WriteAsync(row.CPoint ?? (object)DBNull.Value, NpgsqlDbType.Point);
-                    await writer.WriteAsync(row.CLine ?? (object)DBNull.Value, NpgsqlDbType.Line);
-                    await writer.WriteAsync(row.CLseg ?? (object)DBNull.Value, NpgsqlDbType.LSeg);
-                    await writer.WriteAsync(row.CBox ?? (object)DBNull.Value, NpgsqlDbType.Box);
-                    await writer.WriteAsync(row.CPath ?? (object)DBNull.Value, NpgsqlDbType.Path);
-                    await writer.WriteAsync(row.CPolygon ?? (object)DBNull.Value, NpgsqlDbType.Polygon);
-                    await writer.WriteAsync(row.CCircle ?? (object)DBNull.Value, NpgsqlDbType.Circle);
+                    await writer.WriteAsync(row.CPoint ?? (object)DBNull.Value);
+                    await writer.WriteAsync(row.CLine ?? (object)DBNull.Value);
+                    await writer.WriteAsync(row.CLseg ?? (object)DBNull.Value);
+                    await writer.WriteAsync(row.CBox ?? (object)DBNull.Value);
+                    await writer.WriteAsync(row.CPath ?? (object)DBNull.Value);
+                    await writer.WriteAsync(row.CPolygon ?? (object)DBNull.Value);
+                    await writer.WriteAsync(row.CCircle ?? (object)DBNull.Value);
                 }
 
                 await writer.CompleteAsync();
