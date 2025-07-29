@@ -78,7 +78,7 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId
             ["Guid"] = new(
                 new()
                 {
-                    { "uuid", new(NpgsqlTypeOverride: "NpgsqlDbType.Uuid") }
+                    { "uuid", new() }
                 },
                 readerFn: ordinal => $"reader.GetFieldValue<Guid>({ordinal})",
                 readerArrayFn: ordinal => $"reader.GetFieldValue<Guid[]>({ordinal})"
@@ -96,8 +96,8 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId
                 new()
                 {
                     { "date", new(NpgsqlTypeOverride: "NpgsqlDbType.Date") },
-                    { "timestamp", new(NpgsqlTypeOverride: "NpgsqlDbType.Timestamp") },
-                    { "timestamptz", new(NpgsqlTypeOverride: "NpgsqlDbType.TimestampTz") }
+                    { "timestamp", new() },
+                    { "timestamptz", new() }
                 },
                 readerFn: ordinal => $"reader.GetDateTime({ordinal})",
                 readerArrayFn: ordinal => $"reader.GetFieldValue<DateTime[]>({ordinal})"
@@ -123,7 +123,7 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId
             ["short"] = new(
                 new()
                 {
-                    { "int2", new(NpgsqlTypeOverride: "NpgsqlDbType.Smallint") }
+                    { "int2", new() }
                 },
                 readerFn: ordinal => $"reader.GetInt16({ordinal})",
                 readerArrayFn: ordinal => $"reader.GetFieldValue<short[]>({ordinal})"
@@ -131,10 +131,10 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId
             ["int"] = new(
                 new()
                 {
-                    { "integer", new(NpgsqlTypeOverride: "NpgsqlDbType.Integer") },
-                    { "int", new(NpgsqlTypeOverride: "NpgsqlDbType.Integer") },
-                    { "int4", new(NpgsqlTypeOverride: "NpgsqlDbType.Integer") },
-                    { "serial", new(NpgsqlTypeOverride: "NpgsqlDbType.Integer") }
+                    { "integer", new() },
+                    { "int", new() },
+                    { "int4", new() },
+                    { "serial", new() }
                 },
                 readerFn: ordinal => $"reader.GetInt32({ordinal})",
                 readerArrayFn: ordinal => $"reader.GetFieldValue<int[]>({ordinal})"
@@ -142,7 +142,7 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId
             ["float"] = new(
                 new()
                 {
-                    { "float4", new(NpgsqlTypeOverride: "NpgsqlDbType.Real") }
+                    { "float4", new() }
                 },
                 readerFn: ordinal => $"reader.GetFloat({ordinal})",
                 readerArrayFn: ordinal => $"reader.GetFieldValue<float[]>({ordinal})"
@@ -150,8 +150,8 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId
             ["decimal"] = new(
                 new()
                 {
-                    { "numeric", new(NpgsqlTypeOverride: "NpgsqlDbType.Numeric") },
-                    { "decimal", new(NpgsqlTypeOverride: "NpgsqlDbType.Numeric") },
+                    { "numeric", new() },
+                    { "decimal", new() },
                     { "money", new(NpgsqlTypeOverride: "NpgsqlDbType.Money") }
                 },
                 readerFn: ordinal => $"reader.GetDecimal({ordinal})",
@@ -160,7 +160,7 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId
             ["double"] = new(
                 new()
                 {
-                    { "float8", new(NpgsqlTypeOverride: "NpgsqlDbType.Double") }
+                    { "float8", new() }
                 },
                 readerFn: ordinal => $"reader.GetDouble({ordinal})",
                 readerArrayFn: ordinal => $"reader.GetFieldValue<double[]>({ordinal})"
@@ -177,7 +177,7 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId
             ["NpgsqlPoint"] = new(
                 new()
                 {
-                    { "point", new(NpgsqlTypeOverride: "NpgsqlDbType.Point") }
+                    { "point", new() }
                 },
                 readerFn: ordinal => $"reader.GetFieldValue<NpgsqlPoint>({ordinal})",
                 readerArrayFn: ordinal => $"reader.GetFieldValue<NpgsqlPoint[]>({ordinal})",
@@ -187,7 +187,7 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId
             ["NpgsqlLine"] = new(
                 new()
                 {
-                    { "line", new(NpgsqlTypeOverride: "NpgsqlDbType.Line") }
+                    { "line", new() }
                 },
                 readerFn: ordinal => $"reader.GetFieldValue<NpgsqlLine>({ordinal})",
                 readerArrayFn: ordinal => $"reader.GetFieldValue<NpgsqlLine[]>({ordinal})",
@@ -197,7 +197,7 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId
             ["NpgsqlLSeg"] = new(
                 new()
                 {
-                    { "lseg", new(NpgsqlTypeOverride: "NpgsqlDbType.LSeg") }
+                    { "lseg", new() }
                 },
                 readerFn: ordinal => $"reader.GetFieldValue<NpgsqlLSeg>({ordinal})",
                 readerArrayFn: ordinal => $"reader.GetFieldValue<NpgsqlLSeg[]>({ordinal})",
@@ -207,7 +207,7 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId
             ["NpgsqlBox"] = new(
                 new()
                 {
-                    { "box", new(NpgsqlTypeOverride: "NpgsqlDbType.Box") }
+                    { "box", new() }
                 },
                 readerFn: ordinal => $"reader.GetFieldValue<NpgsqlBox>({ordinal})",
                 readerArrayFn: ordinal => $"reader.GetFieldValue<NpgsqlBox[]>({ordinal})",
@@ -217,7 +217,7 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId
             ["NpgsqlPath"] = new(
                 new()
                 {
-                    { "path", new(NpgsqlTypeOverride: "NpgsqlDbType.Path") }
+                    { "path", new() }
                 },
                 readerFn: ordinal => $"reader.GetFieldValue<NpgsqlPath>({ordinal})",
                 readerArrayFn: ordinal => $"reader.GetFieldValue<NpgsqlPath[]>({ordinal})",
@@ -227,7 +227,7 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId
             ["NpgsqlPolygon"] = new(
                 new()
                 {
-                    { "polygon", new(NpgsqlTypeOverride: "NpgsqlDbType.Polygon") }
+                    { "polygon", new() }
                 },
                 readerFn: ordinal => $"reader.GetFieldValue<NpgsqlPolygon>({ordinal})",
                 readerArrayFn: ordinal => $"reader.GetFieldValue<NpgsqlPolygon[]>({ordinal})",
@@ -237,7 +237,7 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId
             ["NpgsqlCircle"] = new(
                 new()
                 {
-                    { "circle", new(NpgsqlTypeOverride: "NpgsqlDbType.Circle") }
+                    { "circle", new() }
                 },
                 readerFn: ordinal => $"reader.GetFieldValue<NpgsqlCircle>({ordinal})",
                 readerArrayFn: ordinal => $"reader.GetFieldValue<NpgsqlCircle[]>({ordinal})",
@@ -247,7 +247,7 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId
             ["NpgsqlCidr"] = new(
                 new()
                 {
-                    { "cidr", new(NpgsqlTypeOverride: "NpgsqlDbType.Cidr") }
+                    { "cidr", new() }
                 },
                 readerFn: ordinal => $"reader.GetFieldValue<NpgsqlCidr>({ordinal})",
                 readerArrayFn: ordinal => $"reader.GetFieldValue<NpgsqlCidr[]>({ordinal})",
@@ -257,7 +257,7 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId
             ["IPAddress"] = new(
                 new()
                 {
-                    { "inet", new(NpgsqlTypeOverride: "NpgsqlDbType.Inet") }
+                    { "inet", new() }
                 },
                 readerFn: ordinal => $"reader.GetFieldValue<IPAddress>({ordinal})",
                 readerArrayFn: ordinal => $"reader.GetFieldValue<IPAddress[]>({ordinal})",
@@ -267,7 +267,7 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId
             ["PhysicalAddress"] = new(
                 new()
                 {
-                    { "macaddr", new(NpgsqlTypeOverride: "NpgsqlDbType.MacAddr") }
+                    { "macaddr", new() }
                 },
                 readerFn: ordinal => $"reader.GetFieldValue<PhysicalAddress>({ordinal})",
                 readerArrayFn: ordinal => $"reader.GetFieldValue<PhysicalAddress[]>({ordinal})",
