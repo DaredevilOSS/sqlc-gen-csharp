@@ -4,8 +4,10 @@ CREATE TABLE authors (
     bio TEXT
 );
 
+CREATE EXTENSION "uuid-ossp";
+
 CREATE TABLE books (
-    id BIGSERIAL PRIMARY KEY,
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     name TEXT NOT NULL,
     author_id BIGINT NOT NULL,
     description TEXT,
@@ -63,7 +65,6 @@ CREATE TABLE postgres_types (
     c_date_array DATE [],
     c_timestamp_array TIMESTAMP []
 );
-
 
 CREATE TABLE postgres_geometric_types (
     c_point POINT,

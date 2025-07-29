@@ -40,7 +40,7 @@ public partial class SqliteDriver(
                     { "integernotnulldefaultunixepoch", new() }
                 },
                 ordinal => $"reader.GetInt32({ordinal})",
-                convertFunc: IntTo32
+                convertFunc: x => $"Convert.ToInt32({x})"
             ),
             ["decimal"] = new(
                 new()

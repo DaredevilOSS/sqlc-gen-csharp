@@ -3,13 +3,13 @@
 2
 postgresql%examples/config/postgresql/schema.sql"$examples/config/postgresql/query.sqlb›
 "examples/NpgsqlDapperLegacyExamplecsharpÖ{"debugRequest":true,"generateCsproj":true,"namespaceName":"NpgsqlDapperLegacyExampleGen","overrides":[{"column":"GetPostgresFunctions:max_integer","csharp_type":{"notNull":false,"type":"int"}},{"column":"GetPostgresFunctions:max_varchar","csharp_type":{"notNull":false,"type":"string"}},{"column":"GetPostgresFunctions:max_timestamp","csharp_type":{"notNull":true,"type":"DateTime"}},{"column":"*:c_json_string_override","csharp_type":{"notNull":false,"type":"string"}},{"column":"*:c_macaddr8","csharp_type":{"notNull":false,"type":"string"}}],"targetFramework":"netstandard2.0","useDapper":true}*
-./dist/LocalRunner¼åpublic"publicƒ
+./dist/LocalRunner·åpublic"‹publicƒ
 	authors)
 id0ÿÿÿÿÿÿÿÿÿR	authorsb	bigserial&
 name0ÿÿÿÿÿÿÿÿÿR	authorsbtext#
-bio0ÿÿÿÿÿÿÿÿÿR	authorsbtextº
-books'
-id0ÿÿÿÿÿÿÿÿÿRbooksb	bigserial$
+bio0ÿÿÿÿÿÿÿÿÿR	authorsbtextµ
+books"
+id0ÿÿÿÿÿÿÿÿÿRbooksbuuid$
 name0ÿÿÿÿÿÿÿÿÿRbooksbtext5
 	author_id0ÿÿÿÿÿÿÿÿÿRbooksb
 pg_catalogint8)
@@ -10260,10 +10260,10 @@ WHERE id = ANY($1::BIGINT []) AND name = ANY($2::TEXT [])GetAuthorsByIdsAndNam
 id0ÿÿÿÿÿÿÿÿÿR	authorsb	bigserialzid",
 name0ÿÿÿÿÿÿÿÿÿR	authorsbtextzname"(
 bio0ÿÿÿÿÿÿÿÿÿR	authorsbtextzbio**& 0ÿÿÿÿÿÿÿÿÿb
-pg_catalogint8ˆ* 0ÿÿÿÿÿÿÿÿÿbtextˆ:	query.sql¡
+pg_catalogint8ˆ* 0ÿÿÿÿÿÿÿÿÿbtextˆ:	query.sqlœ
 @INSERT INTO books (name, author_id) VALUES ($1, $2) RETURNING id
-CreateBook:execlastid"+
-id0ÿÿÿÿÿÿÿÿÿRbooksb	bigserialzid*62
+CreateBook:execlastid"&
+id0ÿÿÿÿÿÿÿÿÿRbooksbuuidzid*62
 name0ÿÿÿÿÿÿÿÿÿRpublicbooksbtextzname*KG
 	author_id0ÿÿÿÿÿÿÿÿÿRpublicbooksbpg_catalog.int8z	author_id:	query.sqlBbooks®
 ÂSELECT
