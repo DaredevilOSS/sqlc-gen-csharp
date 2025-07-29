@@ -43,7 +43,7 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId
                 },
                 readerFn: ordinal => $"reader.GetInt64({ordinal})",
                 readerArrayFn: ordinal => $"reader.GetFieldValue<long[]>({ordinal})",
-                convertFunc: IntTo64
+                convertFunc: x => $"Convert.ToInt64({x})"
             ),
             ["byte[]"] = new(
                 new()
@@ -81,7 +81,8 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId
                     { "uuid", new() }
                 },
                 readerFn: ordinal => $"reader.GetFieldValue<Guid>({ordinal})",
-                readerArrayFn: ordinal => $"reader.GetFieldValue<Guid[]>({ordinal})"
+                readerArrayFn: ordinal => $"reader.GetFieldValue<Guid[]>({ordinal})",
+                convertFunc: x => $"Guid.Parse({x}?.ToString())"
             ),
             ["TimeSpan"] = new(
                 new()
@@ -126,7 +127,8 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId
                     { "int2", new() }
                 },
                 readerFn: ordinal => $"reader.GetInt16({ordinal})",
-                readerArrayFn: ordinal => $"reader.GetFieldValue<short[]>({ordinal})"
+                readerArrayFn: ordinal => $"reader.GetFieldValue<short[]>({ordinal})",
+                convertFunc: x => $"Convert.ToInt16({x})"
             ),
             ["int"] = new(
                 new()
@@ -137,7 +139,8 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId
                     { "serial", new() }
                 },
                 readerFn: ordinal => $"reader.GetInt32({ordinal})",
-                readerArrayFn: ordinal => $"reader.GetFieldValue<int[]>({ordinal})"
+                readerArrayFn: ordinal => $"reader.GetFieldValue<int[]>({ordinal})",
+                convertFunc: x => $"Convert.ToInt32({x})"
             ),
             ["float"] = new(
                 new()

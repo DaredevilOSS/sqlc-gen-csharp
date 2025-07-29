@@ -75,7 +75,7 @@
                   "name": "books"
                 },
                 "type": {
-                  "name": "bigserial"
+                  "name": "uuid"
                 }
               },
               {
@@ -33003,7 +33003,7 @@
             "name": "books"
           },
           "type": {
-            "name": "bigserial"
+            "name": "uuid"
           },
           "originalName": "id"
         }
