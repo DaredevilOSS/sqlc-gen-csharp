@@ -55,22 +55,24 @@ namespace EndToEndTests
                     Bio = "You'll miss the best things if you keep your eyes shut"
                 }
             };
-            var actual = await this.QuerySql.ListAuthors();
-            Assert.That(SequenceEquals(expected, actual));
+            var actual = await this.QuerySql.ListAuthors(new QuerySql.ListAuthorsArgs { Limit = 2, Offset = 0 });
+            AssertSequenceEquals(expected, actual);
         }
 
-        private static bool SingularEquals(QuerySql.ListAuthorsRow x, QuerySql.ListAuthorsRow y)
+        private static void AssertSingularEquals(QuerySql.ListAuthorsRow x, QuerySql.ListAuthorsRow y)
         {
-            return x.Id.Equals(y.Id) && x.Name.Equals(y.Name) && x.Bio.Equals(y.Bio);
+            Assert.That(x.Id, Is.EqualTo(y.Id));
+            Assert.That(x.Name, Is.EqualTo(y.Name));
+            Assert.That(x.Bio, Is.EqualTo(y.Bio));
         }
 
-        private static bool SequenceEquals(List<QuerySql.ListAuthorsRow> x, List<QuerySql.ListAuthorsRow> y)
+        private static void AssertSequenceEquals(List<QuerySql.ListAuthorsRow> x, List<QuerySql.ListAuthorsRow> y)
         {
-            if (x.Count != y.Count)
-                return false;
-            x = x.OrderBy<QuerySql.ListAuthorsRow, object>(o => o.Id).ToList();
-            y = y.OrderBy<QuerySql.ListAuthorsRow, object>(o => o.Id).ToList();
-            return !x.Where((t, i) => !SingularEquals(t, y[i])).Any();
+            Assert.That(x.Count, Is.EqualTo(y.Count));
+            for (int i = 0; i < x.Count; i++)
+            {
+                AssertSingularEquals(x[i], y[i]);
+            }
         }
 
         [Test]
@@ -105,8 +107,8 @@ namespace EndToEndTests
                     Bio = "Quote that everyone always attribute to Einstein"
                 }
             };
-            var actual = await this.QuerySql.ListAuthors();
-            Assert.That(SequenceEquals(expected, actual));
+            var actual = await this.QuerySql.ListAuthors(new QuerySql.ListAuthorsArgs { Limit = 2, Offset = 0 });
+            AssertSequenceEquals(expected, actual);
         }
 
         [Test]

@@ -1,6 +1,7 @@
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Plugin;
 using SqlcGenCsharp.Drivers.Generators;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -12,7 +13,7 @@ public partial class SqliteDriver(
     Options options,
     string defaultSchema,
     Dictionary<string, Dictionary<string, Table>> tables,
-    Dictionary<string, Dictionary<string, Enum>> enums,
+    Dictionary<string, Dictionary<string, Plugin.Enum>> enums,
     IList<Query> queries) :
     DbDriver(options, defaultSchema, tables, enums, queries), IOne, IMany, IExec, IExecRows, IExecLastId, ICopyFrom
 {
@@ -130,13 +131,18 @@ public partial class SqliteDriver(
 
     public override string TransformQueryText(Query query)
     {
-        var counter = 0;
-        var transformedQueryText = QueryParamRegex().Replace(query.Text, _ => "@" + query.Params[counter++].Column.Name);
-        return transformedQueryText;
-    }
+        var areArgumentsNumbered = new Regex($@"\?\d\b*").IsMatch(query.Text);
+        var queryText = query.Text;
 
-    [GeneratedRegex(@"\?\d*")]
-    private static partial Regex QueryParamRegex();
+        for (var i = 0; i < query.Params.Count; i++)
+        {
+            var currentParameter = query.Params[i];
+            var column = GetColumnFromParam(currentParameter, query);
+            var regexToUse = areArgumentsNumbered ? $@"\?{i + 1}\b*" : $@"\?\b*";
+            queryText = new Regex(regexToUse).Replace(queryText, $"@{column.Name}", 1);
+        }
+        return queryText;
+    }
 
     public MemberDeclarationSyntax OneDeclare(string queryTextConstant, string argInterface,
         string returnInterface, Query query)

@@ -96,6 +96,7 @@ public partial class MySqlConnectorDriver(
                 new()
                 {
                     { "int", new() },
+                    { "integer", new() },
                     { "mediumint", new() }
                 },
                 ordinal => $"reader.GetInt32({ordinal})",

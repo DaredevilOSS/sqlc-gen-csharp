@@ -10211,12 +10211,17 @@ WHERE name = $1 LIMIT 1	GetAuthor:one"-
 id0ÿÿÿÿÿÿÿÿÿR	authorsb	bigserialzid",
 name0ÿÿÿÿÿÿÿÿÿR	authorsbtextzname"(
 bio0ÿÿÿÿÿÿÿÿÿR	authorsbtextzbio*0,
-name0ÿÿÿÿÿÿÿÿÿR	authorsbtextzname:	query.sql×
-/SELECT id, name, bio FROM authors
-ORDER BY nameListAuthors:many"-
+name0ÿÿÿÿÿÿÿÿÿR	authorsbtextzname:	query.sqlº
+CSELECT id, name, bio 
+FROM authors
+ORDER BY name
+LIMIT $2
+OFFSET $1ListAuthors:many"-
 id0ÿÿÿÿÿÿÿÿÿR	authorsb	bigserialzid",
 name0ÿÿÿÿÿÿÿÿÿR	authorsbtextzname"(
-bio0ÿÿÿÿÿÿÿÿÿR	authorsbtextzbio:	query.sql­
+bio0ÿÿÿÿÿÿÿÿÿR	authorsbtextzbio*&"
+offset0ÿÿÿÿÿÿÿÿÿ8b	integer*%!
+limit0ÿÿÿÿÿÿÿÿÿ8b	integer:	query.sql­
 OINSERT INTO authors (id, name, bio) VALUES ($1, $2, $3) RETURNING id, name, bioCreateAuthor:one"-
 id0ÿÿÿÿÿÿÿÿÿR	authorsb	bigserialzid",
 name0ÿÿÿÿÿÿÿÿÿR	authorsbtextzname"(

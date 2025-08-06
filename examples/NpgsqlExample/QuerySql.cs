@@ -96,9 +96,10 @@ public class QuerySql
         return null;
     }
 
-    private const string ListAuthorsSql = "SELECT id, name, bio FROM authors ORDER  BY  name  ";  
+    private const string ListAuthorsSql = "SELECT id, name, bio  FROM  authors  ORDER  BY  name  LIMIT  @limit  OFFSET  @offset  ";  
     public readonly record struct ListAuthorsRow(long Id, string Name, string? Bio);
-    public async Task<List<ListAuthorsRow>> ListAuthors()
+    public readonly record struct ListAuthorsArgs(int Offset, int Limit);
+    public async Task<List<ListAuthorsRow>> ListAuthors(ListAuthorsArgs args)
     {
         if (this.Transaction == null)
         {
@@ -106,6 +107,8 @@ public class QuerySql
             {
                 using (var command = connection.CreateCommand(ListAuthorsSql))
                 {
+                    command.Parameters.AddWithValue("@offset", args.Offset);
+                    command.Parameters.AddWithValue("@limit", args.Limit);
                     using (var reader = await command.ExecuteReaderAsync())
                     {
                         var result = new List<ListAuthorsRow>();
@@ -123,6 +126,8 @@ public class QuerySql
         {
             command.CommandText = ListAuthorsSql;
             command.Transaction = this.Transaction;
+            command.Parameters.AddWithValue("@offset", args.Offset);
+            command.Parameters.AddWithValue("@limit", args.Limit);
             using (var reader = await command.ExecuteReaderAsync())
             {
                 var result = new List<ListAuthorsRow>();

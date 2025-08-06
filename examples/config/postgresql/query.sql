@@ -3,8 +3,11 @@ SELECT * FROM authors
 WHERE name = $1 LIMIT 1;
 
 -- name: ListAuthors :many
-SELECT * FROM authors
-ORDER BY name;
+SELECT * 
+FROM authors
+ORDER BY name
+LIMIT sqlc.arg('limit')
+OFFSET sqlc.arg('offset');
 
 -- name: CreateAuthor :one
 INSERT INTO authors (id, name, bio) VALUES ($1, $2, $3) RETURNING *;
