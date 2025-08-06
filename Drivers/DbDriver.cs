@@ -55,9 +55,6 @@ public abstract class DbDriver
         "NpgsqlCidr",
     ];
 
-    protected const string IntTo32 = "Convert.ToInt32";
-    protected const string IntTo64 = "Convert.ToInt64";
-
 
     public abstract Dictionary<string, ColumnMapping> ColumnMappings { get; }
 
@@ -339,11 +336,13 @@ public abstract class DbDriver
     public virtual string[] GetLastIdStatement(Query query)
     {
         var idColumnType = GetIdColumnType(query);
-        var convertFunc = ColumnMappings[idColumnType].ConvertFunc ?? throw new InvalidOperationException($"ConvertFunc is missing for id column type {idColumnType}");
+        var convertFunc = ColumnMappings[idColumnType].ConvertFunc ??
+            throw new InvalidOperationException($"ConvertFunc is missing for id column type {idColumnType}");
+        var convertFuncCall = convertFunc(Variable.Result.AsVarName());
         return
         [
             $"var {Variable.Result.AsVarName()} = await {Variable.Command.AsVarName()}.ExecuteScalarAsync();",
-            $"return {convertFunc}({Variable.Result.AsVarName()});"
+            $"return {convertFuncCall};"
         ];
     }
 

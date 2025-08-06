@@ -14,7 +14,7 @@ public class Author
 };
 public class Book
 {
-    public required long Id { get; init; }
+    public required Guid Id { get; init; }
     public required string Name { get; init; }
     public required long AuthorId { get; init; }
     public string? Description { get; init; }

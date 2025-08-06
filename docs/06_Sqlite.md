@@ -3,13 +3,12 @@
 <summary>:execlastid - Implementation</summary>
 
 ## :execlastid - Implementation
-Implemented via a `RETURNING` clause, allowing the `INSERT` command to return the newly created id, which can be of any
-data type that can have a unique constraint.
-
+Implemented via a `RETURNING` clause, allowing the `INSERT` command to return the newly created id.
+Only integer data type is supported as id for this annotation.
+   
 ```sql
 INSERT INTO tab1 (field1, field2) VALUES ('a', 1) RETURNING id_field;
 ```
-
 </details>
 
 <details>

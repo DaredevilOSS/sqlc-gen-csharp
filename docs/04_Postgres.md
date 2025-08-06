@@ -2,8 +2,16 @@
 <details>
 <summary>:execlastid - Implementation</summary>
 
-Implemented via a `RETURNING` clause, allowing the `INSERT` command to return the newly created id, which can be of any
-data type that can have a unique constraint.
+Implemented via a `RETURNING` clause, allowing the `INSERT` command to return the newly created id.
+The data types that can be used as id data types for this annotation are:
+1. uuid
+2. bigint
+3. integer
+4. smallint (less recommended due to small id range, but possible)
+
+```sql
+INSERT INTO tab1 (field1, field2) VALUES ('a', 1) RETURNING id_field;
+```
 </details>
 
 <details>
