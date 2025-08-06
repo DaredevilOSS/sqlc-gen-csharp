@@ -92,7 +92,7 @@ public class QuerySql
         return null;
     }
 
-    private const string ListAuthorsSql = "SELECT id, name, bio  FROM  authors  ORDER  BY  name  LIMIT  @limit  OFFSET  @offset  ";  
+    private const string ListAuthorsSql = "SELECT id, name, bio FROM  authors  ORDER  BY  name  LIMIT  @limit  OFFSET  @offset  ";  
     public readonly record struct ListAuthorsRow(int Id, string Name, string? Bio);
     public readonly record struct ListAuthorsArgs(int Offset, int Limit);
     public async Task<List<ListAuthorsRow>> ListAuthors(ListAuthorsArgs args)

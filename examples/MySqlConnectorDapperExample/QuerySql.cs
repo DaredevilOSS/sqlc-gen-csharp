@@ -44,7 +44,7 @@ public class QuerySql
     private MySqlTransaction? Transaction { get; }
     private string? ConnectionString { get; }
 
-    private const string GetAuthorSql = "SELECT id, name, bio FROM authors WHERE name = @name LIMIT 1; SELECT LAST_INSERT_ID()";
+    private const string GetAuthorSql = "SELECT id, name, bio FROM authors WHERE name = @name LIMIT 1";
     public class GetAuthorRow
     {
         public required long Id { get; init; }
@@ -76,7 +76,7 @@ public class QuerySql
         return await this.Transaction.Connection.QueryFirstOrDefaultAsync<GetAuthorRow?>(GetAuthorSql, queryParams, transaction: this.Transaction);
     }
 
-    private const string ListAuthorsSql = "SELECT id, name, bio  FROM  authors  ORDER  BY  name  LIMIT  @limit  OFFSET  @offset ; SELECT  LAST_INSERT_ID ( ) "; 
+    private const string ListAuthorsSql = "SELECT id, name, bio  FROM  authors  ORDER  BY  name  LIMIT  @limit  OFFSET  @offset  ";  
     public class ListAuthorsRow
     {
         public required long Id { get; init; }
@@ -107,7 +107,7 @@ public class QuerySql
         return (await this.Transaction.Connection.QueryAsync<ListAuthorsRow>(ListAuthorsSql, queryParams, transaction: this.Transaction)).AsList();
     }
 
-    private const string CreateAuthorSql = "INSERT INTO authors (id, name, bio) VALUES (@id, @name, @bio); SELECT LAST_INSERT_ID()";
+    private const string CreateAuthorSql = "INSERT INTO authors (id, name, bio) VALUES (@id, @name, @bio)";
     public class CreateAuthorArgs
     {
         public required long Id { get; init; }
@@ -165,7 +165,7 @@ public class QuerySql
         return await this.Transaction.Connection.QuerySingleAsync<long>(CreateAuthorReturnIdSql, queryParams, transaction: this.Transaction);
     }
 
-    private const string GetAuthorByIdSql = "SELECT id, name, bio FROM authors WHERE id = @id LIMIT 1; SELECT LAST_INSERT_ID()";
+    private const string GetAuthorByIdSql = "SELECT id, name, bio FROM authors WHERE id = @id LIMIT 1";
     public class GetAuthorByIdRow
     {
         public required long Id { get; init; }
@@ -197,7 +197,7 @@ public class QuerySql
         return await this.Transaction.Connection.QueryFirstOrDefaultAsync<GetAuthorByIdRow?>(GetAuthorByIdSql, queryParams, transaction: this.Transaction);
     }
 
-    private const string GetAuthorByNamePatternSql = "SELECT id, name, bio FROM authors WHERE  name  LIKE  COALESCE ( @name_pattern ,  '%' ) ; SELECT  LAST_INSERT_ID ( ) "; 
+    private const string GetAuthorByNamePatternSql = "SELECT id, name, bio FROM authors WHERE  name  LIKE  COALESCE ( @name_pattern ,  '%' ) ";  
     public class GetAuthorByNamePatternRow
     {
         public required long Id { get; init; }
@@ -226,7 +226,7 @@ public class QuerySql
         return (await this.Transaction.Connection.QueryAsync<GetAuthorByNamePatternRow>(GetAuthorByNamePatternSql, queryParams, transaction: this.Transaction)).AsList();
     }
 
-    private const string DeleteAuthorSql = "DELETE FROM authors WHERE  name  =  @name ; SELECT  LAST_INSERT_ID ( ) "; 
+    private const string DeleteAuthorSql = "DELETE FROM authors WHERE  name  =  @name  ";  
     public class DeleteAuthorArgs
     {
         public required string Name { get; init; }
@@ -253,7 +253,7 @@ public class QuerySql
         await this.Transaction.Connection.ExecuteAsync(DeleteAuthorSql, queryParams, transaction: this.Transaction);
     }
 
-    private const string DeleteAllAuthorsSql = "DELETE FROM authors; SELECT LAST_INSERT_ID()";
+    private const string DeleteAllAuthorsSql = "DELETE FROM authors";
     public async Task DeleteAllAuthors()
     {
         if (this.Transaction == null)
@@ -274,7 +274,7 @@ public class QuerySql
         await this.Transaction.Connection.ExecuteAsync(DeleteAllAuthorsSql, transaction: this.Transaction);
     }
 
-    private const string UpdateAuthorsSql = "UPDATE authors SET  bio  =  @bio  WHERE  bio  IS  NOT  NULL ; SELECT  LAST_INSERT_ID ( ) "; 
+    private const string UpdateAuthorsSql = "UPDATE authors SET  bio  =  @bio  WHERE  bio  IS  NOT  NULL  ";  
     public class UpdateAuthorsArgs
     {
         public string? Bio { get; init; }
@@ -299,7 +299,7 @@ public class QuerySql
         return await this.Transaction.Connection.ExecuteAsync(UpdateAuthorsSql, queryParams, transaction: this.Transaction);
     }
 
-    private const string GetAuthorsByIdsSql = "SELECT id, name, bio FROM authors WHERE id IN (/*SLICE:ids*/@ids); SELECT LAST_INSERT_ID()";
+    private const string GetAuthorsByIdsSql = "SELECT id, name, bio FROM authors WHERE id IN (/*SLICE:ids*/@ids)";
     public class GetAuthorsByIdsRow
     {
         public required long Id { get; init; }
@@ -331,7 +331,7 @@ public class QuerySql
         return (await this.Transaction.Connection.QueryAsync<GetAuthorsByIdsRow>(transformedSql, queryParams, transaction: this.Transaction)).AsList();
     }
 
-    private const string GetAuthorsByIdsAndNamesSql = "SELECT id, name, bio FROM authors WHERE id IN (/*SLICE:ids*/@ids) AND name IN (/*SLICE:names*/@names); SELECT LAST_INSERT_ID()";
+    private const string GetAuthorsByIdsAndNamesSql = "SELECT id, name, bio FROM authors WHERE id IN (/*SLICE:ids*/@ids) AND name IN (/*SLICE:names*/@names)";
     public class GetAuthorsByIdsAndNamesRow
     {
         public required long Id { get; init; }
@@ -394,7 +394,7 @@ public class QuerySql
         return await this.Transaction.Connection.QuerySingleAsync<long>(CreateBookSql, queryParams, transaction: this.Transaction);
     }
 
-    private const string ListAllAuthorsBooksSql = "SELECT authors.id, authors.name, authors.bio, books.id, books.name, books.author_id, books.description  FROM  authors  JOIN  books  ON  authors . id  =  books . author_id  ORDER  BY  authors . name ; SELECT  LAST_INSERT_ID ( ) "; 
+    private const string ListAllAuthorsBooksSql = "SELECT authors.id, authors.name, authors.bio, books.id, books.name, books.author_id, books.description  FROM  authors  JOIN  books  ON  authors . id  =  books . author_id  ORDER  BY  authors . name  ";  
     public class ListAllAuthorsBooksRow
     {
         public required Author? Author { get; init; }
@@ -436,7 +436,7 @@ public class QuerySql
         }
     }
 
-    private const string GetDuplicateAuthorsSql = "SELECT authors1.id, authors1.name, authors1.bio, authors2.id, authors2.name, authors2.bio FROM  authors  authors1  JOIN  authors  authors2  ON  authors1 . name  =  authors2 . name  WHERE  authors1 . id < authors2 . id ; SELECT  LAST_INSERT_ID ( ) "; 
+    private const string GetDuplicateAuthorsSql = "SELECT authors1.id, authors1.name, authors1.bio, authors2.id, authors2.name, authors2.bio FROM  authors  authors1  JOIN  authors  authors2  ON  authors1 . name  =  authors2 . name  WHERE  authors1 . id < authors2 . id  ";  
     public class GetDuplicateAuthorsRow
     {
         public required Author? Author { get; init; }
@@ -478,7 +478,7 @@ public class QuerySql
         }
     }
 
-    private const string GetAuthorsByBookNameSql = "SELECT authors.id, authors.name, authors.bio, books.id, books.name, books.author_id, books.description FROM  authors  JOIN  books  ON  authors . id  =  books . author_id  WHERE  books . name  =  @name ; SELECT  LAST_INSERT_ID ( ) "; 
+    private const string GetAuthorsByBookNameSql = "SELECT authors.id, authors.name, authors.bio, books.id, books.name, books.author_id, books.description FROM  authors  JOIN  books  ON  authors . id  =  books . author_id  WHERE  books . name  =  @name  ";  
     public class GetAuthorsByBookNameRow
     {
         public required long Id { get; init; }
@@ -528,7 +528,7 @@ public class QuerySql
         }
     }
 
-    private const string InsertMysqlTypesSql = "INSERT INTO mysql_types (c_bit, c_bool, c_boolean, c_tinyint, c_smallint, c_mediumint, c_int, c_integer, c_bigint, c_decimal, c_dec, c_numeric, c_fixed, c_float, c_double, c_double_precision, c_char, c_nchar, c_national_char, c_varchar, c_tinytext, c_mediumtext, c_text, c_longtext, c_enum, c_json, c_json_string_override, c_year, c_date, c_datetime, c_timestamp, c_binary, c_varbinary, c_tinyblob, c_blob, c_mediumblob, c_longblob) VALUES ( @c_bit, @c_bool, @c_boolean, @c_tinyint, @c_smallint, @c_mediumint, @c_int, @c_integer, @c_bigint, @c_decimal, @c_dec, @c_numeric, @c_fixed, @c_float, @c_double, @c_double_precision, @c_char, @c_nchar, @c_national_char, @c_varchar, @c_tinytext, @c_mediumtext, @c_text, @c_longtext, @c_enum, @c_json, @c_json_string_override, @c_year, @c_date, @c_datetime, @c_timestamp, @c_binary, @c_varbinary, @c_tinyblob, @c_blob, @c_mediumblob, @c_longblob ); SELECT  LAST_INSERT_ID ( ) "; 
+    private const string InsertMysqlTypesSql = "INSERT INTO mysql_types (c_bit, c_bool, c_boolean, c_tinyint, c_smallint, c_mediumint, c_int, c_integer, c_bigint, c_decimal, c_dec, c_numeric, c_fixed, c_float, c_double, c_double_precision, c_char, c_nchar, c_national_char, c_varchar, c_tinytext, c_mediumtext, c_text, c_longtext, c_enum, c_json, c_json_string_override, c_year, c_date, c_datetime, c_timestamp, c_binary, c_varbinary, c_tinyblob, c_blob, c_mediumblob, c_longblob) VALUES ( @c_bit, @c_bool, @c_boolean, @c_tinyint, @c_smallint, @c_mediumint, @c_int, @c_integer, @c_bigint, @c_decimal, @c_dec, @c_numeric, @c_fixed, @c_float, @c_double, @c_double_precision, @c_char, @c_nchar, @c_national_char, @c_varchar, @c_tinytext, @c_mediumtext, @c_text, @c_longtext, @c_enum, @c_json, @c_json_string_override, @c_year, @c_date, @c_datetime, @c_timestamp, @c_binary, @c_varbinary, @c_tinyblob, @c_blob, @c_mediumblob, @c_longblob ) "; 
     public class InsertMysqlTypesArgs
     {
         public byte? CBit { get; init; }
@@ -726,7 +726,7 @@ public class QuerySql
         }
     }
 
-    private const string GetMysqlTypesSql = "SELECT c_bool, c_boolean, c_tinyint, c_smallint, c_mediumint, c_int, c_integer, c_bigint, c_float, c_decimal, c_dec, c_numeric, c_fixed, c_double, c_double_precision, c_year, c_date, c_time, c_datetime, c_timestamp, c_char, c_nchar, c_national_char, c_varchar, c_tinytext, c_mediumtext, c_text, c_longtext, c_enum, c_json, c_json_string_override, c_bit, c_binary, c_varbinary, c_tinyblob, c_blob, c_mediumblob, c_longblob FROM mysql_types LIMIT 1; SELECT LAST_INSERT_ID()";
+    private const string GetMysqlTypesSql = "SELECT c_bool, c_boolean, c_tinyint, c_smallint, c_mediumint, c_int, c_integer, c_bigint, c_float, c_decimal, c_dec, c_numeric, c_fixed, c_double, c_double_precision, c_year, c_date, c_time, c_datetime, c_timestamp, c_char, c_nchar, c_national_char, c_varchar, c_tinytext, c_mediumtext, c_text, c_longtext, c_enum, c_json, c_json_string_override, c_bit, c_binary, c_varbinary, c_tinyblob, c_blob, c_mediumblob, c_longblob FROM mysql_types LIMIT 1";
     public class GetMysqlTypesRow
     {
         public bool? CBool { get; init; }
@@ -787,7 +787,7 @@ public class QuerySql
         return await this.Transaction.Connection.QueryFirstOrDefaultAsync<GetMysqlTypesRow?>(GetMysqlTypesSql, transaction: this.Transaction);
     }
 
-    private const string GetMysqlTypesCntSql = "SELECT COUNT(1) AS cnt, c_bool, c_boolean, c_bit, c_tinyint, c_smallint, c_mediumint, c_int, c_integer, c_bigint,  c_float , c_numeric, c_decimal, c_dec, c_fixed, c_double, c_double_precision, c_char, c_nchar, c_national_char, c_varchar, c_tinytext, c_mediumtext, c_text, c_longtext, c_enum, c_json, c_json_string_override, c_year, c_date, c_datetime, c_timestamp, c_binary, c_varbinary, c_tinyblob, c_blob, c_mediumblob, c_longblob FROM  mysql_types  GROUP  BY  c_bool , c_boolean, c_bit, c_tinyint, c_smallint, c_mediumint, c_int, c_integer, c_bigint, c_float, c_numeric, c_decimal, c_dec, c_fixed, c_double, c_double_precision, c_char, c_nchar, c_national_char, c_varchar, c_tinytext, c_mediumtext, c_text, c_longtext, c_enum, c_json, c_json_string_override, c_year, c_date, c_datetime, c_timestamp, c_binary, c_varbinary, c_tinyblob, c_blob, c_mediumblob, c_longblob LIMIT  1 ; SELECT  LAST_INSERT_ID ( ) "; 
+    private const string GetMysqlTypesCntSql = "SELECT COUNT(1) AS cnt, c_bool, c_boolean, c_bit, c_tinyint, c_smallint, c_mediumint, c_int, c_integer, c_bigint,  c_float , c_numeric, c_decimal, c_dec, c_fixed, c_double, c_double_precision, c_char, c_nchar, c_national_char, c_varchar, c_tinytext, c_mediumtext, c_text, c_longtext, c_enum, c_json, c_json_string_override, c_year, c_date, c_datetime, c_timestamp, c_binary, c_varbinary, c_tinyblob, c_blob, c_mediumblob, c_longblob FROM  mysql_types  GROUP  BY  c_bool , c_boolean, c_bit, c_tinyint, c_smallint, c_mediumint, c_int, c_integer, c_bigint, c_float, c_numeric, c_decimal, c_dec, c_fixed, c_double, c_double_precision, c_char, c_nchar, c_national_char, c_varchar, c_tinytext, c_mediumtext, c_text, c_longtext, c_enum, c_json, c_json_string_override, c_year, c_date, c_datetime, c_timestamp, c_binary, c_varbinary, c_tinyblob, c_blob, c_mediumblob, c_longblob LIMIT  1  ";  
     public class GetMysqlTypesCntRow
     {
         public required long Cnt { get; init; }
@@ -848,7 +848,7 @@ public class QuerySql
         return await this.Transaction.Connection.QueryFirstOrDefaultAsync<GetMysqlTypesCntRow?>(GetMysqlTypesCntSql, transaction: this.Transaction);
     }
 
-    private const string GetMysqlFunctionsSql = "SELECT MAX(c_int) AS max_int, MAX(c_varchar) AS max_varchar, MAX(c_timestamp) AS max_timestamp FROM  mysql_types ; SELECT  LAST_INSERT_ID ( ) "; 
+    private const string GetMysqlFunctionsSql = "SELECT MAX(c_int) AS max_int, MAX(c_varchar) AS max_varchar, MAX(c_timestamp) AS max_timestamp FROM  mysql_types  ";  
     public class GetMysqlFunctionsRow
     {
         public int? MaxInt { get; init; }
@@ -874,7 +874,7 @@ public class QuerySql
         return await this.Transaction.Connection.QueryFirstOrDefaultAsync<GetMysqlFunctionsRow?>(GetMysqlFunctionsSql, transaction: this.Transaction);
     }
 
-    private const string TruncateMysqlTypesSql = "TRUNCATE TABLE mysql_types; SELECT LAST_INSERT_ID()";
+    private const string TruncateMysqlTypesSql = "TRUNCATE TABLE mysql_types";
     public async Task TruncateMysqlTypes()
     {
         if (this.Transaction == null)
@@ -895,7 +895,7 @@ public class QuerySql
         await this.Transaction.Connection.ExecuteAsync(TruncateMysqlTypesSql, transaction: this.Transaction);
     }
 
-    private const string CreateExtendedBioSql = "INSERT INTO extended.bios (author_name, name, bio_type) VALUES (@author_name, @name, @bio_type); SELECT LAST_INSERT_ID()";
+    private const string CreateExtendedBioSql = "INSERT INTO extended.bios (author_name, name, bio_type) VALUES (@author_name, @name, @bio_type)";
     public class CreateExtendedBioArgs
     {
         public string? AuthorName { get; init; }
@@ -926,7 +926,7 @@ public class QuerySql
         await this.Transaction.Connection.ExecuteAsync(CreateExtendedBioSql, queryParams, transaction: this.Transaction);
     }
 
-    private const string GetFirstExtendedBioByTypeSql = "SELECT author_name, name, bio_type FROM extended.bios WHERE bio_type = @bio_type LIMIT 1; SELECT LAST_INSERT_ID()";
+    private const string GetFirstExtendedBioByTypeSql = "SELECT author_name, name, bio_type FROM extended.bios WHERE bio_type = @bio_type LIMIT 1";
     public class GetFirstExtendedBioByTypeRow
     {
         public string? AuthorName { get; init; }
@@ -958,7 +958,7 @@ public class QuerySql
         return await this.Transaction.Connection.QueryFirstOrDefaultAsync<GetFirstExtendedBioByTypeRow?>(GetFirstExtendedBioByTypeSql, queryParams, transaction: this.Transaction);
     }
 
-    private const string TruncateExtendedBiosSql = "TRUNCATE TABLE extended.bios; SELECT LAST_INSERT_ID()";
+    private const string TruncateExtendedBiosSql = "TRUNCATE TABLE extended.bios";
     public async Task TruncateExtendedBios()
     {
         if (this.Transaction == null)

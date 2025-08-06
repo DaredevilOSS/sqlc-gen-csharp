@@ -225,7 +225,7 @@
       "filename": "query.sql"
     },
     {
-      "text": "SELECT id, name, bio \nFROM authors\nORDER BY name\nLIMIT ?2\nOFFSET ?1",
+      "text": "SELECT id, name, bio\nFROM authors\nORDER BY name\nLIMIT ?2 OFFSET ?1",
       "name": "ListAuthors",
       "cmd": ":many",
       "columns": [
