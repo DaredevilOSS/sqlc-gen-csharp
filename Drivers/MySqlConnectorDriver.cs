@@ -96,6 +96,7 @@ public partial class MySqlConnectorDriver(
                 new()
                 {
                     { "int", new() },
+                    { "integer", new() },
                     { "mediumint", new() }
                 },
                 ordinal => $"reader.GetInt32({ordinal})",
@@ -282,9 +283,14 @@ public partial class MySqlConnectorDriver(
         if (query.Cmd == ":copyfrom")
             return string.Empty;
 
-        var queryText = Options.UseDapper ? $"{query.Text}; SELECT LAST_INSERT_ID()" : query.Text;
         var counter = 0;
-        return QueryParamRegex().Replace(queryText, _ => "@" + query.Params[counter++].Column.Name);
+        var queryText = query.Text;
+        queryText = QueryParamRegex().Replace(queryText, _ => "@" + query.Params[counter++].Column.Name);
+        queryText = Options.UseDapper && query.Cmd == ":execlastid"
+            ? $"{queryText}; SELECT LAST_INSERT_ID()"
+            : queryText;
+
+        return queryText;
     }
 
     [GeneratedRegex(@"\?")]

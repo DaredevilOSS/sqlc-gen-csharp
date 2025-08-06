@@ -2,8 +2,10 @@
 SELECT * FROM authors WHERE name = ? LIMIT 1;
 
 -- name: ListAuthors :many
-SELECT * FROM authors
-ORDER BY name;
+SELECT * 
+FROM authors
+ORDER BY name
+LIMIT ? OFFSET ?;
 
 -- name: CreateAuthor :exec
 INSERT INTO authors (id, name, bio) VALUES (?, ?, ?);

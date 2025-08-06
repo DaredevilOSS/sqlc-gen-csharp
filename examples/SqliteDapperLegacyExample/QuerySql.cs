@@ -70,27 +70,35 @@ namespace SqliteDapperLegacyExampleGen
             return await this.Transaction.Connection.QueryFirstOrDefaultAsync<GetAuthorRow>(GetAuthorSql, queryParams, transaction: this.Transaction);
         }
 
-        private const string ListAuthorsSql = "SELECT id, name, bio FROM authors ORDER  BY  name  ";  
+        private const string ListAuthorsSql = "SELECT id, name, bio FROM  authors  ORDER  BY  name  LIMIT  @limit  OFFSET  @offset  ";  
         public class ListAuthorsRow
         {
             public int Id { get; set; }
             public string Name { get; set; }
             public string Bio { get; set; }
         };
-        public async Task<List<ListAuthorsRow>> ListAuthors()
+        public class ListAuthorsArgs
         {
+            public int Offset { get; set; }
+            public int Limit { get; set; }
+        };
+        public async Task<List<ListAuthorsRow>> ListAuthors(ListAuthorsArgs args)
+        {
+            var queryParams = new Dictionary<string, object>();
+            queryParams.Add("offset", args.Offset);
+            queryParams.Add("limit", args.Limit);
             if (this.Transaction == null)
             {
                 using (var connection = new SqliteConnection(ConnectionString))
                 {
-                    var result = await connection.QueryAsync<ListAuthorsRow>(ListAuthorsSql);
+                    var result = await connection.QueryAsync<ListAuthorsRow>(ListAuthorsSql, queryParams);
                     return result.AsList();
                 }
             }
 
             if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
                 throw new InvalidOperationException("Transaction is provided, but its connection is null.");
-            return (await this.Transaction.Connection.QueryAsync<ListAuthorsRow>(ListAuthorsSql, transaction: this.Transaction)).AsList();
+            return (await this.Transaction.Connection.QueryAsync<ListAuthorsRow>(ListAuthorsSql, queryParams, transaction: this.Transaction)).AsList();
         }
 
         private const string CreateAuthorSql = "INSERT INTO authors (id, name, bio) VALUES (@id, @name, @bio)";

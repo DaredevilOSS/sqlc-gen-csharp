@@ -32497,7 +32497,7 @@
       "filename": "query.sql"
     },
     {
-      "text": "SELECT id, name, bio FROM authors\nORDER BY name",
+      "text": "SELECT id, name, bio \nFROM authors\nORDER BY name\nLIMIT $2\nOFFSET $1",
       "name": "ListAuthors",
       "cmd": ":many",
       "columns": [
@@ -32535,6 +32535,32 @@
             "name": "text"
           },
           "originalName": "bio"
+        }
+      ],
+      "parameters": [
+        {
+          "number": 1,
+          "column": {
+            "name": "offset",
+            "notNull": true,
+            "length": -1,
+            "isNamedParam": true,
+            "type": {
+              "name": "integer"
+            }
+          }
+        },
+        {
+          "number": 2,
+          "column": {
+            "name": "limit",
+            "notNull": true,
+            "length": -1,
+            "isNamedParam": true,
+            "type": {
+              "name": "integer"
+            }
+          }
         }
       ],
       "filename": "query.sql"

@@ -108,14 +108,19 @@ namespace MySqlConnectorLegacyExampleGen
             return null;
         }
 
-        private const string ListAuthorsSql = "SELECT id, name, bio FROM authors ORDER  BY  name  ";  
+        private const string ListAuthorsSql = "SELECT id, name, bio  FROM  authors  ORDER  BY  name  LIMIT  @limit  OFFSET  @offset  ";  
         public class ListAuthorsRow
         {
             public long Id { get; set; }
             public string Name { get; set; }
             public string Bio { get; set; }
         };
-        public async Task<List<ListAuthorsRow>> ListAuthors()
+        public class ListAuthorsArgs
+        {
+            public int Limit { get; set; }
+            public int Offset { get; set; }
+        };
+        public async Task<List<ListAuthorsRow>> ListAuthors(ListAuthorsArgs args)
         {
             if (this.Transaction == null)
             {
@@ -124,6 +129,8 @@ namespace MySqlConnectorLegacyExampleGen
                     await connection.OpenAsync();
                     using (var command = new MySqlCommand(ListAuthorsSql, connection))
                     {
+                        command.Parameters.AddWithValue("@limit", args.Limit);
+                        command.Parameters.AddWithValue("@offset", args.Offset);
                         using (var reader = await command.ExecuteReaderAsync())
                         {
                             var result = new List<ListAuthorsRow>();
@@ -141,6 +148,8 @@ namespace MySqlConnectorLegacyExampleGen
             {
                 command.CommandText = ListAuthorsSql;
                 command.Transaction = this.Transaction;
+                command.Parameters.AddWithValue("@limit", args.Limit);
+                command.Parameters.AddWithValue("@offset", args.Offset);
                 using (var reader = await command.ExecuteReaderAsync())
                 {
                     var result = new List<ListAuthorsRow>();

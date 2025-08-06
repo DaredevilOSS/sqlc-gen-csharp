@@ -101,14 +101,19 @@ namespace SqliteLegacyExampleGen
             return null;
         }
 
-        private const string ListAuthorsSql = "SELECT id, name, bio FROM authors ORDER  BY  name  ";  
+        private const string ListAuthorsSql = "SELECT id, name, bio FROM  authors  ORDER  BY  name  LIMIT  @limit  OFFSET  @offset  ";  
         public class ListAuthorsRow
         {
             public int Id { get; set; }
             public string Name { get; set; }
             public string Bio { get; set; }
         };
-        public async Task<List<ListAuthorsRow>> ListAuthors()
+        public class ListAuthorsArgs
+        {
+            public int Offset { get; set; }
+            public int Limit { get; set; }
+        };
+        public async Task<List<ListAuthorsRow>> ListAuthors(ListAuthorsArgs args)
         {
             if (this.Transaction == null)
             {
@@ -117,6 +122,8 @@ namespace SqliteLegacyExampleGen
                     await connection.OpenAsync();
                     using (var command = new SqliteCommand(ListAuthorsSql, connection))
                     {
+                        command.Parameters.AddWithValue("@offset", args.Offset);
+                        command.Parameters.AddWithValue("@limit", args.Limit);
                         using (var reader = await command.ExecuteReaderAsync())
                         {
                             var result = new List<ListAuthorsRow>();
@@ -134,6 +141,8 @@ namespace SqliteLegacyExampleGen
             {
                 command.CommandText = ListAuthorsSql;
                 command.Transaction = this.Transaction;
+                command.Parameters.AddWithValue("@offset", args.Offset);
+                command.Parameters.AddWithValue("@limit", args.Limit);
                 using (var reader = await command.ExecuteReaderAsync())
                 {
                     var result = new List<ListAuthorsRow>();
