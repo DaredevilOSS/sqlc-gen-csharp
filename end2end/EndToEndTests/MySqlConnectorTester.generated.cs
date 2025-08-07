@@ -474,17 +474,23 @@ namespace EndToEndTests
         }
 
         [Test]
-        [TestCase(MysqlTypesCEnum.Medium)]
-        [TestCase(null)]
-        public async Task TestMySqlStringTypes(MysqlTypesCEnum? cEnum)
+        [TestCase(MysqlTypesCEnum.Medium, new[] { MysqlTypesCSet.Tea, MysqlTypesCSet.Coffee })]
+        [TestCase(null, null)]
+        public async Task TestMySqlStringTypes(MysqlTypesCEnum? cEnum, MysqlTypesCSet[] cSet)
         {
-            await QuerySql.InsertMysqlTypes(new QuerySql.InsertMysqlTypesArgs { CEnum = cEnum });
+            await QuerySql.InsertMysqlTypes(new QuerySql.InsertMysqlTypesArgs { CEnum = cEnum, CSet = cSet });
             var expected = new QuerySql.GetMysqlTypesRow
             {
-                CEnum = cEnum
+                CEnum = cEnum,
+                CSet = cSet
             };
             var actual = await QuerySql.GetMysqlTypes();
-            Assert.That(actual.Value.CEnum, Is.EqualTo(expected.CEnum));
+            AssertSingularEquals(expected, actual.Value);
+            void AssertSingularEquals(QuerySql.GetMysqlTypesRow x, QuerySql.GetMysqlTypesRow y)
+            {
+                Assert.That(x.CEnum, Is.EqualTo(y.CEnum));
+                Assert.That(x.CSet, Is.EqualTo(y.CSet));
+            }
         }
 
         [Test]

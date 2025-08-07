@@ -128,7 +128,7 @@ public partial class MySqlConnectorDriver(
                     if (notNull)
                         return $"{el}.GetRawText()";
                     var nullValue = isDapper ? "null" : "(object)DBNull.Value";
-                    return $"{el}.HasValue ? {el}.Value.GetRawText() : {nullValue}";
+                    return $"{el}?.GetRawText() ?? {nullValue}";
                 },
                 usingDirective: "System.Text.Json",
                 sqlMapper: "SqlMapper.AddTypeHandler(typeof(JsonElement), new JsonElementTypeHandler());",
@@ -144,6 +144,24 @@ public partial class MySqlConnectorDriver(
         };
 
     public override string TransactionClassName => "MySqlTransaction";
+
+    private readonly Func<string, string> _setTypeHandlerFunc = x =>
+    $$"""
+        public class {{x}}TypeHandler : SqlMapper.TypeHandler<{{x}}[]>
+        {
+            public override {{x}}[] Parse(object value)
+            {
+                if (value is string s)
+                    return s.To{{x}}Arr();
+                throw new DataException($"Cannot convert {value?.GetType()} to {{x}}[]");
+            }
+
+            public override void SetValue(IDbDataParameter parameter, {{x}}[] value)
+            {
+                parameter.Value = string.Join(",", value);
+            }
+        }
+    """;
 
     public override ISet<string> GetUsingDirectivesForQueries()
     {
@@ -193,11 +211,48 @@ public partial class MySqlConnectorDriver(
             );
     }
 
+    protected override ISet<string> GetConfigureSqlMappings()
+    {
+        var setSqlMappings = Queries
+            .SelectMany(q => q.Columns)
+            .Where(c =>
+            {
+                var enumType = GetEnumType(c);
+                return enumType is not null && IsEnumOfTypeSet(c, enumType);
+            })
+            .Select(c =>
+            {
+                var enumName = c.Type.Name.ToModelName(GetColumnSchema(c), DefaultSchema);
+                return $"SqlMapper.AddTypeHandler(typeof({enumName}[]), new {enumName}TypeHandler());";
+            })
+            .Distinct();
+
+        return base
+            .GetConfigureSqlMappings()
+            .AddRangeExcludeNulls(setSqlMappings);
+    }
+
+    private MemberDeclarationSyntax[] GetSetTypeHandlers()
+    {
+        return Queries
+            .SelectMany(q => q.Columns)
+            .Where(c =>
+            {
+                var enumType = GetEnumType(c);
+                return enumType is not null && IsEnumOfTypeSet(c, enumType);
+            })
+            .Select(c => _setTypeHandlerFunc(c.Type.Name.ToModelName(GetColumnSchema(c), DefaultSchema)))
+            .Distinct()
+            .Select(m => ParseMemberDeclaration(m)!)
+            .ToArray();
+    }
+
     public override MemberDeclarationSyntax[] GetMemberDeclarationsForUtils()
     {
         var memberDeclarations = base
             .GetMemberDeclarationsForUtils()
-            .AddRangeIf([ParseMemberDeclaration(TransformQueryForSliceArgsImpl)!], SliceQueryExists());
+            .AddRangeIf([ParseMemberDeclaration(TransformQueryForSliceArgsImpl)!], SliceQueryExists())
+            .AddRangeIf(GetSetTypeHandlers(), Options.UseDapper);
 
         if (!CopyFromQueryExists())
             return [.. memberDeclarations];
@@ -438,5 +493,18 @@ public partial class MySqlConnectorDriver(
                 ],
                 TypeExistsInQueries("byte[]")
             );
+    }
+
+    private bool IsEnumOfTypeSet(Column column, Plugin.Enum enumType)
+    {
+        return column.Length > enumType.Vals.Select(v => v.Length).Sum();
+    }
+
+    public override string GetEnumTypeAsCsharpType(Column column, Plugin.Enum enumType)
+    {
+        var enumName = column.Type.Name.ToModelName(GetColumnSchema(column), DefaultSchema);
+        if (this is not MySqlConnectorDriver)
+            return enumName;
+        return IsEnumOfTypeSet(column, enumType) ? $"{enumName}[]" : enumName;
     }
 }

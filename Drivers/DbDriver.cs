@@ -21,7 +21,7 @@ public abstract class DbDriver
 
     public Dictionary<string, Dictionary<string, Plugin.Enum>> Enums { get; }
 
-    private IList<Query> Queries { get; }
+    protected IList<Query> Queries { get; }
 
     private HashSet<string> NullableTypesInDotnetCore { get; } =
     [
@@ -148,7 +148,7 @@ public abstract class DbDriver
 
     public virtual ISet<string> GetUsingDirectivesForUtils()
     {
-        return new HashSet<string>()
+        return new HashSet<string>
             {
                 "System.Linq"
             }
@@ -158,20 +158,24 @@ public abstract class DbDriver
 
     public virtual ISet<string> GetUsingDirectivesForModels()
     {
-        return GetUsingDirectivesForColumnMappings();
+        return new HashSet<string>
+            {
+                "System.Linq"
+            }
+            .AddRangeExcludeNulls(GetUsingDirectivesForColumnMappings());
     }
 
-    public virtual string[] GetConstructorStatements()
+    public string[] GetConstructorStatements()
     {
         return [$"this.{Variable.ConnectionString.AsPropertyName()} = {Variable.ConnectionString.AsVarName()};"];
     }
 
-    public virtual string[] GetTransactionConstructorStatements()
+    public string[] GetTransactionConstructorStatements()
     {
         return [$"this.{Variable.Transaction.AsPropertyName()} = {Variable.Transaction.AsVarName()};"];
     }
 
-    protected ISet<string> GetConfigureSqlMappings()
+    protected virtual ISet<string> GetConfigureSqlMappings()
     {
         return ColumnMappings
             .Where(m => TypeExistsInQueries(m.Key) && m.Value.SqlMapper is not null)
@@ -218,6 +222,16 @@ public abstract class DbDriver
         return AddNullableSuffixIfNeeded(csharpType, IsColumnNotNull(column, query));
     }
 
+    public string GetColumnSchema(Column column)
+    {
+        return column.Table.Schema == DefaultSchema ? string.Empty : column.Table.Schema;
+    }
+
+    public virtual string GetEnumTypeAsCsharpType(Column column, Plugin.Enum enumType)
+    {
+        return column.Type.Name.ToModelName(GetColumnSchema(column), DefaultSchema);
+    }
+
     public string GetCsharpTypeWithoutNullableSuffix(Column column, Query? query)
     {
         if (column.EmbedTable != null)
@@ -226,8 +240,8 @@ public abstract class DbDriver
         if (string.IsNullOrEmpty(column.Type.Name))
             return "object";
 
-        if (IsEnumType(column))
-            return column.Type.Name.ToModelName(column.Table.Schema, DefaultSchema);
+        if (GetEnumType(column) is { } enumType)
+            return GetEnumTypeAsCsharpType(column, enumType);
 
         if (FindOverrideForQueryColumn(query, column) is { CsharpType: var csharpType })
             return csharpType.Type;
@@ -242,14 +256,14 @@ public abstract class DbDriver
         throw new NotSupportedException($"Column {column.Name} has unsupported column type: {column.Type.Name}");
     }
 
-    private bool IsEnumType(Column column)
+    public Plugin.Enum? GetEnumType(Column column)
     {
         if (column.Table is null)
-            return false;
-        var enumSchema = column.Table.Schema == DefaultSchema ? string.Empty : column.Table.Schema;
-        if (!Enums.TryGetValue(enumSchema, value: out var enumsInSchema))
-            return false;
-        return enumsInSchema.ContainsKey(column.Type.Name);
+            return null;
+        var schemaName = GetColumnSchema(column);
+        if (!Enums.TryGetValue(schemaName, value: out var enumsInSchema))
+            return null;
+        return enumsInSchema.GetValueOrDefault(column.Type.Name);
     }
 
     private static bool DoesColumnMappingApply(ColumnMapping columnMapping, Column column)
@@ -269,16 +283,20 @@ public abstract class DbDriver
         throw new NotSupportedException($"Could not find column mapping for type override: {csharpTypeOption.Type}");
     }
 
-    private string GetEnumReader(Column column, int ordinal)
+    private string GetEnumReader(Column column, int ordinal, Plugin.Enum enumType)
     {
         var enumName = column.Type.Name.ToModelName(column.Table.Schema, DefaultSchema);
-        return $"{Variable.Reader.AsVarName()}.GetString({ordinal}).To{enumName}()";
+        var fullEnumType = GetEnumTypeAsCsharpType(column, enumType);
+        var readStmt = $"{Variable.Reader.AsVarName()}.GetString({ordinal})";
+        if (fullEnumType.EndsWith("[]"))
+            return $"{readStmt}.To{enumName}Arr()";
+        return $"{readStmt}.To{enumName}()";
     }
 
     public string GetColumnReader(Column column, int ordinal, Query? query)
     {
-        if (IsEnumType(column))
-            return GetEnumReader(column, ordinal);
+        if (GetEnumType(column) is { } enumType)
+            return GetEnumReader(column, ordinal, enumType);
 
         if (FindOverrideForQueryColumn(query, column) is { CsharpType: var csharpType })
             return GetColumnReader(csharpType, ordinal);

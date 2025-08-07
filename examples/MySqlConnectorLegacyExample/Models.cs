@@ -3,6 +3,7 @@ namespace MySqlConnectorLegacyExampleGen
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Text.Json;
 
     public class Author
@@ -48,9 +49,10 @@ namespace MySqlConnectorLegacyExampleGen
         public string CMediumtext { get; set; }
         public string CText { get; set; }
         public string CLongtext { get; set; }
-        public MysqlTypesCEnum? CEnum { get; set; }
         public JsonElement? CJson { get; set; }
         public JsonElement? CJsonStringOverride { get; set; }
+        public MysqlTypesCEnum? CEnum { get; set; }
+        public MysqlTypesCSet[] CSet { get; set; }
         public byte? CBit { get; set; }
         public byte[] CBinary { get; set; }
         public byte[] CVarbinary { get; set; }
@@ -86,6 +88,39 @@ namespace MySqlConnectorLegacyExampleGen
         {
             return StringToEnum[me];
         }
+
+        public static MysqlTypesCEnum[] ToMysqlTypesCEnumArr(this string me)
+        {
+            return me.Split(',').ToList().Select(v => StringToEnum[v]).ToArray();
+        }
+    }
+
+    public enum MysqlTypesCSet
+    {
+        Invalid = 0, // reserved for invalid enum value
+        Tea = 1,
+        Coffee = 2,
+        Milk = 3
+    }
+
+    public static class MysqlTypesCSetExtensions
+    {
+        private static readonly Dictionary<string, MysqlTypesCSet> StringToEnum = new Dictionary<string, MysqlTypesCSet>()
+        {
+            [string.Empty] = MysqlTypesCSet.Invalid,
+            ["tea"] = MysqlTypesCSet.Tea,
+            ["coffee"] = MysqlTypesCSet.Coffee,
+            ["milk"] = MysqlTypesCSet.Milk
+        };
+        public static MysqlTypesCSet ToMysqlTypesCSet(this string me)
+        {
+            return StringToEnum[me];
+        }
+
+        public static MysqlTypesCSet[] ToMysqlTypesCSetArr(this string me)
+        {
+            return me.Split(',').ToList().Select(v => StringToEnum[v]).ToArray();
+        }
     }
 
     public enum ExtendedBiosBioType
@@ -108,6 +143,11 @@ namespace MySqlConnectorLegacyExampleGen
         public static ExtendedBiosBioType ToExtendedBiosBioType(this string me)
         {
             return StringToEnum[me];
+        }
+
+        public static ExtendedBiosBioType[] ToExtendedBiosBioTypeArr(this string me)
+        {
+            return me.Split(',').ToList().Select(v => StringToEnum[v]).ToArray();
         }
     }
 }
