@@ -31,12 +31,28 @@ namespace MySqlConnectorDapperLegacyExampleGen
         public static void ConfigureSqlMapper()
         {
             SqlMapper.AddTypeHandler(typeof(JsonElement), new JsonElementTypeHandler());
+            SqlMapper.AddTypeHandler(typeof(MysqlTypesCSet[]), new MysqlTypesCSetTypeHandler());
         }
 
         public static string TransformQueryForSliceArgs(string originalSql, int sliceSize, string paramName)
         {
             var paramArgs = Enumerable.Range(0, sliceSize).Select(i => $"@{paramName}Arg{i}").ToList();
             return originalSql.Replace($"/*SLICE:{paramName}*/@{paramName}", string.Join(",", paramArgs));
+        }
+
+        public class MysqlTypesCSetTypeHandler : SqlMapper.TypeHandler<MysqlTypesCSet[]>
+        {
+            public override MysqlTypesCSet[] Parse(object value)
+            {
+                if (value is string s)
+                    return s.ToMysqlTypesCSetArr();
+                throw new DataException($"Cannot convert {value?.GetType()} to MysqlTypesCSet[]");
+            }
+
+            public override void SetValue(IDbDataParameter parameter, MysqlTypesCSet[] value)
+            {
+                parameter.Value = string.Join(",", value);
+            }
         }
 
         public class NullToStringCsvConverter : DefaultTypeConverter

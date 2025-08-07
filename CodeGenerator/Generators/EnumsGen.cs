@@ -21,10 +21,6 @@ internal class EnumsGen(DbDriver dbDriver)
                    {{enumValuesDef}}
                }
                """)!;
-
-        if (dbDriver.Options.UseDapper)
-            return [enumType];
-
         var enumExtensions = ParseMemberDeclaration($$"""
                public static class {{name}}Extensions 
                {
@@ -39,6 +35,11 @@ internal class EnumsGen(DbDriver dbDriver)
                    public static {{name}} To{{name}}(this string me)
                    {
                        return StringToEnum[me];
+                   }
+
+                   public static {{name}}[] To{{name}}Arr(this string me)
+                   {
+                       return me.Split(',').ToList().Select(v => StringToEnum[v]).ToArray();
                    }
                }
                """)!;
