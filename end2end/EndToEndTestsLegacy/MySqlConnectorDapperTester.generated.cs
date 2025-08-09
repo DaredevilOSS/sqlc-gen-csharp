@@ -744,20 +744,27 @@ namespace EndToEndTests
         }
 
         [Test]
-        [TestCase(100, MysqlTypesCEnum.Big)]
-        [TestCase(500, MysqlTypesCEnum.Small)]
-        [TestCase(10, null)]
-        public async Task TestCopyFrom(int batchSize, MysqlTypesCEnum? cEnum)
+        [TestCase(100, MysqlTypesCEnum.Big, new[] { MysqlTypesCSet.Tea, MysqlTypesCSet.Coffee })]
+        [TestCase(500, MysqlTypesCEnum.Small, new[] { MysqlTypesCSet.Milk })]
+        [TestCase(10, null, null)]
+        public async Task TestCopyFrom(int batchSize, MysqlTypesCEnum? cEnum, MysqlTypesCSet[] cSet)
         {
-            var batchArgs = Enumerable.Range(0, batchSize).Select(_ => new QuerySql.InsertMysqlTypesBatchArgs { CEnum = cEnum }).ToList();
+            var batchArgs = Enumerable.Range(0, batchSize).Select(_ => new QuerySql.InsertMysqlTypesBatchArgs { CEnum = cEnum, CSet = cSet }).ToList();
             await QuerySql.InsertMysqlTypesBatch(batchArgs);
             var expected = new QuerySql.GetMysqlTypesCntRow
             {
                 Cnt = batchSize,
-                CEnum = cEnum
+                CEnum = cEnum,
+                CSet = cSet
             };
             var actual = await QuerySql.GetMysqlTypesCnt();
-            Assert.That(actual.CEnum, Is.EqualTo(expected.CEnum));
+            AssertSingularEquals(expected, actual);
+            void AssertSingularEquals(QuerySql.GetMysqlTypesCntRow x, QuerySql.GetMysqlTypesCntRow y)
+            {
+                Assert.That(x.Cnt, Is.EqualTo(y.Cnt));
+                Assert.That(x.CEnum, Is.EqualTo(y.CEnum));
+                Assert.That(x.CSet, Is.EqualTo(y.CSet));
+            }
         }
     }
 }

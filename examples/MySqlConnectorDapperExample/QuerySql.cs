@@ -697,6 +697,8 @@ public class QuerySql
             csvWriter.Context.TypeConverterCache.AddConverter<byte?>(new Utils.ByteCsvConverter());
             csvWriter.Context.TypeConverterCache.AddConverter<byte[]>(new Utils.ByteArrayCsvConverter());
             csvWriter.Context.TypeConverterCache.AddConverter<byte[]?>(new Utils.ByteArrayCsvConverter());
+            csvWriter.Context.TypeConverterCache.AddConverter<MysqlTypesCSet[]>(new Utils.MysqlTypesCSetCsvConverter());
+            csvWriter.Context.TypeConverterCache.AddConverter<MysqlTypesCSet[]?>(new Utils.MysqlTypesCSetCsvConverter());
             csvWriter.Context.TypeConverterCache.AddConverter<short?>(nullConverterFn);
             csvWriter.Context.TypeConverterCache.AddConverter<int?>(nullConverterFn);
             csvWriter.Context.TypeConverterCache.AddConverter<long?>(nullConverterFn);
@@ -705,7 +707,6 @@ public class QuerySql
             csvWriter.Context.TypeConverterCache.AddConverter<string?>(nullConverterFn);
             csvWriter.Context.TypeConverterCache.AddConverter<JsonElement?>(nullConverterFn);
             csvWriter.Context.TypeConverterCache.AddConverter<MysqlTypesCEnum?>(nullConverterFn);
-            csvWriter.Context.TypeConverterCache.AddConverter<MysqlTypesCSet[]?>(nullConverterFn);
             csvWriter.Context.TypeConverterCache.AddConverter<DateTime?>(nullConverterFn);
             await csvWriter.WriteRecordsAsync(args);
         }
