@@ -59,15 +59,13 @@ public abstract class DbDriver
     public abstract Dictionary<string, ColumnMapping> ColumnMappings { get; }
 
     protected const string JsonElementTypeHandler =
-    """
-        public class JsonElementTypeHandler : SqlMapper.TypeHandler<JsonElement>
+        """
+        private class JsonElementTypeHandler : SqlMapper.TypeHandler<JsonElement>
         {
             public override JsonElement Parse(object value)
             {
                 if (value is string s)
                     return JsonDocument.Parse(s).RootElement;
-                if (value is null)
-                    return default;
                 throw new DataException($"Cannot convert {value?.GetType()} to JsonElement");
             }
 
@@ -76,7 +74,7 @@ public abstract class DbDriver
                 parameter.Value = value.GetRawText();
             }
         }
-    """;
+        """;
 
     protected const string TransformQueryForSliceArgsImpl = """
            public static string TransformQueryForSliceArgs(string originalSql, int sliceSize, string paramName)
@@ -204,9 +202,15 @@ public abstract class DbDriver
 
     protected bool TypeExistsInQueries(string csharpType)
     {
-        return Queries
-            .SelectMany(query => query.Columns)
-            .Any(column => csharpType == GetCsharpTypeWithoutNullableSuffix(column, null));
+        return Queries.Any(q => TypeExistsInQuery(csharpType, q));
+    }
+
+    protected bool TypeExistsInQuery(string csharpType, Query query)
+    {
+        return query.Columns
+            .Any(column => csharpType == GetCsharpTypeWithoutNullableSuffix(column, query)) ||
+               query.Params
+            .Any(p => csharpType == GetCsharpTypeWithoutNullableSuffix(p.Column, query));
     }
 
     public string AddNullableSuffixIfNeeded(string csharpType, bool notNull)

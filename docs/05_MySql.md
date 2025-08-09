@@ -70,7 +70,7 @@ we consider support for the different data types separately for batch inserts an
 | mediumblob                | ✅         | ✅                  |
 | longblob                  | ✅         | ✅                  |
 | enum                      | ✅         | ✅                  |
-| set                       | ✅         | ❌                  |
+| set                       | ✅         | ✅                  |
 | json                      | ✅         | ✅                  |
 | geometry                  | ❌         | ❌                  |
 | point                     | ❌         | ❌                  |

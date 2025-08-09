@@ -11,14 +11,12 @@ namespace MySqlConnectorDapperLegacyExampleGen
 
     public static class Utils
     {
-        public class JsonElementTypeHandler : SqlMapper.TypeHandler<JsonElement>
+        private class JsonElementTypeHandler : SqlMapper.TypeHandler<JsonElement>
         {
             public override JsonElement Parse(object value)
             {
                 if (value is string s)
                     return JsonDocument.Parse(s).RootElement;
-                if (value is null)
-                    return default;
                 throw new DataException($"Cannot convert {value?.GetType()} to JsonElement");
             }
 
@@ -40,7 +38,7 @@ namespace MySqlConnectorDapperLegacyExampleGen
             return originalSql.Replace($"/*SLICE:{paramName}*/@{paramName}", string.Join(",", paramArgs));
         }
 
-        public class MysqlTypesCSetTypeHandler : SqlMapper.TypeHandler<MysqlTypesCSet[]>
+        private class MysqlTypesCSetTypeHandler : SqlMapper.TypeHandler<MysqlTypesCSet[]>
         {
             public override MysqlTypesCSet[] Parse(object value)
             {
@@ -52,6 +50,18 @@ namespace MySqlConnectorDapperLegacyExampleGen
             public override void SetValue(IDbDataParameter parameter, MysqlTypesCSet[] value)
             {
                 parameter.Value = string.Join(",", value);
+            }
+        }
+
+        public class MysqlTypesCSetCsvConverter : DefaultTypeConverter
+        {
+            public override string ConvertToString(object value, IWriterRow row, MemberMapData memberMapData)
+            {
+                if (value == null)
+                    return @"\N";
+                if (value is MysqlTypesCSet[] arrVal)
+                    return string.Join(",", arrVal);
+                return base.ConvertToString(value, row, memberMapData);
             }
         }
 

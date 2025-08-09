@@ -13,6 +13,18 @@ public static class Utils
         return originalSql.Replace($"/*SLICE:{paramName}*/@{paramName}", string.Join(",", paramArgs));
     }
 
+    public class MysqlTypesCSetCsvConverter : DefaultTypeConverter
+    {
+        public override string? ConvertToString(object? value, IWriterRow row, MemberMapData memberMapData)
+        {
+            if (value == null)
+                return @"\N";
+            if (value is MysqlTypesCSet[] arrVal)
+                return string.Join(",", arrVal);
+            return base.ConvertToString(value, row, memberMapData);
+        }
+    }
+
     public class NullToStringCsvConverter : DefaultTypeConverter
     {
         public override string? ConvertToString(object? value, IWriterRow row, MemberMapData memberMapData)

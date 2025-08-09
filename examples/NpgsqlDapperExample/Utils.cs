@@ -10,14 +10,12 @@ using System.Text.Json;
 namespace NpgsqlDapperExampleGen;
 public static class Utils
 {
-    public class JsonElementTypeHandler : SqlMapper.TypeHandler<JsonElement>
+    private class JsonElementTypeHandler : SqlMapper.TypeHandler<JsonElement>
     {
         public override JsonElement Parse(object value)
         {
             if (value is string s)
                 return JsonDocument.Parse(s).RootElement;
-            if (value is null)
-                return default;
             throw new DataException($"Cannot convert {value?.GetType()} to JsonElement");
         }
 
