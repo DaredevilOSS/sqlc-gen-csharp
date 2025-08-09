@@ -41,45 +41,45 @@ Since in batch insert the data is not validated by the SQL itself but written an
 we consider support for the different data types separately for batch inserts and everything else.
 
 | DB Type                   | Supported? | Supported in Batch? |
-|---------------------------|------------|---------------------|
-| bool, boolean, tinyint(1) | ✅         | ✅                  |
-| bit                       | ✅         | ✅                  |
-| tinyint                   | ✅         | ✅                  |
-| smallint                  | ✅         | ✅                  |
-| mediumint                 | ✅         | ✅                  |
-| integer, int              | ✅         | ✅                  |
-| bigint                    | ✅         | ✅                  |
-| real                      | ✅         | ✅                  |
-| numeric                   | ✅         | ✅                  |
-| decimal                   | ✅         | ✅                  |
-| double precision          | ✅         | ✅                  |
-| year                      | ✅         | ✅                  |
-| date                      | ✅         | ✅                  |
-| timestamp                 | ✅         | ✅                  |
-| char                      | ✅         | ✅                  |
-| nchar, national char      | ✅         | ✅                  |
-| varchar                   | ✅         | ✅                  |
-| tinytext                  | ✅         | ✅                  |
-| mediumtext                | ✅         | ✅                  |
-| text                      | ✅         | ✅                  |
-| longtext                  | ✅         | ✅                  |
-| binary                    | ✅         | ✅                  |
-| varbinary                 | ✅         | ✅                  |
-| tinyblob                  | ✅         | ✅                  |
-| blob                      | ✅         | ✅                  |
-| mediumblob                | ✅         | ✅                  |
-| longblob                  | ✅         | ✅                  |
-| enum                      | ✅         | ✅                  |
-| set                       | ❌         | ❌                  |
-| json                      | ✅         | ✅                  |
-| geometry                  | ❌         | ❌                  |
-| point                     | ❌         | ❌                  |
-| linestring                | ❌         | ❌                  |
-| polygon                   | ❌         | ❌                  |
-| multipoint                | ❌         | ❌                  |
-| multilinestring           | ❌         | ❌                  |
-| multipolygon              | ❌         | ❌                  |
-| geometrycollection        | ❌         | ❌                  |
+|---------------------------|----|-------------|
+| bool, boolean, tinyint(1) | ✅ | ✅          |
+| bit                       | ✅ | ✅          |
+| tinyint                   | ✅ | ✅          |
+| smallint                  | ✅ | ✅          |
+| mediumint                 | ✅ | ✅          |
+| integer, int              | ✅ | ✅          |
+| bigint                    | ✅ | ✅          |
+| real                      | ✅ | ✅          |
+| numeric                   | ✅ | ✅          |
+| decimal                   | ✅ | ✅          |
+| double precision          | ✅ | ✅          |
+| year                      | ✅ | ✅          |
+| date                      | ✅ | ✅          |
+| timestamp                 | ✅ | ✅          |
+| char                      | ✅ | ✅          |
+| nchar, national char      | ✅ | ✅          |
+| varchar                   | ✅ | ✅          |
+| tinytext                  | ✅ | ✅          |
+| mediumtext                | ✅ | ✅          |
+| text                      | ✅ | ✅          |
+| longtext                  | ✅ | ✅          |
+| binary                    | ✅ | ✅          |
+| varbinary                 | ✅ | ✅          |
+| tinyblob                  | ✅ | ✅          |
+| blob                      | ✅ | ✅          |
+| mediumblob                | ✅ | ✅          |
+| longblob                  | ✅ | ✅          |
+| enum                      | ✅ | ✅          |
+| set                       | ✅ | ✅          |
+| json                      | ✅ | ✅          |
+| geometry                  | ⚠️  | ⚠️         |
+| point                     | ⚠️  | ⚠️         |
+| linestring                | ⚠️  | ⚠️         |
+| polygon                   | ⚠️  | ⚠️         |
+| multipoint                | ⚠️  | ⚠️         |
+| multilinestring           | ⚠️  | ⚠️         |
+| multipolygon              | ⚠️  | ⚠️         |
+| geometrycollection        | ⚠️  | ⚠️         |
 
 </details>
 

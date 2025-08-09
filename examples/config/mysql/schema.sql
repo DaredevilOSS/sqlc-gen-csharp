@@ -42,18 +42,21 @@ CREATE TABLE mysql_types (
   c_timestamp   TIMESTAMP,
 
   /* String data types */  
-  c_char            CHAR,
-  c_nchar           NCHAR,
-  c_national_char   NATIONAL CHAR,
-  c_varchar         VARCHAR(100),
-  c_tinytext        TINYTEXT,
-  c_mediumtext      MEDIUMTEXT,
-  c_text            TEXT,
-  c_longtext        LONGTEXT,
-  c_enum            ENUM ('small', 'medium', 'big'),
+  c_char                 CHAR,
+  c_nchar                NCHAR,
+  c_national_char        NATIONAL CHAR,
+  c_varchar              VARCHAR(100),
+  c_tinytext             TINYTEXT,
+  c_mediumtext           MEDIUMTEXT,
+  c_text                 TEXT,
+  c_longtext             LONGTEXT,
   c_json                 JSON,
-  c_json_string_override JSON,
-    
+  c_json_string_override JSON,  
+
+  /* Pre-defined types */
+  c_enum         ENUM ('small', 'medium', 'big'),
+  c_set          SET ('tea', 'coffee', 'milk'),
+
   /* Binary data types */
   c_bit         BIT(8),
   c_binary      BINARY(3),
@@ -70,5 +73,6 @@ CREATE TABLE extended.bios (
   author_name   VARCHAR(100),
   name          VARCHAR(100),
   bio_type      ENUM ('Autobiography', 'Biography', 'Memoir'),
+  author_type   SET ('Author', 'Editor', 'Translator'),
   PRIMARY KEY (author_name, name)
 );

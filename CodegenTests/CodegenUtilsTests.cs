@@ -145,9 +145,6 @@ public class CodegenUtilsTests
         var expected = new HashSet<string>
         {
             MySqlConnectorDriver.NullToStringCsvConverter,
-            MySqlConnectorDriver.BoolToBitCsvConverter,
-            MySqlConnectorDriver.ByteCsvConverter,
-            MySqlConnectorDriver.ByteArrayCsvConverter
         };
         var actual = members
             .FindAll(m => m is ClassDeclarationSyntax)
