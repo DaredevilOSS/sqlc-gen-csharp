@@ -73,5 +73,6 @@ CREATE TABLE extended.bios (
   author_name   VARCHAR(100),
   name          VARCHAR(100),
   bio_type      ENUM ('Autobiography', 'Biography', 'Memoir'),
+  author_type   SET ('Author', 'Editor', 'Translator'),
   PRIMARY KEY (author_name, name)
 );

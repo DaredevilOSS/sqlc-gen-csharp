@@ -66,6 +66,7 @@ namespace MySqlConnectorDapperLegacyExampleGen
         public string AuthorName { get; set; }
         public string Name { get; set; }
         public ExtendedBiosBioType? BioType { get; set; }
+        public ExtendedBiosAuthorType[] AuthorType { get; set; }
     };
     public enum MysqlTypesCEnum
     {
@@ -146,6 +147,34 @@ namespace MySqlConnectorDapperLegacyExampleGen
         }
 
         public static ExtendedBiosBioType[] ToExtendedBiosBioTypeArr(this string me)
+        {
+            return me.Split(',').ToList().Select(v => StringToEnum[v]).ToArray();
+        }
+    }
+
+    public enum ExtendedBiosAuthorType
+    {
+        Invalid = 0, // reserved for invalid enum value
+        Author = 1,
+        Editor = 2,
+        Translator = 3
+    }
+
+    public static class ExtendedBiosAuthorTypeExtensions
+    {
+        private static readonly Dictionary<string, ExtendedBiosAuthorType> StringToEnum = new Dictionary<string, ExtendedBiosAuthorType>()
+        {
+            [string.Empty] = ExtendedBiosAuthorType.Invalid,
+            ["Author"] = ExtendedBiosAuthorType.Author,
+            ["Editor"] = ExtendedBiosAuthorType.Editor,
+            ["Translator"] = ExtendedBiosAuthorType.Translator
+        };
+        public static ExtendedBiosAuthorType ToExtendedBiosAuthorType(this string me)
+        {
+            return StringToEnum[me];
+        }
+
+        public static ExtendedBiosAuthorType[] ToExtendedBiosAuthorTypeArr(this string me)
         {
             return me.Split(',').ToList().Select(v => StringToEnum[v]).ToArray();
         }

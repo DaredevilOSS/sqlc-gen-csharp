@@ -902,12 +902,13 @@ public class QuerySql
         await this.Transaction.Connection.ExecuteAsync(TruncateMysqlTypesSql, transaction: this.Transaction);
     }
 
-    private const string CreateExtendedBioSql = "INSERT INTO extended.bios (author_name, name, bio_type) VALUES (@author_name, @name, @bio_type)";
+    private const string CreateExtendedBioSql = "INSERT INTO extended.bios (author_name, name, bio_type, author_type) VALUES (@author_name, @name, @bio_type, @author_type)";
     public class CreateExtendedBioArgs
     {
         public string? AuthorName { get; init; }
         public string? Name { get; init; }
         public ExtendedBiosBioType? BioType { get; init; }
+        public ExtendedBiosAuthorType[]? AuthorType { get; init; }
     };
     public async Task CreateExtendedBio(CreateExtendedBioArgs args)
     {
@@ -915,6 +916,7 @@ public class QuerySql
         queryParams.Add("author_name", args.AuthorName);
         queryParams.Add("name", args.Name);
         queryParams.Add("bio_type", args.BioType);
+        queryParams.Add("author_type", args.AuthorType != null ? string.Join(",", args.AuthorType) : null);
         if (this.Transaction == null)
         {
             using (var connection = new MySqlConnection(ConnectionString))
@@ -933,12 +935,13 @@ public class QuerySql
         await this.Transaction.Connection.ExecuteAsync(CreateExtendedBioSql, queryParams, transaction: this.Transaction);
     }
 
-    private const string GetFirstExtendedBioByTypeSql = "SELECT author_name, name, bio_type FROM extended.bios WHERE bio_type = @bio_type LIMIT 1";
+    private const string GetFirstExtendedBioByTypeSql = "SELECT author_name, name, bio_type, author_type FROM extended.bios WHERE bio_type = @bio_type LIMIT 1";
     public class GetFirstExtendedBioByTypeRow
     {
         public string? AuthorName { get; init; }
         public string? Name { get; init; }
         public ExtendedBiosBioType? BioType { get; init; }
+        public ExtendedBiosAuthorType[]? AuthorType { get; init; }
     };
     public class GetFirstExtendedBioByTypeArgs
     {

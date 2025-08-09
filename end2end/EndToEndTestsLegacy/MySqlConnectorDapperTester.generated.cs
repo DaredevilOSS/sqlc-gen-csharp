@@ -519,20 +519,28 @@ namespace EndToEndTests
         [Test]
         public async Task TestMySqlScopedSchemaEnum()
         {
-            await this.QuerySql.CreateExtendedBio(new QuerySql.CreateExtendedBioArgs { AuthorName = "Bojack Horseman", Name = "One Trick Pony", BioType = ExtendedBiosBioType.Memoir });
+            await this.QuerySql.CreateExtendedBio(new QuerySql.CreateExtendedBioArgs { AuthorName = "Bojack Horseman", Name = "One Trick Pony", BioType = ExtendedBiosBioType.Memoir, AuthorType = new ExtendedBiosAuthorType[] { ExtendedBiosAuthorType.Author, ExtendedBiosAuthorType.Translator } });
             var expected = new QuerySql.GetFirstExtendedBioByTypeRow
             {
                 AuthorName = "Bojack Horseman",
                 Name = "One Trick Pony",
-                BioType = ExtendedBiosBioType.Memoir
+                BioType = ExtendedBiosBioType.Memoir,
+                AuthorType = new ExtendedBiosAuthorType[]
+                {
+                    ExtendedBiosAuthorType.Author,
+                    ExtendedBiosAuthorType.Translator
+                }
             };
             var actual = await this.QuerySql.GetFirstExtendedBioByType(new QuerySql.GetFirstExtendedBioByTypeArgs { BioType = ExtendedBiosBioType.Memoir });
-            Assert.That(SingularEquals(expected, actual));
+            AssertSingularEquals(expected, actual);
         }
 
-        private static bool SingularEquals(QuerySql.GetFirstExtendedBioByTypeRow x, QuerySql.GetFirstExtendedBioByTypeRow y)
+        private void AssertSingularEquals(QuerySql.GetFirstExtendedBioByTypeRow x, QuerySql.GetFirstExtendedBioByTypeRow y)
         {
-            return x.AuthorName.Equals(y.AuthorName) && x.Name.Equals(y.Name) && x.BioType.Equals(y.BioType);
+            Assert.That(x.AuthorName, Is.EqualTo(y.AuthorName));
+            Assert.That(x.Name, Is.EqualTo(y.Name));
+            Assert.That(x.BioType, Is.EqualTo(y.BioType));
+            Assert.That(x.AuthorType, Is.EqualTo(y.AuthorType));
         }
 
         [Test]

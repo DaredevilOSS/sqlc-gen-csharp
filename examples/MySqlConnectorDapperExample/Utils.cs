@@ -29,6 +29,7 @@ public static class Utils
     {
         SqlMapper.AddTypeHandler(typeof(JsonElement), new JsonElementTypeHandler());
         SqlMapper.AddTypeHandler(typeof(MysqlTypesCSet[]), new MysqlTypesCSetTypeHandler());
+        SqlMapper.AddTypeHandler(typeof(ExtendedBiosAuthorType[]), new ExtendedBiosAuthorTypeTypeHandler());
     }
 
     public static string TransformQueryForSliceArgs(string originalSql, int sliceSize, string paramName)
@@ -47,6 +48,21 @@ public static class Utils
         }
 
         public override void SetValue(IDbDataParameter parameter, MysqlTypesCSet[] value)
+        {
+            parameter.Value = string.Join(",", value);
+        }
+    }
+
+    private class ExtendedBiosAuthorTypeTypeHandler : SqlMapper.TypeHandler<ExtendedBiosAuthorType[]>
+    {
+        public override ExtendedBiosAuthorType[] Parse(object value)
+        {
+            if (value is string s)
+                return s.ToExtendedBiosAuthorTypeArr();
+            throw new DataException($"Cannot convert {value?.GetType()} to ExtendedBiosAuthorType[]");
+        }
+
+        public override void SetValue(IDbDataParameter parameter, ExtendedBiosAuthorType[] value)
         {
             parameter.Value = string.Join(",", value);
         }
