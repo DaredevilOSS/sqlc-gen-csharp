@@ -1162,8 +1162,8 @@ public class QuerySql
         }
     }
 
-    private const string CreateExtendedBioSql = "INSERT INTO extended.bios (author_name, name, bio_type) VALUES (@author_name, @name, @bio_type)";
-    public readonly record struct CreateExtendedBioArgs(string? AuthorName, string? Name, ExtendedBiosBioType? BioType);
+    private const string CreateExtendedBioSql = "INSERT INTO extended.bios (author_name, name, bio_type, author_type) VALUES (@author_name, @name, @bio_type, @author_type)";
+    public readonly record struct CreateExtendedBioArgs(string? AuthorName, string? Name, ExtendedBiosBioType? BioType, ExtendedBiosAuthorType[]? AuthorType);
     public async Task CreateExtendedBio(CreateExtendedBioArgs args)
     {
         if (this.Transaction == null)
@@ -1176,6 +1176,7 @@ public class QuerySql
                     command.Parameters.AddWithValue("@author_name", args.AuthorName ?? (object)DBNull.Value);
                     command.Parameters.AddWithValue("@name", args.Name ?? (object)DBNull.Value);
                     command.Parameters.AddWithValue("@bio_type", args.BioType ?? (object)DBNull.Value);
+                    command.Parameters.AddWithValue("@author_type", args.AuthorType != null ? string.Join(",", args.AuthorType) : (object)DBNull.Value);
                     await command.ExecuteNonQueryAsync();
                 }
             }
@@ -1195,12 +1196,13 @@ public class QuerySql
             command.Parameters.AddWithValue("@author_name", args.AuthorName ?? (object)DBNull.Value);
             command.Parameters.AddWithValue("@name", args.Name ?? (object)DBNull.Value);
             command.Parameters.AddWithValue("@bio_type", args.BioType ?? (object)DBNull.Value);
+            command.Parameters.AddWithValue("@author_type", args.AuthorType != null ? string.Join(",", args.AuthorType) : (object)DBNull.Value);
             await command.ExecuteNonQueryAsync();
         }
     }
 
-    private const string GetFirstExtendedBioByTypeSql = "SELECT author_name, name, bio_type FROM extended.bios WHERE bio_type = @bio_type LIMIT 1";
-    public readonly record struct GetFirstExtendedBioByTypeRow(string? AuthorName, string? Name, ExtendedBiosBioType? BioType);
+    private const string GetFirstExtendedBioByTypeSql = "SELECT author_name, name, bio_type, author_type FROM extended.bios WHERE bio_type = @bio_type LIMIT 1";
+    public readonly record struct GetFirstExtendedBioByTypeRow(string? AuthorName, string? Name, ExtendedBiosBioType? BioType, ExtendedBiosAuthorType[]? AuthorType);
     public readonly record struct GetFirstExtendedBioByTypeArgs(ExtendedBiosBioType? BioType);
     public async Task<GetFirstExtendedBioByTypeRow?> GetFirstExtendedBioByType(GetFirstExtendedBioByTypeArgs args)
     {
@@ -1220,7 +1222,8 @@ public class QuerySql
                             {
                                 AuthorName = reader.IsDBNull(0) ? null : reader.GetString(0),
                                 Name = reader.IsDBNull(1) ? null : reader.GetString(1),
-                                BioType = reader.IsDBNull(2) ? null : reader.GetString(2).ToExtendedBiosBioType()
+                                BioType = reader.IsDBNull(2) ? null : reader.GetString(2).ToExtendedBiosBioType(),
+                                AuthorType = reader.IsDBNull(3) ? null : reader.GetString(3).ToExtendedBiosAuthorTypeArr()
                             };
                         }
                     }
@@ -1248,7 +1251,8 @@ public class QuerySql
                     {
                         AuthorName = reader.IsDBNull(0) ? null : reader.GetString(0),
                         Name = reader.IsDBNull(1) ? null : reader.GetString(1),
-                        BioType = reader.IsDBNull(2) ? null : reader.GetString(2).ToExtendedBiosBioType()
+                        BioType = reader.IsDBNull(2) ? null : reader.GetString(2).ToExtendedBiosBioType(),
+                        AuthorType = reader.IsDBNull(3) ? null : reader.GetString(3).ToExtendedBiosAuthorTypeArr()
                     };
                 }
             }

@@ -1414,12 +1414,13 @@ namespace MySqlConnectorLegacyExampleGen
             }
         }
 
-        private const string CreateExtendedBioSql = "INSERT INTO extended.bios (author_name, name, bio_type) VALUES (@author_name, @name, @bio_type)";
+        private const string CreateExtendedBioSql = "INSERT INTO extended.bios (author_name, name, bio_type, author_type) VALUES (@author_name, @name, @bio_type, @author_type)";
         public class CreateExtendedBioArgs
         {
             public string AuthorName { get; set; }
             public string Name { get; set; }
             public ExtendedBiosBioType? BioType { get; set; }
+            public ExtendedBiosAuthorType[] AuthorType { get; set; }
         };
         public async Task CreateExtendedBio(CreateExtendedBioArgs args)
         {
@@ -1433,6 +1434,7 @@ namespace MySqlConnectorLegacyExampleGen
                         command.Parameters.AddWithValue("@author_name", args.AuthorName ?? (object)DBNull.Value);
                         command.Parameters.AddWithValue("@name", args.Name ?? (object)DBNull.Value);
                         command.Parameters.AddWithValue("@bio_type", args.BioType ?? (object)DBNull.Value);
+                        command.Parameters.AddWithValue("@author_type", args.AuthorType != null ? string.Join(",", args.AuthorType) : (object)DBNull.Value);
                         await command.ExecuteNonQueryAsync();
                     }
                 }
@@ -1452,16 +1454,18 @@ namespace MySqlConnectorLegacyExampleGen
                 command.Parameters.AddWithValue("@author_name", args.AuthorName ?? (object)DBNull.Value);
                 command.Parameters.AddWithValue("@name", args.Name ?? (object)DBNull.Value);
                 command.Parameters.AddWithValue("@bio_type", args.BioType ?? (object)DBNull.Value);
+                command.Parameters.AddWithValue("@author_type", args.AuthorType != null ? string.Join(",", args.AuthorType) : (object)DBNull.Value);
                 await command.ExecuteNonQueryAsync();
             }
         }
 
-        private const string GetFirstExtendedBioByTypeSql = "SELECT author_name, name, bio_type FROM extended.bios WHERE bio_type = @bio_type LIMIT 1";
+        private const string GetFirstExtendedBioByTypeSql = "SELECT author_name, name, bio_type, author_type FROM extended.bios WHERE bio_type = @bio_type LIMIT 1";
         public class GetFirstExtendedBioByTypeRow
         {
             public string AuthorName { get; set; }
             public string Name { get; set; }
             public ExtendedBiosBioType? BioType { get; set; }
+            public ExtendedBiosAuthorType[] AuthorType { get; set; }
         };
         public class GetFirstExtendedBioByTypeArgs
         {
@@ -1485,7 +1489,8 @@ namespace MySqlConnectorLegacyExampleGen
                                 {
                                     AuthorName = reader.IsDBNull(0) ? null : reader.GetString(0),
                                     Name = reader.IsDBNull(1) ? null : reader.GetString(1),
-                                    BioType = reader.IsDBNull(2) ? (ExtendedBiosBioType? )null : reader.GetString(2).ToExtendedBiosBioType()
+                                    BioType = reader.IsDBNull(2) ? (ExtendedBiosBioType? )null : reader.GetString(2).ToExtendedBiosBioType(),
+                                    AuthorType = reader.IsDBNull(3) ? null : reader.GetString(3).ToExtendedBiosAuthorTypeArr()
                                 };
                             }
                         }
@@ -1513,7 +1518,8 @@ namespace MySqlConnectorLegacyExampleGen
                         {
                             AuthorName = reader.IsDBNull(0) ? null : reader.GetString(0),
                             Name = reader.IsDBNull(1) ? null : reader.GetString(1),
-                            BioType = reader.IsDBNull(2) ? (ExtendedBiosBioType? )null : reader.GetString(2).ToExtendedBiosBioType()
+                            BioType = reader.IsDBNull(2) ? (ExtendedBiosBioType? )null : reader.GetString(2).ToExtendedBiosBioType(),
+                            AuthorType = reader.IsDBNull(3) ? null : reader.GetString(3).ToExtendedBiosAuthorTypeArr()
                         };
                     }
                 }

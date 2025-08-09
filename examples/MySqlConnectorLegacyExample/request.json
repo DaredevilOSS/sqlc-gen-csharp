@@ -534,6 +534,14 @@
               "Biography",
               "Memoir"
             ]
+          },
+          {
+            "name": "bios_author_type",
+            "vals": [
+              "Author",
+              "Editor",
+              "Translator"
+            ]
           }
         ]
       },
@@ -577,6 +585,17 @@
                 },
                 "type": {
                   "name": "bios_bio_type"
+                }
+              },
+              {
+                "name": "author_type",
+                "length": 24,
+                "table": {
+                  "schema": "extended",
+                  "name": "bios"
+                },
+                "type": {
+                  "name": "bios_author_type"
                 }
               }
             ]
@@ -3362,7 +3381,7 @@
       "filename": "query.sql"
     },
     {
-      "text": "INSERT INTO extended.bios (author_name, name, bio_type) VALUES (?, ?, ?)",
+      "text": "INSERT INTO extended.bios (author_name, name, bio_type, author_type) VALUES (?, ?, ?, ?)",
       "name": "CreateExtendedBio",
       "cmd": ":exec",
       "parameters": [
@@ -3410,6 +3429,21 @@
             },
             "originalName": "bio_type"
           }
+        },
+        {
+          "number": 4,
+          "column": {
+            "name": "author_type",
+            "length": 24,
+            "table": {
+              "schema": "extended",
+              "name": "bios"
+            },
+            "type": {
+              "name": "bios_author_type"
+            },
+            "originalName": "author_type"
+          }
         }
       ],
       "filename": "query.sql",
@@ -3419,7 +3453,7 @@
       }
     },
     {
-      "text": "SELECT author_name, name, bio_type FROM extended.bios WHERE bio_type = ? LIMIT 1",
+      "text": "SELECT author_name, name, bio_type, author_type FROM extended.bios WHERE bio_type = ? LIMIT 1",
       "name": "GetFirstExtendedBioByType",
       "cmd": ":one",
       "columns": [
@@ -3458,6 +3492,18 @@
             "name": "bios_bio_type"
           },
           "originalName": "bio_type"
+        },
+        {
+          "name": "author_type",
+          "length": 24,
+          "table": {
+            "schema": "extended",
+            "name": "bios"
+          },
+          "type": {
+            "name": "bios_author_type"
+          },
+          "originalName": "author_type"
         }
       ],
       "parameters": [

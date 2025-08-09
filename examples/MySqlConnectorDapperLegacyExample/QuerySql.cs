@@ -901,12 +901,13 @@ namespace MySqlConnectorDapperLegacyExampleGen
             await this.Transaction.Connection.ExecuteAsync(TruncateMysqlTypesSql, transaction: this.Transaction);
         }
 
-        private const string CreateExtendedBioSql = "INSERT INTO extended.bios (author_name, name, bio_type) VALUES (@author_name, @name, @bio_type)";
+        private const string CreateExtendedBioSql = "INSERT INTO extended.bios (author_name, name, bio_type, author_type) VALUES (@author_name, @name, @bio_type, @author_type)";
         public class CreateExtendedBioArgs
         {
             public string AuthorName { get; set; }
             public string Name { get; set; }
             public ExtendedBiosBioType? BioType { get; set; }
+            public ExtendedBiosAuthorType[] AuthorType { get; set; }
         };
         public async Task CreateExtendedBio(CreateExtendedBioArgs args)
         {
@@ -914,6 +915,7 @@ namespace MySqlConnectorDapperLegacyExampleGen
             queryParams.Add("author_name", args.AuthorName);
             queryParams.Add("name", args.Name);
             queryParams.Add("bio_type", args.BioType);
+            queryParams.Add("author_type", args.AuthorType != null ? string.Join(",", args.AuthorType) : null);
             if (this.Transaction == null)
             {
                 using (var connection = new MySqlConnection(ConnectionString))
@@ -932,12 +934,13 @@ namespace MySqlConnectorDapperLegacyExampleGen
             await this.Transaction.Connection.ExecuteAsync(CreateExtendedBioSql, queryParams, transaction: this.Transaction);
         }
 
-        private const string GetFirstExtendedBioByTypeSql = "SELECT author_name, name, bio_type FROM extended.bios WHERE bio_type = @bio_type LIMIT 1";
+        private const string GetFirstExtendedBioByTypeSql = "SELECT author_name, name, bio_type, author_type FROM extended.bios WHERE bio_type = @bio_type LIMIT 1";
         public class GetFirstExtendedBioByTypeRow
         {
             public string AuthorName { get; set; }
             public string Name { get; set; }
             public ExtendedBiosBioType? BioType { get; set; }
+            public ExtendedBiosAuthorType[] AuthorType { get; set; }
         };
         public class GetFirstExtendedBioByTypeArgs
         {

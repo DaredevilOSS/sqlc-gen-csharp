@@ -8,7 +8,7 @@ namespace MySqlConnectorExampleGen;
 public readonly record struct Author(long Id, string Name, string? Bio);
 public readonly record struct Book(long Id, string Name, long AuthorId, string? Description);
 public readonly record struct MysqlType(bool? CBool, bool? CBoolean, short? CTinyint, short? CSmallint, int? CMediumint, int? CInt, int? CInteger, long? CBigint, double? CFloat, decimal? CDecimal, decimal? CDec, decimal? CNumeric, decimal? CFixed, double? CDouble, double? CDoublePrecision, short? CYear, DateTime? CDate, string? CTime, DateTime? CDatetime, DateTime? CTimestamp, string? CChar, string? CNchar, string? CNationalChar, string? CVarchar, string? CTinytext, string? CMediumtext, string? CText, string? CLongtext, JsonElement? CJson, JsonElement? CJsonStringOverride, MysqlTypesCEnum? CEnum, MysqlTypesCSet[]? CSet, byte? CBit, byte[]? CBinary, byte[]? CVarbinary, byte[]? CTinyblob, byte[]? CBlob, byte[]? CMediumblob, byte[]? CLongblob);
-public readonly record struct ExtendedBio(string? AuthorName, string? Name, ExtendedBiosBioType? BioType);
+public readonly record struct ExtendedBio(string? AuthorName, string? Name, ExtendedBiosBioType? BioType, ExtendedBiosAuthorType[]? AuthorType);
 public enum MysqlTypesCEnum
 {
     Invalid = 0, // reserved for invalid enum value
@@ -88,6 +88,34 @@ public static class ExtendedBiosBioTypeExtensions
     }
 
     public static ExtendedBiosBioType[] ToExtendedBiosBioTypeArr(this string me)
+    {
+        return me.Split(',').ToList().Select(v => StringToEnum[v]).ToArray();
+    }
+}
+
+public enum ExtendedBiosAuthorType
+{
+    Invalid = 0, // reserved for invalid enum value
+    Author = 1,
+    Editor = 2,
+    Translator = 3
+}
+
+public static class ExtendedBiosAuthorTypeExtensions
+{
+    private static readonly Dictionary<string, ExtendedBiosAuthorType> StringToEnum = new Dictionary<string, ExtendedBiosAuthorType>()
+    {
+        [string.Empty] = ExtendedBiosAuthorType.Invalid,
+        ["Author"] = ExtendedBiosAuthorType.Author,
+        ["Editor"] = ExtendedBiosAuthorType.Editor,
+        ["Translator"] = ExtendedBiosAuthorType.Translator
+    };
+    public static ExtendedBiosAuthorType ToExtendedBiosAuthorType(this string me)
+    {
+        return StringToEnum[me];
+    }
+
+    public static ExtendedBiosAuthorType[] ToExtendedBiosAuthorTypeArr(this string me)
     {
         return me.Split(',').ToList().Select(v => StringToEnum[v]).ToArray();
     }

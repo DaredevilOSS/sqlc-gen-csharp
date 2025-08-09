@@ -99,7 +99,7 @@ FROM mysql_types;
 TRUNCATE TABLE mysql_types;
 
 -- name: CreateExtendedBio :exec
-INSERT INTO extended.bios (author_name, name, bio_type) VALUES (?, ?, ?);
+INSERT INTO extended.bios (author_name, name, bio_type, author_type) VALUES (?, ?, ?, ?);
 
 -- name: GetFirstExtendedBioByType :one
 SELECT * FROM extended.bios WHERE bio_type = ? LIMIT 1;
