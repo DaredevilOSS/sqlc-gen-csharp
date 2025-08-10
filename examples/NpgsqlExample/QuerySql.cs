@@ -758,8 +758,8 @@ public class QuerySql
         }
     }
 
-    private const string InsertPostgresTypesBatchSql = "COPY postgres_types (c_boolean, c_smallint, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_money, c_date, c_time, c_timestamp, c_timestamp_with_tz, c_interval, c_char, c_varchar, c_character_varying, c_bpchar, c_text, c_uuid, c_bytea) FROM STDIN (FORMAT BINARY)";
-    public readonly record struct InsertPostgresTypesBatchArgs(bool? CBoolean, short? CSmallint, int? CInteger, long? CBigint, float? CReal, decimal? CNumeric, decimal? CDecimal, double? CDoublePrecision, decimal? CMoney, DateTime? CDate, TimeSpan? CTime, DateTime? CTimestamp, DateTime? CTimestampWithTz, TimeSpan? CInterval, string? CChar, string? CVarchar, string? CCharacterVarying, string? CBpchar, string? CText, Guid? CUuid, byte[]? CBytea);
+    private const string InsertPostgresTypesBatchSql = "COPY postgres_types (c_boolean, c_smallint, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_money, c_date, c_time, c_timestamp, c_timestamp_with_tz, c_interval, c_char, c_varchar, c_character_varying, c_bpchar, c_text, c_uuid, c_bytea, c_cidr, c_inet, c_macaddr) FROM STDIN (FORMAT BINARY)";
+    public readonly record struct InsertPostgresTypesBatchArgs(bool? CBoolean, short? CSmallint, int? CInteger, long? CBigint, float? CReal, decimal? CNumeric, decimal? CDecimal, double? CDoublePrecision, decimal? CMoney, DateTime? CDate, TimeSpan? CTime, DateTime? CTimestamp, DateTime? CTimestampWithTz, TimeSpan? CInterval, string? CChar, string? CVarchar, string? CCharacterVarying, string? CBpchar, string? CText, Guid? CUuid, byte[]? CBytea, NpgsqlCidr? CCidr, IPAddress? CInet, PhysicalAddress? CMacaddr);
     public async Task InsertPostgresTypesBatch(List<InsertPostgresTypesBatchArgs> args)
     {
         using (var connection = new NpgsqlConnection(ConnectionString))
@@ -791,6 +791,9 @@ public class QuerySql
                     await writer.WriteAsync(row.CText ?? (object)DBNull.Value);
                     await writer.WriteAsync(row.CUuid ?? (object)DBNull.Value);
                     await writer.WriteAsync(row.CBytea ?? (object)DBNull.Value);
+                    await writer.WriteAsync(row.CCidr ?? (object)DBNull.Value);
+                    await writer.WriteAsync(row.CInet ?? (object)DBNull.Value);
+                    await writer.WriteAsync(row.CMacaddr ?? (object)DBNull.Value);
                 }
 
                 await writer.CompleteAsync();
@@ -932,8 +935,8 @@ public class QuerySql
         return null;
     }
 
-    private const string GetPostgresTypesCntSql = "SELECT c_smallint , c_boolean, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_money, c_date, c_time, c_timestamp, c_timestamp_with_tz, c_interval, c_char, c_varchar, c_character_varying, c_bpchar, c_text, c_uuid, c_bytea, COUNT (* ) AS  cnt  FROM  postgres_types  GROUP  BY  c_smallint, c_boolean, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_money, c_date, c_time, c_timestamp, c_timestamp_with_tz, c_interval, c_char, c_varchar, c_character_varying, c_bpchar, c_text, c_uuid, c_bytea LIMIT  1  ";  
-    public readonly record struct GetPostgresTypesCntRow(short? CSmallint, bool? CBoolean, int? CInteger, long? CBigint, float? CReal, decimal? CNumeric, decimal? CDecimal, double? CDoublePrecision, decimal? CMoney, DateTime? CDate, TimeSpan? CTime, DateTime? CTimestamp, DateTime? CTimestampWithTz, TimeSpan? CInterval, string? CChar, string? CVarchar, string? CCharacterVarying, string? CBpchar, string? CText, Guid? CUuid, byte[]? CBytea, long Cnt);
+    private const string GetPostgresTypesCntSql = "SELECT c_smallint , c_boolean, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_money, c_date, c_time, c_timestamp, c_timestamp_with_tz, c_interval, c_char, c_varchar, c_character_varying, c_bpchar, c_text, c_uuid, c_bytea, c_cidr, c_inet, c_macaddr, COUNT (* ) AS  cnt  FROM  postgres_types  GROUP  BY  c_smallint, c_boolean, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_money, c_date, c_time, c_timestamp, c_timestamp_with_tz, c_interval, c_char, c_varchar, c_character_varying, c_bpchar, c_text, c_uuid, c_bytea, c_cidr, c_inet, c_macaddr LIMIT  1  ";  
+    public readonly record struct GetPostgresTypesCntRow(short? CSmallint, bool? CBoolean, int? CInteger, long? CBigint, float? CReal, decimal? CNumeric, decimal? CDecimal, double? CDoublePrecision, decimal? CMoney, DateTime? CDate, TimeSpan? CTime, DateTime? CTimestamp, DateTime? CTimestampWithTz, TimeSpan? CInterval, string? CChar, string? CVarchar, string? CCharacterVarying, string? CBpchar, string? CText, Guid? CUuid, byte[]? CBytea, NpgsqlCidr? CCidr, IPAddress? CInet, PhysicalAddress? CMacaddr, long Cnt);
     public async Task<GetPostgresTypesCntRow?> GetPostgresTypesCnt()
     {
         if (this.Transaction == null)
@@ -969,7 +972,10 @@ public class QuerySql
                                 CText = reader.IsDBNull(18) ? null : reader.GetString(18),
                                 CUuid = reader.IsDBNull(19) ? null : reader.GetFieldValue<Guid>(19),
                                 CBytea = reader.IsDBNull(20) ? null : reader.GetFieldValue<byte[]>(20),
-                                Cnt = reader.GetInt64(21)
+                                CCidr = reader.IsDBNull(21) ? null : reader.GetFieldValue<NpgsqlCidr>(21),
+                                CInet = reader.IsDBNull(22) ? null : reader.GetFieldValue<IPAddress>(22),
+                                CMacaddr = reader.IsDBNull(23) ? null : reader.GetFieldValue<PhysicalAddress>(23),
+                                Cnt = reader.GetInt64(24)
                             };
                         }
                     }
@@ -1015,7 +1021,10 @@ public class QuerySql
                         CText = reader.IsDBNull(18) ? null : reader.GetString(18),
                         CUuid = reader.IsDBNull(19) ? null : reader.GetFieldValue<Guid>(19),
                         CBytea = reader.IsDBNull(20) ? null : reader.GetFieldValue<byte[]>(20),
-                        Cnt = reader.GetInt64(21)
+                        CCidr = reader.IsDBNull(21) ? null : reader.GetFieldValue<NpgsqlCidr>(21),
+                        CInet = reader.IsDBNull(22) ? null : reader.GetFieldValue<IPAddress>(22),
+                        CMacaddr = reader.IsDBNull(23) ? null : reader.GetFieldValue<PhysicalAddress>(23),
+                        Cnt = reader.GetInt64(24)
                     };
                 }
             }

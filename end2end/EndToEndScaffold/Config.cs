@@ -50,6 +50,7 @@ public enum KnownTestType
     PostgresFloatingPointCopyFrom,
     PostgresDateTimeCopyFrom,
     PostgresGuidCopyFrom,
+    PostgresNetworkCopyFrom,
     PostgresArrayCopyFrom,
     PostgresGeoDataTypes,
     PostgresGeoCopyFrom,
@@ -211,6 +212,7 @@ internal static class Config
                     KnownTestType.PostgresDateTimeCopyFrom,
                     KnownTestType.PostgresGuidCopyFrom,
                     KnownTestType.PostgresArrayCopyFrom,
+                    KnownTestType.PostgresNetworkCopyFrom,
                 ]
             }
         },
@@ -254,6 +256,7 @@ internal static class Config
                     KnownTestType.PostgresDateTimeCopyFrom,
                     KnownTestType.PostgresGuidCopyFrom,
                     KnownTestType.PostgresArrayCopyFrom,
+                    KnownTestType.PostgresNetworkCopyFrom
                 ]
             }
         },

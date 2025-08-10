@@ -55,9 +55,9 @@ we consider support for the different data types separately for batch inserts an
 | path                                    | ✅         | ✅                  |
 | polygon                                 | ✅         | ✅                  |
 | circle                                  | ✅         | ✅                  |
-| cidr                                    | ✅         | ❌                  |
-| inet                                    | ✅         | ❌                  |
-| macaddr                                 | ✅         | ❌                  |
+| cidr                                    | ✅         | ✅                  |
+| inet                                    | ✅         | ✅                  |
+| macaddr                                 | ✅         | ✅                  |
 | macaddr8                                | ✅         | ❌                  |
 | tsvector                                | ❌         | ❌                  |
 | tsquery                                 | ❌         | ❌                  |

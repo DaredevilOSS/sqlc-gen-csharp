@@ -174,7 +174,10 @@ INSERT INTO postgres_types
     c_bpchar,
     c_text,
     c_uuid,
-    c_bytea
+    c_bytea,
+    c_cidr,
+    c_inet,
+    c_macaddr
 )
 VALUES (
     $1, 
@@ -197,7 +200,10 @@ VALUES (
     $18,
     $19,
     $20,
-    $21
+    $21,
+    $22,
+    $23,
+    $24
 );
 
 -- name: GetPostgresTypes :one
@@ -265,6 +271,9 @@ SELECT
     c_text,
     c_uuid,
     c_bytea,
+    c_cidr,
+    c_inet,
+    c_macaddr,
     COUNT(*) AS cnt
 FROM postgres_types
 GROUP BY
@@ -288,7 +297,10 @@ GROUP BY
     c_bpchar,
     c_text,
     c_uuid,
-    c_bytea
+    c_bytea,
+    c_cidr,
+    c_inet,
+    c_macaddr
 LIMIT 1;
 
 -- name: GetPostgresFunctions :one

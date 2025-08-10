@@ -10422,8 +10422,8 @@ c_macaddr80ÿÿÿÿÿÿÿÿÿb
 c_integer_array 0ÿÿÿÿÿÿÿÿÿ8Rpublicpostgres_typesbpg_catalog.int4zc_integer_arrayˆ*h#d
 c_decimal_array 0ÿÿÿÿÿÿÿÿÿ8Rpublicpostgres_typesbpg_catalog.numericzc_decimal_arrayˆ*T$P
 c_date_array 0ÿÿÿÿÿÿÿÿÿ8Rpublicpostgres_typesbdatezc_date_arrayˆ*n%j
-c_timestamp_array 0ÿÿÿÿÿÿÿÿÿ8Rpublicpostgres_typesbpg_catalog.timestampzc_timestamp_arrayˆ:	query.sqlBpostgres_typesÏ
-°INSERT INTO postgres_types
+c_timestamp_array 0ÿÿÿÿÿÿÿÿÿ8Rpublicpostgres_typesbpg_catalog.timestampzc_timestamp_arrayˆ:	query.sqlBpostgres_typesã
+òINSERT INTO postgres_types
 (
     c_boolean,
     c_smallint,
@@ -10445,7 +10445,10 @@ c_macaddr80ÿÿÿÿÿÿÿÿÿb
     c_bpchar,
     c_text,
     c_uuid,
-    c_bytea
+    c_bytea,
+    c_cidr,
+    c_inet,
+    c_macaddr
 )
 VALUES (
     $1, 
@@ -10468,7 +10471,10 @@ VALUES (
     $18,
     $19,
     $20,
-    $21
+    $21,
+    $22,
+    $23,
+    $24
 )InsertPostgresTypesBatch	:copyfrom*RN
 	c_boolean0ÿÿÿÿÿÿÿÿÿRpublicpostgres_typesbpg_catalog.boolz	c_boolean*TP
 
@@ -10495,7 +10501,10 @@ c_interval*NJ
 c_bpchar0ÿÿÿÿÿÿÿÿÿRpublicpostgres_typesbbpcharzc_bpchar*A=
 c_text0ÿÿÿÿÿÿÿÿÿRpublicpostgres_typesbtextzc_text*A=
 c_uuid0ÿÿÿÿÿÿÿÿÿRpublicpostgres_typesbuuidzc_uuid*D@
-c_bytea0ÿÿÿÿÿÿÿÿÿRpublicpostgres_typesbbyteazc_bytea:	query.sqlBpostgres_typesô
+c_bytea0ÿÿÿÿÿÿÿÿÿRpublicpostgres_typesbbyteazc_bytea*A=
+c_cidr0ÿÿÿÿÿÿÿÿÿRpublicpostgres_typesbcidrzc_cidr*A=
+c_inet0ÿÿÿÿÿÿÿÿÿRpublicpostgres_typesbinetzc_inet*JF
+	c_macaddr0ÿÿÿÿÿÿÿÿÿRpublicpostgres_typesb	macaddrz	c_macaddr:	query.sqlBpostgres_typesô
 SELECT     
     c_boolean,
     c_bit,
@@ -10600,8 +10609,8 @@ pg_catalogint4zc_integer_arrayˆ"[
 pg_catalognumericzc_decimal_arrayˆ"F
 c_date_array 0ÿÿÿÿÿÿÿÿÿRpostgres_typesbdatezc_date_arrayˆ"a
 c_timestamp_array 0ÿÿÿÿÿÿÿÿÿRpostgres_typesb
-pg_catalog	timestampzc_timestamp_arrayˆ:	query.sqlü
-ÆSELECT
+pg_catalog	timestampzc_timestamp_arrayˆ:	query.sqlø
+”SELECT
     c_smallint,
     c_boolean,
     c_integer,
@@ -10623,6 +10632,9 @@ pg_catalog	timestampzc_timestamp_arrayˆ:	query.sqlü
     c_text,
     c_uuid,
     c_bytea,
+    c_cidr,
+    c_inet,
+    c_macaddr,
     COUNT(*) AS cnt
 FROM postgres_types
 GROUP BY
@@ -10646,7 +10658,10 @@ GROUP BY
     c_bpchar,
     c_text,
     c_uuid,
-    c_bytea
+    c_bytea,
+    c_cidr,
+    c_inet,
+    c_macaddr
 LIMIT 1GetPostgresTypesCnt:one"I
 
 c_smallint0ÿÿÿÿÿÿÿÿÿRpostgres_typesb
@@ -10687,7 +10702,10 @@ pg_catalogvarcharzc_character_varying";
 c_bpchar0ÿÿÿÿÿÿÿÿÿRpostgres_typesbbpcharzc_bpchar"5
 c_text0ÿÿÿÿÿÿÿÿÿRpostgres_typesbtextzc_text"5
 c_uuid0ÿÿÿÿÿÿÿÿÿRpostgres_typesbuuidzc_uuid"8
-c_bytea0ÿÿÿÿÿÿÿÿÿRpostgres_typesbbyteazc_bytea"
+c_bytea0ÿÿÿÿÿÿÿÿÿRpostgres_typesbbyteazc_bytea"5
+c_cidr0ÿÿÿÿÿÿÿÿÿRpostgres_typesbcidrzc_cidr"5
+c_inet0ÿÿÿÿÿÿÿÿÿRpostgres_typesbinetzc_inet">
+	c_macaddr0ÿÿÿÿÿÿÿÿÿRpostgres_typesb	macaddrz	c_macaddr"
 cnt0ÿÿÿÿÿÿÿÿÿ@bbigint:	query.sql°
 †SELECT
     MAX(c_integer) AS max_integer,

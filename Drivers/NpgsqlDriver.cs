@@ -69,8 +69,8 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId
                     { "bpchar", new() },
                     { "tinytext", new() },
                     { "varchar", new() },
-                    { "jsonpath", new(NpgsqlTypeOverride: "NpgsqlDbType.JsonPath") },
-                    { "macaddr8", new(NpgsqlTypeOverride: "NpgsqlDbType.MacAddr8") }
+                    { "jsonpath", new() },
+                    { "macaddr8", new() }
                 },
                 readerFn: ordinal => $"reader.GetString({ordinal})",
                 readerArrayFn: ordinal => $"reader.GetFieldValue<string[]>({ordinal})"

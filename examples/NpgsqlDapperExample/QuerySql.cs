@@ -628,7 +628,7 @@ public class QuerySql
         await this.Transaction.Connection.ExecuteAsync(InsertPostgresTypesSql, queryParams, transaction: this.Transaction);
     }
 
-    private const string InsertPostgresTypesBatchSql = "COPY postgres_types (c_boolean, c_smallint, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_money, c_date, c_time, c_timestamp, c_timestamp_with_tz, c_interval, c_char, c_varchar, c_character_varying, c_bpchar, c_text, c_uuid, c_bytea) FROM STDIN (FORMAT BINARY)";
+    private const string InsertPostgresTypesBatchSql = "COPY postgres_types (c_boolean, c_smallint, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_money, c_date, c_time, c_timestamp, c_timestamp_with_tz, c_interval, c_char, c_varchar, c_character_varying, c_bpchar, c_text, c_uuid, c_bytea, c_cidr, c_inet, c_macaddr) FROM STDIN (FORMAT BINARY)";
     public class InsertPostgresTypesBatchArgs
     {
         public bool? CBoolean { get; init; }
@@ -652,6 +652,9 @@ public class QuerySql
         public string? CText { get; init; }
         public Guid? CUuid { get; init; }
         public byte[]? CBytea { get; init; }
+        public NpgsqlCidr? CCidr { get; init; }
+        public IPAddress? CInet { get; init; }
+        public PhysicalAddress? CMacaddr { get; init; }
     };
     public async Task InsertPostgresTypesBatch(List<InsertPostgresTypesBatchArgs> args)
     {
@@ -684,6 +687,9 @@ public class QuerySql
                     await writer.WriteAsync(row.CText);
                     await writer.WriteAsync(row.CUuid);
                     await writer.WriteAsync(row.CBytea);
+                    await writer.WriteAsync(row.CCidr);
+                    await writer.WriteAsync(row.CInet);
+                    await writer.WriteAsync(row.CMacaddr);
                 }
 
                 await writer.CompleteAsync();
@@ -753,7 +759,7 @@ public class QuerySql
         return await this.Transaction.Connection.QueryFirstOrDefaultAsync<GetPostgresTypesRow?>(GetPostgresTypesSql, transaction: this.Transaction);
     }
 
-    private const string GetPostgresTypesCntSql = "SELECT c_smallint , c_boolean, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_money, c_date, c_time, c_timestamp, c_timestamp_with_tz, c_interval, c_char, c_varchar, c_character_varying, c_bpchar, c_text, c_uuid, c_bytea, COUNT (* ) AS  cnt  FROM  postgres_types  GROUP  BY  c_smallint, c_boolean, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_money, c_date, c_time, c_timestamp, c_timestamp_with_tz, c_interval, c_char, c_varchar, c_character_varying, c_bpchar, c_text, c_uuid, c_bytea LIMIT  1  ";  
+    private const string GetPostgresTypesCntSql = "SELECT c_smallint , c_boolean, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_money, c_date, c_time, c_timestamp, c_timestamp_with_tz, c_interval, c_char, c_varchar, c_character_varying, c_bpchar, c_text, c_uuid, c_bytea, c_cidr, c_inet, c_macaddr, COUNT (* ) AS  cnt  FROM  postgres_types  GROUP  BY  c_smallint, c_boolean, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_money, c_date, c_time, c_timestamp, c_timestamp_with_tz, c_interval, c_char, c_varchar, c_character_varying, c_bpchar, c_text, c_uuid, c_bytea, c_cidr, c_inet, c_macaddr LIMIT  1  ";  
     public class GetPostgresTypesCntRow
     {
         public short? CSmallint { get; init; }
@@ -777,6 +783,9 @@ public class QuerySql
         public string? CText { get; init; }
         public Guid? CUuid { get; init; }
         public byte[]? CBytea { get; init; }
+        public NpgsqlCidr? CCidr { get; init; }
+        public IPAddress? CInet { get; init; }
+        public PhysicalAddress? CMacaddr { get; init; }
         public required long Cnt { get; init; }
     };
     public async Task<GetPostgresTypesCntRow?> GetPostgresTypesCnt()
