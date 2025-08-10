@@ -34,92 +34,15 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId
     public sealed override Dictionary<string, ColumnMapping> ColumnMappings { get; } =
         new()
         {
-            ["long"] = new(
+            /* Numeric data types */
+            ["bool"] = new(
                 new()
                 {
-                    { "int8", new() },
-                    { "bigint", new() },
-                    { "bigserial", new() }
+                    { "bool", new() },
+                    { "boolean", new() }
                 },
-                readerFn: ordinal => $"reader.GetInt64({ordinal})",
-                readerArrayFn: ordinal => $"reader.GetFieldValue<long[]>({ordinal})",
-                convertFunc: x => $"Convert.ToInt64({x})"
-            ),
-            ["byte[]"] = new(
-                new()
-                {
-                    { "binary", new() },
-                    { "bit", new() },
-                    { "bytea", new() },
-                    { "blob", new() },
-                    { "longblob", new() },
-                    { "mediumblob", new() },
-                    { "tinyblob", new() },
-                    { "varbinary", new() }
-                },
-                readerFn: ordinal => $"reader.GetFieldValue<byte[]>({ordinal})",
-                readerArrayFn: ordinal => $"reader.GetFieldValue<byte[][]>({ordinal})"
-            ),
-            ["string"] = new(
-                new()
-                {
-                    { "longtext", new() },
-                    { "mediumtext", new() },
-                    { "text", new() },
-                    { "bpchar", new() },
-                    { "tinytext", new() },
-                    { "varchar", new() },
-                    { "jsonpath", new() },
-                    { "macaddr8", new() }
-                },
-                readerFn: ordinal => $"reader.GetString({ordinal})",
-                readerArrayFn: ordinal => $"reader.GetFieldValue<string[]>({ordinal})"
-            ),
-            ["Guid"] = new(
-                new()
-                {
-                    { "uuid", new() }
-                },
-                readerFn: ordinal => $"reader.GetFieldValue<Guid>({ordinal})",
-                readerArrayFn: ordinal => $"reader.GetFieldValue<Guid[]>({ordinal})",
-                convertFunc: x => $"Guid.Parse({x}?.ToString())"
-            ),
-            ["TimeSpan"] = new(
-                new()
-                {
-                    { "time", new(NpgsqlTypeOverride: "NpgsqlDbType.Time") },
-                    { "interval", new(NpgsqlTypeOverride: "NpgsqlDbType.Interval") }
-                },
-                readerFn: ordinal => $"reader.GetFieldValue<TimeSpan>({ordinal})",
-                readerArrayFn: ordinal => $"reader.GetFieldValue<TimeSpan[]>({ordinal})"
-            ),
-            ["DateTime"] = new(
-                new()
-                {
-                    { "date", new(NpgsqlTypeOverride: "NpgsqlDbType.Date") },
-                    { "timestamp", new() },
-                    { "timestamptz", new() }
-                },
-                readerFn: ordinal => $"reader.GetDateTime({ordinal})",
-                readerArrayFn: ordinal => $"reader.GetFieldValue<DateTime[]>({ordinal})"
-            ),
-            ["JsonElement"] = new(
-                new()
-                {
-                    { "json", new() },
-                    { "jsonb", new() }
-                },
-                readerFn: ordinal => $"JsonSerializer.Deserialize<JsonElement>(reader.GetString({ordinal}))",
-                writerFn: (el, notNull, isDapper) =>
-                {
-                    if (notNull)
-                        return $"{el}.GetRawText()";
-                    var nullValue = isDapper ? "null" : "(object)DBNull.Value";
-                    return $"{el}.HasValue ? {el}.Value.GetRawText() : {nullValue}";
-                },
-                usingDirective: "System.Text.Json",
-                sqlMapper: "SqlMapper.AddTypeHandler(typeof(JsonElement), new JsonElementTypeHandler());",
-                sqlMapperImpl: JsonElementTypeHandler
+                readerFn: ordinal => $"reader.GetBoolean({ordinal})",
+                readerArrayFn: ordinal => $"reader.GetFieldValue<bool[]>({ordinal})"
             ),
             ["short"] = new(
                 new()
@@ -141,6 +64,17 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId
                 readerFn: ordinal => $"reader.GetInt32({ordinal})",
                 readerArrayFn: ordinal => $"reader.GetFieldValue<int[]>({ordinal})",
                 convertFunc: x => $"Convert.ToInt32({x})"
+            ),
+            ["long"] = new(
+                new()
+                {
+                    { "int8", new() },
+                    { "bigint", new() },
+                    { "bigserial", new() }
+                },
+                readerFn: ordinal => $"reader.GetInt64({ordinal})",
+                readerArrayFn: ordinal => $"reader.GetFieldValue<long[]>({ordinal})",
+                convertFunc: x => $"Convert.ToInt64({x})"
             ),
             ["float"] = new(
                 new()
@@ -168,14 +102,63 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId
                 readerFn: ordinal => $"reader.GetDouble({ordinal})",
                 readerArrayFn: ordinal => $"reader.GetFieldValue<double[]>({ordinal})"
             ),
-            ["bool"] = new(
+
+            /* String data types */
+            ["string"] = new(
                 new()
                 {
-                    { "bool", new() },
-                    { "boolean", new() }
+                    { "longtext", new() },
+                    { "mediumtext", new() },
+                    { "text", new() },
+                    { "bpchar", new() },
+                    { "tinytext", new() },
+                    { "varchar", new() },
+                    { "jsonpath", new() },
+                    { "macaddr8", new() }
                 },
-                readerFn: ordinal => $"reader.GetBoolean({ordinal})",
-                readerArrayFn: ordinal => $"reader.GetFieldValue<bool[]>({ordinal})"
+                readerFn: ordinal => $"reader.GetString({ordinal})",
+                readerArrayFn: ordinal => $"reader.GetFieldValue<string[]>({ordinal})"
+            ),
+
+            /* Date and time data types */
+            ["TimeSpan"] = new(
+                new()
+                {
+                    { "time", new(NpgsqlTypeOverride: "NpgsqlDbType.Time") },
+                    { "interval", new(NpgsqlTypeOverride: "NpgsqlDbType.Interval") }
+                },
+                readerFn: ordinal => $"reader.GetFieldValue<TimeSpan>({ordinal})",
+                readerArrayFn: ordinal => $"reader.GetFieldValue<TimeSpan[]>({ordinal})"
+            ),
+            ["DateTime"] = new(
+                new()
+                {
+                    { "date", new(NpgsqlTypeOverride: "NpgsqlDbType.Date") },
+                    { "timestamp", new() },
+                    { "timestamptz", new() }
+                },
+                readerFn: ordinal => $"reader.GetDateTime({ordinal})",
+                readerArrayFn: ordinal => $"reader.GetFieldValue<DateTime[]>({ordinal})"
+            ),
+
+            /* Unstructured data types */
+            ["JsonElement"] = new(
+                new()
+                {
+                    { "json", new() },
+                    { "jsonb", new() }
+                },
+                readerFn: ordinal => $"JsonSerializer.Deserialize<JsonElement>(reader.GetString({ordinal}))",
+                writerFn: (el, notNull, isDapper) =>
+                {
+                    if (notNull)
+                        return $"{el}.GetRawText()";
+                    var nullValue = isDapper ? "null" : "(object)DBNull.Value";
+                    return $"{el}.HasValue ? {el}.Value.GetRawText() : {nullValue}";
+                },
+                usingDirective: "System.Text.Json",
+                sqlMapper: "SqlMapper.AddTypeHandler(typeof(JsonElement), new JsonElementTypeHandler());",
+                sqlMapperImpl: JsonElementTypeHandler
             ),
             ["XmlDocument"] = new(
                 new()
@@ -201,6 +184,8 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId
                 sqlMapper: "SqlMapper.AddTypeHandler(typeof(XmlDocument), new XmlDocumentTypeHandler());",
                 sqlMapperImpl: XmlDocumentTypeHandler
             ),
+
+            /* Geometric data types */
             ["NpgsqlPoint"] = new(
                 new()
                 {
@@ -271,6 +256,8 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId
                 usingDirective: "NpgsqlTypes",
                 sqlMapper: "RegisterNpgsqlTypeHandler<NpgsqlCircle>();"
             ),
+
+            /* Network data types */
             ["NpgsqlCidr"] = new(
                 new()
                 {
@@ -300,6 +287,32 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId
                 readerArrayFn: ordinal => $"reader.GetFieldValue<PhysicalAddress[]>({ordinal})",
                 usingDirective: "System.Net.NetworkInformation",
                 sqlMapper: "RegisterNpgsqlTypeHandler<PhysicalAddress>();"
+            ),
+
+            /* Other data types */
+            ["Guid"] = new(
+                new()
+                {
+                    { "uuid", new() }
+                },
+                readerFn: ordinal => $"reader.GetFieldValue<Guid>({ordinal})",
+                readerArrayFn: ordinal => $"reader.GetFieldValue<Guid[]>({ordinal})",
+                convertFunc: x => $"Guid.Parse({x}?.ToString())"
+            ),
+            ["byte[]"] = new(
+                new()
+                {
+                    { "binary", new() },
+                    { "bit", new() },
+                    { "bytea", new() },
+                    { "blob", new() },
+                    { "longblob", new() },
+                    { "mediumblob", new() },
+                    { "tinyblob", new() },
+                    { "varbinary", new() }
+                },
+                readerFn: ordinal => $"reader.GetFieldValue<byte[]>({ordinal})",
+                readerArrayFn: ordinal => $"reader.GetFieldValue<byte[][]>({ordinal})"
             ),
             ["object"] = new(
                 new()

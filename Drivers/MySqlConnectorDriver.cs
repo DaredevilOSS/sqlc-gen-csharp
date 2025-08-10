@@ -26,6 +26,7 @@ public partial class MySqlConnectorDriver(
     public override Dictionary<string, ColumnMapping> ColumnMappings { get; } =
         new()
         {
+            /* Numeric data types */
             ["bool"] = new(
                 new()
                 {
@@ -42,6 +43,16 @@ public partial class MySqlConnectorDriver(
                 },
                 ordinal => $"reader.GetInt16({ordinal})"
             ),
+            ["int"] = new(
+                new()
+                {
+                    { "int", new() },
+                    { "integer", new() },
+                    { "mediumint", new() }
+                },
+                ordinal => $"reader.GetInt32({ordinal})",
+                convertFunc: x => $"Convert.ToInt32{x}"
+            ),
             ["long"] = new(
                 new()
                 {
@@ -50,7 +61,24 @@ public partial class MySqlConnectorDriver(
                 ordinal => $"reader.GetInt64({ordinal})",
                 convertFunc: x => $"Convert.ToInt64{x}"
             ),
-            ["byte"] = new ColumnMapping(
+            ["double"] = new(
+                new()
+                {
+                    { "double", new() },
+                    { "float", new() }
+                },
+                ordinal => $"reader.GetDouble({ordinal})"
+            ),
+            ["decimal"] = new(
+                new()
+                {
+                    { "decimal", new() }
+                },
+                ordinal => $"reader.GetDecimal({ordinal})"
+            ),
+
+            /* Binary data types */
+            ["byte"] = new(
                 new()
                 {
                     { "bit", new() }
@@ -69,6 +97,8 @@ public partial class MySqlConnectorDriver(
                 },
                 ordinal => $"reader.GetFieldValue<byte[]>({ordinal})"
             ),
+
+            /* String data types */
             ["string"] = new(
                 new()
                 {
@@ -83,6 +113,8 @@ public partial class MySqlConnectorDriver(
                 },
                 ordinal => $"reader.GetString({ordinal})"
             ),
+
+            /* Date and time data types */
             ["DateTime"] = new(
                 new()
                 {
@@ -92,31 +124,8 @@ public partial class MySqlConnectorDriver(
                 },
                 ordinal => $"reader.GetDateTime({ordinal})"
             ),
-            ["int"] = new(
-                new()
-                {
-                    { "int", new() },
-                    { "integer", new() },
-                    { "mediumint", new() }
-                },
-                ordinal => $"reader.GetInt32({ordinal})",
-                convertFunc: x => $"Convert.ToInt32{x}"
-            ),
-            ["double"] = new(
-                new()
-                {
-                    { "double", new() },
-                    { "float", new() }
-                },
-                ordinal => $"reader.GetDouble({ordinal})"
-            ),
-            ["decimal"] = new(
-                new()
-                {
-                    { "decimal", new() }
-                },
-                ordinal => $"reader.GetDecimal({ordinal})"
-            ),
+
+            /* Unstructured data types */
             ["JsonElement"] = new(
                 new()
                 {
@@ -134,6 +143,8 @@ public partial class MySqlConnectorDriver(
                 sqlMapper: "SqlMapper.AddTypeHandler(typeof(JsonElement), new JsonElementTypeHandler());",
                 sqlMapperImpl: JsonElementTypeHandler
             ),
+
+            /* Other data types */
             ["object"] = new(
                 new()
                 {
