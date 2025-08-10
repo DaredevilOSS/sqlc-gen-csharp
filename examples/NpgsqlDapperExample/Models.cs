@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net;
 using System.Net.NetworkInformation;
 using System.Text.Json;
+using System.Xml;
 
 namespace NpgsqlDapperExampleGen;
 public class Author
@@ -46,6 +47,7 @@ public class PostgresType
     public JsonElement? CJsonStringOverride { get; init; }
     public JsonElement? CJsonb { get; init; }
     public string? CJsonpath { get; init; }
+    public XmlDocument? CXml { get; init; }
     public NpgsqlCidr? CCidr { get; init; }
     public IPAddress? CInet { get; init; }
     public PhysicalAddress? CMacaddr { get; init; }

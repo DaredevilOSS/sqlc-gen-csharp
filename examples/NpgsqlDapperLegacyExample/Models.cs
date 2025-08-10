@@ -7,6 +7,7 @@ namespace NpgsqlDapperLegacyExampleGen
     using System.Net;
     using System.Net.NetworkInformation;
     using System.Text.Json;
+    using System.Xml;
 
     public class Author
     {
@@ -47,6 +48,7 @@ namespace NpgsqlDapperLegacyExampleGen
         public JsonElement? CJsonStringOverride { get; set; }
         public JsonElement? CJsonb { get; set; }
         public string CJsonpath { get; set; }
+        public XmlDocument CXml { get; set; }
         public NpgsqlCidr? CCidr { get; set; }
         public IPAddress CInet { get; set; }
         public PhysicalAddress CMacaddr { get; set; }

@@ -3,7 +3,7 @@
 2
 postgresql%examples/config/postgresql/schema.sql"$examples/config/postgresql/query.sqlb‡
 examples/NpgsqlDapperExamplecsharpÈ{"debugRequest":true,"generateCsproj":true,"namespaceName":"NpgsqlDapperExampleGen","overrides":[{"column":"GetPostgresFunctions:max_integer","csharp_type":{"notNull":false,"type":"int"}},{"column":"GetPostgresFunctions:max_varchar","csharp_type":{"notNull":false,"type":"string"}},{"column":"GetPostgresFunctions:max_timestamp","csharp_type":{"notNull":true,"type":"DateTime"}},{"column":"*:c_json_string_override","csharp_type":{"notNull":false,"type":"string"}},{"column":"*:c_macaddr8","csharp_type":{"notNull":false,"type":"string"}}],"targetFramework":"net8.0","useDapper":true}*
-./dist/LocalRunner·åpublic"‹publicƒ
+./dist/LocalRunneräåpublic"¸publicƒ
 	authors)
 id0ÿÿÿÿÿÿÿÿÿR	authorsb	bigserial&
 name0ÿÿÿÿÿÿÿÿÿR	authorsbtext#
@@ -13,7 +13,7 @@ postgresql%examples/config/postgresql/schema.sql"$examples/config/postgresql/qu
 name0ÿÿÿÿÿÿÿÿÿRbooksbtext5
 	author_id0ÿÿÿÿÿÿÿÿÿRbooksb
 pg_catalogint8)
-description0ÿÿÿÿÿÿÿÿÿRbooksbtextŠ
+description0ÿÿÿÿÿÿÿÿÿRbooksbtext·
 postgres_types<
 	c_boolean0ÿÿÿÿÿÿÿÿÿRpostgres_typesb
 pg_catalogbool7
@@ -58,7 +58,8 @@ pg_catalogvarchar1
 c_jsonb0ÿÿÿÿÿÿÿÿÿRpostgres_typesbjsonb5
 
 c_jsonpath0ÿÿÿÿÿÿÿÿÿRpostgres_typesb
-jsonpath-
+jsonpath+
+c_xml0ÿÿÿÿÿÿÿÿÿRpostgres_typesbxml-
 c_cidr0ÿÿÿÿÿÿÿÿÿRpostgres_typesbcidr-
 c_inet0ÿÿÿÿÿÿÿÿÿRpostgres_typesbinet3
 	c_macaddr0ÿÿÿÿÿÿÿÿÿRpostgres_typesb	macaddr5
@@ -10296,8 +10297,8 @@ WHERE books.name = $1GetAuthorsByBookName:many"-
 name0ÿÿÿÿÿÿÿÿÿR	authorsbtextzname"(
 bio0ÿÿÿÿÿÿÿÿÿR	authorsbtextzbio"
 books0ÿÿÿÿÿÿÿÿÿb rbooks*.*
-name0ÿÿÿÿÿÿÿÿÿRbooksbtextzname:	query.sql¶
-ÝINSERT INTO postgres_types
+name0ÿÿÿÿÿÿÿÿÿRbooksbtextzname:	query.sqlî
+öINSERT INTO postgres_types
 (
     c_boolean,
     c_bit,
@@ -10324,6 +10325,7 @@ WHERE books.name = $1GetAuthorsByBookName:many"-
     c_json_string_override,
     c_jsonb,
     c_jsonpath,
+    c_xml,
     c_cidr,
     c_inet,
     c_macaddr,
@@ -10362,17 +10364,18 @@ VALUES (
     $23::json, 
     $24::jsonb,
     $25::jsonpath,
-    $26,
+    $26::xml,
     $27,
-    $28::macaddr,
-    $29::macaddr8,
-    $30, 
-    $31,
-    $32, 
-    $33,
+    $28,
+    $29::macaddr,
+    $30::macaddr8,
+    $31, 
+    $32,
+    $33, 
     $34,
     $35,
-    $36
+    $36,
+    $37
 )InsertPostgresTypes:exec*TP
 	c_boolean0ÿÿÿÿÿÿÿÿÿ8Rpublicpostgres_typesbpg_catalog.boolz	c_boolean*KG
 c_bit0ÿÿÿÿÿÿÿÿÿ8Rpublicpostgres_typesbpg_catalog.bitzc_bit*VR
@@ -10405,19 +10408,20 @@ c_interval*PL
 c_jsonb0ÿÿÿÿÿÿÿÿÿbjsonb*'#
 
 c_jsonpath0ÿÿÿÿÿÿÿÿÿb
-jsonpath*C?
-c_cidr0ÿÿÿÿÿÿÿÿÿ8Rpublicpostgres_typesbcidrzc_cidr*C?
-c_inet0ÿÿÿÿÿÿÿÿÿ8Rpublicpostgres_typesbinetzc_inet*%!
-	c_macaddr0ÿÿÿÿÿÿÿÿÿb	macaddr*'#
+jsonpath*
+c_xml0ÿÿÿÿÿÿÿÿÿbxml*C?
+c_cidr0ÿÿÿÿÿÿÿÿÿ8Rpublicpostgres_typesbcidrzc_cidr*C?
+c_inet0ÿÿÿÿÿÿÿÿÿ8Rpublicpostgres_typesbinetzc_inet*%!
+	c_macaddr0ÿÿÿÿÿÿÿÿÿb	macaddr*'#
 
 c_macaddr80ÿÿÿÿÿÿÿÿÿb
-macaddr8*FB
-c_bytea0ÿÿÿÿÿÿÿÿÿ8Rpublicpostgres_typesbbyteazc_bytea*ea
-c_boolean_array 0ÿÿÿÿÿÿÿÿÿ8Rpublicpostgres_typesbpg_catalog.boolzc_boolean_arrayˆ*T P
-c_text_array 0ÿÿÿÿÿÿÿÿÿ8Rpublicpostgres_typesbtextzc_text_arrayˆ*e!a
-c_integer_array 0ÿÿÿÿÿÿÿÿÿ8Rpublicpostgres_typesbpg_catalog.int4zc_integer_arrayˆ*h"d
-c_decimal_array 0ÿÿÿÿÿÿÿÿÿ8Rpublicpostgres_typesbpg_catalog.numericzc_decimal_arrayˆ*T#P
-c_date_array 0ÿÿÿÿÿÿÿÿÿ8Rpublicpostgres_typesbdatezc_date_arrayˆ*n$j
+macaddr8*FB
+c_bytea0ÿÿÿÿÿÿÿÿÿ8Rpublicpostgres_typesbbyteazc_bytea*e a
+c_boolean_array 0ÿÿÿÿÿÿÿÿÿ8Rpublicpostgres_typesbpg_catalog.boolzc_boolean_arrayˆ*T!P
+c_text_array 0ÿÿÿÿÿÿÿÿÿ8Rpublicpostgres_typesbtextzc_text_arrayˆ*e"a
+c_integer_array 0ÿÿÿÿÿÿÿÿÿ8Rpublicpostgres_typesbpg_catalog.int4zc_integer_arrayˆ*h#d
+c_decimal_array 0ÿÿÿÿÿÿÿÿÿ8Rpublicpostgres_typesbpg_catalog.numericzc_decimal_arrayˆ*T$P
+c_date_array 0ÿÿÿÿÿÿÿÿÿ8Rpublicpostgres_typesbdatezc_date_arrayˆ*n%j
 c_timestamp_array 0ÿÿÿÿÿÿÿÿÿ8Rpublicpostgres_typesbpg_catalog.timestampzc_timestamp_arrayˆ:	query.sqlBpostgres_typesÏ
 °INSERT INTO postgres_types
 (
@@ -10491,8 +10495,8 @@ c_interval*NJ
 c_bpchar0ÿÿÿÿÿÿÿÿÿRpublicpostgres_typesbbpcharzc_bpchar*A=
 c_text0ÿÿÿÿÿÿÿÿÿRpublicpostgres_typesbtextzc_text*A=
 c_uuid0ÿÿÿÿÿÿÿÿÿRpublicpostgres_typesbuuidzc_uuid*D@
-c_bytea0ÿÿÿÿÿÿÿÿÿRpublicpostgres_typesbbyteazc_bytea:	query.sqlBpostgres_typesµ
-‚SELECT     
+c_bytea0ÿÿÿÿÿÿÿÿÿRpublicpostgres_typesbbyteazc_bytea:	query.sqlBpostgres_typesô
+SELECT     
     c_boolean,
     c_bit,
     c_smallint,
@@ -10518,6 +10522,7 @@ c_interval*NJ
     c_json_string_override,
     c_jsonb,
     c_jsonpath,
+    c_xml,
     c_cidr,
     c_inet,
     c_macaddr,
@@ -10578,7 +10583,8 @@ pg_catalogvarcharzc_character_varying";
 
 c_jsonpath0ÿÿÿÿÿÿÿÿÿRpostgres_typesb
 jsonpathz
-c_jsonpath"5
+c_jsonpath"2
+c_xml0ÿÿÿÿÿÿÿÿÿRpostgres_typesbxmlzc_xml"5
 c_cidr0ÿÿÿÿÿÿÿÿÿRpostgres_typesbcidrzc_cidr"5
 c_inet0ÿÿÿÿÿÿÿÿÿRpostgres_typesbinetzc_inet">
 	c_macaddr0ÿÿÿÿÿÿÿÿÿRpostgres_typesb	macaddrz	c_macaddr"!

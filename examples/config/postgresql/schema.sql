@@ -46,6 +46,7 @@ CREATE TABLE postgres_types (
     c_json_string_override JSON,
     c_jsonb JSONB,
     c_jsonpath JSONPATH,
+    c_xml XML,
 
     /* Network Address Data Types */
     c_cidr CIDR,

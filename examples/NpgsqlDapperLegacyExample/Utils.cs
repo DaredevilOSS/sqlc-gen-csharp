@@ -8,6 +8,7 @@ namespace NpgsqlDapperLegacyExampleGen
     using System.Net;
     using System.Net.NetworkInformation;
     using System.Text.Json;
+    using System.Xml;
 
     public static class Utils
     {
@@ -26,9 +27,30 @@ namespace NpgsqlDapperLegacyExampleGen
             }
         }
 
+        private class XmlDocumentTypeHandler : SqlMapper.TypeHandler<XmlDocument>
+        {
+            public override XmlDocument Parse(object value)
+            {
+                if (value is string s)
+                {
+                    var xmlDoc = new XmlDocument();
+                    xmlDoc.LoadXml(s);
+                    return xmlDoc;
+                }
+
+                throw new DataException($"Cannot convert {value?.GetType()} to XmlDocument");
+            }
+
+            public override void SetValue(IDbDataParameter parameter, XmlDocument value)
+            {
+                parameter.Value = value.OuterXml;
+            }
+        }
+
         public static void ConfigureSqlMapper()
         {
             SqlMapper.AddTypeHandler(typeof(JsonElement), new JsonElementTypeHandler());
+            SqlMapper.AddTypeHandler(typeof(XmlDocument), new XmlDocumentTypeHandler());
             RegisterNpgsqlTypeHandler<NpgsqlPoint>();
             RegisterNpgsqlTypeHandler<NpgsqlLine>();
             RegisterNpgsqlTypeHandler<NpgsqlLSeg>();

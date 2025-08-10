@@ -36,6 +36,7 @@ public class CommonGen(DbDriver dbDriver)
         return dbDriver.Options.UseDapper ? null : DefaultWriterFn;
     }
 
+    // TODO: extract AddWithValue statement generation to a method + possible override for Npgsql for type override
     public string AddParametersToCommand(Query query)
     {
         return query.Params.Select(p =>

@@ -3,6 +3,7 @@ using NpgsqlTypes;
 using System.Net;
 using System.Net.NetworkInformation;
 using System.Text.Json;
+using System.Xml;
 using NUnit.Framework;
 using NUnit.Framework.Legacy;
 using System;
@@ -823,6 +824,33 @@ namespace EndToEndTests
         {
             Assert.ThrowsAsync<Npgsql.PostgresException>(async () => await QuerySql.InsertPostgresTypes(new QuerySql.InsertPostgresTypesArgs { CJsonStringOverride = "SOME INVALID JSON" }));
             Assert.ThrowsAsync<Npgsql.PostgresException>(async () => await QuerySql.InsertPostgresTypes(new QuerySql.InsertPostgresTypesArgs { CJsonpath = "SOME INVALID JSONPATH" }));
+        }
+
+        [Test]
+        [TestCase("<root><child>Good morning xml, the world says hello</child></root>")]
+        [TestCase(null)]
+        public async Task TestPostgresXmlDataTypes(string cXml)
+        {
+            XmlDocument parsedXml = null;
+            if (cXml != null)
+            {
+                parsedXml = new XmlDocument();
+                parsedXml.LoadXml(cXml);
+            }
+
+            await QuerySql.InsertPostgresTypes(new QuerySql.InsertPostgresTypesArgs { CXml = parsedXml });
+            var expected = new QuerySql.GetPostgresTypesRow
+            {
+                CXml = parsedXml
+            };
+            var actual = await QuerySql.GetPostgresTypes();
+            AssertSingularEquals(expected, actual.Value);
+            void AssertSingularEquals(QuerySql.GetPostgresTypesRow x, QuerySql.GetPostgresTypesRow y)
+            {
+                if (x.CXml == null && y.CXml == null)
+                    return;
+                Assert.That(x.CXml.OuterXml, Is.EqualTo(y.CXml.OuterXml));
+            }
         }
 
         [Test]

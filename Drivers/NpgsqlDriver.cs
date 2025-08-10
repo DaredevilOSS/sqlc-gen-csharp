@@ -177,6 +177,30 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId
                 readerFn: ordinal => $"reader.GetBoolean({ordinal})",
                 readerArrayFn: ordinal => $"reader.GetFieldValue<bool[]>({ordinal})"
             ),
+            ["XmlDocument"] = new(
+                new()
+                {
+                    { "xml", new(NpgsqlTypeOverride: "NpgsqlDbType.Xml") }
+                },
+                readerFn: ordinal => $$"""
+                    (new Func<NpgsqlDataReader, int, XmlDocument>((r, o) =>
+                    {
+                       var xmlDoc = new XmlDocument(); 
+                       xmlDoc.LoadXml(r.GetString(o)); 
+                       return xmlDoc; 
+                    }))({{Variable.Reader.AsVarName()}}, {{ordinal}})
+                """,
+                writerFn: (el, notNull, isDapper) =>
+                {
+                    if (notNull)
+                        return $"{el}.OuterXml";
+                    var nullValue = isDapper ? "null" : "(object)DBNull.Value";
+                    return $"{el} != null ? {el}.OuterXml : {nullValue}";
+                },
+                usingDirective: "System.Xml",
+                sqlMapper: "SqlMapper.AddTypeHandler(typeof(XmlDocument), new XmlDocumentTypeHandler());",
+                sqlMapperImpl: XmlDocumentTypeHandler
+            ),
             ["NpgsqlPoint"] = new(
                 new()
                 {
@@ -287,6 +311,28 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId
         };
 
     public override string TransactionClassName => "NpgsqlTransaction";
+
+    protected const string XmlDocumentTypeHandler =
+        """
+        private class XmlDocumentTypeHandler : SqlMapper.TypeHandler<XmlDocument>
+        {
+            public override XmlDocument Parse(object value)
+            {
+                if (value is string s)
+                {
+                    var xmlDoc = new XmlDocument();
+                    xmlDoc.LoadXml(s);
+                    return xmlDoc;
+                }
+                throw new DataException($"Cannot convert {value?.GetType()} to XmlDocument");
+            }
+
+            public override void SetValue(IDbDataParameter parameter, XmlDocument value)
+            {
+                parameter.Value = value.OuterXml;
+            }
+        }
+        """;
 
     public override ISet<string> GetUsingDirectivesForQueries()
     {
