@@ -35241,7 +35241,7 @@
       "filename": "query.sql"
     },
     {
-      "text": "INSERT INTO postgres_array_types (\n    c_bytea\n)\nVALUES (\n    $1\n)",
+      "text": "INSERT INTO postgres_array_types (c_bytea) VALUES ($1)",
       "name": "InsertPostgresArrayTypesBatch",
       "cmd": ":copyfrom",
       "parameters": [

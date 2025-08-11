@@ -10735,13 +10735,8 @@ pg_catalogint4zc_integer_arrayˆ"a
 pg_catalognumericzc_decimal_arrayˆ"L
 c_date_array 0ÿÿÿÿÿÿÿÿÿRpostgres_array_typesbdatezc_date_arrayˆ"g
 c_timestamp_array 0ÿÿÿÿÿÿÿÿÿRpostgres_array_typesb
-pg_catalog	timestampzc_timestamp_arrayˆ:	query.sqlÝ
-BINSERT INTO postgres_array_types (
-    c_bytea
-)
-VALUES (
-    $1
-)InsertPostgresArrayTypesBatch	:copyfrom*JF
+pg_catalog	timestampzc_timestamp_arrayˆ:	query.sqlÑ
+6INSERT INTO postgres_array_types (c_bytea) VALUES ($1)InsertPostgresArrayTypesBatch	:copyfrom*JF
 c_bytea0ÿÿÿÿÿÿÿÿÿRpublicpostgres_array_typesbbyteazc_bytea:	query.sqlBpostgres_array_typesë
 ^SELECT
     c_bytea,
