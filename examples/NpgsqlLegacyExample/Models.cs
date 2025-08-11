@@ -54,13 +54,6 @@ namespace NpgsqlLegacyExampleGen
         public PhysicalAddress CMacaddr { get; set; }
         public string CMacaddr8 { get; set; }
         public Guid? CUuid { get; set; }
-        public byte[] CBytea { get; set; }
-        public bool[] CBooleanArray { get; set; }
-        public string[] CTextArray { get; set; }
-        public int[] CIntegerArray { get; set; }
-        public decimal[] CDecimalArray { get; set; }
-        public DateTime[] CDateArray { get; set; }
-        public DateTime[] CTimestampArray { get; set; }
     };
     public class PostgresGeometricType
     {
@@ -71,5 +64,15 @@ namespace NpgsqlLegacyExampleGen
         public NpgsqlPath? CPath { get; set; }
         public NpgsqlPolygon? CPolygon { get; set; }
         public NpgsqlCircle? CCircle { get; set; }
+    };
+    public class PostgresArrayType
+    {
+        public byte[] CBytea { get; set; }
+        public bool[] CBooleanArray { get; set; }
+        public string[] CTextArray { get; set; }
+        public int[] CIntegerArray { get; set; }
+        public decimal[] CDecimalArray { get; set; }
+        public DateTime[] CDateArray { get; set; }
+        public DateTime[] CTimestampArray { get; set; }
     };
 }

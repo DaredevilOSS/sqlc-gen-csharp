@@ -406,8 +406,8 @@ namespace EndToEndTests
         [TestCaseSource(nameof(PostgresArrayTypesTestCases))]
         public async Task TestPostgresArrayTypes(byte[] cBytea, bool[] cBooleanArray, string[] cTextArray, int[] cIntegerArray, decimal[] cDecimalArray, DateTime[] cDateArray, DateTime[] cTimestampArray)
         {
-            await QuerySql.InsertPostgresTypes(new QuerySql.InsertPostgresTypesArgs { CBytea = cBytea, CBooleanArray = cBooleanArray, CTextArray = cTextArray, CIntegerArray = cIntegerArray, CDecimalArray = cDecimalArray, CDateArray = cDateArray, CTimestampArray = cTimestampArray });
-            var expected = new QuerySql.GetPostgresTypesRow
+            await QuerySql.InsertPostgresArrayTypes(new QuerySql.InsertPostgresArrayTypesArgs { CBytea = cBytea, CBooleanArray = cBooleanArray, CTextArray = cTextArray, CIntegerArray = cIntegerArray, CDecimalArray = cDecimalArray, CDateArray = cDateArray, CTimestampArray = cTimestampArray });
+            var expected = new QuerySql.GetPostgresArrayTypesRow
             {
                 CBytea = cBytea,
                 CBooleanArray = cBooleanArray,
@@ -417,9 +417,9 @@ namespace EndToEndTests
                 CDateArray = cDateArray,
                 CTimestampArray = cTimestampArray
             };
-            var actual = await QuerySql.GetPostgresTypes();
+            var actual = await QuerySql.GetPostgresArrayTypes();
             AssertSingularEquals(expected, actual.Value);
-            void AssertSingularEquals(QuerySql.GetPostgresTypesRow x, QuerySql.GetPostgresTypesRow y)
+            void AssertSingularEquals(QuerySql.GetPostgresArrayTypesRow x, QuerySql.GetPostgresArrayTypesRow y)
             {
                 Assert.That(x.CBytea, Is.EqualTo(y.CBytea));
                 Assert.That(x.CTextArray, Is.EqualTo(y.CTextArray));
@@ -700,16 +700,19 @@ namespace EndToEndTests
         [TestCase(10, null)]
         public async Task TestArrayCopyFrom(int batchSize, byte[] cBytea)
         {
-            var batchArgs = Enumerable.Range(0, batchSize).Select(_ => new QuerySql.InsertPostgresTypesBatchArgs { CBytea = cBytea }).ToList();
-            await QuerySql.InsertPostgresTypesBatch(batchArgs);
-            var expected = new QuerySql.GetPostgresTypesCntRow
+            var batchArgs = Enumerable.Range(0, batchSize).Select(_ => new QuerySql.InsertPostgresArrayTypesBatchArgs { CBytea = cBytea }).ToList();
+            await QuerySql.InsertPostgresArrayTypesBatch(batchArgs);
+            var expected = new QuerySql.GetPostgresArrayTypesCntRow
             {
                 Cnt = batchSize,
                 CBytea = cBytea
             };
-            var actual = await QuerySql.GetPostgresTypesCnt();
-            Assert.That(actual.Value.Cnt, Is.EqualTo(expected.Cnt));
-            Assert.That(actual.Value.CBytea, Is.EqualTo(expected.CBytea));
+            var actual = await QuerySql.GetPostgresArrayTypesCnt();
+            AssertSingularEquals(expected, actual.Value);
+            void AssertSingularEquals(QuerySql.GetPostgresArrayTypesCntRow x, QuerySql.GetPostgresArrayTypesCntRow y)
+            {
+                Assert.That(x.Cnt, Is.EqualTo(y.Cnt));
+            }
         }
 
         private static IEnumerable<TestCaseData> PostgresGeoTypesTestCases

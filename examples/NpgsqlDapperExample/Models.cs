@@ -53,13 +53,6 @@ public class PostgresType
     public PhysicalAddress? CMacaddr { get; init; }
     public string? CMacaddr8 { get; init; }
     public Guid? CUuid { get; init; }
-    public byte[]? CBytea { get; init; }
-    public bool[]? CBooleanArray { get; init; }
-    public string[]? CTextArray { get; init; }
-    public int[]? CIntegerArray { get; init; }
-    public decimal[]? CDecimalArray { get; init; }
-    public DateTime[]? CDateArray { get; init; }
-    public DateTime[]? CTimestampArray { get; init; }
 };
 public class PostgresGeometricType
 {
@@ -70,4 +63,14 @@ public class PostgresGeometricType
     public NpgsqlPath? CPath { get; init; }
     public NpgsqlPolygon? CPolygon { get; init; }
     public NpgsqlCircle? CCircle { get; init; }
+};
+public class PostgresArrayType
+{
+    public byte[]? CBytea { get; init; }
+    public bool[]? CBooleanArray { get; init; }
+    public string[]? CTextArray { get; init; }
+    public int[]? CIntegerArray { get; init; }
+    public decimal[]? CDecimalArray { get; init; }
+    public DateTime[]? CDateArray { get; init; }
+    public DateTime[]? CTimestampArray { get; init; }
 };

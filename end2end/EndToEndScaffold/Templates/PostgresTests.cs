@@ -225,7 +225,7 @@ public static class PostgresTests
                          DateTime[] cDateArray,
                          DateTime[] cTimestampArray)
                      {
-                         await QuerySql.InsertPostgresTypes(new QuerySql.InsertPostgresTypesArgs
+                         await QuerySql.InsertPostgresArrayTypes(new QuerySql.InsertPostgresArrayTypesArgs
                          {
                              CBytea = cBytea,
                              CBooleanArray = cBooleanArray,
@@ -236,7 +236,7 @@ public static class PostgresTests
                              CTimestampArray = cTimestampArray
                          });
                      
-                         var expected = new QuerySql.GetPostgresTypesRow
+                         var expected = new QuerySql.GetPostgresArrayTypesRow
                          {
                              CBytea = cBytea,       
                              CBooleanArray = cBooleanArray,
@@ -246,10 +246,10 @@ public static class PostgresTests
                              CDateArray = cDateArray,
                              CTimestampArray = cTimestampArray
                          };
-                         var actual = await QuerySql.GetPostgresTypes();
+                         var actual = await QuerySql.GetPostgresArrayTypes();
                          AssertSingularEquals(expected, actual{{Consts.UnknownRecordValuePlaceholder}});
 
-                         void AssertSingularEquals(QuerySql.GetPostgresTypesRow x, QuerySql.GetPostgresTypesRow y)
+                         void AssertSingularEquals(QuerySql.GetPostgresArrayTypesRow x, QuerySql.GetPostgresArrayTypesRow y)
                          {
                              Assert.That(x.CBytea, Is.EqualTo(y.CBytea));
                              Assert.That(x.CTextArray, Is.EqualTo(y.CTextArray));
@@ -597,21 +597,25 @@ public static class PostgresTests
                         byte[] cBytea)
                      {
                          var batchArgs = Enumerable.Range(0, batchSize)
-                             .Select(_ => new QuerySql.InsertPostgresTypesBatchArgs
+                             .Select(_ => new QuerySql.InsertPostgresArrayTypesBatchArgs
                              {
                                  CBytea = cBytea
                              })
                              .ToList();
-                         await QuerySql.InsertPostgresTypesBatch(batchArgs);
-                         var expected = new QuerySql.GetPostgresTypesCntRow
+                         await QuerySql.InsertPostgresArrayTypesBatch(batchArgs);
+                         var expected = new QuerySql.GetPostgresArrayTypesCntRow
                          {
                              Cnt = batchSize,
                              CBytea = cBytea
                          };
-                         var actual = await QuerySql.GetPostgresTypesCnt();
+                         
+                         var actual = await QuerySql.GetPostgresArrayTypesCnt();
+                         AssertSingularEquals(expected, actual{{Consts.UnknownRecordValuePlaceholder}});
 
-                         Assert.That(actual{{Consts.UnknownRecordValuePlaceholder}}.Cnt, Is.EqualTo(expected.Cnt));
-                         Assert.That(actual{{Consts.UnknownRecordValuePlaceholder}}.CBytea, Is.EqualTo(expected.CBytea));
+                         void AssertSingularEquals(QuerySql.GetPostgresArrayTypesCntRow x, QuerySql.GetPostgresArrayTypesCntRow y)
+                         {
+                             Assert.That(x.Cnt, Is.EqualTo(y.Cnt));
+                         }
                      }
                      """
         },

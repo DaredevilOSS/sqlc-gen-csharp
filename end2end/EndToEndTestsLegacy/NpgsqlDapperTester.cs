@@ -16,6 +16,7 @@ namespace EndToEndTests
             await QuerySql.TruncateAuthors();
             await QuerySql.TruncatePostgresTypes();
             await QuerySql.TruncatePostgresGeoTypes();
+            await QuerySql.TruncatePostgresArrayTypes();
         }
     }
 }
