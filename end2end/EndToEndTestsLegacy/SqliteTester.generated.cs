@@ -334,6 +334,25 @@ namespace EndToEndTests
         }
 
         [Test]
+        public async Task TestGetAuthorByIdWithMultipleNamedParam()
+        {
+            await this.QuerySql.CreateAuthor(new QuerySql.CreateAuthorArgs { Id = 1111, Name = "Bojack Horseman", Bio = "Back in the 90s he was in a very famous TV show" });
+            var expected = new QuerySql.GetAuthorByIdWithMultipleNamedParamRow
+            {
+                Id = 1111,
+                Name = "Bojack Horseman",
+                Bio = "Back in the 90s he was in a very famous TV show"
+            };
+            var actual = await this.QuerySql.GetAuthorByIdWithMultipleNamedParam(new QuerySql.GetAuthorByIdWithMultipleNamedParamArgs { IdArg = 1111, Take = 1 });
+            Assert.That(SingularEquals(expected, actual));
+        }
+
+        private static bool SingularEquals(QuerySql.GetAuthorByIdWithMultipleNamedParamRow x, QuerySql.GetAuthorByIdWithMultipleNamedParamRow y)
+        {
+            return x.Id.Equals(y.Id) && x.Name.Equals(y.Name) && x.Bio.Equals(y.Bio);
+        }
+
+        [Test]
         [TestCase(-54355, 9787.66, "Have One On Me")]
         [TestCase(null, 0.0, null)]
         public async Task TestSqliteDataTypesOverride(int? cInteger, decimal cReal, string cText)

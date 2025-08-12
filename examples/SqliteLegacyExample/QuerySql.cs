@@ -304,6 +304,75 @@ namespace SqliteLegacyExampleGen
             return null;
         }
 
+        private const string GetAuthorByIdWithMultipleNamedParamSql = "SELECT id, name, bio FROM authors WHERE id = @id_arg AND id = @id_arg LIMIT @take";
+        public class GetAuthorByIdWithMultipleNamedParamRow
+        {
+            public int Id { get; set; }
+            public string Name { get; set; }
+            public string Bio { get; set; }
+        };
+        public class GetAuthorByIdWithMultipleNamedParamArgs
+        {
+            public int IdArg { get; set; }
+            public int? Take { get; set; }
+        };
+        public async Task<GetAuthorByIdWithMultipleNamedParamRow> GetAuthorByIdWithMultipleNamedParam(GetAuthorByIdWithMultipleNamedParamArgs args)
+        {
+            if (this.Transaction == null)
+            {
+                using (var connection = new SqliteConnection(ConnectionString))
+                {
+                    await connection.OpenAsync();
+                    using (var command = new SqliteCommand(GetAuthorByIdWithMultipleNamedParamSql, connection))
+                    {
+                        command.Parameters.AddWithValue("@id_arg", args.IdArg);
+                        command.Parameters.AddWithValue("@take", args.Take ?? (object)DBNull.Value);
+                        using (var reader = await command.ExecuteReaderAsync())
+                        {
+                            if (await reader.ReadAsync())
+                            {
+                                return new GetAuthorByIdWithMultipleNamedParamRow
+                                {
+                                    Id = reader.GetInt32(0),
+                                    Name = reader.GetString(1),
+                                    Bio = reader.IsDBNull(2) ? null : reader.GetString(2)
+                                };
+                            }
+                        }
+                    }
+                }
+
+                return null;
+            }
+
+            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+            {
+                throw new System.InvalidOperationException("Transaction is provided, but its connection is null.");
+            }
+
+            using (var command = this.Transaction.Connection.CreateCommand())
+            {
+                command.CommandText = GetAuthorByIdWithMultipleNamedParamSql;
+                command.Transaction = this.Transaction;
+                command.Parameters.AddWithValue("@id_arg", args.IdArg);
+                command.Parameters.AddWithValue("@take", args.Take ?? (object)DBNull.Value);
+                using (var reader = await command.ExecuteReaderAsync())
+                {
+                    if (await reader.ReadAsync())
+                    {
+                        return new GetAuthorByIdWithMultipleNamedParamRow
+                        {
+                            Id = reader.GetInt32(0),
+                            Name = reader.GetString(1),
+                            Bio = reader.IsDBNull(2) ? null : reader.GetString(2)
+                        };
+                    }
+                }
+            }
+
+            return null;
+        }
+
         private const string GetAuthorByNamePatternSql = "SELECT id, name, bio FROM authors WHERE  name  LIKE  COALESCE ( @name_pattern ,  '%' ) ";  
         public class GetAuthorByNamePatternRow
         {

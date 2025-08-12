@@ -18,6 +18,10 @@ INSERT INTO authors (name, bio) VALUES (?, ?) RETURNING id;
 SELECT * FROM authors
 WHERE id = ? LIMIT 1;
 
+-- name: GetAuthorByIdWithMultipleNamedParam :one
+SELECT * FROM authors WHERE id = sqlc.arg('id_arg') AND id = sqlc.arg('id_arg') LIMIT sqlc.narg('take');
+
+
 -- name: GetAuthorByNamePattern :many
 SELECT * FROM authors
 WHERE name LIKE COALESCE(sqlc.narg('name_pattern'), '%');

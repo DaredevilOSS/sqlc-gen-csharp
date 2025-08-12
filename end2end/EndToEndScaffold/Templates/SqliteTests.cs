@@ -174,6 +174,33 @@ public static class SqliteTests
                          Assert.That(actual.MaxText, Is.EqualTo(expected.MaxText));
                      }
                      """
+        },
+        [KnownTestType.SqliteMultipleNamedParam] = new TestImpl
+        {
+            Impl = $$"""
+                     [Test]
+                     public async Task TestGetAuthorByIdWithMultipleNamedParam()
+                     {
+                         {{Consts.CreateBojackAuthor}}
+                         var expected = new QuerySql.GetAuthorByIdWithMultipleNamedParamRow
+                         {
+                             Id = {{Consts.BojackId}},
+                             Name = {{Consts.BojackAuthor}},
+                             Bio = {{Consts.BojackTheme}}
+                         };
+                         var actual = await this.QuerySql.GetAuthorByIdWithMultipleNamedParam(new QuerySql.GetAuthorByIdWithMultipleNamedParamArgs
+                         {
+                             IdArg = {{Consts.BojackId}},
+                             Take = 1
+                         });
+                         Assert.That(SingularEquals(expected, actual{{Consts.UnknownRecordValuePlaceholder}}));
+                     }
+
+                     private static bool SingularEquals(QuerySql.GetAuthorByIdWithMultipleNamedParamRow x, QuerySql.GetAuthorByIdWithMultipleNamedParamRow y)
+                     {
+                         return x.Id.Equals(y.Id) && x.Name.Equals(y.Name) && x.Bio.Equals(y.Bio);
+                     }
+                     """
         }
     };
 }

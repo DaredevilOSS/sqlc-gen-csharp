@@ -28,6 +28,7 @@ public enum KnownTestType
 
     // Sqlite
     SqliteDataTypes,
+    SqliteMultipleNamedParam,
     SqliteDataTypesOverride,
     SqliteCopyFrom,
     SqliteTransaction,
@@ -274,7 +275,8 @@ internal static class Config
                     KnownTestType.SqliteTransactionRollback,
                     KnownTestType.SqliteDataTypes,
                     KnownTestType.SqliteCopyFrom,
-                    KnownTestType.SqliteDataTypesOverride
+                    KnownTestType.SqliteDataTypesOverride,
+                    KnownTestType.SqliteMultipleNamedParam
                 ]
             }
         },
@@ -299,7 +301,8 @@ internal static class Config
                     KnownTestType.SqliteTransactionRollback,
                     KnownTestType.SqliteDataTypes,
                     KnownTestType.SqliteCopyFrom,
-                    KnownTestType.SqliteDataTypesOverride
+                    KnownTestType.SqliteDataTypesOverride,
+                    KnownTestType.SqliteMultipleNamedParam
                 ]
             }
         },
