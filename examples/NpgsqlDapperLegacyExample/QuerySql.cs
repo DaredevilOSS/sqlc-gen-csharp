@@ -530,7 +530,7 @@ namespace NpgsqlDapperLegacyExampleGen
             }
         }
 
-        private const string InsertPostgresTypesSql = "INSERT INTO postgres_types(c_boolean, c_bit, c_smallint, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_money, c_date, c_time, c_timestamp, c_timestamp_with_tz, c_interval, c_char, c_varchar, c_character_varying, c_bpchar, c_text, c_uuid, c_json, c_json_string_override, c_jsonb, c_jsonpath, c_xml, c_cidr, c_inet, c_macaddr, c_macaddr8) VALUES ( @c_boolean, @c_bit, @c_smallint, @c_integer, @c_bigint, @c_real, @c_numeric, @c_decimal, @c_double_precision, @c_money, @c_date, @c_time, @c_timestamp, @c_timestamp_with_tz, @c_interval, @c_char, @c_varchar, @c_character_varying, @c_bpchar, @c_text, @c_uuid, @c_json :: json, @c_json_string_override :: json, @c_jsonb :: jsonb, @c_jsonpath :: jsonpath, @c_xml :: xml, @c_cidr, @c_inet, @c_macaddr :: macaddr, @c_macaddr8 :: macaddr8 ) "; 
+        private const string InsertPostgresTypesSql = "INSERT INTO postgres_types(c_boolean, c_bit, c_smallint, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_money, c_date, c_time, c_timestamp, c_timestamp_with_tz, c_interval, c_char, c_varchar, c_character_varying, c_bpchar, c_text, c_uuid, c_json, c_json_string_override, c_jsonb, c_jsonpath, c_xml, c_xml_string_override, c_cidr, c_inet, c_macaddr, c_macaddr8) VALUES ( @c_boolean, @c_bit, @c_smallint, @c_integer, @c_bigint, @c_real, @c_numeric, @c_decimal, @c_double_precision, @c_money, @c_date, @c_time, @c_timestamp, @c_timestamp_with_tz, @c_interval, @c_char, @c_varchar, @c_character_varying, @c_bpchar, @c_text, @c_uuid, @c_json :: json, @c_json_string_override :: json, @c_jsonb :: jsonb, @c_jsonpath :: jsonpath, @c_xml :: xml, @c_xml_string_override :: xml, @c_cidr, @c_inet, @c_macaddr :: macaddr, @c_macaddr8 :: macaddr8 ) "; 
         public class InsertPostgresTypesArgs
         {
             public bool? CBoolean { get; set; }
@@ -559,6 +559,7 @@ namespace NpgsqlDapperLegacyExampleGen
             public JsonElement? CJsonb { get; set; }
             public string CJsonpath { get; set; }
             public XmlDocument CXml { get; set; }
+            public string CXmlStringOverride { get; set; }
             public NpgsqlCidr? CCidr { get; set; }
             public IPAddress CInet { get; set; }
             public PhysicalAddress CMacaddr { get; set; }
@@ -593,6 +594,7 @@ namespace NpgsqlDapperLegacyExampleGen
             queryParams.Add("c_jsonb", args.CJsonb.HasValue ? args.CJsonb.Value.GetRawText() : null);
             queryParams.Add("c_jsonpath", args.CJsonpath);
             queryParams.Add("c_xml", args.CXml != null ? args.CXml.OuterXml : null);
+            queryParams.Add("c_xml_string_override", args.CXmlStringOverride);
             queryParams.Add("c_cidr", args.CCidr);
             queryParams.Add("c_inet", args.CInet);
             queryParams.Add("c_macaddr", args.CMacaddr);
@@ -684,7 +686,7 @@ namespace NpgsqlDapperLegacyExampleGen
             }
         }
 
-        private const string GetPostgresTypesSql = "SELECT      c_boolean , c_bit, c_smallint, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_money, c_date, c_time, c_timestamp, c_timestamp_with_tz, c_interval, c_char, c_varchar, c_character_varying, c_bpchar, c_text, c_uuid, c_json, c_json_string_override, c_jsonb, c_jsonpath, c_xml, c_cidr, c_inet, c_macaddr, c_macaddr8 :: TEXT  AS  c_macaddr8  FROM  postgres_types  LIMIT  1  "; 
+        private const string GetPostgresTypesSql = "SELECT      c_boolean , c_bit, c_smallint, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_money, c_date, c_time, c_timestamp, c_timestamp_with_tz, c_interval, c_char, c_varchar, c_character_varying, c_bpchar, c_text, c_uuid, c_json, c_json_string_override, c_jsonb, c_jsonpath, c_xml, c_xml_string_override, c_cidr, c_inet, c_macaddr, c_macaddr8 :: TEXT  AS  c_macaddr8  FROM  postgres_types  LIMIT  1  "; 
         public class GetPostgresTypesRow
         {
             public bool? CBoolean { get; set; }
@@ -713,6 +715,7 @@ namespace NpgsqlDapperLegacyExampleGen
             public JsonElement? CJsonb { get; set; }
             public string CJsonpath { get; set; }
             public XmlDocument CXml { get; set; }
+            public string CXmlStringOverride { get; set; }
             public NpgsqlCidr? CCidr { get; set; }
             public IPAddress CInet { get; set; }
             public PhysicalAddress CMacaddr { get; set; }

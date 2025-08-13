@@ -1006,6 +1006,21 @@ public static class PostgresTests
                      }
                      """
         },
+
+        [KnownTestType.PostgresInvalidXml] = new TestImpl
+        {
+            Impl = $$"""
+                     [Test]
+                     public void TestPostgresInvalidXml()
+                     {
+                         Assert.ThrowsAsync<Npgsql.PostgresException>(async () => await 
+                            QuerySql.InsertPostgresTypes(new QuerySql.InsertPostgresTypesArgs
+                            {
+                                CXmlStringOverride = "<root>SOME INVALID XML"
+                            }));
+                     }
+                     """
+        },
         [KnownTestType.PostgresNetworkCopyFrom] = new TestImpl
         {
             Impl = $$"""

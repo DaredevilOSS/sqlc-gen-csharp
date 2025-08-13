@@ -919,6 +919,12 @@ namespace EndToEndTests
         }
 
         [Test]
+        public void TestPostgresInvalidXml()
+        {
+            Assert.ThrowsAsync<Npgsql.PostgresException>(async () => await QuerySql.InsertPostgresTypes(new QuerySql.InsertPostgresTypesArgs { CXmlStringOverride = "<root>SOME INVALID XML" }));
+        }
+
+        [Test]
         public async Task TestArray()
         {
             var id1 = await this.QuerySql.CreateAuthorReturnId(new QuerySql.CreateAuthorReturnIdArgs { Name = "Albert Einstein", Bio = "Quote that everyone always attribute to Einstein" });

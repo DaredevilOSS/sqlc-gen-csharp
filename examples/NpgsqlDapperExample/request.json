@@ -11,7 +11,7 @@
     "codegen": {
       "out": "examples/NpgsqlDapperExample",
       "plugin": "csharp",
-      "options": "eyJkZWJ1Z1JlcXVlc3QiOnRydWUsImdlbmVyYXRlQ3Nwcm9qIjp0cnVlLCJuYW1lc3BhY2VOYW1lIjoiTnBnc3FsRGFwcGVyRXhhbXBsZUdlbiIsIm92ZXJyaWRlcyI6W3siY29sdW1uIjoiR2V0UG9zdGdyZXNGdW5jdGlvbnM6bWF4X2ludGVnZXIiLCJjc2hhcnBfdHlwZSI6eyJub3ROdWxsIjpmYWxzZSwidHlwZSI6ImludCJ9fSx7ImNvbHVtbiI6IkdldFBvc3RncmVzRnVuY3Rpb25zOm1heF92YXJjaGFyIiwiY3NoYXJwX3R5cGUiOnsibm90TnVsbCI6ZmFsc2UsInR5cGUiOiJzdHJpbmcifX0seyJjb2x1bW4iOiJHZXRQb3N0Z3Jlc0Z1bmN0aW9uczptYXhfdGltZXN0YW1wIiwiY3NoYXJwX3R5cGUiOnsibm90TnVsbCI6dHJ1ZSwidHlwZSI6IkRhdGVUaW1lIn19LHsiY29sdW1uIjoiKjpjX2pzb25fc3RyaW5nX292ZXJyaWRlIiwiY3NoYXJwX3R5cGUiOnsibm90TnVsbCI6ZmFsc2UsInR5cGUiOiJzdHJpbmcifX0seyJjb2x1bW4iOiIqOmNfbWFjYWRkcjgiLCJjc2hhcnBfdHlwZSI6eyJub3ROdWxsIjpmYWxzZSwidHlwZSI6InN0cmluZyJ9fV0sInRhcmdldEZyYW1ld29yayI6Im5ldDguMCIsInVzZURhcHBlciI6dHJ1ZX0=",
+      "options": "eyJkZWJ1Z1JlcXVlc3QiOnRydWUsImdlbmVyYXRlQ3Nwcm9qIjp0cnVlLCJuYW1lc3BhY2VOYW1lIjoiTnBnc3FsRGFwcGVyRXhhbXBsZUdlbiIsIm92ZXJyaWRlcyI6W3siY29sdW1uIjoiR2V0UG9zdGdyZXNGdW5jdGlvbnM6bWF4X2ludGVnZXIiLCJjc2hhcnBfdHlwZSI6eyJub3ROdWxsIjpmYWxzZSwidHlwZSI6ImludCJ9fSx7ImNvbHVtbiI6IkdldFBvc3RncmVzRnVuY3Rpb25zOm1heF92YXJjaGFyIiwiY3NoYXJwX3R5cGUiOnsibm90TnVsbCI6ZmFsc2UsInR5cGUiOiJzdHJpbmcifX0seyJjb2x1bW4iOiJHZXRQb3N0Z3Jlc0Z1bmN0aW9uczptYXhfdGltZXN0YW1wIiwiY3NoYXJwX3R5cGUiOnsibm90TnVsbCI6dHJ1ZSwidHlwZSI6IkRhdGVUaW1lIn19LHsiY29sdW1uIjoiKjpjX2pzb25fc3RyaW5nX292ZXJyaWRlIiwiY3NoYXJwX3R5cGUiOnsibm90TnVsbCI6ZmFsc2UsInR5cGUiOiJzdHJpbmcifX0seyJjb2x1bW4iOiIqOmNfeG1sX3N0cmluZ19vdmVycmlkZSIsImNzaGFycF90eXBlIjp7Im5vdE51bGwiOmZhbHNlLCJ0eXBlIjoic3RyaW5nIn19LHsiY29sdW1uIjoiKjpjX21hY2FkZHI4IiwiY3NoYXJwX3R5cGUiOnsibm90TnVsbCI6ZmFsc2UsInR5cGUiOiJzdHJpbmcifX1dLCJ0YXJnZXRGcmFtZXdvcmsiOiJuZXQ4LjAiLCJ1c2VEYXBwZXIiOnRydWV9",
       "process": {
         "cmd": "./dist/LocalRunner"
       }
@@ -376,6 +376,16 @@
               },
               {
                 "name": "c_xml",
+                "length": -1,
+                "table": {
+                  "name": "postgres_types"
+                },
+                "type": {
+                  "name": "xml"
+                }
+              },
+              {
+                "name": "c_xml_string_override",
                 "length": -1,
                 "table": {
                   "name": "postgres_types"
@@ -33207,7 +33217,7 @@
       "filename": "query.sql"
     },
     {
-      "text": "INSERT INTO postgres_types\n(\n    c_boolean,\n    c_bit,\n    c_smallint,\n    c_integer,\n    c_bigint,\n    c_real,\n    c_numeric,\n    c_decimal,\n    c_double_precision,\n    c_money,\n    c_date,\n    c_time,\n    c_timestamp,\n    c_timestamp_with_tz,\n    c_interval,\n    c_char,\n    c_varchar,\n    c_character_varying,\n    c_bpchar,\n    c_text,\n    c_uuid,\n    c_json,\n    c_json_string_override,\n    c_jsonb,\n    c_jsonpath,\n    c_xml,\n    c_cidr,\n    c_inet,\n    c_macaddr,\n    c_macaddr8\n)\nVALUES (\n    $1,\n    $2,\n    $3,\n    $4,\n    $5,\n    $6,\n    $7,\n    $8,\n    $9,\n    $10,\n    $11,\n    $12,\n    $13,\n    $14,\n    $15,\n    $16,\n    $17,\n    $18,\n    $19,\n    $20,\n    $21,\n    $22::json, \n    $23::json, \n    $24::jsonb,\n    $25::jsonpath,\n    $26::xml,\n    $27,\n    $28,\n    $29::macaddr,\n    $30::macaddr8\n)",
+      "text": "INSERT INTO postgres_types\n(\n    c_boolean,\n    c_bit,\n    c_smallint,\n    c_integer,\n    c_bigint,\n    c_real,\n    c_numeric,\n    c_decimal,\n    c_double_precision,\n    c_money,\n    c_date,\n    c_time,\n    c_timestamp,\n    c_timestamp_with_tz,\n    c_interval,\n    c_char,\n    c_varchar,\n    c_character_varying,\n    c_bpchar,\n    c_text,\n    c_uuid,\n    c_json,\n    c_json_string_override,\n    c_jsonb,\n    c_jsonpath,\n    c_xml,\n    c_xml_string_override,\n    c_cidr,\n    c_inet,\n    c_macaddr,\n    c_macaddr8\n)\nVALUES (\n    $1,\n    $2,\n    $3,\n    $4,\n    $5,\n    $6,\n    $7,\n    $8,\n    $9,\n    $10,\n    $11,\n    $12,\n    $13,\n    $14,\n    $15,\n    $16,\n    $17,\n    $18,\n    $19,\n    $20,\n    $21,\n    $22::json, \n    $23::json, \n    $24::jsonb,\n    $25::jsonpath,\n    $26::xml,\n    $27::xml,\n    $28,\n    $29,\n    $30::macaddr,\n    $31::macaddr8\n)",
       "name": "InsertPostgresTypes",
       "cmd": ":exec",
       "parameters": [
@@ -33600,6 +33610,16 @@
         {
           "number": 27,
           "column": {
+            "name": "c_xml_string_override",
+            "length": -1,
+            "type": {
+              "name": "xml"
+            }
+          }
+        },
+        {
+          "number": 28,
+          "column": {
             "name": "c_cidr",
             "length": -1,
             "isNamedParam": true,
@@ -33614,7 +33634,7 @@
           }
         },
         {
-          "number": 28,
+          "number": 29,
           "column": {
             "name": "c_inet",
             "length": -1,
@@ -33630,7 +33650,7 @@
           }
         },
         {
-          "number": 29,
+          "number": 30,
           "column": {
             "name": "c_macaddr",
             "length": -1,
@@ -33640,7 +33660,7 @@
           }
         },
         {
-          "number": 30,
+          "number": 31,
           "column": {
             "name": "c_macaddr8",
             "length": -1,
@@ -34012,7 +34032,7 @@
       }
     },
     {
-      "text": "SELECT     \n    c_boolean,\n    c_bit,\n    c_smallint,\n    c_integer,\n    c_bigint,\n    c_real,\n    c_numeric,\n    c_decimal,\n    c_double_precision,\n    c_money,\n    c_date,\n    c_time,\n    c_timestamp,\n    c_timestamp_with_tz,\n    c_interval,\n    c_char,\n    c_varchar,\n    c_character_varying,\n    c_bpchar,\n    c_text,\n    c_uuid,\n    c_json,\n    c_json_string_override,\n    c_jsonb,\n    c_jsonpath,\n    c_xml,\n    c_cidr,\n    c_inet,\n    c_macaddr,\n    c_macaddr8::TEXT AS c_macaddr8\nFROM postgres_types \nLIMIT 1",
+      "text": "SELECT     \n    c_boolean,\n    c_bit,\n    c_smallint,\n    c_integer,\n    c_bigint,\n    c_real,\n    c_numeric,\n    c_decimal,\n    c_double_precision,\n    c_money,\n    c_date,\n    c_time,\n    c_timestamp,\n    c_timestamp_with_tz,\n    c_interval,\n    c_char,\n    c_varchar,\n    c_character_varying,\n    c_bpchar,\n    c_text,\n    c_uuid,\n    c_json,\n    c_json_string_override,\n    c_jsonb,\n    c_jsonpath,\n    c_xml,\n    c_xml_string_override,\n    c_cidr,\n    c_inet,\n    c_macaddr,\n    c_macaddr8::TEXT AS c_macaddr8\nFROM postgres_types \nLIMIT 1",
       "name": "GetPostgresTypes",
       "cmd": ":one",
       "columns": [
@@ -34317,6 +34337,17 @@
             "name": "xml"
           },
           "originalName": "c_xml"
+        },
+        {
+          "name": "c_xml_string_override",
+          "length": -1,
+          "table": {
+            "name": "postgres_types"
+          },
+          "type": {
+            "name": "xml"
+          },
+          "originalName": "c_xml_string_override"
         },
         {
           "name": "c_cidr",
@@ -35302,5 +35333,5 @@
     }
   ],
   "sqlc_version": "v1.27.0",
-  "plugin_options": "eyJvdmVycmlkZURyaXZlclZlcnNpb24iOiIiLCJnZW5lcmF0ZUNzcHJvaiI6dHJ1ZSwidGFyZ2V0RnJhbWV3b3JrIjoibmV0OC4wIiwibmFtZXNwYWNlTmFtZSI6Ik5wZ3NxbERhcHBlckV4YW1wbGVHZW4iLCJ1c2VEYXBwZXIiOnRydWUsIm92ZXJyaWRlRGFwcGVyVmVyc2lvbiI6IiIsIm92ZXJyaWRlcyI6W3siY29sdW1uIjoiR2V0UG9zdGdyZXNGdW5jdGlvbnM6bWF4X2ludGVnZXIiLCJjc2hhcnBfdHlwZSI6eyJ0eXBlIjoiaW50Iiwibm90TnVsbCI6ZmFsc2V9fSx7ImNvbHVtbiI6IkdldFBvc3RncmVzRnVuY3Rpb25zOm1heF92YXJjaGFyIiwiY3NoYXJwX3R5cGUiOnsidHlwZSI6InN0cmluZyIsIm5vdE51bGwiOmZhbHNlfX0seyJjb2x1bW4iOiJHZXRQb3N0Z3Jlc0Z1bmN0aW9uczptYXhfdGltZXN0YW1wIiwiY3NoYXJwX3R5cGUiOnsidHlwZSI6IkRhdGVUaW1lIiwibm90TnVsbCI6dHJ1ZX19LHsiY29sdW1uIjoiKjpjX2pzb25fc3RyaW5nX292ZXJyaWRlIiwiY3NoYXJwX3R5cGUiOnsidHlwZSI6InN0cmluZyIsIm5vdE51bGwiOmZhbHNlfX0seyJjb2x1bW4iOiIqOmNfbWFjYWRkcjgiLCJjc2hhcnBfdHlwZSI6eyJ0eXBlIjoic3RyaW5nIiwibm90TnVsbCI6ZmFsc2V9fV0sImRlYnVnUmVxdWVzdCI6ZmFsc2V9"
+  "plugin_options": "eyJvdmVycmlkZURyaXZlclZlcnNpb24iOiIiLCJnZW5lcmF0ZUNzcHJvaiI6dHJ1ZSwidGFyZ2V0RnJhbWV3b3JrIjoibmV0OC4wIiwibmFtZXNwYWNlTmFtZSI6Ik5wZ3NxbERhcHBlckV4YW1wbGVHZW4iLCJ1c2VEYXBwZXIiOnRydWUsIm92ZXJyaWRlRGFwcGVyVmVyc2lvbiI6IiIsIm92ZXJyaWRlcyI6W3siY29sdW1uIjoiR2V0UG9zdGdyZXNGdW5jdGlvbnM6bWF4X2ludGVnZXIiLCJjc2hhcnBfdHlwZSI6eyJ0eXBlIjoiaW50Iiwibm90TnVsbCI6ZmFsc2V9fSx7ImNvbHVtbiI6IkdldFBvc3RncmVzRnVuY3Rpb25zOm1heF92YXJjaGFyIiwiY3NoYXJwX3R5cGUiOnsidHlwZSI6InN0cmluZyIsIm5vdE51bGwiOmZhbHNlfX0seyJjb2x1bW4iOiJHZXRQb3N0Z3Jlc0Z1bmN0aW9uczptYXhfdGltZXN0YW1wIiwiY3NoYXJwX3R5cGUiOnsidHlwZSI6IkRhdGVUaW1lIiwibm90TnVsbCI6dHJ1ZX19LHsiY29sdW1uIjoiKjpjX2pzb25fc3RyaW5nX292ZXJyaWRlIiwiY3NoYXJwX3R5cGUiOnsidHlwZSI6InN0cmluZyIsIm5vdE51bGwiOmZhbHNlfX0seyJjb2x1bW4iOiIqOmNfeG1sX3N0cmluZ19vdmVycmlkZSIsImNzaGFycF90eXBlIjp7InR5cGUiOiJzdHJpbmciLCJub3ROdWxsIjpmYWxzZX19LHsiY29sdW1uIjoiKjpjX21hY2FkZHI4IiwiY3NoYXJwX3R5cGUiOnsidHlwZSI6InN0cmluZyIsIm5vdE51bGwiOmZhbHNlfX1dLCJkZWJ1Z1JlcXVlc3QiOmZhbHNlfQ=="
 }

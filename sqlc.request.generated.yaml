@@ -33,6 +33,10 @@ sql:
               csharp_type:
                 type: "string"
                 notNull: false
+            - column: "*:c_xml_string_override"
+              csharp_type:
+                type: "string"
+                notNull: false
             - column: "*:c_macaddr8"
               csharp_type:
                 type: "string"
@@ -63,6 +67,10 @@ sql:
                 type: "DateTime"
                 notNull: true
             - column: "*:c_json_string_override"
+              csharp_type:
+                type: "string"
+                notNull: false
+            - column: "*:c_xml_string_override"
               csharp_type:
                 type: "string"
                 notNull: false
@@ -99,6 +107,10 @@ sql:
               csharp_type:
                 type: "string"
                 notNull: false
+            - column: "*:c_xml_string_override"
+              csharp_type:
+                type: "string"
+                notNull: false
             - column: "*:c_macaddr8"
               csharp_type:
                 type: "string"
@@ -129,6 +141,10 @@ sql:
                 type: "DateTime"
                 notNull: true
             - column: "*:c_json_string_override"
+              csharp_type:
+                type: "string"
+                notNull: false
+            - column: "*:c_xml_string_override"
               csharp_type:
                 type: "string"
                 notNull: false

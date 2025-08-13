@@ -1,9 +1,9 @@
 
-ï
+Ä
 2
-postgresql%examples/config/postgresql/schema.sql"$examples/config/postgresql/query.sqlb
-examples/NpgsqlLegacyExamplecsharpÑ{"debugRequest":true,"generateCsproj":true,"namespaceName":"NpgsqlLegacyExampleGen","overrides":[{"column":"GetPostgresFunctions:max_integer","csharp_type":{"notNull":false,"type":"int"}},{"column":"GetPostgresFunctions:max_varchar","csharp_type":{"notNull":false,"type":"string"}},{"column":"GetPostgresFunctions:max_timestamp","csharp_type":{"notNull":true,"type":"DateTime"}},{"column":"*:c_json_string_override","csharp_type":{"notNull":false,"type":"string"}},{"column":"*:c_macaddr8","csharp_type":{"notNull":false,"type":"string"}}],"targetFramework":"netstandard2.0","useDapper":false}*
-./dist/LocalRunner©æpublic"ıpublicƒ
+postgresql%examples/config/postgresql/schema.sql"$examples/config/postgresql/query.sqlbå
+examples/NpgsqlLegacyExamplecsharp¦{"debugRequest":true,"generateCsproj":true,"namespaceName":"NpgsqlLegacyExampleGen","overrides":[{"column":"GetPostgresFunctions:max_integer","csharp_type":{"notNull":false,"type":"int"}},{"column":"GetPostgresFunctions:max_varchar","csharp_type":{"notNull":false,"type":"string"}},{"column":"GetPostgresFunctions:max_timestamp","csharp_type":{"notNull":true,"type":"DateTime"}},{"column":"*:c_json_string_override","csharp_type":{"notNull":false,"type":"string"}},{"column":"*:c_xml_string_override","csharp_type":{"notNull":false,"type":"string"}},{"column":"*:c_macaddr8","csharp_type":{"notNull":false,"type":"string"}}],"targetFramework":"netstandard2.0","useDapper":false}*
+./dist/LocalRunnerææpublic"ºpublicƒ
 	authors)
 id0ÿÿÿÿÿÿÿÿÿR	authorsb	bigserial&
 name0ÿÿÿÿÿÿÿÿÿR	authorsbtext#
@@ -13,7 +13,7 @@ postgresql%examples/config/postgresql/schema.sql"$examples/config/postgresql/qu
 name0ÿÿÿÿÿÿÿÿÿRbooksbtext5
 	author_id0ÿÿÿÿÿÿÿÿÿRbooksb
 pg_catalogint8)
-description0ÿÿÿÿÿÿÿÿÿRbooksbtextä
+description0ÿÿÿÿÿÿÿÿÿRbooksbtext¡
 postgres_types<
 	c_boolean0ÿÿÿÿÿÿÿÿÿRpostgres_typesb
 pg_catalogbool7
@@ -59,7 +59,8 @@ pg_catalogvarchar1
 
 c_jsonpath0ÿÿÿÿÿÿÿÿÿRpostgres_typesb
 jsonpath+
-c_xml0ÿÿÿÿÿÿÿÿÿRpostgres_typesbxml-
+c_xml0ÿÿÿÿÿÿÿÿÿRpostgres_typesbxml;
+c_xml_string_override0ÿÿÿÿÿÿÿÿÿRpostgres_typesbxml-
 c_cidr0ÿÿÿÿÿÿÿÿÿRpostgres_typesbcidr-
 c_inet0ÿÿÿÿÿÿÿÿÿRpostgres_typesbinet3
 	c_macaddr0ÿÿÿÿÿÿÿÿÿRpostgres_typesb	macaddr5
@@ -10298,8 +10299,8 @@ WHERE books.name = $1GetAuthorsByBookName:many"-
 name0ÿÿÿÿÿÿÿÿÿR	authorsbtextzname"(
 bio0ÿÿÿÿÿÿÿÿÿR	authorsbtextzbio"
 books0ÿÿÿÿÿÿÿÿÿb rbooks*.*
-name0ÿÿÿÿÿÿÿÿÿRbooksbtextzname:	query.sqlˆ
-¬INSERT INTO postgres_types
+name0ÿÿÿÿÿÿÿÿÿRbooksbtextzname:	query.sqlà
+ÕINSERT INTO postgres_types
 (
     c_boolean,
     c_bit,
@@ -10327,6 +10328,7 @@ WHERE books.name = $1GetAuthorsByBookName:many"-
     c_jsonb,
     c_jsonpath,
     c_xml,
+    c_xml_string_override,
     c_cidr,
     c_inet,
     c_macaddr,
@@ -10359,10 +10361,11 @@ VALUES (
     $24::jsonb,
     $25::jsonpath,
     $26::xml,
-    $27,
+    $27::xml,
     $28,
-    $29::macaddr,
-    $30::macaddr8
+    $29,
+    $30::macaddr,
+    $31::macaddr8
 )InsertPostgresTypes:exec*TP
 	c_boolean0ÿÿÿÿÿÿÿÿÿ8Rpublicpostgres_typesbpg_catalog.boolz	c_boolean*KG
 c_bit0ÿÿÿÿÿÿÿÿÿ8Rpublicpostgres_typesbpg_catalog.bitzc_bit*VR
@@ -10396,10 +10399,11 @@ c_interval*PL
 
 c_jsonpath0ÿÿÿÿÿÿÿÿÿb
 jsonpath*
-c_xml0ÿÿÿÿÿÿÿÿÿbxml*C?
-c_cidr0ÿÿÿÿÿÿÿÿÿ8Rpublicpostgres_typesbcidrzc_cidr*C?
-c_inet0ÿÿÿÿÿÿÿÿÿ8Rpublicpostgres_typesbinetzc_inet*%!
-	c_macaddr0ÿÿÿÿÿÿÿÿÿb	macaddr*'#
+c_xml0ÿÿÿÿÿÿÿÿÿbxml*-)
+c_xml_string_override0ÿÿÿÿÿÿÿÿÿbxml*C?
+c_cidr0ÿÿÿÿÿÿÿÿÿ8Rpublicpostgres_typesbcidrzc_cidr*C?
+c_inet0ÿÿÿÿÿÿÿÿÿ8Rpublicpostgres_typesbinetzc_inet*%!
+	c_macaddr0ÿÿÿÿÿÿÿÿÿb	macaddr*'#
 
 c_macaddr80ÿÿÿÿÿÿÿÿÿb
 macaddr8:	query.sqlBpostgres_types‡
@@ -10481,8 +10485,8 @@ c_interval*NJ
 c_uuid0ÿÿÿÿÿÿÿÿÿRpublicpostgres_typesbuuidzc_uuid*A=
 c_cidr0ÿÿÿÿÿÿÿÿÿRpublicpostgres_typesbcidrzc_cidr*A=
 c_inet0ÿÿÿÿÿÿÿÿÿRpublicpostgres_typesbinetzc_inet*JF
-	c_macaddr0ÿÿÿÿÿÿÿÿÿRpublicpostgres_typesb	macaddrz	c_macaddr:	query.sqlBpostgres_types­
-„SELECT     
+	c_macaddr0ÿÿÿÿÿÿÿÿÿRpublicpostgres_typesb	macaddrz	c_macaddr:	query.sqlBpostgres_typesœ
+ŸSELECT     
     c_boolean,
     c_bit,
     c_smallint,
@@ -10509,6 +10513,7 @@ c_interval*NJ
     c_jsonb,
     c_jsonpath,
     c_xml,
+    c_xml_string_override,
     c_cidr,
     c_inet,
     c_macaddr,
@@ -10563,7 +10568,8 @@ pg_catalogvarcharzc_character_varying";
 c_jsonpath0ÿÿÿÿÿÿÿÿÿRpostgres_typesb
 jsonpathz
 c_jsonpath"2
-c_xml0ÿÿÿÿÿÿÿÿÿRpostgres_typesbxmlzc_xml"5
+c_xml0ÿÿÿÿÿÿÿÿÿRpostgres_typesbxmlzc_xml"R
+c_xml_string_override0ÿÿÿÿÿÿÿÿÿRpostgres_typesbxmlzc_xml_string_override"5
 c_cidr0ÿÿÿÿÿÿÿÿÿRpostgres_typesbcidrzc_cidr"5
 c_inet0ÿÿÿÿÿÿÿÿÿRpostgres_typesbinetzc_inet">
 	c_macaddr0ÿÿÿÿÿÿÿÿÿRpostgres_typesb	macaddrz	c_macaddr"!
@@ -10747,4 +10753,4 @@ GROUP BY
 LIMIT 1GetPostgresArrayTypesCnt:one">
 c_bytea0ÿÿÿÿÿÿÿÿÿRpostgres_array_typesbbyteazc_bytea"
 cnt0ÿÿÿÿÿÿÿÿÿ@bbigint:	query.sqlS
-#TRUNCATE TABLE postgres_array_typesTruncatePostgresArrayTypes:exec:	query.sql"v1.27.0*ˆ{"overrideDriverVersion":"","generateCsproj":true,"targetFramework":"netstandard2.0","namespaceName":"NpgsqlLegacyExampleGen","useDapper":false,"overrideDapperVersion":"","overrides":[{"column":"GetPostgresFunctions:max_integer","csharp_type":{"type":"int","notNull":false}},{"column":"GetPostgresFunctions:max_varchar","csharp_type":{"type":"string","notNull":false}},{"column":"GetPostgresFunctions:max_timestamp","csharp_type":{"type":"DateTime","notNull":true}},{"column":"*:c_json_string_override","csharp_type":{"type":"string","notNull":false}},{"column":"*:c_macaddr8","csharp_type":{"type":"string","notNull":false}}],"debugRequest":false}
+#TRUNCATE TABLE postgres_array_typesTruncatePostgresArrayTypes:exec:	query.sql"v1.27.0*İ{"overrideDriverVersion":"","generateCsproj":true,"targetFramework":"netstandard2.0","namespaceName":"NpgsqlLegacyExampleGen","useDapper":false,"overrideDapperVersion":"","overrides":[{"column":"GetPostgresFunctions:max_integer","csharp_type":{"type":"int","notNull":false}},{"column":"GetPostgresFunctions:max_varchar","csharp_type":{"type":"string","notNull":false}},{"column":"GetPostgresFunctions:max_timestamp","csharp_type":{"type":"DateTime","notNull":true}},{"column":"*:c_json_string_override","csharp_type":{"type":"string","notNull":false}},{"column":"*:c_xml_string_override","csharp_type":{"type":"string","notNull":false}},{"column":"*:c_macaddr8","csharp_type":{"type":"string","notNull":false}}],"debugRequest":false}

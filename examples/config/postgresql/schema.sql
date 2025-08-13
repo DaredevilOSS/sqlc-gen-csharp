@@ -41,12 +41,13 @@ CREATE TABLE postgres_types (
     c_bpchar BPCHAR(100),
     c_text TEXT,
 
-    /* JSON Data Types */
-    c_json JSON,
+    /* Unstructured Data Types */
+    c_json                 JSON,
     c_json_string_override JSON,
-    c_jsonb JSONB,
-    c_jsonpath JSONPATH,
-    c_xml XML,
+    c_jsonb                JSONB,
+    c_jsonpath             JSONPATH,
+    c_xml                  XML,
+    c_xml_string_override  XML,
 
     /* Network Address Data Types */
     c_cidr CIDR,

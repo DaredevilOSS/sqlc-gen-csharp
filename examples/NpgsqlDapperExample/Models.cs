@@ -48,6 +48,7 @@ public class PostgresType
     public JsonElement? CJsonb { get; init; }
     public string? CJsonpath { get; init; }
     public XmlDocument? CXml { get; init; }
+    public XmlDocument? CXmlStringOverride { get; init; }
     public NpgsqlCidr? CCidr { get; init; }
     public IPAddress? CInet { get; init; }
     public PhysicalAddress? CMacaddr { get; init; }
