@@ -558,7 +558,7 @@ public class QuerySql
         public JsonElement? CJson { get; init; }
         public string? CJsonStringOverride { get; init; }
         public MysqlTypesCEnum? CEnum { get; init; }
-        public MysqlTypesCSet[]? CSet { get; init; }
+        public HashSet<MysqlTypesCSet>? CSet { get; init; }
         public short? CYear { get; init; }
         public DateTime? CDate { get; init; }
         public DateTime? CDatetime { get; init; }
@@ -658,7 +658,7 @@ public class QuerySql
         public JsonElement? CJson { get; init; }
         public string? CJsonStringOverride { get; init; }
         public MysqlTypesCEnum? CEnum { get; init; }
-        public MysqlTypesCSet[]? CSet { get; init; }
+        public HashSet<MysqlTypesCSet>? CSet { get; init; }
         public short? CYear { get; init; }
         public DateTime? CDate { get; init; }
         public DateTime? CDatetime { get; init; }
@@ -697,8 +697,8 @@ public class QuerySql
             csvWriter.Context.TypeConverterCache.AddConverter<byte?>(new Utils.ByteCsvConverter());
             csvWriter.Context.TypeConverterCache.AddConverter<byte[]>(new Utils.ByteArrayCsvConverter());
             csvWriter.Context.TypeConverterCache.AddConverter<byte[]?>(new Utils.ByteArrayCsvConverter());
-            csvWriter.Context.TypeConverterCache.AddConverter<MysqlTypesCSet[]>(new Utils.MysqlTypesCSetCsvConverter());
-            csvWriter.Context.TypeConverterCache.AddConverter<MysqlTypesCSet[]?>(new Utils.MysqlTypesCSetCsvConverter());
+            csvWriter.Context.TypeConverterCache.AddConverter<HashSet<MysqlTypesCSet>>(new Utils.MysqlTypesCSetCsvConverter());
+            csvWriter.Context.TypeConverterCache.AddConverter<HashSet<MysqlTypesCSet>?>(new Utils.MysqlTypesCSetCsvConverter());
             csvWriter.Context.TypeConverterCache.AddConverter<short?>(nullConverterFn);
             csvWriter.Context.TypeConverterCache.AddConverter<int?>(nullConverterFn);
             csvWriter.Context.TypeConverterCache.AddConverter<long?>(nullConverterFn);
@@ -765,7 +765,7 @@ public class QuerySql
         public JsonElement? CJson { get; init; }
         public string? CJsonStringOverride { get; init; }
         public MysqlTypesCEnum? CEnum { get; init; }
-        public MysqlTypesCSet[]? CSet { get; init; }
+        public HashSet<MysqlTypesCSet>? CSet { get; init; }
         public byte? CBit { get; init; }
         public byte[]? CBinary { get; init; }
         public byte[]? CVarbinary { get; init; }
@@ -824,7 +824,7 @@ public class QuerySql
         public JsonElement? CJson { get; init; }
         public string? CJsonStringOverride { get; init; }
         public MysqlTypesCEnum? CEnum { get; init; }
-        public MysqlTypesCSet[]? CSet { get; init; }
+        public HashSet<MysqlTypesCSet>? CSet { get; init; }
         public short? CYear { get; init; }
         public DateTime? CDate { get; init; }
         public DateTime? CDatetime { get; init; }
@@ -908,7 +908,7 @@ public class QuerySql
         public string? AuthorName { get; init; }
         public string? Name { get; init; }
         public ExtendedBiosBioType? BioType { get; init; }
-        public ExtendedBiosAuthorType[]? AuthorType { get; init; }
+        public HashSet<ExtendedBiosAuthorType>? AuthorType { get; init; }
     };
     public async Task CreateExtendedBio(CreateExtendedBioArgs args)
     {
@@ -941,7 +941,7 @@ public class QuerySql
         public string? AuthorName { get; init; }
         public string? Name { get; init; }
         public ExtendedBiosBioType? BioType { get; init; }
-        public ExtendedBiosAuthorType[]? AuthorType { get; init; }
+        public HashSet<ExtendedBiosAuthorType>? AuthorType { get; init; }
     };
     public class GetFirstExtendedBioByTypeArgs
     {

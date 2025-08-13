@@ -7,8 +7,8 @@ using System.Text.Json;
 namespace MySqlConnectorExampleGen;
 public readonly record struct Author(long Id, string Name, string? Bio);
 public readonly record struct Book(long Id, string Name, long AuthorId, string? Description);
-public readonly record struct MysqlType(bool? CBool, bool? CBoolean, short? CTinyint, short? CSmallint, int? CMediumint, int? CInt, int? CInteger, long? CBigint, double? CFloat, decimal? CDecimal, decimal? CDec, decimal? CNumeric, decimal? CFixed, double? CDouble, double? CDoublePrecision, short? CYear, DateTime? CDate, string? CTime, DateTime? CDatetime, DateTime? CTimestamp, string? CChar, string? CNchar, string? CNationalChar, string? CVarchar, string? CTinytext, string? CMediumtext, string? CText, string? CLongtext, JsonElement? CJson, JsonElement? CJsonStringOverride, MysqlTypesCEnum? CEnum, MysqlTypesCSet[]? CSet, byte? CBit, byte[]? CBinary, byte[]? CVarbinary, byte[]? CTinyblob, byte[]? CBlob, byte[]? CMediumblob, byte[]? CLongblob);
-public readonly record struct ExtendedBio(string? AuthorName, string? Name, ExtendedBiosBioType? BioType, ExtendedBiosAuthorType[]? AuthorType);
+public readonly record struct MysqlType(bool? CBool, bool? CBoolean, short? CTinyint, short? CSmallint, int? CMediumint, int? CInt, int? CInteger, long? CBigint, double? CFloat, decimal? CDecimal, decimal? CDec, decimal? CNumeric, decimal? CFixed, double? CDouble, double? CDoublePrecision, short? CYear, DateTime? CDate, string? CTime, DateTime? CDatetime, DateTime? CTimestamp, string? CChar, string? CNchar, string? CNationalChar, string? CVarchar, string? CTinytext, string? CMediumtext, string? CText, string? CLongtext, JsonElement? CJson, JsonElement? CJsonStringOverride, MysqlTypesCEnum? CEnum, HashSet<MysqlTypesCSet>? CSet, byte? CBit, byte[]? CBinary, byte[]? CVarbinary, byte[]? CTinyblob, byte[]? CBlob, byte[]? CMediumblob, byte[]? CLongblob);
+public readonly record struct ExtendedBio(string? AuthorName, string? Name, ExtendedBiosBioType? BioType, HashSet<ExtendedBiosAuthorType>? AuthorType);
 public enum MysqlTypesCEnum
 {
     Invalid = 0, // reserved for invalid enum value
@@ -31,9 +31,9 @@ public static class MysqlTypesCEnumExtensions
         return StringToEnum[me];
     }
 
-    public static MysqlTypesCEnum[] ToMysqlTypesCEnumArr(this string me)
+    public static HashSet<MysqlTypesCEnum> ToMysqlTypesCEnumSet(this string me)
     {
-        return me.Split(',').ToList().Select(v => StringToEnum[v]).ToArray();
+        return new HashSet<MysqlTypesCEnum>(me.Split(',').ToList().Select(v => StringToEnum[v]));
     }
 }
 
@@ -59,9 +59,9 @@ public static class MysqlTypesCSetExtensions
         return StringToEnum[me];
     }
 
-    public static MysqlTypesCSet[] ToMysqlTypesCSetArr(this string me)
+    public static HashSet<MysqlTypesCSet> ToMysqlTypesCSetSet(this string me)
     {
-        return me.Split(',').ToList().Select(v => StringToEnum[v]).ToArray();
+        return new HashSet<MysqlTypesCSet>(me.Split(',').ToList().Select(v => StringToEnum[v]));
     }
 }
 
@@ -87,9 +87,9 @@ public static class ExtendedBiosBioTypeExtensions
         return StringToEnum[me];
     }
 
-    public static ExtendedBiosBioType[] ToExtendedBiosBioTypeArr(this string me)
+    public static HashSet<ExtendedBiosBioType> ToExtendedBiosBioTypeSet(this string me)
     {
-        return me.Split(',').ToList().Select(v => StringToEnum[v]).ToArray();
+        return new HashSet<ExtendedBiosBioType>(me.Split(',').ToList().Select(v => StringToEnum[v]));
     }
 }
 
@@ -115,8 +115,8 @@ public static class ExtendedBiosAuthorTypeExtensions
         return StringToEnum[me];
     }
 
-    public static ExtendedBiosAuthorType[] ToExtendedBiosAuthorTypeArr(this string me)
+    public static HashSet<ExtendedBiosAuthorType> ToExtendedBiosAuthorTypeSet(this string me)
     {
-        return me.Split(',').ToList().Select(v => StringToEnum[v]).ToArray();
+        return new HashSet<ExtendedBiosAuthorType>(me.Split(',').ToList().Select(v => StringToEnum[v]));
     }
 }

@@ -51,7 +51,7 @@ public class MysqlType
     public JsonElement? CJson { get; init; }
     public JsonElement? CJsonStringOverride { get; init; }
     public MysqlTypesCEnum? CEnum { get; init; }
-    public MysqlTypesCSet[]? CSet { get; init; }
+    public HashSet<MysqlTypesCSet>? CSet { get; init; }
     public byte? CBit { get; init; }
     public byte[]? CBinary { get; init; }
     public byte[]? CVarbinary { get; init; }
@@ -65,7 +65,7 @@ public class ExtendedBio
     public string? AuthorName { get; init; }
     public string? Name { get; init; }
     public ExtendedBiosBioType? BioType { get; init; }
-    public ExtendedBiosAuthorType[]? AuthorType { get; init; }
+    public HashSet<ExtendedBiosAuthorType>? AuthorType { get; init; }
 };
 public enum MysqlTypesCEnum
 {
@@ -89,9 +89,9 @@ public static class MysqlTypesCEnumExtensions
         return StringToEnum[me];
     }
 
-    public static MysqlTypesCEnum[] ToMysqlTypesCEnumArr(this string me)
+    public static HashSet<MysqlTypesCEnum> ToMysqlTypesCEnumSet(this string me)
     {
-        return me.Split(',').ToList().Select(v => StringToEnum[v]).ToArray();
+        return new HashSet<MysqlTypesCEnum>(me.Split(',').ToList().Select(v => StringToEnum[v]));
     }
 }
 
@@ -117,9 +117,9 @@ public static class MysqlTypesCSetExtensions
         return StringToEnum[me];
     }
 
-    public static MysqlTypesCSet[] ToMysqlTypesCSetArr(this string me)
+    public static HashSet<MysqlTypesCSet> ToMysqlTypesCSetSet(this string me)
     {
-        return me.Split(',').ToList().Select(v => StringToEnum[v]).ToArray();
+        return new HashSet<MysqlTypesCSet>(me.Split(',').ToList().Select(v => StringToEnum[v]));
     }
 }
 
@@ -145,9 +145,9 @@ public static class ExtendedBiosBioTypeExtensions
         return StringToEnum[me];
     }
 
-    public static ExtendedBiosBioType[] ToExtendedBiosBioTypeArr(this string me)
+    public static HashSet<ExtendedBiosBioType> ToExtendedBiosBioTypeSet(this string me)
     {
-        return me.Split(',').ToList().Select(v => StringToEnum[v]).ToArray();
+        return new HashSet<ExtendedBiosBioType>(me.Split(',').ToList().Select(v => StringToEnum[v]));
     }
 }
 
@@ -173,8 +173,8 @@ public static class ExtendedBiosAuthorTypeExtensions
         return StringToEnum[me];
     }
 
-    public static ExtendedBiosAuthorType[] ToExtendedBiosAuthorTypeArr(this string me)
+    public static HashSet<ExtendedBiosAuthorType> ToExtendedBiosAuthorTypeSet(this string me)
     {
-        return me.Split(',').ToList().Select(v => StringToEnum[v]).ToArray();
+        return new HashSet<ExtendedBiosAuthorType>(me.Split(',').ToList().Select(v => StringToEnum[v]));
     }
 }

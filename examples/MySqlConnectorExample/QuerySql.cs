@@ -655,7 +655,7 @@ public class QuerySql
     }
 
     private const string InsertMysqlTypesSql = "INSERT INTO mysql_types (c_bit, c_bool, c_boolean, c_tinyint, c_smallint, c_mediumint, c_int, c_integer, c_bigint, c_decimal, c_dec, c_numeric, c_fixed, c_float, c_double, c_double_precision, c_char, c_nchar, c_national_char, c_varchar, c_tinytext, c_mediumtext, c_text, c_longtext, c_json, c_json_string_override, c_enum, c_set, c_year, c_date, c_datetime, c_timestamp, c_binary, c_varbinary, c_tinyblob, c_blob, c_mediumblob, c_longblob) VALUES ( @c_bit, @c_bool, @c_boolean, @c_tinyint, @c_smallint, @c_mediumint, @c_int, @c_integer, @c_bigint, @c_decimal, @c_dec, @c_numeric, @c_fixed, @c_float, @c_double, @c_double_precision, @c_char, @c_nchar, @c_national_char, @c_varchar, @c_tinytext, @c_mediumtext, @c_text, @c_longtext, @c_json, @c_json_string_override, @c_enum, @c_set, @c_year, @c_date, @c_datetime, @c_timestamp, @c_binary, @c_varbinary, @c_tinyblob, @c_blob, @c_mediumblob, @c_longblob ) "; 
-    public readonly record struct InsertMysqlTypesArgs(byte? CBit, bool? CBool, bool? CBoolean, short? CTinyint, short? CSmallint, int? CMediumint, int? CInt, int? CInteger, long? CBigint, decimal? CDecimal, decimal? CDec, decimal? CNumeric, decimal? CFixed, double? CFloat, double? CDouble, double? CDoublePrecision, string? CChar, string? CNchar, string? CNationalChar, string? CVarchar, string? CTinytext, string? CMediumtext, string? CText, string? CLongtext, JsonElement? CJson, string? CJsonStringOverride, MysqlTypesCEnum? CEnum, MysqlTypesCSet[]? CSet, short? CYear, DateTime? CDate, DateTime? CDatetime, DateTime? CTimestamp, byte[]? CBinary, byte[]? CVarbinary, byte[]? CTinyblob, byte[]? CBlob, byte[]? CMediumblob, byte[]? CLongblob);
+    public readonly record struct InsertMysqlTypesArgs(byte? CBit, bool? CBool, bool? CBoolean, short? CTinyint, short? CSmallint, int? CMediumint, int? CInt, int? CInteger, long? CBigint, decimal? CDecimal, decimal? CDec, decimal? CNumeric, decimal? CFixed, double? CFloat, double? CDouble, double? CDoublePrecision, string? CChar, string? CNchar, string? CNationalChar, string? CVarchar, string? CTinytext, string? CMediumtext, string? CText, string? CLongtext, JsonElement? CJson, string? CJsonStringOverride, MysqlTypesCEnum? CEnum, HashSet<MysqlTypesCSet>? CSet, short? CYear, DateTime? CDate, DateTime? CDatetime, DateTime? CTimestamp, byte[]? CBinary, byte[]? CVarbinary, byte[]? CTinyblob, byte[]? CBlob, byte[]? CMediumblob, byte[]? CLongblob);
     public async Task InsertMysqlTypes(InsertMysqlTypesArgs args)
     {
         if (this.Transaction == null)
@@ -761,7 +761,7 @@ public class QuerySql
         }
     }
 
-    public readonly record struct InsertMysqlTypesBatchArgs(byte? CBit, bool? CBool, bool? CBoolean, short? CTinyint, short? CSmallint, int? CMediumint, int? CInt, int? CInteger, long? CBigint, double? CFloat, decimal? CNumeric, decimal? CDecimal, decimal? CDec, decimal? CFixed, double? CDouble, double? CDoublePrecision, string? CChar, string? CNchar, string? CNationalChar, string? CVarchar, string? CTinytext, string? CMediumtext, string? CText, string? CLongtext, JsonElement? CJson, string? CJsonStringOverride, MysqlTypesCEnum? CEnum, MysqlTypesCSet[]? CSet, short? CYear, DateTime? CDate, DateTime? CDatetime, DateTime? CTimestamp, byte[]? CBinary, byte[]? CVarbinary, byte[]? CTinyblob, byte[]? CBlob, byte[]? CMediumblob, byte[]? CLongblob);
+    public readonly record struct InsertMysqlTypesBatchArgs(byte? CBit, bool? CBool, bool? CBoolean, short? CTinyint, short? CSmallint, int? CMediumint, int? CInt, int? CInteger, long? CBigint, double? CFloat, decimal? CNumeric, decimal? CDecimal, decimal? CDec, decimal? CFixed, double? CDouble, double? CDoublePrecision, string? CChar, string? CNchar, string? CNationalChar, string? CVarchar, string? CTinytext, string? CMediumtext, string? CText, string? CLongtext, JsonElement? CJson, string? CJsonStringOverride, MysqlTypesCEnum? CEnum, HashSet<MysqlTypesCSet>? CSet, short? CYear, DateTime? CDate, DateTime? CDatetime, DateTime? CTimestamp, byte[]? CBinary, byte[]? CVarbinary, byte[]? CTinyblob, byte[]? CBlob, byte[]? CMediumblob, byte[]? CLongblob);
     public async Task InsertMysqlTypesBatch(List<InsertMysqlTypesBatchArgs> args)
     {
         const string supportedDateTimeFormat = "yyyy-MM-dd H:mm:ss";
@@ -789,8 +789,8 @@ public class QuerySql
             csvWriter.Context.TypeConverterCache.AddConverter<byte?>(new Utils.ByteCsvConverter());
             csvWriter.Context.TypeConverterCache.AddConverter<byte[]>(new Utils.ByteArrayCsvConverter());
             csvWriter.Context.TypeConverterCache.AddConverter<byte[]?>(new Utils.ByteArrayCsvConverter());
-            csvWriter.Context.TypeConverterCache.AddConverter<MysqlTypesCSet[]>(new Utils.MysqlTypesCSetCsvConverter());
-            csvWriter.Context.TypeConverterCache.AddConverter<MysqlTypesCSet[]?>(new Utils.MysqlTypesCSetCsvConverter());
+            csvWriter.Context.TypeConverterCache.AddConverter<HashSet<MysqlTypesCSet>>(new Utils.MysqlTypesCSetCsvConverter());
+            csvWriter.Context.TypeConverterCache.AddConverter<HashSet<MysqlTypesCSet>?>(new Utils.MysqlTypesCSetCsvConverter());
             csvWriter.Context.TypeConverterCache.AddConverter<short?>(nullConverterFn);
             csvWriter.Context.TypeConverterCache.AddConverter<int?>(nullConverterFn);
             csvWriter.Context.TypeConverterCache.AddConverter<long?>(nullConverterFn);
@@ -824,7 +824,7 @@ public class QuerySql
     }
 
     private const string GetMysqlTypesSql = "SELECT c_bool, c_boolean, c_tinyint, c_smallint, c_mediumint, c_int, c_integer, c_bigint, c_float, c_decimal, c_dec, c_numeric, c_fixed, c_double, c_double_precision, c_year, c_date, c_time, c_datetime, c_timestamp, c_char, c_nchar, c_national_char, c_varchar, c_tinytext, c_mediumtext, c_text, c_longtext, c_json, c_json_string_override, c_enum, c_set, c_bit, c_binary, c_varbinary, c_tinyblob, c_blob, c_mediumblob, c_longblob FROM mysql_types LIMIT 1";
-    public readonly record struct GetMysqlTypesRow(bool? CBool, bool? CBoolean, short? CTinyint, short? CSmallint, int? CMediumint, int? CInt, int? CInteger, long? CBigint, double? CFloat, decimal? CDecimal, decimal? CDec, decimal? CNumeric, decimal? CFixed, double? CDouble, double? CDoublePrecision, short? CYear, DateTime? CDate, string? CTime, DateTime? CDatetime, DateTime? CTimestamp, string? CChar, string? CNchar, string? CNationalChar, string? CVarchar, string? CTinytext, string? CMediumtext, string? CText, string? CLongtext, JsonElement? CJson, string? CJsonStringOverride, MysqlTypesCEnum? CEnum, MysqlTypesCSet[]? CSet, byte? CBit, byte[]? CBinary, byte[]? CVarbinary, byte[]? CTinyblob, byte[]? CBlob, byte[]? CMediumblob, byte[]? CLongblob);
+    public readonly record struct GetMysqlTypesRow(bool? CBool, bool? CBoolean, short? CTinyint, short? CSmallint, int? CMediumint, int? CInt, int? CInteger, long? CBigint, double? CFloat, decimal? CDecimal, decimal? CDec, decimal? CNumeric, decimal? CFixed, double? CDouble, double? CDoublePrecision, short? CYear, DateTime? CDate, string? CTime, DateTime? CDatetime, DateTime? CTimestamp, string? CChar, string? CNchar, string? CNationalChar, string? CVarchar, string? CTinytext, string? CMediumtext, string? CText, string? CLongtext, JsonElement? CJson, string? CJsonStringOverride, MysqlTypesCEnum? CEnum, HashSet<MysqlTypesCSet>? CSet, byte? CBit, byte[]? CBinary, byte[]? CVarbinary, byte[]? CTinyblob, byte[]? CBlob, byte[]? CMediumblob, byte[]? CLongblob);
     public async Task<GetMysqlTypesRow?> GetMysqlTypes()
     {
         if (this.Transaction == null)
@@ -871,7 +871,7 @@ public class QuerySql
                                 CJson = reader.IsDBNull(28) ? null : JsonSerializer.Deserialize<JsonElement>(reader.GetString(28)),
                                 CJsonStringOverride = reader.IsDBNull(29) ? null : reader.GetString(29),
                                 CEnum = reader.IsDBNull(30) ? null : reader.GetString(30).ToMysqlTypesCEnum(),
-                                CSet = reader.IsDBNull(31) ? null : reader.GetString(31).ToMysqlTypesCSetArr(),
+                                CSet = reader.IsDBNull(31) ? null : reader.GetString(31).ToMysqlTypesCSetSet(),
                                 CBit = reader.IsDBNull(32) ? null : reader.GetFieldValue<byte>(32),
                                 CBinary = reader.IsDBNull(33) ? null : reader.GetFieldValue<byte[]>(33),
                                 CVarbinary = reader.IsDBNull(34) ? null : reader.GetFieldValue<byte[]>(34),
@@ -934,7 +934,7 @@ public class QuerySql
                         CJson = reader.IsDBNull(28) ? null : JsonSerializer.Deserialize<JsonElement>(reader.GetString(28)),
                         CJsonStringOverride = reader.IsDBNull(29) ? null : reader.GetString(29),
                         CEnum = reader.IsDBNull(30) ? null : reader.GetString(30).ToMysqlTypesCEnum(),
-                        CSet = reader.IsDBNull(31) ? null : reader.GetString(31).ToMysqlTypesCSetArr(),
+                        CSet = reader.IsDBNull(31) ? null : reader.GetString(31).ToMysqlTypesCSetSet(),
                         CBit = reader.IsDBNull(32) ? null : reader.GetFieldValue<byte>(32),
                         CBinary = reader.IsDBNull(33) ? null : reader.GetFieldValue<byte[]>(33),
                         CVarbinary = reader.IsDBNull(34) ? null : reader.GetFieldValue<byte[]>(34),
@@ -951,7 +951,7 @@ public class QuerySql
     }
 
     private const string GetMysqlTypesCntSql = "SELECT COUNT(1) AS cnt, c_bool, c_boolean, c_bit, c_tinyint, c_smallint, c_mediumint, c_int, c_integer, c_bigint,  c_float , c_numeric, c_decimal, c_dec, c_fixed, c_double, c_double_precision, c_char, c_nchar, c_national_char, c_varchar, c_tinytext, c_mediumtext, c_text, c_longtext, c_json, c_json_string_override, c_enum, c_set, c_year, c_date, c_datetime, c_timestamp, c_binary, c_varbinary, c_tinyblob, c_blob, c_mediumblob, c_longblob FROM  mysql_types  GROUP  BY  c_bool , c_boolean, c_bit, c_tinyint, c_smallint, c_mediumint, c_int, c_integer, c_bigint, c_float, c_numeric, c_decimal, c_dec, c_fixed, c_double, c_double_precision, c_char, c_nchar, c_national_char, c_varchar, c_tinytext, c_mediumtext, c_text, c_longtext, c_json, c_json_string_override, c_enum, c_set, c_year, c_date, c_datetime, c_timestamp, c_binary, c_varbinary, c_tinyblob, c_blob, c_mediumblob, c_longblob LIMIT  1  ";  
-    public readonly record struct GetMysqlTypesCntRow(long Cnt, bool? CBool, bool? CBoolean, byte? CBit, short? CTinyint, short? CSmallint, int? CMediumint, int? CInt, int? CInteger, long? CBigint, double? CFloat, decimal? CNumeric, decimal? CDecimal, decimal? CDec, decimal? CFixed, double? CDouble, double? CDoublePrecision, string? CChar, string? CNchar, string? CNationalChar, string? CVarchar, string? CTinytext, string? CMediumtext, string? CText, string? CLongtext, JsonElement? CJson, string? CJsonStringOverride, MysqlTypesCEnum? CEnum, MysqlTypesCSet[]? CSet, short? CYear, DateTime? CDate, DateTime? CDatetime, DateTime? CTimestamp, byte[]? CBinary, byte[]? CVarbinary, byte[]? CTinyblob, byte[]? CBlob, byte[]? CMediumblob, byte[]? CLongblob);
+    public readonly record struct GetMysqlTypesCntRow(long Cnt, bool? CBool, bool? CBoolean, byte? CBit, short? CTinyint, short? CSmallint, int? CMediumint, int? CInt, int? CInteger, long? CBigint, double? CFloat, decimal? CNumeric, decimal? CDecimal, decimal? CDec, decimal? CFixed, double? CDouble, double? CDoublePrecision, string? CChar, string? CNchar, string? CNationalChar, string? CVarchar, string? CTinytext, string? CMediumtext, string? CText, string? CLongtext, JsonElement? CJson, string? CJsonStringOverride, MysqlTypesCEnum? CEnum, HashSet<MysqlTypesCSet>? CSet, short? CYear, DateTime? CDate, DateTime? CDatetime, DateTime? CTimestamp, byte[]? CBinary, byte[]? CVarbinary, byte[]? CTinyblob, byte[]? CBlob, byte[]? CMediumblob, byte[]? CLongblob);
     public async Task<GetMysqlTypesCntRow?> GetMysqlTypesCnt()
     {
         if (this.Transaction == null)
@@ -995,7 +995,7 @@ public class QuerySql
                                 CJson = reader.IsDBNull(25) ? null : JsonSerializer.Deserialize<JsonElement>(reader.GetString(25)),
                                 CJsonStringOverride = reader.IsDBNull(26) ? null : reader.GetString(26),
                                 CEnum = reader.IsDBNull(27) ? null : reader.GetString(27).ToMysqlTypesCEnum(),
-                                CSet = reader.IsDBNull(28) ? null : reader.GetString(28).ToMysqlTypesCSetArr(),
+                                CSet = reader.IsDBNull(28) ? null : reader.GetString(28).ToMysqlTypesCSetSet(),
                                 CYear = reader.IsDBNull(29) ? null : reader.GetInt16(29),
                                 CDate = reader.IsDBNull(30) ? null : reader.GetDateTime(30),
                                 CDatetime = reader.IsDBNull(31) ? null : reader.GetDateTime(31),
@@ -1058,7 +1058,7 @@ public class QuerySql
                         CJson = reader.IsDBNull(25) ? null : JsonSerializer.Deserialize<JsonElement>(reader.GetString(25)),
                         CJsonStringOverride = reader.IsDBNull(26) ? null : reader.GetString(26),
                         CEnum = reader.IsDBNull(27) ? null : reader.GetString(27).ToMysqlTypesCEnum(),
-                        CSet = reader.IsDBNull(28) ? null : reader.GetString(28).ToMysqlTypesCSetArr(),
+                        CSet = reader.IsDBNull(28) ? null : reader.GetString(28).ToMysqlTypesCSetSet(),
                         CYear = reader.IsDBNull(29) ? null : reader.GetInt16(29),
                         CDate = reader.IsDBNull(30) ? null : reader.GetDateTime(30),
                         CDatetime = reader.IsDBNull(31) ? null : reader.GetDateTime(31),
@@ -1163,7 +1163,7 @@ public class QuerySql
     }
 
     private const string CreateExtendedBioSql = "INSERT INTO extended.bios (author_name, name, bio_type, author_type) VALUES (@author_name, @name, @bio_type, @author_type)";
-    public readonly record struct CreateExtendedBioArgs(string? AuthorName, string? Name, ExtendedBiosBioType? BioType, ExtendedBiosAuthorType[]? AuthorType);
+    public readonly record struct CreateExtendedBioArgs(string? AuthorName, string? Name, ExtendedBiosBioType? BioType, HashSet<ExtendedBiosAuthorType>? AuthorType);
     public async Task CreateExtendedBio(CreateExtendedBioArgs args)
     {
         if (this.Transaction == null)
@@ -1202,7 +1202,7 @@ public class QuerySql
     }
 
     private const string GetFirstExtendedBioByTypeSql = "SELECT author_name, name, bio_type, author_type FROM extended.bios WHERE bio_type = @bio_type LIMIT 1";
-    public readonly record struct GetFirstExtendedBioByTypeRow(string? AuthorName, string? Name, ExtendedBiosBioType? BioType, ExtendedBiosAuthorType[]? AuthorType);
+    public readonly record struct GetFirstExtendedBioByTypeRow(string? AuthorName, string? Name, ExtendedBiosBioType? BioType, HashSet<ExtendedBiosAuthorType>? AuthorType);
     public readonly record struct GetFirstExtendedBioByTypeArgs(ExtendedBiosBioType? BioType);
     public async Task<GetFirstExtendedBioByTypeRow?> GetFirstExtendedBioByType(GetFirstExtendedBioByTypeArgs args)
     {
@@ -1223,7 +1223,7 @@ public class QuerySql
                                 AuthorName = reader.IsDBNull(0) ? null : reader.GetString(0),
                                 Name = reader.IsDBNull(1) ? null : reader.GetString(1),
                                 BioType = reader.IsDBNull(2) ? null : reader.GetString(2).ToExtendedBiosBioType(),
-                                AuthorType = reader.IsDBNull(3) ? null : reader.GetString(3).ToExtendedBiosAuthorTypeArr()
+                                AuthorType = reader.IsDBNull(3) ? null : reader.GetString(3).ToExtendedBiosAuthorTypeSet()
                             };
                         }
                     }
@@ -1252,7 +1252,7 @@ public class QuerySql
                         AuthorName = reader.IsDBNull(0) ? null : reader.GetString(0),
                         Name = reader.IsDBNull(1) ? null : reader.GetString(1),
                         BioType = reader.IsDBNull(2) ? null : reader.GetString(2).ToExtendedBiosBioType(),
-                        AuthorType = reader.IsDBNull(3) ? null : reader.GetString(3).ToExtendedBiosAuthorTypeArr()
+                        AuthorType = reader.IsDBNull(3) ? null : reader.GetString(3).ToExtendedBiosAuthorTypeSet()
                     };
                 }
             }

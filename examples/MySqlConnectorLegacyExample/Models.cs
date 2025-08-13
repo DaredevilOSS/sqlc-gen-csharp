@@ -52,7 +52,7 @@ namespace MySqlConnectorLegacyExampleGen
         public JsonElement? CJson { get; set; }
         public JsonElement? CJsonStringOverride { get; set; }
         public MysqlTypesCEnum? CEnum { get; set; }
-        public MysqlTypesCSet[] CSet { get; set; }
+        public HashSet<MysqlTypesCSet> CSet { get; set; }
         public byte? CBit { get; set; }
         public byte[] CBinary { get; set; }
         public byte[] CVarbinary { get; set; }
@@ -66,7 +66,7 @@ namespace MySqlConnectorLegacyExampleGen
         public string AuthorName { get; set; }
         public string Name { get; set; }
         public ExtendedBiosBioType? BioType { get; set; }
-        public ExtendedBiosAuthorType[] AuthorType { get; set; }
+        public HashSet<ExtendedBiosAuthorType> AuthorType { get; set; }
     };
     public enum MysqlTypesCEnum
     {
@@ -90,9 +90,9 @@ namespace MySqlConnectorLegacyExampleGen
             return StringToEnum[me];
         }
 
-        public static MysqlTypesCEnum[] ToMysqlTypesCEnumArr(this string me)
+        public static HashSet<MysqlTypesCEnum> ToMysqlTypesCEnumSet(this string me)
         {
-            return me.Split(',').ToList().Select(v => StringToEnum[v]).ToArray();
+            return new HashSet<MysqlTypesCEnum>(me.Split(',').ToList().Select(v => StringToEnum[v]));
         }
     }
 
@@ -118,9 +118,9 @@ namespace MySqlConnectorLegacyExampleGen
             return StringToEnum[me];
         }
 
-        public static MysqlTypesCSet[] ToMysqlTypesCSetArr(this string me)
+        public static HashSet<MysqlTypesCSet> ToMysqlTypesCSetSet(this string me)
         {
-            return me.Split(',').ToList().Select(v => StringToEnum[v]).ToArray();
+            return new HashSet<MysqlTypesCSet>(me.Split(',').ToList().Select(v => StringToEnum[v]));
         }
     }
 
@@ -146,9 +146,9 @@ namespace MySqlConnectorLegacyExampleGen
             return StringToEnum[me];
         }
 
-        public static ExtendedBiosBioType[] ToExtendedBiosBioTypeArr(this string me)
+        public static HashSet<ExtendedBiosBioType> ToExtendedBiosBioTypeSet(this string me)
         {
-            return me.Split(',').ToList().Select(v => StringToEnum[v]).ToArray();
+            return new HashSet<ExtendedBiosBioType>(me.Split(',').ToList().Select(v => StringToEnum[v]));
         }
     }
 
@@ -174,9 +174,9 @@ namespace MySqlConnectorLegacyExampleGen
             return StringToEnum[me];
         }
 
-        public static ExtendedBiosAuthorType[] ToExtendedBiosAuthorTypeArr(this string me)
+        public static HashSet<ExtendedBiosAuthorType> ToExtendedBiosAuthorTypeSet(this string me)
         {
-            return me.Split(',').ToList().Select(v => StringToEnum[v]).ToArray();
+            return new HashSet<ExtendedBiosAuthorType>(me.Split(',').ToList().Select(v => StringToEnum[v]));
         }
     }
 }

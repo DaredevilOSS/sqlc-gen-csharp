@@ -559,7 +559,7 @@ namespace MySqlConnectorDapperLegacyExampleGen
             public JsonElement? CJson { get; set; }
             public string CJsonStringOverride { get; set; }
             public MysqlTypesCEnum? CEnum { get; set; }
-            public MysqlTypesCSet[] CSet { get; set; }
+            public HashSet<MysqlTypesCSet> CSet { get; set; }
             public short? CYear { get; set; }
             public DateTime? CDate { get; set; }
             public DateTime? CDatetime { get; set; }
@@ -659,7 +659,7 @@ namespace MySqlConnectorDapperLegacyExampleGen
             public JsonElement? CJson { get; set; }
             public string CJsonStringOverride { get; set; }
             public MysqlTypesCEnum? CEnum { get; set; }
-            public MysqlTypesCSet[] CSet { get; set; }
+            public HashSet<MysqlTypesCSet> CSet { get; set; }
             public short? CYear { get; set; }
             public DateTime? CDate { get; set; }
             public DateTime? CDatetime { get; set; }
@@ -697,7 +697,7 @@ namespace MySqlConnectorDapperLegacyExampleGen
                 csvWriter.Context.TypeConverterCache.AddConverter<byte>(new Utils.ByteCsvConverter());
                 csvWriter.Context.TypeConverterCache.AddConverter<byte?>(new Utils.ByteCsvConverter());
                 csvWriter.Context.TypeConverterCache.AddConverter<byte[]>(new Utils.ByteArrayCsvConverter());
-                csvWriter.Context.TypeConverterCache.AddConverter<MysqlTypesCSet[]>(new Utils.MysqlTypesCSetCsvConverter());
+                csvWriter.Context.TypeConverterCache.AddConverter<HashSet<MysqlTypesCSet>>(new Utils.MysqlTypesCSetCsvConverter());
                 csvWriter.Context.TypeConverterCache.AddConverter<short?>(nullConverterFn);
                 csvWriter.Context.TypeConverterCache.AddConverter<int?>(nullConverterFn);
                 csvWriter.Context.TypeConverterCache.AddConverter<long?>(nullConverterFn);
@@ -764,7 +764,7 @@ namespace MySqlConnectorDapperLegacyExampleGen
             public JsonElement? CJson { get; set; }
             public string CJsonStringOverride { get; set; }
             public MysqlTypesCEnum? CEnum { get; set; }
-            public MysqlTypesCSet[] CSet { get; set; }
+            public HashSet<MysqlTypesCSet> CSet { get; set; }
             public byte? CBit { get; set; }
             public byte[] CBinary { get; set; }
             public byte[] CVarbinary { get; set; }
@@ -823,7 +823,7 @@ namespace MySqlConnectorDapperLegacyExampleGen
             public JsonElement? CJson { get; set; }
             public string CJsonStringOverride { get; set; }
             public MysqlTypesCEnum? CEnum { get; set; }
-            public MysqlTypesCSet[] CSet { get; set; }
+            public HashSet<MysqlTypesCSet> CSet { get; set; }
             public short? CYear { get; set; }
             public DateTime? CDate { get; set; }
             public DateTime? CDatetime { get; set; }
@@ -907,7 +907,7 @@ namespace MySqlConnectorDapperLegacyExampleGen
             public string AuthorName { get; set; }
             public string Name { get; set; }
             public ExtendedBiosBioType? BioType { get; set; }
-            public ExtendedBiosAuthorType[] AuthorType { get; set; }
+            public HashSet<ExtendedBiosAuthorType> AuthorType { get; set; }
         };
         public async Task CreateExtendedBio(CreateExtendedBioArgs args)
         {
@@ -940,7 +940,7 @@ namespace MySqlConnectorDapperLegacyExampleGen
             public string AuthorName { get; set; }
             public string Name { get; set; }
             public ExtendedBiosBioType? BioType { get; set; }
-            public ExtendedBiosAuthorType[] AuthorType { get; set; }
+            public HashSet<ExtendedBiosAuthorType> AuthorType { get; set; }
         };
         public class GetFirstExtendedBioByTypeArgs
         {

@@ -2,6 +2,7 @@
 using CsvHelper;
 using CsvHelper.Configuration;
 using CsvHelper.TypeConversion;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace MySqlConnectorExampleGen;
@@ -19,8 +20,8 @@ public static class Utils
         {
             if (value == null)
                 return @"\N";
-            if (value is MysqlTypesCSet[] arrVal)
-                return string.Join(",", arrVal);
+            if (value is HashSet<MysqlTypesCSet> setVal)
+                return string.Join(",", setVal);
             return base.ConvertToString(value, row, memberMapData);
         }
     }

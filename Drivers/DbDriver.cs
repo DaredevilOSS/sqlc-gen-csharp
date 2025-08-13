@@ -200,130 +200,9 @@ public abstract class DbDriver
                """)!];
     }
 
-    protected bool TypeExistsInQueries(string csharpType)
-    {
-        return Queries.Any(q => TypeExistsInQuery(csharpType, q));
-    }
-
-    protected bool TypeExistsInQuery(string csharpType, Query query)
-    {
-        return query.Columns
-            .Any(column => csharpType == GetCsharpTypeWithoutNullableSuffix(column, query)) ||
-               query.Params
-            .Any(p => csharpType == GetCsharpTypeWithoutNullableSuffix(p.Column, query));
-    }
-
-    public string AddNullableSuffixIfNeeded(string csharpType, bool notNull)
-    {
-        if (notNull)
-            return csharpType;
-        return IsTypeNullable(csharpType) ? $"{csharpType}?" : csharpType;
-    }
-
-    public string GetCsharpType(Column column, Query? query)
-    {
-        var csharpType = GetCsharpTypeWithoutNullableSuffix(column, query);
-        return AddNullableSuffixIfNeeded(csharpType, IsColumnNotNull(column, query));
-    }
-
     public string GetColumnSchema(Column column)
     {
         return column.Table.Schema == DefaultSchema ? string.Empty : column.Table.Schema;
-    }
-
-    public virtual string GetEnumTypeAsCsharpType(Column column, Plugin.Enum enumType)
-    {
-        return column.Type.Name.ToModelName(GetColumnSchema(column), DefaultSchema);
-    }
-
-    public string GetCsharpTypeWithoutNullableSuffix(Column column, Query? query)
-    {
-        if (column.EmbedTable != null)
-            return column.EmbedTable.Name.ToModelName(column.EmbedTable.Schema, DefaultSchema);
-
-        if (string.IsNullOrEmpty(column.Type.Name))
-            return "object";
-
-        if (GetEnumType(column) is { } enumType)
-            return GetEnumTypeAsCsharpType(column, enumType);
-
-        if (FindOverrideForQueryColumn(query, column) is { CsharpType: var csharpType })
-            return csharpType.Type;
-
-        foreach (var columnMapping in ColumnMappings
-                     .Where(columnMapping => DoesColumnMappingApply(columnMapping.Value, column)))
-        {
-            if (column.IsArray || column.IsSqlcSlice) return $"{columnMapping.Key}[]";
-            return columnMapping.Key;
-        }
-
-        throw new NotSupportedException($"Column {column.Name} has unsupported column type: {column.Type.Name}");
-    }
-
-    public Plugin.Enum? GetEnumType(Column column)
-    {
-        if (column.Table is null)
-            return null;
-        var schemaName = GetColumnSchema(column);
-        if (!Enums.TryGetValue(schemaName, value: out var enumsInSchema))
-            return null;
-        return enumsInSchema.GetValueOrDefault(column.Type.Name);
-    }
-
-    private static bool DoesColumnMappingApply(ColumnMapping columnMapping, Column column)
-    {
-        var columnType = column.Type.Name.ToLower();
-        if (!columnMapping.DbTypes.TryGetValue(columnType, out var typeInfo))
-            return false;
-        if (typeInfo.Length is null)
-            return true;
-        return typeInfo.Length.Value == column.Length;
-    }
-
-    private string GetColumnReader(CsharpTypeOption csharpTypeOption, int ordinal)
-    {
-        if (ColumnMappings.TryGetValue(csharpTypeOption.Type, out var value))
-            return value.ReaderFn(ordinal);
-        throw new NotSupportedException($"Could not find column mapping for type override: {csharpTypeOption.Type}");
-    }
-
-    private string GetEnumReader(Column column, int ordinal, Plugin.Enum enumType)
-    {
-        var enumName = column.Type.Name.ToModelName(column.Table.Schema, DefaultSchema);
-        var fullEnumType = GetEnumTypeAsCsharpType(column, enumType);
-        var readStmt = $"{Variable.Reader.AsVarName()}.GetString({ordinal})";
-        if (fullEnumType.EndsWith("[]"))
-            return $"{readStmt}.To{enumName}Arr()";
-        return $"{readStmt}.To{enumName}()";
-    }
-
-    public string GetColumnReader(Column column, int ordinal, Query? query)
-    {
-        if (GetEnumType(column) is { } enumType)
-            return GetEnumReader(column, ordinal, enumType);
-
-        if (FindOverrideForQueryColumn(query, column) is { CsharpType: var csharpType })
-            return GetColumnReader(csharpType, ordinal);
-
-        foreach (var columnMapping in ColumnMappings.Values
-                     .Where(columnMapping => DoesColumnMappingApply(columnMapping, column)))
-        {
-            if (column.IsArray)
-                return columnMapping.ReaderArrayFn?.Invoke(ordinal) ?? throw new InvalidOperationException("ReaderArrayFn is null");
-            return columnMapping.ReaderFn(ordinal);
-        }
-        throw new NotSupportedException($"Column {column.Name} has unsupported column type: {column.Type.Name}");
-    }
-
-    protected string? GetColumnDbTypeOverride(Column column)
-    {
-        var columnType = column.Type.Name.ToLower();
-        foreach (var columnMapping in ColumnMappings.Values)
-        {
-            if (columnMapping.DbTypes.TryGetValue(columnType, out var dbTypeOverride))
-                return dbTypeOverride.NpgsqlTypeOverride;
-        }
-        throw new NotSupportedException($"Column {column.Name} has unsupported column type: {column.Type.Name}");
     }
 
     public abstract string TransformQueryText(Query query);
@@ -332,18 +211,9 @@ public abstract class DbDriver
 
     public abstract string CreateSqlCommand(string sqlTextConstant);
 
-    public bool IsTypeNullable(string csharpType)
-    {
-        if (NullableTypes.Contains(csharpType.Replace("?", ""))) return true;
-        return Options.DotnetFramework.IsDotnetCore(); // non-primitives in .Net Core are inherently nullable
-    }
-
-    /// <summary>
-    /// Since there is no indication of the primary key column in SQLC protobuf (assuming it is a single column),
-    /// this method uses a few heuristics to assess the data type of the id column
-    /// </summary>
-    /// <param name="query"></param>
-    /// <returns>The data type of the id column</returns>
+    /* Since there is no indication of the primary key column in SQLC protobuf (assuming it is a single column),
+       this method uses a few heuristics to assess the data type of the id column
+    */
     public string GetIdColumnType(Query query)
     {
         var tableColumns = Tables[query.InsertIntoTable.Schema][query.InsertIntoTable.Name].Columns;
@@ -375,6 +245,19 @@ public abstract class DbDriver
         return queryParam.Column;
     }
 
+    protected bool TypeExistsInQueries(string csharpType)
+    {
+        return Queries.Any(q => TypeExistsInQuery(csharpType, q));
+    }
+
+    protected bool TypeExistsInQuery(string csharpType, Query query)
+    {
+        return query.Columns
+            .Any(column => csharpType == GetCsharpTypeWithoutNullableSuffix(column, query)) ||
+               query.Params
+            .Any(p => csharpType == GetCsharpTypeWithoutNullableSuffix(p.Column, query));
+    }
+
     protected bool SliceQueryExists()
     {
         return Queries.Any(q => q.Params.Any(p => p.Column.IsSqlcSlice));
@@ -393,16 +276,128 @@ public abstract class DbDriver
             o.Column == $"{query.Name}:{column.Name}" || o.Column == $"*:{column.Name}");
     }
 
-    /// <summary>
-    /// If the column data type is overridden, we need to check for nulls in generated code
-    /// </summary>
-    /// <param name="column"></param>
-    /// <param name="query"></param>
-    /// <returns>Adjusted not null value</returns>
+    // If the column data type is overridden, we need to check for nulls in generated code
     public bool IsColumnNotNull(Column column, Query? query)
     {
         if (FindOverrideForQueryColumn(query, column) is { CsharpType: var csharpType })
             return csharpType.NotNull;
         return column.NotNull;
+    }
+
+    /* Data type methods */
+    public string GetCsharpType(Column column, Query? query)
+    {
+        var csharpType = GetCsharpTypeWithoutNullableSuffix(column, query);
+        return AddNullableSuffixIfNeeded(csharpType, IsColumnNotNull(column, query));
+    }
+
+    public string AddNullableSuffixIfNeeded(string csharpType, bool notNull)
+    {
+        if (notNull)
+            return csharpType;
+        return IsTypeNullable(csharpType) ? $"{csharpType}?" : csharpType;
+    }
+
+    protected string? GetColumnDbTypeOverride(Column column)
+    {
+        var columnType = column.Type.Name.ToLower();
+        foreach (var columnMapping in ColumnMappings.Values)
+        {
+            if (columnMapping.DbTypes.TryGetValue(columnType, out var dbTypeOverride))
+                return dbTypeOverride.NpgsqlTypeOverride;
+        }
+        throw new NotSupportedException($"Column {column.Name} has unsupported column type: {column.Type.Name}");
+    }
+
+    public bool IsTypeNullable(string csharpType)
+    {
+        if (NullableTypes.Contains(csharpType.Replace("?", ""))) return true;
+        return Options.DotnetFramework.IsDotnetCore(); // non-primitives in .Net Core are inherently nullable
+    }
+
+    public string GetCsharpTypeWithoutNullableSuffix(Column column, Query? query)
+    {
+        if (column.EmbedTable != null)
+            return column.EmbedTable.Name.ToModelName(column.EmbedTable.Schema, DefaultSchema);
+
+        if (string.IsNullOrEmpty(column.Type.Name))
+            return "object";
+
+        if (GetEnumType(column) is { } enumType)
+            return EnumToCsharpTypeName(column, enumType);
+
+        if (FindOverrideForQueryColumn(query, column) is { CsharpType: var csharpType })
+            return csharpType.Type;
+
+        foreach (var columnMapping in ColumnMappings
+                     .Where(columnMapping => DoesColumnMappingApply(columnMapping.Value, column)))
+        {
+            if (column.IsArray || column.IsSqlcSlice) return $"{columnMapping.Key}[]";
+            return columnMapping.Key;
+        }
+
+        throw new NotSupportedException($"Column {column.Name} has unsupported column type: {column.Type.Name}");
+    }
+
+    private static bool DoesColumnMappingApply(ColumnMapping columnMapping, Column column)
+    {
+        var columnType = column.Type.Name.ToLower();
+        if (!columnMapping.DbTypes.TryGetValue(columnType, out var typeInfo))
+            return false;
+        if (typeInfo.Length is null)
+            return true;
+        return typeInfo.Length.Value == column.Length;
+    }
+
+    /* Column reader methods */
+    private string GetColumnReader(CsharpTypeOption csharpTypeOption, int ordinal)
+    {
+        if (ColumnMappings.TryGetValue(csharpTypeOption.Type, out var value))
+            return value.ReaderFn(ordinal);
+        throw new NotSupportedException($"Could not find column mapping for type override: {csharpTypeOption.Type}");
+    }
+
+    private string GetEnumReader(Column column, int ordinal, Plugin.Enum enumType)
+    {
+        var enumName = column.Type.Name.ToModelName(column.Table.Schema, DefaultSchema);
+        var fullEnumType = EnumToCsharpTypeName(column, enumType);
+        var readStmt = $"{Variable.Reader.AsVarName()}.GetString({ordinal})";
+        if (fullEnumType.StartsWith("HashSet"))
+            return $"{readStmt}.To{enumName}Set()";
+        return $"{readStmt}.To{enumName}()";
+    }
+
+    public string GetColumnReader(Column column, int ordinal, Query? query)
+    {
+        if (GetEnumType(column) is { } enumType)
+            return GetEnumReader(column, ordinal, enumType);
+
+        if (FindOverrideForQueryColumn(query, column) is { CsharpType: var csharpType })
+            return GetColumnReader(csharpType, ordinal);
+
+        foreach (var columnMapping in ColumnMappings.Values
+                     .Where(columnMapping => DoesColumnMappingApply(columnMapping, column)))
+        {
+            if (column.IsArray)
+                return columnMapping.ReaderArrayFn?.Invoke(ordinal) ?? throw new InvalidOperationException("ReaderArrayFn is null");
+            return columnMapping.ReaderFn(ordinal);
+        }
+        throw new NotSupportedException($"Column {column.Name} has unsupported column type: {column.Type.Name}");
+    }
+
+    /* Enum methods*/
+    public Plugin.Enum? GetEnumType(Column column)
+    {
+        if (column.Table is null)
+            return null;
+        var schemaName = GetColumnSchema(column);
+        if (!Enums.TryGetValue(schemaName, value: out var enumsInSchema))
+            return null;
+        return enumsInSchema.GetValueOrDefault(column.Type.Name);
+    }
+
+    public virtual string EnumToCsharpTypeName(Column column, Plugin.Enum enumType)
+    {
+        return column.Type.Name.ToModelName(GetColumnSchema(column), DefaultSchema);
     }
 }

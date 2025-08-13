@@ -22,7 +22,7 @@ public class CommonGen(DbDriver dbDriver)
             return writerFn;
 
         if (dbDriver.GetEnumType(column) is { } enumType)
-            if (dbDriver.GetEnumTypeAsCsharpType(column, enumType).EndsWith("[]"))
+            if (dbDriver.EnumToCsharpTypeName(column, enumType).StartsWith("HashSet"))
                 return (el, notNull, isDapper) =>
                 {
                     var stringJoinStmt = $"string.Join(\",\", {el})";

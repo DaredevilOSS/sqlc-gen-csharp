@@ -37,9 +37,9 @@ internal class EnumsGen(DbDriver dbDriver)
                        return StringToEnum[me];
                    }
 
-                   public static {{name}}[] To{{name}}Arr(this string me)
+                   public static HashSet<{{name}}> To{{name}}Set(this string me)
                    {
-                       return me.Split(',').ToList().Select(v => StringToEnum[v]).ToArray();
+                       return new HashSet<{{name}}>(me.Split(',').ToList().Select(v => StringToEnum[v]));
                    }
                }
                """)!;

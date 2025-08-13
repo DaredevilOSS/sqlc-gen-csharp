@@ -5,6 +5,7 @@ namespace MySqlConnectorDapperLegacyExampleGen
     using CsvHelper.Configuration;
     using CsvHelper.TypeConversion;
     using Dapper;
+    using System.Collections.Generic;
     using System.Data;
     using System.Linq;
     using System.Text.Json;
@@ -29,8 +30,8 @@ namespace MySqlConnectorDapperLegacyExampleGen
         public static void ConfigureSqlMapper()
         {
             SqlMapper.AddTypeHandler(typeof(JsonElement), new JsonElementTypeHandler());
-            SqlMapper.AddTypeHandler(typeof(MysqlTypesCSet[]), new MysqlTypesCSetTypeHandler());
-            SqlMapper.AddTypeHandler(typeof(ExtendedBiosAuthorType[]), new ExtendedBiosAuthorTypeTypeHandler());
+            SqlMapper.AddTypeHandler(typeof(HashSet<MysqlTypesCSet>), new MysqlTypesCSetTypeHandler());
+            SqlMapper.AddTypeHandler(typeof(HashSet<ExtendedBiosAuthorType>), new ExtendedBiosAuthorTypeTypeHandler());
         }
 
         public static string TransformQueryForSliceArgs(string originalSql, int sliceSize, string paramName)
@@ -39,31 +40,31 @@ namespace MySqlConnectorDapperLegacyExampleGen
             return originalSql.Replace($"/*SLICE:{paramName}*/@{paramName}", string.Join(",", paramArgs));
         }
 
-        private class MysqlTypesCSetTypeHandler : SqlMapper.TypeHandler<MysqlTypesCSet[]>
+        private class MysqlTypesCSetTypeHandler : SqlMapper.TypeHandler<HashSet<MysqlTypesCSet>>
         {
-            public override MysqlTypesCSet[] Parse(object value)
+            public override HashSet<MysqlTypesCSet> Parse(object value)
             {
                 if (value is string s)
-                    return s.ToMysqlTypesCSetArr();
-                throw new DataException($"Cannot convert {value?.GetType()} to MysqlTypesCSet[]");
+                    return s.ToMysqlTypesCSetSet();
+                throw new DataException($"Cannot convert {value?.GetType()} to HashSet<MysqlTypesCSet>");
             }
 
-            public override void SetValue(IDbDataParameter parameter, MysqlTypesCSet[] value)
+            public override void SetValue(IDbDataParameter parameter, HashSet<MysqlTypesCSet> value)
             {
                 parameter.Value = string.Join(",", value);
             }
         }
 
-        private class ExtendedBiosAuthorTypeTypeHandler : SqlMapper.TypeHandler<ExtendedBiosAuthorType[]>
+        private class ExtendedBiosAuthorTypeTypeHandler : SqlMapper.TypeHandler<HashSet<ExtendedBiosAuthorType>>
         {
-            public override ExtendedBiosAuthorType[] Parse(object value)
+            public override HashSet<ExtendedBiosAuthorType> Parse(object value)
             {
                 if (value is string s)
-                    return s.ToExtendedBiosAuthorTypeArr();
-                throw new DataException($"Cannot convert {value?.GetType()} to ExtendedBiosAuthorType[]");
+                    return s.ToExtendedBiosAuthorTypeSet();
+                throw new DataException($"Cannot convert {value?.GetType()} to HashSet<ExtendedBiosAuthorType>");
             }
 
-            public override void SetValue(IDbDataParameter parameter, ExtendedBiosAuthorType[] value)
+            public override void SetValue(IDbDataParameter parameter, HashSet<ExtendedBiosAuthorType> value)
             {
                 parameter.Value = string.Join(",", value);
             }
@@ -75,8 +76,8 @@ namespace MySqlConnectorDapperLegacyExampleGen
             {
                 if (value == null)
                     return @"\N";
-                if (value is MysqlTypesCSet[] arrVal)
-                    return string.Join(",", arrVal);
+                if (value is HashSet<MysqlTypesCSet> setVal)
+                    return string.Join(",", setVal);
                 return base.ConvertToString(value, row, memberMapData);
             }
         }

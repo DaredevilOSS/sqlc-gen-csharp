@@ -4,6 +4,7 @@ namespace MySqlConnectorLegacyExampleGen
     using CsvHelper;
     using CsvHelper.Configuration;
     using CsvHelper.TypeConversion;
+    using System.Collections.Generic;
     using System.Linq;
 
     public static class Utils
@@ -20,8 +21,8 @@ namespace MySqlConnectorLegacyExampleGen
             {
                 if (value == null)
                     return @"\N";
-                if (value is MysqlTypesCSet[] arrVal)
-                    return string.Join(",", arrVal);
+                if (value is HashSet<MysqlTypesCSet> setVal)
+                    return string.Join(",", setVal);
                 return base.ConvertToString(value, row, memberMapData);
             }
         }

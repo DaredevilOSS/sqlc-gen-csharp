@@ -771,7 +771,7 @@ namespace MySqlConnectorLegacyExampleGen
             public JsonElement? CJson { get; set; }
             public string CJsonStringOverride { get; set; }
             public MysqlTypesCEnum? CEnum { get; set; }
-            public MysqlTypesCSet[] CSet { get; set; }
+            public HashSet<MysqlTypesCSet> CSet { get; set; }
             public short? CYear { get; set; }
             public DateTime? CDate { get; set; }
             public DateTime? CDatetime { get; set; }
@@ -917,7 +917,7 @@ namespace MySqlConnectorLegacyExampleGen
             public JsonElement? CJson { get; set; }
             public string CJsonStringOverride { get; set; }
             public MysqlTypesCEnum? CEnum { get; set; }
-            public MysqlTypesCSet[] CSet { get; set; }
+            public HashSet<MysqlTypesCSet> CSet { get; set; }
             public short? CYear { get; set; }
             public DateTime? CDate { get; set; }
             public DateTime? CDatetime { get; set; }
@@ -955,7 +955,7 @@ namespace MySqlConnectorLegacyExampleGen
                 csvWriter.Context.TypeConverterCache.AddConverter<byte>(new Utils.ByteCsvConverter());
                 csvWriter.Context.TypeConverterCache.AddConverter<byte?>(new Utils.ByteCsvConverter());
                 csvWriter.Context.TypeConverterCache.AddConverter<byte[]>(new Utils.ByteArrayCsvConverter());
-                csvWriter.Context.TypeConverterCache.AddConverter<MysqlTypesCSet[]>(new Utils.MysqlTypesCSetCsvConverter());
+                csvWriter.Context.TypeConverterCache.AddConverter<HashSet<MysqlTypesCSet>>(new Utils.MysqlTypesCSetCsvConverter());
                 csvWriter.Context.TypeConverterCache.AddConverter<short?>(nullConverterFn);
                 csvWriter.Context.TypeConverterCache.AddConverter<int?>(nullConverterFn);
                 csvWriter.Context.TypeConverterCache.AddConverter<long?>(nullConverterFn);
@@ -1022,7 +1022,7 @@ namespace MySqlConnectorLegacyExampleGen
             public JsonElement? CJson { get; set; }
             public string CJsonStringOverride { get; set; }
             public MysqlTypesCEnum? CEnum { get; set; }
-            public MysqlTypesCSet[] CSet { get; set; }
+            public HashSet<MysqlTypesCSet> CSet { get; set; }
             public byte? CBit { get; set; }
             public byte[] CBinary { get; set; }
             public byte[] CVarbinary { get; set; }
@@ -1077,7 +1077,7 @@ namespace MySqlConnectorLegacyExampleGen
                                     CJson = reader.IsDBNull(28) ? (JsonElement? )null : JsonSerializer.Deserialize<JsonElement>(reader.GetString(28)),
                                     CJsonStringOverride = reader.IsDBNull(29) ? null : reader.GetString(29),
                                     CEnum = reader.IsDBNull(30) ? (MysqlTypesCEnum? )null : reader.GetString(30).ToMysqlTypesCEnum(),
-                                    CSet = reader.IsDBNull(31) ? null : reader.GetString(31).ToMysqlTypesCSetArr(),
+                                    CSet = reader.IsDBNull(31) ? null : reader.GetString(31).ToMysqlTypesCSetSet(),
                                     CBit = reader.IsDBNull(32) ? (byte? )null : reader.GetFieldValue<byte>(32),
                                     CBinary = reader.IsDBNull(33) ? null : reader.GetFieldValue<byte[]>(33),
                                     CVarbinary = reader.IsDBNull(34) ? null : reader.GetFieldValue<byte[]>(34),
@@ -1140,7 +1140,7 @@ namespace MySqlConnectorLegacyExampleGen
                             CJson = reader.IsDBNull(28) ? (JsonElement? )null : JsonSerializer.Deserialize<JsonElement>(reader.GetString(28)),
                             CJsonStringOverride = reader.IsDBNull(29) ? null : reader.GetString(29),
                             CEnum = reader.IsDBNull(30) ? (MysqlTypesCEnum? )null : reader.GetString(30).ToMysqlTypesCEnum(),
-                            CSet = reader.IsDBNull(31) ? null : reader.GetString(31).ToMysqlTypesCSetArr(),
+                            CSet = reader.IsDBNull(31) ? null : reader.GetString(31).ToMysqlTypesCSetSet(),
                             CBit = reader.IsDBNull(32) ? (byte? )null : reader.GetFieldValue<byte>(32),
                             CBinary = reader.IsDBNull(33) ? null : reader.GetFieldValue<byte[]>(33),
                             CVarbinary = reader.IsDBNull(34) ? null : reader.GetFieldValue<byte[]>(34),
@@ -1187,7 +1187,7 @@ namespace MySqlConnectorLegacyExampleGen
             public JsonElement? CJson { get; set; }
             public string CJsonStringOverride { get; set; }
             public MysqlTypesCEnum? CEnum { get; set; }
-            public MysqlTypesCSet[] CSet { get; set; }
+            public HashSet<MysqlTypesCSet> CSet { get; set; }
             public short? CYear { get; set; }
             public DateTime? CDate { get; set; }
             public DateTime? CDatetime { get; set; }
@@ -1242,7 +1242,7 @@ namespace MySqlConnectorLegacyExampleGen
                                     CJson = reader.IsDBNull(25) ? (JsonElement? )null : JsonSerializer.Deserialize<JsonElement>(reader.GetString(25)),
                                     CJsonStringOverride = reader.IsDBNull(26) ? null : reader.GetString(26),
                                     CEnum = reader.IsDBNull(27) ? (MysqlTypesCEnum? )null : reader.GetString(27).ToMysqlTypesCEnum(),
-                                    CSet = reader.IsDBNull(28) ? null : reader.GetString(28).ToMysqlTypesCSetArr(),
+                                    CSet = reader.IsDBNull(28) ? null : reader.GetString(28).ToMysqlTypesCSetSet(),
                                     CYear = reader.IsDBNull(29) ? (short? )null : reader.GetInt16(29),
                                     CDate = reader.IsDBNull(30) ? (DateTime? )null : reader.GetDateTime(30),
                                     CDatetime = reader.IsDBNull(31) ? (DateTime? )null : reader.GetDateTime(31),
@@ -1305,7 +1305,7 @@ namespace MySqlConnectorLegacyExampleGen
                             CJson = reader.IsDBNull(25) ? (JsonElement? )null : JsonSerializer.Deserialize<JsonElement>(reader.GetString(25)),
                             CJsonStringOverride = reader.IsDBNull(26) ? null : reader.GetString(26),
                             CEnum = reader.IsDBNull(27) ? (MysqlTypesCEnum? )null : reader.GetString(27).ToMysqlTypesCEnum(),
-                            CSet = reader.IsDBNull(28) ? null : reader.GetString(28).ToMysqlTypesCSetArr(),
+                            CSet = reader.IsDBNull(28) ? null : reader.GetString(28).ToMysqlTypesCSetSet(),
                             CYear = reader.IsDBNull(29) ? (short? )null : reader.GetInt16(29),
                             CDate = reader.IsDBNull(30) ? (DateTime? )null : reader.GetDateTime(30),
                             CDatetime = reader.IsDBNull(31) ? (DateTime? )null : reader.GetDateTime(31),
@@ -1420,7 +1420,7 @@ namespace MySqlConnectorLegacyExampleGen
             public string AuthorName { get; set; }
             public string Name { get; set; }
             public ExtendedBiosBioType? BioType { get; set; }
-            public ExtendedBiosAuthorType[] AuthorType { get; set; }
+            public HashSet<ExtendedBiosAuthorType> AuthorType { get; set; }
         };
         public async Task CreateExtendedBio(CreateExtendedBioArgs args)
         {
@@ -1465,7 +1465,7 @@ namespace MySqlConnectorLegacyExampleGen
             public string AuthorName { get; set; }
             public string Name { get; set; }
             public ExtendedBiosBioType? BioType { get; set; }
-            public ExtendedBiosAuthorType[] AuthorType { get; set; }
+            public HashSet<ExtendedBiosAuthorType> AuthorType { get; set; }
         };
         public class GetFirstExtendedBioByTypeArgs
         {
@@ -1490,7 +1490,7 @@ namespace MySqlConnectorLegacyExampleGen
                                     AuthorName = reader.IsDBNull(0) ? null : reader.GetString(0),
                                     Name = reader.IsDBNull(1) ? null : reader.GetString(1),
                                     BioType = reader.IsDBNull(2) ? (ExtendedBiosBioType? )null : reader.GetString(2).ToExtendedBiosBioType(),
-                                    AuthorType = reader.IsDBNull(3) ? null : reader.GetString(3).ToExtendedBiosAuthorTypeArr()
+                                    AuthorType = reader.IsDBNull(3) ? null : reader.GetString(3).ToExtendedBiosAuthorTypeSet()
                                 };
                             }
                         }
@@ -1519,7 +1519,7 @@ namespace MySqlConnectorLegacyExampleGen
                             AuthorName = reader.IsDBNull(0) ? null : reader.GetString(0),
                             Name = reader.IsDBNull(1) ? null : reader.GetString(1),
                             BioType = reader.IsDBNull(2) ? (ExtendedBiosBioType? )null : reader.GetString(2).ToExtendedBiosBioType(),
-                            AuthorType = reader.IsDBNull(3) ? null : reader.GetString(3).ToExtendedBiosAuthorTypeArr()
+                            AuthorType = reader.IsDBNull(3) ? null : reader.GetString(3).ToExtendedBiosAuthorTypeSet()
                         };
                     }
                 }

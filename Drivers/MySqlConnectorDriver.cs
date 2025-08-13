@@ -18,11 +18,6 @@ public partial class MySqlConnectorDriver(
     IList<Query> queries) :
     DbDriver(options, defaultSchema, tables, enums, queries), IOne, IMany, IExec, IExecRows, IExecLastId, ICopyFrom
 {
-    public const string NullToStringCsvConverter = "NullToStringCsvConverter";
-    public const string BoolToBitCsvConverter = "BoolToBitCsvConverter";
-    public const string ByteCsvConverter = "ByteCsvConverter";
-    public const string ByteArrayCsvConverter = "ByteArrayCsvConverter";
-
     public override Dictionary<string, ColumnMapping> ColumnMappings { get; } =
         new()
         {
@@ -158,16 +153,16 @@ public partial class MySqlConnectorDriver(
 
     private readonly Func<string, string> _setTypeHandlerFunc = x =>
         $$"""
-          private class {{x}}TypeHandler : SqlMapper.TypeHandler<{{x}}[]>
+          private class {{x}}TypeHandler : SqlMapper.TypeHandler<HashSet<{{x}}>>
           {
-              public override {{x}}[] Parse(object value)
+              public override HashSet<{{x}}> Parse(object value)
               {
                   if (value is string s)
-                      return s.To{{x}}Arr();
-                  throw new DataException($"Cannot convert {value?.GetType()} to {{x}}[]");
+                      return s.To{{x}}Set();
+                  throw new DataException($"Cannot convert {value?.GetType()} to HashSet<{{x}}>");
               }
           
-              public override void SetValue(IDbDataParameter parameter, {{x}}[] value)
+              public override void SetValue(IDbDataParameter parameter, HashSet<{{x}}> value)
               {
                   parameter.Value = string.Join(",", value);
               }
@@ -219,24 +214,23 @@ public partial class MySqlConnectorDriver(
                     "CsvHelper.Configuration"
                 ],
                 CopyFromQueryExists()
+            )
+            .AddRangeExcludeNulls(
+                [
+                    "System.Collections.Generic"
+                ]
             );
-    }
-
-    private bool IsSetType(Column column)
-    {
-        var enumType = GetEnumType(column);
-        return enumType is not null && IsEnumOfTypeSet(column, enumType);
     }
 
     protected override ISet<string> GetConfigureSqlMappings()
     {
         var setSqlMappings = Queries
             .SelectMany(q => q.Columns)
-            .Where(IsSetType)
+            .Where(IsSetDataType)
             .Select(c =>
             {
                 var enumName = c.Type.Name.ToModelName(GetColumnSchema(c), DefaultSchema);
-                return $"SqlMapper.AddTypeHandler(typeof({enumName}[]), new {enumName}TypeHandler());";
+                return $"SqlMapper.AddTypeHandler(typeof(HashSet<{enumName}>), new {enumName}TypeHandler());";
             })
             .Distinct();
 
@@ -252,7 +246,7 @@ public partial class MySqlConnectorDriver(
             .Where(c =>
             {
                 var enumType = GetEnumType(c);
-                return enumType is not null && IsEnumOfTypeSet(c, enumType);
+                return enumType is not null && IsSetDataType(c, enumType);
             })
             .Select(c => _setTypeHandlerFunc(c.Type.Name.ToModelName(GetColumnSchema(c), DefaultSchema)))
             .Distinct()
@@ -276,7 +270,7 @@ public partial class MySqlConnectorDriver(
                 continue;
             foreach (var p in query.Params)
             {
-                if (!IsSetType(p.Column))
+                if (!IsSetDataType(p.Column))
                     continue;
                 var enumName = p.Column.Type.Name.ToModelName(GetColumnSchema(p.Column), DefaultSchema);
                 memberDeclarations = memberDeclarations.AddRangeExcludeNulls([ParseMemberDeclaration(SetCsvConverterFunc(enumName))!]);
@@ -359,8 +353,8 @@ public partial class MySqlConnectorDriver(
                   {
                       if (value == null)
                           return @"\N";
-                      if (value is {{x}}[] arrVal)
-                          return string.Join(",", arrVal);
+                      if (value is HashSet<{{x}}> setVal)
+                          return string.Join(",", setVal);
                       return base.ConvertToString(value, row, memberMapData);
                   }
               }
@@ -409,6 +403,17 @@ public partial class MySqlConnectorDriver(
         return new ExecDeclareGen(this).Generate(queryTextConstant, argInterface, query);
     }
 
+    public MemberDeclarationSyntax ManyDeclare(string queryTextConstant, string argInterface, string returnInterface, Query query)
+    {
+        return new ManyDeclareGen(this).Generate(queryTextConstant, argInterface, returnInterface, query);
+    }
+
+    public MemberDeclarationSyntax ExecRowsDeclare(string queryTextConstant, string argInterface, Query query)
+    {
+        return new ExecRowsDeclareGen(this).Generate(queryTextConstant, argInterface, query);
+    }
+
+    /* :execlastid methods */
     public MemberDeclarationSyntax ExecLastIdDeclare(string queryTextConstant, string argInterface, Query query)
     {
         return new ExecLastIdDeclareGen(this).Generate(queryTextConstant, argInterface, query);
@@ -423,15 +428,11 @@ public partial class MySqlConnectorDriver(
         ];
     }
 
-    public MemberDeclarationSyntax ManyDeclare(string queryTextConstant, string argInterface, string returnInterface, Query query)
-    {
-        return new ManyDeclareGen(this).Generate(queryTextConstant, argInterface, returnInterface, query);
-    }
-
-    public MemberDeclarationSyntax ExecRowsDeclare(string queryTextConstant, string argInterface, Query query)
-    {
-        return new ExecRowsDeclareGen(this).Generate(queryTextConstant, argInterface, query);
-    }
+    /* :copyfrom methods */
+    public const string NullToStringCsvConverter = "NullToStringCsvConverter";
+    public const string BoolToBitCsvConverter = "BoolToBitCsvConverter";
+    public const string ByteCsvConverter = "ByteCsvConverter";
+    public const string ByteArrayCsvConverter = "ByteArrayCsvConverter";
 
     public MemberDeclarationSyntax CopyFromDeclare(string queryTextConstant, string argInterface, Query query)
     {
@@ -508,7 +509,7 @@ public partial class MySqlConnectorDriver(
             var csharpType = GetCsharpTypeWithoutNullableSuffix(p.Column, query);
             if (
                 !BoolAndByteTypes.Contains(csharpType) &&
-                !IsSetType(p.Column) &&
+                !IsSetDataType(p.Column) &&
                 TypeExistsInQuery(csharpType, query))
             {
                 var nullableCsharpType = AddNullableSuffixIfNeeded(csharpType, false);
@@ -551,25 +552,32 @@ public partial class MySqlConnectorDriver(
         var converters = new HashSet<string>();
         foreach (var p in query.Params)
         {
-            if (!IsSetType(p.Column))
+            if (!IsSetDataType(p.Column))
                 continue;
 
             var enumName = p.Column.Type.Name.ToModelName(GetColumnSchema(p.Column), DefaultSchema);
             var csvWriterVar = Variable.CsvWriter.AsVarName();
-            converters.Add($"{csvWriterVar}.Context.TypeConverterCache.AddConverter<{AddNullableSuffixIfNeeded($"{enumName}[]", true)}>(new Utils.{enumName}CsvConverter());");
-            converters.Add($"{csvWriterVar}.Context.TypeConverterCache.AddConverter<{AddNullableSuffixIfNeeded($"{enumName}[]", false)}>(new Utils.{enumName}CsvConverter());");
+            converters.Add($"{csvWriterVar}.Context.TypeConverterCache.AddConverter<{AddNullableSuffixIfNeeded($"HashSet<{enumName}>", true)}>(new Utils.{enumName}CsvConverter());");
+            converters.Add($"{csvWriterVar}.Context.TypeConverterCache.AddConverter<{AddNullableSuffixIfNeeded($"HashSet<{enumName}>", false)}>(new Utils.{enumName}CsvConverter());");
         }
         return converters;
     }
 
-    private static bool IsEnumOfTypeSet(Column column, Plugin.Enum enumType)
+    /* Enum methods */
+    public override string EnumToCsharpTypeName(Column column, Plugin.Enum enumType)
+    {
+        var enumName = column.Type.Name.ToModelName(GetColumnSchema(column), DefaultSchema);
+        return IsSetDataType(column, enumType) ? $"HashSet<{enumName}>" : enumName;
+    }
+
+    private static bool IsSetDataType(Column column, Plugin.Enum enumType)
     {
         return column.Length > enumType.Vals.Select(v => v.Length).Sum();
     }
 
-    public override string GetEnumTypeAsCsharpType(Column column, Plugin.Enum enumType)
+    private bool IsSetDataType(Column column)
     {
-        var enumName = column.Type.Name.ToModelName(GetColumnSchema(column), DefaultSchema);
-        return IsEnumOfTypeSet(column, enumType) ? $"{enumName}[]" : enumName;
+        var enumType = GetEnumType(column);
+        return enumType is not null && IsSetDataType(column, enumType);
     }
 }

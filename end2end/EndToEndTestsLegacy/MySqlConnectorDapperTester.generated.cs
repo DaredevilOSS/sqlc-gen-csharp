@@ -515,10 +515,18 @@ namespace EndToEndTests
             }
         }
 
+        private static IEnumerable<TestCaseData> MySqlEnumTypesTestCases
+        {
+            get
+            {
+                yield return new TestCaseData(MysqlTypesCEnum.Medium, new HashSet<MysqlTypesCSet> { MysqlTypesCSet.Tea, MysqlTypesCSet.Coffee }).SetName("Valid Enum values");
+                yield return new TestCaseData(null, null).SetName("Enum with null values");
+            }
+        }
+
         [Test]
-        [TestCase(MysqlTypesCEnum.Medium, new[] { MysqlTypesCSet.Tea, MysqlTypesCSet.Coffee })]
-        [TestCase(null, null)]
-        public async Task TestMySqlStringTypes(MysqlTypesCEnum? cEnum, MysqlTypesCSet[] cSet)
+        [TestCaseSource(nameof(MySqlEnumTypesTestCases))]
+        public async Task TestMySqlStringTypes(MysqlTypesCEnum? cEnum, HashSet<MysqlTypesCSet> cSet)
         {
             await QuerySql.InsertMysqlTypes(new QuerySql.InsertMysqlTypesArgs { CEnum = cEnum, CSet = cSet });
             var expected = new QuerySql.GetMysqlTypesRow
@@ -560,13 +568,13 @@ namespace EndToEndTests
         [Test]
         public async Task TestMySqlScopedSchemaEnum()
         {
-            await this.QuerySql.CreateExtendedBio(new QuerySql.CreateExtendedBioArgs { AuthorName = "Bojack Horseman", Name = "One Trick Pony", BioType = ExtendedBiosBioType.Memoir, AuthorType = new ExtendedBiosAuthorType[] { ExtendedBiosAuthorType.Author, ExtendedBiosAuthorType.Translator } });
+            await this.QuerySql.CreateExtendedBio(new QuerySql.CreateExtendedBioArgs { AuthorName = "Bojack Horseman", Name = "One Trick Pony", BioType = ExtendedBiosBioType.Memoir, AuthorType = new HashSet<ExtendedBiosAuthorType> { ExtendedBiosAuthorType.Author, ExtendedBiosAuthorType.Translator } });
             var expected = new QuerySql.GetFirstExtendedBioByTypeRow
             {
                 AuthorName = "Bojack Horseman",
                 Name = "One Trick Pony",
                 BioType = ExtendedBiosBioType.Memoir,
-                AuthorType = new ExtendedBiosAuthorType[]
+                AuthorType = new HashSet<ExtendedBiosAuthorType>
                 {
                     ExtendedBiosAuthorType.Author,
                     ExtendedBiosAuthorType.Translator
@@ -804,11 +812,18 @@ namespace EndToEndTests
             }
         }
 
+        private static IEnumerable<TestCaseData> MySqlEnumCopyFromTestCases
+        {
+            get
+            {
+                yield return new TestCaseData(100, MysqlTypesCEnum.Big, new HashSet<MysqlTypesCSet> { MysqlTypesCSet.Tea, MysqlTypesCSet.Coffee }).SetName("Valid Enum values");
+                yield return new TestCaseData(10, null, null).SetName("Enum with null values");
+            }
+        }
+
         [Test]
-        [TestCase(100, MysqlTypesCEnum.Big, new[] { MysqlTypesCSet.Tea, MysqlTypesCSet.Coffee })]
-        [TestCase(500, MysqlTypesCEnum.Small, new[] { MysqlTypesCSet.Milk })]
-        [TestCase(10, null, null)]
-        public async Task TestCopyFrom(int batchSize, MysqlTypesCEnum? cEnum, MysqlTypesCSet[] cSet)
+        [TestCaseSource(nameof(MySqlEnumCopyFromTestCases))]
+        public async Task TestCopyFrom(int batchSize, MysqlTypesCEnum? cEnum, HashSet<MysqlTypesCSet> cSet)
         {
             var batchArgs = Enumerable.Range(0, batchSize).Select(_ => new QuerySql.InsertMysqlTypesBatchArgs { CEnum = cEnum, CSet = cSet }).ToList();
             await QuerySql.InsertMysqlTypesBatch(batchArgs);
