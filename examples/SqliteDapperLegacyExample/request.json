@@ -468,6 +468,78 @@
       "filename": "query.sql"
     },
     {
+      "text": "SELECT id, name, bio FROM authors WHERE id = ?1 AND id = ?1 LIMIT ?2",
+      "name": "GetAuthorByIdWithMultipleNamedParam",
+      "cmd": ":one",
+      "columns": [
+        {
+          "name": "id",
+          "notNull": true,
+          "length": -1,
+          "table": {
+            "name": "authors"
+          },
+          "type": {
+            "name": "INTEGER"
+          },
+          "originalName": "id"
+        },
+        {
+          "name": "name",
+          "notNull": true,
+          "length": -1,
+          "table": {
+            "name": "authors"
+          },
+          "type": {
+            "name": "TEXT"
+          },
+          "originalName": "name"
+        },
+        {
+          "name": "bio",
+          "length": -1,
+          "table": {
+            "name": "authors"
+          },
+          "type": {
+            "name": "TEXT"
+          },
+          "originalName": "bio"
+        }
+      ],
+      "parameters": [
+        {
+          "number": 1,
+          "column": {
+            "name": "id_arg",
+            "notNull": true,
+            "length": -1,
+            "isNamedParam": true,
+            "table": {
+              "name": "authors"
+            },
+            "type": {
+              "name": "INTEGER"
+            },
+            "originalName": "id"
+          }
+        },
+        {
+          "number": 2,
+          "column": {
+            "name": "take",
+            "length": -1,
+            "isNamedParam": true,
+            "type": {
+              "name": "integer"
+            }
+          }
+        }
+      ],
+      "filename": "query.sql"
+    },
+    {
       "text": "SELECT id, name, bio FROM authors\nWHERE name LIKE COALESCE(?1, '%')",
       "name": "GetAuthorByNamePattern",
       "cmd": ":many",

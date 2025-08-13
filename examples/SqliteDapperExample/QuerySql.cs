@@ -194,6 +194,40 @@ public class QuerySql
         return await this.Transaction.Connection.QueryFirstOrDefaultAsync<GetAuthorByIdRow?>(GetAuthorByIdSql, queryParams, transaction: this.Transaction);
     }
 
+    private const string GetAuthorByIdWithMultipleNamedParamSql = "SELECT id, name, bio FROM authors WHERE id = @id_arg AND id = @id_arg LIMIT @take";
+    public class GetAuthorByIdWithMultipleNamedParamRow
+    {
+        public required int Id { get; init; }
+        public required string Name { get; init; }
+        public string? Bio { get; init; }
+    };
+    public class GetAuthorByIdWithMultipleNamedParamArgs
+    {
+        public required int IdArg { get; init; }
+        public int? Take { get; init; }
+    };
+    public async Task<GetAuthorByIdWithMultipleNamedParamRow?> GetAuthorByIdWithMultipleNamedParam(GetAuthorByIdWithMultipleNamedParamArgs args)
+    {
+        var queryParams = new Dictionary<string, object?>();
+        queryParams.Add("id_arg", args.IdArg);
+        queryParams.Add("take", args.Take);
+        if (this.Transaction == null)
+        {
+            using (var connection = new SqliteConnection(ConnectionString))
+            {
+                var result = await connection.QueryFirstOrDefaultAsync<GetAuthorByIdWithMultipleNamedParamRow?>(GetAuthorByIdWithMultipleNamedParamSql, queryParams);
+                return result;
+            }
+        }
+
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+        {
+            throw new System.InvalidOperationException("Transaction is provided, but its connection is null.");
+        }
+
+        return await this.Transaction.Connection.QueryFirstOrDefaultAsync<GetAuthorByIdWithMultipleNamedParamRow?>(GetAuthorByIdWithMultipleNamedParamSql, queryParams, transaction: this.Transaction);
+    }
+
     private const string GetAuthorByNamePatternSql = "SELECT id, name, bio FROM authors WHERE  name  LIKE  COALESCE ( @name_pattern ,  '%' ) ";  
     public class GetAuthorByNamePatternRow
     {

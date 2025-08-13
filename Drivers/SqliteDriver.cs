@@ -131,15 +131,29 @@ public partial class SqliteDriver(
 
     public override string TransformQueryText(Query query)
     {
-        var areArgumentsNumbered = new Regex($@"\?\d\b*").IsMatch(query.Text);
+        // Regex to detect numbered parameters like ?1, ?2
+        var areArgumentsNumbered = new Regex(@"\?\d+\b").IsMatch(query.Text);
         var queryText = query.Text;
 
-        for (var i = 0; i < query.Params.Count; i++)
+        if (areArgumentsNumbered)
         {
-            var currentParameter = query.Params[i];
-            var column = GetColumnFromParam(currentParameter, query);
-            var regexToUse = areArgumentsNumbered ? $@"\?{i + 1}\b*" : $@"\?\b*";
-            queryText = new Regex(regexToUse).Replace(queryText, $"@{column.Name}", 1);
+            // For numbered parameters, we replace all occurrences of each parameter number.
+            foreach (var p in query.Params)
+            {
+                var column = GetColumnFromParam(p, query);
+                var regex = new Regex($@"\?{p.Number}\b");
+                queryText = regex.Replace(queryText, $"@{column.Name}");
+            }
+        }
+        else
+        {
+            // For positional '?' parameters, we must replace them one by one in order.
+            var regex = new Regex(@"\?");
+            foreach (var p in query.Params)
+            {
+                var column = GetColumnFromParam(p, query);
+                queryText = regex.Replace(queryText, $"@{column.Name}", 1);
+            }
         }
         return queryText;
     }
