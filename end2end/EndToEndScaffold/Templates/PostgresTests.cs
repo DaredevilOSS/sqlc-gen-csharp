@@ -79,11 +79,15 @@ public static class PostgresTests
                              CBigint = cBigint
                          };
                          var actual = await QuerySql.GetPostgresTypes();
+                         AssertSingularEquals(expected, actual{{Consts.UnknownRecordValuePlaceholder}});
                      
-                         Assert.That(actual{{Consts.UnknownRecordValuePlaceholder}}.CBoolean, Is.EqualTo(expected.CBoolean));
-                         Assert.That(actual{{Consts.UnknownRecordValuePlaceholder}}.CSmallint, Is.EqualTo(expected.CSmallint));
-                         Assert.That(actual{{Consts.UnknownRecordValuePlaceholder}}.CInteger, Is.EqualTo(expected.CInteger));
-                         Assert.That(actual{{Consts.UnknownRecordValuePlaceholder}}.CBigint, Is.EqualTo(expected.CBigint));
+                         void AssertSingularEquals(QuerySql.GetPostgresTypesRow x, QuerySql.GetPostgresTypesRow y)
+                         {
+                             Assert.That(x.CBoolean, Is.EqualTo(y.CBoolean));
+                             Assert.That(x.CSmallint, Is.EqualTo(y.CSmallint));
+                             Assert.That(x.CInteger, Is.EqualTo(y.CInteger));
+                             Assert.That(x.CBigint, Is.EqualTo(y.CBigint));
+                         }
                      }
                      """
         },
@@ -615,6 +619,7 @@ public static class PostgresTests
                          void AssertSingularEquals(QuerySql.GetPostgresArrayTypesCntRow x, QuerySql.GetPostgresArrayTypesCntRow y)
                          {
                              Assert.That(x.Cnt, Is.EqualTo(y.Cnt));
+                             Assert.That(x.CBytea, Is.EqualTo(y.CBytea));
                          }
                      }
                      """
@@ -809,9 +814,8 @@ public static class PostgresTests
                          var querySqlWithTx = QuerySql.WithTransaction(transaction);
                          await querySqlWithTx.CreateAuthor(new QuerySql.CreateAuthorArgs { Id = {{Consts.BojackId}}, Name = {{Consts.BojackAuthor}}, Bio = {{Consts.BojackTheme}} });
 
-                         // The GetAuthor method in NpgsqlExampleGen returns QuerySql.GetAuthorRow? (nullable record struct)
-                         var actualNull = await QuerySql.GetAuthor(new QuerySql.GetAuthorArgs { Name = {{Consts.BojackAuthor}} });
-                         Assert.That(actualNull == null, "there is author"); // This is correct for nullable types
+                         var actual = await QuerySql.GetAuthor(new QuerySql.GetAuthorArgs { Name = {{Consts.BojackAuthor}} });
+                         ClassicAssert.IsNull(actual);
 
                          await transaction.CommitAsync();
 
@@ -821,8 +825,15 @@ public static class PostgresTests
                              Name = {{Consts.BojackAuthor}},
                              Bio = {{Consts.BojackTheme}}
                          };
-                         var actual = await QuerySql.GetAuthor(new QuerySql.GetAuthorArgs { Name = {{Consts.BojackAuthor}} });
-                         Assert.That(SingularEquals(expected, actual{{Consts.UnknownRecordValuePlaceholder}})); // Apply placeholder here
+                         actual = await QuerySql.GetAuthor(new QuerySql.GetAuthorArgs { Name = {{Consts.BojackAuthor}} });
+                         AssertSingularEquals(expected, actual{{Consts.UnknownRecordValuePlaceholder}});
+
+                         void AssertSingularEquals(QuerySql.GetAuthorRow x, QuerySql.GetAuthorRow y)
+                         {
+                             Assert.That(x.Id, Is.EqualTo(y.Id));
+                             Assert.That(x.Name, Is.EqualTo(y.Name));
+                             Assert.That(x.Bio, Is.EqualTo(y.Bio));
+                         }
                      }
                      """
         },
@@ -842,7 +853,7 @@ public static class PostgresTests
                          await transaction.RollbackAsync();
 
                          var actual = await QuerySql.GetAuthor(new QuerySql.GetAuthorArgs { Name = {{Consts.BojackAuthor}} });
-                         Assert.That(actual == null, "author should not exist after rollback");
+                         ClassicAssert.IsNull(actual);
                      }
                      """
         },
@@ -873,13 +884,13 @@ public static class PostgresTests
 
                          var actual = await QuerySql.GetPostgresFunctions();
                          AssertSingularEquals(expected, actual{{Consts.UnknownRecordValuePlaceholder}});
-                     }
 
-                     private static void AssertSingularEquals(QuerySql.GetPostgresFunctionsRow expected, QuerySql.GetPostgresFunctionsRow actual)
-                     {
-                         Assert.That(actual.MaxInteger, Is.EqualTo(expected.MaxInteger));
-                         Assert.That(actual.MaxVarchar, Is.EqualTo(expected.MaxVarchar));
-                         Assert.That(actual.MaxTimestamp, Is.EqualTo(expected.MaxTimestamp));
+                         void AssertSingularEquals(QuerySql.GetPostgresFunctionsRow x, QuerySql.GetPostgresFunctionsRow y)
+                         {
+                             Assert.That(x.MaxInteger, Is.EqualTo(y.MaxInteger));
+                             Assert.That(x.MaxVarchar, Is.EqualTo(y.MaxVarchar));
+                             Assert.That(x.MaxTimestamp, Is.EqualTo(y.MaxTimestamp));
+                         }
                      }
                      """
         },
@@ -988,9 +999,9 @@ public static class PostgresTests
 
                          void AssertSingularEquals(QuerySql.GetPostgresTypesRow x, QuerySql.GetPostgresTypesRow y)
                          {
-                             if (x.CXml == null && y.CXml == null)
-                                return;
-                             Assert.That(x.CXml.OuterXml, Is.EqualTo(y.CXml.OuterXml));
+                             Assert.That(x.CXml == null, Is.EqualTo(y.CXml == null));
+                             if (x.CXml != null)
+                                 Assert.That(x.CXml.OuterXml, Is.EqualTo(y.CXml.OuterXml));
                          }
                      }
                      """

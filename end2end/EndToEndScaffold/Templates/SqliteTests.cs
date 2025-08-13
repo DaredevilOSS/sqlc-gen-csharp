@@ -36,14 +36,14 @@ public static class SqliteTests
                          };
                          var actual = await QuerySql.GetSqliteTypes();
                          AssertSingularEquals(expected, actual{{Consts.UnknownRecordValuePlaceholder}});
-                     }
 
-                     private static void AssertSingularEquals(QuerySql.GetSqliteTypesRow expected, QuerySql.GetSqliteTypesRow actual)
-                     {
-                         Assert.That(actual.CInteger, Is.EqualTo(expected.CInteger));
-                         Assert.That(actual.CReal, Is.EqualTo(expected.CReal));
-                         Assert.That(actual.CText, Is.EqualTo(expected.CText));
-                         Assert.That(actual.CBlob, Is.EqualTo(expected.CBlob));
+                         void AssertSingularEquals(QuerySql.GetSqliteTypesRow x, QuerySql.GetSqliteTypesRow y)
+                         {
+                             Assert.That(x.CInteger, Is.EqualTo(y.CInteger));
+                             Assert.That(x.CReal, Is.EqualTo(y.CReal));
+                             Assert.That(x.CText, Is.EqualTo(y.CText));
+                             Assert.That(x.CBlob, Is.EqualTo(y.CBlob));
+                         }
                      }
                      """
         },
@@ -78,14 +78,14 @@ public static class SqliteTests
                          };
                          var actual = await QuerySql.GetSqliteTypesCnt();
                          AssertSingularEquals(expected, actual{{Consts.UnknownRecordValuePlaceholder}});
-                     }
-
-                     private static void AssertSingularEquals(QuerySql.GetSqliteTypesCntRow expected, QuerySql.GetSqliteTypesCntRow actual)
-                     {
-                         Assert.That(actual.Cnt, Is.EqualTo(expected.Cnt));
-                         Assert.That(actual.CInteger, Is.EqualTo(expected.CInteger));
-                         Assert.That(actual.CReal, Is.EqualTo(expected.CReal));
-                         Assert.That(actual.CText, Is.EqualTo(expected.CText));
+                         
+                         void AssertSingularEquals(QuerySql.GetSqliteTypesCntRow x, QuerySql.GetSqliteTypesCntRow y)
+                         {
+                             Assert.That(x.Cnt, Is.EqualTo(y.Cnt));
+                             Assert.That(x.CInteger, Is.EqualTo(y.CInteger));
+                             Assert.That(x.CReal, Is.EqualTo(y.CReal));
+                             Assert.That(x.CText, Is.EqualTo(y.CText));
+                         }
                      }
                      """
         },
@@ -102,9 +102,8 @@ public static class SqliteTests
                          var querySqlWithTx = QuerySql.WithTransaction(transaction);
                          await querySqlWithTx.CreateAuthor(new QuerySql.CreateAuthorArgs { Id = {{Consts.BojackId}}, Name = {{Consts.BojackAuthor}}, Bio = {{Consts.BojackTheme}} });
 
-                         // The GetAuthor method in SqliteExampleGen returns QuerySql.GetAuthorRow? (nullable record struct/class)
-                         var actualNull = await QuerySql.GetAuthor(new QuerySql.GetAuthorArgs { Name = {{Consts.BojackAuthor}} });
-                         Assert.That(actualNull == null, "there is author"); // This is correct for nullable types
+                         var actual = await QuerySql.GetAuthor(new QuerySql.GetAuthorArgs { Name = {{Consts.BojackAuthor}} });
+                         ClassicAssert.IsNull(actual);
 
                          transaction.Commit();
 
@@ -114,8 +113,15 @@ public static class SqliteTests
                              Name = {{Consts.BojackAuthor}},
                              Bio = {{Consts.BojackTheme}}
                          };
-                         var actual = await QuerySql.GetAuthor(new QuerySql.GetAuthorArgs { Name = {{Consts.BojackAuthor}} });
-                         Assert.That(SingularEquals(expected, actual{{Consts.UnknownRecordValuePlaceholder}})); // Apply placeholder here
+                         actual = await QuerySql.GetAuthor(new QuerySql.GetAuthorArgs { Name = {{Consts.BojackAuthor}} });
+                         AssertSingularEquals(expected, actual{{Consts.UnknownRecordValuePlaceholder}});
+
+                         void AssertSingularEquals(QuerySql.GetAuthorRow x, QuerySql.GetAuthorRow y)
+                         {
+                             Assert.That(x.Id, Is.EqualTo(y.Id));
+                             Assert.That(x.Name, Is.EqualTo(y.Name));
+                             Assert.That(x.Bio, Is.EqualTo(y.Bio));
+                         }
                      }
                      """
         },
@@ -135,7 +141,7 @@ public static class SqliteTests
                          transaction.Rollback();
 
                          var actual = await this.QuerySql.GetAuthor(new QuerySql.GetAuthorArgs { Name = {{Consts.BojackAuthor}} });
-                         Assert.That(actual == null, "author should not exist after rollback");
+                         ClassicAssert.IsNull(actual);
                      }
                      """
         },
@@ -165,13 +171,13 @@ public static class SqliteTests
                          };
                          var actual = await QuerySql.GetSqliteFunctions();
                          AssertSingularEquals(expected, actual{{Consts.UnknownRecordValuePlaceholder}});
-                     }
 
-                     private static void AssertSingularEquals(QuerySql.GetSqliteFunctionsRow expected, QuerySql.GetSqliteFunctionsRow actual)
-                     {
-                         Assert.That(actual.MaxInteger, Is.EqualTo(expected.MaxInteger));
-                         Assert.That(actual.MaxReal, Is.EqualTo(expected.MaxReal));
-                         Assert.That(actual.MaxText, Is.EqualTo(expected.MaxText));
+                         void AssertSingularEquals(QuerySql.GetSqliteFunctionsRow x, QuerySql.GetSqliteFunctionsRow y)
+                         {
+                             Assert.That(x.MaxInteger, Is.EqualTo(y.MaxInteger));
+                             Assert.That(x.MaxReal, Is.EqualTo(y.MaxReal));
+                             Assert.That(x.MaxText, Is.EqualTo(y.MaxText));
+                         }
                      }
                      """
         },
@@ -193,12 +199,14 @@ public static class SqliteTests
                              IdArg = {{Consts.BojackId}},
                              Take = 1
                          });
-                         Assert.That(SingularEquals(expected, actual{{Consts.UnknownRecordValuePlaceholder}}));
-                     }
+                         AssertSingularEquals(expected, actual{{Consts.UnknownRecordValuePlaceholder}});
 
-                     private static bool SingularEquals(QuerySql.GetAuthorByIdWithMultipleNamedParamRow x, QuerySql.GetAuthorByIdWithMultipleNamedParamRow y)
-                     {
-                         return x.Id.Equals(y.Id) && x.Name.Equals(y.Name) && x.Bio.Equals(y.Bio);
+                         void AssertSingularEquals(QuerySql.GetAuthorByIdWithMultipleNamedParamRow x, QuerySql.GetAuthorByIdWithMultipleNamedParamRow y)
+                         {
+                             Assert.That(x.Id, Is.EqualTo(y.Id));
+                             Assert.That(x.Name, Is.EqualTo(y.Name));
+                             Assert.That(x.Bio, Is.EqualTo(y.Bio));
+                         }
                      }
                      """
         }

@@ -47,15 +47,19 @@ public static class MySqlTests
                               CLongtext = cLongtext
                          };
                          var actual = await QuerySql.GetMysqlTypes();
-                     
-                         Assert.That(actual{{Consts.UnknownRecordValuePlaceholder}}.CChar, Is.EqualTo(expected.CChar));
-                         Assert.That(actual{{Consts.UnknownRecordValuePlaceholder}}.CNchar, Is.EqualTo(expected.CNchar));
-                         Assert.That(actual{{Consts.UnknownRecordValuePlaceholder}}.CNationalChar, Is.EqualTo(expected.CNationalChar));
-                         Assert.That(actual{{Consts.UnknownRecordValuePlaceholder}}.CVarchar, Is.EqualTo(expected.CVarchar));
-                         Assert.That(actual{{Consts.UnknownRecordValuePlaceholder}}.CTinytext, Is.EqualTo(expected.CTinytext));
-                         Assert.That(actual{{Consts.UnknownRecordValuePlaceholder}}.CMediumtext, Is.EqualTo(expected.CMediumtext));
-                         Assert.That(actual{{Consts.UnknownRecordValuePlaceholder}}.CText, Is.EqualTo(expected.CText));
-                         Assert.That(actual{{Consts.UnknownRecordValuePlaceholder}}.CLongtext, Is.EqualTo(expected.CLongtext));
+                         AssertSingularEquals(expected, actual{{Consts.UnknownRecordValuePlaceholder}});
+
+                         void AssertSingularEquals(QuerySql.GetMysqlTypesRow x, QuerySql.GetMysqlTypesRow y)
+                         {
+                             Assert.That(x.CChar, Is.EqualTo(y.CChar));
+                             Assert.That(x.CNchar, Is.EqualTo(y.CNchar));
+                             Assert.That(x.CNationalChar, Is.EqualTo(y.CNationalChar));
+                             Assert.That(x.CVarchar, Is.EqualTo(y.CVarchar));
+                             Assert.That(x.CTinytext, Is.EqualTo(y.CTinytext));
+                             Assert.That(x.CMediumtext, Is.EqualTo(y.CMediumtext));
+                             Assert.That(x.CText, Is.EqualTo(y.CText));
+                             Assert.That(x.CLongtext, Is.EqualTo(y.CLongtext));
+                         }
                      }
                      """
         },
@@ -100,15 +104,19 @@ public static class MySqlTests
                              CBigint = cBigint
                          };
                          var actual = await QuerySql.GetMysqlTypes();
-                     
-                         Assert.That(actual{{Consts.UnknownRecordValuePlaceholder}}.CBool, Is.EqualTo(expected.CBool));
-                         Assert.That(actual{{Consts.UnknownRecordValuePlaceholder}}.CBoolean, Is.EqualTo(expected.CBoolean));
-                         Assert.That(actual{{Consts.UnknownRecordValuePlaceholder}}.CTinyint, Is.EqualTo(expected.CTinyint));
-                         Assert.That(actual{{Consts.UnknownRecordValuePlaceholder}}.CSmallint, Is.EqualTo(expected.CSmallint));
-                         Assert.That(actual{{Consts.UnknownRecordValuePlaceholder}}.CMediumint, Is.EqualTo(expected.CMediumint));
-                         Assert.That(actual{{Consts.UnknownRecordValuePlaceholder}}.CInt, Is.EqualTo(expected.CInt));
-                         Assert.That(actual{{Consts.UnknownRecordValuePlaceholder}}.CInteger, Is.EqualTo(expected.CInteger));
-                         Assert.That(actual{{Consts.UnknownRecordValuePlaceholder}}.CBigint, Is.EqualTo(expected.CBigint));
+                         AssertSingularEquals(expected, actual{{Consts.UnknownRecordValuePlaceholder}});
+
+                         void AssertSingularEquals(QuerySql.GetMysqlTypesRow x, QuerySql.GetMysqlTypesRow y)
+                         {
+                             Assert.That(x.CBool, Is.EqualTo(y.CBool));
+                             Assert.That(x.CBoolean, Is.EqualTo(y.CBoolean));
+                             Assert.That(x.CTinyint, Is.EqualTo(y.CTinyint));
+                             Assert.That(x.CSmallint, Is.EqualTo(y.CSmallint));
+                             Assert.That(x.CMediumint, Is.EqualTo(y.CMediumint));
+                             Assert.That(x.CInt, Is.EqualTo(y.CInt));
+                             Assert.That(x.CInteger, Is.EqualTo(y.CInteger));
+                             Assert.That(x.CBigint, Is.EqualTo(y.CBigint));
+                         }
                      }
                      """
         },
@@ -149,14 +157,18 @@ public static class MySqlTests
                               CDoublePrecision = cDoublePrecision
                          };
                          var actual = await QuerySql.GetMysqlTypes();
-                         
-                         Assert.That(actual{{Consts.UnknownRecordValuePlaceholder}}.CFloat, Is.EqualTo(expected.CFloat));
-                         Assert.That(actual{{Consts.UnknownRecordValuePlaceholder}}.CNumeric, Is.EqualTo(expected.CNumeric));
-                         Assert.That(actual{{Consts.UnknownRecordValuePlaceholder}}.CDecimal, Is.EqualTo(expected.CDecimal));
-                         Assert.That(actual{{Consts.UnknownRecordValuePlaceholder}}.CDec, Is.EqualTo(expected.CDec));
-                         Assert.That(actual{{Consts.UnknownRecordValuePlaceholder}}.CFixed, Is.EqualTo(expected.CFixed));
-                         Assert.That(actual{{Consts.UnknownRecordValuePlaceholder}}.CDouble, Is.EqualTo(expected.CDouble));
-                         Assert.That(actual{{Consts.UnknownRecordValuePlaceholder}}.CDoublePrecision, Is.EqualTo(expected.CDoublePrecision));
+                         AssertSingularEquals(expected, actual{{Consts.UnknownRecordValuePlaceholder}});
+
+                         void AssertSingularEquals(QuerySql.GetMysqlTypesRow x, QuerySql.GetMysqlTypesRow y)
+                         {
+                             Assert.That(x.CFloat, Is.EqualTo(y.CFloat));
+                             Assert.That(x.CNumeric, Is.EqualTo(y.CNumeric));
+                             Assert.That(x.CDecimal, Is.EqualTo(y.CDecimal));
+                             Assert.That(x.CDec, Is.EqualTo(y.CDec));
+                             Assert.That(x.CFixed, Is.EqualTo(y.CFixed));
+                             Assert.That(x.CDouble, Is.EqualTo(y.CDouble));
+                             Assert.That(x.CDoublePrecision, Is.EqualTo(y.CDoublePrecision));
+                         }
                      }
                      """
         },
@@ -185,10 +197,14 @@ public static class MySqlTests
                               CTimestamp = cTimestamp
                          };
                          var actual = await QuerySql.GetMysqlTypes();
+                         AssertSingularEquals(expected, actual{{Consts.UnknownRecordValuePlaceholder}});
                      
-                         Assert.That(actual{{Consts.UnknownRecordValuePlaceholder}}.CYear, Is.EqualTo(expected.CYear));
-                         Assert.That(actual{{Consts.UnknownRecordValuePlaceholder}}.CDate, Is.EqualTo(expected.CDate));
-                         Assert.That(actual{{Consts.UnknownRecordValuePlaceholder}}.CTimestamp, Is.EqualTo(expected.CTimestamp));
+                         void AssertSingularEquals(QuerySql.GetMysqlTypesRow x, QuerySql.GetMysqlTypesRow y)
+                         {
+                             Assert.That(x.CYear, Is.EqualTo(y.CYear));
+                             Assert.That(x.CDate, Is.EqualTo(y.CDate));
+                             Assert.That(x.CTimestamp, Is.EqualTo(y.CTimestamp));
+                         }
                      }
                      """
         },
@@ -443,14 +459,19 @@ public static class MySqlTests
                              CDoublePrecision = cDoublePrecision
                          };
                          var actual = await QuerySql.GetMysqlTypesCnt();
+                         AssertSingularEquals(expected, actual{{Consts.UnknownRecordValuePlaceholder}});
                          
-                         Assert.That(actual{{Consts.UnknownRecordValuePlaceholder}}.CFloat, Is.EqualTo(expected.CFloat));
-                         Assert.That(actual{{Consts.UnknownRecordValuePlaceholder}}.CNumeric, Is.EqualTo(expected.CNumeric));
-                         Assert.That(actual{{Consts.UnknownRecordValuePlaceholder}}.CDecimal, Is.EqualTo(expected.CDecimal));
-                         Assert.That(actual{{Consts.UnknownRecordValuePlaceholder}}.CDec, Is.EqualTo(expected.CDec));
-                         Assert.That(actual{{Consts.UnknownRecordValuePlaceholder}}.CFixed, Is.EqualTo(expected.CFixed));
-                         Assert.That(actual{{Consts.UnknownRecordValuePlaceholder}}.CDouble, Is.EqualTo(expected.CDouble));
-                         Assert.That(actual{{Consts.UnknownRecordValuePlaceholder}}.CDoublePrecision, Is.EqualTo(expected.CDoublePrecision));
+                         void AssertSingularEquals(QuerySql.GetMysqlTypesCntRow x, QuerySql.GetMysqlTypesCntRow y)
+                         {
+                             Assert.That(x.Cnt, Is.EqualTo(y.Cnt));
+                             Assert.That(x.CFloat, Is.EqualTo(y.CFloat));
+                             Assert.That(x.CNumeric, Is.EqualTo(y.CNumeric));
+                             Assert.That(x.CDecimal, Is.EqualTo(y.CDecimal));
+                             Assert.That(x.CDec, Is.EqualTo(y.CDec));
+                             Assert.That(x.CFixed, Is.EqualTo(y.CFixed));
+                             Assert.That(x.CDouble, Is.EqualTo(y.CDouble));
+                             Assert.That(x.CDoublePrecision, Is.EqualTo(y.CDoublePrecision));
+                         }
                      }
                      """
         },
@@ -486,12 +507,16 @@ public static class MySqlTests
                              CTimestamp = cTimestamp
                          };
                          var actual = await QuerySql.GetMysqlTypesCnt();
+                         AssertSingularEquals(expected, actual{{Consts.UnknownRecordValuePlaceholder}});
                          
-                         Assert.That(actual{{Consts.UnknownRecordValuePlaceholder}}.Cnt, Is.EqualTo(expected.Cnt));
-                         Assert.That(actual{{Consts.UnknownRecordValuePlaceholder}}.CYear, Is.EqualTo(expected.CYear));
-                         Assert.That(actual{{Consts.UnknownRecordValuePlaceholder}}.CDate, Is.EqualTo(expected.CDate));
-                         Assert.That(actual{{Consts.UnknownRecordValuePlaceholder}}.CDatetime, Is.EqualTo(expected.CDatetime));
-                         Assert.That(actual{{Consts.UnknownRecordValuePlaceholder}}.CTimestamp, Is.EqualTo(expected.CTimestamp));
+                         void AssertSingularEquals(QuerySql.GetMysqlTypesCntRow x, QuerySql.GetMysqlTypesCntRow y)
+                         {
+                             Assert.That(x.Cnt, Is.EqualTo(y.Cnt));
+                             Assert.That(x.CYear, Is.EqualTo(y.CYear));
+                             Assert.That(x.CDate, Is.EqualTo(y.CDate));
+                             Assert.That(x.CDatetime, Is.EqualTo(y.CDatetime));
+                             Assert.That(x.CTimestamp, Is.EqualTo(y.CTimestamp));
+                         }
                      }
                      """
         },
@@ -537,15 +562,19 @@ public static class MySqlTests
                              CLongblob = cLongblob
                          };
                          var actual = await QuerySql.GetMysqlTypesCnt();
+                         AssertSingularEquals(expected, actual{{Consts.UnknownRecordValuePlaceholder}});
 
-                         Assert.That(actual{{Consts.UnknownRecordValuePlaceholder}}.Cnt, Is.EqualTo(expected.Cnt));
-                         Assert.That(actual{{Consts.UnknownRecordValuePlaceholder}}.CBit, Is.EqualTo(expected.CBit));
-                         Assert.That(actual{{Consts.UnknownRecordValuePlaceholder}}.CBinary, Is.EqualTo(expected.CBinary));
-                         Assert.That(actual{{Consts.UnknownRecordValuePlaceholder}}.CVarbinary, Is.EqualTo(expected.CVarbinary));
-                         Assert.That(actual{{Consts.UnknownRecordValuePlaceholder}}.CTinyblob, Is.EqualTo(expected.CTinyblob));
-                         Assert.That(actual{{Consts.UnknownRecordValuePlaceholder}}.CBlob, Is.EqualTo(expected.CBlob));
-                         Assert.That(actual{{Consts.UnknownRecordValuePlaceholder}}.CMediumblob, Is.EqualTo(expected.CMediumblob));
-                         Assert.That(actual{{Consts.UnknownRecordValuePlaceholder}}.CLongblob, Is.EqualTo(expected.CLongblob));
+                         void AssertSingularEquals(QuerySql.GetMysqlTypesCntRow x, QuerySql.GetMysqlTypesCntRow y)
+                         {
+                             Assert.That(x.Cnt, Is.EqualTo(y.Cnt));
+                             Assert.That(x.CBit, Is.EqualTo(y.CBit));
+                             Assert.That(x.CBinary, Is.EqualTo(y.CBinary));
+                             Assert.That(x.CVarbinary, Is.EqualTo(y.CVarbinary));
+                             Assert.That(x.CTinyblob, Is.EqualTo(y.CTinyblob));
+                             Assert.That(x.CBlob, Is.EqualTo(y.CBlob));
+                             Assert.That(x.CMediumblob, Is.EqualTo(y.CMediumblob));
+                             Assert.That(x.CLongblob, Is.EqualTo(y.CLongblob));
+                         }
                      }
                      """
         },
@@ -562,8 +591,8 @@ public static class MySqlTests
                          var querySqlWithTx = QuerySql.WithTransaction(transaction);
                          await querySqlWithTx.CreateAuthor(new QuerySql.CreateAuthorArgs { Id = {{Consts.BojackId}}, Name = {{Consts.BojackAuthor}}, Bio = {{Consts.BojackTheme}} });
 
-                         var actualNull = await QuerySql.GetAuthor(new QuerySql.GetAuthorArgs { Name = {{Consts.BojackAuthor}} });
-                         Assert.That(actualNull == null, "there is author"); // This is correct for nullable types
+                         var actual = await QuerySql.GetAuthor(new QuerySql.GetAuthorArgs { Name = {{Consts.BojackAuthor}} });
+                         ClassicAssert.IsNull(actual);
 
                          await transaction.CommitAsync();
 
@@ -573,8 +602,15 @@ public static class MySqlTests
                              Name = {{Consts.BojackAuthor}},
                              Bio = {{Consts.BojackTheme}}
                          };
-                         var actual = await QuerySql.GetAuthor(new QuerySql.GetAuthorArgs { Name = {{Consts.BojackAuthor}} });
-                         Assert.That(SingularEquals(expected, actual{{Consts.UnknownRecordValuePlaceholder}})); // Apply placeholder here
+                         actual = await QuerySql.GetAuthor(new QuerySql.GetAuthorArgs { Name = {{Consts.BojackAuthor}} });
+                         AssertSingularEquals(expected, actual{{Consts.UnknownRecordValuePlaceholder}});
+
+                         void AssertSingularEquals(QuerySql.GetAuthorRow x, QuerySql.GetAuthorRow y)
+                         {
+                             Assert.That(x.Id, Is.EqualTo(y.Id));
+                             Assert.That(x.Name, Is.EqualTo(y.Name));
+                             Assert.That(x.Bio, Is.EqualTo(y.Bio));
+                         }
                      }
                      """
         },
@@ -594,7 +630,7 @@ public static class MySqlTests
                          await transaction.RollbackAsync();
 
                          var actual = await QuerySql.GetAuthor(new QuerySql.GetAuthorArgs { Name = {{Consts.BojackAuthor}} });
-                         Assert.That(actual == null, "author should not exist after rollback");
+                         ClassicAssert.IsNull(actual);
                      }
                      """
         },
@@ -662,14 +698,14 @@ public static class MySqlTests
                              BioType = ExtendedBiosBioType.Memoir
                          });
                          AssertSingularEquals(expected, actual{{Consts.UnknownRecordValuePlaceholder}});
-                     }
 
-                     private void AssertSingularEquals(QuerySql.GetFirstExtendedBioByTypeRow x, QuerySql.GetFirstExtendedBioByTypeRow y)
-                     {
-                         Assert.That(x.AuthorName, Is.EqualTo(y.AuthorName));
-                         Assert.That(x.Name, Is.EqualTo(y.Name));
-                         Assert.That(x.BioType, Is.EqualTo(y.BioType));
-                         Assert.That(x.AuthorType, Is.EqualTo(y.AuthorType));
+                         void AssertSingularEquals(QuerySql.GetFirstExtendedBioByTypeRow x, QuerySql.GetFirstExtendedBioByTypeRow y)
+                         {
+                             Assert.That(x.AuthorName, Is.EqualTo(y.AuthorName));
+                             Assert.That(x.Name, Is.EqualTo(y.Name));
+                             Assert.That(x.BioType, Is.EqualTo(y.BioType));
+                             Assert.That(x.AuthorType, Is.EqualTo(y.AuthorType));
+                         }
                      }
                      """
         },
@@ -789,13 +825,13 @@ public static class MySqlTests
 
                          var actual = await QuerySql.GetMysqlFunctions();
                          AssertSingularEquals(expected, actual{{Consts.UnknownRecordValuePlaceholder}});
-                     }
 
-                     private static void AssertSingularEquals(QuerySql.GetMysqlFunctionsRow expected, QuerySql.GetMysqlFunctionsRow actual)
-                     {
-                         Assert.That(actual.MaxInt, Is.EqualTo(expected.MaxInt));
-                         Assert.That(actual.MaxVarchar, Is.EqualTo(expected.MaxVarchar));
-                         Assert.That(actual.MaxTimestamp, Is.EqualTo(expected.MaxTimestamp));
+                         void AssertSingularEquals(QuerySql.GetMysqlFunctionsRow x, QuerySql.GetMysqlFunctionsRow y)
+                         {
+                             Assert.That(x.MaxInt, Is.EqualTo(y.MaxInt));
+                             Assert.That(x.MaxVarchar, Is.EqualTo(y.MaxVarchar));
+                             Assert.That(x.MaxTimestamp, Is.EqualTo(y.MaxTimestamp));
+                         }
                      }
                      """
         }
