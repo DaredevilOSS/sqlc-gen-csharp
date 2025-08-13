@@ -10,14 +10,12 @@ using System.Text.Json;
 namespace MySqlConnectorDapperExampleGen;
 public static class Utils
 {
-    public class JsonElementTypeHandler : SqlMapper.TypeHandler<JsonElement>
+    private class JsonElementTypeHandler : SqlMapper.TypeHandler<JsonElement>
     {
         public override JsonElement Parse(object value)
         {
             if (value is string s)
                 return JsonDocument.Parse(s).RootElement;
-            if (value is null)
-                return default;
             throw new DataException($"Cannot convert {value?.GetType()} to JsonElement");
         }
 
@@ -30,12 +28,56 @@ public static class Utils
     public static void ConfigureSqlMapper()
     {
         SqlMapper.AddTypeHandler(typeof(JsonElement), new JsonElementTypeHandler());
+        SqlMapper.AddTypeHandler(typeof(MysqlTypesCSet[]), new MysqlTypesCSetTypeHandler());
+        SqlMapper.AddTypeHandler(typeof(ExtendedBiosAuthorType[]), new ExtendedBiosAuthorTypeTypeHandler());
     }
 
     public static string TransformQueryForSliceArgs(string originalSql, int sliceSize, string paramName)
     {
         var paramArgs = Enumerable.Range(0, sliceSize).Select(i => $"@{paramName}Arg{i}").ToList();
         return originalSql.Replace($"/*SLICE:{paramName}*/@{paramName}", string.Join(",", paramArgs));
+    }
+
+    private class MysqlTypesCSetTypeHandler : SqlMapper.TypeHandler<MysqlTypesCSet[]>
+    {
+        public override MysqlTypesCSet[] Parse(object value)
+        {
+            if (value is string s)
+                return s.ToMysqlTypesCSetArr();
+            throw new DataException($"Cannot convert {value?.GetType()} to MysqlTypesCSet[]");
+        }
+
+        public override void SetValue(IDbDataParameter parameter, MysqlTypesCSet[] value)
+        {
+            parameter.Value = string.Join(",", value);
+        }
+    }
+
+    private class ExtendedBiosAuthorTypeTypeHandler : SqlMapper.TypeHandler<ExtendedBiosAuthorType[]>
+    {
+        public override ExtendedBiosAuthorType[] Parse(object value)
+        {
+            if (value is string s)
+                return s.ToExtendedBiosAuthorTypeArr();
+            throw new DataException($"Cannot convert {value?.GetType()} to ExtendedBiosAuthorType[]");
+        }
+
+        public override void SetValue(IDbDataParameter parameter, ExtendedBiosAuthorType[] value)
+        {
+            parameter.Value = string.Join(",", value);
+        }
+    }
+
+    public class MysqlTypesCSetCsvConverter : DefaultTypeConverter
+    {
+        public override string? ConvertToString(object? value, IWriterRow row, MemberMapData memberMapData)
+        {
+            if (value == null)
+                return @"\N";
+            if (value is MysqlTypesCSet[] arrVal)
+                return string.Join(",", arrVal);
+            return base.ConvertToString(value, row, memberMapData);
+        }
     }
 
     public class NullToStringCsvConverter : DefaultTypeConverter

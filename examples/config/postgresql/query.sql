@@ -98,17 +98,11 @@ INSERT INTO postgres_types
     c_json_string_override,
     c_jsonb,
     c_jsonpath,
+    c_xml,
     c_cidr,
     c_inet,
     c_macaddr,
-    c_macaddr8,
-    c_bytea, 
-    c_boolean_array,
-    c_text_array, 
-    c_integer_array,
-    c_decimal_array,
-    c_date_array,
-    c_timestamp_array
+    c_macaddr8
 )
 VALUES (
     sqlc.narg('c_boolean'),
@@ -136,17 +130,11 @@ VALUES (
     sqlc.narg('c_json_string_override')::json, 
     sqlc.narg('c_jsonb')::jsonb,
     sqlc.narg('c_jsonpath')::jsonpath,
+    sqlc.narg('c_xml')::xml,
     sqlc.narg('c_cidr'),
     sqlc.narg('c_inet'),
     sqlc.narg('c_macaddr')::macaddr,
-    sqlc.narg('c_macaddr8')::macaddr8,
-    sqlc.narg('c_bytea'), 
-    sqlc.narg('c_boolean_array'),
-    sqlc.narg('c_text_array'), 
-    sqlc.narg('c_integer_array'),
-    sqlc.narg('c_decimal_array'),
-    sqlc.narg('c_date_array'),
-    sqlc.narg('c_timestamp_array')
+    sqlc.narg('c_macaddr8')::macaddr8
 );
 
 -- name: InsertPostgresTypesBatch :copyfrom
@@ -172,7 +160,9 @@ INSERT INTO postgres_types
     c_bpchar,
     c_text,
     c_uuid,
-    c_bytea
+    c_cidr,
+    c_inet,
+    c_macaddr
 )
 VALUES (
     $1, 
@@ -195,7 +185,9 @@ VALUES (
     $18,
     $19,
     $20,
-    $21
+    $21,
+    $22,
+    $23
 );
 
 -- name: GetPostgresTypes :one
@@ -225,17 +217,11 @@ SELECT
     c_json_string_override,
     c_jsonb,
     c_jsonpath,
+    c_xml,
     c_cidr,
     c_inet,
     c_macaddr,
-    c_macaddr8::TEXT AS c_macaddr8,
-    c_bytea, 
-    c_boolean_array,
-    c_text_array, 
-    c_integer_array,
-    c_decimal_array,
-    c_date_array,
-    c_timestamp_array
+    c_macaddr8::TEXT AS c_macaddr8
 FROM postgres_types 
 LIMIT 1;
 
@@ -261,7 +247,9 @@ SELECT
     c_bpchar,
     c_text,
     c_uuid,
-    c_bytea,
+    c_cidr,
+    c_inet,
+    c_macaddr,
     COUNT(*) AS cnt
 FROM postgres_types
 GROUP BY
@@ -285,7 +273,9 @@ GROUP BY
     c_bpchar,
     c_text,
     c_uuid,
-    c_bytea
+    c_cidr,
+    c_inet,
+    c_macaddr
 LIMIT 1;
 
 -- name: GetPostgresFunctions :one
@@ -315,3 +305,34 @@ TRUNCATE TABLE postgres_types;
 
 -- name: TruncatePostgresGeoTypes :exec
 TRUNCATE TABLE postgres_geometric_types;
+
+-- name: InsertPostgresArrayTypes :exec
+INSERT INTO postgres_array_types
+(
+    c_bytea,
+    c_boolean_array,
+    c_text_array,
+    c_integer_array,
+    c_decimal_array,
+    c_date_array,
+    c_timestamp_array
+)
+VALUES ($1, $2, $3, $4, $5, $6, $7);
+
+-- name: GetPostgresArrayTypes :one
+SELECT * FROM postgres_array_types LIMIT 1;
+
+-- name: InsertPostgresArrayTypesBatch :copyfrom
+INSERT INTO postgres_array_types (c_bytea) VALUES ($1);
+
+-- name: GetPostgresArrayTypesCnt :one
+SELECT
+    c_bytea,
+    COUNT(*) AS cnt
+FROM postgres_array_types
+GROUP BY
+    c_bytea
+LIMIT 1;
+
+-- name: TruncatePostgresArrayTypes :exec
+TRUNCATE TABLE postgres_array_types;

@@ -8,17 +8,16 @@ namespace NpgsqlDapperLegacyExampleGen
     using System.Net;
     using System.Net.NetworkInformation;
     using System.Text.Json;
+    using System.Xml;
 
     public static class Utils
     {
-        public class JsonElementTypeHandler : SqlMapper.TypeHandler<JsonElement>
+        private class JsonElementTypeHandler : SqlMapper.TypeHandler<JsonElement>
         {
             public override JsonElement Parse(object value)
             {
                 if (value is string s)
                     return JsonDocument.Parse(s).RootElement;
-                if (value is null)
-                    return default;
                 throw new DataException($"Cannot convert {value?.GetType()} to JsonElement");
             }
 
@@ -28,9 +27,30 @@ namespace NpgsqlDapperLegacyExampleGen
             }
         }
 
+        private class XmlDocumentTypeHandler : SqlMapper.TypeHandler<XmlDocument>
+        {
+            public override XmlDocument Parse(object value)
+            {
+                if (value is string s)
+                {
+                    var xmlDoc = new XmlDocument();
+                    xmlDoc.LoadXml(s);
+                    return xmlDoc;
+                }
+
+                throw new DataException($"Cannot convert {value?.GetType()} to XmlDocument");
+            }
+
+            public override void SetValue(IDbDataParameter parameter, XmlDocument value)
+            {
+                parameter.Value = value.OuterXml;
+            }
+        }
+
         public static void ConfigureSqlMapper()
         {
             SqlMapper.AddTypeHandler(typeof(JsonElement), new JsonElementTypeHandler());
+            SqlMapper.AddTypeHandler(typeof(XmlDocument), new XmlDocumentTypeHandler());
             RegisterNpgsqlTypeHandler<NpgsqlPoint>();
             RegisterNpgsqlTypeHandler<NpgsqlLine>();
             RegisterNpgsqlTypeHandler<NpgsqlLSeg>();

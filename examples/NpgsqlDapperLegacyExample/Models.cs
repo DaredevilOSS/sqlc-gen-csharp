@@ -3,9 +3,11 @@ namespace NpgsqlDapperLegacyExampleGen
 {
     using NpgsqlTypes;
     using System;
+    using System.Linq;
     using System.Net;
     using System.Net.NetworkInformation;
     using System.Text.Json;
+    using System.Xml;
 
     public class Author
     {
@@ -46,18 +48,12 @@ namespace NpgsqlDapperLegacyExampleGen
         public JsonElement? CJsonStringOverride { get; set; }
         public JsonElement? CJsonb { get; set; }
         public string CJsonpath { get; set; }
+        public XmlDocument CXml { get; set; }
         public NpgsqlCidr? CCidr { get; set; }
         public IPAddress CInet { get; set; }
         public PhysicalAddress CMacaddr { get; set; }
         public string CMacaddr8 { get; set; }
         public Guid? CUuid { get; set; }
-        public byte[] CBytea { get; set; }
-        public bool[] CBooleanArray { get; set; }
-        public string[] CTextArray { get; set; }
-        public int[] CIntegerArray { get; set; }
-        public decimal[] CDecimalArray { get; set; }
-        public DateTime[] CDateArray { get; set; }
-        public DateTime[] CTimestampArray { get; set; }
     };
     public class PostgresGeometricType
     {
@@ -68,5 +64,15 @@ namespace NpgsqlDapperLegacyExampleGen
         public NpgsqlPath? CPath { get; set; }
         public NpgsqlPolygon? CPolygon { get; set; }
         public NpgsqlCircle? CCircle { get; set; }
+    };
+    public class PostgresArrayType
+    {
+        public byte[] CBytea { get; set; }
+        public bool[] CBooleanArray { get; set; }
+        public string[] CTextArray { get; set; }
+        public int[] CIntegerArray { get; set; }
+        public decimal[] CDecimalArray { get; set; }
+        public DateTime[] CDateArray { get; set; }
+        public DateTime[] CTimestampArray { get; set; }
     };
 }

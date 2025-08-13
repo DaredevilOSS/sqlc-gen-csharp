@@ -21,10 +21,22 @@ public class CommonGen(DbDriver dbDriver)
         if (writerFn is not null)
             return writerFn;
 
-        var defaultWriterFn = (string el, bool notNull, bool isDapper) => notNull ? el : $"{el} ?? (object)DBNull.Value";
-        return dbDriver.Options.UseDapper ? null : defaultWriterFn;
+        if (dbDriver.GetEnumType(column) is { } enumType)
+            if (dbDriver.GetEnumTypeAsCsharpType(column, enumType).EndsWith("[]"))
+                return (el, notNull, isDapper) =>
+                {
+                    var stringJoinStmt = $"string.Join(\",\", {el})";
+                    var nullValue = isDapper ? "null" : "(object)DBNull.Value";
+                    return notNull
+                        ? stringJoinStmt
+                        : $"{el} != null ? {stringJoinStmt} : {nullValue}";
+                };
+
+        string DefaultWriterFn(string el, bool notNull, bool isDapper) => notNull ? el : $"{el} ?? (object)DBNull.Value";
+        return dbDriver.Options.UseDapper ? null : DefaultWriterFn;
     }
 
+    // TODO: extract AddWithValue statement generation to a method + possible override for Npgsql for type override
     public string AddParametersToCommand(Query query)
     {
         return query.Params.Select(p =>

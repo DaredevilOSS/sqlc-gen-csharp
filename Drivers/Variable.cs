@@ -14,6 +14,7 @@ public enum Variable
     Loader,
     CsvWriter,
     NullConverterFn,
+    SetConverterFn,
 
     Args,
     QueryParams,

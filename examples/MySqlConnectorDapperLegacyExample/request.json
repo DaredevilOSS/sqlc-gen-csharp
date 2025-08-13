@@ -398,16 +398,6 @@
                 }
               },
               {
-                "name": "c_enum",
-                "length": 6,
-                "table": {
-                  "name": "mysql_types"
-                },
-                "type": {
-                  "name": "mysql_types_c_enum"
-                }
-              },
-              {
                 "name": "c_json",
                 "length": -1,
                 "table": {
@@ -425,6 +415,26 @@
                 },
                 "type": {
                   "name": "json"
+                }
+              },
+              {
+                "name": "c_enum",
+                "length": 6,
+                "table": {
+                  "name": "mysql_types"
+                },
+                "type": {
+                  "name": "mysql_types_c_enum"
+                }
+              },
+              {
+                "name": "c_set",
+                "length": 15,
+                "table": {
+                  "name": "mysql_types"
+                },
+                "type": {
+                  "name": "mysql_types_c_set"
                 }
               },
               {
@@ -510,11 +520,27 @@
             ]
           },
           {
+            "name": "mysql_types_c_set",
+            "vals": [
+              "tea",
+              "coffee",
+              "milk"
+            ]
+          },
+          {
             "name": "bios_bio_type",
             "vals": [
               "Autobiography",
               "Biography",
               "Memoir"
+            ]
+          },
+          {
+            "name": "bios_author_type",
+            "vals": [
+              "Author",
+              "Editor",
+              "Translator"
             ]
           }
         ]
@@ -559,6 +585,17 @@
                 },
                 "type": {
                   "name": "bios_bio_type"
+                }
+              },
+              {
+                "name": "author_type",
+                "length": 24,
+                "table": {
+                  "schema": "extended",
+                  "name": "bios"
+                },
+                "type": {
+                  "name": "bios_author_type"
                 }
               }
             ]
@@ -1269,7 +1306,7 @@
       "filename": "query.sql"
     },
     {
-      "text": "INSERT INTO mysql_types \n(c_bit, c_bool, c_boolean, c_tinyint, c_smallint, c_mediumint, c_int, c_integer, c_bigint, \n c_decimal, c_dec, c_numeric, c_fixed, c_float, c_double, c_double_precision, \n c_char, c_nchar, c_national_char, c_varchar, c_tinytext, c_mediumtext, c_text, c_longtext, c_enum, \n c_json, c_json_string_override, c_year, c_date, c_datetime, c_timestamp, \n c_binary, c_varbinary, c_tinyblob, c_blob, c_mediumblob, c_longblob) \nVALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+      "text": "INSERT INTO mysql_types \n(c_bit, c_bool, c_boolean, c_tinyint, c_smallint, c_mediumint, c_int, c_integer, c_bigint, \n c_decimal, c_dec, c_numeric, c_fixed, c_float, c_double, c_double_precision, \n c_char, c_nchar, c_national_char, c_varchar, c_tinytext, c_mediumtext, c_text, c_longtext, \n c_json, c_json_string_override, c_enum, c_set, c_year, c_date, c_datetime, c_timestamp, \n c_binary, c_varbinary, c_tinyblob, c_blob, c_mediumblob, c_longblob) \nVALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
       "name": "InsertMysqlTypes",
       "cmd": ":exec",
       "parameters": [
@@ -1636,21 +1673,6 @@
         {
           "number": 25,
           "column": {
-            "name": "c_enum",
-            "length": 6,
-            "table": {
-              "schema": "public",
-              "name": "mysql_types"
-            },
-            "type": {
-              "name": "mysql_types_c_enum"
-            },
-            "originalName": "c_enum"
-          }
-        },
-        {
-          "number": 26,
-          "column": {
             "name": "c_json",
             "length": -1,
             "table": {
@@ -1664,7 +1686,7 @@
           }
         },
         {
-          "number": 27,
+          "number": 26,
           "column": {
             "name": "c_json_string_override",
             "length": -1,
@@ -1679,7 +1701,37 @@
           }
         },
         {
+          "number": 27,
+          "column": {
+            "name": "c_enum",
+            "length": 6,
+            "table": {
+              "schema": "public",
+              "name": "mysql_types"
+            },
+            "type": {
+              "name": "mysql_types_c_enum"
+            },
+            "originalName": "c_enum"
+          }
+        },
+        {
           "number": 28,
+          "column": {
+            "name": "c_set",
+            "length": 15,
+            "table": {
+              "schema": "public",
+              "name": "mysql_types"
+            },
+            "type": {
+              "name": "mysql_types_c_set"
+            },
+            "originalName": "c_set"
+          }
+        },
+        {
+          "number": 29,
           "column": {
             "name": "c_year",
             "length": -1,
@@ -1694,7 +1746,7 @@
           }
         },
         {
-          "number": 29,
+          "number": 30,
           "column": {
             "name": "c_date",
             "length": -1,
@@ -1709,7 +1761,7 @@
           }
         },
         {
-          "number": 30,
+          "number": 31,
           "column": {
             "name": "c_datetime",
             "length": 19,
@@ -1724,7 +1776,7 @@
           }
         },
         {
-          "number": 31,
+          "number": 32,
           "column": {
             "name": "c_timestamp",
             "length": 19,
@@ -1739,7 +1791,7 @@
           }
         },
         {
-          "number": 32,
+          "number": 33,
           "column": {
             "name": "c_binary",
             "length": 3,
@@ -1754,7 +1806,7 @@
           }
         },
         {
-          "number": 33,
+          "number": 34,
           "column": {
             "name": "c_varbinary",
             "length": 10,
@@ -1769,7 +1821,7 @@
           }
         },
         {
-          "number": 34,
+          "number": 35,
           "column": {
             "name": "c_tinyblob",
             "length": -1,
@@ -1784,7 +1836,7 @@
           }
         },
         {
-          "number": 35,
+          "number": 36,
           "column": {
             "name": "c_blob",
             "length": -1,
@@ -1799,7 +1851,7 @@
           }
         },
         {
-          "number": 36,
+          "number": 37,
           "column": {
             "name": "c_mediumblob",
             "length": -1,
@@ -1814,7 +1866,7 @@
           }
         },
         {
-          "number": 37,
+          "number": 38,
           "column": {
             "name": "c_longblob",
             "length": -1,
@@ -1835,7 +1887,7 @@
       }
     },
     {
-      "text": "INSERT INTO mysql_types \n(c_bit, c_bool, c_boolean, c_tinyint, c_smallint, c_mediumint, c_int, c_integer, c_bigint, \n c_float, c_numeric, c_decimal, c_dec, c_fixed, c_double, c_double_precision, \n c_char, c_nchar, c_national_char, c_varchar, c_tinytext, c_mediumtext, c_text, c_longtext, c_enum, \n c_json, c_json_string_override, c_year, c_date, c_datetime, c_timestamp,\n c_binary, c_varbinary, c_tinyblob, c_blob, c_mediumblob, c_longblob) \nVALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+      "text": "INSERT INTO mysql_types \n(c_bit, c_bool, c_boolean, c_tinyint, c_smallint, c_mediumint, c_int, c_integer, c_bigint, \n c_float, c_numeric, c_decimal, c_dec, c_fixed, c_double, c_double_precision, \n c_char, c_nchar, c_national_char, c_varchar, c_tinytext, c_mediumtext, c_text, c_longtext, \n c_json, c_json_string_override, c_enum, c_set, c_year, c_date, c_datetime, c_timestamp,\n c_binary, c_varbinary, c_tinyblob, c_blob, c_mediumblob, c_longblob) \nVALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
       "name": "InsertMysqlTypesBatch",
       "cmd": ":copyfrom",
       "parameters": [
@@ -2202,21 +2254,6 @@
         {
           "number": 25,
           "column": {
-            "name": "c_enum",
-            "length": 6,
-            "table": {
-              "schema": "public",
-              "name": "mysql_types"
-            },
-            "type": {
-              "name": "mysql_types_c_enum"
-            },
-            "originalName": "c_enum"
-          }
-        },
-        {
-          "number": 26,
-          "column": {
             "name": "c_json",
             "length": -1,
             "table": {
@@ -2230,7 +2267,7 @@
           }
         },
         {
-          "number": 27,
+          "number": 26,
           "column": {
             "name": "c_json_string_override",
             "length": -1,
@@ -2245,7 +2282,37 @@
           }
         },
         {
+          "number": 27,
+          "column": {
+            "name": "c_enum",
+            "length": 6,
+            "table": {
+              "schema": "public",
+              "name": "mysql_types"
+            },
+            "type": {
+              "name": "mysql_types_c_enum"
+            },
+            "originalName": "c_enum"
+          }
+        },
+        {
           "number": 28,
+          "column": {
+            "name": "c_set",
+            "length": 15,
+            "table": {
+              "schema": "public",
+              "name": "mysql_types"
+            },
+            "type": {
+              "name": "mysql_types_c_set"
+            },
+            "originalName": "c_set"
+          }
+        },
+        {
+          "number": 29,
           "column": {
             "name": "c_year",
             "length": -1,
@@ -2260,7 +2327,7 @@
           }
         },
         {
-          "number": 29,
+          "number": 30,
           "column": {
             "name": "c_date",
             "length": -1,
@@ -2275,7 +2342,7 @@
           }
         },
         {
-          "number": 30,
+          "number": 31,
           "column": {
             "name": "c_datetime",
             "length": 19,
@@ -2290,7 +2357,7 @@
           }
         },
         {
-          "number": 31,
+          "number": 32,
           "column": {
             "name": "c_timestamp",
             "length": 19,
@@ -2305,7 +2372,7 @@
           }
         },
         {
-          "number": 32,
+          "number": 33,
           "column": {
             "name": "c_binary",
             "length": 3,
@@ -2320,7 +2387,7 @@
           }
         },
         {
-          "number": 33,
+          "number": 34,
           "column": {
             "name": "c_varbinary",
             "length": 10,
@@ -2335,7 +2402,7 @@
           }
         },
         {
-          "number": 34,
+          "number": 35,
           "column": {
             "name": "c_tinyblob",
             "length": -1,
@@ -2350,7 +2417,7 @@
           }
         },
         {
-          "number": 35,
+          "number": 36,
           "column": {
             "name": "c_blob",
             "length": -1,
@@ -2365,7 +2432,7 @@
           }
         },
         {
-          "number": 36,
+          "number": 37,
           "column": {
             "name": "c_mediumblob",
             "length": -1,
@@ -2380,7 +2447,7 @@
           }
         },
         {
-          "number": 37,
+          "number": 38,
           "column": {
             "name": "c_longblob",
             "length": -1,
@@ -2401,7 +2468,7 @@
       }
     },
     {
-      "text": "SELECT c_bool, c_boolean, c_tinyint, c_smallint, c_mediumint, c_int, c_integer, c_bigint, c_float, c_decimal, c_dec, c_numeric, c_fixed, c_double, c_double_precision, c_year, c_date, c_time, c_datetime, c_timestamp, c_char, c_nchar, c_national_char, c_varchar, c_tinytext, c_mediumtext, c_text, c_longtext, c_enum, c_json, c_json_string_override, c_bit, c_binary, c_varbinary, c_tinyblob, c_blob, c_mediumblob, c_longblob FROM mysql_types LIMIT 1",
+      "text": "SELECT c_bool, c_boolean, c_tinyint, c_smallint, c_mediumint, c_int, c_integer, c_bigint, c_float, c_decimal, c_dec, c_numeric, c_fixed, c_double, c_double_precision, c_year, c_date, c_time, c_datetime, c_timestamp, c_char, c_nchar, c_national_char, c_varchar, c_tinytext, c_mediumtext, c_text, c_longtext, c_json, c_json_string_override, c_enum, c_set, c_bit, c_binary, c_varbinary, c_tinyblob, c_blob, c_mediumblob, c_longblob FROM mysql_types LIMIT 1",
       "name": "GetMysqlTypes",
       "cmd": ":one",
       "columns": [
@@ -2714,17 +2781,6 @@
           "originalName": "c_longtext"
         },
         {
-          "name": "c_enum",
-          "length": 6,
-          "table": {
-            "name": "mysql_types"
-          },
-          "type": {
-            "name": "mysql_types_c_enum"
-          },
-          "originalName": "c_enum"
-        },
-        {
           "name": "c_json",
           "length": -1,
           "table": {
@@ -2745,6 +2801,28 @@
             "name": "json"
           },
           "originalName": "c_json_string_override"
+        },
+        {
+          "name": "c_enum",
+          "length": 6,
+          "table": {
+            "name": "mysql_types"
+          },
+          "type": {
+            "name": "mysql_types_c_enum"
+          },
+          "originalName": "c_enum"
+        },
+        {
+          "name": "c_set",
+          "length": 15,
+          "table": {
+            "name": "mysql_types"
+          },
+          "type": {
+            "name": "mysql_types_c_set"
+          },
+          "originalName": "c_set"
         },
         {
           "name": "c_bit",
@@ -2827,7 +2905,7 @@
       "filename": "query.sql"
     },
     {
-      "text": "SELECT COUNT(1) AS cnt, c_bool, c_boolean, c_bit, c_tinyint, c_smallint, c_mediumint, c_int, c_integer, c_bigint, \n       c_float, c_numeric, c_decimal, c_dec, c_fixed, c_double, c_double_precision, \n       c_char, c_nchar, c_national_char, c_varchar, c_tinytext, c_mediumtext, c_text, c_longtext, \n       c_enum, c_json, c_json_string_override, c_year, c_date, c_datetime, c_timestamp, \n       c_binary, c_varbinary, c_tinyblob, c_blob, c_mediumblob, c_longblob\nFROM mysql_types\nGROUP BY c_bool, c_boolean, c_bit, c_tinyint, c_smallint, c_mediumint, c_int, c_integer, c_bigint, \n         c_float, c_numeric, c_decimal, c_dec, c_fixed, c_double, c_double_precision, \n         c_char, c_nchar, c_national_char, c_varchar, c_tinytext, c_mediumtext, c_text, c_longtext, \n         c_enum, c_json, c_json_string_override, c_year, c_date, c_datetime, c_timestamp, \n         c_binary, c_varbinary, c_tinyblob, c_blob, c_mediumblob, c_longblob\nLIMIT 1",
+      "text": "SELECT COUNT(1) AS cnt, c_bool, c_boolean, c_bit, c_tinyint, c_smallint, c_mediumint, c_int, c_integer, c_bigint, \n       c_float, c_numeric, c_decimal, c_dec, c_fixed, c_double, c_double_precision, \n       c_char, c_nchar, c_national_char, c_varchar, c_tinytext, c_mediumtext, c_text, c_longtext, \n       c_json, c_json_string_override, c_enum, c_set, c_year, c_date, c_datetime, c_timestamp, \n       c_binary, c_varbinary, c_tinyblob, c_blob, c_mediumblob, c_longblob\nFROM mysql_types\nGROUP BY c_bool, c_boolean, c_bit, c_tinyint, c_smallint, c_mediumint, c_int, c_integer, c_bigint, \n         c_float, c_numeric, c_decimal, c_dec, c_fixed, c_double, c_double_precision, \n         c_char, c_nchar, c_national_char, c_varchar, c_tinytext, c_mediumtext, c_text, c_longtext, \n         c_json, c_json_string_override, c_enum, c_set, c_year, c_date, c_datetime, c_timestamp, \n         c_binary, c_varbinary, c_tinyblob, c_blob, c_mediumblob, c_longblob\nLIMIT 1",
       "name": "GetMysqlTypesCnt",
       "cmd": ":one",
       "columns": [
@@ -3105,17 +3183,6 @@
           "originalName": "c_longtext"
         },
         {
-          "name": "c_enum",
-          "length": 6,
-          "table": {
-            "name": "mysql_types"
-          },
-          "type": {
-            "name": "mysql_types_c_enum"
-          },
-          "originalName": "c_enum"
-        },
-        {
           "name": "c_json",
           "length": -1,
           "table": {
@@ -3136,6 +3203,28 @@
             "name": "json"
           },
           "originalName": "c_json_string_override"
+        },
+        {
+          "name": "c_enum",
+          "length": 6,
+          "table": {
+            "name": "mysql_types"
+          },
+          "type": {
+            "name": "mysql_types_c_enum"
+          },
+          "originalName": "c_enum"
+        },
+        {
+          "name": "c_set",
+          "length": 15,
+          "table": {
+            "name": "mysql_types"
+          },
+          "type": {
+            "name": "mysql_types_c_set"
+          },
+          "originalName": "c_set"
         },
         {
           "name": "c_year",
@@ -3292,7 +3381,7 @@
       "filename": "query.sql"
     },
     {
-      "text": "INSERT INTO extended.bios (author_name, name, bio_type) VALUES (?, ?, ?)",
+      "text": "INSERT INTO extended.bios (author_name, name, bio_type, author_type) VALUES (?, ?, ?, ?)",
       "name": "CreateExtendedBio",
       "cmd": ":exec",
       "parameters": [
@@ -3340,6 +3429,21 @@
             },
             "originalName": "bio_type"
           }
+        },
+        {
+          "number": 4,
+          "column": {
+            "name": "author_type",
+            "length": 24,
+            "table": {
+              "schema": "extended",
+              "name": "bios"
+            },
+            "type": {
+              "name": "bios_author_type"
+            },
+            "originalName": "author_type"
+          }
         }
       ],
       "filename": "query.sql",
@@ -3349,7 +3453,7 @@
       }
     },
     {
-      "text": "SELECT author_name, name, bio_type FROM extended.bios WHERE bio_type = ? LIMIT 1",
+      "text": "SELECT author_name, name, bio_type, author_type FROM extended.bios WHERE bio_type = ? LIMIT 1",
       "name": "GetFirstExtendedBioByType",
       "cmd": ":one",
       "columns": [
@@ -3388,6 +3492,18 @@
             "name": "bios_bio_type"
           },
           "originalName": "bio_type"
+        },
+        {
+          "name": "author_type",
+          "length": 24,
+          "table": {
+            "schema": "extended",
+            "name": "bios"
+          },
+          "type": {
+            "name": "bios_author_type"
+          },
+          "originalName": "author_type"
         }
       ],
       "parameters": [

@@ -31,6 +31,7 @@ overrides:
 
 ## Supported Features
 - ✅ means the feature is fully supported.
+- ⚠️ means SQLC does not yet support this feature, so it cannot be supported by the plugin yet.
 - 🚫 means the database does not support the feature.
 - ❌ means the feature is not supported by the plugin (but could be supported by the database).
 

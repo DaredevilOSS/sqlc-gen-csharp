@@ -46,6 +46,7 @@ CREATE TABLE postgres_types (
     c_json_string_override JSON,
     c_jsonb JSONB,
     c_jsonpath JSONPATH,
+    c_xml XML,
 
     /* Network Address Data Types */
     c_cidr CIDR,
@@ -54,16 +55,7 @@ CREATE TABLE postgres_types (
     c_macaddr8 MACADDR8,
 
     /* Special Data Types */
-    c_uuid UUID,
-
-    /* Array Data Types */
-    c_bytea BYTEA,
-    c_boolean_array BOOLEAN [],
-    c_text_array TEXT [],
-    c_integer_array INTEGER [],
-    c_decimal_array DECIMAL(10, 7) [],
-    c_date_array DATE [],
-    c_timestamp_array TIMESTAMP []
+    c_uuid UUID
 );
 
 CREATE TABLE postgres_geometric_types (
@@ -74,4 +66,14 @@ CREATE TABLE postgres_geometric_types (
     c_path PATH,
     c_polygon POLYGON,
     c_circle CIRCLE
+);
+
+CREATE TABLE postgres_array_types (
+    c_bytea             BYTEA,
+    c_boolean_array     BOOLEAN [],
+    c_text_array        TEXT [],
+    c_integer_array     INTEGER [],
+    c_decimal_array     DECIMAL(10, 7) [],
+    c_date_array        DATE [],
+    c_timestamp_array   TIMESTAMP []
 );

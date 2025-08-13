@@ -16,5 +16,6 @@ public partial class NpgsqlDapperTester
         await QuerySql.TruncateAuthors();
         await QuerySql.TruncatePostgresTypes();
         await QuerySql.TruncatePostgresGeoTypes();
+        await QuerySql.TruncatePostgresArrayTypes();
     }
 }

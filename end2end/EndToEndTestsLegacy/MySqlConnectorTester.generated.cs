@@ -474,17 +474,23 @@ namespace EndToEndTests
         }
 
         [Test]
-        [TestCase(MysqlTypesCEnum.Medium)]
-        [TestCase(null)]
-        public async Task TestMySqlStringTypes(MysqlTypesCEnum? cEnum)
+        [TestCase(MysqlTypesCEnum.Medium, new[] { MysqlTypesCSet.Tea, MysqlTypesCSet.Coffee })]
+        [TestCase(null, null)]
+        public async Task TestMySqlStringTypes(MysqlTypesCEnum? cEnum, MysqlTypesCSet[] cSet)
         {
-            await QuerySql.InsertMysqlTypes(new QuerySql.InsertMysqlTypesArgs { CEnum = cEnum });
+            await QuerySql.InsertMysqlTypes(new QuerySql.InsertMysqlTypesArgs { CEnum = cEnum, CSet = cSet });
             var expected = new QuerySql.GetMysqlTypesRow
             {
-                CEnum = cEnum
+                CEnum = cEnum,
+                CSet = cSet
             };
             var actual = await QuerySql.GetMysqlTypes();
-            Assert.That(actual.CEnum, Is.EqualTo(expected.CEnum));
+            AssertSingularEquals(expected, actual);
+            void AssertSingularEquals(QuerySql.GetMysqlTypesRow x, QuerySql.GetMysqlTypesRow y)
+            {
+                Assert.That(x.CEnum, Is.EqualTo(y.CEnum));
+                Assert.That(x.CSet, Is.EqualTo(y.CSet));
+            }
         }
 
         [Test]
@@ -513,20 +519,28 @@ namespace EndToEndTests
         [Test]
         public async Task TestMySqlScopedSchemaEnum()
         {
-            await this.QuerySql.CreateExtendedBio(new QuerySql.CreateExtendedBioArgs { AuthorName = "Bojack Horseman", Name = "One Trick Pony", BioType = ExtendedBiosBioType.Memoir });
+            await this.QuerySql.CreateExtendedBio(new QuerySql.CreateExtendedBioArgs { AuthorName = "Bojack Horseman", Name = "One Trick Pony", BioType = ExtendedBiosBioType.Memoir, AuthorType = new ExtendedBiosAuthorType[] { ExtendedBiosAuthorType.Author, ExtendedBiosAuthorType.Translator } });
             var expected = new QuerySql.GetFirstExtendedBioByTypeRow
             {
                 AuthorName = "Bojack Horseman",
                 Name = "One Trick Pony",
-                BioType = ExtendedBiosBioType.Memoir
+                BioType = ExtendedBiosBioType.Memoir,
+                AuthorType = new ExtendedBiosAuthorType[]
+                {
+                    ExtendedBiosAuthorType.Author,
+                    ExtendedBiosAuthorType.Translator
+                }
             };
             var actual = await this.QuerySql.GetFirstExtendedBioByType(new QuerySql.GetFirstExtendedBioByTypeArgs { BioType = ExtendedBiosBioType.Memoir });
-            Assert.That(SingularEquals(expected, actual));
+            AssertSingularEquals(expected, actual);
         }
 
-        private static bool SingularEquals(QuerySql.GetFirstExtendedBioByTypeRow x, QuerySql.GetFirstExtendedBioByTypeRow y)
+        private void AssertSingularEquals(QuerySql.GetFirstExtendedBioByTypeRow x, QuerySql.GetFirstExtendedBioByTypeRow y)
         {
-            return x.AuthorName.Equals(y.AuthorName) && x.Name.Equals(y.Name) && x.BioType.Equals(y.BioType);
+            Assert.That(x.AuthorName, Is.EqualTo(y.AuthorName));
+            Assert.That(x.Name, Is.EqualTo(y.Name));
+            Assert.That(x.BioType, Is.EqualTo(y.BioType));
+            Assert.That(x.AuthorType, Is.EqualTo(y.AuthorType));
         }
 
         [Test]
@@ -738,20 +752,27 @@ namespace EndToEndTests
         }
 
         [Test]
-        [TestCase(100, MysqlTypesCEnum.Big)]
-        [TestCase(500, MysqlTypesCEnum.Small)]
-        [TestCase(10, null)]
-        public async Task TestCopyFrom(int batchSize, MysqlTypesCEnum? cEnum)
+        [TestCase(100, MysqlTypesCEnum.Big, new[] { MysqlTypesCSet.Tea, MysqlTypesCSet.Coffee })]
+        [TestCase(500, MysqlTypesCEnum.Small, new[] { MysqlTypesCSet.Milk })]
+        [TestCase(10, null, null)]
+        public async Task TestCopyFrom(int batchSize, MysqlTypesCEnum? cEnum, MysqlTypesCSet[] cSet)
         {
-            var batchArgs = Enumerable.Range(0, batchSize).Select(_ => new QuerySql.InsertMysqlTypesBatchArgs { CEnum = cEnum }).ToList();
+            var batchArgs = Enumerable.Range(0, batchSize).Select(_ => new QuerySql.InsertMysqlTypesBatchArgs { CEnum = cEnum, CSet = cSet }).ToList();
             await QuerySql.InsertMysqlTypesBatch(batchArgs);
             var expected = new QuerySql.GetMysqlTypesCntRow
             {
                 Cnt = batchSize,
-                CEnum = cEnum
+                CEnum = cEnum,
+                CSet = cSet
             };
             var actual = await QuerySql.GetMysqlTypesCnt();
-            Assert.That(actual.CEnum, Is.EqualTo(expected.CEnum));
+            AssertSingularEquals(expected, actual);
+            void AssertSingularEquals(QuerySql.GetMysqlTypesCntRow x, QuerySql.GetMysqlTypesCntRow y)
+            {
+                Assert.That(x.Cnt, Is.EqualTo(y.Cnt));
+                Assert.That(x.CEnum, Is.EqualTo(y.CEnum));
+                Assert.That(x.CSet, Is.EqualTo(y.CSet));
+            }
         }
     }
 }
