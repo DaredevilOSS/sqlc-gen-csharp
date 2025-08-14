@@ -192,8 +192,8 @@ Rmysql_numeric_typesb	decimalz	c_numeric"6
 c_fixed0
 Rmysql_numeric_typesb	decimalzc_fixed"@
 c_double0ÿÿÿÿÿÿÿÿÿRmysql_numeric_typesbdoublezc_double"T
-c_double_precision0ÿÿÿÿÿÿÿÿÿRmysql_numeric_typesbdoublezc_double_precision:	query.sql†
-SELECT
+c_double_precision0ÿÿÿÿÿÿÿÿÿRmysql_numeric_typesbdoublezc_double_precision:	query.sql€
+ûSELECT
     COUNT(*) AS cnt,
     c_bool,
     c_boolean,
@@ -220,12 +220,12 @@ GROUP BY
     c_int,
     c_integer,
     c_bigint,
-    c_float, 
-    c_numeric, 
-    c_decimal, 
-    c_dec, 
-    c_fixed, 
-    c_double, 
+    c_float,
+    c_numeric,
+    c_decimal,
+    c_dec,
+    c_fixed,
+    c_double,
     c_double_precision
 LIMIT 1GetMysqlNumericTypesCnt:one"
 cnt0ÿÿÿÿÿÿÿÿÿ@bbigint"4

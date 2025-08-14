@@ -1277,7 +1277,7 @@
       "filename": "query.sql"
     },
     {
-      "text": "SELECT\n    COUNT(*) AS cnt,\n    c_bool,\n    c_boolean,\n    c_tinyint,\n    c_smallint,\n    c_mediumint,\n    c_int,\n    c_integer,\n    c_bigint,\n    c_float,\n    c_numeric,\n    c_decimal,\n    c_dec,\n    c_fixed,\n    c_double,\n    c_double_precision\nFROM mysql_numeric_types\nGROUP BY\n    c_bool,\n    c_boolean,\n    c_tinyint,\n    c_smallint,\n    c_mediumint,\n    c_int,\n    c_integer,\n    c_bigint,\n    c_float, \n    c_numeric, \n    c_decimal, \n    c_dec, \n    c_fixed, \n    c_double, \n    c_double_precision\nLIMIT 1",
+      "text": "SELECT\n    COUNT(*) AS cnt,\n    c_bool,\n    c_boolean,\n    c_tinyint,\n    c_smallint,\n    c_mediumint,\n    c_int,\n    c_integer,\n    c_bigint,\n    c_float,\n    c_numeric,\n    c_decimal,\n    c_dec,\n    c_fixed,\n    c_double,\n    c_double_precision\nFROM mysql_numeric_types\nGROUP BY\n    c_bool,\n    c_boolean,\n    c_tinyint,\n    c_smallint,\n    c_mediumint,\n    c_int,\n    c_integer,\n    c_bigint,\n    c_float,\n    c_numeric,\n    c_decimal,\n    c_dec,\n    c_fixed,\n    c_double,\n    c_double_precision\nLIMIT 1",
       "name": "GetMysqlNumericTypesCnt",
       "cmd": ":one",
       "columns": [
