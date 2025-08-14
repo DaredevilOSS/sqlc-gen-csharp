@@ -109,7 +109,7 @@ namespace NpgsqlDapperLegacyExampleGen
             }
 
             if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
-                throw new System.InvalidOperationException("Transaction is provided, but its connection is null.");
+                throw new InvalidOperationException("Transaction is provided, but its connection is null.");
             await this.Transaction.Connection.ExecuteAsync(InsertPostgresTypesSql, queryParams, transaction: this.Transaction);
         }
 
@@ -314,7 +314,7 @@ namespace NpgsqlDapperLegacyExampleGen
             }
 
             if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
-                throw new System.InvalidOperationException("Transaction is provided, but its connection is null.");
+                throw new InvalidOperationException("Transaction is provided, but its connection is null.");
             await this.Transaction.Connection.ExecuteAsync(TruncatePostgresTypesSql, transaction: this.Transaction);
         }
 
@@ -345,7 +345,7 @@ namespace NpgsqlDapperLegacyExampleGen
             }
 
             if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
-                throw new System.InvalidOperationException("Transaction is provided, but its connection is null.");
+                throw new InvalidOperationException("Transaction is provided, but its connection is null.");
             await this.Transaction.Connection.ExecuteAsync(InsertPostgresUnstructuredTypesSql, queryParams, transaction: this.Transaction);
         }
 
@@ -389,7 +389,7 @@ namespace NpgsqlDapperLegacyExampleGen
             }
 
             if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
-                throw new System.InvalidOperationException("Transaction is provided, but its connection is null.");
+                throw new InvalidOperationException("Transaction is provided, but its connection is null.");
             await this.Transaction.Connection.ExecuteAsync(TruncatePostgresUnstructuredTypesSql, transaction: this.Transaction);
         }
 
@@ -422,7 +422,7 @@ namespace NpgsqlDapperLegacyExampleGen
             }
 
             if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
-                throw new System.InvalidOperationException("Transaction is provided, but its connection is null.");
+                throw new InvalidOperationException("Transaction is provided, but its connection is null.");
             await this.Transaction.Connection.ExecuteAsync(InsertPostgresArrayTypesSql, queryParams, transaction: this.Transaction);
         }
 
@@ -517,7 +517,7 @@ namespace NpgsqlDapperLegacyExampleGen
             }
 
             if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
-                throw new System.InvalidOperationException("Transaction is provided, but its connection is null.");
+                throw new InvalidOperationException("Transaction is provided, but its connection is null.");
             await this.Transaction.Connection.ExecuteAsync(TruncatePostgresArrayTypesSql, transaction: this.Transaction);
         }
 
@@ -550,7 +550,7 @@ namespace NpgsqlDapperLegacyExampleGen
             }
 
             if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
-                throw new System.InvalidOperationException("Transaction is provided, but its connection is null.");
+                throw new InvalidOperationException("Transaction is provided, but its connection is null.");
             await this.Transaction.Connection.ExecuteAsync(InsertPostgresGeoTypesSql, queryParams, transaction: this.Transaction);
         }
 
@@ -632,7 +632,7 @@ namespace NpgsqlDapperLegacyExampleGen
             }
 
             if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
-                throw new System.InvalidOperationException("Transaction is provided, but its connection is null.");
+                throw new InvalidOperationException("Transaction is provided, but its connection is null.");
             await this.Transaction.Connection.ExecuteAsync(TruncatePostgresGeoTypesSql, transaction: this.Transaction);
         }
 
@@ -839,7 +839,7 @@ namespace NpgsqlDapperLegacyExampleGen
             }
 
             if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
-                throw new System.InvalidOperationException("Transaction is provided, but its connection is null.");
+                throw new InvalidOperationException("Transaction is provided, but its connection is null.");
             await this.Transaction.Connection.ExecuteAsync(DeleteAuthorSql, queryParams, transaction: this.Transaction);
         }
 
@@ -854,7 +854,7 @@ namespace NpgsqlDapperLegacyExampleGen
             }
 
             if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
-                throw new System.InvalidOperationException("Transaction is provided, but its connection is null.");
+                throw new InvalidOperationException("Transaction is provided, but its connection is null.");
             await this.Transaction.Connection.ExecuteAsync(TruncateAuthorsSql, transaction: this.Transaction);
         }
 

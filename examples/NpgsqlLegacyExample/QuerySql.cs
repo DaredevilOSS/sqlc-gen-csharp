@@ -1526,7 +1526,7 @@ namespace NpgsqlLegacyExampleGen
             }
 
             if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
-                throw new System.InvalidOperationException("Transaction is provided, but its connection is null.");
+                throw new InvalidOperationException("Transaction is provided, but its connection is null.");
             using (var command = this.Transaction.Connection.CreateCommand())
             {
                 command.CommandText = UpdateAuthorsSql;
