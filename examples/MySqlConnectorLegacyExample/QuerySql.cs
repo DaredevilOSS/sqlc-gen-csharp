@@ -532,13 +532,14 @@ namespace MySqlConnectorLegacyExampleGen
             }
         }
 
-        private const string InsertMysqlDatetimeTypesSql = " INSERT INTO mysql_datetime_types ( c_year, c_date, c_datetime, c_timestamp ) VALUES (@c_year, @c_date, @c_datetime, @c_timestamp)";
+        private const string InsertMysqlDatetimeTypesSql = " INSERT INTO mysql_datetime_types ( c_year, c_date, c_datetime, c_timestamp, c_time ) VALUES (@c_year, @c_date, @c_datetime, @c_timestamp, @c_time)";
         public class InsertMysqlDatetimeTypesArgs
         {
             public short? CYear { get; set; }
             public DateTime? CDate { get; set; }
             public DateTime? CDatetime { get; set; }
             public DateTime? CTimestamp { get; set; }
+            public TimeSpan? CTime { get; set; }
         };
         public async Task InsertMysqlDatetimeTypes(InsertMysqlDatetimeTypesArgs args)
         {
@@ -553,6 +554,7 @@ namespace MySqlConnectorLegacyExampleGen
                         command.Parameters.AddWithValue("@c_date", args.CDate ?? (object)DBNull.Value);
                         command.Parameters.AddWithValue("@c_datetime", args.CDatetime ?? (object)DBNull.Value);
                         command.Parameters.AddWithValue("@c_timestamp", args.CTimestamp ?? (object)DBNull.Value);
+                        command.Parameters.AddWithValue("@c_time", args.CTime ?? (object)DBNull.Value);
                         await command.ExecuteNonQueryAsync();
                     }
                 }
@@ -570,6 +572,7 @@ namespace MySqlConnectorLegacyExampleGen
                 command.Parameters.AddWithValue("@c_date", args.CDate ?? (object)DBNull.Value);
                 command.Parameters.AddWithValue("@c_datetime", args.CDatetime ?? (object)DBNull.Value);
                 command.Parameters.AddWithValue("@c_timestamp", args.CTimestamp ?? (object)DBNull.Value);
+                command.Parameters.AddWithValue("@c_time", args.CTime ?? (object)DBNull.Value);
                 await command.ExecuteNonQueryAsync();
             }
         }
@@ -580,6 +583,7 @@ namespace MySqlConnectorLegacyExampleGen
             public DateTime? CDate { get; set; }
             public DateTime? CDatetime { get; set; }
             public DateTime? CTimestamp { get; set; }
+            public TimeSpan? CTime { get; set; }
         };
         public async Task InsertMysqlDatetimeTypesBatch(List<InsertMysqlDatetimeTypesBatchArgs> args)
         {
@@ -604,6 +608,7 @@ namespace MySqlConnectorLegacyExampleGen
                 csvWriter.Context.TypeConverterOptionsCache.AddOptions<DateTime?>(options);
                 csvWriter.Context.TypeConverterCache.AddConverter<short?>(nullConverterFn);
                 csvWriter.Context.TypeConverterCache.AddConverter<DateTime?>(nullConverterFn);
+                csvWriter.Context.TypeConverterCache.AddConverter<TimeSpan?>(nullConverterFn);
                 await csvWriter.WriteRecordsAsync(args);
             }
 
@@ -621,20 +626,20 @@ namespace MySqlConnectorLegacyExampleGen
                     NumberOfLinesToSkip = 1,
                     LineTerminator = "\n"
                 };
-                loader.Columns.AddRange(new List<string> { "c_year", "c_date", "c_datetime", "c_timestamp" });
+                loader.Columns.AddRange(new List<string> { "c_year", "c_date", "c_datetime", "c_timestamp", "c_time" });
                 await loader.LoadAsync();
                 await connection.CloseAsync();
             }
         }
 
-        private const string GetMysqlDatetimeTypesSql = "SELECT c_year, c_date, c_time, c_datetime, c_timestamp FROM mysql_datetime_types LIMIT 1";
+        private const string GetMysqlDatetimeTypesSql = "SELECT c_year, c_date, c_datetime, c_timestamp, c_time FROM mysql_datetime_types LIMIT 1";
         public class GetMysqlDatetimeTypesRow
         {
             public short? CYear { get; set; }
             public DateTime? CDate { get; set; }
-            public string CTime { get; set; }
             public DateTime? CDatetime { get; set; }
             public DateTime? CTimestamp { get; set; }
+            public TimeSpan? CTime { get; set; }
         };
         public async Task<GetMysqlDatetimeTypesRow> GetMysqlDatetimeTypes()
         {
@@ -653,9 +658,9 @@ namespace MySqlConnectorLegacyExampleGen
                                 {
                                     CYear = reader.IsDBNull(0) ? (short? )null : reader.GetInt16(0),
                                     CDate = reader.IsDBNull(1) ? (DateTime? )null : reader.GetDateTime(1),
-                                    CTime = reader.IsDBNull(2) ? null : reader.GetString(2),
-                                    CDatetime = reader.IsDBNull(3) ? (DateTime? )null : reader.GetDateTime(3),
-                                    CTimestamp = reader.IsDBNull(4) ? (DateTime? )null : reader.GetDateTime(4)
+                                    CDatetime = reader.IsDBNull(2) ? (DateTime? )null : reader.GetDateTime(2),
+                                    CTimestamp = reader.IsDBNull(3) ? (DateTime? )null : reader.GetDateTime(3),
+                                    CTime = reader.IsDBNull(4) ? (TimeSpan? )null : reader.GetFieldValue<TimeSpan>(4)
                                 };
                             }
                         }
@@ -682,9 +687,9 @@ namespace MySqlConnectorLegacyExampleGen
                         {
                             CYear = reader.IsDBNull(0) ? (short? )null : reader.GetInt16(0),
                             CDate = reader.IsDBNull(1) ? (DateTime? )null : reader.GetDateTime(1),
-                            CTime = reader.IsDBNull(2) ? null : reader.GetString(2),
-                            CDatetime = reader.IsDBNull(3) ? (DateTime? )null : reader.GetDateTime(3),
-                            CTimestamp = reader.IsDBNull(4) ? (DateTime? )null : reader.GetDateTime(4)
+                            CDatetime = reader.IsDBNull(2) ? (DateTime? )null : reader.GetDateTime(2),
+                            CTimestamp = reader.IsDBNull(3) ? (DateTime? )null : reader.GetDateTime(3),
+                            CTime = reader.IsDBNull(4) ? (TimeSpan? )null : reader.GetFieldValue<TimeSpan>(4)
                         };
                     }
                 }
@@ -693,7 +698,7 @@ namespace MySqlConnectorLegacyExampleGen
             return null;
         }
 
-        private const string GetMysqlDatetimeTypesCntSql = "SELECT COUNT(*) AS cnt, c_year, c_date, c_datetime, c_timestamp FROM mysql_datetime_types GROUP BY c_year, c_date, c_datetime, c_timestamp LIMIT 1";
+        private const string GetMysqlDatetimeTypesCntSql = "SELECT COUNT(*) AS cnt, c_year, c_date, c_datetime, c_timestamp, c_time FROM mysql_datetime_types GROUP BY c_year, c_date, c_datetime, c_timestamp, c_time LIMIT 1";
         public class GetMysqlDatetimeTypesCntRow
         {
             public long Cnt { get; set; }
@@ -701,6 +706,7 @@ namespace MySqlConnectorLegacyExampleGen
             public DateTime? CDate { get; set; }
             public DateTime? CDatetime { get; set; }
             public DateTime? CTimestamp { get; set; }
+            public TimeSpan? CTime { get; set; }
         };
         public async Task<GetMysqlDatetimeTypesCntRow> GetMysqlDatetimeTypesCnt()
         {
@@ -721,7 +727,8 @@ namespace MySqlConnectorLegacyExampleGen
                                     CYear = reader.IsDBNull(1) ? (short? )null : reader.GetInt16(1),
                                     CDate = reader.IsDBNull(2) ? (DateTime? )null : reader.GetDateTime(2),
                                     CDatetime = reader.IsDBNull(3) ? (DateTime? )null : reader.GetDateTime(3),
-                                    CTimestamp = reader.IsDBNull(4) ? (DateTime? )null : reader.GetDateTime(4)
+                                    CTimestamp = reader.IsDBNull(4) ? (DateTime? )null : reader.GetDateTime(4),
+                                    CTime = reader.IsDBNull(5) ? (TimeSpan? )null : reader.GetFieldValue<TimeSpan>(5)
                                 };
                             }
                         }
@@ -750,7 +757,8 @@ namespace MySqlConnectorLegacyExampleGen
                             CYear = reader.IsDBNull(1) ? (short? )null : reader.GetInt16(1),
                             CDate = reader.IsDBNull(2) ? (DateTime? )null : reader.GetDateTime(2),
                             CDatetime = reader.IsDBNull(3) ? (DateTime? )null : reader.GetDateTime(3),
-                            CTimestamp = reader.IsDBNull(4) ? (DateTime? )null : reader.GetDateTime(4)
+                            CTimestamp = reader.IsDBNull(4) ? (DateTime? )null : reader.GetDateTime(4),
+                            CTime = reader.IsDBNull(5) ? (TimeSpan? )null : reader.GetFieldValue<TimeSpan>(5)
                         };
                     }
                 }

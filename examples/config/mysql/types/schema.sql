@@ -36,9 +36,9 @@ CREATE TABLE mysql_types (
 CREATE TABLE mysql_datetime_types (
   c_year        YEAR,
   c_date        DATE,
-  c_time        TIME,
   c_datetime    DATETIME,
-  c_timestamp   TIMESTAMP
+  c_timestamp   TIMESTAMP,
+  c_time        TIME
 );
 
 CREATE TABLE mysql_binary_types (

@@ -39,9 +39,9 @@ public class MysqlDatetimeType
 {
     public short? CYear { get; init; }
     public DateTime? CDate { get; init; }
-    public string? CTime { get; init; }
     public DateTime? CDatetime { get; init; }
     public DateTime? CTimestamp { get; init; }
+    public TimeSpan? CTime { get; init; }
 };
 public class MysqlBinaryType
 {

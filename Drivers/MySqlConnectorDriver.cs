@@ -101,7 +101,6 @@ public partial class MySqlConnectorDriver(
                     { "longtext", new() },
                     { "mediumtext", new() },
                     { "text", new() },
-                    { "time", new() },
                     { "tinytext", new() },
                     { "varchar", new() },
                     { "var_string", new() },
@@ -117,7 +116,14 @@ public partial class MySqlConnectorDriver(
                     { "datetime", new() },
                     { "timestamp", new() }
                 },
-                ordinal => $"reader.GetDateTime({ordinal})"
+                readerFn: ordinal => $"reader.GetDateTime({ordinal})"
+            ),
+            ["TimeSpan"] = new(
+                new()
+                {
+                    { "time", new() }
+                },
+                readerFn: ordinal => $"reader.GetFieldValue<TimeSpan>({ordinal})"
             ),
 
             /* Unstructured data types */

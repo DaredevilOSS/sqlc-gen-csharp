@@ -123,9 +123,10 @@ INSERT INTO mysql_datetime_types
     c_year,
     c_date,
     c_datetime,
-    c_timestamp
+    c_timestamp,
+    c_time
 ) 
-VALUES (?, ?, ?, ?);
+VALUES (?, ?, ?, ?, ?);
 
 -- name: InsertMysqlDatetimeTypesBatch :copyfrom
 INSERT INTO mysql_datetime_types 
@@ -133,9 +134,10 @@ INSERT INTO mysql_datetime_types
     c_year,
     c_date,
     c_datetime,
-    c_timestamp
+    c_timestamp,
+    c_time
 ) 
-VALUES (?, ?, ?, ?);
+VALUES (?, ?, ?, ?, ?);
 
 -- name: GetMysqlDatetimeTypes :one
 SELECT * FROM mysql_datetime_types LIMIT 1;
@@ -146,13 +148,15 @@ SELECT
     c_year,
     c_date,
     c_datetime,
-    c_timestamp
+    c_timestamp,
+    c_time
 FROM mysql_datetime_types
 GROUP BY
     c_year,
     c_date,
     c_datetime,
-    c_timestamp
+    c_timestamp,
+    c_time
 LIMIT 1;
 
 -- name: TruncateMysqlDatetimeTypes :exec

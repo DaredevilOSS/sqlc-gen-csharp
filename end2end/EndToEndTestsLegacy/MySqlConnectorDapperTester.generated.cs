@@ -463,16 +463,18 @@ namespace EndToEndTests
         }
 
         [Test]
-        [TestCase(1999, "2000-1-30", "1983-11-3 02:01:22")]
-        [TestCase(null, null, "1970-1-1 00:00:01")]
-        public async Task TestMySqlDateTimeTypes(short? cYear, DateTime? cDate, DateTime? cTimestamp)
+        [TestCase(1999, "2000-1-30", "1983-11-3 02:01:22", "2010-1-30 08:11:00", "02:01:22")]
+        [TestCase(null, null, null, null, null)]
+        public async Task TestMySqlDateTimeTypes(short? cYear, DateTime? cDate, DateTime? cDatetime, DateTime? cTimestamp, TimeSpan? cTime)
         {
-            await QuerySql.InsertMysqlDatetimeTypes(new QuerySql.InsertMysqlDatetimeTypesArgs { CYear = cYear, CDate = cDate, CTimestamp = cTimestamp });
+            await QuerySql.InsertMysqlDatetimeTypes(new QuerySql.InsertMysqlDatetimeTypesArgs { CYear = cYear, CDate = cDate, CDatetime = cDatetime, CTimestamp = cTimestamp, CTime = cTime });
             var expected = new QuerySql.GetMysqlDatetimeTypesRow
             {
                 CYear = cYear,
                 CDate = cDate,
-                CTimestamp = cTimestamp
+                CDatetime = cDatetime,
+                CTimestamp = cTimestamp,
+                CTime = cTime
             };
             var actual = await QuerySql.GetMysqlDatetimeTypes();
             AssertSingularEquals(expected, actual);
@@ -480,7 +482,9 @@ namespace EndToEndTests
             {
                 Assert.That(x.CYear, Is.EqualTo(y.CYear));
                 Assert.That(x.CDate, Is.EqualTo(y.CDate));
+                Assert.That(x.CDatetime, Is.EqualTo(y.CDatetime));
                 Assert.That(x.CTimestamp, Is.EqualTo(y.CTimestamp));
+                Assert.That(x.CTime, Is.EqualTo(y.CTime));
             }
         }
 
@@ -753,11 +757,11 @@ namespace EndToEndTests
         }
 
         [Test]
-        [TestCase(100, 1993, "2000-1-30", "1983-11-3 02:01:22", "2010-1-30 08:11:00")]
-        [TestCase(10, null, null, null, null)]
-        public async Task TestDateTimeCopyFrom(int batchSize, short? cYear, DateTime? cDate, DateTime? cDatetime, DateTime? cTimestamp)
+        [TestCase(100, 1993, "2000-1-30", "1983-11-3 02:01:22", "2010-1-30 08:11:00", "02:01:22")]
+        [TestCase(10, null, null, null, null, null)]
+        public async Task TestDateTimeCopyFrom(int batchSize, short? cYear, DateTime? cDate, DateTime? cDatetime, DateTime? cTimestamp, TimeSpan? cTime)
         {
-            var batchArgs = Enumerable.Range(0, batchSize).Select(_ => new QuerySql.InsertMysqlDatetimeTypesBatchArgs { CYear = cYear, CDate = cDate, CDatetime = cDatetime, CTimestamp = cTimestamp }).ToList();
+            var batchArgs = Enumerable.Range(0, batchSize).Select(_ => new QuerySql.InsertMysqlDatetimeTypesBatchArgs { CYear = cYear, CDate = cDate, CDatetime = cDatetime, CTimestamp = cTimestamp, CTime = cTime }).ToList();
             await QuerySql.InsertMysqlDatetimeTypesBatch(batchArgs);
             var expected = new QuerySql.GetMysqlDatetimeTypesCntRow
             {
@@ -765,7 +769,8 @@ namespace EndToEndTests
                 CYear = cYear,
                 CDate = cDate,
                 CDatetime = cDatetime,
-                CTimestamp = cTimestamp
+                CTimestamp = cTimestamp,
+                CTime = cTime
             };
             var actual = await QuerySql.GetMysqlDatetimeTypesCnt();
             AssertSingularEquals(expected, actual);
@@ -776,6 +781,7 @@ namespace EndToEndTests
                 Assert.That(x.CDate, Is.EqualTo(y.CDate));
                 Assert.That(x.CDatetime, Is.EqualTo(y.CDatetime));
                 Assert.That(x.CTimestamp, Is.EqualTo(y.CTimestamp));
+                Assert.That(x.CTime, Is.EqualTo(y.CTime));
             }
         }
 

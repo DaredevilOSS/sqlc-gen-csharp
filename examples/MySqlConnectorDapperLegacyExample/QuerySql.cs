@@ -319,13 +319,14 @@ namespace MySqlConnectorDapperLegacyExampleGen
             await this.Transaction.Connection.ExecuteAsync(TruncateMysqlTypesSql, transaction: this.Transaction);
         }
 
-        private const string InsertMysqlDatetimeTypesSql = " INSERT INTO mysql_datetime_types ( c_year, c_date, c_datetime, c_timestamp ) VALUES (@c_year, @c_date, @c_datetime, @c_timestamp)";
+        private const string InsertMysqlDatetimeTypesSql = " INSERT INTO mysql_datetime_types ( c_year, c_date, c_datetime, c_timestamp, c_time ) VALUES (@c_year, @c_date, @c_datetime, @c_timestamp, @c_time)";
         public class InsertMysqlDatetimeTypesArgs
         {
             public short? CYear { get; set; }
             public DateTime? CDate { get; set; }
             public DateTime? CDatetime { get; set; }
             public DateTime? CTimestamp { get; set; }
+            public TimeSpan? CTime { get; set; }
         };
         public async Task InsertMysqlDatetimeTypes(InsertMysqlDatetimeTypesArgs args)
         {
@@ -334,6 +335,7 @@ namespace MySqlConnectorDapperLegacyExampleGen
             queryParams.Add("c_date", args.CDate);
             queryParams.Add("c_datetime", args.CDatetime);
             queryParams.Add("c_timestamp", args.CTimestamp);
+            queryParams.Add("c_time", args.CTime);
             if (this.Transaction == null)
             {
                 using (var connection = new MySqlConnection(ConnectionString))
@@ -352,6 +354,7 @@ namespace MySqlConnectorDapperLegacyExampleGen
             public DateTime? CDate { get; set; }
             public DateTime? CDatetime { get; set; }
             public DateTime? CTimestamp { get; set; }
+            public TimeSpan? CTime { get; set; }
         };
         public async Task InsertMysqlDatetimeTypesBatch(List<InsertMysqlDatetimeTypesBatchArgs> args)
         {
@@ -376,6 +379,7 @@ namespace MySqlConnectorDapperLegacyExampleGen
                 csvWriter.Context.TypeConverterOptionsCache.AddOptions<DateTime?>(options);
                 csvWriter.Context.TypeConverterCache.AddConverter<short?>(nullConverterFn);
                 csvWriter.Context.TypeConverterCache.AddConverter<DateTime?>(nullConverterFn);
+                csvWriter.Context.TypeConverterCache.AddConverter<TimeSpan?>(nullConverterFn);
                 await csvWriter.WriteRecordsAsync(args);
             }
 
@@ -393,20 +397,20 @@ namespace MySqlConnectorDapperLegacyExampleGen
                     NumberOfLinesToSkip = 1,
                     LineTerminator = "\n"
                 };
-                loader.Columns.AddRange(new List<string> { "c_year", "c_date", "c_datetime", "c_timestamp" });
+                loader.Columns.AddRange(new List<string> { "c_year", "c_date", "c_datetime", "c_timestamp", "c_time" });
                 await loader.LoadAsync();
                 await connection.CloseAsync();
             }
         }
 
-        private const string GetMysqlDatetimeTypesSql = "SELECT c_year, c_date, c_time, c_datetime, c_timestamp FROM mysql_datetime_types LIMIT 1";
+        private const string GetMysqlDatetimeTypesSql = "SELECT c_year, c_date, c_datetime, c_timestamp, c_time FROM mysql_datetime_types LIMIT 1";
         public class GetMysqlDatetimeTypesRow
         {
             public short? CYear { get; set; }
             public DateTime? CDate { get; set; }
-            public string CTime { get; set; }
             public DateTime? CDatetime { get; set; }
             public DateTime? CTimestamp { get; set; }
+            public TimeSpan? CTime { get; set; }
         };
         public async Task<GetMysqlDatetimeTypesRow> GetMysqlDatetimeTypes()
         {
@@ -427,7 +431,7 @@ namespace MySqlConnectorDapperLegacyExampleGen
             return await this.Transaction.Connection.QueryFirstOrDefaultAsync<GetMysqlDatetimeTypesRow>(GetMysqlDatetimeTypesSql, transaction: this.Transaction);
         }
 
-        private const string GetMysqlDatetimeTypesCntSql = "SELECT COUNT(*) AS cnt, c_year, c_date, c_datetime, c_timestamp FROM mysql_datetime_types GROUP BY c_year, c_date, c_datetime, c_timestamp LIMIT 1";
+        private const string GetMysqlDatetimeTypesCntSql = "SELECT COUNT(*) AS cnt, c_year, c_date, c_datetime, c_timestamp, c_time FROM mysql_datetime_types GROUP BY c_year, c_date, c_datetime, c_timestamp, c_time LIMIT 1";
         public class GetMysqlDatetimeTypesCntRow
         {
             public long Cnt { get; set; }
@@ -435,6 +439,7 @@ namespace MySqlConnectorDapperLegacyExampleGen
             public DateTime? CDate { get; set; }
             public DateTime? CDatetime { get; set; }
             public DateTime? CTimestamp { get; set; }
+            public TimeSpan? CTime { get; set; }
         };
         public async Task<GetMysqlDatetimeTypesCntRow> GetMysqlDatetimeTypesCnt()
         {

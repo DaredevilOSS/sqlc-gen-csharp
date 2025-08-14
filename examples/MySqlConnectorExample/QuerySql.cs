@@ -1133,8 +1133,8 @@ public class QuerySql
         }
     }
 
-    private const string InsertMysqlDatetimeTypesSql = " INSERT INTO mysql_datetime_types ( c_year, c_date, c_datetime, c_timestamp ) VALUES (@c_year, @c_date, @c_datetime, @c_timestamp)";
-    public readonly record struct InsertMysqlDatetimeTypesArgs(short? CYear, DateTime? CDate, DateTime? CDatetime, DateTime? CTimestamp);
+    private const string InsertMysqlDatetimeTypesSql = " INSERT INTO mysql_datetime_types ( c_year, c_date, c_datetime, c_timestamp, c_time ) VALUES (@c_year, @c_date, @c_datetime, @c_timestamp, @c_time)";
+    public readonly record struct InsertMysqlDatetimeTypesArgs(short? CYear, DateTime? CDate, DateTime? CDatetime, DateTime? CTimestamp, TimeSpan? CTime);
     public async Task InsertMysqlDatetimeTypes(InsertMysqlDatetimeTypesArgs args)
     {
         if (this.Transaction == null)
@@ -1148,6 +1148,7 @@ public class QuerySql
                     command.Parameters.AddWithValue("@c_date", args.CDate ?? (object)DBNull.Value);
                     command.Parameters.AddWithValue("@c_datetime", args.CDatetime ?? (object)DBNull.Value);
                     command.Parameters.AddWithValue("@c_timestamp", args.CTimestamp ?? (object)DBNull.Value);
+                    command.Parameters.AddWithValue("@c_time", args.CTime ?? (object)DBNull.Value);
                     await command.ExecuteNonQueryAsync();
                 }
             }
@@ -1165,11 +1166,12 @@ public class QuerySql
             command.Parameters.AddWithValue("@c_date", args.CDate ?? (object)DBNull.Value);
             command.Parameters.AddWithValue("@c_datetime", args.CDatetime ?? (object)DBNull.Value);
             command.Parameters.AddWithValue("@c_timestamp", args.CTimestamp ?? (object)DBNull.Value);
+            command.Parameters.AddWithValue("@c_time", args.CTime ?? (object)DBNull.Value);
             await command.ExecuteNonQueryAsync();
         }
     }
 
-    public readonly record struct InsertMysqlDatetimeTypesBatchArgs(short? CYear, DateTime? CDate, DateTime? CDatetime, DateTime? CTimestamp);
+    public readonly record struct InsertMysqlDatetimeTypesBatchArgs(short? CYear, DateTime? CDate, DateTime? CDatetime, DateTime? CTimestamp, TimeSpan? CTime);
     public async Task InsertMysqlDatetimeTypesBatch(List<InsertMysqlDatetimeTypesBatchArgs> args)
     {
         const string supportedDateTimeFormat = "yyyy-MM-dd H:mm:ss";
@@ -1193,6 +1195,7 @@ public class QuerySql
             csvWriter.Context.TypeConverterOptionsCache.AddOptions<DateTime?>(options);
             csvWriter.Context.TypeConverterCache.AddConverter<short?>(nullConverterFn);
             csvWriter.Context.TypeConverterCache.AddConverter<DateTime?>(nullConverterFn);
+            csvWriter.Context.TypeConverterCache.AddConverter<TimeSpan?>(nullConverterFn);
             await csvWriter.WriteRecordsAsync(args);
         }
 
@@ -1210,14 +1213,14 @@ public class QuerySql
                 NumberOfLinesToSkip = 1,
                 LineTerminator = "\n"
             };
-            loader.Columns.AddRange(new List<string> { "c_year", "c_date", "c_datetime", "c_timestamp" });
+            loader.Columns.AddRange(new List<string> { "c_year", "c_date", "c_datetime", "c_timestamp", "c_time" });
             await loader.LoadAsync();
             await connection.CloseAsync();
         }
     }
 
-    private const string GetMysqlDatetimeTypesSql = "SELECT c_year, c_date, c_time, c_datetime, c_timestamp FROM mysql_datetime_types LIMIT 1";
-    public readonly record struct GetMysqlDatetimeTypesRow(short? CYear, DateTime? CDate, string? CTime, DateTime? CDatetime, DateTime? CTimestamp);
+    private const string GetMysqlDatetimeTypesSql = "SELECT c_year, c_date, c_datetime, c_timestamp, c_time FROM mysql_datetime_types LIMIT 1";
+    public readonly record struct GetMysqlDatetimeTypesRow(short? CYear, DateTime? CDate, DateTime? CDatetime, DateTime? CTimestamp, TimeSpan? CTime);
     public async Task<GetMysqlDatetimeTypesRow?> GetMysqlDatetimeTypes()
     {
         if (this.Transaction == null)
@@ -1235,9 +1238,9 @@ public class QuerySql
                             {
                                 CYear = reader.IsDBNull(0) ? null : reader.GetInt16(0),
                                 CDate = reader.IsDBNull(1) ? null : reader.GetDateTime(1),
-                                CTime = reader.IsDBNull(2) ? null : reader.GetString(2),
-                                CDatetime = reader.IsDBNull(3) ? null : reader.GetDateTime(3),
-                                CTimestamp = reader.IsDBNull(4) ? null : reader.GetDateTime(4)
+                                CDatetime = reader.IsDBNull(2) ? null : reader.GetDateTime(2),
+                                CTimestamp = reader.IsDBNull(3) ? null : reader.GetDateTime(3),
+                                CTime = reader.IsDBNull(4) ? null : reader.GetFieldValue<TimeSpan>(4)
                             };
                         }
                     }
@@ -1264,9 +1267,9 @@ public class QuerySql
                     {
                         CYear = reader.IsDBNull(0) ? null : reader.GetInt16(0),
                         CDate = reader.IsDBNull(1) ? null : reader.GetDateTime(1),
-                        CTime = reader.IsDBNull(2) ? null : reader.GetString(2),
-                        CDatetime = reader.IsDBNull(3) ? null : reader.GetDateTime(3),
-                        CTimestamp = reader.IsDBNull(4) ? null : reader.GetDateTime(4)
+                        CDatetime = reader.IsDBNull(2) ? null : reader.GetDateTime(2),
+                        CTimestamp = reader.IsDBNull(3) ? null : reader.GetDateTime(3),
+                        CTime = reader.IsDBNull(4) ? null : reader.GetFieldValue<TimeSpan>(4)
                     };
                 }
             }
@@ -1275,8 +1278,8 @@ public class QuerySql
         return null;
     }
 
-    private const string GetMysqlDatetimeTypesCntSql = "SELECT COUNT(*) AS cnt, c_year, c_date, c_datetime, c_timestamp FROM mysql_datetime_types GROUP BY c_year, c_date, c_datetime, c_timestamp LIMIT 1";
-    public readonly record struct GetMysqlDatetimeTypesCntRow(long Cnt, short? CYear, DateTime? CDate, DateTime? CDatetime, DateTime? CTimestamp);
+    private const string GetMysqlDatetimeTypesCntSql = "SELECT COUNT(*) AS cnt, c_year, c_date, c_datetime, c_timestamp, c_time FROM mysql_datetime_types GROUP BY c_year, c_date, c_datetime, c_timestamp, c_time LIMIT 1";
+    public readonly record struct GetMysqlDatetimeTypesCntRow(long Cnt, short? CYear, DateTime? CDate, DateTime? CDatetime, DateTime? CTimestamp, TimeSpan? CTime);
     public async Task<GetMysqlDatetimeTypesCntRow?> GetMysqlDatetimeTypesCnt()
     {
         if (this.Transaction == null)
@@ -1296,7 +1299,8 @@ public class QuerySql
                                 CYear = reader.IsDBNull(1) ? null : reader.GetInt16(1),
                                 CDate = reader.IsDBNull(2) ? null : reader.GetDateTime(2),
                                 CDatetime = reader.IsDBNull(3) ? null : reader.GetDateTime(3),
-                                CTimestamp = reader.IsDBNull(4) ? null : reader.GetDateTime(4)
+                                CTimestamp = reader.IsDBNull(4) ? null : reader.GetDateTime(4),
+                                CTime = reader.IsDBNull(5) ? null : reader.GetFieldValue<TimeSpan>(5)
                             };
                         }
                     }
@@ -1325,7 +1329,8 @@ public class QuerySql
                         CYear = reader.IsDBNull(1) ? null : reader.GetInt16(1),
                         CDate = reader.IsDBNull(2) ? null : reader.GetDateTime(2),
                         CDatetime = reader.IsDBNull(3) ? null : reader.GetDateTime(3),
-                        CTimestamp = reader.IsDBNull(4) ? null : reader.GetDateTime(4)
+                        CTimestamp = reader.IsDBNull(4) ? null : reader.GetDateTime(4),
+                        CTime = reader.IsDBNull(5) ? null : reader.GetFieldValue<TimeSpan>(5)
                     };
                 }
             }

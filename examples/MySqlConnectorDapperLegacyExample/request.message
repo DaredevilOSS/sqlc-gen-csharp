@@ -44,13 +44,13 @@ c_longtext0ÿÿÿÿÿÿÿÿÿRmysql_typesb
 c_set0Rmysql_typesbmysql_types_c_set˜
 mysql_datetime_types3
 c_year0ÿÿÿÿÿÿÿÿÿRmysql_datetime_typesbyear3
-c_date0ÿÿÿÿÿÿÿÿÿRmysql_datetime_typesbdate*
-c_time0
-Rmysql_datetime_typesbtime2
+c_date0ÿÿÿÿÿÿÿÿÿRmysql_datetime_typesbdate2
 
 c_datetime0Rmysql_datetime_typesb
 datetime4
-c_timestamp0Rmysql_datetime_typesb	timestampˆ
+c_timestamp0Rmysql_datetime_typesb	timestamp*
+c_time0
+Rmysql_datetime_typesbtimeˆ
 mysql_binary_types&
 c_bit0Rmysql_binary_typesbbit,
 c_binary0Rmysql_binary_typesbbinary2
@@ -356,60 +356,68 @@ c_longtext"2
 c_json_string_override0ÿÿÿÿÿÿÿÿÿRmysql_typesbjsonzc_json_string_override"7
 c_enum0Rmysql_typesbmysql_types_c_enumzc_enum"4
 c_set0Rmysql_typesbmysql_types_c_setzc_set:	query.sqlB
-TRUNCATE TABLE mysql_typesTruncateMysqlTypes:exec:	query.sqlø
-s
+TRUNCATE TABLE mysql_typesTruncateMysqlTypes:exec:	query.sqlÈ
+‚
 INSERT INTO mysql_datetime_types 
 (
     c_year,
     c_date,
     c_datetime,
-    c_timestamp
+    c_timestamp,
+    c_time
 ) 
-VALUES (?, ?, ?, ?)InsertMysqlDatetimeTypes:exec*GC
+VALUES (?, ?, ?, ?, ?)InsertMysqlDatetimeTypes:exec*GC
 c_year0ÿÿÿÿÿÿÿÿÿRpublicmysql_datetime_typesbyearzc_year*GC
 c_date0ÿÿÿÿÿÿÿÿÿRpublicmysql_datetime_typesbdatezc_date*JF
 
 c_datetime0Rpublicmysql_datetime_typesb
 datetimez
 c_datetime*MI
-c_timestamp0Rpublicmysql_datetime_typesb	timestampzc_timestamp2 Datetime types :	query.sqlBmysql_datetime_typesî
-rINSERT INTO mysql_datetime_types 
+c_timestamp0Rpublicmysql_datetime_typesb	timestampzc_timestamp*>:
+c_time0
+Rpublicmysql_datetime_typesbtimezc_time2 Datetime types :	query.sqlBmysql_datetime_types¾
+INSERT INTO mysql_datetime_types 
 (
     c_year,
     c_date,
     c_datetime,
-    c_timestamp
+    c_timestamp,
+    c_time
 ) 
-VALUES (?, ?, ?, ?)InsertMysqlDatetimeTypesBatch	:copyfrom*GC
+VALUES (?, ?, ?, ?, ?)InsertMysqlDatetimeTypesBatch	:copyfrom*GC
 c_year0ÿÿÿÿÿÿÿÿÿRpublicmysql_datetime_typesbyearzc_year*GC
 c_date0ÿÿÿÿÿÿÿÿÿRpublicmysql_datetime_typesbdatezc_date*JF
 
 c_datetime0Rpublicmysql_datetime_typesb
 datetimez
 c_datetime*MI
-c_timestamp0Rpublicmysql_datetime_typesb	timestampzc_timestamp:	query.sqlBmysql_datetime_types³
-XSELECT c_year, c_date, c_time, c_datetime, c_timestamp FROM mysql_datetime_types LIMIT 1GetMysqlDatetimeTypes:one";
-c_year0ÿÿÿÿÿÿÿÿÿRmysql_datetime_typesbyearzc_year";
-c_date0ÿÿÿÿÿÿÿÿÿRmysql_datetime_typesbdatezc_date"2
+c_timestamp0Rpublicmysql_datetime_typesb	timestampzc_timestamp*>:
 c_time0
-Rmysql_datetime_typesbtimezc_time">
+Rpublicmysql_datetime_typesbtimezc_time:	query.sqlBmysql_datetime_types³
+XSELECT c_year, c_date, c_datetime, c_timestamp, c_time FROM mysql_datetime_types LIMIT 1GetMysqlDatetimeTypes:one";
+c_year0ÿÿÿÿÿÿÿÿÿRmysql_datetime_typesbyearzc_year";
+c_date0ÿÿÿÿÿÿÿÿÿRmysql_datetime_typesbdatezc_date">
 
 c_datetime0Rmysql_datetime_typesb
 datetimez
 c_datetime"A
-c_timestamp0Rmysql_datetime_typesb	timestampzc_timestamp:	query.sql
-¶SELECT
+c_timestamp0Rmysql_datetime_typesb	timestampzc_timestamp"2
+c_time0
+Rmysql_datetime_typesbtimezc_time:	query.sqlÍ
+ÎSELECT
     COUNT(*) AS cnt,
     c_year,
     c_date,
     c_datetime,
-    c_timestamp
+    c_timestamp,
+    c_time
 FROM mysql_datetime_types
 GROUP BY
     c_year,
     c_date,
     c_datetime,
-    c_timestamp
+    c_timestamp,
+    c_time
 LIMIT 1GetMysqlDatetimeTypesCnt:one"
 cnt0ÿÿÿÿÿÿÿÿÿ@bbigint";
 c_year0ÿÿÿÿÿÿÿÿÿRmysql_datetime_typesbyearzc_year";
@@ -418,7 +426,9 @@ LIMIT 1GetMysqlDatetimeTypesCnt:one"
 c_datetime0Rmysql_datetime_typesb
 datetimez
 c_datetime"A
-c_timestamp0Rmysql_datetime_typesb	timestampzc_timestamp:	query.sqlS
+c_timestamp0Rmysql_datetime_typesb	timestampzc_timestamp"2
+c_time0
+Rmysql_datetime_typesbtimezc_time:	query.sqlS
 #TRUNCATE TABLE mysql_datetime_typesTruncateMysqlDatetimeTypes:exec:	query.sql“
 ®
 INSERT INTO mysql_binary_types 

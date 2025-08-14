@@ -328,16 +328,6 @@
                 }
               },
               {
-                "name": "c_time",
-                "length": 10,
-                "table": {
-                  "name": "mysql_datetime_types"
-                },
-                "type": {
-                  "name": "time"
-                }
-              },
-              {
                 "name": "c_datetime",
                 "length": 19,
                 "table": {
@@ -355,6 +345,16 @@
                 },
                 "type": {
                   "name": "timestamp"
+                }
+              },
+              {
+                "name": "c_time",
+                "length": 10,
+                "table": {
+                  "name": "mysql_datetime_types"
+                },
+                "type": {
+                  "name": "time"
                 }
               }
             ]
@@ -2933,7 +2933,7 @@
       "filename": "query.sql"
     },
     {
-      "text": "\nINSERT INTO mysql_datetime_types \n(\n    c_year,\n    c_date,\n    c_datetime,\n    c_timestamp\n) \nVALUES (?, ?, ?, ?)",
+      "text": "\nINSERT INTO mysql_datetime_types \n(\n    c_year,\n    c_date,\n    c_datetime,\n    c_timestamp,\n    c_time\n) \nVALUES (?, ?, ?, ?, ?)",
       "name": "InsertMysqlDatetimeTypes",
       "cmd": ":exec",
       "parameters": [
@@ -2996,6 +2996,21 @@
             },
             "originalName": "c_timestamp"
           }
+        },
+        {
+          "number": 5,
+          "column": {
+            "name": "c_time",
+            "length": 10,
+            "table": {
+              "schema": "public",
+              "name": "mysql_datetime_types"
+            },
+            "type": {
+              "name": "time"
+            },
+            "originalName": "c_time"
+          }
         }
       ],
       "comments": [
@@ -3007,7 +3022,7 @@
       }
     },
     {
-      "text": "INSERT INTO mysql_datetime_types \n(\n    c_year,\n    c_date,\n    c_datetime,\n    c_timestamp\n) \nVALUES (?, ?, ?, ?)",
+      "text": "INSERT INTO mysql_datetime_types \n(\n    c_year,\n    c_date,\n    c_datetime,\n    c_timestamp,\n    c_time\n) \nVALUES (?, ?, ?, ?, ?)",
       "name": "InsertMysqlDatetimeTypesBatch",
       "cmd": ":copyfrom",
       "parameters": [
@@ -3070,6 +3085,21 @@
             },
             "originalName": "c_timestamp"
           }
+        },
+        {
+          "number": 5,
+          "column": {
+            "name": "c_time",
+            "length": 10,
+            "table": {
+              "schema": "public",
+              "name": "mysql_datetime_types"
+            },
+            "type": {
+              "name": "time"
+            },
+            "originalName": "c_time"
+          }
         }
       ],
       "filename": "query.sql",
@@ -3078,7 +3108,7 @@
       }
     },
     {
-      "text": "SELECT c_year, c_date, c_time, c_datetime, c_timestamp FROM mysql_datetime_types LIMIT 1",
+      "text": "SELECT c_year, c_date, c_datetime, c_timestamp, c_time FROM mysql_datetime_types LIMIT 1",
       "name": "GetMysqlDatetimeTypes",
       "cmd": ":one",
       "columns": [
@@ -3105,17 +3135,6 @@
           "originalName": "c_date"
         },
         {
-          "name": "c_time",
-          "length": 10,
-          "table": {
-            "name": "mysql_datetime_types"
-          },
-          "type": {
-            "name": "time"
-          },
-          "originalName": "c_time"
-        },
-        {
           "name": "c_datetime",
           "length": 19,
           "table": {
@@ -3136,12 +3155,23 @@
             "name": "timestamp"
           },
           "originalName": "c_timestamp"
+        },
+        {
+          "name": "c_time",
+          "length": 10,
+          "table": {
+            "name": "mysql_datetime_types"
+          },
+          "type": {
+            "name": "time"
+          },
+          "originalName": "c_time"
         }
       ],
       "filename": "query.sql"
     },
     {
-      "text": "SELECT\n    COUNT(*) AS cnt,\n    c_year,\n    c_date,\n    c_datetime,\n    c_timestamp\nFROM mysql_datetime_types\nGROUP BY\n    c_year,\n    c_date,\n    c_datetime,\n    c_timestamp\nLIMIT 1",
+      "text": "SELECT\n    COUNT(*) AS cnt,\n    c_year,\n    c_date,\n    c_datetime,\n    c_timestamp,\n    c_time\nFROM mysql_datetime_types\nGROUP BY\n    c_year,\n    c_date,\n    c_datetime,\n    c_timestamp,\n    c_time\nLIMIT 1",
       "name": "GetMysqlDatetimeTypesCnt",
       "cmd": ":one",
       "columns": [
@@ -3197,6 +3227,17 @@
             "name": "timestamp"
           },
           "originalName": "c_timestamp"
+        },
+        {
+          "name": "c_time",
+          "length": 10,
+          "table": {
+            "name": "mysql_datetime_types"
+          },
+          "type": {
+            "name": "time"
+          },
+          "originalName": "c_time"
         }
       ],
       "filename": "query.sql"

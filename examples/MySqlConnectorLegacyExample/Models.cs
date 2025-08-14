@@ -40,9 +40,9 @@ namespace MySqlConnectorLegacyExampleGen
     {
         public short? CYear { get; set; }
         public DateTime? CDate { get; set; }
-        public string CTime { get; set; }
         public DateTime? CDatetime { get; set; }
         public DateTime? CTimestamp { get; set; }
+        public TimeSpan? CTime { get; set; }
     };
     public class MysqlBinaryType
     {

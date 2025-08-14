@@ -6,7 +6,7 @@ using System.Text.Json;
 
 namespace MySqlConnectorExampleGen;
 public readonly record struct MysqlType(bool? CBool, bool? CBoolean, short? CTinyint, short? CSmallint, int? CMediumint, int? CInt, int? CInteger, long? CBigint, double? CFloat, decimal? CDecimal, decimal? CDec, decimal? CNumeric, decimal? CFixed, double? CDouble, double? CDoublePrecision, string? CChar, string? CNchar, string? CNationalChar, string? CVarchar, string? CTinytext, string? CMediumtext, string? CText, string? CLongtext, JsonElement? CJson, JsonElement? CJsonStringOverride, MysqlTypesCEnum? CEnum, HashSet<MysqlTypesCSet>? CSet);
-public readonly record struct MysqlDatetimeType(short? CYear, DateTime? CDate, string? CTime, DateTime? CDatetime, DateTime? CTimestamp);
+public readonly record struct MysqlDatetimeType(short? CYear, DateTime? CDate, DateTime? CDatetime, DateTime? CTimestamp, TimeSpan? CTime);
 public readonly record struct MysqlBinaryType(byte? CBit, byte[]? CBinary, byte[]? CVarbinary, byte[]? CTinyblob, byte[]? CBlob, byte[]? CMediumblob, byte[]? CLongblob);
 public readonly record struct Author(long Id, string Name, string? Bio);
 public readonly record struct Book(long Id, string Name, long AuthorId, string? Description);
