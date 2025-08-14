@@ -224,7 +224,7 @@ public static class MySqlTests
                          byte[] cMediumblob, 
                          byte[] cLongblob)
                      {
-                         await QuerySql.InsertMysqlTypes(new QuerySql.InsertMysqlTypesArgs
+                         await QuerySql.InsertMysqlBinaryTypes(new QuerySql.InsertMysqlBinaryTypesArgs
                          {
                               CBit = cBit,
                               CBinary = cBinary,
@@ -235,7 +235,7 @@ public static class MySqlTests
                               CLongblob = cLongblob
                          });
                      
-                         var expected = new QuerySql.GetMysqlTypesRow
+                         var expected = new QuerySql.GetMysqlBinaryTypesRow
                          {
                               CBit = cBit,
                               CBinary = cBinary,
@@ -246,10 +246,10 @@ public static class MySqlTests
                               CLongblob = cLongblob
                          };
 
-                         var actual = await QuerySql.GetMysqlTypes();
+                         var actual = await QuerySql.GetMysqlBinaryTypes();
                          AssertSingularEquals(expected, actual{{Consts.UnknownRecordValuePlaceholder}});
 
-                         void AssertSingularEquals(QuerySql.GetMysqlTypesRow x, QuerySql.GetMysqlTypesRow y)
+                         void AssertSingularEquals(QuerySql.GetMysqlBinaryTypesRow x, QuerySql.GetMysqlBinaryTypesRow y)
                          {
                              Assert.That(x.CBit, Is.EqualTo(y.CBit));
                              Assert.That(x.CBinary, Is.EqualTo(y.CBinary));
@@ -553,7 +553,7 @@ public static class MySqlTests
                         byte[] cLongblob)
                      {
                          var batchArgs = Enumerable.Range(0, batchSize)
-                             .Select(_ => new QuerySql.InsertMysqlTypesBatchArgs
+                             .Select(_ => new QuerySql.InsertMysqlBinaryTypesBatchArgs
                              {
                                  CBit = cBit,
                                  CBinary = cBinary,
@@ -564,8 +564,8 @@ public static class MySqlTests
                                  CLongblob = cLongblob
                              })
                              .ToList();
-                         await QuerySql.InsertMysqlTypesBatch(batchArgs);
-                         var expected = new QuerySql.GetMysqlTypesCntRow
+                         await QuerySql.InsertMysqlBinaryTypesBatch(batchArgs);
+                         var expected = new QuerySql.GetMysqlBinaryTypesCntRow
                          {
                              Cnt = batchSize,
                              CBit = cBit,
@@ -576,10 +576,10 @@ public static class MySqlTests
                              CMediumblob = cMediumblob,
                              CLongblob = cLongblob
                          };
-                         var actual = await QuerySql.GetMysqlTypesCnt();
+                         var actual = await QuerySql.GetMysqlBinaryTypesCnt();
                          AssertSingularEquals(expected, actual{{Consts.UnknownRecordValuePlaceholder}});
 
-                         void AssertSingularEquals(QuerySql.GetMysqlTypesCntRow x, QuerySql.GetMysqlTypesCntRow y)
+                         void AssertSingularEquals(QuerySql.GetMysqlBinaryTypesCntRow x, QuerySql.GetMysqlBinaryTypesCntRow y)
                          {
                              Assert.That(x.Cnt, Is.EqualTo(y.Cnt));
                              Assert.That(x.CBit, Is.EqualTo(y.CBit));

@@ -15,6 +15,7 @@ public partial class MySqlConnectorDapperTester
     {
         await QuerySql.DeleteAllAuthors();
         await QuerySql.TruncateMysqlTypes();
+        await QuerySql.TruncateMysqlBinaryTypes();
         await QuerySql.TruncateExtendedBios();
     }
 }

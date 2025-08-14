@@ -40,6 +40,9 @@ namespace MySqlConnectorLegacyExampleGen
         public JsonElement? CJsonStringOverride { get; set; }
         public MysqlTypesCEnum? CEnum { get; set; }
         public HashSet<MysqlTypesCSet> CSet { get; set; }
+    };
+    public class MysqlBinaryType
+    {
         public byte? CBit { get; set; }
         public byte[] CBinary { get; set; }
         public byte[] CVarbinary { get; set; }

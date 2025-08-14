@@ -39,6 +39,9 @@ public class MysqlType
     public JsonElement? CJsonStringOverride { get; init; }
     public MysqlTypesCEnum? CEnum { get; init; }
     public HashSet<MysqlTypesCSet>? CSet { get; init; }
+};
+public class MysqlBinaryType
+{
     public byte? CBit { get; init; }
     public byte[]? CBinary { get; init; }
     public byte[]? CVarbinary { get; init; }

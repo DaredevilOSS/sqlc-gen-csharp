@@ -1,7 +1,8 @@
+/* Basic types */
+
 -- name: InsertMysqlTypes :exec
 INSERT INTO mysql_types 
 (
-    c_bit,
     c_bool,
     c_boolean,
     c_tinyint,
@@ -26,15 +27,13 @@ INSERT INTO mysql_types
     c_year,
     c_date,
     c_datetime,
-    c_timestamp, 
-    c_binary, c_varbinary, c_tinyblob, c_blob, c_mediumblob, c_longblob
+    c_timestamp
 ) 
-VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
 
 -- name: InsertMysqlTypesBatch :copyfrom
 INSERT INTO mysql_types 
 (
-    c_bit,
     c_bool,
     c_boolean,
     c_tinyint,
@@ -59,10 +58,9 @@ INSERT INTO mysql_types
     c_year,
     c_date,
     c_datetime,
-    c_timestamp,
-    c_binary, c_varbinary, c_tinyblob, c_blob, c_mediumblob, c_longblob
+    c_timestamp
 ) 
-VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
 
 -- name: GetMysqlTypes :one
 SELECT * FROM mysql_types LIMIT 1;
@@ -72,7 +70,6 @@ SELECT
     COUNT(*) AS cnt,
     c_bool,
     c_boolean,
-    c_bit,
     c_tinyint,
     c_smallint,
     c_mediumint,
@@ -101,18 +98,11 @@ SELECT
     c_year,
     c_date,
     c_datetime,
-    c_timestamp,
-    c_binary,
-    c_varbinary,
-    c_tinyblob,
-    c_blob,
-    c_mediumblob,
-    c_longblob
+    c_timestamp
 FROM mysql_types
 GROUP BY
     c_bool,
     c_boolean,
-    c_bit,
     c_tinyint,
     c_smallint,
     c_mediumint,
@@ -135,8 +125,7 @@ GROUP BY
     c_year,
     c_date,
     c_datetime,
-    c_timestamp,
-    c_binary, c_varbinary, c_tinyblob, c_blob, c_mediumblob, c_longblob
+    c_timestamp
 LIMIT 1;
 
 -- name: GetMysqlFunctions :one
@@ -148,3 +137,58 @@ FROM mysql_types;
 
 -- name: TruncateMysqlTypes :exec
 TRUNCATE TABLE mysql_types;
+
+/* Binary types */
+
+-- name: InsertMysqlBinaryTypes :exec
+INSERT INTO mysql_binary_types 
+(
+    c_bit,
+    c_binary, 
+    c_varbinary, 
+    c_tinyblob, 
+    c_blob, 
+    c_mediumblob, 
+    c_longblob
+) 
+VALUES (?, ?, ?, ?, ?, ?, ?);
+
+-- name: InsertMysqlBinaryTypesBatch :copyfrom
+INSERT INTO mysql_binary_types 
+(
+    c_bit,
+    c_binary, 
+    c_varbinary, 
+    c_tinyblob, 
+    c_blob, 
+    c_mediumblob, 
+    c_longblob
+) 
+VALUES (?, ?, ?, ?, ?, ?, ?);
+
+-- name: GetMysqlBinaryTypes :one
+SELECT * FROM mysql_binary_types LIMIT 1;
+
+-- name: GetMysqlBinaryTypesCnt :one
+SELECT
+    COUNT(*) AS cnt,
+    c_bit,
+    c_binary,
+    c_varbinary,
+    c_tinyblob,
+    c_blob,
+    c_mediumblob,
+    c_longblob
+FROM mysql_binary_types
+GROUP BY
+    c_bit,
+    c_binary,
+    c_varbinary,
+    c_tinyblob,
+    c_blob,
+    c_mediumblob,
+    c_longblob
+LIMIT 1;
+
+-- name: TruncateMysqlBinaryTypes :exec
+TRUNCATE TABLE mysql_binary_types;
