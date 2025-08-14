@@ -654,8 +654,8 @@ public class QuerySql
         }
     }
 
-    private const string InsertPostgresTypesSql = "INSERT INTO postgres_types(c_boolean, c_bit, c_smallint, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_money, c_date, c_time, c_timestamp, c_timestamp_with_tz, c_interval, c_char, c_varchar, c_character_varying, c_bpchar, c_text, c_uuid, c_json, c_json_string_override, c_jsonb, c_jsonpath, c_xml, c_xml_string_override, c_cidr, c_inet, c_macaddr, c_macaddr8) VALUES ( @c_boolean, @c_bit, @c_smallint, @c_integer, @c_bigint, @c_real, @c_numeric, @c_decimal, @c_double_precision, @c_money, @c_date, @c_time, @c_timestamp, @c_timestamp_with_tz, @c_interval, @c_char, @c_varchar, @c_character_varying, @c_bpchar, @c_text, @c_uuid, @c_json :: json, @c_json_string_override :: json, @c_jsonb :: jsonb, @c_jsonpath :: jsonpath, @c_xml :: xml, @c_xml_string_override :: xml, @c_cidr, @c_inet, @c_macaddr :: macaddr, @c_macaddr8 :: macaddr8 ) "; 
-    public readonly record struct InsertPostgresTypesArgs(bool? CBoolean, byte[]? CBit, short? CSmallint, int? CInteger, long? CBigint, float? CReal, decimal? CNumeric, decimal? CDecimal, double? CDoublePrecision, decimal? CMoney, DateTime? CDate, TimeSpan? CTime, DateTime? CTimestamp, DateTime? CTimestampWithTz, TimeSpan? CInterval, string? CChar, string? CVarchar, string? CCharacterVarying, string? CBpchar, string? CText, Guid? CUuid, JsonElement? CJson, string? CJsonStringOverride, JsonElement? CJsonb, string? CJsonpath, XmlDocument? CXml, string? CXmlStringOverride, NpgsqlCidr? CCidr, IPAddress? CInet, PhysicalAddress? CMacaddr, string? CMacaddr8);
+    private const string InsertPostgresTypesSql = " INSERT  INTO  postgres_types ( c_boolean , c_bit, c_smallint, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_money, c_date, c_time, c_timestamp, c_timestamp_with_tz, c_interval, c_char, c_varchar, c_character_varying, c_bpchar, c_text, c_uuid, c_cidr, c_inet, c_macaddr, c_macaddr8 ) VALUES ( @c_boolean, @c_bit, @c_smallint, @c_integer, @c_bigint, @c_real, @c_numeric, @c_decimal, @c_double_precision, @c_money, @c_date, @c_time, @c_timestamp, @c_timestamp_with_tz, @c_interval, @c_char, @c_varchar, @c_character_varying, @c_bpchar, @c_text, @c_uuid, @c_cidr, @c_inet, @c_macaddr :: macaddr, @c_macaddr8 :: macaddr8 ) "; 
+    public readonly record struct InsertPostgresTypesArgs(bool? CBoolean, byte[]? CBit, short? CSmallint, int? CInteger, long? CBigint, float? CReal, decimal? CNumeric, decimal? CDecimal, double? CDoublePrecision, decimal? CMoney, DateTime? CDate, TimeSpan? CTime, DateTime? CTimestamp, DateTime? CTimestampWithTz, TimeSpan? CInterval, string? CChar, string? CVarchar, string? CCharacterVarying, string? CBpchar, string? CText, Guid? CUuid, NpgsqlCidr? CCidr, IPAddress? CInet, PhysicalAddress? CMacaddr, string? CMacaddr8);
     public async Task InsertPostgresTypes(InsertPostgresTypesArgs args)
     {
         if (this.Transaction == null)
@@ -685,12 +685,6 @@ public class QuerySql
                     command.Parameters.AddWithValue("@c_bpchar", args.CBpchar ?? (object)DBNull.Value);
                     command.Parameters.AddWithValue("@c_text", args.CText ?? (object)DBNull.Value);
                     command.Parameters.AddWithValue("@c_uuid", args.CUuid ?? (object)DBNull.Value);
-                    command.Parameters.AddWithValue("@c_json", args.CJson.HasValue ? args.CJson.Value.GetRawText() : (object)DBNull.Value);
-                    command.Parameters.AddWithValue("@c_json_string_override", args.CJsonStringOverride ?? (object)DBNull.Value);
-                    command.Parameters.AddWithValue("@c_jsonb", args.CJsonb.HasValue ? args.CJsonb.Value.GetRawText() : (object)DBNull.Value);
-                    command.Parameters.AddWithValue("@c_jsonpath", args.CJsonpath ?? (object)DBNull.Value);
-                    command.Parameters.AddWithValue("@c_xml", args.CXml != null ? args.CXml.OuterXml : (object)DBNull.Value);
-                    command.Parameters.AddWithValue("@c_xml_string_override", args.CXmlStringOverride ?? (object)DBNull.Value);
                     command.Parameters.AddWithValue("@c_cidr", args.CCidr ?? (object)DBNull.Value);
                     command.Parameters.AddWithValue("@c_inet", args.CInet ?? (object)DBNull.Value);
                     command.Parameters.AddWithValue("@c_macaddr", args.CMacaddr ?? (object)DBNull.Value);
@@ -732,12 +726,6 @@ public class QuerySql
             command.Parameters.AddWithValue("@c_bpchar", args.CBpchar ?? (object)DBNull.Value);
             command.Parameters.AddWithValue("@c_text", args.CText ?? (object)DBNull.Value);
             command.Parameters.AddWithValue("@c_uuid", args.CUuid ?? (object)DBNull.Value);
-            command.Parameters.AddWithValue("@c_json", args.CJson.HasValue ? args.CJson.Value.GetRawText() : (object)DBNull.Value);
-            command.Parameters.AddWithValue("@c_json_string_override", args.CJsonStringOverride ?? (object)DBNull.Value);
-            command.Parameters.AddWithValue("@c_jsonb", args.CJsonb.HasValue ? args.CJsonb.Value.GetRawText() : (object)DBNull.Value);
-            command.Parameters.AddWithValue("@c_jsonpath", args.CJsonpath ?? (object)DBNull.Value);
-            command.Parameters.AddWithValue("@c_xml", args.CXml != null ? args.CXml.OuterXml : (object)DBNull.Value);
-            command.Parameters.AddWithValue("@c_xml_string_override", args.CXmlStringOverride ?? (object)DBNull.Value);
             command.Parameters.AddWithValue("@c_cidr", args.CCidr ?? (object)DBNull.Value);
             command.Parameters.AddWithValue("@c_inet", args.CInet ?? (object)DBNull.Value);
             command.Parameters.AddWithValue("@c_macaddr", args.CMacaddr ?? (object)DBNull.Value);
@@ -790,8 +778,8 @@ public class QuerySql
         }
     }
 
-    private const string GetPostgresTypesSql = "SELECT      c_boolean , c_bit, c_smallint, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_money, c_date, c_time, c_timestamp, c_timestamp_with_tz, c_interval, c_char, c_varchar, c_character_varying, c_bpchar, c_text, c_uuid, c_json, c_json_string_override, c_jsonb, c_jsonpath, c_xml, c_xml_string_override, c_cidr, c_inet, c_macaddr, c_macaddr8 :: TEXT  AS  c_macaddr8  FROM  postgres_types  LIMIT  1  "; 
-    public readonly record struct GetPostgresTypesRow(bool? CBoolean, byte[]? CBit, short? CSmallint, int? CInteger, long? CBigint, float? CReal, decimal? CNumeric, decimal? CDecimal, double? CDoublePrecision, decimal? CMoney, DateTime? CDate, TimeSpan? CTime, DateTime? CTimestamp, DateTime? CTimestampWithTz, TimeSpan? CInterval, string? CChar, string? CVarchar, string? CCharacterVarying, string? CBpchar, string? CText, Guid? CUuid, JsonElement? CJson, string? CJsonStringOverride, JsonElement? CJsonb, string? CJsonpath, XmlDocument? CXml, string? CXmlStringOverride, NpgsqlCidr? CCidr, IPAddress? CInet, PhysicalAddress? CMacaddr, string? CMacaddr8);
+    private const string GetPostgresTypesSql = "SELECT      c_boolean , c_bit, c_smallint, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_money, c_date, c_time, c_timestamp, c_timestamp_with_tz, c_interval, c_char, c_varchar, c_character_varying, c_bpchar, c_text, c_uuid, c_cidr, c_inet, c_macaddr, c_macaddr8 :: TEXT  AS  c_macaddr8  FROM  postgres_types  LIMIT  1  "; 
+    public readonly record struct GetPostgresTypesRow(bool? CBoolean, byte[]? CBit, short? CSmallint, int? CInteger, long? CBigint, float? CReal, decimal? CNumeric, decimal? CDecimal, double? CDoublePrecision, decimal? CMoney, DateTime? CDate, TimeSpan? CTime, DateTime? CTimestamp, DateTime? CTimestampWithTz, TimeSpan? CInterval, string? CChar, string? CVarchar, string? CCharacterVarying, string? CBpchar, string? CText, Guid? CUuid, NpgsqlCidr? CCidr, IPAddress? CInet, PhysicalAddress? CMacaddr, string? CMacaddr8);
     public async Task<GetPostgresTypesRow?> GetPostgresTypes()
     {
         if (this.Transaction == null)
@@ -827,21 +815,10 @@ public class QuerySql
                                 CBpchar = reader.IsDBNull(18) ? null : reader.GetString(18),
                                 CText = reader.IsDBNull(19) ? null : reader.GetString(19),
                                 CUuid = reader.IsDBNull(20) ? null : reader.GetFieldValue<Guid>(20),
-                                CJson = reader.IsDBNull(21) ? null : JsonSerializer.Deserialize<JsonElement>(reader.GetString(21)),
-                                CJsonStringOverride = reader.IsDBNull(22) ? null : reader.GetString(22),
-                                CJsonb = reader.IsDBNull(23) ? null : JsonSerializer.Deserialize<JsonElement>(reader.GetString(23)),
-                                CJsonpath = reader.IsDBNull(24) ? null : reader.GetString(24),
-                                CXml = reader.IsDBNull(25) ? null : (new Func<NpgsqlDataReader, int, XmlDocument>((r, o) =>
-                                {
-                                    var xmlDoc = new XmlDocument();
-                                    xmlDoc.LoadXml(r.GetString(o));
-                                    return xmlDoc;
-                                }))(reader, 25),
-                                CXmlStringOverride = reader.IsDBNull(26) ? null : reader.GetString(26),
-                                CCidr = reader.IsDBNull(27) ? null : reader.GetFieldValue<NpgsqlCidr>(27),
-                                CInet = reader.IsDBNull(28) ? null : reader.GetFieldValue<IPAddress>(28),
-                                CMacaddr = reader.IsDBNull(29) ? null : reader.GetFieldValue<PhysicalAddress>(29),
-                                CMacaddr8 = reader.IsDBNull(30) ? null : reader.GetString(30)
+                                CCidr = reader.IsDBNull(21) ? null : reader.GetFieldValue<NpgsqlCidr>(21),
+                                CInet = reader.IsDBNull(22) ? null : reader.GetFieldValue<IPAddress>(22),
+                                CMacaddr = reader.IsDBNull(23) ? null : reader.GetFieldValue<PhysicalAddress>(23),
+                                CMacaddr8 = reader.IsDBNull(24) ? null : reader.GetString(24)
                             };
                         }
                     }
@@ -887,21 +864,10 @@ public class QuerySql
                         CBpchar = reader.IsDBNull(18) ? null : reader.GetString(18),
                         CText = reader.IsDBNull(19) ? null : reader.GetString(19),
                         CUuid = reader.IsDBNull(20) ? null : reader.GetFieldValue<Guid>(20),
-                        CJson = reader.IsDBNull(21) ? null : JsonSerializer.Deserialize<JsonElement>(reader.GetString(21)),
-                        CJsonStringOverride = reader.IsDBNull(22) ? null : reader.GetString(22),
-                        CJsonb = reader.IsDBNull(23) ? null : JsonSerializer.Deserialize<JsonElement>(reader.GetString(23)),
-                        CJsonpath = reader.IsDBNull(24) ? null : reader.GetString(24),
-                        CXml = reader.IsDBNull(25) ? null : (new Func<NpgsqlDataReader, int, XmlDocument>((r, o) =>
-                        {
-                            var xmlDoc = new XmlDocument();
-                            xmlDoc.LoadXml(r.GetString(o));
-                            return xmlDoc;
-                        }))(reader, 25),
-                        CXmlStringOverride = reader.IsDBNull(26) ? null : reader.GetString(26),
-                        CCidr = reader.IsDBNull(27) ? null : reader.GetFieldValue<NpgsqlCidr>(27),
-                        CInet = reader.IsDBNull(28) ? null : reader.GetFieldValue<IPAddress>(28),
-                        CMacaddr = reader.IsDBNull(29) ? null : reader.GetFieldValue<PhysicalAddress>(29),
-                        CMacaddr8 = reader.IsDBNull(30) ? null : reader.GetString(30)
+                        CCidr = reader.IsDBNull(21) ? null : reader.GetFieldValue<NpgsqlCidr>(21),
+                        CInet = reader.IsDBNull(22) ? null : reader.GetFieldValue<IPAddress>(22),
+                        CMacaddr = reader.IsDBNull(23) ? null : reader.GetFieldValue<PhysicalAddress>(23),
+                        CMacaddr8 = reader.IsDBNull(24) ? null : reader.GetString(24)
                     };
                 }
             }
@@ -1060,140 +1026,6 @@ public class QuerySql
         return null;
     }
 
-    private const string InsertPostgresGeoTypesSql = "INSERT INTO postgres_geometric_types ( c_point , c_line, c_lseg, c_box, c_path, c_polygon, c_circle ) VALUES ( @c_point, @c_line, @c_lseg, @c_box, @c_path, @c_polygon, @c_circle ) "; 
-    public readonly record struct InsertPostgresGeoTypesArgs(NpgsqlPoint? CPoint, NpgsqlLine? CLine, NpgsqlLSeg? CLseg, NpgsqlBox? CBox, NpgsqlPath? CPath, NpgsqlPolygon? CPolygon, NpgsqlCircle? CCircle);
-    public async Task InsertPostgresGeoTypes(InsertPostgresGeoTypesArgs args)
-    {
-        if (this.Transaction == null)
-        {
-            using (var connection = NpgsqlDataSource.Create(ConnectionString))
-            {
-                using (var command = connection.CreateCommand(InsertPostgresGeoTypesSql))
-                {
-                    command.Parameters.AddWithValue("@c_point", args.CPoint ?? (object)DBNull.Value);
-                    command.Parameters.AddWithValue("@c_line", args.CLine ?? (object)DBNull.Value);
-                    command.Parameters.AddWithValue("@c_lseg", args.CLseg ?? (object)DBNull.Value);
-                    command.Parameters.AddWithValue("@c_box", args.CBox ?? (object)DBNull.Value);
-                    command.Parameters.AddWithValue("@c_path", args.CPath ?? (object)DBNull.Value);
-                    command.Parameters.AddWithValue("@c_polygon", args.CPolygon ?? (object)DBNull.Value);
-                    command.Parameters.AddWithValue("@c_circle", args.CCircle ?? (object)DBNull.Value);
-                    await command.ExecuteNonQueryAsync();
-                }
-            }
-
-            return;
-        }
-
-        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
-        {
-            throw new System.InvalidOperationException("Transaction is provided, but its connection is null.");
-        }
-
-        using (var command = this.Transaction.Connection.CreateCommand())
-        {
-            command.CommandText = InsertPostgresGeoTypesSql;
-            command.Transaction = this.Transaction;
-            command.Parameters.AddWithValue("@c_point", args.CPoint ?? (object)DBNull.Value);
-            command.Parameters.AddWithValue("@c_line", args.CLine ?? (object)DBNull.Value);
-            command.Parameters.AddWithValue("@c_lseg", args.CLseg ?? (object)DBNull.Value);
-            command.Parameters.AddWithValue("@c_box", args.CBox ?? (object)DBNull.Value);
-            command.Parameters.AddWithValue("@c_path", args.CPath ?? (object)DBNull.Value);
-            command.Parameters.AddWithValue("@c_polygon", args.CPolygon ?? (object)DBNull.Value);
-            command.Parameters.AddWithValue("@c_circle", args.CCircle ?? (object)DBNull.Value);
-            await command.ExecuteNonQueryAsync();
-        }
-    }
-
-    private const string InsertPostgresGeoTypesBatchSql = "COPY postgres_geometric_types (c_point, c_line, c_lseg, c_box, c_path, c_polygon, c_circle) FROM STDIN (FORMAT BINARY)";
-    public readonly record struct InsertPostgresGeoTypesBatchArgs(NpgsqlPoint? CPoint, NpgsqlLine? CLine, NpgsqlLSeg? CLseg, NpgsqlBox? CBox, NpgsqlPath? CPath, NpgsqlPolygon? CPolygon, NpgsqlCircle? CCircle);
-    public async Task InsertPostgresGeoTypesBatch(List<InsertPostgresGeoTypesBatchArgs> args)
-    {
-        using (var connection = new NpgsqlConnection(ConnectionString))
-        {
-            await connection.OpenAsync();
-            using (var writer = await connection.BeginBinaryImportAsync(InsertPostgresGeoTypesBatchSql))
-            {
-                foreach (var row in args)
-                {
-                    await writer.StartRowAsync();
-                    await writer.WriteAsync(row.CPoint ?? (object)DBNull.Value);
-                    await writer.WriteAsync(row.CLine ?? (object)DBNull.Value);
-                    await writer.WriteAsync(row.CLseg ?? (object)DBNull.Value);
-                    await writer.WriteAsync(row.CBox ?? (object)DBNull.Value);
-                    await writer.WriteAsync(row.CPath ?? (object)DBNull.Value);
-                    await writer.WriteAsync(row.CPolygon ?? (object)DBNull.Value);
-                    await writer.WriteAsync(row.CCircle ?? (object)DBNull.Value);
-                }
-
-                await writer.CompleteAsync();
-            }
-
-            await connection.CloseAsync();
-        }
-    }
-
-    private const string GetPostgresGeoTypesSql = "SELECT c_point, c_line, c_lseg, c_box, c_path, c_polygon, c_circle FROM postgres_geometric_types LIMIT 1";
-    public readonly record struct GetPostgresGeoTypesRow(NpgsqlPoint? CPoint, NpgsqlLine? CLine, NpgsqlLSeg? CLseg, NpgsqlBox? CBox, NpgsqlPath? CPath, NpgsqlPolygon? CPolygon, NpgsqlCircle? CCircle);
-    public async Task<GetPostgresGeoTypesRow?> GetPostgresGeoTypes()
-    {
-        if (this.Transaction == null)
-        {
-            using (var connection = NpgsqlDataSource.Create(ConnectionString))
-            {
-                using (var command = connection.CreateCommand(GetPostgresGeoTypesSql))
-                {
-                    using (var reader = await command.ExecuteReaderAsync())
-                    {
-                        if (await reader.ReadAsync())
-                        {
-                            return new GetPostgresGeoTypesRow
-                            {
-                                CPoint = reader.IsDBNull(0) ? null : reader.GetFieldValue<NpgsqlPoint>(0),
-                                CLine = reader.IsDBNull(1) ? null : reader.GetFieldValue<NpgsqlLine>(1),
-                                CLseg = reader.IsDBNull(2) ? null : reader.GetFieldValue<NpgsqlLSeg>(2),
-                                CBox = reader.IsDBNull(3) ? null : reader.GetFieldValue<NpgsqlBox>(3),
-                                CPath = reader.IsDBNull(4) ? null : reader.GetFieldValue<NpgsqlPath>(4),
-                                CPolygon = reader.IsDBNull(5) ? null : reader.GetFieldValue<NpgsqlPolygon>(5),
-                                CCircle = reader.IsDBNull(6) ? null : reader.GetFieldValue<NpgsqlCircle>(6)
-                            };
-                        }
-                    }
-                }
-            }
-
-            return null;
-        }
-
-        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
-        {
-            throw new System.InvalidOperationException("Transaction is provided, but its connection is null.");
-        }
-
-        using (var command = this.Transaction.Connection.CreateCommand())
-        {
-            command.CommandText = GetPostgresGeoTypesSql;
-            command.Transaction = this.Transaction;
-            using (var reader = await command.ExecuteReaderAsync())
-            {
-                if (await reader.ReadAsync())
-                {
-                    return new GetPostgresGeoTypesRow
-                    {
-                        CPoint = reader.IsDBNull(0) ? null : reader.GetFieldValue<NpgsqlPoint>(0),
-                        CLine = reader.IsDBNull(1) ? null : reader.GetFieldValue<NpgsqlLine>(1),
-                        CLseg = reader.IsDBNull(2) ? null : reader.GetFieldValue<NpgsqlLSeg>(2),
-                        CBox = reader.IsDBNull(3) ? null : reader.GetFieldValue<NpgsqlBox>(3),
-                        CPath = reader.IsDBNull(4) ? null : reader.GetFieldValue<NpgsqlPath>(4),
-                        CPolygon = reader.IsDBNull(5) ? null : reader.GetFieldValue<NpgsqlPolygon>(5),
-                        CCircle = reader.IsDBNull(6) ? null : reader.GetFieldValue<NpgsqlCircle>(6)
-                    };
-                }
-            }
-        }
-
-        return null;
-    }
-
     private const string TruncatePostgresTypesSql = "TRUNCATE TABLE postgres_types";
     public async Task TruncatePostgresTypes()
     {
@@ -1223,14 +1055,126 @@ public class QuerySql
         }
     }
 
-    private const string TruncatePostgresGeoTypesSql = "TRUNCATE TABLE postgres_geometric_types";
-    public async Task TruncatePostgresGeoTypes()
+    private const string InsertPostgresUnstructuredTypesSql = " INSERT  INTO  postgres_unstructured_types ( c_json , c_json_string_override, c_jsonb, c_jsonpath, c_xml, c_xml_string_override ) VALUES ( @c_json :: json, @c_json_string_override :: json, @c_jsonb :: jsonb, @c_jsonpath :: jsonpath, @c_xml :: xml, @c_xml_string_override :: xml ) "; 
+    public readonly record struct InsertPostgresUnstructuredTypesArgs(JsonElement? CJson, string? CJsonStringOverride, JsonElement? CJsonb, string? CJsonpath, XmlDocument? CXml, string? CXmlStringOverride);
+    public async Task InsertPostgresUnstructuredTypes(InsertPostgresUnstructuredTypesArgs args)
     {
         if (this.Transaction == null)
         {
             using (var connection = NpgsqlDataSource.Create(ConnectionString))
             {
-                using (var command = connection.CreateCommand(TruncatePostgresGeoTypesSql))
+                using (var command = connection.CreateCommand(InsertPostgresUnstructuredTypesSql))
+                {
+                    command.Parameters.AddWithValue("@c_json", args.CJson.HasValue ? args.CJson.Value.GetRawText() : (object)DBNull.Value);
+                    command.Parameters.AddWithValue("@c_json_string_override", args.CJsonStringOverride ?? (object)DBNull.Value);
+                    command.Parameters.AddWithValue("@c_jsonb", args.CJsonb.HasValue ? args.CJsonb.Value.GetRawText() : (object)DBNull.Value);
+                    command.Parameters.AddWithValue("@c_jsonpath", args.CJsonpath ?? (object)DBNull.Value);
+                    command.Parameters.AddWithValue("@c_xml", args.CXml != null ? args.CXml.OuterXml : (object)DBNull.Value);
+                    command.Parameters.AddWithValue("@c_xml_string_override", args.CXmlStringOverride ?? (object)DBNull.Value);
+                    await command.ExecuteNonQueryAsync();
+                }
+            }
+
+            return;
+        }
+
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+        {
+            throw new System.InvalidOperationException("Transaction is provided, but its connection is null.");
+        }
+
+        using (var command = this.Transaction.Connection.CreateCommand())
+        {
+            command.CommandText = InsertPostgresUnstructuredTypesSql;
+            command.Transaction = this.Transaction;
+            command.Parameters.AddWithValue("@c_json", args.CJson.HasValue ? args.CJson.Value.GetRawText() : (object)DBNull.Value);
+            command.Parameters.AddWithValue("@c_json_string_override", args.CJsonStringOverride ?? (object)DBNull.Value);
+            command.Parameters.AddWithValue("@c_jsonb", args.CJsonb.HasValue ? args.CJsonb.Value.GetRawText() : (object)DBNull.Value);
+            command.Parameters.AddWithValue("@c_jsonpath", args.CJsonpath ?? (object)DBNull.Value);
+            command.Parameters.AddWithValue("@c_xml", args.CXml != null ? args.CXml.OuterXml : (object)DBNull.Value);
+            command.Parameters.AddWithValue("@c_xml_string_override", args.CXmlStringOverride ?? (object)DBNull.Value);
+            await command.ExecuteNonQueryAsync();
+        }
+    }
+
+    private const string GetPostgresUnstructuredTypesSql = "SELECT c_json , c_json_string_override, c_jsonb, c_jsonpath, c_xml, c_xml_string_override FROM  postgres_unstructured_types  LIMIT  1  ";  
+    public readonly record struct GetPostgresUnstructuredTypesRow(JsonElement? CJson, string? CJsonStringOverride, JsonElement? CJsonb, string? CJsonpath, XmlDocument? CXml, string? CXmlStringOverride);
+    public async Task<GetPostgresUnstructuredTypesRow?> GetPostgresUnstructuredTypes()
+    {
+        if (this.Transaction == null)
+        {
+            using (var connection = NpgsqlDataSource.Create(ConnectionString))
+            {
+                using (var command = connection.CreateCommand(GetPostgresUnstructuredTypesSql))
+                {
+                    using (var reader = await command.ExecuteReaderAsync())
+                    {
+                        if (await reader.ReadAsync())
+                        {
+                            return new GetPostgresUnstructuredTypesRow
+                            {
+                                CJson = reader.IsDBNull(0) ? null : JsonSerializer.Deserialize<JsonElement>(reader.GetString(0)),
+                                CJsonStringOverride = reader.IsDBNull(1) ? null : reader.GetString(1),
+                                CJsonb = reader.IsDBNull(2) ? null : JsonSerializer.Deserialize<JsonElement>(reader.GetString(2)),
+                                CJsonpath = reader.IsDBNull(3) ? null : reader.GetString(3),
+                                CXml = reader.IsDBNull(4) ? null : (new Func<NpgsqlDataReader, int, XmlDocument>((r, o) =>
+                                {
+                                    var xmlDoc = new XmlDocument();
+                                    xmlDoc.LoadXml(r.GetString(o));
+                                    return xmlDoc;
+                                }))(reader, 4),
+                                CXmlStringOverride = reader.IsDBNull(5) ? null : reader.GetString(5)
+                            };
+                        }
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+        {
+            throw new System.InvalidOperationException("Transaction is provided, but its connection is null.");
+        }
+
+        using (var command = this.Transaction.Connection.CreateCommand())
+        {
+            command.CommandText = GetPostgresUnstructuredTypesSql;
+            command.Transaction = this.Transaction;
+            using (var reader = await command.ExecuteReaderAsync())
+            {
+                if (await reader.ReadAsync())
+                {
+                    return new GetPostgresUnstructuredTypesRow
+                    {
+                        CJson = reader.IsDBNull(0) ? null : JsonSerializer.Deserialize<JsonElement>(reader.GetString(0)),
+                        CJsonStringOverride = reader.IsDBNull(1) ? null : reader.GetString(1),
+                        CJsonb = reader.IsDBNull(2) ? null : JsonSerializer.Deserialize<JsonElement>(reader.GetString(2)),
+                        CJsonpath = reader.IsDBNull(3) ? null : reader.GetString(3),
+                        CXml = reader.IsDBNull(4) ? null : (new Func<NpgsqlDataReader, int, XmlDocument>((r, o) =>
+                        {
+                            var xmlDoc = new XmlDocument();
+                            xmlDoc.LoadXml(r.GetString(o));
+                            return xmlDoc;
+                        }))(reader, 4),
+                        CXmlStringOverride = reader.IsDBNull(5) ? null : reader.GetString(5)
+                    };
+                }
+            }
+        }
+
+        return null;
+    }
+
+    private const string TruncatePostgresUnstructuredTypesSql = "TRUNCATE TABLE postgres_unstructured_types";
+    public async Task TruncatePostgresUnstructuredTypes()
+    {
+        if (this.Transaction == null)
+        {
+            using (var connection = NpgsqlDataSource.Create(ConnectionString))
+            {
+                using (var command = connection.CreateCommand(TruncatePostgresUnstructuredTypesSql))
                 {
                     await command.ExecuteNonQueryAsync();
                 }
@@ -1246,13 +1190,13 @@ public class QuerySql
 
         using (var command = this.Transaction.Connection.CreateCommand())
         {
-            command.CommandText = TruncatePostgresGeoTypesSql;
+            command.CommandText = TruncatePostgresUnstructuredTypesSql;
             command.Transaction = this.Transaction;
             await command.ExecuteNonQueryAsync();
         }
     }
 
-    private const string InsertPostgresArrayTypesSql = "INSERT INTO postgres_array_types(c_bytea, c_boolean_array, c_text_array, c_integer_array, c_decimal_array, c_date_array, c_timestamp_array) VALUES ( @c_bytea, @c_boolean_array, @c_text_array, @c_integer_array, @c_decimal_array, @c_date_array, @c_timestamp_array ) "; 
+    private const string InsertPostgresArrayTypesSql = " INSERT  INTO  postgres_array_types ( c_bytea , c_boolean_array, c_text_array, c_integer_array, c_decimal_array, c_date_array, c_timestamp_array ) VALUES ( @c_bytea, @c_boolean_array, @c_text_array, @c_integer_array, @c_decimal_array, @c_date_array, @c_timestamp_array ) "; 
     public readonly record struct InsertPostgresArrayTypesArgs(byte[]? CBytea, bool[]? CBooleanArray, string[]? CTextArray, int[]? CIntegerArray, decimal[]? CDecimalArray, DateTime[]? CDateArray, DateTime[]? CTimestampArray);
     public async Task InsertPostgresArrayTypes(InsertPostgresArrayTypesArgs args)
     {
@@ -1456,6 +1400,169 @@ public class QuerySql
         using (var command = this.Transaction.Connection.CreateCommand())
         {
             command.CommandText = TruncatePostgresArrayTypesSql;
+            command.Transaction = this.Transaction;
+            await command.ExecuteNonQueryAsync();
+        }
+    }
+
+    private const string InsertPostgresGeoTypesSql = " INSERT  INTO  postgres_geometric_types ( c_point , c_line, c_lseg, c_box, c_path, c_polygon, c_circle ) VALUES ( @c_point, @c_line, @c_lseg, @c_box, @c_path, @c_polygon, @c_circle ) "; 
+    public readonly record struct InsertPostgresGeoTypesArgs(NpgsqlPoint? CPoint, NpgsqlLine? CLine, NpgsqlLSeg? CLseg, NpgsqlBox? CBox, NpgsqlPath? CPath, NpgsqlPolygon? CPolygon, NpgsqlCircle? CCircle);
+    public async Task InsertPostgresGeoTypes(InsertPostgresGeoTypesArgs args)
+    {
+        if (this.Transaction == null)
+        {
+            using (var connection = NpgsqlDataSource.Create(ConnectionString))
+            {
+                using (var command = connection.CreateCommand(InsertPostgresGeoTypesSql))
+                {
+                    command.Parameters.AddWithValue("@c_point", args.CPoint ?? (object)DBNull.Value);
+                    command.Parameters.AddWithValue("@c_line", args.CLine ?? (object)DBNull.Value);
+                    command.Parameters.AddWithValue("@c_lseg", args.CLseg ?? (object)DBNull.Value);
+                    command.Parameters.AddWithValue("@c_box", args.CBox ?? (object)DBNull.Value);
+                    command.Parameters.AddWithValue("@c_path", args.CPath ?? (object)DBNull.Value);
+                    command.Parameters.AddWithValue("@c_polygon", args.CPolygon ?? (object)DBNull.Value);
+                    command.Parameters.AddWithValue("@c_circle", args.CCircle ?? (object)DBNull.Value);
+                    await command.ExecuteNonQueryAsync();
+                }
+            }
+
+            return;
+        }
+
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+        {
+            throw new System.InvalidOperationException("Transaction is provided, but its connection is null.");
+        }
+
+        using (var command = this.Transaction.Connection.CreateCommand())
+        {
+            command.CommandText = InsertPostgresGeoTypesSql;
+            command.Transaction = this.Transaction;
+            command.Parameters.AddWithValue("@c_point", args.CPoint ?? (object)DBNull.Value);
+            command.Parameters.AddWithValue("@c_line", args.CLine ?? (object)DBNull.Value);
+            command.Parameters.AddWithValue("@c_lseg", args.CLseg ?? (object)DBNull.Value);
+            command.Parameters.AddWithValue("@c_box", args.CBox ?? (object)DBNull.Value);
+            command.Parameters.AddWithValue("@c_path", args.CPath ?? (object)DBNull.Value);
+            command.Parameters.AddWithValue("@c_polygon", args.CPolygon ?? (object)DBNull.Value);
+            command.Parameters.AddWithValue("@c_circle", args.CCircle ?? (object)DBNull.Value);
+            await command.ExecuteNonQueryAsync();
+        }
+    }
+
+    private const string InsertPostgresGeoTypesBatchSql = "COPY postgres_geometric_types (c_point, c_line, c_lseg, c_box, c_path, c_polygon, c_circle) FROM STDIN (FORMAT BINARY)";
+    public readonly record struct InsertPostgresGeoTypesBatchArgs(NpgsqlPoint? CPoint, NpgsqlLine? CLine, NpgsqlLSeg? CLseg, NpgsqlBox? CBox, NpgsqlPath? CPath, NpgsqlPolygon? CPolygon, NpgsqlCircle? CCircle);
+    public async Task InsertPostgresGeoTypesBatch(List<InsertPostgresGeoTypesBatchArgs> args)
+    {
+        using (var connection = new NpgsqlConnection(ConnectionString))
+        {
+            await connection.OpenAsync();
+            using (var writer = await connection.BeginBinaryImportAsync(InsertPostgresGeoTypesBatchSql))
+            {
+                foreach (var row in args)
+                {
+                    await writer.StartRowAsync();
+                    await writer.WriteAsync(row.CPoint ?? (object)DBNull.Value);
+                    await writer.WriteAsync(row.CLine ?? (object)DBNull.Value);
+                    await writer.WriteAsync(row.CLseg ?? (object)DBNull.Value);
+                    await writer.WriteAsync(row.CBox ?? (object)DBNull.Value);
+                    await writer.WriteAsync(row.CPath ?? (object)DBNull.Value);
+                    await writer.WriteAsync(row.CPolygon ?? (object)DBNull.Value);
+                    await writer.WriteAsync(row.CCircle ?? (object)DBNull.Value);
+                }
+
+                await writer.CompleteAsync();
+            }
+
+            await connection.CloseAsync();
+        }
+    }
+
+    private const string GetPostgresGeoTypesSql = "SELECT c_point, c_line, c_lseg, c_box, c_path, c_polygon, c_circle FROM postgres_geometric_types LIMIT 1";
+    public readonly record struct GetPostgresGeoTypesRow(NpgsqlPoint? CPoint, NpgsqlLine? CLine, NpgsqlLSeg? CLseg, NpgsqlBox? CBox, NpgsqlPath? CPath, NpgsqlPolygon? CPolygon, NpgsqlCircle? CCircle);
+    public async Task<GetPostgresGeoTypesRow?> GetPostgresGeoTypes()
+    {
+        if (this.Transaction == null)
+        {
+            using (var connection = NpgsqlDataSource.Create(ConnectionString))
+            {
+                using (var command = connection.CreateCommand(GetPostgresGeoTypesSql))
+                {
+                    using (var reader = await command.ExecuteReaderAsync())
+                    {
+                        if (await reader.ReadAsync())
+                        {
+                            return new GetPostgresGeoTypesRow
+                            {
+                                CPoint = reader.IsDBNull(0) ? null : reader.GetFieldValue<NpgsqlPoint>(0),
+                                CLine = reader.IsDBNull(1) ? null : reader.GetFieldValue<NpgsqlLine>(1),
+                                CLseg = reader.IsDBNull(2) ? null : reader.GetFieldValue<NpgsqlLSeg>(2),
+                                CBox = reader.IsDBNull(3) ? null : reader.GetFieldValue<NpgsqlBox>(3),
+                                CPath = reader.IsDBNull(4) ? null : reader.GetFieldValue<NpgsqlPath>(4),
+                                CPolygon = reader.IsDBNull(5) ? null : reader.GetFieldValue<NpgsqlPolygon>(5),
+                                CCircle = reader.IsDBNull(6) ? null : reader.GetFieldValue<NpgsqlCircle>(6)
+                            };
+                        }
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+        {
+            throw new System.InvalidOperationException("Transaction is provided, but its connection is null.");
+        }
+
+        using (var command = this.Transaction.Connection.CreateCommand())
+        {
+            command.CommandText = GetPostgresGeoTypesSql;
+            command.Transaction = this.Transaction;
+            using (var reader = await command.ExecuteReaderAsync())
+            {
+                if (await reader.ReadAsync())
+                {
+                    return new GetPostgresGeoTypesRow
+                    {
+                        CPoint = reader.IsDBNull(0) ? null : reader.GetFieldValue<NpgsqlPoint>(0),
+                        CLine = reader.IsDBNull(1) ? null : reader.GetFieldValue<NpgsqlLine>(1),
+                        CLseg = reader.IsDBNull(2) ? null : reader.GetFieldValue<NpgsqlLSeg>(2),
+                        CBox = reader.IsDBNull(3) ? null : reader.GetFieldValue<NpgsqlBox>(3),
+                        CPath = reader.IsDBNull(4) ? null : reader.GetFieldValue<NpgsqlPath>(4),
+                        CPolygon = reader.IsDBNull(5) ? null : reader.GetFieldValue<NpgsqlPolygon>(5),
+                        CCircle = reader.IsDBNull(6) ? null : reader.GetFieldValue<NpgsqlCircle>(6)
+                    };
+                }
+            }
+        }
+
+        return null;
+    }
+
+    private const string TruncatePostgresGeoTypesSql = "TRUNCATE TABLE postgres_geometric_types";
+    public async Task TruncatePostgresGeoTypes()
+    {
+        if (this.Transaction == null)
+        {
+            using (var connection = NpgsqlDataSource.Create(ConnectionString))
+            {
+                using (var command = connection.CreateCommand(TruncatePostgresGeoTypesSql))
+                {
+                    await command.ExecuteNonQueryAsync();
+                }
+            }
+
+            return;
+        }
+
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+        {
+            throw new System.InvalidOperationException("Transaction is provided, but its connection is null.");
+        }
+
+        using (var command = this.Transaction.Connection.CreateCommand())
+        {
+            command.CommandText = TruncatePostgresGeoTypesSql;
             command.Transaction = this.Transaction;
             await command.ExecuteNonQueryAsync();
         }

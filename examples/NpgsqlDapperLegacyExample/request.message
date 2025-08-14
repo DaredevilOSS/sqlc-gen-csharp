@@ -1,9 +1,9 @@
 
-Ï
+¸
 2
-postgresql%examples/config/postgresql/schema.sql"$examples/config/postgresql/query.sqlbð
+postgresql-examples/config/postgresql/authors/schema.sql+examples/config/postgresql/types/schema.sql",examples/config/postgresql/authors/query.sql"*examples/config/postgresql/types/query.sqlbð
 "examples/NpgsqlDapperLegacyExamplecsharp«{"debugRequest":true,"generateCsproj":true,"namespaceName":"NpgsqlDapperLegacyExampleGen","overrides":[{"column":"GetPostgresFunctions:max_integer","csharp_type":{"notNull":false,"type":"int"}},{"column":"GetPostgresFunctions:max_varchar","csharp_type":{"notNull":false,"type":"string"}},{"column":"GetPostgresFunctions:max_timestamp","csharp_type":{"notNull":true,"type":"DateTime"}},{"column":"*:c_json_string_override","csharp_type":{"notNull":false,"type":"string"}},{"column":"*:c_xml_string_override","csharp_type":{"notNull":false,"type":"string"}},{"column":"*:c_macaddr8","csharp_type":{"notNull":false,"type":"string"}}],"targetFramework":"netstandard2.0","useDapper":true}*
-./dist/LocalRunnerææpublic"ºpublicƒ
+./dist/LocalRunnerÖçpublic"ªpublicƒ
 	authors)
 id0ÿÿÿÿÿÿÿÿÿR	authorsb	bigserial&
 name0ÿÿÿÿÿÿÿÿÿR	authorsbtext#
@@ -13,7 +13,7 @@ postgresql%examples/config/postgresql/schema.sql"$examples/config/postgresql/qu
 name0ÿÿÿÿÿÿÿÿÿRbooksbtext5
 	author_id0ÿÿÿÿÿÿÿÿÿRbooksb
 pg_catalogint8)
-description0ÿÿÿÿÿÿÿÿÿRbooksbtext¡
+description0ÿÿÿÿÿÿÿÿÿRbooksbtextá
 postgres_types<
 	c_boolean0ÿÿÿÿÿÿÿÿÿRpostgres_typesb
 pg_catalogbool7
@@ -53,29 +53,22 @@ pg_catalogvarcharI
 pg_catalogvarchar1
 c_bpchar0ÿÿÿÿÿÿÿÿÿRpostgres_typesbbpchar-
 c_text0ÿÿÿÿÿÿÿÿÿRpostgres_typesbtext-
-c_json0ÿÿÿÿÿÿÿÿÿRpostgres_typesbjson=
-c_json_string_override0ÿÿÿÿÿÿÿÿÿRpostgres_typesbjson/
-c_jsonb0ÿÿÿÿÿÿÿÿÿRpostgres_typesbjsonb5
-
-c_jsonpath0ÿÿÿÿÿÿÿÿÿRpostgres_typesb
-jsonpath+
-c_xml0ÿÿÿÿÿÿÿÿÿRpostgres_typesbxml;
-c_xml_string_override0ÿÿÿÿÿÿÿÿÿRpostgres_typesbxml-
 c_cidr0ÿÿÿÿÿÿÿÿÿRpostgres_typesbcidr-
 c_inet0ÿÿÿÿÿÿÿÿÿRpostgres_typesbinet3
 	c_macaddr0ÿÿÿÿÿÿÿÿÿRpostgres_typesb	macaddr5
 
 c_macaddr80ÿÿÿÿÿÿÿÿÿRpostgres_typesb
 macaddr8-
-c_uuid0ÿÿÿÿÿÿÿÿÿRpostgres_typesbuuidµ
-postgres_geometric_types9
-c_point0ÿÿÿÿÿÿÿÿÿRpostgres_geometric_typesbpoint7
-c_line0ÿÿÿÿÿÿÿÿÿRpostgres_geometric_typesbline7
-c_lseg0ÿÿÿÿÿÿÿÿÿRpostgres_geometric_typesblseg5
-c_box0ÿÿÿÿÿÿÿÿÿRpostgres_geometric_typesbbox7
-c_path0ÿÿÿÿÿÿÿÿÿRpostgres_geometric_typesbpath=
-	c_polygon0ÿÿÿÿÿÿÿÿÿRpostgres_geometric_typesb	polygon;
-c_circle0ÿÿÿÿÿÿÿÿÿRpostgres_geometric_typesbcircle•
+c_uuid0ÿÿÿÿÿÿÿÿÿRpostgres_typesbuuid­
+postgres_unstructured_types:
+c_json0ÿÿÿÿÿÿÿÿÿRpostgres_unstructured_typesbjsonJ
+c_json_string_override0ÿÿÿÿÿÿÿÿÿRpostgres_unstructured_typesbjson<
+c_jsonb0ÿÿÿÿÿÿÿÿÿRpostgres_unstructured_typesbjsonbB
+
+c_jsonpath0ÿÿÿÿÿÿÿÿÿRpostgres_unstructured_typesb
+jsonpath8
+c_xml0ÿÿÿÿÿÿÿÿÿRpostgres_unstructured_typesbxmlH
+c_xml_string_override0ÿÿÿÿÿÿÿÿÿRpostgres_unstructured_typesbxml•
 postgres_array_types5
 c_bytea0ÿÿÿÿÿÿÿÿÿRpostgres_array_typesbbyteaM
 c_boolean_array 0ÿÿÿÿÿÿÿÿÿRpostgres_array_typesb
@@ -87,7 +80,15 @@ pg_catalogint4ˆP
 pg_catalognumericˆ>
 c_date_array 0ÿÿÿÿÿÿÿÿÿRpostgres_array_typesbdateˆT
 c_timestamp_array 0ÿÿÿÿÿÿÿÿÿRpostgres_array_typesb
-pg_catalog	timestampˆ"	pg_temp"æ²
+pg_catalog	timestampˆµ
+postgres_geometric_types9
+c_point0ÿÿÿÿÿÿÿÿÿRpostgres_geometric_typesbpoint7
+c_line0ÿÿÿÿÿÿÿÿÿRpostgres_geometric_typesbline7
+c_lseg0ÿÿÿÿÿÿÿÿÿRpostgres_geometric_typesblseg5
+c_box0ÿÿÿÿÿÿÿÿÿRpostgres_geometric_typesbbox7
+c_path0ÿÿÿÿÿÿÿÿÿRpostgres_geometric_typesbpath=
+	c_polygon0ÿÿÿÿÿÿÿÿÿRpostgres_geometric_typesb	polygon;
+c_circle0ÿÿÿÿÿÿÿÿÿRpostgres_geometric_typesbcircle"	pg_temp"æ²
 pg_catalog‰
 &
 
@@ -10299,8 +10300,9 @@ WHERE books.name = $1GetAuthorsByBookName:many"-
 name0ÿÿÿÿÿÿÿÿÿR	authorsbtextzname"(
 bio0ÿÿÿÿÿÿÿÿÿR	authorsbtextzbio"
 books0ÿÿÿÿÿÿÿÿÿb rbooks*.*
-name0ÿÿÿÿÿÿÿÿÿRbooksbtextzname:	query.sqlà
-ÕINSERT INTO postgres_types
+name0ÿÿÿÿÿÿÿÿÿRbooksbtextzname:	query.sqlº
+Œ
+INSERT INTO postgres_types
 (
     c_boolean,
     c_bit,
@@ -10323,12 +10325,6 @@ WHERE books.name = $1GetAuthorsByBookName:many"-
     c_bpchar,
     c_text,
     c_uuid,
-    c_json,
-    c_json_string_override,
-    c_jsonb,
-    c_jsonpath,
-    c_xml,
-    c_xml_string_override,
     c_cidr,
     c_inet,
     c_macaddr,
@@ -10356,16 +10352,10 @@ VALUES (
     $19,
     $20,
     $21,
-    $22::json, 
-    $23::json, 
-    $24::jsonb,
-    $25::jsonpath,
-    $26::xml,
-    $27::xml,
-    $28,
-    $29,
-    $30::macaddr,
-    $31::macaddr8
+    $22,
+    $23,
+    $24::macaddr,
+    $25::macaddr8
 )InsertPostgresTypes:exec*TP
 	c_boolean0ÿÿÿÿÿÿÿÿÿ8Rpublicpostgres_typesbpg_catalog.boolz	c_boolean*KG
 c_bit0ÿÿÿÿÿÿÿÿÿ8Rpublicpostgres_typesbpg_catalog.bitzc_bit*VR
@@ -10392,21 +10382,13 @@ c_interval*PL
 c_character_varying0ÿÿÿÿÿÿÿÿÿ8Rpublicpostgres_typesbpg_catalog.varcharzc_character_varying*IE
 c_bpchar0ÿÿÿÿÿÿÿÿÿ8Rpublicpostgres_typesbbpcharzc_bpchar*C?
 c_text0ÿÿÿÿÿÿÿÿÿ8Rpublicpostgres_typesbtextzc_text*C?
-c_uuid0ÿÿÿÿÿÿÿÿÿ8Rpublicpostgres_typesbuuidzc_uuid*
-c_json0ÿÿÿÿÿÿÿÿÿbjson*/+
-c_json_string_override0ÿÿÿÿÿÿÿÿÿbjson*!
-c_jsonb0ÿÿÿÿÿÿÿÿÿbjsonb*'#
-
-c_jsonpath0ÿÿÿÿÿÿÿÿÿb
-jsonpath*
-c_xml0ÿÿÿÿÿÿÿÿÿbxml*-)
-c_xml_string_override0ÿÿÿÿÿÿÿÿÿbxml*C?
-c_cidr0ÿÿÿÿÿÿÿÿÿ8Rpublicpostgres_typesbcidrzc_cidr*C?
-c_inet0ÿÿÿÿÿÿÿÿÿ8Rpublicpostgres_typesbinetzc_inet*%!
-	c_macaddr0ÿÿÿÿÿÿÿÿÿb	macaddr*'#
+c_uuid0ÿÿÿÿÿÿÿÿÿ8Rpublicpostgres_typesbuuidzc_uuid*C?
+c_cidr0ÿÿÿÿÿÿÿÿÿ8Rpublicpostgres_typesbcidrzc_cidr*C?
+c_inet0ÿÿÿÿÿÿÿÿÿ8Rpublicpostgres_typesbinetzc_inet*%!
+	c_macaddr0ÿÿÿÿÿÿÿÿÿb	macaddr*'#
 
 c_macaddr80ÿÿÿÿÿÿÿÿÿb
-macaddr8:	query.sqlBpostgres_types‡
+macaddr82 Basic types :	query.sqlBpostgres_types‡
 ÜINSERT INTO postgres_types
 (
     c_boolean,
@@ -10485,8 +10467,8 @@ c_interval*NJ
 c_uuid0ÿÿÿÿÿÿÿÿÿRpublicpostgres_typesbuuidzc_uuid*A=
 c_cidr0ÿÿÿÿÿÿÿÿÿRpublicpostgres_typesbcidrzc_cidr*A=
 c_inet0ÿÿÿÿÿÿÿÿÿRpublicpostgres_typesbinetzc_inet*JF
-	c_macaddr0ÿÿÿÿÿÿÿÿÿRpublicpostgres_typesb	macaddrz	c_macaddr:	query.sqlBpostgres_typesœ
-ŸSELECT     
+	c_macaddr0ÿÿÿÿÿÿÿÿÿRpublicpostgres_typesb	macaddrz	c_macaddr:	query.sqlBpostgres_typesž
+´SELECT     
     c_boolean,
     c_bit,
     c_smallint,
@@ -10508,12 +10490,6 @@ c_interval*NJ
     c_bpchar,
     c_text,
     c_uuid,
-    c_json,
-    c_json_string_override,
-    c_jsonb,
-    c_jsonpath,
-    c_xml,
-    c_xml_string_override,
     c_cidr,
     c_inet,
     c_macaddr,
@@ -10561,15 +10537,6 @@ pg_catalogvarcharzc_character_varying";
 c_bpchar0ÿÿÿÿÿÿÿÿÿRpostgres_typesbbpcharzc_bpchar"5
 c_text0ÿÿÿÿÿÿÿÿÿRpostgres_typesbtextzc_text"5
 c_uuid0ÿÿÿÿÿÿÿÿÿRpostgres_typesbuuidzc_uuid"5
-c_json0ÿÿÿÿÿÿÿÿÿRpostgres_typesbjsonzc_json"U
-c_json_string_override0ÿÿÿÿÿÿÿÿÿRpostgres_typesbjsonzc_json_string_override"8
-c_jsonb0ÿÿÿÿÿÿÿÿÿRpostgres_typesbjsonbzc_jsonb"A
-
-c_jsonpath0ÿÿÿÿÿÿÿÿÿRpostgres_typesb
-jsonpathz
-c_jsonpath"2
-c_xml0ÿÿÿÿÿÿÿÿÿRpostgres_typesbxmlzc_xml"R
-c_xml_string_override0ÿÿÿÿÿÿÿÿÿRpostgres_typesbxmlzc_xml_string_override"5
 c_cidr0ÿÿÿÿÿÿÿÿÿRpostgres_typesbcidrzc_cidr"5
 c_inet0ÿÿÿÿÿÿÿÿÿRpostgres_typesbinetzc_inet">
 	c_macaddr0ÿÿÿÿÿÿÿÿÿRpostgres_typesb	macaddrz	c_macaddr"!
@@ -10679,40 +10646,55 @@ FROM postgres_typesGetPostgresFunctions:one"(
 max_varchar0ÿÿÿÿÿÿÿÿÿ@b
 anyarray"*
 max_timestamp0ÿÿÿÿÿÿÿÿÿ@b
-anyarray:	query.sqlÿ
-ŒINSERT INTO postgres_geometric_types (
-    c_point, c_line, c_lseg, c_box, c_path, c_polygon, c_circle
+anyarray:	query.sqlH
+TRUNCATE TABLE postgres_typesTruncatePostgresTypes:exec:	query.sqlÐ
+ù
+INSERT INTO postgres_unstructured_types
+(
+    c_json,
+    c_json_string_override,
+    c_jsonb,
+    c_jsonpath,
+    c_xml,
+    c_xml_string_override
 )
-VALUES ($1, $2, $3, $4, $5, $6, $7)InsertPostgresGeoTypes:exec*NJ
-c_point0ÿÿÿÿÿÿÿÿÿR"publicpostgres_geometric_typesbpointzc_point*KG
-c_line0ÿÿÿÿÿÿÿÿÿR"publicpostgres_geometric_typesblinezc_line*KG
-c_lseg0ÿÿÿÿÿÿÿÿÿR"publicpostgres_geometric_typesblsegzc_lseg*HD
-c_box0ÿÿÿÿÿÿÿÿÿR"publicpostgres_geometric_typesbboxzc_box*KG
-c_path0ÿÿÿÿÿÿÿÿÿR"publicpostgres_geometric_typesbpathzc_path*TP
-	c_polygon0ÿÿÿÿÿÿÿÿÿR"publicpostgres_geometric_typesb	polygonz	c_polygon*QM
-c_circle0ÿÿÿÿÿÿÿÿÿR"publicpostgres_geometric_typesbcirclezc_circle:	query.sqlBpostgres_geometric_typesˆ
-ŒINSERT INTO postgres_geometric_types (
-    c_point, c_line, c_lseg, c_box, c_path, c_polygon, c_circle
-)
-VALUES ($1, $2, $3, $4, $5, $6, $7)InsertPostgresGeoTypesBatch	:copyfrom*NJ
-c_point0ÿÿÿÿÿÿÿÿÿR"publicpostgres_geometric_typesbpointzc_point*KG
-c_line0ÿÿÿÿÿÿÿÿÿR"publicpostgres_geometric_typesblinezc_line*KG
-c_lseg0ÿÿÿÿÿÿÿÿÿR"publicpostgres_geometric_typesblsegzc_lseg*HD
-c_box0ÿÿÿÿÿÿÿÿÿR"publicpostgres_geometric_typesbboxzc_box*KG
-c_path0ÿÿÿÿÿÿÿÿÿR"publicpostgres_geometric_typesbpathzc_path*TP
-	c_polygon0ÿÿÿÿÿÿÿÿÿR"publicpostgres_geometric_typesb	polygonz	c_polygon*QM
-c_circle0ÿÿÿÿÿÿÿÿÿR"publicpostgres_geometric_typesbcirclezc_circle:	query.sqlBpostgres_geometric_typesæ
-hSELECT c_point, c_line, c_lseg, c_box, c_path, c_polygon, c_circle FROM postgres_geometric_types LIMIT 1GetPostgresGeoTypes:one"B
-c_point0ÿÿÿÿÿÿÿÿÿRpostgres_geometric_typesbpointzc_point"?
-c_line0ÿÿÿÿÿÿÿÿÿRpostgres_geometric_typesblinezc_line"?
-c_lseg0ÿÿÿÿÿÿÿÿÿRpostgres_geometric_typesblsegzc_lseg"<
-c_box0ÿÿÿÿÿÿÿÿÿRpostgres_geometric_typesbboxzc_box"?
-c_path0ÿÿÿÿÿÿÿÿÿRpostgres_geometric_typesbpathzc_path"H
-	c_polygon0ÿÿÿÿÿÿÿÿÿRpostgres_geometric_typesb	polygonz	c_polygon"E
-c_circle0ÿÿÿÿÿÿÿÿÿRpostgres_geometric_typesbcirclezc_circle:	query.sqlH
-TRUNCATE TABLE postgres_typesTruncatePostgresTypes:exec:	query.sqlU
-'TRUNCATE TABLE postgres_geometric_typesTruncatePostgresGeoTypes:exec:	query.sqlÍ
-ÎINSERT INTO postgres_array_types
+VALUES (
+    $1::json, 
+    $2::json, 
+    $3::jsonb,
+    $4::jsonpath,
+    $5::xml,
+    $6::xml
+)InsertPostgresUnstructuredTypes:exec*
+c_json0ÿÿÿÿÿÿÿÿÿbjson*/+
+c_json_string_override0ÿÿÿÿÿÿÿÿÿbjson*!
+c_jsonb0ÿÿÿÿÿÿÿÿÿbjsonb*'#
+
+c_jsonpath0ÿÿÿÿÿÿÿÿÿb
+jsonpath*
+c_xml0ÿÿÿÿÿÿÿÿÿbxml*-)
+c_xml_string_override0ÿÿÿÿÿÿÿÿÿbxml2 Unstructured types :	query.sqlBpostgres_unstructured_types­
+šSELECT
+    c_json,
+    c_json_string_override,
+    c_jsonb,
+    c_jsonpath,
+    c_xml,
+    c_xml_string_override
+FROM postgres_unstructured_types 
+LIMIT 1GetPostgresUnstructuredTypes:one"B
+c_json0ÿÿÿÿÿÿÿÿÿRpostgres_unstructured_typesbjsonzc_json"b
+c_json_string_override0ÿÿÿÿÿÿÿÿÿRpostgres_unstructured_typesbjsonzc_json_string_override"E
+c_jsonb0ÿÿÿÿÿÿÿÿÿRpostgres_unstructured_typesbjsonbzc_jsonb"N
+
+c_jsonpath0ÿÿÿÿÿÿÿÿÿRpostgres_unstructured_typesb
+jsonpathz
+c_jsonpath"?
+c_xml0ÿÿÿÿÿÿÿÿÿRpostgres_unstructured_typesbxmlzc_xml"_
+c_xml_string_override0ÿÿÿÿÿÿÿÿÿRpostgres_unstructured_typesbxmlzc_xml_string_override:	query.sqla
+*TRUNCATE TABLE postgres_unstructured_types!TruncatePostgresUnstructuredTypes:exec:	query.sqlÝ
+Ï
+INSERT INTO postgres_array_types
 (
     c_bytea,
     c_boolean_array,
@@ -10729,7 +10711,7 @@ VALUES ($1, $2, $3, $4, $5, $6, $7)InsertPostgresArrayTypes:exec*JF
 c_integer_array 0ÿÿÿÿÿÿÿÿÿRpublicpostgres_array_typesbpg_catalog.int4zc_integer_arrayˆ*lh
 c_decimal_array 0ÿÿÿÿÿÿÿÿÿRpublicpostgres_array_typesbpg_catalog.numericzc_decimal_arrayˆ*XT
 c_date_array 0ÿÿÿÿÿÿÿÿÿRpublicpostgres_array_typesbdatezc_date_arrayˆ*rn
-c_timestamp_array 0ÿÿÿÿÿÿÿÿÿRpublicpostgres_array_typesbpg_catalog.timestampzc_timestamp_arrayˆ:	query.sqlBpostgres_array_types¥
+c_timestamp_array 0ÿÿÿÿÿÿÿÿÿRpublicpostgres_array_typesbpg_catalog.timestampzc_timestamp_arrayˆ2 Array types :	query.sqlBpostgres_array_types¥
 ’SELECT c_bytea, c_boolean_array, c_text_array, c_integer_array, c_decimal_array, c_date_array, c_timestamp_array FROM postgres_array_types LIMIT 1GetPostgresArrayTypes:one">
 c_bytea0ÿÿÿÿÿÿÿÿÿRpostgres_array_typesbbyteazc_bytea"^
 c_boolean_array 0ÿÿÿÿÿÿÿÿÿRpostgres_array_typesb
@@ -10753,4 +10735,48 @@ GROUP BY
 LIMIT 1GetPostgresArrayTypesCnt:one">
 c_bytea0ÿÿÿÿÿÿÿÿÿRpostgres_array_typesbbyteazc_bytea"
 cnt0ÿÿÿÿÿÿÿÿÿ@bbigint:	query.sqlS
-#TRUNCATE TABLE postgres_array_typesTruncatePostgresArrayTypes:exec:	query.sql"v1.27.0*â{"overrideDriverVersion":"","generateCsproj":true,"targetFramework":"netstandard2.0","namespaceName":"NpgsqlDapperLegacyExampleGen","useDapper":true,"overrideDapperVersion":"","overrides":[{"column":"GetPostgresFunctions:max_integer","csharp_type":{"type":"int","notNull":false}},{"column":"GetPostgresFunctions:max_varchar","csharp_type":{"type":"string","notNull":false}},{"column":"GetPostgresFunctions:max_timestamp","csharp_type":{"type":"DateTime","notNull":true}},{"column":"*:c_json_string_override","csharp_type":{"type":"string","notNull":false}},{"column":"*:c_xml_string_override","csharp_type":{"type":"string","notNull":false}},{"column":"*:c_macaddr8","csharp_type":{"type":"string","notNull":false}}],"debugRequest":false}
+#TRUNCATE TABLE postgres_array_typesTruncatePostgresArrayTypes:exec:	query.sql±
+«
+INSERT INTO postgres_geometric_types (
+    c_point, 
+    c_line, 
+    c_lseg, 
+    c_box, 
+    c_path, 
+    c_polygon, 
+    c_circle
+)
+VALUES ($1, $2, $3, $4, $5, $6, $7)InsertPostgresGeoTypes:exec*NJ
+c_point0ÿÿÿÿÿÿÿÿÿR"publicpostgres_geometric_typesbpointzc_point*KG
+c_line0ÿÿÿÿÿÿÿÿÿR"publicpostgres_geometric_typesblinezc_line*KG
+c_lseg0ÿÿÿÿÿÿÿÿÿR"publicpostgres_geometric_typesblsegzc_lseg*HD
+c_box0ÿÿÿÿÿÿÿÿÿR"publicpostgres_geometric_typesbboxzc_box*KG
+c_path0ÿÿÿÿÿÿÿÿÿR"publicpostgres_geometric_typesbpathzc_path*TP
+	c_polygon0ÿÿÿÿÿÿÿÿÿR"publicpostgres_geometric_typesb	polygonz	c_polygon*QM
+c_circle0ÿÿÿÿÿÿÿÿÿR"publicpostgres_geometric_typesbcirclezc_circle2 Geometric types :	query.sqlBpostgres_geometric_types¦
+ªINSERT INTO postgres_geometric_types (
+    c_point, 
+    c_line, 
+    c_lseg, 
+    c_box, 
+    c_path, 
+    c_polygon, 
+    c_circle
+)
+VALUES ($1, $2, $3, $4, $5, $6, $7)InsertPostgresGeoTypesBatch	:copyfrom*NJ
+c_point0ÿÿÿÿÿÿÿÿÿR"publicpostgres_geometric_typesbpointzc_point*KG
+c_line0ÿÿÿÿÿÿÿÿÿR"publicpostgres_geometric_typesblinezc_line*KG
+c_lseg0ÿÿÿÿÿÿÿÿÿR"publicpostgres_geometric_typesblsegzc_lseg*HD
+c_box0ÿÿÿÿÿÿÿÿÿR"publicpostgres_geometric_typesbboxzc_box*KG
+c_path0ÿÿÿÿÿÿÿÿÿR"publicpostgres_geometric_typesbpathzc_path*TP
+	c_polygon0ÿÿÿÿÿÿÿÿÿR"publicpostgres_geometric_typesb	polygonz	c_polygon*QM
+c_circle0ÿÿÿÿÿÿÿÿÿR"publicpostgres_geometric_typesbcirclezc_circle:	query.sqlBpostgres_geometric_typesæ
+hSELECT c_point, c_line, c_lseg, c_box, c_path, c_polygon, c_circle FROM postgres_geometric_types LIMIT 1GetPostgresGeoTypes:one"B
+c_point0ÿÿÿÿÿÿÿÿÿRpostgres_geometric_typesbpointzc_point"?
+c_line0ÿÿÿÿÿÿÿÿÿRpostgres_geometric_typesblinezc_line"?
+c_lseg0ÿÿÿÿÿÿÿÿÿRpostgres_geometric_typesblsegzc_lseg"<
+c_box0ÿÿÿÿÿÿÿÿÿRpostgres_geometric_typesbboxzc_box"?
+c_path0ÿÿÿÿÿÿÿÿÿRpostgres_geometric_typesbpathzc_path"H
+	c_polygon0ÿÿÿÿÿÿÿÿÿRpostgres_geometric_typesb	polygonz	c_polygon"E
+c_circle0ÿÿÿÿÿÿÿÿÿRpostgres_geometric_typesbcirclezc_circle:	query.sqlU
+'TRUNCATE TABLE postgres_geometric_typesTruncatePostgresGeoTypes:exec:	query.sql"v1.27.0*â{"overrideDriverVersion":"","generateCsproj":true,"targetFramework":"netstandard2.0","namespaceName":"NpgsqlDapperLegacyExampleGen","useDapper":true,"overrideDapperVersion":"","overrides":[{"column":"GetPostgresFunctions:max_integer","csharp_type":{"type":"int","notNull":false}},{"column":"GetPostgresFunctions:max_varchar","csharp_type":{"type":"string","notNull":false}},{"column":"GetPostgresFunctions:max_timestamp","csharp_type":{"type":"DateTime","notNull":true}},{"column":"*:c_json_string_override","csharp_type":{"type":"string","notNull":false}},{"column":"*:c_xml_string_override","csharp_type":{"type":"string","notNull":false}},{"column":"*:c_macaddr8","csharp_type":{"type":"string","notNull":false}}],"debugRequest":false}

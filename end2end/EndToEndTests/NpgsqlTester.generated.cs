@@ -861,17 +861,17 @@ namespace EndToEndTests
             JsonElement? cParsedJson = null;
             if (cJson != null)
                 cParsedJson = JsonDocument.Parse(cJson).RootElement;
-            await QuerySql.InsertPostgresTypes(new QuerySql.InsertPostgresTypesArgs { CJson = cParsedJson, CJsonb = cParsedJson, CJsonStringOverride = cJson, CJsonpath = cJsonpath });
-            var expected = new QuerySql.GetPostgresTypesRow
+            await QuerySql.InsertPostgresUnstructuredTypes(new QuerySql.InsertPostgresUnstructuredTypesArgs { CJson = cParsedJson, CJsonb = cParsedJson, CJsonStringOverride = cJson, CJsonpath = cJsonpath });
+            var expected = new QuerySql.GetPostgresUnstructuredTypesRow
             {
                 CJson = cParsedJson,
                 CJsonb = cParsedJson,
                 CJsonStringOverride = cJson,
                 CJsonpath = cJsonpath
             };
-            var actual = await QuerySql.GetPostgresTypes();
+            var actual = await QuerySql.GetPostgresUnstructuredTypes();
             AssertSingularEquals(expected, actual.Value);
-            void AssertSingularEquals(QuerySql.GetPostgresTypesRow x, QuerySql.GetPostgresTypesRow y)
+            void AssertSingularEquals(QuerySql.GetPostgresUnstructuredTypesRow x, QuerySql.GetPostgresUnstructuredTypesRow y)
             {
                 Assert.That(x.CJson.HasValue, Is.EqualTo(y.CJson.HasValue));
                 if (x.CJson.HasValue)
@@ -887,8 +887,8 @@ namespace EndToEndTests
         [Test]
         public void TestPostgresInvalidJson()
         {
-            Assert.ThrowsAsync<Npgsql.PostgresException>(async () => await QuerySql.InsertPostgresTypes(new QuerySql.InsertPostgresTypesArgs { CJsonStringOverride = "SOME INVALID JSON" }));
-            Assert.ThrowsAsync<Npgsql.PostgresException>(async () => await QuerySql.InsertPostgresTypes(new QuerySql.InsertPostgresTypesArgs { CJsonpath = "SOME INVALID JSONPATH" }));
+            Assert.ThrowsAsync<Npgsql.PostgresException>(async () => await QuerySql.InsertPostgresUnstructuredTypes(new QuerySql.InsertPostgresUnstructuredTypesArgs { CJsonStringOverride = "SOME INVALID JSON" }));
+            Assert.ThrowsAsync<Npgsql.PostgresException>(async () => await QuerySql.InsertPostgresUnstructuredTypes(new QuerySql.InsertPostgresUnstructuredTypesArgs { CJsonpath = "SOME INVALID JSONPATH" }));
         }
 
         [Test]
@@ -903,14 +903,14 @@ namespace EndToEndTests
                 parsedXml.LoadXml(cXml);
             }
 
-            await QuerySql.InsertPostgresTypes(new QuerySql.InsertPostgresTypesArgs { CXml = parsedXml });
-            var expected = new QuerySql.GetPostgresTypesRow
+            await QuerySql.InsertPostgresUnstructuredTypes(new QuerySql.InsertPostgresUnstructuredTypesArgs { CXml = parsedXml });
+            var expected = new QuerySql.GetPostgresUnstructuredTypesRow
             {
                 CXml = parsedXml
             };
-            var actual = await QuerySql.GetPostgresTypes();
+            var actual = await QuerySql.GetPostgresUnstructuredTypes();
             AssertSingularEquals(expected, actual.Value);
-            void AssertSingularEquals(QuerySql.GetPostgresTypesRow x, QuerySql.GetPostgresTypesRow y)
+            void AssertSingularEquals(QuerySql.GetPostgresUnstructuredTypesRow x, QuerySql.GetPostgresUnstructuredTypesRow y)
             {
                 Assert.That(x.CXml == null, Is.EqualTo(y.CXml == null));
                 if (x.CXml != null)
@@ -921,7 +921,7 @@ namespace EndToEndTests
         [Test]
         public void TestPostgresInvalidXml()
         {
-            Assert.ThrowsAsync<Npgsql.PostgresException>(async () => await QuerySql.InsertPostgresTypes(new QuerySql.InsertPostgresTypesArgs { CXmlStringOverride = "<root>SOME INVALID XML" }));
+            Assert.ThrowsAsync<Npgsql.PostgresException>(async () => await QuerySql.InsertPostgresUnstructuredTypes(new QuerySql.InsertPostgresUnstructuredTypesArgs { CXmlStringOverride = "<root>SOME INVALID XML" }));
         }
 
         [Test]

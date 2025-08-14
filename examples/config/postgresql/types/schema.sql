@@ -1,18 +1,4 @@
-CREATE TABLE authors (
-    id BIGSERIAL PRIMARY KEY,
-    name TEXT NOT NULL,
-    bio TEXT
-);
-
 CREATE EXTENSION "uuid-ossp";
-
-CREATE TABLE books (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    name TEXT NOT NULL,
-    author_id BIGINT NOT NULL,
-    description TEXT,
-    FOREIGN KEY (author_id) REFERENCES authors (id) ON DELETE CASCADE
-);
 
 CREATE TABLE postgres_types (
     /* Numeric Data Types */
@@ -41,14 +27,6 @@ CREATE TABLE postgres_types (
     c_bpchar BPCHAR(100),
     c_text TEXT,
 
-    /* Unstructured Data Types */
-    c_json                 JSON,
-    c_json_string_override JSON,
-    c_jsonb                JSONB,
-    c_jsonpath             JSONPATH,
-    c_xml                  XML,
-    c_xml_string_override  XML,
-
     /* Network Address Data Types */
     c_cidr CIDR,
     c_inet INET,
@@ -59,14 +37,13 @@ CREATE TABLE postgres_types (
     c_uuid UUID
 );
 
-CREATE TABLE postgres_geometric_types (
-    c_point POINT,
-    c_line LINE,
-    c_lseg LSEG,
-    c_box BOX,
-    c_path PATH,
-    c_polygon POLYGON,
-    c_circle CIRCLE
+CREATE TABLE postgres_unstructured_types (
+    c_json                 JSON,
+    c_json_string_override JSON,
+    c_jsonb                JSONB,
+    c_jsonpath             JSONPATH,
+    c_xml                  XML,
+    c_xml_string_override  XML
 );
 
 CREATE TABLE postgres_array_types (
@@ -77,4 +54,14 @@ CREATE TABLE postgres_array_types (
     c_decimal_array     DECIMAL(10, 7) [],
     c_date_array        DATE [],
     c_timestamp_array   TIMESTAMP []
+);
+
+CREATE TABLE postgres_geometric_types (
+    c_point POINT,
+    c_line LINE,
+    c_lseg LSEG,
+    c_box BOX,
+    c_path PATH,
+    c_polygon POLYGON,
+    c_circle CIRCLE
 );

@@ -44,27 +44,20 @@ namespace NpgsqlLegacyExampleGen
         public string CCharacterVarying { get; set; }
         public string CBpchar { get; set; }
         public string CText { get; set; }
-        public JsonElement? CJson { get; set; }
-        public JsonElement? CJsonStringOverride { get; set; }
-        public JsonElement? CJsonb { get; set; }
-        public string CJsonpath { get; set; }
-        public XmlDocument CXml { get; set; }
-        public XmlDocument CXmlStringOverride { get; set; }
         public NpgsqlCidr? CCidr { get; set; }
         public IPAddress CInet { get; set; }
         public PhysicalAddress CMacaddr { get; set; }
         public string CMacaddr8 { get; set; }
         public Guid? CUuid { get; set; }
     };
-    public class PostgresGeometricType
+    public class PostgresUnstructuredType
     {
-        public NpgsqlPoint? CPoint { get; set; }
-        public NpgsqlLine? CLine { get; set; }
-        public NpgsqlLSeg? CLseg { get; set; }
-        public NpgsqlBox? CBox { get; set; }
-        public NpgsqlPath? CPath { get; set; }
-        public NpgsqlPolygon? CPolygon { get; set; }
-        public NpgsqlCircle? CCircle { get; set; }
+        public JsonElement? CJson { get; set; }
+        public JsonElement? CJsonStringOverride { get; set; }
+        public JsonElement? CJsonb { get; set; }
+        public string CJsonpath { get; set; }
+        public XmlDocument CXml { get; set; }
+        public XmlDocument CXmlStringOverride { get; set; }
     };
     public class PostgresArrayType
     {
@@ -75,5 +68,15 @@ namespace NpgsqlLegacyExampleGen
         public decimal[] CDecimalArray { get; set; }
         public DateTime[] CDateArray { get; set; }
         public DateTime[] CTimestampArray { get; set; }
+    };
+    public class PostgresGeometricType
+    {
+        public NpgsqlPoint? CPoint { get; set; }
+        public NpgsqlLine? CLine { get; set; }
+        public NpgsqlLSeg? CLseg { get; set; }
+        public NpgsqlBox? CBox { get; set; }
+        public NpgsqlPath? CPath { get; set; }
+        public NpgsqlPolygon? CPolygon { get; set; }
+        public NpgsqlCircle? CCircle { get; set; }
     };
 }

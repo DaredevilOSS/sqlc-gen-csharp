@@ -476,7 +476,7 @@ public static class PostgresTests
                          if (cJson != null)
                             cParsedJson = JsonDocument.Parse(cJson).RootElement;
 
-                         await QuerySql.InsertPostgresTypes(new QuerySql.InsertPostgresTypesArgs
+                         await QuerySql.InsertPostgresUnstructuredTypes(new QuerySql.InsertPostgresUnstructuredTypesArgs
                          {
                              CJson = cParsedJson,
                              CJsonb = cParsedJson,
@@ -484,7 +484,7 @@ public static class PostgresTests
                              CJsonpath = cJsonpath
                          });
 
-                         var expected = new QuerySql.GetPostgresTypesRow
+                         var expected = new QuerySql.GetPostgresUnstructuredTypesRow
                          {
                              CJson = cParsedJson,
                              CJsonb = cParsedJson,
@@ -492,10 +492,10 @@ public static class PostgresTests
                              CJsonpath = cJsonpath
                          };
 
-                         var actual = await QuerySql.GetPostgresTypes();
+                         var actual = await QuerySql.GetPostgresUnstructuredTypes();
                          AssertSingularEquals(expected, actual{{Consts.UnknownRecordValuePlaceholder}});
 
-                         void AssertSingularEquals(QuerySql.GetPostgresTypesRow x, QuerySql.GetPostgresTypesRow y)
+                         void AssertSingularEquals(QuerySql.GetPostgresUnstructuredTypesRow x, QuerySql.GetPostgresUnstructuredTypesRow y)
                          {
                              Assert.That(x.CJson.HasValue, Is.EqualTo(y.CJson.HasValue));
                              if (x.CJson.HasValue)
@@ -516,13 +516,13 @@ public static class PostgresTests
                      public void TestPostgresInvalidJson()
                      {
                          Assert.ThrowsAsync<Npgsql.PostgresException>(async () => await 
-                            QuerySql.InsertPostgresTypes(new QuerySql.InsertPostgresTypesArgs
+                            QuerySql.InsertPostgresUnstructuredTypes(new QuerySql.InsertPostgresUnstructuredTypesArgs
                             {
                                 CJsonStringOverride = "SOME INVALID JSON"
                             }));
                         
                         Assert.ThrowsAsync<Npgsql.PostgresException>(async () => await 
-                            QuerySql.InsertPostgresTypes(new QuerySql.InsertPostgresTypesArgs
+                            QuerySql.InsertPostgresUnstructuredTypes(new QuerySql.InsertPostgresUnstructuredTypesArgs
                             {
                                 CJsonpath = "SOME INVALID JSONPATH"
                             }));
@@ -984,20 +984,20 @@ public static class PostgresTests
                              parsedXml.LoadXml(cXml);
                          }
 
-                         await QuerySql.InsertPostgresTypes(new QuerySql.InsertPostgresTypesArgs
+                         await QuerySql.InsertPostgresUnstructuredTypes(new QuerySql.InsertPostgresUnstructuredTypesArgs
                          {
                             CXml = parsedXml
                          });
 
-                         var expected = new QuerySql.GetPostgresTypesRow
+                         var expected = new QuerySql.GetPostgresUnstructuredTypesRow
                          {
                              CXml = parsedXml
                          };
 
-                         var actual = await QuerySql.GetPostgresTypes();
+                         var actual = await QuerySql.GetPostgresUnstructuredTypes();
                          AssertSingularEquals(expected, actual{{Consts.UnknownRecordValuePlaceholder}});
 
-                         void AssertSingularEquals(QuerySql.GetPostgresTypesRow x, QuerySql.GetPostgresTypesRow y)
+                         void AssertSingularEquals(QuerySql.GetPostgresUnstructuredTypesRow x, QuerySql.GetPostgresUnstructuredTypesRow y)
                          {
                              Assert.That(x.CXml == null, Is.EqualTo(y.CXml == null));
                              if (x.CXml != null)
@@ -1014,7 +1014,7 @@ public static class PostgresTests
                      public void TestPostgresInvalidXml()
                      {
                          Assert.ThrowsAsync<Npgsql.PostgresException>(async () => await 
-                            QuerySql.InsertPostgresTypes(new QuerySql.InsertPostgresTypesArgs
+                            QuerySql.InsertPostgresUnstructuredTypes(new QuerySql.InsertPostgresUnstructuredTypesArgs
                             {
                                 CXmlStringOverride = "<root>SOME INVALID XML"
                             }));

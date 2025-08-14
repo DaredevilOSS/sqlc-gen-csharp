@@ -1,74 +1,4 @@
--- name: GetAuthor :one
-SELECT * FROM authors
-WHERE name = $1 LIMIT 1;
-
--- name: ListAuthors :many
-SELECT * 
-FROM authors
-ORDER BY name
-LIMIT sqlc.arg('limit')
-OFFSET sqlc.arg('offset');
-
--- name: CreateAuthor :one
-INSERT INTO authors (id, name, bio) VALUES ($1, $2, $3) RETURNING *;
-
--- name: CreateAuthorReturnId :execlastid
-INSERT INTO authors (name, bio) VALUES ($1, $2) RETURNING id;
-
--- name: GetAuthorById :one
-SELECT * FROM authors
-WHERE id = $1 LIMIT 1;
-
--- name: GetAuthorByNamePattern :many
-SELECT * FROM authors
-WHERE name LIKE COALESCE(sqlc.narg('name_pattern'), '%');
-
--- name: DeleteAuthor :exec
-DELETE FROM authors
-WHERE name = $1;
-
--- name: TruncateAuthors :exec
-TRUNCATE TABLE authors CASCADE;
-
--- name: UpdateAuthors :execrows
-UPDATE authors
-SET bio = $1
-WHERE bio IS NOT NULL;
-
--- name: GetAuthorsByIds :many
-SELECT * FROM authors
-WHERE id = ANY($1::BIGINT []);
-
--- name: GetAuthorsByIdsAndNames :many
-SELECT *
-FROM authors
-WHERE id = ANY($1::BIGINT []) AND name = ANY($2::TEXT []);;
-
--- name: CreateBook :execlastid
-INSERT INTO books (name, author_id) VALUES ($1, $2) RETURNING id;
-
--- name: ListAllAuthorsBooks :many 
-SELECT
-    sqlc.embed(authors),
-    sqlc.embed(books)
-FROM authors
-INNER JOIN books ON authors.id = books.author_id
-ORDER BY authors.name;
-
--- name: GetDuplicateAuthors :many 
-SELECT
-    sqlc.embed(authors1),
-    sqlc.embed(authors2)
-FROM authors AS authors1
-INNER JOIN authors AS authors2 ON authors1.name = authors2.name
-WHERE authors1.id < authors2.id;
-
--- name: GetAuthorsByBookName :many 
-SELECT
-    authors.*,
-    sqlc.embed(books)
-FROM authors INNER JOIN books ON authors.id = books.author_id
-WHERE books.name = $1;
+/* Basic types */
 
 -- name: InsertPostgresTypes :exec
 INSERT INTO postgres_types
@@ -94,12 +24,6 @@ INSERT INTO postgres_types
     c_bpchar,
     c_text,
     c_uuid,
-    c_json,
-    c_json_string_override,
-    c_jsonb,
-    c_jsonpath,
-    c_xml,
-    c_xml_string_override,
     c_cidr,
     c_inet,
     c_macaddr,
@@ -127,12 +51,6 @@ VALUES (
     sqlc.narg('c_bpchar'),
     sqlc.narg('c_text'),
     sqlc.narg('c_uuid'),
-    sqlc.narg('c_json')::json, 
-    sqlc.narg('c_json_string_override')::json, 
-    sqlc.narg('c_jsonb')::jsonb,
-    sqlc.narg('c_jsonpath')::jsonpath,
-    sqlc.narg('c_xml')::xml,
-    sqlc.narg('c_xml_string_override')::xml,
     sqlc.narg('c_cidr'),
     sqlc.narg('c_inet'),
     sqlc.narg('c_macaddr')::macaddr,
@@ -215,12 +133,6 @@ SELECT
     c_bpchar,
     c_text,
     c_uuid,
-    c_json,
-    c_json_string_override,
-    c_jsonb,
-    c_jsonpath,
-    c_xml,
-    c_xml_string_override,
     c_cidr,
     c_inet,
     c_macaddr,
@@ -288,26 +200,45 @@ SELECT
     MAX(c_timestamp) AS max_timestamp
 FROM postgres_types;
 
--- name: InsertPostgresGeoTypes :exec
-INSERT INTO postgres_geometric_types (
-    c_point, c_line, c_lseg, c_box, c_path, c_polygon, c_circle
-)
-VALUES ($1, $2, $3, $4, $5, $6, $7);
-
--- name: InsertPostgresGeoTypesBatch :copyfrom
-INSERT INTO postgres_geometric_types (
-    c_point, c_line, c_lseg, c_box, c_path, c_polygon, c_circle
-)
-VALUES ($1, $2, $3, $4, $5, $6, $7);
-
--- name: GetPostgresGeoTypes :one
-SELECT * FROM postgres_geometric_types LIMIT 1;
-
 -- name: TruncatePostgresTypes :exec
 TRUNCATE TABLE postgres_types;
 
--- name: TruncatePostgresGeoTypes :exec
-TRUNCATE TABLE postgres_geometric_types;
+/* Unstructured types */
+
+-- name: InsertPostgresUnstructuredTypes :exec
+INSERT INTO postgres_unstructured_types
+(
+    c_json,
+    c_json_string_override,
+    c_jsonb,
+    c_jsonpath,
+    c_xml,
+    c_xml_string_override
+)
+VALUES (
+    sqlc.narg('c_json')::json, 
+    sqlc.narg('c_json_string_override')::json, 
+    sqlc.narg('c_jsonb')::jsonb,
+    sqlc.narg('c_jsonpath')::jsonpath,
+    sqlc.narg('c_xml')::xml,
+    sqlc.narg('c_xml_string_override')::xml
+);
+
+-- name: GetPostgresUnstructuredTypes :one
+SELECT
+    c_json,
+    c_json_string_override,
+    c_jsonb,
+    c_jsonpath,
+    c_xml,
+    c_xml_string_override
+FROM postgres_unstructured_types 
+LIMIT 1;
+
+-- name: TruncatePostgresUnstructuredTypes :exec
+TRUNCATE TABLE postgres_unstructured_types;
+
+/* Array types */
 
 -- name: InsertPostgresArrayTypes :exec
 INSERT INTO postgres_array_types
@@ -339,3 +270,36 @@ LIMIT 1;
 
 -- name: TruncatePostgresArrayTypes :exec
 TRUNCATE TABLE postgres_array_types;
+
+
+/* Geometric types */
+
+-- name: InsertPostgresGeoTypes :exec
+INSERT INTO postgres_geometric_types (
+    c_point, 
+    c_line, 
+    c_lseg, 
+    c_box, 
+    c_path, 
+    c_polygon, 
+    c_circle
+)
+VALUES ($1, $2, $3, $4, $5, $6, $7);
+
+-- name: InsertPostgresGeoTypesBatch :copyfrom
+INSERT INTO postgres_geometric_types (
+    c_point, 
+    c_line, 
+    c_lseg, 
+    c_box, 
+    c_path, 
+    c_polygon, 
+    c_circle
+)
+VALUES ($1, $2, $3, $4, $5, $6, $7);
+
+-- name: GetPostgresGeoTypes :one
+SELECT * FROM postgres_geometric_types LIMIT 1;
+
+-- name: TruncatePostgresGeoTypes :exec
+TRUNCATE TABLE postgres_geometric_types;

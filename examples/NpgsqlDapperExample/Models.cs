@@ -43,27 +43,20 @@ public class PostgresType
     public string? CCharacterVarying { get; init; }
     public string? CBpchar { get; init; }
     public string? CText { get; init; }
-    public JsonElement? CJson { get; init; }
-    public JsonElement? CJsonStringOverride { get; init; }
-    public JsonElement? CJsonb { get; init; }
-    public string? CJsonpath { get; init; }
-    public XmlDocument? CXml { get; init; }
-    public XmlDocument? CXmlStringOverride { get; init; }
     public NpgsqlCidr? CCidr { get; init; }
     public IPAddress? CInet { get; init; }
     public PhysicalAddress? CMacaddr { get; init; }
     public string? CMacaddr8 { get; init; }
     public Guid? CUuid { get; init; }
 };
-public class PostgresGeometricType
+public class PostgresUnstructuredType
 {
-    public NpgsqlPoint? CPoint { get; init; }
-    public NpgsqlLine? CLine { get; init; }
-    public NpgsqlLSeg? CLseg { get; init; }
-    public NpgsqlBox? CBox { get; init; }
-    public NpgsqlPath? CPath { get; init; }
-    public NpgsqlPolygon? CPolygon { get; init; }
-    public NpgsqlCircle? CCircle { get; init; }
+    public JsonElement? CJson { get; init; }
+    public JsonElement? CJsonStringOverride { get; init; }
+    public JsonElement? CJsonb { get; init; }
+    public string? CJsonpath { get; init; }
+    public XmlDocument? CXml { get; init; }
+    public XmlDocument? CXmlStringOverride { get; init; }
 };
 public class PostgresArrayType
 {
@@ -74,4 +67,14 @@ public class PostgresArrayType
     public decimal[]? CDecimalArray { get; init; }
     public DateTime[]? CDateArray { get; init; }
     public DateTime[]? CTimestampArray { get; init; }
+};
+public class PostgresGeometricType
+{
+    public NpgsqlPoint? CPoint { get; init; }
+    public NpgsqlLine? CLine { get; init; }
+    public NpgsqlLSeg? CLseg { get; init; }
+    public NpgsqlBox? CBox { get; init; }
+    public NpgsqlPath? CPath { get; init; }
+    public NpgsqlPolygon? CPolygon { get; init; }
+    public NpgsqlCircle? CCircle { get; init; }
 };
