@@ -15,7 +15,8 @@ namespace EndToEndTests
         {
             await QuerySql.DeleteAllAuthors();
             await QuerySql.TruncateExtendedBios();
-            await QuerySql.TruncateMysqlTypes();
+            await QuerySql.TruncateMysqlNumericTypes();
+            await QuerySql.TruncateMysqlStringTypes();
             await QuerySql.TruncateMysqlDatetimeTypes();
             await QuerySql.TruncateMysqlBinaryTypes();
         }

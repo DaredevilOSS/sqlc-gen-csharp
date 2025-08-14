@@ -30,7 +30,7 @@ namespace MySqlConnectorDapperLegacyExampleGen
         public static void ConfigureSqlMapper()
         {
             SqlMapper.AddTypeHandler(typeof(JsonElement), new JsonElementTypeHandler());
-            SqlMapper.AddTypeHandler(typeof(HashSet<MysqlTypesCSet>), new MysqlTypesCSetTypeHandler());
+            SqlMapper.AddTypeHandler(typeof(HashSet<MysqlStringTypesCSet>), new MysqlStringTypesCSetTypeHandler());
             SqlMapper.AddTypeHandler(typeof(HashSet<ExtendedBiosAuthorType>), new ExtendedBiosAuthorTypeTypeHandler());
         }
 
@@ -40,16 +40,16 @@ namespace MySqlConnectorDapperLegacyExampleGen
             return originalSql.Replace($"/*SLICE:{paramName}*/@{paramName}", string.Join(",", paramArgs));
         }
 
-        private class MysqlTypesCSetTypeHandler : SqlMapper.TypeHandler<HashSet<MysqlTypesCSet>>
+        private class MysqlStringTypesCSetTypeHandler : SqlMapper.TypeHandler<HashSet<MysqlStringTypesCSet>>
         {
-            public override HashSet<MysqlTypesCSet> Parse(object value)
+            public override HashSet<MysqlStringTypesCSet> Parse(object value)
             {
                 if (value is string s)
-                    return s.ToMysqlTypesCSetSet();
-                throw new DataException($"Cannot convert {value?.GetType()} to HashSet<MysqlTypesCSet>");
+                    return s.ToMysqlStringTypesCSetSet();
+                throw new DataException($"Cannot convert {value?.GetType()} to HashSet<MysqlStringTypesCSet>");
             }
 
-            public override void SetValue(IDbDataParameter parameter, HashSet<MysqlTypesCSet> value)
+            public override void SetValue(IDbDataParameter parameter, HashSet<MysqlStringTypesCSet> value)
             {
                 parameter.Value = string.Join(",", value);
             }
@@ -70,13 +70,13 @@ namespace MySqlConnectorDapperLegacyExampleGen
             }
         }
 
-        public class MysqlTypesCSetCsvConverter : DefaultTypeConverter
+        public class MysqlStringTypesCSetCsvConverter : DefaultTypeConverter
         {
             public override string ConvertToString(object value, IWriterRow row, MemberMapData memberMapData)
             {
                 if (value == null)
                     return @"\N";
-                if (value is HashSet<MysqlTypesCSet> setVal)
+                if (value is HashSet<MysqlStringTypesCSet> setVal)
                     return string.Join(",", setVal);
                 return base.ConvertToString(value, row, memberMapData);
             }

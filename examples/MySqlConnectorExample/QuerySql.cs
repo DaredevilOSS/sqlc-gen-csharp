@@ -759,16 +759,16 @@ public class QuerySql
         }
     }
 
-    private const string InsertMysqlTypesSql = " INSERT INTO mysql_types ( c_bool, c_boolean, c_tinyint, c_smallint, c_mediumint, c_int, c_integer, c_bigint, c_decimal, c_dec, c_numeric, c_fixed, c_float, c_double, c_double_precision, c_char, c_nchar, c_national_char, c_varchar, c_tinytext, c_mediumtext, c_text, c_longtext, c_json, c_json_string_override, c_enum, c_set ) VALUES (@c_bool, @c_boolean, @c_tinyint, @c_smallint, @c_mediumint, @c_int, @c_integer, @c_bigint, @c_decimal, @c_dec, @c_numeric, @c_fixed, @c_float, @c_double, @c_double_precision, @c_char, @c_nchar, @c_national_char, @c_varchar, @c_tinytext, @c_mediumtext, @c_text, @c_longtext, @c_json, @c_json_string_override, @c_enum, @c_set)";
-    public readonly record struct InsertMysqlTypesArgs(bool? CBool, bool? CBoolean, short? CTinyint, short? CSmallint, int? CMediumint, int? CInt, int? CInteger, long? CBigint, decimal? CDecimal, decimal? CDec, decimal? CNumeric, decimal? CFixed, double? CFloat, double? CDouble, double? CDoublePrecision, string? CChar, string? CNchar, string? CNationalChar, string? CVarchar, string? CTinytext, string? CMediumtext, string? CText, string? CLongtext, JsonElement? CJson, string? CJsonStringOverride, MysqlTypesCEnum? CEnum, HashSet<MysqlTypesCSet>? CSet);
-    public async Task InsertMysqlTypes(InsertMysqlTypesArgs args)
+    private const string InsertMysqlNumericTypesSql = " INSERT INTO mysql_numeric_types ( c_bool, c_boolean, c_tinyint, c_smallint, c_mediumint, c_int, c_integer, c_bigint, c_decimal, c_dec, c_numeric, c_fixed, c_float, c_double, c_double_precision ) VALUES (@c_bool, @c_boolean, @c_tinyint, @c_smallint, @c_mediumint, @c_int, @c_integer, @c_bigint, @c_decimal, @c_dec, @c_numeric, @c_fixed, @c_float, @c_double, @c_double_precision)";
+    public readonly record struct InsertMysqlNumericTypesArgs(bool? CBool, bool? CBoolean, short? CTinyint, short? CSmallint, int? CMediumint, int? CInt, int? CInteger, long? CBigint, decimal? CDecimal, decimal? CDec, decimal? CNumeric, decimal? CFixed, double? CFloat, double? CDouble, double? CDoublePrecision);
+    public async Task InsertMysqlNumericTypes(InsertMysqlNumericTypesArgs args)
     {
         if (this.Transaction == null)
         {
             using (var connection = new MySqlConnection(ConnectionString))
             {
                 await connection.OpenAsync();
-                using (var command = new MySqlCommand(InsertMysqlTypesSql, connection))
+                using (var command = new MySqlCommand(InsertMysqlNumericTypesSql, connection))
                 {
                     command.Parameters.AddWithValue("@c_bool", args.CBool ?? (object)DBNull.Value);
                     command.Parameters.AddWithValue("@c_boolean", args.CBoolean ?? (object)DBNull.Value);
@@ -785,6 +785,288 @@ public class QuerySql
                     command.Parameters.AddWithValue("@c_float", args.CFloat ?? (object)DBNull.Value);
                     command.Parameters.AddWithValue("@c_double", args.CDouble ?? (object)DBNull.Value);
                     command.Parameters.AddWithValue("@c_double_precision", args.CDoublePrecision ?? (object)DBNull.Value);
+                    await command.ExecuteNonQueryAsync();
+                }
+            }
+
+            return;
+        }
+
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+        using (var command = this.Transaction.Connection.CreateCommand())
+        {
+            command.CommandText = InsertMysqlNumericTypesSql;
+            command.Transaction = this.Transaction;
+            command.Parameters.AddWithValue("@c_bool", args.CBool ?? (object)DBNull.Value);
+            command.Parameters.AddWithValue("@c_boolean", args.CBoolean ?? (object)DBNull.Value);
+            command.Parameters.AddWithValue("@c_tinyint", args.CTinyint ?? (object)DBNull.Value);
+            command.Parameters.AddWithValue("@c_smallint", args.CSmallint ?? (object)DBNull.Value);
+            command.Parameters.AddWithValue("@c_mediumint", args.CMediumint ?? (object)DBNull.Value);
+            command.Parameters.AddWithValue("@c_int", args.CInt ?? (object)DBNull.Value);
+            command.Parameters.AddWithValue("@c_integer", args.CInteger ?? (object)DBNull.Value);
+            command.Parameters.AddWithValue("@c_bigint", args.CBigint ?? (object)DBNull.Value);
+            command.Parameters.AddWithValue("@c_decimal", args.CDecimal ?? (object)DBNull.Value);
+            command.Parameters.AddWithValue("@c_dec", args.CDec ?? (object)DBNull.Value);
+            command.Parameters.AddWithValue("@c_numeric", args.CNumeric ?? (object)DBNull.Value);
+            command.Parameters.AddWithValue("@c_fixed", args.CFixed ?? (object)DBNull.Value);
+            command.Parameters.AddWithValue("@c_float", args.CFloat ?? (object)DBNull.Value);
+            command.Parameters.AddWithValue("@c_double", args.CDouble ?? (object)DBNull.Value);
+            command.Parameters.AddWithValue("@c_double_precision", args.CDoublePrecision ?? (object)DBNull.Value);
+            await command.ExecuteNonQueryAsync();
+        }
+    }
+
+    public readonly record struct InsertMysqlNumericTypesBatchArgs(bool? CBool, bool? CBoolean, short? CTinyint, short? CSmallint, int? CMediumint, int? CInt, int? CInteger, long? CBigint, double? CFloat, decimal? CNumeric, decimal? CDecimal, decimal? CDec, decimal? CFixed, double? CDouble, double? CDoublePrecision);
+    public async Task InsertMysqlNumericTypesBatch(List<InsertMysqlNumericTypesBatchArgs> args)
+    {
+        const string supportedDateTimeFormat = "yyyy-MM-dd H:mm:ss";
+        var config = new CsvConfiguration(CultureInfo.CurrentCulture)
+        {
+            Delimiter = ",",
+            NewLine = "\n"
+        };
+        var nullConverterFn = new Utils.NullToStringCsvConverter();
+        using (var writer = new StreamWriter("input.csv", false, new UTF8Encoding(false)))
+        using (var csvWriter = new CsvWriter(writer, config))
+        {
+            var options = new TypeConverterOptions
+            {
+                Formats = new[]
+                {
+                    supportedDateTimeFormat
+                }
+            };
+            csvWriter.Context.TypeConverterOptionsCache.AddOptions<DateTime>(options);
+            csvWriter.Context.TypeConverterOptionsCache.AddOptions<DateTime?>(options);
+            csvWriter.Context.TypeConverterCache.AddConverter<bool>(new Utils.BoolToBitCsvConverter());
+            csvWriter.Context.TypeConverterCache.AddConverter<bool?>(new Utils.BoolToBitCsvConverter());
+            csvWriter.Context.TypeConverterCache.AddConverter<short?>(nullConverterFn);
+            csvWriter.Context.TypeConverterCache.AddConverter<int?>(nullConverterFn);
+            csvWriter.Context.TypeConverterCache.AddConverter<long?>(nullConverterFn);
+            csvWriter.Context.TypeConverterCache.AddConverter<double?>(nullConverterFn);
+            csvWriter.Context.TypeConverterCache.AddConverter<decimal?>(nullConverterFn);
+            await csvWriter.WriteRecordsAsync(args);
+        }
+
+        using (var connection = new MySqlConnection(ConnectionString))
+        {
+            await connection.OpenAsync();
+            var loader = new MySqlBulkLoader(connection)
+            {
+                Local = true,
+                TableName = "mysql_numeric_types",
+                FileName = "input.csv",
+                FieldTerminator = ",",
+                FieldQuotationCharacter = '"',
+                FieldQuotationOptional = true,
+                NumberOfLinesToSkip = 1,
+                LineTerminator = "\n"
+            };
+            loader.Columns.AddRange(new List<string> { "c_bool", "c_boolean", "c_tinyint", "c_smallint", "c_mediumint", "c_int", "c_integer", "c_bigint", "c_float", "c_numeric", "c_decimal", "c_dec", "c_fixed", "c_double", "c_double_precision" });
+            await loader.LoadAsync();
+            await connection.CloseAsync();
+        }
+    }
+
+    private const string GetMysqlNumericTypesSql = "SELECT c_bool, c_boolean, c_tinyint, c_smallint, c_mediumint, c_int, c_integer, c_bigint, c_float, c_decimal, c_dec, c_numeric, c_fixed, c_double, c_double_precision FROM mysql_numeric_types LIMIT 1";
+    public readonly record struct GetMysqlNumericTypesRow(bool? CBool, bool? CBoolean, short? CTinyint, short? CSmallint, int? CMediumint, int? CInt, int? CInteger, long? CBigint, double? CFloat, decimal? CDecimal, decimal? CDec, decimal? CNumeric, decimal? CFixed, double? CDouble, double? CDoublePrecision);
+    public async Task<GetMysqlNumericTypesRow?> GetMysqlNumericTypes()
+    {
+        if (this.Transaction == null)
+        {
+            using (var connection = new MySqlConnection(ConnectionString))
+            {
+                await connection.OpenAsync();
+                using (var command = new MySqlCommand(GetMysqlNumericTypesSql, connection))
+                {
+                    using (var reader = await command.ExecuteReaderAsync())
+                    {
+                        if (await reader.ReadAsync())
+                        {
+                            return new GetMysqlNumericTypesRow
+                            {
+                                CBool = reader.IsDBNull(0) ? null : reader.GetBoolean(0),
+                                CBoolean = reader.IsDBNull(1) ? null : reader.GetBoolean(1),
+                                CTinyint = reader.IsDBNull(2) ? null : reader.GetInt16(2),
+                                CSmallint = reader.IsDBNull(3) ? null : reader.GetInt16(3),
+                                CMediumint = reader.IsDBNull(4) ? null : reader.GetInt32(4),
+                                CInt = reader.IsDBNull(5) ? null : reader.GetInt32(5),
+                                CInteger = reader.IsDBNull(6) ? null : reader.GetInt32(6),
+                                CBigint = reader.IsDBNull(7) ? null : reader.GetInt64(7),
+                                CFloat = reader.IsDBNull(8) ? null : reader.GetDouble(8),
+                                CDecimal = reader.IsDBNull(9) ? null : reader.GetDecimal(9),
+                                CDec = reader.IsDBNull(10) ? null : reader.GetDecimal(10),
+                                CNumeric = reader.IsDBNull(11) ? null : reader.GetDecimal(11),
+                                CFixed = reader.IsDBNull(12) ? null : reader.GetDecimal(12),
+                                CDouble = reader.IsDBNull(13) ? null : reader.GetDouble(13),
+                                CDoublePrecision = reader.IsDBNull(14) ? null : reader.GetDouble(14)
+                            };
+                        }
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+        {
+            throw new System.InvalidOperationException("Transaction is provided, but its connection is null.");
+        }
+
+        using (var command = this.Transaction.Connection.CreateCommand())
+        {
+            command.CommandText = GetMysqlNumericTypesSql;
+            command.Transaction = this.Transaction;
+            using (var reader = await command.ExecuteReaderAsync())
+            {
+                if (await reader.ReadAsync())
+                {
+                    return new GetMysqlNumericTypesRow
+                    {
+                        CBool = reader.IsDBNull(0) ? null : reader.GetBoolean(0),
+                        CBoolean = reader.IsDBNull(1) ? null : reader.GetBoolean(1),
+                        CTinyint = reader.IsDBNull(2) ? null : reader.GetInt16(2),
+                        CSmallint = reader.IsDBNull(3) ? null : reader.GetInt16(3),
+                        CMediumint = reader.IsDBNull(4) ? null : reader.GetInt32(4),
+                        CInt = reader.IsDBNull(5) ? null : reader.GetInt32(5),
+                        CInteger = reader.IsDBNull(6) ? null : reader.GetInt32(6),
+                        CBigint = reader.IsDBNull(7) ? null : reader.GetInt64(7),
+                        CFloat = reader.IsDBNull(8) ? null : reader.GetDouble(8),
+                        CDecimal = reader.IsDBNull(9) ? null : reader.GetDecimal(9),
+                        CDec = reader.IsDBNull(10) ? null : reader.GetDecimal(10),
+                        CNumeric = reader.IsDBNull(11) ? null : reader.GetDecimal(11),
+                        CFixed = reader.IsDBNull(12) ? null : reader.GetDecimal(12),
+                        CDouble = reader.IsDBNull(13) ? null : reader.GetDouble(13),
+                        CDoublePrecision = reader.IsDBNull(14) ? null : reader.GetDouble(14)
+                    };
+                }
+            }
+        }
+
+        return null;
+    }
+
+    private const string GetMysqlNumericTypesCntSql = "SELECT COUNT(*) AS cnt, c_bool, c_boolean, c_tinyint, c_smallint, c_mediumint, c_int, c_integer, c_bigint, c_float, c_numeric, c_decimal, c_dec, c_fixed, c_double, c_double_precision FROM mysql_numeric_types GROUP BY c_bool, c_boolean, c_tinyint, c_smallint, c_mediumint, c_int, c_integer, c_bigint, c_float, c_numeric, c_decimal, c_dec, c_fixed, c_double, c_double_precision LIMIT 1";
+    public readonly record struct GetMysqlNumericTypesCntRow(long Cnt, bool? CBool, bool? CBoolean, short? CTinyint, short? CSmallint, int? CMediumint, int? CInt, int? CInteger, long? CBigint, double? CFloat, decimal? CNumeric, decimal? CDecimal, decimal? CDec, decimal? CFixed, double? CDouble, double? CDoublePrecision);
+    public async Task<GetMysqlNumericTypesCntRow?> GetMysqlNumericTypesCnt()
+    {
+        if (this.Transaction == null)
+        {
+            using (var connection = new MySqlConnection(ConnectionString))
+            {
+                await connection.OpenAsync();
+                using (var command = new MySqlCommand(GetMysqlNumericTypesCntSql, connection))
+                {
+                    using (var reader = await command.ExecuteReaderAsync())
+                    {
+                        if (await reader.ReadAsync())
+                        {
+                            return new GetMysqlNumericTypesCntRow
+                            {
+                                Cnt = reader.GetInt64(0),
+                                CBool = reader.IsDBNull(1) ? null : reader.GetBoolean(1),
+                                CBoolean = reader.IsDBNull(2) ? null : reader.GetBoolean(2),
+                                CTinyint = reader.IsDBNull(3) ? null : reader.GetInt16(3),
+                                CSmallint = reader.IsDBNull(4) ? null : reader.GetInt16(4),
+                                CMediumint = reader.IsDBNull(5) ? null : reader.GetInt32(5),
+                                CInt = reader.IsDBNull(6) ? null : reader.GetInt32(6),
+                                CInteger = reader.IsDBNull(7) ? null : reader.GetInt32(7),
+                                CBigint = reader.IsDBNull(8) ? null : reader.GetInt64(8),
+                                CFloat = reader.IsDBNull(9) ? null : reader.GetDouble(9),
+                                CNumeric = reader.IsDBNull(10) ? null : reader.GetDecimal(10),
+                                CDecimal = reader.IsDBNull(11) ? null : reader.GetDecimal(11),
+                                CDec = reader.IsDBNull(12) ? null : reader.GetDecimal(12),
+                                CFixed = reader.IsDBNull(13) ? null : reader.GetDecimal(13),
+                                CDouble = reader.IsDBNull(14) ? null : reader.GetDouble(14),
+                                CDoublePrecision = reader.IsDBNull(15) ? null : reader.GetDouble(15)
+                            };
+                        }
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+        {
+            throw new System.InvalidOperationException("Transaction is provided, but its connection is null.");
+        }
+
+        using (var command = this.Transaction.Connection.CreateCommand())
+        {
+            command.CommandText = GetMysqlNumericTypesCntSql;
+            command.Transaction = this.Transaction;
+            using (var reader = await command.ExecuteReaderAsync())
+            {
+                if (await reader.ReadAsync())
+                {
+                    return new GetMysqlNumericTypesCntRow
+                    {
+                        Cnt = reader.GetInt64(0),
+                        CBool = reader.IsDBNull(1) ? null : reader.GetBoolean(1),
+                        CBoolean = reader.IsDBNull(2) ? null : reader.GetBoolean(2),
+                        CTinyint = reader.IsDBNull(3) ? null : reader.GetInt16(3),
+                        CSmallint = reader.IsDBNull(4) ? null : reader.GetInt16(4),
+                        CMediumint = reader.IsDBNull(5) ? null : reader.GetInt32(5),
+                        CInt = reader.IsDBNull(6) ? null : reader.GetInt32(6),
+                        CInteger = reader.IsDBNull(7) ? null : reader.GetInt32(7),
+                        CBigint = reader.IsDBNull(8) ? null : reader.GetInt64(8),
+                        CFloat = reader.IsDBNull(9) ? null : reader.GetDouble(9),
+                        CNumeric = reader.IsDBNull(10) ? null : reader.GetDecimal(10),
+                        CDecimal = reader.IsDBNull(11) ? null : reader.GetDecimal(11),
+                        CDec = reader.IsDBNull(12) ? null : reader.GetDecimal(12),
+                        CFixed = reader.IsDBNull(13) ? null : reader.GetDecimal(13),
+                        CDouble = reader.IsDBNull(14) ? null : reader.GetDouble(14),
+                        CDoublePrecision = reader.IsDBNull(15) ? null : reader.GetDouble(15)
+                    };
+                }
+            }
+        }
+
+        return null;
+    }
+
+    private const string TruncateMysqlNumericTypesSql = "TRUNCATE TABLE mysql_numeric_types";
+    public async Task TruncateMysqlNumericTypes()
+    {
+        if (this.Transaction == null)
+        {
+            using (var connection = new MySqlConnection(ConnectionString))
+            {
+                await connection.OpenAsync();
+                using (var command = new MySqlCommand(TruncateMysqlNumericTypesSql, connection))
+                {
+                    await command.ExecuteNonQueryAsync();
+                }
+            }
+
+            return;
+        }
+
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+        using (var command = this.Transaction.Connection.CreateCommand())
+        {
+            command.CommandText = TruncateMysqlNumericTypesSql;
+            command.Transaction = this.Transaction;
+            await command.ExecuteNonQueryAsync();
+        }
+    }
+
+    private const string InsertMysqlStringTypesSql = " INSERT INTO mysql_string_types ( c_char, c_nchar, c_national_char, c_varchar, c_tinytext, c_mediumtext, c_text, c_longtext, c_json, c_json_string_override, c_enum, c_set ) VALUES (@c_char, @c_nchar, @c_national_char, @c_varchar, @c_tinytext, @c_mediumtext, @c_text, @c_longtext, @c_json, @c_json_string_override, @c_enum, @c_set)";
+    public readonly record struct InsertMysqlStringTypesArgs(string? CChar, string? CNchar, string? CNationalChar, string? CVarchar, string? CTinytext, string? CMediumtext, string? CText, string? CLongtext, JsonElement? CJson, string? CJsonStringOverride, MysqlStringTypesCEnum? CEnum, HashSet<MysqlStringTypesCSet>? CSet);
+    public async Task InsertMysqlStringTypes(InsertMysqlStringTypesArgs args)
+    {
+        if (this.Transaction == null)
+        {
+            using (var connection = new MySqlConnection(ConnectionString))
+            {
+                await connection.OpenAsync();
+                using (var command = new MySqlCommand(InsertMysqlStringTypesSql, connection))
+                {
                     command.Parameters.AddWithValue("@c_char", args.CChar ?? (object)DBNull.Value);
                     command.Parameters.AddWithValue("@c_nchar", args.CNchar ?? (object)DBNull.Value);
                     command.Parameters.AddWithValue("@c_national_char", args.CNationalChar ?? (object)DBNull.Value);
@@ -808,23 +1090,8 @@ public class QuerySql
             throw new InvalidOperationException("Transaction is provided, but its connection is null.");
         using (var command = this.Transaction.Connection.CreateCommand())
         {
-            command.CommandText = InsertMysqlTypesSql;
+            command.CommandText = InsertMysqlStringTypesSql;
             command.Transaction = this.Transaction;
-            command.Parameters.AddWithValue("@c_bool", args.CBool ?? (object)DBNull.Value);
-            command.Parameters.AddWithValue("@c_boolean", args.CBoolean ?? (object)DBNull.Value);
-            command.Parameters.AddWithValue("@c_tinyint", args.CTinyint ?? (object)DBNull.Value);
-            command.Parameters.AddWithValue("@c_smallint", args.CSmallint ?? (object)DBNull.Value);
-            command.Parameters.AddWithValue("@c_mediumint", args.CMediumint ?? (object)DBNull.Value);
-            command.Parameters.AddWithValue("@c_int", args.CInt ?? (object)DBNull.Value);
-            command.Parameters.AddWithValue("@c_integer", args.CInteger ?? (object)DBNull.Value);
-            command.Parameters.AddWithValue("@c_bigint", args.CBigint ?? (object)DBNull.Value);
-            command.Parameters.AddWithValue("@c_decimal", args.CDecimal ?? (object)DBNull.Value);
-            command.Parameters.AddWithValue("@c_dec", args.CDec ?? (object)DBNull.Value);
-            command.Parameters.AddWithValue("@c_numeric", args.CNumeric ?? (object)DBNull.Value);
-            command.Parameters.AddWithValue("@c_fixed", args.CFixed ?? (object)DBNull.Value);
-            command.Parameters.AddWithValue("@c_float", args.CFloat ?? (object)DBNull.Value);
-            command.Parameters.AddWithValue("@c_double", args.CDouble ?? (object)DBNull.Value);
-            command.Parameters.AddWithValue("@c_double_precision", args.CDoublePrecision ?? (object)DBNull.Value);
             command.Parameters.AddWithValue("@c_char", args.CChar ?? (object)DBNull.Value);
             command.Parameters.AddWithValue("@c_nchar", args.CNchar ?? (object)DBNull.Value);
             command.Parameters.AddWithValue("@c_national_char", args.CNationalChar ?? (object)DBNull.Value);
@@ -841,8 +1108,8 @@ public class QuerySql
         }
     }
 
-    public readonly record struct InsertMysqlTypesBatchArgs(bool? CBool, bool? CBoolean, short? CTinyint, short? CSmallint, int? CMediumint, int? CInt, int? CInteger, long? CBigint, double? CFloat, decimal? CNumeric, decimal? CDecimal, decimal? CDec, decimal? CFixed, double? CDouble, double? CDoublePrecision, string? CChar, string? CNchar, string? CNationalChar, string? CVarchar, string? CTinytext, string? CMediumtext, string? CText, string? CLongtext, JsonElement? CJson, string? CJsonStringOverride, MysqlTypesCEnum? CEnum, HashSet<MysqlTypesCSet>? CSet);
-    public async Task InsertMysqlTypesBatch(List<InsertMysqlTypesBatchArgs> args)
+    public readonly record struct InsertMysqlStringTypesBatchArgs(string? CChar, string? CNchar, string? CNationalChar, string? CVarchar, string? CTinytext, string? CMediumtext, string? CText, string? CLongtext, JsonElement? CJson, string? CJsonStringOverride, MysqlStringTypesCEnum? CEnum, HashSet<MysqlStringTypesCSet>? CSet);
+    public async Task InsertMysqlStringTypesBatch(List<InsertMysqlStringTypesBatchArgs> args)
     {
         const string supportedDateTimeFormat = "yyyy-MM-dd H:mm:ss";
         var config = new CsvConfiguration(CultureInfo.CurrentCulture)
@@ -863,18 +1130,11 @@ public class QuerySql
             };
             csvWriter.Context.TypeConverterOptionsCache.AddOptions<DateTime>(options);
             csvWriter.Context.TypeConverterOptionsCache.AddOptions<DateTime?>(options);
-            csvWriter.Context.TypeConverterCache.AddConverter<bool>(new Utils.BoolToBitCsvConverter());
-            csvWriter.Context.TypeConverterCache.AddConverter<bool?>(new Utils.BoolToBitCsvConverter());
-            csvWriter.Context.TypeConverterCache.AddConverter<HashSet<MysqlTypesCSet>>(new Utils.MysqlTypesCSetCsvConverter());
-            csvWriter.Context.TypeConverterCache.AddConverter<HashSet<MysqlTypesCSet>?>(new Utils.MysqlTypesCSetCsvConverter());
-            csvWriter.Context.TypeConverterCache.AddConverter<short?>(nullConverterFn);
-            csvWriter.Context.TypeConverterCache.AddConverter<int?>(nullConverterFn);
-            csvWriter.Context.TypeConverterCache.AddConverter<long?>(nullConverterFn);
-            csvWriter.Context.TypeConverterCache.AddConverter<double?>(nullConverterFn);
-            csvWriter.Context.TypeConverterCache.AddConverter<decimal?>(nullConverterFn);
+            csvWriter.Context.TypeConverterCache.AddConverter<HashSet<MysqlStringTypesCSet>>(new Utils.MysqlStringTypesCSetCsvConverter());
+            csvWriter.Context.TypeConverterCache.AddConverter<HashSet<MysqlStringTypesCSet>?>(new Utils.MysqlStringTypesCSetCsvConverter());
             csvWriter.Context.TypeConverterCache.AddConverter<string?>(nullConverterFn);
             csvWriter.Context.TypeConverterCache.AddConverter<JsonElement?>(nullConverterFn);
-            csvWriter.Context.TypeConverterCache.AddConverter<MysqlTypesCEnum?>(nullConverterFn);
+            csvWriter.Context.TypeConverterCache.AddConverter<MysqlStringTypesCEnum?>(nullConverterFn);
             await csvWriter.WriteRecordsAsync(args);
         }
 
@@ -884,7 +1144,7 @@ public class QuerySql
             var loader = new MySqlBulkLoader(connection)
             {
                 Local = true,
-                TableName = "mysql_types",
+                TableName = "mysql_string_types",
                 FileName = "input.csv",
                 FieldTerminator = ",",
                 FieldQuotationCharacter = '"',
@@ -892,56 +1152,41 @@ public class QuerySql
                 NumberOfLinesToSkip = 1,
                 LineTerminator = "\n"
             };
-            loader.Columns.AddRange(new List<string> { "c_bool", "c_boolean", "c_tinyint", "c_smallint", "c_mediumint", "c_int", "c_integer", "c_bigint", "c_float", "c_numeric", "c_decimal", "c_dec", "c_fixed", "c_double", "c_double_precision", "c_char", "c_nchar", "c_national_char", "c_varchar", "c_tinytext", "c_mediumtext", "c_text", "c_longtext", "c_json", "c_json_string_override", "c_enum", "c_set" });
+            loader.Columns.AddRange(new List<string> { "c_char", "c_nchar", "c_national_char", "c_varchar", "c_tinytext", "c_mediumtext", "c_text", "c_longtext", "c_json", "c_json_string_override", "c_enum", "c_set" });
             await loader.LoadAsync();
             await connection.CloseAsync();
         }
     }
 
-    private const string GetMysqlTypesSql = "SELECT c_bool, c_boolean, c_tinyint, c_smallint, c_mediumint, c_int, c_integer, c_bigint, c_float, c_decimal, c_dec, c_numeric, c_fixed, c_double, c_double_precision, c_char, c_nchar, c_national_char, c_varchar, c_tinytext, c_mediumtext, c_text, c_longtext, c_json, c_json_string_override, c_enum, c_set FROM mysql_types LIMIT 1";
-    public readonly record struct GetMysqlTypesRow(bool? CBool, bool? CBoolean, short? CTinyint, short? CSmallint, int? CMediumint, int? CInt, int? CInteger, long? CBigint, double? CFloat, decimal? CDecimal, decimal? CDec, decimal? CNumeric, decimal? CFixed, double? CDouble, double? CDoublePrecision, string? CChar, string? CNchar, string? CNationalChar, string? CVarchar, string? CTinytext, string? CMediumtext, string? CText, string? CLongtext, JsonElement? CJson, string? CJsonStringOverride, MysqlTypesCEnum? CEnum, HashSet<MysqlTypesCSet>? CSet);
-    public async Task<GetMysqlTypesRow?> GetMysqlTypes()
+    private const string GetMysqlStringTypesSql = "SELECT c_char, c_nchar, c_national_char, c_varchar, c_tinytext, c_mediumtext, c_text, c_longtext, c_json, c_json_string_override, c_enum, c_set FROM mysql_string_types LIMIT 1";
+    public readonly record struct GetMysqlStringTypesRow(string? CChar, string? CNchar, string? CNationalChar, string? CVarchar, string? CTinytext, string? CMediumtext, string? CText, string? CLongtext, JsonElement? CJson, string? CJsonStringOverride, MysqlStringTypesCEnum? CEnum, HashSet<MysqlStringTypesCSet>? CSet);
+    public async Task<GetMysqlStringTypesRow?> GetMysqlStringTypes()
     {
         if (this.Transaction == null)
         {
             using (var connection = new MySqlConnection(ConnectionString))
             {
                 await connection.OpenAsync();
-                using (var command = new MySqlCommand(GetMysqlTypesSql, connection))
+                using (var command = new MySqlCommand(GetMysqlStringTypesSql, connection))
                 {
                     using (var reader = await command.ExecuteReaderAsync())
                     {
                         if (await reader.ReadAsync())
                         {
-                            return new GetMysqlTypesRow
+                            return new GetMysqlStringTypesRow
                             {
-                                CBool = reader.IsDBNull(0) ? null : reader.GetBoolean(0),
-                                CBoolean = reader.IsDBNull(1) ? null : reader.GetBoolean(1),
-                                CTinyint = reader.IsDBNull(2) ? null : reader.GetInt16(2),
-                                CSmallint = reader.IsDBNull(3) ? null : reader.GetInt16(3),
-                                CMediumint = reader.IsDBNull(4) ? null : reader.GetInt32(4),
-                                CInt = reader.IsDBNull(5) ? null : reader.GetInt32(5),
-                                CInteger = reader.IsDBNull(6) ? null : reader.GetInt32(6),
-                                CBigint = reader.IsDBNull(7) ? null : reader.GetInt64(7),
-                                CFloat = reader.IsDBNull(8) ? null : reader.GetDouble(8),
-                                CDecimal = reader.IsDBNull(9) ? null : reader.GetDecimal(9),
-                                CDec = reader.IsDBNull(10) ? null : reader.GetDecimal(10),
-                                CNumeric = reader.IsDBNull(11) ? null : reader.GetDecimal(11),
-                                CFixed = reader.IsDBNull(12) ? null : reader.GetDecimal(12),
-                                CDouble = reader.IsDBNull(13) ? null : reader.GetDouble(13),
-                                CDoublePrecision = reader.IsDBNull(14) ? null : reader.GetDouble(14),
-                                CChar = reader.IsDBNull(15) ? null : reader.GetString(15),
-                                CNchar = reader.IsDBNull(16) ? null : reader.GetString(16),
-                                CNationalChar = reader.IsDBNull(17) ? null : reader.GetString(17),
-                                CVarchar = reader.IsDBNull(18) ? null : reader.GetString(18),
-                                CTinytext = reader.IsDBNull(19) ? null : reader.GetString(19),
-                                CMediumtext = reader.IsDBNull(20) ? null : reader.GetString(20),
-                                CText = reader.IsDBNull(21) ? null : reader.GetString(21),
-                                CLongtext = reader.IsDBNull(22) ? null : reader.GetString(22),
-                                CJson = reader.IsDBNull(23) ? null : JsonSerializer.Deserialize<JsonElement>(reader.GetString(23)),
-                                CJsonStringOverride = reader.IsDBNull(24) ? null : reader.GetString(24),
-                                CEnum = reader.IsDBNull(25) ? null : reader.GetString(25).ToMysqlTypesCEnum(),
-                                CSet = reader.IsDBNull(26) ? null : reader.GetString(26).ToMysqlTypesCSetSet()
+                                CChar = reader.IsDBNull(0) ? null : reader.GetString(0),
+                                CNchar = reader.IsDBNull(1) ? null : reader.GetString(1),
+                                CNationalChar = reader.IsDBNull(2) ? null : reader.GetString(2),
+                                CVarchar = reader.IsDBNull(3) ? null : reader.GetString(3),
+                                CTinytext = reader.IsDBNull(4) ? null : reader.GetString(4),
+                                CMediumtext = reader.IsDBNull(5) ? null : reader.GetString(5),
+                                CText = reader.IsDBNull(6) ? null : reader.GetString(6),
+                                CLongtext = reader.IsDBNull(7) ? null : reader.GetString(7),
+                                CJson = reader.IsDBNull(8) ? null : JsonSerializer.Deserialize<JsonElement>(reader.GetString(8)),
+                                CJsonStringOverride = reader.IsDBNull(9) ? null : reader.GetString(9),
+                                CEnum = reader.IsDBNull(10) ? null : reader.GetString(10).ToMysqlStringTypesCEnum(),
+                                CSet = reader.IsDBNull(11) ? null : reader.GetString(11).ToMysqlStringTypesCSetSet()
                             };
                         }
                     }
@@ -958,41 +1203,26 @@ public class QuerySql
 
         using (var command = this.Transaction.Connection.CreateCommand())
         {
-            command.CommandText = GetMysqlTypesSql;
+            command.CommandText = GetMysqlStringTypesSql;
             command.Transaction = this.Transaction;
             using (var reader = await command.ExecuteReaderAsync())
             {
                 if (await reader.ReadAsync())
                 {
-                    return new GetMysqlTypesRow
+                    return new GetMysqlStringTypesRow
                     {
-                        CBool = reader.IsDBNull(0) ? null : reader.GetBoolean(0),
-                        CBoolean = reader.IsDBNull(1) ? null : reader.GetBoolean(1),
-                        CTinyint = reader.IsDBNull(2) ? null : reader.GetInt16(2),
-                        CSmallint = reader.IsDBNull(3) ? null : reader.GetInt16(3),
-                        CMediumint = reader.IsDBNull(4) ? null : reader.GetInt32(4),
-                        CInt = reader.IsDBNull(5) ? null : reader.GetInt32(5),
-                        CInteger = reader.IsDBNull(6) ? null : reader.GetInt32(6),
-                        CBigint = reader.IsDBNull(7) ? null : reader.GetInt64(7),
-                        CFloat = reader.IsDBNull(8) ? null : reader.GetDouble(8),
-                        CDecimal = reader.IsDBNull(9) ? null : reader.GetDecimal(9),
-                        CDec = reader.IsDBNull(10) ? null : reader.GetDecimal(10),
-                        CNumeric = reader.IsDBNull(11) ? null : reader.GetDecimal(11),
-                        CFixed = reader.IsDBNull(12) ? null : reader.GetDecimal(12),
-                        CDouble = reader.IsDBNull(13) ? null : reader.GetDouble(13),
-                        CDoublePrecision = reader.IsDBNull(14) ? null : reader.GetDouble(14),
-                        CChar = reader.IsDBNull(15) ? null : reader.GetString(15),
-                        CNchar = reader.IsDBNull(16) ? null : reader.GetString(16),
-                        CNationalChar = reader.IsDBNull(17) ? null : reader.GetString(17),
-                        CVarchar = reader.IsDBNull(18) ? null : reader.GetString(18),
-                        CTinytext = reader.IsDBNull(19) ? null : reader.GetString(19),
-                        CMediumtext = reader.IsDBNull(20) ? null : reader.GetString(20),
-                        CText = reader.IsDBNull(21) ? null : reader.GetString(21),
-                        CLongtext = reader.IsDBNull(22) ? null : reader.GetString(22),
-                        CJson = reader.IsDBNull(23) ? null : JsonSerializer.Deserialize<JsonElement>(reader.GetString(23)),
-                        CJsonStringOverride = reader.IsDBNull(24) ? null : reader.GetString(24),
-                        CEnum = reader.IsDBNull(25) ? null : reader.GetString(25).ToMysqlTypesCEnum(),
-                        CSet = reader.IsDBNull(26) ? null : reader.GetString(26).ToMysqlTypesCSetSet()
+                        CChar = reader.IsDBNull(0) ? null : reader.GetString(0),
+                        CNchar = reader.IsDBNull(1) ? null : reader.GetString(1),
+                        CNationalChar = reader.IsDBNull(2) ? null : reader.GetString(2),
+                        CVarchar = reader.IsDBNull(3) ? null : reader.GetString(3),
+                        CTinytext = reader.IsDBNull(4) ? null : reader.GetString(4),
+                        CMediumtext = reader.IsDBNull(5) ? null : reader.GetString(5),
+                        CText = reader.IsDBNull(6) ? null : reader.GetString(6),
+                        CLongtext = reader.IsDBNull(7) ? null : reader.GetString(7),
+                        CJson = reader.IsDBNull(8) ? null : JsonSerializer.Deserialize<JsonElement>(reader.GetString(8)),
+                        CJsonStringOverride = reader.IsDBNull(9) ? null : reader.GetString(9),
+                        CEnum = reader.IsDBNull(10) ? null : reader.GetString(10).ToMysqlStringTypesCEnum(),
+                        CSet = reader.IsDBNull(11) ? null : reader.GetString(11).ToMysqlStringTypesCSetSet()
                     };
                 }
             }
@@ -1001,51 +1231,36 @@ public class QuerySql
         return null;
     }
 
-    private const string GetMysqlTypesCntSql = "SELECT COUNT(*) AS cnt, c_bool, c_boolean, c_tinyint, c_smallint, c_mediumint, c_int, c_integer, c_bigint, c_float, c_numeric, c_decimal, c_dec, c_fixed, c_double, c_double_precision, c_char, c_nchar, c_national_char, c_varchar, c_tinytext, c_mediumtext, c_text, c_longtext, c_json, c_json_string_override, c_enum, c_set FROM mysql_types GROUP BY c_bool, c_boolean, c_tinyint, c_smallint, c_mediumint, c_int, c_integer, c_bigint, c_float, c_numeric, c_decimal, c_dec, c_fixed, c_double, c_double_precision, c_char, c_nchar, c_national_char, c_varchar, c_tinytext, c_mediumtext, c_text, c_longtext, c_json, c_json_string_override, c_enum, c_set LIMIT 1";
-    public readonly record struct GetMysqlTypesCntRow(long Cnt, bool? CBool, bool? CBoolean, short? CTinyint, short? CSmallint, int? CMediumint, int? CInt, int? CInteger, long? CBigint, double? CFloat, decimal? CNumeric, decimal? CDecimal, decimal? CDec, decimal? CFixed, double? CDouble, double? CDoublePrecision, string? CChar, string? CNchar, string? CNationalChar, string? CVarchar, string? CTinytext, string? CMediumtext, string? CText, string? CLongtext, JsonElement? CJson, string? CJsonStringOverride, MysqlTypesCEnum? CEnum, HashSet<MysqlTypesCSet>? CSet);
-    public async Task<GetMysqlTypesCntRow?> GetMysqlTypesCnt()
+    private const string GetMysqlStringTypesCntSql = "SELECT COUNT(*) AS cnt, c_char, c_nchar, c_national_char, c_varchar, c_tinytext, c_mediumtext, c_text, c_longtext, c_json, c_json_string_override, c_enum, c_set FROM mysql_string_types GROUP BY c_char, c_nchar, c_national_char, c_varchar, c_tinytext, c_mediumtext, c_text, c_longtext, c_json, c_json_string_override, c_enum, c_set LIMIT 1";
+    public readonly record struct GetMysqlStringTypesCntRow(long Cnt, string? CChar, string? CNchar, string? CNationalChar, string? CVarchar, string? CTinytext, string? CMediumtext, string? CText, string? CLongtext, JsonElement? CJson, string? CJsonStringOverride, MysqlStringTypesCEnum? CEnum, HashSet<MysqlStringTypesCSet>? CSet);
+    public async Task<GetMysqlStringTypesCntRow?> GetMysqlStringTypesCnt()
     {
         if (this.Transaction == null)
         {
             using (var connection = new MySqlConnection(ConnectionString))
             {
                 await connection.OpenAsync();
-                using (var command = new MySqlCommand(GetMysqlTypesCntSql, connection))
+                using (var command = new MySqlCommand(GetMysqlStringTypesCntSql, connection))
                 {
                     using (var reader = await command.ExecuteReaderAsync())
                     {
                         if (await reader.ReadAsync())
                         {
-                            return new GetMysqlTypesCntRow
+                            return new GetMysqlStringTypesCntRow
                             {
                                 Cnt = reader.GetInt64(0),
-                                CBool = reader.IsDBNull(1) ? null : reader.GetBoolean(1),
-                                CBoolean = reader.IsDBNull(2) ? null : reader.GetBoolean(2),
-                                CTinyint = reader.IsDBNull(3) ? null : reader.GetInt16(3),
-                                CSmallint = reader.IsDBNull(4) ? null : reader.GetInt16(4),
-                                CMediumint = reader.IsDBNull(5) ? null : reader.GetInt32(5),
-                                CInt = reader.IsDBNull(6) ? null : reader.GetInt32(6),
-                                CInteger = reader.IsDBNull(7) ? null : reader.GetInt32(7),
-                                CBigint = reader.IsDBNull(8) ? null : reader.GetInt64(8),
-                                CFloat = reader.IsDBNull(9) ? null : reader.GetDouble(9),
-                                CNumeric = reader.IsDBNull(10) ? null : reader.GetDecimal(10),
-                                CDecimal = reader.IsDBNull(11) ? null : reader.GetDecimal(11),
-                                CDec = reader.IsDBNull(12) ? null : reader.GetDecimal(12),
-                                CFixed = reader.IsDBNull(13) ? null : reader.GetDecimal(13),
-                                CDouble = reader.IsDBNull(14) ? null : reader.GetDouble(14),
-                                CDoublePrecision = reader.IsDBNull(15) ? null : reader.GetDouble(15),
-                                CChar = reader.IsDBNull(16) ? null : reader.GetString(16),
-                                CNchar = reader.IsDBNull(17) ? null : reader.GetString(17),
-                                CNationalChar = reader.IsDBNull(18) ? null : reader.GetString(18),
-                                CVarchar = reader.IsDBNull(19) ? null : reader.GetString(19),
-                                CTinytext = reader.IsDBNull(20) ? null : reader.GetString(20),
-                                CMediumtext = reader.IsDBNull(21) ? null : reader.GetString(21),
-                                CText = reader.IsDBNull(22) ? null : reader.GetString(22),
-                                CLongtext = reader.IsDBNull(23) ? null : reader.GetString(23),
-                                CJson = reader.IsDBNull(24) ? null : JsonSerializer.Deserialize<JsonElement>(reader.GetString(24)),
-                                CJsonStringOverride = reader.IsDBNull(25) ? null : reader.GetString(25),
-                                CEnum = reader.IsDBNull(26) ? null : reader.GetString(26).ToMysqlTypesCEnum(),
-                                CSet = reader.IsDBNull(27) ? null : reader.GetString(27).ToMysqlTypesCSetSet()
+                                CChar = reader.IsDBNull(1) ? null : reader.GetString(1),
+                                CNchar = reader.IsDBNull(2) ? null : reader.GetString(2),
+                                CNationalChar = reader.IsDBNull(3) ? null : reader.GetString(3),
+                                CVarchar = reader.IsDBNull(4) ? null : reader.GetString(4),
+                                CTinytext = reader.IsDBNull(5) ? null : reader.GetString(5),
+                                CMediumtext = reader.IsDBNull(6) ? null : reader.GetString(6),
+                                CText = reader.IsDBNull(7) ? null : reader.GetString(7),
+                                CLongtext = reader.IsDBNull(8) ? null : reader.GetString(8),
+                                CJson = reader.IsDBNull(9) ? null : JsonSerializer.Deserialize<JsonElement>(reader.GetString(9)),
+                                CJsonStringOverride = reader.IsDBNull(10) ? null : reader.GetString(10),
+                                CEnum = reader.IsDBNull(11) ? null : reader.GetString(11).ToMysqlStringTypesCEnum(),
+                                CSet = reader.IsDBNull(12) ? null : reader.GetString(12).ToMysqlStringTypesCSetSet()
                             };
                         }
                     }
@@ -1062,42 +1277,27 @@ public class QuerySql
 
         using (var command = this.Transaction.Connection.CreateCommand())
         {
-            command.CommandText = GetMysqlTypesCntSql;
+            command.CommandText = GetMysqlStringTypesCntSql;
             command.Transaction = this.Transaction;
             using (var reader = await command.ExecuteReaderAsync())
             {
                 if (await reader.ReadAsync())
                 {
-                    return new GetMysqlTypesCntRow
+                    return new GetMysqlStringTypesCntRow
                     {
                         Cnt = reader.GetInt64(0),
-                        CBool = reader.IsDBNull(1) ? null : reader.GetBoolean(1),
-                        CBoolean = reader.IsDBNull(2) ? null : reader.GetBoolean(2),
-                        CTinyint = reader.IsDBNull(3) ? null : reader.GetInt16(3),
-                        CSmallint = reader.IsDBNull(4) ? null : reader.GetInt16(4),
-                        CMediumint = reader.IsDBNull(5) ? null : reader.GetInt32(5),
-                        CInt = reader.IsDBNull(6) ? null : reader.GetInt32(6),
-                        CInteger = reader.IsDBNull(7) ? null : reader.GetInt32(7),
-                        CBigint = reader.IsDBNull(8) ? null : reader.GetInt64(8),
-                        CFloat = reader.IsDBNull(9) ? null : reader.GetDouble(9),
-                        CNumeric = reader.IsDBNull(10) ? null : reader.GetDecimal(10),
-                        CDecimal = reader.IsDBNull(11) ? null : reader.GetDecimal(11),
-                        CDec = reader.IsDBNull(12) ? null : reader.GetDecimal(12),
-                        CFixed = reader.IsDBNull(13) ? null : reader.GetDecimal(13),
-                        CDouble = reader.IsDBNull(14) ? null : reader.GetDouble(14),
-                        CDoublePrecision = reader.IsDBNull(15) ? null : reader.GetDouble(15),
-                        CChar = reader.IsDBNull(16) ? null : reader.GetString(16),
-                        CNchar = reader.IsDBNull(17) ? null : reader.GetString(17),
-                        CNationalChar = reader.IsDBNull(18) ? null : reader.GetString(18),
-                        CVarchar = reader.IsDBNull(19) ? null : reader.GetString(19),
-                        CTinytext = reader.IsDBNull(20) ? null : reader.GetString(20),
-                        CMediumtext = reader.IsDBNull(21) ? null : reader.GetString(21),
-                        CText = reader.IsDBNull(22) ? null : reader.GetString(22),
-                        CLongtext = reader.IsDBNull(23) ? null : reader.GetString(23),
-                        CJson = reader.IsDBNull(24) ? null : JsonSerializer.Deserialize<JsonElement>(reader.GetString(24)),
-                        CJsonStringOverride = reader.IsDBNull(25) ? null : reader.GetString(25),
-                        CEnum = reader.IsDBNull(26) ? null : reader.GetString(26).ToMysqlTypesCEnum(),
-                        CSet = reader.IsDBNull(27) ? null : reader.GetString(27).ToMysqlTypesCSetSet()
+                        CChar = reader.IsDBNull(1) ? null : reader.GetString(1),
+                        CNchar = reader.IsDBNull(2) ? null : reader.GetString(2),
+                        CNationalChar = reader.IsDBNull(3) ? null : reader.GetString(3),
+                        CVarchar = reader.IsDBNull(4) ? null : reader.GetString(4),
+                        CTinytext = reader.IsDBNull(5) ? null : reader.GetString(5),
+                        CMediumtext = reader.IsDBNull(6) ? null : reader.GetString(6),
+                        CText = reader.IsDBNull(7) ? null : reader.GetString(7),
+                        CLongtext = reader.IsDBNull(8) ? null : reader.GetString(8),
+                        CJson = reader.IsDBNull(9) ? null : JsonSerializer.Deserialize<JsonElement>(reader.GetString(9)),
+                        CJsonStringOverride = reader.IsDBNull(10) ? null : reader.GetString(10),
+                        CEnum = reader.IsDBNull(11) ? null : reader.GetString(11).ToMysqlStringTypesCEnum(),
+                        CSet = reader.IsDBNull(12) ? null : reader.GetString(12).ToMysqlStringTypesCSetSet()
                     };
                 }
             }
@@ -1106,15 +1306,15 @@ public class QuerySql
         return null;
     }
 
-    private const string TruncateMysqlTypesSql = "TRUNCATE TABLE mysql_types";
-    public async Task TruncateMysqlTypes()
+    private const string TruncateMysqlStringTypesSql = "TRUNCATE TABLE mysql_string_types";
+    public async Task TruncateMysqlStringTypes()
     {
         if (this.Transaction == null)
         {
             using (var connection = new MySqlConnection(ConnectionString))
             {
                 await connection.OpenAsync();
-                using (var command = new MySqlCommand(TruncateMysqlTypesSql, connection))
+                using (var command = new MySqlCommand(TruncateMysqlStringTypesSql, connection))
                 {
                     await command.ExecuteNonQueryAsync();
                 }
@@ -1127,7 +1327,7 @@ public class QuerySql
             throw new InvalidOperationException("Transaction is provided, but its connection is null.");
         using (var command = this.Transaction.Connection.CreateCommand())
         {
-            command.CommandText = TruncateMysqlTypesSql;
+            command.CommandText = TruncateMysqlStringTypesSql;
             command.Transaction = this.Transaction;
             await command.ExecuteNonQueryAsync();
         }
@@ -1612,7 +1812,7 @@ public class QuerySql
         }
     }
 
-    private const string GetMysqlFunctionsSql = " SELECT MAX(c_int) AS max_int, MAX(c_varchar) AS max_varchar, MAX(c_timestamp) AS max_timestamp FROM mysql_types CROSS JOIN mysql_datetime_types";
+    private const string GetMysqlFunctionsSql = " SELECT MAX(c_int) AS max_int, MAX(c_varchar) AS max_varchar, MAX(c_timestamp) AS max_timestamp FROM mysql_numeric_types CROSS JOIN mysql_string_types CROSS JOIN mysql_datetime_types";
     public readonly record struct GetMysqlFunctionsRow(int? MaxInt, string? MaxVarchar, DateTime MaxTimestamp);
     public async Task<GetMysqlFunctionsRow?> GetMysqlFunctions()
     {

@@ -2,46 +2,47 @@
 ø
 2mysql&examples/config/mysql/types/schema.sql(examples/config/mysql/authors/schema.sql"%examples/config/mysql/types/query.sql"'examples/config/mysql/authors/query.sqlbÉ
 $examples/MySqlConnectorLegacyExamplecsharp‚{"debugRequest":true,"generateCsproj":true,"namespaceName":"MySqlConnectorLegacyExampleGen","overrides":[{"column":"GetMysqlFunctions:max_int","csharp_type":{"notNull":false,"type":"int"}},{"column":"GetMysqlFunctions:max_varchar","csharp_type":{"notNull":false,"type":"string"}},{"column":"GetMysqlFunctions:max_timestamp","csharp_type":{"notNull":true,"type":"DateTime"}},{"column":"*:c_json_string_override","csharp_type":{"notNull":false,"type":"string"}}],"targetFramework":"netstandard2.0","useDapper":false}*
-./dist/LocalRunnerýpublic"“publicú	
-mysql_types$
-c_bool0Rmysql_typesb	tinyint'
-	c_boolean0Rmysql_typesb	tinyint'
-	c_tinyint0Rmysql_typesb	tinyint2
+./dist/LocalRunner†public"œpublic¯
+mysql_numeric_types,
+c_bool0Rmysql_numeric_typesb	tinyint/
+	c_boolean0Rmysql_numeric_typesb	tinyint/
+	c_tinyint0Rmysql_numeric_typesb	tinyint:
 
-c_smallint0ÿÿÿÿÿÿÿÿÿRmysql_typesb
-smallint4
-c_mediumint0ÿÿÿÿÿÿÿÿÿRmysql_typesb	mediumint(
-c_int0ÿÿÿÿÿÿÿÿÿRmysql_typesbint,
-	c_integer0ÿÿÿÿÿÿÿÿÿRmysql_typesbint.
-c_bigint0ÿÿÿÿÿÿÿÿÿRmysql_typesbbigint,
-c_float0ÿÿÿÿÿÿÿÿÿRmysql_typesbfloat'
+c_smallint0ÿÿÿÿÿÿÿÿÿRmysql_numeric_typesb
+smallint<
+c_mediumint0ÿÿÿÿÿÿÿÿÿRmysql_numeric_typesb	mediumint0
+c_int0ÿÿÿÿÿÿÿÿÿRmysql_numeric_typesbint4
+	c_integer0ÿÿÿÿÿÿÿÿÿRmysql_numeric_typesbint6
+c_bigint0ÿÿÿÿÿÿÿÿÿRmysql_numeric_typesbbigint4
+c_float0ÿÿÿÿÿÿÿÿÿRmysql_numeric_typesbfloat/
 	c_decimal0
-Rmysql_typesb	decimal#
+Rmysql_numeric_typesb	decimal+
 c_dec0
-Rmysql_typesb	decimal'
+Rmysql_numeric_typesb	decimal/
 	c_numeric0
-Rmysql_typesb	decimal%
+Rmysql_numeric_typesb	decimal-
 c_fixed0
-Rmysql_typesb	decimal.
-c_double0ÿÿÿÿÿÿÿÿÿRmysql_typesbdouble8
-c_double_precision0ÿÿÿÿÿÿÿÿÿRmysql_typesbdouble*
-c_char0ÿÿÿÿÿÿÿÿÿRmysql_typesbchar+
-c_nchar0ÿÿÿÿÿÿÿÿÿRmysql_typesbchar3
-c_national_char0ÿÿÿÿÿÿÿÿÿRmysql_typesbchar'
-	c_varchar0dRmysql_typesb	varchar2
+Rmysql_numeric_typesb	decimal6
+c_double0ÿÿÿÿÿÿÿÿÿRmysql_numeric_typesbdouble@
+c_double_precision0ÿÿÿÿÿÿÿÿÿRmysql_numeric_typesbdoubleÃ
+mysql_string_types1
+c_char0ÿÿÿÿÿÿÿÿÿRmysql_string_typesbchar2
+c_nchar0ÿÿÿÿÿÿÿÿÿRmysql_string_typesbchar:
+c_national_char0ÿÿÿÿÿÿÿÿÿRmysql_string_typesbchar.
+	c_varchar0dRmysql_string_typesb	varchar9
 
-c_tinytext0ÿÿÿÿÿÿÿÿÿRmysql_typesb
-tinytext6
-c_mediumtext0ÿÿÿÿÿÿÿÿÿRmysql_typesb
-mediumtext*
-c_text0ÿÿÿÿÿÿÿÿÿRmysql_typesbtext2
+c_tinytext0ÿÿÿÿÿÿÿÿÿRmysql_string_typesb
+tinytext=
+c_mediumtext0ÿÿÿÿÿÿÿÿÿRmysql_string_typesb
+mediumtext1
+c_text0ÿÿÿÿÿÿÿÿÿRmysql_string_typesbtext9
 
-c_longtext0ÿÿÿÿÿÿÿÿÿRmysql_typesb
-longtext*
-c_json0ÿÿÿÿÿÿÿÿÿRmysql_typesbjson:
-c_json_string_override0ÿÿÿÿÿÿÿÿÿRmysql_typesbjson/
-c_enum0Rmysql_typesbmysql_types_c_enum-
-c_set0Rmysql_typesbmysql_types_c_set˜
+c_longtext0ÿÿÿÿÿÿÿÿÿRmysql_string_typesb
+longtext1
+c_json0ÿÿÿÿÿÿÿÿÿRmysql_string_typesbjsonA
+c_json_string_override0ÿÿÿÿÿÿÿÿÿRmysql_string_typesbjson=
+c_enum0Rmysql_string_typesbmysql_string_types_c_enum;
+c_set0Rmysql_string_typesbmysql_string_types_c_set˜
 mysql_datetime_types3
 c_year0ÿÿÿÿÿÿÿÿÿRmysql_datetime_typesbyear3
 c_date0ÿÿÿÿÿÿÿÿÿRmysql_datetime_typesbdate2
@@ -73,9 +74,9 @@ c_longblob0ÿÿÿÿÿÿÿÿÿRmysql_binary_typesb
 id0ÿÿÿÿÿÿÿÿÿRbooksbbigint$
 name0ÿÿÿÿÿÿÿÿÿRbooksbtext+
 	author_id0ÿÿÿÿÿÿÿÿÿRbooksbbigint)
-description0ÿÿÿÿÿÿÿÿÿRbooksbtext"(
-mysql_types_c_enumsmallmediumbig"&
-mysql_types_c_setteacoffeemilk"1
+description0ÿÿÿÿÿÿÿÿÿRbooksbtext"/
+mysql_string_types_c_enumsmallmediumbig"-
+mysql_string_types_c_setteacoffeemilk"1
 bios_bio_typeAutobiography	BiographyMemoir".
 bios_author_typeAuthorEditor
 Translator"ÜextendedÏ
@@ -83,9 +84,9 @@ Translator"ÜextendedÏ
 author_name0dRextendedbiosb	varchar%
 name0dRextendedbiosb	varchar/
 bio_type0Rextendedbiosbbios_bio_type5
-author_type0Rextendedbiosbbios_author_type•
-÷
-INSERT INTO mysql_types 
+author_type0Rextendedbiosbbios_author_typeÿ
+½
+INSERT INTO mysql_numeric_types 
 (
     c_bool,
     c_boolean,
@@ -95,173 +96,104 @@ INSERT INTO mysql_types
     c_int,
     c_integer,
     c_bigint, 
-    c_decimal, c_dec, c_numeric, c_fixed, c_float, c_double, c_double_precision, 
-    c_char,
-    c_nchar,
-    c_national_char,
-    c_varchar,
-    c_tinytext,
-    c_mediumtext,
-    c_text,
-    c_longtext, 
-    c_json,
-    c_json_string_override,
-    c_enum,
-    c_set
+    c_decimal, 
+    c_dec, 
+    c_numeric, 
+    c_fixed, 
+    c_float, 
+    c_double, 
+    c_double_precision
 ) 
-VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)InsertMysqlTypes:exec*84
-c_bool0Rpublicmysql_typesb	tinyintzc_bool*>:
-	c_boolean0Rpublicmysql_typesb	tinyintz	c_boolean*>:
-	c_tinyint0Rpublicmysql_typesb	tinyintz	c_tinyint*JF
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)InsertMysqlNumericTypes:exec*@<
+c_bool0Rpublicmysql_numeric_typesb	tinyintzc_bool*FB
+	c_boolean0Rpublicmysql_numeric_typesb	tinyintz	c_boolean*FB
+	c_tinyint0Rpublicmysql_numeric_typesb	tinyintz	c_tinyint*RN
 
-c_smallint0ÿÿÿÿÿÿÿÿÿRpublicmysql_typesb
+c_smallint0ÿÿÿÿÿÿÿÿÿRpublicmysql_numeric_typesb
 smallintz
-c_smallint*MI
-c_mediumint0ÿÿÿÿÿÿÿÿÿRpublicmysql_typesb	mediumintzc_mediumint*;7
-c_int0ÿÿÿÿÿÿÿÿÿRpublicmysql_typesbintzc_int*C?
-	c_integer0ÿÿÿÿÿÿÿÿÿRpublicmysql_typesbintz	c_integer*D@
-c_bigint0ÿÿÿÿÿÿÿÿÿRpublicmysql_typesbbigintzc_bigint*>	:
+c_smallint*UQ
+c_mediumint0ÿÿÿÿÿÿÿÿÿRpublicmysql_numeric_typesb	mediumintzc_mediumint*C?
+c_int0ÿÿÿÿÿÿÿÿÿRpublicmysql_numeric_typesbintzc_int*KG
+	c_integer0ÿÿÿÿÿÿÿÿÿRpublicmysql_numeric_typesbintz	c_integer*LH
+c_bigint0ÿÿÿÿÿÿÿÿÿRpublicmysql_numeric_typesbbigintzc_bigint*F	B
 	c_decimal0
-Rpublicmysql_typesb	decimalz	c_decimal*6
-2
-c_dec0
-Rpublicmysql_typesb	decimalzc_dec*>:
-	c_numeric0
-Rpublicmysql_typesb	decimalz	c_numeric*:6
-c_fixed0
-Rpublicmysql_typesb	decimalzc_fixed*A=
-c_float0ÿÿÿÿÿÿÿÿÿRpublicmysql_typesbfloatzc_float*D@
-c_double0ÿÿÿÿÿÿÿÿÿRpublicmysql_typesbdoublezc_double*XT
-c_double_precision0ÿÿÿÿÿÿÿÿÿRpublicmysql_typesbdoublezc_double_precision*>:
-c_char0ÿÿÿÿÿÿÿÿÿRpublicmysql_typesbcharzc_char*@<
-c_nchar0ÿÿÿÿÿÿÿÿÿRpublicmysql_typesbcharzc_nchar*PL
-c_national_char0ÿÿÿÿÿÿÿÿÿRpublicmysql_typesbcharzc_national_char*>:
-	c_varchar0dRpublicmysql_typesb	varcharz	c_varchar*JF
-
-c_tinytext0ÿÿÿÿÿÿÿÿÿRpublicmysql_typesb
-tinytextz
-c_tinytext*PL
-c_mediumtext0ÿÿÿÿÿÿÿÿÿRpublicmysql_typesb
-mediumtextzc_mediumtext*>:
-c_text0ÿÿÿÿÿÿÿÿÿRpublicmysql_typesbtextzc_text*JF
-
-c_longtext0ÿÿÿÿÿÿÿÿÿRpublicmysql_typesb
-longtextz
-c_longtext*>:
-c_json0ÿÿÿÿÿÿÿÿÿRpublicmysql_typesbjsonzc_json*^Z
-c_json_string_override0ÿÿÿÿÿÿÿÿÿRpublicmysql_typesbjsonzc_json_string_override*C?
-c_enum0Rpublicmysql_typesbmysql_types_c_enumzc_enum*@<
-c_set0Rpublicmysql_typesbmysql_types_c_setzc_set2 Basic types :	query.sqlBmysql_typesŽ
-öINSERT INTO mysql_types 
-(
-    c_bool,
-    c_boolean,
-    c_tinyint,
-    c_smallint,
-    c_mediumint,
-    c_int,
-    c_integer,
-    c_bigint, 
-    c_float, c_numeric, c_decimal, c_dec, c_fixed, c_double, c_double_precision, 
-    c_char,
-    c_nchar,
-    c_national_char,
-    c_varchar,
-    c_tinytext,
-    c_mediumtext,
-    c_text,
-    c_longtext, 
-    c_json,
-    c_json_string_override,
-    c_enum,
-    c_set
-) 
-VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)InsertMysqlTypesBatch	:copyfrom*84
-c_bool0Rpublicmysql_typesb	tinyintzc_bool*>:
-	c_boolean0Rpublicmysql_typesb	tinyintz	c_boolean*>:
-	c_tinyint0Rpublicmysql_typesb	tinyintz	c_tinyint*JF
-
-c_smallint0ÿÿÿÿÿÿÿÿÿRpublicmysql_typesb
-smallintz
-c_smallint*MI
-c_mediumint0ÿÿÿÿÿÿÿÿÿRpublicmysql_typesb	mediumintzc_mediumint*;7
-c_int0ÿÿÿÿÿÿÿÿÿRpublicmysql_typesbintzc_int*C?
-	c_integer0ÿÿÿÿÿÿÿÿÿRpublicmysql_typesbintz	c_integer*D@
-c_bigint0ÿÿÿÿÿÿÿÿÿRpublicmysql_typesbbigintzc_bigint*A	=
-c_float0ÿÿÿÿÿÿÿÿÿRpublicmysql_typesbfloatzc_float*>
+Rpublicmysql_numeric_typesb	decimalz	c_decimal*>
 :
-	c_numeric0
-Rpublicmysql_typesb	decimalz	c_numeric*>:
-	c_decimal0
-Rpublicmysql_typesb	decimalz	c_decimal*62
 c_dec0
-Rpublicmysql_typesb	decimalzc_dec*:6
+Rpublicmysql_numeric_typesb	decimalzc_dec*FB
+	c_numeric0
+Rpublicmysql_numeric_typesb	decimalz	c_numeric*B>
 c_fixed0
-Rpublicmysql_typesb	decimalzc_fixed*D@
-c_double0ÿÿÿÿÿÿÿÿÿRpublicmysql_typesbdoublezc_double*XT
-c_double_precision0ÿÿÿÿÿÿÿÿÿRpublicmysql_typesbdoublezc_double_precision*>:
-c_char0ÿÿÿÿÿÿÿÿÿRpublicmysql_typesbcharzc_char*@<
-c_nchar0ÿÿÿÿÿÿÿÿÿRpublicmysql_typesbcharzc_nchar*PL
-c_national_char0ÿÿÿÿÿÿÿÿÿRpublicmysql_typesbcharzc_national_char*>:
-	c_varchar0dRpublicmysql_typesb	varcharz	c_varchar*JF
+Rpublicmysql_numeric_typesb	decimalzc_fixed*IE
+c_float0ÿÿÿÿÿÿÿÿÿRpublicmysql_numeric_typesbfloatzc_float*LH
+c_double0ÿÿÿÿÿÿÿÿÿRpublicmysql_numeric_typesbdoublezc_double*`\
+c_double_precision0ÿÿÿÿÿÿÿÿÿRpublicmysql_numeric_typesbdoublezc_double_precision2 Numeric types :	query.sqlBmysql_numeric_typesö
+¼INSERT INTO mysql_numeric_types 
+(
+    c_bool,
+    c_boolean,
+    c_tinyint,
+    c_smallint,
+    c_mediumint,
+    c_int,
+    c_integer,
+    c_bigint, 
+    c_float, 
+    c_numeric, 
+    c_decimal, 
+    c_dec, 
+    c_fixed, 
+    c_double, 
+    c_double_precision
+) 
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)InsertMysqlNumericTypesBatch	:copyfrom*@<
+c_bool0Rpublicmysql_numeric_typesb	tinyintzc_bool*FB
+	c_boolean0Rpublicmysql_numeric_typesb	tinyintz	c_boolean*FB
+	c_tinyint0Rpublicmysql_numeric_typesb	tinyintz	c_tinyint*RN
 
-c_tinytext0ÿÿÿÿÿÿÿÿÿRpublicmysql_typesb
-tinytextz
-c_tinytext*PL
-c_mediumtext0ÿÿÿÿÿÿÿÿÿRpublicmysql_typesb
-mediumtextzc_mediumtext*>:
-c_text0ÿÿÿÿÿÿÿÿÿRpublicmysql_typesbtextzc_text*JF
-
-c_longtext0ÿÿÿÿÿÿÿÿÿRpublicmysql_typesb
-longtextz
-c_longtext*>:
-c_json0ÿÿÿÿÿÿÿÿÿRpublicmysql_typesbjsonzc_json*^Z
-c_json_string_override0ÿÿÿÿÿÿÿÿÿRpublicmysql_typesbjsonzc_json_string_override*C?
-c_enum0Rpublicmysql_typesbmysql_types_c_enumzc_enum*@<
-c_set0Rpublicmysql_typesbmysql_types_c_setzc_set:	query.sqlBmysql_types€
-ÈSELECT c_bool, c_boolean, c_tinyint, c_smallint, c_mediumint, c_int, c_integer, c_bigint, c_float, c_decimal, c_dec, c_numeric, c_fixed, c_double, c_double_precision, c_char, c_nchar, c_national_char, c_varchar, c_tinytext, c_mediumtext, c_text, c_longtext, c_json, c_json_string_override, c_enum, c_set FROM mysql_types LIMIT 1GetMysqlTypes:one",
-c_bool0Rmysql_typesb	tinyintzc_bool"2
-	c_boolean0Rmysql_typesb	tinyintz	c_boolean"2
-	c_tinyint0Rmysql_typesb	tinyintz	c_tinyint">
-
-c_smallint0ÿÿÿÿÿÿÿÿÿRmysql_typesb
+c_smallint0ÿÿÿÿÿÿÿÿÿRpublicmysql_numeric_typesb
 smallintz
-c_smallint"A
-c_mediumint0ÿÿÿÿÿÿÿÿÿRmysql_typesb	mediumintzc_mediumint"/
-c_int0ÿÿÿÿÿÿÿÿÿRmysql_typesbintzc_int"7
-	c_integer0ÿÿÿÿÿÿÿÿÿRmysql_typesbintz	c_integer"8
-c_bigint0ÿÿÿÿÿÿÿÿÿRmysql_typesbbigintzc_bigint"5
-c_float0ÿÿÿÿÿÿÿÿÿRmysql_typesbfloatzc_float"2
-	c_decimal0
-Rmysql_typesb	decimalz	c_decimal"*
-c_dec0
-Rmysql_typesb	decimalzc_dec"2
+c_smallint*UQ
+c_mediumint0ÿÿÿÿÿÿÿÿÿRpublicmysql_numeric_typesb	mediumintzc_mediumint*C?
+c_int0ÿÿÿÿÿÿÿÿÿRpublicmysql_numeric_typesbintzc_int*KG
+	c_integer0ÿÿÿÿÿÿÿÿÿRpublicmysql_numeric_typesbintz	c_integer*LH
+c_bigint0ÿÿÿÿÿÿÿÿÿRpublicmysql_numeric_typesbbigintzc_bigint*I	E
+c_float0ÿÿÿÿÿÿÿÿÿRpublicmysql_numeric_typesbfloatzc_float*F
+B
 	c_numeric0
-Rmysql_typesb	decimalz	c_numeric".
+Rpublicmysql_numeric_typesb	decimalz	c_numeric*FB
+	c_decimal0
+Rpublicmysql_numeric_typesb	decimalz	c_decimal*>:
+c_dec0
+Rpublicmysql_numeric_typesb	decimalzc_dec*B>
 c_fixed0
-Rmysql_typesb	decimalzc_fixed"8
-c_double0ÿÿÿÿÿÿÿÿÿRmysql_typesbdoublezc_double"L
-c_double_precision0ÿÿÿÿÿÿÿÿÿRmysql_typesbdoublezc_double_precision"2
-c_char0ÿÿÿÿÿÿÿÿÿRmysql_typesbcharzc_char"4
-c_nchar0ÿÿÿÿÿÿÿÿÿRmysql_typesbcharzc_nchar"D
-c_national_char0ÿÿÿÿÿÿÿÿÿRmysql_typesbcharzc_national_char"2
-	c_varchar0dRmysql_typesb	varcharz	c_varchar">
+Rpublicmysql_numeric_typesb	decimalzc_fixed*LH
+c_double0ÿÿÿÿÿÿÿÿÿRpublicmysql_numeric_typesbdoublezc_double*`\
+c_double_precision0ÿÿÿÿÿÿÿÿÿRpublicmysql_numeric_typesbdoublezc_double_precision:	query.sqlBmysql_numeric_types¨	
+ÆSELECT c_bool, c_boolean, c_tinyint, c_smallint, c_mediumint, c_int, c_integer, c_bigint, c_float, c_decimal, c_dec, c_numeric, c_fixed, c_double, c_double_precision FROM mysql_numeric_types LIMIT 1GetMysqlNumericTypes:one"4
+c_bool0Rmysql_numeric_typesb	tinyintzc_bool":
+	c_boolean0Rmysql_numeric_typesb	tinyintz	c_boolean":
+	c_tinyint0Rmysql_numeric_typesb	tinyintz	c_tinyint"F
 
-c_tinytext0ÿÿÿÿÿÿÿÿÿRmysql_typesb
-tinytextz
-c_tinytext"D
-c_mediumtext0ÿÿÿÿÿÿÿÿÿRmysql_typesb
-mediumtextzc_mediumtext"2
-c_text0ÿÿÿÿÿÿÿÿÿRmysql_typesbtextzc_text">
-
-c_longtext0ÿÿÿÿÿÿÿÿÿRmysql_typesb
-longtextz
-c_longtext"2
-c_json0ÿÿÿÿÿÿÿÿÿRmysql_typesbjsonzc_json"R
-c_json_string_override0ÿÿÿÿÿÿÿÿÿRmysql_typesbjsonzc_json_string_override"7
-c_enum0Rmysql_typesbmysql_types_c_enumzc_enum"4
-c_set0Rmysql_typesbmysql_types_c_setzc_set:	query.sqlª
-ÏSELECT
+c_smallint0ÿÿÿÿÿÿÿÿÿRmysql_numeric_typesb
+smallintz
+c_smallint"I
+c_mediumint0ÿÿÿÿÿÿÿÿÿRmysql_numeric_typesb	mediumintzc_mediumint"7
+c_int0ÿÿÿÿÿÿÿÿÿRmysql_numeric_typesbintzc_int"?
+	c_integer0ÿÿÿÿÿÿÿÿÿRmysql_numeric_typesbintz	c_integer"@
+c_bigint0ÿÿÿÿÿÿÿÿÿRmysql_numeric_typesbbigintzc_bigint"=
+c_float0ÿÿÿÿÿÿÿÿÿRmysql_numeric_typesbfloatzc_float":
+	c_decimal0
+Rmysql_numeric_typesb	decimalz	c_decimal"2
+c_dec0
+Rmysql_numeric_typesb	decimalzc_dec":
+	c_numeric0
+Rmysql_numeric_typesb	decimalz	c_numeric"6
+c_fixed0
+Rmysql_numeric_typesb	decimalzc_fixed"@
+c_double0ÿÿÿÿÿÿÿÿÿRmysql_numeric_typesbdoublezc_double"T
+c_double_precision0ÿÿÿÿÿÿÿÿÿRmysql_numeric_typesbdoublezc_double_precision:	query.sql†
+SELECT
     COUNT(*) AS cnt,
     c_bool,
     c_boolean,
@@ -277,20 +209,8 @@ c_longtext"2
     c_dec,
     c_fixed,
     c_double,
-    c_double_precision,
-    c_char,
-    c_nchar,
-    c_national_char,
-    c_varchar,
-    c_tinytext,
-    c_mediumtext,
-    c_text,
-    c_longtext,
-    c_json,
-    c_json_string_override,
-    c_enum,
-    c_set
-FROM mysql_types
+    c_double_precision
+FROM mysql_numeric_types
 GROUP BY
     c_bool,
     c_boolean,
@@ -300,7 +220,136 @@ GROUP BY
     c_int,
     c_integer,
     c_bigint,
-    c_float, c_numeric, c_decimal, c_dec, c_fixed, c_double, c_double_precision,
+    c_float, 
+    c_numeric, 
+    c_decimal, 
+    c_dec, 
+    c_fixed, 
+    c_double, 
+    c_double_precision
+LIMIT 1GetMysqlNumericTypesCnt:one"
+cnt0ÿÿÿÿÿÿÿÿÿ@bbigint"4
+c_bool0Rmysql_numeric_typesb	tinyintzc_bool":
+	c_boolean0Rmysql_numeric_typesb	tinyintz	c_boolean":
+	c_tinyint0Rmysql_numeric_typesb	tinyintz	c_tinyint"F
+
+c_smallint0ÿÿÿÿÿÿÿÿÿRmysql_numeric_typesb
+smallintz
+c_smallint"I
+c_mediumint0ÿÿÿÿÿÿÿÿÿRmysql_numeric_typesb	mediumintzc_mediumint"7
+c_int0ÿÿÿÿÿÿÿÿÿRmysql_numeric_typesbintzc_int"?
+	c_integer0ÿÿÿÿÿÿÿÿÿRmysql_numeric_typesbintz	c_integer"@
+c_bigint0ÿÿÿÿÿÿÿÿÿRmysql_numeric_typesbbigintzc_bigint"=
+c_float0ÿÿÿÿÿÿÿÿÿRmysql_numeric_typesbfloatzc_float":
+	c_numeric0
+Rmysql_numeric_typesb	decimalz	c_numeric":
+	c_decimal0
+Rmysql_numeric_typesb	decimalz	c_decimal"2
+c_dec0
+Rmysql_numeric_typesb	decimalzc_dec"6
+c_fixed0
+Rmysql_numeric_typesb	decimalzc_fixed"@
+c_double0ÿÿÿÿÿÿÿÿÿRmysql_numeric_typesbdoublezc_double"T
+c_double_precision0ÿÿÿÿÿÿÿÿÿRmysql_numeric_typesbdoublezc_double_precision:	query.sqlQ
+"TRUNCATE TABLE mysql_numeric_typesTruncateMysqlNumericTypes:exec:	query.sql¥
+
+‹
+INSERT INTO mysql_string_types 
+(
+    c_char,
+    c_nchar,
+    c_national_char,
+    c_varchar,
+    c_tinytext,
+    c_mediumtext,
+    c_text,
+    c_longtext, 
+    c_json,
+    c_json_string_override,
+    c_enum,
+    c_set
+) 
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)InsertMysqlStringTypes:exec*EA
+c_char0ÿÿÿÿÿÿÿÿÿRpublicmysql_string_typesbcharzc_char*GC
+c_nchar0ÿÿÿÿÿÿÿÿÿRpublicmysql_string_typesbcharzc_nchar*WS
+c_national_char0ÿÿÿÿÿÿÿÿÿRpublicmysql_string_typesbcharzc_national_char*EA
+	c_varchar0dRpublicmysql_string_typesb	varcharz	c_varchar*QM
+
+c_tinytext0ÿÿÿÿÿÿÿÿÿRpublicmysql_string_typesb
+tinytextz
+c_tinytext*WS
+c_mediumtext0ÿÿÿÿÿÿÿÿÿRpublicmysql_string_typesb
+mediumtextzc_mediumtext*EA
+c_text0ÿÿÿÿÿÿÿÿÿRpublicmysql_string_typesbtextzc_text*QM
+
+c_longtext0ÿÿÿÿÿÿÿÿÿRpublicmysql_string_typesb
+longtextz
+c_longtext*E	A
+c_json0ÿÿÿÿÿÿÿÿÿRpublicmysql_string_typesbjsonzc_json*e
+a
+c_json_string_override0ÿÿÿÿÿÿÿÿÿRpublicmysql_string_typesbjsonzc_json_string_override*QM
+c_enum0Rpublicmysql_string_typesbmysql_string_types_c_enumzc_enum*NJ
+c_set0Rpublicmysql_string_typesbmysql_string_types_c_setzc_set2 String types :	query.sqlBmysql_string_types
+
+ŠINSERT INTO mysql_string_types 
+(
+    c_char,
+    c_nchar,
+    c_national_char,
+    c_varchar,
+    c_tinytext,
+    c_mediumtext,
+    c_text,
+    c_longtext, 
+    c_json,
+    c_json_string_override,
+    c_enum,
+    c_set
+) 
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)InsertMysqlStringTypesBatch	:copyfrom*EA
+c_char0ÿÿÿÿÿÿÿÿÿRpublicmysql_string_typesbcharzc_char*GC
+c_nchar0ÿÿÿÿÿÿÿÿÿRpublicmysql_string_typesbcharzc_nchar*WS
+c_national_char0ÿÿÿÿÿÿÿÿÿRpublicmysql_string_typesbcharzc_national_char*EA
+	c_varchar0dRpublicmysql_string_typesb	varcharz	c_varchar*QM
+
+c_tinytext0ÿÿÿÿÿÿÿÿÿRpublicmysql_string_typesb
+tinytextz
+c_tinytext*WS
+c_mediumtext0ÿÿÿÿÿÿÿÿÿRpublicmysql_string_typesb
+mediumtextzc_mediumtext*EA
+c_text0ÿÿÿÿÿÿÿÿÿRpublicmysql_string_typesbtextzc_text*QM
+
+c_longtext0ÿÿÿÿÿÿÿÿÿRpublicmysql_string_typesb
+longtextz
+c_longtext*E	A
+c_json0ÿÿÿÿÿÿÿÿÿRpublicmysql_string_typesbjsonzc_json*e
+a
+c_json_string_override0ÿÿÿÿÿÿÿÿÿRpublicmysql_string_typesbjsonzc_json_string_override*QM
+c_enum0Rpublicmysql_string_typesbmysql_string_types_c_enumzc_enum*NJ
+c_set0Rpublicmysql_string_typesbmysql_string_types_c_setzc_set:	query.sqlBmysql_string_types
+¯SELECT c_char, c_nchar, c_national_char, c_varchar, c_tinytext, c_mediumtext, c_text, c_longtext, c_json, c_json_string_override, c_enum, c_set FROM mysql_string_types LIMIT 1GetMysqlStringTypes:one"9
+c_char0ÿÿÿÿÿÿÿÿÿRmysql_string_typesbcharzc_char";
+c_nchar0ÿÿÿÿÿÿÿÿÿRmysql_string_typesbcharzc_nchar"K
+c_national_char0ÿÿÿÿÿÿÿÿÿRmysql_string_typesbcharzc_national_char"9
+	c_varchar0dRmysql_string_typesb	varcharz	c_varchar"E
+
+c_tinytext0ÿÿÿÿÿÿÿÿÿRmysql_string_typesb
+tinytextz
+c_tinytext"K
+c_mediumtext0ÿÿÿÿÿÿÿÿÿRmysql_string_typesb
+mediumtextzc_mediumtext"9
+c_text0ÿÿÿÿÿÿÿÿÿRmysql_string_typesbtextzc_text"E
+
+c_longtext0ÿÿÿÿÿÿÿÿÿRmysql_string_typesb
+longtextz
+c_longtext"9
+c_json0ÿÿÿÿÿÿÿÿÿRmysql_string_typesbjsonzc_json"Y
+c_json_string_override0ÿÿÿÿÿÿÿÿÿRmysql_string_typesbjsonzc_json_string_override"E
+c_enum0Rmysql_string_typesbmysql_string_types_c_enumzc_enum"B
+c_set0Rmysql_string_typesbmysql_string_types_c_setzc_set:	query.sql¹
+
+¶SELECT
+    COUNT(*) AS cnt,
     c_char,
     c_nchar,
     c_national_char,
@@ -313,50 +362,42 @@ GROUP BY
     c_json_string_override,
     c_enum,
     c_set
-LIMIT 1GetMysqlTypesCnt:one"
-cnt0ÿÿÿÿÿÿÿÿÿ@bbigint",
-c_bool0Rmysql_typesb	tinyintzc_bool"2
-	c_boolean0Rmysql_typesb	tinyintz	c_boolean"2
-	c_tinyint0Rmysql_typesb	tinyintz	c_tinyint">
+FROM mysql_string_types
+GROUP BY
+    c_char,
+    c_nchar,
+    c_national_char,
+    c_varchar,
+    c_tinytext,
+    c_mediumtext,
+    c_text,
+    c_longtext,
+    c_json,
+    c_json_string_override,
+    c_enum,
+    c_set
+LIMIT 1GetMysqlStringTypesCnt:one"
+cnt0ÿÿÿÿÿÿÿÿÿ@bbigint"9
+c_char0ÿÿÿÿÿÿÿÿÿRmysql_string_typesbcharzc_char";
+c_nchar0ÿÿÿÿÿÿÿÿÿRmysql_string_typesbcharzc_nchar"K
+c_national_char0ÿÿÿÿÿÿÿÿÿRmysql_string_typesbcharzc_national_char"9
+	c_varchar0dRmysql_string_typesb	varcharz	c_varchar"E
 
-c_smallint0ÿÿÿÿÿÿÿÿÿRmysql_typesb
-smallintz
-c_smallint"A
-c_mediumint0ÿÿÿÿÿÿÿÿÿRmysql_typesb	mediumintzc_mediumint"/
-c_int0ÿÿÿÿÿÿÿÿÿRmysql_typesbintzc_int"7
-	c_integer0ÿÿÿÿÿÿÿÿÿRmysql_typesbintz	c_integer"8
-c_bigint0ÿÿÿÿÿÿÿÿÿRmysql_typesbbigintzc_bigint"5
-c_float0ÿÿÿÿÿÿÿÿÿRmysql_typesbfloatzc_float"2
-	c_numeric0
-Rmysql_typesb	decimalz	c_numeric"2
-	c_decimal0
-Rmysql_typesb	decimalz	c_decimal"*
-c_dec0
-Rmysql_typesb	decimalzc_dec".
-c_fixed0
-Rmysql_typesb	decimalzc_fixed"8
-c_double0ÿÿÿÿÿÿÿÿÿRmysql_typesbdoublezc_double"L
-c_double_precision0ÿÿÿÿÿÿÿÿÿRmysql_typesbdoublezc_double_precision"2
-c_char0ÿÿÿÿÿÿÿÿÿRmysql_typesbcharzc_char"4
-c_nchar0ÿÿÿÿÿÿÿÿÿRmysql_typesbcharzc_nchar"D
-c_national_char0ÿÿÿÿÿÿÿÿÿRmysql_typesbcharzc_national_char"2
-	c_varchar0dRmysql_typesb	varcharz	c_varchar">
-
-c_tinytext0ÿÿÿÿÿÿÿÿÿRmysql_typesb
+c_tinytext0ÿÿÿÿÿÿÿÿÿRmysql_string_typesb
 tinytextz
-c_tinytext"D
-c_mediumtext0ÿÿÿÿÿÿÿÿÿRmysql_typesb
-mediumtextzc_mediumtext"2
-c_text0ÿÿÿÿÿÿÿÿÿRmysql_typesbtextzc_text">
+c_tinytext"K
+c_mediumtext0ÿÿÿÿÿÿÿÿÿRmysql_string_typesb
+mediumtextzc_mediumtext"9
+c_text0ÿÿÿÿÿÿÿÿÿRmysql_string_typesbtextzc_text"E
 
-c_longtext0ÿÿÿÿÿÿÿÿÿRmysql_typesb
+c_longtext0ÿÿÿÿÿÿÿÿÿRmysql_string_typesb
 longtextz
-c_longtext"2
-c_json0ÿÿÿÿÿÿÿÿÿRmysql_typesbjsonzc_json"R
-c_json_string_override0ÿÿÿÿÿÿÿÿÿRmysql_typesbjsonzc_json_string_override"7
-c_enum0Rmysql_typesbmysql_types_c_enumzc_enum"4
-c_set0Rmysql_typesbmysql_types_c_setzc_set:	query.sqlB
-TRUNCATE TABLE mysql_typesTruncateMysqlTypes:exec:	query.sqlÈ
+c_longtext"9
+c_json0ÿÿÿÿÿÿÿÿÿRmysql_string_typesbjsonzc_json"Y
+c_json_string_override0ÿÿÿÿÿÿÿÿÿRmysql_string_typesbjsonzc_json_string_override"E
+c_enum0Rmysql_string_typesbmysql_string_types_c_enumzc_enum"B
+c_set0Rmysql_string_typesbmysql_string_types_c_setzc_set:	query.sqlO
+!TRUNCATE TABLE mysql_string_typesTruncateMysqlStringTypes:exec:	query.sqlÈ
 ‚
 INSERT INTO mysql_datetime_types 
 (
@@ -534,13 +575,14 @@ mediumblobzc_mediumblob"E
 c_longblob0ÿÿÿÿÿÿÿÿÿRmysql_binary_typesb
 longblobz
 c_longblob:	query.sqlO
-!TRUNCATE TABLE mysql_binary_typesTruncateMysqlBinaryTypes:exec:	query.sql½
-œ
+!TRUNCATE TABLE mysql_binary_typesTruncateMysqlBinaryTypes:exec:	query.sqlã
+Â
 SELECT
     MAX(c_int) AS max_int,
     MAX(c_varchar) AS max_varchar,
     MAX(c_timestamp) AS max_timestamp
-FROM mysql_types
+FROM mysql_numeric_types
+CROSS JOIN mysql_string_types
 CROSS JOIN mysql_datetime_typesGetMysqlFunctions:one"
 max_int0ÿÿÿÿÿÿÿÿÿ@bany"#
 max_varchar0ÿÿÿÿÿÿÿÿÿ@bany"%

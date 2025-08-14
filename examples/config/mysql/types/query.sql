@@ -1,7 +1,7 @@
-/* Basic types */
+/* Numeric types */
 
--- name: InsertMysqlTypes :exec
-INSERT INTO mysql_types 
+-- name: InsertMysqlNumericTypes :exec
+INSERT INTO mysql_numeric_types 
 (
     c_bool,
     c_boolean,
@@ -11,24 +11,18 @@ INSERT INTO mysql_types
     c_int,
     c_integer,
     c_bigint, 
-    c_decimal, c_dec, c_numeric, c_fixed, c_float, c_double, c_double_precision, 
-    c_char,
-    c_nchar,
-    c_national_char,
-    c_varchar,
-    c_tinytext,
-    c_mediumtext,
-    c_text,
-    c_longtext, 
-    c_json,
-    c_json_string_override,
-    c_enum,
-    c_set
+    c_decimal, 
+    c_dec, 
+    c_numeric, 
+    c_fixed, 
+    c_float, 
+    c_double, 
+    c_double_precision
 ) 
-VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
 
--- name: InsertMysqlTypesBatch :copyfrom
-INSERT INTO mysql_types 
+-- name: InsertMysqlNumericTypesBatch :copyfrom
+INSERT INTO mysql_numeric_types 
 (
     c_bool,
     c_boolean,
@@ -38,26 +32,20 @@ INSERT INTO mysql_types
     c_int,
     c_integer,
     c_bigint, 
-    c_float, c_numeric, c_decimal, c_dec, c_fixed, c_double, c_double_precision, 
-    c_char,
-    c_nchar,
-    c_national_char,
-    c_varchar,
-    c_tinytext,
-    c_mediumtext,
-    c_text,
-    c_longtext, 
-    c_json,
-    c_json_string_override,
-    c_enum,
-    c_set
+    c_float, 
+    c_numeric, 
+    c_decimal, 
+    c_dec, 
+    c_fixed, 
+    c_double, 
+    c_double_precision
 ) 
-VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
 
--- name: GetMysqlTypes :one
-SELECT * FROM mysql_types LIMIT 1;
+-- name: GetMysqlNumericTypes :one
+SELECT * FROM mysql_numeric_types LIMIT 1;
 
--- name: GetMysqlTypesCnt :one
+-- name: GetMysqlNumericTypesCnt :one
 SELECT
     COUNT(*) AS cnt,
     c_bool,
@@ -74,7 +62,73 @@ SELECT
     c_dec,
     c_fixed,
     c_double,
-    c_double_precision,
+    c_double_precision
+FROM mysql_numeric_types
+GROUP BY
+    c_bool,
+    c_boolean,
+    c_tinyint,
+    c_smallint,
+    c_mediumint,
+    c_int,
+    c_integer,
+    c_bigint,
+    c_float,
+    c_numeric,
+    c_decimal,
+    c_dec,
+    c_fixed,
+    c_double,
+    c_double_precision
+LIMIT 1;
+
+-- name: TruncateMysqlNumericTypes :exec
+TRUNCATE TABLE mysql_numeric_types;
+
+/* String types */
+
+-- name: InsertMysqlStringTypes :exec
+INSERT INTO mysql_string_types 
+(
+    c_char,
+    c_nchar,
+    c_national_char,
+    c_varchar,
+    c_tinytext,
+    c_mediumtext,
+    c_text,
+    c_longtext, 
+    c_json,
+    c_json_string_override,
+    c_enum,
+    c_set
+) 
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+
+-- name: InsertMysqlStringTypesBatch :copyfrom
+INSERT INTO mysql_string_types 
+(
+    c_char,
+    c_nchar,
+    c_national_char,
+    c_varchar,
+    c_tinytext,
+    c_mediumtext,
+    c_text,
+    c_longtext, 
+    c_json,
+    c_json_string_override,
+    c_enum,
+    c_set
+) 
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+
+-- name: GetMysqlStringTypes :one
+SELECT * FROM mysql_string_types LIMIT 1;
+
+-- name: GetMysqlStringTypesCnt :one
+SELECT
+    COUNT(*) AS cnt,
     c_char,
     c_nchar,
     c_national_char,
@@ -87,17 +141,8 @@ SELECT
     c_json_string_override,
     c_enum,
     c_set
-FROM mysql_types
+FROM mysql_string_types
 GROUP BY
-    c_bool,
-    c_boolean,
-    c_tinyint,
-    c_smallint,
-    c_mediumint,
-    c_int,
-    c_integer,
-    c_bigint,
-    c_float, c_numeric, c_decimal, c_dec, c_fixed, c_double, c_double_precision,
     c_char,
     c_nchar,
     c_national_char,
@@ -112,8 +157,8 @@ GROUP BY
     c_set
 LIMIT 1;
 
--- name: TruncateMysqlTypes :exec
-TRUNCATE TABLE mysql_types;
+-- name: TruncateMysqlStringTypes :exec
+TRUNCATE TABLE mysql_string_types;
 
 /* Datetime types */
 
@@ -224,5 +269,6 @@ SELECT
     MAX(c_int) AS max_int,
     MAX(c_varchar) AS max_varchar,
     MAX(c_timestamp) AS max_timestamp
-FROM mysql_types
+FROM mysql_numeric_types
+CROSS JOIN mysql_string_types
 CROSS JOIN mysql_datetime_types;

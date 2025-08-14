@@ -5,13 +5,14 @@ using System.Linq;
 using System.Text.Json;
 
 namespace MySqlConnectorExampleGen;
-public readonly record struct MysqlType(bool? CBool, bool? CBoolean, short? CTinyint, short? CSmallint, int? CMediumint, int? CInt, int? CInteger, long? CBigint, double? CFloat, decimal? CDecimal, decimal? CDec, decimal? CNumeric, decimal? CFixed, double? CDouble, double? CDoublePrecision, string? CChar, string? CNchar, string? CNationalChar, string? CVarchar, string? CTinytext, string? CMediumtext, string? CText, string? CLongtext, JsonElement? CJson, JsonElement? CJsonStringOverride, MysqlTypesCEnum? CEnum, HashSet<MysqlTypesCSet>? CSet);
+public readonly record struct MysqlNumericType(bool? CBool, bool? CBoolean, short? CTinyint, short? CSmallint, int? CMediumint, int? CInt, int? CInteger, long? CBigint, double? CFloat, decimal? CDecimal, decimal? CDec, decimal? CNumeric, decimal? CFixed, double? CDouble, double? CDoublePrecision);
+public readonly record struct MysqlStringType(string? CChar, string? CNchar, string? CNationalChar, string? CVarchar, string? CTinytext, string? CMediumtext, string? CText, string? CLongtext, JsonElement? CJson, JsonElement? CJsonStringOverride, MysqlStringTypesCEnum? CEnum, HashSet<MysqlStringTypesCSet>? CSet);
 public readonly record struct MysqlDatetimeType(short? CYear, DateTime? CDate, DateTime? CDatetime, DateTime? CTimestamp, TimeSpan? CTime);
 public readonly record struct MysqlBinaryType(byte? CBit, byte[]? CBinary, byte[]? CVarbinary, byte[]? CTinyblob, byte[]? CBlob, byte[]? CMediumblob, byte[]? CLongblob);
 public readonly record struct Author(long Id, string Name, string? Bio);
 public readonly record struct Book(long Id, string Name, long AuthorId, string? Description);
 public readonly record struct ExtendedBio(string? AuthorName, string? Name, ExtendedBiosBioType? BioType, HashSet<ExtendedBiosAuthorType>? AuthorType);
-public enum MysqlTypesCEnum
+public enum MysqlStringTypesCEnum
 {
     Invalid = 0, // reserved for invalid enum value
     Small = 1,
@@ -19,27 +20,27 @@ public enum MysqlTypesCEnum
     Big = 3
 }
 
-public static class MysqlTypesCEnumExtensions
+public static class MysqlStringTypesCEnumExtensions
 {
-    private static readonly Dictionary<string, MysqlTypesCEnum> StringToEnum = new Dictionary<string, MysqlTypesCEnum>()
+    private static readonly Dictionary<string, MysqlStringTypesCEnum> StringToEnum = new Dictionary<string, MysqlStringTypesCEnum>()
     {
-        [string.Empty] = MysqlTypesCEnum.Invalid,
-        ["small"] = MysqlTypesCEnum.Small,
-        ["medium"] = MysqlTypesCEnum.Medium,
-        ["big"] = MysqlTypesCEnum.Big
+        [string.Empty] = MysqlStringTypesCEnum.Invalid,
+        ["small"] = MysqlStringTypesCEnum.Small,
+        ["medium"] = MysqlStringTypesCEnum.Medium,
+        ["big"] = MysqlStringTypesCEnum.Big
     };
-    public static MysqlTypesCEnum ToMysqlTypesCEnum(this string me)
+    public static MysqlStringTypesCEnum ToMysqlStringTypesCEnum(this string me)
     {
         return StringToEnum[me];
     }
 
-    public static HashSet<MysqlTypesCEnum> ToMysqlTypesCEnumSet(this string me)
+    public static HashSet<MysqlStringTypesCEnum> ToMysqlStringTypesCEnumSet(this string me)
     {
-        return new HashSet<MysqlTypesCEnum>(me.Split(',').ToList().Select(v => StringToEnum[v]));
+        return new HashSet<MysqlStringTypesCEnum>(me.Split(',').ToList().Select(v => StringToEnum[v]));
     }
 }
 
-public enum MysqlTypesCSet
+public enum MysqlStringTypesCSet
 {
     Invalid = 0, // reserved for invalid enum value
     Tea = 1,
@@ -47,23 +48,23 @@ public enum MysqlTypesCSet
     Milk = 3
 }
 
-public static class MysqlTypesCSetExtensions
+public static class MysqlStringTypesCSetExtensions
 {
-    private static readonly Dictionary<string, MysqlTypesCSet> StringToEnum = new Dictionary<string, MysqlTypesCSet>()
+    private static readonly Dictionary<string, MysqlStringTypesCSet> StringToEnum = new Dictionary<string, MysqlStringTypesCSet>()
     {
-        [string.Empty] = MysqlTypesCSet.Invalid,
-        ["tea"] = MysqlTypesCSet.Tea,
-        ["coffee"] = MysqlTypesCSet.Coffee,
-        ["milk"] = MysqlTypesCSet.Milk
+        [string.Empty] = MysqlStringTypesCSet.Invalid,
+        ["tea"] = MysqlStringTypesCSet.Tea,
+        ["coffee"] = MysqlStringTypesCSet.Coffee,
+        ["milk"] = MysqlStringTypesCSet.Milk
     };
-    public static MysqlTypesCSet ToMysqlTypesCSet(this string me)
+    public static MysqlStringTypesCSet ToMysqlStringTypesCSet(this string me)
     {
         return StringToEnum[me];
     }
 
-    public static HashSet<MysqlTypesCSet> ToMysqlTypesCSetSet(this string me)
+    public static HashSet<MysqlStringTypesCSet> ToMysqlStringTypesCSetSet(this string me)
     {
-        return new HashSet<MysqlTypesCSet>(me.Split(',').ToList().Select(v => StringToEnum[v]));
+        return new HashSet<MysqlStringTypesCSet>(me.Split(',').ToList().Select(v => StringToEnum[v]));
     }
 }
 

@@ -6,7 +6,7 @@ namespace MySqlConnectorLegacyExampleGen
     using System.Linq;
     using System.Text.Json;
 
-    public class MysqlType
+    public class MysqlNumericType
     {
         public bool? CBool { get; set; }
         public bool? CBoolean { get; set; }
@@ -23,6 +23,9 @@ namespace MySqlConnectorLegacyExampleGen
         public decimal? CFixed { get; set; }
         public double? CDouble { get; set; }
         public double? CDoublePrecision { get; set; }
+    };
+    public class MysqlStringType
+    {
         public string CChar { get; set; }
         public string CNchar { get; set; }
         public string CNationalChar { get; set; }
@@ -33,8 +36,8 @@ namespace MySqlConnectorLegacyExampleGen
         public string CLongtext { get; set; }
         public JsonElement? CJson { get; set; }
         public JsonElement? CJsonStringOverride { get; set; }
-        public MysqlTypesCEnum? CEnum { get; set; }
-        public HashSet<MysqlTypesCSet> CSet { get; set; }
+        public MysqlStringTypesCEnum? CEnum { get; set; }
+        public HashSet<MysqlStringTypesCSet> CSet { get; set; }
     };
     public class MysqlDatetimeType
     {
@@ -74,7 +77,7 @@ namespace MySqlConnectorLegacyExampleGen
         public ExtendedBiosBioType? BioType { get; set; }
         public HashSet<ExtendedBiosAuthorType> AuthorType { get; set; }
     };
-    public enum MysqlTypesCEnum
+    public enum MysqlStringTypesCEnum
     {
         Invalid = 0, // reserved for invalid enum value
         Small = 1,
@@ -82,27 +85,27 @@ namespace MySqlConnectorLegacyExampleGen
         Big = 3
     }
 
-    public static class MysqlTypesCEnumExtensions
+    public static class MysqlStringTypesCEnumExtensions
     {
-        private static readonly Dictionary<string, MysqlTypesCEnum> StringToEnum = new Dictionary<string, MysqlTypesCEnum>()
+        private static readonly Dictionary<string, MysqlStringTypesCEnum> StringToEnum = new Dictionary<string, MysqlStringTypesCEnum>()
         {
-            [string.Empty] = MysqlTypesCEnum.Invalid,
-            ["small"] = MysqlTypesCEnum.Small,
-            ["medium"] = MysqlTypesCEnum.Medium,
-            ["big"] = MysqlTypesCEnum.Big
+            [string.Empty] = MysqlStringTypesCEnum.Invalid,
+            ["small"] = MysqlStringTypesCEnum.Small,
+            ["medium"] = MysqlStringTypesCEnum.Medium,
+            ["big"] = MysqlStringTypesCEnum.Big
         };
-        public static MysqlTypesCEnum ToMysqlTypesCEnum(this string me)
+        public static MysqlStringTypesCEnum ToMysqlStringTypesCEnum(this string me)
         {
             return StringToEnum[me];
         }
 
-        public static HashSet<MysqlTypesCEnum> ToMysqlTypesCEnumSet(this string me)
+        public static HashSet<MysqlStringTypesCEnum> ToMysqlStringTypesCEnumSet(this string me)
         {
-            return new HashSet<MysqlTypesCEnum>(me.Split(',').ToList().Select(v => StringToEnum[v]));
+            return new HashSet<MysqlStringTypesCEnum>(me.Split(',').ToList().Select(v => StringToEnum[v]));
         }
     }
 
-    public enum MysqlTypesCSet
+    public enum MysqlStringTypesCSet
     {
         Invalid = 0, // reserved for invalid enum value
         Tea = 1,
@@ -110,23 +113,23 @@ namespace MySqlConnectorLegacyExampleGen
         Milk = 3
     }
 
-    public static class MysqlTypesCSetExtensions
+    public static class MysqlStringTypesCSetExtensions
     {
-        private static readonly Dictionary<string, MysqlTypesCSet> StringToEnum = new Dictionary<string, MysqlTypesCSet>()
+        private static readonly Dictionary<string, MysqlStringTypesCSet> StringToEnum = new Dictionary<string, MysqlStringTypesCSet>()
         {
-            [string.Empty] = MysqlTypesCSet.Invalid,
-            ["tea"] = MysqlTypesCSet.Tea,
-            ["coffee"] = MysqlTypesCSet.Coffee,
-            ["milk"] = MysqlTypesCSet.Milk
+            [string.Empty] = MysqlStringTypesCSet.Invalid,
+            ["tea"] = MysqlStringTypesCSet.Tea,
+            ["coffee"] = MysqlStringTypesCSet.Coffee,
+            ["milk"] = MysqlStringTypesCSet.Milk
         };
-        public static MysqlTypesCSet ToMysqlTypesCSet(this string me)
+        public static MysqlStringTypesCSet ToMysqlStringTypesCSet(this string me)
         {
             return StringToEnum[me];
         }
 
-        public static HashSet<MysqlTypesCSet> ToMysqlTypesCSetSet(this string me)
+        public static HashSet<MysqlStringTypesCSet> ToMysqlStringTypesCSetSet(this string me)
         {
-            return new HashSet<MysqlTypesCSet>(me.Split(',').ToList().Select(v => StringToEnum[v]));
+            return new HashSet<MysqlStringTypesCSet>(me.Split(',').ToList().Select(v => StringToEnum[v]));
         }
     }
 

@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Text.Json;
 
 namespace EndToEndScaffold.Templates;
 
@@ -23,7 +22,7 @@ public static class MySqlTests
                          string cText,
                          string cLongtext)
                      {
-                         await QuerySql.InsertMysqlTypes(new QuerySql.InsertMysqlTypesArgs
+                         await QuerySql.InsertMysqlStringTypes(new QuerySql.InsertMysqlStringTypesArgs
                          {
                               CChar = cChar,
                               CNchar = cNchar,
@@ -35,7 +34,7 @@ public static class MySqlTests
                               CLongtext = cLongtext
                          });
                          
-                         var expected = new QuerySql.GetMysqlTypesRow
+                         var expected = new QuerySql.GetMysqlStringTypesRow
                          {
                               CChar = cChar,
                               CNchar = cNchar,
@@ -46,10 +45,10 @@ public static class MySqlTests
                               CText = cText,
                               CLongtext = cLongtext
                          };
-                         var actual = await QuerySql.GetMysqlTypes();
+                         var actual = await QuerySql.GetMysqlStringTypes();
                          AssertSingularEquals(expected, actual{{Consts.UnknownRecordValuePlaceholder}});
 
-                         void AssertSingularEquals(QuerySql.GetMysqlTypesRow x, QuerySql.GetMysqlTypesRow y)
+                         void AssertSingularEquals(QuerySql.GetMysqlStringTypesRow x, QuerySql.GetMysqlStringTypesRow y)
                          {
                              Assert.That(x.CChar, Is.EqualTo(y.CChar));
                              Assert.That(x.CNchar, Is.EqualTo(y.CNchar));
@@ -80,7 +79,7 @@ public static class MySqlTests
                          int? cInteger,
                          long? cBigint)
                      {
-                         await QuerySql.InsertMysqlTypes(new QuerySql.InsertMysqlTypesArgs
+                         await QuerySql.InsertMysqlNumericTypes(new QuerySql.InsertMysqlNumericTypesArgs
                          {
                               CBool = cBool,
                               CBoolean = cBoolean,
@@ -92,7 +91,7 @@ public static class MySqlTests
                               CBigint = cBigint
                          });
                      
-                         var expected = new QuerySql.GetMysqlTypesRow
+                         var expected = new QuerySql.GetMysqlNumericTypesRow
                          {
                              CBool = cBool,
                              CBoolean = cBoolean,
@@ -103,10 +102,10 @@ public static class MySqlTests
                              CInteger = cInteger,
                              CBigint = cBigint
                          };
-                         var actual = await QuerySql.GetMysqlTypes();
+                         var actual = await QuerySql.GetMysqlNumericTypes();
                          AssertSingularEquals(expected, actual{{Consts.UnknownRecordValuePlaceholder}});
 
-                         void AssertSingularEquals(QuerySql.GetMysqlTypesRow x, QuerySql.GetMysqlTypesRow y)
+                         void AssertSingularEquals(QuerySql.GetMysqlNumericTypesRow x, QuerySql.GetMysqlNumericTypesRow y)
                          {
                              Assert.That(x.CBool, Is.EqualTo(y.CBool));
                              Assert.That(x.CBoolean, Is.EqualTo(y.CBoolean));
@@ -135,7 +134,7 @@ public static class MySqlTests
                          double? cDouble,
                          double? cDoublePrecision)
                      {
-                         await QuerySql.InsertMysqlTypes(new QuerySql.InsertMysqlTypesArgs
+                         await QuerySql.InsertMysqlNumericTypes(new QuerySql.InsertMysqlNumericTypesArgs
                          {
                               CFloat = cFloat,
                               CNumeric = cNumeric,
@@ -146,7 +145,7 @@ public static class MySqlTests
                               CDoublePrecision = cDoublePrecision
                          });
                      
-                         var expected = new QuerySql.GetMysqlTypesRow
+                         var expected = new QuerySql.GetMysqlNumericTypesRow
                          {
                               CFloat = cFloat,
                               CNumeric = cNumeric,
@@ -156,10 +155,10 @@ public static class MySqlTests
                               CDouble = cDouble,
                               CDoublePrecision = cDoublePrecision
                          };
-                         var actual = await QuerySql.GetMysqlTypes();
+                         var actual = await QuerySql.GetMysqlNumericTypes();
                          AssertSingularEquals(expected, actual{{Consts.UnknownRecordValuePlaceholder}});
 
-                         void AssertSingularEquals(QuerySql.GetMysqlTypesRow x, QuerySql.GetMysqlTypesRow y)
+                         void AssertSingularEquals(QuerySql.GetMysqlNumericTypesRow x, QuerySql.GetMysqlNumericTypesRow y)
                          {
                              Assert.That(x.CFloat, Is.EqualTo(y.CFloat));
                              Assert.That(x.CNumeric, Is.EqualTo(y.CNumeric));
@@ -278,8 +277,8 @@ public static class MySqlTests
                          get
                          {
                              yield return new TestCaseData(
-                                 MysqlTypesCEnum.Medium, 
-                                 new HashSet<MysqlTypesCSet> { MysqlTypesCSet.Tea, MysqlTypesCSet.Coffee }
+                                 MysqlStringTypesCEnum.Medium, 
+                                 new HashSet<MysqlStringTypesCSet> { MysqlStringTypesCSet.Tea, MysqlStringTypesCSet.Coffee }
                              ).SetName("Valid Enum values");
 
                              yield return new TestCaseData(
@@ -292,24 +291,24 @@ public static class MySqlTests
                      [Test]
                      [TestCaseSource(nameof(MySqlEnumTypesTestCases))]
                      public async Task TestMySqlStringTypes(
-                         MysqlTypesCEnum? cEnum,
-                         HashSet<MysqlTypesCSet> cSet)
+                         MysqlStringTypesCEnum? cEnum,
+                         HashSet<MysqlStringTypesCSet> cSet)
                      {
-                         await QuerySql.InsertMysqlTypes(new QuerySql.InsertMysqlTypesArgs
+                         await QuerySql.InsertMysqlStringTypes(new QuerySql.InsertMysqlStringTypesArgs
                          {
                               CEnum = cEnum,
                               CSet = cSet
                          });
                          
-                         var expected = new QuerySql.GetMysqlTypesRow
+                         var expected = new QuerySql.GetMysqlStringTypesRow
                          {
                               CEnum = cEnum,    
                               CSet = cSet
                          };
-                         var actual = await QuerySql.GetMysqlTypes();
+                         var actual = await QuerySql.GetMysqlStringTypes();
                          AssertSingularEquals(expected, actual{{Consts.UnknownRecordValuePlaceholder}});
 
-                         void AssertSingularEquals(QuerySql.GetMysqlTypesRow x, QuerySql.GetMysqlTypesRow y)
+                         void AssertSingularEquals(QuerySql.GetMysqlStringTypesRow x, QuerySql.GetMysqlStringTypesRow y)
                          {
                              Assert.That(x.CEnum, Is.EqualTo(y.CEnum));
                              Assert.That(x.CSet, Is.EqualTo(y.CSet));
@@ -335,7 +334,7 @@ public static class MySqlTests
                         string cLongtext)
                      {
                          var batchArgs = Enumerable.Range(0, batchSize)
-                             .Select(_ => new QuerySql.InsertMysqlTypesBatchArgs
+                             .Select(_ => new QuerySql.InsertMysqlStringTypesBatchArgs
                              {
                                  CChar = cChar,
                                  CNchar = cNchar,
@@ -347,8 +346,8 @@ public static class MySqlTests
                                  CLongtext = cLongtext
                              })
                              .ToList();
-                         await QuerySql.InsertMysqlTypesBatch(batchArgs);
-                         var expected = new QuerySql.GetMysqlTypesCntRow
+                         await QuerySql.InsertMysqlStringTypesBatch(batchArgs);
+                         var expected = new QuerySql.GetMysqlStringTypesCntRow
                          {
                              Cnt = batchSize,
                              CChar = cChar,
@@ -361,10 +360,10 @@ public static class MySqlTests
                              CLongtext = cLongtext
                          };
 
-                         var actual = await QuerySql.GetMysqlTypesCnt();
+                         var actual = await QuerySql.GetMysqlStringTypesCnt();
                          AssertSingularEquals(expected, actual{{Consts.UnknownRecordValuePlaceholder}});
 
-                         void AssertSingularEquals(QuerySql.GetMysqlTypesCntRow x, QuerySql.GetMysqlTypesCntRow y)
+                         void AssertSingularEquals(QuerySql.GetMysqlStringTypesCntRow x, QuerySql.GetMysqlStringTypesCntRow y)
                          {          
                              Assert.That(x.Cnt, Is.EqualTo(y.Cnt));
                              Assert.That(x.CChar, Is.EqualTo(y.CChar));
@@ -397,7 +396,7 @@ public static class MySqlTests
                         long? cBigint)
                      {
                          var batchArgs = Enumerable.Range(0, batchSize)
-                             .Select(_ => new QuerySql.InsertMysqlTypesBatchArgs
+                             .Select(_ => new QuerySql.InsertMysqlNumericTypesBatchArgs
                              {
                                  CBool = cBool,
                                  CBoolean = cBoolean,
@@ -409,8 +408,8 @@ public static class MySqlTests
                                  CBigint = cBigint
                              })
                              .ToList();
-                         await QuerySql.InsertMysqlTypesBatch(batchArgs);
-                         var expected = new QuerySql.GetMysqlTypesCntRow
+                         await QuerySql.InsertMysqlNumericTypesBatch(batchArgs);
+                         var expected = new QuerySql.GetMysqlNumericTypesCntRow
                          {
                              Cnt = batchSize,
                              CBool = cBool,
@@ -423,10 +422,10 @@ public static class MySqlTests
                              CBigint = cBigint
                          };
 
-                         var actual = await QuerySql.GetMysqlTypesCnt();
+                         var actual = await QuerySql.GetMysqlNumericTypesCnt();
                          AssertSingularEquals(expected, actual{{Consts.UnknownRecordValuePlaceholder}});
 
-                        void AssertSingularEquals(QuerySql.GetMysqlTypesCntRow x, QuerySql.GetMysqlTypesCntRow y)
+                        void AssertSingularEquals(QuerySql.GetMysqlNumericTypesCntRow x, QuerySql.GetMysqlNumericTypesCntRow y)
                         {
                             Assert.That(x.Cnt, Is.EqualTo(y.Cnt));
                             Assert.That(x.CBool, Is.EqualTo(y.CBool));
@@ -458,7 +457,7 @@ public static class MySqlTests
                         double? cDoublePrecision)
                      {
                          var batchArgs = Enumerable.Range(0, batchSize)
-                             .Select(_ => new QuerySql.InsertMysqlTypesBatchArgs
+                             .Select(_ => new QuerySql.InsertMysqlNumericTypesBatchArgs
                              {
                                  CFloat = cFloat,
                                  CNumeric = cNumeric,
@@ -469,8 +468,8 @@ public static class MySqlTests
                                  CDoublePrecision = cDoublePrecision
                              })
                              .ToList();
-                         await QuerySql.InsertMysqlTypesBatch(batchArgs);
-                         var expected = new QuerySql.GetMysqlTypesCntRow
+                         await QuerySql.InsertMysqlNumericTypesBatch(batchArgs);
+                         var expected = new QuerySql.GetMysqlNumericTypesCntRow
                          {
                              Cnt = batchSize,
                              CFloat = cFloat,
@@ -481,10 +480,10 @@ public static class MySqlTests
                              CDouble = cDouble,
                              CDoublePrecision = cDoublePrecision
                          };
-                         var actual = await QuerySql.GetMysqlTypesCnt();
+                         var actual = await QuerySql.GetMysqlNumericTypesCnt();
                          AssertSingularEquals(expected, actual{{Consts.UnknownRecordValuePlaceholder}});
                          
-                         void AssertSingularEquals(QuerySql.GetMysqlTypesCntRow x, QuerySql.GetMysqlTypesCntRow y)
+                         void AssertSingularEquals(QuerySql.GetMysqlNumericTypesCntRow x, QuerySql.GetMysqlNumericTypesCntRow y)
                          {
                              Assert.That(x.Cnt, Is.EqualTo(y.Cnt));
                              Assert.That(x.CFloat, Is.EqualTo(y.CFloat));
@@ -670,8 +669,8 @@ public static class MySqlTests
                          {
                              yield return new TestCaseData(
                                  100, 
-                                 MysqlTypesCEnum.Big, 
-                                 new HashSet<MysqlTypesCSet> { MysqlTypesCSet.Tea, MysqlTypesCSet.Coffee }
+                                 MysqlStringTypesCEnum.Big, 
+                                 new HashSet<MysqlStringTypesCSet> { MysqlStringTypesCSet.Tea, MysqlStringTypesCSet.Coffee }
                              ).SetName("Valid Enum values");
 
                              yield return new TestCaseData(
@@ -686,27 +685,27 @@ public static class MySqlTests
                      [TestCaseSource(nameof(MySqlEnumCopyFromTestCases))]
                      public async Task TestCopyFrom(
                         int batchSize, 
-                        MysqlTypesCEnum? cEnum,
-                        HashSet<MysqlTypesCSet> cSet)
+                        MysqlStringTypesCEnum? cEnum,
+                        HashSet<MysqlStringTypesCSet> cSet)
                      {
                          var batchArgs = Enumerable.Range(0, batchSize)
-                             .Select(_ => new QuerySql.InsertMysqlTypesBatchArgs
+                             .Select(_ => new QuerySql.InsertMysqlStringTypesBatchArgs
                              {
                                  CEnum = cEnum,
                                  CSet = cSet
                              })
                              .ToList();
-                         await QuerySql.InsertMysqlTypesBatch(batchArgs);
-                         var expected = new QuerySql.GetMysqlTypesCntRow
+                         await QuerySql.InsertMysqlStringTypesBatch(batchArgs);
+                         var expected = new QuerySql.GetMysqlStringTypesCntRow
                          {
                              Cnt = batchSize,
                              CEnum = cEnum,
                              CSet = cSet
                          };
-                         var actual = await QuerySql.GetMysqlTypesCnt();
+                         var actual = await QuerySql.GetMysqlStringTypesCnt();
                          AssertSingularEquals(expected, actual{{Consts.UnknownRecordValuePlaceholder}});
 
-                         void AssertSingularEquals(QuerySql.GetMysqlTypesCntRow x, QuerySql.GetMysqlTypesCntRow y)
+                         void AssertSingularEquals(QuerySql.GetMysqlStringTypesCntRow x, QuerySql.GetMysqlStringTypesCntRow y)
                          {
                              Assert.That(x.Cnt, Is.EqualTo(y.Cnt));
                              Assert.That(x.CEnum, Is.EqualTo(y.CEnum));
@@ -765,20 +764,20 @@ public static class MySqlTests
                          if (cJson != null)
                              cParsedJson = JsonDocument.Parse(cJson).RootElement;
                              
-                         await QuerySql.InsertMysqlTypes(new QuerySql.InsertMysqlTypesArgs
+                         await QuerySql.InsertMysqlStringTypes(new QuerySql.InsertMysqlStringTypesArgs
                          {
                              CJson = cParsedJson,
                              CJsonStringOverride = cJson
                          });
-                         var expected = new QuerySql.GetMysqlTypesRow
+                         var expected = new QuerySql.GetMysqlStringTypesRow
                          {
                              CJson = cParsedJson,
                              CJsonStringOverride = cJson
                          };
-                         var actual = await QuerySql.GetMysqlTypes();
+                         var actual = await QuerySql.GetMysqlStringTypes();
                          AssertSingularEquals(expected, actual{{Consts.UnknownRecordValuePlaceholder}});
                          
-                         void AssertSingularEquals(QuerySql.GetMysqlTypesRow x, QuerySql.GetMysqlTypesRow y)
+                         void AssertSingularEquals(QuerySql.GetMysqlStringTypesRow x, QuerySql.GetMysqlStringTypesRow y)
                          {
                              Assert.That(x.CJson.HasValue, Is.EqualTo(y.CJson.HasValue));
                              if (x.CJson.HasValue)
@@ -795,7 +794,7 @@ public static class MySqlTests
                      public void TestMySqlInvalidJson()
                      {
                          Assert.ThrowsAsync<MySqlConnector.MySqlException>(async () => await 
-                            QuerySql.InsertMysqlTypes(new QuerySql.InsertMysqlTypesArgs
+                            QuerySql.InsertMysqlStringTypes(new QuerySql.InsertMysqlStringTypesArgs
                             {
                                 CJsonStringOverride = "SOME INVALID JSON"
                             }));
@@ -817,22 +816,22 @@ public static class MySqlTests
                              cParsedJson = JsonDocument.Parse(cJson).RootElement;
 
                          var batchArgs = Enumerable.Range(0, batchSize)
-                             .Select(_ => new QuerySql.InsertMysqlTypesBatchArgs
+                             .Select(_ => new QuerySql.InsertMysqlStringTypesBatchArgs
                              {
                                 CJson = cParsedJson
                              })
                              .ToList();
-                         await QuerySql.InsertMysqlTypesBatch(batchArgs);
-                         var expected = new QuerySql.GetMysqlTypesCntRow
+                         await QuerySql.InsertMysqlStringTypesBatch(batchArgs);
+                         var expected = new QuerySql.GetMysqlStringTypesCntRow
                          {
                              Cnt = batchSize,
                              CJson = cParsedJson
                          };
 
-                         var actual = await QuerySql.GetMysqlTypesCnt();
+                         var actual = await QuerySql.GetMysqlStringTypesCnt();
                          AssertSingularEquals(expected, actual{{Consts.UnknownRecordValuePlaceholder}});
 
-                         void AssertSingularEquals(QuerySql.GetMysqlTypesCntRow x, QuerySql.GetMysqlTypesCntRow y)
+                         void AssertSingularEquals(QuerySql.GetMysqlStringTypesCntRow x, QuerySql.GetMysqlStringTypesCntRow y)
                          {          
                              Assert.That(x.Cnt, Is.EqualTo(y.Cnt));
                              Assert.That(x.CJson.HasValue, Is.EqualTo(y.CJson.HasValue));
@@ -853,9 +852,12 @@ public static class MySqlTests
                         string cVarchar,
                         DateTime cTimestamp)
                      {
-                         await QuerySql.InsertMysqlTypes(new QuerySql.InsertMysqlTypesArgs
+                         await QuerySql.InsertMysqlNumericTypes(new QuerySql.InsertMysqlNumericTypesArgs
                          {
-                             CInt = cInt,
+                             CInt = cInt
+                         });
+                         await QuerySql.InsertMysqlStringTypes(new QuerySql.InsertMysqlStringTypesArgs
+                         {
                              CVarchar = cVarchar
                          });
                          await QuerySql.InsertMysqlDatetimeTypes(new QuerySql.InsertMysqlDatetimeTypesArgs
