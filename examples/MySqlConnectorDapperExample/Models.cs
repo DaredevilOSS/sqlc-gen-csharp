@@ -5,19 +5,6 @@ using System.Linq;
 using System.Text.Json;
 
 namespace MySqlConnectorDapperExampleGen;
-public class Author
-{
-    public required long Id { get; init; }
-    public required string Name { get; init; }
-    public string? Bio { get; init; }
-};
-public class Book
-{
-    public required long Id { get; init; }
-    public required string Name { get; init; }
-    public required long AuthorId { get; init; }
-    public string? Description { get; init; }
-};
 public class MysqlType
 {
     public bool? CBool { get; init; }
@@ -59,6 +46,19 @@ public class MysqlType
     public byte[]? CBlob { get; init; }
     public byte[]? CMediumblob { get; init; }
     public byte[]? CLongblob { get; init; }
+};
+public class Author
+{
+    public required long Id { get; init; }
+    public required string Name { get; init; }
+    public string? Bio { get; init; }
+};
+public class Book
+{
+    public required long Id { get; init; }
+    public required string Name { get; init; }
+    public required long AuthorId { get; init; }
+    public string? Description { get; init; }
 };
 public class ExtendedBio
 {

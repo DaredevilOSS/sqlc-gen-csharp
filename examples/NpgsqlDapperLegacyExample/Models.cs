@@ -9,19 +9,6 @@ namespace NpgsqlDapperLegacyExampleGen
     using System.Text.Json;
     using System.Xml;
 
-    public class Author
-    {
-        public long Id { get; set; }
-        public string Name { get; set; }
-        public string Bio { get; set; }
-    };
-    public class Book
-    {
-        public Guid Id { get; set; }
-        public string Name { get; set; }
-        public long AuthorId { get; set; }
-        public string Description { get; set; }
-    };
     public class PostgresType
     {
         public bool? CBoolean { get; set; }
@@ -78,5 +65,18 @@ namespace NpgsqlDapperLegacyExampleGen
         public NpgsqlPath? CPath { get; set; }
         public NpgsqlPolygon? CPolygon { get; set; }
         public NpgsqlCircle? CCircle { get; set; }
+    };
+    public class Author
+    {
+        public long Id { get; set; }
+        public string Name { get; set; }
+        public string Bio { get; set; }
+    };
+    public class Book
+    {
+        public Guid Id { get; set; }
+        public string Name { get; set; }
+        public long AuthorId { get; set; }
+        public string Description { get; set; }
     };
 }

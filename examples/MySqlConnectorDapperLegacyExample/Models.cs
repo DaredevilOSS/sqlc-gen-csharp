@@ -6,19 +6,6 @@ namespace MySqlConnectorDapperLegacyExampleGen
     using System.Linq;
     using System.Text.Json;
 
-    public class Author
-    {
-        public long Id { get; set; }
-        public string Name { get; set; }
-        public string Bio { get; set; }
-    };
-    public class Book
-    {
-        public long Id { get; set; }
-        public string Name { get; set; }
-        public long AuthorId { get; set; }
-        public string Description { get; set; }
-    };
     public class MysqlType
     {
         public bool? CBool { get; set; }
@@ -60,6 +47,19 @@ namespace MySqlConnectorDapperLegacyExampleGen
         public byte[] CBlob { get; set; }
         public byte[] CMediumblob { get; set; }
         public byte[] CLongblob { get; set; }
+    };
+    public class Author
+    {
+        public long Id { get; set; }
+        public string Name { get; set; }
+        public string Bio { get; set; }
+    };
+    public class Book
+    {
+        public long Id { get; set; }
+        public string Name { get; set; }
+        public long AuthorId { get; set; }
+        public string Description { get; set; }
     };
     public class ExtendedBio
     {

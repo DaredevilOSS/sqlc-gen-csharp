@@ -3,10 +3,12 @@
     "version": "2",
     "engine": "mysql",
     "schema": [
-      "examples/config/mysql/schema.sql"
+      "examples/config/mysql/types/schema.sql",
+      "examples/config/mysql/authors/schema.sql"
     ],
     "queries": [
-      "examples/config/mysql/query.sql"
+      "examples/config/mysql/types/query.sql",
+      "examples/config/mysql/authors/query.sql"
     ],
     "codegen": {
       "out": "examples/MySqlConnectorLegacyExample",
@@ -23,95 +25,6 @@
       {
         "name": "public",
         "tables": [
-          {
-            "rel": {
-              "name": "authors"
-            },
-            "columns": [
-              {
-                "name": "id",
-                "notNull": true,
-                "length": -1,
-                "table": {
-                  "name": "authors"
-                },
-                "type": {
-                  "name": "bigint"
-                }
-              },
-              {
-                "name": "name",
-                "notNull": true,
-                "length": -1,
-                "table": {
-                  "name": "authors"
-                },
-                "type": {
-                  "name": "text"
-                }
-              },
-              {
-                "name": "bio",
-                "length": -1,
-                "table": {
-                  "name": "authors"
-                },
-                "type": {
-                  "name": "text"
-                }
-              }
-            ]
-          },
-          {
-            "rel": {
-              "name": "books"
-            },
-            "columns": [
-              {
-                "name": "id",
-                "notNull": true,
-                "length": -1,
-                "table": {
-                  "name": "books"
-                },
-                "type": {
-                  "name": "bigint"
-                }
-              },
-              {
-                "name": "name",
-                "notNull": true,
-                "length": -1,
-                "table": {
-                  "name": "books"
-                },
-                "type": {
-                  "name": "text"
-                }
-              },
-              {
-                "name": "author_id",
-                "notNull": true,
-                "length": -1,
-                "table": {
-                  "name": "books"
-                },
-                "type": {
-                  "name": "bigint"
-                }
-              },
-              {
-                "name": "description",
-                "length": -1,
-                "table": {
-                  "name": "books"
-                },
-                "type": {
-                  "name": "text"
-                }
-              }
-            ]
-          },
           {
             "rel": {
               "name": "mysql_types"
@@ -508,6 +421,95 @@
                 }
               }
             ]
+          },
+          {
+            "rel": {
+              "name": "authors"
+            },
+            "columns": [
+              {
+                "name": "id",
+                "notNull": true,
+                "length": -1,
+                "table": {
+                  "name": "authors"
+                },
+                "type": {
+                  "name": "bigint"
+                }
+              },
+              {
+                "name": "name",
+                "notNull": true,
+                "length": -1,
+                "table": {
+                  "name": "authors"
+                },
+                "type": {
+                  "name": "text"
+                }
+              },
+              {
+                "name": "bio",
+                "length": -1,
+                "table": {
+                  "name": "authors"
+                },
+                "type": {
+                  "name": "text"
+                }
+              }
+            ]
+          },
+          {
+            "rel": {
+              "name": "books"
+            },
+            "columns": [
+              {
+                "name": "id",
+                "notNull": true,
+                "length": -1,
+                "table": {
+                  "name": "books"
+                },
+                "type": {
+                  "name": "bigint"
+                }
+              },
+              {
+                "name": "name",
+                "notNull": true,
+                "length": -1,
+                "table": {
+                  "name": "books"
+                },
+                "type": {
+                  "name": "text"
+                }
+              },
+              {
+                "name": "author_id",
+                "notNull": true,
+                "length": -1,
+                "table": {
+                  "name": "books"
+                },
+                "type": {
+                  "name": "bigint"
+                }
+              },
+              {
+                "name": "description",
+                "length": -1,
+                "table": {
+                  "name": "books"
+                },
+                "type": {
+                  "name": "text"
+                }
+              }
+            ]
           }
         ],
         "enums": [
@@ -605,706 +607,6 @@
     ]
   },
   "queries": [
-    {
-      "text": "SELECT id, name, bio FROM authors WHERE name = ? LIMIT 1",
-      "name": "GetAuthor",
-      "cmd": ":one",
-      "columns": [
-        {
-          "name": "id",
-          "notNull": true,
-          "length": -1,
-          "table": {
-            "name": "authors"
-          },
-          "type": {
-            "name": "bigint"
-          },
-          "originalName": "id"
-        },
-        {
-          "name": "name",
-          "notNull": true,
-          "length": -1,
-          "table": {
-            "name": "authors"
-          },
-          "type": {
-            "name": "text"
-          },
-          "originalName": "name"
-        },
-        {
-          "name": "bio",
-          "length": -1,
-          "table": {
-            "name": "authors"
-          },
-          "type": {
-            "name": "text"
-          },
-          "originalName": "bio"
-        }
-      ],
-      "parameters": [
-        {
-          "number": 1,
-          "column": {
-            "name": "name",
-            "notNull": true,
-            "length": -1,
-            "table": {
-              "name": "authors"
-            },
-            "type": {
-              "name": "text"
-            },
-            "originalName": "name"
-          }
-        }
-      ],
-      "filename": "query.sql"
-    },
-    {
-      "text": "SELECT id, name, bio \nFROM authors\nORDER BY name\nLIMIT ? OFFSET ?",
-      "name": "ListAuthors",
-      "cmd": ":many",
-      "columns": [
-        {
-          "name": "id",
-          "notNull": true,
-          "length": -1,
-          "table": {
-            "name": "authors"
-          },
-          "type": {
-            "name": "bigint"
-          },
-          "originalName": "id"
-        },
-        {
-          "name": "name",
-          "notNull": true,
-          "length": -1,
-          "table": {
-            "name": "authors"
-          },
-          "type": {
-            "name": "text"
-          },
-          "originalName": "name"
-        },
-        {
-          "name": "bio",
-          "length": -1,
-          "table": {
-            "name": "authors"
-          },
-          "type": {
-            "name": "text"
-          },
-          "originalName": "bio"
-        }
-      ],
-      "parameters": [
-        {
-          "number": 1,
-          "column": {
-            "name": "limit",
-            "notNull": true,
-            "length": -1,
-            "type": {
-              "name": "integer"
-            }
-          }
-        },
-        {
-          "number": 2,
-          "column": {
-            "name": "offset",
-            "notNull": true,
-            "length": -1,
-            "type": {
-              "name": "integer"
-            }
-          }
-        }
-      ],
-      "filename": "query.sql"
-    },
-    {
-      "text": "INSERT INTO authors (id, name, bio) VALUES (?, ?, ?)",
-      "name": "CreateAuthor",
-      "cmd": ":exec",
-      "parameters": [
-        {
-          "number": 1,
-          "column": {
-            "name": "id",
-            "notNull": true,
-            "length": -1,
-            "table": {
-              "schema": "public",
-              "name": "authors"
-            },
-            "type": {
-              "name": "bigint"
-            },
-            "originalName": "id"
-          }
-        },
-        {
-          "number": 2,
-          "column": {
-            "name": "name",
-            "notNull": true,
-            "length": -1,
-            "table": {
-              "schema": "public",
-              "name": "authors"
-            },
-            "type": {
-              "name": "text"
-            },
-            "originalName": "name"
-          }
-        },
-        {
-          "number": 3,
-          "column": {
-            "name": "bio",
-            "length": -1,
-            "table": {
-              "schema": "public",
-              "name": "authors"
-            },
-            "type": {
-              "name": "text"
-            },
-            "originalName": "bio"
-          }
-        }
-      ],
-      "filename": "query.sql",
-      "insert_into_table": {
-        "name": "authors"
-      }
-    },
-    {
-      "text": "INSERT INTO authors (name, bio) VALUES (?, ?)",
-      "name": "CreateAuthorReturnId",
-      "cmd": ":execlastid",
-      "parameters": [
-        {
-          "number": 1,
-          "column": {
-            "name": "name",
-            "notNull": true,
-            "length": -1,
-            "table": {
-              "schema": "public",
-              "name": "authors"
-            },
-            "type": {
-              "name": "text"
-            },
-            "originalName": "name"
-          }
-        },
-        {
-          "number": 2,
-          "column": {
-            "name": "bio",
-            "length": -1,
-            "table": {
-              "schema": "public",
-              "name": "authors"
-            },
-            "type": {
-              "name": "text"
-            },
-            "originalName": "bio"
-          }
-        }
-      ],
-      "filename": "query.sql",
-      "insert_into_table": {
-        "name": "authors"
-      }
-    },
-    {
-      "text": "SELECT id, name, bio FROM authors WHERE id = ? LIMIT 1",
-      "name": "GetAuthorById",
-      "cmd": ":one",
-      "columns": [
-        {
-          "name": "id",
-          "notNull": true,
-          "length": -1,
-          "table": {
-            "name": "authors"
-          },
-          "type": {
-            "name": "bigint"
-          },
-          "originalName": "id"
-        },
-        {
-          "name": "name",
-          "notNull": true,
-          "length": -1,
-          "table": {
-            "name": "authors"
-          },
-          "type": {
-            "name": "text"
-          },
-          "originalName": "name"
-        },
-        {
-          "name": "bio",
-          "length": -1,
-          "table": {
-            "name": "authors"
-          },
-          "type": {
-            "name": "text"
-          },
-          "originalName": "bio"
-        }
-      ],
-      "parameters": [
-        {
-          "number": 1,
-          "column": {
-            "name": "id",
-            "notNull": true,
-            "length": -1,
-            "table": {
-              "name": "authors"
-            },
-            "type": {
-              "name": "bigint"
-            },
-            "originalName": "id"
-          }
-        }
-      ],
-      "filename": "query.sql"
-    },
-    {
-      "text": "SELECT id, name, bio FROM authors\nWHERE name LIKE COALESCE(?, '%')",
-      "name": "GetAuthorByNamePattern",
-      "cmd": ":many",
-      "columns": [
-        {
-          "name": "id",
-          "notNull": true,
-          "length": -1,
-          "table": {
-            "name": "authors"
-          },
-          "type": {
-            "name": "bigint"
-          },
-          "originalName": "id"
-        },
-        {
-          "name": "name",
-          "notNull": true,
-          "length": -1,
-          "table": {
-            "name": "authors"
-          },
-          "type": {
-            "name": "text"
-          },
-          "originalName": "name"
-        },
-        {
-          "name": "bio",
-          "length": -1,
-          "table": {
-            "name": "authors"
-          },
-          "type": {
-            "name": "text"
-          },
-          "originalName": "bio"
-        }
-      ],
-      "parameters": [
-        {
-          "number": 1,
-          "column": {
-            "name": "name_pattern",
-            "length": -1,
-            "isNamedParam": true,
-            "table": {
-              "name": "authors"
-            },
-            "type": {
-              "name": "text"
-            },
-            "originalName": "name"
-          }
-        }
-      ],
-      "filename": "query.sql"
-    },
-    {
-      "text": "DELETE FROM authors\nWHERE name = ?",
-      "name": "DeleteAuthor",
-      "cmd": ":exec",
-      "parameters": [
-        {
-          "number": 1,
-          "column": {
-            "name": "name",
-            "notNull": true,
-            "length": -1,
-            "table": {
-              "name": "authors"
-            },
-            "type": {
-              "name": "text"
-            },
-            "originalName": "name"
-          }
-        }
-      ],
-      "filename": "query.sql"
-    },
-    {
-      "text": "DELETE FROM authors",
-      "name": "DeleteAllAuthors",
-      "cmd": ":exec",
-      "filename": "query.sql"
-    },
-    {
-      "text": "UPDATE authors\nSET bio = ?\nWHERE bio IS NOT NULL",
-      "name": "UpdateAuthors",
-      "cmd": ":execrows",
-      "parameters": [
-        {
-          "number": 1,
-          "column": {
-            "name": "bio",
-            "length": -1,
-            "isNamedParam": true,
-            "table": {
-              "schema": "public",
-              "name": "authors"
-            },
-            "type": {
-              "name": "text"
-            },
-            "originalName": "bio"
-          }
-        }
-      ],
-      "filename": "query.sql"
-    },
-    {
-      "text": "SELECT id, name, bio FROM authors WHERE id IN (/*SLICE:ids*/?)",
-      "name": "GetAuthorsByIds",
-      "cmd": ":many",
-      "columns": [
-        {
-          "name": "id",
-          "notNull": true,
-          "length": -1,
-          "table": {
-            "name": "authors"
-          },
-          "type": {
-            "name": "bigint"
-          },
-          "originalName": "id"
-        },
-        {
-          "name": "name",
-          "notNull": true,
-          "length": -1,
-          "table": {
-            "name": "authors"
-          },
-          "type": {
-            "name": "text"
-          },
-          "originalName": "name"
-        },
-        {
-          "name": "bio",
-          "length": -1,
-          "table": {
-            "name": "authors"
-          },
-          "type": {
-            "name": "text"
-          },
-          "originalName": "bio"
-        }
-      ],
-      "parameters": [
-        {
-          "number": 1,
-          "column": {
-            "name": "ids",
-            "notNull": true,
-            "length": -1,
-            "isNamedParam": true,
-            "table": {
-              "name": "authors"
-            },
-            "type": {
-              "name": "bigint"
-            },
-            "isSqlcSlice": true,
-            "originalName": "id"
-          }
-        }
-      ],
-      "filename": "query.sql"
-    },
-    {
-      "text": "SELECT id, name, bio FROM authors WHERE id IN (/*SLICE:ids*/?) AND name IN (/*SLICE:names*/?)",
-      "name": "GetAuthorsByIdsAndNames",
-      "cmd": ":many",
-      "columns": [
-        {
-          "name": "id",
-          "notNull": true,
-          "length": -1,
-          "table": {
-            "name": "authors"
-          },
-          "type": {
-            "name": "bigint"
-          },
-          "originalName": "id"
-        },
-        {
-          "name": "name",
-          "notNull": true,
-          "length": -1,
-          "table": {
-            "name": "authors"
-          },
-          "type": {
-            "name": "text"
-          },
-          "originalName": "name"
-        },
-        {
-          "name": "bio",
-          "length": -1,
-          "table": {
-            "name": "authors"
-          },
-          "type": {
-            "name": "text"
-          },
-          "originalName": "bio"
-        }
-      ],
-      "parameters": [
-        {
-          "number": 1,
-          "column": {
-            "name": "ids",
-            "notNull": true,
-            "length": -1,
-            "isNamedParam": true,
-            "table": {
-              "name": "authors"
-            },
-            "type": {
-              "name": "bigint"
-            },
-            "isSqlcSlice": true,
-            "originalName": "id"
-          }
-        },
-        {
-          "number": 2,
-          "column": {
-            "name": "names",
-            "notNull": true,
-            "length": -1,
-            "isNamedParam": true,
-            "table": {
-              "name": "authors"
-            },
-            "type": {
-              "name": "text"
-            },
-            "isSqlcSlice": true,
-            "originalName": "name"
-          }
-        }
-      ],
-      "filename": "query.sql"
-    },
-    {
-      "text": "INSERT INTO books (name, author_id) VALUES (?, ?)",
-      "name": "CreateBook",
-      "cmd": ":execlastid",
-      "parameters": [
-        {
-          "number": 1,
-          "column": {
-            "name": "name",
-            "notNull": true,
-            "length": -1,
-            "table": {
-              "schema": "public",
-              "name": "books"
-            },
-            "type": {
-              "name": "text"
-            },
-            "originalName": "name"
-          }
-        },
-        {
-          "number": 2,
-          "column": {
-            "name": "author_id",
-            "notNull": true,
-            "length": -1,
-            "table": {
-              "schema": "public",
-              "name": "books"
-            },
-            "type": {
-              "name": "bigint"
-            },
-            "originalName": "author_id"
-          }
-        }
-      ],
-      "filename": "query.sql",
-      "insert_into_table": {
-        "name": "books"
-      }
-    },
-    {
-      "text": "SELECT authors.id, authors.name, authors.bio, books.id, books.name, books.author_id, books.description \nFROM authors JOIN books ON authors.id = books.author_id \nORDER BY authors.name",
-      "name": "ListAllAuthorsBooks",
-      "cmd": ":many",
-      "columns": [
-        {
-          "name": "authors",
-          "length": -1,
-          "type": {},
-          "embedTable": {
-            "name": "authors"
-          }
-        },
-        {
-          "name": "books",
-          "length": -1,
-          "type": {},
-          "embedTable": {
-            "name": "books"
-          }
-        }
-      ],
-      "filename": "query.sql"
-    },
-    {
-      "text": "SELECT authors1.id, authors1.name, authors1.bio, authors2.id, authors2.name, authors2.bio\nFROM authors authors1 JOIN authors authors2 ON authors1.name = authors2.name\nWHERE authors1.id \u003c authors2.id",
-      "name": "GetDuplicateAuthors",
-      "cmd": ":many",
-      "columns": [
-        {
-          "name": "authors",
-          "length": -1,
-          "type": {},
-          "embedTable": {
-            "name": "authors"
-          }
-        },
-        {
-          "name": "authors",
-          "length": -1,
-          "type": {},
-          "embedTable": {
-            "name": "authors"
-          }
-        }
-      ],
-      "filename": "query.sql"
-    },
-    {
-      "text": "SELECT authors.id, authors.name, authors.bio, books.id, books.name, books.author_id, books.description\nFROM authors JOIN books ON authors.id = books.author_id\nWHERE books.name = ?",
-      "name": "GetAuthorsByBookName",
-      "cmd": ":many",
-      "columns": [
-        {
-          "name": "id",
-          "notNull": true,
-          "length": -1,
-          "table": {
-            "name": "authors"
-          },
-          "type": {
-            "name": "bigint"
-          },
-          "originalName": "id"
-        },
-        {
-          "name": "name",
-          "notNull": true,
-          "length": -1,
-          "table": {
-            "name": "authors"
-          },
-          "type": {
-            "name": "text"
-          },
-          "originalName": "name"
-        },
-        {
-          "name": "bio",
-          "length": -1,
-          "table": {
-            "name": "authors"
-          },
-          "type": {
-            "name": "text"
-          },
-          "originalName": "bio"
-        },
-        {
-          "name": "books",
-          "length": -1,
-          "type": {},
-          "embedTable": {
-            "name": "books"
-          }
-        }
-      ],
-      "parameters": [
-        {
-          "number": 1,
-          "column": {
-            "name": "name",
-            "notNull": true,
-            "length": -1,
-            "table": {
-              "name": "books"
-            },
-            "type": {
-              "name": "text"
-            },
-            "originalName": "name"
-          }
-        }
-      ],
-      "filename": "query.sql"
-    },
     {
       "text": "INSERT INTO mysql_types \n(c_bit, c_bool, c_boolean, c_tinyint, c_smallint, c_mediumint, c_int, c_integer, c_bigint, \n c_decimal, c_dec, c_numeric, c_fixed, c_float, c_double, c_double_precision, \n c_char, c_nchar, c_national_char, c_varchar, c_tinytext, c_mediumtext, c_text, c_longtext, \n c_json, c_json_string_override, c_enum, c_set, c_year, c_date, c_datetime, c_timestamp, \n c_binary, c_varbinary, c_tinyblob, c_blob, c_mediumblob, c_longblob) \nVALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
       "name": "InsertMysqlTypes",
@@ -3378,6 +2680,706 @@
       "text": "TRUNCATE TABLE mysql_types",
       "name": "TruncateMysqlTypes",
       "cmd": ":exec",
+      "filename": "query.sql"
+    },
+    {
+      "text": "SELECT id, name, bio FROM authors WHERE name = ? LIMIT 1",
+      "name": "GetAuthor",
+      "cmd": ":one",
+      "columns": [
+        {
+          "name": "id",
+          "notNull": true,
+          "length": -1,
+          "table": {
+            "name": "authors"
+          },
+          "type": {
+            "name": "bigint"
+          },
+          "originalName": "id"
+        },
+        {
+          "name": "name",
+          "notNull": true,
+          "length": -1,
+          "table": {
+            "name": "authors"
+          },
+          "type": {
+            "name": "text"
+          },
+          "originalName": "name"
+        },
+        {
+          "name": "bio",
+          "length": -1,
+          "table": {
+            "name": "authors"
+          },
+          "type": {
+            "name": "text"
+          },
+          "originalName": "bio"
+        }
+      ],
+      "parameters": [
+        {
+          "number": 1,
+          "column": {
+            "name": "name",
+            "notNull": true,
+            "length": -1,
+            "table": {
+              "name": "authors"
+            },
+            "type": {
+              "name": "text"
+            },
+            "originalName": "name"
+          }
+        }
+      ],
+      "filename": "query.sql"
+    },
+    {
+      "text": "SELECT id, name, bio \nFROM authors\nORDER BY name\nLIMIT ? OFFSET ?",
+      "name": "ListAuthors",
+      "cmd": ":many",
+      "columns": [
+        {
+          "name": "id",
+          "notNull": true,
+          "length": -1,
+          "table": {
+            "name": "authors"
+          },
+          "type": {
+            "name": "bigint"
+          },
+          "originalName": "id"
+        },
+        {
+          "name": "name",
+          "notNull": true,
+          "length": -1,
+          "table": {
+            "name": "authors"
+          },
+          "type": {
+            "name": "text"
+          },
+          "originalName": "name"
+        },
+        {
+          "name": "bio",
+          "length": -1,
+          "table": {
+            "name": "authors"
+          },
+          "type": {
+            "name": "text"
+          },
+          "originalName": "bio"
+        }
+      ],
+      "parameters": [
+        {
+          "number": 1,
+          "column": {
+            "name": "limit",
+            "notNull": true,
+            "length": -1,
+            "type": {
+              "name": "integer"
+            }
+          }
+        },
+        {
+          "number": 2,
+          "column": {
+            "name": "offset",
+            "notNull": true,
+            "length": -1,
+            "type": {
+              "name": "integer"
+            }
+          }
+        }
+      ],
+      "filename": "query.sql"
+    },
+    {
+      "text": "INSERT INTO authors (id, name, bio) VALUES (?, ?, ?)",
+      "name": "CreateAuthor",
+      "cmd": ":exec",
+      "parameters": [
+        {
+          "number": 1,
+          "column": {
+            "name": "id",
+            "notNull": true,
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "authors"
+            },
+            "type": {
+              "name": "bigint"
+            },
+            "originalName": "id"
+          }
+        },
+        {
+          "number": 2,
+          "column": {
+            "name": "name",
+            "notNull": true,
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "authors"
+            },
+            "type": {
+              "name": "text"
+            },
+            "originalName": "name"
+          }
+        },
+        {
+          "number": 3,
+          "column": {
+            "name": "bio",
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "authors"
+            },
+            "type": {
+              "name": "text"
+            },
+            "originalName": "bio"
+          }
+        }
+      ],
+      "filename": "query.sql",
+      "insert_into_table": {
+        "name": "authors"
+      }
+    },
+    {
+      "text": "INSERT INTO authors (name, bio) VALUES (?, ?)",
+      "name": "CreateAuthorReturnId",
+      "cmd": ":execlastid",
+      "parameters": [
+        {
+          "number": 1,
+          "column": {
+            "name": "name",
+            "notNull": true,
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "authors"
+            },
+            "type": {
+              "name": "text"
+            },
+            "originalName": "name"
+          }
+        },
+        {
+          "number": 2,
+          "column": {
+            "name": "bio",
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "authors"
+            },
+            "type": {
+              "name": "text"
+            },
+            "originalName": "bio"
+          }
+        }
+      ],
+      "filename": "query.sql",
+      "insert_into_table": {
+        "name": "authors"
+      }
+    },
+    {
+      "text": "SELECT id, name, bio FROM authors WHERE id = ? LIMIT 1",
+      "name": "GetAuthorById",
+      "cmd": ":one",
+      "columns": [
+        {
+          "name": "id",
+          "notNull": true,
+          "length": -1,
+          "table": {
+            "name": "authors"
+          },
+          "type": {
+            "name": "bigint"
+          },
+          "originalName": "id"
+        },
+        {
+          "name": "name",
+          "notNull": true,
+          "length": -1,
+          "table": {
+            "name": "authors"
+          },
+          "type": {
+            "name": "text"
+          },
+          "originalName": "name"
+        },
+        {
+          "name": "bio",
+          "length": -1,
+          "table": {
+            "name": "authors"
+          },
+          "type": {
+            "name": "text"
+          },
+          "originalName": "bio"
+        }
+      ],
+      "parameters": [
+        {
+          "number": 1,
+          "column": {
+            "name": "id",
+            "notNull": true,
+            "length": -1,
+            "table": {
+              "name": "authors"
+            },
+            "type": {
+              "name": "bigint"
+            },
+            "originalName": "id"
+          }
+        }
+      ],
+      "filename": "query.sql"
+    },
+    {
+      "text": "SELECT id, name, bio FROM authors\nWHERE name LIKE COALESCE(?, '%')",
+      "name": "GetAuthorByNamePattern",
+      "cmd": ":many",
+      "columns": [
+        {
+          "name": "id",
+          "notNull": true,
+          "length": -1,
+          "table": {
+            "name": "authors"
+          },
+          "type": {
+            "name": "bigint"
+          },
+          "originalName": "id"
+        },
+        {
+          "name": "name",
+          "notNull": true,
+          "length": -1,
+          "table": {
+            "name": "authors"
+          },
+          "type": {
+            "name": "text"
+          },
+          "originalName": "name"
+        },
+        {
+          "name": "bio",
+          "length": -1,
+          "table": {
+            "name": "authors"
+          },
+          "type": {
+            "name": "text"
+          },
+          "originalName": "bio"
+        }
+      ],
+      "parameters": [
+        {
+          "number": 1,
+          "column": {
+            "name": "name_pattern",
+            "length": -1,
+            "isNamedParam": true,
+            "table": {
+              "name": "authors"
+            },
+            "type": {
+              "name": "text"
+            },
+            "originalName": "name"
+          }
+        }
+      ],
+      "filename": "query.sql"
+    },
+    {
+      "text": "DELETE FROM authors\nWHERE name = ?",
+      "name": "DeleteAuthor",
+      "cmd": ":exec",
+      "parameters": [
+        {
+          "number": 1,
+          "column": {
+            "name": "name",
+            "notNull": true,
+            "length": -1,
+            "table": {
+              "name": "authors"
+            },
+            "type": {
+              "name": "text"
+            },
+            "originalName": "name"
+          }
+        }
+      ],
+      "filename": "query.sql"
+    },
+    {
+      "text": "DELETE FROM authors",
+      "name": "DeleteAllAuthors",
+      "cmd": ":exec",
+      "filename": "query.sql"
+    },
+    {
+      "text": "UPDATE authors\nSET bio = ?\nWHERE bio IS NOT NULL",
+      "name": "UpdateAuthors",
+      "cmd": ":execrows",
+      "parameters": [
+        {
+          "number": 1,
+          "column": {
+            "name": "bio",
+            "length": -1,
+            "isNamedParam": true,
+            "table": {
+              "schema": "public",
+              "name": "authors"
+            },
+            "type": {
+              "name": "text"
+            },
+            "originalName": "bio"
+          }
+        }
+      ],
+      "filename": "query.sql"
+    },
+    {
+      "text": "SELECT id, name, bio FROM authors WHERE id IN (/*SLICE:ids*/?)",
+      "name": "GetAuthorsByIds",
+      "cmd": ":many",
+      "columns": [
+        {
+          "name": "id",
+          "notNull": true,
+          "length": -1,
+          "table": {
+            "name": "authors"
+          },
+          "type": {
+            "name": "bigint"
+          },
+          "originalName": "id"
+        },
+        {
+          "name": "name",
+          "notNull": true,
+          "length": -1,
+          "table": {
+            "name": "authors"
+          },
+          "type": {
+            "name": "text"
+          },
+          "originalName": "name"
+        },
+        {
+          "name": "bio",
+          "length": -1,
+          "table": {
+            "name": "authors"
+          },
+          "type": {
+            "name": "text"
+          },
+          "originalName": "bio"
+        }
+      ],
+      "parameters": [
+        {
+          "number": 1,
+          "column": {
+            "name": "ids",
+            "notNull": true,
+            "length": -1,
+            "isNamedParam": true,
+            "table": {
+              "name": "authors"
+            },
+            "type": {
+              "name": "bigint"
+            },
+            "isSqlcSlice": true,
+            "originalName": "id"
+          }
+        }
+      ],
+      "filename": "query.sql"
+    },
+    {
+      "text": "SELECT id, name, bio FROM authors WHERE id IN (/*SLICE:ids*/?) AND name IN (/*SLICE:names*/?)",
+      "name": "GetAuthorsByIdsAndNames",
+      "cmd": ":many",
+      "columns": [
+        {
+          "name": "id",
+          "notNull": true,
+          "length": -1,
+          "table": {
+            "name": "authors"
+          },
+          "type": {
+            "name": "bigint"
+          },
+          "originalName": "id"
+        },
+        {
+          "name": "name",
+          "notNull": true,
+          "length": -1,
+          "table": {
+            "name": "authors"
+          },
+          "type": {
+            "name": "text"
+          },
+          "originalName": "name"
+        },
+        {
+          "name": "bio",
+          "length": -1,
+          "table": {
+            "name": "authors"
+          },
+          "type": {
+            "name": "text"
+          },
+          "originalName": "bio"
+        }
+      ],
+      "parameters": [
+        {
+          "number": 1,
+          "column": {
+            "name": "ids",
+            "notNull": true,
+            "length": -1,
+            "isNamedParam": true,
+            "table": {
+              "name": "authors"
+            },
+            "type": {
+              "name": "bigint"
+            },
+            "isSqlcSlice": true,
+            "originalName": "id"
+          }
+        },
+        {
+          "number": 2,
+          "column": {
+            "name": "names",
+            "notNull": true,
+            "length": -1,
+            "isNamedParam": true,
+            "table": {
+              "name": "authors"
+            },
+            "type": {
+              "name": "text"
+            },
+            "isSqlcSlice": true,
+            "originalName": "name"
+          }
+        }
+      ],
+      "filename": "query.sql"
+    },
+    {
+      "text": "INSERT INTO books (name, author_id) VALUES (?, ?)",
+      "name": "CreateBook",
+      "cmd": ":execlastid",
+      "parameters": [
+        {
+          "number": 1,
+          "column": {
+            "name": "name",
+            "notNull": true,
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "books"
+            },
+            "type": {
+              "name": "text"
+            },
+            "originalName": "name"
+          }
+        },
+        {
+          "number": 2,
+          "column": {
+            "name": "author_id",
+            "notNull": true,
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "books"
+            },
+            "type": {
+              "name": "bigint"
+            },
+            "originalName": "author_id"
+          }
+        }
+      ],
+      "filename": "query.sql",
+      "insert_into_table": {
+        "name": "books"
+      }
+    },
+    {
+      "text": "SELECT authors.id, authors.name, authors.bio, books.id, books.name, books.author_id, books.description \nFROM authors JOIN books ON authors.id = books.author_id \nORDER BY authors.name",
+      "name": "ListAllAuthorsBooks",
+      "cmd": ":many",
+      "columns": [
+        {
+          "name": "authors",
+          "length": -1,
+          "type": {},
+          "embedTable": {
+            "name": "authors"
+          }
+        },
+        {
+          "name": "books",
+          "length": -1,
+          "type": {},
+          "embedTable": {
+            "name": "books"
+          }
+        }
+      ],
+      "filename": "query.sql"
+    },
+    {
+      "text": "SELECT authors1.id, authors1.name, authors1.bio, authors2.id, authors2.name, authors2.bio\nFROM authors authors1 JOIN authors authors2 ON authors1.name = authors2.name\nWHERE authors1.id \u003c authors2.id",
+      "name": "GetDuplicateAuthors",
+      "cmd": ":many",
+      "columns": [
+        {
+          "name": "authors",
+          "length": -1,
+          "type": {},
+          "embedTable": {
+            "name": "authors"
+          }
+        },
+        {
+          "name": "authors",
+          "length": -1,
+          "type": {},
+          "embedTable": {
+            "name": "authors"
+          }
+        }
+      ],
+      "filename": "query.sql"
+    },
+    {
+      "text": "SELECT authors.id, authors.name, authors.bio, books.id, books.name, books.author_id, books.description\nFROM authors JOIN books ON authors.id = books.author_id\nWHERE books.name = ?",
+      "name": "GetAuthorsByBookName",
+      "cmd": ":many",
+      "columns": [
+        {
+          "name": "id",
+          "notNull": true,
+          "length": -1,
+          "table": {
+            "name": "authors"
+          },
+          "type": {
+            "name": "bigint"
+          },
+          "originalName": "id"
+        },
+        {
+          "name": "name",
+          "notNull": true,
+          "length": -1,
+          "table": {
+            "name": "authors"
+          },
+          "type": {
+            "name": "text"
+          },
+          "originalName": "name"
+        },
+        {
+          "name": "bio",
+          "length": -1,
+          "table": {
+            "name": "authors"
+          },
+          "type": {
+            "name": "text"
+          },
+          "originalName": "bio"
+        },
+        {
+          "name": "books",
+          "length": -1,
+          "type": {},
+          "embedTable": {
+            "name": "books"
+          }
+        }
+      ],
+      "parameters": [
+        {
+          "number": 1,
+          "column": {
+            "name": "name",
+            "notNull": true,
+            "length": -1,
+            "table": {
+              "name": "books"
+            },
+            "type": {
+              "name": "text"
+            },
+            "originalName": "name"
+          }
+        }
+      ],
       "filename": "query.sql"
     },
     {

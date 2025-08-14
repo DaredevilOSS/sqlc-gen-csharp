@@ -3,10 +3,12 @@
     "version": "2",
     "engine": "mysql",
     "schema": [
-      "examples/config/mysql/schema.sql"
+      "examples/config/mysql/types/schema.sql",
+      "examples/config/mysql/authors/schema.sql"
     ],
     "queries": [
-      "examples/config/mysql/query.sql"
+      "examples/config/mysql/authors/query.sql",
+      "examples/config/mysql/types/query.sql"
     ],
     "codegen": {
       "out": "examples/MySqlConnectorDapperExample",
@@ -23,95 +25,6 @@
       {
         "name": "public",
         "tables": [
-          {
-            "rel": {
-              "name": "authors"
-            },
-            "columns": [
-              {
-                "name": "id",
-                "notNull": true,
-                "length": -1,
-                "table": {
-                  "name": "authors"
-                },
-                "type": {
-                  "name": "bigint"
-                }
-              },
-              {
-                "name": "name",
-                "notNull": true,
-                "length": -1,
-                "table": {
-                  "name": "authors"
-                },
-                "type": {
-                  "name": "text"
-                }
-              },
-              {
-                "name": "bio",
-                "length": -1,
-                "table": {
-                  "name": "authors"
-                },
-                "type": {
-                  "name": "text"
-                }
-              }
-            ]
-          },
-          {
-            "rel": {
-              "name": "books"
-            },
-            "columns": [
-              {
-                "name": "id",
-                "notNull": true,
-                "length": -1,
-                "table": {
-                  "name": "books"
-                },
-                "type": {
-                  "name": "bigint"
-                }
-              },
-              {
-                "name": "name",
-                "notNull": true,
-                "length": -1,
-                "table": {
-                  "name": "books"
-                },
-                "type": {
-                  "name": "text"
-                }
-              },
-              {
-                "name": "author_id",
-                "notNull": true,
-                "length": -1,
-                "table": {
-                  "name": "books"
-                },
-                "type": {
-                  "name": "bigint"
-                }
-              },
-              {
-                "name": "description",
-                "length": -1,
-                "table": {
-                  "name": "books"
-                },
-                "type": {
-                  "name": "text"
-                }
-              }
-            ]
-          },
           {
             "rel": {
               "name": "mysql_types"
@@ -505,6 +418,95 @@
                 },
                 "type": {
                   "name": "longblob"
+                }
+              }
+            ]
+          },
+          {
+            "rel": {
+              "name": "authors"
+            },
+            "columns": [
+              {
+                "name": "id",
+                "notNull": true,
+                "length": -1,
+                "table": {
+                  "name": "authors"
+                },
+                "type": {
+                  "name": "bigint"
+                }
+              },
+              {
+                "name": "name",
+                "notNull": true,
+                "length": -1,
+                "table": {
+                  "name": "authors"
+                },
+                "type": {
+                  "name": "text"
+                }
+              },
+              {
+                "name": "bio",
+                "length": -1,
+                "table": {
+                  "name": "authors"
+                },
+                "type": {
+                  "name": "text"
+                }
+              }
+            ]
+          },
+          {
+            "rel": {
+              "name": "books"
+            },
+            "columns": [
+              {
+                "name": "id",
+                "notNull": true,
+                "length": -1,
+                "table": {
+                  "name": "books"
+                },
+                "type": {
+                  "name": "bigint"
+                }
+              },
+              {
+                "name": "name",
+                "notNull": true,
+                "length": -1,
+                "table": {
+                  "name": "books"
+                },
+                "type": {
+                  "name": "text"
+                }
+              },
+              {
+                "name": "author_id",
+                "notNull": true,
+                "length": -1,
+                "table": {
+                  "name": "books"
+                },
+                "type": {
+                  "name": "bigint"
+                }
+              },
+              {
+                "name": "description",
+                "length": -1,
+                "table": {
+                  "name": "books"
+                },
+                "type": {
+                  "name": "text"
                 }
               }
             ]
@@ -1303,6 +1305,157 @@
           }
         }
       ],
+      "filename": "query.sql"
+    },
+    {
+      "text": "INSERT INTO extended.bios (author_name, name, bio_type, author_type) VALUES (?, ?, ?, ?)",
+      "name": "CreateExtendedBio",
+      "cmd": ":exec",
+      "parameters": [
+        {
+          "number": 1,
+          "column": {
+            "name": "author_name",
+            "length": 100,
+            "table": {
+              "schema": "extended",
+              "name": "bios"
+            },
+            "type": {
+              "name": "varchar"
+            },
+            "originalName": "author_name"
+          }
+        },
+        {
+          "number": 2,
+          "column": {
+            "name": "name",
+            "length": 100,
+            "table": {
+              "schema": "extended",
+              "name": "bios"
+            },
+            "type": {
+              "name": "varchar"
+            },
+            "originalName": "name"
+          }
+        },
+        {
+          "number": 3,
+          "column": {
+            "name": "bio_type",
+            "length": 13,
+            "table": {
+              "schema": "extended",
+              "name": "bios"
+            },
+            "type": {
+              "name": "bios_bio_type"
+            },
+            "originalName": "bio_type"
+          }
+        },
+        {
+          "number": 4,
+          "column": {
+            "name": "author_type",
+            "length": 24,
+            "table": {
+              "schema": "extended",
+              "name": "bios"
+            },
+            "type": {
+              "name": "bios_author_type"
+            },
+            "originalName": "author_type"
+          }
+        }
+      ],
+      "filename": "query.sql",
+      "insert_into_table": {
+        "schema": "extended",
+        "name": "bios"
+      }
+    },
+    {
+      "text": "SELECT author_name, name, bio_type, author_type FROM extended.bios WHERE bio_type = ? LIMIT 1",
+      "name": "GetFirstExtendedBioByType",
+      "cmd": ":one",
+      "columns": [
+        {
+          "name": "author_name",
+          "length": 100,
+          "table": {
+            "schema": "extended",
+            "name": "bios"
+          },
+          "type": {
+            "name": "varchar"
+          },
+          "originalName": "author_name"
+        },
+        {
+          "name": "name",
+          "length": 100,
+          "table": {
+            "schema": "extended",
+            "name": "bios"
+          },
+          "type": {
+            "name": "varchar"
+          },
+          "originalName": "name"
+        },
+        {
+          "name": "bio_type",
+          "length": 13,
+          "table": {
+            "schema": "extended",
+            "name": "bios"
+          },
+          "type": {
+            "name": "bios_bio_type"
+          },
+          "originalName": "bio_type"
+        },
+        {
+          "name": "author_type",
+          "length": 24,
+          "table": {
+            "schema": "extended",
+            "name": "bios"
+          },
+          "type": {
+            "name": "bios_author_type"
+          },
+          "originalName": "author_type"
+        }
+      ],
+      "parameters": [
+        {
+          "number": 1,
+          "column": {
+            "name": "bio_type",
+            "length": 13,
+            "table": {
+              "schema": "extended",
+              "name": "bios"
+            },
+            "type": {
+              "name": "bios_bio_type"
+            },
+            "originalName": "bio_type"
+          }
+        }
+      ],
+      "filename": "query.sql"
+    },
+    {
+      "text": "TRUNCATE TABLE extended.bios",
+      "name": "TruncateExtendedBios",
+      "cmd": ":exec",
       "filename": "query.sql"
     },
     {
@@ -3377,157 +3530,6 @@
     {
       "text": "TRUNCATE TABLE mysql_types",
       "name": "TruncateMysqlTypes",
-      "cmd": ":exec",
-      "filename": "query.sql"
-    },
-    {
-      "text": "INSERT INTO extended.bios (author_name, name, bio_type, author_type) VALUES (?, ?, ?, ?)",
-      "name": "CreateExtendedBio",
-      "cmd": ":exec",
-      "parameters": [
-        {
-          "number": 1,
-          "column": {
-            "name": "author_name",
-            "length": 100,
-            "table": {
-              "schema": "extended",
-              "name": "bios"
-            },
-            "type": {
-              "name": "varchar"
-            },
-            "originalName": "author_name"
-          }
-        },
-        {
-          "number": 2,
-          "column": {
-            "name": "name",
-            "length": 100,
-            "table": {
-              "schema": "extended",
-              "name": "bios"
-            },
-            "type": {
-              "name": "varchar"
-            },
-            "originalName": "name"
-          }
-        },
-        {
-          "number": 3,
-          "column": {
-            "name": "bio_type",
-            "length": 13,
-            "table": {
-              "schema": "extended",
-              "name": "bios"
-            },
-            "type": {
-              "name": "bios_bio_type"
-            },
-            "originalName": "bio_type"
-          }
-        },
-        {
-          "number": 4,
-          "column": {
-            "name": "author_type",
-            "length": 24,
-            "table": {
-              "schema": "extended",
-              "name": "bios"
-            },
-            "type": {
-              "name": "bios_author_type"
-            },
-            "originalName": "author_type"
-          }
-        }
-      ],
-      "filename": "query.sql",
-      "insert_into_table": {
-        "schema": "extended",
-        "name": "bios"
-      }
-    },
-    {
-      "text": "SELECT author_name, name, bio_type, author_type FROM extended.bios WHERE bio_type = ? LIMIT 1",
-      "name": "GetFirstExtendedBioByType",
-      "cmd": ":one",
-      "columns": [
-        {
-          "name": "author_name",
-          "length": 100,
-          "table": {
-            "schema": "extended",
-            "name": "bios"
-          },
-          "type": {
-            "name": "varchar"
-          },
-          "originalName": "author_name"
-        },
-        {
-          "name": "name",
-          "length": 100,
-          "table": {
-            "schema": "extended",
-            "name": "bios"
-          },
-          "type": {
-            "name": "varchar"
-          },
-          "originalName": "name"
-        },
-        {
-          "name": "bio_type",
-          "length": 13,
-          "table": {
-            "schema": "extended",
-            "name": "bios"
-          },
-          "type": {
-            "name": "bios_bio_type"
-          },
-          "originalName": "bio_type"
-        },
-        {
-          "name": "author_type",
-          "length": 24,
-          "table": {
-            "schema": "extended",
-            "name": "bios"
-          },
-          "type": {
-            "name": "bios_author_type"
-          },
-          "originalName": "author_type"
-        }
-      ],
-      "parameters": [
-        {
-          "number": 1,
-          "column": {
-            "name": "bio_type",
-            "length": 13,
-            "table": {
-              "schema": "extended",
-              "name": "bios"
-            },
-            "type": {
-              "name": "bios_bio_type"
-            },
-            "originalName": "bio_type"
-          }
-        }
-      ],
-      "filename": "query.sql"
-    },
-    {
-      "text": "TRUNCATE TABLE extended.bios",
-      "name": "TruncateExtendedBios",
       "cmd": ":exec",
       "filename": "query.sql"
     }

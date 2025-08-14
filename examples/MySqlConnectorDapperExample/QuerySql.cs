@@ -528,6 +528,93 @@ public class QuerySql
         }
     }
 
+    private const string CreateExtendedBioSql = "INSERT INTO extended.bios (author_name, name, bio_type, author_type) VALUES (@author_name, @name, @bio_type, @author_type)";
+    public class CreateExtendedBioArgs
+    {
+        public string? AuthorName { get; init; }
+        public string? Name { get; init; }
+        public ExtendedBiosBioType? BioType { get; init; }
+        public HashSet<ExtendedBiosAuthorType>? AuthorType { get; init; }
+    };
+    public async Task CreateExtendedBio(CreateExtendedBioArgs args)
+    {
+        var queryParams = new Dictionary<string, object?>();
+        queryParams.Add("author_name", args.AuthorName);
+        queryParams.Add("name", args.Name);
+        queryParams.Add("bio_type", args.BioType);
+        queryParams.Add("author_type", args.AuthorType != null ? string.Join(",", args.AuthorType) : null);
+        if (this.Transaction == null)
+        {
+            using (var connection = new MySqlConnection(ConnectionString))
+            {
+                await connection.ExecuteAsync(CreateExtendedBioSql, queryParams);
+            }
+
+            return;
+        }
+
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+        {
+            throw new System.InvalidOperationException("Transaction is provided, but its connection is null.");
+        }
+
+        await this.Transaction.Connection.ExecuteAsync(CreateExtendedBioSql, queryParams, transaction: this.Transaction);
+    }
+
+    private const string GetFirstExtendedBioByTypeSql = "SELECT author_name, name, bio_type, author_type FROM extended.bios WHERE bio_type = @bio_type LIMIT 1";
+    public class GetFirstExtendedBioByTypeRow
+    {
+        public string? AuthorName { get; init; }
+        public string? Name { get; init; }
+        public ExtendedBiosBioType? BioType { get; init; }
+        public HashSet<ExtendedBiosAuthorType>? AuthorType { get; init; }
+    };
+    public class GetFirstExtendedBioByTypeArgs
+    {
+        public ExtendedBiosBioType? BioType { get; init; }
+    };
+    public async Task<GetFirstExtendedBioByTypeRow?> GetFirstExtendedBioByType(GetFirstExtendedBioByTypeArgs args)
+    {
+        var queryParams = new Dictionary<string, object?>();
+        queryParams.Add("bio_type", args.BioType);
+        if (this.Transaction == null)
+        {
+            using (var connection = new MySqlConnection(ConnectionString))
+            {
+                var result = await connection.QueryFirstOrDefaultAsync<GetFirstExtendedBioByTypeRow?>(GetFirstExtendedBioByTypeSql, queryParams);
+                return result;
+            }
+        }
+
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+        {
+            throw new System.InvalidOperationException("Transaction is provided, but its connection is null.");
+        }
+
+        return await this.Transaction.Connection.QueryFirstOrDefaultAsync<GetFirstExtendedBioByTypeRow?>(GetFirstExtendedBioByTypeSql, queryParams, transaction: this.Transaction);
+    }
+
+    private const string TruncateExtendedBiosSql = "TRUNCATE TABLE extended.bios";
+    public async Task TruncateExtendedBios()
+    {
+        if (this.Transaction == null)
+        {
+            using (var connection = new MySqlConnection(ConnectionString))
+            {
+                await connection.ExecuteAsync(TruncateExtendedBiosSql);
+            }
+
+            return;
+        }
+
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+        {
+            throw new System.InvalidOperationException("Transaction is provided, but its connection is null.");
+        }
+
+        await this.Transaction.Connection.ExecuteAsync(TruncateExtendedBiosSql, transaction: this.Transaction);
+    }
+
     private const string InsertMysqlTypesSql = "INSERT INTO mysql_types (c_bit, c_bool, c_boolean, c_tinyint, c_smallint, c_mediumint, c_int, c_integer, c_bigint, c_decimal, c_dec, c_numeric, c_fixed, c_float, c_double, c_double_precision, c_char, c_nchar, c_national_char, c_varchar, c_tinytext, c_mediumtext, c_text, c_longtext, c_json, c_json_string_override, c_enum, c_set, c_year, c_date, c_datetime, c_timestamp, c_binary, c_varbinary, c_tinyblob, c_blob, c_mediumblob, c_longblob) VALUES ( @c_bit, @c_bool, @c_boolean, @c_tinyint, @c_smallint, @c_mediumint, @c_int, @c_integer, @c_bigint, @c_decimal, @c_dec, @c_numeric, @c_fixed, @c_float, @c_double, @c_double_precision, @c_char, @c_nchar, @c_national_char, @c_varchar, @c_tinytext, @c_mediumtext, @c_text, @c_longtext, @c_json, @c_json_string_override, @c_enum, @c_set, @c_year, @c_date, @c_datetime, @c_timestamp, @c_binary, @c_varbinary, @c_tinyblob, @c_blob, @c_mediumblob, @c_longblob ) "; 
     public class InsertMysqlTypesArgs
     {
@@ -900,92 +987,5 @@ public class QuerySql
         }
 
         await this.Transaction.Connection.ExecuteAsync(TruncateMysqlTypesSql, transaction: this.Transaction);
-    }
-
-    private const string CreateExtendedBioSql = "INSERT INTO extended.bios (author_name, name, bio_type, author_type) VALUES (@author_name, @name, @bio_type, @author_type)";
-    public class CreateExtendedBioArgs
-    {
-        public string? AuthorName { get; init; }
-        public string? Name { get; init; }
-        public ExtendedBiosBioType? BioType { get; init; }
-        public HashSet<ExtendedBiosAuthorType>? AuthorType { get; init; }
-    };
-    public async Task CreateExtendedBio(CreateExtendedBioArgs args)
-    {
-        var queryParams = new Dictionary<string, object?>();
-        queryParams.Add("author_name", args.AuthorName);
-        queryParams.Add("name", args.Name);
-        queryParams.Add("bio_type", args.BioType);
-        queryParams.Add("author_type", args.AuthorType != null ? string.Join(",", args.AuthorType) : null);
-        if (this.Transaction == null)
-        {
-            using (var connection = new MySqlConnection(ConnectionString))
-            {
-                await connection.ExecuteAsync(CreateExtendedBioSql, queryParams);
-            }
-
-            return;
-        }
-
-        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
-        {
-            throw new System.InvalidOperationException("Transaction is provided, but its connection is null.");
-        }
-
-        await this.Transaction.Connection.ExecuteAsync(CreateExtendedBioSql, queryParams, transaction: this.Transaction);
-    }
-
-    private const string GetFirstExtendedBioByTypeSql = "SELECT author_name, name, bio_type, author_type FROM extended.bios WHERE bio_type = @bio_type LIMIT 1";
-    public class GetFirstExtendedBioByTypeRow
-    {
-        public string? AuthorName { get; init; }
-        public string? Name { get; init; }
-        public ExtendedBiosBioType? BioType { get; init; }
-        public HashSet<ExtendedBiosAuthorType>? AuthorType { get; init; }
-    };
-    public class GetFirstExtendedBioByTypeArgs
-    {
-        public ExtendedBiosBioType? BioType { get; init; }
-    };
-    public async Task<GetFirstExtendedBioByTypeRow?> GetFirstExtendedBioByType(GetFirstExtendedBioByTypeArgs args)
-    {
-        var queryParams = new Dictionary<string, object?>();
-        queryParams.Add("bio_type", args.BioType);
-        if (this.Transaction == null)
-        {
-            using (var connection = new MySqlConnection(ConnectionString))
-            {
-                var result = await connection.QueryFirstOrDefaultAsync<GetFirstExtendedBioByTypeRow?>(GetFirstExtendedBioByTypeSql, queryParams);
-                return result;
-            }
-        }
-
-        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
-        {
-            throw new System.InvalidOperationException("Transaction is provided, but its connection is null.");
-        }
-
-        return await this.Transaction.Connection.QueryFirstOrDefaultAsync<GetFirstExtendedBioByTypeRow?>(GetFirstExtendedBioByTypeSql, queryParams, transaction: this.Transaction);
-    }
-
-    private const string TruncateExtendedBiosSql = "TRUNCATE TABLE extended.bios";
-    public async Task TruncateExtendedBios()
-    {
-        if (this.Transaction == null)
-        {
-            using (var connection = new MySqlConnection(ConnectionString))
-            {
-                await connection.ExecuteAsync(TruncateExtendedBiosSql);
-            }
-
-            return;
-        }
-
-        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
-        {
-            throw new System.InvalidOperationException("Transaction is provided, but its connection is null.");
-        }
-
-        await this.Transaction.Connection.ExecuteAsync(TruncateExtendedBiosSql, transaction: this.Transaction);
     }
 }
