@@ -26,11 +26,10 @@ public static class ExamplesDocGen
     private static string ParseConfigNode(YamlNode node)
     {
         var item = (YamlMappingNode)node;
-        var queryFiles = item["queries"].ToString();
         var codegenArray = (YamlSequenceNode)item["codegen"];
-        var firstCodegenObj = (YamlMappingNode)codegenArray.Children[0];
+        var codegenObj = (YamlMappingNode)codegenArray.Children[0];
 
-        var outputDirectory = firstCodegenObj["out"].ToString();
+        var outputDirectory = codegenObj["out"].ToString();
         var projectName = outputDirectory.Replace("examples/", "");
         var testProject = projectName.Contains("Legacy") ? "EndToEndTestsLegacy" : "EndToEndTests";
         var testClassName = projectName.Replace("Example", "Tester");
@@ -38,7 +37,7 @@ public static class ExamplesDocGen
             testClassName = testClassName.Replace("Legacy", "");
 
         var yamlStream = new YamlStream();
-        var yamlDocument = new YamlDocument(firstCodegenObj["options"]);
+        var yamlDocument = new YamlDocument(codegenObj["options"]);
         yamlStream.Documents.Add(yamlDocument);
         using var optionsWriter = new StringWriter();
         yamlStream.Save(optionsWriter, false);
@@ -49,7 +48,7 @@ public static class ExamplesDocGen
                 <summary>{projectName.Replace("Example", "")}</summary>
                 
                 ## Engine `{item["engine"]}`: [{projectName}]({outputDirectory})
-                ### [Schema]({item["schema"]}) | [Queries]({queryFiles}) | [End2End Test](end2end/{testProject}/{testClassName}.cs)
+                ### [Schema]({item["schema"][0]}) | [Queries]({item["queries"][0]}) | [End2End Test](end2end/{testProject}/{testClassName}.cs)
                 ### Config
                 ```yaml
                 {optionsStr}```

@@ -6,16 +6,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <Content Include="../../.env">
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </Content>
-        <Content Include="../../examples/config/sqlite/schema.sql">
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-            <TargetPath>sqlite.schema.sql</TargetPath>
-        </Content>
-    </ItemGroup>
-
-    <ItemGroup>
         <PackageReference Include="dotenv.net" Version="3.2.1" />
         <PackageReference Include="Microsoft.Data.Sqlite" Version="9.0.0"/>
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.9.0"/>

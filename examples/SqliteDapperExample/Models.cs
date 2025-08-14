@@ -2,6 +2,13 @@
 using System.Linq;
 
 namespace SqliteDapperExampleGen;
+public class TypesSqlite
+{
+    public int? CInteger { get; init; }
+    public decimal? CReal { get; init; }
+    public string? CText { get; init; }
+    public byte[]? CBlob { get; init; }
+};
 public class Author
 {
     public required int Id { get; init; }
@@ -14,11 +21,4 @@ public class Book
     public required string Name { get; init; }
     public required int AuthorId { get; init; }
     public string? Description { get; init; }
-};
-public class TypesSqlite
-{
-    public int? CInteger { get; init; }
-    public decimal? CReal { get; init; }
-    public string? CText { get; init; }
-    public byte[]? CBlob { get; init; }
 };

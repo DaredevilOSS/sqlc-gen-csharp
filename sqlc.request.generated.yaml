@@ -271,8 +271,8 @@ sql:
                 notNull: false
           debugRequest: true
   # Sqlite
-  - schema: "examples/config/sqlite/schema.sql"
-    queries: "examples/config/sqlite/query.sql"
+  - schema: ["examples/config/sqlite/types/schema.sql", "examples/config/sqlite/authors/schema.sql"]
+    queries: ["examples/config/sqlite/types/query.sql", "examples/config/sqlite/authors/query.sql"]
     engine: "sqlite"
     codegen:
       - plugin: csharp
@@ -296,8 +296,8 @@ sql:
                 type: "decimal"
                 notNull: true
           debugRequest: true
-  - schema: "examples/config/sqlite/schema.sql"
-    queries: "examples/config/sqlite/query.sql"
+  - schema: ["examples/config/sqlite/types/schema.sql", "examples/config/sqlite/authors/schema.sql"]
+    queries: ["examples/config/sqlite/types/query.sql", "examples/config/sqlite/authors/query.sql"]
     engine: "sqlite"
     codegen:
       - plugin: csharp
@@ -321,8 +321,8 @@ sql:
                 type: "decimal"
                 notNull: true
           debugRequest: true
-  - schema: "examples/config/sqlite/schema.sql"
-    queries: "examples/config/sqlite/query.sql"
+  - schema: ["examples/config/sqlite/types/schema.sql", "examples/config/sqlite/authors/schema.sql"]
+    queries: ["examples/config/sqlite/types/query.sql", "examples/config/sqlite/authors/query.sql"]
     engine: "sqlite"
     codegen:
       - plugin: csharp
@@ -346,8 +346,8 @@ sql:
                 type: "decimal"
                 notNull: true
           debugRequest: true
-  - schema: "examples/config/sqlite/schema.sql"
-    queries: "examples/config/sqlite/query.sql"
+  - schema: ["examples/config/sqlite/types/schema.sql", "examples/config/sqlite/authors/schema.sql"]
+    queries: ["examples/config/sqlite/types/query.sql", "examples/config/sqlite/authors/query.sql"]
     engine: "sqlite"
     codegen:
       - plugin: csharp
