@@ -51,7 +51,7 @@ jobs:
         
       - name: Init PostgresSQL Schema
         shell: powershell
-        run: psql -U $Env:POSTGRES_USER -f 'examples/config/postgresql/schema.sql'
+        run: psql -U $Env:POSTGRES_USER -f 'examples/config/postgresql/types/schema.sql' -f 'examples/config/postgresql/authors/schema.sql'
         env:
           PGSERVICE: ${{ steps.postgres.outputs.service-name }}
           PGPASSWORD: ${{ env.POSTGRES_PASSWORD }}
