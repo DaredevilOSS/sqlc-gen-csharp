@@ -22,11 +22,6 @@ public class MysqlType
     public decimal? CFixed { get; init; }
     public double? CDouble { get; init; }
     public double? CDoublePrecision { get; init; }
-    public short? CYear { get; init; }
-    public DateTime? CDate { get; init; }
-    public string? CTime { get; init; }
-    public DateTime? CDatetime { get; init; }
-    public DateTime? CTimestamp { get; init; }
     public string? CChar { get; init; }
     public string? CNchar { get; init; }
     public string? CNationalChar { get; init; }
@@ -39,6 +34,14 @@ public class MysqlType
     public JsonElement? CJsonStringOverride { get; init; }
     public MysqlTypesCEnum? CEnum { get; init; }
     public HashSet<MysqlTypesCSet>? CSet { get; init; }
+};
+public class MysqlDatetimeType
+{
+    public short? CYear { get; init; }
+    public DateTime? CDate { get; init; }
+    public string? CTime { get; init; }
+    public DateTime? CDatetime { get; init; }
+    public DateTime? CTimestamp { get; init; }
 };
 public class MysqlBinaryType
 {

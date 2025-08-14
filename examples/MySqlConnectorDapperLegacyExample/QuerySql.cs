@@ -45,7 +45,7 @@ namespace MySqlConnectorDapperLegacyExampleGen
         private MySqlTransaction Transaction { get; }
         private string ConnectionString { get; }
 
-        private const string InsertMysqlTypesSql = " INSERT  INTO  mysql_types ( c_bool , c_boolean, c_tinyint, c_smallint, c_mediumint, c_int, c_integer, c_bigint, c_decimal, c_dec, c_numeric, c_fixed, c_float, c_double, c_double_precision, c_char, c_nchar, c_national_char, c_varchar, c_tinytext, c_mediumtext, c_text, c_longtext, c_json, c_json_string_override, c_enum, c_set, c_year, c_date, c_datetime, c_timestamp ) VALUES ( @c_bool, @c_boolean, @c_tinyint, @c_smallint, @c_mediumint, @c_int, @c_integer, @c_bigint, @c_decimal, @c_dec, @c_numeric, @c_fixed, @c_float, @c_double, @c_double_precision, @c_char, @c_nchar, @c_national_char, @c_varchar, @c_tinytext, @c_mediumtext, @c_text, @c_longtext, @c_json, @c_json_string_override, @c_enum, @c_set, @c_year, @c_date, @c_datetime, @c_timestamp ) "; 
+        private const string InsertMysqlTypesSql = " INSERT INTO mysql_types ( c_bool, c_boolean, c_tinyint, c_smallint, c_mediumint, c_int, c_integer, c_bigint, c_decimal, c_dec, c_numeric, c_fixed, c_float, c_double, c_double_precision, c_char, c_nchar, c_national_char, c_varchar, c_tinytext, c_mediumtext, c_text, c_longtext, c_json, c_json_string_override, c_enum, c_set ) VALUES (@c_bool, @c_boolean, @c_tinyint, @c_smallint, @c_mediumint, @c_int, @c_integer, @c_bigint, @c_decimal, @c_dec, @c_numeric, @c_fixed, @c_float, @c_double, @c_double_precision, @c_char, @c_nchar, @c_national_char, @c_varchar, @c_tinytext, @c_mediumtext, @c_text, @c_longtext, @c_json, @c_json_string_override, @c_enum, @c_set)";
         public class InsertMysqlTypesArgs
         {
             public bool? CBool { get; set; }
@@ -75,10 +75,6 @@ namespace MySqlConnectorDapperLegacyExampleGen
             public string CJsonStringOverride { get; set; }
             public MysqlTypesCEnum? CEnum { get; set; }
             public HashSet<MysqlTypesCSet> CSet { get; set; }
-            public short? CYear { get; set; }
-            public DateTime? CDate { get; set; }
-            public DateTime? CDatetime { get; set; }
-            public DateTime? CTimestamp { get; set; }
         };
         public async Task InsertMysqlTypes(InsertMysqlTypesArgs args)
         {
@@ -110,25 +106,15 @@ namespace MySqlConnectorDapperLegacyExampleGen
             queryParams.Add("c_json_string_override", args.CJsonStringOverride);
             queryParams.Add("c_enum", args.CEnum);
             queryParams.Add("c_set", args.CSet != null ? string.Join(",", args.CSet) : null);
-            queryParams.Add("c_year", args.CYear);
-            queryParams.Add("c_date", args.CDate);
-            queryParams.Add("c_datetime", args.CDatetime);
-            queryParams.Add("c_timestamp", args.CTimestamp);
             if (this.Transaction == null)
             {
                 using (var connection = new MySqlConnection(ConnectionString))
-                {
                     await connection.ExecuteAsync(InsertMysqlTypesSql, queryParams);
-                }
-
                 return;
             }
 
             if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
-            {
                 throw new System.InvalidOperationException("Transaction is provided, but its connection is null.");
-            }
-
             await this.Transaction.Connection.ExecuteAsync(InsertMysqlTypesSql, queryParams, transaction: this.Transaction);
         }
 
@@ -161,10 +147,6 @@ namespace MySqlConnectorDapperLegacyExampleGen
             public string CJsonStringOverride { get; set; }
             public MysqlTypesCEnum? CEnum { get; set; }
             public HashSet<MysqlTypesCSet> CSet { get; set; }
-            public short? CYear { get; set; }
-            public DateTime? CDate { get; set; }
-            public DateTime? CDatetime { get; set; }
-            public DateTime? CTimestamp { get; set; }
         };
         public async Task InsertMysqlTypesBatch(List<InsertMysqlTypesBatchArgs> args)
         {
@@ -198,7 +180,6 @@ namespace MySqlConnectorDapperLegacyExampleGen
                 csvWriter.Context.TypeConverterCache.AddConverter<string>(nullConverterFn);
                 csvWriter.Context.TypeConverterCache.AddConverter<JsonElement?>(nullConverterFn);
                 csvWriter.Context.TypeConverterCache.AddConverter<MysqlTypesCEnum?>(nullConverterFn);
-                csvWriter.Context.TypeConverterCache.AddConverter<DateTime?>(nullConverterFn);
                 await csvWriter.WriteRecordsAsync(args);
             }
 
@@ -216,13 +197,13 @@ namespace MySqlConnectorDapperLegacyExampleGen
                     NumberOfLinesToSkip = 1,
                     LineTerminator = "\n"
                 };
-                loader.Columns.AddRange(new List<string> { "c_bool", "c_boolean", "c_tinyint", "c_smallint", "c_mediumint", "c_int", "c_integer", "c_bigint", "c_float", "c_numeric", "c_decimal", "c_dec", "c_fixed", "c_double", "c_double_precision", "c_char", "c_nchar", "c_national_char", "c_varchar", "c_tinytext", "c_mediumtext", "c_text", "c_longtext", "c_json", "c_json_string_override", "c_enum", "c_set", "c_year", "c_date", "c_datetime", "c_timestamp" });
+                loader.Columns.AddRange(new List<string> { "c_bool", "c_boolean", "c_tinyint", "c_smallint", "c_mediumint", "c_int", "c_integer", "c_bigint", "c_float", "c_numeric", "c_decimal", "c_dec", "c_fixed", "c_double", "c_double_precision", "c_char", "c_nchar", "c_national_char", "c_varchar", "c_tinytext", "c_mediumtext", "c_text", "c_longtext", "c_json", "c_json_string_override", "c_enum", "c_set" });
                 await loader.LoadAsync();
                 await connection.CloseAsync();
             }
         }
 
-        private const string GetMysqlTypesSql = "SELECT c_bool, c_boolean, c_tinyint, c_smallint, c_mediumint, c_int, c_integer, c_bigint, c_float, c_decimal, c_dec, c_numeric, c_fixed, c_double, c_double_precision, c_year, c_date, c_time, c_datetime, c_timestamp, c_char, c_nchar, c_national_char, c_varchar, c_tinytext, c_mediumtext, c_text, c_longtext, c_json, c_json_string_override, c_enum, c_set FROM mysql_types LIMIT 1";
+        private const string GetMysqlTypesSql = "SELECT c_bool, c_boolean, c_tinyint, c_smallint, c_mediumint, c_int, c_integer, c_bigint, c_float, c_decimal, c_dec, c_numeric, c_fixed, c_double, c_double_precision, c_char, c_nchar, c_national_char, c_varchar, c_tinytext, c_mediumtext, c_text, c_longtext, c_json, c_json_string_override, c_enum, c_set FROM mysql_types LIMIT 1";
         public class GetMysqlTypesRow
         {
             public bool? CBool { get; set; }
@@ -240,11 +221,6 @@ namespace MySqlConnectorDapperLegacyExampleGen
             public decimal? CFixed { get; set; }
             public double? CDouble { get; set; }
             public double? CDoublePrecision { get; set; }
-            public short? CYear { get; set; }
-            public DateTime? CDate { get; set; }
-            public string CTime { get; set; }
-            public DateTime? CDatetime { get; set; }
-            public DateTime? CTimestamp { get; set; }
             public string CChar { get; set; }
             public string CNchar { get; set; }
             public string CNationalChar { get; set; }
@@ -277,7 +253,7 @@ namespace MySqlConnectorDapperLegacyExampleGen
             return await this.Transaction.Connection.QueryFirstOrDefaultAsync<GetMysqlTypesRow>(GetMysqlTypesSql, transaction: this.Transaction);
         }
 
-        private const string GetMysqlTypesCntSql = "SELECT COUNT(*) AS cnt, c_bool, c_boolean, c_tinyint, c_smallint, c_mediumint, c_int, c_integer, c_bigint, c_float, c_numeric, c_decimal, c_dec, c_fixed, c_double, c_double_precision, c_char, c_nchar, c_national_char, c_varchar, c_tinytext, c_mediumtext, c_text, c_longtext, c_json, c_json_string_override, c_enum, c_set, c_year, c_date, c_datetime, c_timestamp FROM  mysql_types  GROUP  BY  c_bool , c_boolean, c_tinyint, c_smallint, c_mediumint, c_int, c_integer, c_bigint, c_float, c_numeric, c_decimal, c_dec, c_fixed, c_double, c_double_precision, c_char, c_nchar, c_national_char, c_varchar, c_tinytext, c_mediumtext, c_text, c_longtext, c_json, c_json_string_override, c_enum, c_set, c_year, c_date, c_datetime, c_timestamp LIMIT  1  ";  
+        private const string GetMysqlTypesCntSql = "SELECT COUNT(*) AS cnt, c_bool, c_boolean, c_tinyint, c_smallint, c_mediumint, c_int, c_integer, c_bigint, c_float, c_numeric, c_decimal, c_dec, c_fixed, c_double, c_double_precision, c_char, c_nchar, c_national_char, c_varchar, c_tinytext, c_mediumtext, c_text, c_longtext, c_json, c_json_string_override, c_enum, c_set FROM mysql_types GROUP BY c_bool, c_boolean, c_tinyint, c_smallint, c_mediumint, c_int, c_integer, c_bigint, c_float, c_numeric, c_decimal, c_dec, c_fixed, c_double, c_double_precision, c_char, c_nchar, c_national_char, c_varchar, c_tinytext, c_mediumtext, c_text, c_longtext, c_json, c_json_string_override, c_enum, c_set LIMIT 1";
         public class GetMysqlTypesCntRow
         {
             public long Cnt { get; set; }
@@ -308,10 +284,6 @@ namespace MySqlConnectorDapperLegacyExampleGen
             public string CJsonStringOverride { get; set; }
             public MysqlTypesCEnum? CEnum { get; set; }
             public HashSet<MysqlTypesCSet> CSet { get; set; }
-            public short? CYear { get; set; }
-            public DateTime? CDate { get; set; }
-            public DateTime? CDatetime { get; set; }
-            public DateTime? CTimestamp { get; set; }
         };
         public async Task<GetMysqlTypesCntRow> GetMysqlTypesCnt()
         {
@@ -332,20 +304,117 @@ namespace MySqlConnectorDapperLegacyExampleGen
             return await this.Transaction.Connection.QueryFirstOrDefaultAsync<GetMysqlTypesCntRow>(GetMysqlTypesCntSql, transaction: this.Transaction);
         }
 
-        private const string GetMysqlFunctionsSql = "SELECT MAX(c_int) AS max_int, MAX(c_varchar) AS max_varchar, MAX(c_timestamp) AS max_timestamp FROM  mysql_types  ";  
-        public class GetMysqlFunctionsRow
+        private const string TruncateMysqlTypesSql = "TRUNCATE TABLE mysql_types";
+        public async Task TruncateMysqlTypes()
         {
-            public int? MaxInt { get; set; }
-            public string MaxVarchar { get; set; }
-            public DateTime MaxTimestamp { get; set; }
+            if (this.Transaction == null)
+            {
+                using (var connection = new MySqlConnection(ConnectionString))
+                    await connection.ExecuteAsync(TruncateMysqlTypesSql);
+                return;
+            }
+
+            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+                throw new System.InvalidOperationException("Transaction is provided, but its connection is null.");
+            await this.Transaction.Connection.ExecuteAsync(TruncateMysqlTypesSql, transaction: this.Transaction);
+        }
+
+        private const string InsertMysqlDatetimeTypesSql = " INSERT INTO mysql_datetime_types ( c_year, c_date, c_datetime, c_timestamp ) VALUES (@c_year, @c_date, @c_datetime, @c_timestamp)";
+        public class InsertMysqlDatetimeTypesArgs
+        {
+            public short? CYear { get; set; }
+            public DateTime? CDate { get; set; }
+            public DateTime? CDatetime { get; set; }
+            public DateTime? CTimestamp { get; set; }
         };
-        public async Task<GetMysqlFunctionsRow> GetMysqlFunctions()
+        public async Task InsertMysqlDatetimeTypes(InsertMysqlDatetimeTypesArgs args)
+        {
+            var queryParams = new Dictionary<string, object>();
+            queryParams.Add("c_year", args.CYear);
+            queryParams.Add("c_date", args.CDate);
+            queryParams.Add("c_datetime", args.CDatetime);
+            queryParams.Add("c_timestamp", args.CTimestamp);
+            if (this.Transaction == null)
+            {
+                using (var connection = new MySqlConnection(ConnectionString))
+                    await connection.ExecuteAsync(InsertMysqlDatetimeTypesSql, queryParams);
+                return;
+            }
+
+            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+                throw new System.InvalidOperationException("Transaction is provided, but its connection is null.");
+            await this.Transaction.Connection.ExecuteAsync(InsertMysqlDatetimeTypesSql, queryParams, transaction: this.Transaction);
+        }
+
+        public class InsertMysqlDatetimeTypesBatchArgs
+        {
+            public short? CYear { get; set; }
+            public DateTime? CDate { get; set; }
+            public DateTime? CDatetime { get; set; }
+            public DateTime? CTimestamp { get; set; }
+        };
+        public async Task InsertMysqlDatetimeTypesBatch(List<InsertMysqlDatetimeTypesBatchArgs> args)
+        {
+            const string supportedDateTimeFormat = "yyyy-MM-dd H:mm:ss";
+            var config = new CsvConfiguration(CultureInfo.CurrentCulture)
+            {
+                Delimiter = ",",
+                NewLine = "\n"
+            };
+            var nullConverterFn = new Utils.NullToStringCsvConverter();
+            using (var writer = new StreamWriter("input.csv", false, new UTF8Encoding(false)))
+            using (var csvWriter = new CsvWriter(writer, config))
+            {
+                var options = new TypeConverterOptions
+                {
+                    Formats = new[]
+                    {
+                        supportedDateTimeFormat
+                    }
+                };
+                csvWriter.Context.TypeConverterOptionsCache.AddOptions<DateTime>(options);
+                csvWriter.Context.TypeConverterOptionsCache.AddOptions<DateTime?>(options);
+                csvWriter.Context.TypeConverterCache.AddConverter<short?>(nullConverterFn);
+                csvWriter.Context.TypeConverterCache.AddConverter<DateTime?>(nullConverterFn);
+                await csvWriter.WriteRecordsAsync(args);
+            }
+
+            using (var connection = new MySqlConnection(ConnectionString))
+            {
+                await connection.OpenAsync();
+                var loader = new MySqlBulkLoader(connection)
+                {
+                    Local = true,
+                    TableName = "mysql_datetime_types",
+                    FileName = "input.csv",
+                    FieldTerminator = ",",
+                    FieldQuotationCharacter = '"',
+                    FieldQuotationOptional = true,
+                    NumberOfLinesToSkip = 1,
+                    LineTerminator = "\n"
+                };
+                loader.Columns.AddRange(new List<string> { "c_year", "c_date", "c_datetime", "c_timestamp" });
+                await loader.LoadAsync();
+                await connection.CloseAsync();
+            }
+        }
+
+        private const string GetMysqlDatetimeTypesSql = "SELECT c_year, c_date, c_time, c_datetime, c_timestamp FROM mysql_datetime_types LIMIT 1";
+        public class GetMysqlDatetimeTypesRow
+        {
+            public short? CYear { get; set; }
+            public DateTime? CDate { get; set; }
+            public string CTime { get; set; }
+            public DateTime? CDatetime { get; set; }
+            public DateTime? CTimestamp { get; set; }
+        };
+        public async Task<GetMysqlDatetimeTypesRow> GetMysqlDatetimeTypes()
         {
             if (this.Transaction == null)
             {
                 using (var connection = new MySqlConnection(ConnectionString))
                 {
-                    var result = await connection.QueryFirstOrDefaultAsync<GetMysqlFunctionsRow>(GetMysqlFunctionsSql);
+                    var result = await connection.QueryFirstOrDefaultAsync<GetMysqlDatetimeTypesRow>(GetMysqlDatetimeTypesSql);
                     return result;
                 }
             }
@@ -355,20 +424,27 @@ namespace MySqlConnectorDapperLegacyExampleGen
                 throw new System.InvalidOperationException("Transaction is provided, but its connection is null.");
             }
 
-            return await this.Transaction.Connection.QueryFirstOrDefaultAsync<GetMysqlFunctionsRow>(GetMysqlFunctionsSql, transaction: this.Transaction);
+            return await this.Transaction.Connection.QueryFirstOrDefaultAsync<GetMysqlDatetimeTypesRow>(GetMysqlDatetimeTypesSql, transaction: this.Transaction);
         }
 
-        private const string TruncateMysqlTypesSql = "TRUNCATE TABLE mysql_types";
-        public async Task TruncateMysqlTypes()
+        private const string GetMysqlDatetimeTypesCntSql = "SELECT COUNT(*) AS cnt, c_year, c_date, c_datetime, c_timestamp FROM mysql_datetime_types GROUP BY c_year, c_date, c_datetime, c_timestamp LIMIT 1";
+        public class GetMysqlDatetimeTypesCntRow
+        {
+            public long Cnt { get; set; }
+            public short? CYear { get; set; }
+            public DateTime? CDate { get; set; }
+            public DateTime? CDatetime { get; set; }
+            public DateTime? CTimestamp { get; set; }
+        };
+        public async Task<GetMysqlDatetimeTypesCntRow> GetMysqlDatetimeTypesCnt()
         {
             if (this.Transaction == null)
             {
                 using (var connection = new MySqlConnection(ConnectionString))
                 {
-                    await connection.ExecuteAsync(TruncateMysqlTypesSql);
+                    var result = await connection.QueryFirstOrDefaultAsync<GetMysqlDatetimeTypesCntRow>(GetMysqlDatetimeTypesCntSql);
+                    return result;
                 }
-
-                return;
             }
 
             if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
@@ -376,10 +452,25 @@ namespace MySqlConnectorDapperLegacyExampleGen
                 throw new System.InvalidOperationException("Transaction is provided, but its connection is null.");
             }
 
-            await this.Transaction.Connection.ExecuteAsync(TruncateMysqlTypesSql, transaction: this.Transaction);
+            return await this.Transaction.Connection.QueryFirstOrDefaultAsync<GetMysqlDatetimeTypesCntRow>(GetMysqlDatetimeTypesCntSql, transaction: this.Transaction);
         }
 
-        private const string InsertMysqlBinaryTypesSql = " INSERT  INTO  mysql_binary_types ( c_bit , c_binary, c_varbinary, c_tinyblob, c_blob, c_mediumblob, c_longblob ) VALUES ( @c_bit, @c_binary, @c_varbinary, @c_tinyblob, @c_blob, @c_mediumblob, @c_longblob ) "; 
+        private const string TruncateMysqlDatetimeTypesSql = "TRUNCATE TABLE mysql_datetime_types";
+        public async Task TruncateMysqlDatetimeTypes()
+        {
+            if (this.Transaction == null)
+            {
+                using (var connection = new MySqlConnection(ConnectionString))
+                    await connection.ExecuteAsync(TruncateMysqlDatetimeTypesSql);
+                return;
+            }
+
+            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+                throw new System.InvalidOperationException("Transaction is provided, but its connection is null.");
+            await this.Transaction.Connection.ExecuteAsync(TruncateMysqlDatetimeTypesSql, transaction: this.Transaction);
+        }
+
+        private const string InsertMysqlBinaryTypesSql = " INSERT INTO mysql_binary_types ( c_bit, c_binary, c_varbinary, c_tinyblob, c_blob, c_mediumblob, c_longblob ) VALUES (@c_bit, @c_binary, @c_varbinary, @c_tinyblob, @c_blob, @c_mediumblob, @c_longblob)";
         public class InsertMysqlBinaryTypesArgs
         {
             public byte? CBit { get; set; }
@@ -403,18 +494,12 @@ namespace MySqlConnectorDapperLegacyExampleGen
             if (this.Transaction == null)
             {
                 using (var connection = new MySqlConnection(ConnectionString))
-                {
                     await connection.ExecuteAsync(InsertMysqlBinaryTypesSql, queryParams);
-                }
-
                 return;
             }
 
             if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
-            {
                 throw new System.InvalidOperationException("Transaction is provided, but its connection is null.");
-            }
-
             await this.Transaction.Connection.ExecuteAsync(InsertMysqlBinaryTypesSql, queryParams, transaction: this.Transaction);
         }
 
@@ -505,7 +590,7 @@ namespace MySqlConnectorDapperLegacyExampleGen
             return await this.Transaction.Connection.QueryFirstOrDefaultAsync<GetMysqlBinaryTypesRow>(GetMysqlBinaryTypesSql, transaction: this.Transaction);
         }
 
-        private const string GetMysqlBinaryTypesCntSql = "SELECT COUNT(*) AS cnt, c_bit, c_binary, c_varbinary, c_tinyblob, c_blob, c_mediumblob, c_longblob FROM  mysql_binary_types  GROUP  BY  c_bit , c_binary, c_varbinary, c_tinyblob, c_blob, c_mediumblob, c_longblob LIMIT  1  ";  
+        private const string GetMysqlBinaryTypesCntSql = "SELECT COUNT(*) AS cnt, c_bit, c_binary, c_varbinary, c_tinyblob, c_blob, c_mediumblob, c_longblob FROM mysql_binary_types GROUP BY c_bit, c_binary, c_varbinary, c_tinyblob, c_blob, c_mediumblob, c_longblob LIMIT 1";
         public class GetMysqlBinaryTypesCntRow
         {
             public long Cnt { get; set; }
@@ -542,11 +627,31 @@ namespace MySqlConnectorDapperLegacyExampleGen
             if (this.Transaction == null)
             {
                 using (var connection = new MySqlConnection(ConnectionString))
-                {
                     await connection.ExecuteAsync(TruncateMysqlBinaryTypesSql);
-                }
-
                 return;
+            }
+
+            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+                throw new System.InvalidOperationException("Transaction is provided, but its connection is null.");
+            await this.Transaction.Connection.ExecuteAsync(TruncateMysqlBinaryTypesSql, transaction: this.Transaction);
+        }
+
+        private const string GetMysqlFunctionsSql = " SELECT MAX(c_int) AS max_int, MAX(c_varchar) AS max_varchar, MAX(c_timestamp) AS max_timestamp FROM mysql_types CROSS JOIN mysql_datetime_types";
+        public class GetMysqlFunctionsRow
+        {
+            public int? MaxInt { get; set; }
+            public string MaxVarchar { get; set; }
+            public DateTime MaxTimestamp { get; set; }
+        };
+        public async Task<GetMysqlFunctionsRow> GetMysqlFunctions()
+        {
+            if (this.Transaction == null)
+            {
+                using (var connection = new MySqlConnection(ConnectionString))
+                {
+                    var result = await connection.QueryFirstOrDefaultAsync<GetMysqlFunctionsRow>(GetMysqlFunctionsSql);
+                    return result;
+                }
             }
 
             if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
@@ -554,7 +659,7 @@ namespace MySqlConnectorDapperLegacyExampleGen
                 throw new System.InvalidOperationException("Transaction is provided, but its connection is null.");
             }
 
-            await this.Transaction.Connection.ExecuteAsync(TruncateMysqlBinaryTypesSql, transaction: this.Transaction);
+            return await this.Transaction.Connection.QueryFirstOrDefaultAsync<GetMysqlFunctionsRow>(GetMysqlFunctionsSql, transaction: this.Transaction);
         }
 
         private const string GetAuthorSql = "SELECT id, name, bio FROM authors WHERE name = @name LIMIT 1";
@@ -589,7 +694,7 @@ namespace MySqlConnectorDapperLegacyExampleGen
             return await this.Transaction.Connection.QueryFirstOrDefaultAsync<GetAuthorRow>(GetAuthorSql, queryParams, transaction: this.Transaction);
         }
 
-        private const string ListAuthorsSql = "SELECT id, name, bio FROM authors ORDER  BY  name  LIMIT  @limit  OFFSET  @offset  ";  
+        private const string ListAuthorsSql = "SELECT id, name, bio FROM authors ORDER BY name LIMIT @limit OFFSET @offset";
         public class ListAuthorsRow
         {
             public long Id { get; set; }
@@ -636,18 +741,12 @@ namespace MySqlConnectorDapperLegacyExampleGen
             if (this.Transaction == null)
             {
                 using (var connection = new MySqlConnection(ConnectionString))
-                {
                     await connection.ExecuteAsync(CreateAuthorSql, queryParams);
-                }
-
                 return;
             }
 
             if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
-            {
                 throw new System.InvalidOperationException("Transaction is provided, but its connection is null.");
-            }
-
             await this.Transaction.Connection.ExecuteAsync(CreateAuthorSql, queryParams, transaction: this.Transaction);
         }
 
@@ -665,16 +764,11 @@ namespace MySqlConnectorDapperLegacyExampleGen
             if (this.Transaction == null)
             {
                 using (var connection = new MySqlConnection(ConnectionString))
-                {
                     return await connection.QuerySingleAsync<long>(CreateAuthorReturnIdSql, queryParams);
-                }
             }
 
             if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
-            {
-                throw new System.InvalidOperationException("Transaction is provided, but its connection is null.");
-            }
-
+                throw new InvalidOperationException("Transaction is provided, but its connection is null.");
             return await this.Transaction.Connection.QuerySingleAsync<long>(CreateAuthorReturnIdSql, queryParams, transaction: this.Transaction);
         }
 
@@ -710,7 +804,7 @@ namespace MySqlConnectorDapperLegacyExampleGen
             return await this.Transaction.Connection.QueryFirstOrDefaultAsync<GetAuthorByIdRow>(GetAuthorByIdSql, queryParams, transaction: this.Transaction);
         }
 
-        private const string GetAuthorByNamePatternSql = "SELECT id, name, bio FROM authors WHERE  name  LIKE  COALESCE ( @name_pattern ,  '%' ) ";  
+        private const string GetAuthorByNamePatternSql = "SELECT id, name, bio FROM authors WHERE name LIKE COALESCE(@name_pattern, '%')";
         public class GetAuthorByNamePatternRow
         {
             public long Id { get; set; }
@@ -739,7 +833,7 @@ namespace MySqlConnectorDapperLegacyExampleGen
             return (await this.Transaction.Connection.QueryAsync<GetAuthorByNamePatternRow>(GetAuthorByNamePatternSql, queryParams, transaction: this.Transaction)).AsList();
         }
 
-        private const string DeleteAuthorSql = "DELETE FROM authors WHERE  name  =  @name  ";  
+        private const string DeleteAuthorSql = "DELETE FROM authors WHERE name = @name";
         public class DeleteAuthorArgs
         {
             public string Name { get; set; }
@@ -751,18 +845,12 @@ namespace MySqlConnectorDapperLegacyExampleGen
             if (this.Transaction == null)
             {
                 using (var connection = new MySqlConnection(ConnectionString))
-                {
                     await connection.ExecuteAsync(DeleteAuthorSql, queryParams);
-                }
-
                 return;
             }
 
             if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
-            {
                 throw new System.InvalidOperationException("Transaction is provided, but its connection is null.");
-            }
-
             await this.Transaction.Connection.ExecuteAsync(DeleteAuthorSql, queryParams, transaction: this.Transaction);
         }
 
@@ -772,22 +860,16 @@ namespace MySqlConnectorDapperLegacyExampleGen
             if (this.Transaction == null)
             {
                 using (var connection = new MySqlConnection(ConnectionString))
-                {
                     await connection.ExecuteAsync(DeleteAllAuthorsSql);
-                }
-
                 return;
             }
 
             if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
-            {
                 throw new System.InvalidOperationException("Transaction is provided, but its connection is null.");
-            }
-
             await this.Transaction.Connection.ExecuteAsync(DeleteAllAuthorsSql, transaction: this.Transaction);
         }
 
-        private const string UpdateAuthorsSql = "UPDATE authors SET  bio  =  @bio  WHERE  bio  IS  NOT  NULL  ";  
+        private const string UpdateAuthorsSql = "UPDATE authors SET bio = @bio WHERE bio IS NOT NULL";
         public class UpdateAuthorsArgs
         {
             public string Bio { get; set; }
@@ -799,16 +881,11 @@ namespace MySqlConnectorDapperLegacyExampleGen
             if (this.Transaction == null)
             {
                 using (var connection = new MySqlConnection(ConnectionString))
-                {
                     return await connection.ExecuteAsync(UpdateAuthorsSql, queryParams);
-                }
             }
 
             if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
-            {
-                throw new System.InvalidOperationException("Transaction is provided, but its connection is null.");
-            }
-
+                throw new InvalidOperationException("Transaction is provided, but its connection is null.");
             return await this.Transaction.Connection.ExecuteAsync(UpdateAuthorsSql, queryParams, transaction: this.Transaction);
         }
 
@@ -894,16 +971,11 @@ namespace MySqlConnectorDapperLegacyExampleGen
             if (this.Transaction == null)
             {
                 using (var connection = new MySqlConnection(ConnectionString))
-                {
                     return await connection.QuerySingleAsync<long>(CreateBookSql, queryParams);
-                }
             }
 
             if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
-            {
-                throw new System.InvalidOperationException("Transaction is provided, but its connection is null.");
-            }
-
+                throw new InvalidOperationException("Transaction is provided, but its connection is null.");
             return await this.Transaction.Connection.QuerySingleAsync<long>(CreateBookSql, queryParams, transaction: this.Transaction);
         }
 
@@ -949,7 +1021,7 @@ namespace MySqlConnectorDapperLegacyExampleGen
             }
         }
 
-        private const string GetDuplicateAuthorsSql = "SELECT authors1.id, authors1.name, authors1.bio, authors2.id, authors2.name, authors2.bio FROM  authors  authors1  JOIN  authors  authors2  ON  authors1 . name  =  authors2 . name  WHERE  authors1 . id < authors2 . id  ";  
+        private const string GetDuplicateAuthorsSql = "SELECT authors1.id, authors1.name, authors1.bio, authors2.id, authors2.name, authors2.bio FROM authors authors1 JOIN authors authors2 ON authors1.name = authors2.name WHERE authors1.id < authors2.id";
         public class GetDuplicateAuthorsRow
         {
             public Author Author { get; set; }
@@ -991,7 +1063,7 @@ namespace MySqlConnectorDapperLegacyExampleGen
             }
         }
 
-        private const string GetAuthorsByBookNameSql = "SELECT authors.id, authors.name, authors.bio, books.id, books.name, books.author_id, books.description FROM  authors  JOIN  books  ON  authors . id  =  books . author_id  WHERE  books . name  =  @name  ";  
+        private const string GetAuthorsByBookNameSql = "SELECT authors.id, authors.name, authors.bio, books.id, books.name, books.author_id, books.description FROM authors JOIN books ON authors.id = books.author_id WHERE books.name = @name";
         public class GetAuthorsByBookNameRow
         {
             public long Id { get; set; }
@@ -1059,18 +1131,12 @@ namespace MySqlConnectorDapperLegacyExampleGen
             if (this.Transaction == null)
             {
                 using (var connection = new MySqlConnection(ConnectionString))
-                {
                     await connection.ExecuteAsync(CreateExtendedBioSql, queryParams);
-                }
-
                 return;
             }
 
             if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
-            {
                 throw new System.InvalidOperationException("Transaction is provided, but its connection is null.");
-            }
-
             await this.Transaction.Connection.ExecuteAsync(CreateExtendedBioSql, queryParams, transaction: this.Transaction);
         }
 
@@ -1113,18 +1179,12 @@ namespace MySqlConnectorDapperLegacyExampleGen
             if (this.Transaction == null)
             {
                 using (var connection = new MySqlConnection(ConnectionString))
-                {
                     await connection.ExecuteAsync(TruncateExtendedBiosSql);
-                }
-
                 return;
             }
 
             if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
-            {
                 throw new System.InvalidOperationException("Transaction is provided, but its connection is null.");
-            }
-
             await this.Transaction.Connection.ExecuteAsync(TruncateExtendedBiosSql, transaction: this.Transaction);
         }
     }

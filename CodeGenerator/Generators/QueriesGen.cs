@@ -146,7 +146,7 @@ internal partial class QueriesGen(DbDriver dbDriver, string namespaceName)
     }
 
 
-    [GeneratedRegex(@"\s{2,}")]
+    [GeneratedRegex(@"\s{1,}")]
     private static partial Regex LongWhitespaceRegex();
 
     private MemberDeclarationSyntax AddMethodDeclaration(Query query)

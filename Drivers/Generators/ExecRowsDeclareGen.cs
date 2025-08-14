@@ -49,9 +49,7 @@ public class ExecRowsDeclareGen(DbDriver dbDriver)
         var dapperArgs = query.Params.Any() ? $", {Variable.QueryParams.AsVarName()}" : string.Empty;
         return $$"""
                     using ({{establishConnection}})
-                    {
                         return await {{Variable.Connection.AsVarName()}}.ExecuteAsync({{sqlVar}}{{dapperArgs}});
-                    }
                  """;
     }
 
@@ -61,9 +59,7 @@ public class ExecRowsDeclareGen(DbDriver dbDriver)
         var dapperArgs = query.Params.Any() ? $", {Variable.QueryParams.AsVarName()}" : string.Empty;
         return $$"""
                     if (this.{{transactionProperty}}?.Connection == null || this.{{transactionProperty}}?.Connection.State != System.Data.ConnectionState.Open)
-                    {
-                        throw new System.InvalidOperationException("Transaction is provided, but its connection is null.");
-                    }
+                        throw new InvalidOperationException("Transaction is provided, but its connection is null.");
                     
                     return await this.{{transactionProperty}}.Connection.ExecuteAsync(
                             {{sqlVar}}{{dapperArgs}},
@@ -97,9 +93,7 @@ public class ExecRowsDeclareGen(DbDriver dbDriver)
 
         return $$"""
                     if (this.{{transactionProperty}}?.Connection == null || this.{{transactionProperty}}?.Connection.State != System.Data.ConnectionState.Open)
-                    {
-                        throw new System.InvalidOperationException("Transaction is provided, but its connection is null.");
-                    }
+                        throw new InvalidOperationException("Transaction is provided, but its connection is null.");
 
                     using (var {{commandVar}} = this.{{transactionProperty}}.Connection.CreateCommand())
                     {

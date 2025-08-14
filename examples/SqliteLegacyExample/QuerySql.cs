@@ -35,7 +35,7 @@ namespace SqliteLegacyExampleGen
         private SqliteTransaction Transaction { get; }
         private string ConnectionString { get; }
 
-        private const string GetAuthorSql = "SELECT id, name, bio FROM authors WHERE  name  =  @name  LIMIT  1  ";  
+        private const string GetAuthorSql = "SELECT id, name, bio FROM authors WHERE name = @name LIMIT 1";
         public class GetAuthorRow
         {
             public int Id { get; set; }
@@ -101,7 +101,7 @@ namespace SqliteLegacyExampleGen
             return null;
         }
 
-        private const string ListAuthorsSql = "SELECT id, name, bio FROM  authors  ORDER  BY  name  LIMIT  @limit  OFFSET  @offset  ";  
+        private const string ListAuthorsSql = "SELECT id, name, bio FROM authors ORDER BY name LIMIT @limit OFFSET @offset";
         public class ListAuthorsRow
         {
             public int Id { get; set; }
@@ -180,10 +180,7 @@ namespace SqliteLegacyExampleGen
             }
 
             if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
-            {
-                throw new System.InvalidOperationException("Transaction is provided, but its connection is null.");
-            }
-
+                throw new InvalidOperationException("Transaction is provided, but its connection is null.");
             using (var command = this.Transaction.Connection.CreateCommand())
             {
                 command.CommandText = CreateAuthorSql;
@@ -223,10 +220,7 @@ namespace SqliteLegacyExampleGen
             }
 
             if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
-            {
                 throw new System.InvalidOperationException("Transaction is provided, but its connection is null.");
-            }
-
             using (var command = this.Transaction.Connection.CreateCommand())
             {
                 command.CommandText = CreateAuthorReturnIdSql;
@@ -238,7 +232,7 @@ namespace SqliteLegacyExampleGen
             }
         }
 
-        private const string GetAuthorByIdSql = "SELECT id, name, bio FROM authors WHERE  id  =  @id  LIMIT  1  ";  
+        private const string GetAuthorByIdSql = "SELECT id, name, bio FROM authors WHERE id = @id LIMIT 1";
         public class GetAuthorByIdRow
         {
             public int Id { get; set; }
@@ -373,7 +367,7 @@ namespace SqliteLegacyExampleGen
             return null;
         }
 
-        private const string GetAuthorByNamePatternSql = "SELECT id, name, bio FROM authors WHERE  name  LIKE  COALESCE ( @name_pattern ,  '%' ) ";  
+        private const string GetAuthorByNamePatternSql = "SELECT id, name, bio FROM authors WHERE name LIKE COALESCE(@name_pattern, '%')";
         public class GetAuthorByNamePatternRow
         {
             public int Id { get; set; }
@@ -422,7 +416,7 @@ namespace SqliteLegacyExampleGen
             }
         }
 
-        private const string UpdateAuthorsSql = "UPDATE authors SET  bio  =  @bio  WHERE  bio  IS  NOT  NULL  ";  
+        private const string UpdateAuthorsSql = "UPDATE authors SET bio = @bio WHERE bio IS NOT NULL";
         public class UpdateAuthorsArgs
         {
             public string Bio { get; set; }
@@ -443,10 +437,7 @@ namespace SqliteLegacyExampleGen
             }
 
             if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
-            {
                 throw new System.InvalidOperationException("Transaction is provided, but its connection is null.");
-            }
-
             using (var command = this.Transaction.Connection.CreateCommand())
             {
                 command.CommandText = UpdateAuthorsSql;
@@ -568,7 +559,7 @@ namespace SqliteLegacyExampleGen
             }
         }
 
-        private const string DeleteAuthorSql = "DELETE FROM authors WHERE  name  =  @name  ";  
+        private const string DeleteAuthorSql = "DELETE FROM authors WHERE name = @name";
         public class DeleteAuthorArgs
         {
             public string Name { get; set; }
@@ -591,10 +582,7 @@ namespace SqliteLegacyExampleGen
             }
 
             if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
-            {
-                throw new System.InvalidOperationException("Transaction is provided, but its connection is null.");
-            }
-
+                throw new InvalidOperationException("Transaction is provided, but its connection is null.");
             using (var command = this.Transaction.Connection.CreateCommand())
             {
                 command.CommandText = DeleteAuthorSql;
@@ -632,10 +620,7 @@ namespace SqliteLegacyExampleGen
             }
 
             if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
-            {
                 throw new System.InvalidOperationException("Transaction is provided, but its connection is null.");
-            }
-
             using (var command = this.Transaction.Connection.CreateCommand())
             {
                 command.CommandText = CreateBookSql;
@@ -647,7 +632,7 @@ namespace SqliteLegacyExampleGen
             }
         }
 
-        private const string ListAllAuthorsBooksSql = "SELECT authors.id, authors.name, authors.bio, books.id, books.name, books.author_id, books.description FROM  authors  INNER  JOIN  books  ON  authors . id  =  books . author_id  ORDER  BY  authors . name  ";  
+        private const string ListAllAuthorsBooksSql = "SELECT authors.id, authors.name, authors.bio, books.id, books.name, books.author_id, books.description FROM authors INNER JOIN books ON authors.id = books.author_id ORDER BY authors.name";
         public class ListAllAuthorsBooksRow
         {
             public Author Author { get; set; }
@@ -689,7 +674,7 @@ namespace SqliteLegacyExampleGen
             }
         }
 
-        private const string GetDuplicateAuthorsSql = "SELECT authors1.id, authors1.name, authors1.bio, authors2.id, authors2.name, authors2.bio FROM  authors  AS  authors1  INNER  JOIN  authors  AS  authors2  ON  authors1 . name  =  authors2 . name  WHERE  authors1 . id < authors2 . id  ";  
+        private const string GetDuplicateAuthorsSql = "SELECT authors1.id, authors1.name, authors1.bio, authors2.id, authors2.name, authors2.bio FROM authors AS authors1 INNER JOIN authors AS authors2 ON authors1.name = authors2.name WHERE authors1.id < authors2.id";
         public class GetDuplicateAuthorsRow
         {
             public Author Author { get; set; }
@@ -731,7 +716,7 @@ namespace SqliteLegacyExampleGen
             }
         }
 
-        private const string GetAuthorsByBookNameSql = "SELECT authors.id, authors.name, authors.bio, books.id, books.name, books.author_id, books.description FROM  authors  INNER  JOIN  books  ON  authors . id  =  books . author_id  WHERE  books . name  =  @name  ";  
+        private const string GetAuthorsByBookNameSql = "SELECT authors.id, authors.name, authors.bio, books.id, books.name, books.author_id, books.description FROM authors INNER JOIN books ON authors.id = books.author_id WHERE books.name = @name";
         public class GetAuthorsByBookNameRow
         {
             public int Id { get; set; }
@@ -799,10 +784,7 @@ namespace SqliteLegacyExampleGen
             }
 
             if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
-            {
-                throw new System.InvalidOperationException("Transaction is provided, but its connection is null.");
-            }
-
+                throw new InvalidOperationException("Transaction is provided, but its connection is null.");
             using (var command = this.Transaction.Connection.CreateCommand())
             {
                 command.CommandText = DeleteAllAuthorsSql;
@@ -811,7 +793,7 @@ namespace SqliteLegacyExampleGen
             }
         }
 
-        private const string InsertSqliteTypesSql = "INSERT INTO types_sqlite (c_integer, c_real, c_text, c_blob) VALUES ( @c_integer, @c_real, @c_text, @c_blob ) "; 
+        private const string InsertSqliteTypesSql = "INSERT INTO types_sqlite (c_integer, c_real, c_text, c_blob) VALUES ( @c_integer, @c_real, @c_text, @c_blob )";
         public class InsertSqliteTypesArgs
         {
             public int? CInteger { get; set; }
@@ -840,10 +822,7 @@ namespace SqliteLegacyExampleGen
             }
 
             if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
-            {
-                throw new System.InvalidOperationException("Transaction is provided, but its connection is null.");
-            }
-
+                throw new InvalidOperationException("Transaction is provided, but its connection is null.");
             using (var command = this.Transaction.Connection.CreateCommand())
             {
                 command.CommandText = InsertSqliteTypesSql;
@@ -946,7 +925,7 @@ namespace SqliteLegacyExampleGen
             return null;
         }
 
-        private const string GetSqliteTypesCntSql = "SELECT c_integer, c_real, c_text, c_blob, COUNT(*) AS cnt FROM  types_sqlite  GROUP  BY  c_integer , c_real, c_text, c_blob LIMIT  1  ";  
+        private const string GetSqliteTypesCntSql = "SELECT c_integer, c_real, c_text, c_blob, COUNT(*) AS cnt FROM types_sqlite GROUP BY c_integer, c_real, c_text, c_blob LIMIT 1";
         public class GetSqliteTypesCntRow
         {
             public int? CInteger { get; set; }
@@ -1012,7 +991,7 @@ namespace SqliteLegacyExampleGen
             return null;
         }
 
-        private const string GetSqliteFunctionsSql = "SELECT MAX(c_integer) AS max_integer, MAX(c_real) AS max_real, MAX(c_text) AS max_text FROM  types_sqlite  ";  
+        private const string GetSqliteFunctionsSql = "SELECT MAX(c_integer) AS max_integer, MAX(c_real) AS max_real, MAX(c_text) AS max_text FROM types_sqlite";
         public class GetSqliteFunctionsRow
         {
             public int? MaxInteger { get; set; }
@@ -1090,10 +1069,7 @@ namespace SqliteLegacyExampleGen
             }
 
             if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
-            {
-                throw new System.InvalidOperationException("Transaction is provided, but its connection is null.");
-            }
-
+                throw new InvalidOperationException("Transaction is provided, but its connection is null.");
             using (var command = this.Transaction.Connection.CreateCommand())
             {
                 command.CommandText = DeleteAllSqliteTypesSql;

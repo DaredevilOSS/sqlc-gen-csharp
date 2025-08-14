@@ -23,11 +23,6 @@ namespace MySqlConnectorLegacyExampleGen
         public decimal? CFixed { get; set; }
         public double? CDouble { get; set; }
         public double? CDoublePrecision { get; set; }
-        public short? CYear { get; set; }
-        public DateTime? CDate { get; set; }
-        public string CTime { get; set; }
-        public DateTime? CDatetime { get; set; }
-        public DateTime? CTimestamp { get; set; }
         public string CChar { get; set; }
         public string CNchar { get; set; }
         public string CNationalChar { get; set; }
@@ -40,6 +35,14 @@ namespace MySqlConnectorLegacyExampleGen
         public JsonElement? CJsonStringOverride { get; set; }
         public MysqlTypesCEnum? CEnum { get; set; }
         public HashSet<MysqlTypesCSet> CSet { get; set; }
+    };
+    public class MysqlDatetimeType
+    {
+        public short? CYear { get; set; }
+        public DateTime? CDate { get; set; }
+        public string CTime { get; set; }
+        public DateTime? CDatetime { get; set; }
+        public DateTime? CTimestamp { get; set; }
     };
     public class MysqlBinaryType
     {

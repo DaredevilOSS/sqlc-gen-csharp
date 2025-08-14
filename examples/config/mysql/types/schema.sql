@@ -16,13 +16,6 @@ CREATE TABLE mysql_types (
   c_double           DOUBLE,
   c_double_precision DOUBLE PRECISION,
 
-  /* Datetime data types */
-  c_year        YEAR,
-  c_date        DATE,
-  c_time        TIME,
-  c_datetime    DATETIME,
-  c_timestamp   TIMESTAMP,
-
   /* String data types */  
   c_char                 CHAR,
   c_nchar                NCHAR,
@@ -38,6 +31,14 @@ CREATE TABLE mysql_types (
   /* Pre-defined types */
   c_enum         ENUM ('small', 'medium', 'big'),
   c_set          SET ('tea', 'coffee', 'milk')
+);
+
+CREATE TABLE mysql_datetime_types (
+  c_year        YEAR,
+  c_date        DATE,
+  c_time        TIME,
+  c_datetime    DATETIME,
+  c_timestamp   TIMESTAMP
 );
 
 CREATE TABLE mysql_binary_types (

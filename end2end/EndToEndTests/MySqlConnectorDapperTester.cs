@@ -14,8 +14,9 @@ public partial class MySqlConnectorDapperTester
     public async Task EmptyTestsTable()
     {
         await QuerySql.DeleteAllAuthors();
-        await QuerySql.TruncateMysqlTypes();
-        await QuerySql.TruncateMysqlBinaryTypes();
         await QuerySql.TruncateExtendedBios();
+        await QuerySql.TruncateMysqlTypes();
+        await QuerySql.TruncateMysqlDatetimeTypes();
+        await QuerySql.TruncateMysqlBinaryTypes();
     }
 }

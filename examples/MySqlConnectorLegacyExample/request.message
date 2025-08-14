@@ -2,7 +2,7 @@
 ø
 2mysql&examples/config/mysql/types/schema.sql(examples/config/mysql/authors/schema.sql"%examples/config/mysql/types/query.sql"'examples/config/mysql/authors/query.sqlbÉ
 $examples/MySqlConnectorLegacyExamplecsharp‚{"debugRequest":true,"generateCsproj":true,"namespaceName":"MySqlConnectorLegacyExampleGen","overrides":[{"column":"GetMysqlFunctions:max_int","csharp_type":{"notNull":false,"type":"int"}},{"column":"GetMysqlFunctions:max_varchar","csharp_type":{"notNull":false,"type":"string"}},{"column":"GetMysqlFunctions:max_timestamp","csharp_type":{"notNull":true,"type":"DateTime"}},{"column":"*:c_json_string_override","csharp_type":{"notNull":false,"type":"string"}}],"targetFramework":"netstandard2.0","useDapper":false}*
-./dist/LocalRunnerµpublic"ËpublicÍ
+./dist/LocalRunnerýpublic"“publicú	
 mysql_types$
 c_bool0Rmysql_typesb	tinyint'
 	c_boolean0Rmysql_typesb	tinyint'
@@ -25,14 +25,6 @@ Rmysql_typesb	decimal%
 Rmysql_typesb	decimal.
 c_double0ÿÿÿÿÿÿÿÿÿRmysql_typesbdouble8
 c_double_precision0ÿÿÿÿÿÿÿÿÿRmysql_typesbdouble*
-c_year0ÿÿÿÿÿÿÿÿÿRmysql_typesbyear*
-c_date0ÿÿÿÿÿÿÿÿÿRmysql_typesbdate!
-c_time0
-Rmysql_typesbtime)
-
-c_datetime0Rmysql_typesb
-datetime+
-c_timestamp0Rmysql_typesb	timestamp*
 c_char0ÿÿÿÿÿÿÿÿÿRmysql_typesbchar+
 c_nchar0ÿÿÿÿÿÿÿÿÿRmysql_typesbchar3
 c_national_char0ÿÿÿÿÿÿÿÿÿRmysql_typesbchar'
@@ -49,7 +41,16 @@ c_longtext0ÿÿÿÿÿÿÿÿÿRmysql_typesb
 c_json0ÿÿÿÿÿÿÿÿÿRmysql_typesbjson:
 c_json_string_override0ÿÿÿÿÿÿÿÿÿRmysql_typesbjson/
 c_enum0Rmysql_typesbmysql_types_c_enum-
-c_set0Rmysql_typesbmysql_types_c_setˆ
+c_set0Rmysql_typesbmysql_types_c_set˜
+mysql_datetime_types3
+c_year0ÿÿÿÿÿÿÿÿÿRmysql_datetime_typesbyear3
+c_date0ÿÿÿÿÿÿÿÿÿRmysql_datetime_typesbdate*
+c_time0
+Rmysql_datetime_typesbtime2
+
+c_datetime0Rmysql_datetime_typesb
+datetime4
+c_timestamp0Rmysql_datetime_typesb	timestampˆ
 mysql_binary_types&
 c_bit0Rmysql_binary_typesbbit,
 c_binary0Rmysql_binary_typesbbinary2
@@ -82,8 +83,8 @@ Translator"ÜextendedÏ
 author_name0dRextendedbiosb	varchar%
 name0dRextendedbiosb	varchar/
 bio_type0Rextendedbiosbbios_bio_type5
-author_type0Rextendedbiosbbios_author_typeã
-¼
+author_type0Rextendedbiosbbios_author_type•
+÷
 INSERT INTO mysql_types 
 (
     c_bool,
@@ -106,13 +107,9 @@ INSERT INTO mysql_types
     c_json,
     c_json_string_override,
     c_enum,
-    c_set,
-    c_year,
-    c_date,
-    c_datetime,
-    c_timestamp
+    c_set
 ) 
-VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)InsertMysqlTypes:exec*84
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)InsertMysqlTypes:exec*84
 c_bool0Rpublicmysql_typesb	tinyintzc_bool*>:
 	c_boolean0Rpublicmysql_typesb	tinyintz	c_boolean*>:
 	c_tinyint0Rpublicmysql_typesb	tinyintz	c_tinyint*JF
@@ -154,15 +151,8 @@ c_longtext*>:
 c_json0ÿÿÿÿÿÿÿÿÿRpublicmysql_typesbjsonzc_json*^Z
 c_json_string_override0ÿÿÿÿÿÿÿÿÿRpublicmysql_typesbjsonzc_json_string_override*C?
 c_enum0Rpublicmysql_typesbmysql_types_c_enumzc_enum*@<
-c_set0Rpublicmysql_typesbmysql_types_c_setzc_set*>:
-c_year0ÿÿÿÿÿÿÿÿÿRpublicmysql_typesbyearzc_year*>:
-c_date0ÿÿÿÿÿÿÿÿÿRpublicmysql_typesbdatezc_date*A=
-
-c_datetime0Rpublicmysql_typesb
-datetimez
-c_datetime*D@
-c_timestamp0Rpublicmysql_typesb	timestampzc_timestamp2 Basic types :	query.sqlBmysql_typesÜ
-»INSERT INTO mysql_types 
+c_set0Rpublicmysql_typesbmysql_types_c_setzc_set2 Basic types :	query.sqlBmysql_typesŽ
+öINSERT INTO mysql_types 
 (
     c_bool,
     c_boolean,
@@ -184,13 +174,9 @@ c_datetime*D@
     c_json,
     c_json_string_override,
     c_enum,
-    c_set,
-    c_year,
-    c_date,
-    c_datetime,
-    c_timestamp
+    c_set
 ) 
-VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)InsertMysqlTypesBatch	:copyfrom*84
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)InsertMysqlTypesBatch	:copyfrom*84
 c_bool0Rpublicmysql_typesb	tinyintzc_bool*>:
 	c_boolean0Rpublicmysql_typesb	tinyintz	c_boolean*>:
 	c_tinyint0Rpublicmysql_typesb	tinyintz	c_tinyint*JF
@@ -232,15 +218,8 @@ c_longtext*>:
 c_json0ÿÿÿÿÿÿÿÿÿRpublicmysql_typesbjsonzc_json*^Z
 c_json_string_override0ÿÿÿÿÿÿÿÿÿRpublicmysql_typesbjsonzc_json_string_override*C?
 c_enum0Rpublicmysql_typesbmysql_types_c_enumzc_enum*@<
-c_set0Rpublicmysql_typesbmysql_types_c_setzc_set*>:
-c_year0ÿÿÿÿÿÿÿÿÿRpublicmysql_typesbyearzc_year*>:
-c_date0ÿÿÿÿÿÿÿÿÿRpublicmysql_typesbdatezc_date*A=
-
-c_datetime0Rpublicmysql_typesb
-datetimez
-c_datetime*D@
-c_timestamp0Rpublicmysql_typesb	timestampzc_timestamp:	query.sqlBmysql_typesµ
-ùSELECT c_bool, c_boolean, c_tinyint, c_smallint, c_mediumint, c_int, c_integer, c_bigint, c_float, c_decimal, c_dec, c_numeric, c_fixed, c_double, c_double_precision, c_year, c_date, c_time, c_datetime, c_timestamp, c_char, c_nchar, c_national_char, c_varchar, c_tinytext, c_mediumtext, c_text, c_longtext, c_json, c_json_string_override, c_enum, c_set FROM mysql_types LIMIT 1GetMysqlTypes:one",
+c_set0Rpublicmysql_typesbmysql_types_c_setzc_set:	query.sqlBmysql_types€
+ÈSELECT c_bool, c_boolean, c_tinyint, c_smallint, c_mediumint, c_int, c_integer, c_bigint, c_float, c_decimal, c_dec, c_numeric, c_fixed, c_double, c_double_precision, c_char, c_nchar, c_national_char, c_varchar, c_tinytext, c_mediumtext, c_text, c_longtext, c_json, c_json_string_override, c_enum, c_set FROM mysql_types LIMIT 1GetMysqlTypes:one",
 c_bool0Rmysql_typesb	tinyintzc_bool"2
 	c_boolean0Rmysql_typesb	tinyintz	c_boolean"2
 	c_tinyint0Rmysql_typesb	tinyintz	c_tinyint">
@@ -263,15 +242,6 @@ Rmysql_typesb	decimalz	c_numeric".
 Rmysql_typesb	decimalzc_fixed"8
 c_double0ÿÿÿÿÿÿÿÿÿRmysql_typesbdoublezc_double"L
 c_double_precision0ÿÿÿÿÿÿÿÿÿRmysql_typesbdoublezc_double_precision"2
-c_year0ÿÿÿÿÿÿÿÿÿRmysql_typesbyearzc_year"2
-c_date0ÿÿÿÿÿÿÿÿÿRmysql_typesbdatezc_date")
-c_time0
-Rmysql_typesbtimezc_time"5
-
-c_datetime0Rmysql_typesb
-datetimez
-c_datetime"8
-c_timestamp0Rmysql_typesb	timestampzc_timestamp"2
 c_char0ÿÿÿÿÿÿÿÿÿRmysql_typesbcharzc_char"4
 c_nchar0ÿÿÿÿÿÿÿÿÿRmysql_typesbcharzc_nchar"D
 c_national_char0ÿÿÿÿÿÿÿÿÿRmysql_typesbcharzc_national_char"2
@@ -290,8 +260,8 @@ c_longtext"2
 c_json0ÿÿÿÿÿÿÿÿÿRmysql_typesbjsonzc_json"R
 c_json_string_override0ÿÿÿÿÿÿÿÿÿRmysql_typesbjsonzc_json_string_override"7
 c_enum0Rmysql_typesbmysql_types_c_enumzc_enum"4
-c_set0Rmysql_typesbmysql_types_c_setzc_set:	query.sqlõ
-ÁSELECT
+c_set0Rmysql_typesbmysql_types_c_setzc_set:	query.sqlª
+ÏSELECT
     COUNT(*) AS cnt,
     c_bool,
     c_boolean,
@@ -319,11 +289,7 @@ c_longtext"2
     c_json,
     c_json_string_override,
     c_enum,
-    c_set,
-    c_year,
-    c_date,
-    c_datetime,
-    c_timestamp
+    c_set
 FROM mysql_types
 GROUP BY
     c_bool,
@@ -346,11 +312,7 @@ GROUP BY
     c_json,
     c_json_string_override,
     c_enum,
-    c_set,
-    c_year,
-    c_date,
-    c_datetime,
-    c_timestamp
+    c_set
 LIMIT 1GetMysqlTypesCnt:one"
 cnt0ÿÿÿÿÿÿÿÿÿ@bbigint",
 c_bool0Rmysql_typesb	tinyintzc_bool"2
@@ -393,23 +355,71 @@ c_longtext"2
 c_json0ÿÿÿÿÿÿÿÿÿRmysql_typesbjsonzc_json"R
 c_json_string_override0ÿÿÿÿÿÿÿÿÿRmysql_typesbjsonzc_json_string_override"7
 c_enum0Rmysql_typesbmysql_types_c_enumzc_enum"4
-c_set0Rmysql_typesbmysql_types_c_setzc_set"2
-c_year0ÿÿÿÿÿÿÿÿÿRmysql_typesbyearzc_year"2
-c_date0ÿÿÿÿÿÿÿÿÿRmysql_typesbdatezc_date"5
+c_set0Rmysql_typesbmysql_types_c_setzc_set:	query.sqlB
+TRUNCATE TABLE mysql_typesTruncateMysqlTypes:exec:	query.sqlø
+s
+INSERT INTO mysql_datetime_types 
+(
+    c_year,
+    c_date,
+    c_datetime,
+    c_timestamp
+) 
+VALUES (?, ?, ?, ?)InsertMysqlDatetimeTypes:exec*GC
+c_year0ÿÿÿÿÿÿÿÿÿRpublicmysql_datetime_typesbyearzc_year*GC
+c_date0ÿÿÿÿÿÿÿÿÿRpublicmysql_datetime_typesbdatezc_date*JF
 
-c_datetime0Rmysql_typesb
+c_datetime0Rpublicmysql_datetime_typesb
 datetimez
-c_datetime"8
-c_timestamp0Rmysql_typesb	timestampzc_timestamp:	query.sqlŽ
-{SELECT
-    MAX(c_int) AS max_int,
-    MAX(c_varchar) AS max_varchar,
-    MAX(c_timestamp) AS max_timestamp
-FROM mysql_typesGetMysqlFunctions:one"
-max_int0ÿÿÿÿÿÿÿÿÿ@bany"#
-max_varchar0ÿÿÿÿÿÿÿÿÿ@bany"%
-max_timestamp0ÿÿÿÿÿÿÿÿÿ@bany:	query.sqlB
-TRUNCATE TABLE mysql_typesTruncateMysqlTypes:exec:	query.sql“
+c_datetime*MI
+c_timestamp0Rpublicmysql_datetime_typesb	timestampzc_timestamp2 Datetime types :	query.sqlBmysql_datetime_typesî
+rINSERT INTO mysql_datetime_types 
+(
+    c_year,
+    c_date,
+    c_datetime,
+    c_timestamp
+) 
+VALUES (?, ?, ?, ?)InsertMysqlDatetimeTypesBatch	:copyfrom*GC
+c_year0ÿÿÿÿÿÿÿÿÿRpublicmysql_datetime_typesbyearzc_year*GC
+c_date0ÿÿÿÿÿÿÿÿÿRpublicmysql_datetime_typesbdatezc_date*JF
+
+c_datetime0Rpublicmysql_datetime_typesb
+datetimez
+c_datetime*MI
+c_timestamp0Rpublicmysql_datetime_typesb	timestampzc_timestamp:	query.sqlBmysql_datetime_types³
+XSELECT c_year, c_date, c_time, c_datetime, c_timestamp FROM mysql_datetime_types LIMIT 1GetMysqlDatetimeTypes:one";
+c_year0ÿÿÿÿÿÿÿÿÿRmysql_datetime_typesbyearzc_year";
+c_date0ÿÿÿÿÿÿÿÿÿRmysql_datetime_typesbdatezc_date"2
+c_time0
+Rmysql_datetime_typesbtimezc_time">
+
+c_datetime0Rmysql_datetime_typesb
+datetimez
+c_datetime"A
+c_timestamp0Rmysql_datetime_typesb	timestampzc_timestamp:	query.sql
+¶SELECT
+    COUNT(*) AS cnt,
+    c_year,
+    c_date,
+    c_datetime,
+    c_timestamp
+FROM mysql_datetime_types
+GROUP BY
+    c_year,
+    c_date,
+    c_datetime,
+    c_timestamp
+LIMIT 1GetMysqlDatetimeTypesCnt:one"
+cnt0ÿÿÿÿÿÿÿÿÿ@bbigint";
+c_year0ÿÿÿÿÿÿÿÿÿRmysql_datetime_typesbyearzc_year";
+c_date0ÿÿÿÿÿÿÿÿÿRmysql_datetime_typesbdatezc_date">
+
+c_datetime0Rmysql_datetime_typesb
+datetimez
+c_datetime"A
+c_timestamp0Rmysql_datetime_typesb	timestampzc_timestamp:	query.sqlS
+#TRUNCATE TABLE mysql_datetime_typesTruncateMysqlDatetimeTypes:exec:	query.sql“
 ®
 INSERT INTO mysql_binary_types 
 (
@@ -514,7 +524,17 @@ mediumblobzc_mediumblob"E
 c_longblob0ÿÿÿÿÿÿÿÿÿRmysql_binary_typesb
 longblobz
 c_longblob:	query.sqlO
-!TRUNCATE TABLE mysql_binary_typesTruncateMysqlBinaryTypes:exec:	query.sqlŒ
+!TRUNCATE TABLE mysql_binary_typesTruncateMysqlBinaryTypes:exec:	query.sql½
+œ
+SELECT
+    MAX(c_int) AS max_int,
+    MAX(c_varchar) AS max_varchar,
+    MAX(c_timestamp) AS max_timestamp
+FROM mysql_types
+CROSS JOIN mysql_datetime_typesGetMysqlFunctions:one"
+max_int0ÿÿÿÿÿÿÿÿÿ@bany"#
+max_varchar0ÿÿÿÿÿÿÿÿÿ@bany"%
+max_timestamp0ÿÿÿÿÿÿÿÿÿ@bany2 Functions :	query.sqlŒ
 8SELECT id, name, bio FROM authors WHERE name = ? LIMIT 1	GetAuthor:one"*
 id0ÿÿÿÿÿÿÿÿÿR	authorsbbigintzid",
 name0ÿÿÿÿÿÿÿÿÿR	authorsbtextzname"(

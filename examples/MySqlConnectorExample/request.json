@@ -181,56 +181,6 @@
                 }
               },
               {
-                "name": "c_year",
-                "length": -1,
-                "table": {
-                  "name": "mysql_types"
-                },
-                "type": {
-                  "name": "year"
-                }
-              },
-              {
-                "name": "c_date",
-                "length": -1,
-                "table": {
-                  "name": "mysql_types"
-                },
-                "type": {
-                  "name": "date"
-                }
-              },
-              {
-                "name": "c_time",
-                "length": 10,
-                "table": {
-                  "name": "mysql_types"
-                },
-                "type": {
-                  "name": "time"
-                }
-              },
-              {
-                "name": "c_datetime",
-                "length": 19,
-                "table": {
-                  "name": "mysql_types"
-                },
-                "type": {
-                  "name": "datetime"
-                }
-              },
-              {
-                "name": "c_timestamp",
-                "length": 19,
-                "table": {
-                  "name": "mysql_types"
-                },
-                "type": {
-                  "name": "timestamp"
-                }
-              },
-              {
                 "name": "c_char",
                 "length": -1,
                 "table": {
@@ -348,6 +298,63 @@
                 },
                 "type": {
                   "name": "mysql_types_c_set"
+                }
+              }
+            ]
+          },
+          {
+            "rel": {
+              "name": "mysql_datetime_types"
+            },
+            "columns": [
+              {
+                "name": "c_year",
+                "length": -1,
+                "table": {
+                  "name": "mysql_datetime_types"
+                },
+                "type": {
+                  "name": "year"
+                }
+              },
+              {
+                "name": "c_date",
+                "length": -1,
+                "table": {
+                  "name": "mysql_datetime_types"
+                },
+                "type": {
+                  "name": "date"
+                }
+              },
+              {
+                "name": "c_time",
+                "length": 10,
+                "table": {
+                  "name": "mysql_datetime_types"
+                },
+                "type": {
+                  "name": "time"
+                }
+              },
+              {
+                "name": "c_datetime",
+                "length": 19,
+                "table": {
+                  "name": "mysql_datetime_types"
+                },
+                "type": {
+                  "name": "datetime"
+                }
+              },
+              {
+                "name": "c_timestamp",
+                "length": 19,
+                "table": {
+                  "name": "mysql_datetime_types"
+                },
+                "type": {
+                  "name": "timestamp"
                 }
               }
             ]
@@ -1466,7 +1473,7 @@
       "filename": "query.sql"
     },
     {
-      "text": "\nINSERT INTO mysql_types \n(\n    c_bool,\n    c_boolean,\n    c_tinyint,\n    c_smallint,\n    c_mediumint,\n    c_int,\n    c_integer,\n    c_bigint, \n    c_decimal, c_dec, c_numeric, c_fixed, c_float, c_double, c_double_precision, \n    c_char,\n    c_nchar,\n    c_national_char,\n    c_varchar,\n    c_tinytext,\n    c_mediumtext,\n    c_text,\n    c_longtext, \n    c_json,\n    c_json_string_override,\n    c_enum,\n    c_set,\n    c_year,\n    c_date,\n    c_datetime,\n    c_timestamp\n) \nVALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+      "text": "\nINSERT INTO mysql_types \n(\n    c_bool,\n    c_boolean,\n    c_tinyint,\n    c_smallint,\n    c_mediumint,\n    c_int,\n    c_integer,\n    c_bigint, \n    c_decimal, c_dec, c_numeric, c_fixed, c_float, c_double, c_double_precision, \n    c_char,\n    c_nchar,\n    c_national_char,\n    c_varchar,\n    c_tinytext,\n    c_mediumtext,\n    c_text,\n    c_longtext, \n    c_json,\n    c_json_string_override,\n    c_enum,\n    c_set\n) \nVALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
       "name": "InsertMysqlTypes",
       "cmd": ":exec",
       "parameters": [
@@ -1874,66 +1881,6 @@
             },
             "originalName": "c_set"
           }
-        },
-        {
-          "number": 28,
-          "column": {
-            "name": "c_year",
-            "length": -1,
-            "table": {
-              "schema": "public",
-              "name": "mysql_types"
-            },
-            "type": {
-              "name": "year"
-            },
-            "originalName": "c_year"
-          }
-        },
-        {
-          "number": 29,
-          "column": {
-            "name": "c_date",
-            "length": -1,
-            "table": {
-              "schema": "public",
-              "name": "mysql_types"
-            },
-            "type": {
-              "name": "date"
-            },
-            "originalName": "c_date"
-          }
-        },
-        {
-          "number": 30,
-          "column": {
-            "name": "c_datetime",
-            "length": 19,
-            "table": {
-              "schema": "public",
-              "name": "mysql_types"
-            },
-            "type": {
-              "name": "datetime"
-            },
-            "originalName": "c_datetime"
-          }
-        },
-        {
-          "number": 31,
-          "column": {
-            "name": "c_timestamp",
-            "length": 19,
-            "table": {
-              "schema": "public",
-              "name": "mysql_types"
-            },
-            "type": {
-              "name": "timestamp"
-            },
-            "originalName": "c_timestamp"
-          }
         }
       ],
       "comments": [
@@ -1945,7 +1892,7 @@
       }
     },
     {
-      "text": "INSERT INTO mysql_types \n(\n    c_bool,\n    c_boolean,\n    c_tinyint,\n    c_smallint,\n    c_mediumint,\n    c_int,\n    c_integer,\n    c_bigint, \n    c_float, c_numeric, c_decimal, c_dec, c_fixed, c_double, c_double_precision, \n    c_char,\n    c_nchar,\n    c_national_char,\n    c_varchar,\n    c_tinytext,\n    c_mediumtext,\n    c_text,\n    c_longtext, \n    c_json,\n    c_json_string_override,\n    c_enum,\n    c_set,\n    c_year,\n    c_date,\n    c_datetime,\n    c_timestamp\n) \nVALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+      "text": "INSERT INTO mysql_types \n(\n    c_bool,\n    c_boolean,\n    c_tinyint,\n    c_smallint,\n    c_mediumint,\n    c_int,\n    c_integer,\n    c_bigint, \n    c_float, c_numeric, c_decimal, c_dec, c_fixed, c_double, c_double_precision, \n    c_char,\n    c_nchar,\n    c_national_char,\n    c_varchar,\n    c_tinytext,\n    c_mediumtext,\n    c_text,\n    c_longtext, \n    c_json,\n    c_json_string_override,\n    c_enum,\n    c_set\n) \nVALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
       "name": "InsertMysqlTypesBatch",
       "cmd": ":copyfrom",
       "parameters": [
@@ -2353,66 +2300,6 @@
             },
             "originalName": "c_set"
           }
-        },
-        {
-          "number": 28,
-          "column": {
-            "name": "c_year",
-            "length": -1,
-            "table": {
-              "schema": "public",
-              "name": "mysql_types"
-            },
-            "type": {
-              "name": "year"
-            },
-            "originalName": "c_year"
-          }
-        },
-        {
-          "number": 29,
-          "column": {
-            "name": "c_date",
-            "length": -1,
-            "table": {
-              "schema": "public",
-              "name": "mysql_types"
-            },
-            "type": {
-              "name": "date"
-            },
-            "originalName": "c_date"
-          }
-        },
-        {
-          "number": 30,
-          "column": {
-            "name": "c_datetime",
-            "length": 19,
-            "table": {
-              "schema": "public",
-              "name": "mysql_types"
-            },
-            "type": {
-              "name": "datetime"
-            },
-            "originalName": "c_datetime"
-          }
-        },
-        {
-          "number": 31,
-          "column": {
-            "name": "c_timestamp",
-            "length": 19,
-            "table": {
-              "schema": "public",
-              "name": "mysql_types"
-            },
-            "type": {
-              "name": "timestamp"
-            },
-            "originalName": "c_timestamp"
-          }
         }
       ],
       "filename": "query.sql",
@@ -2421,7 +2308,7 @@
       }
     },
     {
-      "text": "SELECT c_bool, c_boolean, c_tinyint, c_smallint, c_mediumint, c_int, c_integer, c_bigint, c_float, c_decimal, c_dec, c_numeric, c_fixed, c_double, c_double_precision, c_year, c_date, c_time, c_datetime, c_timestamp, c_char, c_nchar, c_national_char, c_varchar, c_tinytext, c_mediumtext, c_text, c_longtext, c_json, c_json_string_override, c_enum, c_set FROM mysql_types LIMIT 1",
+      "text": "SELECT c_bool, c_boolean, c_tinyint, c_smallint, c_mediumint, c_int, c_integer, c_bigint, c_float, c_decimal, c_dec, c_numeric, c_fixed, c_double, c_double_precision, c_char, c_nchar, c_national_char, c_varchar, c_tinytext, c_mediumtext, c_text, c_longtext, c_json, c_json_string_override, c_enum, c_set FROM mysql_types LIMIT 1",
       "name": "GetMysqlTypes",
       "cmd": ":one",
       "columns": [
@@ -2591,61 +2478,6 @@
           "originalName": "c_double_precision"
         },
         {
-          "name": "c_year",
-          "length": -1,
-          "table": {
-            "name": "mysql_types"
-          },
-          "type": {
-            "name": "year"
-          },
-          "originalName": "c_year"
-        },
-        {
-          "name": "c_date",
-          "length": -1,
-          "table": {
-            "name": "mysql_types"
-          },
-          "type": {
-            "name": "date"
-          },
-          "originalName": "c_date"
-        },
-        {
-          "name": "c_time",
-          "length": 10,
-          "table": {
-            "name": "mysql_types"
-          },
-          "type": {
-            "name": "time"
-          },
-          "originalName": "c_time"
-        },
-        {
-          "name": "c_datetime",
-          "length": 19,
-          "table": {
-            "name": "mysql_types"
-          },
-          "type": {
-            "name": "datetime"
-          },
-          "originalName": "c_datetime"
-        },
-        {
-          "name": "c_timestamp",
-          "length": 19,
-          "table": {
-            "name": "mysql_types"
-          },
-          "type": {
-            "name": "timestamp"
-          },
-          "originalName": "c_timestamp"
-        },
-        {
           "name": "c_char",
           "length": -1,
           "table": {
@@ -2781,7 +2613,7 @@
       "filename": "query.sql"
     },
     {
-      "text": "SELECT\n    COUNT(*) AS cnt,\n    c_bool,\n    c_boolean,\n    c_tinyint,\n    c_smallint,\n    c_mediumint,\n    c_int,\n    c_integer,\n    c_bigint,\n    c_float,\n    c_numeric,\n    c_decimal,\n    c_dec,\n    c_fixed,\n    c_double,\n    c_double_precision,\n    c_char,\n    c_nchar,\n    c_national_char,\n    c_varchar,\n    c_tinytext,\n    c_mediumtext,\n    c_text,\n    c_longtext,\n    c_json,\n    c_json_string_override,\n    c_enum,\n    c_set,\n    c_year,\n    c_date,\n    c_datetime,\n    c_timestamp\nFROM mysql_types\nGROUP BY\n    c_bool,\n    c_boolean,\n    c_tinyint,\n    c_smallint,\n    c_mediumint,\n    c_int,\n    c_integer,\n    c_bigint,\n    c_float, c_numeric, c_decimal, c_dec, c_fixed, c_double, c_double_precision,\n    c_char,\n    c_nchar,\n    c_national_char,\n    c_varchar,\n    c_tinytext,\n    c_mediumtext,\n    c_text,\n    c_longtext,\n    c_json,\n    c_json_string_override,\n    c_enum,\n    c_set,\n    c_year,\n    c_date,\n    c_datetime,\n    c_timestamp\nLIMIT 1",
+      "text": "SELECT\n    COUNT(*) AS cnt,\n    c_bool,\n    c_boolean,\n    c_tinyint,\n    c_smallint,\n    c_mediumint,\n    c_int,\n    c_integer,\n    c_bigint,\n    c_float,\n    c_numeric,\n    c_decimal,\n    c_dec,\n    c_fixed,\n    c_double,\n    c_double_precision,\n    c_char,\n    c_nchar,\n    c_national_char,\n    c_varchar,\n    c_tinytext,\n    c_mediumtext,\n    c_text,\n    c_longtext,\n    c_json,\n    c_json_string_override,\n    c_enum,\n    c_set\nFROM mysql_types\nGROUP BY\n    c_bool,\n    c_boolean,\n    c_tinyint,\n    c_smallint,\n    c_mediumint,\n    c_int,\n    c_integer,\n    c_bigint,\n    c_float, c_numeric, c_decimal, c_dec, c_fixed, c_double, c_double_precision,\n    c_char,\n    c_nchar,\n    c_national_char,\n    c_varchar,\n    c_tinytext,\n    c_mediumtext,\n    c_text,\n    c_longtext,\n    c_json,\n    c_json_string_override,\n    c_enum,\n    c_set\nLIMIT 1",
       "name": "GetMysqlTypesCnt",
       "cmd": ":one",
       "columns": [
@@ -3090,12 +2922,171 @@
             "name": "mysql_types_c_set"
           },
           "originalName": "c_set"
+        }
+      ],
+      "filename": "query.sql"
+    },
+    {
+      "text": "TRUNCATE TABLE mysql_types",
+      "name": "TruncateMysqlTypes",
+      "cmd": ":exec",
+      "filename": "query.sql"
+    },
+    {
+      "text": "\nINSERT INTO mysql_datetime_types \n(\n    c_year,\n    c_date,\n    c_datetime,\n    c_timestamp\n) \nVALUES (?, ?, ?, ?)",
+      "name": "InsertMysqlDatetimeTypes",
+      "cmd": ":exec",
+      "parameters": [
+        {
+          "number": 1,
+          "column": {
+            "name": "c_year",
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "mysql_datetime_types"
+            },
+            "type": {
+              "name": "year"
+            },
+            "originalName": "c_year"
+          }
         },
+        {
+          "number": 2,
+          "column": {
+            "name": "c_date",
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "mysql_datetime_types"
+            },
+            "type": {
+              "name": "date"
+            },
+            "originalName": "c_date"
+          }
+        },
+        {
+          "number": 3,
+          "column": {
+            "name": "c_datetime",
+            "length": 19,
+            "table": {
+              "schema": "public",
+              "name": "mysql_datetime_types"
+            },
+            "type": {
+              "name": "datetime"
+            },
+            "originalName": "c_datetime"
+          }
+        },
+        {
+          "number": 4,
+          "column": {
+            "name": "c_timestamp",
+            "length": 19,
+            "table": {
+              "schema": "public",
+              "name": "mysql_datetime_types"
+            },
+            "type": {
+              "name": "timestamp"
+            },
+            "originalName": "c_timestamp"
+          }
+        }
+      ],
+      "comments": [
+        " Datetime types "
+      ],
+      "filename": "query.sql",
+      "insert_into_table": {
+        "name": "mysql_datetime_types"
+      }
+    },
+    {
+      "text": "INSERT INTO mysql_datetime_types \n(\n    c_year,\n    c_date,\n    c_datetime,\n    c_timestamp\n) \nVALUES (?, ?, ?, ?)",
+      "name": "InsertMysqlDatetimeTypesBatch",
+      "cmd": ":copyfrom",
+      "parameters": [
+        {
+          "number": 1,
+          "column": {
+            "name": "c_year",
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "mysql_datetime_types"
+            },
+            "type": {
+              "name": "year"
+            },
+            "originalName": "c_year"
+          }
+        },
+        {
+          "number": 2,
+          "column": {
+            "name": "c_date",
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "mysql_datetime_types"
+            },
+            "type": {
+              "name": "date"
+            },
+            "originalName": "c_date"
+          }
+        },
+        {
+          "number": 3,
+          "column": {
+            "name": "c_datetime",
+            "length": 19,
+            "table": {
+              "schema": "public",
+              "name": "mysql_datetime_types"
+            },
+            "type": {
+              "name": "datetime"
+            },
+            "originalName": "c_datetime"
+          }
+        },
+        {
+          "number": 4,
+          "column": {
+            "name": "c_timestamp",
+            "length": 19,
+            "table": {
+              "schema": "public",
+              "name": "mysql_datetime_types"
+            },
+            "type": {
+              "name": "timestamp"
+            },
+            "originalName": "c_timestamp"
+          }
+        }
+      ],
+      "filename": "query.sql",
+      "insert_into_table": {
+        "name": "mysql_datetime_types"
+      }
+    },
+    {
+      "text": "SELECT c_year, c_date, c_time, c_datetime, c_timestamp FROM mysql_datetime_types LIMIT 1",
+      "name": "GetMysqlDatetimeTypes",
+      "cmd": ":one",
+      "columns": [
         {
           "name": "c_year",
           "length": -1,
           "table": {
-            "name": "mysql_types"
+            "name": "mysql_datetime_types"
           },
           "type": {
             "name": "year"
@@ -3106,7 +3097,7 @@
           "name": "c_date",
           "length": -1,
           "table": {
-            "name": "mysql_types"
+            "name": "mysql_datetime_types"
           },
           "type": {
             "name": "date"
@@ -3114,10 +3105,21 @@
           "originalName": "c_date"
         },
         {
+          "name": "c_time",
+          "length": 10,
+          "table": {
+            "name": "mysql_datetime_types"
+          },
+          "type": {
+            "name": "time"
+          },
+          "originalName": "c_time"
+        },
+        {
           "name": "c_datetime",
           "length": 19,
           "table": {
-            "name": "mysql_types"
+            "name": "mysql_datetime_types"
           },
           "type": {
             "name": "datetime"
@@ -3128,7 +3130,7 @@
           "name": "c_timestamp",
           "length": 19,
           "table": {
-            "name": "mysql_types"
+            "name": "mysql_datetime_types"
           },
           "type": {
             "name": "timestamp"
@@ -3139,43 +3141,69 @@
       "filename": "query.sql"
     },
     {
-      "text": "SELECT\n    MAX(c_int) AS max_int,\n    MAX(c_varchar) AS max_varchar,\n    MAX(c_timestamp) AS max_timestamp\nFROM mysql_types",
-      "name": "GetMysqlFunctions",
+      "text": "SELECT\n    COUNT(*) AS cnt,\n    c_year,\n    c_date,\n    c_datetime,\n    c_timestamp\nFROM mysql_datetime_types\nGROUP BY\n    c_year,\n    c_date,\n    c_datetime,\n    c_timestamp\nLIMIT 1",
+      "name": "GetMysqlDatetimeTypesCnt",
       "cmd": ":one",
       "columns": [
         {
-          "name": "max_int",
+          "name": "cnt",
           "notNull": true,
           "length": -1,
           "isFuncCall": true,
           "type": {
-            "name": "any"
+            "name": "bigint"
           }
         },
         {
-          "name": "max_varchar",
-          "notNull": true,
+          "name": "c_year",
           "length": -1,
-          "isFuncCall": true,
+          "table": {
+            "name": "mysql_datetime_types"
+          },
           "type": {
-            "name": "any"
-          }
+            "name": "year"
+          },
+          "originalName": "c_year"
         },
         {
-          "name": "max_timestamp",
-          "notNull": true,
+          "name": "c_date",
           "length": -1,
-          "isFuncCall": true,
+          "table": {
+            "name": "mysql_datetime_types"
+          },
           "type": {
-            "name": "any"
-          }
+            "name": "date"
+          },
+          "originalName": "c_date"
+        },
+        {
+          "name": "c_datetime",
+          "length": 19,
+          "table": {
+            "name": "mysql_datetime_types"
+          },
+          "type": {
+            "name": "datetime"
+          },
+          "originalName": "c_datetime"
+        },
+        {
+          "name": "c_timestamp",
+          "length": 19,
+          "table": {
+            "name": "mysql_datetime_types"
+          },
+          "type": {
+            "name": "timestamp"
+          },
+          "originalName": "c_timestamp"
         }
       ],
       "filename": "query.sql"
     },
     {
-      "text": "TRUNCATE TABLE mysql_types",
-      "name": "TruncateMysqlTypes",
+      "text": "TRUNCATE TABLE mysql_datetime_types",
+      "name": "TruncateMysqlDatetimeTypes",
       "cmd": ":exec",
       "filename": "query.sql"
     },
@@ -3597,6 +3625,44 @@
       "text": "TRUNCATE TABLE mysql_binary_types",
       "name": "TruncateMysqlBinaryTypes",
       "cmd": ":exec",
+      "filename": "query.sql"
+    },
+    {
+      "text": "\nSELECT\n    MAX(c_int) AS max_int,\n    MAX(c_varchar) AS max_varchar,\n    MAX(c_timestamp) AS max_timestamp\nFROM mysql_types\nCROSS JOIN mysql_datetime_types",
+      "name": "GetMysqlFunctions",
+      "cmd": ":one",
+      "columns": [
+        {
+          "name": "max_int",
+          "notNull": true,
+          "length": -1,
+          "isFuncCall": true,
+          "type": {
+            "name": "any"
+          }
+        },
+        {
+          "name": "max_varchar",
+          "notNull": true,
+          "length": -1,
+          "isFuncCall": true,
+          "type": {
+            "name": "any"
+          }
+        },
+        {
+          "name": "max_timestamp",
+          "notNull": true,
+          "length": -1,
+          "isFuncCall": true,
+          "type": {
+            "name": "any"
+          }
+        }
+      ],
+      "comments": [
+        " Functions "
+      ],
       "filename": "query.sql"
     }
   ],

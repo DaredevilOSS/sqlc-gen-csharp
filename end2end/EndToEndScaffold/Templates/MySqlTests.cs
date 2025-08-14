@@ -183,23 +183,23 @@ public static class MySqlTests
                          DateTime? cDate, 
                          DateTime? cTimestamp)
                      {
-                         await QuerySql.InsertMysqlTypes(new QuerySql.InsertMysqlTypesArgs
+                         await QuerySql.InsertMysqlDatetimeTypes(new QuerySql.InsertMysqlDatetimeTypesArgs
                          {
                               CYear = cYear,
                               CDate = cDate,
                               CTimestamp = cTimestamp
                          });
                      
-                         var expected = new QuerySql.GetMysqlTypesRow
+                         var expected = new QuerySql.GetMysqlDatetimeTypesRow
                          {
                               CYear = cYear,
                               CDate = cDate,
                               CTimestamp = cTimestamp
                          };
-                         var actual = await QuerySql.GetMysqlTypes();
+                         var actual = await QuerySql.GetMysqlDatetimeTypes();
                          AssertSingularEquals(expected, actual{{Consts.UnknownRecordValuePlaceholder}});
                      
-                         void AssertSingularEquals(QuerySql.GetMysqlTypesRow x, QuerySql.GetMysqlTypesRow y)
+                         void AssertSingularEquals(QuerySql.GetMysqlDatetimeTypesRow x, QuerySql.GetMysqlDatetimeTypesRow y)
                          {
                              Assert.That(x.CYear, Is.EqualTo(y.CYear));
                              Assert.That(x.CDate, Is.EqualTo(y.CDate));
@@ -504,7 +504,7 @@ public static class MySqlTests
                         DateTime? cTimestamp)
                      {
                          var batchArgs = Enumerable.Range(0, batchSize)
-                             .Select(_ => new QuerySql.InsertMysqlTypesBatchArgs
+                             .Select(_ => new QuerySql.InsertMysqlDatetimeTypesBatchArgs
                              {
                                  CYear = cYear,
                                  CDate = cDate,
@@ -512,8 +512,8 @@ public static class MySqlTests
                                  CTimestamp = cTimestamp
                              })
                              .ToList();
-                         await QuerySql.InsertMysqlTypesBatch(batchArgs);
-                         var expected = new QuerySql.GetMysqlTypesCntRow
+                         await QuerySql.InsertMysqlDatetimeTypesBatch(batchArgs);
+                         var expected = new QuerySql.GetMysqlDatetimeTypesCntRow
                          {
                              Cnt = batchSize,
                              CYear = cYear,
@@ -521,10 +521,10 @@ public static class MySqlTests
                              CDatetime = cDatetime,
                              CTimestamp = cTimestamp
                          };
-                         var actual = await QuerySql.GetMysqlTypesCnt();
+                         var actual = await QuerySql.GetMysqlDatetimeTypesCnt();
                          AssertSingularEquals(expected, actual{{Consts.UnknownRecordValuePlaceholder}});
                          
-                         void AssertSingularEquals(QuerySql.GetMysqlTypesCntRow x, QuerySql.GetMysqlTypesCntRow y)
+                         void AssertSingularEquals(QuerySql.GetMysqlDatetimeTypesCntRow x, QuerySql.GetMysqlDatetimeTypesCntRow y)
                          {
                              Assert.That(x.Cnt, Is.EqualTo(y.Cnt));
                              Assert.That(x.CYear, Is.EqualTo(y.CYear));
@@ -844,9 +844,13 @@ public static class MySqlTests
                          await QuerySql.InsertMysqlTypes(new QuerySql.InsertMysqlTypesArgs
                          {
                              CInt = cInt,
-                             CVarchar = cVarchar,
+                             CVarchar = cVarchar
+                         });
+                         await QuerySql.InsertMysqlDatetimeTypes(new QuerySql.InsertMysqlDatetimeTypesArgs
+                         {
                              CTimestamp = cTimestamp
                          });
+                         
                          var expected = new QuerySql.GetMysqlFunctionsRow
                          {
                              MaxInt = cInt,

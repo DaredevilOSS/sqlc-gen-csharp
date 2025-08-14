@@ -23,13 +23,9 @@ INSERT INTO mysql_types
     c_json,
     c_json_string_override,
     c_enum,
-    c_set,
-    c_year,
-    c_date,
-    c_datetime,
-    c_timestamp
+    c_set
 ) 
-VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
 
 -- name: InsertMysqlTypesBatch :copyfrom
 INSERT INTO mysql_types 
@@ -54,13 +50,9 @@ INSERT INTO mysql_types
     c_json,
     c_json_string_override,
     c_enum,
-    c_set,
-    c_year,
-    c_date,
-    c_datetime,
-    c_timestamp
+    c_set
 ) 
-VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
 
 -- name: GetMysqlTypes :one
 SELECT * FROM mysql_types LIMIT 1;
@@ -94,11 +86,7 @@ SELECT
     c_json,
     c_json_string_override,
     c_enum,
-    c_set,
-    c_year,
-    c_date,
-    c_datetime,
-    c_timestamp
+    c_set
 FROM mysql_types
 GROUP BY
     c_bool,
@@ -121,22 +109,54 @@ GROUP BY
     c_json,
     c_json_string_override,
     c_enum,
-    c_set,
+    c_set
+LIMIT 1;
+
+-- name: TruncateMysqlTypes :exec
+TRUNCATE TABLE mysql_types;
+
+/* Datetime types */
+
+-- name: InsertMysqlDatetimeTypes :exec
+INSERT INTO mysql_datetime_types 
+(
+    c_year,
+    c_date,
+    c_datetime,
+    c_timestamp
+) 
+VALUES (?, ?, ?, ?);
+
+-- name: InsertMysqlDatetimeTypesBatch :copyfrom
+INSERT INTO mysql_datetime_types 
+(
+    c_year,
+    c_date,
+    c_datetime,
+    c_timestamp
+) 
+VALUES (?, ?, ?, ?);
+
+-- name: GetMysqlDatetimeTypes :one
+SELECT * FROM mysql_datetime_types LIMIT 1;
+
+-- name: GetMysqlDatetimeTypesCnt :one
+SELECT
+    COUNT(*) AS cnt,
+    c_year,
+    c_date,
+    c_datetime,
+    c_timestamp
+FROM mysql_datetime_types
+GROUP BY
     c_year,
     c_date,
     c_datetime,
     c_timestamp
 LIMIT 1;
 
--- name: GetMysqlFunctions :one
-SELECT
-    MAX(c_int) AS max_int,
-    MAX(c_varchar) AS max_varchar,
-    MAX(c_timestamp) AS max_timestamp
-FROM mysql_types;
-
--- name: TruncateMysqlTypes :exec
-TRUNCATE TABLE mysql_types;
+-- name: TruncateMysqlDatetimeTypes :exec
+TRUNCATE TABLE mysql_datetime_types;
 
 /* Binary types */
 
@@ -192,3 +212,13 @@ LIMIT 1;
 
 -- name: TruncateMysqlBinaryTypes :exec
 TRUNCATE TABLE mysql_binary_types;
+
+/* Functions */
+
+-- name: GetMysqlFunctions :one
+SELECT
+    MAX(c_int) AS max_int,
+    MAX(c_varchar) AS max_varchar,
+    MAX(c_timestamp) AS max_timestamp
+FROM mysql_types
+CROSS JOIN mysql_datetime_types;
