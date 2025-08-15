@@ -157,24 +157,6 @@ public partial class MySqlConnectorDriver(
 
     public override string TransactionClassName => "MySqlTransaction";
 
-    private readonly Func<string, string> _setTypeHandlerFunc = x =>
-        $$"""
-          private class {{x}}TypeHandler : SqlMapper.TypeHandler<HashSet<{{x}}>>
-          {
-              public override HashSet<{{x}}> Parse(object value)
-              {
-                  if (value is string s)
-                      return s.To{{x}}Set();
-                  throw new DataException($"Cannot convert {value?.GetType()} to HashSet<{{x}}>");
-              }
-          
-              public override void SetValue(IDbDataParameter parameter, HashSet<{{x}}> value)
-              {
-                  parameter.Value = string.Join(",", value);
-              }
-          }
-          """;
-
     public override ISet<string> GetUsingDirectivesForQueries()
     {
         return base
@@ -247,6 +229,24 @@ public partial class MySqlConnectorDriver(
 
     private MemberDeclarationSyntax[] GetSetTypeHandlers()
     {
+        var setTypeHandlerFunc = (string x) =>
+            $$"""
+            private class {{x}}TypeHandler : SqlMapper.TypeHandler<HashSet<{{x}}>>
+            {
+                public override HashSet<{{x}}> Parse(object value)
+                {
+                    if (value is string s)
+                        return s.To{{x}}Set();
+                    throw new DataException($"Cannot convert {value?.GetType()} to HashSet<{{x}}>");
+                }
+            
+                public override void SetValue(IDbDataParameter parameter, HashSet<{{x}}> value)
+                {
+                    parameter.Value = string.Join(",", value);
+                }
+            }
+            """;
+
         return Queries
             .SelectMany(q => q.Columns)
             .Where(c =>
@@ -254,7 +254,7 @@ public partial class MySqlConnectorDriver(
                 var enumType = GetEnumType(c);
                 return enumType is not null && IsSetDataType(c, enumType);
             })
-            .Select(c => _setTypeHandlerFunc(c.Type.Name.ToModelName(GetColumnSchema(c), DefaultSchema)))
+            .Select(c => setTypeHandlerFunc(c.Type.Name.ToModelName(GetColumnSchema(c), DefaultSchema)))
             .Distinct()
             .Select(m => ParseMemberDeclaration(m)!)
             .ToArray();

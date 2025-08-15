@@ -194,7 +194,7 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId
                 readerFn: ordinal => $"reader.GetFieldValue<NpgsqlPoint>({ordinal})",
                 readerArrayFn: ordinal => $"reader.GetFieldValue<NpgsqlPoint[]>({ordinal})",
                 usingDirective: "NpgsqlTypes",
-                sqlMapper: "RegisterNpgsqlTypeHandler<NpgsqlPoint>();"
+                sqlMapper: "SqlMapper.AddTypeHandler(typeof(NpgsqlPoint), new NpgsqlTypeHandler<NpgsqlPoint>());"
             ),
             ["NpgsqlLine"] = new(
                 new()
@@ -204,7 +204,7 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId
                 readerFn: ordinal => $"reader.GetFieldValue<NpgsqlLine>({ordinal})",
                 readerArrayFn: ordinal => $"reader.GetFieldValue<NpgsqlLine[]>({ordinal})",
                 usingDirective: "NpgsqlTypes",
-                sqlMapper: "RegisterNpgsqlTypeHandler<NpgsqlLine>();"
+                sqlMapper: "SqlMapper.AddTypeHandler(typeof(NpgsqlLine), new NpgsqlTypeHandler<NpgsqlLine>());"
             ),
             ["NpgsqlLSeg"] = new(
                 new()
@@ -214,7 +214,7 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId
                 readerFn: ordinal => $"reader.GetFieldValue<NpgsqlLSeg>({ordinal})",
                 readerArrayFn: ordinal => $"reader.GetFieldValue<NpgsqlLSeg[]>({ordinal})",
                 usingDirective: "NpgsqlTypes",
-                sqlMapper: "RegisterNpgsqlTypeHandler<NpgsqlLSeg>();"
+                sqlMapper: "SqlMapper.AddTypeHandler(typeof(NpgsqlLSeg), new NpgsqlTypeHandler<NpgsqlLSeg>());"
             ),
             ["NpgsqlBox"] = new(
                 new()
@@ -224,7 +224,7 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId
                 readerFn: ordinal => $"reader.GetFieldValue<NpgsqlBox>({ordinal})",
                 readerArrayFn: ordinal => $"reader.GetFieldValue<NpgsqlBox[]>({ordinal})",
                 usingDirective: "NpgsqlTypes",
-                sqlMapper: "RegisterNpgsqlTypeHandler<NpgsqlBox>();"
+                sqlMapper: "SqlMapper.AddTypeHandler(typeof(NpgsqlBox), new NpgsqlTypeHandler<NpgsqlBox>());"
             ),
             ["NpgsqlPath"] = new(
                 new()
@@ -234,7 +234,7 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId
                 readerFn: ordinal => $"reader.GetFieldValue<NpgsqlPath>({ordinal})",
                 readerArrayFn: ordinal => $"reader.GetFieldValue<NpgsqlPath[]>({ordinal})",
                 usingDirective: "NpgsqlTypes",
-                sqlMapper: "RegisterNpgsqlTypeHandler<NpgsqlPath>();"
+                sqlMapper: "SqlMapper.AddTypeHandler(typeof(NpgsqlPath), new NpgsqlTypeHandler<NpgsqlPath>());"
             ),
             ["NpgsqlPolygon"] = new(
                 new()
@@ -244,7 +244,7 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId
                 readerFn: ordinal => $"reader.GetFieldValue<NpgsqlPolygon>({ordinal})",
                 readerArrayFn: ordinal => $"reader.GetFieldValue<NpgsqlPolygon[]>({ordinal})",
                 usingDirective: "NpgsqlTypes",
-                sqlMapper: "RegisterNpgsqlTypeHandler<NpgsqlPolygon>();"
+                sqlMapper: "SqlMapper.AddTypeHandler(typeof(NpgsqlPolygon), new NpgsqlTypeHandler<NpgsqlPolygon>());"
             ),
             ["NpgsqlCircle"] = new(
                 new()
@@ -254,7 +254,7 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId
                 readerFn: ordinal => $"reader.GetFieldValue<NpgsqlCircle>({ordinal})",
                 readerArrayFn: ordinal => $"reader.GetFieldValue<NpgsqlCircle[]>({ordinal})",
                 usingDirective: "NpgsqlTypes",
-                sqlMapper: "RegisterNpgsqlTypeHandler<NpgsqlCircle>();"
+                sqlMapper: "SqlMapper.AddTypeHandler(typeof(NpgsqlCircle), new NpgsqlTypeHandler<NpgsqlCircle>());"
             ),
 
             /* Network data types */
@@ -266,7 +266,7 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId
                 readerFn: ordinal => $"reader.GetFieldValue<NpgsqlCidr>({ordinal})",
                 readerArrayFn: ordinal => $"reader.GetFieldValue<NpgsqlCidr[]>({ordinal})",
                 usingDirective: "NpgsqlTypes",
-                sqlMapper: "RegisterNpgsqlTypeHandler<NpgsqlCidr>();"
+                sqlMapper: "SqlMapper.AddTypeHandler(typeof(NpgsqlCidr), new NpgsqlTypeHandler<NpgsqlCidr>());"
             ),
             ["IPAddress"] = new(
                 new()
@@ -276,7 +276,7 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId
                 readerFn: ordinal => $"reader.GetFieldValue<IPAddress>({ordinal})",
                 readerArrayFn: ordinal => $"reader.GetFieldValue<IPAddress[]>({ordinal})",
                 usingDirective: "System.Net",
-                sqlMapper: "RegisterNpgsqlTypeHandler<IPAddress>();"
+                sqlMapper: "SqlMapper.AddTypeHandler(typeof(IPAddress), new NpgsqlTypeHandler<IPAddress>());"
             ),
             ["PhysicalAddress"] = new(
                 new()
@@ -286,7 +286,7 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId
                 readerFn: ordinal => $"reader.GetFieldValue<PhysicalAddress>({ordinal})",
                 readerArrayFn: ordinal => $"reader.GetFieldValue<PhysicalAddress[]>({ordinal})",
                 usingDirective: "System.Net.NetworkInformation",
-                sqlMapper: "RegisterNpgsqlTypeHandler<PhysicalAddress>();"
+                sqlMapper: "SqlMapper.AddTypeHandler(typeof(PhysicalAddress), new NpgsqlTypeHandler<PhysicalAddress>());"
             ),
 
             /* Other data types */
@@ -405,13 +405,7 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId
                          parameter.Value = value;
                      }
                  }
-                 """)!,
-            ParseMemberDeclaration($$"""
-                 private static void RegisterNpgsqlTypeHandler<T>(){{optionalDotnetCoreSuffix}}
-                 {
-                    SqlMapper.AddTypeHandler(typeof(T), new NpgsqlTypeHandler<T>());
-                 }
-                 """)!,
+                 """)!
         ];
     }
 
