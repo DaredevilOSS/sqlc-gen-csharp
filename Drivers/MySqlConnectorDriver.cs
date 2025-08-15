@@ -1,5 +1,6 @@
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Plugin;
+using SqlcGenCsharp.Drivers.Generators;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -153,6 +154,40 @@ public partial class MySqlConnectorDriver(
         };
 
     public override string TransactionClassName => "MySqlTransaction";
+
+
+    public MemberDeclarationSyntax OneDeclare(string queryTextConstant, string argInterface,
+        string returnInterface, Query query)
+    {
+        return new OneDeclareGen(this).Generate(queryTextConstant, argInterface, returnInterface, query);
+    }
+
+    public MemberDeclarationSyntax ExecDeclare(string queryTextConstant, string argInterface, Query query)
+    {
+        return new ExecDeclareGen(this).Generate(queryTextConstant, argInterface, query);
+    }
+
+    public MemberDeclarationSyntax ManyDeclare(string queryTextConstant, string argInterface,
+        string returnInterface, Query query)
+    {
+        return new ManyDeclareGen(this).Generate(queryTextConstant, argInterface, returnInterface, query);
+    }
+
+    public MemberDeclarationSyntax ExecRowsDeclare(string queryTextConstant, string argInterface, Query query)
+    {
+        return new ExecRowsDeclareGen(this).Generate(queryTextConstant, argInterface, query);
+    }
+
+    public MemberDeclarationSyntax ExecLastIdDeclare(string queryTextConstant, string argInterface, Query query)
+    {
+        return new ExecLastIdDeclareGen(this).Generate(queryTextConstant, argInterface, query);
+    }
+
+    public MemberDeclarationSyntax CopyFromDeclare(string queryTextConstant, string argInterface, Query query)
+    {
+        return new CopyFromDeclareGen(this).Generate(queryTextConstant, argInterface, query);
+    }
+
 
     public override ISet<string> GetUsingDirectivesForQueries()
     {
