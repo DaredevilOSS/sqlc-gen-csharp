@@ -438,8 +438,7 @@ public partial class MySqlConnectorDriver(
                     var {{optionsVar}} = new TypeConverterOptions { Formats = new[] { supportedDateTimeFormat } };
                     {{csvWriterVar}}.Context.TypeConverterOptionsCache.AddOptions<DateTime>({{optionsVar}});
                     {{csvWriterVar}}.Context.TypeConverterOptionsCache.AddOptions<DateTime?>({{optionsVar}});
-                    {{GetBoolAndByteConverters(query).JoinByNewLine()}}
-                    {{GetCsvNullConverters(query).JoinByNewLine()}}
+                    {{GetCsvConverters(query).JoinByNewLine()}}
                     await {{csvWriterVar}}.WriteRecordsAsync({{Variable.Args.AsVarName()}});
                  }
                  
@@ -471,26 +470,7 @@ public partial class MySqlConnectorDriver(
         "byte[]"
     };
 
-    private ISet<string> GetCsvNullConverters(Query query)
-    {
-        var nullConverterFn = Variable.NullConverterFn.AsVarName();
-        var converters = new HashSet<string>();
-        foreach (var p in query.Params)
-        {
-            var csharpType = GetCsharpTypeWithoutNullableSuffix(p.Column, query);
-            if (
-                !BoolAndByteTypes.Contains(csharpType) &&
-                !IsSetDataType(p.Column) &&
-                TypeExistsInQuery(csharpType, query))
-            {
-                var nullableCsharpType = AddNullableSuffixIfNeeded(csharpType, false);
-                converters.Add($"{Variable.CsvWriter.AsVarName()}.Context.TypeConverterCache.AddConverter<{nullableCsharpType}>({nullConverterFn});");
-            }
-        }
-        return converters;
-    }
-
-    private ISet<string> GetBoolAndByteConverters(Query query)
+    private ISet<string> GetCsvConverters(Query query)
     {
         var csvWriterVar = Variable.CsvWriter.AsVarName();
         return new HashSet<string>()
@@ -515,7 +495,27 @@ public partial class MySqlConnectorDriver(
                 ],
                 TypeExistsInQuery("byte[]", query)
             )
-            .AddRangeExcludeNulls(GetSetConverters(query));
+            .AddRangeExcludeNulls(GetSetConverters(query))
+            .AddRangeExcludeNulls(GetCsvNullConverters(query));
+    }
+
+    private ISet<string> GetCsvNullConverters(Query query)
+    {
+        var nullConverterFn = Variable.NullConverterFn.AsVarName();
+        var converters = new HashSet<string>();
+        foreach (var p in query.Params)
+        {
+            var csharpType = GetCsharpTypeWithoutNullableSuffix(p.Column, query);
+            if (
+                !BoolAndByteTypes.Contains(csharpType) &&
+                !IsSetDataType(p.Column) &&
+                TypeExistsInQuery(csharpType, query))
+            {
+                var nullableCsharpType = AddNullableSuffixIfNeeded(csharpType, false);
+                converters.Add($"{Variable.CsvWriter.AsVarName()}.Context.TypeConverterCache.AddConverter<{nullableCsharpType}>({nullConverterFn});");
+            }
+        }
+        return converters;
     }
 
     private ISet<string> GetSetConverters(Query query)

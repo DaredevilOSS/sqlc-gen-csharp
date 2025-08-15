@@ -943,7 +943,7 @@ public class QuerySql
     {
         if (this.Transaction == null)
         {
-            using (var connection = NpgsqlDataSource.Create(ConnectionString))
+            using (var connection = NpgsqlDataSource.Create(ConnectionString!))
             {
                 using (var command = connection.CreateCommand(ListAllAuthorsBooksSql))
                 {
@@ -984,7 +984,7 @@ public class QuerySql
     {
         if (this.Transaction == null)
         {
-            using (var connection = NpgsqlDataSource.Create(ConnectionString))
+            using (var connection = NpgsqlDataSource.Create(ConnectionString!))
             {
                 using (var command = connection.CreateCommand(GetDuplicateAuthorsSql))
                 {
@@ -1031,7 +1031,7 @@ public class QuerySql
     {
         if (this.Transaction == null)
         {
-            using (var connection = NpgsqlDataSource.Create(ConnectionString))
+            using (var connection = NpgsqlDataSource.Create(ConnectionString!))
             {
                 using (var command = connection.CreateCommand(GetAuthorsByBookNameSql))
                 {

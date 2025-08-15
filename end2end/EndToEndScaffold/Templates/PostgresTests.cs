@@ -959,7 +959,7 @@ public static class PostgresTests
                              CUuid = cUuid
                          };
                          var actual = await QuerySql.GetPostgresTypesCnt();
-                         Assert.That(actual{{Consts.UnknownRecordValuePlaceholder}}.Cnt, Is.EqualTo(expected.Cnt));
+                         AssertSingularEquals(expected, actual{{Consts.UnknownRecordValuePlaceholder}});
 
                          void AssertSingularEquals(QuerySql.GetPostgresTypesCntRow x, QuerySql.GetPostgresTypesCntRow y)
                          {

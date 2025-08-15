@@ -681,7 +681,7 @@ namespace EndToEndTests
                 CUuid = cUuid
             };
             var actual = await QuerySql.GetPostgresTypesCnt();
-            Assert.That(actual.Cnt, Is.EqualTo(expected.Cnt));
+            AssertSingularEquals(expected, actual);
             void AssertSingularEquals(QuerySql.GetPostgresTypesCntRow x, QuerySql.GetPostgresTypesCntRow y)
             {
                 Assert.That(x.Cnt, Is.EqualTo(y.Cnt));

@@ -46,7 +46,7 @@ public class QuerySql
     {
         if (this.Transaction == null)
         {
-            using (var connection = NpgsqlDataSource.Create(ConnectionString))
+            using (var connection = NpgsqlDataSource.Create(ConnectionString!))
             {
                 using (var command = connection.CreateCommand(InsertPostgresTypesSql))
                 {
@@ -167,7 +167,7 @@ public class QuerySql
     {
         if (this.Transaction == null)
         {
-            using (var connection = NpgsqlDataSource.Create(ConnectionString))
+            using (var connection = NpgsqlDataSource.Create(ConnectionString!))
             {
                 using (var command = connection.CreateCommand(GetPostgresTypesSql))
                 {
@@ -262,7 +262,7 @@ public class QuerySql
     {
         if (this.Transaction == null)
         {
-            using (var connection = NpgsqlDataSource.Create(ConnectionString))
+            using (var connection = NpgsqlDataSource.Create(ConnectionString!))
             {
                 using (var command = connection.CreateCommand(GetPostgresTypesCntSql))
                 {
@@ -355,7 +355,7 @@ public class QuerySql
     {
         if (this.Transaction == null)
         {
-            using (var connection = NpgsqlDataSource.Create(ConnectionString))
+            using (var connection = NpgsqlDataSource.Create(ConnectionString!))
             {
                 using (var command = connection.CreateCommand(GetPostgresFunctionsSql))
                 {
@@ -405,7 +405,7 @@ public class QuerySql
     {
         if (this.Transaction == null)
         {
-            using (var connection = NpgsqlDataSource.Create(ConnectionString))
+            using (var connection = NpgsqlDataSource.Create(ConnectionString!))
             {
                 using (var command = connection.CreateCommand(TruncatePostgresTypesSql))
                 {
@@ -432,7 +432,7 @@ public class QuerySql
     {
         if (this.Transaction == null)
         {
-            using (var connection = NpgsqlDataSource.Create(ConnectionString))
+            using (var connection = NpgsqlDataSource.Create(ConnectionString!))
             {
                 using (var command = connection.CreateCommand(InsertPostgresUnstructuredTypesSql))
                 {
@@ -471,7 +471,7 @@ public class QuerySql
     {
         if (this.Transaction == null)
         {
-            using (var connection = NpgsqlDataSource.Create(ConnectionString))
+            using (var connection = NpgsqlDataSource.Create(ConnectionString!))
             {
                 using (var command = connection.CreateCommand(GetPostgresUnstructuredTypesSql))
                 {
@@ -537,7 +537,7 @@ public class QuerySql
     {
         if (this.Transaction == null)
         {
-            using (var connection = NpgsqlDataSource.Create(ConnectionString))
+            using (var connection = NpgsqlDataSource.Create(ConnectionString!))
             {
                 using (var command = connection.CreateCommand(TruncatePostgresUnstructuredTypesSql))
                 {
@@ -564,7 +564,7 @@ public class QuerySql
     {
         if (this.Transaction == null)
         {
-            using (var connection = NpgsqlDataSource.Create(ConnectionString))
+            using (var connection = NpgsqlDataSource.Create(ConnectionString!))
             {
                 using (var command = connection.CreateCommand(InsertPostgresArrayTypesSql))
                 {
@@ -605,7 +605,7 @@ public class QuerySql
     {
         if (this.Transaction == null)
         {
-            using (var connection = NpgsqlDataSource.Create(ConnectionString))
+            using (var connection = NpgsqlDataSource.Create(ConnectionString!))
             {
                 using (var command = connection.CreateCommand(GetPostgresArrayTypesSql))
                 {
@@ -686,7 +686,7 @@ public class QuerySql
     {
         if (this.Transaction == null)
         {
-            using (var connection = NpgsqlDataSource.Create(ConnectionString))
+            using (var connection = NpgsqlDataSource.Create(ConnectionString!))
             {
                 using (var command = connection.CreateCommand(GetPostgresArrayTypesCntSql))
                 {
@@ -734,7 +734,7 @@ public class QuerySql
     {
         if (this.Transaction == null)
         {
-            using (var connection = NpgsqlDataSource.Create(ConnectionString))
+            using (var connection = NpgsqlDataSource.Create(ConnectionString!))
             {
                 using (var command = connection.CreateCommand(TruncatePostgresArrayTypesSql))
                 {
@@ -761,7 +761,7 @@ public class QuerySql
     {
         if (this.Transaction == null)
         {
-            using (var connection = NpgsqlDataSource.Create(ConnectionString))
+            using (var connection = NpgsqlDataSource.Create(ConnectionString!))
             {
                 using (var command = connection.CreateCommand(InsertPostgresGeoTypesSql))
                 {
@@ -830,7 +830,7 @@ public class QuerySql
     {
         if (this.Transaction == null)
         {
-            using (var connection = NpgsqlDataSource.Create(ConnectionString))
+            using (var connection = NpgsqlDataSource.Create(ConnectionString!))
             {
                 using (var command = connection.CreateCommand(GetPostgresGeoTypesSql))
                 {
@@ -888,7 +888,7 @@ public class QuerySql
     {
         if (this.Transaction == null)
         {
-            using (var connection = NpgsqlDataSource.Create(ConnectionString))
+            using (var connection = NpgsqlDataSource.Create(ConnectionString!))
             {
                 using (var command = connection.CreateCommand(TruncatePostgresGeoTypesSql))
                 {
@@ -916,7 +916,7 @@ public class QuerySql
     {
         if (this.Transaction == null)
         {
-            using (var connection = NpgsqlDataSource.Create(ConnectionString))
+            using (var connection = NpgsqlDataSource.Create(ConnectionString!))
             {
                 using (var command = connection.CreateCommand(GetAuthorSql))
                 {
@@ -970,7 +970,7 @@ public class QuerySql
     {
         if (this.Transaction == null)
         {
-            using (var connection = NpgsqlDataSource.Create(ConnectionString))
+            using (var connection = NpgsqlDataSource.Create(ConnectionString!))
             {
                 using (var command = connection.CreateCommand(ListAuthorsSql))
                 {
@@ -1012,7 +1012,7 @@ public class QuerySql
     {
         if (this.Transaction == null)
         {
-            using (var connection = NpgsqlDataSource.Create(ConnectionString))
+            using (var connection = NpgsqlDataSource.Create(ConnectionString!))
             {
                 using (var command = connection.CreateCommand(CreateAuthorSql))
                 {
@@ -1070,7 +1070,7 @@ public class QuerySql
     {
         if (this.Transaction == null)
         {
-            using (var connection = NpgsqlDataSource.Create(ConnectionString))
+            using (var connection = NpgsqlDataSource.Create(ConnectionString!))
             {
                 using (var command = connection.CreateCommand(CreateAuthorReturnIdSql))
                 {
@@ -1102,7 +1102,7 @@ public class QuerySql
     {
         if (this.Transaction == null)
         {
-            using (var connection = NpgsqlDataSource.Create(ConnectionString))
+            using (var connection = NpgsqlDataSource.Create(ConnectionString!))
             {
                 using (var command = connection.CreateCommand(GetAuthorByIdSql))
                 {
@@ -1156,7 +1156,7 @@ public class QuerySql
     {
         if (this.Transaction == null)
         {
-            using (var connection = NpgsqlDataSource.Create(ConnectionString))
+            using (var connection = NpgsqlDataSource.Create(ConnectionString!))
             {
                 using (var command = connection.CreateCommand(GetAuthorByNamePatternSql))
                 {
@@ -1195,7 +1195,7 @@ public class QuerySql
     {
         if (this.Transaction == null)
         {
-            using (var connection = NpgsqlDataSource.Create(ConnectionString))
+            using (var connection = NpgsqlDataSource.Create(ConnectionString!))
             {
                 using (var command = connection.CreateCommand(DeleteAuthorSql))
                 {
@@ -1223,7 +1223,7 @@ public class QuerySql
     {
         if (this.Transaction == null)
         {
-            using (var connection = NpgsqlDataSource.Create(ConnectionString))
+            using (var connection = NpgsqlDataSource.Create(ConnectionString!))
             {
                 using (var command = connection.CreateCommand(TruncateAuthorsSql))
                 {
@@ -1250,7 +1250,7 @@ public class QuerySql
     {
         if (this.Transaction == null)
         {
-            using (var connection = NpgsqlDataSource.Create(ConnectionString))
+            using (var connection = NpgsqlDataSource.Create(ConnectionString!))
             {
                 using (var command = connection.CreateCommand(UpdateAuthorsSql))
                 {
@@ -1278,7 +1278,7 @@ public class QuerySql
     {
         if (this.Transaction == null)
         {
-            using (var connection = NpgsqlDataSource.Create(ConnectionString))
+            using (var connection = NpgsqlDataSource.Create(ConnectionString!))
             {
                 using (var command = connection.CreateCommand(GetAuthorsByIdsSql))
                 {
@@ -1318,7 +1318,7 @@ public class QuerySql
     {
         if (this.Transaction == null)
         {
-            using (var connection = NpgsqlDataSource.Create(ConnectionString))
+            using (var connection = NpgsqlDataSource.Create(ConnectionString!))
             {
                 using (var command = connection.CreateCommand(GetAuthorsByIdsAndNamesSql))
                 {
@@ -1360,7 +1360,7 @@ public class QuerySql
     {
         if (this.Transaction == null)
         {
-            using (var connection = NpgsqlDataSource.Create(ConnectionString))
+            using (var connection = NpgsqlDataSource.Create(ConnectionString!))
             {
                 using (var command = connection.CreateCommand(CreateBookSql))
                 {
@@ -1391,7 +1391,7 @@ public class QuerySql
     {
         if (this.Transaction == null)
         {
-            using (var connection = NpgsqlDataSource.Create(ConnectionString))
+            using (var connection = NpgsqlDataSource.Create(ConnectionString!))
             {
                 using (var command = connection.CreateCommand(ListAllAuthorsBooksSql))
                 {
@@ -1428,7 +1428,7 @@ public class QuerySql
     {
         if (this.Transaction == null)
         {
-            using (var connection = NpgsqlDataSource.Create(ConnectionString))
+            using (var connection = NpgsqlDataSource.Create(ConnectionString!))
             {
                 using (var command = connection.CreateCommand(GetDuplicateAuthorsSql))
                 {
@@ -1466,7 +1466,7 @@ public class QuerySql
     {
         if (this.Transaction == null)
         {
-            using (var connection = NpgsqlDataSource.Create(ConnectionString))
+            using (var connection = NpgsqlDataSource.Create(ConnectionString!))
             {
                 using (var command = connection.CreateCommand(GetAuthorsByBookNameSql))
                 {

@@ -415,6 +415,7 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId
         var connectionVar = Variable.Connection.AsVarName();
         var embedTableExists = query.Columns.Any(c => c.EmbedTable is not null);
         var useOpenConnection = query.Cmd == ":copyfrom" || (Options.UseDapper && !embedTableExists);
+        var optionalNotNullVerify = Options.DotnetFramework.IsDotnetCore() ? "!" : string.Empty;
 
         return useOpenConnection
             ? new ConnectionGenCommands(
@@ -422,7 +423,7 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId
                 string.Empty
             )
             : new ConnectionGenCommands(
-                $"var {connectionVar} = NpgsqlDataSource.Create({connectionStringVar})",
+                $"var {connectionVar} = NpgsqlDataSource.Create({connectionStringVar}{optionalNotNullVerify})",
                 string.Empty
             );
     }
