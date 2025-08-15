@@ -1,12 +1,9 @@
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Plugin;
-using SqlcGenCsharp.Drivers.Generators;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
-using OneDeclareGen = SqlcGenCsharp.Drivers.Generators.OneDeclareGen;
 
 namespace SqlcGenCsharp.Drivers;
 
@@ -14,7 +11,7 @@ public partial class MySqlConnectorDriver(
     Options options,
     string defaultSchema,
     Dictionary<string, Dictionary<string, Table>> tables,
-    Dictionary<string, Dictionary<string, Plugin.Enum>> enums,
+    Dictionary<string, Dictionary<string, Enum>> enums,
     IList<Query> queries) :
     DbDriver(options, defaultSchema, tables, enums, queries), IOne, IMany, IExec, IExecRows, IExecLastId, ICopyFrom
 {
@@ -398,33 +395,6 @@ public partial class MySqlConnectorDriver(
     [GeneratedRegex(@"\?")]
     private static partial Regex QueryParamRegex();
 
-    public MemberDeclarationSyntax OneDeclare(string queryTextConstant, string argInterface,
-        string returnInterface, Query query)
-    {
-        return new OneDeclareGen(this).Generate(queryTextConstant, argInterface, returnInterface, query);
-    }
-
-    public MemberDeclarationSyntax ExecDeclare(string queryTextConstant, string argInterface, Query query)
-    {
-        return new ExecDeclareGen(this).Generate(queryTextConstant, argInterface, query);
-    }
-
-    public MemberDeclarationSyntax ManyDeclare(string queryTextConstant, string argInterface, string returnInterface, Query query)
-    {
-        return new ManyDeclareGen(this).Generate(queryTextConstant, argInterface, returnInterface, query);
-    }
-
-    public MemberDeclarationSyntax ExecRowsDeclare(string queryTextConstant, string argInterface, Query query)
-    {
-        return new ExecRowsDeclareGen(this).Generate(queryTextConstant, argInterface, query);
-    }
-
-    /* :execlastid methods */
-    public MemberDeclarationSyntax ExecLastIdDeclare(string queryTextConstant, string argInterface, Query query)
-    {
-        return new ExecLastIdDeclareGen(this).Generate(queryTextConstant, argInterface, query);
-    }
-
     public override string[] GetLastIdStatement(Query query)
     {
         return
@@ -439,11 +409,6 @@ public partial class MySqlConnectorDriver(
     public const string BoolToBitCsvConverter = "BoolToBitCsvConverter";
     public const string ByteCsvConverter = "ByteCsvConverter";
     public const string ByteArrayCsvConverter = "ByteArrayCsvConverter";
-
-    public MemberDeclarationSyntax CopyFromDeclare(string queryTextConstant, string argInterface, Query query)
-    {
-        return new CopyFromDeclareGen(this).Generate(queryTextConstant, argInterface, query);
-    }
 
     public string GetCopyFromImpl(Query query, string queryTextConstant)
     {
@@ -570,13 +535,13 @@ public partial class MySqlConnectorDriver(
     }
 
     /* Enum methods */
-    public override string EnumToCsharpTypeName(Column column, Plugin.Enum enumType)
+    public override string EnumToCsharpTypeName(Column column, Enum enumType)
     {
         var enumName = column.Type.Name.ToModelName(GetColumnSchema(column), DefaultSchema);
         return IsSetDataType(column, enumType) ? $"HashSet<{enumName}>" : enumName;
     }
 
-    private static bool IsSetDataType(Column column, Plugin.Enum enumType)
+    private static bool IsSetDataType(Column column, Enum enumType)
     {
         return column.Length > enumType.Vals.Select(v => v.Length).Sum();
     }

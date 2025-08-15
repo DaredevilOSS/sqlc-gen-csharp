@@ -14,7 +14,7 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId
         Options options,
         string defaultSchema,
         Dictionary<string, Dictionary<string, Table>> tables,
-        Dictionary<string, Dictionary<string, Plugin.Enum>> enums,
+        Dictionary<string, Dictionary<string, Enum>> enums,
         IList<Query> queries) :
         base(options, defaultSchema, tables, enums, queries)
     {
@@ -452,38 +452,6 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId
             var copyParams = query.Params.Select(p => p.Column.Name).JoinByComma();
             return $"COPY {query.InsertIntoTable.Name} ({copyParams}) FROM STDIN (FORMAT BINARY)";
         }
-    }
-
-    public MemberDeclarationSyntax OneDeclare(string queryTextConstant, string argInterface,
-        string returnInterface, Query query)
-    {
-        return new OneDeclareGen(this).Generate(queryTextConstant, argInterface, returnInterface, query);
-    }
-
-    public MemberDeclarationSyntax ExecDeclare(string queryTextConstant, string argInterface, Query query)
-    {
-        return new ExecDeclareGen(this).Generate(queryTextConstant, argInterface, query);
-    }
-
-    public MemberDeclarationSyntax ManyDeclare(string queryTextConstant, string argInterface,
-        string returnInterface, Query query)
-    {
-        return new ManyDeclareGen(this).Generate(queryTextConstant, argInterface, returnInterface, query);
-    }
-
-    public MemberDeclarationSyntax ExecRowsDeclare(string queryTextConstant, string argInterface, Query query)
-    {
-        return new ExecRowsDeclareGen(this).Generate(queryTextConstant, argInterface, query);
-    }
-
-    public MemberDeclarationSyntax ExecLastIdDeclare(string queryTextConstant, string argInterface, Query query)
-    {
-        return new ExecLastIdDeclareGen(this).Generate(queryTextConstant, argInterface, query);
-    }
-
-    public MemberDeclarationSyntax CopyFromDeclare(string queryTextConstant, string argInterface, Query query)
-    {
-        return new CopyFromDeclareGen(this).Generate(queryTextConstant, argInterface, query);
     }
 
     public string GetCopyFromImpl(Query query, string queryTextConstant)
