@@ -55,7 +55,6 @@ public abstract class DbDriver
         "NpgsqlCidr",
     ];
 
-
     public abstract Dictionary<string, ColumnMapping> ColumnMappings { get; }
 
     protected const string JsonElementTypeHandler =
@@ -83,6 +82,12 @@ public abstract class DbDriver
                return originalSql.Replace($"/*SLICE:{paramName}*/@{paramName}", string.Join(",", paramArgs));
            }
            """;
+
+    public readonly string TransactionConnectionNullExcetionThrow =
+        $"""
+         if (this.{Variable.Transaction.AsPropertyName()}?.Connection == null || this.{Variable.Transaction.AsPropertyName()}?.Connection.State != System.Data.ConnectionState.Open)
+             throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+         """;
 
     protected DbDriver(
         Options options,
