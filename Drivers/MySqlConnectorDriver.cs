@@ -604,9 +604,8 @@ public sealed partial class MySqlConnectorDriver(
     protected override string GetEnumReader(Column column, int ordinal)
     {
         var enumName = EnumToModelName(column);
-        var enumDataType = EnumToCsharpDataType(column);
         var readStmt = $"{Variable.Reader.AsVarName()}.GetString({ordinal})";
-        return enumDataType.StartsWith("HashSet")
+        return IsSetDataType(column)
             ? $"{readStmt}.To{enumName}Set()"
             : $"{readStmt}.To{enumName}()";
     }

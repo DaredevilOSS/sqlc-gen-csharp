@@ -572,11 +572,8 @@ public sealed class NpgsqlDriver : EnumDbDriver, IOne, IMany, IExec, IExecRows, 
     protected override string GetEnumReader(Column column, int ordinal)
     {
         var enumName = EnumToModelName(column);
-        var enumDataType = EnumToCsharpDataType(column);
         var readStmt = $"{Variable.Reader.AsVarName()}.GetString({ordinal})";
-        return enumDataType.StartsWith("HashSet")
-            ? $"{readStmt}.To{enumName}Set()"
-            : $"{readStmt}.To{enumName}()";
+        return $"{readStmt}.To{enumName}()";
     }
 
     protected override Enum? GetEnumType(Column column)
