@@ -57,8 +57,12 @@ internal class ModelsGen(DbDriver dbDriver, string namespaceName)
         {
             return s.Value.SelectMany(e =>
             {
-                var enumName = dbDriver.EnumToModelName(s.Key, e.Value);
-                return EnumsGen.Generate(enumName, e.Value.Vals);
+                if (dbDriver is EnumDbDriver enumDbDriver)
+                {
+                    var enumName = enumDbDriver.EnumToModelName(s.Key, e.Value);
+                    return EnumsGen.Generate(enumName, e.Value.Vals);
+                }
+                return [];
             });
         }).ToArray();
     }

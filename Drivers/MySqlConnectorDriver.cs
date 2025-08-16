@@ -14,7 +14,7 @@ public sealed partial class MySqlConnectorDriver(
     Options options,
     Catalog catalog,
     IList<Query> queries) :
-    DbDriver(options, catalog, queries),
+    EnumDbDriver(options, catalog, queries),
     IOne, IMany, IExec, IExecRows, IExecLastId, ICopyFrom
 {
     protected override Dictionary<string, ColumnMapping> ColumnMappings { get; } =
@@ -599,6 +599,16 @@ public sealed partial class MySqlConnectorDriver(
 
         static string DefaultWriterFn(string el, bool notNull, bool isDapper) => notNull ? el : $"{el} ?? (object)DBNull.Value";
         return Options.UseDapper ? null : DefaultWriterFn;
+    }
+
+    protected override string GetEnumReader(Column column, int ordinal)
+    {
+        var enumName = EnumToModelName(column);
+        var enumDataType = EnumToCsharpDataType(column);
+        var readStmt = $"{Variable.Reader.AsVarName()}.GetString({ordinal})";
+        return enumDataType.StartsWith("HashSet")
+            ? $"{readStmt}.To{enumName}Set()"
+            : $"{readStmt}.To{enumName}()";
     }
 
     protected override Enum? GetEnumType(Column column)

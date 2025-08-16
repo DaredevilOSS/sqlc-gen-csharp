@@ -10,7 +10,7 @@ using Enum = Plugin.Enum;
 
 namespace SqlcGenCsharp.Drivers;
 
-public sealed class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId, ICopyFrom
+public sealed class NpgsqlDriver : EnumDbDriver, IOne, IMany, IExec, IExecRows, IExecLastId, ICopyFrom
 {
     public NpgsqlDriver(
         Options options,
@@ -567,6 +567,16 @@ public sealed class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExe
             enumName = schemaAndEnum[1];
         }
         return (schemaName, enumName);
+    }
+
+    protected override string GetEnumReader(Column column, int ordinal)
+    {
+        var enumName = EnumToModelName(column);
+        var enumDataType = EnumToCsharpDataType(column);
+        var readStmt = $"{Variable.Reader.AsVarName()}.GetString({ordinal})";
+        return enumDataType.StartsWith("HashSet")
+            ? $"{readStmt}.To{enumName}Set()"
+            : $"{readStmt}.To{enumName}()";
     }
 
     protected override Enum? GetEnumType(Column column)

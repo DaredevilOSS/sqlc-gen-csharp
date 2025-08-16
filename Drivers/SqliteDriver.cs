@@ -229,10 +229,4 @@ public sealed partial class SqliteDriver(
                      """;
         }
     }
-
-    // Unsupported implementations of enum related logic - TODO refactor
-    protected override Enum? GetEnumType(Column column) => null;
-    protected override string EnumToCsharpDataType(Column column) => string.Empty;
-    public override string EnumToModelName(string schemaName, Enum enumType) => string.Empty;
-    protected override string EnumToModelName(Column column) => string.Empty;
 }

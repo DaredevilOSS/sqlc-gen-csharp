@@ -337,16 +337,13 @@ public abstract class DbDriver
         return Options.DotnetFramework.IsDotnetCore(); // non-primitives in .Net Core are inherently nullable
     }
 
-    protected string GetCsharpTypeWithoutNullableSuffix(Column column, Query? query)
+    protected virtual string GetCsharpTypeWithoutNullableSuffix(Column column, Query? query)
     {
         if (column.EmbedTable != null)
             return column.EmbedTable.Name.ToModelName(column.EmbedTable.Schema, DefaultSchema);
 
         if (string.IsNullOrEmpty(column.Type.Name))
             return "object";
-
-        if (GetEnumType(column) is not null)
-            return EnumToCsharpDataType(column);
 
         if (FindOverrideForQueryColumn(query, column) is { CsharpType: var csharpType })
             return csharpType.Type;
@@ -389,21 +386,8 @@ public abstract class DbDriver
         throw new NotSupportedException($"Could not find column mapping for type override: {csharpTypeOption.Type}");
     }
 
-    private string GetEnumReader(Column column, int ordinal)
+    public virtual string GetColumnReader(Column column, int ordinal, Query? query)
     {
-        var enumName = EnumToModelName(column);
-        var enumDataType = EnumToCsharpDataType(column);
-        var readStmt = $"{Variable.Reader.AsVarName()}.GetString({ordinal})";
-        return enumDataType.StartsWith("HashSet")
-            ? $"{readStmt}.To{enumName}Set()"
-            : $"{readStmt}.To{enumName}()";
-    }
-
-    public string GetColumnReader(Column column, int ordinal, Query? query)
-    {
-        if (GetEnumType(column) is not null)
-            return GetEnumReader(column, ordinal);
-
         if (FindOverrideForQueryColumn(query, column) is { CsharpType: var csharpType })
             return GetColumnReader(csharpType, ordinal);
 
@@ -416,13 +400,4 @@ public abstract class DbDriver
         }
         throw new NotSupportedException($"column {column.Name} has unsupported column type: {column.Type.Name} in {GetType().Name}");
     }
-
-    /* Enum methods*/
-    protected abstract Plugin.Enum? GetEnumType(Column column);
-
-    protected abstract string EnumToCsharpDataType(Column column);
-
-    public abstract string EnumToModelName(string schemaName, Plugin.Enum enumType);
-
-    protected abstract string EnumToModelName(Column column);
 }
