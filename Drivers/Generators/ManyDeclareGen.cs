@@ -68,9 +68,7 @@ public class ManyDeclareGen(DbDriver dbDriver)
         var returnType = dbDriver.AddNullableSuffixIfNeeded(returnInterface, true);
 
         return $$"""
-                    if (this.{{transactionProperty}}?.Connection == null || this.{{transactionProperty}}?.Connection.State != System.Data.ConnectionState.Open)
-                        throw new InvalidOperationException("Transaction is provided, but its connection is null.");
-                    
+                    {{dbDriver.TransactionConnectionNullExcetionThrow}}
                     return (await this.{{transactionProperty}}.Connection.QueryAsync<{{returnType}}>(
                             {{sqlVar}}{{dapperArgs}},
                             transaction: this.{{transactionProperty}})).AsList();
@@ -124,9 +122,7 @@ public class ManyDeclareGen(DbDriver dbDriver)
                                 """;
 
         return $$"""
-                    if (this.{{transactionProperty}}?.Connection == null || this.{{transactionProperty}}?.Connection.State != System.Data.ConnectionState.Open)
-                        throw new InvalidOperationException("Transaction is provided, but its connection is null.");
-
+                    {{dbDriver.TransactionConnectionNullExcetionThrow}}
                     using (var {{commandVar}} = this.{{transactionProperty}}.Connection.CreateCommand())
                     {
                         {{commandVar}}.CommandText = {{sqlVar}};

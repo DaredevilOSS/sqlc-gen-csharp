@@ -49,9 +49,7 @@ public class ExecLastIdDeclareGen(DbDriver dbDriver)
         var dapperArgs = query.Params.Any() ? $", {Variable.QueryParams.AsVarName()}" : string.Empty;
         return $$"""
                     using ({{establishConnection}})
-                    {
                         return await {{Variable.Connection.AsVarName()}}.QuerySingleAsync<{{dbDriver.GetIdColumnType(query)}}>({{sqlVar}}{{dapperArgs}});
-                    }
                  """;
     }
 
@@ -60,11 +58,7 @@ public class ExecLastIdDeclareGen(DbDriver dbDriver)
         var transactionProperty = Variable.Transaction.AsPropertyName();
         var dapperArgs = query.Params.Any() ? $", {Variable.QueryParams.AsVarName()}" : string.Empty;
         return $$"""
-                    if (this.{{transactionProperty}}?.Connection == null || this.{{transactionProperty}}?.Connection.State != System.Data.ConnectionState.Open)
-                    {
-                        throw new System.InvalidOperationException("Transaction is provided, but its connection is null.");
-                    }
-                    
+                    {{dbDriver.TransactionConnectionNullExcetionThrow}}
                     return await this.{{transactionProperty}}.Connection.QuerySingleAsync<{{dbDriver.GetIdColumnType(query)}}>({{sqlVar}}{{dapperArgs}}, transaction: this.{{transactionProperty}});
                  """;
     }
@@ -96,11 +90,7 @@ public class ExecLastIdDeclareGen(DbDriver dbDriver)
         var returnLastId = ((IExecLastId)dbDriver).GetLastIdStatement(query).JoinByNewLine();
 
         return $$"""
-                    if (this.{{transactionProperty}}?.Connection == null || this.{{transactionProperty}}?.Connection.State != System.Data.ConnectionState.Open)
-                    {
-                        throw new System.InvalidOperationException("Transaction is provided, but its connection is null.");
-                    }
-
+                    {{dbDriver.TransactionConnectionNullExcetionThrow}}
                     using (var {{commandVar}} = this.{{transactionProperty}}.Connection.CreateCommand())
                     {
                         {{commandVar}}.CommandText = {{sqlVar}};

@@ -23,12 +23,13 @@ namespace EndToEndTests
                 Bio = "Back in the 90s he was in a very famous TV show"
             };
             var actual = await this.QuerySql.GetAuthor(new QuerySql.GetAuthorArgs { Name = "Bojack Horseman" });
-            Assert.That(SingularEquals(expected, actual.Value));
-        }
-
-        private static bool SingularEquals(QuerySql.GetAuthorRow x, QuerySql.GetAuthorRow y)
-        {
-            return x.Id.Equals(y.Id) && x.Name.Equals(y.Name) && x.Bio.Equals(y.Bio);
+            AssertSingularEquals(expected, actual.Value);
+            void AssertSingularEquals(QuerySql.GetAuthorRow x, QuerySql.GetAuthorRow y)
+            {
+                Assert.That(x.Id, Is.EqualTo(y.Id));
+                Assert.That(x.Name, Is.EqualTo(y.Name));
+                Assert.That(x.Bio, Is.EqualTo(y.Bio));
+            }
         }
 
         [Test]
@@ -53,21 +54,18 @@ namespace EndToEndTests
             };
             var actual = await this.QuerySql.ListAuthors(new QuerySql.ListAuthorsArgs { Limit = 2, Offset = 0 });
             AssertSequenceEquals(expected, actual);
-        }
-
-        private static void AssertSingularEquals(QuerySql.ListAuthorsRow x, QuerySql.ListAuthorsRow y)
-        {
-            Assert.That(x.Id, Is.EqualTo(y.Id));
-            Assert.That(x.Name, Is.EqualTo(y.Name));
-            Assert.That(x.Bio, Is.EqualTo(y.Bio));
-        }
-
-        private static void AssertSequenceEquals(List<QuerySql.ListAuthorsRow> x, List<QuerySql.ListAuthorsRow> y)
-        {
-            Assert.That(x.Count, Is.EqualTo(y.Count));
-            for (int i = 0; i < x.Count; i++)
+            void AssertSingularEquals(QuerySql.ListAuthorsRow x, QuerySql.ListAuthorsRow y)
             {
-                AssertSingularEquals(x[i], y[i]);
+                Assert.That(x.Id, Is.EqualTo(y.Id));
+                Assert.That(x.Name, Is.EqualTo(y.Name));
+                Assert.That(x.Bio, Is.EqualTo(y.Bio));
+            }
+
+            void AssertSequenceEquals(List<QuerySql.ListAuthorsRow> x, List<QuerySql.ListAuthorsRow> y)
+            {
+                Assert.That(x.Count, Is.EqualTo(y.Count));
+                for (int i = 0; i < x.Count; i++)
+                    AssertSingularEquals(x[i], y[i]);
             }
         }
 
@@ -105,6 +103,19 @@ namespace EndToEndTests
             };
             var actual = await this.QuerySql.ListAuthors(new QuerySql.ListAuthorsArgs { Limit = 2, Offset = 0 });
             AssertSequenceEquals(expected, actual);
+            void AssertSingularEquals(QuerySql.ListAuthorsRow x, QuerySql.ListAuthorsRow y)
+            {
+                Assert.That(x.Id, Is.EqualTo(y.Id));
+                Assert.That(x.Name, Is.EqualTo(y.Name));
+                Assert.That(x.Bio, Is.EqualTo(y.Bio));
+            }
+
+            void AssertSequenceEquals(List<QuerySql.ListAuthorsRow> x, List<QuerySql.ListAuthorsRow> y)
+            {
+                Assert.That(x.Count, Is.EqualTo(y.Count));
+                for (int i = 0; i < x.Count; i++)
+                    AssertSingularEquals(x[i], y[i]);
+            }
         }
 
         [Test]
@@ -118,12 +129,13 @@ namespace EndToEndTests
                 Bio = "Quote that everyone always attribute to Einstein"
             };
             var actual = await QuerySql.GetAuthorById(new QuerySql.GetAuthorByIdArgs { Id = id1 });
-            Assert.That(SingularEquals(expected, actual.Value));
-        }
-
-        private static bool SingularEquals(QuerySql.GetAuthorByIdRow x, QuerySql.GetAuthorByIdRow y)
-        {
-            return x.Id.Equals(y.Id) && x.Name.Equals(y.Name) && x.Bio.Equals(y.Bio);
+            AssertSingularEquals(expected, actual.Value);
+            void AssertSingularEquals(QuerySql.GetAuthorByIdRow x, QuerySql.GetAuthorByIdRow y)
+            {
+                Assert.That(x.Id, Is.EqualTo(y.Id));
+                Assert.That(x.Name, Is.EqualTo(y.Name));
+                Assert.That(x.Bio, Is.EqualTo(y.Bio));
+            }
         }
 
         [Test]
@@ -150,19 +162,23 @@ namespace EndToEndTests
                 }
             };
             var actual = await QuerySql.GetDuplicateAuthors();
-            Assert.That(SequenceEquals(expected, actual));
-        }
+            AssertSequenceEquals(expected, actual);
+            void AssertSingularEquals(QuerySql.GetDuplicateAuthorsRow x, QuerySql.GetDuplicateAuthorsRow y)
+            {
+                Assert.That(x.Author.Value.Id, Is.EqualTo(y.Author.Value.Id));
+                Assert.That(x.Author.Value.Name, Is.EqualTo(y.Author.Value.Name));
+                Assert.That(x.Author.Value.Bio, Is.EqualTo(y.Author.Value.Bio));
+                Assert.That(x.Author2.Value.Id, Is.EqualTo(y.Author2.Value.Id));
+                Assert.That(x.Author2.Value.Name, Is.EqualTo(y.Author2.Value.Name));
+                Assert.That(x.Author2.Value.Bio, Is.EqualTo(y.Author2.Value.Bio));
+            }
 
-        private static bool SingularEquals(QuerySql.GetDuplicateAuthorsRow x, QuerySql.GetDuplicateAuthorsRow y)
-        {
-            return SingularEquals(x.Author.Value, y.Author.Value) && SingularEquals(x.Author2.Value, y.Author2.Value);
-        }
-
-        private static bool SequenceEquals(List<QuerySql.GetDuplicateAuthorsRow> x, List<QuerySql.GetDuplicateAuthorsRow> y)
-        {
-            if (x.Count != y.Count)
-                return false;
-            return !x.Where((t, i) => !SingularEquals(t, y[i])).Any();
+            void AssertSequenceEquals(List<QuerySql.GetDuplicateAuthorsRow> x, List<QuerySql.GetDuplicateAuthorsRow> y)
+            {
+                Assert.That(x.Count, Is.EqualTo(y.Count));
+                for (int i = 0; i < x.Count; i++)
+                    AssertSingularEquals(x[i], y[i]);
+            }
         }
 
         [Test]
@@ -206,31 +222,23 @@ namespace EndToEndTests
                 }
             };
             var actual = await QuerySql.ListAllAuthorsBooks();
-            Assert.That(SequenceEquals(expected, actual));
-        }
+            AssertSequenceEquals(expected, actual);
+            void AssertSingularEquals(QuerySql.ListAllAuthorsBooksRow x, QuerySql.ListAllAuthorsBooksRow y)
+            {
+                Assert.That(x.Author.Value.Id, Is.EqualTo(y.Author.Value.Id));
+                Assert.That(x.Author.Value.Name, Is.EqualTo(y.Author.Value.Name));
+                Assert.That(x.Author.Value.Bio, Is.EqualTo(y.Author.Value.Bio));
+                Assert.That(x.Book.Value.Id, Is.EqualTo(y.Book.Value.Id));
+                Assert.That(x.Book.Value.AuthorId, Is.EqualTo(y.Book.Value.AuthorId));
+                Assert.That(x.Book.Value.Name, Is.EqualTo(y.Book.Value.Name));
+            }
 
-        private static bool SingularEquals(QuerySql.ListAllAuthorsBooksRow x, QuerySql.ListAllAuthorsBooksRow y)
-        {
-            return SingularEquals(x.Author.Value, y.Author.Value) && SingularEquals(x.Book.Value, y.Book.Value);
-        }
-
-        private static bool SequenceEquals(List<QuerySql.ListAllAuthorsBooksRow> x, List<QuerySql.ListAllAuthorsBooksRow> y)
-        {
-            if (x.Count != y.Count)
-                return false;
-            x = x.OrderBy<QuerySql.ListAllAuthorsBooksRow, object>(o => o.Author.Value.Name + o.Book.Value.Name).ToList();
-            y = y.OrderBy<QuerySql.ListAllAuthorsBooksRow, object>(o => o.Author.Value.Name + o.Book.Value.Name).ToList();
-            return !x.Where((t, i) => !SingularEquals(t, y[i])).Any();
-        }
-
-        private static bool SingularEquals(Author x, Author y)
-        {
-            return x.Id.Equals(y.Id) && x.Name.Equals(y.Name) && x.Bio.Equals(y.Bio);
-        }
-
-        private static bool SingularEquals(Book x, Book y)
-        {
-            return x.Id.Equals(y.Id) && x.AuthorId.Equals(y.AuthorId) && x.Name.Equals(y.Name);
+            void AssertSequenceEquals(List<QuerySql.ListAllAuthorsBooksRow> x, List<QuerySql.ListAllAuthorsBooksRow> y)
+            {
+                Assert.That(x.Count, Is.EqualTo(y.Count));
+                for (int i = 0; i < x.Count; i++)
+                    AssertSingularEquals(x[i], y[i]);
+            }
         }
 
         [Test]
@@ -272,21 +280,20 @@ namespace EndToEndTests
                 }
             };
             var actual = await this.QuerySql.GetAuthorByNamePattern(new QuerySql.GetAuthorByNamePatternArgs());
-            Assert.That(SequenceEquals(expected, actual));
-        }
+            AssertSequenceEquals(expected, actual);
+            void AssertSequenceEquals(List<QuerySql.GetAuthorByNamePatternRow> x, List<QuerySql.GetAuthorByNamePatternRow> y)
+            {
+                Assert.That(x.Count, Is.EqualTo(y.Count));
+                for (int i = 0; i < x.Count; i++)
+                    AssertSingularEquals(x[i], y[i]);
+            }
 
-        private static bool SequenceEquals(List<QuerySql.GetAuthorByNamePatternRow> x, List<QuerySql.GetAuthorByNamePatternRow> y)
-        {
-            if (x.Count != y.Count)
-                return false;
-            x = x.OrderBy<QuerySql.GetAuthorByNamePatternRow, object>(o => o.Id).ToList();
-            y = y.OrderBy<QuerySql.GetAuthorByNamePatternRow, object>(o => o.Id).ToList();
-            return !x.Where((t, i) => !SingularEquals(t, y[i])).Any();
-        }
-
-        private static bool SingularEquals(QuerySql.GetAuthorByNamePatternRow x, QuerySql.GetAuthorByNamePatternRow y)
-        {
-            return x.Id.Equals(y.Id) && x.Name.Equals(y.Name) && x.Bio.Equals(y.Bio);
+            void AssertSingularEquals(QuerySql.GetAuthorByNamePatternRow x, QuerySql.GetAuthorByNamePatternRow y)
+            {
+                Assert.That(x.Id, Is.EqualTo(y.Id));
+                Assert.That(x.Name, Is.EqualTo(y.Name));
+                Assert.That(x.Bio, Is.EqualTo(y.Bio));
+            }
         }
 
         [Test]
@@ -304,7 +311,20 @@ namespace EndToEndTests
                 }
             };
             var actual = await this.QuerySql.GetAuthorByNamePattern(new QuerySql.GetAuthorByNamePatternArgs { NamePattern = "Bojack%" });
-            Assert.That(SequenceEquals(expected, actual));
+            AssertSequenceEquals(expected, actual);
+            void AssertSequenceEquals(List<QuerySql.GetAuthorByNamePatternRow> x, List<QuerySql.GetAuthorByNamePatternRow> y)
+            {
+                Assert.That(x.Count, Is.EqualTo(y.Count));
+                for (int i = 0; i < x.Count; i++)
+                    AssertSingularEquals(x[i], y[i]);
+            }
+
+            void AssertSingularEquals(QuerySql.GetAuthorByNamePatternRow x, QuerySql.GetAuthorByNamePatternRow y)
+            {
+                Assert.That(x.Id, Is.EqualTo(y.Id));
+                Assert.That(x.Name, Is.EqualTo(y.Name));
+                Assert.That(x.Bio, Is.EqualTo(y.Bio));
+            }
         }
 
         [Test]
@@ -323,14 +343,13 @@ namespace EndToEndTests
             };
             var actual = await QuerySql.GetSqliteTypes();
             AssertSingularEquals(expected, actual.Value);
-        }
-
-        private static void AssertSingularEquals(QuerySql.GetSqliteTypesRow expected, QuerySql.GetSqliteTypesRow actual)
-        {
-            Assert.That(actual.CInteger, Is.EqualTo(expected.CInteger));
-            Assert.That(actual.CReal, Is.EqualTo(expected.CReal));
-            Assert.That(actual.CText, Is.EqualTo(expected.CText));
-            Assert.That(actual.CBlob, Is.EqualTo(expected.CBlob));
+            void AssertSingularEquals(QuerySql.GetSqliteTypesRow x, QuerySql.GetSqliteTypesRow y)
+            {
+                Assert.That(x.CInteger, Is.EqualTo(y.CInteger));
+                Assert.That(x.CReal, Is.EqualTo(y.CReal));
+                Assert.That(x.CText, Is.EqualTo(y.CText));
+                Assert.That(x.CBlob, Is.EqualTo(y.CBlob));
+            }
         }
 
         [Test]
@@ -344,12 +363,13 @@ namespace EndToEndTests
                 Bio = "Back in the 90s he was in a very famous TV show"
             };
             var actual = await this.QuerySql.GetAuthorByIdWithMultipleNamedParam(new QuerySql.GetAuthorByIdWithMultipleNamedParamArgs { IdArg = 1111, Take = 1 });
-            Assert.That(SingularEquals(expected, actual.Value));
-        }
-
-        private static bool SingularEquals(QuerySql.GetAuthorByIdWithMultipleNamedParamRow x, QuerySql.GetAuthorByIdWithMultipleNamedParamRow y)
-        {
-            return x.Id.Equals(y.Id) && x.Name.Equals(y.Name) && x.Bio.Equals(y.Bio);
+            AssertSingularEquals(expected, actual.Value);
+            void AssertSingularEquals(QuerySql.GetAuthorByIdWithMultipleNamedParamRow x, QuerySql.GetAuthorByIdWithMultipleNamedParamRow y)
+            {
+                Assert.That(x.Id, Is.EqualTo(y.Id));
+                Assert.That(x.Name, Is.EqualTo(y.Name));
+                Assert.That(x.Bio, Is.EqualTo(y.Bio));
+            }
         }
 
         [Test]
@@ -366,13 +386,12 @@ namespace EndToEndTests
             };
             var actual = await QuerySql.GetSqliteFunctions();
             AssertSingularEquals(expected, actual.Value);
-        }
-
-        private static void AssertSingularEquals(QuerySql.GetSqliteFunctionsRow expected, QuerySql.GetSqliteFunctionsRow actual)
-        {
-            Assert.That(actual.MaxInteger, Is.EqualTo(expected.MaxInteger));
-            Assert.That(actual.MaxReal, Is.EqualTo(expected.MaxReal));
-            Assert.That(actual.MaxText, Is.EqualTo(expected.MaxText));
+            void AssertSingularEquals(QuerySql.GetSqliteFunctionsRow x, QuerySql.GetSqliteFunctionsRow y)
+            {
+                Assert.That(x.MaxInteger, Is.EqualTo(y.MaxInteger));
+                Assert.That(x.MaxReal, Is.EqualTo(y.MaxReal));
+                Assert.That(x.MaxText, Is.EqualTo(y.MaxText));
+            }
         }
 
         [Test]
@@ -392,14 +411,13 @@ namespace EndToEndTests
             };
             var actual = await QuerySql.GetSqliteTypesCnt();
             AssertSingularEquals(expected, actual.Value);
-        }
-
-        private static void AssertSingularEquals(QuerySql.GetSqliteTypesCntRow expected, QuerySql.GetSqliteTypesCntRow actual)
-        {
-            Assert.That(actual.Cnt, Is.EqualTo(expected.Cnt));
-            Assert.That(actual.CInteger, Is.EqualTo(expected.CInteger));
-            Assert.That(actual.CReal, Is.EqualTo(expected.CReal));
-            Assert.That(actual.CText, Is.EqualTo(expected.CText));
+            void AssertSingularEquals(QuerySql.GetSqliteTypesCntRow x, QuerySql.GetSqliteTypesCntRow y)
+            {
+                Assert.That(x.Cnt, Is.EqualTo(y.Cnt));
+                Assert.That(x.CInteger, Is.EqualTo(y.CInteger));
+                Assert.That(x.CReal, Is.EqualTo(y.CReal));
+                Assert.That(x.CText, Is.EqualTo(y.CText));
+            }
         }
 
         [Test]
@@ -410,9 +428,8 @@ namespace EndToEndTests
             var transaction = connection.BeginTransaction();
             var querySqlWithTx = QuerySql.WithTransaction(transaction);
             await querySqlWithTx.CreateAuthor(new QuerySql.CreateAuthorArgs { Id = 1111, Name = "Bojack Horseman", Bio = "Back in the 90s he was in a very famous TV show" });
-            // The GetAuthor method in SqliteExampleGen returns QuerySql.GetAuthorRow? (nullable record struct/class)
-            var actualNull = await QuerySql.GetAuthor(new QuerySql.GetAuthorArgs { Name = "Bojack Horseman" });
-            Assert.That(actualNull == null, "there is author"); // This is correct for nullable types
+            var actual = await QuerySql.GetAuthor(new QuerySql.GetAuthorArgs { Name = "Bojack Horseman" });
+            ClassicAssert.IsNull(actual);
             transaction.Commit();
             var expected = new QuerySql.GetAuthorRow
             {
@@ -420,8 +437,14 @@ namespace EndToEndTests
                 Name = "Bojack Horseman",
                 Bio = "Back in the 90s he was in a very famous TV show"
             };
-            var actual = await QuerySql.GetAuthor(new QuerySql.GetAuthorArgs { Name = "Bojack Horseman" });
-            Assert.That(SingularEquals(expected, actual.Value)); // Apply placeholder here
+            actual = await QuerySql.GetAuthor(new QuerySql.GetAuthorArgs { Name = "Bojack Horseman" });
+            AssertSingularEquals(expected, actual.Value);
+            void AssertSingularEquals(QuerySql.GetAuthorRow x, QuerySql.GetAuthorRow y)
+            {
+                Assert.That(x.Id, Is.EqualTo(y.Id));
+                Assert.That(x.Name, Is.EqualTo(y.Name));
+                Assert.That(x.Bio, Is.EqualTo(y.Bio));
+            }
         }
 
         [Test]
@@ -434,7 +457,7 @@ namespace EndToEndTests
             await sqlQueryWithTx.CreateAuthor(new QuerySql.CreateAuthorArgs { Id = 1111, Name = "Bojack Horseman", Bio = "Back in the 90s he was in a very famous TV show" });
             transaction.Rollback();
             var actual = await this.QuerySql.GetAuthor(new QuerySql.GetAuthorArgs { Name = "Bojack Horseman" });
-            Assert.That(actual == null, "author should not exist after rollback");
+            ClassicAssert.IsNull(actual);
         }
     }
 }

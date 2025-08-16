@@ -2,7 +2,6 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Plugin;
 using SqlcGenCsharp.Drivers;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Linq;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
@@ -16,7 +15,6 @@ internal class ModelsGen(DbDriver dbDriver, string namespaceName)
     private RootGen RootGen { get; } = new(dbDriver.Options);
 
     private DataClassesGen DataClassesGen { get; } = new(dbDriver);
-
 
     private EnumsGen EnumsGen { get; } = new(dbDriver);
 
@@ -59,8 +57,12 @@ internal class ModelsGen(DbDriver dbDriver, string namespaceName)
         {
             return s.Value.SelectMany(e =>
             {
-                var enumName = e.Value.Name.ToModelName(s.Key, dbDriver.DefaultSchema);
-                return EnumsGen.Generate(enumName, e.Value.Vals);
+                if (dbDriver is EnumDbDriver enumDbDriver)
+                {
+                    var enumName = enumDbDriver.EnumToModelName(s.Key, e.Value);
+                    return EnumsGen.Generate(enumName, e.Value.Vals);
+                }
+                return [];
             });
         }).ToArray();
     }

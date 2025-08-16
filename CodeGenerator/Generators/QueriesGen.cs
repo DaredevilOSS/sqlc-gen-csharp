@@ -4,12 +4,13 @@ using SqlcGenCsharp.Drivers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 
 namespace SqlcGenCsharp.Generators;
 
-internal class QueriesGen(DbDriver dbDriver, string namespaceName)
+internal partial class QueriesGen(DbDriver dbDriver, string namespaceName)
 {
     private static readonly string[] ResharperDisables =
     [
@@ -132,15 +133,21 @@ internal class QueriesGen(DbDriver dbDriver, string namespaceName)
 
     private MemberDeclarationSyntax? GetQueryTextConstant(Query query)
     {
-        var transformQueryText = dbDriver.TransformQueryText(query);
-        if (transformQueryText == string.Empty)
+        var transformedQueryText = dbDriver.TransformQueryText(query);
+        if (transformedQueryText == string.Empty)
             return null;
+
+        var singleLineQueryText = LongWhitespaceRegex().Replace(transformedQueryText, " ");
         return ParseMemberDeclaration(
                 $"""
-                 private const string {ClassMember.Sql.Name(query.Name)} = "{transformQueryText}";
+                 private const string {ClassMember.Sql.Name(query.Name)} = "{singleLineQueryText}";
                  """)!
             .AppendNewLine();
     }
+
+
+    [GeneratedRegex(@"\s{1,}")]
+    private static partial Regex LongWhitespaceRegex();
 
     private MemberDeclarationSyntax AddMethodDeclaration(Query query)
     {

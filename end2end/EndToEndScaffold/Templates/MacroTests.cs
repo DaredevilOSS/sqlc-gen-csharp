@@ -31,20 +31,21 @@ public static class MacroTests
                           };
                      
                           var actual = await this.QuerySql.GetAuthorByNamePattern(new QuerySql.GetAuthorByNamePatternArgs());
-                          Assert.That(SequenceEquals(expected, actual));
-                      }
-                     
-                      private static bool SequenceEquals(List<QuerySql.GetAuthorByNamePatternRow> x, List<QuerySql.GetAuthorByNamePatternRow> y)
-                      {
-                          if (x.Count != y.Count)
-                              return false;
-                          x = x.OrderBy<QuerySql.GetAuthorByNamePatternRow, object>(o => o.Id).ToList();
-                          y = y.OrderBy<QuerySql.GetAuthorByNamePatternRow, object>(o => o.Id).ToList();
-                          return !x.Where((t, i) => !SingularEquals(t, y[i])).Any();
-                      }
-                      private static bool SingularEquals(QuerySql.GetAuthorByNamePatternRow x, QuerySql.GetAuthorByNamePatternRow y)
-                      {
-                          return x.Id.Equals(y.Id) && x.Name.Equals(y.Name) && x.Bio.Equals(y.Bio);
+                          AssertSequenceEquals(expected, actual);
+
+                          void AssertSequenceEquals(List<QuerySql.GetAuthorByNamePatternRow> x, List<QuerySql.GetAuthorByNamePatternRow> y)
+                          {
+                              Assert.That(x.Count, Is.EqualTo(y.Count));
+                              for (int i = 0; i < x.Count; i++)
+                                  AssertSingularEquals(x[i], y[i]);
+                          }
+
+                          void AssertSingularEquals(QuerySql.GetAuthorByNamePatternRow x, QuerySql.GetAuthorByNamePatternRow y)
+                          {
+                              Assert.That(x.Id, Is.EqualTo(y.Id));
+                              Assert.That(x.Name, Is.EqualTo(y.Name));
+                              Assert.That(x.Bio, Is.EqualTo(y.Bio));
+                          }
                       }
                      """
         },
@@ -68,7 +69,21 @@ public static class MacroTests
                           };
                      
                           var actual = await this.QuerySql.GetAuthorByNamePattern(new QuerySql.GetAuthorByNamePatternArgs { NamePattern = "Bojack%" });
-                          Assert.That(SequenceEquals(expected, actual));
+                          AssertSequenceEquals(expected, actual);
+
+                          void AssertSequenceEquals(List<QuerySql.GetAuthorByNamePatternRow> x, List<QuerySql.GetAuthorByNamePatternRow> y)
+                          {
+                              Assert.That(x.Count, Is.EqualTo(y.Count));
+                              for (int i = 0; i < x.Count; i++)
+                                  AssertSingularEquals(x[i], y[i]);
+                          }
+
+                          void AssertSingularEquals(QuerySql.GetAuthorByNamePatternRow x, QuerySql.GetAuthorByNamePatternRow y)
+                          {
+                              Assert.That(x.Id, Is.EqualTo(y.Id));
+                              Assert.That(x.Name, Is.EqualTo(y.Name));
+                              Assert.That(x.Bio, Is.EqualTo(y.Bio));
+                          }
                       }
                      """
         },
@@ -116,37 +131,24 @@ public static class MacroTests
                              }
                          };
                          var actual = await QuerySql.ListAllAuthorsBooks();
-                         Assert.That(SequenceEquals(expected, actual));
-                     }
+                         AssertSequenceEquals(expected, actual);
 
-                     private static bool SingularEquals(QuerySql.ListAllAuthorsBooksRow x, QuerySql.ListAllAuthorsBooksRow y)
-                     {
-                         return 
-                            SingularEquals(x.Author{{Consts.UnknownRecordValuePlaceholder}}, y.Author{{Consts.UnknownRecordValuePlaceholder}}) && 
-                            SingularEquals(x.Book{{Consts.UnknownRecordValuePlaceholder}}, y.Book{{Consts.UnknownRecordValuePlaceholder}});
-                     }
+                         void AssertSingularEquals(QuerySql.ListAllAuthorsBooksRow x, QuerySql.ListAllAuthorsBooksRow y)
+                         {
+                             Assert.That(x.Author{{Consts.UnknownRecordValuePlaceholder}}.Id, Is.EqualTo(y.Author{{Consts.UnknownRecordValuePlaceholder}}.Id));
+                             Assert.That(x.Author{{Consts.UnknownRecordValuePlaceholder}}.Name, Is.EqualTo(y.Author{{Consts.UnknownRecordValuePlaceholder}}.Name));
+                             Assert.That(x.Author{{Consts.UnknownRecordValuePlaceholder}}.Bio, Is.EqualTo(y.Author{{Consts.UnknownRecordValuePlaceholder}}.Bio));
+                             Assert.That(x.Book{{Consts.UnknownRecordValuePlaceholder}}.Id, Is.EqualTo(y.Book{{Consts.UnknownRecordValuePlaceholder}}.Id));
+                             Assert.That(x.Book{{Consts.UnknownRecordValuePlaceholder}}.AuthorId, Is.EqualTo(y.Book{{Consts.UnknownRecordValuePlaceholder}}.AuthorId));
+                             Assert.That(x.Book{{Consts.UnknownRecordValuePlaceholder}}.Name, Is.EqualTo(y.Book{{Consts.UnknownRecordValuePlaceholder}}.Name));
+                         }
 
-                     private static bool SequenceEquals(List<QuerySql.ListAllAuthorsBooksRow> x, List<QuerySql.ListAllAuthorsBooksRow> y)
-                     {
-                         if (x.Count != y.Count)
-                             return false;
-                         x = x.OrderBy<QuerySql.ListAllAuthorsBooksRow, object>(o => o.Author{{Consts.UnknownRecordValuePlaceholder}}.Name + o.Book{{Consts.UnknownRecordValuePlaceholder}}.Name).ToList();
-                         y = y.OrderBy<QuerySql.ListAllAuthorsBooksRow, object>(o => o.Author{{Consts.UnknownRecordValuePlaceholder}}.Name + o.Book{{Consts.UnknownRecordValuePlaceholder}}.Name).ToList();
-                         return !x.Where((t, i) => !SingularEquals(t, y[i])).Any();
-                     }
-
-                     private static bool SingularEquals(Author x, Author y)
-                     {
-                         return x.Id.Equals(y.Id) && 
-                             x.Name.Equals(y.Name) && 
-                             x.Bio.Equals(y.Bio);
-                     }
-
-                     private static bool SingularEquals(Book x, Book y)
-                     {
-                         return x.Id.Equals(y.Id) && 
-                             x.AuthorId.Equals(y.AuthorId) && 
-                             x.Name.Equals(y.Name);
+                         void AssertSequenceEquals(List<QuerySql.ListAllAuthorsBooksRow> x, List<QuerySql.ListAllAuthorsBooksRow> y)
+                         {
+                             Assert.That(x.Count, Is.EqualTo(y.Count));
+                             for (int i = 0; i < x.Count; i++)
+                                 AssertSingularEquals(x[i], y[i]);
+                         }
                      }
                      """
         },
@@ -177,21 +179,24 @@ public static class MacroTests
                              }
                          };
                          var actual = await QuerySql.GetDuplicateAuthors();
-                         Assert.That(SequenceEquals(expected, actual));
-                     }
+                         AssertSequenceEquals(expected, actual);
 
-                     private static bool SingularEquals(QuerySql.GetDuplicateAuthorsRow x, QuerySql.GetDuplicateAuthorsRow y)
-                     {
-                         return 
-                            SingularEquals(x.Author{{Consts.UnknownRecordValuePlaceholder}}, y.Author{{Consts.UnknownRecordValuePlaceholder}}) && 
-                            SingularEquals(x.Author2{{Consts.UnknownRecordValuePlaceholder}}, y.Author2{{Consts.UnknownRecordValuePlaceholder}});
-                     }
+                        void AssertSingularEquals(QuerySql.GetDuplicateAuthorsRow x, QuerySql.GetDuplicateAuthorsRow y)
+                        {
+                            Assert.That(x.Author{{Consts.UnknownRecordValuePlaceholder}}.Id, Is.EqualTo(y.Author{{Consts.UnknownRecordValuePlaceholder}}.Id));
+                            Assert.That(x.Author{{Consts.UnknownRecordValuePlaceholder}}.Name, Is.EqualTo(y.Author{{Consts.UnknownRecordValuePlaceholder}}.Name));
+                            Assert.That(x.Author{{Consts.UnknownRecordValuePlaceholder}}.Bio, Is.EqualTo(y.Author{{Consts.UnknownRecordValuePlaceholder}}.Bio));
+                            Assert.That(x.Author2{{Consts.UnknownRecordValuePlaceholder}}.Id, Is.EqualTo(y.Author2{{Consts.UnknownRecordValuePlaceholder}}.Id));
+                            Assert.That(x.Author2{{Consts.UnknownRecordValuePlaceholder}}.Name, Is.EqualTo(y.Author2{{Consts.UnknownRecordValuePlaceholder}}.Name));
+                            Assert.That(x.Author2{{Consts.UnknownRecordValuePlaceholder}}.Bio, Is.EqualTo(y.Author2{{Consts.UnknownRecordValuePlaceholder}}.Bio));
+                        }
 
-                     private static bool SequenceEquals(List<QuerySql.GetDuplicateAuthorsRow> x, List<QuerySql.GetDuplicateAuthorsRow> y)
-                     {
-                         if (x.Count != y.Count)
-                             return false;
-                         return !x.Where((t, i) => !SingularEquals(t, y[i])).Any();
+                        void AssertSequenceEquals(List<QuerySql.GetDuplicateAuthorsRow> x, List<QuerySql.GetDuplicateAuthorsRow> y)
+                        {
+                            Assert.That(x.Count, Is.EqualTo(y.Count));
+                            for (int i = 0; i < x.Count; i++)
+                                AssertSingularEquals(x[i], y[i]);
+                        }
                      }
                      """
         },
@@ -224,22 +229,24 @@ public static class MacroTests
                          { 
                              Name = {{Consts.BojackBookTitle}} 
                          });
-                         Assert.That(SequenceEquals(expected, actual));
-                     }
+                         AssertSequenceEquals(expected, actual{{Consts.UnknownRecordValuePlaceholder}});
 
-                     private static bool SingularEquals(QuerySql.GetAuthorsByBookNameRow x, QuerySql.GetAuthorsByBookNameRow y)
-                     {
-                         return x.Id.Equals(y.Id) && 
-                             x.Name.Equals(y.Name) && 
-                             x.Bio.Equals(y.Bio) && 
-                             SingularEquals(x.Book, y.Book);
-                     }
+                        void AssertSingularEquals(QuerySql.GetAuthorsByBookNameRow x, QuerySql.GetAuthorsByBookNameRow y)
+                        {
+                            Assert.That(x.Id, Is.EqualTo(y.Id));
+                            Assert.That(x.Name, Is.EqualTo(y.Name));
+                            Assert.That(x.Bio, Is.EqualTo(y.Bio));
+                            Assert.That(x.Book{{Consts.UnknownRecordValuePlaceholder}}.Id, Is.EqualTo(y.Book{{Consts.UnknownRecordValuePlaceholder}}.Id));
+                            Assert.That(x.Book{{Consts.UnknownRecordValuePlaceholder}}.AuthorId, Is.EqualTo(y.Book{{Consts.UnknownRecordValuePlaceholder}}.AuthorId));
+                            Assert.That(x.Book{{Consts.UnknownRecordValuePlaceholder}}.Name, Is.EqualTo(y.Book{{Consts.UnknownRecordValuePlaceholder}}.Name));
+                        }
 
-                     private static bool SequenceEquals(List<QuerySql.GetAuthorsByBookNameRow> x, List<QuerySql.GetAuthorsByBookNameRow> y)
-                     {
-                         if (x.Count != y.Count)
-                             return false;
-                         return !x.Where((t, i) => !SingularEquals(t, y[i])).Any();
+                        void AssertSequenceEquals(List<QuerySql.GetAuthorsByBookNameRow> x, List<QuerySql.GetAuthorsByBookNameRow> y)
+                        {
+                            Assert.That(x.Count, Is.EqualTo(y.Count));
+                            for (int i = 0; i < x.Count; i++)
+                                AssertSingularEquals(x[i], y[i]);
+                        }
                      }
                      """
         },

@@ -14,11 +14,9 @@ cp "$LOCAL_YAML" "$TMP_LOCAL_YML"
 sql_count=$(yq '.sql | length' "$CI_YAML")
 for ((i=0; i<sql_count; i++)); do
   codegen_count=$(yq ".sql[$i].codegen | length" "$CI_YAML")
-  for ((j=0; j<codegen_count; j++)); do
-    yq -i ".sql[$i].codegen[$j].options = (load(\"$CI_YAML\") | .sql[$i].codegen[$j].options)" "$TMP_REQUESTS_YML"
-    yq -i ".sql[$i].codegen[$j].options = (load(\"$CI_YAML\") | .sql[$i].codegen[$j].options)" "$TMP_LOCAL_YML"
-    yq -i ".sql[$i].codegen[$j].options.debugRequest = true" "$TMP_REQUESTS_YML"
-  done
+  yq -i ".sql[$i] = (load(\"$CI_YAML\") | .sql[$i])" "$TMP_REQUESTS_YML"
+  yq -i ".sql[$i] = (load(\"$CI_YAML\") | .sql[$i])" "$TMP_LOCAL_YML"
+  yq -i ".sql[$i].codegen[0].options.debugRequest = true" "$TMP_REQUESTS_YML"
 done
 
 mv "$TMP_REQUESTS_YML" "$REQUESTS_YAML"

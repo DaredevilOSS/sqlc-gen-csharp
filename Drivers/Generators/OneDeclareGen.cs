@@ -68,11 +68,7 @@ public class OneDeclareGen(DbDriver dbDriver)
         var returnType = dbDriver.AddNullableSuffixIfNeeded(returnInterface, false);
 
         return $$"""
-                    if (this.{{transactionProperty}}?.Connection == null || this.{{transactionProperty}}?.Connection.State != System.Data.ConnectionState.Open)
-                    {
-                        throw new System.InvalidOperationException("Transaction is provided, but its connection is null.");
-                    }
-                    
+                    {{dbDriver.TransactionConnectionNullExcetionThrow}}
                     return await this.{{transactionProperty}}.Connection.QueryFirstOrDefaultAsync<{{returnType}}>(
                             {{sqlVar}}{{dapperArgs}},
                             transaction: this.{{transactionProperty}});
@@ -118,11 +114,7 @@ public class OneDeclareGen(DbDriver dbDriver)
         var returnDataclass = CommonGen.InstantiateDataclass(query.Columns.ToArray(), returnInterface, query);
 
         return $$"""
-                    if (this.{{transactionProperty}}?.Connection == null || this.{{transactionProperty}}?.Connection.State != System.Data.ConnectionState.Open)
-                    {
-                        throw new System.InvalidOperationException("Transaction is provided, but its connection is null.");
-                    }
-
+                    {{dbDriver.TransactionConnectionNullExcetionThrow}}
                     using (var {{commandVar}} = this.{{transactionProperty}}.Connection.CreateCommand())
                     {
                         {{commandVar}}.CommandText = {{sqlVar}};

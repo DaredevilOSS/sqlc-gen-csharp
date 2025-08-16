@@ -47,8 +47,8 @@ public class CodegenSchemaTests
         var expected = new HashSet<string>
         {
             "DummySchemaDummyTable",
-            "DummySchemaDummyTableDummyColumn",
-            "DummySchemaDummyTableDummyColumnExtensions"
+            "DummyTableDummyColumn",
+            "DummyTableDummyColumnExtensions"
         };
         var actual = GetMemberNames(modelsCode);
         Assert.That(actual.IsSupersetOf(expected));

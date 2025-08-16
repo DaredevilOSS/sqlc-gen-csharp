@@ -2,7 +2,6 @@ using Google.Protobuf;
 using Plugin;
 using SqlcGenCsharp;
 using System.Text;
-using System.Xml;
 
 namespace CodegenTests;
 

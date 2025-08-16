@@ -1,7 +1,6 @@
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Plugin;
 using SqlcGenCsharp.Drivers.Generators;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -9,15 +8,13 @@ using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace SqlcGenCsharp.Drivers;
 
-public partial class SqliteDriver(
+public sealed partial class SqliteDriver(
     Options options,
-    string defaultSchema,
-    Dictionary<string, Dictionary<string, Table>> tables,
-    Dictionary<string, Dictionary<string, Plugin.Enum>> enums,
+    Catalog catalog,
     IList<Query> queries) :
-    DbDriver(options, defaultSchema, tables, enums, queries), IOne, IMany, IExec, IExecRows, IExecLastId, ICopyFrom
+    DbDriver(options, catalog, queries), IOne, IMany, IExec, IExecRows, IExecLastId, ICopyFrom
 {
-    public override Dictionary<string, ColumnMapping> ColumnMappings { get; } =
+    protected override Dictionary<string, ColumnMapping> ColumnMappings { get; } =
         new()
         {
             ["byte[]"] = new(
@@ -82,81 +79,28 @@ public partial class SqliteDriver(
         );
     }
 
-    public override MemberDeclarationSyntax[] GetMemberDeclarationsForUtils()
-    {
-        var memberDeclarations = base
-            .GetMemberDeclarationsForUtils()
-            .AddRangeIf([ParseMemberDeclaration(TransformQueryForSliceArgsImpl)!], SliceQueryExists());
+    private const string ValuesRegex = """
+        private static readonly Regex ValuesRegex = new Regex(@"VALUES\s*\((?<params>[^)]*)\)", RegexOptions.IgnoreCase);
+    """;
 
-        if (!CopyFromQueryExists())
-            return memberDeclarations.ToArray();
-
-        return memberDeclarations
-            .Append(ParseMemberDeclaration("""
-                   private static readonly Regex ValuesRegex = new Regex(@"VALUES\s*\((?<params>[^)]*)\)", RegexOptions.IgnoreCase);
-                   """)!)
-            .Append(ParseMemberDeclaration("""
-                   public static string TransformQueryForSqliteBatch(string originalSql, int cntRecords)
-                   {
-                       var match = ValuesRegex.Match(originalSql);
-                       if (!match.Success)
-                           throw new ArgumentException("The query does not contain a valid VALUES clause.");
-                       
-                       var valuesParams = match.Groups["params"].Value
-                           .Split(',')
-                           .Select(p => p.Trim())
-                           .ToList();
-                       var batchRows = Enumerable.Range(0, cntRecords)
-                           .Select(i => "(" + string.Join(", ", valuesParams.Select(p => $"{p}{i}")) + ")");
-                           
-                       var batchValuesClause = "VALUES " + string.Join(",\n", batchRows);
-                       return ValuesRegex.Replace(originalSql, batchValuesClause);
-                   }
-                   """)!)
-            .ToArray();
-    }
-
-    public override ConnectionGenCommands EstablishConnection(Query query)
-    {
-        return new ConnectionGenCommands(
-            $"var {Variable.Connection.AsVarName()} = new SqliteConnection({Variable.ConnectionString.AsPropertyName()})",
-            $"await {Variable.Connection.AsVarName()}.OpenAsync()"
-        );
-    }
-
-    public override string CreateSqlCommand(string sqlTextConstant)
-    {
-        return $"var {Variable.Command.AsVarName()} = new SqliteCommand({sqlTextConstant}, {Variable.Connection.AsVarName()})";
-    }
-
-    public override string TransformQueryText(Query query)
-    {
-        // Regex to detect numbered parameters like ?1, ?2
-        var areArgumentsNumbered = new Regex(@"\?\d+\b").IsMatch(query.Text);
-        var queryText = query.Text;
-
-        if (areArgumentsNumbered)
+    private const string TransformQueryForBatch = """
+        public static string TransformQueryForSqliteBatch(string originalSql, int cntRecords)
         {
-            // For numbered parameters, we replace all occurrences of each parameter number.
-            foreach (var p in query.Params)
-            {
-                var column = GetColumnFromParam(p, query);
-                var regex = new Regex($@"\?{p.Number}\b");
-                queryText = regex.Replace(queryText, $"@{column.Name}");
-            }
+            var match = ValuesRegex.Match(originalSql);
+            if (!match.Success)
+                throw new ArgumentException("The query does not contain a valid VALUES clause.");
+            
+            var valuesParams = match.Groups["params"].Value
+                .Split(',')
+                .Select(p => p.Trim())
+                .ToList();
+            var batchRows = Enumerable.Range(0, cntRecords)
+                .Select(i => "(" + string.Join(", ", valuesParams.Select(p => $"{p}{i}")) + ")");
+                
+            var batchValuesClause = "VALUES " + string.Join(",\n", batchRows);
+            return ValuesRegex.Replace(originalSql, batchValuesClause);
         }
-        else
-        {
-            // For positional '?' parameters, we must replace them one by one in order.
-            var regex = new Regex(@"\?");
-            foreach (var p in query.Params)
-            {
-                var column = GetColumnFromParam(p, query);
-                queryText = regex.Replace(queryText, $"@{column.Name}", 1);
-            }
-        }
-        return queryText;
-    }
+    """;
 
     public MemberDeclarationSyntax OneDeclare(string queryTextConstant, string argInterface,
         string returnInterface, Query query)
@@ -190,6 +134,57 @@ public partial class SqliteDriver(
         return new CopyFromDeclareGen(this).Generate(queryTextConstant, argInterface, query);
     }
 
+    public override MemberDeclarationSyntax[] GetMemberDeclarationsForUtils()
+    {
+        return base
+            .GetMemberDeclarationsForUtils()
+            .AddRangeIf([
+                ParseMemberDeclaration(TransformQueryForSliceArgsImpl)!
+            ], SliceQueryExists())
+            .AddRangeIf([
+                ParseMemberDeclaration(ValuesRegex)!,
+                ParseMemberDeclaration(TransformQueryForBatch)!
+            ], CopyFromQueryExists())
+            .ToArray();
+    }
+
+    public override ConnectionGenCommands EstablishConnection(Query query)
+    {
+        return new(
+            $"var {Variable.Connection.AsVarName()} = new SqliteConnection({Variable.ConnectionString.AsPropertyName()})",
+            $"await {Variable.Connection.AsVarName()}.OpenAsync()"
+        );
+    }
+
+    public override string CreateSqlCommand(string sqlTextConstant)
+    {
+        return $"var {Variable.Command.AsVarName()} = new SqliteCommand({sqlTextConstant}, {Variable.Connection.AsVarName()})";
+    }
+
+    public override string TransformQueryText(Query query)
+    {
+        var queryText = query.Text;
+        var areArgumentsNumbered = NumberedArgumentsRegex().IsMatch(queryText);
+
+        foreach (var p in query.Params)
+        {
+            var column = GetColumnFromParam(p, query);
+            queryText = areArgumentsNumbered
+                // For numbered parameters, we replace all occurrences of each parameter number.
+                ? new Regex($@"\?{p.Number}\b").Replace(queryText, $"@{column.Name}")
+                // For positional '?' parameters, we must replace them one by one in order.
+                : QueryParamRegex().Replace(queryText, $"@{column.Name}", 1);
+        }
+        return queryText;
+    }
+
+    // Regex to detect numbered parameters like ?1, ?2
+    [GeneratedRegex(@"\?\d+\b")]
+    private static partial Regex NumberedArgumentsRegex();
+
+    [GeneratedRegex(@"\?")]
+    private static partial Regex QueryParamRegex();
+
     public string GetCopyFromImpl(Query query, string queryTextConstant)
     {
         var sqlTextVar = Variable.TransformedSql.AsVarName();
@@ -222,7 +217,7 @@ public partial class SqliteDriver(
                 var nullParamCast = p.Column.NotNull ? string.Empty : " ?? (object)DBNull.Value";
                 var addParamToCommand = $$"""
                     {{commandVar}}.Parameters.AddWithValue($"@{{p.Column.Name}}{i}", {{argsVar}}[i].{{param}}{{nullParamCast}});
-                    """;
+                """;
                 return addParamToCommand;
             }).JoinByNewLine();
 

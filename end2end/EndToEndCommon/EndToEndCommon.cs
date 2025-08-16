@@ -9,7 +9,10 @@ namespace EndToEndTests
     public static class EndToEndCommon
     {
         private const string EnvFile = ".env";
-        private const string SchemaFile = "sqlite.schema.sql";
+        private static readonly string[] SchemaFiles = new string[] {
+            "authors.sqlite.schema.sql",
+            "types.sqlite.schema.sql"
+        };
 
         public const string PostgresConnectionStringEnv = "POSTGRES_CONNECTION_STRING";
         public const string MySqlConnectionStringEnv = "MYSQL_CONNECTION_STRING";
@@ -20,8 +23,7 @@ namespace EndToEndTests
             if (File.Exists(EnvFile))
                 DotEnv.Load(options: new DotEnvOptions(envFilePaths: new[] { EnvFile }));
             RemoveExistingSqliteDb();
-            if (File.Exists(SchemaFile))
-                InitSqliteDb();
+            InitSqliteDb();
         }
 
         public static void TearDown()
@@ -49,15 +51,21 @@ namespace EndToEndTests
         }
         private static void InitSqliteDb()
         {
-            var schemaSql = File.ReadAllText(SchemaFile);
             var connectionString = Environment.GetEnvironmentVariable(EndToEndCommon.SqliteConnectionStringEnv);
             using (var connection = new SqliteConnection(connectionString))
             {
                 connection.Open();
-                using (var command = connection.CreateCommand())
+                foreach (var schemaFile in SchemaFiles)
                 {
-                    command.CommandText = schemaSql;
-                    command.ExecuteNonQuery();
+                    if (!File.Exists(schemaFile))
+                        continue;
+
+                    var schemaSql = File.ReadAllText(schemaFile);
+                    using (var command = connection.CreateCommand())
+                    {
+                        command.CommandText = schemaSql;
+                        command.ExecuteNonQuery();
+                    }
                 }
             }
         }

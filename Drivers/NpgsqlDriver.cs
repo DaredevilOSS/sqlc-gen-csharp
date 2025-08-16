@@ -1,22 +1,22 @@
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Plugin;
 using SqlcGenCsharp.Drivers.Generators;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
+using Enum = Plugin.Enum;
 
 namespace SqlcGenCsharp.Drivers;
 
-public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId, ICopyFrom
+public sealed class NpgsqlDriver : EnumDbDriver, IOne, IMany, IExec, IExecRows, IExecLastId, ICopyFrom
 {
     public NpgsqlDriver(
         Options options,
-        string defaultSchema,
-        Dictionary<string, Dictionary<string, Table>> tables,
-        Dictionary<string, Dictionary<string, Plugin.Enum>> enums,
+        Catalog catalog,
         IList<Query> queries) :
-        base(options, defaultSchema, tables, enums, queries)
+        base(options, catalog, queries)
     {
         foreach (var columnMapping in ColumnMappings.Values)
         {
@@ -26,12 +26,9 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId
                 columnMapping.DbTypes.Add(dbTypeToAdd, dbType.Value);
             }
         }
-        CommonGen = new CommonGen(this);
     }
 
-    private CommonGen CommonGen { get; }
-
-    public sealed override Dictionary<string, ColumnMapping> ColumnMappings { get; } =
+    protected override Dictionary<string, ColumnMapping> ColumnMappings { get; } =
         new()
         {
             /* Numeric data types */
@@ -194,7 +191,7 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId
                 readerFn: ordinal => $"reader.GetFieldValue<NpgsqlPoint>({ordinal})",
                 readerArrayFn: ordinal => $"reader.GetFieldValue<NpgsqlPoint[]>({ordinal})",
                 usingDirective: "NpgsqlTypes",
-                sqlMapper: "RegisterNpgsqlTypeHandler<NpgsqlPoint>();"
+                sqlMapper: "SqlMapper.AddTypeHandler(typeof(NpgsqlPoint), new NpgsqlTypeHandler<NpgsqlPoint>());"
             ),
             ["NpgsqlLine"] = new(
                 new()
@@ -204,7 +201,7 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId
                 readerFn: ordinal => $"reader.GetFieldValue<NpgsqlLine>({ordinal})",
                 readerArrayFn: ordinal => $"reader.GetFieldValue<NpgsqlLine[]>({ordinal})",
                 usingDirective: "NpgsqlTypes",
-                sqlMapper: "RegisterNpgsqlTypeHandler<NpgsqlLine>();"
+                sqlMapper: "SqlMapper.AddTypeHandler(typeof(NpgsqlLine), new NpgsqlTypeHandler<NpgsqlLine>());"
             ),
             ["NpgsqlLSeg"] = new(
                 new()
@@ -214,7 +211,7 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId
                 readerFn: ordinal => $"reader.GetFieldValue<NpgsqlLSeg>({ordinal})",
                 readerArrayFn: ordinal => $"reader.GetFieldValue<NpgsqlLSeg[]>({ordinal})",
                 usingDirective: "NpgsqlTypes",
-                sqlMapper: "RegisterNpgsqlTypeHandler<NpgsqlLSeg>();"
+                sqlMapper: "SqlMapper.AddTypeHandler(typeof(NpgsqlLSeg), new NpgsqlTypeHandler<NpgsqlLSeg>());"
             ),
             ["NpgsqlBox"] = new(
                 new()
@@ -224,7 +221,7 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId
                 readerFn: ordinal => $"reader.GetFieldValue<NpgsqlBox>({ordinal})",
                 readerArrayFn: ordinal => $"reader.GetFieldValue<NpgsqlBox[]>({ordinal})",
                 usingDirective: "NpgsqlTypes",
-                sqlMapper: "RegisterNpgsqlTypeHandler<NpgsqlBox>();"
+                sqlMapper: "SqlMapper.AddTypeHandler(typeof(NpgsqlBox), new NpgsqlTypeHandler<NpgsqlBox>());"
             ),
             ["NpgsqlPath"] = new(
                 new()
@@ -234,7 +231,7 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId
                 readerFn: ordinal => $"reader.GetFieldValue<NpgsqlPath>({ordinal})",
                 readerArrayFn: ordinal => $"reader.GetFieldValue<NpgsqlPath[]>({ordinal})",
                 usingDirective: "NpgsqlTypes",
-                sqlMapper: "RegisterNpgsqlTypeHandler<NpgsqlPath>();"
+                sqlMapper: "SqlMapper.AddTypeHandler(typeof(NpgsqlPath), new NpgsqlTypeHandler<NpgsqlPath>());"
             ),
             ["NpgsqlPolygon"] = new(
                 new()
@@ -244,7 +241,7 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId
                 readerFn: ordinal => $"reader.GetFieldValue<NpgsqlPolygon>({ordinal})",
                 readerArrayFn: ordinal => $"reader.GetFieldValue<NpgsqlPolygon[]>({ordinal})",
                 usingDirective: "NpgsqlTypes",
-                sqlMapper: "RegisterNpgsqlTypeHandler<NpgsqlPolygon>();"
+                sqlMapper: "SqlMapper.AddTypeHandler(typeof(NpgsqlPolygon), new NpgsqlTypeHandler<NpgsqlPolygon>());"
             ),
             ["NpgsqlCircle"] = new(
                 new()
@@ -254,7 +251,7 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId
                 readerFn: ordinal => $"reader.GetFieldValue<NpgsqlCircle>({ordinal})",
                 readerArrayFn: ordinal => $"reader.GetFieldValue<NpgsqlCircle[]>({ordinal})",
                 usingDirective: "NpgsqlTypes",
-                sqlMapper: "RegisterNpgsqlTypeHandler<NpgsqlCircle>();"
+                sqlMapper: "SqlMapper.AddTypeHandler(typeof(NpgsqlCircle), new NpgsqlTypeHandler<NpgsqlCircle>());"
             ),
 
             /* Network data types */
@@ -266,7 +263,7 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId
                 readerFn: ordinal => $"reader.GetFieldValue<NpgsqlCidr>({ordinal})",
                 readerArrayFn: ordinal => $"reader.GetFieldValue<NpgsqlCidr[]>({ordinal})",
                 usingDirective: "NpgsqlTypes",
-                sqlMapper: "RegisterNpgsqlTypeHandler<NpgsqlCidr>();"
+                sqlMapper: "SqlMapper.AddTypeHandler(typeof(NpgsqlCidr), new NpgsqlTypeHandler<NpgsqlCidr>());"
             ),
             ["IPAddress"] = new(
                 new()
@@ -276,7 +273,7 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId
                 readerFn: ordinal => $"reader.GetFieldValue<IPAddress>({ordinal})",
                 readerArrayFn: ordinal => $"reader.GetFieldValue<IPAddress[]>({ordinal})",
                 usingDirective: "System.Net",
-                sqlMapper: "RegisterNpgsqlTypeHandler<IPAddress>();"
+                sqlMapper: "SqlMapper.AddTypeHandler(typeof(IPAddress), new NpgsqlTypeHandler<IPAddress>());"
             ),
             ["PhysicalAddress"] = new(
                 new()
@@ -286,7 +283,7 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId
                 readerFn: ordinal => $"reader.GetFieldValue<PhysicalAddress>({ordinal})",
                 readerArrayFn: ordinal => $"reader.GetFieldValue<PhysicalAddress[]>({ordinal})",
                 usingDirective: "System.Net.NetworkInformation",
-                sqlMapper: "RegisterNpgsqlTypeHandler<PhysicalAddress>();"
+                sqlMapper: "SqlMapper.AddTypeHandler(typeof(PhysicalAddress), new NpgsqlTypeHandler<PhysicalAddress>());"
             ),
 
             /* Other data types */
@@ -325,7 +322,7 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId
 
     public override string TransactionClassName => "NpgsqlTransaction";
 
-    protected const string XmlDocumentTypeHandler =
+    private const string XmlDocumentTypeHandler =
         """
         private class XmlDocumentTypeHandler : SqlMapper.TypeHandler<XmlDocument>
         {
@@ -347,6 +344,38 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId
         }
         """;
 
+    public MemberDeclarationSyntax OneDeclare(string queryTextConstant, string argInterface,
+        string returnInterface, Query query)
+    {
+        return new OneDeclareGen(this).Generate(queryTextConstant, argInterface, returnInterface, query);
+    }
+
+    public MemberDeclarationSyntax ExecDeclare(string queryTextConstant, string argInterface, Query query)
+    {
+        return new ExecDeclareGen(this).Generate(queryTextConstant, argInterface, query);
+    }
+
+    public MemberDeclarationSyntax ManyDeclare(string queryTextConstant, string argInterface,
+        string returnInterface, Query query)
+    {
+        return new ManyDeclareGen(this).Generate(queryTextConstant, argInterface, returnInterface, query);
+    }
+
+    public MemberDeclarationSyntax ExecRowsDeclare(string queryTextConstant, string argInterface, Query query)
+    {
+        return new ExecRowsDeclareGen(this).Generate(queryTextConstant, argInterface, query);
+    }
+
+    public MemberDeclarationSyntax ExecLastIdDeclare(string queryTextConstant, string argInterface, Query query)
+    {
+        return new ExecLastIdDeclareGen(this).Generate(queryTextConstant, argInterface, query);
+    }
+
+    public MemberDeclarationSyntax CopyFromDeclare(string queryTextConstant, string argInterface, Query query)
+    {
+        return new CopyFromDeclareGen(this).Generate(queryTextConstant, argInterface, query);
+    }
+
     public override ISet<string> GetUsingDirectivesForQueries()
     {
         return base.GetUsingDirectivesForQueries().AddRangeExcludeNulls(
@@ -360,7 +389,8 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId
     {
         return base.GetUsingDirectivesForModels().AddRangeExcludeNulls(
         [
-            "System"
+            "System",
+            "System.Collections.Generic"
         ]);
     }
 
@@ -405,13 +435,7 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId
                          parameter.Value = value;
                      }
                  }
-                 """)!,
-            ParseMemberDeclaration($$"""
-                 private static void RegisterNpgsqlTypeHandler<T>(){{optionalDotnetCoreSuffix}}
-                 {
-                    SqlMapper.AddTypeHandler(typeof(T), new NpgsqlTypeHandler<T>());
-                 }
-                 """)!,
+                 """)!
         ];
     }
 
@@ -421,6 +445,7 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId
         var connectionVar = Variable.Connection.AsVarName();
         var embedTableExists = query.Columns.Any(c => c.EmbedTable is not null);
         var useOpenConnection = query.Cmd == ":copyfrom" || (Options.UseDapper && !embedTableExists);
+        var optionalNotNullVerify = Options.DotnetFramework.IsDotnetCore() ? "!" : string.Empty;
 
         return useOpenConnection
             ? new ConnectionGenCommands(
@@ -428,7 +453,7 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId
                 string.Empty
             )
             : new ConnectionGenCommands(
-                $"var {connectionVar} = NpgsqlDataSource.Create({connectionStringVar})",
+                $"var {connectionVar} = NpgsqlDataSource.Create({connectionStringVar}{optionalNotNullVerify})",
                 string.Empty
             );
     }
@@ -458,38 +483,6 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId
             var copyParams = query.Params.Select(p => p.Column.Name).JoinByComma();
             return $"COPY {query.InsertIntoTable.Name} ({copyParams}) FROM STDIN (FORMAT BINARY)";
         }
-    }
-
-    public MemberDeclarationSyntax OneDeclare(string queryTextConstant, string argInterface,
-        string returnInterface, Query query)
-    {
-        return new OneDeclareGen(this).Generate(queryTextConstant, argInterface, returnInterface, query);
-    }
-
-    public MemberDeclarationSyntax ExecDeclare(string queryTextConstant, string argInterface, Query query)
-    {
-        return new ExecDeclareGen(this).Generate(queryTextConstant, argInterface, query);
-    }
-
-    public MemberDeclarationSyntax ManyDeclare(string queryTextConstant, string argInterface,
-        string returnInterface, Query query)
-    {
-        return new ManyDeclareGen(this).Generate(queryTextConstant, argInterface, returnInterface, query);
-    }
-
-    public MemberDeclarationSyntax ExecRowsDeclare(string queryTextConstant, string argInterface, Query query)
-    {
-        return new ExecRowsDeclareGen(this).Generate(queryTextConstant, argInterface, query);
-    }
-
-    public MemberDeclarationSyntax ExecLastIdDeclare(string queryTextConstant, string argInterface, Query query)
-    {
-        return new ExecLastIdDeclareGen(this).Generate(queryTextConstant, argInterface, query);
-    }
-
-    public MemberDeclarationSyntax CopyFromDeclare(string queryTextConstant, string argInterface, Query query)
-    {
-        return new CopyFromDeclareGen(this).Generate(queryTextConstant, argInterface, query);
     }
 
     public string GetCopyFromImpl(Query query, string queryTextConstant)
@@ -522,7 +515,7 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId
                     {
                         var typeOverride = GetColumnDbTypeOverride(p.Column);
                         var param = $"{rowVar}.{p.Column.Name.ToPascalCase()}";
-                        var writerFn = CommonGen.GetWriterFn(p.Column, query);
+                        var writerFn = GetWriterFn(p.Column, query);
                         var paramToWrite = writerFn is null ? param : writerFn(param, p.Column.NotNull, false);
                         var partialStmt = $"await {writerVar}.WriteAsync({paramToWrite}";
                         return typeOverride is null
@@ -538,5 +531,73 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId
                      }
                      """;
         }
+    }
+
+    public override Func<string, bool, bool, string>? GetWriterFn(Column column, Query query)
+    {
+        var csharpType = GetCsharpTypeWithoutNullableSuffix(column, query);
+        var writerFn = ColumnMappings.GetValueOrDefault(csharpType)?.WriterFn;
+        if (writerFn is not null)
+            return writerFn;
+
+        if (GetEnumType(column) is not null)
+        {
+            return (el, notNull, isDapper) =>
+            {
+                var enumToStringStmt = $"{el}.Value.Stringify()";
+                var nullValue = isDapper ? "null" : "(object)DBNull.Value";
+                return notNull
+                    ? enumToStringStmt
+                    : $"{el} != null ? {enumToStringStmt} : {nullValue}";
+            };
+        }
+
+        static string DefaultWriterFn(string el, bool notNull, bool isDapper) => notNull ? el : $"{el} ?? (object)DBNull.Value";
+        return Options.UseDapper ? null : DefaultWriterFn;
+    }
+
+    private static (string, string) GetEnumSchemaAndName(Column column)
+    {
+        var schemaName = column.Type.Schema;
+        var enumName = column.Type.Name;
+        if (schemaName == string.Empty && enumName.Contains('.'))
+        {
+            var schemaAndEnum = enumName.Split('.');
+            schemaName = schemaAndEnum[0];
+            enumName = schemaAndEnum[1];
+        }
+        return (schemaName, enumName);
+    }
+
+    protected override string GetEnumReader(Column column, int ordinal)
+    {
+        var enumName = EnumToModelName(column);
+        var readStmt = $"{Variable.Reader.AsVarName()}.GetString({ordinal})";
+        return $"{readStmt}.To{enumName}()";
+    }
+
+    protected override Enum? GetEnumType(Column column)
+    {
+        var (schemaName, enumName) = GetEnumSchemaAndName(column);
+        if (!Enums.TryGetValue(schemaName, value: out var enumsInSchema))
+            return null;
+        return enumsInSchema.GetValueOrDefault(enumName);
+    }
+
+    protected override string EnumToCsharpDataType(Column column)
+    {
+        var (schemaName, enumName) = GetEnumSchemaAndName(column);
+        return $"{schemaName}.{enumName}".ToPascalCase();
+    }
+
+    public override string EnumToModelName(string schemaName, Enum enumType)
+    {
+        return $"{schemaName}.{enumType.Name}".ToPascalCase();
+    }
+
+    protected override string EnumToModelName(Column column)
+    {
+        var (schemaName, enumName) = GetEnumSchemaAndName(column);
+        return $"{schemaName}.{enumName}".ToPascalCase();
     }
 }

@@ -10,7 +10,10 @@ public static class App
     public static async Task Main(string[] requestFiles)
     {
         foreach (var requestFile in requestFiles)
+        {
             await ProcessRequestFile(requestFile);
+            break;
+        }
     }
 
     private static async Task ProcessRequestFile(string requestFile)
