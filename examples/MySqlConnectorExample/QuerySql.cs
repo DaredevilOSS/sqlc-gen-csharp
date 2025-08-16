@@ -631,7 +631,7 @@ public class QuerySql
     }
 
     private const string CreateExtendedBioSql = "INSERT INTO extended.bios (author_name, name, bio_type, author_type) VALUES (@author_name, @name, @bio_type, @author_type)";
-    public readonly record struct CreateExtendedBioArgs(string? AuthorName, string? Name, ExtendedBiosBioType? BioType, HashSet<ExtendedBiosAuthorType>? AuthorType);
+    public readonly record struct CreateExtendedBioArgs(string? AuthorName, string? Name, BiosBioType? BioType, HashSet<BiosAuthorType>? AuthorType);
     public async Task CreateExtendedBio(CreateExtendedBioArgs args)
     {
         if (this.Transaction == null)
@@ -667,8 +667,8 @@ public class QuerySql
     }
 
     private const string GetFirstExtendedBioByTypeSql = "SELECT author_name, name, bio_type, author_type FROM extended.bios WHERE bio_type = @bio_type LIMIT 1";
-    public readonly record struct GetFirstExtendedBioByTypeRow(string? AuthorName, string? Name, ExtendedBiosBioType? BioType, HashSet<ExtendedBiosAuthorType>? AuthorType);
-    public readonly record struct GetFirstExtendedBioByTypeArgs(ExtendedBiosBioType? BioType);
+    public readonly record struct GetFirstExtendedBioByTypeRow(string? AuthorName, string? Name, BiosBioType? BioType, HashSet<BiosAuthorType>? AuthorType);
+    public readonly record struct GetFirstExtendedBioByTypeArgs(BiosBioType? BioType);
     public async Task<GetFirstExtendedBioByTypeRow?> GetFirstExtendedBioByType(GetFirstExtendedBioByTypeArgs args)
     {
         if (this.Transaction == null)
@@ -687,8 +687,8 @@ public class QuerySql
                             {
                                 AuthorName = reader.IsDBNull(0) ? null : reader.GetString(0),
                                 Name = reader.IsDBNull(1) ? null : reader.GetString(1),
-                                BioType = reader.IsDBNull(2) ? null : reader.GetString(2).ToExtendedBiosBioType(),
-                                AuthorType = reader.IsDBNull(3) ? null : reader.GetString(3).ToExtendedBiosAuthorTypeSet()
+                                BioType = reader.IsDBNull(2) ? null : reader.GetString(2).ToBiosBioType(),
+                                AuthorType = reader.IsDBNull(3) ? null : reader.GetString(3).ToBiosAuthorTypeSet()
                             };
                         }
                     }
@@ -713,8 +713,8 @@ public class QuerySql
                     {
                         AuthorName = reader.IsDBNull(0) ? null : reader.GetString(0),
                         Name = reader.IsDBNull(1) ? null : reader.GetString(1),
-                        BioType = reader.IsDBNull(2) ? null : reader.GetString(2).ToExtendedBiosBioType(),
-                        AuthorType = reader.IsDBNull(3) ? null : reader.GetString(3).ToExtendedBiosAuthorTypeSet()
+                        BioType = reader.IsDBNull(2) ? null : reader.GetString(2).ToBiosBioType(),
+                        AuthorType = reader.IsDBNull(3) ? null : reader.GetString(3).ToBiosAuthorTypeSet()
                     };
                 }
             }

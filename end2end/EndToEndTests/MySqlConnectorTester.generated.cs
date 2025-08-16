@@ -574,19 +574,19 @@ namespace EndToEndTests
         [Test]
         public async Task TestMySqlScopedSchemaEnum()
         {
-            await this.QuerySql.CreateExtendedBio(new QuerySql.CreateExtendedBioArgs { AuthorName = "Bojack Horseman", Name = "One Trick Pony", BioType = ExtendedBiosBioType.Memoir, AuthorType = new HashSet<ExtendedBiosAuthorType> { ExtendedBiosAuthorType.Author, ExtendedBiosAuthorType.Translator } });
+            await this.QuerySql.CreateExtendedBio(new QuerySql.CreateExtendedBioArgs { AuthorName = "Bojack Horseman", Name = "One Trick Pony", BioType = BiosBioType.Memoir, AuthorType = new HashSet<BiosAuthorType> { BiosAuthorType.Author, BiosAuthorType.Translator } });
             var expected = new QuerySql.GetFirstExtendedBioByTypeRow
             {
                 AuthorName = "Bojack Horseman",
                 Name = "One Trick Pony",
-                BioType = ExtendedBiosBioType.Memoir,
-                AuthorType = new HashSet<ExtendedBiosAuthorType>
+                BioType = BiosBioType.Memoir,
+                AuthorType = new HashSet<BiosAuthorType>
                 {
-                    ExtendedBiosAuthorType.Author,
-                    ExtendedBiosAuthorType.Translator
+                    BiosAuthorType.Author,
+                    BiosAuthorType.Translator
                 }
             };
-            var actual = await this.QuerySql.GetFirstExtendedBioByType(new QuerySql.GetFirstExtendedBioByTypeArgs { BioType = ExtendedBiosBioType.Memoir });
+            var actual = await this.QuerySql.GetFirstExtendedBioByType(new QuerySql.GetFirstExtendedBioByTypeArgs { BioType = BiosBioType.Memoir });
             AssertSingularEquals(expected, actual.Value);
             void AssertSingularEquals(QuerySql.GetFirstExtendedBioByTypeRow x, QuerySql.GetFirstExtendedBioByTypeRow y)
             {

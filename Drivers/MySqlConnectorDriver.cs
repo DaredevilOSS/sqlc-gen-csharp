@@ -3,10 +3,10 @@ using Plugin;
 using SqlcGenCsharp.Drivers.Generators;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
+using Enum = Plugin.Enum;
 
 namespace SqlcGenCsharp.Drivers;
 
@@ -248,7 +248,7 @@ public sealed partial class MySqlConnectorDriver(
             .Where(IsSetDataType)
             .Select(c =>
             {
-                var enumName = c.Type.Name.ToModelName(GetColumnSchema(c), DefaultSchema);
+                var enumName = EnumToModelName(c);
                 return $"SqlMapper.AddTypeHandler(typeof(HashSet<{enumName}>), new {enumName}TypeHandler());";
             })
             .Distinct();
@@ -285,7 +285,7 @@ public sealed partial class MySqlConnectorDriver(
                 var enumType = GetEnumType(c);
                 return enumType is not null && IsSetDataType(c, enumType);
             })
-            .Select(c => setTypeHandlerFunc(c.Type.Name.ToModelName(GetColumnSchema(c), DefaultSchema)))
+            .Select(c => setTypeHandlerFunc(EnumToModelName(c)))
             .Distinct()
             .Select(m => ParseMemberDeclaration(m)!)
             .ToArray();
@@ -309,7 +309,7 @@ public sealed partial class MySqlConnectorDriver(
             {
                 if (!IsSetDataType(p.Column))
                     continue;
-                var enumName = p.Column.Type.Name.ToModelName(GetColumnSchema(p.Column), DefaultSchema);
+                var enumName = EnumToModelName(p.Column);
                 memberDeclarations = memberDeclarations.AddRangeExcludeNulls([ParseMemberDeclaration(SetCsvConverterFunc(enumName))!]);
             }
         }
@@ -497,7 +497,7 @@ public sealed partial class MySqlConnectorDriver(
                  """;
     }
 
-    private readonly ISet<string> BoolAndByteTypes = new HashSet<string>
+    private readonly ISet<string> _boolAndByteTypes = new HashSet<string>
     {
         "bool",
         "byte",
@@ -541,7 +541,7 @@ public sealed partial class MySqlConnectorDriver(
         {
             var csharpType = GetCsharpTypeWithoutNullableSuffix(p.Column, query);
             if (
-                !BoolAndByteTypes.Contains(csharpType) &&
+                !_boolAndByteTypes.Contains(csharpType) &&
                 !IsSetDataType(p.Column) &&
                 TypeExistsInQuery(csharpType, query))
             {
@@ -560,7 +560,7 @@ public sealed partial class MySqlConnectorDriver(
             if (!IsSetDataType(p.Column))
                 continue;
 
-            var enumName = p.Column.Type.Name.ToModelName(GetColumnSchema(p.Column), DefaultSchema);
+            var enumName = EnumToModelName(p.Column);
             var csvWriterVar = Variable.CsvWriter.AsVarName();
             converters.Add($"{csvWriterVar}.Context.TypeConverterCache.AddConverter<{AddNullableSuffixIfNeeded($"HashSet<{enumName}>", true)}>(new Utils.{enumName}CsvConverter());");
             converters.Add($"{csvWriterVar}.Context.TypeConverterCache.AddConverter<{AddNullableSuffixIfNeeded($"HashSet<{enumName}>", false)}>(new Utils.{enumName}CsvConverter());");
@@ -569,13 +569,7 @@ public sealed partial class MySqlConnectorDriver(
     }
 
     /* Enum methods */
-    protected override string EnumToCsharpTypeName(Column column, Plugin.Enum enumType)
-    {
-        var enumName = column.Type.Name.ToModelName(GetColumnSchema(column), DefaultSchema);
-        return IsSetDataType(column, enumType) ? $"HashSet<{enumName}>" : enumName;
-    }
-
-    private static bool IsSetDataType(Column column, Plugin.Enum enumType)
+    private static bool IsSetDataType(Column column, Enum enumType)
     {
         return column.Length > enumType.Vals.Select(v => v.Length).Sum();
     }
@@ -584,38 +578,6 @@ public sealed partial class MySqlConnectorDriver(
     {
         var enumType = GetEnumType(column);
         return enumType is not null && IsSetDataType(column, enumType);
-    }
-
-    protected override Dictionary<string, Dictionary<string, Plugin.Enum>> ConstructEnumsLookup(Catalog catalog)
-    {
-        var defaultSchemaCatalog = catalog.Schemas.First(s => s.Name == catalog.DefaultSchema);
-        return defaultSchemaCatalog.Enums
-            .Select(e => new
-            {
-                EnumItem = e,
-                Schema = FindEnumSchema(e)
-            })
-            .GroupBy(x => x.Schema)
-            .ToDictionary(
-                group => group.Key,
-                group => group.ToDictionary(
-                    x => x.EnumItem.Name,
-                    x => x.EnumItem)
-            );
-    }
-
-    private string FindEnumSchema(Plugin.Enum e)
-    {
-        foreach (var schemaTables in Tables)
-        {
-            foreach (var table in schemaTables.Value)
-            {
-                var isEnumColumn = table.Value.Columns.Any(c => c.Type.Name == e.Name);
-                if (isEnumColumn)
-                    return schemaTables.Key;
-            }
-        }
-        throw new InvalidDataException($"No enum {e.Name} schema found.");
     }
 
     public override Func<string, bool, bool, string>? GetWriterFn(Column column, Query query)
@@ -637,5 +599,28 @@ public sealed partial class MySqlConnectorDriver(
 
         static string DefaultWriterFn(string el, bool notNull, bool isDapper) => notNull ? el : $"{el} ?? (object)DBNull.Value";
         return Options.UseDapper ? null : DefaultWriterFn;
+    }
+
+    protected override Enum? GetEnumType(Column column)
+    {
+        if (!Enums.TryGetValue(string.Empty, value: out var enumsInSchema))
+            return null;
+        return enumsInSchema.GetValueOrDefault(column.Type.Name);
+    }
+
+    protected override string EnumToCsharpDataType(Column column)
+    {
+        var enumName = EnumToModelName(column);
+        return IsSetDataType(column) ? $"HashSet<{enumName}>" : enumName;
+    }
+
+    public override string EnumToModelName(string _, Enum enumType)
+    {
+        return enumType.Name.ToPascalCase();
+    }
+
+    protected override string EnumToModelName(Column column)
+    {
+        return column.Type.Name.ToPascalCase();
     }
 }

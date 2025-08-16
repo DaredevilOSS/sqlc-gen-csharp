@@ -74,8 +74,8 @@ namespace MySqlConnectorDapperLegacyExampleGen
     {
         public string AuthorName { get; set; }
         public string Name { get; set; }
-        public ExtendedBiosBioType? BioType { get; set; }
-        public HashSet<ExtendedBiosAuthorType> AuthorType { get; set; }
+        public BiosBioType? BioType { get; set; }
+        public HashSet<BiosAuthorType> AuthorType { get; set; }
     };
     public enum MysqlStringTypesCEnum
     {
@@ -157,7 +157,7 @@ namespace MySqlConnectorDapperLegacyExampleGen
         }
     }
 
-    public enum ExtendedBiosBioType
+    public enum BiosBioType
     {
         Invalid = 0, // reserved for invalid enum value
         Autobiography = 1,
@@ -165,39 +165,39 @@ namespace MySqlConnectorDapperLegacyExampleGen
         Memoir = 3
     }
 
-    public static class ExtendedBiosBioTypeExtensions
+    public static class BiosBioTypeExtensions
     {
-        private static readonly Dictionary<string, ExtendedBiosBioType> StringToEnum = new Dictionary<string, ExtendedBiosBioType>()
+        private static readonly Dictionary<string, BiosBioType> StringToEnum = new Dictionary<string, BiosBioType>()
         {
-            [string.Empty] = ExtendedBiosBioType.Invalid,
-            ["Autobiography"] = ExtendedBiosBioType.Autobiography,
-            ["Biography"] = ExtendedBiosBioType.Biography,
-            ["Memoir"] = ExtendedBiosBioType.Memoir
+            [string.Empty] = BiosBioType.Invalid,
+            ["Autobiography"] = BiosBioType.Autobiography,
+            ["Biography"] = BiosBioType.Biography,
+            ["Memoir"] = BiosBioType.Memoir
         };
-        private static readonly Dictionary<ExtendedBiosBioType, string> EnumToString = new Dictionary<ExtendedBiosBioType, string>()
+        private static readonly Dictionary<BiosBioType, string> EnumToString = new Dictionary<BiosBioType, string>()
         {
-            [ExtendedBiosBioType.Invalid] = string.Empty,
-            [ExtendedBiosBioType.Autobiography] = "Autobiography",
-            [ExtendedBiosBioType.Biography] = "Biography",
-            [ExtendedBiosBioType.Memoir] = "Memoir"
+            [BiosBioType.Invalid] = string.Empty,
+            [BiosBioType.Autobiography] = "Autobiography",
+            [BiosBioType.Biography] = "Biography",
+            [BiosBioType.Memoir] = "Memoir"
         };
-        public static ExtendedBiosBioType ToExtendedBiosBioType(this string me)
+        public static BiosBioType ToBiosBioType(this string me)
         {
             return StringToEnum[me];
         }
 
-        public static string Stringify(this ExtendedBiosBioType me)
+        public static string Stringify(this BiosBioType me)
         {
             return EnumToString[me];
         }
 
-        public static HashSet<ExtendedBiosBioType> ToExtendedBiosBioTypeSet(this string me)
+        public static HashSet<BiosBioType> ToBiosBioTypeSet(this string me)
         {
-            return new HashSet<ExtendedBiosBioType>(me.Split(',').ToList().Select(v => StringToEnum[v]));
+            return new HashSet<BiosBioType>(me.Split(',').ToList().Select(v => StringToEnum[v]));
         }
     }
 
-    public enum ExtendedBiosAuthorType
+    public enum BiosAuthorType
     {
         Invalid = 0, // reserved for invalid enum value
         Author = 1,
@@ -205,35 +205,35 @@ namespace MySqlConnectorDapperLegacyExampleGen
         Translator = 3
     }
 
-    public static class ExtendedBiosAuthorTypeExtensions
+    public static class BiosAuthorTypeExtensions
     {
-        private static readonly Dictionary<string, ExtendedBiosAuthorType> StringToEnum = new Dictionary<string, ExtendedBiosAuthorType>()
+        private static readonly Dictionary<string, BiosAuthorType> StringToEnum = new Dictionary<string, BiosAuthorType>()
         {
-            [string.Empty] = ExtendedBiosAuthorType.Invalid,
-            ["Author"] = ExtendedBiosAuthorType.Author,
-            ["Editor"] = ExtendedBiosAuthorType.Editor,
-            ["Translator"] = ExtendedBiosAuthorType.Translator
+            [string.Empty] = BiosAuthorType.Invalid,
+            ["Author"] = BiosAuthorType.Author,
+            ["Editor"] = BiosAuthorType.Editor,
+            ["Translator"] = BiosAuthorType.Translator
         };
-        private static readonly Dictionary<ExtendedBiosAuthorType, string> EnumToString = new Dictionary<ExtendedBiosAuthorType, string>()
+        private static readonly Dictionary<BiosAuthorType, string> EnumToString = new Dictionary<BiosAuthorType, string>()
         {
-            [ExtendedBiosAuthorType.Invalid] = string.Empty,
-            [ExtendedBiosAuthorType.Author] = "Author",
-            [ExtendedBiosAuthorType.Editor] = "Editor",
-            [ExtendedBiosAuthorType.Translator] = "Translator"
+            [BiosAuthorType.Invalid] = string.Empty,
+            [BiosAuthorType.Author] = "Author",
+            [BiosAuthorType.Editor] = "Editor",
+            [BiosAuthorType.Translator] = "Translator"
         };
-        public static ExtendedBiosAuthorType ToExtendedBiosAuthorType(this string me)
+        public static BiosAuthorType ToBiosAuthorType(this string me)
         {
             return StringToEnum[me];
         }
 
-        public static string Stringify(this ExtendedBiosAuthorType me)
+        public static string Stringify(this BiosAuthorType me)
         {
             return EnumToString[me];
         }
 
-        public static HashSet<ExtendedBiosAuthorType> ToExtendedBiosAuthorTypeSet(this string me)
+        public static HashSet<BiosAuthorType> ToBiosAuthorTypeSet(this string me)
         {
-            return new HashSet<ExtendedBiosAuthorType>(me.Split(',').ToList().Select(v => StringToEnum[v]));
+            return new HashSet<BiosAuthorType>(me.Split(',').ToList().Select(v => StringToEnum[v]));
         }
     }
 }

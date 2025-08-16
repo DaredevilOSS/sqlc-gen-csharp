@@ -31,7 +31,7 @@ namespace MySqlConnectorDapperLegacyExampleGen
         {
             SqlMapper.AddTypeHandler(typeof(JsonElement), new JsonElementTypeHandler());
             SqlMapper.AddTypeHandler(typeof(HashSet<MysqlStringTypesCSet>), new MysqlStringTypesCSetTypeHandler());
-            SqlMapper.AddTypeHandler(typeof(HashSet<ExtendedBiosAuthorType>), new ExtendedBiosAuthorTypeTypeHandler());
+            SqlMapper.AddTypeHandler(typeof(HashSet<BiosAuthorType>), new BiosAuthorTypeTypeHandler());
         }
 
         public static string TransformQueryForSliceArgs(string originalSql, int sliceSize, string paramName)
@@ -55,16 +55,16 @@ namespace MySqlConnectorDapperLegacyExampleGen
             }
         }
 
-        private class ExtendedBiosAuthorTypeTypeHandler : SqlMapper.TypeHandler<HashSet<ExtendedBiosAuthorType>>
+        private class BiosAuthorTypeTypeHandler : SqlMapper.TypeHandler<HashSet<BiosAuthorType>>
         {
-            public override HashSet<ExtendedBiosAuthorType> Parse(object value)
+            public override HashSet<BiosAuthorType> Parse(object value)
             {
                 if (value is string s)
-                    return s.ToExtendedBiosAuthorTypeSet();
-                throw new DataException($"Cannot convert {value?.GetType()} to HashSet<ExtendedBiosAuthorType>");
+                    return s.ToBiosAuthorTypeSet();
+                throw new DataException($"Cannot convert {value?.GetType()} to HashSet<BiosAuthorType>");
             }
 
-            public override void SetValue(IDbDataParameter parameter, HashSet<ExtendedBiosAuthorType> value)
+            public override void SetValue(IDbDataParameter parameter, HashSet<BiosAuthorType> value)
             {
                 parameter.Value = string.Join(",", value);
             }

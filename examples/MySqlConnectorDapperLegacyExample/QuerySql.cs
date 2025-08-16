@@ -1218,8 +1218,8 @@ namespace MySqlConnectorDapperLegacyExampleGen
         {
             public string AuthorName { get; set; }
             public string Name { get; set; }
-            public ExtendedBiosBioType? BioType { get; set; }
-            public HashSet<ExtendedBiosAuthorType> AuthorType { get; set; }
+            public BiosBioType? BioType { get; set; }
+            public HashSet<BiosAuthorType> AuthorType { get; set; }
         };
         public async Task CreateExtendedBio(CreateExtendedBioArgs args)
         {
@@ -1245,12 +1245,12 @@ namespace MySqlConnectorDapperLegacyExampleGen
         {
             public string AuthorName { get; set; }
             public string Name { get; set; }
-            public ExtendedBiosBioType? BioType { get; set; }
-            public HashSet<ExtendedBiosAuthorType> AuthorType { get; set; }
+            public BiosBioType? BioType { get; set; }
+            public HashSet<BiosAuthorType> AuthorType { get; set; }
         };
         public class GetFirstExtendedBioByTypeArgs
         {
-            public ExtendedBiosBioType? BioType { get; set; }
+            public BiosBioType? BioType { get; set; }
         };
         public async Task<GetFirstExtendedBioByTypeRow> GetFirstExtendedBioByType(GetFirstExtendedBioByTypeArgs args)
         {

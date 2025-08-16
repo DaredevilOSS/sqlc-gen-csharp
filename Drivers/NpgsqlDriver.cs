@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
+using Enum = Plugin.Enum;
 
 namespace SqlcGenCsharp.Drivers;
 
@@ -27,7 +28,7 @@ public sealed class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExe
         }
     }
 
-    protected sealed override Dictionary<string, ColumnMapping> ColumnMappings { get; } =
+    protected override Dictionary<string, ColumnMapping> ColumnMappings { get; } =
         new()
         {
             /* Numeric data types */
@@ -532,21 +533,6 @@ public sealed class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExe
         }
     }
 
-    protected override Dictionary<string, Dictionary<string, Plugin.Enum>> ConstructEnumsLookup(Catalog catalog)
-    {
-        return catalog
-            .Schemas
-            .SelectMany(s => s.Enums.Select(e => new { EnumItem = e, Schema = s.Name }))
-            .GroupBy(x => x.Schema == catalog.DefaultSchema ? string.Empty : x.Schema)
-            .ToDictionary(
-                group => group.Key,
-                group => group.ToDictionary(
-                    x => x.EnumItem.Name,
-                    x => x.EnumItem
-                )
-            );
-    }
-
     public override Func<string, bool, bool, string>? GetWriterFn(Column column, Query query)
     {
         var csharpType = GetCsharpTypeWithoutNullableSuffix(column, query);
@@ -554,7 +540,7 @@ public sealed class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExe
         if (writerFn is not null)
             return writerFn;
 
-        if (GetEnumType(column) is { } enumType)
+        if (GetEnumType(column) is not null)
         {
             return (el, notNull, isDapper) =>
             {
@@ -568,5 +554,43 @@ public sealed class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExe
 
         static string DefaultWriterFn(string el, bool notNull, bool isDapper) => notNull ? el : $"{el} ?? (object)DBNull.Value";
         return Options.UseDapper ? null : DefaultWriterFn;
+    }
+
+    private static (string, string) GetEnumSchemaAndName(Column column)
+    {
+        var schemaName = column.Type.Schema;
+        var enumName = column.Type.Name;
+        if (schemaName == string.Empty && enumName.Contains('.'))
+        {
+            var schemaAndEnum = enumName.Split('.');
+            schemaName = schemaAndEnum[0];
+            enumName = schemaAndEnum[1];
+        }
+        return (schemaName, enumName);
+    }
+
+    protected override Enum? GetEnumType(Column column)
+    {
+        var (schemaName, enumName) = GetEnumSchemaAndName(column);
+        if (!Enums.TryGetValue(schemaName, value: out var enumsInSchema))
+            return null;
+        return enumsInSchema.GetValueOrDefault(enumName);
+    }
+
+    protected override string EnumToCsharpDataType(Column column)
+    {
+        var (schemaName, enumName) = GetEnumSchemaAndName(column);
+        return $"{schemaName}.{enumName}".ToPascalCase();
+    }
+
+    public override string EnumToModelName(string schemaName, Enum enumType)
+    {
+        return $"{schemaName}.{enumType.Name}".ToPascalCase();
+    }
+
+    protected override string EnumToModelName(Column column)
+    {
+        var (schemaName, enumName) = GetEnumSchemaAndName(column);
+        return $"{schemaName}.{enumName}".ToPascalCase();
     }
 }

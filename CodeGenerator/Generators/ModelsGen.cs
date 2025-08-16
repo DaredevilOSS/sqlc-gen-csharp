@@ -16,7 +16,6 @@ internal class ModelsGen(DbDriver dbDriver, string namespaceName)
 
     private DataClassesGen DataClassesGen { get; } = new(dbDriver);
 
-
     private EnumsGen EnumsGen { get; } = new(dbDriver);
 
     public File GenerateFile(
@@ -58,7 +57,7 @@ internal class ModelsGen(DbDriver dbDriver, string namespaceName)
         {
             return s.Value.SelectMany(e =>
             {
-                var enumName = e.Value.Name.ToModelName(s.Key, dbDriver.DefaultSchema);
+                var enumName = dbDriver.EnumToModelName(s.Key, e.Value);
                 return EnumsGen.Generate(enumName, e.Value.Vals);
             });
         }).ToArray();

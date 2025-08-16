@@ -724,20 +724,20 @@ public static class MySqlTests
                          {
                              AuthorName = {{Consts.BojackAuthor}},
                              Name = {{Consts.BojackBookTitle}},
-                             BioType = ExtendedBiosBioType.Memoir,
-                             AuthorType = new HashSet<ExtendedBiosAuthorType> { ExtendedBiosAuthorType.Author, ExtendedBiosAuthorType.Translator }
+                             BioType = BiosBioType.Memoir,
+                             AuthorType = new HashSet<BiosAuthorType> { BiosAuthorType.Author, BiosAuthorType.Translator }
                          });
                          var expected = new QuerySql.GetFirstExtendedBioByTypeRow
                          {
                              AuthorName = {{Consts.BojackAuthor}},
                              Name = {{Consts.BojackBookTitle}},
-                             BioType = ExtendedBiosBioType.Memoir,
-                             AuthorType = new HashSet<ExtendedBiosAuthorType> { ExtendedBiosAuthorType.Author, ExtendedBiosAuthorType.Translator }
+                             BioType = BiosBioType.Memoir,
+                             AuthorType = new HashSet<BiosAuthorType> { BiosAuthorType.Author, BiosAuthorType.Translator }
                          };
                      
                          var actual = await this.QuerySql.GetFirstExtendedBioByType(new QuerySql.GetFirstExtendedBioByTypeArgs
                          {
-                             BioType = ExtendedBiosBioType.Memoir
+                             BioType = BiosBioType.Memoir
                          });
                          AssertSingularEquals(expected, actual{{Consts.UnknownRecordValuePlaceholder}});
 

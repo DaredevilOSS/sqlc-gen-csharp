@@ -100,35 +100,45 @@ public abstract class DbDriver
 
         foreach (var schemaEnums in Enums)
             foreach (var e in schemaEnums.Value)
-            {
                 NullableTypes.Add(e.Key.ToModelName(schemaEnums.Key, DefaultSchema));
-            }
 
         if (!Options.DotnetFramework.IsDotnetCore())
             return;
 
         foreach (var t in NullableTypesInDotnetCore)
-        {
             NullableTypes.Add(t);
-        }
     }
 
-    private readonly HashSet<string> _excludedSchemas =
+    private static readonly HashSet<string> _excludedSchemas =
     [
         "pg_catalog",
         "information_schema"
     ];
 
-    private Dictionary<string, Dictionary<string, Table>> ConstructTablesLookup(Catalog catalog)
+    private static Dictionary<string, Dictionary<string, Table>> ConstructTablesLookup(Catalog catalog)
     {
         return catalog.Schemas
             .Where(s => !_excludedSchemas.Contains(s.Name))
             .ToDictionary(
                 s => s.Name == catalog.DefaultSchema ? string.Empty : s.Name,
-                s => s.Tables.ToDictionary(t => t.Rel.Name, t => t));
+                s => s.Tables.ToDictionary(t => t.Rel.Name, t => t)
+            );
     }
 
-    protected abstract Dictionary<string, Dictionary<string, Plugin.Enum>> ConstructEnumsLookup(Catalog catalog);
+    private static Dictionary<string, Dictionary<string, Plugin.Enum>> ConstructEnumsLookup(Catalog catalog)
+    {
+        return catalog
+            .Schemas
+            .SelectMany(s => s.Enums.Select(e => new { EnumItem = e, Schema = s.Name }))
+            .GroupBy(x => x.Schema == catalog.DefaultSchema ? string.Empty : x.Schema)
+            .ToDictionary(
+                group => group.Key,
+                group => group.ToDictionary(
+                    x => x.EnumItem.Name,
+                    x => x.EnumItem
+                )
+            );
+    }
 
     public virtual ISet<string> GetUsingDirectivesForQueries()
     {
@@ -215,13 +225,6 @@ public abstract class DbDriver
                      {{GetConfigureSqlMappings().JoinByNewLine()}}
                  }
                """)!];
-    }
-
-    protected string GetColumnSchema(Column column)
-    {
-        if (column.Table == null)
-            return string.Empty;
-        return column.Table.Schema == DefaultSchema ? string.Empty : column.Table.Schema;
     }
 
     public abstract string TransformQueryText(Query query);
@@ -342,8 +345,8 @@ public abstract class DbDriver
         if (string.IsNullOrEmpty(column.Type.Name))
             return "object";
 
-        if (GetEnumType(column) is { } enumType)
-            return EnumToCsharpTypeName(column, enumType);
+        if (GetEnumType(column) is not null)
+            return EnumToCsharpDataType(column);
 
         if (FindOverrideForQueryColumn(query, column) is { CsharpType: var csharpType })
             return csharpType.Type;
@@ -354,8 +357,7 @@ public abstract class DbDriver
             if (column.IsArray || column.IsSqlcSlice) return $"{columnMapping.Key}[]";
             return columnMapping.Key;
         }
-
-        throw new NotSupportedException($"Column {column.Name} has unsupported column type: {column.Type.Name}");
+        throw new NotSupportedException($"Column {column.Name} has unsupported column type: {column.Type.Name} in {GetType().Name}");
     }
 
     private static bool DoesColumnMappingApply(ColumnMapping columnMapping, Column column)
@@ -387,20 +389,20 @@ public abstract class DbDriver
         throw new NotSupportedException($"Could not find column mapping for type override: {csharpTypeOption.Type}");
     }
 
-    private string GetEnumReader(Column column, int ordinal, Plugin.Enum enumType)
+    private string GetEnumReader(Column column, int ordinal)
     {
-        var enumName = column.Type.Name.ToModelName(column.Table.Schema, DefaultSchema);
-        var fullEnumType = EnumToCsharpTypeName(column, enumType);
+        var enumName = EnumToModelName(column);
+        var enumDataType = EnumToCsharpDataType(column);
         var readStmt = $"{Variable.Reader.AsVarName()}.GetString({ordinal})";
-        if (fullEnumType.StartsWith("HashSet"))
-            return $"{readStmt}.To{enumName}Set()";
-        return $"{readStmt}.To{enumName}()";
+        return enumDataType.StartsWith("HashSet")
+            ? $"{readStmt}.To{enumName}Set()"
+            : $"{readStmt}.To{enumName}()";
     }
 
     public string GetColumnReader(Column column, int ordinal, Query? query)
     {
-        if (GetEnumType(column) is { } enumType)
-            return GetEnumReader(column, ordinal, enumType);
+        if (GetEnumType(column) is not null)
+            return GetEnumReader(column, ordinal);
 
         if (FindOverrideForQueryColumn(query, column) is { CsharpType: var csharpType })
             return GetColumnReader(csharpType, ordinal);
@@ -412,21 +414,15 @@ public abstract class DbDriver
                 return columnMapping.ReaderArrayFn?.Invoke(ordinal) ?? throw new InvalidOperationException("ReaderArrayFn is null");
             return columnMapping.ReaderFn(ordinal);
         }
-        throw new NotSupportedException($"Column {column.Name} has unsupported column type: {column.Type.Name}");
+        throw new NotSupportedException($"column {column.Name} has unsupported column type: {column.Type.Name} in {GetType().Name}");
     }
 
     /* Enum methods*/
-    protected Plugin.Enum? GetEnumType(Column column)
-    {
-        var schemaName = GetColumnSchema(column);
-        if (!Enums.TryGetValue(schemaName, value: out var enumsInSchema))
-            return null;
-        var enumNameWithoutSchema = column.Type.Name.Replace($"{schemaName}.", "");
-        return enumsInSchema.GetValueOrDefault(enumNameWithoutSchema);
-    }
+    protected abstract Plugin.Enum? GetEnumType(Column column);
 
-    protected virtual string EnumToCsharpTypeName(Column column, Plugin.Enum enumType)
-    {
-        return column.Type.Name.ToModelName(GetColumnSchema(column), DefaultSchema);
-    }
+    protected abstract string EnumToCsharpDataType(Column column);
+
+    public abstract string EnumToModelName(string schemaName, Plugin.Enum enumType);
+
+    protected abstract string EnumToModelName(Column column);
 }

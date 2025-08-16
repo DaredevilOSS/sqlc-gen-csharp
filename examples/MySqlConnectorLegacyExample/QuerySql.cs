@@ -1998,8 +1998,8 @@ namespace MySqlConnectorLegacyExampleGen
         {
             public string AuthorName { get; set; }
             public string Name { get; set; }
-            public ExtendedBiosBioType? BioType { get; set; }
-            public HashSet<ExtendedBiosAuthorType> AuthorType { get; set; }
+            public BiosBioType? BioType { get; set; }
+            public HashSet<BiosAuthorType> AuthorType { get; set; }
         };
         public async Task CreateExtendedBio(CreateExtendedBioArgs args)
         {
@@ -2040,12 +2040,12 @@ namespace MySqlConnectorLegacyExampleGen
         {
             public string AuthorName { get; set; }
             public string Name { get; set; }
-            public ExtendedBiosBioType? BioType { get; set; }
-            public HashSet<ExtendedBiosAuthorType> AuthorType { get; set; }
+            public BiosBioType? BioType { get; set; }
+            public HashSet<BiosAuthorType> AuthorType { get; set; }
         };
         public class GetFirstExtendedBioByTypeArgs
         {
-            public ExtendedBiosBioType? BioType { get; set; }
+            public BiosBioType? BioType { get; set; }
         };
         public async Task<GetFirstExtendedBioByTypeRow> GetFirstExtendedBioByType(GetFirstExtendedBioByTypeArgs args)
         {
@@ -2065,8 +2065,8 @@ namespace MySqlConnectorLegacyExampleGen
                                 {
                                     AuthorName = reader.IsDBNull(0) ? null : reader.GetString(0),
                                     Name = reader.IsDBNull(1) ? null : reader.GetString(1),
-                                    BioType = reader.IsDBNull(2) ? (ExtendedBiosBioType? )null : reader.GetString(2).ToExtendedBiosBioType(),
-                                    AuthorType = reader.IsDBNull(3) ? null : reader.GetString(3).ToExtendedBiosAuthorTypeSet()
+                                    BioType = reader.IsDBNull(2) ? (BiosBioType? )null : reader.GetString(2).ToBiosBioType(),
+                                    AuthorType = reader.IsDBNull(3) ? null : reader.GetString(3).ToBiosAuthorTypeSet()
                                 };
                             }
                         }
@@ -2091,8 +2091,8 @@ namespace MySqlConnectorLegacyExampleGen
                         {
                             AuthorName = reader.IsDBNull(0) ? null : reader.GetString(0),
                             Name = reader.IsDBNull(1) ? null : reader.GetString(1),
-                            BioType = reader.IsDBNull(2) ? (ExtendedBiosBioType? )null : reader.GetString(2).ToExtendedBiosBioType(),
-                            AuthorType = reader.IsDBNull(3) ? null : reader.GetString(3).ToExtendedBiosAuthorTypeSet()
+                            BioType = reader.IsDBNull(2) ? (BiosBioType? )null : reader.GetString(2).ToBiosBioType(),
+                            AuthorType = reader.IsDBNull(3) ? null : reader.GetString(3).ToBiosAuthorTypeSet()
                         };
                     }
                 }

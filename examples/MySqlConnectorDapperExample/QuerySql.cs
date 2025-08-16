@@ -494,8 +494,8 @@ public class QuerySql
     {
         public string? AuthorName { get; init; }
         public string? Name { get; init; }
-        public ExtendedBiosBioType? BioType { get; init; }
-        public HashSet<ExtendedBiosAuthorType>? AuthorType { get; init; }
+        public BiosBioType? BioType { get; init; }
+        public HashSet<BiosAuthorType>? AuthorType { get; init; }
     };
     public async Task CreateExtendedBio(CreateExtendedBioArgs args)
     {
@@ -521,12 +521,12 @@ public class QuerySql
     {
         public string? AuthorName { get; init; }
         public string? Name { get; init; }
-        public ExtendedBiosBioType? BioType { get; init; }
-        public HashSet<ExtendedBiosAuthorType>? AuthorType { get; init; }
+        public BiosBioType? BioType { get; init; }
+        public HashSet<BiosAuthorType>? AuthorType { get; init; }
     };
     public class GetFirstExtendedBioByTypeArgs
     {
-        public ExtendedBiosBioType? BioType { get; init; }
+        public BiosBioType? BioType { get; init; }
     };
     public async Task<GetFirstExtendedBioByTypeRow?> GetFirstExtendedBioByType(GetFirstExtendedBioByTypeArgs args)
     {
