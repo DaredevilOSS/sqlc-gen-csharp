@@ -3,7 +3,7 @@
 2
 postgresql+examples/config/postgresql/types/schema.sql-examples/config/postgresql/authors/schema.sql"*examples/config/postgresql/types/query.sql",examples/config/postgresql/authors/query.sqlbÑ
 examples/NpgsqlExamplecsharp˜{"debugRequest":true,"generateCsproj":true,"namespaceName":"NpgsqlExampleGen","overrides":[{"column":"GetPostgresFunctions:max_integer","csharp_type":{"notNull":false,"type":"int"}},{"column":"GetPostgresFunctions:max_varchar","csharp_type":{"notNull":false,"type":"string"}},{"column":"GetPostgresFunctions:max_timestamp","csharp_type":{"notNull":true,"type":"DateTime"}},{"column":"*:c_json_string_override","csharp_type":{"notNull":false,"type":"string"}},{"column":"*:c_xml_string_override","csharp_type":{"notNull":false,"type":"string"}},{"column":"*:c_macaddr8","csharp_type":{"notNull":false,"type":"string"}}],"targetFramework":"net8.0","useDapper":false}*
-./dist/LocalRunnerÖçpublic"ªpublicá
+./dist/LocalRunner·êpublic"ùpublic’
 postgres_types<
 	c_boolean0ÿÿÿÿÿÿÿÿÿRpostgres_typesb
 pg_catalogbool7
@@ -49,7 +49,8 @@ pg_catalogvarchar1
 
 c_macaddr80ÿÿÿÿÿÿÿÿÿRpostgres_typesb
 macaddr8-
-c_uuid0ÿÿÿÿÿÿÿÿÿRpostgres_typesbuuid­
+c_uuid0ÿÿÿÿÿÿÿÿÿRpostgres_typesbuuid/
+c_enum0ÿÿÿÿÿÿÿÿÿRpostgres_typesbc_enum­
 postgres_unstructured_types:
 c_json0ÿÿÿÿÿÿÿÿÿRpostgres_unstructured_typesbjsonJ
 c_json_string_override0ÿÿÿÿÿÿÿÿÿRpostgres_unstructured_typesbjson<
@@ -88,7 +89,8 @@ pg_catalog	timestampˆµ
 name0ÿÿÿÿÿÿÿÿÿRbooksbtext5
 	author_id0ÿÿÿÿÿÿÿÿÿRbooksb
 pg_catalogint8)
-description0ÿÿÿÿÿÿÿÿÿRbooksbtext"	pg_temp"æ²
+description0ÿÿÿÿÿÿÿÿÿRbooksbtext"
+c_enumsmallmediumbig"	pg_temp"æ²
 pg_catalog‰
 &
 
@@ -10209,8 +10211,15 @@ pg_cataloginformation_schemaviewsb	yes_or_noW
 pg_cataloginformation_schemaviewsb	yes_or_no]
 is_trigger_insertable_into0ÿÿÿÿÿÿÿÿÿR'
 
-pg_cataloginformation_schemaviewsb	yes_or_noº
-Œ
+pg_cataloginformation_schemaviewsb	yes_or_no"extendedÔ
+extendedbiosC
+author_name0ÿÿÿÿÿÿÿÿÿRextendedbiosb
+pg_catalogvarchar<
+name0ÿÿÿÿÿÿÿÿÿRextendedbiosb
+pg_catalogvarchar=
+bio_type0ÿÿÿÿÿÿÿÿÿRextendedbiosbextendedbio_type",
+bio_typeAutobiography	BiographyMemoirú
+©
 INSERT INTO postgres_types
 (
     c_boolean,
@@ -10234,6 +10243,7 @@ INSERT INTO postgres_types
     c_bpchar,
     c_text,
     c_uuid,
+    c_enum,
     c_cidr,
     c_inet,
     c_macaddr,
@@ -10261,10 +10271,11 @@ VALUES (
     $19,
     $20,
     $21,
-    $22,
+    $22::c_enum,
     $23,
-    $24::macaddr,
-    $25::macaddr8
+    $24,
+    $25::macaddr,
+    $26::macaddr8
 )InsertPostgresTypes:exec*TP
 	c_boolean0ÿÿÿÿÿÿÿÿÿ8Rpublicpostgres_typesbpg_catalog.boolz	c_boolean*KG
 c_bit0ÿÿÿÿÿÿÿÿÿ8Rpublicpostgres_typesbpg_catalog.bitzc_bit*VR
@@ -10291,10 +10302,11 @@ c_interval*PL
 c_character_varying0ÿÿÿÿÿÿÿÿÿ8Rpublicpostgres_typesbpg_catalog.varcharzc_character_varying*IE
 c_bpchar0ÿÿÿÿÿÿÿÿÿ8Rpublicpostgres_typesbbpcharzc_bpchar*C?
 c_text0ÿÿÿÿÿÿÿÿÿ8Rpublicpostgres_typesbtextzc_text*C?
-c_uuid0ÿÿÿÿÿÿÿÿÿ8Rpublicpostgres_typesbuuidzc_uuid*C?
-c_cidr0ÿÿÿÿÿÿÿÿÿ8Rpublicpostgres_typesbcidrzc_cidr*C?
-c_inet0ÿÿÿÿÿÿÿÿÿ8Rpublicpostgres_typesbinetzc_inet*%!
-	c_macaddr0ÿÿÿÿÿÿÿÿÿb	macaddr*'#
+c_uuid0ÿÿÿÿÿÿÿÿÿ8Rpublicpostgres_typesbuuidzc_uuid*!
+c_enum0ÿÿÿÿÿÿÿÿÿbc_enum*C?
+c_cidr0ÿÿÿÿÿÿÿÿÿ8Rpublicpostgres_typesbcidrzc_cidr*C?
+c_inet0ÿÿÿÿÿÿÿÿÿ8Rpublicpostgres_typesbinetzc_inet*%!
+	c_macaddr0ÿÿÿÿÿÿÿÿÿb	macaddr*'#
 
 c_macaddr80ÿÿÿÿÿÿÿÿÿb
 macaddr82 Basic types :	query.sqlBpostgres_types‡
@@ -10376,8 +10388,8 @@ c_interval*NJ
 c_uuid0ÿÿÿÿÿÿÿÿÿRpublicpostgres_typesbuuidzc_uuid*A=
 c_cidr0ÿÿÿÿÿÿÿÿÿRpublicpostgres_typesbcidrzc_cidr*A=
 c_inet0ÿÿÿÿÿÿÿÿÿRpublicpostgres_typesbinetzc_inet*JF
-	c_macaddr0ÿÿÿÿÿÿÿÿÿRpublicpostgres_typesb	macaddrz	c_macaddr:	query.sqlBpostgres_typesž
-´SELECT     
+	c_macaddr0ÿÿÿÿÿÿÿÿÿRpublicpostgres_typesb	macaddrz	c_macaddr:	query.sqlBpostgres_typesã
+ÀSELECT     
     c_boolean,
     c_bit,
     c_smallint,
@@ -10399,6 +10411,7 @@ c_interval*NJ
     c_bpchar,
     c_text,
     c_uuid,
+    c_enum,
     c_cidr,
     c_inet,
     c_macaddr,
@@ -10445,7 +10458,8 @@ pg_catalogvarcharz	c_varchar"^
 pg_catalogvarcharzc_character_varying";
 c_bpchar0ÿÿÿÿÿÿÿÿÿRpostgres_typesbbpcharzc_bpchar"5
 c_text0ÿÿÿÿÿÿÿÿÿRpostgres_typesbtextzc_text"5
-c_uuid0ÿÿÿÿÿÿÿÿÿRpostgres_typesbuuidzc_uuid"5
+c_uuid0ÿÿÿÿÿÿÿÿÿRpostgres_typesbuuidzc_uuid"7
+c_enum0ÿÿÿÿÿÿÿÿÿRpostgres_typesbc_enumzc_enum"5
 c_cidr0ÿÿÿÿÿÿÿÿÿRpostgres_typesbcidrzc_cidr"5
 c_inet0ÿÿÿÿÿÿÿÿÿRpostgres_typesbinetzc_inet">
 	c_macaddr0ÿÿÿÿÿÿÿÿÿRpostgres_typesb	macaddrz	c_macaddr"!
@@ -10779,4 +10793,16 @@ WHERE books.name = $1GetAuthorsByBookName:many"-
 name0ÿÿÿÿÿÿÿÿÿR	authorsbtextzname"(
 bio0ÿÿÿÿÿÿÿÿÿR	authorsbtextzbio"
 books0ÿÿÿÿÿÿÿÿÿb rbooks*.*
-name0ÿÿÿÿÿÿÿÿÿRbooksbtextzname:	query.sql"v1.27.0*Ï{"overrideDriverVersion":"","generateCsproj":true,"targetFramework":"net8.0","namespaceName":"NpgsqlExampleGen","useDapper":false,"overrideDapperVersion":"","overrides":[{"column":"GetPostgresFunctions:max_integer","csharp_type":{"type":"int","notNull":false}},{"column":"GetPostgresFunctions:max_varchar","csharp_type":{"type":"string","notNull":false}},{"column":"GetPostgresFunctions:max_timestamp","csharp_type":{"type":"DateTime","notNull":true}},{"column":"*:c_json_string_override","csharp_type":{"type":"string","notNull":false}},{"column":"*:c_xml_string_override","csharp_type":{"type":"string","notNull":false}},{"column":"*:c_macaddr8","csharp_type":{"type":"string","notNull":false}}],"debugRequest":false}
+name0ÿÿÿÿÿÿÿÿÿRbooksbtextzname:	query.sqlì
+KINSERT INTO extended.bios (author_name, name, bio_type) VALUES ($1, $2, $3)CreateExtendedBio:exec*SO
+author_name0ÿÿÿÿÿÿÿÿÿRextendedbiosbpg_catalog.varcharzauthor_name*EA
+name0ÿÿÿÿÿÿÿÿÿRextendedbiosbpg_catalog.varcharzname*JF
+bio_type0ÿÿÿÿÿÿÿÿÿRextendedbiosbextended.bio_typezbio_type:	query.sqlBextendedbiosª
+QSELECT author_name, name, bio_type FROM extended.bios WHERE bio_type = $1 LIMIT 1GetFirstExtendedBioByType:one"P
+author_name0ÿÿÿÿÿÿÿÿÿRextendedbiosb
+pg_catalogvarcharzauthor_name"B
+name0ÿÿÿÿÿÿÿÿÿRextendedbiosb
+pg_catalogvarcharzname"G
+bio_type0ÿÿÿÿÿÿÿÿÿRextendedbiosbextendedbio_typezbio_type*JF
+bio_type0ÿÿÿÿÿÿÿÿÿRextendedbiosbextended.bio_typezbio_type:	query.sqlF
+TRUNCATE TABLE extended.biosTruncateExtendedBios:exec:	query.sql"v1.27.0*Ï{"overrideDriverVersion":"","generateCsproj":true,"targetFramework":"net8.0","namespaceName":"NpgsqlExampleGen","useDapper":false,"overrideDapperVersion":"","overrides":[{"column":"GetPostgresFunctions:max_integer","csharp_type":{"type":"int","notNull":false}},{"column":"GetPostgresFunctions:max_varchar","csharp_type":{"type":"string","notNull":false}},{"column":"GetPostgresFunctions:max_timestamp","csharp_type":{"type":"DateTime","notNull":true}},{"column":"*:c_json_string_override","csharp_type":{"type":"string","notNull":false}},{"column":"*:c_xml_string_override","csharp_type":{"type":"string","notNull":false}},{"column":"*:c_macaddr8","csharp_type":{"type":"string","notNull":false}}],"debugRequest":false}

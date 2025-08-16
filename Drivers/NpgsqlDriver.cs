@@ -1,6 +1,7 @@
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Plugin;
 using SqlcGenCsharp.Drivers.Generators;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -8,15 +9,13 @@ using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace SqlcGenCsharp.Drivers;
 
-public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId, ICopyFrom
+public sealed class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId, ICopyFrom
 {
     public NpgsqlDriver(
         Options options,
-        string defaultSchema,
-        Dictionary<string, Dictionary<string, Table>> tables,
-        Dictionary<string, Dictionary<string, Enum>> enums,
+        Catalog catalog,
         IList<Query> queries) :
-        base(options, defaultSchema, tables, enums, queries)
+        base(options, catalog, queries)
     {
         foreach (var columnMapping in ColumnMappings.Values)
         {
@@ -26,12 +25,9 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId
                 columnMapping.DbTypes.Add(dbTypeToAdd, dbType.Value);
             }
         }
-        CommonGen = new CommonGen(this);
     }
 
-    private CommonGen CommonGen { get; }
-
-    public sealed override Dictionary<string, ColumnMapping> ColumnMappings { get; } =
+    protected sealed override Dictionary<string, ColumnMapping> ColumnMappings { get; } =
         new()
         {
             /* Numeric data types */
@@ -325,7 +321,7 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId
 
     public override string TransactionClassName => "NpgsqlTransaction";
 
-    protected const string XmlDocumentTypeHandler =
+    private const string XmlDocumentTypeHandler =
         """
         private class XmlDocumentTypeHandler : SqlMapper.TypeHandler<XmlDocument>
         {
@@ -346,7 +342,6 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId
             }
         }
         """;
-
 
     public MemberDeclarationSyntax OneDeclare(string queryTextConstant, string argInterface,
         string returnInterface, Query query)
@@ -393,7 +388,8 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId
     {
         return base.GetUsingDirectivesForModels().AddRangeExcludeNulls(
         [
-            "System"
+            "System",
+            "System.Collections.Generic"
         ]);
     }
 
@@ -518,7 +514,7 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId
                     {
                         var typeOverride = GetColumnDbTypeOverride(p.Column);
                         var param = $"{rowVar}.{p.Column.Name.ToPascalCase()}";
-                        var writerFn = CommonGen.GetWriterFn(p.Column, query);
+                        var writerFn = GetWriterFn(p.Column, query);
                         var paramToWrite = writerFn is null ? param : writerFn(param, p.Column.NotNull, false);
                         var partialStmt = $"await {writerVar}.WriteAsync({paramToWrite}";
                         return typeOverride is null
@@ -534,5 +530,43 @@ public class NpgsqlDriver : DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId
                      }
                      """;
         }
+    }
+
+    protected override Dictionary<string, Dictionary<string, Plugin.Enum>> ConstructEnumsLookup(Catalog catalog)
+    {
+        return catalog
+            .Schemas
+            .SelectMany(s => s.Enums.Select(e => new { EnumItem = e, Schema = s.Name }))
+            .GroupBy(x => x.Schema == catalog.DefaultSchema ? string.Empty : x.Schema)
+            .ToDictionary(
+                group => group.Key,
+                group => group.ToDictionary(
+                    x => x.EnumItem.Name,
+                    x => x.EnumItem
+                )
+            );
+    }
+
+    public override Func<string, bool, bool, string>? GetWriterFn(Column column, Query query)
+    {
+        var csharpType = GetCsharpTypeWithoutNullableSuffix(column, query);
+        var writerFn = ColumnMappings.GetValueOrDefault(csharpType)?.WriterFn;
+        if (writerFn is not null)
+            return writerFn;
+
+        if (GetEnumType(column) is { } enumType)
+        {
+            return (el, notNull, isDapper) =>
+            {
+                var enumToStringStmt = $"{el}.Value.Stringify()";
+                var nullValue = isDapper ? "null" : "(object)DBNull.Value";
+                return notNull
+                    ? enumToStringStmt
+                    : $"{el} != null ? {enumToStringStmt} : {nullValue}";
+            };
+        }
+
+        static string DefaultWriterFn(string el, bool notNull, bool isDapper) => notNull ? el : $"{el} ?? (object)DBNull.Value";
+        return Options.UseDapper ? null : DefaultWriterFn;
     }
 }

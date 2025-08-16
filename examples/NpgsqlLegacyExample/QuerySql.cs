@@ -41,7 +41,7 @@ namespace NpgsqlLegacyExampleGen
         private NpgsqlTransaction Transaction { get; }
         private string ConnectionString { get; }
 
-        private const string InsertPostgresTypesSql = " INSERT INTO postgres_types ( c_boolean, c_bit, c_smallint, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_money, c_date, c_time, c_timestamp, c_timestamp_with_tz, c_interval, c_char, c_varchar, c_character_varying, c_bpchar, c_text, c_uuid, c_cidr, c_inet, c_macaddr, c_macaddr8 ) VALUES ( @c_boolean, @c_bit, @c_smallint, @c_integer, @c_bigint, @c_real, @c_numeric, @c_decimal, @c_double_precision, @c_money, @c_date, @c_time, @c_timestamp, @c_timestamp_with_tz, @c_interval, @c_char, @c_varchar, @c_character_varying, @c_bpchar, @c_text, @c_uuid, @c_cidr, @c_inet, @c_macaddr::macaddr, @c_macaddr8::macaddr8 )";
+        private const string InsertPostgresTypesSql = " INSERT INTO postgres_types ( c_boolean, c_bit, c_smallint, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_money, c_date, c_time, c_timestamp, c_timestamp_with_tz, c_interval, c_char, c_varchar, c_character_varying, c_bpchar, c_text, c_uuid, c_enum, c_cidr, c_inet, c_macaddr, c_macaddr8 ) VALUES ( @c_boolean, @c_bit, @c_smallint, @c_integer, @c_bigint, @c_real, @c_numeric, @c_decimal, @c_double_precision, @c_money, @c_date, @c_time, @c_timestamp, @c_timestamp_with_tz, @c_interval, @c_char, @c_varchar, @c_character_varying, @c_bpchar, @c_text, @c_uuid, @c_enum::c_enum, @c_cidr, @c_inet, @c_macaddr::macaddr, @c_macaddr8::macaddr8 )";
         public class InsertPostgresTypesArgs
         {
             public bool? CBoolean { get; set; }
@@ -65,6 +65,7 @@ namespace NpgsqlLegacyExampleGen
             public string CBpchar { get; set; }
             public string CText { get; set; }
             public Guid? CUuid { get; set; }
+            public CEnum? CEnum { get; set; }
             public NpgsqlCidr? CCidr { get; set; }
             public IPAddress CInet { get; set; }
             public PhysicalAddress CMacaddr { get; set; }
@@ -99,6 +100,7 @@ namespace NpgsqlLegacyExampleGen
                         command.Parameters.AddWithValue("@c_bpchar", args.CBpchar ?? (object)DBNull.Value);
                         command.Parameters.AddWithValue("@c_text", args.CText ?? (object)DBNull.Value);
                         command.Parameters.AddWithValue("@c_uuid", args.CUuid ?? (object)DBNull.Value);
+                        command.Parameters.AddWithValue("@c_enum", args.CEnum != null ? args.CEnum.Value.Stringify() : (object)DBNull.Value);
                         command.Parameters.AddWithValue("@c_cidr", args.CCidr ?? (object)DBNull.Value);
                         command.Parameters.AddWithValue("@c_inet", args.CInet ?? (object)DBNull.Value);
                         command.Parameters.AddWithValue("@c_macaddr", args.CMacaddr ?? (object)DBNull.Value);
@@ -137,6 +139,7 @@ namespace NpgsqlLegacyExampleGen
                 command.Parameters.AddWithValue("@c_bpchar", args.CBpchar ?? (object)DBNull.Value);
                 command.Parameters.AddWithValue("@c_text", args.CText ?? (object)DBNull.Value);
                 command.Parameters.AddWithValue("@c_uuid", args.CUuid ?? (object)DBNull.Value);
+                command.Parameters.AddWithValue("@c_enum", args.CEnum != null ? args.CEnum.Value.Stringify() : (object)DBNull.Value);
                 command.Parameters.AddWithValue("@c_cidr", args.CCidr ?? (object)DBNull.Value);
                 command.Parameters.AddWithValue("@c_inet", args.CInet ?? (object)DBNull.Value);
                 command.Parameters.AddWithValue("@c_macaddr", args.CMacaddr ?? (object)DBNull.Value);
@@ -214,7 +217,7 @@ namespace NpgsqlLegacyExampleGen
             }
         }
 
-        private const string GetPostgresTypesSql = "SELECT c_boolean, c_bit, c_smallint, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_money, c_date, c_time, c_timestamp, c_timestamp_with_tz, c_interval, c_char, c_varchar, c_character_varying, c_bpchar, c_text, c_uuid, c_cidr, c_inet, c_macaddr, c_macaddr8::TEXT AS c_macaddr8 FROM postgres_types LIMIT 1";
+        private const string GetPostgresTypesSql = "SELECT c_boolean, c_bit, c_smallint, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_money, c_date, c_time, c_timestamp, c_timestamp_with_tz, c_interval, c_char, c_varchar, c_character_varying, c_bpchar, c_text, c_uuid, c_enum, c_cidr, c_inet, c_macaddr, c_macaddr8::TEXT AS c_macaddr8 FROM postgres_types LIMIT 1";
         public class GetPostgresTypesRow
         {
             public bool? CBoolean { get; set; }
@@ -238,6 +241,7 @@ namespace NpgsqlLegacyExampleGen
             public string CBpchar { get; set; }
             public string CText { get; set; }
             public Guid? CUuid { get; set; }
+            public CEnum? CEnum { get; set; }
             public NpgsqlCidr? CCidr { get; set; }
             public IPAddress CInet { get; set; }
             public PhysicalAddress CMacaddr { get; set; }
@@ -278,10 +282,11 @@ namespace NpgsqlLegacyExampleGen
                                     CBpchar = reader.IsDBNull(18) ? null : reader.GetString(18),
                                     CText = reader.IsDBNull(19) ? null : reader.GetString(19),
                                     CUuid = reader.IsDBNull(20) ? (Guid? )null : reader.GetFieldValue<Guid>(20),
-                                    CCidr = reader.IsDBNull(21) ? (NpgsqlCidr? )null : reader.GetFieldValue<NpgsqlCidr>(21),
-                                    CInet = reader.IsDBNull(22) ? null : reader.GetFieldValue<IPAddress>(22),
-                                    CMacaddr = reader.IsDBNull(23) ? null : reader.GetFieldValue<PhysicalAddress>(23),
-                                    CMacaddr8 = reader.IsDBNull(24) ? null : reader.GetString(24)
+                                    CEnum = reader.IsDBNull(21) ? (CEnum? )null : reader.GetString(21).ToCEnum(),
+                                    CCidr = reader.IsDBNull(22) ? (NpgsqlCidr? )null : reader.GetFieldValue<NpgsqlCidr>(22),
+                                    CInet = reader.IsDBNull(23) ? null : reader.GetFieldValue<IPAddress>(23),
+                                    CMacaddr = reader.IsDBNull(24) ? null : reader.GetFieldValue<PhysicalAddress>(24),
+                                    CMacaddr8 = reader.IsDBNull(25) ? null : reader.GetString(25)
                                 };
                             }
                         }
@@ -324,10 +329,11 @@ namespace NpgsqlLegacyExampleGen
                             CBpchar = reader.IsDBNull(18) ? null : reader.GetString(18),
                             CText = reader.IsDBNull(19) ? null : reader.GetString(19),
                             CUuid = reader.IsDBNull(20) ? (Guid? )null : reader.GetFieldValue<Guid>(20),
-                            CCidr = reader.IsDBNull(21) ? (NpgsqlCidr? )null : reader.GetFieldValue<NpgsqlCidr>(21),
-                            CInet = reader.IsDBNull(22) ? null : reader.GetFieldValue<IPAddress>(22),
-                            CMacaddr = reader.IsDBNull(23) ? null : reader.GetFieldValue<PhysicalAddress>(23),
-                            CMacaddr8 = reader.IsDBNull(24) ? null : reader.GetString(24)
+                            CEnum = reader.IsDBNull(21) ? (CEnum? )null : reader.GetString(21).ToCEnum(),
+                            CCidr = reader.IsDBNull(22) ? (NpgsqlCidr? )null : reader.GetFieldValue<NpgsqlCidr>(22),
+                            CInet = reader.IsDBNull(23) ? null : reader.GetFieldValue<IPAddress>(23),
+                            CMacaddr = reader.IsDBNull(24) ? null : reader.GetFieldValue<PhysicalAddress>(24),
+                            CMacaddr8 = reader.IsDBNull(25) ? null : reader.GetString(25)
                         };
                     }
                 }
@@ -1772,6 +1778,132 @@ namespace NpgsqlLegacyExampleGen
                         result.Add(new GetAuthorsByBookNameRow { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2), Book = new Book { Id = reader.GetFieldValue<Guid>(3), Name = reader.GetString(4), AuthorId = reader.GetInt64(5), Description = reader.IsDBNull(6) ? null : reader.GetString(6) } });
                     return result;
                 }
+            }
+        }
+
+        private const string CreateExtendedBioSql = "INSERT INTO extended.bios (author_name, name, bio_type) VALUES (@author_name, @name, @bio_type)";
+        public class CreateExtendedBioArgs
+        {
+            public string AuthorName { get; set; }
+            public string Name { get; set; }
+            public ExtendedBioType? BioType { get; set; }
+        };
+        public async Task CreateExtendedBio(CreateExtendedBioArgs args)
+        {
+            if (this.Transaction == null)
+            {
+                using (var connection = NpgsqlDataSource.Create(ConnectionString))
+                {
+                    using (var command = connection.CreateCommand(CreateExtendedBioSql))
+                    {
+                        command.Parameters.AddWithValue("@author_name", args.AuthorName);
+                        command.Parameters.AddWithValue("@name", args.Name);
+                        command.Parameters.AddWithValue("@bio_type", args.BioType != null ? args.BioType.Value.Stringify() : (object)DBNull.Value);
+                        await command.ExecuteNonQueryAsync();
+                    }
+                }
+
+                return;
+            }
+
+            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+                throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+            using (var command = this.Transaction.Connection.CreateCommand())
+            {
+                command.CommandText = CreateExtendedBioSql;
+                command.Transaction = this.Transaction;
+                command.Parameters.AddWithValue("@author_name", args.AuthorName);
+                command.Parameters.AddWithValue("@name", args.Name);
+                command.Parameters.AddWithValue("@bio_type", args.BioType != null ? args.BioType.Value.Stringify() : (object)DBNull.Value);
+                await command.ExecuteNonQueryAsync();
+            }
+        }
+
+        private const string GetFirstExtendedBioByTypeSql = "SELECT author_name, name, bio_type FROM extended.bios WHERE bio_type = @bio_type LIMIT 1";
+        public class GetFirstExtendedBioByTypeRow
+        {
+            public string AuthorName { get; set; }
+            public string Name { get; set; }
+            public ExtendedBioType? BioType { get; set; }
+        };
+        public class GetFirstExtendedBioByTypeArgs
+        {
+            public ExtendedBioType? BioType { get; set; }
+        };
+        public async Task<GetFirstExtendedBioByTypeRow> GetFirstExtendedBioByType(GetFirstExtendedBioByTypeArgs args)
+        {
+            if (this.Transaction == null)
+            {
+                using (var connection = NpgsqlDataSource.Create(ConnectionString))
+                {
+                    using (var command = connection.CreateCommand(GetFirstExtendedBioByTypeSql))
+                    {
+                        command.Parameters.AddWithValue("@bio_type", args.BioType != null ? args.BioType.Value.Stringify() : (object)DBNull.Value);
+                        using (var reader = await command.ExecuteReaderAsync())
+                        {
+                            if (await reader.ReadAsync())
+                            {
+                                return new GetFirstExtendedBioByTypeRow
+                                {
+                                    AuthorName = reader.GetString(0),
+                                    Name = reader.GetString(1),
+                                    BioType = reader.IsDBNull(2) ? (ExtendedBioType? )null : reader.GetString(2).ToExtendedBioType()
+                                };
+                            }
+                        }
+                    }
+                }
+
+                return null;
+            }
+
+            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+                throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+            using (var command = this.Transaction.Connection.CreateCommand())
+            {
+                command.CommandText = GetFirstExtendedBioByTypeSql;
+                command.Transaction = this.Transaction;
+                command.Parameters.AddWithValue("@bio_type", args.BioType != null ? args.BioType.Value.Stringify() : (object)DBNull.Value);
+                using (var reader = await command.ExecuteReaderAsync())
+                {
+                    if (await reader.ReadAsync())
+                    {
+                        return new GetFirstExtendedBioByTypeRow
+                        {
+                            AuthorName = reader.GetString(0),
+                            Name = reader.GetString(1),
+                            BioType = reader.IsDBNull(2) ? (ExtendedBioType? )null : reader.GetString(2).ToExtendedBioType()
+                        };
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        private const string TruncateExtendedBiosSql = "TRUNCATE TABLE extended.bios";
+        public async Task TruncateExtendedBios()
+        {
+            if (this.Transaction == null)
+            {
+                using (var connection = NpgsqlDataSource.Create(ConnectionString))
+                {
+                    using (var command = connection.CreateCommand(TruncateExtendedBiosSql))
+                    {
+                        await command.ExecuteNonQueryAsync();
+                    }
+                }
+
+                return;
+            }
+
+            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+                throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+            using (var command = this.Transaction.Connection.CreateCommand())
+            {
+                command.CommandText = TruncateExtendedBiosSql;
+                command.Transaction = this.Transaction;
+                await command.ExecuteNonQueryAsync();
             }
         }
     }

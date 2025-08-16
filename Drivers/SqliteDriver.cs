@@ -8,15 +8,13 @@ using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace SqlcGenCsharp.Drivers;
 
-public partial class SqliteDriver(
+public sealed partial class SqliteDriver(
     Options options,
-    string defaultSchema,
-    Dictionary<string, Dictionary<string, Table>> tables,
-    Dictionary<string, Dictionary<string, Enum>> enums,
+    Catalog catalog,
     IList<Query> queries) :
-    DbDriver(options, defaultSchema, tables, enums, queries), IOne, IMany, IExec, IExecRows, IExecLastId, ICopyFrom
+    DbDriver(options, catalog, queries), IOne, IMany, IExec, IExecRows, IExecLastId, ICopyFrom
 {
-    public override Dictionary<string, ColumnMapping> ColumnMappings { get; } =
+    protected override Dictionary<string, ColumnMapping> ColumnMappings { get; } =
         new()
         {
             ["byte[]"] = new(
@@ -152,7 +150,7 @@ public partial class SqliteDriver(
 
     public override ConnectionGenCommands EstablishConnection(Query query)
     {
-        return new ConnectionGenCommands(
+        return new(
             $"var {Variable.Connection.AsVarName()} = new SqliteConnection({Variable.ConnectionString.AsPropertyName()})",
             $"await {Variable.Connection.AsVarName()}.OpenAsync()"
         );
@@ -230,5 +228,10 @@ public partial class SqliteDriver(
                      }
                      """;
         }
+    }
+
+    protected override Dictionary<string, Dictionary<string, Enum>> ConstructEnumsLookup(Catalog catalog)
+    {
+        return [];
     }
 }

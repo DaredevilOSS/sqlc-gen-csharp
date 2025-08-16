@@ -69,3 +69,12 @@ SELECT
     sqlc.embed(books)
 FROM authors INNER JOIN books ON authors.id = books.author_id
 WHERE books.name = $1;
+
+-- name: CreateExtendedBio :exec
+INSERT INTO extended.bios (author_name, name, bio_type) VALUES ($1, $2, $3);
+
+-- name: GetFirstExtendedBioByType :one
+SELECT * FROM extended.bios WHERE bio_type = $1 LIMIT 1;
+
+-- name: TruncateExtendedBios :exec
+TRUNCATE TABLE extended.bios;

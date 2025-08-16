@@ -66,7 +66,7 @@ we consider support for the different data types separately for batch inserts an
 | jsonb                                   | ✅         | ❌                  |
 | jsonpath                                | ✅         | ❌                  |
 | xml                                     | ✅         | ❌                  |
-| enum                                    | ❌         | ❌                  |
+| enum                                    | ✅         | ❌                  |
 
 *** `time with time zone` is not useful and not recommended to use by Postgres themselves - 
 see [here](https://www.postgresql.org/docs/current/datatype-datetime.html#DATATYPE-DATETIME) -

@@ -1,6 +1,5 @@
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Plugin;
-using SqlcGenCsharp.Drivers.Generators;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -56,10 +55,9 @@ public abstract class DbDriver
         "NpgsqlCidr",
     ];
 
-    public abstract Dictionary<string, ColumnMapping> ColumnMappings { get; }
+    protected abstract Dictionary<string, ColumnMapping> ColumnMappings { get; }
 
-    protected const string JsonElementTypeHandler =
-        """
+    protected const string JsonElementTypeHandler = """
         private class JsonElementTypeHandler : SqlMapper.TypeHandler<JsonElement>
         {
             public override JsonElement Parse(object value)
@@ -84,40 +82,53 @@ public abstract class DbDriver
            }
            """;
 
-    public readonly string TransactionConnectionNullExcetionThrow =
-        $"""
+    public readonly string TransactionConnectionNullExcetionThrow = $"""
          if (this.{Variable.Transaction.AsPropertyName()}?.Connection == null || this.{Variable.Transaction.AsPropertyName()}?.Connection.State != System.Data.ConnectionState.Open)
              throw new InvalidOperationException("Transaction is provided, but its connection is null.");
          """;
 
     protected DbDriver(
         Options options,
-        string defaultSchema,
-        Dictionary<string, Dictionary<string, Table>> tables,
-        Dictionary<string, Dictionary<string, Plugin.Enum>> enums,
+        Catalog catalog,
         IList<Query> queries)
     {
         Options = options;
-        DefaultSchema = defaultSchema;
-        Tables = tables;
-        Enums = enums;
+        DefaultSchema = catalog.DefaultSchema;
+        Tables = ConstructTablesLookup(catalog);
         Queries = queries;
+        Enums = ConstructEnumsLookup(catalog);
 
         foreach (var schemaEnums in Enums)
-        {
             foreach (var e in schemaEnums.Value)
             {
                 NullableTypes.Add(e.Key.ToModelName(schemaEnums.Key, DefaultSchema));
             }
-        }
 
-        if (!Options.DotnetFramework.IsDotnetCore()) return;
+        if (!Options.DotnetFramework.IsDotnetCore())
+            return;
 
         foreach (var t in NullableTypesInDotnetCore)
         {
             NullableTypes.Add(t);
         }
     }
+
+    private readonly HashSet<string> _excludedSchemas =
+    [
+        "pg_catalog",
+        "information_schema"
+    ];
+
+    private Dictionary<string, Dictionary<string, Table>> ConstructTablesLookup(Catalog catalog)
+    {
+        return catalog.Schemas
+            .Where(s => !_excludedSchemas.Contains(s.Name))
+            .ToDictionary(
+                s => s.Name == catalog.DefaultSchema ? string.Empty : s.Name,
+                s => s.Tables.ToDictionary(t => t.Rel.Name, t => t));
+    }
+
+    protected abstract Dictionary<string, Dictionary<string, Plugin.Enum>> ConstructEnumsLookup(Catalog catalog);
 
     public virtual ISet<string> GetUsingDirectivesForQueries()
     {
@@ -206,8 +217,10 @@ public abstract class DbDriver
                """)!];
     }
 
-    public string GetColumnSchema(Column column)
+    protected string GetColumnSchema(Column column)
     {
+        if (column.Table == null)
+            return string.Empty;
         return column.Table.Schema == DefaultSchema ? string.Empty : column.Table.Schema;
     }
 
@@ -274,7 +287,7 @@ public abstract class DbDriver
         return Queries.Any(q => q.Cmd is ":copyfrom");
     }
 
-    public OverrideOption? FindOverrideForQueryColumn(Query? query, Column column)
+    private OverrideOption? FindOverrideForQueryColumn(Query? query, Column column)
     {
         if (query is null)
             return null;
@@ -321,7 +334,7 @@ public abstract class DbDriver
         return Options.DotnetFramework.IsDotnetCore(); // non-primitives in .Net Core are inherently nullable
     }
 
-    public string GetCsharpTypeWithoutNullableSuffix(Column column, Query? query)
+    protected string GetCsharpTypeWithoutNullableSuffix(Column column, Query? query)
     {
         if (column.EmbedTable != null)
             return column.EmbedTable.Name.ToModelName(column.EmbedTable.Schema, DefaultSchema);
@@ -353,6 +366,17 @@ public abstract class DbDriver
         if (typeInfo.Length is null)
             return true;
         return typeInfo.Length.Value == column.Length;
+    }
+
+    public virtual Func<string, bool, bool, string>? GetWriterFn(Column column, Query query)
+    {
+        var csharpType = GetCsharpTypeWithoutNullableSuffix(column, query);
+        var writerFn = ColumnMappings.GetValueOrDefault(csharpType)?.WriterFn;
+        if (writerFn is not null)
+            return writerFn;
+
+        static string DefaultWriterFn(string el, bool notNull, bool isDapper) => notNull ? el : $"{el} ?? (object)DBNull.Value";
+        return Options.UseDapper ? null : DefaultWriterFn;
     }
 
     /* Column reader methods */
@@ -392,17 +416,16 @@ public abstract class DbDriver
     }
 
     /* Enum methods*/
-    public Plugin.Enum? GetEnumType(Column column)
+    protected Plugin.Enum? GetEnumType(Column column)
     {
-        if (column.Table is null)
-            return null;
         var schemaName = GetColumnSchema(column);
         if (!Enums.TryGetValue(schemaName, value: out var enumsInSchema))
             return null;
-        return enumsInSchema.GetValueOrDefault(column.Type.Name);
+        var enumNameWithoutSchema = column.Type.Name.Replace($"{schemaName}.", "");
+        return enumsInSchema.GetValueOrDefault(enumNameWithoutSchema);
     }
 
-    public virtual string EnumToCsharpTypeName(Column column, Plugin.Enum enumType)
+    protected virtual string EnumToCsharpTypeName(Column column, Plugin.Enum enumType)
     {
         return column.Type.Name.ToModelName(GetColumnSchema(column), DefaultSchema);
     }

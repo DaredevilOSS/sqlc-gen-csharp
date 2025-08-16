@@ -1080,6 +1080,33 @@ public static class PostgresTests
                          }
                      }
                      """
+        },
+        [KnownTestType.PostgresEnumDataType] = new TestImpl
+        {
+            Impl = $$"""
+                     [Test]
+                     [TestCase(CEnum.Medium)]
+                     [TestCase(null)]
+                     public async Task TestPostgresStringTypes(CEnum? cEnum)
+                     {
+                         await QuerySql.InsertPostgresTypes(new QuerySql.InsertPostgresTypesArgs
+                         {
+                              CEnum = cEnum
+                         });
+                         
+                         var expected = new QuerySql.GetPostgresTypesRow
+                         {
+                              CEnum = cEnum
+                         };
+                         var actual = await QuerySql.GetPostgresTypes();
+                         AssertSingularEquals(expected, actual{{Consts.UnknownRecordValuePlaceholder}});
+
+                         void AssertSingularEquals(QuerySql.GetPostgresTypesRow x, QuerySql.GetPostgresTypesRow y)
+                         {
+                             Assert.That(x.CEnum, Is.EqualTo(y.CEnum));
+                         }
+                     }
+                     """
         }
     };
 }

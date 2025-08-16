@@ -11,3 +11,14 @@ CREATE TABLE books (
     description TEXT,
     FOREIGN KEY (author_id) REFERENCES authors (id) ON DELETE CASCADE
 );
+
+CREATE SCHEMA extended;
+
+CREATE TYPE extended.bio_type AS ENUM ('Autobiography', 'Biography', 'Memoir');
+
+CREATE TABLE extended.bios (
+    author_name VARCHAR(100),
+    name VARCHAR(100),
+    bio_type extended.bio_type,
+    PRIMARY KEY (author_name, name)
+);

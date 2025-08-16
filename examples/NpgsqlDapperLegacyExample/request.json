@@ -295,6 +295,16 @@
                 "type": {
                   "name": "uuid"
                 }
+              },
+              {
+                "name": "c_enum",
+                "length": -1,
+                "table": {
+                  "name": "postgres_types"
+                },
+                "type": {
+                  "name": "c_enum"
+                }
               }
             ]
           },
@@ -623,6 +633,16 @@
                   "name": "text"
                 }
               }
+            ]
+          }
+        ],
+        "enums": [
+          {
+            "name": "c_enum",
+            "vals": [
+              "small",
+              "medium",
+              "big"
             ]
           }
         ]
@@ -32468,12 +32488,73 @@
             ]
           }
         ]
+      },
+      {
+        "name": "extended",
+        "tables": [
+          {
+            "rel": {
+              "schema": "extended",
+              "name": "bios"
+            },
+            "columns": [
+              {
+                "name": "author_name",
+                "notNull": true,
+                "length": -1,
+                "table": {
+                  "schema": "extended",
+                  "name": "bios"
+                },
+                "type": {
+                  "schema": "pg_catalog",
+                  "name": "varchar"
+                }
+              },
+              {
+                "name": "name",
+                "notNull": true,
+                "length": -1,
+                "table": {
+                  "schema": "extended",
+                  "name": "bios"
+                },
+                "type": {
+                  "schema": "pg_catalog",
+                  "name": "varchar"
+                }
+              },
+              {
+                "name": "bio_type",
+                "length": -1,
+                "table": {
+                  "schema": "extended",
+                  "name": "bios"
+                },
+                "type": {
+                  "schema": "extended",
+                  "name": "bio_type"
+                }
+              }
+            ]
+          }
+        ],
+        "enums": [
+          {
+            "name": "bio_type",
+            "vals": [
+              "Autobiography",
+              "Biography",
+              "Memoir"
+            ]
+          }
+        ]
       }
     ]
   },
   "queries": [
     {
-      "text": "\nINSERT INTO postgres_types\n(\n    c_boolean,\n    c_bit,\n    c_smallint,\n    c_integer,\n    c_bigint,\n    c_real,\n    c_numeric,\n    c_decimal,\n    c_double_precision,\n    c_money,\n    c_date,\n    c_time,\n    c_timestamp,\n    c_timestamp_with_tz,\n    c_interval,\n    c_char,\n    c_varchar,\n    c_character_varying,\n    c_bpchar,\n    c_text,\n    c_uuid,\n    c_cidr,\n    c_inet,\n    c_macaddr,\n    c_macaddr8\n)\nVALUES (\n    $1,\n    $2,\n    $3,\n    $4,\n    $5,\n    $6,\n    $7,\n    $8,\n    $9,\n    $10,\n    $11,\n    $12,\n    $13,\n    $14,\n    $15,\n    $16,\n    $17,\n    $18,\n    $19,\n    $20,\n    $21,\n    $22,\n    $23,\n    $24::macaddr,\n    $25::macaddr8\n)",
+      "text": "\nINSERT INTO postgres_types\n(\n    c_boolean,\n    c_bit,\n    c_smallint,\n    c_integer,\n    c_bigint,\n    c_real,\n    c_numeric,\n    c_decimal,\n    c_double_precision,\n    c_money,\n    c_date,\n    c_time,\n    c_timestamp,\n    c_timestamp_with_tz,\n    c_interval,\n    c_char,\n    c_varchar,\n    c_character_varying,\n    c_bpchar,\n    c_text,\n    c_uuid,\n    c_enum,\n    c_cidr,\n    c_inet,\n    c_macaddr,\n    c_macaddr8\n)\nVALUES (\n    $1,\n    $2,\n    $3,\n    $4,\n    $5,\n    $6,\n    $7,\n    $8,\n    $9,\n    $10,\n    $11,\n    $12,\n    $13,\n    $14,\n    $15,\n    $16,\n    $17,\n    $18,\n    $19,\n    $20,\n    $21,\n    $22::c_enum,\n    $23,\n    $24,\n    $25::macaddr,\n    $26::macaddr8\n)",
       "name": "InsertPostgresTypes",
       "cmd": ":exec",
       "parameters": [
@@ -32816,6 +32897,16 @@
         {
           "number": 22,
           "column": {
+            "name": "c_enum",
+            "length": -1,
+            "type": {
+              "name": "c_enum"
+            }
+          }
+        },
+        {
+          "number": 23,
+          "column": {
             "name": "c_cidr",
             "length": -1,
             "isNamedParam": true,
@@ -32830,7 +32921,7 @@
           }
         },
         {
-          "number": 23,
+          "number": 24,
           "column": {
             "name": "c_inet",
             "length": -1,
@@ -32846,7 +32937,7 @@
           }
         },
         {
-          "number": 24,
+          "number": 25,
           "column": {
             "name": "c_macaddr",
             "length": -1,
@@ -32856,7 +32947,7 @@
           }
         },
         {
-          "number": 25,
+          "number": 26,
           "column": {
             "name": "c_macaddr8",
             "length": -1,
@@ -33231,7 +33322,7 @@
       }
     },
     {
-      "text": "SELECT     \n    c_boolean,\n    c_bit,\n    c_smallint,\n    c_integer,\n    c_bigint,\n    c_real,\n    c_numeric,\n    c_decimal,\n    c_double_precision,\n    c_money,\n    c_date,\n    c_time,\n    c_timestamp,\n    c_timestamp_with_tz,\n    c_interval,\n    c_char,\n    c_varchar,\n    c_character_varying,\n    c_bpchar,\n    c_text,\n    c_uuid,\n    c_cidr,\n    c_inet,\n    c_macaddr,\n    c_macaddr8::TEXT AS c_macaddr8\nFROM postgres_types \nLIMIT 1",
+      "text": "SELECT     \n    c_boolean,\n    c_bit,\n    c_smallint,\n    c_integer,\n    c_bigint,\n    c_real,\n    c_numeric,\n    c_decimal,\n    c_double_precision,\n    c_money,\n    c_date,\n    c_time,\n    c_timestamp,\n    c_timestamp_with_tz,\n    c_interval,\n    c_char,\n    c_varchar,\n    c_character_varying,\n    c_bpchar,\n    c_text,\n    c_uuid,\n    c_enum,\n    c_cidr,\n    c_inet,\n    c_macaddr,\n    c_macaddr8::TEXT AS c_macaddr8\nFROM postgres_types \nLIMIT 1",
       "name": "GetPostgresTypes",
       "cmd": ":one",
       "columns": [
@@ -33481,6 +33572,17 @@
             "name": "uuid"
           },
           "originalName": "c_uuid"
+        },
+        {
+          "name": "c_enum",
+          "length": -1,
+          "table": {
+            "name": "postgres_types"
+          },
+          "type": {
+            "name": "c_enum"
+          },
+          "originalName": "c_enum"
         },
         {
           "name": "c_cidr",
@@ -35375,6 +35477,137 @@
           }
         }
       ],
+      "filename": "query.sql"
+    },
+    {
+      "text": "INSERT INTO extended.bios (author_name, name, bio_type) VALUES ($1, $2, $3)",
+      "name": "CreateExtendedBio",
+      "cmd": ":exec",
+      "parameters": [
+        {
+          "number": 1,
+          "column": {
+            "name": "author_name",
+            "notNull": true,
+            "length": -1,
+            "table": {
+              "schema": "extended",
+              "name": "bios"
+            },
+            "type": {
+              "name": "pg_catalog.varchar"
+            },
+            "originalName": "author_name"
+          }
+        },
+        {
+          "number": 2,
+          "column": {
+            "name": "name",
+            "notNull": true,
+            "length": -1,
+            "table": {
+              "schema": "extended",
+              "name": "bios"
+            },
+            "type": {
+              "name": "pg_catalog.varchar"
+            },
+            "originalName": "name"
+          }
+        },
+        {
+          "number": 3,
+          "column": {
+            "name": "bio_type",
+            "length": -1,
+            "table": {
+              "schema": "extended",
+              "name": "bios"
+            },
+            "type": {
+              "name": "extended.bio_type"
+            },
+            "originalName": "bio_type"
+          }
+        }
+      ],
+      "filename": "query.sql",
+      "insert_into_table": {
+        "schema": "extended",
+        "name": "bios"
+      }
+    },
+    {
+      "text": "SELECT author_name, name, bio_type FROM extended.bios WHERE bio_type = $1 LIMIT 1",
+      "name": "GetFirstExtendedBioByType",
+      "cmd": ":one",
+      "columns": [
+        {
+          "name": "author_name",
+          "notNull": true,
+          "length": -1,
+          "table": {
+            "schema": "extended",
+            "name": "bios"
+          },
+          "type": {
+            "schema": "pg_catalog",
+            "name": "varchar"
+          },
+          "originalName": "author_name"
+        },
+        {
+          "name": "name",
+          "notNull": true,
+          "length": -1,
+          "table": {
+            "schema": "extended",
+            "name": "bios"
+          },
+          "type": {
+            "schema": "pg_catalog",
+            "name": "varchar"
+          },
+          "originalName": "name"
+        },
+        {
+          "name": "bio_type",
+          "length": -1,
+          "table": {
+            "schema": "extended",
+            "name": "bios"
+          },
+          "type": {
+            "schema": "extended",
+            "name": "bio_type"
+          },
+          "originalName": "bio_type"
+        }
+      ],
+      "parameters": [
+        {
+          "number": 1,
+          "column": {
+            "name": "bio_type",
+            "length": -1,
+            "table": {
+              "schema": "extended",
+              "name": "bios"
+            },
+            "type": {
+              "name": "extended.bio_type"
+            },
+            "originalName": "bio_type"
+          }
+        }
+      ],
+      "filename": "query.sql"
+    },
+    {
+      "text": "TRUNCATE TABLE extended.bios",
+      "name": "TruncateExtendedBios",
+      "cmd": ":exec",
       "filename": "query.sql"
     }
   ],

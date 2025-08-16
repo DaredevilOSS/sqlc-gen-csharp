@@ -1,5 +1,6 @@
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Plugin;
+using System.Collections.Generic;
 
 namespace SqlcGenCsharp.Drivers;
 
@@ -15,7 +16,6 @@ public interface IExec
 {
     MemberDeclarationSyntax ExecDeclare(string queryTextConstant, string argInterface, Query query);
 }
-
 public interface IExecRows
 {
     MemberDeclarationSyntax ExecRowsDeclare(string queryTextConstant, string argInterface, Query query);

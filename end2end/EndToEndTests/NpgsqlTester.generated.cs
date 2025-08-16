@@ -925,6 +925,24 @@ namespace EndToEndTests
         }
 
         [Test]
+        [TestCase(CEnum.Medium)]
+        [TestCase(null)]
+        public async Task TestPostgresStringTypes(CEnum? cEnum)
+        {
+            await QuerySql.InsertPostgresTypes(new QuerySql.InsertPostgresTypesArgs { CEnum = cEnum });
+            var expected = new QuerySql.GetPostgresTypesRow
+            {
+                CEnum = cEnum
+            };
+            var actual = await QuerySql.GetPostgresTypes();
+            AssertSingularEquals(expected, actual.Value);
+            void AssertSingularEquals(QuerySql.GetPostgresTypesRow x, QuerySql.GetPostgresTypesRow y)
+            {
+                Assert.That(x.CEnum, Is.EqualTo(y.CEnum));
+            }
+        }
+
+        [Test]
         public async Task TestArray()
         {
             var id1 = await this.QuerySql.CreateAuthorReturnId(new QuerySql.CreateAuthorReturnIdArgs { Name = "Albert Einstein", Bio = "Quote that everyone always attribute to Einstein" });

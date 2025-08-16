@@ -269,53 +269,6 @@ public static class MySqlTests
                      }
                      """
         },
-        [KnownTestType.MySqlEnumDataType] = new TestImpl
-        {
-            Impl = $$"""
-                     private static IEnumerable<TestCaseData> MySqlEnumTypesTestCases
-                     {
-                         get
-                         {
-                             yield return new TestCaseData(
-                                 MysqlStringTypesCEnum.Medium, 
-                                 new HashSet<MysqlStringTypesCSet> { MysqlStringTypesCSet.Tea, MysqlStringTypesCSet.Coffee }
-                             ).SetName("Valid Enum values");
-
-                             yield return new TestCaseData(
-                                 null, 
-                                 null
-                             ).SetName("Enum with null values");
-                         }
-                     }
-            
-                     [Test]
-                     [TestCaseSource(nameof(MySqlEnumTypesTestCases))]
-                     public async Task TestMySqlStringTypes(
-                         MysqlStringTypesCEnum? cEnum,
-                         HashSet<MysqlStringTypesCSet> cSet)
-                     {
-                         await QuerySql.InsertMysqlStringTypes(new QuerySql.InsertMysqlStringTypesArgs
-                         {
-                              CEnum = cEnum,
-                              CSet = cSet
-                         });
-                         
-                         var expected = new QuerySql.GetMysqlStringTypesRow
-                         {
-                              CEnum = cEnum,    
-                              CSet = cSet
-                         };
-                         var actual = await QuerySql.GetMysqlStringTypes();
-                         AssertSingularEquals(expected, actual{{Consts.UnknownRecordValuePlaceholder}});
-
-                         void AssertSingularEquals(QuerySql.GetMysqlStringTypesRow x, QuerySql.GetMysqlStringTypesRow y)
-                         {
-                             Assert.That(x.CEnum, Is.EqualTo(y.CEnum));
-                             Assert.That(x.CSet, Is.EqualTo(y.CSet));
-                         }
-                     }
-                     """
-        },
         [KnownTestType.MySqlStringCopyFrom] = new TestImpl
         {
             Impl = $$"""
@@ -657,6 +610,53 @@ public static class MySqlTests
 
                          var actual = await QuerySql.GetAuthor(new QuerySql.GetAuthorArgs { Name = {{Consts.BojackAuthor}} });
                          ClassicAssert.IsNull(actual);
+                     }
+                     """
+        },
+        [KnownTestType.MySqlEnumDataType] = new TestImpl
+        {
+            Impl = $$"""
+                     private static IEnumerable<TestCaseData> MySqlEnumTypesTestCases
+                     {
+                         get
+                         {
+                             yield return new TestCaseData(
+                                 MysqlStringTypesCEnum.Medium, 
+                                 new HashSet<MysqlStringTypesCSet> { MysqlStringTypesCSet.Tea, MysqlStringTypesCSet.Coffee }
+                             ).SetName("Valid Enum values");
+
+                             yield return new TestCaseData(
+                                 null, 
+                                 null
+                             ).SetName("Enum with null values");
+                         }
+                     }
+            
+                     [Test]
+                     [TestCaseSource(nameof(MySqlEnumTypesTestCases))]
+                     public async Task TestMySqlStringTypes(
+                         MysqlStringTypesCEnum? cEnum,
+                         HashSet<MysqlStringTypesCSet> cSet)
+                     {
+                         await QuerySql.InsertMysqlStringTypes(new QuerySql.InsertMysqlStringTypesArgs
+                         {
+                              CEnum = cEnum,
+                              CSet = cSet
+                         });
+                         
+                         var expected = new QuerySql.GetMysqlStringTypesRow
+                         {
+                              CEnum = cEnum,    
+                              CSet = cSet
+                         };
+                         var actual = await QuerySql.GetMysqlStringTypes();
+                         AssertSingularEquals(expected, actual{{Consts.UnknownRecordValuePlaceholder}});
+
+                         void AssertSingularEquals(QuerySql.GetMysqlStringTypesRow x, QuerySql.GetMysqlStringTypesRow y)
+                         {
+                             Assert.That(x.CEnum, Is.EqualTo(y.CEnum));
+                             Assert.That(x.CSet, Is.EqualTo(y.CSet));
+                         }
                      }
                      """
         },

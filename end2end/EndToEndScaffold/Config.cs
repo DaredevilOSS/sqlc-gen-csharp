@@ -59,6 +59,7 @@ public enum KnownTestType
     PostgresInvalidJson,
     PostgresXmlDataTypes,
     PostgresInvalidXml,
+    PostgresEnumDataType,
 
     ArrayAsParam,
     MultipleArraysAsParams,
@@ -207,6 +208,7 @@ internal static class Config
                     KnownTestType.PostgresNetworkDataTypes,
                     KnownTestType.PostgresXmlDataTypes,
                     KnownTestType.PostgresInvalidXml,
+                    KnownTestType.PostgresEnumDataType,
 
                     KnownTestType.PostgresStringCopyFrom,
                     KnownTestType.PostgresIntegerCopyFrom,
@@ -252,6 +254,7 @@ internal static class Config
                     KnownTestType.PostgresNetworkDataTypes,
                     KnownTestType.PostgresXmlDataTypes,
                     KnownTestType.PostgresInvalidXml,
+                    KnownTestType.PostgresEnumDataType,
 
                     KnownTestType.PostgresStringCopyFrom,
                     KnownTestType.PostgresIntegerCopyFrom,

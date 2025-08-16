@@ -38,6 +38,7 @@ public static partial class StringExtensions
     public static string ToModelName(this string value, string schema, string defaultSchema)
     {
         var schemaName = schema == defaultSchema ? string.Empty : schema;
+        value = value.Replace($"{schemaName}.", "");
         return $"{schemaName}_{value.TrimEnd('s')}".ToPascalCase(); // TODO implement better way to turn words to singular
     }
 

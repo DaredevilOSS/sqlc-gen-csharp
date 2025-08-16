@@ -43,7 +43,7 @@ public class QuerySql
     private NpgsqlTransaction? Transaction { get; }
     private string? ConnectionString { get; }
 
-    private const string InsertPostgresTypesSql = " INSERT INTO postgres_types ( c_boolean, c_bit, c_smallint, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_money, c_date, c_time, c_timestamp, c_timestamp_with_tz, c_interval, c_char, c_varchar, c_character_varying, c_bpchar, c_text, c_uuid, c_cidr, c_inet, c_macaddr, c_macaddr8 ) VALUES ( @c_boolean, @c_bit, @c_smallint, @c_integer, @c_bigint, @c_real, @c_numeric, @c_decimal, @c_double_precision, @c_money, @c_date, @c_time, @c_timestamp, @c_timestamp_with_tz, @c_interval, @c_char, @c_varchar, @c_character_varying, @c_bpchar, @c_text, @c_uuid, @c_cidr, @c_inet, @c_macaddr::macaddr, @c_macaddr8::macaddr8 )";
+    private const string InsertPostgresTypesSql = " INSERT INTO postgres_types ( c_boolean, c_bit, c_smallint, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_money, c_date, c_time, c_timestamp, c_timestamp_with_tz, c_interval, c_char, c_varchar, c_character_varying, c_bpchar, c_text, c_uuid, c_enum, c_cidr, c_inet, c_macaddr, c_macaddr8 ) VALUES ( @c_boolean, @c_bit, @c_smallint, @c_integer, @c_bigint, @c_real, @c_numeric, @c_decimal, @c_double_precision, @c_money, @c_date, @c_time, @c_timestamp, @c_timestamp_with_tz, @c_interval, @c_char, @c_varchar, @c_character_varying, @c_bpchar, @c_text, @c_uuid, @c_enum::c_enum, @c_cidr, @c_inet, @c_macaddr::macaddr, @c_macaddr8::macaddr8 )";
     public class InsertPostgresTypesArgs
     {
         public bool? CBoolean { get; init; }
@@ -67,6 +67,7 @@ public class QuerySql
         public string? CBpchar { get; init; }
         public string? CText { get; init; }
         public Guid? CUuid { get; init; }
+        public CEnum? CEnum { get; init; }
         public NpgsqlCidr? CCidr { get; init; }
         public IPAddress? CInet { get; init; }
         public PhysicalAddress? CMacaddr { get; init; }
@@ -96,6 +97,7 @@ public class QuerySql
         queryParams.Add("c_bpchar", args.CBpchar);
         queryParams.Add("c_text", args.CText);
         queryParams.Add("c_uuid", args.CUuid);
+        queryParams.Add("c_enum", args.CEnum != null ? args.CEnum.Value.Stringify() : null);
         queryParams.Add("c_cidr", args.CCidr);
         queryParams.Add("c_inet", args.CInet);
         queryParams.Add("c_macaddr", args.CMacaddr);
@@ -181,7 +183,7 @@ public class QuerySql
         }
     }
 
-    private const string GetPostgresTypesSql = "SELECT c_boolean, c_bit, c_smallint, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_money, c_date, c_time, c_timestamp, c_timestamp_with_tz, c_interval, c_char, c_varchar, c_character_varying, c_bpchar, c_text, c_uuid, c_cidr, c_inet, c_macaddr, c_macaddr8::TEXT AS c_macaddr8 FROM postgres_types LIMIT 1";
+    private const string GetPostgresTypesSql = "SELECT c_boolean, c_bit, c_smallint, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_money, c_date, c_time, c_timestamp, c_timestamp_with_tz, c_interval, c_char, c_varchar, c_character_varying, c_bpchar, c_text, c_uuid, c_enum, c_cidr, c_inet, c_macaddr, c_macaddr8::TEXT AS c_macaddr8 FROM postgres_types LIMIT 1";
     public class GetPostgresTypesRow
     {
         public bool? CBoolean { get; init; }
@@ -205,6 +207,7 @@ public class QuerySql
         public string? CBpchar { get; init; }
         public string? CText { get; init; }
         public Guid? CUuid { get; init; }
+        public CEnum? CEnum { get; init; }
         public NpgsqlCidr? CCidr { get; init; }
         public IPAddress? CInet { get; init; }
         public PhysicalAddress? CMacaddr { get; init; }
@@ -1062,5 +1065,74 @@ public class QuerySql
                 return result;
             }
         }
+    }
+
+    private const string CreateExtendedBioSql = "INSERT INTO extended.bios (author_name, name, bio_type) VALUES (@author_name, @name, @bio_type)";
+    public class CreateExtendedBioArgs
+    {
+        public required string AuthorName { get; init; }
+        public required string Name { get; init; }
+        public ExtendedBioType? BioType { get; init; }
+    };
+    public async Task CreateExtendedBio(CreateExtendedBioArgs args)
+    {
+        var queryParams = new Dictionary<string, object?>();
+        queryParams.Add("author_name", args.AuthorName);
+        queryParams.Add("name", args.Name);
+        queryParams.Add("bio_type", args.BioType != null ? args.BioType.Value.Stringify() : null);
+        if (this.Transaction == null)
+        {
+            using (var connection = new NpgsqlConnection(ConnectionString))
+                await connection.ExecuteAsync(CreateExtendedBioSql, queryParams);
+            return;
+        }
+
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+        await this.Transaction.Connection.ExecuteAsync(CreateExtendedBioSql, queryParams, transaction: this.Transaction);
+    }
+
+    private const string GetFirstExtendedBioByTypeSql = "SELECT author_name, name, bio_type FROM extended.bios WHERE bio_type = @bio_type LIMIT 1";
+    public class GetFirstExtendedBioByTypeRow
+    {
+        public required string AuthorName { get; init; }
+        public required string Name { get; init; }
+        public ExtendedBioType? BioType { get; init; }
+    };
+    public class GetFirstExtendedBioByTypeArgs
+    {
+        public ExtendedBioType? BioType { get; init; }
+    };
+    public async Task<GetFirstExtendedBioByTypeRow?> GetFirstExtendedBioByType(GetFirstExtendedBioByTypeArgs args)
+    {
+        var queryParams = new Dictionary<string, object?>();
+        queryParams.Add("bio_type", args.BioType != null ? args.BioType.Value.Stringify() : null);
+        if (this.Transaction == null)
+        {
+            using (var connection = new NpgsqlConnection(ConnectionString))
+            {
+                var result = await connection.QueryFirstOrDefaultAsync<GetFirstExtendedBioByTypeRow?>(GetFirstExtendedBioByTypeSql, queryParams);
+                return result;
+            }
+        }
+
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+        return await this.Transaction.Connection.QueryFirstOrDefaultAsync<GetFirstExtendedBioByTypeRow?>(GetFirstExtendedBioByTypeSql, queryParams, transaction: this.Transaction);
+    }
+
+    private const string TruncateExtendedBiosSql = "TRUNCATE TABLE extended.bios";
+    public async Task TruncateExtendedBios()
+    {
+        if (this.Transaction == null)
+        {
+            using (var connection = new NpgsqlConnection(ConnectionString))
+                await connection.ExecuteAsync(TruncateExtendedBiosSql);
+            return;
+        }
+
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+        await this.Transaction.Connection.ExecuteAsync(TruncateExtendedBiosSql, transaction: this.Transaction);
     }
 }

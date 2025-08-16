@@ -14,28 +14,6 @@ public class CommonGen(DbDriver dbDriver)
             : $"{argInterface} {Variable.Args.AsVarName()}")}";
     }
 
-    public Func<string, bool, bool, string>? GetWriterFn(Column column, Query query)
-    {
-        var csharpType = dbDriver.GetCsharpTypeWithoutNullableSuffix(column, query);
-        var writerFn = dbDriver.ColumnMappings.GetValueOrDefault(csharpType)?.WriterFn;
-        if (writerFn is not null)
-            return writerFn;
-
-        if (dbDriver.GetEnumType(column) is { } enumType)
-            if (dbDriver.EnumToCsharpTypeName(column, enumType).StartsWith("HashSet"))
-                return (el, notNull, isDapper) =>
-                {
-                    var stringJoinStmt = $"string.Join(\",\", {el})";
-                    var nullValue = isDapper ? "null" : "(object)DBNull.Value";
-                    return notNull
-                        ? stringJoinStmt
-                        : $"{el} != null ? {stringJoinStmt} : {nullValue}";
-                };
-
-        string DefaultWriterFn(string el, bool notNull, bool isDapper) => notNull ? el : $"{el} ?? (object)DBNull.Value";
-        return dbDriver.Options.UseDapper ? null : DefaultWriterFn;
-    }
-
     // TODO: extract AddWithValue statement generation to a method + possible override for Npgsql for type override
     public string AddParametersToCommand(Query query)
     {
@@ -50,7 +28,7 @@ public class CommonGen(DbDriver dbDriver)
                          """;
 
             var notNull = dbDriver.IsColumnNotNull(p.Column, query);
-            var writerFn = GetWriterFn(p.Column, query);
+            var writerFn = dbDriver.GetWriterFn(p.Column, query);
             var paramToWrite = writerFn is null ? param : writerFn(param, notNull, dbDriver.Options.UseDapper);
             var addParamToCommand = $"""{commandVar}.Parameters.AddWithValue("@{p.Column.Name}", {paramToWrite});""";
             return addParamToCommand;
@@ -79,7 +57,7 @@ public class CommonGen(DbDriver dbDriver)
                 param += "?.ToEnumString()";
 
             var notNull = dbDriver.IsColumnNotNull(p.Column, query);
-            var writerFn = GetWriterFn(p.Column, query);
+            var writerFn = dbDriver.GetWriterFn(p.Column, query);
             var paramToWrite = writerFn is null ? $"{argsVar}.{param}" : writerFn($"{argsVar}.{param}", notNull, dbDriver.Options.UseDapper);
             var addParamToDict = $"{queryParamsVar}.Add(\"{p.Column.Name}\", {paramToWrite});";
             return addParamToDict;

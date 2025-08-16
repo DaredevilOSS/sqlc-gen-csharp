@@ -1,22 +1,23 @@
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Plugin;
 using SqlcGenCsharp.Drivers.Generators;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace SqlcGenCsharp.Drivers;
 
-public partial class MySqlConnectorDriver(
+public sealed partial class MySqlConnectorDriver(
     Options options,
-    string defaultSchema,
-    Dictionary<string, Dictionary<string, Table>> tables,
-    Dictionary<string, Dictionary<string, Enum>> enums,
+    Catalog catalog,
     IList<Query> queries) :
-    DbDriver(options, defaultSchema, tables, enums, queries), IOne, IMany, IExec, IExecRows, IExecLastId, ICopyFrom
+    DbDriver(options, catalog, queries),
+    IOne, IMany, IExec, IExecRows, IExecLastId, ICopyFrom
 {
-    public override Dictionary<string, ColumnMapping> ColumnMappings { get; } =
+    protected override Dictionary<string, ColumnMapping> ColumnMappings { get; } =
         new()
         {
             /* Numeric data types */
@@ -155,7 +156,6 @@ public partial class MySqlConnectorDriver(
 
     public override string TransactionClassName => "MySqlTransaction";
 
-
     public MemberDeclarationSyntax OneDeclare(string queryTextConstant, string argInterface,
         string returnInterface, Query query)
     {
@@ -187,7 +187,6 @@ public partial class MySqlConnectorDriver(
     {
         return new CopyFromDeclareGen(this).Generate(queryTextConstant, argInterface, query);
     }
-
 
     public override ISet<string> GetUsingDirectivesForQueries()
     {
@@ -401,7 +400,7 @@ public partial class MySqlConnectorDriver(
 
     public override ConnectionGenCommands EstablishConnection(Query query)
     {
-        return new ConnectionGenCommands(
+        return new(
             $"var {Variable.Connection.AsVarName()} = new MySqlConnection({Variable.ConnectionString.AsPropertyName()})",
             $"await {Variable.Connection.AsVarName()}.OpenAsync()"
         );
@@ -441,9 +440,9 @@ public partial class MySqlConnectorDriver(
 
     /* :copyfrom methods */
     public const string NullToStringCsvConverter = "NullToStringCsvConverter";
-    public const string BoolToBitCsvConverter = "BoolToBitCsvConverter";
-    public const string ByteCsvConverter = "ByteCsvConverter";
-    public const string ByteArrayCsvConverter = "ByteArrayCsvConverter";
+    private const string BoolToBitCsvConverter = "BoolToBitCsvConverter";
+    private const string ByteCsvConverter = "ByteCsvConverter";
+    private const string ByteArrayCsvConverter = "ByteArrayCsvConverter";
 
     public string GetCopyFromImpl(Query query, string queryTextConstant)
     {
@@ -570,13 +569,13 @@ public partial class MySqlConnectorDriver(
     }
 
     /* Enum methods */
-    public override string EnumToCsharpTypeName(Column column, Enum enumType)
+    protected override string EnumToCsharpTypeName(Column column, Plugin.Enum enumType)
     {
         var enumName = column.Type.Name.ToModelName(GetColumnSchema(column), DefaultSchema);
         return IsSetDataType(column, enumType) ? $"HashSet<{enumName}>" : enumName;
     }
 
-    private static bool IsSetDataType(Column column, Enum enumType)
+    private static bool IsSetDataType(Column column, Plugin.Enum enumType)
     {
         return column.Length > enumType.Vals.Select(v => v.Length).Sum();
     }
@@ -585,5 +584,58 @@ public partial class MySqlConnectorDriver(
     {
         var enumType = GetEnumType(column);
         return enumType is not null && IsSetDataType(column, enumType);
+    }
+
+    protected override Dictionary<string, Dictionary<string, Plugin.Enum>> ConstructEnumsLookup(Catalog catalog)
+    {
+        var defaultSchemaCatalog = catalog.Schemas.First(s => s.Name == catalog.DefaultSchema);
+        return defaultSchemaCatalog.Enums
+            .Select(e => new
+            {
+                EnumItem = e,
+                Schema = FindEnumSchema(e)
+            })
+            .GroupBy(x => x.Schema)
+            .ToDictionary(
+                group => group.Key,
+                group => group.ToDictionary(
+                    x => x.EnumItem.Name,
+                    x => x.EnumItem)
+            );
+    }
+
+    private string FindEnumSchema(Plugin.Enum e)
+    {
+        foreach (var schemaTables in Tables)
+        {
+            foreach (var table in schemaTables.Value)
+            {
+                var isEnumColumn = table.Value.Columns.Any(c => c.Type.Name == e.Name);
+                if (isEnumColumn)
+                    return schemaTables.Key;
+            }
+        }
+        throw new InvalidDataException($"No enum {e.Name} schema found.");
+    }
+
+    public override Func<string, bool, bool, string>? GetWriterFn(Column column, Query query)
+    {
+        var csharpType = GetCsharpTypeWithoutNullableSuffix(column, query);
+        var writerFn = ColumnMappings.GetValueOrDefault(csharpType)?.WriterFn;
+        if (writerFn is not null)
+            return writerFn;
+
+        if (GetEnumType(column) is { } enumType && IsSetDataType(column, enumType))
+            return (el, notNull, isDapper) =>
+            {
+                var stringJoinStmt = $"string.Join(\",\", {el})";
+                var nullValue = isDapper ? "null" : "(object)DBNull.Value";
+                return notNull
+                    ? stringJoinStmt
+                    : $"{el} != null ? {stringJoinStmt} : {nullValue}";
+            };
+
+        static string DefaultWriterFn(string el, bool notNull, bool isDapper) => notNull ? el : $"{el} ?? (object)DBNull.Value";
+        return Options.UseDapper ? null : DefaultWriterFn;
     }
 }
