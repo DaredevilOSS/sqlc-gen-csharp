@@ -505,6 +505,29 @@ namespace EndToEndTests
         }
 
         [Test]
+        [Obsolete]
+        public async Task TestPostgresFullTextSearchDataTypes()
+        {
+            await QuerySql.InsertPostgresStringTypes(new QuerySql.InsertPostgresStringTypesArgs { CText = "Hello world" });
+            var actual = await QuerySql.GetPostgresStringTypesTextSearch(new QuerySql.GetPostgresStringTypesTextSearchArgs { ToTsquery = "Hello" });
+            var expected = new QuerySql.GetPostgresStringTypesTextSearchRow
+            {
+                CText = "Hello world",
+                Query = new NpgsqlTsQueryLexeme("hello"),
+                Tsv = NpgsqlTsVector.Parse("hello:1 world:2"),
+                Rnk = 0.07f
+            };
+            AssertSingularEquals(expected, actual);
+            void AssertSingularEquals(QuerySql.GetPostgresStringTypesTextSearchRow x, QuerySql.GetPostgresStringTypesTextSearchRow y)
+            {
+                Assert.That(y.CText, Is.EqualTo(x.CText));
+                Assert.That(y.Query.ToString(), Is.EqualTo(x.Query.ToString()));
+                Assert.That(y.Tsv.ToString(), Is.EqualTo(x.Tsv.ToString()));
+                Assert.That(y.Rnk, Is.AtMost(x.Rnk));
+            }
+        }
+
+        [Test]
         [TestCase(100, "z", "Sex Pistols", "Anarchy in the U.K", "Yoshimi Battles the Pink Robots", "Never Mind the Bollocks...")]
         [TestCase(10, null, null, null, null, null)]
         public async Task TestStringCopyFrom(int batchSize, string cChar, string cVarchar, string cCharacterVarying, string cBpchar, string cText)

@@ -10573,7 +10573,27 @@ pg_catalogvarcharz	c_varchar"e
 pg_catalogvarcharzc_character_varying"B
 c_bpchar0ÿÿÿÿÿÿÿÿÿRpostgres_string_typesbbpcharzc_bpchar"<
 c_text0ÿÿÿÿÿÿÿÿÿRpostgres_string_typesbtextzc_text"
-cnt0ÿÿÿÿÿÿÿÿÿ@bbigint:	query.sqlÐ
+cnt0ÿÿÿÿÿÿÿÿÿ@bbigint:	query.sqlì
+ØWITH txt_query AS (
+    SELECT 
+        c_text, 
+        to_tsquery('english', $1) AS query,
+        to_tsvector('english', c_text) AS tsv
+    FROM postgres_string_types 
+    WHERE c_text @@ to_tsquery('english', $1)
+)
+
+SELECT txt_query.c_text, txt_query.query, txt_query.tsv, ts_rank(tsv, query) AS rnk
+FROM txt_query
+ORDER BY rnk DESC
+LIMIT 1 GetPostgresStringTypesTextSearch:one"0
+c_text0ÿÿÿÿÿÿÿÿÿR	txt_querybtextzc_text"3
+query0ÿÿÿÿÿÿÿÿÿR	txt_queryb	tsqueryzquery"0
+tsv0ÿÿÿÿÿÿÿÿÿR	txt_queryb
+tsvectorztsv"
+rnk0ÿÿÿÿÿÿÿÿÿ@breal*%!
+
+to_tsquery0ÿÿÿÿÿÿÿÿÿbtext:	query.sqlÐ
 ù
 INSERT INTO postgres_unstructured_types
 (

@@ -42,6 +42,7 @@ public enum KnownTestType
     PostgresArrayDataTypes,
     PostgresDataTypesOverride,
     PostgresGuidDataTypes,
+    PostgresFullTextSearchDataTypes,
 
     PostgresStringCopyFrom,
     PostgresTransaction,
@@ -209,6 +210,7 @@ internal static class Config
                     KnownTestType.PostgresXmlDataTypes,
                     KnownTestType.PostgresInvalidXml,
                     KnownTestType.PostgresEnumDataType,
+                    KnownTestType.PostgresFullTextSearchDataTypes,
 
                     KnownTestType.PostgresStringCopyFrom,
                     KnownTestType.PostgresIntegerCopyFrom,
@@ -255,6 +257,7 @@ internal static class Config
                     KnownTestType.PostgresXmlDataTypes,
                     KnownTestType.PostgresInvalidXml,
                     KnownTestType.PostgresEnumDataType,
+                    KnownTestType.PostgresFullTextSearchDataTypes,
 
                     KnownTestType.PostgresStringCopyFrom,
                     KnownTestType.PostgresIntegerCopyFrom,

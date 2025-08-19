@@ -409,6 +409,36 @@ public class QuerySql
         return await this.Transaction.Connection.QueryFirstOrDefaultAsync<GetPostgresStringTypesCntRow?>(GetPostgresStringTypesCntSql, transaction: this.Transaction);
     }
 
+    private const string GetPostgresStringTypesTextSearchSql = "WITH txt_query AS ( SELECT c_text, to_tsquery('english', @to_tsquery) AS query, to_tsvector('english', c_text) AS tsv FROM postgres_string_types WHERE c_text @@ to_tsquery('english', @to_tsquery) ) SELECT txt_query.c_text, txt_query.query, txt_query.tsv, ts_rank(tsv, query) AS rnk FROM txt_query ORDER BY rnk DESC LIMIT 1";
+    public class GetPostgresStringTypesTextSearchRow
+    {
+        public string? CText { get; init; }
+        public required NpgsqlTsQuery Query { get; init; }
+        public required NpgsqlTsVector Tsv { get; init; }
+        public required float Rnk { get; init; }
+    };
+    public class GetPostgresStringTypesTextSearchArgs
+    {
+        public required string ToTsquery { get; init; }
+    };
+    public async Task<GetPostgresStringTypesTextSearchRow?> GetPostgresStringTypesTextSearch(GetPostgresStringTypesTextSearchArgs args)
+    {
+        var queryParams = new Dictionary<string, object?>();
+        queryParams.Add("to_tsquery", args.ToTsquery);
+        if (this.Transaction == null)
+        {
+            using (var connection = new NpgsqlConnection(ConnectionString))
+            {
+                var result = await connection.QueryFirstOrDefaultAsync<GetPostgresStringTypesTextSearchRow?>(GetPostgresStringTypesTextSearchSql, queryParams);
+                return result;
+            }
+        }
+
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+        return await this.Transaction.Connection.QueryFirstOrDefaultAsync<GetPostgresStringTypesTextSearchRow?>(GetPostgresStringTypesTextSearchSql, queryParams, transaction: this.Transaction);
+    }
+
     private const string InsertPostgresUnstructuredTypesSql = " INSERT INTO postgres_unstructured_types ( c_json, c_json_string_override, c_jsonb, c_jsonpath, c_xml, c_xml_string_override ) VALUES ( @c_json::json, @c_json_string_override::json, @c_jsonb::jsonb, @c_jsonpath::jsonpath, @c_xml::xml, @c_xml_string_override::xml )";
     public class InsertPostgresUnstructuredTypesArgs
     {

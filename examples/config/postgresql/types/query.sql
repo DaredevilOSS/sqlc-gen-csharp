@@ -218,6 +218,21 @@ GROUP BY
     c_text
 LIMIT 1;
 
+-- name: GetPostgresStringTypesTextSearch :one
+WITH txt_query AS (
+    SELECT 
+        c_text, 
+        to_tsquery('english', $1) AS query,
+        to_tsvector('english', c_text) AS tsv
+    FROM postgres_string_types 
+    WHERE c_text @@ to_tsquery('english', $1)
+)
+
+SELECT txt_query.*, ts_rank(tsv, query) AS rnk
+FROM txt_query
+ORDER BY rnk DESC
+LIMIT 1;
+
 /* Unstructured types */
 
 -- name: InsertPostgresUnstructuredTypes :exec

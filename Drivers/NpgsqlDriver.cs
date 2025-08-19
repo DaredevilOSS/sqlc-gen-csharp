@@ -76,7 +76,8 @@ public sealed class NpgsqlDriver : EnumDbDriver, IOne, IMany, IExec, IExecRows, 
             ["float"] = new(
                 new()
                 {
-                    { "float4", new() }
+                    { "float4", new() },
+                    { "real", new() }
                 },
                 readerFn: ordinal => $"reader.GetFloat({ordinal})",
                 readerArrayFn: ordinal => $"reader.GetFieldValue<float[]>({ordinal})"
@@ -284,6 +285,28 @@ public sealed class NpgsqlDriver : EnumDbDriver, IOne, IMany, IExec, IExecRows, 
                 readerArrayFn: ordinal => $"reader.GetFieldValue<PhysicalAddress[]>({ordinal})",
                 usingDirective: "System.Net.NetworkInformation",
                 sqlMapper: "SqlMapper.AddTypeHandler(typeof(PhysicalAddress), new NpgsqlTypeHandler<PhysicalAddress>());"
+            ),
+
+            /* Full-text search data types */
+            ["NpgsqlTsQuery"] = new(
+                new()
+                {
+                    { "tsquery", new() }
+                },
+                readerFn: ordinal => $"reader.GetFieldValue<NpgsqlTsQuery>({ordinal})",
+                readerArrayFn: ordinal => $"reader.GetFieldValue<NpgsqlTsQuery[]>({ordinal})",
+                usingDirective: "NpgsqlTypes",
+                sqlMapper: "SqlMapper.AddTypeHandler(typeof(NpgsqlTsQuery), new NpgsqlTypeHandler<NpgsqlTsQuery>());"
+            ),
+            ["NpgsqlTsVector"] = new(
+                new()
+                {
+                    { "tsvector", new() }
+                },
+                readerFn: ordinal => $"reader.GetFieldValue<NpgsqlTsVector>({ordinal})",
+                readerArrayFn: ordinal => $"reader.GetFieldValue<NpgsqlTsVector[]>({ordinal})",
+                usingDirective: "NpgsqlTypes",
+                sqlMapper: "SqlMapper.AddTypeHandler(typeof(NpgsqlTsVector), new NpgsqlTypeHandler<NpgsqlTsVector>());"
             ),
 
             /* Other data types */

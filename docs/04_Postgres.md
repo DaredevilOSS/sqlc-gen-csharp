@@ -59,8 +59,8 @@ we consider support for the different data types separately for batch inserts an
 | inet                                    | ✅         | ✅                  |
 | macaddr                                 | ✅         | ✅                  |
 | macaddr8                                | ✅         | ❌                  |
-| tsvector                                | ❌         | ❌                  |
-| tsquery                                 | ❌         | ❌                  |
+| tsvector                                | ✅         | ❌                  |
+| tsquery                                 | ✅         | ❌                  |
 | uuid                                    | ✅         | ✅                  |
 | json                                    | ✅         | ❌                  |
 | jsonb                                   | ✅         | ❌                  |

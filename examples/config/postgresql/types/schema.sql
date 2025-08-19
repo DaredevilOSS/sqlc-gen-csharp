@@ -41,6 +41,11 @@ CREATE TABLE postgres_string_types (
     c_text              TEXT
 );
 
+CREATE EXTENSION "pg_trgm";
+CREATE EXTENSION "btree_gin";
+
+CREATE INDEX postgres_txt_idx ON postgres_string_types USING GIN (c_text);
+
 CREATE TABLE postgres_unstructured_types (
     c_json                 JSON,
     c_json_string_override JSON,

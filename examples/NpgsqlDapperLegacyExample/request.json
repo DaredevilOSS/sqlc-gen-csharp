@@ -34013,6 +34013,71 @@
       "filename": "query.sql"
     },
     {
+      "text": "WITH txt_query AS (\n    SELECT \n        c_text, \n        to_tsquery('english', $1) AS query,\n        to_tsvector('english', c_text) AS tsv\n    FROM postgres_string_types \n    WHERE c_text @@ to_tsquery('english', $1)\n)\n\nSELECT txt_query.c_text, txt_query.query, txt_query.tsv, ts_rank(tsv, query) AS rnk\nFROM txt_query\nORDER BY rnk DESC\nLIMIT 1",
+      "name": "GetPostgresStringTypesTextSearch",
+      "cmd": ":one",
+      "columns": [
+        {
+          "name": "c_text",
+          "length": -1,
+          "table": {
+            "name": "txt_query"
+          },
+          "type": {
+            "name": "text"
+          },
+          "originalName": "c_text"
+        },
+        {
+          "name": "query",
+          "notNull": true,
+          "length": -1,
+          "table": {
+            "name": "txt_query"
+          },
+          "type": {
+            "name": "tsquery"
+          },
+          "originalName": "query"
+        },
+        {
+          "name": "tsv",
+          "notNull": true,
+          "length": -1,
+          "table": {
+            "name": "txt_query"
+          },
+          "type": {
+            "name": "tsvector"
+          },
+          "originalName": "tsv"
+        },
+        {
+          "name": "rnk",
+          "notNull": true,
+          "length": -1,
+          "isFuncCall": true,
+          "type": {
+            "name": "real"
+          }
+        }
+      ],
+      "parameters": [
+        {
+          "number": 1,
+          "column": {
+            "name": "to_tsquery",
+            "notNull": true,
+            "length": -1,
+            "type": {
+              "name": "text"
+            }
+          }
+        }
+      ],
+      "filename": "query.sql"
+    },
+    {
       "text": "\nINSERT INTO postgres_unstructured_types\n(\n    c_json,\n    c_json_string_override,\n    c_jsonb,\n    c_jsonpath,\n    c_xml,\n    c_xml_string_override\n)\nVALUES (\n    $1::json, \n    $2::json, \n    $3::jsonb,\n    $4::jsonpath,\n    $5::xml,\n    $6::xml\n)",
       "name": "InsertPostgresUnstructuredTypes",
       "cmd": ":exec",

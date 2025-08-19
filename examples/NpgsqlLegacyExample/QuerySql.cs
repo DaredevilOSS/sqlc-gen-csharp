@@ -718,6 +718,71 @@ namespace NpgsqlLegacyExampleGen
             return null;
         }
 
+        private const string GetPostgresStringTypesTextSearchSql = "WITH txt_query AS ( SELECT c_text, to_tsquery('english', @to_tsquery) AS query, to_tsvector('english', c_text) AS tsv FROM postgres_string_types WHERE c_text @@ to_tsquery('english', @to_tsquery) ) SELECT txt_query.c_text, txt_query.query, txt_query.tsv, ts_rank(tsv, query) AS rnk FROM txt_query ORDER BY rnk DESC LIMIT 1";
+        public class GetPostgresStringTypesTextSearchRow
+        {
+            public string CText { get; set; }
+            public NpgsqlTsQuery Query { get; set; }
+            public NpgsqlTsVector Tsv { get; set; }
+            public float Rnk { get; set; }
+        };
+        public class GetPostgresStringTypesTextSearchArgs
+        {
+            public string ToTsquery { get; set; }
+        };
+        public async Task<GetPostgresStringTypesTextSearchRow> GetPostgresStringTypesTextSearch(GetPostgresStringTypesTextSearchArgs args)
+        {
+            if (this.Transaction == null)
+            {
+                using (var connection = NpgsqlDataSource.Create(ConnectionString))
+                {
+                    using (var command = connection.CreateCommand(GetPostgresStringTypesTextSearchSql))
+                    {
+                        command.Parameters.AddWithValue("@to_tsquery", args.ToTsquery);
+                        using (var reader = await command.ExecuteReaderAsync())
+                        {
+                            if (await reader.ReadAsync())
+                            {
+                                return new GetPostgresStringTypesTextSearchRow
+                                {
+                                    CText = reader.IsDBNull(0) ? null : reader.GetString(0),
+                                    Query = reader.GetFieldValue<NpgsqlTsQuery>(1),
+                                    Tsv = reader.GetFieldValue<NpgsqlTsVector>(2),
+                                    Rnk = reader.GetFloat(3)
+                                };
+                            }
+                        }
+                    }
+                }
+
+                return null;
+            }
+
+            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+                throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+            using (var command = this.Transaction.Connection.CreateCommand())
+            {
+                command.CommandText = GetPostgresStringTypesTextSearchSql;
+                command.Transaction = this.Transaction;
+                command.Parameters.AddWithValue("@to_tsquery", args.ToTsquery);
+                using (var reader = await command.ExecuteReaderAsync())
+                {
+                    if (await reader.ReadAsync())
+                    {
+                        return new GetPostgresStringTypesTextSearchRow
+                        {
+                            CText = reader.IsDBNull(0) ? null : reader.GetString(0),
+                            Query = reader.GetFieldValue<NpgsqlTsQuery>(1),
+                            Tsv = reader.GetFieldValue<NpgsqlTsVector>(2),
+                            Rnk = reader.GetFloat(3)
+                        };
+                    }
+                }
+            }
+
+            return null;
+        }
+
         private const string InsertPostgresUnstructuredTypesSql = " INSERT INTO postgres_unstructured_types ( c_json, c_json_string_override, c_jsonb, c_jsonpath, c_xml, c_xml_string_override ) VALUES ( @c_json::json, @c_json_string_override::json, @c_jsonb::jsonb, @c_jsonpath::jsonpath, @c_xml::xml, @c_xml_string_override::xml )";
         public class InsertPostgresUnstructuredTypesArgs
         {
