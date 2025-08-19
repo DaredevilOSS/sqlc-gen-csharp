@@ -3,7 +3,7 @@
 2
 postgresql+examples/config/postgresql/types/schema.sql-examples/config/postgresql/authors/schema.sql"*examples/config/postgresql/types/query.sql",examples/config/postgresql/authors/query.sqlbğ
 "examples/NpgsqlDapperLegacyExamplecsharp«{"debugRequest":true,"generateCsproj":true,"namespaceName":"NpgsqlDapperLegacyExampleGen","overrides":[{"column":"GetPostgresFunctions:max_integer","csharp_type":{"notNull":false,"type":"int"}},{"column":"GetPostgresFunctions:max_varchar","csharp_type":{"notNull":false,"type":"string"}},{"column":"GetPostgresFunctions:max_timestamp","csharp_type":{"notNull":true,"type":"DateTime"}},{"column":"*:c_json_string_override","csharp_type":{"notNull":false,"type":"string"}},{"column":"*:c_xml_string_override","csharp_type":{"notNull":false,"type":"string"}},{"column":"*:c_macaddr8","csharp_type":{"notNull":false,"type":"string"}}],"targetFramework":"netstandard2.0","useDapper":true}*
-./dist/LocalRunner·êpublic"ùpublic’
+./dist/LocalRunneröêpublic"¸publicç	
 postgres_types<
 	c_boolean0ÿÿÿÿÿÿÿÿÿRpostgres_typesb
 pg_catalogbool7
@@ -34,15 +34,7 @@ pg_catalog	timestampM
 pg_catalogtimestamptzA
 
 c_interval0ÿÿÿÿÿÿÿÿÿRpostgres_typesb
-pg_cataloginterval;
-c_char0ÿÿÿÿÿÿÿÿÿRpostgres_typesb
-pg_catalogbpchar?
-	c_varchar0ÿÿÿÿÿÿÿÿÿRpostgres_typesb
-pg_catalogvarcharI
-c_character_varying0ÿÿÿÿÿÿÿÿÿRpostgres_typesb
-pg_catalogvarchar1
-c_bpchar0ÿÿÿÿÿÿÿÿÿRpostgres_typesbbpchar-
-c_text0ÿÿÿÿÿÿÿÿÿRpostgres_typesbtext-
+pg_cataloginterval-
 c_cidr0ÿÿÿÿÿÿÿÿÿRpostgres_typesbcidr-
 c_inet0ÿÿÿÿÿÿÿÿÿRpostgres_typesbinet3
 	c_macaddr0ÿÿÿÿÿÿÿÿÿRpostgres_typesb	macaddr5
@@ -50,7 +42,16 @@ pg_catalogvarchar1
 c_macaddr80ÿÿÿÿÿÿÿÿÿRpostgres_typesb
 macaddr8-
 c_uuid0ÿÿÿÿÿÿÿÿÿRpostgres_typesbuuid/
-c_enum0ÿÿÿÿÿÿÿÿÿRpostgres_typesbc_enum­
+c_enum0ÿÿÿÿÿÿÿÿÿRpostgres_typesbc_enumç
+postgres_string_typesB
+c_char0ÿÿÿÿÿÿÿÿÿRpostgres_string_typesb
+pg_catalogbpcharF
+	c_varchar0ÿÿÿÿÿÿÿÿÿRpostgres_string_typesb
+pg_catalogvarcharP
+c_character_varying0ÿÿÿÿÿÿÿÿÿRpostgres_string_typesb
+pg_catalogvarchar8
+c_bpchar0ÿÿÿÿÿÿÿÿÿRpostgres_string_typesbbpchar4
+c_text0ÿÿÿÿÿÿÿÿÿRpostgres_string_typesbtext­
 postgres_unstructured_types:
 c_json0ÿÿÿÿÿÿÿÿÿRpostgres_unstructured_typesbjsonJ
 c_json_string_override0ÿÿÿÿÿÿÿÿÿRpostgres_unstructured_typesbjson<
@@ -10218,8 +10219,8 @@ pg_catalogvarchar<
 name0ÿÿÿÿÿÿÿÿÿRextendedbiosb
 pg_catalogvarchar=
 bio_type0ÿÿÿÿÿÿÿÿÿRextendedbiosbextendedbio_type",
-bio_typeAutobiography	BiographyMemoirú
-©
+bio_typeAutobiography	BiographyMemoir×
+®
 INSERT INTO postgres_types
 (
     c_boolean,
@@ -10237,11 +10238,6 @@ INSERT INTO postgres_types
     c_timestamp,
     c_timestamp_with_tz,
     c_interval,
-    c_char,
-    c_varchar,
-    c_character_varying,
-    c_bpchar,
-    c_text,
     c_uuid,
     c_enum,
     c_cidr,
@@ -10266,16 +10262,11 @@ VALUES (
     $14,
     $15,
     $16,
-    $17,
+    $17::c_enum,
     $18,
     $19,
-    $20,
-    $21,
-    $22::c_enum,
-    $23,
-    $24,
-    $25::macaddr,
-    $26::macaddr8
+    $20::macaddr,
+    $21::macaddr8
 )InsertPostgresTypes:exec*TP
 	c_boolean0ÿÿÿÿÿÿÿÿÿ8Rpublicpostgres_typesbpg_catalog.boolz	c_boolean*KG
 c_bit0ÿÿÿÿÿÿÿÿÿ8Rpublicpostgres_typesbpg_catalog.bitzc_bit*VR
@@ -10296,21 +10287,16 @@ c_smallint*TP
 c_timestamp_with_tz0ÿÿÿÿÿÿÿÿÿ8Rpublicpostgres_typesbpg_catalog.timestamptzzc_timestamp_with_tz*ZV
 
 c_interval0ÿÿÿÿÿÿÿÿÿ8Rpublicpostgres_typesbpg_catalog.intervalz
-c_interval*PL
-c_char0ÿÿÿÿÿÿÿÿÿ8Rpublicpostgres_typesbpg_catalog.bpcharzc_char*WS
-	c_varchar0ÿÿÿÿÿÿÿÿÿ8Rpublicpostgres_typesbpg_catalog.varcharz	c_varchar*kg
-c_character_varying0ÿÿÿÿÿÿÿÿÿ8Rpublicpostgres_typesbpg_catalog.varcharzc_character_varying*IE
-c_bpchar0ÿÿÿÿÿÿÿÿÿ8Rpublicpostgres_typesbbpcharzc_bpchar*C?
-c_text0ÿÿÿÿÿÿÿÿÿ8Rpublicpostgres_typesbtextzc_text*C?
-c_uuid0ÿÿÿÿÿÿÿÿÿ8Rpublicpostgres_typesbuuidzc_uuid*!
-c_enum0ÿÿÿÿÿÿÿÿÿbc_enum*C?
-c_cidr0ÿÿÿÿÿÿÿÿÿ8Rpublicpostgres_typesbcidrzc_cidr*C?
-c_inet0ÿÿÿÿÿÿÿÿÿ8Rpublicpostgres_typesbinetzc_inet*%!
-	c_macaddr0ÿÿÿÿÿÿÿÿÿb	macaddr*'#
+c_interval*C?
+c_uuid0ÿÿÿÿÿÿÿÿÿ8Rpublicpostgres_typesbuuidzc_uuid*!
+c_enum0ÿÿÿÿÿÿÿÿÿbc_enum*C?
+c_cidr0ÿÿÿÿÿÿÿÿÿ8Rpublicpostgres_typesbcidrzc_cidr*C?
+c_inet0ÿÿÿÿÿÿÿÿÿ8Rpublicpostgres_typesbinetzc_inet*%!
+	c_macaddr0ÿÿÿÿÿÿÿÿÿb	macaddr*'#
 
 c_macaddr80ÿÿÿÿÿÿÿÿÿb
-macaddr82 Basic types :	query.sqlBpostgres_types‡
-ÜINSERT INTO postgres_types
+macaddr82 Basic types :	query.sqlBpostgres_typesî
+áINSERT INTO postgres_types
 (
     c_boolean,
     c_smallint,
@@ -10326,11 +10312,6 @@ c_macaddr80ÿÿÿÿÿÿÿÿÿb
     c_timestamp,
     c_timestamp_with_tz,
     c_interval,
-    c_char,
-    c_varchar,
-    c_character_varying,
-    c_bpchar,
-    c_text,
     c_uuid,
     c_cidr,
     c_inet,
@@ -10354,12 +10335,7 @@ VALUES (
     $15, 
     $16, 
     $17, 
-    $18,
-    $19,
-    $20,
-    $21,
-    $22,
-    $23
+    $18
 )InsertPostgresTypesBatch	:copyfrom*RN
 	c_boolean0ÿÿÿÿÿÿÿÿÿRpublicpostgres_typesbpg_catalog.boolz	c_boolean*TP
 
@@ -10379,17 +10355,12 @@ c_smallint*RN
 c_timestamp_with_tz0ÿÿÿÿÿÿÿÿÿRpublicpostgres_typesbpg_catalog.timestamptzzc_timestamp_with_tz*XT
 
 c_interval0ÿÿÿÿÿÿÿÿÿRpublicpostgres_typesbpg_catalog.intervalz
-c_interval*NJ
-c_char0ÿÿÿÿÿÿÿÿÿRpublicpostgres_typesbpg_catalog.bpcharzc_char*UQ
-	c_varchar0ÿÿÿÿÿÿÿÿÿRpublicpostgres_typesbpg_catalog.varcharz	c_varchar*ie
-c_character_varying0ÿÿÿÿÿÿÿÿÿRpublicpostgres_typesbpg_catalog.varcharzc_character_varying*GC
-c_bpchar0ÿÿÿÿÿÿÿÿÿRpublicpostgres_typesbbpcharzc_bpchar*A=
-c_text0ÿÿÿÿÿÿÿÿÿRpublicpostgres_typesbtextzc_text*A=
-c_uuid0ÿÿÿÿÿÿÿÿÿRpublicpostgres_typesbuuidzc_uuid*A=
-c_cidr0ÿÿÿÿÿÿÿÿÿRpublicpostgres_typesbcidrzc_cidr*A=
-c_inet0ÿÿÿÿÿÿÿÿÿRpublicpostgres_typesbinetzc_inet*JF
-	c_macaddr0ÿÿÿÿÿÿÿÿÿRpublicpostgres_typesb	macaddrz	c_macaddr:	query.sqlBpostgres_typesã
-ÀSELECT     
+c_interval*A=
+c_uuid0ÿÿÿÿÿÿÿÿÿRpublicpostgres_typesbuuidzc_uuid*A=
+c_cidr0ÿÿÿÿÿÿÿÿÿRpublicpostgres_typesbcidrzc_cidr*A=
+c_inet0ÿÿÿÿÿÿÿÿÿRpublicpostgres_typesbinetzc_inet*JF
+	c_macaddr0ÿÿÿÿÿÿÿÿÿRpublicpostgres_typesb	macaddrz	c_macaddr:	query.sqlBpostgres_types°
+òSELECT     
     c_boolean,
     c_bit,
     c_smallint,
@@ -10405,11 +10376,6 @@ c_interval*NJ
     c_timestamp,
     c_timestamp_with_tz,
     c_interval,
-    c_char,
-    c_varchar,
-    c_character_varying,
-    c_bpchar,
-    c_text,
     c_uuid,
     c_enum,
     c_cidr,
@@ -10449,23 +10415,15 @@ pg_catalogtimestamptzzc_timestamp_with_tz"M
 
 c_interval0ÿÿÿÿÿÿÿÿÿRpostgres_typesb
 pg_catalogintervalz
-c_interval"C
-c_char0ÿÿÿÿÿÿÿÿÿRpostgres_typesb
-pg_catalogbpcharzc_char"J
-	c_varchar0ÿÿÿÿÿÿÿÿÿRpostgres_typesb
-pg_catalogvarcharz	c_varchar"^
-c_character_varying0ÿÿÿÿÿÿÿÿÿRpostgres_typesb
-pg_catalogvarcharzc_character_varying";
-c_bpchar0ÿÿÿÿÿÿÿÿÿRpostgres_typesbbpcharzc_bpchar"5
-c_text0ÿÿÿÿÿÿÿÿÿRpostgres_typesbtextzc_text"5
+c_interval"5
 c_uuid0ÿÿÿÿÿÿÿÿÿRpostgres_typesbuuidzc_uuid"7
 c_enum0ÿÿÿÿÿÿÿÿÿRpostgres_typesbc_enumzc_enum"5
 c_cidr0ÿÿÿÿÿÿÿÿÿRpostgres_typesbcidrzc_cidr"5
 c_inet0ÿÿÿÿÿÿÿÿÿRpostgres_typesbinetzc_inet">
 	c_macaddr0ÿÿÿÿÿÿÿÿÿRpostgres_typesb	macaddrz	c_macaddr"!
 
-c_macaddr80ÿÿÿÿÿÿÿÿÿbtext:	query.sql¤
-úSELECT
+c_macaddr80ÿÿÿÿÿÿÿÿÿbtext:	query.sql£
+ŞSELECT
     c_smallint,
     c_boolean,
     c_integer,
@@ -10480,11 +10438,6 @@ c_macaddr80ÿÿÿÿÿÿÿÿÿbtext:	query.sql¤
     c_timestamp,
     c_timestamp_with_tz,
     c_interval,
-    c_char,
-    c_varchar,
-    c_character_varying,
-    c_bpchar,
-    c_text,
     c_uuid,
     c_cidr,
     c_inet,
@@ -10506,11 +10459,6 @@ GROUP BY
     c_timestamp,
     c_timestamp_with_tz,
     c_interval,
-    c_char,
-    c_varchar,
-    c_character_varying,
-    c_bpchar,
-    c_text,
     c_uuid,
     c_cidr,
     c_inet,
@@ -10545,32 +10493,87 @@ pg_catalogtimestamptzzc_timestamp_with_tz"M
 
 c_interval0ÿÿÿÿÿÿÿÿÿRpostgres_typesb
 pg_catalogintervalz
-c_interval"C
-c_char0ÿÿÿÿÿÿÿÿÿRpostgres_typesb
-pg_catalogbpcharzc_char"J
-	c_varchar0ÿÿÿÿÿÿÿÿÿRpostgres_typesb
-pg_catalogvarcharz	c_varchar"^
-c_character_varying0ÿÿÿÿÿÿÿÿÿRpostgres_typesb
-pg_catalogvarcharzc_character_varying";
-c_bpchar0ÿÿÿÿÿÿÿÿÿRpostgres_typesbbpcharzc_bpchar"5
-c_text0ÿÿÿÿÿÿÿÿÿRpostgres_typesbtextzc_text"5
+c_interval"5
 c_uuid0ÿÿÿÿÿÿÿÿÿRpostgres_typesbuuidzc_uuid"5
 c_cidr0ÿÿÿÿÿÿÿÿÿRpostgres_typesbcidrzc_cidr"5
 c_inet0ÿÿÿÿÿÿÿÿÿRpostgres_typesbinetzc_inet">
 	c_macaddr0ÿÿÿÿÿÿÿÿÿRpostgres_typesb	macaddrz	c_macaddr"
-cnt0ÿÿÿÿÿÿÿÿÿ@bbigint:	query.sql°
-†SELECT
+cnt0ÿÿÿÿÿÿÿÿÿ@bbigint:	query.sqlÑ
+§SELECT
     MAX(c_integer) AS max_integer,
     MAX(c_varchar) AS max_varchar,
     MAX(c_timestamp) AS max_timestamp
-FROM postgres_typesGetPostgresFunctions:one"(
+FROM postgres_types
+CROSS JOIN postgres_string_typesGetPostgresFunctions:one"(
 max_integer0ÿÿÿÿÿÿÿÿÿ@b
 anyarray"(
 max_varchar0ÿÿÿÿÿÿÿÿÿ@b
 anyarray"*
 max_timestamp0ÿÿÿÿÿÿÿÿÿ@b
 anyarray:	query.sqlH
-TRUNCATE TABLE postgres_typesTruncatePostgresTypes:exec:	query.sqlĞ
+TRUNCATE TABLE postgres_typesTruncatePostgresTypes:exec:	query.sql©
+
+INSERT INTO postgres_string_types
+(
+    c_char,
+    c_varchar,
+    c_character_varying,
+    c_bpchar,
+    c_text
+)
+VALUES ($1, $2, $3, $4, $5)InsertPostgresStringTypes:exec*UQ
+c_char0ÿÿÿÿÿÿÿÿÿRpublicpostgres_string_typesbpg_catalog.bpcharzc_char*\X
+	c_varchar0ÿÿÿÿÿÿÿÿÿRpublicpostgres_string_typesbpg_catalog.varcharz	c_varchar*pl
+c_character_varying0ÿÿÿÿÿÿÿÿÿRpublicpostgres_string_typesbpg_catalog.varcharzc_character_varying*NJ
+c_bpchar0ÿÿÿÿÿÿÿÿÿRpublicpostgres_string_typesbbpcharzc_bpchar*HD
+c_text0ÿÿÿÿÿÿÿÿÿRpublicpostgres_string_typesbtextzc_text2 String types :	query.sqlBpostgres_string_types¢
+INSERT INTO postgres_string_types 
+(
+    c_char,
+    c_varchar,
+    c_character_varying,
+    c_bpchar,
+    c_text
+) VALUES ($1, $2, $3, $4, $5)InsertPostgresStringTypesBatch	:copyfrom*UQ
+c_char0ÿÿÿÿÿÿÿÿÿRpublicpostgres_string_typesbpg_catalog.bpcharzc_char*\X
+	c_varchar0ÿÿÿÿÿÿÿÿÿRpublicpostgres_string_typesbpg_catalog.varcharz	c_varchar*pl
+c_character_varying0ÿÿÿÿÿÿÿÿÿRpublicpostgres_string_typesbpg_catalog.varcharzc_character_varying*NJ
+c_bpchar0ÿÿÿÿÿÿÿÿÿRpublicpostgres_string_typesbbpcharzc_bpchar*HD
+c_text0ÿÿÿÿÿÿÿÿÿRpublicpostgres_string_typesbtextzc_text:	query.sqlBpostgres_string_types•
+bSELECT c_char, c_varchar, c_character_varying, c_bpchar, c_text FROM postgres_string_types LIMIT 1GetPostgresStringTypes:one"J
+c_char0ÿÿÿÿÿÿÿÿÿRpostgres_string_typesb
+pg_catalogbpcharzc_char"Q
+	c_varchar0ÿÿÿÿÿÿÿÿÿRpostgres_string_typesb
+pg_catalogvarcharz	c_varchar"e
+c_character_varying0ÿÿÿÿÿÿÿÿÿRpostgres_string_typesb
+pg_catalogvarcharzc_character_varying"B
+c_bpchar0ÿÿÿÿÿÿÿÿÿRpostgres_string_typesbbpcharzc_bpchar"<
+c_text0ÿÿÿÿÿÿÿÿÿRpostgres_string_typesbtextzc_text:	query.sqlU
+$TRUNCATE TABLE postgres_string_typesTruncatePostgresStringTypes:exec:	query.sql¸
+áSELECT
+    c_char,
+    c_varchar,
+    c_character_varying,
+    c_bpchar,
+    c_text,
+    COUNT(*) AS cnt
+FROM postgres_string_types
+GROUP BY
+    c_char,
+    c_varchar,
+    c_character_varying,
+    c_bpchar,
+    c_text
+LIMIT 1GetPostgresStringTypesCnt:one"J
+c_char0ÿÿÿÿÿÿÿÿÿRpostgres_string_typesb
+pg_catalogbpcharzc_char"Q
+	c_varchar0ÿÿÿÿÿÿÿÿÿRpostgres_string_typesb
+pg_catalogvarcharz	c_varchar"e
+c_character_varying0ÿÿÿÿÿÿÿÿÿRpostgres_string_typesb
+pg_catalogvarcharzc_character_varying"B
+c_bpchar0ÿÿÿÿÿÿÿÿÿRpostgres_string_typesbbpcharzc_bpchar"<
+c_text0ÿÿÿÿÿÿÿÿÿRpostgres_string_typesbtextzc_text"
+cnt0ÿÿÿÿÿÿÿÿÿ@bbigint:	query.sqlĞ
 ù
 INSERT INTO postgres_unstructured_types
 (

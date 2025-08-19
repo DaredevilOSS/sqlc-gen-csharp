@@ -27,17 +27,20 @@ namespace NpgsqlLegacyExampleGen
         public DateTime? CTimestamp { get; set; }
         public DateTime? CTimestampWithTz { get; set; }
         public TimeSpan? CInterval { get; set; }
-        public string CChar { get; set; }
-        public string CVarchar { get; set; }
-        public string CCharacterVarying { get; set; }
-        public string CBpchar { get; set; }
-        public string CText { get; set; }
         public NpgsqlCidr? CCidr { get; set; }
         public IPAddress CInet { get; set; }
         public PhysicalAddress CMacaddr { get; set; }
         public string CMacaddr8 { get; set; }
         public Guid? CUuid { get; set; }
         public CEnum? CEnum { get; set; }
+    };
+    public class PostgresStringType
+    {
+        public string CChar { get; set; }
+        public string CVarchar { get; set; }
+        public string CCharacterVarying { get; set; }
+        public string CBpchar { get; set; }
+        public string CText { get; set; }
     };
     public class PostgresUnstructuredType
     {

@@ -26,17 +26,20 @@ public class PostgresType
     public DateTime? CTimestamp { get; init; }
     public DateTime? CTimestampWithTz { get; init; }
     public TimeSpan? CInterval { get; init; }
-    public string? CChar { get; init; }
-    public string? CVarchar { get; init; }
-    public string? CCharacterVarying { get; init; }
-    public string? CBpchar { get; init; }
-    public string? CText { get; init; }
     public NpgsqlCidr? CCidr { get; init; }
     public IPAddress? CInet { get; init; }
     public PhysicalAddress? CMacaddr { get; init; }
     public string? CMacaddr8 { get; init; }
     public Guid? CUuid { get; init; }
     public CEnum? CEnum { get; init; }
+};
+public class PostgresStringType
+{
+    public string? CChar { get; init; }
+    public string? CVarchar { get; init; }
+    public string? CCharacterVarying { get; init; }
+    public string? CBpchar { get; init; }
+    public string? CText { get; init; }
 };
 public class PostgresUnstructuredType
 {

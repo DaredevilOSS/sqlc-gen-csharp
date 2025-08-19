@@ -19,7 +19,7 @@ public static class PostgresTests
                          string cBpchar,
                          string cText)
                      {
-                         await QuerySql.InsertPostgresTypes(new QuerySql.InsertPostgresTypesArgs
+                         await QuerySql.InsertPostgresStringTypes(new QuerySql.InsertPostgresStringTypesArgs
                          {
                              CChar = cChar,
                              CVarchar = cVarchar,
@@ -28,7 +28,7 @@ public static class PostgresTests
                              CText = cText,
                          });
                      
-                         var expected = new QuerySql.GetPostgresTypesRow
+                         var expected = new QuerySql.GetPostgresStringTypesRow
                          {
                              CChar = cChar,
                              CVarchar = cVarchar,
@@ -37,10 +37,10 @@ public static class PostgresTests
                              CText = cText,
                          };
                          
-                         var actual = await QuerySql.GetPostgresTypes();
+                         var actual = await QuerySql.GetPostgresStringTypes();
                          AssertSingularEquals(expected, actual{{Consts.UnknownRecordValuePlaceholder}});
 
-                         void AssertSingularEquals(QuerySql.GetPostgresTypesRow x, QuerySql.GetPostgresTypesRow y)
+                         void AssertSingularEquals(QuerySql.GetPostgresStringTypesRow x, QuerySql.GetPostgresStringTypesRow y)
                          {
                              Assert.That(x.CChar, Is.EqualTo(y.CChar));
                              Assert.That(x.CVarchar, Is.EqualTo(y.CVarchar));
@@ -281,7 +281,7 @@ public static class PostgresTests
                         string cText)
                      {
                          var batchArgs = Enumerable.Range(0, batchSize)
-                             .Select(_ => new QuerySql.InsertPostgresTypesBatchArgs
+                             .Select(_ => new QuerySql.InsertPostgresStringTypesBatchArgs
                              {
                                  CChar = cChar,
                                  CVarchar = cVarchar,
@@ -290,8 +290,8 @@ public static class PostgresTests
                                  CText = cText
                              })
                              .ToList();
-                         await QuerySql.InsertPostgresTypesBatch(batchArgs);
-                         var expected = new QuerySql.GetPostgresTypesCntRow
+                         await QuerySql.InsertPostgresStringTypesBatch(batchArgs);
+                         var expected = new QuerySql.GetPostgresStringTypesCntRow
                          {
                              Cnt = batchSize,
                              CChar = cChar,
@@ -300,10 +300,10 @@ public static class PostgresTests
                              CBpchar = cBpchar,
                              CText = cText
                          };
-                         var actual = await QuerySql.GetPostgresTypesCnt();
+                         var actual = await QuerySql.GetPostgresStringTypesCnt();
                          AssertSingularEquals(expected, actual{{Consts.UnknownRecordValuePlaceholder}});
 
-                         void AssertSingularEquals(QuerySql.GetPostgresTypesCntRow x, QuerySql.GetPostgresTypesCntRow y)
+                         void AssertSingularEquals(QuerySql.GetPostgresStringTypesCntRow x, QuerySql.GetPostgresStringTypesCntRow y)
                          {
                              Assert.That(x.Cnt, Is.EqualTo(y.Cnt));
                              Assert.That(x.CChar, Is.EqualTo(y.CChar));
@@ -871,8 +871,11 @@ public static class PostgresTests
                          await QuerySql.InsertPostgresTypes(new QuerySql.InsertPostgresTypesArgs
                          {
                              CInteger = cInteger,
-                             CVarchar = cVarchar,
                              CTimestamp = cTimestamp
+                         });
+                         await QuerySql.InsertPostgresStringTypes(new QuerySql.InsertPostgresStringTypesArgs
+                         {
+                             CVarchar = cVarchar
                          });
                      
                          var expected = new QuerySql.GetPostgresFunctionsRow

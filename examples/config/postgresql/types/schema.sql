@@ -22,13 +22,6 @@ CREATE TABLE postgres_types (
     c_timestamp_with_tz TIMESTAMP WITH TIME ZONE,
     c_interval INTERVAL,
 
-    /* String Data Type Syntax */
-    c_char CHAR,
-    c_varchar VARCHAR(100),
-    c_character_varying CHARACTER VARYING(100),
-    c_bpchar BPCHAR(100),
-    c_text TEXT,
-
     /* Network Address Data Types */
     c_cidr CIDR,
     c_inet INET,
@@ -38,6 +31,14 @@ CREATE TABLE postgres_types (
     /* Special Data Types */
     c_uuid UUID,
     c_enum c_enum
+);
+
+CREATE TABLE postgres_string_types (
+    c_char              CHAR,
+    c_varchar           VARCHAR(100),
+    c_character_varying CHARACTER VARYING(100),
+    c_bpchar            BPCHAR(100),
+    c_text              TEXT
 );
 
 CREATE TABLE postgres_unstructured_types (

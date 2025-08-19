@@ -18,11 +18,6 @@ INSERT INTO postgres_types
     c_timestamp,
     c_timestamp_with_tz,
     c_interval,
-    c_char,
-    c_varchar,
-    c_character_varying,
-    c_bpchar,
-    c_text,
     c_uuid,
     c_enum,
     c_cidr,
@@ -46,11 +41,6 @@ VALUES (
     sqlc.narg('c_timestamp'),
     sqlc.narg('c_timestamp_with_tz'),
     sqlc.narg('c_interval'),
-    sqlc.narg('c_char'),
-    sqlc.narg('c_varchar'),
-    sqlc.narg('c_character_varying'),
-    sqlc.narg('c_bpchar'),
-    sqlc.narg('c_text'),
     sqlc.narg('c_uuid'),
     sqlc.narg('c_enum')::c_enum,
     sqlc.narg('c_cidr'),
@@ -76,11 +66,6 @@ INSERT INTO postgres_types
     c_timestamp,
     c_timestamp_with_tz,
     c_interval,
-    c_char,
-    c_varchar,
-    c_character_varying,
-    c_bpchar,
-    c_text,
     c_uuid,
     c_cidr,
     c_inet,
@@ -104,12 +89,7 @@ VALUES (
     $15, 
     $16, 
     $17, 
-    $18,
-    $19,
-    $20,
-    $21,
-    $22,
-    $23
+    $18
 );
 
 -- name: GetPostgresTypes :one
@@ -129,11 +109,6 @@ SELECT
     c_timestamp,
     c_timestamp_with_tz,
     c_interval,
-    c_char,
-    c_varchar,
-    c_character_varying,
-    c_bpchar,
-    c_text,
     c_uuid,
     c_enum,
     c_cidr,
@@ -159,11 +134,6 @@ SELECT
     c_timestamp,
     c_timestamp_with_tz,
     c_interval,
-    c_char,
-    c_varchar,
-    c_character_varying,
-    c_bpchar,
-    c_text,
     c_uuid,
     c_cidr,
     c_inet,
@@ -185,11 +155,6 @@ GROUP BY
     c_timestamp,
     c_timestamp_with_tz,
     c_interval,
-    c_char,
-    c_varchar,
-    c_character_varying,
-    c_bpchar,
-    c_text,
     c_uuid,
     c_cidr,
     c_inet,
@@ -201,10 +166,57 @@ SELECT
     MAX(c_integer) AS max_integer,
     MAX(c_varchar) AS max_varchar,
     MAX(c_timestamp) AS max_timestamp
-FROM postgres_types;
+FROM postgres_types
+CROSS JOIN postgres_string_types;
 
 -- name: TruncatePostgresTypes :exec
 TRUNCATE TABLE postgres_types;
+
+/* String types */
+
+-- name: InsertPostgresStringTypes :exec
+INSERT INTO postgres_string_types
+(
+    c_char,
+    c_varchar,
+    c_character_varying,
+    c_bpchar,
+    c_text
+)
+VALUES ($1, $2, $3, $4, $5);
+
+-- name: InsertPostgresStringTypesBatch :copyfrom
+INSERT INTO postgres_string_types 
+(
+    c_char,
+    c_varchar,
+    c_character_varying,
+    c_bpchar,
+    c_text
+) VALUES ($1, $2, $3, $4, $5);
+
+-- name: GetPostgresStringTypes :one
+SELECT * FROM postgres_string_types LIMIT 1;
+
+-- name: TruncatePostgresStringTypes :exec
+TRUNCATE TABLE postgres_string_types;
+
+-- name: GetPostgresStringTypesCnt :one
+SELECT
+    c_char,
+    c_varchar,
+    c_character_varying,
+    c_bpchar,
+    c_text,
+    COUNT(*) AS cnt
+FROM postgres_string_types
+GROUP BY
+    c_char,
+    c_varchar,
+    c_character_varying,
+    c_bpchar,
+    c_text
+LIMIT 1;
 
 /* Unstructured types */
 

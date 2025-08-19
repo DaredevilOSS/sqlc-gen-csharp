@@ -319,8 +319,8 @@ namespace EndToEndTests
         [TestCase(null, null, null, null, null)]
         public async Task TestPostgresStringTypes(string cChar, string cVarchar, string cCharacterVarying, string cBpchar, string cText)
         {
-            await QuerySql.InsertPostgresTypes(new QuerySql.InsertPostgresTypesArgs { CChar = cChar, CVarchar = cVarchar, CCharacterVarying = cCharacterVarying, CBpchar = cBpchar, CText = cText, });
-            var expected = new QuerySql.GetPostgresTypesRow
+            await QuerySql.InsertPostgresStringTypes(new QuerySql.InsertPostgresStringTypesArgs { CChar = cChar, CVarchar = cVarchar, CCharacterVarying = cCharacterVarying, CBpchar = cBpchar, CText = cText, });
+            var expected = new QuerySql.GetPostgresStringTypesRow
             {
                 CChar = cChar,
                 CVarchar = cVarchar,
@@ -328,9 +328,9 @@ namespace EndToEndTests
                 CBpchar = cBpchar,
                 CText = cText,
             };
-            var actual = await QuerySql.GetPostgresTypes();
+            var actual = await QuerySql.GetPostgresStringTypes();
             AssertSingularEquals(expected, actual);
-            void AssertSingularEquals(QuerySql.GetPostgresTypesRow x, QuerySql.GetPostgresTypesRow y)
+            void AssertSingularEquals(QuerySql.GetPostgresStringTypesRow x, QuerySql.GetPostgresStringTypesRow y)
             {
                 Assert.That(x.CChar, Is.EqualTo(y.CChar));
                 Assert.That(x.CVarchar, Is.EqualTo(y.CVarchar));
@@ -460,7 +460,8 @@ namespace EndToEndTests
         [TestCase(null, null, "1970-01-01 00:00:00")]
         public async Task TestPostgresDataTypesOverride(int? cInteger, string cVarchar, DateTime cTimestamp)
         {
-            await QuerySql.InsertPostgresTypes(new QuerySql.InsertPostgresTypesArgs { CInteger = cInteger, CVarchar = cVarchar, CTimestamp = cTimestamp });
+            await QuerySql.InsertPostgresTypes(new QuerySql.InsertPostgresTypesArgs { CInteger = cInteger, CTimestamp = cTimestamp });
+            await QuerySql.InsertPostgresStringTypes(new QuerySql.InsertPostgresStringTypesArgs { CVarchar = cVarchar });
             var expected = new QuerySql.GetPostgresFunctionsRow
             {
                 MaxInteger = cInteger,
@@ -508,9 +509,9 @@ namespace EndToEndTests
         [TestCase(10, null, null, null, null, null)]
         public async Task TestStringCopyFrom(int batchSize, string cChar, string cVarchar, string cCharacterVarying, string cBpchar, string cText)
         {
-            var batchArgs = Enumerable.Range(0, batchSize).Select(_ => new QuerySql.InsertPostgresTypesBatchArgs { CChar = cChar, CVarchar = cVarchar, CCharacterVarying = cCharacterVarying, CBpchar = cBpchar, CText = cText }).ToList();
-            await QuerySql.InsertPostgresTypesBatch(batchArgs);
-            var expected = new QuerySql.GetPostgresTypesCntRow
+            var batchArgs = Enumerable.Range(0, batchSize).Select(_ => new QuerySql.InsertPostgresStringTypesBatchArgs { CChar = cChar, CVarchar = cVarchar, CCharacterVarying = cCharacterVarying, CBpchar = cBpchar, CText = cText }).ToList();
+            await QuerySql.InsertPostgresStringTypesBatch(batchArgs);
+            var expected = new QuerySql.GetPostgresStringTypesCntRow
             {
                 Cnt = batchSize,
                 CChar = cChar,
@@ -519,9 +520,9 @@ namespace EndToEndTests
                 CBpchar = cBpchar,
                 CText = cText
             };
-            var actual = await QuerySql.GetPostgresTypesCnt();
+            var actual = await QuerySql.GetPostgresStringTypesCnt();
             AssertSingularEquals(expected, actual);
-            void AssertSingularEquals(QuerySql.GetPostgresTypesCntRow x, QuerySql.GetPostgresTypesCntRow y)
+            void AssertSingularEquals(QuerySql.GetPostgresStringTypesCntRow x, QuerySql.GetPostgresStringTypesCntRow y)
             {
                 Assert.That(x.Cnt, Is.EqualTo(y.Cnt));
                 Assert.That(x.CChar, Is.EqualTo(y.CChar));

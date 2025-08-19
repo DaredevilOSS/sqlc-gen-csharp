@@ -15,6 +15,7 @@ public partial class NpgsqlTester
     {
         await QuerySql.TruncateAuthors();
         await QuerySql.TruncatePostgresTypes();
+        await QuerySql.TruncatePostgresStringTypes();
         await QuerySql.TruncatePostgresGeoTypes();
         await QuerySql.TruncatePostgresArrayTypes();
         await QuerySql.TruncatePostgresUnstructuredTypes();
