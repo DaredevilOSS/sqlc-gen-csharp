@@ -3,7 +3,7 @@
 2
 postgresql-examples/config/postgresql/authors/schema.sql+examples/config/postgresql/types/schema.sql",examples/config/postgresql/authors/query.sql"*examples/config/postgresql/types/query.sqlbΡ
 examples/NpgsqlExamplecsharp{"debugRequest":true,"generateCsproj":true,"namespaceName":"NpgsqlExampleGen","overrides":[{"column":"GetPostgresFunctions:max_integer","csharp_type":{"notNull":false,"type":"int"}},{"column":"GetPostgresFunctions:max_varchar","csharp_type":{"notNull":false,"type":"string"}},{"column":"GetPostgresFunctions:max_timestamp","csharp_type":{"notNull":true,"type":"DateTime"}},{"column":"*:c_json_string_override","csharp_type":{"notNull":false,"type":"string"}},{"column":"*:c_xml_string_override","csharp_type":{"notNull":false,"type":"string"}},{"column":"*:c_macaddr8","csharp_type":{"notNull":false,"type":"string"}}],"targetFramework":"net8.0","useDapper":false}*
-./dist/LocalRunnerώλpublic"ΐpublicƒ
+./dist/LocalRunnerκμpublic"¬publicƒ
 	authors)
 id0ÿÿÿÿÿÿÿÿÿR	authorsb	bigserial&
 name0ÿÿÿÿÿÿÿÿÿR	authorsbtext#
@@ -13,30 +13,31 @@ postgresql-examples/config/postgresql/authors/schema.sql+examples/config/postg
 name0ÿÿÿÿÿÿÿÿÿRbooksbtext5
 	author_id0ÿÿÿÿÿÿÿÿÿRbooksb
 pg_catalogint8)
-description0ÿÿÿÿÿÿÿÿÿRbooksbtextά
-postgres_types<
-	c_boolean0ÿÿÿÿÿÿÿÿÿRpostgres_typesb
-pg_catalogbool7
-c_bit0ÿÿÿÿÿÿÿÿÿRpostgres_typesb
-pg_catalogbit=
-
-c_smallint0ÿÿÿÿÿÿÿÿÿRpostgres_typesb
-pg_catalogint2<
-	c_integer0ÿÿÿÿÿÿÿÿÿRpostgres_typesb
-pg_catalogint4;
-c_bigint0ÿÿÿÿÿÿÿÿÿRpostgres_typesb
-pg_catalogint8?
-	c_decimal0ÿÿÿÿÿÿÿÿÿRpostgres_typesb
-pg_catalognumeric?
-	c_numeric0ÿÿÿÿÿÿÿÿÿRpostgres_typesb
-pg_catalognumeric;
-c_real0ÿÿÿÿÿÿÿÿÿRpostgres_typesb
-pg_catalogfloat4G
-c_double_precision0ÿÿÿÿÿÿÿÿÿRpostgres_typesb
-pg_catalogfloat8/
-c_money0ÿÿÿÿÿÿÿÿÿRpostgres_typesbmoney-
+description0ÿÿÿÿÿÿÿÿÿRbooksbtextr
+postgres_types-
 c_uuid0ÿÿÿÿÿÿÿÿÿRpostgres_typesbuuid/
-c_enum0ÿÿÿÿÿÿÿÿÿRpostgres_typesbc_enumη
+c_enum0ÿÿÿÿÿÿÿÿÿRpostgres_typesbc_enumΤ
+postgres_numeric_typesD
+	c_boolean0ÿÿÿÿÿÿÿÿÿRpostgres_numeric_typesb
+pg_catalogbool?
+c_bit0ÿÿÿÿÿÿÿÿÿRpostgres_numeric_typesb
+pg_catalogbitE
+
+c_smallint0ÿÿÿÿÿÿÿÿÿRpostgres_numeric_typesb
+pg_catalogint2D
+	c_integer0ÿÿÿÿÿÿÿÿÿRpostgres_numeric_typesb
+pg_catalogint4C
+c_bigint0ÿÿÿÿÿÿÿÿÿRpostgres_numeric_typesb
+pg_catalogint8G
+	c_decimal0ÿÿÿÿÿÿÿÿÿRpostgres_numeric_typesb
+pg_catalognumericG
+	c_numeric0ÿÿÿÿÿÿÿÿÿRpostgres_numeric_typesb
+pg_catalognumericC
+c_real0ÿÿÿÿÿÿÿÿÿRpostgres_numeric_typesb
+pg_catalogfloat4O
+c_double_precision0ÿÿÿÿÿÿÿÿÿRpostgres_numeric_typesb
+pg_catalogfloat87
+c_money0ÿÿÿÿÿÿÿÿÿRpostgres_numeric_typesbmoneyη
 postgres_string_typesB
 c_char0ÿÿÿÿÿÿÿÿÿRpostgres_string_typesb
 pg_catalogbpcharF
@@ -10324,189 +10325,181 @@ pg_catalogvarcharzauthor_name"B
 pg_catalogvarcharzname"G
 bio_type0ÿÿÿÿÿÿÿÿÿRextendedbiosbextendedbio_typezbio_type*JF
 bio_type0ÿÿÿÿÿÿÿÿÿRextendedbiosbextended.bio_typezbio_type:	query.sqlF
-TRUNCATE TABLE extended.biosTruncateExtendedBios:exec:	query.sqlΟ
-
-Α
+TRUNCATE TABLE extended.biosTruncateExtendedBios:exec:	query.sql
+X
 INSERT INTO postgres_types
 (
-    c_boolean,
-    c_bit,
-    c_smallint,
-    c_integer,
-    c_bigint,
-    c_real,
-    c_numeric,
-    c_decimal,
-    c_double_precision,
-    c_money,
     c_uuid,
     c_enum
 )
 VALUES (
     $1,
-    $2,
-    $3,
-    $4,
-    $5,
-    $6,
-    $7,
-    $8,
-    $9,
-    $10,
-    $11,
-    $12::c_enum
-)InsertPostgresTypes:exec*TP
-	c_boolean0ÿÿÿÿÿÿÿÿÿ8Rpublicpostgres_typesbpg_catalog.boolz	c_boolean*KG
-c_bit0ÿÿÿÿÿÿÿÿÿ8Rpublicpostgres_typesbpg_catalog.bitzc_bit*VR
-
-c_smallint0ÿÿÿÿÿÿÿÿÿ8Rpublicpostgres_typesbpg_catalog.int2z
-c_smallint*TP
-	c_integer0ÿÿÿÿÿÿÿÿÿ8Rpublicpostgres_typesbpg_catalog.int4z	c_integer*RN
-c_bigint0ÿÿÿÿÿÿÿÿÿ8Rpublicpostgres_typesbpg_catalog.int8zc_bigint*PL
-c_real0ÿÿÿÿÿÿÿÿÿ8Rpublicpostgres_typesbpg_catalog.float4zc_real*WS
-	c_numeric0ÿÿÿÿÿÿÿÿÿ8Rpublicpostgres_typesbpg_catalog.numericz	c_numeric*WS
-	c_decimal0ÿÿÿÿÿÿÿÿÿ8Rpublicpostgres_typesbpg_catalog.numericz	c_decimal*h	d
-c_double_precision0ÿÿÿÿÿÿÿÿÿ8Rpublicpostgres_typesbpg_catalog.float8zc_double_precision*F
-B
-c_money0ÿÿÿÿÿÿÿÿÿ8Rpublicpostgres_typesbmoneyzc_money*C?
-c_uuid0ÿÿÿÿÿÿÿÿÿ8Rpublicpostgres_typesbuuidzc_uuid*!
-c_enum0ÿÿÿÿÿÿÿÿÿbc_enum2 Basic types :	query.sqlBpostgres_types	
-INSERT INTO postgres_types
+    $2::c_enum
+)InsertPostgresTypes:exec*C?
+c_uuid0ÿÿÿÿÿÿÿÿÿ8Rpublicpostgres_typesbuuidzc_uuid*!
+c_enum0ÿÿÿÿÿÿÿÿÿbc_enum2 Special types :	query.sqlBpostgres_typesΒ
+;INSERT INTO postgres_types
 (
-    c_boolean,
-    c_smallint,
-    c_integer,
-    c_bigint,
-    c_real,
-    c_numeric,
-    c_decimal,
-    c_double_precision,
-    c_money,
     c_uuid
 )
 VALUES (
-    $1, 
-    $2, 
-    $3, 
-    $4, 
-    $5, 
-    $6, 
-    $7, 
-    $8, 
-    $9, 
-    $10
-)InsertPostgresTypesBatch	:copyfrom*RN
-	c_boolean0ÿÿÿÿÿÿÿÿÿRpublicpostgres_typesbpg_catalog.boolz	c_boolean*TP
-
-c_smallint0ÿÿÿÿÿÿÿÿÿRpublicpostgres_typesbpg_catalog.int2z
-c_smallint*RN
-	c_integer0ÿÿÿÿÿÿÿÿÿRpublicpostgres_typesbpg_catalog.int4z	c_integer*PL
-c_bigint0ÿÿÿÿÿÿÿÿÿRpublicpostgres_typesbpg_catalog.int8zc_bigint*NJ
-c_real0ÿÿÿÿÿÿÿÿÿRpublicpostgres_typesbpg_catalog.float4zc_real*UQ
-	c_numeric0ÿÿÿÿÿÿÿÿÿRpublicpostgres_typesbpg_catalog.numericz	c_numeric*UQ
-	c_decimal0ÿÿÿÿÿÿÿÿÿRpublicpostgres_typesbpg_catalog.numericz	c_decimal*fb
-c_double_precision0ÿÿÿÿÿÿÿÿÿRpublicpostgres_typesbpg_catalog.float8zc_double_precision*D	@
-c_money0ÿÿÿÿÿÿÿÿÿRpublicpostgres_typesbmoneyzc_money*A
-=
-c_uuid0ÿÿÿÿÿÿÿÿÿRpublicpostgres_typesbuuidzc_uuid:	query.sqlBpostgres_typesΓ
-ΥSELECT     
-    c_boolean,
-    c_bit,
-    c_smallint,
-    c_integer,
-    c_bigint,
-    c_real,
-    c_numeric,
-    c_decimal,
-    c_double_precision,
-    c_money,
+    $1
+)InsertPostgresTypesBatch	:copyfrom*A=
+c_uuid0ÿÿÿÿÿÿÿÿÿRpublicpostgres_typesbuuidzc_uuid:	query.sqlBpostgres_typesΟ
+:SELECT
     c_uuid,
     c_enum
 FROM postgres_types 
-LIMIT 1GetPostgresTypes:one"G
-	c_boolean0ÿÿÿÿÿÿÿÿÿRpostgres_typesb
-pg_catalogboolz	c_boolean">
-c_bit0ÿÿÿÿÿÿÿÿÿRpostgres_typesb
-pg_catalogbitzc_bit"I
-
-c_smallint0ÿÿÿÿÿÿÿÿÿRpostgres_typesb
-pg_catalogint2z
-c_smallint"G
-	c_integer0ÿÿÿÿÿÿÿÿÿRpostgres_typesb
-pg_catalogint4z	c_integer"E
-c_bigint0ÿÿÿÿÿÿÿÿÿRpostgres_typesb
-pg_catalogint8zc_bigint"C
-c_real0ÿÿÿÿÿÿÿÿÿRpostgres_typesb
-pg_catalogfloat4zc_real"J
-	c_numeric0ÿÿÿÿÿÿÿÿÿRpostgres_typesb
-pg_catalognumericz	c_numeric"J
-	c_decimal0ÿÿÿÿÿÿÿÿÿRpostgres_typesb
-pg_catalognumericz	c_decimal"[
-c_double_precision0ÿÿÿÿÿÿÿÿÿRpostgres_typesb
-pg_catalogfloat8zc_double_precision"8
-c_money0ÿÿÿÿÿÿÿÿÿRpostgres_typesbmoneyzc_money"5
+LIMIT 1GetPostgresTypes:one"5
 c_uuid0ÿÿÿÿÿÿÿÿÿRpostgres_typesbuuidzc_uuid"7
-c_enum0ÿÿÿÿÿÿÿÿÿRpostgres_typesbc_enumzc_enum:	query.sql„	
-μSELECT
-    c_smallint,
-    c_boolean,
-    c_integer,
-    c_bigint,
-    c_real,
-    c_numeric,
-    c_decimal,
-    c_double_precision,
-    c_money,
+c_enum0ÿÿÿÿÿÿÿÿÿRpostgres_typesbc_enumzc_enum:	query.sqlΥ
+VSELECT
     c_uuid,
     COUNT(*) AS cnt
 FROM postgres_types
 GROUP BY
-    c_smallint,
-    c_boolean,
-    c_integer,
-    c_bigint,
-    c_real,
-    c_numeric,
-    c_decimal,
-    c_double_precision,
-    c_money,
     c_uuid
-LIMIT 1GetPostgresTypesCnt:one"I
-
-c_smallint0ÿÿÿÿÿÿÿÿÿRpostgres_typesb
-pg_catalogint2z
-c_smallint"G
-	c_boolean0ÿÿÿÿÿÿÿÿÿRpostgres_typesb
-pg_catalogboolz	c_boolean"G
-	c_integer0ÿÿÿÿÿÿÿÿÿRpostgres_typesb
-pg_catalogint4z	c_integer"E
-c_bigint0ÿÿÿÿÿÿÿÿÿRpostgres_typesb
-pg_catalogint8zc_bigint"C
-c_real0ÿÿÿÿÿÿÿÿÿRpostgres_typesb
-pg_catalogfloat4zc_real"J
-	c_numeric0ÿÿÿÿÿÿÿÿÿRpostgres_typesb
-pg_catalognumericz	c_numeric"J
-	c_decimal0ÿÿÿÿÿÿÿÿÿRpostgres_typesb
-pg_catalognumericz	c_decimal"[
-c_double_precision0ÿÿÿÿÿÿÿÿÿRpostgres_typesb
-pg_catalogfloat8zc_double_precision"8
-c_money0ÿÿÿÿÿÿÿÿÿRpostgres_typesbmoneyzc_money"5
+LIMIT 1GetPostgresTypesCnt:one"5
 c_uuid0ÿÿÿÿÿÿÿÿÿRpostgres_typesbuuidzc_uuid"
-cnt0ÿÿÿÿÿÿÿÿÿ@bbigint:	query.sqlτ
-ΚSELECT
+cnt0ÿÿÿÿÿÿÿÿÿ@bbigint:	query.sqlό
+ÒSELECT
     MAX(c_integer) AS max_integer,
     MAX(c_varchar) AS max_varchar,
     MAX(c_timestamp) AS max_timestamp
-FROM postgres_types
-CROSS JOIN postgres_string_types
-CROSS JOIN postgres_datetime_typesGetPostgresFunctions:one"(
+FROM postgres_datetime_types
+CROSS JOIN postgres_numeric_types
+CROSS JOIN postgres_string_typesGetPostgresFunctions:one"(
 max_integer0ÿÿÿÿÿÿÿÿÿ@b
 anyarray"(
 max_varchar0ÿÿÿÿÿÿÿÿÿ@b
 anyarray"*
 max_timestamp0ÿÿÿÿÿÿÿÿÿ@b
 anyarray:	query.sqlH
-TRUNCATE TABLE postgres_typesTruncatePostgresTypes:exec:	query.sql©
+TRUNCATE TABLE postgres_typesTruncatePostgresTypes:exec:	query.sqlΰ	
+ν
+INSERT INTO postgres_numeric_types
+(
+    c_boolean,
+    c_bit,
+    c_smallint,
+    c_integer,
+    c_bigint,
+    c_decimal,
+    c_numeric,
+    c_real,
+    c_double_precision,
+    c_money
+)
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)InsertPostgresNumericTypes:exec*ZV
+	c_boolean0ÿÿÿÿÿÿÿÿÿR publicpostgres_numeric_typesbpg_catalog.boolz	c_boolean*QM
+c_bit0ÿÿÿÿÿÿÿÿÿR publicpostgres_numeric_typesbpg_catalog.bitzc_bit*\X
+
+c_smallint0ÿÿÿÿÿÿÿÿÿR publicpostgres_numeric_typesbpg_catalog.int2z
+c_smallint*ZV
+	c_integer0ÿÿÿÿÿÿÿÿÿR publicpostgres_numeric_typesbpg_catalog.int4z	c_integer*XT
+c_bigint0ÿÿÿÿÿÿÿÿÿR publicpostgres_numeric_typesbpg_catalog.int8zc_bigint*]Y
+	c_decimal0ÿÿÿÿÿÿÿÿÿR publicpostgres_numeric_typesbpg_catalog.numericz	c_decimal*]Y
+	c_numeric0ÿÿÿÿÿÿÿÿÿR publicpostgres_numeric_typesbpg_catalog.numericz	c_numeric*VR
+c_real0ÿÿÿÿÿÿÿÿÿR publicpostgres_numeric_typesbpg_catalog.float4zc_real*n	j
+c_double_precision0ÿÿÿÿÿÿÿÿÿR publicpostgres_numeric_typesbpg_catalog.float8zc_double_precision*L
+H
+c_money0ÿÿÿÿÿÿÿÿÿR publicpostgres_numeric_typesbmoneyzc_money2 Numeric types :	query.sqlBpostgres_numeric_typesμ
+—SELECT c_boolean, c_bit, c_smallint, c_integer, c_bigint, c_decimal, c_numeric, c_real, c_double_precision, c_money FROM postgres_numeric_types LIMIT 1GetPostgresNumericTypes:one"O
+	c_boolean0ÿÿÿÿÿÿÿÿÿRpostgres_numeric_typesb
+pg_catalogboolz	c_boolean"F
+c_bit0ÿÿÿÿÿÿÿÿÿRpostgres_numeric_typesb
+pg_catalogbitzc_bit"Q
+
+c_smallint0ÿÿÿÿÿÿÿÿÿRpostgres_numeric_typesb
+pg_catalogint2z
+c_smallint"O
+	c_integer0ÿÿÿÿÿÿÿÿÿRpostgres_numeric_typesb
+pg_catalogint4z	c_integer"M
+c_bigint0ÿÿÿÿÿÿÿÿÿRpostgres_numeric_typesb
+pg_catalogint8zc_bigint"R
+	c_decimal0ÿÿÿÿÿÿÿÿÿRpostgres_numeric_typesb
+pg_catalognumericz	c_decimal"R
+	c_numeric0ÿÿÿÿÿÿÿÿÿRpostgres_numeric_typesb
+pg_catalognumericz	c_numeric"K
+c_real0ÿÿÿÿÿÿÿÿÿRpostgres_numeric_typesb
+pg_catalogfloat4zc_real"c
+c_double_precision0ÿÿÿÿÿÿÿÿÿRpostgres_numeric_typesb
+pg_catalogfloat8zc_double_precision"@
+c_money0ÿÿÿÿÿÿÿÿÿRpostgres_numeric_typesbmoneyzc_money:	query.sqlW
+%TRUNCATE TABLE postgres_numeric_typesTruncatePostgresNumericTypes:exec:	query.sqlκ	
+ςSELECT
+    c_boolean,
+    c_bit,
+    c_smallint,
+    c_integer,
+    c_bigint,
+    c_decimal,
+    c_numeric,
+    c_real,
+    c_double_precision,
+    c_money,
+    COUNT(*) AS cnt
+FROM postgres_numeric_types
+GROUP BY
+    c_boolean,
+    c_bit,
+    c_smallint,
+    c_integer,
+    c_bigint,
+    c_decimal,
+    c_numeric,
+    c_real,
+    c_double_precision,
+    c_money
+LIMIT 1GetPostgresNumericTypesCnt:one"O
+	c_boolean0ÿÿÿÿÿÿÿÿÿRpostgres_numeric_typesb
+pg_catalogboolz	c_boolean"F
+c_bit0ÿÿÿÿÿÿÿÿÿRpostgres_numeric_typesb
+pg_catalogbitzc_bit"Q
+
+c_smallint0ÿÿÿÿÿÿÿÿÿRpostgres_numeric_typesb
+pg_catalogint2z
+c_smallint"O
+	c_integer0ÿÿÿÿÿÿÿÿÿRpostgres_numeric_typesb
+pg_catalogint4z	c_integer"M
+c_bigint0ÿÿÿÿÿÿÿÿÿRpostgres_numeric_typesb
+pg_catalogint8zc_bigint"R
+	c_decimal0ÿÿÿÿÿÿÿÿÿRpostgres_numeric_typesb
+pg_catalognumericz	c_decimal"R
+	c_numeric0ÿÿÿÿÿÿÿÿÿRpostgres_numeric_typesb
+pg_catalognumericz	c_numeric"K
+c_real0ÿÿÿÿÿÿÿÿÿRpostgres_numeric_typesb
+pg_catalogfloat4zc_real"c
+c_double_precision0ÿÿÿÿÿÿÿÿÿRpostgres_numeric_typesb
+pg_catalogfloat8zc_double_precision"@
+c_money0ÿÿÿÿÿÿÿÿÿRpostgres_numeric_typesbmoneyzc_money"
+cnt0ÿÿÿÿÿÿÿÿÿ@bbigint:	query.sqlΧ	
+μINSERT INTO postgres_numeric_types
+(
+    c_boolean,
+    c_bit,
+    c_smallint,
+    c_integer,
+    c_bigint,
+    c_decimal,
+    c_numeric,
+    c_real,
+    c_double_precision,
+    c_money
+) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)InsertPostgresNumericTypesBatch	:copyfrom*ZV
+	c_boolean0ÿÿÿÿÿÿÿÿÿR publicpostgres_numeric_typesbpg_catalog.boolz	c_boolean*QM
+c_bit0ÿÿÿÿÿÿÿÿÿR publicpostgres_numeric_typesbpg_catalog.bitzc_bit*\X
+
+c_smallint0ÿÿÿÿÿÿÿÿÿR publicpostgres_numeric_typesbpg_catalog.int2z
+c_smallint*ZV
+	c_integer0ÿÿÿÿÿÿÿÿÿR publicpostgres_numeric_typesbpg_catalog.int4z	c_integer*XT
+c_bigint0ÿÿÿÿÿÿÿÿÿR publicpostgres_numeric_typesbpg_catalog.int8zc_bigint*]Y
+	c_decimal0ÿÿÿÿÿÿÿÿÿR publicpostgres_numeric_typesbpg_catalog.numericz	c_decimal*]Y
+	c_numeric0ÿÿÿÿÿÿÿÿÿR publicpostgres_numeric_typesbpg_catalog.numericz	c_numeric*VR
+c_real0ÿÿÿÿÿÿÿÿÿR publicpostgres_numeric_typesbpg_catalog.float4zc_real*n	j
+c_double_precision0ÿÿÿÿÿÿÿÿÿR publicpostgres_numeric_typesbpg_catalog.float8zc_double_precision*L
+H
+c_money0ÿÿÿÿÿÿÿÿÿR publicpostgres_numeric_typesbmoneyzc_money:	query.sqlBpostgres_numeric_types©
 
 INSERT INTO postgres_string_types
 (

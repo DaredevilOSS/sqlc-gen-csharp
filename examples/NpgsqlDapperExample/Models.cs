@@ -24,6 +24,11 @@ public class Book
 };
 public class PostgresType
 {
+    public Guid? CUuid { get; init; }
+    public CEnum? CEnum { get; init; }
+};
+public class PostgresNumericType
+{
     public bool? CBoolean { get; init; }
     public byte[]? CBit { get; init; }
     public short? CSmallint { get; init; }
@@ -34,8 +39,6 @@ public class PostgresType
     public float? CReal { get; init; }
     public double? CDoublePrecision { get; init; }
     public decimal? CMoney { get; init; }
-    public Guid? CUuid { get; init; }
-    public CEnum? CEnum { get; init; }
 };
 public class PostgresStringType
 {

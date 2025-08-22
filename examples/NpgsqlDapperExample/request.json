@@ -121,115 +121,6 @@
             },
             "columns": [
               {
-                "name": "c_boolean",
-                "length": -1,
-                "table": {
-                  "name": "postgres_types"
-                },
-                "type": {
-                  "schema": "pg_catalog",
-                  "name": "bool"
-                }
-              },
-              {
-                "name": "c_bit",
-                "length": -1,
-                "table": {
-                  "name": "postgres_types"
-                },
-                "type": {
-                  "schema": "pg_catalog",
-                  "name": "bit"
-                }
-              },
-              {
-                "name": "c_smallint",
-                "length": -1,
-                "table": {
-                  "name": "postgres_types"
-                },
-                "type": {
-                  "schema": "pg_catalog",
-                  "name": "int2"
-                }
-              },
-              {
-                "name": "c_integer",
-                "length": -1,
-                "table": {
-                  "name": "postgres_types"
-                },
-                "type": {
-                  "schema": "pg_catalog",
-                  "name": "int4"
-                }
-              },
-              {
-                "name": "c_bigint",
-                "length": -1,
-                "table": {
-                  "name": "postgres_types"
-                },
-                "type": {
-                  "schema": "pg_catalog",
-                  "name": "int8"
-                }
-              },
-              {
-                "name": "c_decimal",
-                "length": -1,
-                "table": {
-                  "name": "postgres_types"
-                },
-                "type": {
-                  "schema": "pg_catalog",
-                  "name": "numeric"
-                }
-              },
-              {
-                "name": "c_numeric",
-                "length": -1,
-                "table": {
-                  "name": "postgres_types"
-                },
-                "type": {
-                  "schema": "pg_catalog",
-                  "name": "numeric"
-                }
-              },
-              {
-                "name": "c_real",
-                "length": -1,
-                "table": {
-                  "name": "postgres_types"
-                },
-                "type": {
-                  "schema": "pg_catalog",
-                  "name": "float4"
-                }
-              },
-              {
-                "name": "c_double_precision",
-                "length": -1,
-                "table": {
-                  "name": "postgres_types"
-                },
-                "type": {
-                  "schema": "pg_catalog",
-                  "name": "float8"
-                }
-              },
-              {
-                "name": "c_money",
-                "length": -1,
-                "table": {
-                  "name": "postgres_types"
-                },
-                "type": {
-                  "name": "money"
-                }
-              },
-              {
                 "name": "c_uuid",
                 "length": -1,
                 "table": {
@@ -247,6 +138,122 @@
                 },
                 "type": {
                   "name": "c_enum"
+                }
+              }
+            ]
+          },
+          {
+            "rel": {
+              "name": "postgres_numeric_types"
+            },
+            "columns": [
+              {
+                "name": "c_boolean",
+                "length": -1,
+                "table": {
+                  "name": "postgres_numeric_types"
+                },
+                "type": {
+                  "schema": "pg_catalog",
+                  "name": "bool"
+                }
+              },
+              {
+                "name": "c_bit",
+                "length": -1,
+                "table": {
+                  "name": "postgres_numeric_types"
+                },
+                "type": {
+                  "schema": "pg_catalog",
+                  "name": "bit"
+                }
+              },
+              {
+                "name": "c_smallint",
+                "length": -1,
+                "table": {
+                  "name": "postgres_numeric_types"
+                },
+                "type": {
+                  "schema": "pg_catalog",
+                  "name": "int2"
+                }
+              },
+              {
+                "name": "c_integer",
+                "length": -1,
+                "table": {
+                  "name": "postgres_numeric_types"
+                },
+                "type": {
+                  "schema": "pg_catalog",
+                  "name": "int4"
+                }
+              },
+              {
+                "name": "c_bigint",
+                "length": -1,
+                "table": {
+                  "name": "postgres_numeric_types"
+                },
+                "type": {
+                  "schema": "pg_catalog",
+                  "name": "int8"
+                }
+              },
+              {
+                "name": "c_decimal",
+                "length": -1,
+                "table": {
+                  "name": "postgres_numeric_types"
+                },
+                "type": {
+                  "schema": "pg_catalog",
+                  "name": "numeric"
+                }
+              },
+              {
+                "name": "c_numeric",
+                "length": -1,
+                "table": {
+                  "name": "postgres_numeric_types"
+                },
+                "type": {
+                  "schema": "pg_catalog",
+                  "name": "numeric"
+                }
+              },
+              {
+                "name": "c_real",
+                "length": -1,
+                "table": {
+                  "name": "postgres_numeric_types"
+                },
+                "type": {
+                  "schema": "pg_catalog",
+                  "name": "float4"
+                }
+              },
+              {
+                "name": "c_double_precision",
+                "length": -1,
+                "table": {
+                  "name": "postgres_numeric_types"
+                },
+                "type": {
+                  "schema": "pg_catalog",
+                  "name": "float8"
+                }
+              },
+              {
+                "name": "c_money",
+                "length": -1,
+                "table": {
+                  "name": "postgres_numeric_types"
+                },
+                "type": {
+                  "name": "money"
                 }
               }
             ]
@@ -33459,172 +33466,12 @@
       "filename": "query.sql"
     },
     {
-      "text": "\nINSERT INTO postgres_types\n(\n    c_boolean,\n    c_bit,\n    c_smallint,\n    c_integer,\n    c_bigint,\n    c_real,\n    c_numeric,\n    c_decimal,\n    c_double_precision,\n    c_money,\n    c_uuid,\n    c_enum\n)\nVALUES (\n    $1,\n    $2,\n    $3,\n    $4,\n    $5,\n    $6,\n    $7,\n    $8,\n    $9,\n    $10,\n    $11,\n    $12::c_enum\n)",
+      "text": "\nINSERT INTO postgres_types\n(\n    c_uuid,\n    c_enum\n)\nVALUES (\n    $1,\n    $2::c_enum\n)",
       "name": "InsertPostgresTypes",
       "cmd": ":exec",
       "parameters": [
         {
           "number": 1,
-          "column": {
-            "name": "c_boolean",
-            "length": -1,
-            "isNamedParam": true,
-            "table": {
-              "schema": "public",
-              "name": "postgres_types"
-            },
-            "type": {
-              "name": "pg_catalog.bool"
-            },
-            "originalName": "c_boolean"
-          }
-        },
-        {
-          "number": 2,
-          "column": {
-            "name": "c_bit",
-            "length": -1,
-            "isNamedParam": true,
-            "table": {
-              "schema": "public",
-              "name": "postgres_types"
-            },
-            "type": {
-              "name": "pg_catalog.bit"
-            },
-            "originalName": "c_bit"
-          }
-        },
-        {
-          "number": 3,
-          "column": {
-            "name": "c_smallint",
-            "length": -1,
-            "isNamedParam": true,
-            "table": {
-              "schema": "public",
-              "name": "postgres_types"
-            },
-            "type": {
-              "name": "pg_catalog.int2"
-            },
-            "originalName": "c_smallint"
-          }
-        },
-        {
-          "number": 4,
-          "column": {
-            "name": "c_integer",
-            "length": -1,
-            "isNamedParam": true,
-            "table": {
-              "schema": "public",
-              "name": "postgres_types"
-            },
-            "type": {
-              "name": "pg_catalog.int4"
-            },
-            "originalName": "c_integer"
-          }
-        },
-        {
-          "number": 5,
-          "column": {
-            "name": "c_bigint",
-            "length": -1,
-            "isNamedParam": true,
-            "table": {
-              "schema": "public",
-              "name": "postgres_types"
-            },
-            "type": {
-              "name": "pg_catalog.int8"
-            },
-            "originalName": "c_bigint"
-          }
-        },
-        {
-          "number": 6,
-          "column": {
-            "name": "c_real",
-            "length": -1,
-            "isNamedParam": true,
-            "table": {
-              "schema": "public",
-              "name": "postgres_types"
-            },
-            "type": {
-              "name": "pg_catalog.float4"
-            },
-            "originalName": "c_real"
-          }
-        },
-        {
-          "number": 7,
-          "column": {
-            "name": "c_numeric",
-            "length": -1,
-            "isNamedParam": true,
-            "table": {
-              "schema": "public",
-              "name": "postgres_types"
-            },
-            "type": {
-              "name": "pg_catalog.numeric"
-            },
-            "originalName": "c_numeric"
-          }
-        },
-        {
-          "number": 8,
-          "column": {
-            "name": "c_decimal",
-            "length": -1,
-            "isNamedParam": true,
-            "table": {
-              "schema": "public",
-              "name": "postgres_types"
-            },
-            "type": {
-              "name": "pg_catalog.numeric"
-            },
-            "originalName": "c_decimal"
-          }
-        },
-        {
-          "number": 9,
-          "column": {
-            "name": "c_double_precision",
-            "length": -1,
-            "isNamedParam": true,
-            "table": {
-              "schema": "public",
-              "name": "postgres_types"
-            },
-            "type": {
-              "name": "pg_catalog.float8"
-            },
-            "originalName": "c_double_precision"
-          }
-        },
-        {
-          "number": 10,
-          "column": {
-            "name": "c_money",
-            "length": -1,
-            "isNamedParam": true,
-            "table": {
-              "schema": "public",
-              "name": "postgres_types"
-            },
-            "type": {
-              "name": "money"
-            },
-            "originalName": "c_money"
-          }
-        },
-        {
-          "number": 11,
           "column": {
             "name": "c_uuid",
             "length": -1,
@@ -33640,7 +33487,7 @@
           }
         },
         {
-          "number": 12,
+          "number": 2,
           "column": {
             "name": "c_enum",
             "length": -1,
@@ -33651,7 +33498,7 @@
         }
       ],
       "comments": [
-        " Basic types "
+        " Special types "
       ],
       "filename": "query.sql",
       "insert_into_table": {
@@ -33659,147 +33506,12 @@
       }
     },
     {
-      "text": "INSERT INTO postgres_types\n(\n    c_boolean,\n    c_smallint,\n    c_integer,\n    c_bigint,\n    c_real,\n    c_numeric,\n    c_decimal,\n    c_double_precision,\n    c_money,\n    c_uuid\n)\nVALUES (\n    $1, \n    $2, \n    $3, \n    $4, \n    $5, \n    $6, \n    $7, \n    $8, \n    $9, \n    $10\n)",
+      "text": "INSERT INTO postgres_types\n(\n    c_uuid\n)\nVALUES (\n    $1\n)",
       "name": "InsertPostgresTypesBatch",
       "cmd": ":copyfrom",
       "parameters": [
         {
           "number": 1,
-          "column": {
-            "name": "c_boolean",
-            "length": -1,
-            "table": {
-              "schema": "public",
-              "name": "postgres_types"
-            },
-            "type": {
-              "name": "pg_catalog.bool"
-            },
-            "originalName": "c_boolean"
-          }
-        },
-        {
-          "number": 2,
-          "column": {
-            "name": "c_smallint",
-            "length": -1,
-            "table": {
-              "schema": "public",
-              "name": "postgres_types"
-            },
-            "type": {
-              "name": "pg_catalog.int2"
-            },
-            "originalName": "c_smallint"
-          }
-        },
-        {
-          "number": 3,
-          "column": {
-            "name": "c_integer",
-            "length": -1,
-            "table": {
-              "schema": "public",
-              "name": "postgres_types"
-            },
-            "type": {
-              "name": "pg_catalog.int4"
-            },
-            "originalName": "c_integer"
-          }
-        },
-        {
-          "number": 4,
-          "column": {
-            "name": "c_bigint",
-            "length": -1,
-            "table": {
-              "schema": "public",
-              "name": "postgres_types"
-            },
-            "type": {
-              "name": "pg_catalog.int8"
-            },
-            "originalName": "c_bigint"
-          }
-        },
-        {
-          "number": 5,
-          "column": {
-            "name": "c_real",
-            "length": -1,
-            "table": {
-              "schema": "public",
-              "name": "postgres_types"
-            },
-            "type": {
-              "name": "pg_catalog.float4"
-            },
-            "originalName": "c_real"
-          }
-        },
-        {
-          "number": 6,
-          "column": {
-            "name": "c_numeric",
-            "length": -1,
-            "table": {
-              "schema": "public",
-              "name": "postgres_types"
-            },
-            "type": {
-              "name": "pg_catalog.numeric"
-            },
-            "originalName": "c_numeric"
-          }
-        },
-        {
-          "number": 7,
-          "column": {
-            "name": "c_decimal",
-            "length": -1,
-            "table": {
-              "schema": "public",
-              "name": "postgres_types"
-            },
-            "type": {
-              "name": "pg_catalog.numeric"
-            },
-            "originalName": "c_decimal"
-          }
-        },
-        {
-          "number": 8,
-          "column": {
-            "name": "c_double_precision",
-            "length": -1,
-            "table": {
-              "schema": "public",
-              "name": "postgres_types"
-            },
-            "type": {
-              "name": "pg_catalog.float8"
-            },
-            "originalName": "c_double_precision"
-          }
-        },
-        {
-          "number": 9,
-          "column": {
-            "name": "c_money",
-            "length": -1,
-            "table": {
-              "schema": "public",
-              "name": "postgres_types"
-            },
-            "type": {
-              "name": "money"
-            },
-            "originalName": "c_money"
-          }
-        },
-        {
-          "number": 10,
           "column": {
             "name": "c_uuid",
             "length": -1,
@@ -33820,129 +33532,10 @@
       }
     },
     {
-      "text": "SELECT     \n    c_boolean,\n    c_bit,\n    c_smallint,\n    c_integer,\n    c_bigint,\n    c_real,\n    c_numeric,\n    c_decimal,\n    c_double_precision,\n    c_money,\n    c_uuid,\n    c_enum\nFROM postgres_types \nLIMIT 1",
+      "text": "SELECT\n    c_uuid,\n    c_enum\nFROM postgres_types \nLIMIT 1",
       "name": "GetPostgresTypes",
       "cmd": ":one",
       "columns": [
-        {
-          "name": "c_boolean",
-          "length": -1,
-          "table": {
-            "name": "postgres_types"
-          },
-          "type": {
-            "schema": "pg_catalog",
-            "name": "bool"
-          },
-          "originalName": "c_boolean"
-        },
-        {
-          "name": "c_bit",
-          "length": -1,
-          "table": {
-            "name": "postgres_types"
-          },
-          "type": {
-            "schema": "pg_catalog",
-            "name": "bit"
-          },
-          "originalName": "c_bit"
-        },
-        {
-          "name": "c_smallint",
-          "length": -1,
-          "table": {
-            "name": "postgres_types"
-          },
-          "type": {
-            "schema": "pg_catalog",
-            "name": "int2"
-          },
-          "originalName": "c_smallint"
-        },
-        {
-          "name": "c_integer",
-          "length": -1,
-          "table": {
-            "name": "postgres_types"
-          },
-          "type": {
-            "schema": "pg_catalog",
-            "name": "int4"
-          },
-          "originalName": "c_integer"
-        },
-        {
-          "name": "c_bigint",
-          "length": -1,
-          "table": {
-            "name": "postgres_types"
-          },
-          "type": {
-            "schema": "pg_catalog",
-            "name": "int8"
-          },
-          "originalName": "c_bigint"
-        },
-        {
-          "name": "c_real",
-          "length": -1,
-          "table": {
-            "name": "postgres_types"
-          },
-          "type": {
-            "schema": "pg_catalog",
-            "name": "float4"
-          },
-          "originalName": "c_real"
-        },
-        {
-          "name": "c_numeric",
-          "length": -1,
-          "table": {
-            "name": "postgres_types"
-          },
-          "type": {
-            "schema": "pg_catalog",
-            "name": "numeric"
-          },
-          "originalName": "c_numeric"
-        },
-        {
-          "name": "c_decimal",
-          "length": -1,
-          "table": {
-            "name": "postgres_types"
-          },
-          "type": {
-            "schema": "pg_catalog",
-            "name": "numeric"
-          },
-          "originalName": "c_decimal"
-        },
-        {
-          "name": "c_double_precision",
-          "length": -1,
-          "table": {
-            "name": "postgres_types"
-          },
-          "type": {
-            "schema": "pg_catalog",
-            "name": "float8"
-          },
-          "originalName": "c_double_precision"
-        },
-        {
-          "name": "c_money",
-          "length": -1,
-          "table": {
-            "name": "postgres_types"
-          },
-          "type": {
-            "name": "money"
-          },
-          "originalName": "c_money"
-        },
         {
           "name": "c_uuid",
           "length": -1,
@@ -33969,117 +33562,10 @@
       "filename": "query.sql"
     },
     {
-      "text": "SELECT\n    c_smallint,\n    c_boolean,\n    c_integer,\n    c_bigint,\n    c_real,\n    c_numeric,\n    c_decimal,\n    c_double_precision,\n    c_money,\n    c_uuid,\n    COUNT(*) AS cnt\nFROM postgres_types\nGROUP BY\n    c_smallint,\n    c_boolean,\n    c_integer,\n    c_bigint,\n    c_real,\n    c_numeric,\n    c_decimal,\n    c_double_precision,\n    c_money,\n    c_uuid\nLIMIT 1",
+      "text": "SELECT\n    c_uuid,\n    COUNT(*) AS cnt\nFROM postgres_types\nGROUP BY\n    c_uuid\nLIMIT 1",
       "name": "GetPostgresTypesCnt",
       "cmd": ":one",
       "columns": [
-        {
-          "name": "c_smallint",
-          "length": -1,
-          "table": {
-            "name": "postgres_types"
-          },
-          "type": {
-            "schema": "pg_catalog",
-            "name": "int2"
-          },
-          "originalName": "c_smallint"
-        },
-        {
-          "name": "c_boolean",
-          "length": -1,
-          "table": {
-            "name": "postgres_types"
-          },
-          "type": {
-            "schema": "pg_catalog",
-            "name": "bool"
-          },
-          "originalName": "c_boolean"
-        },
-        {
-          "name": "c_integer",
-          "length": -1,
-          "table": {
-            "name": "postgres_types"
-          },
-          "type": {
-            "schema": "pg_catalog",
-            "name": "int4"
-          },
-          "originalName": "c_integer"
-        },
-        {
-          "name": "c_bigint",
-          "length": -1,
-          "table": {
-            "name": "postgres_types"
-          },
-          "type": {
-            "schema": "pg_catalog",
-            "name": "int8"
-          },
-          "originalName": "c_bigint"
-        },
-        {
-          "name": "c_real",
-          "length": -1,
-          "table": {
-            "name": "postgres_types"
-          },
-          "type": {
-            "schema": "pg_catalog",
-            "name": "float4"
-          },
-          "originalName": "c_real"
-        },
-        {
-          "name": "c_numeric",
-          "length": -1,
-          "table": {
-            "name": "postgres_types"
-          },
-          "type": {
-            "schema": "pg_catalog",
-            "name": "numeric"
-          },
-          "originalName": "c_numeric"
-        },
-        {
-          "name": "c_decimal",
-          "length": -1,
-          "table": {
-            "name": "postgres_types"
-          },
-          "type": {
-            "schema": "pg_catalog",
-            "name": "numeric"
-          },
-          "originalName": "c_decimal"
-        },
-        {
-          "name": "c_double_precision",
-          "length": -1,
-          "table": {
-            "name": "postgres_types"
-          },
-          "type": {
-            "schema": "pg_catalog",
-            "name": "float8"
-          },
-          "originalName": "c_double_precision"
-        },
-        {
-          "name": "c_money",
-          "length": -1,
-          "table": {
-            "name": "postgres_types"
-          },
-          "type": {
-            "name": "money"
-          },
-          "originalName": "c_money"
-        },
         {
           "name": "c_uuid",
           "length": -1,
@@ -34104,7 +33590,7 @@
       "filename": "query.sql"
     },
     {
-      "text": "SELECT\n    MAX(c_integer) AS max_integer,\n    MAX(c_varchar) AS max_varchar,\n    MAX(c_timestamp) AS max_timestamp\nFROM postgres_types\nCROSS JOIN postgres_string_types\nCROSS JOIN postgres_datetime_types",
+      "text": "SELECT\n    MAX(c_integer) AS max_integer,\n    MAX(c_varchar) AS max_varchar,\n    MAX(c_timestamp) AS max_timestamp\nFROM postgres_datetime_types\nCROSS JOIN postgres_numeric_types\nCROSS JOIN postgres_string_types",
       "name": "GetPostgresFunctions",
       "cmd": ":one",
       "columns": [
@@ -34143,6 +33629,600 @@
       "name": "TruncatePostgresTypes",
       "cmd": ":exec",
       "filename": "query.sql"
+    },
+    {
+      "text": "\nINSERT INTO postgres_numeric_types\n(\n    c_boolean,\n    c_bit,\n    c_smallint,\n    c_integer,\n    c_bigint,\n    c_decimal,\n    c_numeric,\n    c_real,\n    c_double_precision,\n    c_money\n)\nVALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)",
+      "name": "InsertPostgresNumericTypes",
+      "cmd": ":exec",
+      "parameters": [
+        {
+          "number": 1,
+          "column": {
+            "name": "c_boolean",
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "postgres_numeric_types"
+            },
+            "type": {
+              "name": "pg_catalog.bool"
+            },
+            "originalName": "c_boolean"
+          }
+        },
+        {
+          "number": 2,
+          "column": {
+            "name": "c_bit",
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "postgres_numeric_types"
+            },
+            "type": {
+              "name": "pg_catalog.bit"
+            },
+            "originalName": "c_bit"
+          }
+        },
+        {
+          "number": 3,
+          "column": {
+            "name": "c_smallint",
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "postgres_numeric_types"
+            },
+            "type": {
+              "name": "pg_catalog.int2"
+            },
+            "originalName": "c_smallint"
+          }
+        },
+        {
+          "number": 4,
+          "column": {
+            "name": "c_integer",
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "postgres_numeric_types"
+            },
+            "type": {
+              "name": "pg_catalog.int4"
+            },
+            "originalName": "c_integer"
+          }
+        },
+        {
+          "number": 5,
+          "column": {
+            "name": "c_bigint",
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "postgres_numeric_types"
+            },
+            "type": {
+              "name": "pg_catalog.int8"
+            },
+            "originalName": "c_bigint"
+          }
+        },
+        {
+          "number": 6,
+          "column": {
+            "name": "c_decimal",
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "postgres_numeric_types"
+            },
+            "type": {
+              "name": "pg_catalog.numeric"
+            },
+            "originalName": "c_decimal"
+          }
+        },
+        {
+          "number": 7,
+          "column": {
+            "name": "c_numeric",
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "postgres_numeric_types"
+            },
+            "type": {
+              "name": "pg_catalog.numeric"
+            },
+            "originalName": "c_numeric"
+          }
+        },
+        {
+          "number": 8,
+          "column": {
+            "name": "c_real",
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "postgres_numeric_types"
+            },
+            "type": {
+              "name": "pg_catalog.float4"
+            },
+            "originalName": "c_real"
+          }
+        },
+        {
+          "number": 9,
+          "column": {
+            "name": "c_double_precision",
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "postgres_numeric_types"
+            },
+            "type": {
+              "name": "pg_catalog.float8"
+            },
+            "originalName": "c_double_precision"
+          }
+        },
+        {
+          "number": 10,
+          "column": {
+            "name": "c_money",
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "postgres_numeric_types"
+            },
+            "type": {
+              "name": "money"
+            },
+            "originalName": "c_money"
+          }
+        }
+      ],
+      "comments": [
+        " Numeric types "
+      ],
+      "filename": "query.sql",
+      "insert_into_table": {
+        "name": "postgres_numeric_types"
+      }
+    },
+    {
+      "text": "SELECT c_boolean, c_bit, c_smallint, c_integer, c_bigint, c_decimal, c_numeric, c_real, c_double_precision, c_money FROM postgres_numeric_types LIMIT 1",
+      "name": "GetPostgresNumericTypes",
+      "cmd": ":one",
+      "columns": [
+        {
+          "name": "c_boolean",
+          "length": -1,
+          "table": {
+            "name": "postgres_numeric_types"
+          },
+          "type": {
+            "schema": "pg_catalog",
+            "name": "bool"
+          },
+          "originalName": "c_boolean"
+        },
+        {
+          "name": "c_bit",
+          "length": -1,
+          "table": {
+            "name": "postgres_numeric_types"
+          },
+          "type": {
+            "schema": "pg_catalog",
+            "name": "bit"
+          },
+          "originalName": "c_bit"
+        },
+        {
+          "name": "c_smallint",
+          "length": -1,
+          "table": {
+            "name": "postgres_numeric_types"
+          },
+          "type": {
+            "schema": "pg_catalog",
+            "name": "int2"
+          },
+          "originalName": "c_smallint"
+        },
+        {
+          "name": "c_integer",
+          "length": -1,
+          "table": {
+            "name": "postgres_numeric_types"
+          },
+          "type": {
+            "schema": "pg_catalog",
+            "name": "int4"
+          },
+          "originalName": "c_integer"
+        },
+        {
+          "name": "c_bigint",
+          "length": -1,
+          "table": {
+            "name": "postgres_numeric_types"
+          },
+          "type": {
+            "schema": "pg_catalog",
+            "name": "int8"
+          },
+          "originalName": "c_bigint"
+        },
+        {
+          "name": "c_decimal",
+          "length": -1,
+          "table": {
+            "name": "postgres_numeric_types"
+          },
+          "type": {
+            "schema": "pg_catalog",
+            "name": "numeric"
+          },
+          "originalName": "c_decimal"
+        },
+        {
+          "name": "c_numeric",
+          "length": -1,
+          "table": {
+            "name": "postgres_numeric_types"
+          },
+          "type": {
+            "schema": "pg_catalog",
+            "name": "numeric"
+          },
+          "originalName": "c_numeric"
+        },
+        {
+          "name": "c_real",
+          "length": -1,
+          "table": {
+            "name": "postgres_numeric_types"
+          },
+          "type": {
+            "schema": "pg_catalog",
+            "name": "float4"
+          },
+          "originalName": "c_real"
+        },
+        {
+          "name": "c_double_precision",
+          "length": -1,
+          "table": {
+            "name": "postgres_numeric_types"
+          },
+          "type": {
+            "schema": "pg_catalog",
+            "name": "float8"
+          },
+          "originalName": "c_double_precision"
+        },
+        {
+          "name": "c_money",
+          "length": -1,
+          "table": {
+            "name": "postgres_numeric_types"
+          },
+          "type": {
+            "name": "money"
+          },
+          "originalName": "c_money"
+        }
+      ],
+      "filename": "query.sql"
+    },
+    {
+      "text": "TRUNCATE TABLE postgres_numeric_types",
+      "name": "TruncatePostgresNumericTypes",
+      "cmd": ":exec",
+      "filename": "query.sql"
+    },
+    {
+      "text": "SELECT\n    c_boolean,\n    c_bit,\n    c_smallint,\n    c_integer,\n    c_bigint,\n    c_decimal,\n    c_numeric,\n    c_real,\n    c_double_precision,\n    c_money,\n    COUNT(*) AS cnt\nFROM postgres_numeric_types\nGROUP BY\n    c_boolean,\n    c_bit,\n    c_smallint,\n    c_integer,\n    c_bigint,\n    c_decimal,\n    c_numeric,\n    c_real,\n    c_double_precision,\n    c_money\nLIMIT 1",
+      "name": "GetPostgresNumericTypesCnt",
+      "cmd": ":one",
+      "columns": [
+        {
+          "name": "c_boolean",
+          "length": -1,
+          "table": {
+            "name": "postgres_numeric_types"
+          },
+          "type": {
+            "schema": "pg_catalog",
+            "name": "bool"
+          },
+          "originalName": "c_boolean"
+        },
+        {
+          "name": "c_bit",
+          "length": -1,
+          "table": {
+            "name": "postgres_numeric_types"
+          },
+          "type": {
+            "schema": "pg_catalog",
+            "name": "bit"
+          },
+          "originalName": "c_bit"
+        },
+        {
+          "name": "c_smallint",
+          "length": -1,
+          "table": {
+            "name": "postgres_numeric_types"
+          },
+          "type": {
+            "schema": "pg_catalog",
+            "name": "int2"
+          },
+          "originalName": "c_smallint"
+        },
+        {
+          "name": "c_integer",
+          "length": -1,
+          "table": {
+            "name": "postgres_numeric_types"
+          },
+          "type": {
+            "schema": "pg_catalog",
+            "name": "int4"
+          },
+          "originalName": "c_integer"
+        },
+        {
+          "name": "c_bigint",
+          "length": -1,
+          "table": {
+            "name": "postgres_numeric_types"
+          },
+          "type": {
+            "schema": "pg_catalog",
+            "name": "int8"
+          },
+          "originalName": "c_bigint"
+        },
+        {
+          "name": "c_decimal",
+          "length": -1,
+          "table": {
+            "name": "postgres_numeric_types"
+          },
+          "type": {
+            "schema": "pg_catalog",
+            "name": "numeric"
+          },
+          "originalName": "c_decimal"
+        },
+        {
+          "name": "c_numeric",
+          "length": -1,
+          "table": {
+            "name": "postgres_numeric_types"
+          },
+          "type": {
+            "schema": "pg_catalog",
+            "name": "numeric"
+          },
+          "originalName": "c_numeric"
+        },
+        {
+          "name": "c_real",
+          "length": -1,
+          "table": {
+            "name": "postgres_numeric_types"
+          },
+          "type": {
+            "schema": "pg_catalog",
+            "name": "float4"
+          },
+          "originalName": "c_real"
+        },
+        {
+          "name": "c_double_precision",
+          "length": -1,
+          "table": {
+            "name": "postgres_numeric_types"
+          },
+          "type": {
+            "schema": "pg_catalog",
+            "name": "float8"
+          },
+          "originalName": "c_double_precision"
+        },
+        {
+          "name": "c_money",
+          "length": -1,
+          "table": {
+            "name": "postgres_numeric_types"
+          },
+          "type": {
+            "name": "money"
+          },
+          "originalName": "c_money"
+        },
+        {
+          "name": "cnt",
+          "notNull": true,
+          "length": -1,
+          "isFuncCall": true,
+          "type": {
+            "name": "bigint"
+          }
+        }
+      ],
+      "filename": "query.sql"
+    },
+    {
+      "text": "INSERT INTO postgres_numeric_types\n(\n    c_boolean,\n    c_bit,\n    c_smallint,\n    c_integer,\n    c_bigint,\n    c_decimal,\n    c_numeric,\n    c_real,\n    c_double_precision,\n    c_money\n) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)",
+      "name": "InsertPostgresNumericTypesBatch",
+      "cmd": ":copyfrom",
+      "parameters": [
+        {
+          "number": 1,
+          "column": {
+            "name": "c_boolean",
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "postgres_numeric_types"
+            },
+            "type": {
+              "name": "pg_catalog.bool"
+            },
+            "originalName": "c_boolean"
+          }
+        },
+        {
+          "number": 2,
+          "column": {
+            "name": "c_bit",
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "postgres_numeric_types"
+            },
+            "type": {
+              "name": "pg_catalog.bit"
+            },
+            "originalName": "c_bit"
+          }
+        },
+        {
+          "number": 3,
+          "column": {
+            "name": "c_smallint",
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "postgres_numeric_types"
+            },
+            "type": {
+              "name": "pg_catalog.int2"
+            },
+            "originalName": "c_smallint"
+          }
+        },
+        {
+          "number": 4,
+          "column": {
+            "name": "c_integer",
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "postgres_numeric_types"
+            },
+            "type": {
+              "name": "pg_catalog.int4"
+            },
+            "originalName": "c_integer"
+          }
+        },
+        {
+          "number": 5,
+          "column": {
+            "name": "c_bigint",
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "postgres_numeric_types"
+            },
+            "type": {
+              "name": "pg_catalog.int8"
+            },
+            "originalName": "c_bigint"
+          }
+        },
+        {
+          "number": 6,
+          "column": {
+            "name": "c_decimal",
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "postgres_numeric_types"
+            },
+            "type": {
+              "name": "pg_catalog.numeric"
+            },
+            "originalName": "c_decimal"
+          }
+        },
+        {
+          "number": 7,
+          "column": {
+            "name": "c_numeric",
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "postgres_numeric_types"
+            },
+            "type": {
+              "name": "pg_catalog.numeric"
+            },
+            "originalName": "c_numeric"
+          }
+        },
+        {
+          "number": 8,
+          "column": {
+            "name": "c_real",
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "postgres_numeric_types"
+            },
+            "type": {
+              "name": "pg_catalog.float4"
+            },
+            "originalName": "c_real"
+          }
+        },
+        {
+          "number": 9,
+          "column": {
+            "name": "c_double_precision",
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "postgres_numeric_types"
+            },
+            "type": {
+              "name": "pg_catalog.float8"
+            },
+            "originalName": "c_double_precision"
+          }
+        },
+        {
+          "number": 10,
+          "column": {
+            "name": "c_money",
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "postgres_numeric_types"
+            },
+            "type": {
+              "name": "money"
+            },
+            "originalName": "c_money"
+          }
+        }
+      ],
+      "filename": "query.sql",
+      "insert_into_table": {
+        "name": "postgres_numeric_types"
+      }
     },
     {
       "text": "\nINSERT INTO postgres_string_types\n(\n    c_char,\n    c_varchar,\n    c_character_varying,\n    c_bpchar,\n    c_text\n)\nVALUES ($1, $2, $3, $4, $5)",

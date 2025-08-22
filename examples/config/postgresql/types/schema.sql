@@ -3,7 +3,12 @@ CREATE EXTENSION "uuid-ossp";
 CREATE TYPE c_enum AS ENUM ('small', 'medium', 'big');
 
 CREATE TABLE postgres_types (
-    /* Numeric Data Types */
+    /* Special Data Types */
+    c_uuid UUID,
+    c_enum c_enum
+);
+
+CREATE TABLE postgres_numeric_types (
     c_boolean BOOLEAN,
     c_bit BIT(10),
     c_smallint SMALLINT,
@@ -13,11 +18,7 @@ CREATE TABLE postgres_types (
     c_numeric NUMERIC(10, 7),
     c_real REAL,
     c_double_precision DOUBLE PRECISION,
-    c_money MONEY,
-
-    /* Special Data Types */
-    c_uuid UUID,
-    c_enum c_enum
+    c_money MONEY
 );
 
 CREATE TABLE postgres_string_types (

@@ -25,6 +25,11 @@ namespace NpgsqlLegacyExampleGen
     };
     public class PostgresType
     {
+        public Guid? CUuid { get; set; }
+        public CEnum? CEnum { get; set; }
+    };
+    public class PostgresNumericType
+    {
         public bool? CBoolean { get; set; }
         public byte[] CBit { get; set; }
         public short? CSmallint { get; set; }
@@ -35,8 +40,6 @@ namespace NpgsqlLegacyExampleGen
         public float? CReal { get; set; }
         public double? CDoublePrecision { get; set; }
         public decimal? CMoney { get; set; }
-        public Guid? CUuid { get; set; }
-        public CEnum? CEnum { get; set; }
     };
     public class PostgresStringType
     {

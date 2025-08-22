@@ -854,19 +854,9 @@ namespace NpgsqlLegacyExampleGen
             }
         }
 
-        private const string InsertPostgresTypesSql = " INSERT INTO postgres_types ( c_boolean, c_bit, c_smallint, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_money, c_uuid, c_enum ) VALUES ( @c_boolean, @c_bit, @c_smallint, @c_integer, @c_bigint, @c_real, @c_numeric, @c_decimal, @c_double_precision, @c_money, @c_uuid, @c_enum::c_enum )";
+        private const string InsertPostgresTypesSql = " INSERT INTO postgres_types ( c_uuid, c_enum ) VALUES ( @c_uuid, @c_enum::c_enum )";
         public class InsertPostgresTypesArgs
         {
-            public bool? CBoolean { get; set; }
-            public byte[] CBit { get; set; }
-            public short? CSmallint { get; set; }
-            public int? CInteger { get; set; }
-            public long? CBigint { get; set; }
-            public float? CReal { get; set; }
-            public decimal? CNumeric { get; set; }
-            public decimal? CDecimal { get; set; }
-            public double? CDoublePrecision { get; set; }
-            public decimal? CMoney { get; set; }
             public Guid? CUuid { get; set; }
             public CEnum? CEnum { get; set; }
         };
@@ -878,16 +868,6 @@ namespace NpgsqlLegacyExampleGen
                 {
                     using (var command = connection.CreateCommand(InsertPostgresTypesSql))
                     {
-                        command.Parameters.AddWithValue("@c_boolean", args.CBoolean ?? (object)DBNull.Value);
-                        command.Parameters.AddWithValue("@c_bit", args.CBit ?? (object)DBNull.Value);
-                        command.Parameters.AddWithValue("@c_smallint", args.CSmallint ?? (object)DBNull.Value);
-                        command.Parameters.AddWithValue("@c_integer", args.CInteger ?? (object)DBNull.Value);
-                        command.Parameters.AddWithValue("@c_bigint", args.CBigint ?? (object)DBNull.Value);
-                        command.Parameters.AddWithValue("@c_real", args.CReal ?? (object)DBNull.Value);
-                        command.Parameters.AddWithValue("@c_numeric", args.CNumeric ?? (object)DBNull.Value);
-                        command.Parameters.AddWithValue("@c_decimal", args.CDecimal ?? (object)DBNull.Value);
-                        command.Parameters.AddWithValue("@c_double_precision", args.CDoublePrecision ?? (object)DBNull.Value);
-                        command.Parameters.AddWithValue("@c_money", args.CMoney ?? (object)DBNull.Value);
                         command.Parameters.AddWithValue("@c_uuid", args.CUuid ?? (object)DBNull.Value);
                         command.Parameters.AddWithValue("@c_enum", args.CEnum != null ? args.CEnum.Value.Stringify() : (object)DBNull.Value);
                         await command.ExecuteNonQueryAsync();
@@ -903,34 +883,15 @@ namespace NpgsqlLegacyExampleGen
             {
                 command.CommandText = InsertPostgresTypesSql;
                 command.Transaction = this.Transaction;
-                command.Parameters.AddWithValue("@c_boolean", args.CBoolean ?? (object)DBNull.Value);
-                command.Parameters.AddWithValue("@c_bit", args.CBit ?? (object)DBNull.Value);
-                command.Parameters.AddWithValue("@c_smallint", args.CSmallint ?? (object)DBNull.Value);
-                command.Parameters.AddWithValue("@c_integer", args.CInteger ?? (object)DBNull.Value);
-                command.Parameters.AddWithValue("@c_bigint", args.CBigint ?? (object)DBNull.Value);
-                command.Parameters.AddWithValue("@c_real", args.CReal ?? (object)DBNull.Value);
-                command.Parameters.AddWithValue("@c_numeric", args.CNumeric ?? (object)DBNull.Value);
-                command.Parameters.AddWithValue("@c_decimal", args.CDecimal ?? (object)DBNull.Value);
-                command.Parameters.AddWithValue("@c_double_precision", args.CDoublePrecision ?? (object)DBNull.Value);
-                command.Parameters.AddWithValue("@c_money", args.CMoney ?? (object)DBNull.Value);
                 command.Parameters.AddWithValue("@c_uuid", args.CUuid ?? (object)DBNull.Value);
                 command.Parameters.AddWithValue("@c_enum", args.CEnum != null ? args.CEnum.Value.Stringify() : (object)DBNull.Value);
                 await command.ExecuteNonQueryAsync();
             }
         }
 
-        private const string InsertPostgresTypesBatchSql = "COPY postgres_types (c_boolean, c_smallint, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_money, c_uuid) FROM STDIN (FORMAT BINARY)";
+        private const string InsertPostgresTypesBatchSql = "COPY postgres_types (c_uuid) FROM STDIN (FORMAT BINARY)";
         public class InsertPostgresTypesBatchArgs
         {
-            public bool? CBoolean { get; set; }
-            public short? CSmallint { get; set; }
-            public int? CInteger { get; set; }
-            public long? CBigint { get; set; }
-            public float? CReal { get; set; }
-            public decimal? CNumeric { get; set; }
-            public decimal? CDecimal { get; set; }
-            public double? CDoublePrecision { get; set; }
-            public decimal? CMoney { get; set; }
             public Guid? CUuid { get; set; }
         };
         public async Task InsertPostgresTypesBatch(List<InsertPostgresTypesBatchArgs> args)
@@ -943,15 +904,6 @@ namespace NpgsqlLegacyExampleGen
                     foreach (var row in args)
                     {
                         await writer.StartRowAsync();
-                        await writer.WriteAsync(row.CBoolean ?? (object)DBNull.Value);
-                        await writer.WriteAsync(row.CSmallint ?? (object)DBNull.Value);
-                        await writer.WriteAsync(row.CInteger ?? (object)DBNull.Value);
-                        await writer.WriteAsync(row.CBigint ?? (object)DBNull.Value);
-                        await writer.WriteAsync(row.CReal ?? (object)DBNull.Value);
-                        await writer.WriteAsync(row.CNumeric ?? (object)DBNull.Value);
-                        await writer.WriteAsync(row.CDecimal ?? (object)DBNull.Value);
-                        await writer.WriteAsync(row.CDoublePrecision ?? (object)DBNull.Value);
-                        await writer.WriteAsync(row.CMoney ?? (object)DBNull.Value, NpgsqlDbType.Money);
                         await writer.WriteAsync(row.CUuid ?? (object)DBNull.Value);
                     }
 
@@ -962,19 +914,9 @@ namespace NpgsqlLegacyExampleGen
             }
         }
 
-        private const string GetPostgresTypesSql = "SELECT c_boolean, c_bit, c_smallint, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_money, c_uuid, c_enum FROM postgres_types LIMIT 1";
+        private const string GetPostgresTypesSql = "SELECT c_uuid, c_enum FROM postgres_types LIMIT 1";
         public class GetPostgresTypesRow
         {
-            public bool? CBoolean { get; set; }
-            public byte[] CBit { get; set; }
-            public short? CSmallint { get; set; }
-            public int? CInteger { get; set; }
-            public long? CBigint { get; set; }
-            public float? CReal { get; set; }
-            public decimal? CNumeric { get; set; }
-            public decimal? CDecimal { get; set; }
-            public double? CDoublePrecision { get; set; }
-            public decimal? CMoney { get; set; }
             public Guid? CUuid { get; set; }
             public CEnum? CEnum { get; set; }
         };
@@ -992,18 +934,8 @@ namespace NpgsqlLegacyExampleGen
                             {
                                 return new GetPostgresTypesRow
                                 {
-                                    CBoolean = reader.IsDBNull(0) ? (bool? )null : reader.GetBoolean(0),
-                                    CBit = reader.IsDBNull(1) ? null : reader.GetFieldValue<byte[]>(1),
-                                    CSmallint = reader.IsDBNull(2) ? (short? )null : reader.GetInt16(2),
-                                    CInteger = reader.IsDBNull(3) ? (int? )null : reader.GetInt32(3),
-                                    CBigint = reader.IsDBNull(4) ? (long? )null : reader.GetInt64(4),
-                                    CReal = reader.IsDBNull(5) ? (float? )null : reader.GetFloat(5),
-                                    CNumeric = reader.IsDBNull(6) ? (decimal? )null : reader.GetDecimal(6),
-                                    CDecimal = reader.IsDBNull(7) ? (decimal? )null : reader.GetDecimal(7),
-                                    CDoublePrecision = reader.IsDBNull(8) ? (double? )null : reader.GetDouble(8),
-                                    CMoney = reader.IsDBNull(9) ? (decimal? )null : reader.GetDecimal(9),
-                                    CUuid = reader.IsDBNull(10) ? (Guid? )null : reader.GetFieldValue<Guid>(10),
-                                    CEnum = reader.IsDBNull(11) ? (CEnum? )null : reader.GetString(11).ToCEnum()
+                                    CUuid = reader.IsDBNull(0) ? (Guid? )null : reader.GetFieldValue<Guid>(0),
+                                    CEnum = reader.IsDBNull(1) ? (CEnum? )null : reader.GetString(1).ToCEnum()
                                 };
                             }
                         }
@@ -1025,18 +957,8 @@ namespace NpgsqlLegacyExampleGen
                     {
                         return new GetPostgresTypesRow
                         {
-                            CBoolean = reader.IsDBNull(0) ? (bool? )null : reader.GetBoolean(0),
-                            CBit = reader.IsDBNull(1) ? null : reader.GetFieldValue<byte[]>(1),
-                            CSmallint = reader.IsDBNull(2) ? (short? )null : reader.GetInt16(2),
-                            CInteger = reader.IsDBNull(3) ? (int? )null : reader.GetInt32(3),
-                            CBigint = reader.IsDBNull(4) ? (long? )null : reader.GetInt64(4),
-                            CReal = reader.IsDBNull(5) ? (float? )null : reader.GetFloat(5),
-                            CNumeric = reader.IsDBNull(6) ? (decimal? )null : reader.GetDecimal(6),
-                            CDecimal = reader.IsDBNull(7) ? (decimal? )null : reader.GetDecimal(7),
-                            CDoublePrecision = reader.IsDBNull(8) ? (double? )null : reader.GetDouble(8),
-                            CMoney = reader.IsDBNull(9) ? (decimal? )null : reader.GetDecimal(9),
-                            CUuid = reader.IsDBNull(10) ? (Guid? )null : reader.GetFieldValue<Guid>(10),
-                            CEnum = reader.IsDBNull(11) ? (CEnum? )null : reader.GetString(11).ToCEnum()
+                            CUuid = reader.IsDBNull(0) ? (Guid? )null : reader.GetFieldValue<Guid>(0),
+                            CEnum = reader.IsDBNull(1) ? (CEnum? )null : reader.GetString(1).ToCEnum()
                         };
                     }
                 }
@@ -1045,18 +967,9 @@ namespace NpgsqlLegacyExampleGen
             return null;
         }
 
-        private const string GetPostgresTypesCntSql = "SELECT c_smallint, c_boolean, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_money, c_uuid, COUNT(*) AS cnt FROM postgres_types GROUP BY c_smallint, c_boolean, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_money, c_uuid LIMIT 1";
+        private const string GetPostgresTypesCntSql = "SELECT c_uuid, COUNT(*) AS cnt FROM postgres_types GROUP BY c_uuid LIMIT 1";
         public class GetPostgresTypesCntRow
         {
-            public short? CSmallint { get; set; }
-            public bool? CBoolean { get; set; }
-            public int? CInteger { get; set; }
-            public long? CBigint { get; set; }
-            public float? CReal { get; set; }
-            public decimal? CNumeric { get; set; }
-            public decimal? CDecimal { get; set; }
-            public double? CDoublePrecision { get; set; }
-            public decimal? CMoney { get; set; }
             public Guid? CUuid { get; set; }
             public long Cnt { get; set; }
         };
@@ -1074,17 +987,8 @@ namespace NpgsqlLegacyExampleGen
                             {
                                 return new GetPostgresTypesCntRow
                                 {
-                                    CSmallint = reader.IsDBNull(0) ? (short? )null : reader.GetInt16(0),
-                                    CBoolean = reader.IsDBNull(1) ? (bool? )null : reader.GetBoolean(1),
-                                    CInteger = reader.IsDBNull(2) ? (int? )null : reader.GetInt32(2),
-                                    CBigint = reader.IsDBNull(3) ? (long? )null : reader.GetInt64(3),
-                                    CReal = reader.IsDBNull(4) ? (float? )null : reader.GetFloat(4),
-                                    CNumeric = reader.IsDBNull(5) ? (decimal? )null : reader.GetDecimal(5),
-                                    CDecimal = reader.IsDBNull(6) ? (decimal? )null : reader.GetDecimal(6),
-                                    CDoublePrecision = reader.IsDBNull(7) ? (double? )null : reader.GetDouble(7),
-                                    CMoney = reader.IsDBNull(8) ? (decimal? )null : reader.GetDecimal(8),
-                                    CUuid = reader.IsDBNull(9) ? (Guid? )null : reader.GetFieldValue<Guid>(9),
-                                    Cnt = reader.GetInt64(10)
+                                    CUuid = reader.IsDBNull(0) ? (Guid? )null : reader.GetFieldValue<Guid>(0),
+                                    Cnt = reader.GetInt64(1)
                                 };
                             }
                         }
@@ -1106,17 +1010,8 @@ namespace NpgsqlLegacyExampleGen
                     {
                         return new GetPostgresTypesCntRow
                         {
-                            CSmallint = reader.IsDBNull(0) ? (short? )null : reader.GetInt16(0),
-                            CBoolean = reader.IsDBNull(1) ? (bool? )null : reader.GetBoolean(1),
-                            CInteger = reader.IsDBNull(2) ? (int? )null : reader.GetInt32(2),
-                            CBigint = reader.IsDBNull(3) ? (long? )null : reader.GetInt64(3),
-                            CReal = reader.IsDBNull(4) ? (float? )null : reader.GetFloat(4),
-                            CNumeric = reader.IsDBNull(5) ? (decimal? )null : reader.GetDecimal(5),
-                            CDecimal = reader.IsDBNull(6) ? (decimal? )null : reader.GetDecimal(6),
-                            CDoublePrecision = reader.IsDBNull(7) ? (double? )null : reader.GetDouble(7),
-                            CMoney = reader.IsDBNull(8) ? (decimal? )null : reader.GetDecimal(8),
-                            CUuid = reader.IsDBNull(9) ? (Guid? )null : reader.GetFieldValue<Guid>(9),
-                            Cnt = reader.GetInt64(10)
+                            CUuid = reader.IsDBNull(0) ? (Guid? )null : reader.GetFieldValue<Guid>(0),
+                            Cnt = reader.GetInt64(1)
                         };
                     }
                 }
@@ -1125,7 +1020,7 @@ namespace NpgsqlLegacyExampleGen
             return null;
         }
 
-        private const string GetPostgresFunctionsSql = "SELECT MAX(c_integer) AS max_integer, MAX(c_varchar) AS max_varchar, MAX(c_timestamp) AS max_timestamp FROM postgres_types CROSS JOIN postgres_string_types CROSS JOIN postgres_datetime_types";
+        private const string GetPostgresFunctionsSql = "SELECT MAX(c_integer) AS max_integer, MAX(c_varchar) AS max_varchar, MAX(c_timestamp) AS max_timestamp FROM postgres_datetime_types CROSS JOIN postgres_numeric_types CROSS JOIN postgres_string_types";
         public class GetPostgresFunctionsRow
         {
             public int? MaxInteger { get; set; }
@@ -1204,6 +1099,291 @@ namespace NpgsqlLegacyExampleGen
                 command.CommandText = TruncatePostgresTypesSql;
                 command.Transaction = this.Transaction;
                 await command.ExecuteNonQueryAsync();
+            }
+        }
+
+        private const string InsertPostgresNumericTypesSql = " INSERT INTO postgres_numeric_types ( c_boolean, c_bit, c_smallint, c_integer, c_bigint, c_decimal, c_numeric, c_real, c_double_precision, c_money ) VALUES (@c_boolean, @c_bit, @c_smallint, @c_integer, @c_bigint, @c_decimal, @c_numeric, @c_real, @c_double_precision, @c_money)";
+        public class InsertPostgresNumericTypesArgs
+        {
+            public bool? CBoolean { get; set; }
+            public byte[] CBit { get; set; }
+            public short? CSmallint { get; set; }
+            public int? CInteger { get; set; }
+            public long? CBigint { get; set; }
+            public decimal? CDecimal { get; set; }
+            public decimal? CNumeric { get; set; }
+            public float? CReal { get; set; }
+            public double? CDoublePrecision { get; set; }
+            public decimal? CMoney { get; set; }
+        };
+        public async Task InsertPostgresNumericTypes(InsertPostgresNumericTypesArgs args)
+        {
+            if (this.Transaction == null)
+            {
+                using (var connection = NpgsqlDataSource.Create(ConnectionString))
+                {
+                    using (var command = connection.CreateCommand(InsertPostgresNumericTypesSql))
+                    {
+                        command.Parameters.AddWithValue("@c_boolean", args.CBoolean ?? (object)DBNull.Value);
+                        command.Parameters.AddWithValue("@c_bit", args.CBit ?? (object)DBNull.Value);
+                        command.Parameters.AddWithValue("@c_smallint", args.CSmallint ?? (object)DBNull.Value);
+                        command.Parameters.AddWithValue("@c_integer", args.CInteger ?? (object)DBNull.Value);
+                        command.Parameters.AddWithValue("@c_bigint", args.CBigint ?? (object)DBNull.Value);
+                        command.Parameters.AddWithValue("@c_decimal", args.CDecimal ?? (object)DBNull.Value);
+                        command.Parameters.AddWithValue("@c_numeric", args.CNumeric ?? (object)DBNull.Value);
+                        command.Parameters.AddWithValue("@c_real", args.CReal ?? (object)DBNull.Value);
+                        command.Parameters.AddWithValue("@c_double_precision", args.CDoublePrecision ?? (object)DBNull.Value);
+                        command.Parameters.AddWithValue("@c_money", args.CMoney ?? (object)DBNull.Value);
+                        await command.ExecuteNonQueryAsync();
+                    }
+                }
+
+                return;
+            }
+
+            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+                throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+            using (var command = this.Transaction.Connection.CreateCommand())
+            {
+                command.CommandText = InsertPostgresNumericTypesSql;
+                command.Transaction = this.Transaction;
+                command.Parameters.AddWithValue("@c_boolean", args.CBoolean ?? (object)DBNull.Value);
+                command.Parameters.AddWithValue("@c_bit", args.CBit ?? (object)DBNull.Value);
+                command.Parameters.AddWithValue("@c_smallint", args.CSmallint ?? (object)DBNull.Value);
+                command.Parameters.AddWithValue("@c_integer", args.CInteger ?? (object)DBNull.Value);
+                command.Parameters.AddWithValue("@c_bigint", args.CBigint ?? (object)DBNull.Value);
+                command.Parameters.AddWithValue("@c_decimal", args.CDecimal ?? (object)DBNull.Value);
+                command.Parameters.AddWithValue("@c_numeric", args.CNumeric ?? (object)DBNull.Value);
+                command.Parameters.AddWithValue("@c_real", args.CReal ?? (object)DBNull.Value);
+                command.Parameters.AddWithValue("@c_double_precision", args.CDoublePrecision ?? (object)DBNull.Value);
+                command.Parameters.AddWithValue("@c_money", args.CMoney ?? (object)DBNull.Value);
+                await command.ExecuteNonQueryAsync();
+            }
+        }
+
+        private const string GetPostgresNumericTypesSql = "SELECT c_boolean, c_bit, c_smallint, c_integer, c_bigint, c_decimal, c_numeric, c_real, c_double_precision, c_money FROM postgres_numeric_types LIMIT 1";
+        public class GetPostgresNumericTypesRow
+        {
+            public bool? CBoolean { get; set; }
+            public byte[] CBit { get; set; }
+            public short? CSmallint { get; set; }
+            public int? CInteger { get; set; }
+            public long? CBigint { get; set; }
+            public decimal? CDecimal { get; set; }
+            public decimal? CNumeric { get; set; }
+            public float? CReal { get; set; }
+            public double? CDoublePrecision { get; set; }
+            public decimal? CMoney { get; set; }
+        };
+        public async Task<GetPostgresNumericTypesRow> GetPostgresNumericTypes()
+        {
+            if (this.Transaction == null)
+            {
+                using (var connection = NpgsqlDataSource.Create(ConnectionString))
+                {
+                    using (var command = connection.CreateCommand(GetPostgresNumericTypesSql))
+                    {
+                        using (var reader = await command.ExecuteReaderAsync())
+                        {
+                            if (await reader.ReadAsync())
+                            {
+                                return new GetPostgresNumericTypesRow
+                                {
+                                    CBoolean = reader.IsDBNull(0) ? (bool? )null : reader.GetBoolean(0),
+                                    CBit = reader.IsDBNull(1) ? null : reader.GetFieldValue<byte[]>(1),
+                                    CSmallint = reader.IsDBNull(2) ? (short? )null : reader.GetInt16(2),
+                                    CInteger = reader.IsDBNull(3) ? (int? )null : reader.GetInt32(3),
+                                    CBigint = reader.IsDBNull(4) ? (long? )null : reader.GetInt64(4),
+                                    CDecimal = reader.IsDBNull(5) ? (decimal? )null : reader.GetDecimal(5),
+                                    CNumeric = reader.IsDBNull(6) ? (decimal? )null : reader.GetDecimal(6),
+                                    CReal = reader.IsDBNull(7) ? (float? )null : reader.GetFloat(7),
+                                    CDoublePrecision = reader.IsDBNull(8) ? (double? )null : reader.GetDouble(8),
+                                    CMoney = reader.IsDBNull(9) ? (decimal? )null : reader.GetDecimal(9)
+                                };
+                            }
+                        }
+                    }
+                }
+
+                return null;
+            }
+
+            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+                throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+            using (var command = this.Transaction.Connection.CreateCommand())
+            {
+                command.CommandText = GetPostgresNumericTypesSql;
+                command.Transaction = this.Transaction;
+                using (var reader = await command.ExecuteReaderAsync())
+                {
+                    if (await reader.ReadAsync())
+                    {
+                        return new GetPostgresNumericTypesRow
+                        {
+                            CBoolean = reader.IsDBNull(0) ? (bool? )null : reader.GetBoolean(0),
+                            CBit = reader.IsDBNull(1) ? null : reader.GetFieldValue<byte[]>(1),
+                            CSmallint = reader.IsDBNull(2) ? (short? )null : reader.GetInt16(2),
+                            CInteger = reader.IsDBNull(3) ? (int? )null : reader.GetInt32(3),
+                            CBigint = reader.IsDBNull(4) ? (long? )null : reader.GetInt64(4),
+                            CDecimal = reader.IsDBNull(5) ? (decimal? )null : reader.GetDecimal(5),
+                            CNumeric = reader.IsDBNull(6) ? (decimal? )null : reader.GetDecimal(6),
+                            CReal = reader.IsDBNull(7) ? (float? )null : reader.GetFloat(7),
+                            CDoublePrecision = reader.IsDBNull(8) ? (double? )null : reader.GetDouble(8),
+                            CMoney = reader.IsDBNull(9) ? (decimal? )null : reader.GetDecimal(9)
+                        };
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        private const string TruncatePostgresNumericTypesSql = "TRUNCATE TABLE postgres_numeric_types";
+        public async Task TruncatePostgresNumericTypes()
+        {
+            if (this.Transaction == null)
+            {
+                using (var connection = NpgsqlDataSource.Create(ConnectionString))
+                {
+                    using (var command = connection.CreateCommand(TruncatePostgresNumericTypesSql))
+                    {
+                        await command.ExecuteNonQueryAsync();
+                    }
+                }
+
+                return;
+            }
+
+            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+                throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+            using (var command = this.Transaction.Connection.CreateCommand())
+            {
+                command.CommandText = TruncatePostgresNumericTypesSql;
+                command.Transaction = this.Transaction;
+                await command.ExecuteNonQueryAsync();
+            }
+        }
+
+        private const string GetPostgresNumericTypesCntSql = "SELECT c_boolean, c_bit, c_smallint, c_integer, c_bigint, c_decimal, c_numeric, c_real, c_double_precision, c_money, COUNT(*) AS cnt FROM postgres_numeric_types GROUP BY c_boolean, c_bit, c_smallint, c_integer, c_bigint, c_decimal, c_numeric, c_real, c_double_precision, c_money LIMIT 1";
+        public class GetPostgresNumericTypesCntRow
+        {
+            public bool? CBoolean { get; set; }
+            public byte[] CBit { get; set; }
+            public short? CSmallint { get; set; }
+            public int? CInteger { get; set; }
+            public long? CBigint { get; set; }
+            public decimal? CDecimal { get; set; }
+            public decimal? CNumeric { get; set; }
+            public float? CReal { get; set; }
+            public double? CDoublePrecision { get; set; }
+            public decimal? CMoney { get; set; }
+            public long Cnt { get; set; }
+        };
+        public async Task<GetPostgresNumericTypesCntRow> GetPostgresNumericTypesCnt()
+        {
+            if (this.Transaction == null)
+            {
+                using (var connection = NpgsqlDataSource.Create(ConnectionString))
+                {
+                    using (var command = connection.CreateCommand(GetPostgresNumericTypesCntSql))
+                    {
+                        using (var reader = await command.ExecuteReaderAsync())
+                        {
+                            if (await reader.ReadAsync())
+                            {
+                                return new GetPostgresNumericTypesCntRow
+                                {
+                                    CBoolean = reader.IsDBNull(0) ? (bool? )null : reader.GetBoolean(0),
+                                    CBit = reader.IsDBNull(1) ? null : reader.GetFieldValue<byte[]>(1),
+                                    CSmallint = reader.IsDBNull(2) ? (short? )null : reader.GetInt16(2),
+                                    CInteger = reader.IsDBNull(3) ? (int? )null : reader.GetInt32(3),
+                                    CBigint = reader.IsDBNull(4) ? (long? )null : reader.GetInt64(4),
+                                    CDecimal = reader.IsDBNull(5) ? (decimal? )null : reader.GetDecimal(5),
+                                    CNumeric = reader.IsDBNull(6) ? (decimal? )null : reader.GetDecimal(6),
+                                    CReal = reader.IsDBNull(7) ? (float? )null : reader.GetFloat(7),
+                                    CDoublePrecision = reader.IsDBNull(8) ? (double? )null : reader.GetDouble(8),
+                                    CMoney = reader.IsDBNull(9) ? (decimal? )null : reader.GetDecimal(9),
+                                    Cnt = reader.GetInt64(10)
+                                };
+                            }
+                        }
+                    }
+                }
+
+                return null;
+            }
+
+            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+                throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+            using (var command = this.Transaction.Connection.CreateCommand())
+            {
+                command.CommandText = GetPostgresNumericTypesCntSql;
+                command.Transaction = this.Transaction;
+                using (var reader = await command.ExecuteReaderAsync())
+                {
+                    if (await reader.ReadAsync())
+                    {
+                        return new GetPostgresNumericTypesCntRow
+                        {
+                            CBoolean = reader.IsDBNull(0) ? (bool? )null : reader.GetBoolean(0),
+                            CBit = reader.IsDBNull(1) ? null : reader.GetFieldValue<byte[]>(1),
+                            CSmallint = reader.IsDBNull(2) ? (short? )null : reader.GetInt16(2),
+                            CInteger = reader.IsDBNull(3) ? (int? )null : reader.GetInt32(3),
+                            CBigint = reader.IsDBNull(4) ? (long? )null : reader.GetInt64(4),
+                            CDecimal = reader.IsDBNull(5) ? (decimal? )null : reader.GetDecimal(5),
+                            CNumeric = reader.IsDBNull(6) ? (decimal? )null : reader.GetDecimal(6),
+                            CReal = reader.IsDBNull(7) ? (float? )null : reader.GetFloat(7),
+                            CDoublePrecision = reader.IsDBNull(8) ? (double? )null : reader.GetDouble(8),
+                            CMoney = reader.IsDBNull(9) ? (decimal? )null : reader.GetDecimal(9),
+                            Cnt = reader.GetInt64(10)
+                        };
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        private const string InsertPostgresNumericTypesBatchSql = "COPY postgres_numeric_types (c_boolean, c_bit, c_smallint, c_integer, c_bigint, c_decimal, c_numeric, c_real, c_double_precision, c_money) FROM STDIN (FORMAT BINARY)";
+        public class InsertPostgresNumericTypesBatchArgs
+        {
+            public bool? CBoolean { get; set; }
+            public byte[] CBit { get; set; }
+            public short? CSmallint { get; set; }
+            public int? CInteger { get; set; }
+            public long? CBigint { get; set; }
+            public decimal? CDecimal { get; set; }
+            public decimal? CNumeric { get; set; }
+            public float? CReal { get; set; }
+            public double? CDoublePrecision { get; set; }
+            public decimal? CMoney { get; set; }
+        };
+        public async Task InsertPostgresNumericTypesBatch(List<InsertPostgresNumericTypesBatchArgs> args)
+        {
+            using (var connection = new NpgsqlConnection(ConnectionString))
+            {
+                await connection.OpenAsync();
+                using (var writer = await connection.BeginBinaryImportAsync(InsertPostgresNumericTypesBatchSql))
+                {
+                    foreach (var row in args)
+                    {
+                        await writer.StartRowAsync();
+                        await writer.WriteAsync(row.CBoolean ?? (object)DBNull.Value);
+                        await writer.WriteAsync(row.CBit ?? (object)DBNull.Value);
+                        await writer.WriteAsync(row.CSmallint ?? (object)DBNull.Value);
+                        await writer.WriteAsync(row.CInteger ?? (object)DBNull.Value);
+                        await writer.WriteAsync(row.CBigint ?? (object)DBNull.Value);
+                        await writer.WriteAsync(row.CDecimal ?? (object)DBNull.Value);
+                        await writer.WriteAsync(row.CNumeric ?? (object)DBNull.Value);
+                        await writer.WriteAsync(row.CReal ?? (object)DBNull.Value);
+                        await writer.WriteAsync(row.CDoublePrecision ?? (object)DBNull.Value);
+                        await writer.WriteAsync(row.CMoney ?? (object)DBNull.Value, NpgsqlDbType.Money);
+                    }
+
+                    await writer.CompleteAsync();
+                }
+
+                await connection.CloseAsync();
             }
         }
 

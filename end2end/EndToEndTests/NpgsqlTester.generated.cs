@@ -378,7 +378,7 @@ namespace EndToEndTests
         [TestCase(null, null, "1970-01-01 00:00:00")]
         public async Task TestPostgresDataTypesOverride(int? cInteger, string cVarchar, DateTime cTimestamp)
         {
-            await QuerySql.InsertPostgresTypes(new QuerySql.InsertPostgresTypesArgs { CInteger = cInteger });
+            await QuerySql.InsertPostgresNumericTypes(new QuerySql.InsertPostgresNumericTypesArgs { CInteger = cInteger });
             await QuerySql.InsertPostgresDateTimeTypes(new QuerySql.InsertPostgresDateTimeTypesArgs { CTimestamp = cTimestamp });
             await QuerySql.InsertPostgresStringTypes(new QuerySql.InsertPostgresStringTypesArgs { CVarchar = cVarchar });
             var expected = new QuerySql.GetPostgresFunctionsRow
@@ -441,17 +441,17 @@ namespace EndToEndTests
         [TestCase(null, null, null, null)]
         public async Task TestPostgresIntegerTypes(bool cBoolean, short cSmallint, int cInteger, long cBigint)
         {
-            await QuerySql.InsertPostgresTypes(new QuerySql.InsertPostgresTypesArgs { CBoolean = cBoolean, CSmallint = cSmallint, CInteger = cInteger, CBigint = cBigint });
-            var expected = new QuerySql.GetPostgresTypesRow
+            await QuerySql.InsertPostgresNumericTypes(new QuerySql.InsertPostgresNumericTypesArgs { CBoolean = cBoolean, CSmallint = cSmallint, CInteger = cInteger, CBigint = cBigint });
+            var expected = new QuerySql.GetPostgresNumericTypesRow
             {
                 CBoolean = cBoolean,
                 CSmallint = cSmallint,
                 CInteger = cInteger,
                 CBigint = cBigint
             };
-            var actual = await QuerySql.GetPostgresTypes();
+            var actual = await QuerySql.GetPostgresNumericTypes();
             AssertSingularEquals(expected, actual.Value);
-            void AssertSingularEquals(QuerySql.GetPostgresTypesRow x, QuerySql.GetPostgresTypesRow y)
+            void AssertSingularEquals(QuerySql.GetPostgresNumericTypesRow x, QuerySql.GetPostgresNumericTypesRow y)
             {
                 Assert.That(x.CBoolean, Is.EqualTo(y.CBoolean));
                 Assert.That(x.CSmallint, Is.EqualTo(y.CSmallint));
@@ -465,8 +465,8 @@ namespace EndToEndTests
         [TestCase(null, null, null, null, null)]
         public async Task TestPostgresFloatingPointTypes(float? cReal, decimal? cNumeric, decimal? cDecimal, double? cDoublePrecision, decimal? cMoney)
         {
-            await QuerySql.InsertPostgresTypes(new QuerySql.InsertPostgresTypesArgs { CReal = cReal, CNumeric = cNumeric, CDecimal = cDecimal, CDoublePrecision = cDoublePrecision, CMoney = cMoney });
-            var expected = new QuerySql.GetPostgresTypesRow
+            await QuerySql.InsertPostgresNumericTypes(new QuerySql.InsertPostgresNumericTypesArgs { CReal = cReal, CNumeric = cNumeric, CDecimal = cDecimal, CDoublePrecision = cDoublePrecision, CMoney = cMoney });
+            var expected = new QuerySql.GetPostgresNumericTypesRow
             {
                 CReal = cReal,
                 CNumeric = cNumeric,
@@ -474,9 +474,9 @@ namespace EndToEndTests
                 CDoublePrecision = cDoublePrecision,
                 CMoney = cMoney
             };
-            var actual = await QuerySql.GetPostgresTypes();
+            var actual = await QuerySql.GetPostgresNumericTypes();
             AssertSingularEquals(expected, actual.Value);
-            void AssertSingularEquals(QuerySql.GetPostgresTypesRow x, QuerySql.GetPostgresTypesRow y)
+            void AssertSingularEquals(QuerySql.GetPostgresNumericTypesRow x, QuerySql.GetPostgresNumericTypesRow y)
             {
                 Assert.That(x.CReal, Is.EqualTo(y.CReal));
                 Assert.That(x.CNumeric, Is.EqualTo(y.CNumeric));
@@ -780,9 +780,9 @@ namespace EndToEndTests
         [TestCase(10, null, null, null, null)]
         public async Task TestIntegerCopyFrom(int batchSize, bool? cBoolean, short? cSmallint, int? cInteger, long? cBigint)
         {
-            var batchArgs = Enumerable.Range(0, batchSize).Select(_ => new QuerySql.InsertPostgresTypesBatchArgs { CBoolean = cBoolean, CSmallint = cSmallint, CInteger = cInteger, CBigint = cBigint }).ToList();
-            await QuerySql.InsertPostgresTypesBatch(batchArgs);
-            var expected = new QuerySql.GetPostgresTypesCntRow
+            var batchArgs = Enumerable.Range(0, batchSize).Select(_ => new QuerySql.InsertPostgresNumericTypesBatchArgs { CBoolean = cBoolean, CSmallint = cSmallint, CInteger = cInteger, CBigint = cBigint }).ToList();
+            await QuerySql.InsertPostgresNumericTypesBatch(batchArgs);
+            var expected = new QuerySql.GetPostgresNumericTypesCntRow
             {
                 Cnt = batchSize,
                 CBoolean = cBoolean,
@@ -790,9 +790,9 @@ namespace EndToEndTests
                 CInteger = cInteger,
                 CBigint = cBigint
             };
-            var actual = await QuerySql.GetPostgresTypesCnt();
+            var actual = await QuerySql.GetPostgresNumericTypesCnt();
             AssertSingularEquals(expected, actual.Value);
-            void AssertSingularEquals(QuerySql.GetPostgresTypesCntRow x, QuerySql.GetPostgresTypesCntRow y)
+            void AssertSingularEquals(QuerySql.GetPostgresNumericTypesCntRow x, QuerySql.GetPostgresNumericTypesCntRow y)
             {
                 Assert.That(x.Cnt, Is.EqualTo(y.Cnt));
                 Assert.That(x.CBoolean, Is.EqualTo(y.CBoolean));
@@ -807,9 +807,9 @@ namespace EndToEndTests
         [TestCase(10, null, null, null, null, null)]
         public async Task TestFloatingPointCopyFrom(int batchSize, float? cReal, decimal? cDecimal, decimal? cNumeric, double? cDoublePrecision, decimal? cMoney)
         {
-            var batchArgs = Enumerable.Range(0, batchSize).Select(_ => new QuerySql.InsertPostgresTypesBatchArgs { CReal = cReal, CDecimal = cDecimal, CNumeric = cNumeric, CDoublePrecision = cDoublePrecision, CMoney = cMoney }).ToList();
-            await QuerySql.InsertPostgresTypesBatch(batchArgs);
-            var expected = new QuerySql.GetPostgresTypesCntRow
+            var batchArgs = Enumerable.Range(0, batchSize).Select(_ => new QuerySql.InsertPostgresNumericTypesBatchArgs { CReal = cReal, CDecimal = cDecimal, CNumeric = cNumeric, CDoublePrecision = cDoublePrecision, CMoney = cMoney }).ToList();
+            await QuerySql.InsertPostgresNumericTypesBatch(batchArgs);
+            var expected = new QuerySql.GetPostgresNumericTypesCntRow
             {
                 Cnt = batchSize,
                 CReal = cReal,
@@ -818,9 +818,9 @@ namespace EndToEndTests
                 CDoublePrecision = cDoublePrecision,
                 CMoney = cMoney
             };
-            var actual = await QuerySql.GetPostgresTypesCnt();
+            var actual = await QuerySql.GetPostgresNumericTypesCnt();
             AssertSingularEquals(expected, actual.Value);
-            void AssertSingularEquals(QuerySql.GetPostgresTypesCntRow x, QuerySql.GetPostgresTypesCntRow y)
+            void AssertSingularEquals(QuerySql.GetPostgresNumericTypesCntRow x, QuerySql.GetPostgresNumericTypesCntRow y)
             {
                 Assert.That(x.Cnt, Is.EqualTo(y.Cnt));
                 Assert.That(x.CReal, Is.EqualTo(y.CReal));

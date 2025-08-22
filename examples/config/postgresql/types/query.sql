@@ -1,32 +1,12 @@
-/* Basic types */
+/* Special types */
 
 -- name: InsertPostgresTypes :exec
 INSERT INTO postgres_types
 (
-    c_boolean,
-    c_bit,
-    c_smallint,
-    c_integer,
-    c_bigint,
-    c_real,
-    c_numeric,
-    c_decimal,
-    c_double_precision,
-    c_money,
     c_uuid,
     c_enum
 )
 VALUES (
-    sqlc.narg('c_boolean'),
-    sqlc.narg('c_bit'),
-    sqlc.narg('c_smallint'),
-    sqlc.narg('c_integer'),
-    sqlc.narg('c_bigint'),
-    sqlc.narg('c_real'),
-    sqlc.narg('c_numeric'),
-    sqlc.narg('c_decimal'),
-    sqlc.narg('c_double_precision'),
-    sqlc.narg('c_money'),
     sqlc.narg('c_uuid'),
     sqlc.narg('c_enum')::c_enum
 );
@@ -34,42 +14,14 @@ VALUES (
 -- name: InsertPostgresTypesBatch :copyfrom
 INSERT INTO postgres_types
 (
-    c_boolean,
-    c_smallint,
-    c_integer,
-    c_bigint,
-    c_real,
-    c_numeric,
-    c_decimal,
-    c_double_precision,
-    c_money,
     c_uuid
 )
 VALUES (
-    $1, 
-    $2, 
-    $3, 
-    $4, 
-    $5, 
-    $6, 
-    $7, 
-    $8, 
-    $9, 
-    $10
+    $1
 );
 
 -- name: GetPostgresTypes :one
-SELECT     
-    c_boolean,
-    c_bit,
-    c_smallint,
-    c_integer,
-    c_bigint,
-    c_real,
-    c_numeric,
-    c_decimal,
-    c_double_precision,
-    c_money,
+SELECT
     c_uuid,
     c_enum
 FROM postgres_types 
@@ -77,28 +29,10 @@ LIMIT 1;
 
 -- name: GetPostgresTypesCnt :one
 SELECT
-    c_smallint,
-    c_boolean,
-    c_integer,
-    c_bigint,
-    c_real,
-    c_numeric,
-    c_decimal,
-    c_double_precision,
-    c_money,
     c_uuid,
     COUNT(*) AS cnt
 FROM postgres_types
 GROUP BY
-    c_smallint,
-    c_boolean,
-    c_integer,
-    c_bigint,
-    c_real,
-    c_numeric,
-    c_decimal,
-    c_double_precision,
-    c_money,
     c_uuid
 LIMIT 1;
 
@@ -107,12 +41,78 @@ SELECT
     MAX(c_integer) AS max_integer,
     MAX(c_varchar) AS max_varchar,
     MAX(c_timestamp) AS max_timestamp
-FROM postgres_types
-CROSS JOIN postgres_string_types
-CROSS JOIN postgres_datetime_types;
+FROM postgres_datetime_types
+CROSS JOIN postgres_numeric_types
+CROSS JOIN postgres_string_types;
 
 -- name: TruncatePostgresTypes :exec
 TRUNCATE TABLE postgres_types;
+
+/* Numeric types */
+
+-- name: InsertPostgresNumericTypes :exec
+INSERT INTO postgres_numeric_types
+(
+    c_boolean,
+    c_bit,
+    c_smallint,
+    c_integer,
+    c_bigint,
+    c_decimal,
+    c_numeric,
+    c_real,
+    c_double_precision,
+    c_money
+)
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10);
+
+-- name: GetPostgresNumericTypes :one
+SELECT * FROM postgres_numeric_types LIMIT 1;
+
+-- name: TruncatePostgresNumericTypes :exec
+TRUNCATE TABLE postgres_numeric_types;
+
+-- name: GetPostgresNumericTypesCnt :one
+SELECT
+    c_boolean,
+    c_bit,
+    c_smallint,
+    c_integer,
+    c_bigint,
+    c_decimal,
+    c_numeric,
+    c_real,
+    c_double_precision,
+    c_money,
+    COUNT(*) AS cnt
+FROM postgres_numeric_types
+GROUP BY
+    c_boolean,
+    c_bit,
+    c_smallint,
+    c_integer,
+    c_bigint,
+    c_decimal,
+    c_numeric,
+    c_real,
+    c_double_precision,
+    c_money
+LIMIT 1;
+
+-- name: InsertPostgresNumericTypesBatch :copyfrom
+INSERT INTO postgres_numeric_types
+(
+    c_boolean,
+    c_bit,
+    c_smallint,
+    c_integer,
+    c_bigint,
+    c_decimal,
+    c_numeric,
+    c_real,
+    c_double_precision,
+    c_money
+) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10);
 
 /* String types */
 
