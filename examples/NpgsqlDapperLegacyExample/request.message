@@ -3,7 +3,7 @@
 2
 postgresql-examples/config/postgresql/authors/schema.sql+examples/config/postgresql/types/schema.sql",examples/config/postgresql/authors/query.sql"*examples/config/postgresql/types/query.sqlbð
 "examples/NpgsqlDapperLegacyExamplecsharp«{"debugRequest":true,"generateCsproj":true,"namespaceName":"NpgsqlDapperLegacyExampleGen","overrides":[{"column":"GetPostgresFunctions:max_integer","csharp_type":{"notNull":false,"type":"int"}},{"column":"GetPostgresFunctions:max_varchar","csharp_type":{"notNull":false,"type":"string"}},{"column":"GetPostgresFunctions:max_timestamp","csharp_type":{"notNull":true,"type":"DateTime"}},{"column":"*:c_json_string_override","csharp_type":{"notNull":false,"type":"string"}},{"column":"*:c_xml_string_override","csharp_type":{"notNull":false,"type":"string"}},{"column":"*:c_macaddr8","csharp_type":{"notNull":false,"type":"string"}}],"targetFramework":"netstandard2.0","useDapper":true}*
-./dist/LocalRunnerêìpublic"¬publicƒ
+./dist/LocalRunnerÃìpublic"…publicƒ
 	authors)
 id0ÿÿÿÿÿÿÿÿÿR	authorsb	bigserial&
 name0ÿÿÿÿÿÿÿÿÿR	authorsbtext#
@@ -13,10 +13,7 @@ postgresql-examples/config/postgresql/authors/schema.sql+examples/config/postg
 name0ÿÿÿÿÿÿÿÿÿRbooksbtext5
 	author_id0ÿÿÿÿÿÿÿÿÿRbooksb
 pg_catalogint8)
-description0ÿÿÿÿÿÿÿÿÿRbooksbtextr
-postgres_types-
-c_uuid0ÿÿÿÿÿÿÿÿÿRpostgres_typesbuuid/
-c_enum0ÿÿÿÿÿÿÿÿÿRpostgres_typesbc_enumÔ
+description0ÿÿÿÿÿÿÿÿÿRbooksbtextÔ
 postgres_numeric_typesD
 	c_boolean0ÿÿÿÿÿÿÿÿÿRpostgres_numeric_typesb
 pg_catalogbool?
@@ -64,16 +61,7 @@ pg_cataloginterval„
 	c_macaddr0ÿÿÿÿÿÿÿÿÿRpostgres_network_typesb	macaddr=
 
 c_macaddr80ÿÿÿÿÿÿÿÿÿRpostgres_network_typesb
-macaddr8­
-postgres_unstructured_types:
-c_json0ÿÿÿÿÿÿÿÿÿRpostgres_unstructured_typesbjsonJ
-c_json_string_override0ÿÿÿÿÿÿÿÿÿRpostgres_unstructured_typesbjson<
-c_jsonb0ÿÿÿÿÿÿÿÿÿRpostgres_unstructured_typesbjsonbB
-
-c_jsonpath0ÿÿÿÿÿÿÿÿÿRpostgres_unstructured_typesb
-jsonpath8
-c_xml0ÿÿÿÿÿÿÿÿÿRpostgres_unstructured_typesbxmlH
-c_xml_string_override0ÿÿÿÿÿÿÿÿÿRpostgres_unstructured_typesbxml•
+macaddr8•
 postgres_array_types5
 c_bytea0ÿÿÿÿÿÿÿÿÿRpostgres_array_typesbbyteaM
 c_boolean_array 0ÿÿÿÿÿÿÿÿÿRpostgres_array_typesb
@@ -93,7 +81,18 @@ pg_catalog	timestampˆµ
 c_box0ÿÿÿÿÿÿÿÿÿRpostgres_geometric_typesbbox7
 c_path0ÿÿÿÿÿÿÿÿÿRpostgres_geometric_typesbpath=
 	c_polygon0ÿÿÿÿÿÿÿÿÿRpostgres_geometric_typesb	polygon;
-c_circle0ÿÿÿÿÿÿÿÿÿRpostgres_geometric_typesbcircle"
+c_circle0ÿÿÿÿÿÿÿÿÿRpostgres_geometric_typesbcircleú
+postgres_special_types5
+c_uuid0ÿÿÿÿÿÿÿÿÿRpostgres_special_typesbuuid7
+c_enum0ÿÿÿÿÿÿÿÿÿRpostgres_special_typesbc_enum5
+c_json0ÿÿÿÿÿÿÿÿÿRpostgres_special_typesbjsonE
+c_json_string_override0ÿÿÿÿÿÿÿÿÿRpostgres_special_typesbjson7
+c_jsonb0ÿÿÿÿÿÿÿÿÿRpostgres_special_typesbjsonb=
+
+c_jsonpath0ÿÿÿÿÿÿÿÿÿRpostgres_special_typesb
+jsonpath3
+c_xml0ÿÿÿÿÿÿÿÿÿRpostgres_special_typesbxmlC
+c_xml_string_override0ÿÿÿÿÿÿÿÿÿRpostgres_special_typesbxml"
 c_enumsmallmediumbig"	pg_temp"æ²
 pg_catalog‰
 &
@@ -10325,43 +10324,7 @@ pg_catalogvarcharzauthor_name"B
 pg_catalogvarcharzname"G
 bio_type0ÿÿÿÿÿÿÿÿÿRextendedbiosbextendedbio_typezbio_type*JF
 bio_type0ÿÿÿÿÿÿÿÿÿRextendedbiosbextended.bio_typezbio_type:	query.sqlF
-TRUNCATE TABLE extended.biosTruncateExtendedBios:exec:	query.sqlŒ
-X
-INSERT INTO postgres_types
-(
-    c_uuid,
-    c_enum
-)
-VALUES (
-    $1,
-    $2::c_enum
-)InsertPostgresTypes:exec*C?
-c_uuid0ÿÿÿÿÿÿÿÿÿ8Rpublicpostgres_typesbuuidzc_uuid*!
-c_enum0ÿÿÿÿÿÿÿÿÿbc_enum2 Special types :	query.sqlBpostgres_typesÂ
-;INSERT INTO postgres_types
-(
-    c_uuid
-)
-VALUES (
-    $1
-)InsertPostgresTypesBatch	:copyfrom*A=
-c_uuid0ÿÿÿÿÿÿÿÿÿRpublicpostgres_typesbuuidzc_uuid:	query.sqlBpostgres_typesÏ
-:SELECT
-    c_uuid,
-    c_enum
-FROM postgres_types 
-LIMIT 1GetPostgresTypes:one"5
-c_uuid0ÿÿÿÿÿÿÿÿÿRpostgres_typesbuuidzc_uuid"7
-c_enum0ÿÿÿÿÿÿÿÿÿRpostgres_typesbc_enumzc_enum:	query.sqlÕ
-VSELECT
-    c_uuid,
-    COUNT(*) AS cnt
-FROM postgres_types
-GROUP BY
-    c_uuid
-LIMIT 1GetPostgresTypesCnt:one"5
-c_uuid0ÿÿÿÿÿÿÿÿÿRpostgres_typesbuuidzc_uuid"
-cnt0ÿÿÿÿÿÿÿÿÿ@bbigint:	query.sqlü
+TRUNCATE TABLE extended.biosTruncateExtendedBios:exec:	query.sqlü
 ÒSELECT
     MAX(c_integer) AS max_integer,
     MAX(c_varchar) AS max_varchar,
@@ -10374,8 +10337,7 @@ CROSS JOIN postgres_string_typesGetPostgresFunctions:one"(
 max_varchar0ÿÿÿÿÿÿÿÿÿ@b
 anyarray"*
 max_timestamp0ÿÿÿÿÿÿÿÿÿ@b
-anyarray:	query.sqlH
-TRUNCATE TABLE postgres_typesTruncatePostgresTypes:exec:	query.sqlà	
+anyarray:	query.sqlà	
 í
 INSERT INTO postgres_numeric_types
 (
@@ -10708,16 +10670,18 @@ LIMIT 1GetPostgresNetworkTypesCnt:one"=
 ) VALUES ($1, $2, $3)InsertPostgresNetworkTypesBatch	:copyfrom*IE
 c_cidr0ÿÿÿÿÿÿÿÿÿR publicpostgres_network_typesbcidrzc_cidr*IE
 c_inet0ÿÿÿÿÿÿÿÿÿR publicpostgres_network_typesbinetzc_inet*RN
-	c_macaddr0ÿÿÿÿÿÿÿÿÿR publicpostgres_network_typesb	macaddrz	c_macaddr:	query.sqlBpostgres_network_typesÐ
-ù
-INSERT INTO postgres_unstructured_types
+	c_macaddr0ÿÿÿÿÿÿÿÿÿR publicpostgres_network_typesb	macaddrz	c_macaddr:	query.sqlBpostgres_network_typesÜ
+¤
+INSERT INTO postgres_special_types
 (
     c_json,
     c_json_string_override,
     c_jsonb,
     c_jsonpath,
     c_xml,
-    c_xml_string_override
+    c_xml_string_override,
+    c_uuid,
+    c_enum
 )
 VALUES (
     $1::json, 
@@ -10725,8 +10689,10 @@ VALUES (
     $3::jsonb,
     $4::jsonpath,
     $5::xml,
-    $6::xml
-)InsertPostgresUnstructuredTypes:exec*
+    $6::xml,
+    $7,
+    $8::c_enum
+)InsertPostgresSpecialTypes:exec*
 c_json0ÿÿÿÿÿÿÿÿÿbjson*/+
 c_json_string_override0ÿÿÿÿÿÿÿÿÿbjson*!
 c_jsonb0ÿÿÿÿÿÿÿÿÿbjsonb*'#
@@ -10734,26 +10700,49 @@ VALUES (
 c_jsonpath0ÿÿÿÿÿÿÿÿÿb
 jsonpath*
 c_xml0ÿÿÿÿÿÿÿÿÿbxml*-)
-c_xml_string_override0ÿÿÿÿÿÿÿÿÿbxml2 Unstructured types :	query.sqlBpostgres_unstructured_types­
-šSELECT
+c_xml_string_override0ÿÿÿÿÿÿÿÿÿbxml*KG
+c_uuid0ÿÿÿÿÿÿÿÿÿ8R publicpostgres_special_typesbuuidzc_uuid*!
+c_enum0ÿÿÿÿÿÿÿÿÿbc_enum2 Special types :	query.sqlBpostgres_special_types
+­SELECT
     c_json,
     c_json_string_override,
     c_jsonb,
     c_jsonpath,
     c_xml,
-    c_xml_string_override
-FROM postgres_unstructured_types 
-LIMIT 1GetPostgresUnstructuredTypes:one"B
-c_json0ÿÿÿÿÿÿÿÿÿRpostgres_unstructured_typesbjsonzc_json"b
-c_json_string_override0ÿÿÿÿÿÿÿÿÿRpostgres_unstructured_typesbjsonzc_json_string_override"E
-c_jsonb0ÿÿÿÿÿÿÿÿÿRpostgres_unstructured_typesbjsonbzc_jsonb"N
+    c_xml_string_override,
+    c_uuid,
+    c_enum
+FROM postgres_special_types 
+LIMIT 1GetPostgresSpecialTypes:one"=
+c_json0ÿÿÿÿÿÿÿÿÿRpostgres_special_typesbjsonzc_json"]
+c_json_string_override0ÿÿÿÿÿÿÿÿÿRpostgres_special_typesbjsonzc_json_string_override"@
+c_jsonb0ÿÿÿÿÿÿÿÿÿRpostgres_special_typesbjsonbzc_jsonb"I
 
-c_jsonpath0ÿÿÿÿÿÿÿÿÿRpostgres_unstructured_typesb
+c_jsonpath0ÿÿÿÿÿÿÿÿÿRpostgres_special_typesb
 jsonpathz
-c_jsonpath"?
-c_xml0ÿÿÿÿÿÿÿÿÿRpostgres_unstructured_typesbxmlzc_xml"_
-c_xml_string_override0ÿÿÿÿÿÿÿÿÿRpostgres_unstructured_typesbxmlzc_xml_string_override:	query.sqla
-*TRUNCATE TABLE postgres_unstructured_types!TruncatePostgresUnstructuredTypes:exec:	query.sqlÝ
+c_jsonpath":
+c_xml0ÿÿÿÿÿÿÿÿÿRpostgres_special_typesbxmlzc_xml"Z
+c_xml_string_override0ÿÿÿÿÿÿÿÿÿRpostgres_special_typesbxmlzc_xml_string_override"=
+c_uuid0ÿÿÿÿÿÿÿÿÿRpostgres_special_typesbuuidzc_uuid"?
+c_enum0ÿÿÿÿÿÿÿÿÿRpostgres_special_typesbc_enumzc_enum:	query.sqlW
+%TRUNCATE TABLE postgres_special_typesTruncatePostgresSpecialTypes:exec:	query.sqlá
+CINSERT INTO postgres_special_types
+(
+    c_uuid
+)
+VALUES (
+    $1
+)InsertPostgresSpecialTypesBatch	:copyfrom*IE
+c_uuid0ÿÿÿÿÿÿÿÿÿR publicpostgres_special_typesbuuidzc_uuid:	query.sqlBpostgres_special_typesì
+^SELECT
+    c_uuid,
+    COUNT(*) AS cnt
+FROM postgres_special_types
+GROUP BY
+    c_uuid
+LIMIT 1GetPostgresSpecialTypesCnt:one"=
+c_uuid0ÿÿÿÿÿÿÿÿÿRpostgres_special_typesbuuidzc_uuid"
+cnt0ÿÿÿÿÿÿÿÿÿ@bbigint:	query.sqlÝ
 Ï
 INSERT INTO postgres_array_types
 (

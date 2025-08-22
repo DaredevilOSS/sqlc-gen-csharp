@@ -562,98 +562,6 @@ public class QuerySql
         await this.Transaction.Connection.ExecuteAsync(TruncateExtendedBiosSql, transaction: this.Transaction);
     }
 
-    private const string InsertPostgresTypesSql = " INSERT INTO postgres_types ( c_uuid, c_enum ) VALUES ( @c_uuid, @c_enum::c_enum )";
-    public class InsertPostgresTypesArgs
-    {
-        public Guid? CUuid { get; init; }
-        public CEnum? CEnum { get; init; }
-    };
-    public async Task InsertPostgresTypes(InsertPostgresTypesArgs args)
-    {
-        var queryParams = new Dictionary<string, object?>();
-        queryParams.Add("c_uuid", args.CUuid);
-        queryParams.Add("c_enum", args.CEnum != null ? args.CEnum.Value.Stringify() : null);
-        if (this.Transaction == null)
-        {
-            using (var connection = new NpgsqlConnection(ConnectionString))
-                await connection.ExecuteAsync(InsertPostgresTypesSql, queryParams);
-            return;
-        }
-
-        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
-            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
-        await this.Transaction.Connection.ExecuteAsync(InsertPostgresTypesSql, queryParams, transaction: this.Transaction);
-    }
-
-    private const string InsertPostgresTypesBatchSql = "COPY postgres_types (c_uuid) FROM STDIN (FORMAT BINARY)";
-    public class InsertPostgresTypesBatchArgs
-    {
-        public Guid? CUuid { get; init; }
-    };
-    public async Task InsertPostgresTypesBatch(List<InsertPostgresTypesBatchArgs> args)
-    {
-        using (var connection = new NpgsqlConnection(ConnectionString))
-        {
-            await connection.OpenAsync();
-            using (var writer = await connection.BeginBinaryImportAsync(InsertPostgresTypesBatchSql))
-            {
-                foreach (var row in args)
-                {
-                    await writer.StartRowAsync();
-                    await writer.WriteAsync(row.CUuid);
-                }
-
-                await writer.CompleteAsync();
-            }
-
-            await connection.CloseAsync();
-        }
-    }
-
-    private const string GetPostgresTypesSql = "SELECT c_uuid, c_enum FROM postgres_types LIMIT 1";
-    public class GetPostgresTypesRow
-    {
-        public Guid? CUuid { get; init; }
-        public CEnum? CEnum { get; init; }
-    };
-    public async Task<GetPostgresTypesRow?> GetPostgresTypes()
-    {
-        if (this.Transaction == null)
-        {
-            using (var connection = new NpgsqlConnection(ConnectionString))
-            {
-                var result = await connection.QueryFirstOrDefaultAsync<GetPostgresTypesRow?>(GetPostgresTypesSql);
-                return result;
-            }
-        }
-
-        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
-            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
-        return await this.Transaction.Connection.QueryFirstOrDefaultAsync<GetPostgresTypesRow?>(GetPostgresTypesSql, transaction: this.Transaction);
-    }
-
-    private const string GetPostgresTypesCntSql = "SELECT c_uuid, COUNT(*) AS cnt FROM postgres_types GROUP BY c_uuid LIMIT 1";
-    public class GetPostgresTypesCntRow
-    {
-        public Guid? CUuid { get; init; }
-        public required long Cnt { get; init; }
-    };
-    public async Task<GetPostgresTypesCntRow?> GetPostgresTypesCnt()
-    {
-        if (this.Transaction == null)
-        {
-            using (var connection = new NpgsqlConnection(ConnectionString))
-            {
-                var result = await connection.QueryFirstOrDefaultAsync<GetPostgresTypesCntRow?>(GetPostgresTypesCntSql);
-                return result;
-            }
-        }
-
-        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
-            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
-        return await this.Transaction.Connection.QueryFirstOrDefaultAsync<GetPostgresTypesCntRow?>(GetPostgresTypesCntSql, transaction: this.Transaction);
-    }
-
     private const string GetPostgresFunctionsSql = "SELECT MAX(c_integer) AS max_integer, MAX(c_varchar) AS max_varchar, MAX(c_timestamp) AS max_timestamp FROM postgres_datetime_types CROSS JOIN postgres_numeric_types CROSS JOIN postgres_string_types";
     public class GetPostgresFunctionsRow
     {
@@ -675,21 +583,6 @@ public class QuerySql
         if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
             throw new InvalidOperationException("Transaction is provided, but its connection is null.");
         return await this.Transaction.Connection.QueryFirstOrDefaultAsync<GetPostgresFunctionsRow?>(GetPostgresFunctionsSql, transaction: this.Transaction);
-    }
-
-    private const string TruncatePostgresTypesSql = "TRUNCATE TABLE postgres_types";
-    public async Task TruncatePostgresTypes()
-    {
-        if (this.Transaction == null)
-        {
-            using (var connection = new NpgsqlConnection(ConnectionString))
-                await connection.ExecuteAsync(TruncatePostgresTypesSql);
-            return;
-        }
-
-        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
-            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
-        await this.Transaction.Connection.ExecuteAsync(TruncatePostgresTypesSql, transaction: this.Transaction);
     }
 
     private const string InsertPostgresNumericTypesSql = " INSERT INTO postgres_numeric_types ( c_boolean, c_bit, c_smallint, c_integer, c_bigint, c_decimal, c_numeric, c_real, c_double_precision, c_money ) VALUES (@c_boolean, @c_bit, @c_smallint, @c_integer, @c_bigint, @c_decimal, @c_numeric, @c_real, @c_double_precision, @c_money)";
@@ -1255,8 +1148,8 @@ public class QuerySql
         }
     }
 
-    private const string InsertPostgresUnstructuredTypesSql = " INSERT INTO postgres_unstructured_types ( c_json, c_json_string_override, c_jsonb, c_jsonpath, c_xml, c_xml_string_override ) VALUES ( @c_json::json, @c_json_string_override::json, @c_jsonb::jsonb, @c_jsonpath::jsonpath, @c_xml::xml, @c_xml_string_override::xml )";
-    public class InsertPostgresUnstructuredTypesArgs
+    private const string InsertPostgresSpecialTypesSql = " INSERT INTO postgres_special_types ( c_json, c_json_string_override, c_jsonb, c_jsonpath, c_xml, c_xml_string_override, c_uuid, c_enum ) VALUES ( @c_json::json, @c_json_string_override::json, @c_jsonb::jsonb, @c_jsonpath::jsonpath, @c_xml::xml, @c_xml_string_override::xml, @c_uuid, @c_enum::c_enum )";
+    public class InsertPostgresSpecialTypesArgs
     {
         public JsonElement? CJson { get; init; }
         public string? CJsonStringOverride { get; init; }
@@ -1264,8 +1157,10 @@ public class QuerySql
         public string? CJsonpath { get; init; }
         public XmlDocument? CXml { get; init; }
         public string? CXmlStringOverride { get; init; }
+        public Guid? CUuid { get; init; }
+        public CEnum? CEnum { get; init; }
     };
-    public async Task InsertPostgresUnstructuredTypes(InsertPostgresUnstructuredTypesArgs args)
+    public async Task InsertPostgresSpecialTypes(InsertPostgresSpecialTypesArgs args)
     {
         var queryParams = new Dictionary<string, object?>();
         queryParams.Add("c_json", args.CJson.HasValue ? args.CJson.Value.GetRawText() : null);
@@ -1274,20 +1169,22 @@ public class QuerySql
         queryParams.Add("c_jsonpath", args.CJsonpath);
         queryParams.Add("c_xml", args.CXml != null ? args.CXml.OuterXml : null);
         queryParams.Add("c_xml_string_override", args.CXmlStringOverride);
+        queryParams.Add("c_uuid", args.CUuid);
+        queryParams.Add("c_enum", args.CEnum != null ? args.CEnum.Value.Stringify() : null);
         if (this.Transaction == null)
         {
             using (var connection = new NpgsqlConnection(ConnectionString))
-                await connection.ExecuteAsync(InsertPostgresUnstructuredTypesSql, queryParams);
+                await connection.ExecuteAsync(InsertPostgresSpecialTypesSql, queryParams);
             return;
         }
 
         if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
             throw new InvalidOperationException("Transaction is provided, but its connection is null.");
-        await this.Transaction.Connection.ExecuteAsync(InsertPostgresUnstructuredTypesSql, queryParams, transaction: this.Transaction);
+        await this.Transaction.Connection.ExecuteAsync(InsertPostgresSpecialTypesSql, queryParams, transaction: this.Transaction);
     }
 
-    private const string GetPostgresUnstructuredTypesSql = "SELECT c_json, c_json_string_override, c_jsonb, c_jsonpath, c_xml, c_xml_string_override FROM postgres_unstructured_types LIMIT 1";
-    public class GetPostgresUnstructuredTypesRow
+    private const string GetPostgresSpecialTypesSql = "SELECT c_json, c_json_string_override, c_jsonb, c_jsonpath, c_xml, c_xml_string_override, c_uuid, c_enum FROM postgres_special_types LIMIT 1";
+    public class GetPostgresSpecialTypesRow
     {
         public JsonElement? CJson { get; init; }
         public string? CJsonStringOverride { get; init; }
@@ -1295,36 +1192,85 @@ public class QuerySql
         public string? CJsonpath { get; init; }
         public XmlDocument? CXml { get; init; }
         public string? CXmlStringOverride { get; init; }
+        public Guid? CUuid { get; init; }
+        public CEnum? CEnum { get; init; }
     };
-    public async Task<GetPostgresUnstructuredTypesRow?> GetPostgresUnstructuredTypes()
+    public async Task<GetPostgresSpecialTypesRow?> GetPostgresSpecialTypes()
     {
         if (this.Transaction == null)
         {
             using (var connection = new NpgsqlConnection(ConnectionString))
             {
-                var result = await connection.QueryFirstOrDefaultAsync<GetPostgresUnstructuredTypesRow?>(GetPostgresUnstructuredTypesSql);
+                var result = await connection.QueryFirstOrDefaultAsync<GetPostgresSpecialTypesRow?>(GetPostgresSpecialTypesSql);
                 return result;
             }
         }
 
         if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
             throw new InvalidOperationException("Transaction is provided, but its connection is null.");
-        return await this.Transaction.Connection.QueryFirstOrDefaultAsync<GetPostgresUnstructuredTypesRow?>(GetPostgresUnstructuredTypesSql, transaction: this.Transaction);
+        return await this.Transaction.Connection.QueryFirstOrDefaultAsync<GetPostgresSpecialTypesRow?>(GetPostgresSpecialTypesSql, transaction: this.Transaction);
     }
 
-    private const string TruncatePostgresUnstructuredTypesSql = "TRUNCATE TABLE postgres_unstructured_types";
-    public async Task TruncatePostgresUnstructuredTypes()
+    private const string TruncatePostgresSpecialTypesSql = "TRUNCATE TABLE postgres_special_types";
+    public async Task TruncatePostgresSpecialTypes()
     {
         if (this.Transaction == null)
         {
             using (var connection = new NpgsqlConnection(ConnectionString))
-                await connection.ExecuteAsync(TruncatePostgresUnstructuredTypesSql);
+                await connection.ExecuteAsync(TruncatePostgresSpecialTypesSql);
             return;
         }
 
         if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
             throw new InvalidOperationException("Transaction is provided, but its connection is null.");
-        await this.Transaction.Connection.ExecuteAsync(TruncatePostgresUnstructuredTypesSql, transaction: this.Transaction);
+        await this.Transaction.Connection.ExecuteAsync(TruncatePostgresSpecialTypesSql, transaction: this.Transaction);
+    }
+
+    private const string InsertPostgresSpecialTypesBatchSql = "COPY postgres_special_types (c_uuid) FROM STDIN (FORMAT BINARY)";
+    public class InsertPostgresSpecialTypesBatchArgs
+    {
+        public Guid? CUuid { get; init; }
+    };
+    public async Task InsertPostgresSpecialTypesBatch(List<InsertPostgresSpecialTypesBatchArgs> args)
+    {
+        using (var connection = new NpgsqlConnection(ConnectionString))
+        {
+            await connection.OpenAsync();
+            using (var writer = await connection.BeginBinaryImportAsync(InsertPostgresSpecialTypesBatchSql))
+            {
+                foreach (var row in args)
+                {
+                    await writer.StartRowAsync();
+                    await writer.WriteAsync(row.CUuid);
+                }
+
+                await writer.CompleteAsync();
+            }
+
+            await connection.CloseAsync();
+        }
+    }
+
+    private const string GetPostgresSpecialTypesCntSql = "SELECT c_uuid, COUNT(*) AS cnt FROM postgres_special_types GROUP BY c_uuid LIMIT 1";
+    public class GetPostgresSpecialTypesCntRow
+    {
+        public Guid? CUuid { get; init; }
+        public required long Cnt { get; init; }
+    };
+    public async Task<GetPostgresSpecialTypesCntRow?> GetPostgresSpecialTypesCnt()
+    {
+        if (this.Transaction == null)
+        {
+            using (var connection = new NpgsqlConnection(ConnectionString))
+            {
+                var result = await connection.QueryFirstOrDefaultAsync<GetPostgresSpecialTypesCntRow?>(GetPostgresSpecialTypesCntSql);
+                return result;
+            }
+        }
+
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+        return await this.Transaction.Connection.QueryFirstOrDefaultAsync<GetPostgresSpecialTypesCntRow?>(GetPostgresSpecialTypesCntSql, transaction: this.Transaction);
     }
 
     private const string InsertPostgresArrayTypesSql = " INSERT INTO postgres_array_types ( c_bytea, c_boolean_array, c_text_array, c_integer_array, c_decimal_array, c_date_array, c_timestamp_array ) VALUES (@c_bytea, @c_boolean_array, @c_text_array, @c_integer_array, @c_decimal_array, @c_date_array, @c_timestamp_array)";

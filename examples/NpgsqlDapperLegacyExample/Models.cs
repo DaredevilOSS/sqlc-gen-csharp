@@ -23,11 +23,6 @@ namespace NpgsqlDapperLegacyExampleGen
         public long AuthorId { get; set; }
         public string Description { get; set; }
     };
-    public class PostgresType
-    {
-        public Guid? CUuid { get; set; }
-        public CEnum? CEnum { get; set; }
-    };
     public class PostgresNumericType
     {
         public bool? CBoolean { get; set; }
@@ -64,15 +59,6 @@ namespace NpgsqlDapperLegacyExampleGen
         public PhysicalAddress CMacaddr { get; set; }
         public string CMacaddr8 { get; set; }
     };
-    public class PostgresUnstructuredType
-    {
-        public JsonElement? CJson { get; set; }
-        public JsonElement? CJsonStringOverride { get; set; }
-        public JsonElement? CJsonb { get; set; }
-        public string CJsonpath { get; set; }
-        public XmlDocument CXml { get; set; }
-        public XmlDocument CXmlStringOverride { get; set; }
-    };
     public class PostgresArrayType
     {
         public byte[] CBytea { get; set; }
@@ -92,6 +78,17 @@ namespace NpgsqlDapperLegacyExampleGen
         public NpgsqlPath? CPath { get; set; }
         public NpgsqlPolygon? CPolygon { get; set; }
         public NpgsqlCircle? CCircle { get; set; }
+    };
+    public class PostgresSpecialType
+    {
+        public Guid? CUuid { get; set; }
+        public CEnum? CEnum { get; set; }
+        public JsonElement? CJson { get; set; }
+        public JsonElement? CJsonStringOverride { get; set; }
+        public JsonElement? CJsonb { get; set; }
+        public string CJsonpath { get; set; }
+        public XmlDocument CXml { get; set; }
+        public XmlDocument CXmlStringOverride { get; set; }
     };
     public class ExtendedBio
     {

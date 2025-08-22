@@ -22,11 +22,6 @@ public class Book
     public required long AuthorId { get; init; }
     public string? Description { get; init; }
 };
-public class PostgresType
-{
-    public Guid? CUuid { get; init; }
-    public CEnum? CEnum { get; init; }
-};
 public class PostgresNumericType
 {
     public bool? CBoolean { get; init; }
@@ -63,15 +58,6 @@ public class PostgresNetworkType
     public PhysicalAddress? CMacaddr { get; init; }
     public string? CMacaddr8 { get; init; }
 };
-public class PostgresUnstructuredType
-{
-    public JsonElement? CJson { get; init; }
-    public JsonElement? CJsonStringOverride { get; init; }
-    public JsonElement? CJsonb { get; init; }
-    public string? CJsonpath { get; init; }
-    public XmlDocument? CXml { get; init; }
-    public XmlDocument? CXmlStringOverride { get; init; }
-};
 public class PostgresArrayType
 {
     public byte[]? CBytea { get; init; }
@@ -91,6 +77,17 @@ public class PostgresGeometricType
     public NpgsqlPath? CPath { get; init; }
     public NpgsqlPolygon? CPolygon { get; init; }
     public NpgsqlCircle? CCircle { get; init; }
+};
+public class PostgresSpecialType
+{
+    public Guid? CUuid { get; init; }
+    public CEnum? CEnum { get; init; }
+    public JsonElement? CJson { get; init; }
+    public JsonElement? CJsonStringOverride { get; init; }
+    public JsonElement? CJsonb { get; init; }
+    public string? CJsonpath { get; init; }
+    public XmlDocument? CXml { get; init; }
+    public XmlDocument? CXmlStringOverride { get; init; }
 };
 public class ExtendedBio
 {

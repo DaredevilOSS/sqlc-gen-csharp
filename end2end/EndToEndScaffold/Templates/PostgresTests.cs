@@ -476,7 +476,7 @@ public static class PostgresTests
                          if (cJson != null)
                             cParsedJson = JsonDocument.Parse(cJson).RootElement;
 
-                         await QuerySql.InsertPostgresUnstructuredTypes(new QuerySql.InsertPostgresUnstructuredTypesArgs
+                         await QuerySql.InsertPostgresSpecialTypes(new QuerySql.InsertPostgresSpecialTypesArgs
                          {
                              CJson = cParsedJson,
                              CJsonb = cParsedJson,
@@ -484,7 +484,7 @@ public static class PostgresTests
                              CJsonpath = cJsonpath
                          });
 
-                         var expected = new QuerySql.GetPostgresUnstructuredTypesRow
+                         var expected = new QuerySql.GetPostgresSpecialTypesRow
                          {
                              CJson = cParsedJson,
                              CJsonb = cParsedJson,
@@ -492,10 +492,10 @@ public static class PostgresTests
                              CJsonpath = cJsonpath
                          };
 
-                         var actual = await QuerySql.GetPostgresUnstructuredTypes();
+                         var actual = await QuerySql.GetPostgresSpecialTypes();
                          AssertSingularEquals(expected, actual{{Consts.UnknownRecordValuePlaceholder}});
 
-                         void AssertSingularEquals(QuerySql.GetPostgresUnstructuredTypesRow x, QuerySql.GetPostgresUnstructuredTypesRow y)
+                         void AssertSingularEquals(QuerySql.GetPostgresSpecialTypesRow x, QuerySql.GetPostgresSpecialTypesRow y)
                          {
                              Assert.That(x.CJson.HasValue, Is.EqualTo(y.CJson.HasValue));
                              if (x.CJson.HasValue)
@@ -516,13 +516,13 @@ public static class PostgresTests
                      public void TestPostgresInvalidJson()
                      {
                          Assert.ThrowsAsync<Npgsql.PostgresException>(async () => await 
-                            QuerySql.InsertPostgresUnstructuredTypes(new QuerySql.InsertPostgresUnstructuredTypesArgs
+                            QuerySql.InsertPostgresSpecialTypes(new QuerySql.InsertPostgresSpecialTypesArgs
                             {
                                 CJsonStringOverride = "SOME INVALID JSON"
                             }));
                         
                         Assert.ThrowsAsync<Npgsql.PostgresException>(async () => await 
-                            QuerySql.InsertPostgresUnstructuredTypes(new QuerySql.InsertPostgresUnstructuredTypesArgs
+                            QuerySql.InsertPostgresSpecialTypes(new QuerySql.InsertPostgresSpecialTypesArgs
                             {
                                 CJsonpath = "SOME INVALID JSONPATH"
                             }));
@@ -916,19 +916,19 @@ public static class PostgresTests
                      [TestCaseSource(nameof(PostgresGuidDataTypesTestCases))]
                      public async Task TestPostgresGuidDataTypes(Guid? cUuid)
                      {
-                         await QuerySql.InsertPostgresTypes(new QuerySql.InsertPostgresTypesArgs
+                         await QuerySql.InsertPostgresSpecialTypes(new QuerySql.InsertPostgresSpecialTypesArgs
                          {
                             CUuid = cUuid
                          });
 
-                         var expected = new QuerySql.GetPostgresTypesRow
+                         var expected = new QuerySql.GetPostgresSpecialTypesRow
                          {
                              CUuid = cUuid
                          };
-                         var actual = await QuerySql.GetPostgresTypes();
+                         var actual = await QuerySql.GetPostgresSpecialTypes();
                          AssertSingularEquals(expected, actual{{Consts.UnknownRecordValuePlaceholder}});
 
-                         void AssertSingularEquals(QuerySql.GetPostgresTypesRow x, QuerySql.GetPostgresTypesRow y)
+                         void AssertSingularEquals(QuerySql.GetPostgresSpecialTypesRow x, QuerySql.GetPostgresSpecialTypesRow y)
                          {
                              Assert.That(x.CUuid, Is.EqualTo(y.CUuid));
                          }
@@ -952,22 +952,22 @@ public static class PostgresTests
                      public async Task TestPostgresGuidCopyFrom(int batchSize, Guid? cUuid)
                      {
                          var batchArgs = Enumerable.Range(0, batchSize)
-                             .Select(_ => new QuerySql.InsertPostgresTypesBatchArgs
+                             .Select(_ => new QuerySql.InsertPostgresSpecialTypesBatchArgs
                              {
                                  CUuid = cUuid
                              })
                              .ToList();
-                         await QuerySql.InsertPostgresTypesBatch(batchArgs);
+                         await QuerySql.InsertPostgresSpecialTypesBatch(batchArgs);
 
-                         var expected = new QuerySql.GetPostgresTypesCntRow
+                         var expected = new QuerySql.GetPostgresSpecialTypesCntRow
                          {
                              Cnt = batchSize,
                              CUuid = cUuid
                          };
-                         var actual = await QuerySql.GetPostgresTypesCnt();
+                         var actual = await QuerySql.GetPostgresSpecialTypesCnt();
                          AssertSingularEquals(expected, actual{{Consts.UnknownRecordValuePlaceholder}});
 
-                         void AssertSingularEquals(QuerySql.GetPostgresTypesCntRow x, QuerySql.GetPostgresTypesCntRow y)
+                         void AssertSingularEquals(QuerySql.GetPostgresSpecialTypesCntRow x, QuerySql.GetPostgresSpecialTypesCntRow y)
                          {
                              Assert.That(x.Cnt, Is.EqualTo(y.Cnt));
                              Assert.That(x.CUuid, Is.EqualTo(y.CUuid));
@@ -990,20 +990,20 @@ public static class PostgresTests
                              parsedXml.LoadXml(cXml);
                          }
 
-                         await QuerySql.InsertPostgresUnstructuredTypes(new QuerySql.InsertPostgresUnstructuredTypesArgs
+                         await QuerySql.InsertPostgresSpecialTypes(new QuerySql.InsertPostgresSpecialTypesArgs
                          {
                             CXml = parsedXml
                          });
 
-                         var expected = new QuerySql.GetPostgresUnstructuredTypesRow
+                         var expected = new QuerySql.GetPostgresSpecialTypesRow
                          {
                              CXml = parsedXml
                          };
 
-                         var actual = await QuerySql.GetPostgresUnstructuredTypes();
+                         var actual = await QuerySql.GetPostgresSpecialTypes();
                          AssertSingularEquals(expected, actual{{Consts.UnknownRecordValuePlaceholder}});
 
-                         void AssertSingularEquals(QuerySql.GetPostgresUnstructuredTypesRow x, QuerySql.GetPostgresUnstructuredTypesRow y)
+                         void AssertSingularEquals(QuerySql.GetPostgresSpecialTypesRow x, QuerySql.GetPostgresSpecialTypesRow y)
                          {
                              Assert.That(x.CXml == null, Is.EqualTo(y.CXml == null));
                              if (x.CXml != null)
@@ -1020,7 +1020,7 @@ public static class PostgresTests
                      public void TestPostgresInvalidXml()
                      {
                          Assert.ThrowsAsync<Npgsql.PostgresException>(async () => await 
-                            QuerySql.InsertPostgresUnstructuredTypes(new QuerySql.InsertPostgresUnstructuredTypesArgs
+                            QuerySql.InsertPostgresSpecialTypes(new QuerySql.InsertPostgresSpecialTypesArgs
                             {
                                 CXmlStringOverride = "<root>SOME INVALID XML"
                             }));
@@ -1095,19 +1095,19 @@ public static class PostgresTests
                      [TestCase(null)]
                      public async Task TestPostgresStringTypes(CEnum? cEnum)
                      {
-                         await QuerySql.InsertPostgresTypes(new QuerySql.InsertPostgresTypesArgs
+                         await QuerySql.InsertPostgresSpecialTypes(new QuerySql.InsertPostgresSpecialTypesArgs
                          {
                               CEnum = cEnum
                          });
                          
-                         var expected = new QuerySql.GetPostgresTypesRow
+                         var expected = new QuerySql.GetPostgresSpecialTypesRow
                          {
                               CEnum = cEnum
                          };
-                         var actual = await QuerySql.GetPostgresTypes();
+                         var actual = await QuerySql.GetPostgresSpecialTypes();
                          AssertSingularEquals(expected, actual{{Consts.UnknownRecordValuePlaceholder}});
 
-                         void AssertSingularEquals(QuerySql.GetPostgresTypesRow x, QuerySql.GetPostgresTypesRow y)
+                         void AssertSingularEquals(QuerySql.GetPostgresSpecialTypesRow x, QuerySql.GetPostgresSpecialTypesRow y)
                          {
                              Assert.That(x.CEnum, Is.EqualTo(y.CEnum));
                          }

@@ -1,41 +1,3 @@
-/* Special types */
-
--- name: InsertPostgresTypes :exec
-INSERT INTO postgres_types
-(
-    c_uuid,
-    c_enum
-)
-VALUES (
-    sqlc.narg('c_uuid'),
-    sqlc.narg('c_enum')::c_enum
-);
-
--- name: InsertPostgresTypesBatch :copyfrom
-INSERT INTO postgres_types
-(
-    c_uuid
-)
-VALUES (
-    $1
-);
-
--- name: GetPostgresTypes :one
-SELECT
-    c_uuid,
-    c_enum
-FROM postgres_types 
-LIMIT 1;
-
--- name: GetPostgresTypesCnt :one
-SELECT
-    c_uuid,
-    COUNT(*) AS cnt
-FROM postgres_types
-GROUP BY
-    c_uuid
-LIMIT 1;
-
 -- name: GetPostgresFunctions :one
 SELECT
     MAX(c_integer) AS max_integer,
@@ -44,9 +6,6 @@ SELECT
 FROM postgres_datetime_types
 CROSS JOIN postgres_numeric_types
 CROSS JOIN postgres_string_types;
-
--- name: TruncatePostgresTypes :exec
-TRUNCATE TABLE postgres_types;
 
 /* Numeric types */
 
@@ -269,17 +228,19 @@ INSERT INTO postgres_network_types
     c_macaddr
 ) VALUES ($1, $2, $3);
 
-/* Unstructured types */
+/* Special types */
 
--- name: InsertPostgresUnstructuredTypes :exec
-INSERT INTO postgres_unstructured_types
+-- name: InsertPostgresSpecialTypes :exec
+INSERT INTO postgres_special_types
 (
     c_json,
     c_json_string_override,
     c_jsonb,
     c_jsonpath,
     c_xml,
-    c_xml_string_override
+    c_xml_string_override,
+    c_uuid,
+    c_enum
 )
 VALUES (
     sqlc.narg('c_json')::json, 
@@ -287,22 +248,44 @@ VALUES (
     sqlc.narg('c_jsonb')::jsonb,
     sqlc.narg('c_jsonpath')::jsonpath,
     sqlc.narg('c_xml')::xml,
-    sqlc.narg('c_xml_string_override')::xml
+    sqlc.narg('c_xml_string_override')::xml,
+    sqlc.narg('c_uuid'),
+    sqlc.narg('c_enum')::c_enum
 );
 
--- name: GetPostgresUnstructuredTypes :one
+-- name: GetPostgresSpecialTypes :one
 SELECT
     c_json,
     c_json_string_override,
     c_jsonb,
     c_jsonpath,
     c_xml,
-    c_xml_string_override
-FROM postgres_unstructured_types 
+    c_xml_string_override,
+    c_uuid,
+    c_enum
+FROM postgres_special_types 
 LIMIT 1;
 
--- name: TruncatePostgresUnstructuredTypes :exec
-TRUNCATE TABLE postgres_unstructured_types;
+-- name: TruncatePostgresSpecialTypes :exec
+TRUNCATE TABLE postgres_special_types;
+
+-- name: InsertPostgresSpecialTypesBatch :copyfrom
+INSERT INTO postgres_special_types
+(
+    c_uuid
+)
+VALUES (
+    $1
+);
+
+-- name: GetPostgresSpecialTypesCnt :one
+SELECT
+    c_uuid,
+    COUNT(*) AS cnt
+FROM postgres_special_types
+GROUP BY
+    c_uuid
+LIMIT 1;
 
 /* Array types */
 
@@ -336,7 +319,6 @@ LIMIT 1;
 
 -- name: TruncatePostgresArrayTypes :exec
 TRUNCATE TABLE postgres_array_types;
-
 
 /* Geometric types */
 
