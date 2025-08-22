@@ -329,6 +329,102 @@ namespace EndToEndTests
         }
 
         [Test]
+        public async Task TestMySqlTransaction()
+        {
+            var connection = new MySqlConnector.MySqlConnection(Environment.GetEnvironmentVariable(EndToEndCommon.MySqlConnectionStringEnv));
+            await connection.OpenAsync();
+            var transaction = connection.BeginTransaction();
+            var querySqlWithTx = QuerySql.WithTransaction(transaction);
+            await querySqlWithTx.CreateAuthor(new QuerySql.CreateAuthorArgs { Id = 1111, Name = "Bojack Horseman", Bio = "Back in the 90s he was in a very famous TV show" });
+            var actual = await QuerySql.GetAuthor(new QuerySql.GetAuthorArgs { Name = "Bojack Horseman" });
+            ClassicAssert.IsNull(actual);
+            await transaction.CommitAsync();
+            var expected = new QuerySql.GetAuthorRow
+            {
+                Id = 1111,
+                Name = "Bojack Horseman",
+                Bio = "Back in the 90s he was in a very famous TV show"
+            };
+            actual = await QuerySql.GetAuthor(new QuerySql.GetAuthorArgs { Name = "Bojack Horseman" });
+            AssertSingularEquals(expected, actual.Value);
+            void AssertSingularEquals(QuerySql.GetAuthorRow x, QuerySql.GetAuthorRow y)
+            {
+                Assert.That(x.Id, Is.EqualTo(y.Id));
+                Assert.That(x.Name, Is.EqualTo(y.Name));
+                Assert.That(x.Bio, Is.EqualTo(y.Bio));
+            }
+        }
+
+        [Test]
+        public async Task TestMySqlTransactionRollback()
+        {
+            var connection = new MySqlConnector.MySqlConnection(Environment.GetEnvironmentVariable(EndToEndCommon.MySqlConnectionStringEnv));
+            await connection.OpenAsync();
+            var transaction = connection.BeginTransaction();
+            var querySqlWithTx = QuerySql.WithTransaction(transaction);
+            await querySqlWithTx.CreateAuthor(new QuerySql.CreateAuthorArgs { Id = 1111, Name = "Bojack Horseman", Bio = "Back in the 90s he was in a very famous TV show" });
+            await transaction.RollbackAsync();
+            var actual = await QuerySql.GetAuthor(new QuerySql.GetAuthorArgs { Name = "Bojack Horseman" });
+            ClassicAssert.IsNull(actual);
+        }
+
+        [Test]
+        [TestCase(-54355, "Scream of the Butterfly", "2025-06-29 12:00:00")]
+        [TestCase(null, null, "1971-01-01 00:00:00")]
+        public async Task TestMySqlDataTypesOverride(int? cInt, string cVarchar, DateTime cTimestamp)
+        {
+            await QuerySql.InsertMysqlNumericTypes(new QuerySql.InsertMysqlNumericTypesArgs { CInt = cInt });
+            await QuerySql.InsertMysqlStringTypes(new QuerySql.InsertMysqlStringTypesArgs { CVarchar = cVarchar });
+            await QuerySql.InsertMysqlDatetimeTypes(new QuerySql.InsertMysqlDatetimeTypesArgs { CTimestamp = cTimestamp });
+            var expected = new QuerySql.GetMysqlFunctionsRow
+            {
+                MaxInt = cInt,
+                MaxVarchar = cVarchar,
+                MaxTimestamp = cTimestamp
+            };
+            var actual = await QuerySql.GetMysqlFunctions();
+            AssertSingularEquals(expected, actual.Value);
+            void AssertSingularEquals(QuerySql.GetMysqlFunctionsRow x, QuerySql.GetMysqlFunctionsRow y)
+            {
+                Assert.That(x.MaxInt, Is.EqualTo(y.MaxInt));
+                Assert.That(x.MaxVarchar, Is.EqualTo(y.MaxVarchar));
+                Assert.That(x.MaxTimestamp, Is.EqualTo(y.MaxTimestamp));
+            }
+        }
+
+        [Test]
+        public async Task TestMySqlScopedSchemaEnum()
+        {
+            await this.QuerySql.CreateExtendedBio(new QuerySql.CreateExtendedBioArgs { AuthorName = "Bojack Horseman", Name = "One Trick Pony", BioType = BiosBioType.Memoir, AuthorType = new HashSet<BiosAuthorType> { BiosAuthorType.Author, BiosAuthorType.Translator } });
+            var expected = new QuerySql.GetFirstExtendedBioByTypeRow
+            {
+                AuthorName = "Bojack Horseman",
+                Name = "One Trick Pony",
+                BioType = BiosBioType.Memoir,
+                AuthorType = new HashSet<BiosAuthorType>
+                {
+                    BiosAuthorType.Author,
+                    BiosAuthorType.Translator
+                }
+            };
+            var actual = await this.QuerySql.GetFirstExtendedBioByType(new QuerySql.GetFirstExtendedBioByTypeArgs { BioType = BiosBioType.Memoir });
+            AssertSingularEquals(expected, actual.Value);
+            void AssertSingularEquals(QuerySql.GetFirstExtendedBioByTypeRow x, QuerySql.GetFirstExtendedBioByTypeRow y)
+            {
+                Assert.That(x.AuthorName, Is.EqualTo(y.AuthorName));
+                Assert.That(x.Name, Is.EqualTo(y.Name));
+                Assert.That(x.BioType, Is.EqualTo(y.BioType));
+                Assert.That(x.AuthorType, Is.EqualTo(y.AuthorType));
+            }
+        }
+
+        [Test]
+        public void TestMySqlInvalidJson()
+        {
+            Assert.ThrowsAsync<MySqlConnector.MySqlException>(async () => await QuerySql.InsertMysqlStringTypes(new QuerySql.InsertMysqlStringTypesArgs { CJsonStringOverride = "SOME INVALID JSON" }));
+        }
+
+        [Test]
         [TestCase("&", "\u1857", "\u2649", "Sheena is a Punk Rocker", "Holiday in Cambodia", "London's Calling", "London's Burning", "Police & Thieves")]
         [TestCase(null, null, null, null, null, null, null, null)]
         public async Task TestMySqlStringTypes(string cChar, string cNchar, string cNationalChar, string cVarchar, string cTinytext, string cMediumtext, string cText, string cLongtext)
@@ -390,46 +486,6 @@ namespace EndToEndTests
                 Assert.That(x.CInteger, Is.EqualTo(y.CInteger));
                 Assert.That(x.CBigint, Is.EqualTo(y.CBigint));
             }
-        }
-
-        [Test]
-        public async Task TestMySqlTransaction()
-        {
-            var connection = new MySqlConnector.MySqlConnection(Environment.GetEnvironmentVariable(EndToEndCommon.MySqlConnectionStringEnv));
-            await connection.OpenAsync();
-            var transaction = connection.BeginTransaction();
-            var querySqlWithTx = QuerySql.WithTransaction(transaction);
-            await querySqlWithTx.CreateAuthor(new QuerySql.CreateAuthorArgs { Id = 1111, Name = "Bojack Horseman", Bio = "Back in the 90s he was in a very famous TV show" });
-            var actual = await QuerySql.GetAuthor(new QuerySql.GetAuthorArgs { Name = "Bojack Horseman" });
-            ClassicAssert.IsNull(actual);
-            await transaction.CommitAsync();
-            var expected = new QuerySql.GetAuthorRow
-            {
-                Id = 1111,
-                Name = "Bojack Horseman",
-                Bio = "Back in the 90s he was in a very famous TV show"
-            };
-            actual = await QuerySql.GetAuthor(new QuerySql.GetAuthorArgs { Name = "Bojack Horseman" });
-            AssertSingularEquals(expected, actual.Value);
-            void AssertSingularEquals(QuerySql.GetAuthorRow x, QuerySql.GetAuthorRow y)
-            {
-                Assert.That(x.Id, Is.EqualTo(y.Id));
-                Assert.That(x.Name, Is.EqualTo(y.Name));
-                Assert.That(x.Bio, Is.EqualTo(y.Bio));
-            }
-        }
-
-        [Test]
-        public async Task TestMySqlTransactionRollback()
-        {
-            var connection = new MySqlConnector.MySqlConnection(Environment.GetEnvironmentVariable(EndToEndCommon.MySqlConnectionStringEnv));
-            await connection.OpenAsync();
-            var transaction = connection.BeginTransaction();
-            var querySqlWithTx = QuerySql.WithTransaction(transaction);
-            await querySqlWithTx.CreateAuthor(new QuerySql.CreateAuthorArgs { Id = 1111, Name = "Bojack Horseman", Bio = "Back in the 90s he was in a very famous TV show" });
-            await transaction.RollbackAsync();
-            var actual = await QuerySql.GetAuthor(new QuerySql.GetAuthorArgs { Name = "Bojack Horseman" });
-            ClassicAssert.IsNull(actual);
         }
 
         [Test]
@@ -548,56 +604,6 @@ namespace EndToEndTests
         }
 
         [Test]
-        [TestCase(-54355, "Scream of the Butterfly", "2025-06-29 12:00:00")]
-        [TestCase(null, null, "1971-01-01 00:00:00")]
-        public async Task TestMySqlDataTypesOverride(int? cInt, string cVarchar, DateTime cTimestamp)
-        {
-            await QuerySql.InsertMysqlNumericTypes(new QuerySql.InsertMysqlNumericTypesArgs { CInt = cInt });
-            await QuerySql.InsertMysqlStringTypes(new QuerySql.InsertMysqlStringTypesArgs { CVarchar = cVarchar });
-            await QuerySql.InsertMysqlDatetimeTypes(new QuerySql.InsertMysqlDatetimeTypesArgs { CTimestamp = cTimestamp });
-            var expected = new QuerySql.GetMysqlFunctionsRow
-            {
-                MaxInt = cInt,
-                MaxVarchar = cVarchar,
-                MaxTimestamp = cTimestamp
-            };
-            var actual = await QuerySql.GetMysqlFunctions();
-            AssertSingularEquals(expected, actual.Value);
-            void AssertSingularEquals(QuerySql.GetMysqlFunctionsRow x, QuerySql.GetMysqlFunctionsRow y)
-            {
-                Assert.That(x.MaxInt, Is.EqualTo(y.MaxInt));
-                Assert.That(x.MaxVarchar, Is.EqualTo(y.MaxVarchar));
-                Assert.That(x.MaxTimestamp, Is.EqualTo(y.MaxTimestamp));
-            }
-        }
-
-        [Test]
-        public async Task TestMySqlScopedSchemaEnum()
-        {
-            await this.QuerySql.CreateExtendedBio(new QuerySql.CreateExtendedBioArgs { AuthorName = "Bojack Horseman", Name = "One Trick Pony", BioType = BiosBioType.Memoir, AuthorType = new HashSet<BiosAuthorType> { BiosAuthorType.Author, BiosAuthorType.Translator } });
-            var expected = new QuerySql.GetFirstExtendedBioByTypeRow
-            {
-                AuthorName = "Bojack Horseman",
-                Name = "One Trick Pony",
-                BioType = BiosBioType.Memoir,
-                AuthorType = new HashSet<BiosAuthorType>
-                {
-                    BiosAuthorType.Author,
-                    BiosAuthorType.Translator
-                }
-            };
-            var actual = await this.QuerySql.GetFirstExtendedBioByType(new QuerySql.GetFirstExtendedBioByTypeArgs { BioType = BiosBioType.Memoir });
-            AssertSingularEquals(expected, actual.Value);
-            void AssertSingularEquals(QuerySql.GetFirstExtendedBioByTypeRow x, QuerySql.GetFirstExtendedBioByTypeRow y)
-            {
-                Assert.That(x.AuthorName, Is.EqualTo(y.AuthorName));
-                Assert.That(x.Name, Is.EqualTo(y.Name));
-                Assert.That(x.BioType, Is.EqualTo(y.BioType));
-                Assert.That(x.AuthorType, Is.EqualTo(y.AuthorType));
-            }
-        }
-
-        [Test]
         [TestCase("{\"age\": 42, \"name\": \"The Hitchhiker's Guide to the Galaxy\"}")]
         [TestCase(null)]
         public async Task TestMySqlJsonDataType(string cJson)
@@ -620,38 +626,6 @@ namespace EndToEndTests
                     Assert.That(x.CJson.Value.GetRawText(), Is.EqualTo(y.CJson.Value.GetRawText()));
                 Assert.That(x.CJsonStringOverride, Is.EqualTo(y.CJsonStringOverride));
             }
-        }
-
-        [Test]
-        [TestCase(100, "{\"name\": \"Swordfishtrombones\", \"year\": 1983}")]
-        [TestCase(10, null)]
-        public async Task TestJsonCopyFrom(int batchSize, string cJson)
-        {
-            JsonElement? cParsedJson = null;
-            if (cJson != null)
-                cParsedJson = JsonDocument.Parse(cJson).RootElement;
-            var batchArgs = Enumerable.Range(0, batchSize).Select(_ => new QuerySql.InsertMysqlStringTypesBatchArgs { CJson = cParsedJson }).ToList();
-            await QuerySql.InsertMysqlStringTypesBatch(batchArgs);
-            var expected = new QuerySql.GetMysqlStringTypesCntRow
-            {
-                Cnt = batchSize,
-                CJson = cParsedJson
-            };
-            var actual = await QuerySql.GetMysqlStringTypesCnt();
-            AssertSingularEquals(expected, actual.Value);
-            void AssertSingularEquals(QuerySql.GetMysqlStringTypesCntRow x, QuerySql.GetMysqlStringTypesCntRow y)
-            {
-                Assert.That(x.Cnt, Is.EqualTo(y.Cnt));
-                Assert.That(x.CJson.HasValue, Is.EqualTo(y.CJson.HasValue));
-                if (x.CJson.HasValue)
-                    Assert.That(x.CJson.Value.GetRawText(), Is.EqualTo(y.CJson.Value.GetRawText()));
-            }
-        }
-
-        [Test]
-        public void TestMySqlInvalidJson()
-        {
-            Assert.ThrowsAsync<MySqlConnector.MySqlException>(async () => await QuerySql.InsertMysqlStringTypes(new QuerySql.InsertMysqlStringTypesArgs { CJsonStringOverride = "SOME INVALID JSON" }));
         }
 
         [Test]
@@ -848,6 +822,32 @@ namespace EndToEndTests
                 Assert.That(x.Cnt, Is.EqualTo(y.Cnt));
                 Assert.That(x.CEnum, Is.EqualTo(y.CEnum));
                 Assert.That(x.CSet, Is.EqualTo(y.CSet));
+            }
+        }
+
+        [Test]
+        [TestCase(100, "{\"name\": \"Swordfishtrombones\", \"year\": 1983}")]
+        [TestCase(10, null)]
+        public async Task TestJsonCopyFrom(int batchSize, string cJson)
+        {
+            JsonElement? cParsedJson = null;
+            if (cJson != null)
+                cParsedJson = JsonDocument.Parse(cJson).RootElement;
+            var batchArgs = Enumerable.Range(0, batchSize).Select(_ => new QuerySql.InsertMysqlStringTypesBatchArgs { CJson = cParsedJson }).ToList();
+            await QuerySql.InsertMysqlStringTypesBatch(batchArgs);
+            var expected = new QuerySql.GetMysqlStringTypesCntRow
+            {
+                Cnt = batchSize,
+                CJson = cParsedJson
+            };
+            var actual = await QuerySql.GetMysqlStringTypesCnt();
+            AssertSingularEquals(expected, actual.Value);
+            void AssertSingularEquals(QuerySql.GetMysqlStringTypesCntRow x, QuerySql.GetMysqlStringTypesCntRow y)
+            {
+                Assert.That(x.Cnt, Is.EqualTo(y.Cnt));
+                Assert.That(x.CJson.HasValue, Is.EqualTo(y.CJson.HasValue));
+                if (x.CJson.HasValue)
+                    Assert.That(x.CJson.Value.GetRawText(), Is.EqualTo(y.CJson.Value.GetRawText()));
             }
         }
     }

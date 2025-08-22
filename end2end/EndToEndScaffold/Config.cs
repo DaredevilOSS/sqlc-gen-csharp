@@ -35,61 +35,158 @@ public enum KnownTestType
     SqliteTransactionRollback,
 
     // Postgres
+    PostgresTransaction,
+    PostgresTransactionRollback,
+    ArrayAsParam,
+    MultipleArraysAsParams,
+    PostgresDataTypesOverride,
+    PostgresInvalidJson,
+    PostgresInvalidXml,
+
+    // Data types
     PostgresStringDataTypes,
     PostgresIntegerDataTypes,
     PostgresFloatingPointDataTypes,
     PostgresDateTimeDataTypes,
     PostgresArrayDataTypes,
-    PostgresDataTypesOverride,
     PostgresGuidDataTypes,
     PostgresFullTextSearchDataTypes,
+    PostgresNetworkDataTypes,
+    PostgresGeoDataTypes,
+    PostgresJsonDataTypes,
+    PostgresXmlDataTypes,
+    PostgresEnumDataType,
 
+    // :copyfrom (Batch)
     PostgresStringCopyFrom,
-    PostgresTransaction,
-    PostgresTransactionRollback,
     PostgresIntegerCopyFrom,
     PostgresFloatingPointCopyFrom,
     PostgresDateTimeCopyFrom,
     PostgresGuidCopyFrom,
     PostgresNetworkCopyFrom,
     PostgresArrayCopyFrom,
-    PostgresGeoDataTypes,
     PostgresGeoCopyFrom,
-    PostgresNetworkDataTypes,
-    PostgresJsonDataTypes,
-    PostgresInvalidJson,
-    PostgresXmlDataTypes,
-    PostgresInvalidXml,
-    PostgresEnumDataType,
-
-    ArrayAsParam,
-    MultipleArraysAsParams,
 
     // MySql
-    MySqlStringDataTypes,
-    MySqlIntegerDataTypes,
     MySqlTransaction,
     MySqlTransactionRollback,
+    MySqlDataTypesOverride,
+    MySqlScopedSchemaEnum,
+    MySqlInvalidJson,
+
+    // Data types
+    MySqlStringDataTypes,
+    MySqlIntegerDataTypes,
     MySqlFloatingPointDataTypes,
     MySqlDateTimeDataTypes,
     MySqlBinaryDataTypes,
     MySqlEnumDataType,
-    MySqlDataTypesOverride,
-    MySqlScopedSchemaEnum,
     MySqlJsonDataTypes,
-    MySqlJsonCopyFrom,
-    MySqlInvalidJson,
 
+    // :copyfrom (Batch)
     MySqlStringCopyFrom,
     MySqlIntegerCopyFrom,
     MySqlFloatingPointCopyFrom,
     MySqlDateTimeCopyFrom,
     MySqlBinaryCopyFrom,
-    MySqlEnumCopyFrom
+    MySqlEnumCopyFrom,
+    MySqlJsonCopyFrom
 }
 
 internal static class Config
 {
+    private static readonly SortedSet<KnownTestType> _mysqlTestTypes = [
+        KnownTestType.One,
+        KnownTestType.Many,
+        KnownTestType.Exec,
+        KnownTestType.ExecRows,
+        KnownTestType.ExecLastId,
+        KnownTestType.JoinEmbed,
+        KnownTestType.SelfJoinEmbed,
+        KnownTestType.Slice,
+        KnownTestType.MultipleSlices,
+        KnownTestType.NargNull,
+        KnownTestType.NargNotNull,
+        KnownTestType.MySqlStringDataTypes,
+        KnownTestType.MySqlIntegerDataTypes,
+        KnownTestType.MySqlTransaction,
+        KnownTestType.MySqlTransactionRollback,
+        KnownTestType.MySqlFloatingPointDataTypes,
+        KnownTestType.MySqlDateTimeDataTypes,
+        KnownTestType.MySqlBinaryDataTypes,
+        KnownTestType.MySqlEnumDataType,
+        KnownTestType.MySqlScopedSchemaEnum,
+        KnownTestType.MySqlJsonDataTypes,
+        KnownTestType.MySqlInvalidJson,
+        KnownTestType.MySqlJsonCopyFrom,
+        KnownTestType.MySqlDataTypesOverride,
+        KnownTestType.MySqlStringCopyFrom,
+        KnownTestType.MySqlIntegerCopyFrom,
+        KnownTestType.MySqlFloatingPointCopyFrom,
+        KnownTestType.MySqlDateTimeCopyFrom,
+        KnownTestType.MySqlBinaryCopyFrom,
+        KnownTestType.MySqlEnumCopyFrom
+    ];
+
+    private static readonly SortedSet<KnownTestType> _postgresTestTypes = [
+        KnownTestType.One,
+        KnownTestType.Many,
+        KnownTestType.Exec,
+        KnownTestType.ExecRows,
+        KnownTestType.ExecLastId,
+        KnownTestType.JoinEmbed,
+        KnownTestType.SelfJoinEmbed,
+        KnownTestType.ArrayAsParam,
+        KnownTestType.MultipleArraysAsParams,
+        KnownTestType.NargNull,
+        KnownTestType.NargNotNull,
+        KnownTestType.PostgresTransaction,
+        KnownTestType.PostgresTransactionRollback,
+        KnownTestType.PostgresStringDataTypes,
+        KnownTestType.PostgresIntegerDataTypes,
+        KnownTestType.PostgresFloatingPointDataTypes,
+        KnownTestType.PostgresDateTimeDataTypes,
+        KnownTestType.PostgresGuidDataTypes,
+        KnownTestType.PostgresArrayDataTypes,
+        KnownTestType.PostgresGeoDataTypes,
+        KnownTestType.PostgresGeoCopyFrom,
+        KnownTestType.PostgresDataTypesOverride,
+        KnownTestType.PostgresJsonDataTypes,
+        KnownTestType.PostgresInvalidJson,
+        KnownTestType.PostgresNetworkDataTypes,
+        KnownTestType.PostgresXmlDataTypes,
+        KnownTestType.PostgresInvalidXml,
+        KnownTestType.PostgresEnumDataType,
+        KnownTestType.PostgresFullTextSearchDataTypes,
+        KnownTestType.PostgresStringCopyFrom,
+        KnownTestType.PostgresIntegerCopyFrom,
+        KnownTestType.PostgresFloatingPointCopyFrom,
+        KnownTestType.PostgresDateTimeCopyFrom,
+        KnownTestType.PostgresGuidCopyFrom,
+        KnownTestType.PostgresArrayCopyFrom,
+        KnownTestType.PostgresNetworkCopyFrom
+    ];
+
+    private static readonly SortedSet<KnownTestType> _sqliteTestTypes = [
+        KnownTestType.One,
+        KnownTestType.Many,
+        KnownTestType.Exec,
+        KnownTestType.ExecRows,
+        KnownTestType.ExecLastId,
+        KnownTestType.JoinEmbed,
+        KnownTestType.SelfJoinEmbed,
+        KnownTestType.Slice,
+        KnownTestType.MultipleSlices,
+        KnownTestType.NargNull,
+        KnownTestType.NargNotNull,
+        KnownTestType.SqliteTransaction,
+        KnownTestType.SqliteTransactionRollback,
+        KnownTestType.SqliteDataTypes,
+        KnownTestType.SqliteCopyFrom,
+        KnownTestType.SqliteDataTypesOverride,
+        KnownTestType.SqliteMultipleNamedParam
+    ];
+
     public static Dictionary<string, ClassGenConfig> FilesToGenerate { get; } =
     new()
     {
@@ -98,128 +195,23 @@ internal static class Config
             {
                 TestNamespace = "MySqlConnectorExampleGen",
                 LegacyTestNamespace = "MySqlConnectorLegacyExampleGen",
-                TestTypes = [
-                    KnownTestType.One,
-                    KnownTestType.Many,
-                    KnownTestType.Exec,
-                    KnownTestType.ExecRows,
-                    KnownTestType.ExecLastId,
-                    KnownTestType.JoinEmbed,
-                    KnownTestType.SelfJoinEmbed,
-                    KnownTestType.Slice,
-                    KnownTestType.MultipleSlices,
-                    KnownTestType.NargNull,
-                    KnownTestType.NargNotNull,
-
-                    KnownTestType.MySqlStringDataTypes,
-                    KnownTestType.MySqlIntegerDataTypes,
-                    KnownTestType.MySqlTransaction,
-                    KnownTestType.MySqlTransactionRollback,
-                    KnownTestType.MySqlFloatingPointDataTypes,
-                    KnownTestType.MySqlDateTimeDataTypes,
-                    KnownTestType.MySqlBinaryDataTypes,
-                    KnownTestType.MySqlEnumDataType,
-                    KnownTestType.MySqlScopedSchemaEnum,
-                    KnownTestType.MySqlJsonDataTypes,
-                    KnownTestType.MySqlInvalidJson,
-                    KnownTestType.MySqlJsonCopyFrom,
-                    KnownTestType.MySqlDataTypesOverride,
-
-                    KnownTestType.MySqlStringCopyFrom,
-                    KnownTestType.MySqlIntegerCopyFrom,
-                    KnownTestType.MySqlFloatingPointCopyFrom,
-                    KnownTestType.MySqlDateTimeCopyFrom,
-                    KnownTestType.MySqlBinaryCopyFrom,
-                    KnownTestType.MySqlEnumCopyFrom
-                ]
+                TestTypes = _mysqlTestTypes
             }
         },
         {
             "MySqlConnectorDapperTester", new ClassGenConfig
-                {
-                    TestNamespace = "MySqlConnectorDapperExampleGen",
-                    LegacyTestNamespace = "MySqlConnectorDapperLegacyExampleGen",
-                    TestTypes = [
-                        KnownTestType.One,
-                        KnownTestType.Many,
-                        KnownTestType.Exec,
-                        KnownTestType.ExecRows,
-                        KnownTestType.ExecLastId,
-                        KnownTestType.JoinEmbed,
-                        KnownTestType.SelfJoinEmbed,
-                        KnownTestType.Slice,
-                        KnownTestType.MultipleSlices,
-                        KnownTestType.NargNull,
-                        KnownTestType.NargNotNull,
-
-                        KnownTestType.MySqlStringDataTypes,
-                        KnownTestType.MySqlIntegerDataTypes,
-                        KnownTestType.MySqlTransaction,
-                        KnownTestType.MySqlTransactionRollback,
-                        KnownTestType.MySqlFloatingPointDataTypes,
-                        KnownTestType.MySqlDateTimeDataTypes,
-                        KnownTestType.MySqlBinaryDataTypes,
-                        KnownTestType.MySqlEnumDataType,
-                        KnownTestType.MySqlScopedSchemaEnum,
-                        KnownTestType.MySqlJsonDataTypes,
-                        KnownTestType.MySqlInvalidJson,
-                        KnownTestType.MySqlJsonCopyFrom,
-                        KnownTestType.MySqlDataTypesOverride,
-
-                        KnownTestType.MySqlStringCopyFrom,
-                        KnownTestType.MySqlIntegerCopyFrom,
-                        KnownTestType.MySqlFloatingPointCopyFrom,
-                        KnownTestType.MySqlDateTimeCopyFrom,
-                        KnownTestType.MySqlBinaryCopyFrom,
-                        KnownTestType.MySqlEnumCopyFrom
-                    ]
-                }
+            {
+                TestNamespace = "MySqlConnectorDapperExampleGen",
+                LegacyTestNamespace = "MySqlConnectorDapperLegacyExampleGen",
+                TestTypes = _mysqlTestTypes
+            }
         },
         {
             "NpgsqlTester", new ClassGenConfig
             {
                 TestNamespace = "NpgsqlExampleGen",
                 LegacyTestNamespace = "NpgsqlLegacyExampleGen",
-                TestTypes = [
-                    KnownTestType.One,
-                    KnownTestType.Many,
-                    KnownTestType.Exec,
-                    KnownTestType.ExecRows,
-                    KnownTestType.ExecLastId,
-                    KnownTestType.JoinEmbed,
-                    KnownTestType.SelfJoinEmbed,
-                    KnownTestType.ArrayAsParam,
-                    KnownTestType.MultipleArraysAsParams,
-                    KnownTestType.NargNull,
-                    KnownTestType.NargNotNull,
-
-                    KnownTestType.PostgresTransaction,
-                    KnownTestType.PostgresTransactionRollback,
-                    KnownTestType.PostgresStringDataTypes,
-                    KnownTestType.PostgresIntegerDataTypes,
-                    KnownTestType.PostgresFloatingPointDataTypes,
-                    KnownTestType.PostgresDateTimeDataTypes,
-                    KnownTestType.PostgresGuidDataTypes,
-                    KnownTestType.PostgresArrayDataTypes,
-                    KnownTestType.PostgresGeoDataTypes,
-                    KnownTestType.PostgresGeoCopyFrom,
-                    KnownTestType.PostgresDataTypesOverride,
-                    KnownTestType.PostgresJsonDataTypes,
-                    KnownTestType.PostgresInvalidJson,
-                    KnownTestType.PostgresNetworkDataTypes,
-                    KnownTestType.PostgresXmlDataTypes,
-                    KnownTestType.PostgresInvalidXml,
-                    KnownTestType.PostgresEnumDataType,
-                    KnownTestType.PostgresFullTextSearchDataTypes,
-
-                    KnownTestType.PostgresStringCopyFrom,
-                    KnownTestType.PostgresIntegerCopyFrom,
-                    KnownTestType.PostgresFloatingPointCopyFrom,
-                    KnownTestType.PostgresDateTimeCopyFrom,
-                    KnownTestType.PostgresGuidCopyFrom,
-                    KnownTestType.PostgresArrayCopyFrom,
-                    KnownTestType.PostgresNetworkCopyFrom,
-                ]
+                TestTypes = _postgresTestTypes
             }
         },
         {
@@ -227,46 +219,7 @@ internal static class Config
             {
                 TestNamespace = "NpgsqlDapperExampleGen",
                 LegacyTestNamespace = "NpgsqlDapperLegacyExampleGen",
-                TestTypes = [
-                    KnownTestType.One,
-                    KnownTestType.Many,
-                    KnownTestType.Exec,
-                    KnownTestType.ExecRows,
-                    KnownTestType.ExecLastId,
-                    KnownTestType.JoinEmbed,
-                    KnownTestType.SelfJoinEmbed,
-                    KnownTestType.ArrayAsParam,
-                    KnownTestType.MultipleArraysAsParams,
-                    KnownTestType.NargNull,
-                    KnownTestType.NargNotNull,
-                    KnownTestType.PostgresTransaction,
-                    KnownTestType.PostgresTransactionRollback,
-
-                    KnownTestType.PostgresStringDataTypes,
-                    KnownTestType.PostgresIntegerDataTypes,
-                    KnownTestType.PostgresFloatingPointDataTypes,
-                    KnownTestType.PostgresDateTimeDataTypes,
-                    KnownTestType.PostgresGuidDataTypes,
-                    KnownTestType.PostgresArrayDataTypes,
-                    KnownTestType.PostgresGeoDataTypes,
-                    KnownTestType.PostgresGeoCopyFrom,
-                    KnownTestType.PostgresDataTypesOverride,
-                    KnownTestType.PostgresJsonDataTypes,
-                    KnownTestType.PostgresInvalidJson,
-                    KnownTestType.PostgresNetworkDataTypes,
-                    KnownTestType.PostgresXmlDataTypes,
-                    KnownTestType.PostgresInvalidXml,
-                    KnownTestType.PostgresEnumDataType,
-                    KnownTestType.PostgresFullTextSearchDataTypes,
-
-                    KnownTestType.PostgresStringCopyFrom,
-                    KnownTestType.PostgresIntegerCopyFrom,
-                    KnownTestType.PostgresFloatingPointCopyFrom,
-                    KnownTestType.PostgresDateTimeCopyFrom,
-                    KnownTestType.PostgresGuidCopyFrom,
-                    KnownTestType.PostgresArrayCopyFrom,
-                    KnownTestType.PostgresNetworkCopyFrom
-                ]
+                TestTypes = _postgresTestTypes
             }
         },
         {
@@ -274,25 +227,7 @@ internal static class Config
             {
                 TestNamespace = "SqliteExampleGen",
                 LegacyTestNamespace = "SqliteLegacyExampleGen",
-                TestTypes = [
-                    KnownTestType.One,
-                    KnownTestType.Many,
-                    KnownTestType.Exec,
-                    KnownTestType.ExecRows,
-                    KnownTestType.ExecLastId,
-                    KnownTestType.JoinEmbed,
-                    KnownTestType.SelfJoinEmbed,
-                    KnownTestType.Slice,
-                    KnownTestType.MultipleSlices,
-                    KnownTestType.NargNull,
-                    KnownTestType.NargNotNull,
-                    KnownTestType.SqliteTransaction,
-                    KnownTestType.SqliteTransactionRollback,
-                    KnownTestType.SqliteDataTypes,
-                    KnownTestType.SqliteCopyFrom,
-                    KnownTestType.SqliteDataTypesOverride,
-                    KnownTestType.SqliteMultipleNamedParam
-                ]
+                TestTypes = _sqliteTestTypes
             }
         },
         {
@@ -300,25 +235,7 @@ internal static class Config
             {
                 TestNamespace = "SqliteDapperExampleGen",
                 LegacyTestNamespace = "SqliteDapperLegacyExampleGen",
-                TestTypes = [
-                    KnownTestType.One,
-                    KnownTestType.Many,
-                    KnownTestType.Exec,
-                    KnownTestType.ExecRows,
-                    KnownTestType.ExecLastId,
-                    KnownTestType.JoinEmbed,
-                    KnownTestType.SelfJoinEmbed,
-                    KnownTestType.Slice,
-                    KnownTestType.MultipleSlices,
-                    KnownTestType.NargNull,
-                    KnownTestType.NargNotNull,
-                    KnownTestType.SqliteTransaction,
-                    KnownTestType.SqliteTransactionRollback,
-                    KnownTestType.SqliteDataTypes,
-                    KnownTestType.SqliteCopyFrom,
-                    KnownTestType.SqliteDataTypesOverride,
-                    KnownTestType.SqliteMultipleNamedParam
-                ]
+                TestTypes = _sqliteTestTypes
             }
         },
     };

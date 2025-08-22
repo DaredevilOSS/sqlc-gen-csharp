@@ -315,6 +315,101 @@ namespace EndToEndTests
         }
 
         [Test]
+        public async Task TestPostgresTransaction()
+        {
+            var connection = new Npgsql.NpgsqlConnection(Environment.GetEnvironmentVariable(EndToEndCommon.PostgresConnectionStringEnv));
+            await connection.OpenAsync();
+            var transaction = connection.BeginTransaction();
+            var querySqlWithTx = QuerySql.WithTransaction(transaction);
+            await querySqlWithTx.CreateAuthor(new QuerySql.CreateAuthorArgs { Id = 1111, Name = "Bojack Horseman", Bio = "Back in the 90s he was in a very famous TV show" });
+            var actual = await QuerySql.GetAuthor(new QuerySql.GetAuthorArgs { Name = "Bojack Horseman" });
+            ClassicAssert.IsNull(actual);
+            await transaction.CommitAsync();
+            var expected = new QuerySql.GetAuthorRow
+            {
+                Id = 1111,
+                Name = "Bojack Horseman",
+                Bio = "Back in the 90s he was in a very famous TV show"
+            };
+            actual = await QuerySql.GetAuthor(new QuerySql.GetAuthorArgs { Name = "Bojack Horseman" });
+            AssertSingularEquals(expected, actual);
+            void AssertSingularEquals(QuerySql.GetAuthorRow x, QuerySql.GetAuthorRow y)
+            {
+                Assert.That(x.Id, Is.EqualTo(y.Id));
+                Assert.That(x.Name, Is.EqualTo(y.Name));
+                Assert.That(x.Bio, Is.EqualTo(y.Bio));
+            }
+        }
+
+        [Test]
+        public async Task TestPostgresTransactionRollback()
+        {
+            var connection = new Npgsql.NpgsqlConnection(Environment.GetEnvironmentVariable(EndToEndCommon.PostgresConnectionStringEnv));
+            await connection.OpenAsync();
+            var transaction = connection.BeginTransaction();
+            var sqlQueryWithTx = QuerySql.WithTransaction(transaction);
+            await sqlQueryWithTx.CreateAuthor(new QuerySql.CreateAuthorArgs { Id = 1111, Name = "Bojack Horseman", Bio = "Back in the 90s he was in a very famous TV show" });
+            await transaction.RollbackAsync();
+            var actual = await QuerySql.GetAuthor(new QuerySql.GetAuthorArgs { Name = "Bojack Horseman" });
+            ClassicAssert.IsNull(actual);
+        }
+
+        [Test]
+        public async Task TestArray()
+        {
+            var id1 = await this.QuerySql.CreateAuthorReturnId(new QuerySql.CreateAuthorReturnIdArgs { Name = "Albert Einstein", Bio = "Quote that everyone always attribute to Einstein" });
+            var bojackId = await this.QuerySql.CreateAuthorReturnId(new QuerySql.CreateAuthorReturnIdArgs { Name = "Bojack Horseman", Bio = "Back in the 90s he was in a very famous TV show" });
+            var actual = await QuerySql.GetAuthorsByIds(new QuerySql.GetAuthorsByIdsArgs { LongArr1 = new[] { id1, bojackId } });
+            ClassicAssert.AreEqual(2, actual.Count);
+        }
+
+        [Test]
+        public async Task TestMultipleArrays()
+        {
+            var id1 = await this.QuerySql.CreateAuthorReturnId(new QuerySql.CreateAuthorReturnIdArgs { Name = "Albert Einstein", Bio = "Quote that everyone always attribute to Einstein" });
+            var id2 = await this.QuerySql.CreateAuthorReturnId(new QuerySql.CreateAuthorReturnIdArgs { Name = "Albert Einstein", Bio = "Only 2 things are infinite, the universe and human stupidity" });
+            var bojackId = await this.QuerySql.CreateAuthorReturnId(new QuerySql.CreateAuthorReturnIdArgs { Name = "Bojack Horseman", Bio = "Back in the 90s he was in a very famous TV show" });
+            var actual = await QuerySql.GetAuthorsByIdsAndNames(new QuerySql.GetAuthorsByIdsAndNamesArgs { LongArr1 = new[] { id1, bojackId }, StringArr2 = new[] { "Albert Einstein" } });
+            ClassicAssert.AreEqual(1, actual.Count);
+        }
+
+        [Test]
+        [TestCase(-54355, "White Light from the Mouth of Infinity", "2022-10-2 15:44:01+09:00")]
+        [TestCase(null, null, "1970-01-01 00:00:00")]
+        public async Task TestPostgresDataTypesOverride(int? cInteger, string cVarchar, DateTime cTimestamp)
+        {
+            await QuerySql.InsertPostgresTypes(new QuerySql.InsertPostgresTypesArgs { CInteger = cInteger, CTimestamp = cTimestamp });
+            await QuerySql.InsertPostgresStringTypes(new QuerySql.InsertPostgresStringTypesArgs { CVarchar = cVarchar });
+            var expected = new QuerySql.GetPostgresFunctionsRow
+            {
+                MaxInteger = cInteger,
+                MaxVarchar = cVarchar,
+                MaxTimestamp = cTimestamp
+            };
+            var actual = await QuerySql.GetPostgresFunctions();
+            AssertSingularEquals(expected, actual);
+            void AssertSingularEquals(QuerySql.GetPostgresFunctionsRow x, QuerySql.GetPostgresFunctionsRow y)
+            {
+                Assert.That(x.MaxInteger, Is.EqualTo(y.MaxInteger));
+                Assert.That(x.MaxVarchar, Is.EqualTo(y.MaxVarchar));
+                Assert.That(x.MaxTimestamp, Is.EqualTo(y.MaxTimestamp));
+            }
+        }
+
+        [Test]
+        public void TestPostgresInvalidJson()
+        {
+            Assert.ThrowsAsync<Npgsql.PostgresException>(async () => await QuerySql.InsertPostgresUnstructuredTypes(new QuerySql.InsertPostgresUnstructuredTypesArgs { CJsonStringOverride = "SOME INVALID JSON" }));
+            Assert.ThrowsAsync<Npgsql.PostgresException>(async () => await QuerySql.InsertPostgresUnstructuredTypes(new QuerySql.InsertPostgresUnstructuredTypesArgs { CJsonpath = "SOME INVALID JSONPATH" }));
+        }
+
+        [Test]
+        public void TestPostgresInvalidXml()
+        {
+            Assert.ThrowsAsync<Npgsql.PostgresException>(async () => await QuerySql.InsertPostgresUnstructuredTypes(new QuerySql.InsertPostgresUnstructuredTypesArgs { CXmlStringOverride = "<root>SOME INVALID XML" }));
+        }
+
+        [Test]
         [TestCase("E", "It takes a nation of millions to hold us back", "Rebel Without a Pause", "Master of Puppets", "Prophets of Rage")]
         [TestCase(null, null, null, null, null)]
         public async Task TestPostgresStringTypes(string cChar, string cVarchar, string cCharacterVarying, string cBpchar, string cText)
@@ -455,29 +550,6 @@ namespace EndToEndTests
             }
         }
 
-        [Test]
-        [TestCase(-54355, "White Light from the Mouth of Infinity", "2022-10-2 15:44:01+09:00")]
-        [TestCase(null, null, "1970-01-01 00:00:00")]
-        public async Task TestPostgresDataTypesOverride(int? cInteger, string cVarchar, DateTime cTimestamp)
-        {
-            await QuerySql.InsertPostgresTypes(new QuerySql.InsertPostgresTypesArgs { CInteger = cInteger, CTimestamp = cTimestamp });
-            await QuerySql.InsertPostgresStringTypes(new QuerySql.InsertPostgresStringTypesArgs { CVarchar = cVarchar });
-            var expected = new QuerySql.GetPostgresFunctionsRow
-            {
-                MaxInteger = cInteger,
-                MaxVarchar = cVarchar,
-                MaxTimestamp = cTimestamp
-            };
-            var actual = await QuerySql.GetPostgresFunctions();
-            AssertSingularEquals(expected, actual);
-            void AssertSingularEquals(QuerySql.GetPostgresFunctionsRow x, QuerySql.GetPostgresFunctionsRow y)
-            {
-                Assert.That(x.MaxInteger, Is.EqualTo(y.MaxInteger));
-                Assert.That(x.MaxVarchar, Is.EqualTo(y.MaxVarchar));
-                Assert.That(x.MaxTimestamp, Is.EqualTo(y.MaxTimestamp));
-            }
-        }
-
         private static IEnumerable<TestCaseData> PostgresGuidDataTypesTestCases
         {
             get
@@ -527,6 +599,152 @@ namespace EndToEndTests
             }
         }
 
+        private static IEnumerable<TestCaseData> PostgresNetworkDataTypesTestCases
+        {
+            get
+            {
+                yield return new TestCaseData(new NpgsqlCidr("192.168.1.0/24"), new IPAddress(new byte[] { 192, 168, 1, 1 }), new PhysicalAddress(new byte[] { 0x00, 0x1A, 0x2B, 0x3C, 0x4D, 0x5E }), "00:1a:2b:ff:fe:3c:4d:5e").SetName("Valid Network Data Types");
+                yield return new TestCaseData(null, null, null, null).SetName("Null Network Data Types");
+            }
+        }
+
+        [Test]
+        [TestCaseSource(nameof(PostgresNetworkDataTypesTestCases))]
+        public async Task TestPostgresNetworkDataTypes(NpgsqlCidr? cCidr, IPAddress cInet, PhysicalAddress cMacaddr, string cMacaddr8)
+        {
+            await QuerySql.InsertPostgresTypes(new QuerySql.InsertPostgresTypesArgs { CCidr = cCidr, CInet = cInet, CMacaddr = cMacaddr, CMacaddr8 = cMacaddr8 });
+            var expected = new QuerySql.GetPostgresTypesRow
+            {
+                CCidr = cCidr,
+                CInet = cInet,
+                CMacaddr = cMacaddr,
+                CMacaddr8 = cMacaddr8
+            };
+            var actual = await QuerySql.GetPostgresTypes();
+            AssertSingularEquals(expected, actual);
+            void AssertSingularEquals(QuerySql.GetPostgresTypesRow x, QuerySql.GetPostgresTypesRow y)
+            {
+                Assert.That(x.CCidr, Is.EqualTo(y.CCidr));
+                Assert.That(x.CInet, Is.EqualTo(y.CInet));
+                Assert.That(x.CMacaddr, Is.EqualTo(y.CMacaddr));
+                Assert.That(x.CMacaddr8, Is.EqualTo(y.CMacaddr8));
+            }
+        }
+
+        private static IEnumerable<TestCaseData> PostgresGeoTypesTestCases
+        {
+            get
+            {
+                yield return new TestCaseData(new NpgsqlPoint(1, 2), new NpgsqlLine(3, 4, 5), new NpgsqlLSeg(1, 2, 3, 4), new NpgsqlBox(1, 2, 3, 4), new NpgsqlPath(new NpgsqlPoint[] { new NpgsqlPoint(1, 2), new NpgsqlPoint(3, 4) }), new NpgsqlPolygon(new NpgsqlPoint[] { new NpgsqlPoint(1, 2), new NpgsqlPoint(3, 4) }), new NpgsqlCircle(1, 2, 3)).SetName("Valid Geo Types");
+                yield return new TestCaseData(null, null, null, null, null, null, null).SetName("Null Geo Types");
+            }
+        }
+
+        [Test]
+        [TestCaseSource(nameof(PostgresGeoTypesTestCases))]
+        public async Task TestPostgresGeoTypes(NpgsqlPoint? cPoint, NpgsqlLine? cLine, NpgsqlLSeg? cLSeg, NpgsqlBox? cBox, NpgsqlPath? cPath, NpgsqlPolygon? cPolygon, NpgsqlCircle? cCircle)
+        {
+            await QuerySql.InsertPostgresGeoTypes(new QuerySql.InsertPostgresGeoTypesArgs { CPoint = cPoint, CLine = cLine, CLseg = cLSeg, CBox = cBox, CPath = cPath, CPolygon = cPolygon, CCircle = cCircle });
+            var expected = new QuerySql.GetPostgresGeoTypesRow
+            {
+                CPoint = cPoint,
+                CLine = cLine,
+                CLseg = cLSeg,
+                CBox = cBox,
+                CPath = cPath,
+                CPolygon = cPolygon,
+                CCircle = cCircle
+            };
+            var actual = await QuerySql.GetPostgresGeoTypes();
+            AssertSingularEquals(expected, actual);
+            void AssertSingularEquals(QuerySql.GetPostgresGeoTypesRow x, QuerySql.GetPostgresGeoTypesRow y)
+            {
+                Assert.That(x.CPoint, Is.EqualTo(y.CPoint));
+                Assert.That(x.CLine, Is.EqualTo(y.CLine));
+                Assert.That(x.CLseg, Is.EqualTo(y.CLseg));
+                Assert.That(x.CBox, Is.EqualTo(y.CBox));
+                Assert.That(x.CPath, Is.EqualTo(y.CPath));
+                Assert.That(x.CPolygon, Is.EqualTo(y.CPolygon));
+                Assert.That(x.CCircle, Is.EqualTo(y.CCircle));
+            }
+        }
+
+        [Test]
+        [TestCase("{\"name\": \"Swordfishtrombones\", \"year\": 1983}", "$.\"name\"")]
+        [TestCase(null, null)]
+        public async Task TestPostgresJsonDataTypes(string cJson, string cJsonpath)
+        {
+            JsonElement? cParsedJson = null;
+            if (cJson != null)
+                cParsedJson = JsonDocument.Parse(cJson).RootElement;
+            await QuerySql.InsertPostgresUnstructuredTypes(new QuerySql.InsertPostgresUnstructuredTypesArgs { CJson = cParsedJson, CJsonb = cParsedJson, CJsonStringOverride = cJson, CJsonpath = cJsonpath });
+            var expected = new QuerySql.GetPostgresUnstructuredTypesRow
+            {
+                CJson = cParsedJson,
+                CJsonb = cParsedJson,
+                CJsonStringOverride = cJson,
+                CJsonpath = cJsonpath
+            };
+            var actual = await QuerySql.GetPostgresUnstructuredTypes();
+            AssertSingularEquals(expected, actual);
+            void AssertSingularEquals(QuerySql.GetPostgresUnstructuredTypesRow x, QuerySql.GetPostgresUnstructuredTypesRow y)
+            {
+                Assert.That(x.CJson.HasValue, Is.EqualTo(y.CJson.HasValue));
+                if (x.CJson.HasValue)
+                    Assert.That(x.CJson.Value.GetRawText(), Is.EqualTo(y.CJson.Value.GetRawText()));
+                Assert.That(x.CJsonb.HasValue, Is.EqualTo(y.CJsonb.HasValue));
+                if (x.CJsonb.HasValue)
+                    Assert.That(x.CJsonb.Value.GetRawText(), Is.EqualTo(y.CJsonb.Value.GetRawText()));
+                Assert.That(x.CJsonStringOverride, Is.EqualTo(y.CJsonStringOverride));
+                Assert.That(x.CJsonpath, Is.EqualTo(y.CJsonpath));
+            }
+        }
+
+        [Test]
+        [TestCase("<root><child>Good morning xml, the world says hello</child></root>")]
+        [TestCase(null)]
+        public async Task TestPostgresXmlDataTypes(string cXml)
+        {
+            XmlDocument parsedXml = null;
+            if (cXml != null)
+            {
+                parsedXml = new XmlDocument();
+                parsedXml.LoadXml(cXml);
+            }
+
+            await QuerySql.InsertPostgresUnstructuredTypes(new QuerySql.InsertPostgresUnstructuredTypesArgs { CXml = parsedXml });
+            var expected = new QuerySql.GetPostgresUnstructuredTypesRow
+            {
+                CXml = parsedXml
+            };
+            var actual = await QuerySql.GetPostgresUnstructuredTypes();
+            AssertSingularEquals(expected, actual);
+            void AssertSingularEquals(QuerySql.GetPostgresUnstructuredTypesRow x, QuerySql.GetPostgresUnstructuredTypesRow y)
+            {
+                Assert.That(x.CXml == null, Is.EqualTo(y.CXml == null));
+                if (x.CXml != null)
+                    Assert.That(x.CXml.OuterXml, Is.EqualTo(y.CXml.OuterXml));
+            }
+        }
+
+        [Test]
+        [TestCase(CEnum.Medium)]
+        [TestCase(null)]
+        public async Task TestPostgresStringTypes(CEnum? cEnum)
+        {
+            await QuerySql.InsertPostgresTypes(new QuerySql.InsertPostgresTypesArgs { CEnum = cEnum });
+            var expected = new QuerySql.GetPostgresTypesRow
+            {
+                CEnum = cEnum
+            };
+            var actual = await QuerySql.GetPostgresTypes();
+            AssertSingularEquals(expected, actual);
+            void AssertSingularEquals(QuerySql.GetPostgresTypesRow x, QuerySql.GetPostgresTypesRow y)
+            {
+                Assert.That(x.CEnum, Is.EqualTo(y.CEnum));
+            }
+        }
+
         [Test]
         [TestCase(100, "z", "Sex Pistols", "Anarchy in the U.K", "Yoshimi Battles the Pink Robots", "Never Mind the Bollocks...")]
         [TestCase(10, null, null, null, null, null)]
@@ -554,46 +772,6 @@ namespace EndToEndTests
                 Assert.That(x.CBpchar?.Trim(), Is.EqualTo(y.CBpchar?.Trim()));
                 Assert.That(x.CText, Is.EqualTo(y.CText));
             }
-        }
-
-        [Test]
-        public async Task TestPostgresTransaction()
-        {
-            var connection = new Npgsql.NpgsqlConnection(Environment.GetEnvironmentVariable(EndToEndCommon.PostgresConnectionStringEnv));
-            await connection.OpenAsync();
-            var transaction = connection.BeginTransaction();
-            var querySqlWithTx = QuerySql.WithTransaction(transaction);
-            await querySqlWithTx.CreateAuthor(new QuerySql.CreateAuthorArgs { Id = 1111, Name = "Bojack Horseman", Bio = "Back in the 90s he was in a very famous TV show" });
-            var actual = await QuerySql.GetAuthor(new QuerySql.GetAuthorArgs { Name = "Bojack Horseman" });
-            ClassicAssert.IsNull(actual);
-            await transaction.CommitAsync();
-            var expected = new QuerySql.GetAuthorRow
-            {
-                Id = 1111,
-                Name = "Bojack Horseman",
-                Bio = "Back in the 90s he was in a very famous TV show"
-            };
-            actual = await QuerySql.GetAuthor(new QuerySql.GetAuthorArgs { Name = "Bojack Horseman" });
-            AssertSingularEquals(expected, actual);
-            void AssertSingularEquals(QuerySql.GetAuthorRow x, QuerySql.GetAuthorRow y)
-            {
-                Assert.That(x.Id, Is.EqualTo(y.Id));
-                Assert.That(x.Name, Is.EqualTo(y.Name));
-                Assert.That(x.Bio, Is.EqualTo(y.Bio));
-            }
-        }
-
-        [Test]
-        public async Task TestPostgresTransactionRollback()
-        {
-            var connection = new Npgsql.NpgsqlConnection(Environment.GetEnvironmentVariable(EndToEndCommon.PostgresConnectionStringEnv));
-            await connection.OpenAsync();
-            var transaction = connection.BeginTransaction();
-            var sqlQueryWithTx = QuerySql.WithTransaction(transaction);
-            await sqlQueryWithTx.CreateAuthor(new QuerySql.CreateAuthorArgs { Id = 1111, Name = "Bojack Horseman", Bio = "Back in the 90s he was in a very famous TV show" });
-            await transaction.RollbackAsync();
-            var actual = await QuerySql.GetAuthor(new QuerySql.GetAuthorArgs { Name = "Bojack Horseman" });
-            ClassicAssert.IsNull(actual);
         }
 
         [Test]
@@ -768,44 +946,6 @@ namespace EndToEndTests
             }
         }
 
-        private static IEnumerable<TestCaseData> PostgresGeoTypesTestCases
-        {
-            get
-            {
-                yield return new TestCaseData(new NpgsqlPoint(1, 2), new NpgsqlLine(3, 4, 5), new NpgsqlLSeg(1, 2, 3, 4), new NpgsqlBox(1, 2, 3, 4), new NpgsqlPath(new NpgsqlPoint[] { new NpgsqlPoint(1, 2), new NpgsqlPoint(3, 4) }), new NpgsqlPolygon(new NpgsqlPoint[] { new NpgsqlPoint(1, 2), new NpgsqlPoint(3, 4) }), new NpgsqlCircle(1, 2, 3)).SetName("Valid Geo Types");
-                yield return new TestCaseData(null, null, null, null, null, null, null).SetName("Null Geo Types");
-            }
-        }
-
-        [Test]
-        [TestCaseSource(nameof(PostgresGeoTypesTestCases))]
-        public async Task TestPostgresGeoTypes(NpgsqlPoint? cPoint, NpgsqlLine? cLine, NpgsqlLSeg? cLSeg, NpgsqlBox? cBox, NpgsqlPath? cPath, NpgsqlPolygon? cPolygon, NpgsqlCircle? cCircle)
-        {
-            await QuerySql.InsertPostgresGeoTypes(new QuerySql.InsertPostgresGeoTypesArgs { CPoint = cPoint, CLine = cLine, CLseg = cLSeg, CBox = cBox, CPath = cPath, CPolygon = cPolygon, CCircle = cCircle });
-            var expected = new QuerySql.GetPostgresGeoTypesRow
-            {
-                CPoint = cPoint,
-                CLine = cLine,
-                CLseg = cLSeg,
-                CBox = cBox,
-                CPath = cPath,
-                CPolygon = cPolygon,
-                CCircle = cCircle
-            };
-            var actual = await QuerySql.GetPostgresGeoTypes();
-            AssertSingularEquals(expected, actual);
-            void AssertSingularEquals(QuerySql.GetPostgresGeoTypesRow x, QuerySql.GetPostgresGeoTypesRow y)
-            {
-                Assert.That(x.CPoint, Is.EqualTo(y.CPoint));
-                Assert.That(x.CLine, Is.EqualTo(y.CLine));
-                Assert.That(x.CLseg, Is.EqualTo(y.CLseg));
-                Assert.That(x.CBox, Is.EqualTo(y.CBox));
-                Assert.That(x.CPath, Is.EqualTo(y.CPath));
-                Assert.That(x.CPolygon, Is.EqualTo(y.CPolygon));
-                Assert.That(x.CCircle, Is.EqualTo(y.CCircle));
-            }
-        }
-
         private static IEnumerable<TestCaseData> PostgresGeoCopyFromTestCases
         {
             get
@@ -843,146 +983,6 @@ namespace EndToEndTests
                 Assert.That(x.CPolygon, Is.EqualTo(y.CPolygon));
                 Assert.That(x.CCircle, Is.EqualTo(y.CCircle));
             }
-        }
-
-        private static IEnumerable<TestCaseData> PostgresNetworkDataTypesTestCases
-        {
-            get
-            {
-                yield return new TestCaseData(new NpgsqlCidr("192.168.1.0/24"), new IPAddress(new byte[] { 192, 168, 1, 1 }), new PhysicalAddress(new byte[] { 0x00, 0x1A, 0x2B, 0x3C, 0x4D, 0x5E }), "00:1a:2b:ff:fe:3c:4d:5e").SetName("Valid Network Data Types");
-                yield return new TestCaseData(null, null, null, null).SetName("Null Network Data Types");
-            }
-        }
-
-        [Test]
-        [TestCaseSource(nameof(PostgresNetworkDataTypesTestCases))]
-        public async Task TestPostgresNetworkDataTypes(NpgsqlCidr? cCidr, IPAddress cInet, PhysicalAddress cMacaddr, string cMacaddr8)
-        {
-            await QuerySql.InsertPostgresTypes(new QuerySql.InsertPostgresTypesArgs { CCidr = cCidr, CInet = cInet, CMacaddr = cMacaddr, CMacaddr8 = cMacaddr8 });
-            var expected = new QuerySql.GetPostgresTypesRow
-            {
-                CCidr = cCidr,
-                CInet = cInet,
-                CMacaddr = cMacaddr,
-                CMacaddr8 = cMacaddr8
-            };
-            var actual = await QuerySql.GetPostgresTypes();
-            AssertSingularEquals(expected, actual);
-            void AssertSingularEquals(QuerySql.GetPostgresTypesRow x, QuerySql.GetPostgresTypesRow y)
-            {
-                Assert.That(x.CCidr, Is.EqualTo(y.CCidr));
-                Assert.That(x.CInet, Is.EqualTo(y.CInet));
-                Assert.That(x.CMacaddr, Is.EqualTo(y.CMacaddr));
-                Assert.That(x.CMacaddr8, Is.EqualTo(y.CMacaddr8));
-            }
-        }
-
-        [Test]
-        [TestCase("{\"name\": \"Swordfishtrombones\", \"year\": 1983}", "$.\"name\"")]
-        [TestCase(null, null)]
-        public async Task TestPostgresJsonDataTypes(string cJson, string cJsonpath)
-        {
-            JsonElement? cParsedJson = null;
-            if (cJson != null)
-                cParsedJson = JsonDocument.Parse(cJson).RootElement;
-            await QuerySql.InsertPostgresUnstructuredTypes(new QuerySql.InsertPostgresUnstructuredTypesArgs { CJson = cParsedJson, CJsonb = cParsedJson, CJsonStringOverride = cJson, CJsonpath = cJsonpath });
-            var expected = new QuerySql.GetPostgresUnstructuredTypesRow
-            {
-                CJson = cParsedJson,
-                CJsonb = cParsedJson,
-                CJsonStringOverride = cJson,
-                CJsonpath = cJsonpath
-            };
-            var actual = await QuerySql.GetPostgresUnstructuredTypes();
-            AssertSingularEquals(expected, actual);
-            void AssertSingularEquals(QuerySql.GetPostgresUnstructuredTypesRow x, QuerySql.GetPostgresUnstructuredTypesRow y)
-            {
-                Assert.That(x.CJson.HasValue, Is.EqualTo(y.CJson.HasValue));
-                if (x.CJson.HasValue)
-                    Assert.That(x.CJson.Value.GetRawText(), Is.EqualTo(y.CJson.Value.GetRawText()));
-                Assert.That(x.CJsonb.HasValue, Is.EqualTo(y.CJsonb.HasValue));
-                if (x.CJsonb.HasValue)
-                    Assert.That(x.CJsonb.Value.GetRawText(), Is.EqualTo(y.CJsonb.Value.GetRawText()));
-                Assert.That(x.CJsonStringOverride, Is.EqualTo(y.CJsonStringOverride));
-                Assert.That(x.CJsonpath, Is.EqualTo(y.CJsonpath));
-            }
-        }
-
-        [Test]
-        public void TestPostgresInvalidJson()
-        {
-            Assert.ThrowsAsync<Npgsql.PostgresException>(async () => await QuerySql.InsertPostgresUnstructuredTypes(new QuerySql.InsertPostgresUnstructuredTypesArgs { CJsonStringOverride = "SOME INVALID JSON" }));
-            Assert.ThrowsAsync<Npgsql.PostgresException>(async () => await QuerySql.InsertPostgresUnstructuredTypes(new QuerySql.InsertPostgresUnstructuredTypesArgs { CJsonpath = "SOME INVALID JSONPATH" }));
-        }
-
-        [Test]
-        [TestCase("<root><child>Good morning xml, the world says hello</child></root>")]
-        [TestCase(null)]
-        public async Task TestPostgresXmlDataTypes(string cXml)
-        {
-            XmlDocument parsedXml = null;
-            if (cXml != null)
-            {
-                parsedXml = new XmlDocument();
-                parsedXml.LoadXml(cXml);
-            }
-
-            await QuerySql.InsertPostgresUnstructuredTypes(new QuerySql.InsertPostgresUnstructuredTypesArgs { CXml = parsedXml });
-            var expected = new QuerySql.GetPostgresUnstructuredTypesRow
-            {
-                CXml = parsedXml
-            };
-            var actual = await QuerySql.GetPostgresUnstructuredTypes();
-            AssertSingularEquals(expected, actual);
-            void AssertSingularEquals(QuerySql.GetPostgresUnstructuredTypesRow x, QuerySql.GetPostgresUnstructuredTypesRow y)
-            {
-                Assert.That(x.CXml == null, Is.EqualTo(y.CXml == null));
-                if (x.CXml != null)
-                    Assert.That(x.CXml.OuterXml, Is.EqualTo(y.CXml.OuterXml));
-            }
-        }
-
-        [Test]
-        public void TestPostgresInvalidXml()
-        {
-            Assert.ThrowsAsync<Npgsql.PostgresException>(async () => await QuerySql.InsertPostgresUnstructuredTypes(new QuerySql.InsertPostgresUnstructuredTypesArgs { CXmlStringOverride = "<root>SOME INVALID XML" }));
-        }
-
-        [Test]
-        [TestCase(CEnum.Medium)]
-        [TestCase(null)]
-        public async Task TestPostgresStringTypes(CEnum? cEnum)
-        {
-            await QuerySql.InsertPostgresTypes(new QuerySql.InsertPostgresTypesArgs { CEnum = cEnum });
-            var expected = new QuerySql.GetPostgresTypesRow
-            {
-                CEnum = cEnum
-            };
-            var actual = await QuerySql.GetPostgresTypes();
-            AssertSingularEquals(expected, actual);
-            void AssertSingularEquals(QuerySql.GetPostgresTypesRow x, QuerySql.GetPostgresTypesRow y)
-            {
-                Assert.That(x.CEnum, Is.EqualTo(y.CEnum));
-            }
-        }
-
-        [Test]
-        public async Task TestArray()
-        {
-            var id1 = await this.QuerySql.CreateAuthorReturnId(new QuerySql.CreateAuthorReturnIdArgs { Name = "Albert Einstein", Bio = "Quote that everyone always attribute to Einstein" });
-            var bojackId = await this.QuerySql.CreateAuthorReturnId(new QuerySql.CreateAuthorReturnIdArgs { Name = "Bojack Horseman", Bio = "Back in the 90s he was in a very famous TV show" });
-            var actual = await QuerySql.GetAuthorsByIds(new QuerySql.GetAuthorsByIdsArgs { LongArr1 = new[] { id1, bojackId } });
-            ClassicAssert.AreEqual(2, actual.Count);
-        }
-
-        [Test]
-        public async Task TestMultipleArrays()
-        {
-            var id1 = await this.QuerySql.CreateAuthorReturnId(new QuerySql.CreateAuthorReturnIdArgs { Name = "Albert Einstein", Bio = "Quote that everyone always attribute to Einstein" });
-            var id2 = await this.QuerySql.CreateAuthorReturnId(new QuerySql.CreateAuthorReturnIdArgs { Name = "Albert Einstein", Bio = "Only 2 things are infinite, the universe and human stupidity" });
-            var bojackId = await this.QuerySql.CreateAuthorReturnId(new QuerySql.CreateAuthorReturnIdArgs { Name = "Bojack Horseman", Bio = "Back in the 90s he was in a very famous TV show" });
-            var actual = await QuerySql.GetAuthorsByIdsAndNames(new QuerySql.GetAuthorsByIdsAndNamesArgs { LongArr1 = new[] { id1, bojackId }, StringArr2 = new[] { "Albert Einstein" } });
-            ClassicAssert.AreEqual(1, actual.Count);
         }
     }
 }
