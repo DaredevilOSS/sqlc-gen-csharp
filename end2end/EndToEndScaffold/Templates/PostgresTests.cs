@@ -148,7 +148,7 @@ public static class PostgresTests
                          DateTime? cTimestampWithTz,
                          TimeSpan? cInterval)
                      {
-                         await QuerySql.InsertPostgresTypes(new QuerySql.InsertPostgresTypesArgs
+                         await QuerySql.InsertPostgresDateTimeTypes(new QuerySql.InsertPostgresDateTimeTypesArgs
                          {
                              CDate = cDate,
                              CTime = cTime,
@@ -157,7 +157,7 @@ public static class PostgresTests
                              CInterval = cInterval
                          });
                      
-                         var expected = new QuerySql.GetPostgresTypesRow
+                         var expected = new QuerySql.GetPostgresDateTimeTypesRow
                          {
                              CDate = cDate,
                              CTime = cTime,
@@ -165,10 +165,10 @@ public static class PostgresTests
                              CTimestampWithTz = cTimestampWithTz,
                              CInterval = cInterval
                          };
-                         var actual = await QuerySql.GetPostgresTypes();
+                         var actual = await QuerySql.GetPostgresDateTimeTypes();
                          AssertSingularEquals(expected, actual{{Consts.UnknownRecordValuePlaceholder}});
 
-                         void AssertSingularEquals(QuerySql.GetPostgresTypesRow x, QuerySql.GetPostgresTypesRow y)
+                         void AssertSingularEquals(QuerySql.GetPostgresDateTimeTypesRow x, QuerySql.GetPostgresDateTimeTypesRow y)
                          {
                              Assert.That(x.CDate, Is.EqualTo(y.CDate));
                              Assert.That(x.CTime, Is.EqualTo(y.CTime));
@@ -428,7 +428,7 @@ public static class PostgresTests
                             cTimestampWithTzAsUtc = DateTime.SpecifyKind(cTimestampWithTz.Value, DateTimeKind.Utc);
                             
                          var batchArgs = Enumerable.Range(0, batchSize)
-                             .Select(_ => new QuerySql.InsertPostgresTypesBatchArgs
+                             .Select(_ => new QuerySql.InsertPostgresDateTimeTypesBatchArgs
                              {
                                  CDate = cDate,
                                  CTime = cTime,
@@ -437,8 +437,8 @@ public static class PostgresTests
                                  CInterval = cInterval
                              })
                              .ToList();
-                         await QuerySql.InsertPostgresTypesBatch(batchArgs);
-                         var expected = new QuerySql.GetPostgresTypesCntRow
+                         await QuerySql.InsertPostgresDateTimeTypesBatch(batchArgs);
+                         var expected = new QuerySql.GetPostgresDateTimeTypesCntRow
                          {
                              Cnt = batchSize,
                              CDate = cDate,
@@ -447,10 +447,10 @@ public static class PostgresTests
                              CTimestampWithTz = cTimestampWithTz,
                              CInterval = cInterval
                          };
-                         var actual = await QuerySql.GetPostgresTypesCnt();
+                         var actual = await QuerySql.GetPostgresDateTimeTypesCnt();
                          AssertSingularEquals(expected, actual{{Consts.UnknownRecordValuePlaceholder}});
 
-                         void AssertSingularEquals(QuerySql.GetPostgresTypesCntRow x, QuerySql.GetPostgresTypesCntRow y)
+                         void AssertSingularEquals(QuerySql.GetPostgresDateTimeTypesCntRow x, QuerySql.GetPostgresDateTimeTypesCntRow y)
                          {
                              Assert.That(x.Cnt, Is.EqualTo(y.Cnt));
                              Assert.That(x.CDate, Is.EqualTo(y.CDate));
@@ -560,7 +560,7 @@ public static class PostgresTests
                         PhysicalAddress cMacaddr,
                         string cMacaddr8)
                      {
-                         await QuerySql.InsertPostgresTypes(new QuerySql.InsertPostgresTypesArgs 
+                         await QuerySql.InsertPostgresNetworkTypes(new QuerySql.InsertPostgresNetworkTypesArgs 
                          { 
                              CCidr = cCidr,
                              CInet = cInet, 
@@ -568,7 +568,7 @@ public static class PostgresTests
                              CMacaddr8 = cMacaddr8 
                          });
 
-                         var expected = new QuerySql.GetPostgresTypesRow
+                         var expected = new QuerySql.GetPostgresNetworkTypesRow
                          {
                              CCidr = cCidr,
                              CInet = cInet,
@@ -576,10 +576,10 @@ public static class PostgresTests
                              CMacaddr8 = cMacaddr8
                          };
 
-                         var actual = await QuerySql.GetPostgresTypes();
+                         var actual = await QuerySql.GetPostgresNetworkTypes();
                          AssertSingularEquals(expected, actual{{Consts.UnknownRecordValuePlaceholder}});
 
-                         void AssertSingularEquals(QuerySql.GetPostgresTypesRow x, QuerySql.GetPostgresTypesRow y)
+                         void AssertSingularEquals(QuerySql.GetPostgresNetworkTypesRow x, QuerySql.GetPostgresNetworkTypesRow y)
                          {
                              Assert.That(x.CCidr, Is.EqualTo(y.CCidr));
                              Assert.That(x.CInet, Is.EqualTo(y.CInet));
@@ -870,7 +870,10 @@ public static class PostgresTests
                      {
                          await QuerySql.InsertPostgresTypes(new QuerySql.InsertPostgresTypesArgs
                          {
-                             CInteger = cInteger,
+                             CInteger = cInteger
+                         });
+                         await QuerySql.InsertPostgresDateTimeTypes(new QuerySql.InsertPostgresDateTimeTypesArgs
+                         {
                              CTimestamp = cTimestamp
                          });
                          await QuerySql.InsertPostgresStringTypes(new QuerySql.InsertPostgresStringTypesArgs
@@ -1055,26 +1058,26 @@ public static class PostgresTests
                         PhysicalAddress cMacaddr)
                      {
                          var batchArgs = Enumerable.Range(0, batchSize)
-                             .Select(_ => new QuerySql.InsertPostgresTypesBatchArgs
+                             .Select(_ => new QuerySql.InsertPostgresNetworkTypesBatchArgs
                              {
                                  CCidr = cCidr,
                                  CInet = cInet,
                                  CMacaddr = cMacaddr
                              })
                              .ToList();
-                         await QuerySql.InsertPostgresTypesBatch(batchArgs);
+                         await QuerySql.InsertPostgresNetworkTypesBatch(batchArgs);
 
-                         var expected = new QuerySql.GetPostgresTypesCntRow
+                         var expected = new QuerySql.GetPostgresNetworkTypesCntRow
                          {
                              Cnt = batchSize,
                              CCidr = cCidr,
                              CInet = cInet,
                              CMacaddr = cMacaddr
                          };
-                         var actual = await QuerySql.GetPostgresTypesCnt();
+                         var actual = await QuerySql.GetPostgresNetworkTypesCnt();
                          AssertSingularEquals(expected, actual{{Consts.UnknownRecordValuePlaceholder}});
 
-                         void AssertSingularEquals(QuerySql.GetPostgresTypesCntRow x, QuerySql.GetPostgresTypesCntRow y)
+                         void AssertSingularEquals(QuerySql.GetPostgresNetworkTypesCntRow x, QuerySql.GetPostgresNetworkTypesCntRow y)
                          {
                              Assert.That(x.Cnt, Is.EqualTo(y.Cnt));
                              Assert.That(x.CCidr, Is.EqualTo(y.CCidr));
@@ -1115,7 +1118,7 @@ public static class PostgresTests
         {
             Impl = $$"""
                      [Test]
-                     [Obsolete]
+                     [Obsolete] // due to NpgsqlTsVector.Parse usage
                      public async Task TestPostgresFullTextSearchDataTypes()
                      {
                          await QuerySql.InsertPostgresStringTypes(new QuerySql.InsertPostgresStringTypesArgs

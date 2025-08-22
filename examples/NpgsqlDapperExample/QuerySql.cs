@@ -43,7 +43,7 @@ public class QuerySql
     private NpgsqlTransaction? Transaction { get; }
     private string? ConnectionString { get; }
 
-    private const string InsertPostgresTypesSql = " INSERT INTO postgres_types ( c_boolean, c_bit, c_smallint, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_money, c_date, c_time, c_timestamp, c_timestamp_with_tz, c_interval, c_uuid, c_enum, c_cidr, c_inet, c_macaddr, c_macaddr8 ) VALUES ( @c_boolean, @c_bit, @c_smallint, @c_integer, @c_bigint, @c_real, @c_numeric, @c_decimal, @c_double_precision, @c_money, @c_date, @c_time, @c_timestamp, @c_timestamp_with_tz, @c_interval, @c_uuid, @c_enum::c_enum, @c_cidr, @c_inet, @c_macaddr::macaddr, @c_macaddr8::macaddr8 )";
+    private const string InsertPostgresTypesSql = " INSERT INTO postgres_types ( c_boolean, c_bit, c_smallint, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_money, c_uuid, c_enum ) VALUES ( @c_boolean, @c_bit, @c_smallint, @c_integer, @c_bigint, @c_real, @c_numeric, @c_decimal, @c_double_precision, @c_money, @c_uuid, @c_enum::c_enum )";
     public class InsertPostgresTypesArgs
     {
         public bool? CBoolean { get; init; }
@@ -56,17 +56,8 @@ public class QuerySql
         public decimal? CDecimal { get; init; }
         public double? CDoublePrecision { get; init; }
         public decimal? CMoney { get; init; }
-        public DateTime? CDate { get; init; }
-        public TimeSpan? CTime { get; init; }
-        public DateTime? CTimestamp { get; init; }
-        public DateTime? CTimestampWithTz { get; init; }
-        public TimeSpan? CInterval { get; init; }
         public Guid? CUuid { get; init; }
         public CEnum? CEnum { get; init; }
-        public NpgsqlCidr? CCidr { get; init; }
-        public IPAddress? CInet { get; init; }
-        public PhysicalAddress? CMacaddr { get; init; }
-        public string? CMacaddr8 { get; init; }
     };
     public async Task InsertPostgresTypes(InsertPostgresTypesArgs args)
     {
@@ -81,17 +72,8 @@ public class QuerySql
         queryParams.Add("c_decimal", args.CDecimal);
         queryParams.Add("c_double_precision", args.CDoublePrecision);
         queryParams.Add("c_money", args.CMoney);
-        queryParams.Add("c_date", args.CDate);
-        queryParams.Add("c_time", args.CTime);
-        queryParams.Add("c_timestamp", args.CTimestamp);
-        queryParams.Add("c_timestamp_with_tz", args.CTimestampWithTz);
-        queryParams.Add("c_interval", args.CInterval);
         queryParams.Add("c_uuid", args.CUuid);
         queryParams.Add("c_enum", args.CEnum != null ? args.CEnum.Value.Stringify() : null);
-        queryParams.Add("c_cidr", args.CCidr);
-        queryParams.Add("c_inet", args.CInet);
-        queryParams.Add("c_macaddr", args.CMacaddr);
-        queryParams.Add("c_macaddr8", args.CMacaddr8);
         if (this.Transaction == null)
         {
             using (var connection = new NpgsqlConnection(ConnectionString))
@@ -104,7 +86,7 @@ public class QuerySql
         await this.Transaction.Connection.ExecuteAsync(InsertPostgresTypesSql, queryParams, transaction: this.Transaction);
     }
 
-    private const string InsertPostgresTypesBatchSql = "COPY postgres_types (c_boolean, c_smallint, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_money, c_date, c_time, c_timestamp, c_timestamp_with_tz, c_interval, c_uuid, c_cidr, c_inet, c_macaddr) FROM STDIN (FORMAT BINARY)";
+    private const string InsertPostgresTypesBatchSql = "COPY postgres_types (c_boolean, c_smallint, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_money, c_uuid) FROM STDIN (FORMAT BINARY)";
     public class InsertPostgresTypesBatchArgs
     {
         public bool? CBoolean { get; init; }
@@ -116,15 +98,7 @@ public class QuerySql
         public decimal? CDecimal { get; init; }
         public double? CDoublePrecision { get; init; }
         public decimal? CMoney { get; init; }
-        public DateTime? CDate { get; init; }
-        public TimeSpan? CTime { get; init; }
-        public DateTime? CTimestamp { get; init; }
-        public DateTime? CTimestampWithTz { get; init; }
-        public TimeSpan? CInterval { get; init; }
         public Guid? CUuid { get; init; }
-        public NpgsqlCidr? CCidr { get; init; }
-        public IPAddress? CInet { get; init; }
-        public PhysicalAddress? CMacaddr { get; init; }
     };
     public async Task InsertPostgresTypesBatch(List<InsertPostgresTypesBatchArgs> args)
     {
@@ -145,15 +119,7 @@ public class QuerySql
                     await writer.WriteAsync(row.CDecimal);
                     await writer.WriteAsync(row.CDoublePrecision);
                     await writer.WriteAsync(row.CMoney, NpgsqlDbType.Money);
-                    await writer.WriteAsync(row.CDate, NpgsqlDbType.Date);
-                    await writer.WriteAsync(row.CTime, NpgsqlDbType.Time);
-                    await writer.WriteAsync(row.CTimestamp);
-                    await writer.WriteAsync(row.CTimestampWithTz);
-                    await writer.WriteAsync(row.CInterval, NpgsqlDbType.Interval);
                     await writer.WriteAsync(row.CUuid);
-                    await writer.WriteAsync(row.CCidr);
-                    await writer.WriteAsync(row.CInet);
-                    await writer.WriteAsync(row.CMacaddr);
                 }
 
                 await writer.CompleteAsync();
@@ -163,7 +129,7 @@ public class QuerySql
         }
     }
 
-    private const string GetPostgresTypesSql = "SELECT c_boolean, c_bit, c_smallint, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_money, c_date, c_time, c_timestamp, c_timestamp_with_tz, c_interval, c_uuid, c_enum, c_cidr, c_inet, c_macaddr, c_macaddr8::TEXT AS c_macaddr8 FROM postgres_types LIMIT 1";
+    private const string GetPostgresTypesSql = "SELECT c_boolean, c_bit, c_smallint, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_money, c_uuid, c_enum FROM postgres_types LIMIT 1";
     public class GetPostgresTypesRow
     {
         public bool? CBoolean { get; init; }
@@ -176,17 +142,8 @@ public class QuerySql
         public decimal? CDecimal { get; init; }
         public double? CDoublePrecision { get; init; }
         public decimal? CMoney { get; init; }
-        public DateTime? CDate { get; init; }
-        public TimeSpan? CTime { get; init; }
-        public DateTime? CTimestamp { get; init; }
-        public DateTime? CTimestampWithTz { get; init; }
-        public TimeSpan? CInterval { get; init; }
         public Guid? CUuid { get; init; }
         public CEnum? CEnum { get; init; }
-        public NpgsqlCidr? CCidr { get; init; }
-        public IPAddress? CInet { get; init; }
-        public PhysicalAddress? CMacaddr { get; init; }
-        public string? CMacaddr8 { get; init; }
     };
     public async Task<GetPostgresTypesRow?> GetPostgresTypes()
     {
@@ -204,7 +161,7 @@ public class QuerySql
         return await this.Transaction.Connection.QueryFirstOrDefaultAsync<GetPostgresTypesRow?>(GetPostgresTypesSql, transaction: this.Transaction);
     }
 
-    private const string GetPostgresTypesCntSql = "SELECT c_smallint, c_boolean, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_money, c_date, c_time, c_timestamp, c_timestamp_with_tz, c_interval, c_uuid, c_cidr, c_inet, c_macaddr, COUNT(*) AS cnt FROM postgres_types GROUP BY c_smallint, c_boolean, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_money, c_date, c_time, c_timestamp, c_timestamp_with_tz, c_interval, c_uuid, c_cidr, c_inet, c_macaddr LIMIT 1";
+    private const string GetPostgresTypesCntSql = "SELECT c_smallint, c_boolean, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_money, c_uuid, COUNT(*) AS cnt FROM postgres_types GROUP BY c_smallint, c_boolean, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_money, c_uuid LIMIT 1";
     public class GetPostgresTypesCntRow
     {
         public short? CSmallint { get; init; }
@@ -216,15 +173,7 @@ public class QuerySql
         public decimal? CDecimal { get; init; }
         public double? CDoublePrecision { get; init; }
         public decimal? CMoney { get; init; }
-        public DateTime? CDate { get; init; }
-        public TimeSpan? CTime { get; init; }
-        public DateTime? CTimestamp { get; init; }
-        public DateTime? CTimestampWithTz { get; init; }
-        public TimeSpan? CInterval { get; init; }
         public Guid? CUuid { get; init; }
-        public NpgsqlCidr? CCidr { get; init; }
-        public IPAddress? CInet { get; init; }
-        public PhysicalAddress? CMacaddr { get; init; }
         public required long Cnt { get; init; }
     };
     public async Task<GetPostgresTypesCntRow?> GetPostgresTypesCnt()
@@ -243,7 +192,7 @@ public class QuerySql
         return await this.Transaction.Connection.QueryFirstOrDefaultAsync<GetPostgresTypesCntRow?>(GetPostgresTypesCntSql, transaction: this.Transaction);
     }
 
-    private const string GetPostgresFunctionsSql = "SELECT MAX(c_integer) AS max_integer, MAX(c_varchar) AS max_varchar, MAX(c_timestamp) AS max_timestamp FROM postgres_types CROSS JOIN postgres_string_types";
+    private const string GetPostgresFunctionsSql = "SELECT MAX(c_integer) AS max_integer, MAX(c_varchar) AS max_varchar, MAX(c_timestamp) AS max_timestamp FROM postgres_types CROSS JOIN postgres_string_types CROSS JOIN postgres_datetime_types";
     public class GetPostgresFunctionsRow
     {
         public int? MaxInteger { get; init; }
@@ -437,6 +386,253 @@ public class QuerySql
         if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
             throw new InvalidOperationException("Transaction is provided, but its connection is null.");
         return await this.Transaction.Connection.QueryFirstOrDefaultAsync<GetPostgresStringTypesTextSearchRow?>(GetPostgresStringTypesTextSearchSql, queryParams, transaction: this.Transaction);
+    }
+
+    private const string InsertPostgresDateTimeTypesSql = " INSERT INTO postgres_datetime_types ( c_date, c_time, c_timestamp, c_timestamp_with_tz, c_interval ) VALUES (@c_date, @c_time, @c_timestamp, @c_timestamp_with_tz, @c_interval)";
+    public class InsertPostgresDateTimeTypesArgs
+    {
+        public DateTime? CDate { get; init; }
+        public TimeSpan? CTime { get; init; }
+        public DateTime? CTimestamp { get; init; }
+        public DateTime? CTimestampWithTz { get; init; }
+        public TimeSpan? CInterval { get; init; }
+    };
+    public async Task InsertPostgresDateTimeTypes(InsertPostgresDateTimeTypesArgs args)
+    {
+        var queryParams = new Dictionary<string, object?>();
+        queryParams.Add("c_date", args.CDate);
+        queryParams.Add("c_time", args.CTime);
+        queryParams.Add("c_timestamp", args.CTimestamp);
+        queryParams.Add("c_timestamp_with_tz", args.CTimestampWithTz);
+        queryParams.Add("c_interval", args.CInterval);
+        if (this.Transaction == null)
+        {
+            using (var connection = new NpgsqlConnection(ConnectionString))
+                await connection.ExecuteAsync(InsertPostgresDateTimeTypesSql, queryParams);
+            return;
+        }
+
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+        await this.Transaction.Connection.ExecuteAsync(InsertPostgresDateTimeTypesSql, queryParams, transaction: this.Transaction);
+    }
+
+    private const string GetPostgresDateTimeTypesSql = "SELECT c_date, c_time, c_timestamp, c_timestamp_with_tz, c_interval FROM postgres_datetime_types LIMIT 1";
+    public class GetPostgresDateTimeTypesRow
+    {
+        public DateTime? CDate { get; init; }
+        public TimeSpan? CTime { get; init; }
+        public DateTime? CTimestamp { get; init; }
+        public DateTime? CTimestampWithTz { get; init; }
+        public TimeSpan? CInterval { get; init; }
+    };
+    public async Task<GetPostgresDateTimeTypesRow?> GetPostgresDateTimeTypes()
+    {
+        if (this.Transaction == null)
+        {
+            using (var connection = new NpgsqlConnection(ConnectionString))
+            {
+                var result = await connection.QueryFirstOrDefaultAsync<GetPostgresDateTimeTypesRow?>(GetPostgresDateTimeTypesSql);
+                return result;
+            }
+        }
+
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+        return await this.Transaction.Connection.QueryFirstOrDefaultAsync<GetPostgresDateTimeTypesRow?>(GetPostgresDateTimeTypesSql, transaction: this.Transaction);
+    }
+
+    private const string TruncatePostgresDateTimeTypesSql = "TRUNCATE TABLE postgres_datetime_types";
+    public async Task TruncatePostgresDateTimeTypes()
+    {
+        if (this.Transaction == null)
+        {
+            using (var connection = new NpgsqlConnection(ConnectionString))
+                await connection.ExecuteAsync(TruncatePostgresDateTimeTypesSql);
+            return;
+        }
+
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+        await this.Transaction.Connection.ExecuteAsync(TruncatePostgresDateTimeTypesSql, transaction: this.Transaction);
+    }
+
+    private const string GetPostgresDateTimeTypesCntSql = "SELECT c_date, c_time, c_timestamp, c_timestamp_with_tz, c_interval, COUNT(*) AS cnt FROM postgres_datetime_types GROUP BY c_date, c_time, c_timestamp, c_timestamp_with_tz, c_interval LIMIT 1";
+    public class GetPostgresDateTimeTypesCntRow
+    {
+        public DateTime? CDate { get; init; }
+        public TimeSpan? CTime { get; init; }
+        public DateTime? CTimestamp { get; init; }
+        public DateTime? CTimestampWithTz { get; init; }
+        public TimeSpan? CInterval { get; init; }
+        public required long Cnt { get; init; }
+    };
+    public async Task<GetPostgresDateTimeTypesCntRow?> GetPostgresDateTimeTypesCnt()
+    {
+        if (this.Transaction == null)
+        {
+            using (var connection = new NpgsqlConnection(ConnectionString))
+            {
+                var result = await connection.QueryFirstOrDefaultAsync<GetPostgresDateTimeTypesCntRow?>(GetPostgresDateTimeTypesCntSql);
+                return result;
+            }
+        }
+
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+        return await this.Transaction.Connection.QueryFirstOrDefaultAsync<GetPostgresDateTimeTypesCntRow?>(GetPostgresDateTimeTypesCntSql, transaction: this.Transaction);
+    }
+
+    private const string InsertPostgresDateTimeTypesBatchSql = "COPY postgres_datetime_types (c_date, c_time, c_timestamp, c_timestamp_with_tz, c_interval) FROM STDIN (FORMAT BINARY)";
+    public class InsertPostgresDateTimeTypesBatchArgs
+    {
+        public DateTime? CDate { get; init; }
+        public TimeSpan? CTime { get; init; }
+        public DateTime? CTimestamp { get; init; }
+        public DateTime? CTimestampWithTz { get; init; }
+        public TimeSpan? CInterval { get; init; }
+    };
+    public async Task InsertPostgresDateTimeTypesBatch(List<InsertPostgresDateTimeTypesBatchArgs> args)
+    {
+        using (var connection = new NpgsqlConnection(ConnectionString))
+        {
+            await connection.OpenAsync();
+            using (var writer = await connection.BeginBinaryImportAsync(InsertPostgresDateTimeTypesBatchSql))
+            {
+                foreach (var row in args)
+                {
+                    await writer.StartRowAsync();
+                    await writer.WriteAsync(row.CDate, NpgsqlDbType.Date);
+                    await writer.WriteAsync(row.CTime, NpgsqlDbType.Time);
+                    await writer.WriteAsync(row.CTimestamp);
+                    await writer.WriteAsync(row.CTimestampWithTz);
+                    await writer.WriteAsync(row.CInterval, NpgsqlDbType.Interval);
+                }
+
+                await writer.CompleteAsync();
+            }
+
+            await connection.CloseAsync();
+        }
+    }
+
+    private const string InsertPostgresNetworkTypesSql = " INSERT INTO postgres_network_types ( c_cidr, c_inet, c_macaddr, c_macaddr8 ) VALUES ( @c_cidr, @c_inet, @c_macaddr, @c_macaddr8::macaddr8 )";
+    public class InsertPostgresNetworkTypesArgs
+    {
+        public NpgsqlCidr? CCidr { get; init; }
+        public IPAddress? CInet { get; init; }
+        public PhysicalAddress? CMacaddr { get; init; }
+        public string? CMacaddr8 { get; init; }
+    };
+    public async Task InsertPostgresNetworkTypes(InsertPostgresNetworkTypesArgs args)
+    {
+        var queryParams = new Dictionary<string, object?>();
+        queryParams.Add("c_cidr", args.CCidr);
+        queryParams.Add("c_inet", args.CInet);
+        queryParams.Add("c_macaddr", args.CMacaddr);
+        queryParams.Add("c_macaddr8", args.CMacaddr8);
+        if (this.Transaction == null)
+        {
+            using (var connection = new NpgsqlConnection(ConnectionString))
+                await connection.ExecuteAsync(InsertPostgresNetworkTypesSql, queryParams);
+            return;
+        }
+
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+        await this.Transaction.Connection.ExecuteAsync(InsertPostgresNetworkTypesSql, queryParams, transaction: this.Transaction);
+    }
+
+    private const string GetPostgresNetworkTypesSql = "SELECT c_cidr, c_inet, c_macaddr, c_macaddr8::TEXT AS c_macaddr8 FROM postgres_network_types LIMIT 1";
+    public class GetPostgresNetworkTypesRow
+    {
+        public NpgsqlCidr? CCidr { get; init; }
+        public IPAddress? CInet { get; init; }
+        public PhysicalAddress? CMacaddr { get; init; }
+        public string? CMacaddr8 { get; init; }
+    };
+    public async Task<GetPostgresNetworkTypesRow?> GetPostgresNetworkTypes()
+    {
+        if (this.Transaction == null)
+        {
+            using (var connection = new NpgsqlConnection(ConnectionString))
+            {
+                var result = await connection.QueryFirstOrDefaultAsync<GetPostgresNetworkTypesRow?>(GetPostgresNetworkTypesSql);
+                return result;
+            }
+        }
+
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+        return await this.Transaction.Connection.QueryFirstOrDefaultAsync<GetPostgresNetworkTypesRow?>(GetPostgresNetworkTypesSql, transaction: this.Transaction);
+    }
+
+    private const string TruncatePostgresNetworkTypesSql = "TRUNCATE TABLE postgres_network_types";
+    public async Task TruncatePostgresNetworkTypes()
+    {
+        if (this.Transaction == null)
+        {
+            using (var connection = new NpgsqlConnection(ConnectionString))
+                await connection.ExecuteAsync(TruncatePostgresNetworkTypesSql);
+            return;
+        }
+
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+        await this.Transaction.Connection.ExecuteAsync(TruncatePostgresNetworkTypesSql, transaction: this.Transaction);
+    }
+
+    private const string GetPostgresNetworkTypesCntSql = "SELECT c_cidr, c_inet, c_macaddr, COUNT(*) AS cnt FROM postgres_network_types GROUP BY c_cidr, c_inet, c_macaddr LIMIT 1";
+    public class GetPostgresNetworkTypesCntRow
+    {
+        public NpgsqlCidr? CCidr { get; init; }
+        public IPAddress? CInet { get; init; }
+        public PhysicalAddress? CMacaddr { get; init; }
+        public required long Cnt { get; init; }
+    };
+    public async Task<GetPostgresNetworkTypesCntRow?> GetPostgresNetworkTypesCnt()
+    {
+        if (this.Transaction == null)
+        {
+            using (var connection = new NpgsqlConnection(ConnectionString))
+            {
+                var result = await connection.QueryFirstOrDefaultAsync<GetPostgresNetworkTypesCntRow?>(GetPostgresNetworkTypesCntSql);
+                return result;
+            }
+        }
+
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+        return await this.Transaction.Connection.QueryFirstOrDefaultAsync<GetPostgresNetworkTypesCntRow?>(GetPostgresNetworkTypesCntSql, transaction: this.Transaction);
+    }
+
+    private const string InsertPostgresNetworkTypesBatchSql = "COPY postgres_network_types (c_cidr, c_inet, c_macaddr) FROM STDIN (FORMAT BINARY)";
+    public class InsertPostgresNetworkTypesBatchArgs
+    {
+        public NpgsqlCidr? CCidr { get; init; }
+        public IPAddress? CInet { get; init; }
+        public PhysicalAddress? CMacaddr { get; init; }
+    };
+    public async Task InsertPostgresNetworkTypesBatch(List<InsertPostgresNetworkTypesBatchArgs> args)
+    {
+        using (var connection = new NpgsqlConnection(ConnectionString))
+        {
+            await connection.OpenAsync();
+            using (var writer = await connection.BeginBinaryImportAsync(InsertPostgresNetworkTypesBatchSql))
+            {
+                foreach (var row in args)
+                {
+                    await writer.StartRowAsync();
+                    await writer.WriteAsync(row.CCidr);
+                    await writer.WriteAsync(row.CInet);
+                    await writer.WriteAsync(row.CMacaddr);
+                }
+
+                await writer.CompleteAsync();
+            }
+
+            await connection.CloseAsync();
+        }
     }
 
     private const string InsertPostgresUnstructuredTypesSql = " INSERT INTO postgres_unstructured_types ( c_json, c_json_string_override, c_jsonb, c_jsonpath, c_xml, c_xml_string_override ) VALUES ( @c_json::json, @c_json_string_override::json, @c_jsonb::jsonb, @c_jsonpath::jsonpath, @c_xml::xml, @c_xml_string_override::xml )";

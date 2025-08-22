@@ -140,100 +140,6 @@
                 }
               },
               {
-                "name": "c_date",
-                "length": -1,
-                "table": {
-                  "name": "postgres_types"
-                },
-                "type": {
-                  "name": "date"
-                }
-              },
-              {
-                "name": "c_time",
-                "length": -1,
-                "table": {
-                  "name": "postgres_types"
-                },
-                "type": {
-                  "schema": "pg_catalog",
-                  "name": "time"
-                }
-              },
-              {
-                "name": "c_timestamp",
-                "length": -1,
-                "table": {
-                  "name": "postgres_types"
-                },
-                "type": {
-                  "schema": "pg_catalog",
-                  "name": "timestamp"
-                }
-              },
-              {
-                "name": "c_timestamp_with_tz",
-                "length": -1,
-                "table": {
-                  "name": "postgres_types"
-                },
-                "type": {
-                  "schema": "pg_catalog",
-                  "name": "timestamptz"
-                }
-              },
-              {
-                "name": "c_interval",
-                "length": -1,
-                "table": {
-                  "name": "postgres_types"
-                },
-                "type": {
-                  "schema": "pg_catalog",
-                  "name": "interval"
-                }
-              },
-              {
-                "name": "c_cidr",
-                "length": -1,
-                "table": {
-                  "name": "postgres_types"
-                },
-                "type": {
-                  "name": "cidr"
-                }
-              },
-              {
-                "name": "c_inet",
-                "length": -1,
-                "table": {
-                  "name": "postgres_types"
-                },
-                "type": {
-                  "name": "inet"
-                }
-              },
-              {
-                "name": "c_macaddr",
-                "length": -1,
-                "table": {
-                  "name": "postgres_types"
-                },
-                "type": {
-                  "name": "macaddr"
-                }
-              },
-              {
-                "name": "c_macaddr8",
-                "length": -1,
-                "table": {
-                  "name": "postgres_types"
-                },
-                "type": {
-                  "name": "macaddr8"
-                }
-              },
-              {
                 "name": "c_uuid",
                 "length": -1,
                 "table": {
@@ -311,6 +217,114 @@
                 },
                 "type": {
                   "name": "text"
+                }
+              }
+            ]
+          },
+          {
+            "rel": {
+              "name": "postgres_datetime_types"
+            },
+            "columns": [
+              {
+                "name": "c_date",
+                "length": -1,
+                "table": {
+                  "name": "postgres_datetime_types"
+                },
+                "type": {
+                  "name": "date"
+                }
+              },
+              {
+                "name": "c_time",
+                "length": -1,
+                "table": {
+                  "name": "postgres_datetime_types"
+                },
+                "type": {
+                  "schema": "pg_catalog",
+                  "name": "time"
+                }
+              },
+              {
+                "name": "c_timestamp",
+                "length": -1,
+                "table": {
+                  "name": "postgres_datetime_types"
+                },
+                "type": {
+                  "schema": "pg_catalog",
+                  "name": "timestamp"
+                }
+              },
+              {
+                "name": "c_timestamp_with_tz",
+                "length": -1,
+                "table": {
+                  "name": "postgres_datetime_types"
+                },
+                "type": {
+                  "schema": "pg_catalog",
+                  "name": "timestamptz"
+                }
+              },
+              {
+                "name": "c_interval",
+                "length": -1,
+                "table": {
+                  "name": "postgres_datetime_types"
+                },
+                "type": {
+                  "schema": "pg_catalog",
+                  "name": "interval"
+                }
+              }
+            ]
+          },
+          {
+            "rel": {
+              "name": "postgres_network_types"
+            },
+            "columns": [
+              {
+                "name": "c_cidr",
+                "length": -1,
+                "table": {
+                  "name": "postgres_network_types"
+                },
+                "type": {
+                  "name": "cidr"
+                }
+              },
+              {
+                "name": "c_inet",
+                "length": -1,
+                "table": {
+                  "name": "postgres_network_types"
+                },
+                "type": {
+                  "name": "inet"
+                }
+              },
+              {
+                "name": "c_macaddr",
+                "length": -1,
+                "table": {
+                  "name": "postgres_network_types"
+                },
+                "type": {
+                  "name": "macaddr"
+                }
+              },
+              {
+                "name": "c_macaddr8",
+                "length": -1,
+                "table": {
+                  "name": "postgres_network_types"
+                },
+                "type": {
+                  "name": "macaddr8"
                 }
               }
             ]
@@ -32561,7 +32575,7 @@
   },
   "queries": [
     {
-      "text": "\nINSERT INTO postgres_types\n(\n    c_boolean,\n    c_bit,\n    c_smallint,\n    c_integer,\n    c_bigint,\n    c_real,\n    c_numeric,\n    c_decimal,\n    c_double_precision,\n    c_money,\n    c_date,\n    c_time,\n    c_timestamp,\n    c_timestamp_with_tz,\n    c_interval,\n    c_uuid,\n    c_enum,\n    c_cidr,\n    c_inet,\n    c_macaddr,\n    c_macaddr8\n)\nVALUES (\n    $1,\n    $2,\n    $3,\n    $4,\n    $5,\n    $6,\n    $7,\n    $8,\n    $9,\n    $10,\n    $11,\n    $12,\n    $13,\n    $14,\n    $15,\n    $16,\n    $17::c_enum,\n    $18,\n    $19,\n    $20::macaddr,\n    $21::macaddr8\n)",
+      "text": "\nINSERT INTO postgres_types\n(\n    c_boolean,\n    c_bit,\n    c_smallint,\n    c_integer,\n    c_bigint,\n    c_real,\n    c_numeric,\n    c_decimal,\n    c_double_precision,\n    c_money,\n    c_uuid,\n    c_enum\n)\nVALUES (\n    $1,\n    $2,\n    $3,\n    $4,\n    $5,\n    $6,\n    $7,\n    $8,\n    $9,\n    $10,\n    $11,\n    $12::c_enum\n)",
       "name": "InsertPostgresTypes",
       "cmd": ":exec",
       "parameters": [
@@ -32728,86 +32742,6 @@
         {
           "number": 11,
           "column": {
-            "name": "c_date",
-            "length": -1,
-            "isNamedParam": true,
-            "table": {
-              "schema": "public",
-              "name": "postgres_types"
-            },
-            "type": {
-              "name": "date"
-            },
-            "originalName": "c_date"
-          }
-        },
-        {
-          "number": 12,
-          "column": {
-            "name": "c_time",
-            "length": -1,
-            "isNamedParam": true,
-            "table": {
-              "schema": "public",
-              "name": "postgres_types"
-            },
-            "type": {
-              "name": "pg_catalog.time"
-            },
-            "originalName": "c_time"
-          }
-        },
-        {
-          "number": 13,
-          "column": {
-            "name": "c_timestamp",
-            "length": -1,
-            "isNamedParam": true,
-            "table": {
-              "schema": "public",
-              "name": "postgres_types"
-            },
-            "type": {
-              "name": "pg_catalog.timestamp"
-            },
-            "originalName": "c_timestamp"
-          }
-        },
-        {
-          "number": 14,
-          "column": {
-            "name": "c_timestamp_with_tz",
-            "length": -1,
-            "isNamedParam": true,
-            "table": {
-              "schema": "public",
-              "name": "postgres_types"
-            },
-            "type": {
-              "name": "pg_catalog.timestamptz"
-            },
-            "originalName": "c_timestamp_with_tz"
-          }
-        },
-        {
-          "number": 15,
-          "column": {
-            "name": "c_interval",
-            "length": -1,
-            "isNamedParam": true,
-            "table": {
-              "schema": "public",
-              "name": "postgres_types"
-            },
-            "type": {
-              "name": "pg_catalog.interval"
-            },
-            "originalName": "c_interval"
-          }
-        },
-        {
-          "number": 16,
-          "column": {
             "name": "c_uuid",
             "length": -1,
             "isNamedParam": true,
@@ -32822,64 +32756,12 @@
           }
         },
         {
-          "number": 17,
+          "number": 12,
           "column": {
             "name": "c_enum",
             "length": -1,
             "type": {
               "name": "c_enum"
-            }
-          }
-        },
-        {
-          "number": 18,
-          "column": {
-            "name": "c_cidr",
-            "length": -1,
-            "isNamedParam": true,
-            "table": {
-              "schema": "public",
-              "name": "postgres_types"
-            },
-            "type": {
-              "name": "cidr"
-            },
-            "originalName": "c_cidr"
-          }
-        },
-        {
-          "number": 19,
-          "column": {
-            "name": "c_inet",
-            "length": -1,
-            "isNamedParam": true,
-            "table": {
-              "schema": "public",
-              "name": "postgres_types"
-            },
-            "type": {
-              "name": "inet"
-            },
-            "originalName": "c_inet"
-          }
-        },
-        {
-          "number": 20,
-          "column": {
-            "name": "c_macaddr",
-            "length": -1,
-            "type": {
-              "name": "macaddr"
-            }
-          }
-        },
-        {
-          "number": 21,
-          "column": {
-            "name": "c_macaddr8",
-            "length": -1,
-            "type": {
-              "name": "macaddr8"
             }
           }
         }
@@ -32893,7 +32775,7 @@
       }
     },
     {
-      "text": "INSERT INTO postgres_types\n(\n    c_boolean,\n    c_smallint,\n    c_integer,\n    c_bigint,\n    c_real,\n    c_numeric,\n    c_decimal,\n    c_double_precision,\n    c_money,\n    c_date,\n    c_time,\n    c_timestamp,\n    c_timestamp_with_tz,\n    c_interval,\n    c_uuid,\n    c_cidr,\n    c_inet,\n    c_macaddr\n)\nVALUES (\n    $1, \n    $2, \n    $3, \n    $4, \n    $5, \n    $6, \n    $7, \n    $8, \n    $9, \n    $10, \n    $11, \n    $12, \n    $13, \n    $14, \n    $15, \n    $16, \n    $17, \n    $18\n)",
+      "text": "INSERT INTO postgres_types\n(\n    c_boolean,\n    c_smallint,\n    c_integer,\n    c_bigint,\n    c_real,\n    c_numeric,\n    c_decimal,\n    c_double_precision,\n    c_money,\n    c_uuid\n)\nVALUES (\n    $1, \n    $2, \n    $3, \n    $4, \n    $5, \n    $6, \n    $7, \n    $8, \n    $9, \n    $10\n)",
       "name": "InsertPostgresTypesBatch",
       "cmd": ":copyfrom",
       "parameters": [
@@ -33035,81 +32917,6 @@
         {
           "number": 10,
           "column": {
-            "name": "c_date",
-            "length": -1,
-            "table": {
-              "schema": "public",
-              "name": "postgres_types"
-            },
-            "type": {
-              "name": "date"
-            },
-            "originalName": "c_date"
-          }
-        },
-        {
-          "number": 11,
-          "column": {
-            "name": "c_time",
-            "length": -1,
-            "table": {
-              "schema": "public",
-              "name": "postgres_types"
-            },
-            "type": {
-              "name": "pg_catalog.time"
-            },
-            "originalName": "c_time"
-          }
-        },
-        {
-          "number": 12,
-          "column": {
-            "name": "c_timestamp",
-            "length": -1,
-            "table": {
-              "schema": "public",
-              "name": "postgres_types"
-            },
-            "type": {
-              "name": "pg_catalog.timestamp"
-            },
-            "originalName": "c_timestamp"
-          }
-        },
-        {
-          "number": 13,
-          "column": {
-            "name": "c_timestamp_with_tz",
-            "length": -1,
-            "table": {
-              "schema": "public",
-              "name": "postgres_types"
-            },
-            "type": {
-              "name": "pg_catalog.timestamptz"
-            },
-            "originalName": "c_timestamp_with_tz"
-          }
-        },
-        {
-          "number": 14,
-          "column": {
-            "name": "c_interval",
-            "length": -1,
-            "table": {
-              "schema": "public",
-              "name": "postgres_types"
-            },
-            "type": {
-              "name": "pg_catalog.interval"
-            },
-            "originalName": "c_interval"
-          }
-        },
-        {
-          "number": 15,
-          "column": {
             "name": "c_uuid",
             "length": -1,
             "table": {
@@ -33121,51 +32928,6 @@
             },
             "originalName": "c_uuid"
           }
-        },
-        {
-          "number": 16,
-          "column": {
-            "name": "c_cidr",
-            "length": -1,
-            "table": {
-              "schema": "public",
-              "name": "postgres_types"
-            },
-            "type": {
-              "name": "cidr"
-            },
-            "originalName": "c_cidr"
-          }
-        },
-        {
-          "number": 17,
-          "column": {
-            "name": "c_inet",
-            "length": -1,
-            "table": {
-              "schema": "public",
-              "name": "postgres_types"
-            },
-            "type": {
-              "name": "inet"
-            },
-            "originalName": "c_inet"
-          }
-        },
-        {
-          "number": 18,
-          "column": {
-            "name": "c_macaddr",
-            "length": -1,
-            "table": {
-              "schema": "public",
-              "name": "postgres_types"
-            },
-            "type": {
-              "name": "macaddr"
-            },
-            "originalName": "c_macaddr"
-          }
         }
       ],
       "filename": "query.sql",
@@ -33174,7 +32936,7 @@
       }
     },
     {
-      "text": "SELECT     \n    c_boolean,\n    c_bit,\n    c_smallint,\n    c_integer,\n    c_bigint,\n    c_real,\n    c_numeric,\n    c_decimal,\n    c_double_precision,\n    c_money,\n    c_date,\n    c_time,\n    c_timestamp,\n    c_timestamp_with_tz,\n    c_interval,\n    c_uuid,\n    c_enum,\n    c_cidr,\n    c_inet,\n    c_macaddr,\n    c_macaddr8::TEXT AS c_macaddr8\nFROM postgres_types \nLIMIT 1",
+      "text": "SELECT     \n    c_boolean,\n    c_bit,\n    c_smallint,\n    c_integer,\n    c_bigint,\n    c_real,\n    c_numeric,\n    c_decimal,\n    c_double_precision,\n    c_money,\n    c_uuid,\n    c_enum\nFROM postgres_types \nLIMIT 1",
       "name": "GetPostgresTypes",
       "cmd": ":one",
       "columns": [
@@ -33298,65 +33060,6 @@
           "originalName": "c_money"
         },
         {
-          "name": "c_date",
-          "length": -1,
-          "table": {
-            "name": "postgres_types"
-          },
-          "type": {
-            "name": "date"
-          },
-          "originalName": "c_date"
-        },
-        {
-          "name": "c_time",
-          "length": -1,
-          "table": {
-            "name": "postgres_types"
-          },
-          "type": {
-            "schema": "pg_catalog",
-            "name": "time"
-          },
-          "originalName": "c_time"
-        },
-        {
-          "name": "c_timestamp",
-          "length": -1,
-          "table": {
-            "name": "postgres_types"
-          },
-          "type": {
-            "schema": "pg_catalog",
-            "name": "timestamp"
-          },
-          "originalName": "c_timestamp"
-        },
-        {
-          "name": "c_timestamp_with_tz",
-          "length": -1,
-          "table": {
-            "name": "postgres_types"
-          },
-          "type": {
-            "schema": "pg_catalog",
-            "name": "timestamptz"
-          },
-          "originalName": "c_timestamp_with_tz"
-        },
-        {
-          "name": "c_interval",
-          "length": -1,
-          "table": {
-            "name": "postgres_types"
-          },
-          "type": {
-            "schema": "pg_catalog",
-            "name": "interval"
-          },
-          "originalName": "c_interval"
-        },
-        {
           "name": "c_uuid",
           "length": -1,
           "table": {
@@ -33377,53 +33080,12 @@
             "name": "c_enum"
           },
           "originalName": "c_enum"
-        },
-        {
-          "name": "c_cidr",
-          "length": -1,
-          "table": {
-            "name": "postgres_types"
-          },
-          "type": {
-            "name": "cidr"
-          },
-          "originalName": "c_cidr"
-        },
-        {
-          "name": "c_inet",
-          "length": -1,
-          "table": {
-            "name": "postgres_types"
-          },
-          "type": {
-            "name": "inet"
-          },
-          "originalName": "c_inet"
-        },
-        {
-          "name": "c_macaddr",
-          "length": -1,
-          "table": {
-            "name": "postgres_types"
-          },
-          "type": {
-            "name": "macaddr"
-          },
-          "originalName": "c_macaddr"
-        },
-        {
-          "name": "c_macaddr8",
-          "notNull": true,
-          "length": -1,
-          "type": {
-            "name": "text"
-          }
         }
       ],
       "filename": "query.sql"
     },
     {
-      "text": "SELECT\n    c_smallint,\n    c_boolean,\n    c_integer,\n    c_bigint,\n    c_real,\n    c_numeric,\n    c_decimal,\n    c_double_precision,\n    c_money,\n    c_date,\n    c_time,\n    c_timestamp,\n    c_timestamp_with_tz,\n    c_interval,\n    c_uuid,\n    c_cidr,\n    c_inet,\n    c_macaddr,\n    COUNT(*) AS cnt\nFROM postgres_types\nGROUP BY\n    c_smallint,\n    c_boolean,\n    c_integer,\n    c_bigint,\n    c_real,\n    c_numeric,\n    c_decimal,\n    c_double_precision,\n    c_money,\n    c_date,\n    c_time,\n    c_timestamp,\n    c_timestamp_with_tz,\n    c_interval,\n    c_uuid,\n    c_cidr,\n    c_inet,\n    c_macaddr\nLIMIT 1",
+      "text": "SELECT\n    c_smallint,\n    c_boolean,\n    c_integer,\n    c_bigint,\n    c_real,\n    c_numeric,\n    c_decimal,\n    c_double_precision,\n    c_money,\n    c_uuid,\n    COUNT(*) AS cnt\nFROM postgres_types\nGROUP BY\n    c_smallint,\n    c_boolean,\n    c_integer,\n    c_bigint,\n    c_real,\n    c_numeric,\n    c_decimal,\n    c_double_precision,\n    c_money,\n    c_uuid\nLIMIT 1",
       "name": "GetPostgresTypesCnt",
       "cmd": ":one",
       "columns": [
@@ -33535,65 +33197,6 @@
           "originalName": "c_money"
         },
         {
-          "name": "c_date",
-          "length": -1,
-          "table": {
-            "name": "postgres_types"
-          },
-          "type": {
-            "name": "date"
-          },
-          "originalName": "c_date"
-        },
-        {
-          "name": "c_time",
-          "length": -1,
-          "table": {
-            "name": "postgres_types"
-          },
-          "type": {
-            "schema": "pg_catalog",
-            "name": "time"
-          },
-          "originalName": "c_time"
-        },
-        {
-          "name": "c_timestamp",
-          "length": -1,
-          "table": {
-            "name": "postgres_types"
-          },
-          "type": {
-            "schema": "pg_catalog",
-            "name": "timestamp"
-          },
-          "originalName": "c_timestamp"
-        },
-        {
-          "name": "c_timestamp_with_tz",
-          "length": -1,
-          "table": {
-            "name": "postgres_types"
-          },
-          "type": {
-            "schema": "pg_catalog",
-            "name": "timestamptz"
-          },
-          "originalName": "c_timestamp_with_tz"
-        },
-        {
-          "name": "c_interval",
-          "length": -1,
-          "table": {
-            "name": "postgres_types"
-          },
-          "type": {
-            "schema": "pg_catalog",
-            "name": "interval"
-          },
-          "originalName": "c_interval"
-        },
-        {
           "name": "c_uuid",
           "length": -1,
           "table": {
@@ -33603,39 +33206,6 @@
             "name": "uuid"
           },
           "originalName": "c_uuid"
-        },
-        {
-          "name": "c_cidr",
-          "length": -1,
-          "table": {
-            "name": "postgres_types"
-          },
-          "type": {
-            "name": "cidr"
-          },
-          "originalName": "c_cidr"
-        },
-        {
-          "name": "c_inet",
-          "length": -1,
-          "table": {
-            "name": "postgres_types"
-          },
-          "type": {
-            "name": "inet"
-          },
-          "originalName": "c_inet"
-        },
-        {
-          "name": "c_macaddr",
-          "length": -1,
-          "table": {
-            "name": "postgres_types"
-          },
-          "type": {
-            "name": "macaddr"
-          },
-          "originalName": "c_macaddr"
         },
         {
           "name": "cnt",
@@ -33650,7 +33220,7 @@
       "filename": "query.sql"
     },
     {
-      "text": "SELECT\n    MAX(c_integer) AS max_integer,\n    MAX(c_varchar) AS max_varchar,\n    MAX(c_timestamp) AS max_timestamp\nFROM postgres_types\nCROSS JOIN postgres_string_types",
+      "text": "SELECT\n    MAX(c_integer) AS max_integer,\n    MAX(c_varchar) AS max_varchar,\n    MAX(c_timestamp) AS max_timestamp\nFROM postgres_types\nCROSS JOIN postgres_string_types\nCROSS JOIN postgres_datetime_types",
       "name": "GetPostgresFunctions",
       "cmd": ":one",
       "columns": [
@@ -34076,6 +33646,563 @@
         }
       ],
       "filename": "query.sql"
+    },
+    {
+      "text": "\nINSERT INTO postgres_datetime_types\n(\n    c_date,\n    c_time,\n    c_timestamp,\n    c_timestamp_with_tz,\n    c_interval\n) VALUES ($1, $2, $3, $4, $5)",
+      "name": "InsertPostgresDateTimeTypes",
+      "cmd": ":exec",
+      "parameters": [
+        {
+          "number": 1,
+          "column": {
+            "name": "c_date",
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "postgres_datetime_types"
+            },
+            "type": {
+              "name": "date"
+            },
+            "originalName": "c_date"
+          }
+        },
+        {
+          "number": 2,
+          "column": {
+            "name": "c_time",
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "postgres_datetime_types"
+            },
+            "type": {
+              "name": "pg_catalog.time"
+            },
+            "originalName": "c_time"
+          }
+        },
+        {
+          "number": 3,
+          "column": {
+            "name": "c_timestamp",
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "postgres_datetime_types"
+            },
+            "type": {
+              "name": "pg_catalog.timestamp"
+            },
+            "originalName": "c_timestamp"
+          }
+        },
+        {
+          "number": 4,
+          "column": {
+            "name": "c_timestamp_with_tz",
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "postgres_datetime_types"
+            },
+            "type": {
+              "name": "pg_catalog.timestamptz"
+            },
+            "originalName": "c_timestamp_with_tz"
+          }
+        },
+        {
+          "number": 5,
+          "column": {
+            "name": "c_interval",
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "postgres_datetime_types"
+            },
+            "type": {
+              "name": "pg_catalog.interval"
+            },
+            "originalName": "c_interval"
+          }
+        }
+      ],
+      "comments": [
+        " DateTime types "
+      ],
+      "filename": "query.sql",
+      "insert_into_table": {
+        "name": "postgres_datetime_types"
+      }
+    },
+    {
+      "text": "SELECT c_date, c_time, c_timestamp, c_timestamp_with_tz, c_interval FROM postgres_datetime_types LIMIT 1",
+      "name": "GetPostgresDateTimeTypes",
+      "cmd": ":one",
+      "columns": [
+        {
+          "name": "c_date",
+          "length": -1,
+          "table": {
+            "name": "postgres_datetime_types"
+          },
+          "type": {
+            "name": "date"
+          },
+          "originalName": "c_date"
+        },
+        {
+          "name": "c_time",
+          "length": -1,
+          "table": {
+            "name": "postgres_datetime_types"
+          },
+          "type": {
+            "schema": "pg_catalog",
+            "name": "time"
+          },
+          "originalName": "c_time"
+        },
+        {
+          "name": "c_timestamp",
+          "length": -1,
+          "table": {
+            "name": "postgres_datetime_types"
+          },
+          "type": {
+            "schema": "pg_catalog",
+            "name": "timestamp"
+          },
+          "originalName": "c_timestamp"
+        },
+        {
+          "name": "c_timestamp_with_tz",
+          "length": -1,
+          "table": {
+            "name": "postgres_datetime_types"
+          },
+          "type": {
+            "schema": "pg_catalog",
+            "name": "timestamptz"
+          },
+          "originalName": "c_timestamp_with_tz"
+        },
+        {
+          "name": "c_interval",
+          "length": -1,
+          "table": {
+            "name": "postgres_datetime_types"
+          },
+          "type": {
+            "schema": "pg_catalog",
+            "name": "interval"
+          },
+          "originalName": "c_interval"
+        }
+      ],
+      "filename": "query.sql"
+    },
+    {
+      "text": "TRUNCATE TABLE postgres_datetime_types",
+      "name": "TruncatePostgresDateTimeTypes",
+      "cmd": ":exec",
+      "filename": "query.sql"
+    },
+    {
+      "text": "SELECT\n    c_date,\n    c_time,\n    c_timestamp,\n    c_timestamp_with_tz,\n    c_interval,\n    COUNT(*) AS cnt\nFROM postgres_datetime_types\nGROUP BY\n    c_date,\n    c_time,\n    c_timestamp,\n    c_timestamp_with_tz,\n    c_interval\nLIMIT 1",
+      "name": "GetPostgresDateTimeTypesCnt",
+      "cmd": ":one",
+      "columns": [
+        {
+          "name": "c_date",
+          "length": -1,
+          "table": {
+            "name": "postgres_datetime_types"
+          },
+          "type": {
+            "name": "date"
+          },
+          "originalName": "c_date"
+        },
+        {
+          "name": "c_time",
+          "length": -1,
+          "table": {
+            "name": "postgres_datetime_types"
+          },
+          "type": {
+            "schema": "pg_catalog",
+            "name": "time"
+          },
+          "originalName": "c_time"
+        },
+        {
+          "name": "c_timestamp",
+          "length": -1,
+          "table": {
+            "name": "postgres_datetime_types"
+          },
+          "type": {
+            "schema": "pg_catalog",
+            "name": "timestamp"
+          },
+          "originalName": "c_timestamp"
+        },
+        {
+          "name": "c_timestamp_with_tz",
+          "length": -1,
+          "table": {
+            "name": "postgres_datetime_types"
+          },
+          "type": {
+            "schema": "pg_catalog",
+            "name": "timestamptz"
+          },
+          "originalName": "c_timestamp_with_tz"
+        },
+        {
+          "name": "c_interval",
+          "length": -1,
+          "table": {
+            "name": "postgres_datetime_types"
+          },
+          "type": {
+            "schema": "pg_catalog",
+            "name": "interval"
+          },
+          "originalName": "c_interval"
+        },
+        {
+          "name": "cnt",
+          "notNull": true,
+          "length": -1,
+          "isFuncCall": true,
+          "type": {
+            "name": "bigint"
+          }
+        }
+      ],
+      "filename": "query.sql"
+    },
+    {
+      "text": "INSERT INTO postgres_datetime_types\n(\n    c_date,\n    c_time,\n    c_timestamp,\n    c_timestamp_with_tz,\n    c_interval\n) VALUES ($1, $2, $3, $4, $5)",
+      "name": "InsertPostgresDateTimeTypesBatch",
+      "cmd": ":copyfrom",
+      "parameters": [
+        {
+          "number": 1,
+          "column": {
+            "name": "c_date",
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "postgres_datetime_types"
+            },
+            "type": {
+              "name": "date"
+            },
+            "originalName": "c_date"
+          }
+        },
+        {
+          "number": 2,
+          "column": {
+            "name": "c_time",
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "postgres_datetime_types"
+            },
+            "type": {
+              "name": "pg_catalog.time"
+            },
+            "originalName": "c_time"
+          }
+        },
+        {
+          "number": 3,
+          "column": {
+            "name": "c_timestamp",
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "postgres_datetime_types"
+            },
+            "type": {
+              "name": "pg_catalog.timestamp"
+            },
+            "originalName": "c_timestamp"
+          }
+        },
+        {
+          "number": 4,
+          "column": {
+            "name": "c_timestamp_with_tz",
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "postgres_datetime_types"
+            },
+            "type": {
+              "name": "pg_catalog.timestamptz"
+            },
+            "originalName": "c_timestamp_with_tz"
+          }
+        },
+        {
+          "number": 5,
+          "column": {
+            "name": "c_interval",
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "postgres_datetime_types"
+            },
+            "type": {
+              "name": "pg_catalog.interval"
+            },
+            "originalName": "c_interval"
+          }
+        }
+      ],
+      "filename": "query.sql",
+      "insert_into_table": {
+        "name": "postgres_datetime_types"
+      }
+    },
+    {
+      "text": "\nINSERT INTO postgres_network_types\n(\n    c_cidr,\n    c_inet,\n    c_macaddr,\n    c_macaddr8\n) VALUES (\n    $1, \n    $2, \n    $3, \n    $4::macaddr8\n)",
+      "name": "InsertPostgresNetworkTypes",
+      "cmd": ":exec",
+      "parameters": [
+        {
+          "number": 1,
+          "column": {
+            "name": "c_cidr",
+            "length": -1,
+            "isNamedParam": true,
+            "table": {
+              "schema": "public",
+              "name": "postgres_network_types"
+            },
+            "type": {
+              "name": "cidr"
+            },
+            "originalName": "c_cidr"
+          }
+        },
+        {
+          "number": 2,
+          "column": {
+            "name": "c_inet",
+            "length": -1,
+            "isNamedParam": true,
+            "table": {
+              "schema": "public",
+              "name": "postgres_network_types"
+            },
+            "type": {
+              "name": "inet"
+            },
+            "originalName": "c_inet"
+          }
+        },
+        {
+          "number": 3,
+          "column": {
+            "name": "c_macaddr",
+            "length": -1,
+            "isNamedParam": true,
+            "table": {
+              "schema": "public",
+              "name": "postgres_network_types"
+            },
+            "type": {
+              "name": "macaddr"
+            },
+            "originalName": "c_macaddr"
+          }
+        },
+        {
+          "number": 4,
+          "column": {
+            "name": "c_macaddr8",
+            "length": -1,
+            "type": {
+              "name": "macaddr8"
+            }
+          }
+        }
+      ],
+      "comments": [
+        " Network types "
+      ],
+      "filename": "query.sql",
+      "insert_into_table": {
+        "name": "postgres_network_types"
+      }
+    },
+    {
+      "text": "SELECT\n    c_cidr,\n    c_inet,\n    c_macaddr,\n    c_macaddr8::TEXT AS c_macaddr8\nFROM postgres_network_types\nLIMIT 1",
+      "name": "GetPostgresNetworkTypes",
+      "cmd": ":one",
+      "columns": [
+        {
+          "name": "c_cidr",
+          "length": -1,
+          "table": {
+            "name": "postgres_network_types"
+          },
+          "type": {
+            "name": "cidr"
+          },
+          "originalName": "c_cidr"
+        },
+        {
+          "name": "c_inet",
+          "length": -1,
+          "table": {
+            "name": "postgres_network_types"
+          },
+          "type": {
+            "name": "inet"
+          },
+          "originalName": "c_inet"
+        },
+        {
+          "name": "c_macaddr",
+          "length": -1,
+          "table": {
+            "name": "postgres_network_types"
+          },
+          "type": {
+            "name": "macaddr"
+          },
+          "originalName": "c_macaddr"
+        },
+        {
+          "name": "c_macaddr8",
+          "notNull": true,
+          "length": -1,
+          "type": {
+            "name": "text"
+          }
+        }
+      ],
+      "filename": "query.sql"
+    },
+    {
+      "text": "TRUNCATE TABLE postgres_network_types",
+      "name": "TruncatePostgresNetworkTypes",
+      "cmd": ":exec",
+      "filename": "query.sql"
+    },
+    {
+      "text": "SELECT\n    c_cidr,\n    c_inet,\n    c_macaddr,\n    COUNT(*) AS cnt\nFROM postgres_network_types\nGROUP BY\n    c_cidr,\n    c_inet,\n    c_macaddr\nLIMIT 1",
+      "name": "GetPostgresNetworkTypesCnt",
+      "cmd": ":one",
+      "columns": [
+        {
+          "name": "c_cidr",
+          "length": -1,
+          "table": {
+            "name": "postgres_network_types"
+          },
+          "type": {
+            "name": "cidr"
+          },
+          "originalName": "c_cidr"
+        },
+        {
+          "name": "c_inet",
+          "length": -1,
+          "table": {
+            "name": "postgres_network_types"
+          },
+          "type": {
+            "name": "inet"
+          },
+          "originalName": "c_inet"
+        },
+        {
+          "name": "c_macaddr",
+          "length": -1,
+          "table": {
+            "name": "postgres_network_types"
+          },
+          "type": {
+            "name": "macaddr"
+          },
+          "originalName": "c_macaddr"
+        },
+        {
+          "name": "cnt",
+          "notNull": true,
+          "length": -1,
+          "isFuncCall": true,
+          "type": {
+            "name": "bigint"
+          }
+        }
+      ],
+      "filename": "query.sql"
+    },
+    {
+      "text": "INSERT INTO postgres_network_types\n(\n    c_cidr,\n    c_inet,\n    c_macaddr\n) VALUES ($1, $2, $3)",
+      "name": "InsertPostgresNetworkTypesBatch",
+      "cmd": ":copyfrom",
+      "parameters": [
+        {
+          "number": 1,
+          "column": {
+            "name": "c_cidr",
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "postgres_network_types"
+            },
+            "type": {
+              "name": "cidr"
+            },
+            "originalName": "c_cidr"
+          }
+        },
+        {
+          "number": 2,
+          "column": {
+            "name": "c_inet",
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "postgres_network_types"
+            },
+            "type": {
+              "name": "inet"
+            },
+            "originalName": "c_inet"
+          }
+        },
+        {
+          "number": 3,
+          "column": {
+            "name": "c_macaddr",
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "postgres_network_types"
+            },
+            "type": {
+              "name": "macaddr"
+            },
+            "originalName": "c_macaddr"
+          }
+        }
+      ],
+      "filename": "query.sql",
+      "insert_into_table": {
+        "name": "postgres_network_types"
+      }
     },
     {
       "text": "\nINSERT INTO postgres_unstructured_types\n(\n    c_json,\n    c_json_string_override,\n    c_jsonb,\n    c_jsonpath,\n    c_xml,\n    c_xml_string_override\n)\nVALUES (\n    $1::json, \n    $2::json, \n    $3::jsonb,\n    $4::jsonpath,\n    $5::xml,\n    $6::xml\n)",

@@ -21,15 +21,6 @@ public class PostgresType
     public float? CReal { get; init; }
     public double? CDoublePrecision { get; init; }
     public decimal? CMoney { get; init; }
-    public DateTime? CDate { get; init; }
-    public TimeSpan? CTime { get; init; }
-    public DateTime? CTimestamp { get; init; }
-    public DateTime? CTimestampWithTz { get; init; }
-    public TimeSpan? CInterval { get; init; }
-    public NpgsqlCidr? CCidr { get; init; }
-    public IPAddress? CInet { get; init; }
-    public PhysicalAddress? CMacaddr { get; init; }
-    public string? CMacaddr8 { get; init; }
     public Guid? CUuid { get; init; }
     public CEnum? CEnum { get; init; }
 };
@@ -40,6 +31,21 @@ public class PostgresStringType
     public string? CCharacterVarying { get; init; }
     public string? CBpchar { get; init; }
     public string? CText { get; init; }
+};
+public class PostgresDatetimeType
+{
+    public DateTime? CDate { get; init; }
+    public TimeSpan? CTime { get; init; }
+    public DateTime? CTimestamp { get; init; }
+    public DateTime? CTimestampWithTz { get; init; }
+    public TimeSpan? CInterval { get; init; }
+};
+public class PostgresNetworkType
+{
+    public NpgsqlCidr? CCidr { get; init; }
+    public IPAddress? CInet { get; init; }
+    public PhysicalAddress? CMacaddr { get; init; }
+    public string? CMacaddr8 { get; init; }
 };
 public class PostgresUnstructuredType
 {

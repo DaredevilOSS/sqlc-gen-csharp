@@ -15,19 +15,6 @@ CREATE TABLE postgres_types (
     c_double_precision DOUBLE PRECISION,
     c_money MONEY,
 
-    /* Date and Time Data Types */
-    c_date DATE,
-    c_time TIME,
-    c_timestamp TIMESTAMP,
-    c_timestamp_with_tz TIMESTAMP WITH TIME ZONE,
-    c_interval INTERVAL,
-
-    /* Network Address Data Types */
-    c_cidr CIDR,
-    c_inet INET,
-    c_macaddr MACADDR,
-    c_macaddr8 MACADDR8,
-
     /* Special Data Types */
     c_uuid UUID,
     c_enum c_enum
@@ -39,6 +26,21 @@ CREATE TABLE postgres_string_types (
     c_character_varying CHARACTER VARYING(100),
     c_bpchar            BPCHAR(100),
     c_text              TEXT
+);
+
+CREATE TABLE postgres_datetime_types (
+    c_date              DATE,
+    c_time              TIME,
+    c_timestamp         TIMESTAMP,
+    c_timestamp_with_tz TIMESTAMP WITH TIME ZONE,
+    c_interval          INTERVAL
+);
+
+CREATE TABLE postgres_network_types (
+    c_cidr      CIDR,
+    c_inet      INET,
+    c_macaddr   MACADDR,
+    c_macaddr8  MACADDR8
 );
 
 CREATE EXTENSION "pg_trgm";

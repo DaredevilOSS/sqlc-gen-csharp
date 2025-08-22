@@ -13,17 +13,8 @@ INSERT INTO postgres_types
     c_decimal,
     c_double_precision,
     c_money,
-    c_date,
-    c_time,
-    c_timestamp,
-    c_timestamp_with_tz,
-    c_interval,
     c_uuid,
-    c_enum,
-    c_cidr,
-    c_inet,
-    c_macaddr,
-    c_macaddr8
+    c_enum
 )
 VALUES (
     sqlc.narg('c_boolean'),
@@ -36,17 +27,8 @@ VALUES (
     sqlc.narg('c_decimal'),
     sqlc.narg('c_double_precision'),
     sqlc.narg('c_money'),
-    sqlc.narg('c_date'),
-    sqlc.narg('c_time'),
-    sqlc.narg('c_timestamp'),
-    sqlc.narg('c_timestamp_with_tz'),
-    sqlc.narg('c_interval'),
     sqlc.narg('c_uuid'),
-    sqlc.narg('c_enum')::c_enum,
-    sqlc.narg('c_cidr'),
-    sqlc.narg('c_inet'),
-    sqlc.narg('c_macaddr')::macaddr,
-    sqlc.narg('c_macaddr8')::macaddr8
+    sqlc.narg('c_enum')::c_enum
 );
 
 -- name: InsertPostgresTypesBatch :copyfrom
@@ -61,15 +43,7 @@ INSERT INTO postgres_types
     c_decimal,
     c_double_precision,
     c_money,
-    c_date,
-    c_time,
-    c_timestamp,
-    c_timestamp_with_tz,
-    c_interval,
-    c_uuid,
-    c_cidr,
-    c_inet,
-    c_macaddr
+    c_uuid
 )
 VALUES (
     $1, 
@@ -81,15 +55,7 @@ VALUES (
     $7, 
     $8, 
     $9, 
-    $10, 
-    $11, 
-    $12, 
-    $13, 
-    $14, 
-    $15, 
-    $16, 
-    $17, 
-    $18
+    $10
 );
 
 -- name: GetPostgresTypes :one
@@ -104,17 +70,8 @@ SELECT
     c_decimal,
     c_double_precision,
     c_money,
-    c_date,
-    c_time,
-    c_timestamp,
-    c_timestamp_with_tz,
-    c_interval,
     c_uuid,
-    c_enum,
-    c_cidr,
-    c_inet,
-    c_macaddr,
-    c_macaddr8::TEXT AS c_macaddr8
+    c_enum
 FROM postgres_types 
 LIMIT 1;
 
@@ -129,15 +86,7 @@ SELECT
     c_decimal,
     c_double_precision,
     c_money,
-    c_date,
-    c_time,
-    c_timestamp,
-    c_timestamp_with_tz,
-    c_interval,
     c_uuid,
-    c_cidr,
-    c_inet,
-    c_macaddr,
     COUNT(*) AS cnt
 FROM postgres_types
 GROUP BY
@@ -150,15 +99,7 @@ GROUP BY
     c_decimal,
     c_double_precision,
     c_money,
-    c_date,
-    c_time,
-    c_timestamp,
-    c_timestamp_with_tz,
-    c_interval,
-    c_uuid,
-    c_cidr,
-    c_inet,
-    c_macaddr
+    c_uuid
 LIMIT 1;
 
 -- name: GetPostgresFunctions :one
@@ -167,7 +108,8 @@ SELECT
     MAX(c_varchar) AS max_varchar,
     MAX(c_timestamp) AS max_timestamp
 FROM postgres_types
-CROSS JOIN postgres_string_types;
+CROSS JOIN postgres_string_types
+CROSS JOIN postgres_datetime_types;
 
 -- name: TruncatePostgresTypes :exec
 TRUNCATE TABLE postgres_types;
@@ -232,6 +174,100 @@ SELECT txt_query.*, ts_rank(tsv, query) AS rnk
 FROM txt_query
 ORDER BY rnk DESC
 LIMIT 1;
+
+/* DateTime types */
+
+-- name: InsertPostgresDateTimeTypes :exec
+INSERT INTO postgres_datetime_types
+(
+    c_date,
+    c_time,
+    c_timestamp,
+    c_timestamp_with_tz,
+    c_interval
+) VALUES ($1, $2, $3, $4, $5);
+
+-- name: GetPostgresDateTimeTypes :one
+SELECT * FROM postgres_datetime_types LIMIT 1;
+
+-- name: TruncatePostgresDateTimeTypes :exec
+TRUNCATE TABLE postgres_datetime_types;
+
+-- name: GetPostgresDateTimeTypesCnt :one
+SELECT
+    c_date,
+    c_time,
+    c_timestamp,
+    c_timestamp_with_tz,
+    c_interval,
+    COUNT(*) AS cnt
+FROM postgres_datetime_types
+GROUP BY
+    c_date,
+    c_time,
+    c_timestamp,
+    c_timestamp_with_tz,
+    c_interval
+LIMIT 1;
+
+-- name: InsertPostgresDateTimeTypesBatch :copyfrom
+INSERT INTO postgres_datetime_types
+(
+    c_date,
+    c_time,
+    c_timestamp,
+    c_timestamp_with_tz,
+    c_interval
+) VALUES ($1, $2, $3, $4, $5);
+
+/* Network types */
+
+-- name: InsertPostgresNetworkTypes :exec
+INSERT INTO postgres_network_types
+(
+    c_cidr,
+    c_inet,
+    c_macaddr,
+    c_macaddr8
+) VALUES (
+    sqlc.narg('c_cidr'), 
+    sqlc.narg('c_inet'), 
+    sqlc.narg('c_macaddr'), 
+    sqlc.narg('c_macaddr8')::macaddr8
+);
+
+-- name: GetPostgresNetworkTypes :one
+SELECT
+    c_cidr,
+    c_inet,
+    c_macaddr,
+    c_macaddr8::TEXT AS c_macaddr8
+FROM postgres_network_types
+LIMIT 1;
+
+-- name: TruncatePostgresNetworkTypes :exec
+TRUNCATE TABLE postgres_network_types;
+
+-- name: GetPostgresNetworkTypesCnt :one
+SELECT
+    c_cidr,
+    c_inet,
+    c_macaddr,
+    COUNT(*) AS cnt
+FROM postgres_network_types
+GROUP BY
+    c_cidr,
+    c_inet,
+    c_macaddr
+LIMIT 1;
+
+-- name: InsertPostgresNetworkTypesBatch :copyfrom
+INSERT INTO postgres_network_types
+(
+    c_cidr,
+    c_inet,
+    c_macaddr
+) VALUES ($1, $2, $3);
 
 /* Unstructured types */
 

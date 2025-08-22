@@ -22,15 +22,6 @@ namespace NpgsqlLegacyExampleGen
         public float? CReal { get; set; }
         public double? CDoublePrecision { get; set; }
         public decimal? CMoney { get; set; }
-        public DateTime? CDate { get; set; }
-        public TimeSpan? CTime { get; set; }
-        public DateTime? CTimestamp { get; set; }
-        public DateTime? CTimestampWithTz { get; set; }
-        public TimeSpan? CInterval { get; set; }
-        public NpgsqlCidr? CCidr { get; set; }
-        public IPAddress CInet { get; set; }
-        public PhysicalAddress CMacaddr { get; set; }
-        public string CMacaddr8 { get; set; }
         public Guid? CUuid { get; set; }
         public CEnum? CEnum { get; set; }
     };
@@ -41,6 +32,21 @@ namespace NpgsqlLegacyExampleGen
         public string CCharacterVarying { get; set; }
         public string CBpchar { get; set; }
         public string CText { get; set; }
+    };
+    public class PostgresDatetimeType
+    {
+        public DateTime? CDate { get; set; }
+        public TimeSpan? CTime { get; set; }
+        public DateTime? CTimestamp { get; set; }
+        public DateTime? CTimestampWithTz { get; set; }
+        public TimeSpan? CInterval { get; set; }
+    };
+    public class PostgresNetworkType
+    {
+        public NpgsqlCidr? CCidr { get; set; }
+        public IPAddress CInet { get; set; }
+        public PhysicalAddress CMacaddr { get; set; }
+        public string CMacaddr8 { get; set; }
     };
     public class PostgresUnstructuredType
     {

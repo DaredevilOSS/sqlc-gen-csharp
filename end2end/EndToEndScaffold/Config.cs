@@ -96,30 +96,38 @@ public enum KnownTestType
 internal static class Config
 {
     private static readonly SortedSet<KnownTestType> _mysqlTestTypes = [
+        KnownTestType.MySqlTransaction,
+        KnownTestType.MySqlTransactionRollback,
+        KnownTestType.MySqlDataTypesOverride,
+        KnownTestType.MySqlScopedSchemaEnum,
+        KnownTestType.MySqlInvalidJson,
+
+        // query annotations
         KnownTestType.One,
         KnownTestType.Many,
         KnownTestType.Exec,
         KnownTestType.ExecRows,
         KnownTestType.ExecLastId,
+
+        // macros
         KnownTestType.JoinEmbed,
         KnownTestType.SelfJoinEmbed,
         KnownTestType.Slice,
         KnownTestType.MultipleSlices,
         KnownTestType.NargNull,
         KnownTestType.NargNotNull,
+
+        // Data types
         KnownTestType.MySqlStringDataTypes,
         KnownTestType.MySqlIntegerDataTypes,
-        KnownTestType.MySqlTransaction,
-        KnownTestType.MySqlTransactionRollback,
         KnownTestType.MySqlFloatingPointDataTypes,
         KnownTestType.MySqlDateTimeDataTypes,
         KnownTestType.MySqlBinaryDataTypes,
         KnownTestType.MySqlEnumDataType,
-        KnownTestType.MySqlScopedSchemaEnum,
         KnownTestType.MySqlJsonDataTypes,
-        KnownTestType.MySqlInvalidJson,
+
+        // :copyfrom (Batch)
         KnownTestType.MySqlJsonCopyFrom,
-        KnownTestType.MySqlDataTypesOverride,
         KnownTestType.MySqlStringCopyFrom,
         KnownTestType.MySqlIntegerCopyFrom,
         KnownTestType.MySqlFloatingPointCopyFrom,
@@ -129,19 +137,27 @@ internal static class Config
     ];
 
     private static readonly SortedSet<KnownTestType> _postgresTestTypes = [
+        KnownTestType.PostgresTransaction,
+        KnownTestType.PostgresTransactionRollback,
+        KnownTestType.ArrayAsParam,
+        KnownTestType.MultipleArraysAsParams,
+        KnownTestType.PostgresInvalidJson,
+        KnownTestType.PostgresInvalidXml,
+
+        // query annotations
         KnownTestType.One,
         KnownTestType.Many,
         KnownTestType.Exec,
         KnownTestType.ExecRows,
         KnownTestType.ExecLastId,
+
+        // macros
         KnownTestType.JoinEmbed,
         KnownTestType.SelfJoinEmbed,
-        KnownTestType.ArrayAsParam,
-        KnownTestType.MultipleArraysAsParams,
         KnownTestType.NargNull,
         KnownTestType.NargNotNull,
-        KnownTestType.PostgresTransaction,
-        KnownTestType.PostgresTransactionRollback,
+
+        // Data types
         KnownTestType.PostgresStringDataTypes,
         KnownTestType.PostgresIntegerDataTypes,
         KnownTestType.PostgresFloatingPointDataTypes,
@@ -149,15 +165,15 @@ internal static class Config
         KnownTestType.PostgresGuidDataTypes,
         KnownTestType.PostgresArrayDataTypes,
         KnownTestType.PostgresGeoDataTypes,
-        KnownTestType.PostgresGeoCopyFrom,
         KnownTestType.PostgresDataTypesOverride,
         KnownTestType.PostgresJsonDataTypes,
-        KnownTestType.PostgresInvalidJson,
         KnownTestType.PostgresNetworkDataTypes,
         KnownTestType.PostgresXmlDataTypes,
-        KnownTestType.PostgresInvalidXml,
         KnownTestType.PostgresEnumDataType,
         KnownTestType.PostgresFullTextSearchDataTypes,
+
+        // :copyfrom (Batch)
+        KnownTestType.PostgresGeoCopyFrom,
         KnownTestType.PostgresStringCopyFrom,
         KnownTestType.PostgresIntegerCopyFrom,
         KnownTestType.PostgresFloatingPointCopyFrom,
