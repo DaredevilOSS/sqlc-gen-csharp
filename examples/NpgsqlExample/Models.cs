@@ -9,6 +9,8 @@ using System.Text.Json;
 using System.Xml;
 
 namespace NpgsqlExampleGen;
+public readonly record struct Author(long Id, string Name, string? Bio);
+public readonly record struct Book(Guid Id, string Name, long AuthorId, string? Description);
 public readonly record struct PostgresType(bool? CBoolean, byte[]? CBit, short? CSmallint, int? CInteger, long? CBigint, decimal? CDecimal, decimal? CNumeric, float? CReal, double? CDoublePrecision, decimal? CMoney, Guid? CUuid, CEnum? CEnum);
 public readonly record struct PostgresStringType(string? CChar, string? CVarchar, string? CCharacterVarying, string? CBpchar, string? CText);
 public readonly record struct PostgresDatetimeType(DateTime? CDate, TimeSpan? CTime, DateTime? CTimestamp, DateTime? CTimestampWithTz, TimeSpan? CInterval);
@@ -16,8 +18,6 @@ public readonly record struct PostgresNetworkType(NpgsqlCidr? CCidr, IPAddress? 
 public readonly record struct PostgresUnstructuredType(JsonElement? CJson, JsonElement? CJsonStringOverride, JsonElement? CJsonb, string? CJsonpath, XmlDocument? CXml, XmlDocument? CXmlStringOverride);
 public readonly record struct PostgresArrayType(byte[]? CBytea, bool[]? CBooleanArray, string[]? CTextArray, int[]? CIntegerArray, decimal[]? CDecimalArray, DateTime[]? CDateArray, DateTime[]? CTimestampArray);
 public readonly record struct PostgresGeometricType(NpgsqlPoint? CPoint, NpgsqlLine? CLine, NpgsqlLSeg? CLseg, NpgsqlBox? CBox, NpgsqlPath? CPath, NpgsqlPolygon? CPolygon, NpgsqlCircle? CCircle);
-public readonly record struct Author(long Id, string Name, string? Bio);
-public readonly record struct Book(Guid Id, string Name, long AuthorId, string? Description);
 public readonly record struct ExtendedBio(string AuthorName, string Name, ExtendedBioType? BioType);
 public enum CEnum
 {

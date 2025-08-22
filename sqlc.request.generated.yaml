@@ -5,8 +5,8 @@ plugins:
       cmd: ./dist/LocalRunner
 sql:
   # PostgresSQL
-  - schema: ["examples/config/postgresql/types/schema.sql", "examples/config/postgresql/authors/schema.sql"]
-    queries: ["examples/config/postgresql/types/query.sql", "examples/config/postgresql/authors/query.sql"]
+  - schema: ["examples/config/postgresql/authors/schema.sql", "examples/config/postgresql/types/schema.sql"]
+    queries: ["examples/config/postgresql/authors/query.sql", "examples/config/postgresql/types/query.sql"]
     engine: "postgresql"
     codegen:
       - plugin: csharp
@@ -42,8 +42,8 @@ sql:
                 type: "string"
                 notNull: false
           debugRequest: true
-  - schema: ["examples/config/postgresql/types/schema.sql", "examples/config/postgresql/authors/schema.sql"]
-    queries: ["examples/config/postgresql/types/query.sql", "examples/config/postgresql/authors/query.sql"]
+  - schema: ["examples/config/postgresql/authors/schema.sql", "examples/config/postgresql/types/schema.sql"]
+    queries: ["examples/config/postgresql/authors/query.sql", "examples/config/postgresql/types/query.sql"]
     engine: "postgresql"
     codegen:
       - plugin: csharp
@@ -79,8 +79,8 @@ sql:
                 type: "string"
                 notNull: false
           debugRequest: true
-  - schema: ["examples/config/postgresql/types/schema.sql", "examples/config/postgresql/authors/schema.sql"]
-    queries: ["examples/config/postgresql/types/query.sql", "examples/config/postgresql/authors/query.sql"]
+  - schema: ["examples/config/postgresql/authors/schema.sql", "examples/config/postgresql/types/schema.sql"]
+    queries: ["examples/config/postgresql/authors/query.sql", "examples/config/postgresql/types/query.sql"]
     engine: "postgresql"
     codegen:
       - plugin: csharp
@@ -116,8 +116,8 @@ sql:
                 type: "string"
                 notNull: false
           debugRequest: true
-  - schema: ["examples/config/postgresql/types/schema.sql", "examples/config/postgresql/authors/schema.sql"]
-    queries: ["examples/config/postgresql/types/query.sql", "examples/config/postgresql/authors/query.sql"]
+  - schema: ["examples/config/postgresql/authors/schema.sql", "examples/config/postgresql/types/schema.sql"]
+    queries: ["examples/config/postgresql/authors/query.sql", "examples/config/postgresql/types/query.sql"]
     engine: "postgresql"
     codegen:
       - plugin: csharp
@@ -154,7 +154,7 @@ sql:
                 notNull: false
           debugRequest: true
   # MySQL
-  - schema: ["examples/config/mysql/types/schema.sql", "examples/config/mysql/authors/schema.sql"]
+  - schema: ["examples/config/mysql/authors/schema.sql", "examples/config/mysql/types/schema.sql"]
     queries: ["examples/config/mysql/authors/query.sql", "examples/config/mysql/types/query.sql"]
     engine: "mysql"
     codegen:
@@ -183,7 +183,7 @@ sql:
                 type: "string"
                 notNull: false
           debugRequest: true
-  - schema: ["examples/config/mysql/types/schema.sql", "examples/config/mysql/authors/schema.sql"]
+  - schema: ["examples/config/mysql/authors/schema.sql", "examples/config/mysql/types/schema.sql"]
     queries: ["examples/config/mysql/authors/query.sql", "examples/config/mysql/types/query.sql"]
     engine: "mysql"
     codegen:
@@ -212,8 +212,8 @@ sql:
                 type: "string"
                 notNull: false
           debugRequest: true
-  - schema: ["examples/config/mysql/types/schema.sql", "examples/config/mysql/authors/schema.sql"]
-    queries: ["examples/config/mysql/types/query.sql", "examples/config/mysql/authors/query.sql"]
+  - schema: ["examples/config/mysql/authors/schema.sql", "examples/config/mysql/types/schema.sql"]
+    queries: ["examples/config/mysql/authors/query.sql", "examples/config/mysql/types/query.sql"]
     engine: "mysql"
     codegen:
       - plugin: csharp
@@ -241,8 +241,8 @@ sql:
                 type: "string"
                 notNull: false
           debugRequest: true
-  - schema: ["examples/config/mysql/types/schema.sql", "examples/config/mysql/authors/schema.sql"]
-    queries: ["examples/config/mysql/types/query.sql", "examples/config/mysql/authors/query.sql"]
+  - schema: ["examples/config/mysql/authors/schema.sql", "examples/config/mysql/types/schema.sql"]
+    queries: ["examples/config/mysql/authors/query.sql", "examples/config/mysql/types/query.sql"]
     engine: "mysql"
     codegen:
       - plugin: csharp
@@ -271,8 +271,8 @@ sql:
                 notNull: false
           debugRequest: true
   # Sqlite
-  - schema: ["examples/config/sqlite/types/schema.sql", "examples/config/sqlite/authors/schema.sql"]
-    queries: ["examples/config/sqlite/types/query.sql", "examples/config/sqlite/authors/query.sql"]
+  - schema: ["examples/config/sqlite/authors/schema.sql", "examples/config/sqlite/types/schema.sql"]
+    queries: ["examples/config/sqlite/authors/query.sql", "examples/config/sqlite/types/query.sql"]
     engine: "sqlite"
     codegen:
       - plugin: csharp
@@ -296,8 +296,8 @@ sql:
                 type: "decimal"
                 notNull: true
           debugRequest: true
-  - schema: ["examples/config/sqlite/types/schema.sql", "examples/config/sqlite/authors/schema.sql"]
-    queries: ["examples/config/sqlite/types/query.sql", "examples/config/sqlite/authors/query.sql"]
+  - schema: ["examples/config/sqlite/authors/schema.sql", "examples/config/sqlite/types/schema.sql"]
+    queries: ["examples/config/sqlite/authors/query.sql", "examples/config/sqlite/types/query.sql"]
     engine: "sqlite"
     codegen:
       - plugin: csharp
@@ -321,8 +321,8 @@ sql:
                 type: "decimal"
                 notNull: true
           debugRequest: true
-  - schema: ["examples/config/sqlite/types/schema.sql", "examples/config/sqlite/authors/schema.sql"]
-    queries: ["examples/config/sqlite/types/query.sql", "examples/config/sqlite/authors/query.sql"]
+  - schema: ["examples/config/sqlite/authors/schema.sql", "examples/config/sqlite/types/schema.sql"]
+    queries: ["examples/config/sqlite/authors/query.sql", "examples/config/sqlite/types/query.sql"]
     engine: "sqlite"
     codegen:
       - plugin: csharp
@@ -346,8 +346,8 @@ sql:
                 type: "decimal"
                 notNull: true
           debugRequest: true
-  - schema: ["examples/config/sqlite/types/schema.sql", "examples/config/sqlite/authors/schema.sql"]
-    queries: ["examples/config/sqlite/types/query.sql", "examples/config/sqlite/authors/query.sql"]
+  - schema: ["examples/config/sqlite/authors/schema.sql", "examples/config/sqlite/types/schema.sql"]
+    queries: ["examples/config/sqlite/authors/query.sql", "examples/config/sqlite/types/query.sql"]
     engine: "sqlite"
     codegen:
       - plugin: csharp

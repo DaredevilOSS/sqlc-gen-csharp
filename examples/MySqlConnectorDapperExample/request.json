@@ -3,8 +3,8 @@
     "version": "2",
     "engine": "mysql",
     "schema": [
-      "examples/config/mysql/types/schema.sql",
-      "examples/config/mysql/authors/schema.sql"
+      "examples/config/mysql/authors/schema.sql",
+      "examples/config/mysql/types/schema.sql"
     ],
     "queries": [
       "examples/config/mysql/authors/query.sql",
@@ -25,6 +25,95 @@
       {
         "name": "public",
         "tables": [
+          {
+            "rel": {
+              "name": "authors"
+            },
+            "columns": [
+              {
+                "name": "id",
+                "notNull": true,
+                "length": -1,
+                "table": {
+                  "name": "authors"
+                },
+                "type": {
+                  "name": "bigint"
+                }
+              },
+              {
+                "name": "name",
+                "notNull": true,
+                "length": -1,
+                "table": {
+                  "name": "authors"
+                },
+                "type": {
+                  "name": "text"
+                }
+              },
+              {
+                "name": "bio",
+                "length": -1,
+                "table": {
+                  "name": "authors"
+                },
+                "type": {
+                  "name": "text"
+                }
+              }
+            ]
+          },
+          {
+            "rel": {
+              "name": "books"
+            },
+            "columns": [
+              {
+                "name": "id",
+                "notNull": true,
+                "length": -1,
+                "table": {
+                  "name": "books"
+                },
+                "type": {
+                  "name": "bigint"
+                }
+              },
+              {
+                "name": "name",
+                "notNull": true,
+                "length": -1,
+                "table": {
+                  "name": "books"
+                },
+                "type": {
+                  "name": "text"
+                }
+              },
+              {
+                "name": "author_id",
+                "notNull": true,
+                "length": -1,
+                "table": {
+                  "name": "books"
+                },
+                "type": {
+                  "name": "bigint"
+                }
+              },
+              {
+                "name": "description",
+                "length": -1,
+                "table": {
+                  "name": "books"
+                },
+                "type": {
+                  "name": "text"
+                }
+              }
+            ]
+          },
           {
             "rel": {
               "name": "mysql_numeric_types"
@@ -442,114 +531,9 @@
                 }
               }
             ]
-          },
-          {
-            "rel": {
-              "name": "authors"
-            },
-            "columns": [
-              {
-                "name": "id",
-                "notNull": true,
-                "length": -1,
-                "table": {
-                  "name": "authors"
-                },
-                "type": {
-                  "name": "bigint"
-                }
-              },
-              {
-                "name": "name",
-                "notNull": true,
-                "length": -1,
-                "table": {
-                  "name": "authors"
-                },
-                "type": {
-                  "name": "text"
-                }
-              },
-              {
-                "name": "bio",
-                "length": -1,
-                "table": {
-                  "name": "authors"
-                },
-                "type": {
-                  "name": "text"
-                }
-              }
-            ]
-          },
-          {
-            "rel": {
-              "name": "books"
-            },
-            "columns": [
-              {
-                "name": "id",
-                "notNull": true,
-                "length": -1,
-                "table": {
-                  "name": "books"
-                },
-                "type": {
-                  "name": "bigint"
-                }
-              },
-              {
-                "name": "name",
-                "notNull": true,
-                "length": -1,
-                "table": {
-                  "name": "books"
-                },
-                "type": {
-                  "name": "text"
-                }
-              },
-              {
-                "name": "author_id",
-                "notNull": true,
-                "length": -1,
-                "table": {
-                  "name": "books"
-                },
-                "type": {
-                  "name": "bigint"
-                }
-              },
-              {
-                "name": "description",
-                "length": -1,
-                "table": {
-                  "name": "books"
-                },
-                "type": {
-                  "name": "text"
-                }
-              }
-            ]
           }
         ],
         "enums": [
-          {
-            "name": "mysql_string_types_c_enum",
-            "vals": [
-              "small",
-              "medium",
-              "big"
-            ]
-          },
-          {
-            "name": "mysql_string_types_c_set",
-            "vals": [
-              "tea",
-              "coffee",
-              "milk"
-            ]
-          },
           {
             "name": "bios_bio_type",
             "vals": [
@@ -564,6 +548,22 @@
               "Author",
               "Editor",
               "Translator"
+            ]
+          },
+          {
+            "name": "mysql_string_types_c_enum",
+            "vals": [
+              "small",
+              "medium",
+              "big"
+            ]
+          },
+          {
+            "name": "mysql_string_types_c_set",
+            "vals": [
+              "tea",
+              "coffee",
+              "milk"
             ]
           }
         ]

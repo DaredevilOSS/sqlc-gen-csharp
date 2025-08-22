@@ -34,253 +34,6 @@ public class QuerySql
     private SqliteTransaction? Transaction { get; }
     private string? ConnectionString { get; }
 
-    private const string InsertSqliteTypesSql = "INSERT INTO types_sqlite (c_integer, c_real, c_text, c_blob) VALUES (@c_integer, @c_real, @c_text, @c_blob)";
-    public readonly record struct InsertSqliteTypesArgs(int? CInteger, decimal? CReal, string? CText, byte[]? CBlob);
-    public async Task InsertSqliteTypes(InsertSqliteTypesArgs args)
-    {
-        if (this.Transaction == null)
-        {
-            using (var connection = new SqliteConnection(ConnectionString))
-            {
-                await connection.OpenAsync();
-                using (var command = new SqliteCommand(InsertSqliteTypesSql, connection))
-                {
-                    command.Parameters.AddWithValue("@c_integer", args.CInteger ?? (object)DBNull.Value);
-                    command.Parameters.AddWithValue("@c_real", args.CReal ?? (object)DBNull.Value);
-                    command.Parameters.AddWithValue("@c_text", args.CText ?? (object)DBNull.Value);
-                    command.Parameters.AddWithValue("@c_blob", args.CBlob ?? (object)DBNull.Value);
-                    await command.ExecuteNonQueryAsync();
-                }
-            }
-
-            return;
-        }
-
-        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
-            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
-        using (var command = this.Transaction.Connection.CreateCommand())
-        {
-            command.CommandText = InsertSqliteTypesSql;
-            command.Transaction = this.Transaction;
-            command.Parameters.AddWithValue("@c_integer", args.CInteger ?? (object)DBNull.Value);
-            command.Parameters.AddWithValue("@c_real", args.CReal ?? (object)DBNull.Value);
-            command.Parameters.AddWithValue("@c_text", args.CText ?? (object)DBNull.Value);
-            command.Parameters.AddWithValue("@c_blob", args.CBlob ?? (object)DBNull.Value);
-            await command.ExecuteNonQueryAsync();
-        }
-    }
-
-    private const string InsertSqliteTypesBatchSql = "INSERT INTO types_sqlite (c_integer, c_real, c_text) VALUES (@c_integer, @c_real, @c_text)";
-    public readonly record struct InsertSqliteTypesBatchArgs(int? CInteger, decimal? CReal, string? CText);
-    public async Task InsertSqliteTypesBatch(List<InsertSqliteTypesBatchArgs> args)
-    {
-        using (var connection = new SqliteConnection(ConnectionString))
-        {
-            await connection.OpenAsync();
-            var transformedSql = Utils.TransformQueryForSqliteBatch(InsertSqliteTypesBatchSql, args.Count);
-            using (var command = new SqliteCommand(transformedSql, connection))
-            {
-                for (int i = 0; i < args.Count; i++)
-                {
-                    command.Parameters.AddWithValue($"@c_integer{i}", args[i].CInteger ?? (object)DBNull.Value);
-                    command.Parameters.AddWithValue($"@c_real{i}", args[i].CReal ?? (object)DBNull.Value);
-                    command.Parameters.AddWithValue($"@c_text{i}", args[i].CText ?? (object)DBNull.Value);
-                }
-
-                await command.ExecuteScalarAsync();
-            }
-        }
-    }
-
-    private const string GetSqliteTypesSql = "SELECT c_integer, c_real, c_text, c_blob FROM types_sqlite LIMIT 1";
-    public readonly record struct GetSqliteTypesRow(int? CInteger, decimal? CReal, string? CText, byte[]? CBlob);
-    public async Task<GetSqliteTypesRow?> GetSqliteTypes()
-    {
-        if (this.Transaction == null)
-        {
-            using (var connection = new SqliteConnection(ConnectionString))
-            {
-                await connection.OpenAsync();
-                using (var command = new SqliteCommand(GetSqliteTypesSql, connection))
-                {
-                    using (var reader = await command.ExecuteReaderAsync())
-                    {
-                        if (await reader.ReadAsync())
-                        {
-                            return new GetSqliteTypesRow
-                            {
-                                CInteger = reader.IsDBNull(0) ? null : reader.GetInt32(0),
-                                CReal = reader.IsDBNull(1) ? null : reader.GetDecimal(1),
-                                CText = reader.IsDBNull(2) ? null : reader.GetString(2),
-                                CBlob = reader.IsDBNull(3) ? null : reader.GetFieldValue<byte[]>(3)
-                            };
-                        }
-                    }
-                }
-            }
-
-            return null;
-        }
-
-        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
-            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
-        using (var command = this.Transaction.Connection.CreateCommand())
-        {
-            command.CommandText = GetSqliteTypesSql;
-            command.Transaction = this.Transaction;
-            using (var reader = await command.ExecuteReaderAsync())
-            {
-                if (await reader.ReadAsync())
-                {
-                    return new GetSqliteTypesRow
-                    {
-                        CInteger = reader.IsDBNull(0) ? null : reader.GetInt32(0),
-                        CReal = reader.IsDBNull(1) ? null : reader.GetDecimal(1),
-                        CText = reader.IsDBNull(2) ? null : reader.GetString(2),
-                        CBlob = reader.IsDBNull(3) ? null : reader.GetFieldValue<byte[]>(3)
-                    };
-                }
-            }
-        }
-
-        return null;
-    }
-
-    private const string GetSqliteTypesCntSql = "SELECT c_integer, c_real, c_text, c_blob, COUNT(*) AS cnt FROM types_sqlite GROUP BY c_integer, c_real, c_text, c_blob LIMIT 1";
-    public readonly record struct GetSqliteTypesCntRow(int? CInteger, decimal? CReal, string? CText, byte[]? CBlob, int Cnt);
-    public async Task<GetSqliteTypesCntRow?> GetSqliteTypesCnt()
-    {
-        if (this.Transaction == null)
-        {
-            using (var connection = new SqliteConnection(ConnectionString))
-            {
-                await connection.OpenAsync();
-                using (var command = new SqliteCommand(GetSqliteTypesCntSql, connection))
-                {
-                    using (var reader = await command.ExecuteReaderAsync())
-                    {
-                        if (await reader.ReadAsync())
-                        {
-                            return new GetSqliteTypesCntRow
-                            {
-                                CInteger = reader.IsDBNull(0) ? null : reader.GetInt32(0),
-                                CReal = reader.IsDBNull(1) ? null : reader.GetDecimal(1),
-                                CText = reader.IsDBNull(2) ? null : reader.GetString(2),
-                                CBlob = reader.IsDBNull(3) ? null : reader.GetFieldValue<byte[]>(3),
-                                Cnt = reader.GetInt32(4)
-                            };
-                        }
-                    }
-                }
-            }
-
-            return null;
-        }
-
-        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
-            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
-        using (var command = this.Transaction.Connection.CreateCommand())
-        {
-            command.CommandText = GetSqliteTypesCntSql;
-            command.Transaction = this.Transaction;
-            using (var reader = await command.ExecuteReaderAsync())
-            {
-                if (await reader.ReadAsync())
-                {
-                    return new GetSqliteTypesCntRow
-                    {
-                        CInteger = reader.IsDBNull(0) ? null : reader.GetInt32(0),
-                        CReal = reader.IsDBNull(1) ? null : reader.GetDecimal(1),
-                        CText = reader.IsDBNull(2) ? null : reader.GetString(2),
-                        CBlob = reader.IsDBNull(3) ? null : reader.GetFieldValue<byte[]>(3),
-                        Cnt = reader.GetInt32(4)
-                    };
-                }
-            }
-        }
-
-        return null;
-    }
-
-    private const string GetSqliteFunctionsSql = "SELECT MAX(c_integer) AS max_integer, MAX(c_real) AS max_real, MAX(c_text) AS max_text FROM types_sqlite";
-    public readonly record struct GetSqliteFunctionsRow(int? MaxInteger, decimal MaxReal, object? MaxText);
-    public async Task<GetSqliteFunctionsRow?> GetSqliteFunctions()
-    {
-        if (this.Transaction == null)
-        {
-            using (var connection = new SqliteConnection(ConnectionString))
-            {
-                await connection.OpenAsync();
-                using (var command = new SqliteCommand(GetSqliteFunctionsSql, connection))
-                {
-                    using (var reader = await command.ExecuteReaderAsync())
-                    {
-                        if (await reader.ReadAsync())
-                        {
-                            return new GetSqliteFunctionsRow
-                            {
-                                MaxInteger = reader.IsDBNull(0) ? null : reader.GetInt32(0),
-                                MaxReal = reader.GetDecimal(1),
-                                MaxText = reader.IsDBNull(2) ? null : reader.GetValue(2)
-                            };
-                        }
-                    }
-                }
-            }
-
-            return null;
-        }
-
-        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
-            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
-        using (var command = this.Transaction.Connection.CreateCommand())
-        {
-            command.CommandText = GetSqliteFunctionsSql;
-            command.Transaction = this.Transaction;
-            using (var reader = await command.ExecuteReaderAsync())
-            {
-                if (await reader.ReadAsync())
-                {
-                    return new GetSqliteFunctionsRow
-                    {
-                        MaxInteger = reader.IsDBNull(0) ? null : reader.GetInt32(0),
-                        MaxReal = reader.GetDecimal(1),
-                        MaxText = reader.IsDBNull(2) ? null : reader.GetValue(2)
-                    };
-                }
-            }
-        }
-
-        return null;
-    }
-
-    private const string DeleteAllSqliteTypesSql = "DELETE FROM types_sqlite";
-    public async Task DeleteAllSqliteTypes()
-    {
-        if (this.Transaction == null)
-        {
-            using (var connection = new SqliteConnection(ConnectionString))
-            {
-                await connection.OpenAsync();
-                using (var command = new SqliteCommand(DeleteAllSqliteTypesSql, connection))
-                {
-                    await command.ExecuteNonQueryAsync();
-                }
-            }
-
-            return;
-        }
-
-        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
-            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
-        using (var command = this.Transaction.Connection.CreateCommand())
-        {
-            command.CommandText = DeleteAllSqliteTypesSql;
-            command.Transaction = this.Transaction;
-            await command.ExecuteNonQueryAsync();
-        }
-    }
-
     private const string GetAuthorSql = "SELECT id, name, bio FROM authors WHERE name = @name LIMIT 1";
     public readonly record struct GetAuthorRow(int Id, string Name, string? Bio);
     public readonly record struct GetAuthorArgs(string Name);
@@ -924,6 +677,253 @@ public class QuerySql
         using (var command = this.Transaction.Connection.CreateCommand())
         {
             command.CommandText = DeleteAllAuthorsSql;
+            command.Transaction = this.Transaction;
+            await command.ExecuteNonQueryAsync();
+        }
+    }
+
+    private const string InsertSqliteTypesSql = "INSERT INTO types_sqlite (c_integer, c_real, c_text, c_blob) VALUES (@c_integer, @c_real, @c_text, @c_blob)";
+    public readonly record struct InsertSqliteTypesArgs(int? CInteger, decimal? CReal, string? CText, byte[]? CBlob);
+    public async Task InsertSqliteTypes(InsertSqliteTypesArgs args)
+    {
+        if (this.Transaction == null)
+        {
+            using (var connection = new SqliteConnection(ConnectionString))
+            {
+                await connection.OpenAsync();
+                using (var command = new SqliteCommand(InsertSqliteTypesSql, connection))
+                {
+                    command.Parameters.AddWithValue("@c_integer", args.CInteger ?? (object)DBNull.Value);
+                    command.Parameters.AddWithValue("@c_real", args.CReal ?? (object)DBNull.Value);
+                    command.Parameters.AddWithValue("@c_text", args.CText ?? (object)DBNull.Value);
+                    command.Parameters.AddWithValue("@c_blob", args.CBlob ?? (object)DBNull.Value);
+                    await command.ExecuteNonQueryAsync();
+                }
+            }
+
+            return;
+        }
+
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+        using (var command = this.Transaction.Connection.CreateCommand())
+        {
+            command.CommandText = InsertSqliteTypesSql;
+            command.Transaction = this.Transaction;
+            command.Parameters.AddWithValue("@c_integer", args.CInteger ?? (object)DBNull.Value);
+            command.Parameters.AddWithValue("@c_real", args.CReal ?? (object)DBNull.Value);
+            command.Parameters.AddWithValue("@c_text", args.CText ?? (object)DBNull.Value);
+            command.Parameters.AddWithValue("@c_blob", args.CBlob ?? (object)DBNull.Value);
+            await command.ExecuteNonQueryAsync();
+        }
+    }
+
+    private const string InsertSqliteTypesBatchSql = "INSERT INTO types_sqlite (c_integer, c_real, c_text) VALUES (@c_integer, @c_real, @c_text)";
+    public readonly record struct InsertSqliteTypesBatchArgs(int? CInteger, decimal? CReal, string? CText);
+    public async Task InsertSqliteTypesBatch(List<InsertSqliteTypesBatchArgs> args)
+    {
+        using (var connection = new SqliteConnection(ConnectionString))
+        {
+            await connection.OpenAsync();
+            var transformedSql = Utils.TransformQueryForSqliteBatch(InsertSqliteTypesBatchSql, args.Count);
+            using (var command = new SqliteCommand(transformedSql, connection))
+            {
+                for (int i = 0; i < args.Count; i++)
+                {
+                    command.Parameters.AddWithValue($"@c_integer{i}", args[i].CInteger ?? (object)DBNull.Value);
+                    command.Parameters.AddWithValue($"@c_real{i}", args[i].CReal ?? (object)DBNull.Value);
+                    command.Parameters.AddWithValue($"@c_text{i}", args[i].CText ?? (object)DBNull.Value);
+                }
+
+                await command.ExecuteScalarAsync();
+            }
+        }
+    }
+
+    private const string GetSqliteTypesSql = "SELECT c_integer, c_real, c_text, c_blob FROM types_sqlite LIMIT 1";
+    public readonly record struct GetSqliteTypesRow(int? CInteger, decimal? CReal, string? CText, byte[]? CBlob);
+    public async Task<GetSqliteTypesRow?> GetSqliteTypes()
+    {
+        if (this.Transaction == null)
+        {
+            using (var connection = new SqliteConnection(ConnectionString))
+            {
+                await connection.OpenAsync();
+                using (var command = new SqliteCommand(GetSqliteTypesSql, connection))
+                {
+                    using (var reader = await command.ExecuteReaderAsync())
+                    {
+                        if (await reader.ReadAsync())
+                        {
+                            return new GetSqliteTypesRow
+                            {
+                                CInteger = reader.IsDBNull(0) ? null : reader.GetInt32(0),
+                                CReal = reader.IsDBNull(1) ? null : reader.GetDecimal(1),
+                                CText = reader.IsDBNull(2) ? null : reader.GetString(2),
+                                CBlob = reader.IsDBNull(3) ? null : reader.GetFieldValue<byte[]>(3)
+                            };
+                        }
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+        using (var command = this.Transaction.Connection.CreateCommand())
+        {
+            command.CommandText = GetSqliteTypesSql;
+            command.Transaction = this.Transaction;
+            using (var reader = await command.ExecuteReaderAsync())
+            {
+                if (await reader.ReadAsync())
+                {
+                    return new GetSqliteTypesRow
+                    {
+                        CInteger = reader.IsDBNull(0) ? null : reader.GetInt32(0),
+                        CReal = reader.IsDBNull(1) ? null : reader.GetDecimal(1),
+                        CText = reader.IsDBNull(2) ? null : reader.GetString(2),
+                        CBlob = reader.IsDBNull(3) ? null : reader.GetFieldValue<byte[]>(3)
+                    };
+                }
+            }
+        }
+
+        return null;
+    }
+
+    private const string GetSqliteTypesCntSql = "SELECT c_integer, c_real, c_text, c_blob, COUNT(*) AS cnt FROM types_sqlite GROUP BY c_integer, c_real, c_text, c_blob LIMIT 1";
+    public readonly record struct GetSqliteTypesCntRow(int? CInteger, decimal? CReal, string? CText, byte[]? CBlob, int Cnt);
+    public async Task<GetSqliteTypesCntRow?> GetSqliteTypesCnt()
+    {
+        if (this.Transaction == null)
+        {
+            using (var connection = new SqliteConnection(ConnectionString))
+            {
+                await connection.OpenAsync();
+                using (var command = new SqliteCommand(GetSqliteTypesCntSql, connection))
+                {
+                    using (var reader = await command.ExecuteReaderAsync())
+                    {
+                        if (await reader.ReadAsync())
+                        {
+                            return new GetSqliteTypesCntRow
+                            {
+                                CInteger = reader.IsDBNull(0) ? null : reader.GetInt32(0),
+                                CReal = reader.IsDBNull(1) ? null : reader.GetDecimal(1),
+                                CText = reader.IsDBNull(2) ? null : reader.GetString(2),
+                                CBlob = reader.IsDBNull(3) ? null : reader.GetFieldValue<byte[]>(3),
+                                Cnt = reader.GetInt32(4)
+                            };
+                        }
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+        using (var command = this.Transaction.Connection.CreateCommand())
+        {
+            command.CommandText = GetSqliteTypesCntSql;
+            command.Transaction = this.Transaction;
+            using (var reader = await command.ExecuteReaderAsync())
+            {
+                if (await reader.ReadAsync())
+                {
+                    return new GetSqliteTypesCntRow
+                    {
+                        CInteger = reader.IsDBNull(0) ? null : reader.GetInt32(0),
+                        CReal = reader.IsDBNull(1) ? null : reader.GetDecimal(1),
+                        CText = reader.IsDBNull(2) ? null : reader.GetString(2),
+                        CBlob = reader.IsDBNull(3) ? null : reader.GetFieldValue<byte[]>(3),
+                        Cnt = reader.GetInt32(4)
+                    };
+                }
+            }
+        }
+
+        return null;
+    }
+
+    private const string GetSqliteFunctionsSql = "SELECT MAX(c_integer) AS max_integer, MAX(c_real) AS max_real, MAX(c_text) AS max_text FROM types_sqlite";
+    public readonly record struct GetSqliteFunctionsRow(int? MaxInteger, decimal MaxReal, object? MaxText);
+    public async Task<GetSqliteFunctionsRow?> GetSqliteFunctions()
+    {
+        if (this.Transaction == null)
+        {
+            using (var connection = new SqliteConnection(ConnectionString))
+            {
+                await connection.OpenAsync();
+                using (var command = new SqliteCommand(GetSqliteFunctionsSql, connection))
+                {
+                    using (var reader = await command.ExecuteReaderAsync())
+                    {
+                        if (await reader.ReadAsync())
+                        {
+                            return new GetSqliteFunctionsRow
+                            {
+                                MaxInteger = reader.IsDBNull(0) ? null : reader.GetInt32(0),
+                                MaxReal = reader.GetDecimal(1),
+                                MaxText = reader.IsDBNull(2) ? null : reader.GetValue(2)
+                            };
+                        }
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+        using (var command = this.Transaction.Connection.CreateCommand())
+        {
+            command.CommandText = GetSqliteFunctionsSql;
+            command.Transaction = this.Transaction;
+            using (var reader = await command.ExecuteReaderAsync())
+            {
+                if (await reader.ReadAsync())
+                {
+                    return new GetSqliteFunctionsRow
+                    {
+                        MaxInteger = reader.IsDBNull(0) ? null : reader.GetInt32(0),
+                        MaxReal = reader.GetDecimal(1),
+                        MaxText = reader.IsDBNull(2) ? null : reader.GetValue(2)
+                    };
+                }
+            }
+        }
+
+        return null;
+    }
+
+    private const string DeleteAllSqliteTypesSql = "DELETE FROM types_sqlite";
+    public async Task DeleteAllSqliteTypes()
+    {
+        if (this.Transaction == null)
+        {
+            using (var connection = new SqliteConnection(ConnectionString))
+            {
+                await connection.OpenAsync();
+                using (var command = new SqliteCommand(DeleteAllSqliteTypesSql, connection))
+                {
+                    await command.ExecuteNonQueryAsync();
+                }
+            }
+
+            return;
+        }
+
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+        using (var command = this.Transaction.Connection.CreateCommand())
+        {
+            command.CommandText = DeleteAllSqliteTypesSql;
             command.Transaction = this.Transaction;
             await command.ExecuteNonQueryAsync();
         }

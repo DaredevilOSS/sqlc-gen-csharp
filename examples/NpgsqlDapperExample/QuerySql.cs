@@ -43,6 +43,525 @@ public class QuerySql
     private NpgsqlTransaction? Transaction { get; }
     private string? ConnectionString { get; }
 
+    private const string GetAuthorSql = "SELECT id, name, bio FROM authors WHERE name = @name LIMIT 1";
+    public class GetAuthorRow
+    {
+        public required long Id { get; init; }
+        public required string Name { get; init; }
+        public string? Bio { get; init; }
+    };
+    public class GetAuthorArgs
+    {
+        public required string Name { get; init; }
+    };
+    public async Task<GetAuthorRow?> GetAuthor(GetAuthorArgs args)
+    {
+        var queryParams = new Dictionary<string, object?>();
+        queryParams.Add("name", args.Name);
+        if (this.Transaction == null)
+        {
+            using (var connection = new NpgsqlConnection(ConnectionString))
+            {
+                var result = await connection.QueryFirstOrDefaultAsync<GetAuthorRow?>(GetAuthorSql, queryParams);
+                return result;
+            }
+        }
+
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+        return await this.Transaction.Connection.QueryFirstOrDefaultAsync<GetAuthorRow?>(GetAuthorSql, queryParams, transaction: this.Transaction);
+    }
+
+    private const string ListAuthorsSql = "SELECT id, name, bio FROM authors ORDER BY name LIMIT @limit OFFSET @offset";
+    public class ListAuthorsRow
+    {
+        public required long Id { get; init; }
+        public required string Name { get; init; }
+        public string? Bio { get; init; }
+    };
+    public class ListAuthorsArgs
+    {
+        public required int Offset { get; init; }
+        public required int Limit { get; init; }
+    };
+    public async Task<List<ListAuthorsRow>> ListAuthors(ListAuthorsArgs args)
+    {
+        var queryParams = new Dictionary<string, object?>();
+        queryParams.Add("offset", args.Offset);
+        queryParams.Add("limit", args.Limit);
+        if (this.Transaction == null)
+        {
+            using (var connection = new NpgsqlConnection(ConnectionString))
+            {
+                var result = await connection.QueryAsync<ListAuthorsRow>(ListAuthorsSql, queryParams);
+                return result.AsList();
+            }
+        }
+
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+        return (await this.Transaction.Connection.QueryAsync<ListAuthorsRow>(ListAuthorsSql, queryParams, transaction: this.Transaction)).AsList();
+    }
+
+    private const string CreateAuthorSql = "INSERT INTO authors (id, name, bio) VALUES (@id, @name, @bio) RETURNING id, name, bio";
+    public class CreateAuthorRow
+    {
+        public required long Id { get; init; }
+        public required string Name { get; init; }
+        public string? Bio { get; init; }
+    };
+    public class CreateAuthorArgs
+    {
+        public required long Id { get; init; }
+        public required string Name { get; init; }
+        public string? Bio { get; init; }
+    };
+    public async Task<CreateAuthorRow?> CreateAuthor(CreateAuthorArgs args)
+    {
+        var queryParams = new Dictionary<string, object?>();
+        queryParams.Add("id", args.Id);
+        queryParams.Add("name", args.Name);
+        queryParams.Add("bio", args.Bio);
+        if (this.Transaction == null)
+        {
+            using (var connection = new NpgsqlConnection(ConnectionString))
+            {
+                var result = await connection.QueryFirstOrDefaultAsync<CreateAuthorRow?>(CreateAuthorSql, queryParams);
+                return result;
+            }
+        }
+
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+        return await this.Transaction.Connection.QueryFirstOrDefaultAsync<CreateAuthorRow?>(CreateAuthorSql, queryParams, transaction: this.Transaction);
+    }
+
+    private const string CreateAuthorReturnIdSql = "INSERT INTO authors (name, bio) VALUES (@name, @bio) RETURNING id";
+    public class CreateAuthorReturnIdRow
+    {
+        public required long Id { get; init; }
+    };
+    public class CreateAuthorReturnIdArgs
+    {
+        public required string Name { get; init; }
+        public string? Bio { get; init; }
+    };
+    public async Task<long> CreateAuthorReturnId(CreateAuthorReturnIdArgs args)
+    {
+        var queryParams = new Dictionary<string, object?>();
+        queryParams.Add("name", args.Name);
+        queryParams.Add("bio", args.Bio);
+        if (this.Transaction == null)
+        {
+            using (var connection = new NpgsqlConnection(ConnectionString))
+                return await connection.QuerySingleAsync<long>(CreateAuthorReturnIdSql, queryParams);
+        }
+
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+        return await this.Transaction.Connection.QuerySingleAsync<long>(CreateAuthorReturnIdSql, queryParams, transaction: this.Transaction);
+    }
+
+    private const string GetAuthorByIdSql = "SELECT id, name, bio FROM authors WHERE id = @id LIMIT 1";
+    public class GetAuthorByIdRow
+    {
+        public required long Id { get; init; }
+        public required string Name { get; init; }
+        public string? Bio { get; init; }
+    };
+    public class GetAuthorByIdArgs
+    {
+        public required long Id { get; init; }
+    };
+    public async Task<GetAuthorByIdRow?> GetAuthorById(GetAuthorByIdArgs args)
+    {
+        var queryParams = new Dictionary<string, object?>();
+        queryParams.Add("id", args.Id);
+        if (this.Transaction == null)
+        {
+            using (var connection = new NpgsqlConnection(ConnectionString))
+            {
+                var result = await connection.QueryFirstOrDefaultAsync<GetAuthorByIdRow?>(GetAuthorByIdSql, queryParams);
+                return result;
+            }
+        }
+
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+        return await this.Transaction.Connection.QueryFirstOrDefaultAsync<GetAuthorByIdRow?>(GetAuthorByIdSql, queryParams, transaction: this.Transaction);
+    }
+
+    private const string GetAuthorByNamePatternSql = "SELECT id, name, bio FROM authors WHERE name LIKE COALESCE(@name_pattern, '%')";
+    public class GetAuthorByNamePatternRow
+    {
+        public required long Id { get; init; }
+        public required string Name { get; init; }
+        public string? Bio { get; init; }
+    };
+    public class GetAuthorByNamePatternArgs
+    {
+        public string? NamePattern { get; init; }
+    };
+    public async Task<List<GetAuthorByNamePatternRow>> GetAuthorByNamePattern(GetAuthorByNamePatternArgs args)
+    {
+        var queryParams = new Dictionary<string, object?>();
+        queryParams.Add("name_pattern", args.NamePattern);
+        if (this.Transaction == null)
+        {
+            using (var connection = new NpgsqlConnection(ConnectionString))
+            {
+                var result = await connection.QueryAsync<GetAuthorByNamePatternRow>(GetAuthorByNamePatternSql, queryParams);
+                return result.AsList();
+            }
+        }
+
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+        return (await this.Transaction.Connection.QueryAsync<GetAuthorByNamePatternRow>(GetAuthorByNamePatternSql, queryParams, transaction: this.Transaction)).AsList();
+    }
+
+    private const string DeleteAuthorSql = "DELETE FROM authors WHERE name = @name";
+    public class DeleteAuthorArgs
+    {
+        public required string Name { get; init; }
+    };
+    public async Task DeleteAuthor(DeleteAuthorArgs args)
+    {
+        var queryParams = new Dictionary<string, object?>();
+        queryParams.Add("name", args.Name);
+        if (this.Transaction == null)
+        {
+            using (var connection = new NpgsqlConnection(ConnectionString))
+                await connection.ExecuteAsync(DeleteAuthorSql, queryParams);
+            return;
+        }
+
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+        await this.Transaction.Connection.ExecuteAsync(DeleteAuthorSql, queryParams, transaction: this.Transaction);
+    }
+
+    private const string TruncateAuthorsSql = "TRUNCATE TABLE authors CASCADE";
+    public async Task TruncateAuthors()
+    {
+        if (this.Transaction == null)
+        {
+            using (var connection = new NpgsqlConnection(ConnectionString))
+                await connection.ExecuteAsync(TruncateAuthorsSql);
+            return;
+        }
+
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+        await this.Transaction.Connection.ExecuteAsync(TruncateAuthorsSql, transaction: this.Transaction);
+    }
+
+    private const string UpdateAuthorsSql = "UPDATE authors SET bio = @bio WHERE bio IS NOT NULL";
+    public class UpdateAuthorsArgs
+    {
+        public string? Bio { get; init; }
+    };
+    public async Task<long> UpdateAuthors(UpdateAuthorsArgs args)
+    {
+        var queryParams = new Dictionary<string, object?>();
+        queryParams.Add("bio", args.Bio);
+        if (this.Transaction == null)
+        {
+            using (var connection = new NpgsqlConnection(ConnectionString))
+                return await connection.ExecuteAsync(UpdateAuthorsSql, queryParams);
+        }
+
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+        return await this.Transaction.Connection.ExecuteAsync(UpdateAuthorsSql, queryParams, transaction: this.Transaction);
+    }
+
+    private const string GetAuthorsByIdsSql = "SELECT id, name, bio FROM authors WHERE id = ANY(@longArr_1::BIGINT [])";
+    public class GetAuthorsByIdsRow
+    {
+        public required long Id { get; init; }
+        public required string Name { get; init; }
+        public string? Bio { get; init; }
+    };
+    public class GetAuthorsByIdsArgs
+    {
+        public required long[] LongArr1 { get; init; }
+    };
+    public async Task<List<GetAuthorsByIdsRow>> GetAuthorsByIds(GetAuthorsByIdsArgs args)
+    {
+        var queryParams = new Dictionary<string, object?>();
+        queryParams.Add("longArr_1", args.LongArr1);
+        if (this.Transaction == null)
+        {
+            using (var connection = new NpgsqlConnection(ConnectionString))
+            {
+                var result = await connection.QueryAsync<GetAuthorsByIdsRow>(GetAuthorsByIdsSql, queryParams);
+                return result.AsList();
+            }
+        }
+
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+        return (await this.Transaction.Connection.QueryAsync<GetAuthorsByIdsRow>(GetAuthorsByIdsSql, queryParams, transaction: this.Transaction)).AsList();
+    }
+
+    private const string GetAuthorsByIdsAndNamesSql = "SELECT id, name, bio FROM authors WHERE id = ANY(@longArr_1::BIGINT []) AND name = ANY(@stringArr_2::TEXT [])";
+    public class GetAuthorsByIdsAndNamesRow
+    {
+        public required long Id { get; init; }
+        public required string Name { get; init; }
+        public string? Bio { get; init; }
+    };
+    public class GetAuthorsByIdsAndNamesArgs
+    {
+        public required long[] LongArr1 { get; init; }
+        public required string[] StringArr2 { get; init; }
+    };
+    public async Task<List<GetAuthorsByIdsAndNamesRow>> GetAuthorsByIdsAndNames(GetAuthorsByIdsAndNamesArgs args)
+    {
+        var queryParams = new Dictionary<string, object?>();
+        queryParams.Add("longArr_1", args.LongArr1);
+        queryParams.Add("stringArr_2", args.StringArr2);
+        if (this.Transaction == null)
+        {
+            using (var connection = new NpgsqlConnection(ConnectionString))
+            {
+                var result = await connection.QueryAsync<GetAuthorsByIdsAndNamesRow>(GetAuthorsByIdsAndNamesSql, queryParams);
+                return result.AsList();
+            }
+        }
+
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+        return (await this.Transaction.Connection.QueryAsync<GetAuthorsByIdsAndNamesRow>(GetAuthorsByIdsAndNamesSql, queryParams, transaction: this.Transaction)).AsList();
+    }
+
+    private const string CreateBookSql = "INSERT INTO books (name, author_id) VALUES (@name, @author_id) RETURNING id";
+    public class CreateBookRow
+    {
+        public required Guid Id { get; init; }
+    };
+    public class CreateBookArgs
+    {
+        public required string Name { get; init; }
+        public required long AuthorId { get; init; }
+    };
+    public async Task<Guid> CreateBook(CreateBookArgs args)
+    {
+        var queryParams = new Dictionary<string, object?>();
+        queryParams.Add("name", args.Name);
+        queryParams.Add("author_id", args.AuthorId);
+        if (this.Transaction == null)
+        {
+            using (var connection = new NpgsqlConnection(ConnectionString))
+                return await connection.QuerySingleAsync<Guid>(CreateBookSql, queryParams);
+        }
+
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+        return await this.Transaction.Connection.QuerySingleAsync<Guid>(CreateBookSql, queryParams, transaction: this.Transaction);
+    }
+
+    private const string ListAllAuthorsBooksSql = "SELECT authors.id, authors.name, authors.bio, books.id, books.name, books.author_id, books.description FROM authors INNER JOIN books ON authors.id = books.author_id ORDER BY authors.name";
+    public class ListAllAuthorsBooksRow
+    {
+        public required Author? Author { get; init; }
+        public required Book? Book { get; init; }
+    };
+    public async Task<List<ListAllAuthorsBooksRow>> ListAllAuthorsBooks()
+    {
+        if (this.Transaction == null)
+        {
+            using (var connection = NpgsqlDataSource.Create(ConnectionString!))
+            {
+                using (var command = connection.CreateCommand(ListAllAuthorsBooksSql))
+                {
+                    using (var reader = await command.ExecuteReaderAsync())
+                    {
+                        var result = new List<ListAllAuthorsBooksRow>();
+                        while (await reader.ReadAsync())
+                            result.Add(new ListAllAuthorsBooksRow { Author = new Author { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2) }, Book = new Book { Id = reader.GetFieldValue<Guid>(3), Name = reader.GetString(4), AuthorId = reader.GetInt64(5), Description = reader.IsDBNull(6) ? null : reader.GetString(6) } });
+                        return result;
+                    }
+                }
+            }
+        }
+
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+        using (var command = this.Transaction.Connection.CreateCommand())
+        {
+            command.CommandText = ListAllAuthorsBooksSql;
+            command.Transaction = this.Transaction;
+            using (var reader = await command.ExecuteReaderAsync())
+            {
+                var result = new List<ListAllAuthorsBooksRow>();
+                while (await reader.ReadAsync())
+                    result.Add(new ListAllAuthorsBooksRow { Author = new Author { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2) }, Book = new Book { Id = reader.GetFieldValue<Guid>(3), Name = reader.GetString(4), AuthorId = reader.GetInt64(5), Description = reader.IsDBNull(6) ? null : reader.GetString(6) } });
+                return result;
+            }
+        }
+    }
+
+    private const string GetDuplicateAuthorsSql = "SELECT authors1.id, authors1.name, authors1.bio, authors2.id, authors2.name, authors2.bio FROM authors AS authors1 INNER JOIN authors AS authors2 ON authors1.name = authors2.name WHERE authors1.id < authors2.id";
+    public class GetDuplicateAuthorsRow
+    {
+        public required Author? Author { get; init; }
+        public required Author? Author2 { get; init; }
+    };
+    public async Task<List<GetDuplicateAuthorsRow>> GetDuplicateAuthors()
+    {
+        if (this.Transaction == null)
+        {
+            using (var connection = NpgsqlDataSource.Create(ConnectionString!))
+            {
+                using (var command = connection.CreateCommand(GetDuplicateAuthorsSql))
+                {
+                    using (var reader = await command.ExecuteReaderAsync())
+                    {
+                        var result = new List<GetDuplicateAuthorsRow>();
+                        while (await reader.ReadAsync())
+                            result.Add(new GetDuplicateAuthorsRow { Author = new Author { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2) }, Author2 = new Author { Id = reader.GetInt64(3), Name = reader.GetString(4), Bio = reader.IsDBNull(5) ? null : reader.GetString(5) } });
+                        return result;
+                    }
+                }
+            }
+        }
+
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+        using (var command = this.Transaction.Connection.CreateCommand())
+        {
+            command.CommandText = GetDuplicateAuthorsSql;
+            command.Transaction = this.Transaction;
+            using (var reader = await command.ExecuteReaderAsync())
+            {
+                var result = new List<GetDuplicateAuthorsRow>();
+                while (await reader.ReadAsync())
+                    result.Add(new GetDuplicateAuthorsRow { Author = new Author { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2) }, Author2 = new Author { Id = reader.GetInt64(3), Name = reader.GetString(4), Bio = reader.IsDBNull(5) ? null : reader.GetString(5) } });
+                return result;
+            }
+        }
+    }
+
+    private const string GetAuthorsByBookNameSql = "SELECT authors.id, authors.name, authors.bio, books.id, books.name, books.author_id, books.description FROM authors INNER JOIN books ON authors.id = books.author_id WHERE books.name = @name";
+    public class GetAuthorsByBookNameRow
+    {
+        public required long Id { get; init; }
+        public required string Name { get; init; }
+        public string? Bio { get; init; }
+        public required Book? Book { get; init; }
+    };
+    public class GetAuthorsByBookNameArgs
+    {
+        public required string Name { get; init; }
+    };
+    public async Task<List<GetAuthorsByBookNameRow>> GetAuthorsByBookName(GetAuthorsByBookNameArgs args)
+    {
+        if (this.Transaction == null)
+        {
+            using (var connection = NpgsqlDataSource.Create(ConnectionString!))
+            {
+                using (var command = connection.CreateCommand(GetAuthorsByBookNameSql))
+                {
+                    command.Parameters.AddWithValue("@name", args.Name);
+                    using (var reader = await command.ExecuteReaderAsync())
+                    {
+                        var result = new List<GetAuthorsByBookNameRow>();
+                        while (await reader.ReadAsync())
+                            result.Add(new GetAuthorsByBookNameRow { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2), Book = new Book { Id = reader.GetFieldValue<Guid>(3), Name = reader.GetString(4), AuthorId = reader.GetInt64(5), Description = reader.IsDBNull(6) ? null : reader.GetString(6) } });
+                        return result;
+                    }
+                }
+            }
+        }
+
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+        using (var command = this.Transaction.Connection.CreateCommand())
+        {
+            command.CommandText = GetAuthorsByBookNameSql;
+            command.Transaction = this.Transaction;
+            command.Parameters.AddWithValue("@name", args.Name);
+            using (var reader = await command.ExecuteReaderAsync())
+            {
+                var result = new List<GetAuthorsByBookNameRow>();
+                while (await reader.ReadAsync())
+                    result.Add(new GetAuthorsByBookNameRow { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2), Book = new Book { Id = reader.GetFieldValue<Guid>(3), Name = reader.GetString(4), AuthorId = reader.GetInt64(5), Description = reader.IsDBNull(6) ? null : reader.GetString(6) } });
+                return result;
+            }
+        }
+    }
+
+    private const string CreateExtendedBioSql = "INSERT INTO extended.bios (author_name, name, bio_type) VALUES (@author_name, @name, @bio_type)";
+    public class CreateExtendedBioArgs
+    {
+        public required string AuthorName { get; init; }
+        public required string Name { get; init; }
+        public ExtendedBioType? BioType { get; init; }
+    };
+    public async Task CreateExtendedBio(CreateExtendedBioArgs args)
+    {
+        var queryParams = new Dictionary<string, object?>();
+        queryParams.Add("author_name", args.AuthorName);
+        queryParams.Add("name", args.Name);
+        queryParams.Add("bio_type", args.BioType != null ? args.BioType.Value.Stringify() : null);
+        if (this.Transaction == null)
+        {
+            using (var connection = new NpgsqlConnection(ConnectionString))
+                await connection.ExecuteAsync(CreateExtendedBioSql, queryParams);
+            return;
+        }
+
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+        await this.Transaction.Connection.ExecuteAsync(CreateExtendedBioSql, queryParams, transaction: this.Transaction);
+    }
+
+    private const string GetFirstExtendedBioByTypeSql = "SELECT author_name, name, bio_type FROM extended.bios WHERE bio_type = @bio_type LIMIT 1";
+    public class GetFirstExtendedBioByTypeRow
+    {
+        public required string AuthorName { get; init; }
+        public required string Name { get; init; }
+        public ExtendedBioType? BioType { get; init; }
+    };
+    public class GetFirstExtendedBioByTypeArgs
+    {
+        public ExtendedBioType? BioType { get; init; }
+    };
+    public async Task<GetFirstExtendedBioByTypeRow?> GetFirstExtendedBioByType(GetFirstExtendedBioByTypeArgs args)
+    {
+        var queryParams = new Dictionary<string, object?>();
+        queryParams.Add("bio_type", args.BioType != null ? args.BioType.Value.Stringify() : null);
+        if (this.Transaction == null)
+        {
+            using (var connection = new NpgsqlConnection(ConnectionString))
+            {
+                var result = await connection.QueryFirstOrDefaultAsync<GetFirstExtendedBioByTypeRow?>(GetFirstExtendedBioByTypeSql, queryParams);
+                return result;
+            }
+        }
+
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+        return await this.Transaction.Connection.QueryFirstOrDefaultAsync<GetFirstExtendedBioByTypeRow?>(GetFirstExtendedBioByTypeSql, queryParams, transaction: this.Transaction);
+    }
+
+    private const string TruncateExtendedBiosSql = "TRUNCATE TABLE extended.bios";
+    public async Task TruncateExtendedBios()
+    {
+        if (this.Transaction == null)
+        {
+            using (var connection = new NpgsqlConnection(ConnectionString))
+                await connection.ExecuteAsync(TruncateExtendedBiosSql);
+            return;
+        }
+
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+        await this.Transaction.Connection.ExecuteAsync(TruncateExtendedBiosSql, transaction: this.Transaction);
+    }
+
     private const string InsertPostgresTypesSql = " INSERT INTO postgres_types ( c_boolean, c_bit, c_smallint, c_integer, c_bigint, c_real, c_numeric, c_decimal, c_double_precision, c_money, c_uuid, c_enum ) VALUES ( @c_boolean, @c_bit, @c_smallint, @c_integer, @c_bigint, @c_real, @c_numeric, @c_decimal, @c_double_precision, @c_money, @c_uuid, @c_enum::c_enum )";
     public class InsertPostgresTypesArgs
     {
@@ -939,524 +1458,5 @@ public class QuerySql
         if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
             throw new InvalidOperationException("Transaction is provided, but its connection is null.");
         await this.Transaction.Connection.ExecuteAsync(TruncatePostgresGeoTypesSql, transaction: this.Transaction);
-    }
-
-    private const string GetAuthorSql = "SELECT id, name, bio FROM authors WHERE name = @name LIMIT 1";
-    public class GetAuthorRow
-    {
-        public required long Id { get; init; }
-        public required string Name { get; init; }
-        public string? Bio { get; init; }
-    };
-    public class GetAuthorArgs
-    {
-        public required string Name { get; init; }
-    };
-    public async Task<GetAuthorRow?> GetAuthor(GetAuthorArgs args)
-    {
-        var queryParams = new Dictionary<string, object?>();
-        queryParams.Add("name", args.Name);
-        if (this.Transaction == null)
-        {
-            using (var connection = new NpgsqlConnection(ConnectionString))
-            {
-                var result = await connection.QueryFirstOrDefaultAsync<GetAuthorRow?>(GetAuthorSql, queryParams);
-                return result;
-            }
-        }
-
-        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
-            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
-        return await this.Transaction.Connection.QueryFirstOrDefaultAsync<GetAuthorRow?>(GetAuthorSql, queryParams, transaction: this.Transaction);
-    }
-
-    private const string ListAuthorsSql = "SELECT id, name, bio FROM authors ORDER BY name LIMIT @limit OFFSET @offset";
-    public class ListAuthorsRow
-    {
-        public required long Id { get; init; }
-        public required string Name { get; init; }
-        public string? Bio { get; init; }
-    };
-    public class ListAuthorsArgs
-    {
-        public required int Offset { get; init; }
-        public required int Limit { get; init; }
-    };
-    public async Task<List<ListAuthorsRow>> ListAuthors(ListAuthorsArgs args)
-    {
-        var queryParams = new Dictionary<string, object?>();
-        queryParams.Add("offset", args.Offset);
-        queryParams.Add("limit", args.Limit);
-        if (this.Transaction == null)
-        {
-            using (var connection = new NpgsqlConnection(ConnectionString))
-            {
-                var result = await connection.QueryAsync<ListAuthorsRow>(ListAuthorsSql, queryParams);
-                return result.AsList();
-            }
-        }
-
-        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
-            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
-        return (await this.Transaction.Connection.QueryAsync<ListAuthorsRow>(ListAuthorsSql, queryParams, transaction: this.Transaction)).AsList();
-    }
-
-    private const string CreateAuthorSql = "INSERT INTO authors (id, name, bio) VALUES (@id, @name, @bio) RETURNING id, name, bio";
-    public class CreateAuthorRow
-    {
-        public required long Id { get; init; }
-        public required string Name { get; init; }
-        public string? Bio { get; init; }
-    };
-    public class CreateAuthorArgs
-    {
-        public required long Id { get; init; }
-        public required string Name { get; init; }
-        public string? Bio { get; init; }
-    };
-    public async Task<CreateAuthorRow?> CreateAuthor(CreateAuthorArgs args)
-    {
-        var queryParams = new Dictionary<string, object?>();
-        queryParams.Add("id", args.Id);
-        queryParams.Add("name", args.Name);
-        queryParams.Add("bio", args.Bio);
-        if (this.Transaction == null)
-        {
-            using (var connection = new NpgsqlConnection(ConnectionString))
-            {
-                var result = await connection.QueryFirstOrDefaultAsync<CreateAuthorRow?>(CreateAuthorSql, queryParams);
-                return result;
-            }
-        }
-
-        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
-            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
-        return await this.Transaction.Connection.QueryFirstOrDefaultAsync<CreateAuthorRow?>(CreateAuthorSql, queryParams, transaction: this.Transaction);
-    }
-
-    private const string CreateAuthorReturnIdSql = "INSERT INTO authors (name, bio) VALUES (@name, @bio) RETURNING id";
-    public class CreateAuthorReturnIdRow
-    {
-        public required long Id { get; init; }
-    };
-    public class CreateAuthorReturnIdArgs
-    {
-        public required string Name { get; init; }
-        public string? Bio { get; init; }
-    };
-    public async Task<long> CreateAuthorReturnId(CreateAuthorReturnIdArgs args)
-    {
-        var queryParams = new Dictionary<string, object?>();
-        queryParams.Add("name", args.Name);
-        queryParams.Add("bio", args.Bio);
-        if (this.Transaction == null)
-        {
-            using (var connection = new NpgsqlConnection(ConnectionString))
-                return await connection.QuerySingleAsync<long>(CreateAuthorReturnIdSql, queryParams);
-        }
-
-        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
-            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
-        return await this.Transaction.Connection.QuerySingleAsync<long>(CreateAuthorReturnIdSql, queryParams, transaction: this.Transaction);
-    }
-
-    private const string GetAuthorByIdSql = "SELECT id, name, bio FROM authors WHERE id = @id LIMIT 1";
-    public class GetAuthorByIdRow
-    {
-        public required long Id { get; init; }
-        public required string Name { get; init; }
-        public string? Bio { get; init; }
-    };
-    public class GetAuthorByIdArgs
-    {
-        public required long Id { get; init; }
-    };
-    public async Task<GetAuthorByIdRow?> GetAuthorById(GetAuthorByIdArgs args)
-    {
-        var queryParams = new Dictionary<string, object?>();
-        queryParams.Add("id", args.Id);
-        if (this.Transaction == null)
-        {
-            using (var connection = new NpgsqlConnection(ConnectionString))
-            {
-                var result = await connection.QueryFirstOrDefaultAsync<GetAuthorByIdRow?>(GetAuthorByIdSql, queryParams);
-                return result;
-            }
-        }
-
-        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
-            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
-        return await this.Transaction.Connection.QueryFirstOrDefaultAsync<GetAuthorByIdRow?>(GetAuthorByIdSql, queryParams, transaction: this.Transaction);
-    }
-
-    private const string GetAuthorByNamePatternSql = "SELECT id, name, bio FROM authors WHERE name LIKE COALESCE(@name_pattern, '%')";
-    public class GetAuthorByNamePatternRow
-    {
-        public required long Id { get; init; }
-        public required string Name { get; init; }
-        public string? Bio { get; init; }
-    };
-    public class GetAuthorByNamePatternArgs
-    {
-        public string? NamePattern { get; init; }
-    };
-    public async Task<List<GetAuthorByNamePatternRow>> GetAuthorByNamePattern(GetAuthorByNamePatternArgs args)
-    {
-        var queryParams = new Dictionary<string, object?>();
-        queryParams.Add("name_pattern", args.NamePattern);
-        if (this.Transaction == null)
-        {
-            using (var connection = new NpgsqlConnection(ConnectionString))
-            {
-                var result = await connection.QueryAsync<GetAuthorByNamePatternRow>(GetAuthorByNamePatternSql, queryParams);
-                return result.AsList();
-            }
-        }
-
-        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
-            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
-        return (await this.Transaction.Connection.QueryAsync<GetAuthorByNamePatternRow>(GetAuthorByNamePatternSql, queryParams, transaction: this.Transaction)).AsList();
-    }
-
-    private const string DeleteAuthorSql = "DELETE FROM authors WHERE name = @name";
-    public class DeleteAuthorArgs
-    {
-        public required string Name { get; init; }
-    };
-    public async Task DeleteAuthor(DeleteAuthorArgs args)
-    {
-        var queryParams = new Dictionary<string, object?>();
-        queryParams.Add("name", args.Name);
-        if (this.Transaction == null)
-        {
-            using (var connection = new NpgsqlConnection(ConnectionString))
-                await connection.ExecuteAsync(DeleteAuthorSql, queryParams);
-            return;
-        }
-
-        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
-            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
-        await this.Transaction.Connection.ExecuteAsync(DeleteAuthorSql, queryParams, transaction: this.Transaction);
-    }
-
-    private const string TruncateAuthorsSql = "TRUNCATE TABLE authors CASCADE";
-    public async Task TruncateAuthors()
-    {
-        if (this.Transaction == null)
-        {
-            using (var connection = new NpgsqlConnection(ConnectionString))
-                await connection.ExecuteAsync(TruncateAuthorsSql);
-            return;
-        }
-
-        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
-            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
-        await this.Transaction.Connection.ExecuteAsync(TruncateAuthorsSql, transaction: this.Transaction);
-    }
-
-    private const string UpdateAuthorsSql = "UPDATE authors SET bio = @bio WHERE bio IS NOT NULL";
-    public class UpdateAuthorsArgs
-    {
-        public string? Bio { get; init; }
-    };
-    public async Task<long> UpdateAuthors(UpdateAuthorsArgs args)
-    {
-        var queryParams = new Dictionary<string, object?>();
-        queryParams.Add("bio", args.Bio);
-        if (this.Transaction == null)
-        {
-            using (var connection = new NpgsqlConnection(ConnectionString))
-                return await connection.ExecuteAsync(UpdateAuthorsSql, queryParams);
-        }
-
-        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
-            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
-        return await this.Transaction.Connection.ExecuteAsync(UpdateAuthorsSql, queryParams, transaction: this.Transaction);
-    }
-
-    private const string GetAuthorsByIdsSql = "SELECT id, name, bio FROM authors WHERE id = ANY(@longArr_1::BIGINT [])";
-    public class GetAuthorsByIdsRow
-    {
-        public required long Id { get; init; }
-        public required string Name { get; init; }
-        public string? Bio { get; init; }
-    };
-    public class GetAuthorsByIdsArgs
-    {
-        public required long[] LongArr1 { get; init; }
-    };
-    public async Task<List<GetAuthorsByIdsRow>> GetAuthorsByIds(GetAuthorsByIdsArgs args)
-    {
-        var queryParams = new Dictionary<string, object?>();
-        queryParams.Add("longArr_1", args.LongArr1);
-        if (this.Transaction == null)
-        {
-            using (var connection = new NpgsqlConnection(ConnectionString))
-            {
-                var result = await connection.QueryAsync<GetAuthorsByIdsRow>(GetAuthorsByIdsSql, queryParams);
-                return result.AsList();
-            }
-        }
-
-        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
-            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
-        return (await this.Transaction.Connection.QueryAsync<GetAuthorsByIdsRow>(GetAuthorsByIdsSql, queryParams, transaction: this.Transaction)).AsList();
-    }
-
-    private const string GetAuthorsByIdsAndNamesSql = "SELECT id, name, bio FROM authors WHERE id = ANY(@longArr_1::BIGINT []) AND name = ANY(@stringArr_2::TEXT [])";
-    public class GetAuthorsByIdsAndNamesRow
-    {
-        public required long Id { get; init; }
-        public required string Name { get; init; }
-        public string? Bio { get; init; }
-    };
-    public class GetAuthorsByIdsAndNamesArgs
-    {
-        public required long[] LongArr1 { get; init; }
-        public required string[] StringArr2 { get; init; }
-    };
-    public async Task<List<GetAuthorsByIdsAndNamesRow>> GetAuthorsByIdsAndNames(GetAuthorsByIdsAndNamesArgs args)
-    {
-        var queryParams = new Dictionary<string, object?>();
-        queryParams.Add("longArr_1", args.LongArr1);
-        queryParams.Add("stringArr_2", args.StringArr2);
-        if (this.Transaction == null)
-        {
-            using (var connection = new NpgsqlConnection(ConnectionString))
-            {
-                var result = await connection.QueryAsync<GetAuthorsByIdsAndNamesRow>(GetAuthorsByIdsAndNamesSql, queryParams);
-                return result.AsList();
-            }
-        }
-
-        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
-            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
-        return (await this.Transaction.Connection.QueryAsync<GetAuthorsByIdsAndNamesRow>(GetAuthorsByIdsAndNamesSql, queryParams, transaction: this.Transaction)).AsList();
-    }
-
-    private const string CreateBookSql = "INSERT INTO books (name, author_id) VALUES (@name, @author_id) RETURNING id";
-    public class CreateBookRow
-    {
-        public required Guid Id { get; init; }
-    };
-    public class CreateBookArgs
-    {
-        public required string Name { get; init; }
-        public required long AuthorId { get; init; }
-    };
-    public async Task<Guid> CreateBook(CreateBookArgs args)
-    {
-        var queryParams = new Dictionary<string, object?>();
-        queryParams.Add("name", args.Name);
-        queryParams.Add("author_id", args.AuthorId);
-        if (this.Transaction == null)
-        {
-            using (var connection = new NpgsqlConnection(ConnectionString))
-                return await connection.QuerySingleAsync<Guid>(CreateBookSql, queryParams);
-        }
-
-        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
-            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
-        return await this.Transaction.Connection.QuerySingleAsync<Guid>(CreateBookSql, queryParams, transaction: this.Transaction);
-    }
-
-    private const string ListAllAuthorsBooksSql = "SELECT authors.id, authors.name, authors.bio, books.id, books.name, books.author_id, books.description FROM authors INNER JOIN books ON authors.id = books.author_id ORDER BY authors.name";
-    public class ListAllAuthorsBooksRow
-    {
-        public required Author? Author { get; init; }
-        public required Book? Book { get; init; }
-    };
-    public async Task<List<ListAllAuthorsBooksRow>> ListAllAuthorsBooks()
-    {
-        if (this.Transaction == null)
-        {
-            using (var connection = NpgsqlDataSource.Create(ConnectionString!))
-            {
-                using (var command = connection.CreateCommand(ListAllAuthorsBooksSql))
-                {
-                    using (var reader = await command.ExecuteReaderAsync())
-                    {
-                        var result = new List<ListAllAuthorsBooksRow>();
-                        while (await reader.ReadAsync())
-                            result.Add(new ListAllAuthorsBooksRow { Author = new Author { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2) }, Book = new Book { Id = reader.GetFieldValue<Guid>(3), Name = reader.GetString(4), AuthorId = reader.GetInt64(5), Description = reader.IsDBNull(6) ? null : reader.GetString(6) } });
-                        return result;
-                    }
-                }
-            }
-        }
-
-        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
-            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
-        using (var command = this.Transaction.Connection.CreateCommand())
-        {
-            command.CommandText = ListAllAuthorsBooksSql;
-            command.Transaction = this.Transaction;
-            using (var reader = await command.ExecuteReaderAsync())
-            {
-                var result = new List<ListAllAuthorsBooksRow>();
-                while (await reader.ReadAsync())
-                    result.Add(new ListAllAuthorsBooksRow { Author = new Author { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2) }, Book = new Book { Id = reader.GetFieldValue<Guid>(3), Name = reader.GetString(4), AuthorId = reader.GetInt64(5), Description = reader.IsDBNull(6) ? null : reader.GetString(6) } });
-                return result;
-            }
-        }
-    }
-
-    private const string GetDuplicateAuthorsSql = "SELECT authors1.id, authors1.name, authors1.bio, authors2.id, authors2.name, authors2.bio FROM authors AS authors1 INNER JOIN authors AS authors2 ON authors1.name = authors2.name WHERE authors1.id < authors2.id";
-    public class GetDuplicateAuthorsRow
-    {
-        public required Author? Author { get; init; }
-        public required Author? Author2 { get; init; }
-    };
-    public async Task<List<GetDuplicateAuthorsRow>> GetDuplicateAuthors()
-    {
-        if (this.Transaction == null)
-        {
-            using (var connection = NpgsqlDataSource.Create(ConnectionString!))
-            {
-                using (var command = connection.CreateCommand(GetDuplicateAuthorsSql))
-                {
-                    using (var reader = await command.ExecuteReaderAsync())
-                    {
-                        var result = new List<GetDuplicateAuthorsRow>();
-                        while (await reader.ReadAsync())
-                            result.Add(new GetDuplicateAuthorsRow { Author = new Author { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2) }, Author2 = new Author { Id = reader.GetInt64(3), Name = reader.GetString(4), Bio = reader.IsDBNull(5) ? null : reader.GetString(5) } });
-                        return result;
-                    }
-                }
-            }
-        }
-
-        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
-            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
-        using (var command = this.Transaction.Connection.CreateCommand())
-        {
-            command.CommandText = GetDuplicateAuthorsSql;
-            command.Transaction = this.Transaction;
-            using (var reader = await command.ExecuteReaderAsync())
-            {
-                var result = new List<GetDuplicateAuthorsRow>();
-                while (await reader.ReadAsync())
-                    result.Add(new GetDuplicateAuthorsRow { Author = new Author { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2) }, Author2 = new Author { Id = reader.GetInt64(3), Name = reader.GetString(4), Bio = reader.IsDBNull(5) ? null : reader.GetString(5) } });
-                return result;
-            }
-        }
-    }
-
-    private const string GetAuthorsByBookNameSql = "SELECT authors.id, authors.name, authors.bio, books.id, books.name, books.author_id, books.description FROM authors INNER JOIN books ON authors.id = books.author_id WHERE books.name = @name";
-    public class GetAuthorsByBookNameRow
-    {
-        public required long Id { get; init; }
-        public required string Name { get; init; }
-        public string? Bio { get; init; }
-        public required Book? Book { get; init; }
-    };
-    public class GetAuthorsByBookNameArgs
-    {
-        public required string Name { get; init; }
-    };
-    public async Task<List<GetAuthorsByBookNameRow>> GetAuthorsByBookName(GetAuthorsByBookNameArgs args)
-    {
-        if (this.Transaction == null)
-        {
-            using (var connection = NpgsqlDataSource.Create(ConnectionString!))
-            {
-                using (var command = connection.CreateCommand(GetAuthorsByBookNameSql))
-                {
-                    command.Parameters.AddWithValue("@name", args.Name);
-                    using (var reader = await command.ExecuteReaderAsync())
-                    {
-                        var result = new List<GetAuthorsByBookNameRow>();
-                        while (await reader.ReadAsync())
-                            result.Add(new GetAuthorsByBookNameRow { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2), Book = new Book { Id = reader.GetFieldValue<Guid>(3), Name = reader.GetString(4), AuthorId = reader.GetInt64(5), Description = reader.IsDBNull(6) ? null : reader.GetString(6) } });
-                        return result;
-                    }
-                }
-            }
-        }
-
-        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
-            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
-        using (var command = this.Transaction.Connection.CreateCommand())
-        {
-            command.CommandText = GetAuthorsByBookNameSql;
-            command.Transaction = this.Transaction;
-            command.Parameters.AddWithValue("@name", args.Name);
-            using (var reader = await command.ExecuteReaderAsync())
-            {
-                var result = new List<GetAuthorsByBookNameRow>();
-                while (await reader.ReadAsync())
-                    result.Add(new GetAuthorsByBookNameRow { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2), Book = new Book { Id = reader.GetFieldValue<Guid>(3), Name = reader.GetString(4), AuthorId = reader.GetInt64(5), Description = reader.IsDBNull(6) ? null : reader.GetString(6) } });
-                return result;
-            }
-        }
-    }
-
-    private const string CreateExtendedBioSql = "INSERT INTO extended.bios (author_name, name, bio_type) VALUES (@author_name, @name, @bio_type)";
-    public class CreateExtendedBioArgs
-    {
-        public required string AuthorName { get; init; }
-        public required string Name { get; init; }
-        public ExtendedBioType? BioType { get; init; }
-    };
-    public async Task CreateExtendedBio(CreateExtendedBioArgs args)
-    {
-        var queryParams = new Dictionary<string, object?>();
-        queryParams.Add("author_name", args.AuthorName);
-        queryParams.Add("name", args.Name);
-        queryParams.Add("bio_type", args.BioType != null ? args.BioType.Value.Stringify() : null);
-        if (this.Transaction == null)
-        {
-            using (var connection = new NpgsqlConnection(ConnectionString))
-                await connection.ExecuteAsync(CreateExtendedBioSql, queryParams);
-            return;
-        }
-
-        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
-            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
-        await this.Transaction.Connection.ExecuteAsync(CreateExtendedBioSql, queryParams, transaction: this.Transaction);
-    }
-
-    private const string GetFirstExtendedBioByTypeSql = "SELECT author_name, name, bio_type FROM extended.bios WHERE bio_type = @bio_type LIMIT 1";
-    public class GetFirstExtendedBioByTypeRow
-    {
-        public required string AuthorName { get; init; }
-        public required string Name { get; init; }
-        public ExtendedBioType? BioType { get; init; }
-    };
-    public class GetFirstExtendedBioByTypeArgs
-    {
-        public ExtendedBioType? BioType { get; init; }
-    };
-    public async Task<GetFirstExtendedBioByTypeRow?> GetFirstExtendedBioByType(GetFirstExtendedBioByTypeArgs args)
-    {
-        var queryParams = new Dictionary<string, object?>();
-        queryParams.Add("bio_type", args.BioType != null ? args.BioType.Value.Stringify() : null);
-        if (this.Transaction == null)
-        {
-            using (var connection = new NpgsqlConnection(ConnectionString))
-            {
-                var result = await connection.QueryFirstOrDefaultAsync<GetFirstExtendedBioByTypeRow?>(GetFirstExtendedBioByTypeSql, queryParams);
-                return result;
-            }
-        }
-
-        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
-            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
-        return await this.Transaction.Connection.QueryFirstOrDefaultAsync<GetFirstExtendedBioByTypeRow?>(GetFirstExtendedBioByTypeSql, queryParams, transaction: this.Transaction);
-    }
-
-    private const string TruncateExtendedBiosSql = "TRUNCATE TABLE extended.bios";
-    public async Task TruncateExtendedBios()
-    {
-        if (this.Transaction == null)
-        {
-            using (var connection = new NpgsqlConnection(ConnectionString))
-                await connection.ExecuteAsync(TruncateExtendedBiosSql);
-            return;
-        }
-
-        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
-            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
-        await this.Transaction.Connection.ExecuteAsync(TruncateExtendedBiosSql, transaction: this.Transaction);
     }
 }

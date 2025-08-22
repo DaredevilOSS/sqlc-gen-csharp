@@ -9,6 +9,19 @@ using System.Text.Json;
 using System.Xml;
 
 namespace NpgsqlDapperExampleGen;
+public class Author
+{
+    public required long Id { get; init; }
+    public required string Name { get; init; }
+    public string? Bio { get; init; }
+};
+public class Book
+{
+    public required Guid Id { get; init; }
+    public required string Name { get; init; }
+    public required long AuthorId { get; init; }
+    public string? Description { get; init; }
+};
 public class PostgresType
 {
     public bool? CBoolean { get; init; }
@@ -75,19 +88,6 @@ public class PostgresGeometricType
     public NpgsqlPath? CPath { get; init; }
     public NpgsqlPolygon? CPolygon { get; init; }
     public NpgsqlCircle? CCircle { get; init; }
-};
-public class Author
-{
-    public required long Id { get; init; }
-    public required string Name { get; init; }
-    public string? Bio { get; init; }
-};
-public class Book
-{
-    public required Guid Id { get; init; }
-    public required string Name { get; init; }
-    public required long AuthorId { get; init; }
-    public string? Description { get; init; }
 };
 public class ExtendedBio
 {

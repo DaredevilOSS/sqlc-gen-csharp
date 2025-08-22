@@ -30,29 +30,14 @@ namespace MySqlConnectorDapperLegacyExampleGen
         public static void ConfigureSqlMapper()
         {
             SqlMapper.AddTypeHandler(typeof(JsonElement), new JsonElementTypeHandler());
-            SqlMapper.AddTypeHandler(typeof(HashSet<MysqlStringTypesCSet>), new MysqlStringTypesCSetTypeHandler());
             SqlMapper.AddTypeHandler(typeof(HashSet<BiosAuthorType>), new BiosAuthorTypeTypeHandler());
+            SqlMapper.AddTypeHandler(typeof(HashSet<MysqlStringTypesCSet>), new MysqlStringTypesCSetTypeHandler());
         }
 
         public static string TransformQueryForSliceArgs(string originalSql, int sliceSize, string paramName)
         {
             var paramArgs = Enumerable.Range(0, sliceSize).Select(i => $"@{paramName}Arg{i}").ToList();
             return originalSql.Replace($"/*SLICE:{paramName}*/@{paramName}", string.Join(",", paramArgs));
-        }
-
-        private class MysqlStringTypesCSetTypeHandler : SqlMapper.TypeHandler<HashSet<MysqlStringTypesCSet>>
-        {
-            public override HashSet<MysqlStringTypesCSet> Parse(object value)
-            {
-                if (value is string s)
-                    return s.ToMysqlStringTypesCSetSet();
-                throw new DataException($"Cannot convert {value?.GetType()} to HashSet<MysqlStringTypesCSet>");
-            }
-
-            public override void SetValue(IDbDataParameter parameter, HashSet<MysqlStringTypesCSet> value)
-            {
-                parameter.Value = string.Join(",", value);
-            }
         }
 
         private class BiosAuthorTypeTypeHandler : SqlMapper.TypeHandler<HashSet<BiosAuthorType>>
@@ -65,6 +50,21 @@ namespace MySqlConnectorDapperLegacyExampleGen
             }
 
             public override void SetValue(IDbDataParameter parameter, HashSet<BiosAuthorType> value)
+            {
+                parameter.Value = string.Join(",", value);
+            }
+        }
+
+        private class MysqlStringTypesCSetTypeHandler : SqlMapper.TypeHandler<HashSet<MysqlStringTypesCSet>>
+        {
+            public override HashSet<MysqlStringTypesCSet> Parse(object value)
+            {
+                if (value is string s)
+                    return s.ToMysqlStringTypesCSetSet();
+                throw new DataException($"Cannot convert {value?.GetType()} to HashSet<MysqlStringTypesCSet>");
+            }
+
+            public override void SetValue(IDbDataParameter parameter, HashSet<MysqlStringTypesCSet> value)
             {
                 parameter.Value = string.Join(",", value);
             }

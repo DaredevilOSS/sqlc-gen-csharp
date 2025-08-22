@@ -42,6 +42,816 @@ namespace MySqlConnectorLegacyExampleGen
         private MySqlTransaction Transaction { get; }
         private string ConnectionString { get; }
 
+        private const string GetAuthorSql = "SELECT id, name, bio FROM authors WHERE name = @name LIMIT 1";
+        public class GetAuthorRow
+        {
+            public long Id { get; set; }
+            public string Name { get; set; }
+            public string Bio { get; set; }
+        };
+        public class GetAuthorArgs
+        {
+            public string Name { get; set; }
+        };
+        public async Task<GetAuthorRow> GetAuthor(GetAuthorArgs args)
+        {
+            if (this.Transaction == null)
+            {
+                using (var connection = new MySqlConnection(ConnectionString))
+                {
+                    await connection.OpenAsync();
+                    using (var command = new MySqlCommand(GetAuthorSql, connection))
+                    {
+                        command.Parameters.AddWithValue("@name", args.Name);
+                        using (var reader = await command.ExecuteReaderAsync())
+                        {
+                            if (await reader.ReadAsync())
+                            {
+                                return new GetAuthorRow
+                                {
+                                    Id = reader.GetInt64(0),
+                                    Name = reader.GetString(1),
+                                    Bio = reader.IsDBNull(2) ? null : reader.GetString(2)
+                                };
+                            }
+                        }
+                    }
+                }
+
+                return null;
+            }
+
+            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+                throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+            using (var command = this.Transaction.Connection.CreateCommand())
+            {
+                command.CommandText = GetAuthorSql;
+                command.Transaction = this.Transaction;
+                command.Parameters.AddWithValue("@name", args.Name);
+                using (var reader = await command.ExecuteReaderAsync())
+                {
+                    if (await reader.ReadAsync())
+                    {
+                        return new GetAuthorRow
+                        {
+                            Id = reader.GetInt64(0),
+                            Name = reader.GetString(1),
+                            Bio = reader.IsDBNull(2) ? null : reader.GetString(2)
+                        };
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        private const string ListAuthorsSql = "SELECT id, name, bio FROM authors ORDER BY name LIMIT @limit OFFSET @offset";
+        public class ListAuthorsRow
+        {
+            public long Id { get; set; }
+            public string Name { get; set; }
+            public string Bio { get; set; }
+        };
+        public class ListAuthorsArgs
+        {
+            public int Limit { get; set; }
+            public int Offset { get; set; }
+        };
+        public async Task<List<ListAuthorsRow>> ListAuthors(ListAuthorsArgs args)
+        {
+            if (this.Transaction == null)
+            {
+                using (var connection = new MySqlConnection(ConnectionString))
+                {
+                    await connection.OpenAsync();
+                    using (var command = new MySqlCommand(ListAuthorsSql, connection))
+                    {
+                        command.Parameters.AddWithValue("@limit", args.Limit);
+                        command.Parameters.AddWithValue("@offset", args.Offset);
+                        using (var reader = await command.ExecuteReaderAsync())
+                        {
+                            var result = new List<ListAuthorsRow>();
+                            while (await reader.ReadAsync())
+                                result.Add(new ListAuthorsRow { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2) });
+                            return result;
+                        }
+                    }
+                }
+            }
+
+            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+                throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+            using (var command = this.Transaction.Connection.CreateCommand())
+            {
+                command.CommandText = ListAuthorsSql;
+                command.Transaction = this.Transaction;
+                command.Parameters.AddWithValue("@limit", args.Limit);
+                command.Parameters.AddWithValue("@offset", args.Offset);
+                using (var reader = await command.ExecuteReaderAsync())
+                {
+                    var result = new List<ListAuthorsRow>();
+                    while (await reader.ReadAsync())
+                        result.Add(new ListAuthorsRow { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2) });
+                    return result;
+                }
+            }
+        }
+
+        private const string CreateAuthorSql = "INSERT INTO authors (id, name, bio) VALUES (@id, @name, @bio)";
+        public class CreateAuthorArgs
+        {
+            public long Id { get; set; }
+            public string Name { get; set; }
+            public string Bio { get; set; }
+        };
+        public async Task CreateAuthor(CreateAuthorArgs args)
+        {
+            if (this.Transaction == null)
+            {
+                using (var connection = new MySqlConnection(ConnectionString))
+                {
+                    await connection.OpenAsync();
+                    using (var command = new MySqlCommand(CreateAuthorSql, connection))
+                    {
+                        command.Parameters.AddWithValue("@id", args.Id);
+                        command.Parameters.AddWithValue("@name", args.Name);
+                        command.Parameters.AddWithValue("@bio", args.Bio ?? (object)DBNull.Value);
+                        await command.ExecuteNonQueryAsync();
+                    }
+                }
+
+                return;
+            }
+
+            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+                throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+            using (var command = this.Transaction.Connection.CreateCommand())
+            {
+                command.CommandText = CreateAuthorSql;
+                command.Transaction = this.Transaction;
+                command.Parameters.AddWithValue("@id", args.Id);
+                command.Parameters.AddWithValue("@name", args.Name);
+                command.Parameters.AddWithValue("@bio", args.Bio ?? (object)DBNull.Value);
+                await command.ExecuteNonQueryAsync();
+            }
+        }
+
+        private const string CreateAuthorReturnIdSql = "INSERT INTO authors (name, bio) VALUES (@name, @bio)";
+        public class CreateAuthorReturnIdArgs
+        {
+            public string Name { get; set; }
+            public string Bio { get; set; }
+        };
+        public async Task<long> CreateAuthorReturnId(CreateAuthorReturnIdArgs args)
+        {
+            if (this.Transaction == null)
+            {
+                using (var connection = new MySqlConnection(ConnectionString))
+                {
+                    await connection.OpenAsync();
+                    using (var command = new MySqlCommand(CreateAuthorReturnIdSql, connection))
+                    {
+                        command.Parameters.AddWithValue("@name", args.Name);
+                        command.Parameters.AddWithValue("@bio", args.Bio ?? (object)DBNull.Value);
+                        await command.ExecuteNonQueryAsync();
+                        return command.LastInsertedId;
+                    }
+                }
+            }
+
+            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+                throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+            using (var command = this.Transaction.Connection.CreateCommand())
+            {
+                command.CommandText = CreateAuthorReturnIdSql;
+                command.Transaction = this.Transaction;
+                command.Parameters.AddWithValue("@name", args.Name);
+                command.Parameters.AddWithValue("@bio", args.Bio ?? (object)DBNull.Value);
+                await command.ExecuteNonQueryAsync();
+                return command.LastInsertedId;
+            }
+        }
+
+        private const string GetAuthorByIdSql = "SELECT id, name, bio FROM authors WHERE id = @id LIMIT 1";
+        public class GetAuthorByIdRow
+        {
+            public long Id { get; set; }
+            public string Name { get; set; }
+            public string Bio { get; set; }
+        };
+        public class GetAuthorByIdArgs
+        {
+            public long Id { get; set; }
+        };
+        public async Task<GetAuthorByIdRow> GetAuthorById(GetAuthorByIdArgs args)
+        {
+            if (this.Transaction == null)
+            {
+                using (var connection = new MySqlConnection(ConnectionString))
+                {
+                    await connection.OpenAsync();
+                    using (var command = new MySqlCommand(GetAuthorByIdSql, connection))
+                    {
+                        command.Parameters.AddWithValue("@id", args.Id);
+                        using (var reader = await command.ExecuteReaderAsync())
+                        {
+                            if (await reader.ReadAsync())
+                            {
+                                return new GetAuthorByIdRow
+                                {
+                                    Id = reader.GetInt64(0),
+                                    Name = reader.GetString(1),
+                                    Bio = reader.IsDBNull(2) ? null : reader.GetString(2)
+                                };
+                            }
+                        }
+                    }
+                }
+
+                return null;
+            }
+
+            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+                throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+            using (var command = this.Transaction.Connection.CreateCommand())
+            {
+                command.CommandText = GetAuthorByIdSql;
+                command.Transaction = this.Transaction;
+                command.Parameters.AddWithValue("@id", args.Id);
+                using (var reader = await command.ExecuteReaderAsync())
+                {
+                    if (await reader.ReadAsync())
+                    {
+                        return new GetAuthorByIdRow
+                        {
+                            Id = reader.GetInt64(0),
+                            Name = reader.GetString(1),
+                            Bio = reader.IsDBNull(2) ? null : reader.GetString(2)
+                        };
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        private const string GetAuthorByNamePatternSql = "SELECT id, name, bio FROM authors WHERE name LIKE COALESCE(@name_pattern, '%')";
+        public class GetAuthorByNamePatternRow
+        {
+            public long Id { get; set; }
+            public string Name { get; set; }
+            public string Bio { get; set; }
+        };
+        public class GetAuthorByNamePatternArgs
+        {
+            public string NamePattern { get; set; }
+        };
+        public async Task<List<GetAuthorByNamePatternRow>> GetAuthorByNamePattern(GetAuthorByNamePatternArgs args)
+        {
+            if (this.Transaction == null)
+            {
+                using (var connection = new MySqlConnection(ConnectionString))
+                {
+                    await connection.OpenAsync();
+                    using (var command = new MySqlCommand(GetAuthorByNamePatternSql, connection))
+                    {
+                        command.Parameters.AddWithValue("@name_pattern", args.NamePattern ?? (object)DBNull.Value);
+                        using (var reader = await command.ExecuteReaderAsync())
+                        {
+                            var result = new List<GetAuthorByNamePatternRow>();
+                            while (await reader.ReadAsync())
+                                result.Add(new GetAuthorByNamePatternRow { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2) });
+                            return result;
+                        }
+                    }
+                }
+            }
+
+            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+                throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+            using (var command = this.Transaction.Connection.CreateCommand())
+            {
+                command.CommandText = GetAuthorByNamePatternSql;
+                command.Transaction = this.Transaction;
+                command.Parameters.AddWithValue("@name_pattern", args.NamePattern ?? (object)DBNull.Value);
+                using (var reader = await command.ExecuteReaderAsync())
+                {
+                    var result = new List<GetAuthorByNamePatternRow>();
+                    while (await reader.ReadAsync())
+                        result.Add(new GetAuthorByNamePatternRow { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2) });
+                    return result;
+                }
+            }
+        }
+
+        private const string DeleteAuthorSql = "DELETE FROM authors WHERE name = @name";
+        public class DeleteAuthorArgs
+        {
+            public string Name { get; set; }
+        };
+        public async Task DeleteAuthor(DeleteAuthorArgs args)
+        {
+            if (this.Transaction == null)
+            {
+                using (var connection = new MySqlConnection(ConnectionString))
+                {
+                    await connection.OpenAsync();
+                    using (var command = new MySqlCommand(DeleteAuthorSql, connection))
+                    {
+                        command.Parameters.AddWithValue("@name", args.Name);
+                        await command.ExecuteNonQueryAsync();
+                    }
+                }
+
+                return;
+            }
+
+            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+                throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+            using (var command = this.Transaction.Connection.CreateCommand())
+            {
+                command.CommandText = DeleteAuthorSql;
+                command.Transaction = this.Transaction;
+                command.Parameters.AddWithValue("@name", args.Name);
+                await command.ExecuteNonQueryAsync();
+            }
+        }
+
+        private const string DeleteAllAuthorsSql = "DELETE FROM authors";
+        public async Task DeleteAllAuthors()
+        {
+            if (this.Transaction == null)
+            {
+                using (var connection = new MySqlConnection(ConnectionString))
+                {
+                    await connection.OpenAsync();
+                    using (var command = new MySqlCommand(DeleteAllAuthorsSql, connection))
+                    {
+                        await command.ExecuteNonQueryAsync();
+                    }
+                }
+
+                return;
+            }
+
+            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+                throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+            using (var command = this.Transaction.Connection.CreateCommand())
+            {
+                command.CommandText = DeleteAllAuthorsSql;
+                command.Transaction = this.Transaction;
+                await command.ExecuteNonQueryAsync();
+            }
+        }
+
+        private const string UpdateAuthorsSql = "UPDATE authors SET bio = @bio WHERE bio IS NOT NULL";
+        public class UpdateAuthorsArgs
+        {
+            public string Bio { get; set; }
+        };
+        public async Task<long> UpdateAuthors(UpdateAuthorsArgs args)
+        {
+            if (this.Transaction == null)
+            {
+                using (var connection = new MySqlConnection(ConnectionString))
+                {
+                    await connection.OpenAsync();
+                    using (var command = new MySqlCommand(UpdateAuthorsSql, connection))
+                    {
+                        command.Parameters.AddWithValue("@bio", args.Bio ?? (object)DBNull.Value);
+                        return await command.ExecuteNonQueryAsync();
+                    }
+                }
+            }
+
+            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+                throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+            using (var command = this.Transaction.Connection.CreateCommand())
+            {
+                command.CommandText = UpdateAuthorsSql;
+                command.Transaction = this.Transaction;
+                command.Parameters.AddWithValue("@bio", args.Bio ?? (object)DBNull.Value);
+                return await command.ExecuteNonQueryAsync();
+            }
+        }
+
+        private const string GetAuthorsByIdsSql = "SELECT id, name, bio FROM authors WHERE id IN (/*SLICE:ids*/@ids)";
+        public class GetAuthorsByIdsRow
+        {
+            public long Id { get; set; }
+            public string Name { get; set; }
+            public string Bio { get; set; }
+        };
+        public class GetAuthorsByIdsArgs
+        {
+            public long[] Ids { get; set; }
+        };
+        public async Task<List<GetAuthorsByIdsRow>> GetAuthorsByIds(GetAuthorsByIdsArgs args)
+        {
+            var transformedSql = GetAuthorsByIdsSql;
+            transformedSql = Utils.TransformQueryForSliceArgs(transformedSql, args.Ids.Length, "ids");
+            if (this.Transaction == null)
+            {
+                using (var connection = new MySqlConnection(ConnectionString))
+                {
+                    await connection.OpenAsync();
+                    using (var command = new MySqlCommand(transformedSql, connection))
+                    {
+                        for (int i = 0; i < args.Ids.Length; i++)
+                            command.Parameters.AddWithValue($"@idsArg{i}", args.Ids[i]);
+                        using (var reader = await command.ExecuteReaderAsync())
+                        {
+                            var result = new List<GetAuthorsByIdsRow>();
+                            while (await reader.ReadAsync())
+                                result.Add(new GetAuthorsByIdsRow { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2) });
+                            return result;
+                        }
+                    }
+                }
+            }
+
+            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+                throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+            using (var command = this.Transaction.Connection.CreateCommand())
+            {
+                command.CommandText = transformedSql;
+                command.Transaction = this.Transaction;
+                for (int i = 0; i < args.Ids.Length; i++)
+                    command.Parameters.AddWithValue($"@idsArg{i}", args.Ids[i]);
+                using (var reader = await command.ExecuteReaderAsync())
+                {
+                    var result = new List<GetAuthorsByIdsRow>();
+                    while (await reader.ReadAsync())
+                        result.Add(new GetAuthorsByIdsRow { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2) });
+                    return result;
+                }
+            }
+        }
+
+        private const string GetAuthorsByIdsAndNamesSql = "SELECT id, name, bio FROM authors WHERE id IN (/*SLICE:ids*/@ids) AND name IN (/*SLICE:names*/@names)";
+        public class GetAuthorsByIdsAndNamesRow
+        {
+            public long Id { get; set; }
+            public string Name { get; set; }
+            public string Bio { get; set; }
+        };
+        public class GetAuthorsByIdsAndNamesArgs
+        {
+            public long[] Ids { get; set; }
+            public string[] Names { get; set; }
+        };
+        public async Task<List<GetAuthorsByIdsAndNamesRow>> GetAuthorsByIdsAndNames(GetAuthorsByIdsAndNamesArgs args)
+        {
+            var transformedSql = GetAuthorsByIdsAndNamesSql;
+            transformedSql = Utils.TransformQueryForSliceArgs(transformedSql, args.Ids.Length, "ids");
+            transformedSql = Utils.TransformQueryForSliceArgs(transformedSql, args.Names.Length, "names");
+            if (this.Transaction == null)
+            {
+                using (var connection = new MySqlConnection(ConnectionString))
+                {
+                    await connection.OpenAsync();
+                    using (var command = new MySqlCommand(transformedSql, connection))
+                    {
+                        for (int i = 0; i < args.Ids.Length; i++)
+                            command.Parameters.AddWithValue($"@idsArg{i}", args.Ids[i]);
+                        for (int i = 0; i < args.Names.Length; i++)
+                            command.Parameters.AddWithValue($"@namesArg{i}", args.Names[i]);
+                        using (var reader = await command.ExecuteReaderAsync())
+                        {
+                            var result = new List<GetAuthorsByIdsAndNamesRow>();
+                            while (await reader.ReadAsync())
+                                result.Add(new GetAuthorsByIdsAndNamesRow { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2) });
+                            return result;
+                        }
+                    }
+                }
+            }
+
+            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+                throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+            using (var command = this.Transaction.Connection.CreateCommand())
+            {
+                command.CommandText = transformedSql;
+                command.Transaction = this.Transaction;
+                for (int i = 0; i < args.Ids.Length; i++)
+                    command.Parameters.AddWithValue($"@idsArg{i}", args.Ids[i]);
+                for (int i = 0; i < args.Names.Length; i++)
+                    command.Parameters.AddWithValue($"@namesArg{i}", args.Names[i]);
+                using (var reader = await command.ExecuteReaderAsync())
+                {
+                    var result = new List<GetAuthorsByIdsAndNamesRow>();
+                    while (await reader.ReadAsync())
+                        result.Add(new GetAuthorsByIdsAndNamesRow { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2) });
+                    return result;
+                }
+            }
+        }
+
+        private const string CreateBookSql = "INSERT INTO books (name, author_id) VALUES (@name, @author_id)";
+        public class CreateBookArgs
+        {
+            public string Name { get; set; }
+            public long AuthorId { get; set; }
+        };
+        public async Task<long> CreateBook(CreateBookArgs args)
+        {
+            if (this.Transaction == null)
+            {
+                using (var connection = new MySqlConnection(ConnectionString))
+                {
+                    await connection.OpenAsync();
+                    using (var command = new MySqlCommand(CreateBookSql, connection))
+                    {
+                        command.Parameters.AddWithValue("@name", args.Name);
+                        command.Parameters.AddWithValue("@author_id", args.AuthorId);
+                        await command.ExecuteNonQueryAsync();
+                        return command.LastInsertedId;
+                    }
+                }
+            }
+
+            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+                throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+            using (var command = this.Transaction.Connection.CreateCommand())
+            {
+                command.CommandText = CreateBookSql;
+                command.Transaction = this.Transaction;
+                command.Parameters.AddWithValue("@name", args.Name);
+                command.Parameters.AddWithValue("@author_id", args.AuthorId);
+                await command.ExecuteNonQueryAsync();
+                return command.LastInsertedId;
+            }
+        }
+
+        private const string ListAllAuthorsBooksSql = "SELECT authors.id, authors.name, authors.bio, books.id, books.name, books.author_id, books.description FROM authors JOIN books ON authors.id = books.author_id ORDER BY authors.name";
+        public class ListAllAuthorsBooksRow
+        {
+            public Author Author { get; set; }
+            public Book Book { get; set; }
+        };
+        public async Task<List<ListAllAuthorsBooksRow>> ListAllAuthorsBooks()
+        {
+            if (this.Transaction == null)
+            {
+                using (var connection = new MySqlConnection(ConnectionString))
+                {
+                    await connection.OpenAsync();
+                    using (var command = new MySqlCommand(ListAllAuthorsBooksSql, connection))
+                    {
+                        using (var reader = await command.ExecuteReaderAsync())
+                        {
+                            var result = new List<ListAllAuthorsBooksRow>();
+                            while (await reader.ReadAsync())
+                                result.Add(new ListAllAuthorsBooksRow { Author = new Author { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2) }, Book = new Book { Id = reader.GetInt64(3), Name = reader.GetString(4), AuthorId = reader.GetInt64(5), Description = reader.IsDBNull(6) ? null : reader.GetString(6) } });
+                            return result;
+                        }
+                    }
+                }
+            }
+
+            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+                throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+            using (var command = this.Transaction.Connection.CreateCommand())
+            {
+                command.CommandText = ListAllAuthorsBooksSql;
+                command.Transaction = this.Transaction;
+                using (var reader = await command.ExecuteReaderAsync())
+                {
+                    var result = new List<ListAllAuthorsBooksRow>();
+                    while (await reader.ReadAsync())
+                        result.Add(new ListAllAuthorsBooksRow { Author = new Author { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2) }, Book = new Book { Id = reader.GetInt64(3), Name = reader.GetString(4), AuthorId = reader.GetInt64(5), Description = reader.IsDBNull(6) ? null : reader.GetString(6) } });
+                    return result;
+                }
+            }
+        }
+
+        private const string GetDuplicateAuthorsSql = "SELECT authors1.id, authors1.name, authors1.bio, authors2.id, authors2.name, authors2.bio FROM authors authors1 JOIN authors authors2 ON authors1.name = authors2.name WHERE authors1.id < authors2.id";
+        public class GetDuplicateAuthorsRow
+        {
+            public Author Author { get; set; }
+            public Author Author2 { get; set; }
+        };
+        public async Task<List<GetDuplicateAuthorsRow>> GetDuplicateAuthors()
+        {
+            if (this.Transaction == null)
+            {
+                using (var connection = new MySqlConnection(ConnectionString))
+                {
+                    await connection.OpenAsync();
+                    using (var command = new MySqlCommand(GetDuplicateAuthorsSql, connection))
+                    {
+                        using (var reader = await command.ExecuteReaderAsync())
+                        {
+                            var result = new List<GetDuplicateAuthorsRow>();
+                            while (await reader.ReadAsync())
+                                result.Add(new GetDuplicateAuthorsRow { Author = new Author { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2) }, Author2 = new Author { Id = reader.GetInt64(3), Name = reader.GetString(4), Bio = reader.IsDBNull(5) ? null : reader.GetString(5) } });
+                            return result;
+                        }
+                    }
+                }
+            }
+
+            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+                throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+            using (var command = this.Transaction.Connection.CreateCommand())
+            {
+                command.CommandText = GetDuplicateAuthorsSql;
+                command.Transaction = this.Transaction;
+                using (var reader = await command.ExecuteReaderAsync())
+                {
+                    var result = new List<GetDuplicateAuthorsRow>();
+                    while (await reader.ReadAsync())
+                        result.Add(new GetDuplicateAuthorsRow { Author = new Author { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2) }, Author2 = new Author { Id = reader.GetInt64(3), Name = reader.GetString(4), Bio = reader.IsDBNull(5) ? null : reader.GetString(5) } });
+                    return result;
+                }
+            }
+        }
+
+        private const string GetAuthorsByBookNameSql = "SELECT authors.id, authors.name, authors.bio, books.id, books.name, books.author_id, books.description FROM authors JOIN books ON authors.id = books.author_id WHERE books.name = @name";
+        public class GetAuthorsByBookNameRow
+        {
+            public long Id { get; set; }
+            public string Name { get; set; }
+            public string Bio { get; set; }
+            public Book Book { get; set; }
+        };
+        public class GetAuthorsByBookNameArgs
+        {
+            public string Name { get; set; }
+        };
+        public async Task<List<GetAuthorsByBookNameRow>> GetAuthorsByBookName(GetAuthorsByBookNameArgs args)
+        {
+            if (this.Transaction == null)
+            {
+                using (var connection = new MySqlConnection(ConnectionString))
+                {
+                    await connection.OpenAsync();
+                    using (var command = new MySqlCommand(GetAuthorsByBookNameSql, connection))
+                    {
+                        command.Parameters.AddWithValue("@name", args.Name);
+                        using (var reader = await command.ExecuteReaderAsync())
+                        {
+                            var result = new List<GetAuthorsByBookNameRow>();
+                            while (await reader.ReadAsync())
+                                result.Add(new GetAuthorsByBookNameRow { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2), Book = new Book { Id = reader.GetInt64(3), Name = reader.GetString(4), AuthorId = reader.GetInt64(5), Description = reader.IsDBNull(6) ? null : reader.GetString(6) } });
+                            return result;
+                        }
+                    }
+                }
+            }
+
+            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+                throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+            using (var command = this.Transaction.Connection.CreateCommand())
+            {
+                command.CommandText = GetAuthorsByBookNameSql;
+                command.Transaction = this.Transaction;
+                command.Parameters.AddWithValue("@name", args.Name);
+                using (var reader = await command.ExecuteReaderAsync())
+                {
+                    var result = new List<GetAuthorsByBookNameRow>();
+                    while (await reader.ReadAsync())
+                        result.Add(new GetAuthorsByBookNameRow { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2), Book = new Book { Id = reader.GetInt64(3), Name = reader.GetString(4), AuthorId = reader.GetInt64(5), Description = reader.IsDBNull(6) ? null : reader.GetString(6) } });
+                    return result;
+                }
+            }
+        }
+
+        private const string CreateExtendedBioSql = "INSERT INTO extended.bios (author_name, name, bio_type, author_type) VALUES (@author_name, @name, @bio_type, @author_type)";
+        public class CreateExtendedBioArgs
+        {
+            public string AuthorName { get; set; }
+            public string Name { get; set; }
+            public BiosBioType? BioType { get; set; }
+            public HashSet<BiosAuthorType> AuthorType { get; set; }
+        };
+        public async Task CreateExtendedBio(CreateExtendedBioArgs args)
+        {
+            if (this.Transaction == null)
+            {
+                using (var connection = new MySqlConnection(ConnectionString))
+                {
+                    await connection.OpenAsync();
+                    using (var command = new MySqlCommand(CreateExtendedBioSql, connection))
+                    {
+                        command.Parameters.AddWithValue("@author_name", args.AuthorName ?? (object)DBNull.Value);
+                        command.Parameters.AddWithValue("@name", args.Name ?? (object)DBNull.Value);
+                        command.Parameters.AddWithValue("@bio_type", args.BioType ?? (object)DBNull.Value);
+                        command.Parameters.AddWithValue("@author_type", args.AuthorType != null ? string.Join(",", args.AuthorType) : (object)DBNull.Value);
+                        await command.ExecuteNonQueryAsync();
+                    }
+                }
+
+                return;
+            }
+
+            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+                throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+            using (var command = this.Transaction.Connection.CreateCommand())
+            {
+                command.CommandText = CreateExtendedBioSql;
+                command.Transaction = this.Transaction;
+                command.Parameters.AddWithValue("@author_name", args.AuthorName ?? (object)DBNull.Value);
+                command.Parameters.AddWithValue("@name", args.Name ?? (object)DBNull.Value);
+                command.Parameters.AddWithValue("@bio_type", args.BioType ?? (object)DBNull.Value);
+                command.Parameters.AddWithValue("@author_type", args.AuthorType != null ? string.Join(",", args.AuthorType) : (object)DBNull.Value);
+                await command.ExecuteNonQueryAsync();
+            }
+        }
+
+        private const string GetFirstExtendedBioByTypeSql = "SELECT author_name, name, bio_type, author_type FROM extended.bios WHERE bio_type = @bio_type LIMIT 1";
+        public class GetFirstExtendedBioByTypeRow
+        {
+            public string AuthorName { get; set; }
+            public string Name { get; set; }
+            public BiosBioType? BioType { get; set; }
+            public HashSet<BiosAuthorType> AuthorType { get; set; }
+        };
+        public class GetFirstExtendedBioByTypeArgs
+        {
+            public BiosBioType? BioType { get; set; }
+        };
+        public async Task<GetFirstExtendedBioByTypeRow> GetFirstExtendedBioByType(GetFirstExtendedBioByTypeArgs args)
+        {
+            if (this.Transaction == null)
+            {
+                using (var connection = new MySqlConnection(ConnectionString))
+                {
+                    await connection.OpenAsync();
+                    using (var command = new MySqlCommand(GetFirstExtendedBioByTypeSql, connection))
+                    {
+                        command.Parameters.AddWithValue("@bio_type", args.BioType ?? (object)DBNull.Value);
+                        using (var reader = await command.ExecuteReaderAsync())
+                        {
+                            if (await reader.ReadAsync())
+                            {
+                                return new GetFirstExtendedBioByTypeRow
+                                {
+                                    AuthorName = reader.IsDBNull(0) ? null : reader.GetString(0),
+                                    Name = reader.IsDBNull(1) ? null : reader.GetString(1),
+                                    BioType = reader.IsDBNull(2) ? (BiosBioType? )null : reader.GetString(2).ToBiosBioType(),
+                                    AuthorType = reader.IsDBNull(3) ? null : reader.GetString(3).ToBiosAuthorTypeSet()
+                                };
+                            }
+                        }
+                    }
+                }
+
+                return null;
+            }
+
+            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+                throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+            using (var command = this.Transaction.Connection.CreateCommand())
+            {
+                command.CommandText = GetFirstExtendedBioByTypeSql;
+                command.Transaction = this.Transaction;
+                command.Parameters.AddWithValue("@bio_type", args.BioType ?? (object)DBNull.Value);
+                using (var reader = await command.ExecuteReaderAsync())
+                {
+                    if (await reader.ReadAsync())
+                    {
+                        return new GetFirstExtendedBioByTypeRow
+                        {
+                            AuthorName = reader.IsDBNull(0) ? null : reader.GetString(0),
+                            Name = reader.IsDBNull(1) ? null : reader.GetString(1),
+                            BioType = reader.IsDBNull(2) ? (BiosBioType? )null : reader.GetString(2).ToBiosBioType(),
+                            AuthorType = reader.IsDBNull(3) ? null : reader.GetString(3).ToBiosAuthorTypeSet()
+                        };
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        private const string TruncateExtendedBiosSql = "TRUNCATE TABLE extended.bios";
+        public async Task TruncateExtendedBios()
+        {
+            if (this.Transaction == null)
+            {
+                using (var connection = new MySqlConnection(ConnectionString))
+                {
+                    await connection.OpenAsync();
+                    using (var command = new MySqlCommand(TruncateExtendedBiosSql, connection))
+                    {
+                        await command.ExecuteNonQueryAsync();
+                    }
+                }
+
+                return;
+            }
+
+            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+                throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+            using (var command = this.Transaction.Connection.CreateCommand())
+            {
+                command.CommandText = TruncateExtendedBiosSql;
+                command.Transaction = this.Transaction;
+                await command.ExecuteNonQueryAsync();
+            }
+        }
+
         private const string InsertMysqlNumericTypesSql = " INSERT INTO mysql_numeric_types ( c_bool, c_boolean, c_tinyint, c_smallint, c_mediumint, c_int, c_integer, c_bigint, c_decimal, c_dec, c_numeric, c_fixed, c_float, c_double, c_double_precision ) VALUES (@c_bool, @c_boolean, @c_tinyint, @c_smallint, @c_mediumint, @c_int, @c_integer, @c_bigint, @c_decimal, @c_dec, @c_numeric, @c_fixed, @c_float, @c_double, @c_double_precision)";
         public class InsertMysqlNumericTypesArgs
         {
@@ -1316,816 +2126,6 @@ namespace MySqlConnectorLegacyExampleGen
             }
 
             return null;
-        }
-
-        private const string GetAuthorSql = "SELECT id, name, bio FROM authors WHERE name = @name LIMIT 1";
-        public class GetAuthorRow
-        {
-            public long Id { get; set; }
-            public string Name { get; set; }
-            public string Bio { get; set; }
-        };
-        public class GetAuthorArgs
-        {
-            public string Name { get; set; }
-        };
-        public async Task<GetAuthorRow> GetAuthor(GetAuthorArgs args)
-        {
-            if (this.Transaction == null)
-            {
-                using (var connection = new MySqlConnection(ConnectionString))
-                {
-                    await connection.OpenAsync();
-                    using (var command = new MySqlCommand(GetAuthorSql, connection))
-                    {
-                        command.Parameters.AddWithValue("@name", args.Name);
-                        using (var reader = await command.ExecuteReaderAsync())
-                        {
-                            if (await reader.ReadAsync())
-                            {
-                                return new GetAuthorRow
-                                {
-                                    Id = reader.GetInt64(0),
-                                    Name = reader.GetString(1),
-                                    Bio = reader.IsDBNull(2) ? null : reader.GetString(2)
-                                };
-                            }
-                        }
-                    }
-                }
-
-                return null;
-            }
-
-            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
-                throw new InvalidOperationException("Transaction is provided, but its connection is null.");
-            using (var command = this.Transaction.Connection.CreateCommand())
-            {
-                command.CommandText = GetAuthorSql;
-                command.Transaction = this.Transaction;
-                command.Parameters.AddWithValue("@name", args.Name);
-                using (var reader = await command.ExecuteReaderAsync())
-                {
-                    if (await reader.ReadAsync())
-                    {
-                        return new GetAuthorRow
-                        {
-                            Id = reader.GetInt64(0),
-                            Name = reader.GetString(1),
-                            Bio = reader.IsDBNull(2) ? null : reader.GetString(2)
-                        };
-                    }
-                }
-            }
-
-            return null;
-        }
-
-        private const string ListAuthorsSql = "SELECT id, name, bio FROM authors ORDER BY name LIMIT @limit OFFSET @offset";
-        public class ListAuthorsRow
-        {
-            public long Id { get; set; }
-            public string Name { get; set; }
-            public string Bio { get; set; }
-        };
-        public class ListAuthorsArgs
-        {
-            public int Limit { get; set; }
-            public int Offset { get; set; }
-        };
-        public async Task<List<ListAuthorsRow>> ListAuthors(ListAuthorsArgs args)
-        {
-            if (this.Transaction == null)
-            {
-                using (var connection = new MySqlConnection(ConnectionString))
-                {
-                    await connection.OpenAsync();
-                    using (var command = new MySqlCommand(ListAuthorsSql, connection))
-                    {
-                        command.Parameters.AddWithValue("@limit", args.Limit);
-                        command.Parameters.AddWithValue("@offset", args.Offset);
-                        using (var reader = await command.ExecuteReaderAsync())
-                        {
-                            var result = new List<ListAuthorsRow>();
-                            while (await reader.ReadAsync())
-                                result.Add(new ListAuthorsRow { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2) });
-                            return result;
-                        }
-                    }
-                }
-            }
-
-            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
-                throw new InvalidOperationException("Transaction is provided, but its connection is null.");
-            using (var command = this.Transaction.Connection.CreateCommand())
-            {
-                command.CommandText = ListAuthorsSql;
-                command.Transaction = this.Transaction;
-                command.Parameters.AddWithValue("@limit", args.Limit);
-                command.Parameters.AddWithValue("@offset", args.Offset);
-                using (var reader = await command.ExecuteReaderAsync())
-                {
-                    var result = new List<ListAuthorsRow>();
-                    while (await reader.ReadAsync())
-                        result.Add(new ListAuthorsRow { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2) });
-                    return result;
-                }
-            }
-        }
-
-        private const string CreateAuthorSql = "INSERT INTO authors (id, name, bio) VALUES (@id, @name, @bio)";
-        public class CreateAuthorArgs
-        {
-            public long Id { get; set; }
-            public string Name { get; set; }
-            public string Bio { get; set; }
-        };
-        public async Task CreateAuthor(CreateAuthorArgs args)
-        {
-            if (this.Transaction == null)
-            {
-                using (var connection = new MySqlConnection(ConnectionString))
-                {
-                    await connection.OpenAsync();
-                    using (var command = new MySqlCommand(CreateAuthorSql, connection))
-                    {
-                        command.Parameters.AddWithValue("@id", args.Id);
-                        command.Parameters.AddWithValue("@name", args.Name);
-                        command.Parameters.AddWithValue("@bio", args.Bio ?? (object)DBNull.Value);
-                        await command.ExecuteNonQueryAsync();
-                    }
-                }
-
-                return;
-            }
-
-            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
-                throw new InvalidOperationException("Transaction is provided, but its connection is null.");
-            using (var command = this.Transaction.Connection.CreateCommand())
-            {
-                command.CommandText = CreateAuthorSql;
-                command.Transaction = this.Transaction;
-                command.Parameters.AddWithValue("@id", args.Id);
-                command.Parameters.AddWithValue("@name", args.Name);
-                command.Parameters.AddWithValue("@bio", args.Bio ?? (object)DBNull.Value);
-                await command.ExecuteNonQueryAsync();
-            }
-        }
-
-        private const string CreateAuthorReturnIdSql = "INSERT INTO authors (name, bio) VALUES (@name, @bio)";
-        public class CreateAuthorReturnIdArgs
-        {
-            public string Name { get; set; }
-            public string Bio { get; set; }
-        };
-        public async Task<long> CreateAuthorReturnId(CreateAuthorReturnIdArgs args)
-        {
-            if (this.Transaction == null)
-            {
-                using (var connection = new MySqlConnection(ConnectionString))
-                {
-                    await connection.OpenAsync();
-                    using (var command = new MySqlCommand(CreateAuthorReturnIdSql, connection))
-                    {
-                        command.Parameters.AddWithValue("@name", args.Name);
-                        command.Parameters.AddWithValue("@bio", args.Bio ?? (object)DBNull.Value);
-                        await command.ExecuteNonQueryAsync();
-                        return command.LastInsertedId;
-                    }
-                }
-            }
-
-            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
-                throw new InvalidOperationException("Transaction is provided, but its connection is null.");
-            using (var command = this.Transaction.Connection.CreateCommand())
-            {
-                command.CommandText = CreateAuthorReturnIdSql;
-                command.Transaction = this.Transaction;
-                command.Parameters.AddWithValue("@name", args.Name);
-                command.Parameters.AddWithValue("@bio", args.Bio ?? (object)DBNull.Value);
-                await command.ExecuteNonQueryAsync();
-                return command.LastInsertedId;
-            }
-        }
-
-        private const string GetAuthorByIdSql = "SELECT id, name, bio FROM authors WHERE id = @id LIMIT 1";
-        public class GetAuthorByIdRow
-        {
-            public long Id { get; set; }
-            public string Name { get; set; }
-            public string Bio { get; set; }
-        };
-        public class GetAuthorByIdArgs
-        {
-            public long Id { get; set; }
-        };
-        public async Task<GetAuthorByIdRow> GetAuthorById(GetAuthorByIdArgs args)
-        {
-            if (this.Transaction == null)
-            {
-                using (var connection = new MySqlConnection(ConnectionString))
-                {
-                    await connection.OpenAsync();
-                    using (var command = new MySqlCommand(GetAuthorByIdSql, connection))
-                    {
-                        command.Parameters.AddWithValue("@id", args.Id);
-                        using (var reader = await command.ExecuteReaderAsync())
-                        {
-                            if (await reader.ReadAsync())
-                            {
-                                return new GetAuthorByIdRow
-                                {
-                                    Id = reader.GetInt64(0),
-                                    Name = reader.GetString(1),
-                                    Bio = reader.IsDBNull(2) ? null : reader.GetString(2)
-                                };
-                            }
-                        }
-                    }
-                }
-
-                return null;
-            }
-
-            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
-                throw new InvalidOperationException("Transaction is provided, but its connection is null.");
-            using (var command = this.Transaction.Connection.CreateCommand())
-            {
-                command.CommandText = GetAuthorByIdSql;
-                command.Transaction = this.Transaction;
-                command.Parameters.AddWithValue("@id", args.Id);
-                using (var reader = await command.ExecuteReaderAsync())
-                {
-                    if (await reader.ReadAsync())
-                    {
-                        return new GetAuthorByIdRow
-                        {
-                            Id = reader.GetInt64(0),
-                            Name = reader.GetString(1),
-                            Bio = reader.IsDBNull(2) ? null : reader.GetString(2)
-                        };
-                    }
-                }
-            }
-
-            return null;
-        }
-
-        private const string GetAuthorByNamePatternSql = "SELECT id, name, bio FROM authors WHERE name LIKE COALESCE(@name_pattern, '%')";
-        public class GetAuthorByNamePatternRow
-        {
-            public long Id { get; set; }
-            public string Name { get; set; }
-            public string Bio { get; set; }
-        };
-        public class GetAuthorByNamePatternArgs
-        {
-            public string NamePattern { get; set; }
-        };
-        public async Task<List<GetAuthorByNamePatternRow>> GetAuthorByNamePattern(GetAuthorByNamePatternArgs args)
-        {
-            if (this.Transaction == null)
-            {
-                using (var connection = new MySqlConnection(ConnectionString))
-                {
-                    await connection.OpenAsync();
-                    using (var command = new MySqlCommand(GetAuthorByNamePatternSql, connection))
-                    {
-                        command.Parameters.AddWithValue("@name_pattern", args.NamePattern ?? (object)DBNull.Value);
-                        using (var reader = await command.ExecuteReaderAsync())
-                        {
-                            var result = new List<GetAuthorByNamePatternRow>();
-                            while (await reader.ReadAsync())
-                                result.Add(new GetAuthorByNamePatternRow { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2) });
-                            return result;
-                        }
-                    }
-                }
-            }
-
-            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
-                throw new InvalidOperationException("Transaction is provided, but its connection is null.");
-            using (var command = this.Transaction.Connection.CreateCommand())
-            {
-                command.CommandText = GetAuthorByNamePatternSql;
-                command.Transaction = this.Transaction;
-                command.Parameters.AddWithValue("@name_pattern", args.NamePattern ?? (object)DBNull.Value);
-                using (var reader = await command.ExecuteReaderAsync())
-                {
-                    var result = new List<GetAuthorByNamePatternRow>();
-                    while (await reader.ReadAsync())
-                        result.Add(new GetAuthorByNamePatternRow { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2) });
-                    return result;
-                }
-            }
-        }
-
-        private const string DeleteAuthorSql = "DELETE FROM authors WHERE name = @name";
-        public class DeleteAuthorArgs
-        {
-            public string Name { get; set; }
-        };
-        public async Task DeleteAuthor(DeleteAuthorArgs args)
-        {
-            if (this.Transaction == null)
-            {
-                using (var connection = new MySqlConnection(ConnectionString))
-                {
-                    await connection.OpenAsync();
-                    using (var command = new MySqlCommand(DeleteAuthorSql, connection))
-                    {
-                        command.Parameters.AddWithValue("@name", args.Name);
-                        await command.ExecuteNonQueryAsync();
-                    }
-                }
-
-                return;
-            }
-
-            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
-                throw new InvalidOperationException("Transaction is provided, but its connection is null.");
-            using (var command = this.Transaction.Connection.CreateCommand())
-            {
-                command.CommandText = DeleteAuthorSql;
-                command.Transaction = this.Transaction;
-                command.Parameters.AddWithValue("@name", args.Name);
-                await command.ExecuteNonQueryAsync();
-            }
-        }
-
-        private const string DeleteAllAuthorsSql = "DELETE FROM authors";
-        public async Task DeleteAllAuthors()
-        {
-            if (this.Transaction == null)
-            {
-                using (var connection = new MySqlConnection(ConnectionString))
-                {
-                    await connection.OpenAsync();
-                    using (var command = new MySqlCommand(DeleteAllAuthorsSql, connection))
-                    {
-                        await command.ExecuteNonQueryAsync();
-                    }
-                }
-
-                return;
-            }
-
-            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
-                throw new InvalidOperationException("Transaction is provided, but its connection is null.");
-            using (var command = this.Transaction.Connection.CreateCommand())
-            {
-                command.CommandText = DeleteAllAuthorsSql;
-                command.Transaction = this.Transaction;
-                await command.ExecuteNonQueryAsync();
-            }
-        }
-
-        private const string UpdateAuthorsSql = "UPDATE authors SET bio = @bio WHERE bio IS NOT NULL";
-        public class UpdateAuthorsArgs
-        {
-            public string Bio { get; set; }
-        };
-        public async Task<long> UpdateAuthors(UpdateAuthorsArgs args)
-        {
-            if (this.Transaction == null)
-            {
-                using (var connection = new MySqlConnection(ConnectionString))
-                {
-                    await connection.OpenAsync();
-                    using (var command = new MySqlCommand(UpdateAuthorsSql, connection))
-                    {
-                        command.Parameters.AddWithValue("@bio", args.Bio ?? (object)DBNull.Value);
-                        return await command.ExecuteNonQueryAsync();
-                    }
-                }
-            }
-
-            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
-                throw new InvalidOperationException("Transaction is provided, but its connection is null.");
-            using (var command = this.Transaction.Connection.CreateCommand())
-            {
-                command.CommandText = UpdateAuthorsSql;
-                command.Transaction = this.Transaction;
-                command.Parameters.AddWithValue("@bio", args.Bio ?? (object)DBNull.Value);
-                return await command.ExecuteNonQueryAsync();
-            }
-        }
-
-        private const string GetAuthorsByIdsSql = "SELECT id, name, bio FROM authors WHERE id IN (/*SLICE:ids*/@ids)";
-        public class GetAuthorsByIdsRow
-        {
-            public long Id { get; set; }
-            public string Name { get; set; }
-            public string Bio { get; set; }
-        };
-        public class GetAuthorsByIdsArgs
-        {
-            public long[] Ids { get; set; }
-        };
-        public async Task<List<GetAuthorsByIdsRow>> GetAuthorsByIds(GetAuthorsByIdsArgs args)
-        {
-            var transformedSql = GetAuthorsByIdsSql;
-            transformedSql = Utils.TransformQueryForSliceArgs(transformedSql, args.Ids.Length, "ids");
-            if (this.Transaction == null)
-            {
-                using (var connection = new MySqlConnection(ConnectionString))
-                {
-                    await connection.OpenAsync();
-                    using (var command = new MySqlCommand(transformedSql, connection))
-                    {
-                        for (int i = 0; i < args.Ids.Length; i++)
-                            command.Parameters.AddWithValue($"@idsArg{i}", args.Ids[i]);
-                        using (var reader = await command.ExecuteReaderAsync())
-                        {
-                            var result = new List<GetAuthorsByIdsRow>();
-                            while (await reader.ReadAsync())
-                                result.Add(new GetAuthorsByIdsRow { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2) });
-                            return result;
-                        }
-                    }
-                }
-            }
-
-            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
-                throw new InvalidOperationException("Transaction is provided, but its connection is null.");
-            using (var command = this.Transaction.Connection.CreateCommand())
-            {
-                command.CommandText = transformedSql;
-                command.Transaction = this.Transaction;
-                for (int i = 0; i < args.Ids.Length; i++)
-                    command.Parameters.AddWithValue($"@idsArg{i}", args.Ids[i]);
-                using (var reader = await command.ExecuteReaderAsync())
-                {
-                    var result = new List<GetAuthorsByIdsRow>();
-                    while (await reader.ReadAsync())
-                        result.Add(new GetAuthorsByIdsRow { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2) });
-                    return result;
-                }
-            }
-        }
-
-        private const string GetAuthorsByIdsAndNamesSql = "SELECT id, name, bio FROM authors WHERE id IN (/*SLICE:ids*/@ids) AND name IN (/*SLICE:names*/@names)";
-        public class GetAuthorsByIdsAndNamesRow
-        {
-            public long Id { get; set; }
-            public string Name { get; set; }
-            public string Bio { get; set; }
-        };
-        public class GetAuthorsByIdsAndNamesArgs
-        {
-            public long[] Ids { get; set; }
-            public string[] Names { get; set; }
-        };
-        public async Task<List<GetAuthorsByIdsAndNamesRow>> GetAuthorsByIdsAndNames(GetAuthorsByIdsAndNamesArgs args)
-        {
-            var transformedSql = GetAuthorsByIdsAndNamesSql;
-            transformedSql = Utils.TransformQueryForSliceArgs(transformedSql, args.Ids.Length, "ids");
-            transformedSql = Utils.TransformQueryForSliceArgs(transformedSql, args.Names.Length, "names");
-            if (this.Transaction == null)
-            {
-                using (var connection = new MySqlConnection(ConnectionString))
-                {
-                    await connection.OpenAsync();
-                    using (var command = new MySqlCommand(transformedSql, connection))
-                    {
-                        for (int i = 0; i < args.Ids.Length; i++)
-                            command.Parameters.AddWithValue($"@idsArg{i}", args.Ids[i]);
-                        for (int i = 0; i < args.Names.Length; i++)
-                            command.Parameters.AddWithValue($"@namesArg{i}", args.Names[i]);
-                        using (var reader = await command.ExecuteReaderAsync())
-                        {
-                            var result = new List<GetAuthorsByIdsAndNamesRow>();
-                            while (await reader.ReadAsync())
-                                result.Add(new GetAuthorsByIdsAndNamesRow { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2) });
-                            return result;
-                        }
-                    }
-                }
-            }
-
-            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
-                throw new InvalidOperationException("Transaction is provided, but its connection is null.");
-            using (var command = this.Transaction.Connection.CreateCommand())
-            {
-                command.CommandText = transformedSql;
-                command.Transaction = this.Transaction;
-                for (int i = 0; i < args.Ids.Length; i++)
-                    command.Parameters.AddWithValue($"@idsArg{i}", args.Ids[i]);
-                for (int i = 0; i < args.Names.Length; i++)
-                    command.Parameters.AddWithValue($"@namesArg{i}", args.Names[i]);
-                using (var reader = await command.ExecuteReaderAsync())
-                {
-                    var result = new List<GetAuthorsByIdsAndNamesRow>();
-                    while (await reader.ReadAsync())
-                        result.Add(new GetAuthorsByIdsAndNamesRow { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2) });
-                    return result;
-                }
-            }
-        }
-
-        private const string CreateBookSql = "INSERT INTO books (name, author_id) VALUES (@name, @author_id)";
-        public class CreateBookArgs
-        {
-            public string Name { get; set; }
-            public long AuthorId { get; set; }
-        };
-        public async Task<long> CreateBook(CreateBookArgs args)
-        {
-            if (this.Transaction == null)
-            {
-                using (var connection = new MySqlConnection(ConnectionString))
-                {
-                    await connection.OpenAsync();
-                    using (var command = new MySqlCommand(CreateBookSql, connection))
-                    {
-                        command.Parameters.AddWithValue("@name", args.Name);
-                        command.Parameters.AddWithValue("@author_id", args.AuthorId);
-                        await command.ExecuteNonQueryAsync();
-                        return command.LastInsertedId;
-                    }
-                }
-            }
-
-            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
-                throw new InvalidOperationException("Transaction is provided, but its connection is null.");
-            using (var command = this.Transaction.Connection.CreateCommand())
-            {
-                command.CommandText = CreateBookSql;
-                command.Transaction = this.Transaction;
-                command.Parameters.AddWithValue("@name", args.Name);
-                command.Parameters.AddWithValue("@author_id", args.AuthorId);
-                await command.ExecuteNonQueryAsync();
-                return command.LastInsertedId;
-            }
-        }
-
-        private const string ListAllAuthorsBooksSql = "SELECT authors.id, authors.name, authors.bio, books.id, books.name, books.author_id, books.description FROM authors JOIN books ON authors.id = books.author_id ORDER BY authors.name";
-        public class ListAllAuthorsBooksRow
-        {
-            public Author Author { get; set; }
-            public Book Book { get; set; }
-        };
-        public async Task<List<ListAllAuthorsBooksRow>> ListAllAuthorsBooks()
-        {
-            if (this.Transaction == null)
-            {
-                using (var connection = new MySqlConnection(ConnectionString))
-                {
-                    await connection.OpenAsync();
-                    using (var command = new MySqlCommand(ListAllAuthorsBooksSql, connection))
-                    {
-                        using (var reader = await command.ExecuteReaderAsync())
-                        {
-                            var result = new List<ListAllAuthorsBooksRow>();
-                            while (await reader.ReadAsync())
-                                result.Add(new ListAllAuthorsBooksRow { Author = new Author { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2) }, Book = new Book { Id = reader.GetInt64(3), Name = reader.GetString(4), AuthorId = reader.GetInt64(5), Description = reader.IsDBNull(6) ? null : reader.GetString(6) } });
-                            return result;
-                        }
-                    }
-                }
-            }
-
-            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
-                throw new InvalidOperationException("Transaction is provided, but its connection is null.");
-            using (var command = this.Transaction.Connection.CreateCommand())
-            {
-                command.CommandText = ListAllAuthorsBooksSql;
-                command.Transaction = this.Transaction;
-                using (var reader = await command.ExecuteReaderAsync())
-                {
-                    var result = new List<ListAllAuthorsBooksRow>();
-                    while (await reader.ReadAsync())
-                        result.Add(new ListAllAuthorsBooksRow { Author = new Author { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2) }, Book = new Book { Id = reader.GetInt64(3), Name = reader.GetString(4), AuthorId = reader.GetInt64(5), Description = reader.IsDBNull(6) ? null : reader.GetString(6) } });
-                    return result;
-                }
-            }
-        }
-
-        private const string GetDuplicateAuthorsSql = "SELECT authors1.id, authors1.name, authors1.bio, authors2.id, authors2.name, authors2.bio FROM authors authors1 JOIN authors authors2 ON authors1.name = authors2.name WHERE authors1.id < authors2.id";
-        public class GetDuplicateAuthorsRow
-        {
-            public Author Author { get; set; }
-            public Author Author2 { get; set; }
-        };
-        public async Task<List<GetDuplicateAuthorsRow>> GetDuplicateAuthors()
-        {
-            if (this.Transaction == null)
-            {
-                using (var connection = new MySqlConnection(ConnectionString))
-                {
-                    await connection.OpenAsync();
-                    using (var command = new MySqlCommand(GetDuplicateAuthorsSql, connection))
-                    {
-                        using (var reader = await command.ExecuteReaderAsync())
-                        {
-                            var result = new List<GetDuplicateAuthorsRow>();
-                            while (await reader.ReadAsync())
-                                result.Add(new GetDuplicateAuthorsRow { Author = new Author { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2) }, Author2 = new Author { Id = reader.GetInt64(3), Name = reader.GetString(4), Bio = reader.IsDBNull(5) ? null : reader.GetString(5) } });
-                            return result;
-                        }
-                    }
-                }
-            }
-
-            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
-                throw new InvalidOperationException("Transaction is provided, but its connection is null.");
-            using (var command = this.Transaction.Connection.CreateCommand())
-            {
-                command.CommandText = GetDuplicateAuthorsSql;
-                command.Transaction = this.Transaction;
-                using (var reader = await command.ExecuteReaderAsync())
-                {
-                    var result = new List<GetDuplicateAuthorsRow>();
-                    while (await reader.ReadAsync())
-                        result.Add(new GetDuplicateAuthorsRow { Author = new Author { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2) }, Author2 = new Author { Id = reader.GetInt64(3), Name = reader.GetString(4), Bio = reader.IsDBNull(5) ? null : reader.GetString(5) } });
-                    return result;
-                }
-            }
-        }
-
-        private const string GetAuthorsByBookNameSql = "SELECT authors.id, authors.name, authors.bio, books.id, books.name, books.author_id, books.description FROM authors JOIN books ON authors.id = books.author_id WHERE books.name = @name";
-        public class GetAuthorsByBookNameRow
-        {
-            public long Id { get; set; }
-            public string Name { get; set; }
-            public string Bio { get; set; }
-            public Book Book { get; set; }
-        };
-        public class GetAuthorsByBookNameArgs
-        {
-            public string Name { get; set; }
-        };
-        public async Task<List<GetAuthorsByBookNameRow>> GetAuthorsByBookName(GetAuthorsByBookNameArgs args)
-        {
-            if (this.Transaction == null)
-            {
-                using (var connection = new MySqlConnection(ConnectionString))
-                {
-                    await connection.OpenAsync();
-                    using (var command = new MySqlCommand(GetAuthorsByBookNameSql, connection))
-                    {
-                        command.Parameters.AddWithValue("@name", args.Name);
-                        using (var reader = await command.ExecuteReaderAsync())
-                        {
-                            var result = new List<GetAuthorsByBookNameRow>();
-                            while (await reader.ReadAsync())
-                                result.Add(new GetAuthorsByBookNameRow { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2), Book = new Book { Id = reader.GetInt64(3), Name = reader.GetString(4), AuthorId = reader.GetInt64(5), Description = reader.IsDBNull(6) ? null : reader.GetString(6) } });
-                            return result;
-                        }
-                    }
-                }
-            }
-
-            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
-                throw new InvalidOperationException("Transaction is provided, but its connection is null.");
-            using (var command = this.Transaction.Connection.CreateCommand())
-            {
-                command.CommandText = GetAuthorsByBookNameSql;
-                command.Transaction = this.Transaction;
-                command.Parameters.AddWithValue("@name", args.Name);
-                using (var reader = await command.ExecuteReaderAsync())
-                {
-                    var result = new List<GetAuthorsByBookNameRow>();
-                    while (await reader.ReadAsync())
-                        result.Add(new GetAuthorsByBookNameRow { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2), Book = new Book { Id = reader.GetInt64(3), Name = reader.GetString(4), AuthorId = reader.GetInt64(5), Description = reader.IsDBNull(6) ? null : reader.GetString(6) } });
-                    return result;
-                }
-            }
-        }
-
-        private const string CreateExtendedBioSql = "INSERT INTO extended.bios (author_name, name, bio_type, author_type) VALUES (@author_name, @name, @bio_type, @author_type)";
-        public class CreateExtendedBioArgs
-        {
-            public string AuthorName { get; set; }
-            public string Name { get; set; }
-            public BiosBioType? BioType { get; set; }
-            public HashSet<BiosAuthorType> AuthorType { get; set; }
-        };
-        public async Task CreateExtendedBio(CreateExtendedBioArgs args)
-        {
-            if (this.Transaction == null)
-            {
-                using (var connection = new MySqlConnection(ConnectionString))
-                {
-                    await connection.OpenAsync();
-                    using (var command = new MySqlCommand(CreateExtendedBioSql, connection))
-                    {
-                        command.Parameters.AddWithValue("@author_name", args.AuthorName ?? (object)DBNull.Value);
-                        command.Parameters.AddWithValue("@name", args.Name ?? (object)DBNull.Value);
-                        command.Parameters.AddWithValue("@bio_type", args.BioType ?? (object)DBNull.Value);
-                        command.Parameters.AddWithValue("@author_type", args.AuthorType != null ? string.Join(",", args.AuthorType) : (object)DBNull.Value);
-                        await command.ExecuteNonQueryAsync();
-                    }
-                }
-
-                return;
-            }
-
-            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
-                throw new InvalidOperationException("Transaction is provided, but its connection is null.");
-            using (var command = this.Transaction.Connection.CreateCommand())
-            {
-                command.CommandText = CreateExtendedBioSql;
-                command.Transaction = this.Transaction;
-                command.Parameters.AddWithValue("@author_name", args.AuthorName ?? (object)DBNull.Value);
-                command.Parameters.AddWithValue("@name", args.Name ?? (object)DBNull.Value);
-                command.Parameters.AddWithValue("@bio_type", args.BioType ?? (object)DBNull.Value);
-                command.Parameters.AddWithValue("@author_type", args.AuthorType != null ? string.Join(",", args.AuthorType) : (object)DBNull.Value);
-                await command.ExecuteNonQueryAsync();
-            }
-        }
-
-        private const string GetFirstExtendedBioByTypeSql = "SELECT author_name, name, bio_type, author_type FROM extended.bios WHERE bio_type = @bio_type LIMIT 1";
-        public class GetFirstExtendedBioByTypeRow
-        {
-            public string AuthorName { get; set; }
-            public string Name { get; set; }
-            public BiosBioType? BioType { get; set; }
-            public HashSet<BiosAuthorType> AuthorType { get; set; }
-        };
-        public class GetFirstExtendedBioByTypeArgs
-        {
-            public BiosBioType? BioType { get; set; }
-        };
-        public async Task<GetFirstExtendedBioByTypeRow> GetFirstExtendedBioByType(GetFirstExtendedBioByTypeArgs args)
-        {
-            if (this.Transaction == null)
-            {
-                using (var connection = new MySqlConnection(ConnectionString))
-                {
-                    await connection.OpenAsync();
-                    using (var command = new MySqlCommand(GetFirstExtendedBioByTypeSql, connection))
-                    {
-                        command.Parameters.AddWithValue("@bio_type", args.BioType ?? (object)DBNull.Value);
-                        using (var reader = await command.ExecuteReaderAsync())
-                        {
-                            if (await reader.ReadAsync())
-                            {
-                                return new GetFirstExtendedBioByTypeRow
-                                {
-                                    AuthorName = reader.IsDBNull(0) ? null : reader.GetString(0),
-                                    Name = reader.IsDBNull(1) ? null : reader.GetString(1),
-                                    BioType = reader.IsDBNull(2) ? (BiosBioType? )null : reader.GetString(2).ToBiosBioType(),
-                                    AuthorType = reader.IsDBNull(3) ? null : reader.GetString(3).ToBiosAuthorTypeSet()
-                                };
-                            }
-                        }
-                    }
-                }
-
-                return null;
-            }
-
-            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
-                throw new InvalidOperationException("Transaction is provided, but its connection is null.");
-            using (var command = this.Transaction.Connection.CreateCommand())
-            {
-                command.CommandText = GetFirstExtendedBioByTypeSql;
-                command.Transaction = this.Transaction;
-                command.Parameters.AddWithValue("@bio_type", args.BioType ?? (object)DBNull.Value);
-                using (var reader = await command.ExecuteReaderAsync())
-                {
-                    if (await reader.ReadAsync())
-                    {
-                        return new GetFirstExtendedBioByTypeRow
-                        {
-                            AuthorName = reader.IsDBNull(0) ? null : reader.GetString(0),
-                            Name = reader.IsDBNull(1) ? null : reader.GetString(1),
-                            BioType = reader.IsDBNull(2) ? (BiosBioType? )null : reader.GetString(2).ToBiosBioType(),
-                            AuthorType = reader.IsDBNull(3) ? null : reader.GetString(3).ToBiosAuthorTypeSet()
-                        };
-                    }
-                }
-            }
-
-            return null;
-        }
-
-        private const string TruncateExtendedBiosSql = "TRUNCATE TABLE extended.bios";
-        public async Task TruncateExtendedBios()
-        {
-            if (this.Transaction == null)
-            {
-                using (var connection = new MySqlConnection(ConnectionString))
-                {
-                    await connection.OpenAsync();
-                    using (var command = new MySqlCommand(TruncateExtendedBiosSql, connection))
-                    {
-                        await command.ExecuteNonQueryAsync();
-                    }
-                }
-
-                return;
-            }
-
-            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
-                throw new InvalidOperationException("Transaction is provided, but its connection is null.");
-            using (var command = this.Transaction.Connection.CreateCommand())
-            {
-                command.CommandText = TruncateExtendedBiosSql;
-                command.Transaction = this.Transaction;
-                await command.ExecuteNonQueryAsync();
-            }
         }
     }
 }

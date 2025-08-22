@@ -3,12 +3,12 @@
     "version": "2",
     "engine": "sqlite",
     "schema": [
-      "examples/config/sqlite/types/schema.sql",
-      "examples/config/sqlite/authors/schema.sql"
+      "examples/config/sqlite/authors/schema.sql",
+      "examples/config/sqlite/types/schema.sql"
     ],
     "queries": [
-      "examples/config/sqlite/types/query.sql",
-      "examples/config/sqlite/authors/query.sql"
+      "examples/config/sqlite/authors/query.sql",
+      "examples/config/sqlite/types/query.sql"
     ],
     "codegen": {
       "out": "examples/SqliteDapperExample",
@@ -25,53 +25,6 @@
       {
         "name": "main",
         "tables": [
-          {
-            "rel": {
-              "name": "types_sqlite"
-            },
-            "columns": [
-              {
-                "name": "c_integer",
-                "length": -1,
-                "table": {
-                  "name": "types_sqlite"
-                },
-                "type": {
-                  "name": "INTEGER"
-                }
-              },
-              {
-                "name": "c_real",
-                "length": -1,
-                "table": {
-                  "name": "types_sqlite"
-                },
-                "type": {
-                  "name": "REAL"
-                }
-              },
-              {
-                "name": "c_text",
-                "length": -1,
-                "table": {
-                  "name": "types_sqlite"
-                },
-                "type": {
-                  "name": "TEXT"
-                }
-              },
-              {
-                "name": "c_blob",
-                "length": -1,
-                "table": {
-                  "name": "types_sqlite"
-                },
-                "type": {
-                  "name": "BLOB"
-                }
-              }
-            ]
-          },
           {
             "rel": {
               "name": "authors"
@@ -160,290 +113,59 @@
                 }
               }
             ]
+          },
+          {
+            "rel": {
+              "name": "types_sqlite"
+            },
+            "columns": [
+              {
+                "name": "c_integer",
+                "length": -1,
+                "table": {
+                  "name": "types_sqlite"
+                },
+                "type": {
+                  "name": "INTEGER"
+                }
+              },
+              {
+                "name": "c_real",
+                "length": -1,
+                "table": {
+                  "name": "types_sqlite"
+                },
+                "type": {
+                  "name": "REAL"
+                }
+              },
+              {
+                "name": "c_text",
+                "length": -1,
+                "table": {
+                  "name": "types_sqlite"
+                },
+                "type": {
+                  "name": "TEXT"
+                }
+              },
+              {
+                "name": "c_blob",
+                "length": -1,
+                "table": {
+                  "name": "types_sqlite"
+                },
+                "type": {
+                  "name": "BLOB"
+                }
+              }
+            ]
           }
         ]
       }
     ]
   },
   "queries": [
-    {
-      "text": "INSERT INTO types_sqlite \n(c_integer, c_real, c_text, c_blob) \nVALUES (?, ?, ?, ?)",
-      "name": "InsertSqliteTypes",
-      "cmd": ":exec",
-      "parameters": [
-        {
-          "number": 1,
-          "column": {
-            "name": "c_integer",
-            "length": -1,
-            "table": {
-              "schema": "main",
-              "name": "types_sqlite"
-            },
-            "type": {
-              "name": "INTEGER"
-            },
-            "originalName": "c_integer"
-          }
-        },
-        {
-          "number": 2,
-          "column": {
-            "name": "c_real",
-            "length": -1,
-            "table": {
-              "schema": "main",
-              "name": "types_sqlite"
-            },
-            "type": {
-              "name": "REAL"
-            },
-            "originalName": "c_real"
-          }
-        },
-        {
-          "number": 3,
-          "column": {
-            "name": "c_text",
-            "length": -1,
-            "table": {
-              "schema": "main",
-              "name": "types_sqlite"
-            },
-            "type": {
-              "name": "TEXT"
-            },
-            "originalName": "c_text"
-          }
-        },
-        {
-          "number": 4,
-          "column": {
-            "name": "c_blob",
-            "length": -1,
-            "table": {
-              "schema": "main",
-              "name": "types_sqlite"
-            },
-            "type": {
-              "name": "BLOB"
-            },
-            "originalName": "c_blob"
-          }
-        }
-      ],
-      "filename": "query.sql",
-      "insert_into_table": {
-        "name": "types_sqlite"
-      }
-    },
-    {
-      "text": "INSERT INTO types_sqlite (c_integer, c_real, c_text) VALUES (?, ?, ?)",
-      "name": "InsertSqliteTypesBatch",
-      "cmd": ":copyfrom",
-      "parameters": [
-        {
-          "number": 1,
-          "column": {
-            "name": "c_integer",
-            "length": -1,
-            "table": {
-              "schema": "main",
-              "name": "types_sqlite"
-            },
-            "type": {
-              "name": "INTEGER"
-            },
-            "originalName": "c_integer"
-          }
-        },
-        {
-          "number": 2,
-          "column": {
-            "name": "c_real",
-            "length": -1,
-            "table": {
-              "schema": "main",
-              "name": "types_sqlite"
-            },
-            "type": {
-              "name": "REAL"
-            },
-            "originalName": "c_real"
-          }
-        },
-        {
-          "number": 3,
-          "column": {
-            "name": "c_text",
-            "length": -1,
-            "table": {
-              "schema": "main",
-              "name": "types_sqlite"
-            },
-            "type": {
-              "name": "TEXT"
-            },
-            "originalName": "c_text"
-          }
-        }
-      ],
-      "filename": "query.sql",
-      "insert_into_table": {
-        "name": "types_sqlite"
-      }
-    },
-    {
-      "text": "SELECT c_integer, c_real, c_text, c_blob FROM types_sqlite LIMIT 1",
-      "name": "GetSqliteTypes",
-      "cmd": ":one",
-      "columns": [
-        {
-          "name": "c_integer",
-          "length": -1,
-          "table": {
-            "name": "types_sqlite"
-          },
-          "type": {
-            "name": "INTEGER"
-          },
-          "originalName": "c_integer"
-        },
-        {
-          "name": "c_real",
-          "length": -1,
-          "table": {
-            "name": "types_sqlite"
-          },
-          "type": {
-            "name": "REAL"
-          },
-          "originalName": "c_real"
-        },
-        {
-          "name": "c_text",
-          "length": -1,
-          "table": {
-            "name": "types_sqlite"
-          },
-          "type": {
-            "name": "TEXT"
-          },
-          "originalName": "c_text"
-        },
-        {
-          "name": "c_blob",
-          "length": -1,
-          "table": {
-            "name": "types_sqlite"
-          },
-          "type": {
-            "name": "BLOB"
-          },
-          "originalName": "c_blob"
-        }
-      ],
-      "filename": "query.sql"
-    },
-    {
-      "text": "SELECT\n    c_integer,\n    c_real,\n    c_text,\n    c_blob,\n    COUNT(*) AS cnt\nFROM types_sqlite\nGROUP BY c_integer, c_real, c_text, c_blob\nLIMIT 1",
-      "name": "GetSqliteTypesCnt",
-      "cmd": ":one",
-      "columns": [
-        {
-          "name": "c_integer",
-          "length": -1,
-          "table": {
-            "name": "types_sqlite"
-          },
-          "type": {
-            "name": "INTEGER"
-          },
-          "originalName": "c_integer"
-        },
-        {
-          "name": "c_real",
-          "length": -1,
-          "table": {
-            "name": "types_sqlite"
-          },
-          "type": {
-            "name": "REAL"
-          },
-          "originalName": "c_real"
-        },
-        {
-          "name": "c_text",
-          "length": -1,
-          "table": {
-            "name": "types_sqlite"
-          },
-          "type": {
-            "name": "TEXT"
-          },
-          "originalName": "c_text"
-        },
-        {
-          "name": "c_blob",
-          "length": -1,
-          "table": {
-            "name": "types_sqlite"
-          },
-          "type": {
-            "name": "BLOB"
-          },
-          "originalName": "c_blob"
-        },
-        {
-          "name": "cnt",
-          "notNull": true,
-          "length": -1,
-          "isFuncCall": true,
-          "type": {
-            "name": "integer"
-          }
-        }
-      ],
-      "filename": "query.sql"
-    },
-    {
-      "text": "SELECT\n    MAX(c_integer) AS max_integer,\n    MAX(c_real) AS max_real,\n    MAX(c_text) AS max_text\nFROM types_sqlite",
-      "name": "GetSqliteFunctions",
-      "cmd": ":one",
-      "columns": [
-        {
-          "name": "max_integer",
-          "length": -1,
-          "isFuncCall": true,
-          "type": {
-            "name": "any"
-          }
-        },
-        {
-          "name": "max_real",
-          "length": -1,
-          "isFuncCall": true,
-          "type": {
-            "name": "any"
-          }
-        },
-        {
-          "name": "max_text",
-          "length": -1,
-          "isFuncCall": true,
-          "type": {
-            "name": "any"
-          }
-        }
-      ],
-      "filename": "query.sql"
-    },
-    {
-      "text": "DELETE FROM types_sqlite",
-      "name": "DeleteAllSqliteTypes",
-      "cmd": ":exec",
-      "filename": "query.sql"
-    },
     {
       "text": "SELECT id, name, bio FROM authors\nWHERE name = ? LIMIT 1",
       "name": "GetAuthor",
@@ -1242,6 +964,284 @@
     {
       "text": "DELETE FROM authors",
       "name": "DeleteAllAuthors",
+      "cmd": ":exec",
+      "filename": "query.sql"
+    },
+    {
+      "text": "INSERT INTO types_sqlite \n(c_integer, c_real, c_text, c_blob) \nVALUES (?, ?, ?, ?)",
+      "name": "InsertSqliteTypes",
+      "cmd": ":exec",
+      "parameters": [
+        {
+          "number": 1,
+          "column": {
+            "name": "c_integer",
+            "length": -1,
+            "table": {
+              "schema": "main",
+              "name": "types_sqlite"
+            },
+            "type": {
+              "name": "INTEGER"
+            },
+            "originalName": "c_integer"
+          }
+        },
+        {
+          "number": 2,
+          "column": {
+            "name": "c_real",
+            "length": -1,
+            "table": {
+              "schema": "main",
+              "name": "types_sqlite"
+            },
+            "type": {
+              "name": "REAL"
+            },
+            "originalName": "c_real"
+          }
+        },
+        {
+          "number": 3,
+          "column": {
+            "name": "c_text",
+            "length": -1,
+            "table": {
+              "schema": "main",
+              "name": "types_sqlite"
+            },
+            "type": {
+              "name": "TEXT"
+            },
+            "originalName": "c_text"
+          }
+        },
+        {
+          "number": 4,
+          "column": {
+            "name": "c_blob",
+            "length": -1,
+            "table": {
+              "schema": "main",
+              "name": "types_sqlite"
+            },
+            "type": {
+              "name": "BLOB"
+            },
+            "originalName": "c_blob"
+          }
+        }
+      ],
+      "filename": "query.sql",
+      "insert_into_table": {
+        "name": "types_sqlite"
+      }
+    },
+    {
+      "text": "INSERT INTO types_sqlite (c_integer, c_real, c_text) VALUES (?, ?, ?)",
+      "name": "InsertSqliteTypesBatch",
+      "cmd": ":copyfrom",
+      "parameters": [
+        {
+          "number": 1,
+          "column": {
+            "name": "c_integer",
+            "length": -1,
+            "table": {
+              "schema": "main",
+              "name": "types_sqlite"
+            },
+            "type": {
+              "name": "INTEGER"
+            },
+            "originalName": "c_integer"
+          }
+        },
+        {
+          "number": 2,
+          "column": {
+            "name": "c_real",
+            "length": -1,
+            "table": {
+              "schema": "main",
+              "name": "types_sqlite"
+            },
+            "type": {
+              "name": "REAL"
+            },
+            "originalName": "c_real"
+          }
+        },
+        {
+          "number": 3,
+          "column": {
+            "name": "c_text",
+            "length": -1,
+            "table": {
+              "schema": "main",
+              "name": "types_sqlite"
+            },
+            "type": {
+              "name": "TEXT"
+            },
+            "originalName": "c_text"
+          }
+        }
+      ],
+      "filename": "query.sql",
+      "insert_into_table": {
+        "name": "types_sqlite"
+      }
+    },
+    {
+      "text": "SELECT c_integer, c_real, c_text, c_blob FROM types_sqlite LIMIT 1",
+      "name": "GetSqliteTypes",
+      "cmd": ":one",
+      "columns": [
+        {
+          "name": "c_integer",
+          "length": -1,
+          "table": {
+            "name": "types_sqlite"
+          },
+          "type": {
+            "name": "INTEGER"
+          },
+          "originalName": "c_integer"
+        },
+        {
+          "name": "c_real",
+          "length": -1,
+          "table": {
+            "name": "types_sqlite"
+          },
+          "type": {
+            "name": "REAL"
+          },
+          "originalName": "c_real"
+        },
+        {
+          "name": "c_text",
+          "length": -1,
+          "table": {
+            "name": "types_sqlite"
+          },
+          "type": {
+            "name": "TEXT"
+          },
+          "originalName": "c_text"
+        },
+        {
+          "name": "c_blob",
+          "length": -1,
+          "table": {
+            "name": "types_sqlite"
+          },
+          "type": {
+            "name": "BLOB"
+          },
+          "originalName": "c_blob"
+        }
+      ],
+      "filename": "query.sql"
+    },
+    {
+      "text": "SELECT\n    c_integer,\n    c_real,\n    c_text,\n    c_blob,\n    COUNT(*) AS cnt\nFROM types_sqlite\nGROUP BY c_integer, c_real, c_text, c_blob\nLIMIT 1",
+      "name": "GetSqliteTypesCnt",
+      "cmd": ":one",
+      "columns": [
+        {
+          "name": "c_integer",
+          "length": -1,
+          "table": {
+            "name": "types_sqlite"
+          },
+          "type": {
+            "name": "INTEGER"
+          },
+          "originalName": "c_integer"
+        },
+        {
+          "name": "c_real",
+          "length": -1,
+          "table": {
+            "name": "types_sqlite"
+          },
+          "type": {
+            "name": "REAL"
+          },
+          "originalName": "c_real"
+        },
+        {
+          "name": "c_text",
+          "length": -1,
+          "table": {
+            "name": "types_sqlite"
+          },
+          "type": {
+            "name": "TEXT"
+          },
+          "originalName": "c_text"
+        },
+        {
+          "name": "c_blob",
+          "length": -1,
+          "table": {
+            "name": "types_sqlite"
+          },
+          "type": {
+            "name": "BLOB"
+          },
+          "originalName": "c_blob"
+        },
+        {
+          "name": "cnt",
+          "notNull": true,
+          "length": -1,
+          "isFuncCall": true,
+          "type": {
+            "name": "integer"
+          }
+        }
+      ],
+      "filename": "query.sql"
+    },
+    {
+      "text": "SELECT\n    MAX(c_integer) AS max_integer,\n    MAX(c_real) AS max_real,\n    MAX(c_text) AS max_text\nFROM types_sqlite",
+      "name": "GetSqliteFunctions",
+      "cmd": ":one",
+      "columns": [
+        {
+          "name": "max_integer",
+          "length": -1,
+          "isFuncCall": true,
+          "type": {
+            "name": "any"
+          }
+        },
+        {
+          "name": "max_real",
+          "length": -1,
+          "isFuncCall": true,
+          "type": {
+            "name": "any"
+          }
+        },
+        {
+          "name": "max_text",
+          "length": -1,
+          "isFuncCall": true,
+          "type": {
+            "name": "any"
+          }
+        }
+      ],
+      "filename": "query.sql"
+    },
+    {
+      "text": "DELETE FROM types_sqlite",
+      "name": "DeleteAllSqliteTypes",
       "cmd": ":exec",
       "filename": "query.sql"
     }
