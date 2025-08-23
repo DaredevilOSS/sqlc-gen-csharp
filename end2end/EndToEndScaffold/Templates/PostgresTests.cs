@@ -592,25 +592,74 @@ public static class PostgresTests
         [KnownTestType.PostgresArrayCopyFrom] = new TestImpl
         {
             Impl = $$"""
+                     private static IEnumerable<TestCaseData> PostgresArrayCopyFromTestCases
+                     {
+                         get
+                         {
+                             yield return new TestCaseData(
+                                100, 
+                                new byte[] { 0x53, 0x56 }, 
+                                new bool[] { true, false }, 
+                                new string[] { "Sister Ray", "Venus in Furs" }, 
+                                new int[] { 1, 2 }, 
+                                new decimal[] { 132.13m, 23.22m }, 
+                                new DateTime[] { new DateTime(1984, 8, 26), new DateTime(2000, 1, 2) }
+                            ).SetName("Valid Array Copy From");
+
+                             yield return new TestCaseData(
+                                 10, 
+                                 new byte[] { }, 
+                                 new bool[] { }, 
+                                 new string[] { }, 
+                                 new int[] { }, 
+                                 new decimal[] { }, 
+                                 new DateTime[] { }
+                             ).SetName("Empty Array Copy From");
+
+                             yield return new TestCaseData(
+                                 10, 
+                                 null, 
+                                 null, 
+                                 null, 
+                                 null, 
+                                 null, 
+                                 null
+                             ).SetName("Null Array Copy From");
+                         }
+                     }
+
                      [Test]
-                     [TestCase(100, new byte[] { 0x53, 0x56 })]
-                     [TestCase(10,  new byte[] { })]
-                     [TestCase(10, null)]
+                     [TestCaseSource(nameof(PostgresArrayCopyFromTestCases))]
                      public async Task TestArrayCopyFrom(
                         int batchSize, 
-                        byte[] cBytea)
+                        byte[] cBytea,
+                        bool[] cBooleanArray,
+                        string[] cTextArray,
+                        int[] cIntegerArray,
+                        decimal[] cDecimalArray,
+                        DateTime[] cTimestampArray)
                      {
                          var batchArgs = Enumerable.Range(0, batchSize)
                              .Select(_ => new QuerySql.InsertPostgresArrayTypesBatchArgs
                              {
-                                 CBytea = cBytea
+                                 CBytea = cBytea,   
+                                 CBooleanArray = cBooleanArray,
+                                 CTextArray = cTextArray,
+                                 CIntegerArray = cIntegerArray,
+                                 CDecimalArray = cDecimalArray,
+                                 CTimestampArray = cTimestampArray
                              })
                              .ToList();
                          await QuerySql.InsertPostgresArrayTypesBatch(batchArgs);
                          var expected = new QuerySql.GetPostgresArrayTypesCntRow
                          {
                              Cnt = batchSize,
-                             CBytea = cBytea
+                             CBytea = cBytea,   
+                             CBooleanArray = cBooleanArray,
+                             CTextArray = cTextArray,
+                             CIntegerArray = cIntegerArray,
+                             CDecimalArray = cDecimalArray,
+                             CTimestampArray = cTimestampArray
                          };
                          
                          var actual = await QuerySql.GetPostgresArrayTypesCnt();
@@ -620,6 +669,11 @@ public static class PostgresTests
                          {
                              Assert.That(x.Cnt, Is.EqualTo(y.Cnt));
                              Assert.That(x.CBytea, Is.EqualTo(y.CBytea));
+                             Assert.That(x.CBooleanArray, Is.EqualTo(y.CBooleanArray));
+                             Assert.That(x.CTextArray, Is.EqualTo(y.CTextArray));
+                             Assert.That(x.CIntegerArray, Is.EqualTo(y.CIntegerArray));
+                             Assert.That(x.CDecimalArray, Is.EqualTo(y.CDecimalArray));
+                             Assert.That(x.CTimestampArray, Is.EqualTo(y.CTimestampArray));
                          }
                      }
                      """

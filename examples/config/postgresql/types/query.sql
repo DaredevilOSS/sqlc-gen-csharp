@@ -306,15 +306,40 @@ VALUES ($1, $2, $3, $4, $5, $6, $7);
 SELECT * FROM postgres_array_types LIMIT 1;
 
 -- name: InsertPostgresArrayTypesBatch :copyfrom
-INSERT INTO postgres_array_types (c_bytea) VALUES ($1);
+INSERT INTO postgres_array_types (
+    c_bytea,
+    c_boolean_array,
+    c_text_array,
+    c_integer_array,
+    c_decimal_array,
+    c_timestamp_array
+) 
+VALUES (
+    $1,
+    $2,
+    $3,
+    $4,
+    $5,
+    $6
+);
 
 -- name: GetPostgresArrayTypesCnt :one
 SELECT
     c_bytea,
+    c_boolean_array,
+    c_text_array,
+    c_integer_array,
+    c_decimal_array,
+    c_timestamp_array,
     COUNT(*) AS cnt
 FROM postgres_array_types
 GROUP BY
-    c_bytea
+    c_bytea,
+    c_boolean_array,
+    c_text_array,
+    c_integer_array,
+    c_decimal_array,
+    c_timestamp_array
 LIMIT 1;
 
 -- name: TruncatePostgresArrayTypes :exec

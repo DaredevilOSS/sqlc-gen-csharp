@@ -35520,7 +35520,7 @@
       "filename": "query.sql"
     },
     {
-      "text": "INSERT INTO postgres_array_types (c_bytea) VALUES ($1)",
+      "text": "INSERT INTO postgres_array_types (\n    c_bytea,\n    c_boolean_array,\n    c_text_array,\n    c_integer_array,\n    c_decimal_array,\n    c_timestamp_array\n) \nVALUES (\n    $1,\n    $2,\n    $3,\n    $4,\n    $5,\n    $6\n)",
       "name": "InsertPostgresArrayTypesBatch",
       "cmd": ":copyfrom",
       "parameters": [
@@ -35538,6 +35538,91 @@
             },
             "originalName": "c_bytea"
           }
+        },
+        {
+          "number": 2,
+          "column": {
+            "name": "c_boolean_array",
+            "isArray": true,
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "postgres_array_types"
+            },
+            "type": {
+              "name": "pg_catalog.bool"
+            },
+            "originalName": "c_boolean_array",
+            "arrayDims": 1
+          }
+        },
+        {
+          "number": 3,
+          "column": {
+            "name": "c_text_array",
+            "isArray": true,
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "postgres_array_types"
+            },
+            "type": {
+              "name": "text"
+            },
+            "originalName": "c_text_array",
+            "arrayDims": 1
+          }
+        },
+        {
+          "number": 4,
+          "column": {
+            "name": "c_integer_array",
+            "isArray": true,
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "postgres_array_types"
+            },
+            "type": {
+              "name": "pg_catalog.int4"
+            },
+            "originalName": "c_integer_array",
+            "arrayDims": 1
+          }
+        },
+        {
+          "number": 5,
+          "column": {
+            "name": "c_decimal_array",
+            "isArray": true,
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "postgres_array_types"
+            },
+            "type": {
+              "name": "pg_catalog.numeric"
+            },
+            "originalName": "c_decimal_array",
+            "arrayDims": 1
+          }
+        },
+        {
+          "number": 6,
+          "column": {
+            "name": "c_timestamp_array",
+            "isArray": true,
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "postgres_array_types"
+            },
+            "type": {
+              "name": "pg_catalog.timestamp"
+            },
+            "originalName": "c_timestamp_array",
+            "arrayDims": 1
+          }
         }
       ],
       "filename": "query.sql",
@@ -35546,7 +35631,7 @@
       }
     },
     {
-      "text": "SELECT\n    c_bytea,\n    COUNT(*) AS cnt\nFROM postgres_array_types\nGROUP BY\n    c_bytea\nLIMIT 1",
+      "text": "SELECT\n    c_bytea,\n    c_boolean_array,\n    c_text_array,\n    c_integer_array,\n    c_decimal_array,\n    c_timestamp_array,\n    COUNT(*) AS cnt\nFROM postgres_array_types\nGROUP BY\n    c_bytea,\n    c_boolean_array,\n    c_text_array,\n    c_integer_array,\n    c_decimal_array,\n    c_timestamp_array\nLIMIT 1",
       "name": "GetPostgresArrayTypesCnt",
       "cmd": ":one",
       "columns": [
@@ -35560,6 +35645,75 @@
             "name": "bytea"
           },
           "originalName": "c_bytea"
+        },
+        {
+          "name": "c_boolean_array",
+          "isArray": true,
+          "length": -1,
+          "table": {
+            "name": "postgres_array_types"
+          },
+          "type": {
+            "schema": "pg_catalog",
+            "name": "bool"
+          },
+          "originalName": "c_boolean_array",
+          "arrayDims": 1
+        },
+        {
+          "name": "c_text_array",
+          "isArray": true,
+          "length": -1,
+          "table": {
+            "name": "postgres_array_types"
+          },
+          "type": {
+            "name": "text"
+          },
+          "originalName": "c_text_array",
+          "arrayDims": 1
+        },
+        {
+          "name": "c_integer_array",
+          "isArray": true,
+          "length": -1,
+          "table": {
+            "name": "postgres_array_types"
+          },
+          "type": {
+            "schema": "pg_catalog",
+            "name": "int4"
+          },
+          "originalName": "c_integer_array",
+          "arrayDims": 1
+        },
+        {
+          "name": "c_decimal_array",
+          "isArray": true,
+          "length": -1,
+          "table": {
+            "name": "postgres_array_types"
+          },
+          "type": {
+            "schema": "pg_catalog",
+            "name": "numeric"
+          },
+          "originalName": "c_decimal_array",
+          "arrayDims": 1
+        },
+        {
+          "name": "c_timestamp_array",
+          "isArray": true,
+          "length": -1,
+          "table": {
+            "name": "postgres_array_types"
+          },
+          "type": {
+            "schema": "pg_catalog",
+            "name": "timestamp"
+          },
+          "originalName": "c_timestamp_array",
+          "arrayDims": 1
         },
         {
           "name": "cnt",

@@ -2290,10 +2290,15 @@ namespace NpgsqlLegacyExampleGen
             return null;
         }
 
-        private const string InsertPostgresArrayTypesBatchSql = "COPY postgres_array_types (c_bytea) FROM STDIN (FORMAT BINARY)";
+        private const string InsertPostgresArrayTypesBatchSql = "COPY postgres_array_types (c_bytea, c_boolean_array, c_text_array, c_integer_array, c_decimal_array, c_timestamp_array) FROM STDIN (FORMAT BINARY)";
         public class InsertPostgresArrayTypesBatchArgs
         {
             public byte[] CBytea { get; set; }
+            public bool[] CBooleanArray { get; set; }
+            public string[] CTextArray { get; set; }
+            public int[] CIntegerArray { get; set; }
+            public decimal[] CDecimalArray { get; set; }
+            public DateTime[] CTimestampArray { get; set; }
         };
         public async Task InsertPostgresArrayTypesBatch(List<InsertPostgresArrayTypesBatchArgs> args)
         {
@@ -2306,6 +2311,11 @@ namespace NpgsqlLegacyExampleGen
                     {
                         await writer.StartRowAsync();
                         await writer.WriteAsync(row.CBytea ?? (object)DBNull.Value);
+                        await writer.WriteAsync(row.CBooleanArray ?? (object)DBNull.Value);
+                        await writer.WriteAsync(row.CTextArray ?? (object)DBNull.Value);
+                        await writer.WriteAsync(row.CIntegerArray ?? (object)DBNull.Value);
+                        await writer.WriteAsync(row.CDecimalArray ?? (object)DBNull.Value);
+                        await writer.WriteAsync(row.CTimestampArray ?? (object)DBNull.Value);
                     }
 
                     await writer.CompleteAsync();
@@ -2315,10 +2325,15 @@ namespace NpgsqlLegacyExampleGen
             }
         }
 
-        private const string GetPostgresArrayTypesCntSql = "SELECT c_bytea, COUNT(*) AS cnt FROM postgres_array_types GROUP BY c_bytea LIMIT 1";
+        private const string GetPostgresArrayTypesCntSql = "SELECT c_bytea, c_boolean_array, c_text_array, c_integer_array, c_decimal_array, c_timestamp_array, COUNT(*) AS cnt FROM postgres_array_types GROUP BY c_bytea, c_boolean_array, c_text_array, c_integer_array, c_decimal_array, c_timestamp_array LIMIT 1";
         public class GetPostgresArrayTypesCntRow
         {
             public byte[] CBytea { get; set; }
+            public bool[] CBooleanArray { get; set; }
+            public string[] CTextArray { get; set; }
+            public int[] CIntegerArray { get; set; }
+            public decimal[] CDecimalArray { get; set; }
+            public DateTime[] CTimestampArray { get; set; }
             public long Cnt { get; set; }
         };
         public async Task<GetPostgresArrayTypesCntRow> GetPostgresArrayTypesCnt()
@@ -2336,7 +2351,12 @@ namespace NpgsqlLegacyExampleGen
                                 return new GetPostgresArrayTypesCntRow
                                 {
                                     CBytea = reader.IsDBNull(0) ? null : reader.GetFieldValue<byte[]>(0),
-                                    Cnt = reader.GetInt64(1)
+                                    CBooleanArray = reader.IsDBNull(1) ? null : reader.GetFieldValue<bool[]>(1),
+                                    CTextArray = reader.IsDBNull(2) ? null : reader.GetFieldValue<string[]>(2),
+                                    CIntegerArray = reader.IsDBNull(3) ? null : reader.GetFieldValue<int[]>(3),
+                                    CDecimalArray = reader.IsDBNull(4) ? null : reader.GetFieldValue<decimal[]>(4),
+                                    CTimestampArray = reader.IsDBNull(5) ? null : reader.GetFieldValue<DateTime[]>(5),
+                                    Cnt = reader.GetInt64(6)
                                 };
                             }
                         }
@@ -2359,7 +2379,12 @@ namespace NpgsqlLegacyExampleGen
                         return new GetPostgresArrayTypesCntRow
                         {
                             CBytea = reader.IsDBNull(0) ? null : reader.GetFieldValue<byte[]>(0),
-                            Cnt = reader.GetInt64(1)
+                            CBooleanArray = reader.IsDBNull(1) ? null : reader.GetFieldValue<bool[]>(1),
+                            CTextArray = reader.IsDBNull(2) ? null : reader.GetFieldValue<string[]>(2),
+                            CIntegerArray = reader.IsDBNull(3) ? null : reader.GetFieldValue<int[]>(3),
+                            CDecimalArray = reader.IsDBNull(4) ? null : reader.GetFieldValue<decimal[]>(4),
+                            CTimestampArray = reader.IsDBNull(5) ? null : reader.GetFieldValue<DateTime[]>(5),
+                            Cnt = reader.GetInt64(6)
                         };
                     }
                 }

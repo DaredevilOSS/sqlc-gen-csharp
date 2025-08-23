@@ -1333,10 +1333,15 @@ public class QuerySql
         return await this.Transaction.Connection.QueryFirstOrDefaultAsync<GetPostgresArrayTypesRow?>(GetPostgresArrayTypesSql, transaction: this.Transaction);
     }
 
-    private const string InsertPostgresArrayTypesBatchSql = "COPY postgres_array_types (c_bytea) FROM STDIN (FORMAT BINARY)";
+    private const string InsertPostgresArrayTypesBatchSql = "COPY postgres_array_types (c_bytea, c_boolean_array, c_text_array, c_integer_array, c_decimal_array, c_timestamp_array) FROM STDIN (FORMAT BINARY)";
     public class InsertPostgresArrayTypesBatchArgs
     {
         public byte[]? CBytea { get; init; }
+        public bool[]? CBooleanArray { get; init; }
+        public string[]? CTextArray { get; init; }
+        public int[]? CIntegerArray { get; init; }
+        public decimal[]? CDecimalArray { get; init; }
+        public DateTime[]? CTimestampArray { get; init; }
     };
     public async Task InsertPostgresArrayTypesBatch(List<InsertPostgresArrayTypesBatchArgs> args)
     {
@@ -1349,6 +1354,11 @@ public class QuerySql
                 {
                     await writer.StartRowAsync();
                     await writer.WriteAsync(row.CBytea);
+                    await writer.WriteAsync(row.CBooleanArray);
+                    await writer.WriteAsync(row.CTextArray);
+                    await writer.WriteAsync(row.CIntegerArray);
+                    await writer.WriteAsync(row.CDecimalArray);
+                    await writer.WriteAsync(row.CTimestampArray);
                 }
 
                 await writer.CompleteAsync();
@@ -1358,10 +1368,15 @@ public class QuerySql
         }
     }
 
-    private const string GetPostgresArrayTypesCntSql = "SELECT c_bytea, COUNT(*) AS cnt FROM postgres_array_types GROUP BY c_bytea LIMIT 1";
+    private const string GetPostgresArrayTypesCntSql = "SELECT c_bytea, c_boolean_array, c_text_array, c_integer_array, c_decimal_array, c_timestamp_array, COUNT(*) AS cnt FROM postgres_array_types GROUP BY c_bytea, c_boolean_array, c_text_array, c_integer_array, c_decimal_array, c_timestamp_array LIMIT 1";
     public class GetPostgresArrayTypesCntRow
     {
         public byte[]? CBytea { get; init; }
+        public bool[]? CBooleanArray { get; init; }
+        public string[]? CTextArray { get; init; }
+        public int[]? CIntegerArray { get; init; }
+        public decimal[]? CDecimalArray { get; init; }
+        public DateTime[]? CTimestampArray { get; init; }
         public required long Cnt { get; init; }
     };
     public async Task<GetPostgresArrayTypesCntRow?> GetPostgresArrayTypesCnt()

@@ -1334,10 +1334,15 @@ namespace NpgsqlDapperLegacyExampleGen
             return await this.Transaction.Connection.QueryFirstOrDefaultAsync<GetPostgresArrayTypesRow>(GetPostgresArrayTypesSql, transaction: this.Transaction);
         }
 
-        private const string InsertPostgresArrayTypesBatchSql = "COPY postgres_array_types (c_bytea) FROM STDIN (FORMAT BINARY)";
+        private const string InsertPostgresArrayTypesBatchSql = "COPY postgres_array_types (c_bytea, c_boolean_array, c_text_array, c_integer_array, c_decimal_array, c_timestamp_array) FROM STDIN (FORMAT BINARY)";
         public class InsertPostgresArrayTypesBatchArgs
         {
             public byte[] CBytea { get; set; }
+            public bool[] CBooleanArray { get; set; }
+            public string[] CTextArray { get; set; }
+            public int[] CIntegerArray { get; set; }
+            public decimal[] CDecimalArray { get; set; }
+            public DateTime[] CTimestampArray { get; set; }
         };
         public async Task InsertPostgresArrayTypesBatch(List<InsertPostgresArrayTypesBatchArgs> args)
         {
@@ -1350,6 +1355,11 @@ namespace NpgsqlDapperLegacyExampleGen
                     {
                         await writer.StartRowAsync();
                         await writer.WriteAsync(row.CBytea);
+                        await writer.WriteAsync(row.CBooleanArray);
+                        await writer.WriteAsync(row.CTextArray);
+                        await writer.WriteAsync(row.CIntegerArray);
+                        await writer.WriteAsync(row.CDecimalArray);
+                        await writer.WriteAsync(row.CTimestampArray);
                     }
 
                     await writer.CompleteAsync();
@@ -1359,10 +1369,15 @@ namespace NpgsqlDapperLegacyExampleGen
             }
         }
 
-        private const string GetPostgresArrayTypesCntSql = "SELECT c_bytea, COUNT(*) AS cnt FROM postgres_array_types GROUP BY c_bytea LIMIT 1";
+        private const string GetPostgresArrayTypesCntSql = "SELECT c_bytea, c_boolean_array, c_text_array, c_integer_array, c_decimal_array, c_timestamp_array, COUNT(*) AS cnt FROM postgres_array_types GROUP BY c_bytea, c_boolean_array, c_text_array, c_integer_array, c_decimal_array, c_timestamp_array LIMIT 1";
         public class GetPostgresArrayTypesCntRow
         {
             public byte[] CBytea { get; set; }
+            public bool[] CBooleanArray { get; set; }
+            public string[] CTextArray { get; set; }
+            public int[] CIntegerArray { get; set; }
+            public decimal[] CDecimalArray { get; set; }
+            public DateTime[] CTimestampArray { get; set; }
             public long Cnt { get; set; }
         };
         public async Task<GetPostgresArrayTypesCntRow> GetPostgresArrayTypesCnt()
