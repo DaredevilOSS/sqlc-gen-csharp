@@ -46,7 +46,7 @@ we consider support for the different data types separately for batch inserts an
 | varchar, character varying              | ✅         | ✅                  |
 | text                                    | ✅         | ✅                  |
 | bytea                                   | ✅         | ✅                  |
-| 2-dimensional arrays (e.g text[],int[]) | ✅         | ❌                  |
+| 2-dimensional arrays (e.g text[],int[]) | ✅         | ✅                  |
 | money                                   | ✅         | ✅                  |
 | point                                   | ✅         | ✅                  |
 | line                                    | ✅         | ✅                  |
@@ -58,19 +58,28 @@ we consider support for the different data types separately for batch inserts an
 | cidr                                    | ✅         | ✅                  |
 | inet                                    | ✅         | ✅                  |
 | macaddr                                 | ✅         | ✅                  |
-| macaddr8                                | ✅         | ❌                  |
-| tsvector                                | ✅         | ❌                  |
-| tsquery                                 | ✅         | ❌                  |
+| macaddr8                                | ✅         | ⚠️                  |
+| tsvector                                | ✅         | ❌                   |
+| tsquery                                 | ✅         | ❌                   |
 | uuid                                    | ✅         | ✅                  |
-| json                                    | ✅         | ❌                  |
-| jsonb                                   | ✅         | ❌                  |
-| jsonpath                                | ✅         | ❌                  |
-| xml                                     | ✅         | ❌                  |
-| enum                                    | ✅         | ❌                  |
+| json                                    | ✅         | ⚠️                  |
+| jsonb                                   | ✅         | ⚠️                  |
+| jsonpath                                | ✅         | ⚠️                  |
+| xml                                     | ✅         | ⚠️                  |
+| enum                                    | ✅         | ⚠️                  |
 
 *** `time with time zone` is not useful and not recommended to use by Postgres themselves - 
 see [here](https://www.postgresql.org/docs/current/datatype-datetime.html#DATATYPE-DATETIME) -
 so we decided not to implement support for it.
+
+*** Arguments data type conversion in the INSERT statement, and SQLC disallows argument conversion in queries with `:copyfrom` annotation, used for batch inserts.
+These are the data types that require this conversion:
+1. `macaddr8`
+2. `json`
+3. `jsonb`
+4. `jsonpath`
+5. `xml`
+6. `enum`
 
 </details>
 
