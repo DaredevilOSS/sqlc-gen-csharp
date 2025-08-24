@@ -12,8 +12,8 @@ version: "2"
 plugins:
 - name: csharp
   wasm:
-    url: https://github.com/DaredevilOSS/sqlc-gen-csharp/releases/download/v0.20.0/sqlc-gen-csharp.wasm
-    sha256: 3d0a7d09a93b6135c4e043acbbd862d28e2535f20a43292a842a75ac37f35aa0
+    url: https://github.com/DaredevilOSS/sqlc-gen-csharp/releases/download/v0.21.0/sqlc-gen-csharp.wasm
+    sha256: 6a01b8c24418abff5d3c272dd1b4ad69f2b43939bb8866243947db3d167a079c
 sql:
   # For PostgresSQL
   - schema: schema.sql
@@ -70,6 +70,7 @@ overrides:
 
 ## Supported Features
 - ✅ means the feature is fully supported.
+- ⚠️ means SQLC does not yet support this feature, so it cannot be supported by the plugin yet.
 - 🚫 means the database does not support the feature.
 - ❌ means the feature is not supported by the plugin (but could be supported by the database).
 
@@ -202,7 +203,7 @@ we consider support for the different data types separately for batch inserts an
 | varchar, character varying              | ✅         | ✅                  |
 | text                                    | ✅         | ✅                  |
 | bytea                                   | ✅         | ✅                  |
-| 2-dimensional arrays (e.g text[],int[]) | ✅         | ❌                  |
+| 2-dimensional arrays (e.g text[],int[]) | ✅         | ✅                  |
 | money                                   | ✅         | ✅                  |
 | point                                   | ✅         | ✅                  |
 | line                                    | ✅         | ✅                  |
@@ -211,22 +212,36 @@ we consider support for the different data types separately for batch inserts an
 | path                                    | ✅         | ✅                  |
 | polygon                                 | ✅         | ✅                  |
 | circle                                  | ✅         | ✅                  |
-| cidr                                    | ✅         | ❌                  |
-| inet                                    | ✅         | ❌                  |
-| macaddr                                 | ✅         | ❌                  |
-| macaddr8                                | ✅         | ❌                  |
-| tsvector                                | ❌         | ❌                  |
-| tsquery                                 | ❌         | ❌                  |
+| cidr                                    | ✅         | ✅                  |
+| inet                                    | ✅         | ✅                  |
+| macaddr                                 | ✅         | ✅                  |
+| macaddr8                                | ✅         | ⚠️                  |
+| tsvector                                | ✅         | ❌                   |
+| tsquery                                 | ✅         | ❌                   |
 | uuid                                    | ✅         | ✅                  |
-| json                                    | ✅         | ❌                  |
-| jsonb                                   | ✅         | ❌                  |
-| jsonpath                                | ✅         | ❌                  |
-| xml                                     | ❌         | ❌                  |
-| enum                                    | ❌         | ❌                  |
+| json                                    | ✅         | ⚠️                  |
+| jsonb                                   | ✅         | ⚠️                  |
+| jsonpath                                | ✅         | ⚠️                  |
+| xml                                     | ✅         | ⚠️                  |
+| enum                                    | ✅         | ⚠️                  |
 
 *** `time with time zone` is not useful and not recommended to use by Postgres themselves - 
 see [here](https://www.postgresql.org/docs/current/datatype-datetime.html#DATATYPE-DATETIME) -
 so we decided not to implement support for it.
+
+*** Some data types require conversion in the INSERT statement, and SQLC disallows argument conversion in queries with `:copyfrom` annotation, 
+which are used for batch inserts. These are the data types that require this conversion:
+1. `macaddr8`
+2. `json`
+3. `jsonb`
+4. `jsonpath`
+5. `xml`
+6. `enum`
+
+An example of this conversion:
+```sql
+INSERT INTO tab1 (json_field) VALUES (sqlc.narg('json_field')::json);
+```
 
 </details>
 
@@ -273,45 +288,45 @@ Since in batch insert the data is not validated by the SQL itself but written an
 we consider support for the different data types separately for batch inserts and everything else.
 
 | DB Type                   | Supported? | Supported in Batch? |
-|---------------------------|------------|---------------------|
-| bool, boolean, tinyint(1) | ✅         | ✅                  |
-| bit                       | ✅         | ✅                  |
-| tinyint                   | ✅         | ✅                  |
-| smallint                  | ✅         | ✅                  |
-| mediumint                 | ✅         | ✅                  |
-| integer, int              | ✅         | ✅                  |
-| bigint                    | ✅         | ✅                  |
-| real                      | ✅         | ✅                  |
-| numeric                   | ✅         | ✅                  |
-| decimal                   | ✅         | ✅                  |
-| double precision          | ✅         | ✅                  |
-| year                      | ✅         | ✅                  |
-| date                      | ✅         | ✅                  |
-| timestamp                 | ✅         | ✅                  |
-| char                      | ✅         | ✅                  |
-| nchar, national char      | ✅         | ✅                  |
-| varchar                   | ✅         | ✅                  |
-| tinytext                  | ✅         | ✅                  |
-| mediumtext                | ✅         | ✅                  |
-| text                      | ✅         | ✅                  |
-| longtext                  | ✅         | ✅                  |
-| binary                    | ✅         | ✅                  |
-| varbinary                 | ✅         | ✅                  |
-| tinyblob                  | ✅         | ✅                  |
-| blob                      | ✅         | ✅                  |
-| mediumblob                | ✅         | ✅                  |
-| longblob                  | ✅         | ✅                  |
-| enum                      | ✅         | ✅                  |
-| set                       | ❌         | ❌                  |
-| json                      | ✅         | ✅                  |
-| geometry                  | ❌         | ❌                  |
-| point                     | ❌         | ❌                  |
-| linestring                | ❌         | ❌                  |
-| polygon                   | ❌         | ❌                  |
-| multipoint                | ❌         | ❌                  |
-| multilinestring           | ❌         | ❌                  |
-| multipolygon              | ❌         | ❌                  |
-| geometrycollection        | ❌         | ❌                  |
+|---------------------------|----|-------------|
+| bool, boolean, tinyint(1) | ✅ | ✅          |
+| bit                       | ✅ | ✅          |
+| tinyint                   | ✅ | ✅          |
+| smallint                  | ✅ | ✅          |
+| mediumint                 | ✅ | ✅          |
+| integer, int              | ✅ | ✅          |
+| bigint                    | ✅ | ✅          |
+| real                      | ✅ | ✅          |
+| numeric                   | ✅ | ✅          |
+| decimal                   | ✅ | ✅          |
+| double precision          | ✅ | ✅          |
+| year                      | ✅ | ✅          |
+| date                      | ✅ | ✅          |
+| timestamp                 | ✅ | ✅          |
+| char                      | ✅ | ✅          |
+| nchar, national char      | ✅ | ✅          |
+| varchar                   | ✅ | ✅          |
+| tinytext                  | ✅ | ✅          |
+| mediumtext                | ✅ | ✅          |
+| text                      | ✅ | ✅          |
+| longtext                  | ✅ | ✅          |
+| binary                    | ✅ | ✅          |
+| varbinary                 | ✅ | ✅          |
+| tinyblob                  | ✅ | ✅          |
+| blob                      | ✅ | ✅          |
+| mediumblob                | ✅ | ✅          |
+| longblob                  | ✅ | ✅          |
+| enum                      | ✅ | ✅          |
+| set                       | ✅ | ✅          |
+| json                      | ✅ | ✅          |
+| geometry                  | ⚠️  | ⚠️         |
+| point                     | ⚠️  | ⚠️         |
+| linestring                | ⚠️  | ⚠️         |
+| polygon                   | ⚠️  | ⚠️         |
+| multipoint                | ⚠️  | ⚠️         |
+| multilinestring           | ⚠️  | ⚠️         |
+| multipolygon              | ⚠️  | ⚠️         |
+| geometrycollection        | ⚠️  | ⚠️         |
 
 </details>
 
@@ -408,7 +423,7 @@ The new created tag will create a draft release with it, in the release there wi
 <summary>Npgsql</summary>
 
 ## Engine `postgresql`: [NpgsqlExample](examples/NpgsqlExample)
-### [Schema](examples/config/postgresql/schema.sql) | [Queries](examples/config/postgresql/query.sql) | [End2End Test](end2end/EndToEndTests/NpgsqlTester.cs)
+### [Schema](examples/config/postgresql/authors/schema.sql) | [Queries](examples/config/postgresql/authors/query.sql) | [End2End Test](end2end/EndToEndTests/NpgsqlTester.cs)
 ### Config
 ```yaml
 useDapper: false
@@ -432,6 +447,10 @@ overrides:
   csharp_type:
     type: "string"
     notNull: false
+- column: "*:c_xml_string_override"
+  csharp_type:
+    type: "string"
+    notNull: false
 - column: "*:c_macaddr8"
   csharp_type:
     type: "string"
@@ -443,7 +462,7 @@ overrides:
 <summary>NpgsqlDapper</summary>
 
 ## Engine `postgresql`: [NpgsqlDapperExample](examples/NpgsqlDapperExample)
-### [Schema](examples/config/postgresql/schema.sql) | [Queries](examples/config/postgresql/query.sql) | [End2End Test](end2end/EndToEndTests/NpgsqlDapperTester.cs)
+### [Schema](examples/config/postgresql/authors/schema.sql) | [Queries](examples/config/postgresql/authors/query.sql) | [End2End Test](end2end/EndToEndTests/NpgsqlDapperTester.cs)
 ### Config
 ```yaml
 useDapper: true
@@ -467,6 +486,10 @@ overrides:
   csharp_type:
     type: "string"
     notNull: false
+- column: "*:c_xml_string_override"
+  csharp_type:
+    type: "string"
+    notNull: false
 - column: "*:c_macaddr8"
   csharp_type:
     type: "string"
@@ -478,7 +501,7 @@ overrides:
 <summary>NpgsqlLegacy</summary>
 
 ## Engine `postgresql`: [NpgsqlLegacyExample](examples/NpgsqlLegacyExample)
-### [Schema](examples/config/postgresql/schema.sql) | [Queries](examples/config/postgresql/query.sql) | [End2End Test](end2end/EndToEndTestsLegacy/NpgsqlTester.cs)
+### [Schema](examples/config/postgresql/authors/schema.sql) | [Queries](examples/config/postgresql/authors/query.sql) | [End2End Test](end2end/EndToEndTestsLegacy/NpgsqlTester.cs)
 ### Config
 ```yaml
 useDapper: false
@@ -502,6 +525,10 @@ overrides:
   csharp_type:
     type: "string"
     notNull: false
+- column: "*:c_xml_string_override"
+  csharp_type:
+    type: "string"
+    notNull: false
 - column: "*:c_macaddr8"
   csharp_type:
     type: "string"
@@ -513,7 +540,7 @@ overrides:
 <summary>NpgsqlDapperLegacy</summary>
 
 ## Engine `postgresql`: [NpgsqlDapperLegacyExample](examples/NpgsqlDapperLegacyExample)
-### [Schema](examples/config/postgresql/schema.sql) | [Queries](examples/config/postgresql/query.sql) | [End2End Test](end2end/EndToEndTestsLegacy/NpgsqlDapperTester.cs)
+### [Schema](examples/config/postgresql/authors/schema.sql) | [Queries](examples/config/postgresql/authors/query.sql) | [End2End Test](end2end/EndToEndTestsLegacy/NpgsqlDapperTester.cs)
 ### Config
 ```yaml
 useDapper: true
@@ -537,6 +564,10 @@ overrides:
   csharp_type:
     type: "string"
     notNull: false
+- column: "*:c_xml_string_override"
+  csharp_type:
+    type: "string"
+    notNull: false
 - column: "*:c_macaddr8"
   csharp_type:
     type: "string"
@@ -548,7 +579,7 @@ overrides:
 <summary>MySqlConnector</summary>
 
 ## Engine `mysql`: [MySqlConnectorExample](examples/MySqlConnectorExample)
-### [Schema](examples/config/mysql/schema.sql) | [Queries](examples/config/mysql/query.sql) | [End2End Test](end2end/EndToEndTests/MySqlConnectorTester.cs)
+### [Schema](examples/config/mysql/authors/schema.sql) | [Queries](examples/config/mysql/authors/query.sql) | [End2End Test](end2end/EndToEndTests/MySqlConnectorTester.cs)
 ### Config
 ```yaml
 useDapper: false
@@ -579,7 +610,7 @@ overrides:
 <summary>MySqlConnectorDapper</summary>
 
 ## Engine `mysql`: [MySqlConnectorDapperExample](examples/MySqlConnectorDapperExample)
-### [Schema](examples/config/mysql/schema.sql) | [Queries](examples/config/mysql/query.sql) | [End2End Test](end2end/EndToEndTests/MySqlConnectorDapperTester.cs)
+### [Schema](examples/config/mysql/authors/schema.sql) | [Queries](examples/config/mysql/authors/query.sql) | [End2End Test](end2end/EndToEndTests/MySqlConnectorDapperTester.cs)
 ### Config
 ```yaml
 useDapper: true
@@ -610,7 +641,7 @@ overrides:
 <summary>MySqlConnectorLegacy</summary>
 
 ## Engine `mysql`: [MySqlConnectorLegacyExample](examples/MySqlConnectorLegacyExample)
-### [Schema](examples/config/mysql/schema.sql) | [Queries](examples/config/mysql/query.sql) | [End2End Test](end2end/EndToEndTestsLegacy/MySqlConnectorTester.cs)
+### [Schema](examples/config/mysql/authors/schema.sql) | [Queries](examples/config/mysql/authors/query.sql) | [End2End Test](end2end/EndToEndTestsLegacy/MySqlConnectorTester.cs)
 ### Config
 ```yaml
 useDapper: false
@@ -641,7 +672,7 @@ overrides:
 <summary>MySqlConnectorDapperLegacy</summary>
 
 ## Engine `mysql`: [MySqlConnectorDapperLegacyExample](examples/MySqlConnectorDapperLegacyExample)
-### [Schema](examples/config/mysql/schema.sql) | [Queries](examples/config/mysql/query.sql) | [End2End Test](end2end/EndToEndTestsLegacy/MySqlConnectorDapperTester.cs)
+### [Schema](examples/config/mysql/authors/schema.sql) | [Queries](examples/config/mysql/authors/query.sql) | [End2End Test](end2end/EndToEndTestsLegacy/MySqlConnectorDapperTester.cs)
 ### Config
 ```yaml
 useDapper: true
@@ -672,7 +703,7 @@ overrides:
 <summary>Sqlite</summary>
 
 ## Engine `sqlite`: [SqliteExample](examples/SqliteExample)
-### [Schema](examples/config/sqlite/schema.sql) | [Queries](examples/config/sqlite/query.sql) | [End2End Test](end2end/EndToEndTests/SqliteTester.cs)
+### [Schema](examples/config/sqlite/authors/schema.sql) | [Queries](examples/config/sqlite/authors/query.sql) | [End2End Test](end2end/EndToEndTests/SqliteTester.cs)
 ### Config
 ```yaml
 useDapper: false
@@ -699,7 +730,7 @@ overrides:
 <summary>SqliteDapper</summary>
 
 ## Engine `sqlite`: [SqliteDapperExample](examples/SqliteDapperExample)
-### [Schema](examples/config/sqlite/schema.sql) | [Queries](examples/config/sqlite/query.sql) | [End2End Test](end2end/EndToEndTests/SqliteDapperTester.cs)
+### [Schema](examples/config/sqlite/authors/schema.sql) | [Queries](examples/config/sqlite/authors/query.sql) | [End2End Test](end2end/EndToEndTests/SqliteDapperTester.cs)
 ### Config
 ```yaml
 useDapper: true
@@ -726,7 +757,7 @@ overrides:
 <summary>SqliteLegacy</summary>
 
 ## Engine `sqlite`: [SqliteLegacyExample](examples/SqliteLegacyExample)
-### [Schema](examples/config/sqlite/schema.sql) | [Queries](examples/config/sqlite/query.sql) | [End2End Test](end2end/EndToEndTestsLegacy/SqliteTester.cs)
+### [Schema](examples/config/sqlite/authors/schema.sql) | [Queries](examples/config/sqlite/authors/query.sql) | [End2End Test](end2end/EndToEndTestsLegacy/SqliteTester.cs)
 ### Config
 ```yaml
 useDapper: false
@@ -753,7 +784,7 @@ overrides:
 <summary>SqliteDapperLegacy</summary>
 
 ## Engine `sqlite`: [SqliteDapperLegacyExample](examples/SqliteDapperLegacyExample)
-### [Schema](examples/config/sqlite/schema.sql) | [Queries](examples/config/sqlite/query.sql) | [End2End Test](end2end/EndToEndTestsLegacy/SqliteDapperTester.cs)
+### [Schema](examples/config/sqlite/authors/schema.sql) | [Queries](examples/config/sqlite/authors/query.sql) | [End2End Test](end2end/EndToEndTestsLegacy/SqliteDapperTester.cs)
 ### Config
 ```yaml
 useDapper: true
