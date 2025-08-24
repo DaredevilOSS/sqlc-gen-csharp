@@ -69,14 +69,11 @@ public class QuerySql
         }
 
         if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
-        {
-            throw new System.InvalidOperationException("Transaction is provided, but its connection is null.");
-        }
-
+            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
         return await this.Transaction.Connection.QueryFirstOrDefaultAsync<GetAuthorRow?>(GetAuthorSql, queryParams, transaction: this.Transaction);
     }
 
-    private const string ListAuthorsSql = "SELECT id, name, bio  FROM  authors  ORDER  BY  name  LIMIT  @limit  OFFSET  @offset  ";  
+    private const string ListAuthorsSql = "SELECT id, name, bio FROM authors ORDER BY name LIMIT @limit OFFSET @offset";
     public class ListAuthorsRow
     {
         public required long Id { get; init; }
@@ -123,18 +120,12 @@ public class QuerySql
         if (this.Transaction == null)
         {
             using (var connection = new MySqlConnection(ConnectionString))
-            {
                 await connection.ExecuteAsync(CreateAuthorSql, queryParams);
-            }
-
             return;
         }
 
         if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
-        {
-            throw new System.InvalidOperationException("Transaction is provided, but its connection is null.");
-        }
-
+            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
         await this.Transaction.Connection.ExecuteAsync(CreateAuthorSql, queryParams, transaction: this.Transaction);
     }
 
@@ -152,16 +143,11 @@ public class QuerySql
         if (this.Transaction == null)
         {
             using (var connection = new MySqlConnection(ConnectionString))
-            {
                 return await connection.QuerySingleAsync<long>(CreateAuthorReturnIdSql, queryParams);
-            }
         }
 
         if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
-        {
-            throw new System.InvalidOperationException("Transaction is provided, but its connection is null.");
-        }
-
+            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
         return await this.Transaction.Connection.QuerySingleAsync<long>(CreateAuthorReturnIdSql, queryParams, transaction: this.Transaction);
     }
 
@@ -190,14 +176,11 @@ public class QuerySql
         }
 
         if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
-        {
-            throw new System.InvalidOperationException("Transaction is provided, but its connection is null.");
-        }
-
+            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
         return await this.Transaction.Connection.QueryFirstOrDefaultAsync<GetAuthorByIdRow?>(GetAuthorByIdSql, queryParams, transaction: this.Transaction);
     }
 
-    private const string GetAuthorByNamePatternSql = "SELECT id, name, bio FROM authors WHERE  name  LIKE  COALESCE ( @name_pattern ,  '%' ) ";  
+    private const string GetAuthorByNamePatternSql = "SELECT id, name, bio FROM authors WHERE name LIKE COALESCE(@name_pattern, '%')";
     public class GetAuthorByNamePatternRow
     {
         public required long Id { get; init; }
@@ -226,7 +209,7 @@ public class QuerySql
         return (await this.Transaction.Connection.QueryAsync<GetAuthorByNamePatternRow>(GetAuthorByNamePatternSql, queryParams, transaction: this.Transaction)).AsList();
     }
 
-    private const string DeleteAuthorSql = "DELETE FROM authors WHERE  name  =  @name  ";  
+    private const string DeleteAuthorSql = "DELETE FROM authors WHERE name = @name";
     public class DeleteAuthorArgs
     {
         public required string Name { get; init; }
@@ -238,18 +221,12 @@ public class QuerySql
         if (this.Transaction == null)
         {
             using (var connection = new MySqlConnection(ConnectionString))
-            {
                 await connection.ExecuteAsync(DeleteAuthorSql, queryParams);
-            }
-
             return;
         }
 
         if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
-        {
-            throw new System.InvalidOperationException("Transaction is provided, but its connection is null.");
-        }
-
+            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
         await this.Transaction.Connection.ExecuteAsync(DeleteAuthorSql, queryParams, transaction: this.Transaction);
     }
 
@@ -259,22 +236,16 @@ public class QuerySql
         if (this.Transaction == null)
         {
             using (var connection = new MySqlConnection(ConnectionString))
-            {
                 await connection.ExecuteAsync(DeleteAllAuthorsSql);
-            }
-
             return;
         }
 
         if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
-        {
-            throw new System.InvalidOperationException("Transaction is provided, but its connection is null.");
-        }
-
+            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
         await this.Transaction.Connection.ExecuteAsync(DeleteAllAuthorsSql, transaction: this.Transaction);
     }
 
-    private const string UpdateAuthorsSql = "UPDATE authors SET  bio  =  @bio  WHERE  bio  IS  NOT  NULL  ";  
+    private const string UpdateAuthorsSql = "UPDATE authors SET bio = @bio WHERE bio IS NOT NULL";
     public class UpdateAuthorsArgs
     {
         public string? Bio { get; init; }
@@ -286,16 +257,11 @@ public class QuerySql
         if (this.Transaction == null)
         {
             using (var connection = new MySqlConnection(ConnectionString))
-            {
                 return await connection.ExecuteAsync(UpdateAuthorsSql, queryParams);
-            }
         }
 
         if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
-        {
-            throw new System.InvalidOperationException("Transaction is provided, but its connection is null.");
-        }
-
+            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
         return await this.Transaction.Connection.ExecuteAsync(UpdateAuthorsSql, queryParams, transaction: this.Transaction);
     }
 
@@ -381,20 +347,15 @@ public class QuerySql
         if (this.Transaction == null)
         {
             using (var connection = new MySqlConnection(ConnectionString))
-            {
                 return await connection.QuerySingleAsync<long>(CreateBookSql, queryParams);
-            }
         }
 
         if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
-        {
-            throw new System.InvalidOperationException("Transaction is provided, but its connection is null.");
-        }
-
+            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
         return await this.Transaction.Connection.QuerySingleAsync<long>(CreateBookSql, queryParams, transaction: this.Transaction);
     }
 
-    private const string ListAllAuthorsBooksSql = "SELECT authors.id, authors.name, authors.bio, books.id, books.name, books.author_id, books.description  FROM  authors  JOIN  books  ON  authors . id  =  books . author_id  ORDER  BY  authors . name  ";  
+    private const string ListAllAuthorsBooksSql = "SELECT authors.id, authors.name, authors.bio, books.id, books.name, books.author_id, books.description FROM authors JOIN books ON authors.id = books.author_id ORDER BY authors.name";
     public class ListAllAuthorsBooksRow
     {
         public required Author? Author { get; init; }
@@ -436,7 +397,7 @@ public class QuerySql
         }
     }
 
-    private const string GetDuplicateAuthorsSql = "SELECT authors1.id, authors1.name, authors1.bio, authors2.id, authors2.name, authors2.bio FROM  authors  authors1  JOIN  authors  authors2  ON  authors1 . name  =  authors2 . name  WHERE  authors1 . id < authors2 . id  ";  
+    private const string GetDuplicateAuthorsSql = "SELECT authors1.id, authors1.name, authors1.bio, authors2.id, authors2.name, authors2.bio FROM authors authors1 JOIN authors authors2 ON authors1.name = authors2.name WHERE authors1.id < authors2.id";
     public class GetDuplicateAuthorsRow
     {
         public required Author? Author { get; init; }
@@ -478,7 +439,7 @@ public class QuerySql
         }
     }
 
-    private const string GetAuthorsByBookNameSql = "SELECT authors.id, authors.name, authors.bio, books.id, books.name, books.author_id, books.description FROM  authors  JOIN  books  ON  authors . id  =  books . author_id  WHERE  books . name  =  @name  ";  
+    private const string GetAuthorsByBookNameSql = "SELECT authors.id, authors.name, authors.bio, books.id, books.name, books.author_id, books.description FROM authors JOIN books ON authors.id = books.author_id WHERE books.name = @name";
     public class GetAuthorsByBookNameRow
     {
         public required long Id { get; init; }
@@ -528,10 +489,81 @@ public class QuerySql
         }
     }
 
-    private const string InsertMysqlTypesSql = "INSERT INTO mysql_types (c_bit, c_bool, c_boolean, c_tinyint, c_smallint, c_mediumint, c_int, c_integer, c_bigint, c_decimal, c_dec, c_numeric, c_fixed, c_float, c_double, c_double_precision, c_char, c_nchar, c_national_char, c_varchar, c_tinytext, c_mediumtext, c_text, c_longtext, c_json, c_json_string_override, c_enum, c_set, c_year, c_date, c_datetime, c_timestamp, c_binary, c_varbinary, c_tinyblob, c_blob, c_mediumblob, c_longblob) VALUES ( @c_bit, @c_bool, @c_boolean, @c_tinyint, @c_smallint, @c_mediumint, @c_int, @c_integer, @c_bigint, @c_decimal, @c_dec, @c_numeric, @c_fixed, @c_float, @c_double, @c_double_precision, @c_char, @c_nchar, @c_national_char, @c_varchar, @c_tinytext, @c_mediumtext, @c_text, @c_longtext, @c_json, @c_json_string_override, @c_enum, @c_set, @c_year, @c_date, @c_datetime, @c_timestamp, @c_binary, @c_varbinary, @c_tinyblob, @c_blob, @c_mediumblob, @c_longblob ) "; 
-    public class InsertMysqlTypesArgs
+    private const string CreateExtendedBioSql = "INSERT INTO extended.bios (author_name, name, bio_type, author_type) VALUES (@author_name, @name, @bio_type, @author_type)";
+    public class CreateExtendedBioArgs
     {
-        public byte? CBit { get; init; }
+        public string? AuthorName { get; init; }
+        public string? Name { get; init; }
+        public BiosBioType? BioType { get; init; }
+        public HashSet<BiosAuthorType>? AuthorType { get; init; }
+    };
+    public async Task CreateExtendedBio(CreateExtendedBioArgs args)
+    {
+        var queryParams = new Dictionary<string, object?>();
+        queryParams.Add("author_name", args.AuthorName);
+        queryParams.Add("name", args.Name);
+        queryParams.Add("bio_type", args.BioType);
+        queryParams.Add("author_type", args.AuthorType != null ? string.Join(",", args.AuthorType) : null);
+        if (this.Transaction == null)
+        {
+            using (var connection = new MySqlConnection(ConnectionString))
+                await connection.ExecuteAsync(CreateExtendedBioSql, queryParams);
+            return;
+        }
+
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+        await this.Transaction.Connection.ExecuteAsync(CreateExtendedBioSql, queryParams, transaction: this.Transaction);
+    }
+
+    private const string GetFirstExtendedBioByTypeSql = "SELECT author_name, name, bio_type, author_type FROM extended.bios WHERE bio_type = @bio_type LIMIT 1";
+    public class GetFirstExtendedBioByTypeRow
+    {
+        public string? AuthorName { get; init; }
+        public string? Name { get; init; }
+        public BiosBioType? BioType { get; init; }
+        public HashSet<BiosAuthorType>? AuthorType { get; init; }
+    };
+    public class GetFirstExtendedBioByTypeArgs
+    {
+        public BiosBioType? BioType { get; init; }
+    };
+    public async Task<GetFirstExtendedBioByTypeRow?> GetFirstExtendedBioByType(GetFirstExtendedBioByTypeArgs args)
+    {
+        var queryParams = new Dictionary<string, object?>();
+        queryParams.Add("bio_type", args.BioType);
+        if (this.Transaction == null)
+        {
+            using (var connection = new MySqlConnection(ConnectionString))
+            {
+                var result = await connection.QueryFirstOrDefaultAsync<GetFirstExtendedBioByTypeRow?>(GetFirstExtendedBioByTypeSql, queryParams);
+                return result;
+            }
+        }
+
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+        return await this.Transaction.Connection.QueryFirstOrDefaultAsync<GetFirstExtendedBioByTypeRow?>(GetFirstExtendedBioByTypeSql, queryParams, transaction: this.Transaction);
+    }
+
+    private const string TruncateExtendedBiosSql = "TRUNCATE TABLE extended.bios";
+    public async Task TruncateExtendedBios()
+    {
+        if (this.Transaction == null)
+        {
+            using (var connection = new MySqlConnection(ConnectionString))
+                await connection.ExecuteAsync(TruncateExtendedBiosSql);
+            return;
+        }
+
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+        await this.Transaction.Connection.ExecuteAsync(TruncateExtendedBiosSql, transaction: this.Transaction);
+    }
+
+    private const string InsertMysqlNumericTypesSql = " INSERT INTO mysql_numeric_types ( c_bool, c_boolean, c_tinyint, c_smallint, c_mediumint, c_int, c_integer, c_bigint, c_decimal, c_dec, c_numeric, c_fixed, c_float, c_double, c_double_precision ) VALUES (@c_bool, @c_boolean, @c_tinyint, @c_smallint, @c_mediumint, @c_int, @c_integer, @c_bigint, @c_decimal, @c_dec, @c_numeric, @c_fixed, @c_float, @c_double, @c_double_precision)";
+    public class InsertMysqlNumericTypesArgs
+    {
         public bool? CBool { get; init; }
         public bool? CBoolean { get; init; }
         public short? CTinyint { get; init; }
@@ -547,33 +579,10 @@ public class QuerySql
         public double? CFloat { get; init; }
         public double? CDouble { get; init; }
         public double? CDoublePrecision { get; init; }
-        public string? CChar { get; init; }
-        public string? CNchar { get; init; }
-        public string? CNationalChar { get; init; }
-        public string? CVarchar { get; init; }
-        public string? CTinytext { get; init; }
-        public string? CMediumtext { get; init; }
-        public string? CText { get; init; }
-        public string? CLongtext { get; init; }
-        public JsonElement? CJson { get; init; }
-        public string? CJsonStringOverride { get; init; }
-        public MysqlTypesCEnum? CEnum { get; init; }
-        public MysqlTypesCSet[]? CSet { get; init; }
-        public short? CYear { get; init; }
-        public DateTime? CDate { get; init; }
-        public DateTime? CDatetime { get; init; }
-        public DateTime? CTimestamp { get; init; }
-        public byte[]? CBinary { get; init; }
-        public byte[]? CVarbinary { get; init; }
-        public byte[]? CTinyblob { get; init; }
-        public byte[]? CBlob { get; init; }
-        public byte[]? CMediumblob { get; init; }
-        public byte[]? CLongblob { get; init; }
     };
-    public async Task InsertMysqlTypes(InsertMysqlTypesArgs args)
+    public async Task InsertMysqlNumericTypes(InsertMysqlNumericTypesArgs args)
     {
         var queryParams = new Dictionary<string, object?>();
-        queryParams.Add("c_bit", args.CBit);
         queryParams.Add("c_bool", args.CBool);
         queryParams.Add("c_boolean", args.CBoolean);
         queryParams.Add("c_tinyint", args.CTinyint);
@@ -589,49 +598,20 @@ public class QuerySql
         queryParams.Add("c_float", args.CFloat);
         queryParams.Add("c_double", args.CDouble);
         queryParams.Add("c_double_precision", args.CDoublePrecision);
-        queryParams.Add("c_char", args.CChar);
-        queryParams.Add("c_nchar", args.CNchar);
-        queryParams.Add("c_national_char", args.CNationalChar);
-        queryParams.Add("c_varchar", args.CVarchar);
-        queryParams.Add("c_tinytext", args.CTinytext);
-        queryParams.Add("c_mediumtext", args.CMediumtext);
-        queryParams.Add("c_text", args.CText);
-        queryParams.Add("c_longtext", args.CLongtext);
-        queryParams.Add("c_json", args.CJson?.GetRawText() ?? null);
-        queryParams.Add("c_json_string_override", args.CJsonStringOverride);
-        queryParams.Add("c_enum", args.CEnum);
-        queryParams.Add("c_set", args.CSet != null ? string.Join(",", args.CSet) : null);
-        queryParams.Add("c_year", args.CYear);
-        queryParams.Add("c_date", args.CDate);
-        queryParams.Add("c_datetime", args.CDatetime);
-        queryParams.Add("c_timestamp", args.CTimestamp);
-        queryParams.Add("c_binary", args.CBinary);
-        queryParams.Add("c_varbinary", args.CVarbinary);
-        queryParams.Add("c_tinyblob", args.CTinyblob);
-        queryParams.Add("c_blob", args.CBlob);
-        queryParams.Add("c_mediumblob", args.CMediumblob);
-        queryParams.Add("c_longblob", args.CLongblob);
         if (this.Transaction == null)
         {
             using (var connection = new MySqlConnection(ConnectionString))
-            {
-                await connection.ExecuteAsync(InsertMysqlTypesSql, queryParams);
-            }
-
+                await connection.ExecuteAsync(InsertMysqlNumericTypesSql, queryParams);
             return;
         }
 
         if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
-        {
-            throw new System.InvalidOperationException("Transaction is provided, but its connection is null.");
-        }
-
-        await this.Transaction.Connection.ExecuteAsync(InsertMysqlTypesSql, queryParams, transaction: this.Transaction);
+            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+        await this.Transaction.Connection.ExecuteAsync(InsertMysqlNumericTypesSql, queryParams, transaction: this.Transaction);
     }
 
-    public class InsertMysqlTypesBatchArgs
+    public class InsertMysqlNumericTypesBatchArgs
     {
-        public byte? CBit { get; init; }
         public bool? CBool { get; init; }
         public bool? CBoolean { get; init; }
         public short? CTinyint { get; init; }
@@ -647,30 +627,8 @@ public class QuerySql
         public decimal? CFixed { get; init; }
         public double? CDouble { get; init; }
         public double? CDoublePrecision { get; init; }
-        public string? CChar { get; init; }
-        public string? CNchar { get; init; }
-        public string? CNationalChar { get; init; }
-        public string? CVarchar { get; init; }
-        public string? CTinytext { get; init; }
-        public string? CMediumtext { get; init; }
-        public string? CText { get; init; }
-        public string? CLongtext { get; init; }
-        public JsonElement? CJson { get; init; }
-        public string? CJsonStringOverride { get; init; }
-        public MysqlTypesCEnum? CEnum { get; init; }
-        public MysqlTypesCSet[]? CSet { get; init; }
-        public short? CYear { get; init; }
-        public DateTime? CDate { get; init; }
-        public DateTime? CDatetime { get; init; }
-        public DateTime? CTimestamp { get; init; }
-        public byte[]? CBinary { get; init; }
-        public byte[]? CVarbinary { get; init; }
-        public byte[]? CTinyblob { get; init; }
-        public byte[]? CBlob { get; init; }
-        public byte[]? CMediumblob { get; init; }
-        public byte[]? CLongblob { get; init; }
     };
-    public async Task InsertMysqlTypesBatch(List<InsertMysqlTypesBatchArgs> args)
+    public async Task InsertMysqlNumericTypesBatch(List<InsertMysqlNumericTypesBatchArgs> args)
     {
         const string supportedDateTimeFormat = "yyyy-MM-dd H:mm:ss";
         var config = new CsvConfiguration(CultureInfo.CurrentCulture)
@@ -693,21 +651,11 @@ public class QuerySql
             csvWriter.Context.TypeConverterOptionsCache.AddOptions<DateTime?>(options);
             csvWriter.Context.TypeConverterCache.AddConverter<bool>(new Utils.BoolToBitCsvConverter());
             csvWriter.Context.TypeConverterCache.AddConverter<bool?>(new Utils.BoolToBitCsvConverter());
-            csvWriter.Context.TypeConverterCache.AddConverter<byte>(new Utils.ByteCsvConverter());
-            csvWriter.Context.TypeConverterCache.AddConverter<byte?>(new Utils.ByteCsvConverter());
-            csvWriter.Context.TypeConverterCache.AddConverter<byte[]>(new Utils.ByteArrayCsvConverter());
-            csvWriter.Context.TypeConverterCache.AddConverter<byte[]?>(new Utils.ByteArrayCsvConverter());
-            csvWriter.Context.TypeConverterCache.AddConverter<MysqlTypesCSet[]>(new Utils.MysqlTypesCSetCsvConverter());
-            csvWriter.Context.TypeConverterCache.AddConverter<MysqlTypesCSet[]?>(new Utils.MysqlTypesCSetCsvConverter());
             csvWriter.Context.TypeConverterCache.AddConverter<short?>(nullConverterFn);
             csvWriter.Context.TypeConverterCache.AddConverter<int?>(nullConverterFn);
             csvWriter.Context.TypeConverterCache.AddConverter<long?>(nullConverterFn);
             csvWriter.Context.TypeConverterCache.AddConverter<double?>(nullConverterFn);
             csvWriter.Context.TypeConverterCache.AddConverter<decimal?>(nullConverterFn);
-            csvWriter.Context.TypeConverterCache.AddConverter<string?>(nullConverterFn);
-            csvWriter.Context.TypeConverterCache.AddConverter<JsonElement?>(nullConverterFn);
-            csvWriter.Context.TypeConverterCache.AddConverter<MysqlTypesCEnum?>(nullConverterFn);
-            csvWriter.Context.TypeConverterCache.AddConverter<DateTime?>(nullConverterFn);
             await csvWriter.WriteRecordsAsync(args);
         }
 
@@ -717,7 +665,7 @@ public class QuerySql
             var loader = new MySqlBulkLoader(connection)
             {
                 Local = true,
-                TableName = "mysql_types",
+                TableName = "mysql_numeric_types",
                 FileName = "input.csv",
                 FieldTerminator = ",",
                 FieldQuotationCharacter = '"',
@@ -725,14 +673,14 @@ public class QuerySql
                 NumberOfLinesToSkip = 1,
                 LineTerminator = "\n"
             };
-            loader.Columns.AddRange(new List<string> { "c_bit", "c_bool", "c_boolean", "c_tinyint", "c_smallint", "c_mediumint", "c_int", "c_integer", "c_bigint", "c_float", "c_numeric", "c_decimal", "c_dec", "c_fixed", "c_double", "c_double_precision", "c_char", "c_nchar", "c_national_char", "c_varchar", "c_tinytext", "c_mediumtext", "c_text", "c_longtext", "c_json", "c_json_string_override", "c_enum", "c_set", "c_year", "c_date", "c_datetime", "c_timestamp", "c_binary", "c_varbinary", "c_tinyblob", "c_blob", "c_mediumblob", "c_longblob" });
+            loader.Columns.AddRange(new List<string> { "c_bool", "c_boolean", "c_tinyint", "c_smallint", "c_mediumint", "c_int", "c_integer", "c_bigint", "c_float", "c_numeric", "c_decimal", "c_dec", "c_fixed", "c_double", "c_double_precision" });
             await loader.LoadAsync();
             await connection.CloseAsync();
         }
     }
 
-    private const string GetMysqlTypesSql = "SELECT c_bool, c_boolean, c_tinyint, c_smallint, c_mediumint, c_int, c_integer, c_bigint, c_float, c_decimal, c_dec, c_numeric, c_fixed, c_double, c_double_precision, c_year, c_date, c_time, c_datetime, c_timestamp, c_char, c_nchar, c_national_char, c_varchar, c_tinytext, c_mediumtext, c_text, c_longtext, c_json, c_json_string_override, c_enum, c_set, c_bit, c_binary, c_varbinary, c_tinyblob, c_blob, c_mediumblob, c_longblob FROM mysql_types LIMIT 1";
-    public class GetMysqlTypesRow
+    private const string GetMysqlNumericTypesSql = "SELECT c_bool, c_boolean, c_tinyint, c_smallint, c_mediumint, c_int, c_integer, c_bigint, c_float, c_decimal, c_dec, c_numeric, c_fixed, c_double, c_double_precision FROM mysql_numeric_types LIMIT 1";
+    public class GetMysqlNumericTypesRow
     {
         public bool? CBool { get; init; }
         public bool? CBoolean { get; init; }
@@ -749,57 +697,29 @@ public class QuerySql
         public decimal? CFixed { get; init; }
         public double? CDouble { get; init; }
         public double? CDoublePrecision { get; init; }
-        public short? CYear { get; init; }
-        public DateTime? CDate { get; init; }
-        public string? CTime { get; init; }
-        public DateTime? CDatetime { get; init; }
-        public DateTime? CTimestamp { get; init; }
-        public string? CChar { get; init; }
-        public string? CNchar { get; init; }
-        public string? CNationalChar { get; init; }
-        public string? CVarchar { get; init; }
-        public string? CTinytext { get; init; }
-        public string? CMediumtext { get; init; }
-        public string? CText { get; init; }
-        public string? CLongtext { get; init; }
-        public JsonElement? CJson { get; init; }
-        public string? CJsonStringOverride { get; init; }
-        public MysqlTypesCEnum? CEnum { get; init; }
-        public MysqlTypesCSet[]? CSet { get; init; }
-        public byte? CBit { get; init; }
-        public byte[]? CBinary { get; init; }
-        public byte[]? CVarbinary { get; init; }
-        public byte[]? CTinyblob { get; init; }
-        public byte[]? CBlob { get; init; }
-        public byte[]? CMediumblob { get; init; }
-        public byte[]? CLongblob { get; init; }
     };
-    public async Task<GetMysqlTypesRow?> GetMysqlTypes()
+    public async Task<GetMysqlNumericTypesRow?> GetMysqlNumericTypes()
     {
         if (this.Transaction == null)
         {
             using (var connection = new MySqlConnection(ConnectionString))
             {
-                var result = await connection.QueryFirstOrDefaultAsync<GetMysqlTypesRow?>(GetMysqlTypesSql);
+                var result = await connection.QueryFirstOrDefaultAsync<GetMysqlNumericTypesRow?>(GetMysqlNumericTypesSql);
                 return result;
             }
         }
 
         if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
-        {
-            throw new System.InvalidOperationException("Transaction is provided, but its connection is null.");
-        }
-
-        return await this.Transaction.Connection.QueryFirstOrDefaultAsync<GetMysqlTypesRow?>(GetMysqlTypesSql, transaction: this.Transaction);
+            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+        return await this.Transaction.Connection.QueryFirstOrDefaultAsync<GetMysqlNumericTypesRow?>(GetMysqlNumericTypesSql, transaction: this.Transaction);
     }
 
-    private const string GetMysqlTypesCntSql = "SELECT COUNT(1) AS cnt, c_bool, c_boolean, c_bit, c_tinyint, c_smallint, c_mediumint, c_int, c_integer, c_bigint,  c_float , c_numeric, c_decimal, c_dec, c_fixed, c_double, c_double_precision, c_char, c_nchar, c_national_char, c_varchar, c_tinytext, c_mediumtext, c_text, c_longtext, c_json, c_json_string_override, c_enum, c_set, c_year, c_date, c_datetime, c_timestamp, c_binary, c_varbinary, c_tinyblob, c_blob, c_mediumblob, c_longblob FROM  mysql_types  GROUP  BY  c_bool , c_boolean, c_bit, c_tinyint, c_smallint, c_mediumint, c_int, c_integer, c_bigint, c_float, c_numeric, c_decimal, c_dec, c_fixed, c_double, c_double_precision, c_char, c_nchar, c_national_char, c_varchar, c_tinytext, c_mediumtext, c_text, c_longtext, c_json, c_json_string_override, c_enum, c_set, c_year, c_date, c_datetime, c_timestamp, c_binary, c_varbinary, c_tinyblob, c_blob, c_mediumblob, c_longblob LIMIT  1  ";  
-    public class GetMysqlTypesCntRow
+    private const string GetMysqlNumericTypesCntSql = "SELECT COUNT(*) AS cnt, c_bool, c_boolean, c_tinyint, c_smallint, c_mediumint, c_int, c_integer, c_bigint, c_float, c_numeric, c_decimal, c_dec, c_fixed, c_double, c_double_precision FROM mysql_numeric_types GROUP BY c_bool, c_boolean, c_tinyint, c_smallint, c_mediumint, c_int, c_integer, c_bigint, c_float, c_numeric, c_decimal, c_dec, c_fixed, c_double, c_double_precision LIMIT 1";
+    public class GetMysqlNumericTypesCntRow
     {
         public required long Cnt { get; init; }
         public bool? CBool { get; init; }
         public bool? CBoolean { get; init; }
-        public byte? CBit { get; init; }
         public short? CTinyint { get; init; }
         public short? CSmallint { get; init; }
         public int? CMediumint { get; init; }
@@ -813,6 +733,41 @@ public class QuerySql
         public decimal? CFixed { get; init; }
         public double? CDouble { get; init; }
         public double? CDoublePrecision { get; init; }
+    };
+    public async Task<GetMysqlNumericTypesCntRow?> GetMysqlNumericTypesCnt()
+    {
+        if (this.Transaction == null)
+        {
+            using (var connection = new MySqlConnection(ConnectionString))
+            {
+                var result = await connection.QueryFirstOrDefaultAsync<GetMysqlNumericTypesCntRow?>(GetMysqlNumericTypesCntSql);
+                return result;
+            }
+        }
+
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+        return await this.Transaction.Connection.QueryFirstOrDefaultAsync<GetMysqlNumericTypesCntRow?>(GetMysqlNumericTypesCntSql, transaction: this.Transaction);
+    }
+
+    private const string TruncateMysqlNumericTypesSql = "TRUNCATE TABLE mysql_numeric_types";
+    public async Task TruncateMysqlNumericTypes()
+    {
+        if (this.Transaction == null)
+        {
+            using (var connection = new MySqlConnection(ConnectionString))
+                await connection.ExecuteAsync(TruncateMysqlNumericTypesSql);
+            return;
+        }
+
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+        await this.Transaction.Connection.ExecuteAsync(TruncateMysqlNumericTypesSql, transaction: this.Transaction);
+    }
+
+    private const string InsertMysqlStringTypesSql = " INSERT INTO mysql_string_types ( c_char, c_nchar, c_national_char, c_varchar, c_tinytext, c_mediumtext, c_text, c_longtext, c_json, c_json_string_override, c_enum, c_set ) VALUES (@c_char, @c_nchar, @c_national_char, @c_varchar, @c_tinytext, @c_mediumtext, @c_text, @c_longtext, @c_json, @c_json_string_override, @c_enum, @c_set)";
+    public class InsertMysqlStringTypesArgs
+    {
         public string? CChar { get; init; }
         public string? CNchar { get; init; }
         public string? CNationalChar { get; init; }
@@ -823,12 +778,334 @@ public class QuerySql
         public string? CLongtext { get; init; }
         public JsonElement? CJson { get; init; }
         public string? CJsonStringOverride { get; init; }
-        public MysqlTypesCEnum? CEnum { get; init; }
-        public MysqlTypesCSet[]? CSet { get; init; }
+        public MysqlStringTypesCEnum? CEnum { get; init; }
+        public HashSet<MysqlStringTypesCSet>? CSet { get; init; }
+    };
+    public async Task InsertMysqlStringTypes(InsertMysqlStringTypesArgs args)
+    {
+        var queryParams = new Dictionary<string, object?>();
+        queryParams.Add("c_char", args.CChar);
+        queryParams.Add("c_nchar", args.CNchar);
+        queryParams.Add("c_national_char", args.CNationalChar);
+        queryParams.Add("c_varchar", args.CVarchar);
+        queryParams.Add("c_tinytext", args.CTinytext);
+        queryParams.Add("c_mediumtext", args.CMediumtext);
+        queryParams.Add("c_text", args.CText);
+        queryParams.Add("c_longtext", args.CLongtext);
+        queryParams.Add("c_json", args.CJson?.GetRawText() ?? null);
+        queryParams.Add("c_json_string_override", args.CJsonStringOverride);
+        queryParams.Add("c_enum", args.CEnum);
+        queryParams.Add("c_set", args.CSet != null ? string.Join(",", args.CSet) : null);
+        if (this.Transaction == null)
+        {
+            using (var connection = new MySqlConnection(ConnectionString))
+                await connection.ExecuteAsync(InsertMysqlStringTypesSql, queryParams);
+            return;
+        }
+
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+        await this.Transaction.Connection.ExecuteAsync(InsertMysqlStringTypesSql, queryParams, transaction: this.Transaction);
+    }
+
+    public class InsertMysqlStringTypesBatchArgs
+    {
+        public string? CChar { get; init; }
+        public string? CNchar { get; init; }
+        public string? CNationalChar { get; init; }
+        public string? CVarchar { get; init; }
+        public string? CTinytext { get; init; }
+        public string? CMediumtext { get; init; }
+        public string? CText { get; init; }
+        public string? CLongtext { get; init; }
+        public JsonElement? CJson { get; init; }
+        public string? CJsonStringOverride { get; init; }
+        public MysqlStringTypesCEnum? CEnum { get; init; }
+        public HashSet<MysqlStringTypesCSet>? CSet { get; init; }
+    };
+    public async Task InsertMysqlStringTypesBatch(List<InsertMysqlStringTypesBatchArgs> args)
+    {
+        const string supportedDateTimeFormat = "yyyy-MM-dd H:mm:ss";
+        var config = new CsvConfiguration(CultureInfo.CurrentCulture)
+        {
+            Delimiter = ",",
+            NewLine = "\n"
+        };
+        var nullConverterFn = new Utils.NullToStringCsvConverter();
+        using (var writer = new StreamWriter("input.csv", false, new UTF8Encoding(false)))
+        using (var csvWriter = new CsvWriter(writer, config))
+        {
+            var options = new TypeConverterOptions
+            {
+                Formats = new[]
+                {
+                    supportedDateTimeFormat
+                }
+            };
+            csvWriter.Context.TypeConverterOptionsCache.AddOptions<DateTime>(options);
+            csvWriter.Context.TypeConverterOptionsCache.AddOptions<DateTime?>(options);
+            csvWriter.Context.TypeConverterCache.AddConverter<HashSet<MysqlStringTypesCSet>>(new Utils.MysqlStringTypesCSetCsvConverter());
+            csvWriter.Context.TypeConverterCache.AddConverter<HashSet<MysqlStringTypesCSet>?>(new Utils.MysqlStringTypesCSetCsvConverter());
+            csvWriter.Context.TypeConverterCache.AddConverter<string?>(nullConverterFn);
+            csvWriter.Context.TypeConverterCache.AddConverter<JsonElement?>(nullConverterFn);
+            csvWriter.Context.TypeConverterCache.AddConverter<MysqlStringTypesCEnum?>(nullConverterFn);
+            await csvWriter.WriteRecordsAsync(args);
+        }
+
+        using (var connection = new MySqlConnection(ConnectionString))
+        {
+            await connection.OpenAsync();
+            var loader = new MySqlBulkLoader(connection)
+            {
+                Local = true,
+                TableName = "mysql_string_types",
+                FileName = "input.csv",
+                FieldTerminator = ",",
+                FieldQuotationCharacter = '"',
+                FieldQuotationOptional = true,
+                NumberOfLinesToSkip = 1,
+                LineTerminator = "\n"
+            };
+            loader.Columns.AddRange(new List<string> { "c_char", "c_nchar", "c_national_char", "c_varchar", "c_tinytext", "c_mediumtext", "c_text", "c_longtext", "c_json", "c_json_string_override", "c_enum", "c_set" });
+            await loader.LoadAsync();
+            await connection.CloseAsync();
+        }
+    }
+
+    private const string GetMysqlStringTypesSql = "SELECT c_char, c_nchar, c_national_char, c_varchar, c_tinytext, c_mediumtext, c_text, c_longtext, c_json, c_json_string_override, c_enum, c_set FROM mysql_string_types LIMIT 1";
+    public class GetMysqlStringTypesRow
+    {
+        public string? CChar { get; init; }
+        public string? CNchar { get; init; }
+        public string? CNationalChar { get; init; }
+        public string? CVarchar { get; init; }
+        public string? CTinytext { get; init; }
+        public string? CMediumtext { get; init; }
+        public string? CText { get; init; }
+        public string? CLongtext { get; init; }
+        public JsonElement? CJson { get; init; }
+        public string? CJsonStringOverride { get; init; }
+        public MysqlStringTypesCEnum? CEnum { get; init; }
+        public HashSet<MysqlStringTypesCSet>? CSet { get; init; }
+    };
+    public async Task<GetMysqlStringTypesRow?> GetMysqlStringTypes()
+    {
+        if (this.Transaction == null)
+        {
+            using (var connection = new MySqlConnection(ConnectionString))
+            {
+                var result = await connection.QueryFirstOrDefaultAsync<GetMysqlStringTypesRow?>(GetMysqlStringTypesSql);
+                return result;
+            }
+        }
+
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+        return await this.Transaction.Connection.QueryFirstOrDefaultAsync<GetMysqlStringTypesRow?>(GetMysqlStringTypesSql, transaction: this.Transaction);
+    }
+
+    private const string GetMysqlStringTypesCntSql = "SELECT COUNT(*) AS cnt, c_char, c_nchar, c_national_char, c_varchar, c_tinytext, c_mediumtext, c_text, c_longtext, c_json, c_json_string_override, c_enum, c_set FROM mysql_string_types GROUP BY c_char, c_nchar, c_national_char, c_varchar, c_tinytext, c_mediumtext, c_text, c_longtext, c_json, c_json_string_override, c_enum, c_set LIMIT 1";
+    public class GetMysqlStringTypesCntRow
+    {
+        public required long Cnt { get; init; }
+        public string? CChar { get; init; }
+        public string? CNchar { get; init; }
+        public string? CNationalChar { get; init; }
+        public string? CVarchar { get; init; }
+        public string? CTinytext { get; init; }
+        public string? CMediumtext { get; init; }
+        public string? CText { get; init; }
+        public string? CLongtext { get; init; }
+        public JsonElement? CJson { get; init; }
+        public string? CJsonStringOverride { get; init; }
+        public MysqlStringTypesCEnum? CEnum { get; init; }
+        public HashSet<MysqlStringTypesCSet>? CSet { get; init; }
+    };
+    public async Task<GetMysqlStringTypesCntRow?> GetMysqlStringTypesCnt()
+    {
+        if (this.Transaction == null)
+        {
+            using (var connection = new MySqlConnection(ConnectionString))
+            {
+                var result = await connection.QueryFirstOrDefaultAsync<GetMysqlStringTypesCntRow?>(GetMysqlStringTypesCntSql);
+                return result;
+            }
+        }
+
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+        return await this.Transaction.Connection.QueryFirstOrDefaultAsync<GetMysqlStringTypesCntRow?>(GetMysqlStringTypesCntSql, transaction: this.Transaction);
+    }
+
+    private const string TruncateMysqlStringTypesSql = "TRUNCATE TABLE mysql_string_types";
+    public async Task TruncateMysqlStringTypes()
+    {
+        if (this.Transaction == null)
+        {
+            using (var connection = new MySqlConnection(ConnectionString))
+                await connection.ExecuteAsync(TruncateMysqlStringTypesSql);
+            return;
+        }
+
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+        await this.Transaction.Connection.ExecuteAsync(TruncateMysqlStringTypesSql, transaction: this.Transaction);
+    }
+
+    private const string InsertMysqlDatetimeTypesSql = " INSERT INTO mysql_datetime_types ( c_year, c_date, c_datetime, c_timestamp, c_time ) VALUES (@c_year, @c_date, @c_datetime, @c_timestamp, @c_time)";
+    public class InsertMysqlDatetimeTypesArgs
+    {
         public short? CYear { get; init; }
         public DateTime? CDate { get; init; }
         public DateTime? CDatetime { get; init; }
         public DateTime? CTimestamp { get; init; }
+        public TimeSpan? CTime { get; init; }
+    };
+    public async Task InsertMysqlDatetimeTypes(InsertMysqlDatetimeTypesArgs args)
+    {
+        var queryParams = new Dictionary<string, object?>();
+        queryParams.Add("c_year", args.CYear);
+        queryParams.Add("c_date", args.CDate);
+        queryParams.Add("c_datetime", args.CDatetime);
+        queryParams.Add("c_timestamp", args.CTimestamp);
+        queryParams.Add("c_time", args.CTime);
+        if (this.Transaction == null)
+        {
+            using (var connection = new MySqlConnection(ConnectionString))
+                await connection.ExecuteAsync(InsertMysqlDatetimeTypesSql, queryParams);
+            return;
+        }
+
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+        await this.Transaction.Connection.ExecuteAsync(InsertMysqlDatetimeTypesSql, queryParams, transaction: this.Transaction);
+    }
+
+    public class InsertMysqlDatetimeTypesBatchArgs
+    {
+        public short? CYear { get; init; }
+        public DateTime? CDate { get; init; }
+        public DateTime? CDatetime { get; init; }
+        public DateTime? CTimestamp { get; init; }
+        public TimeSpan? CTime { get; init; }
+    };
+    public async Task InsertMysqlDatetimeTypesBatch(List<InsertMysqlDatetimeTypesBatchArgs> args)
+    {
+        const string supportedDateTimeFormat = "yyyy-MM-dd H:mm:ss";
+        var config = new CsvConfiguration(CultureInfo.CurrentCulture)
+        {
+            Delimiter = ",",
+            NewLine = "\n"
+        };
+        var nullConverterFn = new Utils.NullToStringCsvConverter();
+        using (var writer = new StreamWriter("input.csv", false, new UTF8Encoding(false)))
+        using (var csvWriter = new CsvWriter(writer, config))
+        {
+            var options = new TypeConverterOptions
+            {
+                Formats = new[]
+                {
+                    supportedDateTimeFormat
+                }
+            };
+            csvWriter.Context.TypeConverterOptionsCache.AddOptions<DateTime>(options);
+            csvWriter.Context.TypeConverterOptionsCache.AddOptions<DateTime?>(options);
+            csvWriter.Context.TypeConverterCache.AddConverter<short?>(nullConverterFn);
+            csvWriter.Context.TypeConverterCache.AddConverter<DateTime?>(nullConverterFn);
+            csvWriter.Context.TypeConverterCache.AddConverter<TimeSpan?>(nullConverterFn);
+            await csvWriter.WriteRecordsAsync(args);
+        }
+
+        using (var connection = new MySqlConnection(ConnectionString))
+        {
+            await connection.OpenAsync();
+            var loader = new MySqlBulkLoader(connection)
+            {
+                Local = true,
+                TableName = "mysql_datetime_types",
+                FileName = "input.csv",
+                FieldTerminator = ",",
+                FieldQuotationCharacter = '"',
+                FieldQuotationOptional = true,
+                NumberOfLinesToSkip = 1,
+                LineTerminator = "\n"
+            };
+            loader.Columns.AddRange(new List<string> { "c_year", "c_date", "c_datetime", "c_timestamp", "c_time" });
+            await loader.LoadAsync();
+            await connection.CloseAsync();
+        }
+    }
+
+    private const string GetMysqlDatetimeTypesSql = "SELECT c_year, c_date, c_datetime, c_timestamp, c_time FROM mysql_datetime_types LIMIT 1";
+    public class GetMysqlDatetimeTypesRow
+    {
+        public short? CYear { get; init; }
+        public DateTime? CDate { get; init; }
+        public DateTime? CDatetime { get; init; }
+        public DateTime? CTimestamp { get; init; }
+        public TimeSpan? CTime { get; init; }
+    };
+    public async Task<GetMysqlDatetimeTypesRow?> GetMysqlDatetimeTypes()
+    {
+        if (this.Transaction == null)
+        {
+            using (var connection = new MySqlConnection(ConnectionString))
+            {
+                var result = await connection.QueryFirstOrDefaultAsync<GetMysqlDatetimeTypesRow?>(GetMysqlDatetimeTypesSql);
+                return result;
+            }
+        }
+
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+        return await this.Transaction.Connection.QueryFirstOrDefaultAsync<GetMysqlDatetimeTypesRow?>(GetMysqlDatetimeTypesSql, transaction: this.Transaction);
+    }
+
+    private const string GetMysqlDatetimeTypesCntSql = "SELECT COUNT(*) AS cnt, c_year, c_date, c_datetime, c_timestamp, c_time FROM mysql_datetime_types GROUP BY c_year, c_date, c_datetime, c_timestamp, c_time LIMIT 1";
+    public class GetMysqlDatetimeTypesCntRow
+    {
+        public required long Cnt { get; init; }
+        public short? CYear { get; init; }
+        public DateTime? CDate { get; init; }
+        public DateTime? CDatetime { get; init; }
+        public DateTime? CTimestamp { get; init; }
+        public TimeSpan? CTime { get; init; }
+    };
+    public async Task<GetMysqlDatetimeTypesCntRow?> GetMysqlDatetimeTypesCnt()
+    {
+        if (this.Transaction == null)
+        {
+            using (var connection = new MySqlConnection(ConnectionString))
+            {
+                var result = await connection.QueryFirstOrDefaultAsync<GetMysqlDatetimeTypesCntRow?>(GetMysqlDatetimeTypesCntSql);
+                return result;
+            }
+        }
+
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+        return await this.Transaction.Connection.QueryFirstOrDefaultAsync<GetMysqlDatetimeTypesCntRow?>(GetMysqlDatetimeTypesCntSql, transaction: this.Transaction);
+    }
+
+    private const string TruncateMysqlDatetimeTypesSql = "TRUNCATE TABLE mysql_datetime_types";
+    public async Task TruncateMysqlDatetimeTypes()
+    {
+        if (this.Transaction == null)
+        {
+            using (var connection = new MySqlConnection(ConnectionString))
+                await connection.ExecuteAsync(TruncateMysqlDatetimeTypesSql);
+            return;
+        }
+
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+        await this.Transaction.Connection.ExecuteAsync(TruncateMysqlDatetimeTypesSql, transaction: this.Transaction);
+    }
+
+    private const string InsertMysqlBinaryTypesSql = " INSERT INTO mysql_binary_types ( c_bit, c_binary, c_varbinary, c_tinyblob, c_blob, c_mediumblob, c_longblob ) VALUES (@c_bit, @c_binary, @c_varbinary, @c_tinyblob, @c_blob, @c_mediumblob, @c_longblob)";
+    public class InsertMysqlBinaryTypesArgs
+    {
+        public byte? CBit { get; init; }
         public byte[]? CBinary { get; init; }
         public byte[]? CVarbinary { get; init; }
         public byte[]? CTinyblob { get; init; }
@@ -836,26 +1113,157 @@ public class QuerySql
         public byte[]? CMediumblob { get; init; }
         public byte[]? CLongblob { get; init; }
     };
-    public async Task<GetMysqlTypesCntRow?> GetMysqlTypesCnt()
+    public async Task InsertMysqlBinaryTypes(InsertMysqlBinaryTypesArgs args)
+    {
+        var queryParams = new Dictionary<string, object?>();
+        queryParams.Add("c_bit", args.CBit);
+        queryParams.Add("c_binary", args.CBinary);
+        queryParams.Add("c_varbinary", args.CVarbinary);
+        queryParams.Add("c_tinyblob", args.CTinyblob);
+        queryParams.Add("c_blob", args.CBlob);
+        queryParams.Add("c_mediumblob", args.CMediumblob);
+        queryParams.Add("c_longblob", args.CLongblob);
+        if (this.Transaction == null)
+        {
+            using (var connection = new MySqlConnection(ConnectionString))
+                await connection.ExecuteAsync(InsertMysqlBinaryTypesSql, queryParams);
+            return;
+        }
+
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+        await this.Transaction.Connection.ExecuteAsync(InsertMysqlBinaryTypesSql, queryParams, transaction: this.Transaction);
+    }
+
+    public class InsertMysqlBinaryTypesBatchArgs
+    {
+        public byte? CBit { get; init; }
+        public byte[]? CBinary { get; init; }
+        public byte[]? CVarbinary { get; init; }
+        public byte[]? CTinyblob { get; init; }
+        public byte[]? CBlob { get; init; }
+        public byte[]? CMediumblob { get; init; }
+        public byte[]? CLongblob { get; init; }
+    };
+    public async Task InsertMysqlBinaryTypesBatch(List<InsertMysqlBinaryTypesBatchArgs> args)
+    {
+        const string supportedDateTimeFormat = "yyyy-MM-dd H:mm:ss";
+        var config = new CsvConfiguration(CultureInfo.CurrentCulture)
+        {
+            Delimiter = ",",
+            NewLine = "\n"
+        };
+        var nullConverterFn = new Utils.NullToStringCsvConverter();
+        using (var writer = new StreamWriter("input.csv", false, new UTF8Encoding(false)))
+        using (var csvWriter = new CsvWriter(writer, config))
+        {
+            var options = new TypeConverterOptions
+            {
+                Formats = new[]
+                {
+                    supportedDateTimeFormat
+                }
+            };
+            csvWriter.Context.TypeConverterOptionsCache.AddOptions<DateTime>(options);
+            csvWriter.Context.TypeConverterOptionsCache.AddOptions<DateTime?>(options);
+            csvWriter.Context.TypeConverterCache.AddConverter<byte>(new Utils.ByteCsvConverter());
+            csvWriter.Context.TypeConverterCache.AddConverter<byte?>(new Utils.ByteCsvConverter());
+            csvWriter.Context.TypeConverterCache.AddConverter<byte[]>(new Utils.ByteArrayCsvConverter());
+            csvWriter.Context.TypeConverterCache.AddConverter<byte[]?>(new Utils.ByteArrayCsvConverter());
+            await csvWriter.WriteRecordsAsync(args);
+        }
+
+        using (var connection = new MySqlConnection(ConnectionString))
+        {
+            await connection.OpenAsync();
+            var loader = new MySqlBulkLoader(connection)
+            {
+                Local = true,
+                TableName = "mysql_binary_types",
+                FileName = "input.csv",
+                FieldTerminator = ",",
+                FieldQuotationCharacter = '"',
+                FieldQuotationOptional = true,
+                NumberOfLinesToSkip = 1,
+                LineTerminator = "\n"
+            };
+            loader.Columns.AddRange(new List<string> { "c_bit", "c_binary", "c_varbinary", "c_tinyblob", "c_blob", "c_mediumblob", "c_longblob" });
+            await loader.LoadAsync();
+            await connection.CloseAsync();
+        }
+    }
+
+    private const string GetMysqlBinaryTypesSql = "SELECT c_bit, c_binary, c_varbinary, c_tinyblob, c_blob, c_mediumblob, c_longblob FROM mysql_binary_types LIMIT 1";
+    public class GetMysqlBinaryTypesRow
+    {
+        public byte? CBit { get; init; }
+        public byte[]? CBinary { get; init; }
+        public byte[]? CVarbinary { get; init; }
+        public byte[]? CTinyblob { get; init; }
+        public byte[]? CBlob { get; init; }
+        public byte[]? CMediumblob { get; init; }
+        public byte[]? CLongblob { get; init; }
+    };
+    public async Task<GetMysqlBinaryTypesRow?> GetMysqlBinaryTypes()
     {
         if (this.Transaction == null)
         {
             using (var connection = new MySqlConnection(ConnectionString))
             {
-                var result = await connection.QueryFirstOrDefaultAsync<GetMysqlTypesCntRow?>(GetMysqlTypesCntSql);
+                var result = await connection.QueryFirstOrDefaultAsync<GetMysqlBinaryTypesRow?>(GetMysqlBinaryTypesSql);
                 return result;
             }
         }
 
         if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
-        {
-            throw new System.InvalidOperationException("Transaction is provided, but its connection is null.");
-        }
-
-        return await this.Transaction.Connection.QueryFirstOrDefaultAsync<GetMysqlTypesCntRow?>(GetMysqlTypesCntSql, transaction: this.Transaction);
+            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+        return await this.Transaction.Connection.QueryFirstOrDefaultAsync<GetMysqlBinaryTypesRow?>(GetMysqlBinaryTypesSql, transaction: this.Transaction);
     }
 
-    private const string GetMysqlFunctionsSql = "SELECT MAX(c_int) AS max_int, MAX(c_varchar) AS max_varchar, MAX(c_timestamp) AS max_timestamp FROM  mysql_types  ";  
+    private const string GetMysqlBinaryTypesCntSql = "SELECT COUNT(*) AS cnt, c_bit, c_binary, c_varbinary, c_tinyblob, c_blob, c_mediumblob, c_longblob FROM mysql_binary_types GROUP BY c_bit, c_binary, c_varbinary, c_tinyblob, c_blob, c_mediumblob, c_longblob LIMIT 1";
+    public class GetMysqlBinaryTypesCntRow
+    {
+        public required long Cnt { get; init; }
+        public byte? CBit { get; init; }
+        public byte[]? CBinary { get; init; }
+        public byte[]? CVarbinary { get; init; }
+        public byte[]? CTinyblob { get; init; }
+        public byte[]? CBlob { get; init; }
+        public byte[]? CMediumblob { get; init; }
+        public byte[]? CLongblob { get; init; }
+    };
+    public async Task<GetMysqlBinaryTypesCntRow?> GetMysqlBinaryTypesCnt()
+    {
+        if (this.Transaction == null)
+        {
+            using (var connection = new MySqlConnection(ConnectionString))
+            {
+                var result = await connection.QueryFirstOrDefaultAsync<GetMysqlBinaryTypesCntRow?>(GetMysqlBinaryTypesCntSql);
+                return result;
+            }
+        }
+
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+        return await this.Transaction.Connection.QueryFirstOrDefaultAsync<GetMysqlBinaryTypesCntRow?>(GetMysqlBinaryTypesCntSql, transaction: this.Transaction);
+    }
+
+    private const string TruncateMysqlBinaryTypesSql = "TRUNCATE TABLE mysql_binary_types";
+    public async Task TruncateMysqlBinaryTypes()
+    {
+        if (this.Transaction == null)
+        {
+            using (var connection = new MySqlConnection(ConnectionString))
+                await connection.ExecuteAsync(TruncateMysqlBinaryTypesSql);
+            return;
+        }
+
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+        await this.Transaction.Connection.ExecuteAsync(TruncateMysqlBinaryTypesSql, transaction: this.Transaction);
+    }
+
+    private const string GetMysqlFunctionsSql = " SELECT MAX(c_int) AS max_int, MAX(c_varchar) AS max_varchar, MAX(c_timestamp) AS max_timestamp FROM mysql_numeric_types CROSS JOIN mysql_string_types CROSS JOIN mysql_datetime_types";
     public class GetMysqlFunctionsRow
     {
         public int? MaxInt { get; init; }
@@ -874,118 +1282,7 @@ public class QuerySql
         }
 
         if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
-        {
-            throw new System.InvalidOperationException("Transaction is provided, but its connection is null.");
-        }
-
+            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
         return await this.Transaction.Connection.QueryFirstOrDefaultAsync<GetMysqlFunctionsRow?>(GetMysqlFunctionsSql, transaction: this.Transaction);
-    }
-
-    private const string TruncateMysqlTypesSql = "TRUNCATE TABLE mysql_types";
-    public async Task TruncateMysqlTypes()
-    {
-        if (this.Transaction == null)
-        {
-            using (var connection = new MySqlConnection(ConnectionString))
-            {
-                await connection.ExecuteAsync(TruncateMysqlTypesSql);
-            }
-
-            return;
-        }
-
-        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
-        {
-            throw new System.InvalidOperationException("Transaction is provided, but its connection is null.");
-        }
-
-        await this.Transaction.Connection.ExecuteAsync(TruncateMysqlTypesSql, transaction: this.Transaction);
-    }
-
-    private const string CreateExtendedBioSql = "INSERT INTO extended.bios (author_name, name, bio_type, author_type) VALUES (@author_name, @name, @bio_type, @author_type)";
-    public class CreateExtendedBioArgs
-    {
-        public string? AuthorName { get; init; }
-        public string? Name { get; init; }
-        public ExtendedBiosBioType? BioType { get; init; }
-        public ExtendedBiosAuthorType[]? AuthorType { get; init; }
-    };
-    public async Task CreateExtendedBio(CreateExtendedBioArgs args)
-    {
-        var queryParams = new Dictionary<string, object?>();
-        queryParams.Add("author_name", args.AuthorName);
-        queryParams.Add("name", args.Name);
-        queryParams.Add("bio_type", args.BioType);
-        queryParams.Add("author_type", args.AuthorType != null ? string.Join(",", args.AuthorType) : null);
-        if (this.Transaction == null)
-        {
-            using (var connection = new MySqlConnection(ConnectionString))
-            {
-                await connection.ExecuteAsync(CreateExtendedBioSql, queryParams);
-            }
-
-            return;
-        }
-
-        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
-        {
-            throw new System.InvalidOperationException("Transaction is provided, but its connection is null.");
-        }
-
-        await this.Transaction.Connection.ExecuteAsync(CreateExtendedBioSql, queryParams, transaction: this.Transaction);
-    }
-
-    private const string GetFirstExtendedBioByTypeSql = "SELECT author_name, name, bio_type, author_type FROM extended.bios WHERE bio_type = @bio_type LIMIT 1";
-    public class GetFirstExtendedBioByTypeRow
-    {
-        public string? AuthorName { get; init; }
-        public string? Name { get; init; }
-        public ExtendedBiosBioType? BioType { get; init; }
-        public ExtendedBiosAuthorType[]? AuthorType { get; init; }
-    };
-    public class GetFirstExtendedBioByTypeArgs
-    {
-        public ExtendedBiosBioType? BioType { get; init; }
-    };
-    public async Task<GetFirstExtendedBioByTypeRow?> GetFirstExtendedBioByType(GetFirstExtendedBioByTypeArgs args)
-    {
-        var queryParams = new Dictionary<string, object?>();
-        queryParams.Add("bio_type", args.BioType);
-        if (this.Transaction == null)
-        {
-            using (var connection = new MySqlConnection(ConnectionString))
-            {
-                var result = await connection.QueryFirstOrDefaultAsync<GetFirstExtendedBioByTypeRow?>(GetFirstExtendedBioByTypeSql, queryParams);
-                return result;
-            }
-        }
-
-        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
-        {
-            throw new System.InvalidOperationException("Transaction is provided, but its connection is null.");
-        }
-
-        return await this.Transaction.Connection.QueryFirstOrDefaultAsync<GetFirstExtendedBioByTypeRow?>(GetFirstExtendedBioByTypeSql, queryParams, transaction: this.Transaction);
-    }
-
-    private const string TruncateExtendedBiosSql = "TRUNCATE TABLE extended.bios";
-    public async Task TruncateExtendedBios()
-    {
-        if (this.Transaction == null)
-        {
-            using (var connection = new MySqlConnection(ConnectionString))
-            {
-                await connection.ExecuteAsync(TruncateExtendedBiosSql);
-            }
-
-            return;
-        }
-
-        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
-        {
-            throw new System.InvalidOperationException("Transaction is provided, but its connection is null.");
-        }
-
-        await this.Transaction.Connection.ExecuteAsync(TruncateExtendedBiosSql, transaction: this.Transaction);
     }
 }

@@ -50,16 +50,18 @@ public static class Utils
     {
         SqlMapper.AddTypeHandler(typeof(JsonElement), new JsonElementTypeHandler());
         SqlMapper.AddTypeHandler(typeof(XmlDocument), new XmlDocumentTypeHandler());
-        RegisterNpgsqlTypeHandler<NpgsqlPoint>();
-        RegisterNpgsqlTypeHandler<NpgsqlLine>();
-        RegisterNpgsqlTypeHandler<NpgsqlLSeg>();
-        RegisterNpgsqlTypeHandler<NpgsqlBox>();
-        RegisterNpgsqlTypeHandler<NpgsqlPath>();
-        RegisterNpgsqlTypeHandler<NpgsqlPolygon>();
-        RegisterNpgsqlTypeHandler<NpgsqlCircle>();
-        RegisterNpgsqlTypeHandler<NpgsqlCidr>();
-        RegisterNpgsqlTypeHandler<IPAddress>();
-        RegisterNpgsqlTypeHandler<PhysicalAddress>();
+        SqlMapper.AddTypeHandler(typeof(NpgsqlPoint), new NpgsqlTypeHandler<NpgsqlPoint>());
+        SqlMapper.AddTypeHandler(typeof(NpgsqlLine), new NpgsqlTypeHandler<NpgsqlLine>());
+        SqlMapper.AddTypeHandler(typeof(NpgsqlLSeg), new NpgsqlTypeHandler<NpgsqlLSeg>());
+        SqlMapper.AddTypeHandler(typeof(NpgsqlBox), new NpgsqlTypeHandler<NpgsqlBox>());
+        SqlMapper.AddTypeHandler(typeof(NpgsqlPath), new NpgsqlTypeHandler<NpgsqlPath>());
+        SqlMapper.AddTypeHandler(typeof(NpgsqlPolygon), new NpgsqlTypeHandler<NpgsqlPolygon>());
+        SqlMapper.AddTypeHandler(typeof(NpgsqlCircle), new NpgsqlTypeHandler<NpgsqlCircle>());
+        SqlMapper.AddTypeHandler(typeof(NpgsqlCidr), new NpgsqlTypeHandler<NpgsqlCidr>());
+        SqlMapper.AddTypeHandler(typeof(IPAddress), new NpgsqlTypeHandler<IPAddress>());
+        SqlMapper.AddTypeHandler(typeof(PhysicalAddress), new NpgsqlTypeHandler<PhysicalAddress>());
+        SqlMapper.AddTypeHandler(typeof(NpgsqlTsQuery), new NpgsqlTypeHandler<NpgsqlTsQuery>());
+        SqlMapper.AddTypeHandler(typeof(NpgsqlTsVector), new NpgsqlTypeHandler<NpgsqlTsVector>());
     }
 
     private class NpgsqlTypeHandler<T> : SqlMapper.TypeHandler<T> where T : notnull
@@ -73,11 +75,5 @@ public static class Utils
         {
             parameter.Value = value;
         }
-    }
-
-    private static void RegisterNpgsqlTypeHandler<T>()
-        where T : notnull
-    {
-        SqlMapper.AddTypeHandler(typeof(T), new NpgsqlTypeHandler<T>());
     }
 }

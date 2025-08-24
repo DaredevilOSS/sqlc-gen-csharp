@@ -3,6 +3,7 @@ namespace NpgsqlDapperLegacyExampleGen
 {
     using NpgsqlTypes;
     using System;
+    using System.Collections.Generic;
     using System.Linq;
     using System.Net;
     using System.Net.NetworkInformation;
@@ -22,7 +23,7 @@ namespace NpgsqlDapperLegacyExampleGen
         public long AuthorId { get; set; }
         public string Description { get; set; }
     };
-    public class PostgresType
+    public class PostgresNumericType
     {
         public bool? CBoolean { get; set; }
         public byte[] CBit { get; set; }
@@ -34,36 +35,29 @@ namespace NpgsqlDapperLegacyExampleGen
         public float? CReal { get; set; }
         public double? CDoublePrecision { get; set; }
         public decimal? CMoney { get; set; }
-        public DateTime? CDate { get; set; }
-        public TimeSpan? CTime { get; set; }
-        public DateTime? CTimestamp { get; set; }
-        public DateTime? CTimestampWithTz { get; set; }
-        public TimeSpan? CInterval { get; set; }
+    };
+    public class PostgresStringType
+    {
         public string CChar { get; set; }
         public string CVarchar { get; set; }
         public string CCharacterVarying { get; set; }
         public string CBpchar { get; set; }
         public string CText { get; set; }
-        public JsonElement? CJson { get; set; }
-        public JsonElement? CJsonStringOverride { get; set; }
-        public JsonElement? CJsonb { get; set; }
-        public string CJsonpath { get; set; }
-        public XmlDocument CXml { get; set; }
+    };
+    public class PostgresDatetimeType
+    {
+        public DateTime? CDate { get; set; }
+        public TimeSpan? CTime { get; set; }
+        public DateTime? CTimestamp { get; set; }
+        public DateTime? CTimestampWithTz { get; set; }
+        public TimeSpan? CInterval { get; set; }
+    };
+    public class PostgresNetworkType
+    {
         public NpgsqlCidr? CCidr { get; set; }
         public IPAddress CInet { get; set; }
         public PhysicalAddress CMacaddr { get; set; }
         public string CMacaddr8 { get; set; }
-        public Guid? CUuid { get; set; }
-    };
-    public class PostgresGeometricType
-    {
-        public NpgsqlPoint? CPoint { get; set; }
-        public NpgsqlLine? CLine { get; set; }
-        public NpgsqlLSeg? CLseg { get; set; }
-        public NpgsqlBox? CBox { get; set; }
-        public NpgsqlPath? CPath { get; set; }
-        public NpgsqlPolygon? CPolygon { get; set; }
-        public NpgsqlCircle? CCircle { get; set; }
     };
     public class PostgresArrayType
     {
@@ -75,4 +69,110 @@ namespace NpgsqlDapperLegacyExampleGen
         public DateTime[] CDateArray { get; set; }
         public DateTime[] CTimestampArray { get; set; }
     };
+    public class PostgresGeometricType
+    {
+        public NpgsqlPoint? CPoint { get; set; }
+        public NpgsqlLine? CLine { get; set; }
+        public NpgsqlLSeg? CLseg { get; set; }
+        public NpgsqlBox? CBox { get; set; }
+        public NpgsqlPath? CPath { get; set; }
+        public NpgsqlPolygon? CPolygon { get; set; }
+        public NpgsqlCircle? CCircle { get; set; }
+    };
+    public class PostgresSpecialType
+    {
+        public Guid? CUuid { get; set; }
+        public CEnum? CEnum { get; set; }
+        public JsonElement? CJson { get; set; }
+        public JsonElement? CJsonStringOverride { get; set; }
+        public JsonElement? CJsonb { get; set; }
+        public string CJsonpath { get; set; }
+        public XmlDocument CXml { get; set; }
+        public XmlDocument CXmlStringOverride { get; set; }
+    };
+    public class ExtendedBio
+    {
+        public string AuthorName { get; set; }
+        public string Name { get; set; }
+        public ExtendedBioType? BioType { get; set; }
+    };
+    public enum CEnum
+    {
+        Invalid = 0, // reserved for invalid enum value
+        Small = 1,
+        Medium = 2,
+        Big = 3
+    }
+
+    public static class CEnumExtensions
+    {
+        private static readonly Dictionary<string, CEnum> StringToEnum = new Dictionary<string, CEnum>()
+        {
+            [string.Empty] = CEnum.Invalid,
+            ["small"] = CEnum.Small,
+            ["medium"] = CEnum.Medium,
+            ["big"] = CEnum.Big
+        };
+        private static readonly Dictionary<CEnum, string> EnumToString = new Dictionary<CEnum, string>()
+        {
+            [CEnum.Invalid] = string.Empty,
+            [CEnum.Small] = "small",
+            [CEnum.Medium] = "medium",
+            [CEnum.Big] = "big"
+        };
+        public static CEnum ToCEnum(this string me)
+        {
+            return StringToEnum[me];
+        }
+
+        public static string Stringify(this CEnum me)
+        {
+            return EnumToString[me];
+        }
+
+        public static HashSet<CEnum> ToCEnumSet(this string me)
+        {
+            return new HashSet<CEnum>(me.Split(',').ToList().Select(v => StringToEnum[v]));
+        }
+    }
+
+    public enum ExtendedBioType
+    {
+        Invalid = 0, // reserved for invalid enum value
+        Autobiography = 1,
+        Biography = 2,
+        Memoir = 3
+    }
+
+    public static class ExtendedBioTypeExtensions
+    {
+        private static readonly Dictionary<string, ExtendedBioType> StringToEnum = new Dictionary<string, ExtendedBioType>()
+        {
+            [string.Empty] = ExtendedBioType.Invalid,
+            ["Autobiography"] = ExtendedBioType.Autobiography,
+            ["Biography"] = ExtendedBioType.Biography,
+            ["Memoir"] = ExtendedBioType.Memoir
+        };
+        private static readonly Dictionary<ExtendedBioType, string> EnumToString = new Dictionary<ExtendedBioType, string>()
+        {
+            [ExtendedBioType.Invalid] = string.Empty,
+            [ExtendedBioType.Autobiography] = "Autobiography",
+            [ExtendedBioType.Biography] = "Biography",
+            [ExtendedBioType.Memoir] = "Memoir"
+        };
+        public static ExtendedBioType ToExtendedBioType(this string me)
+        {
+            return StringToEnum[me];
+        }
+
+        public static string Stringify(this ExtendedBioType me)
+        {
+            return EnumToString[me];
+        }
+
+        public static HashSet<ExtendedBioType> ToExtendedBioTypeSet(this string me)
+        {
+            return new HashSet<ExtendedBioType>(me.Split(',').ToList().Select(v => StringToEnum[v]));
+        }
+    }
 }

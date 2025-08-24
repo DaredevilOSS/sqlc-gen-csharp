@@ -14,8 +14,12 @@ public partial class NpgsqlDapperTester
     public async Task EmptyTestsTable()
     {
         await QuerySql.TruncateAuthors();
-        await QuerySql.TruncatePostgresTypes();
+        await QuerySql.TruncatePostgresNumericTypes();
+        await QuerySql.TruncatePostgresStringTypes();
+        await QuerySql.TruncatePostgresDateTimeTypes();
         await QuerySql.TruncatePostgresGeoTypes();
+        await QuerySql.TruncatePostgresNetworkTypes();
         await QuerySql.TruncatePostgresArrayTypes();
+        await QuerySql.TruncatePostgresSpecialTypes();
     }
 }

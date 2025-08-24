@@ -31,15 +31,28 @@ internal class EnumsGen(DbDriver dbDriver)
                             .Select(v => $"[\"{v}\"] = {name}.{v.ToPascalCase()}")
                             .JoinByComma()}}
                    };
+
+                   private static readonly Dictionary<{{name}}, string> EnumToString = new Dictionary<{{name}}, string>()
+                   {
+                       [{{name}}.Invalid] = string.Empty,
+                       {{possibleValues
+                            .Select(v => $"[{name}.{v.ToPascalCase()}] = \"{v}\"")
+                            .JoinByComma()}}
+                   };
                    
                    public static {{name}} To{{name}}(this string me)
                    {
                        return StringToEnum[me];
                    }
 
-                   public static {{name}}[] To{{name}}Arr(this string me)
+                   public static string Stringify(this {{name}} me)
                    {
-                       return me.Split(',').ToList().Select(v => StringToEnum[v]).ToArray();
+                       return EnumToString[me];
+                   }
+
+                   public static HashSet<{{name}}> To{{name}}Set(this string me)
+                   {
+                       return new HashSet<{{name}}>(me.Split(',').ToList().Select(v => StringToEnum[v]));
                    }
                }
                """)!;

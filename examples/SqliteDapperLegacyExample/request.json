@@ -3,10 +3,12 @@
     "version": "2",
     "engine": "sqlite",
     "schema": [
-      "examples/config/sqlite/schema.sql"
+      "examples/config/sqlite/authors/schema.sql",
+      "examples/config/sqlite/types/schema.sql"
     ],
     "queries": [
-      "examples/config/sqlite/query.sql"
+      "examples/config/sqlite/authors/query.sql",
+      "examples/config/sqlite/types/query.sql"
     ],
     "codegen": {
       "out": "examples/SqliteDapperLegacyExample",
@@ -966,7 +968,7 @@
       "filename": "query.sql"
     },
     {
-      "text": "INSERT INTO types_sqlite (c_integer, c_real, c_text, c_blob) VALUES (\n    ?, ?, ?, ?\n)",
+      "text": "INSERT INTO types_sqlite \n(c_integer, c_real, c_text, c_blob) \nVALUES (?, ?, ?, ?)",
       "name": "InsertSqliteTypes",
       "cmd": ":exec",
       "parameters": [

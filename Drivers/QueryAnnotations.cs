@@ -15,7 +15,6 @@ public interface IExec
 {
     MemberDeclarationSyntax ExecDeclare(string queryTextConstant, string argInterface, Query query);
 }
-
 public interface IExecRows
 {
     MemberDeclarationSyntax ExecRowsDeclare(string queryTextConstant, string argInterface, Query query);

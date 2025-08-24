@@ -9,21 +9,13 @@ using System.Linq;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
-using Enum = Plugin.Enum;
 
 namespace SqlcGenCsharp;
 
 public class CodeGenerator
 {
-    private readonly HashSet<string> _excludedSchemas =
-    [
-        "pg_catalog",
-        "information_schema"
-    ];
-
     private Options? _options;
-    private Dictionary<string, Dictionary<string, Table>>? _tables;
-    private Dictionary<string, Dictionary<string, Enum>>? _enums;
+    private Catalog? _catalog;
     private List<Query>? _queries;
     private DbDriver? _dbDriver;
     private QueriesGen? _queriesGen;
@@ -37,16 +29,10 @@ public class CodeGenerator
         set => _options = value;
     }
 
-    private Dictionary<string, Dictionary<string, Table>> Tables
+    private Catalog Catalog
     {
-        get => _tables!;
-        set => _tables = value;
-    }
-
-    private Dictionary<string, Dictionary<string, Enum>> Enums
-    {
-        get => _enums!;
-        set => _enums = value;
+        get => _catalog!;
+        set => _catalog = value;
     }
 
     private List<Query> Queries
@@ -89,79 +75,29 @@ public class CodeGenerator
     {
         var outputDirectory = generateRequest.Settings.Codegen.Out;
         var projectName = new DirectoryInfo(outputDirectory).Name;
-        Options = new Options(generateRequest);
+        Options = new(generateRequest);
         if (Options.DebugRequest)
             return;
 
         Queries = generateRequest.Queries.ToList();
-        Tables = ConstructTablesLookup(generateRequest.Catalog);
-        Enums = ConstructEnumsLookup(generateRequest.Catalog);
-
         var namespaceName = Options.NamespaceName == string.Empty ? projectName : Options.NamespaceName;
-        DbDriver = InstantiateDriver(generateRequest.Catalog.DefaultSchema);
+        Catalog = generateRequest.Catalog;
+        DbDriver = InstantiateDriver();
 
         // initialize file generators
-        CsprojGen = new CsprojGen(outputDirectory, projectName, namespaceName, Options);
-        QueriesGen = new QueriesGen(DbDriver, namespaceName);
-        ModelsGen = new ModelsGen(DbDriver, namespaceName);
-        UtilsGen = new UtilsGen(DbDriver, namespaceName);
+        CsprojGen = new(outputDirectory, projectName, namespaceName, Options);
+        QueriesGen = new(DbDriver, namespaceName);
+        ModelsGen = new(DbDriver, namespaceName);
+        UtilsGen = new(DbDriver, namespaceName);
     }
 
-    private Dictionary<string, Dictionary<string, Table>> ConstructTablesLookup(Catalog catalog)
-    {
-        return catalog.Schemas
-            .Where(s => !_excludedSchemas.Contains(s.Name))
-            .ToDictionary(
-                s => s.Name == catalog.DefaultSchema ? string.Empty : s.Name,
-                s => s.Tables.ToDictionary(t => t.Rel.Name, t => t));
-    }
-
-    /// <summary>
-    /// Enums in the request exist only in the default schema (in mysql), this remaps enums to their original schema.
-    /// </summary>
-    /// <param name="catalog"></param>
-    /// <returns></returns>
-    private Dictionary<string, Dictionary<string, Enum>> ConstructEnumsLookup(Catalog catalog)
-    {
-        var defaultSchemaCatalog = catalog.Schemas.First(s => s.Name == catalog.DefaultSchema);
-        var schemaEnumTuples = defaultSchemaCatalog.Enums
-            .Select(e => new
-            {
-                EnumItem = e,
-                Schema = FindEnumSchema(e)
-            });
-        var schemaToEnums = schemaEnumTuples
-            .GroupBy(x => x.Schema)
-            .ToDictionary(
-                group => group.Key,
-                group => group.ToDictionary(
-                    x => x.EnumItem.Name,
-                    x => x.EnumItem)
-            );
-        return schemaToEnums;
-    }
-
-    private string FindEnumSchema(Enum e)
-    {
-        foreach (var schemaTables in Tables)
-        {
-            foreach (var table in schemaTables.Value)
-            {
-                var isEnumColumn = table.Value.Columns.Any(c => c.Type.Name == e.Name);
-                if (isEnumColumn)
-                    return schemaTables.Key;
-            }
-        }
-        throw new InvalidDataException($"No enum {e.Name} schema found.");
-    }
-
-    private DbDriver InstantiateDriver(string defaultSchema)
+    private DbDriver InstantiateDriver()
     {
         return Options.DriverName switch
         {
-            DriverName.MySqlConnector => new MySqlConnectorDriver(Options, defaultSchema, Tables, Enums, Queries),
-            DriverName.Npgsql => new NpgsqlDriver(Options, defaultSchema, Tables, Enums, Queries),
-            DriverName.Sqlite => new SqliteDriver(Options, defaultSchema, Tables, Enums, Queries),
+            DriverName.MySqlConnector => new MySqlConnectorDriver(Options, Catalog, Queries),
+            DriverName.Npgsql => new NpgsqlDriver(Options, Catalog, Queries),
+            DriverName.Sqlite => new SqliteDriver(Options, Catalog, Queries),
             _ => throw new ArgumentException($"unknown driver: {Options.DriverName}")
         };
     }
@@ -182,7 +118,7 @@ public class CodeGenerator
         var files = GetFileQueries()
             .Select(fq => QueriesGen.GenerateFile(fq.Value, fq.Key))
             .AddRangeExcludeNulls([
-                ModelsGen.GenerateFile(Tables, Enums),
+                ModelsGen.GenerateFile(DbDriver.Tables, DbDriver.Enums),
                 UtilsGen.GenerateFile()
             ])
             .AddRangeIf([CsprojGen.GenerateFile()], Options.GenerateCsproj);
@@ -218,12 +154,12 @@ public class CodeGenerator
     {
         var formatter = new JsonFormatter(JsonFormatter.Settings.Default.WithIndentation());
         request.PluginOptions = GetOptionsWithoutDebugRequest(request);
-        return new Plugin.File { Name = "request.json", Contents = ByteString.CopyFromUtf8(formatter.Format(request)) };
+        return new() { Name = "request.json", Contents = ByteString.CopyFromUtf8(formatter.Format(request)) };
     }
 
     private static Plugin.File RequestToProtobufFile(GenerateRequest request)
     {
         request.PluginOptions = GetOptionsWithoutDebugRequest(request);
-        return new Plugin.File { Name = "request.message", Contents = request.ToByteString() };
+        return new() { Name = "request.message", Contents = request.ToByteString() };
     }
 }

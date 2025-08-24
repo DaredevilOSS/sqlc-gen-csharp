@@ -11,10 +11,3 @@ CREATE TABLE books (
     description TEXT,
     FOREIGN KEY (author_id) REFERENCES authors (id) ON DELETE CASCADE
 );
-
-CREATE TABLE types_sqlite (
-    c_integer INTEGER,
-    c_real REAL,
-    c_text TEXT,
-    c_blob BLOB
-);

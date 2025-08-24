@@ -19,7 +19,7 @@ namespace MySqlConnectorDapperLegacyExampleGen
         public long AuthorId { get; set; }
         public string Description { get; set; }
     };
-    public class MysqlType
+    public class MysqlNumericType
     {
         public bool? CBool { get; set; }
         public bool? CBoolean { get; set; }
@@ -36,11 +36,9 @@ namespace MySqlConnectorDapperLegacyExampleGen
         public decimal? CFixed { get; set; }
         public double? CDouble { get; set; }
         public double? CDoublePrecision { get; set; }
-        public short? CYear { get; set; }
-        public DateTime? CDate { get; set; }
-        public string CTime { get; set; }
-        public DateTime? CDatetime { get; set; }
-        public DateTime? CTimestamp { get; set; }
+    };
+    public class MysqlStringType
+    {
         public string CChar { get; set; }
         public string CNchar { get; set; }
         public string CNationalChar { get; set; }
@@ -51,8 +49,19 @@ namespace MySqlConnectorDapperLegacyExampleGen
         public string CLongtext { get; set; }
         public JsonElement? CJson { get; set; }
         public JsonElement? CJsonStringOverride { get; set; }
-        public MysqlTypesCEnum? CEnum { get; set; }
-        public MysqlTypesCSet[] CSet { get; set; }
+        public MysqlStringTypesCEnum? CEnum { get; set; }
+        public HashSet<MysqlStringTypesCSet> CSet { get; set; }
+    };
+    public class MysqlDatetimeType
+    {
+        public short? CYear { get; set; }
+        public DateTime? CDate { get; set; }
+        public DateTime? CDatetime { get; set; }
+        public DateTime? CTimestamp { get; set; }
+        public TimeSpan? CTime { get; set; }
+    };
+    public class MysqlBinaryType
+    {
         public byte? CBit { get; set; }
         public byte[] CBinary { get; set; }
         public byte[] CVarbinary { get; set; }
@@ -65,66 +74,10 @@ namespace MySqlConnectorDapperLegacyExampleGen
     {
         public string AuthorName { get; set; }
         public string Name { get; set; }
-        public ExtendedBiosBioType? BioType { get; set; }
-        public ExtendedBiosAuthorType[] AuthorType { get; set; }
+        public BiosBioType? BioType { get; set; }
+        public HashSet<BiosAuthorType> AuthorType { get; set; }
     };
-    public enum MysqlTypesCEnum
-    {
-        Invalid = 0, // reserved for invalid enum value
-        Small = 1,
-        Medium = 2,
-        Big = 3
-    }
-
-    public static class MysqlTypesCEnumExtensions
-    {
-        private static readonly Dictionary<string, MysqlTypesCEnum> StringToEnum = new Dictionary<string, MysqlTypesCEnum>()
-        {
-            [string.Empty] = MysqlTypesCEnum.Invalid,
-            ["small"] = MysqlTypesCEnum.Small,
-            ["medium"] = MysqlTypesCEnum.Medium,
-            ["big"] = MysqlTypesCEnum.Big
-        };
-        public static MysqlTypesCEnum ToMysqlTypesCEnum(this string me)
-        {
-            return StringToEnum[me];
-        }
-
-        public static MysqlTypesCEnum[] ToMysqlTypesCEnumArr(this string me)
-        {
-            return me.Split(',').ToList().Select(v => StringToEnum[v]).ToArray();
-        }
-    }
-
-    public enum MysqlTypesCSet
-    {
-        Invalid = 0, // reserved for invalid enum value
-        Tea = 1,
-        Coffee = 2,
-        Milk = 3
-    }
-
-    public static class MysqlTypesCSetExtensions
-    {
-        private static readonly Dictionary<string, MysqlTypesCSet> StringToEnum = new Dictionary<string, MysqlTypesCSet>()
-        {
-            [string.Empty] = MysqlTypesCSet.Invalid,
-            ["tea"] = MysqlTypesCSet.Tea,
-            ["coffee"] = MysqlTypesCSet.Coffee,
-            ["milk"] = MysqlTypesCSet.Milk
-        };
-        public static MysqlTypesCSet ToMysqlTypesCSet(this string me)
-        {
-            return StringToEnum[me];
-        }
-
-        public static MysqlTypesCSet[] ToMysqlTypesCSetArr(this string me)
-        {
-            return me.Split(',').ToList().Select(v => StringToEnum[v]).ToArray();
-        }
-    }
-
-    public enum ExtendedBiosBioType
+    public enum BiosBioType
     {
         Invalid = 0, // reserved for invalid enum value
         Autobiography = 1,
@@ -132,27 +85,39 @@ namespace MySqlConnectorDapperLegacyExampleGen
         Memoir = 3
     }
 
-    public static class ExtendedBiosBioTypeExtensions
+    public static class BiosBioTypeExtensions
     {
-        private static readonly Dictionary<string, ExtendedBiosBioType> StringToEnum = new Dictionary<string, ExtendedBiosBioType>()
+        private static readonly Dictionary<string, BiosBioType> StringToEnum = new Dictionary<string, BiosBioType>()
         {
-            [string.Empty] = ExtendedBiosBioType.Invalid,
-            ["Autobiography"] = ExtendedBiosBioType.Autobiography,
-            ["Biography"] = ExtendedBiosBioType.Biography,
-            ["Memoir"] = ExtendedBiosBioType.Memoir
+            [string.Empty] = BiosBioType.Invalid,
+            ["Autobiography"] = BiosBioType.Autobiography,
+            ["Biography"] = BiosBioType.Biography,
+            ["Memoir"] = BiosBioType.Memoir
         };
-        public static ExtendedBiosBioType ToExtendedBiosBioType(this string me)
+        private static readonly Dictionary<BiosBioType, string> EnumToString = new Dictionary<BiosBioType, string>()
+        {
+            [BiosBioType.Invalid] = string.Empty,
+            [BiosBioType.Autobiography] = "Autobiography",
+            [BiosBioType.Biography] = "Biography",
+            [BiosBioType.Memoir] = "Memoir"
+        };
+        public static BiosBioType ToBiosBioType(this string me)
         {
             return StringToEnum[me];
         }
 
-        public static ExtendedBiosBioType[] ToExtendedBiosBioTypeArr(this string me)
+        public static string Stringify(this BiosBioType me)
         {
-            return me.Split(',').ToList().Select(v => StringToEnum[v]).ToArray();
+            return EnumToString[me];
+        }
+
+        public static HashSet<BiosBioType> ToBiosBioTypeSet(this string me)
+        {
+            return new HashSet<BiosBioType>(me.Split(',').ToList().Select(v => StringToEnum[v]));
         }
     }
 
-    public enum ExtendedBiosAuthorType
+    public enum BiosAuthorType
     {
         Invalid = 0, // reserved for invalid enum value
         Author = 1,
@@ -160,23 +125,115 @@ namespace MySqlConnectorDapperLegacyExampleGen
         Translator = 3
     }
 
-    public static class ExtendedBiosAuthorTypeExtensions
+    public static class BiosAuthorTypeExtensions
     {
-        private static readonly Dictionary<string, ExtendedBiosAuthorType> StringToEnum = new Dictionary<string, ExtendedBiosAuthorType>()
+        private static readonly Dictionary<string, BiosAuthorType> StringToEnum = new Dictionary<string, BiosAuthorType>()
         {
-            [string.Empty] = ExtendedBiosAuthorType.Invalid,
-            ["Author"] = ExtendedBiosAuthorType.Author,
-            ["Editor"] = ExtendedBiosAuthorType.Editor,
-            ["Translator"] = ExtendedBiosAuthorType.Translator
+            [string.Empty] = BiosAuthorType.Invalid,
+            ["Author"] = BiosAuthorType.Author,
+            ["Editor"] = BiosAuthorType.Editor,
+            ["Translator"] = BiosAuthorType.Translator
         };
-        public static ExtendedBiosAuthorType ToExtendedBiosAuthorType(this string me)
+        private static readonly Dictionary<BiosAuthorType, string> EnumToString = new Dictionary<BiosAuthorType, string>()
+        {
+            [BiosAuthorType.Invalid] = string.Empty,
+            [BiosAuthorType.Author] = "Author",
+            [BiosAuthorType.Editor] = "Editor",
+            [BiosAuthorType.Translator] = "Translator"
+        };
+        public static BiosAuthorType ToBiosAuthorType(this string me)
         {
             return StringToEnum[me];
         }
 
-        public static ExtendedBiosAuthorType[] ToExtendedBiosAuthorTypeArr(this string me)
+        public static string Stringify(this BiosAuthorType me)
         {
-            return me.Split(',').ToList().Select(v => StringToEnum[v]).ToArray();
+            return EnumToString[me];
+        }
+
+        public static HashSet<BiosAuthorType> ToBiosAuthorTypeSet(this string me)
+        {
+            return new HashSet<BiosAuthorType>(me.Split(',').ToList().Select(v => StringToEnum[v]));
+        }
+    }
+
+    public enum MysqlStringTypesCEnum
+    {
+        Invalid = 0, // reserved for invalid enum value
+        Small = 1,
+        Medium = 2,
+        Big = 3
+    }
+
+    public static class MysqlStringTypesCEnumExtensions
+    {
+        private static readonly Dictionary<string, MysqlStringTypesCEnum> StringToEnum = new Dictionary<string, MysqlStringTypesCEnum>()
+        {
+            [string.Empty] = MysqlStringTypesCEnum.Invalid,
+            ["small"] = MysqlStringTypesCEnum.Small,
+            ["medium"] = MysqlStringTypesCEnum.Medium,
+            ["big"] = MysqlStringTypesCEnum.Big
+        };
+        private static readonly Dictionary<MysqlStringTypesCEnum, string> EnumToString = new Dictionary<MysqlStringTypesCEnum, string>()
+        {
+            [MysqlStringTypesCEnum.Invalid] = string.Empty,
+            [MysqlStringTypesCEnum.Small] = "small",
+            [MysqlStringTypesCEnum.Medium] = "medium",
+            [MysqlStringTypesCEnum.Big] = "big"
+        };
+        public static MysqlStringTypesCEnum ToMysqlStringTypesCEnum(this string me)
+        {
+            return StringToEnum[me];
+        }
+
+        public static string Stringify(this MysqlStringTypesCEnum me)
+        {
+            return EnumToString[me];
+        }
+
+        public static HashSet<MysqlStringTypesCEnum> ToMysqlStringTypesCEnumSet(this string me)
+        {
+            return new HashSet<MysqlStringTypesCEnum>(me.Split(',').ToList().Select(v => StringToEnum[v]));
+        }
+    }
+
+    public enum MysqlStringTypesCSet
+    {
+        Invalid = 0, // reserved for invalid enum value
+        Tea = 1,
+        Coffee = 2,
+        Milk = 3
+    }
+
+    public static class MysqlStringTypesCSetExtensions
+    {
+        private static readonly Dictionary<string, MysqlStringTypesCSet> StringToEnum = new Dictionary<string, MysqlStringTypesCSet>()
+        {
+            [string.Empty] = MysqlStringTypesCSet.Invalid,
+            ["tea"] = MysqlStringTypesCSet.Tea,
+            ["coffee"] = MysqlStringTypesCSet.Coffee,
+            ["milk"] = MysqlStringTypesCSet.Milk
+        };
+        private static readonly Dictionary<MysqlStringTypesCSet, string> EnumToString = new Dictionary<MysqlStringTypesCSet, string>()
+        {
+            [MysqlStringTypesCSet.Invalid] = string.Empty,
+            [MysqlStringTypesCSet.Tea] = "tea",
+            [MysqlStringTypesCSet.Coffee] = "coffee",
+            [MysqlStringTypesCSet.Milk] = "milk"
+        };
+        public static MysqlStringTypesCSet ToMysqlStringTypesCSet(this string me)
+        {
+            return StringToEnum[me];
+        }
+
+        public static string Stringify(this MysqlStringTypesCSet me)
+        {
+            return EnumToString[me];
+        }
+
+        public static HashSet<MysqlStringTypesCSet> ToMysqlStringTypesCSetSet(this string me)
+        {
+            return new HashSet<MysqlStringTypesCSet>(me.Split(',').ToList().Select(v => StringToEnum[v]));
         }
     }
 }

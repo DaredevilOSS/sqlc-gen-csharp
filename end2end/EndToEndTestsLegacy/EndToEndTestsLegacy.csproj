@@ -9,9 +9,13 @@
         <Content Include="../../.env">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </Content>
-        <Content Include="../../examples/config/sqlite/schema.sql">
+        <Content Include="../../examples/config/sqlite/authors/schema.sql">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-            <TargetPath>sqlite.schema.sql</TargetPath>
+            <TargetPath>authors.sqlite.schema.sql</TargetPath>
+        </Content>
+        <Content Include="../../examples/config/sqlite/types/schema.sql">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+            <TargetPath>types.sqlite.schema.sql</TargetPath>
         </Content>
     </ItemGroup>
 

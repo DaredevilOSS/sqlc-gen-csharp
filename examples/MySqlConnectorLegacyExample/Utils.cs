@@ -4,6 +4,7 @@ namespace MySqlConnectorLegacyExampleGen
     using CsvHelper;
     using CsvHelper.Configuration;
     using CsvHelper.TypeConversion;
+    using System.Collections.Generic;
     using System.Linq;
 
     public static class Utils
@@ -14,14 +15,14 @@ namespace MySqlConnectorLegacyExampleGen
             return originalSql.Replace($"/*SLICE:{paramName}*/@{paramName}", string.Join(",", paramArgs));
         }
 
-        public class MysqlTypesCSetCsvConverter : DefaultTypeConverter
+        public class MysqlStringTypesCSetCsvConverter : DefaultTypeConverter
         {
             public override string ConvertToString(object value, IWriterRow row, MemberMapData memberMapData)
             {
                 if (value == null)
                     return @"\N";
-                if (value is MysqlTypesCSet[] arrVal)
-                    return string.Join(",", arrVal);
+                if (value is HashSet<MysqlStringTypesCSet> setVal)
+                    return string.Join(",", setVal);
                 return base.ConvertToString(value, row, memberMapData);
             }
         }

@@ -3,10 +3,12 @@
     "version": "2",
     "engine": "mysql",
     "schema": [
-      "examples/config/mysql/schema.sql"
+      "examples/config/mysql/authors/schema.sql",
+      "examples/config/mysql/types/schema.sql"
     ],
     "queries": [
-      "examples/config/mysql/query.sql"
+      "examples/config/mysql/authors/query.sql",
+      "examples/config/mysql/types/query.sql"
     ],
     "codegen": {
       "out": "examples/MySqlConnectorLegacyExample",
@@ -114,14 +116,14 @@
           },
           {
             "rel": {
-              "name": "mysql_types"
+              "name": "mysql_numeric_types"
             },
             "columns": [
               {
                 "name": "c_bool",
                 "length": 1,
                 "table": {
-                  "name": "mysql_types"
+                  "name": "mysql_numeric_types"
                 },
                 "type": {
                   "name": "tinyint"
@@ -131,7 +133,7 @@
                 "name": "c_boolean",
                 "length": 1,
                 "table": {
-                  "name": "mysql_types"
+                  "name": "mysql_numeric_types"
                 },
                 "type": {
                   "name": "tinyint"
@@ -141,7 +143,7 @@
                 "name": "c_tinyint",
                 "length": 3,
                 "table": {
-                  "name": "mysql_types"
+                  "name": "mysql_numeric_types"
                 },
                 "type": {
                   "name": "tinyint"
@@ -151,7 +153,7 @@
                 "name": "c_smallint",
                 "length": -1,
                 "table": {
-                  "name": "mysql_types"
+                  "name": "mysql_numeric_types"
                 },
                 "type": {
                   "name": "smallint"
@@ -161,7 +163,7 @@
                 "name": "c_mediumint",
                 "length": -1,
                 "table": {
-                  "name": "mysql_types"
+                  "name": "mysql_numeric_types"
                 },
                 "type": {
                   "name": "mediumint"
@@ -171,7 +173,7 @@
                 "name": "c_int",
                 "length": -1,
                 "table": {
-                  "name": "mysql_types"
+                  "name": "mysql_numeric_types"
                 },
                 "type": {
                   "name": "int"
@@ -181,7 +183,7 @@
                 "name": "c_integer",
                 "length": -1,
                 "table": {
-                  "name": "mysql_types"
+                  "name": "mysql_numeric_types"
                 },
                 "type": {
                   "name": "int"
@@ -191,7 +193,7 @@
                 "name": "c_bigint",
                 "length": -1,
                 "table": {
-                  "name": "mysql_types"
+                  "name": "mysql_numeric_types"
                 },
                 "type": {
                   "name": "bigint"
@@ -201,7 +203,7 @@
                 "name": "c_float",
                 "length": -1,
                 "table": {
-                  "name": "mysql_types"
+                  "name": "mysql_numeric_types"
                 },
                 "type": {
                   "name": "float"
@@ -211,7 +213,7 @@
                 "name": "c_decimal",
                 "length": 10,
                 "table": {
-                  "name": "mysql_types"
+                  "name": "mysql_numeric_types"
                 },
                 "type": {
                   "name": "decimal"
@@ -221,7 +223,7 @@
                 "name": "c_dec",
                 "length": 10,
                 "table": {
-                  "name": "mysql_types"
+                  "name": "mysql_numeric_types"
                 },
                 "type": {
                   "name": "decimal"
@@ -231,7 +233,7 @@
                 "name": "c_numeric",
                 "length": 10,
                 "table": {
-                  "name": "mysql_types"
+                  "name": "mysql_numeric_types"
                 },
                 "type": {
                   "name": "decimal"
@@ -241,7 +243,7 @@
                 "name": "c_fixed",
                 "length": 10,
                 "table": {
-                  "name": "mysql_types"
+                  "name": "mysql_numeric_types"
                 },
                 "type": {
                   "name": "decimal"
@@ -251,7 +253,7 @@
                 "name": "c_double",
                 "length": -1,
                 "table": {
-                  "name": "mysql_types"
+                  "name": "mysql_numeric_types"
                 },
                 "type": {
                   "name": "double"
@@ -261,67 +263,24 @@
                 "name": "c_double_precision",
                 "length": -1,
                 "table": {
-                  "name": "mysql_types"
+                  "name": "mysql_numeric_types"
                 },
                 "type": {
                   "name": "double"
                 }
-              },
-              {
-                "name": "c_year",
-                "length": -1,
-                "table": {
-                  "name": "mysql_types"
-                },
-                "type": {
-                  "name": "year"
-                }
-              },
-              {
-                "name": "c_date",
-                "length": -1,
-                "table": {
-                  "name": "mysql_types"
-                },
-                "type": {
-                  "name": "date"
-                }
-              },
-              {
-                "name": "c_time",
-                "length": 10,
-                "table": {
-                  "name": "mysql_types"
-                },
-                "type": {
-                  "name": "time"
-                }
-              },
-              {
-                "name": "c_datetime",
-                "length": 19,
-                "table": {
-                  "name": "mysql_types"
-                },
-                "type": {
-                  "name": "datetime"
-                }
-              },
-              {
-                "name": "c_timestamp",
-                "length": 19,
-                "table": {
-                  "name": "mysql_types"
-                },
-                "type": {
-                  "name": "timestamp"
-                }
-              },
+              }
+            ]
+          },
+          {
+            "rel": {
+              "name": "mysql_string_types"
+            },
+            "columns": [
               {
                 "name": "c_char",
                 "length": -1,
                 "table": {
-                  "name": "mysql_types"
+                  "name": "mysql_string_types"
                 },
                 "type": {
                   "name": "char"
@@ -331,7 +290,7 @@
                 "name": "c_nchar",
                 "length": -1,
                 "table": {
-                  "name": "mysql_types"
+                  "name": "mysql_string_types"
                 },
                 "type": {
                   "name": "char"
@@ -341,7 +300,7 @@
                 "name": "c_national_char",
                 "length": -1,
                 "table": {
-                  "name": "mysql_types"
+                  "name": "mysql_string_types"
                 },
                 "type": {
                   "name": "char"
@@ -351,7 +310,7 @@
                 "name": "c_varchar",
                 "length": 100,
                 "table": {
-                  "name": "mysql_types"
+                  "name": "mysql_string_types"
                 },
                 "type": {
                   "name": "varchar"
@@ -361,7 +320,7 @@
                 "name": "c_tinytext",
                 "length": -1,
                 "table": {
-                  "name": "mysql_types"
+                  "name": "mysql_string_types"
                 },
                 "type": {
                   "name": "tinytext"
@@ -371,7 +330,7 @@
                 "name": "c_mediumtext",
                 "length": -1,
                 "table": {
-                  "name": "mysql_types"
+                  "name": "mysql_string_types"
                 },
                 "type": {
                   "name": "mediumtext"
@@ -381,7 +340,7 @@
                 "name": "c_text",
                 "length": -1,
                 "table": {
-                  "name": "mysql_types"
+                  "name": "mysql_string_types"
                 },
                 "type": {
                   "name": "text"
@@ -391,7 +350,7 @@
                 "name": "c_longtext",
                 "length": -1,
                 "table": {
-                  "name": "mysql_types"
+                  "name": "mysql_string_types"
                 },
                 "type": {
                   "name": "longtext"
@@ -401,7 +360,7 @@
                 "name": "c_json",
                 "length": -1,
                 "table": {
-                  "name": "mysql_types"
+                  "name": "mysql_string_types"
                 },
                 "type": {
                   "name": "json"
@@ -411,7 +370,7 @@
                 "name": "c_json_string_override",
                 "length": -1,
                 "table": {
-                  "name": "mysql_types"
+                  "name": "mysql_string_types"
                 },
                 "type": {
                   "name": "json"
@@ -421,27 +380,91 @@
                 "name": "c_enum",
                 "length": 6,
                 "table": {
-                  "name": "mysql_types"
+                  "name": "mysql_string_types"
                 },
                 "type": {
-                  "name": "mysql_types_c_enum"
+                  "name": "mysql_string_types_c_enum"
                 }
               },
               {
                 "name": "c_set",
                 "length": 15,
                 "table": {
-                  "name": "mysql_types"
+                  "name": "mysql_string_types"
                 },
                 "type": {
-                  "name": "mysql_types_c_set"
+                  "name": "mysql_string_types_c_set"
+                }
+              }
+            ]
+          },
+          {
+            "rel": {
+              "name": "mysql_datetime_types"
+            },
+            "columns": [
+              {
+                "name": "c_year",
+                "length": -1,
+                "table": {
+                  "name": "mysql_datetime_types"
+                },
+                "type": {
+                  "name": "year"
                 }
               },
+              {
+                "name": "c_date",
+                "length": -1,
+                "table": {
+                  "name": "mysql_datetime_types"
+                },
+                "type": {
+                  "name": "date"
+                }
+              },
+              {
+                "name": "c_datetime",
+                "length": 19,
+                "table": {
+                  "name": "mysql_datetime_types"
+                },
+                "type": {
+                  "name": "datetime"
+                }
+              },
+              {
+                "name": "c_timestamp",
+                "length": 19,
+                "table": {
+                  "name": "mysql_datetime_types"
+                },
+                "type": {
+                  "name": "timestamp"
+                }
+              },
+              {
+                "name": "c_time",
+                "length": 10,
+                "table": {
+                  "name": "mysql_datetime_types"
+                },
+                "type": {
+                  "name": "time"
+                }
+              }
+            ]
+          },
+          {
+            "rel": {
+              "name": "mysql_binary_types"
+            },
+            "columns": [
               {
                 "name": "c_bit",
                 "length": 8,
                 "table": {
-                  "name": "mysql_types"
+                  "name": "mysql_binary_types"
                 },
                 "type": {
                   "name": "bit"
@@ -451,7 +474,7 @@
                 "name": "c_binary",
                 "length": 3,
                 "table": {
-                  "name": "mysql_types"
+                  "name": "mysql_binary_types"
                 },
                 "type": {
                   "name": "binary"
@@ -461,7 +484,7 @@
                 "name": "c_varbinary",
                 "length": 10,
                 "table": {
-                  "name": "mysql_types"
+                  "name": "mysql_binary_types"
                 },
                 "type": {
                   "name": "varbinary"
@@ -471,7 +494,7 @@
                 "name": "c_tinyblob",
                 "length": -1,
                 "table": {
-                  "name": "mysql_types"
+                  "name": "mysql_binary_types"
                 },
                 "type": {
                   "name": "tinyblob"
@@ -481,7 +504,7 @@
                 "name": "c_blob",
                 "length": -1,
                 "table": {
-                  "name": "mysql_types"
+                  "name": "mysql_binary_types"
                 },
                 "type": {
                   "name": "blob"
@@ -491,7 +514,7 @@
                 "name": "c_mediumblob",
                 "length": -1,
                 "table": {
-                  "name": "mysql_types"
+                  "name": "mysql_binary_types"
                 },
                 "type": {
                   "name": "mediumblob"
@@ -501,7 +524,7 @@
                 "name": "c_longblob",
                 "length": -1,
                 "table": {
-                  "name": "mysql_types"
+                  "name": "mysql_binary_types"
                 },
                 "type": {
                   "name": "longblob"
@@ -511,22 +534,6 @@
           }
         ],
         "enums": [
-          {
-            "name": "mysql_types_c_enum",
-            "vals": [
-              "small",
-              "medium",
-              "big"
-            ]
-          },
-          {
-            "name": "mysql_types_c_set",
-            "vals": [
-              "tea",
-              "coffee",
-              "milk"
-            ]
-          },
           {
             "name": "bios_bio_type",
             "vals": [
@@ -541,6 +548,22 @@
               "Author",
               "Editor",
               "Translator"
+            ]
+          },
+          {
+            "name": "mysql_string_types_c_enum",
+            "vals": [
+              "small",
+              "medium",
+              "big"
+            ]
+          },
+          {
+            "name": "mysql_string_types_c_set",
+            "vals": [
+              "tea",
+              "coffee",
+              "milk"
             ]
           }
         ]
@@ -1306,2081 +1329,6 @@
       "filename": "query.sql"
     },
     {
-      "text": "INSERT INTO mysql_types \n(c_bit, c_bool, c_boolean, c_tinyint, c_smallint, c_mediumint, c_int, c_integer, c_bigint, \n c_decimal, c_dec, c_numeric, c_fixed, c_float, c_double, c_double_precision, \n c_char, c_nchar, c_national_char, c_varchar, c_tinytext, c_mediumtext, c_text, c_longtext, \n c_json, c_json_string_override, c_enum, c_set, c_year, c_date, c_datetime, c_timestamp, \n c_binary, c_varbinary, c_tinyblob, c_blob, c_mediumblob, c_longblob) \nVALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-      "name": "InsertMysqlTypes",
-      "cmd": ":exec",
-      "parameters": [
-        {
-          "number": 1,
-          "column": {
-            "name": "c_bit",
-            "length": 8,
-            "table": {
-              "schema": "public",
-              "name": "mysql_types"
-            },
-            "type": {
-              "name": "bit"
-            },
-            "originalName": "c_bit"
-          }
-        },
-        {
-          "number": 2,
-          "column": {
-            "name": "c_bool",
-            "length": 1,
-            "table": {
-              "schema": "public",
-              "name": "mysql_types"
-            },
-            "type": {
-              "name": "tinyint"
-            },
-            "originalName": "c_bool"
-          }
-        },
-        {
-          "number": 3,
-          "column": {
-            "name": "c_boolean",
-            "length": 1,
-            "table": {
-              "schema": "public",
-              "name": "mysql_types"
-            },
-            "type": {
-              "name": "tinyint"
-            },
-            "originalName": "c_boolean"
-          }
-        },
-        {
-          "number": 4,
-          "column": {
-            "name": "c_tinyint",
-            "length": 3,
-            "table": {
-              "schema": "public",
-              "name": "mysql_types"
-            },
-            "type": {
-              "name": "tinyint"
-            },
-            "originalName": "c_tinyint"
-          }
-        },
-        {
-          "number": 5,
-          "column": {
-            "name": "c_smallint",
-            "length": -1,
-            "table": {
-              "schema": "public",
-              "name": "mysql_types"
-            },
-            "type": {
-              "name": "smallint"
-            },
-            "originalName": "c_smallint"
-          }
-        },
-        {
-          "number": 6,
-          "column": {
-            "name": "c_mediumint",
-            "length": -1,
-            "table": {
-              "schema": "public",
-              "name": "mysql_types"
-            },
-            "type": {
-              "name": "mediumint"
-            },
-            "originalName": "c_mediumint"
-          }
-        },
-        {
-          "number": 7,
-          "column": {
-            "name": "c_int",
-            "length": -1,
-            "table": {
-              "schema": "public",
-              "name": "mysql_types"
-            },
-            "type": {
-              "name": "int"
-            },
-            "originalName": "c_int"
-          }
-        },
-        {
-          "number": 8,
-          "column": {
-            "name": "c_integer",
-            "length": -1,
-            "table": {
-              "schema": "public",
-              "name": "mysql_types"
-            },
-            "type": {
-              "name": "int"
-            },
-            "originalName": "c_integer"
-          }
-        },
-        {
-          "number": 9,
-          "column": {
-            "name": "c_bigint",
-            "length": -1,
-            "table": {
-              "schema": "public",
-              "name": "mysql_types"
-            },
-            "type": {
-              "name": "bigint"
-            },
-            "originalName": "c_bigint"
-          }
-        },
-        {
-          "number": 10,
-          "column": {
-            "name": "c_decimal",
-            "length": 10,
-            "table": {
-              "schema": "public",
-              "name": "mysql_types"
-            },
-            "type": {
-              "name": "decimal"
-            },
-            "originalName": "c_decimal"
-          }
-        },
-        {
-          "number": 11,
-          "column": {
-            "name": "c_dec",
-            "length": 10,
-            "table": {
-              "schema": "public",
-              "name": "mysql_types"
-            },
-            "type": {
-              "name": "decimal"
-            },
-            "originalName": "c_dec"
-          }
-        },
-        {
-          "number": 12,
-          "column": {
-            "name": "c_numeric",
-            "length": 10,
-            "table": {
-              "schema": "public",
-              "name": "mysql_types"
-            },
-            "type": {
-              "name": "decimal"
-            },
-            "originalName": "c_numeric"
-          }
-        },
-        {
-          "number": 13,
-          "column": {
-            "name": "c_fixed",
-            "length": 10,
-            "table": {
-              "schema": "public",
-              "name": "mysql_types"
-            },
-            "type": {
-              "name": "decimal"
-            },
-            "originalName": "c_fixed"
-          }
-        },
-        {
-          "number": 14,
-          "column": {
-            "name": "c_float",
-            "length": -1,
-            "table": {
-              "schema": "public",
-              "name": "mysql_types"
-            },
-            "type": {
-              "name": "float"
-            },
-            "originalName": "c_float"
-          }
-        },
-        {
-          "number": 15,
-          "column": {
-            "name": "c_double",
-            "length": -1,
-            "table": {
-              "schema": "public",
-              "name": "mysql_types"
-            },
-            "type": {
-              "name": "double"
-            },
-            "originalName": "c_double"
-          }
-        },
-        {
-          "number": 16,
-          "column": {
-            "name": "c_double_precision",
-            "length": -1,
-            "table": {
-              "schema": "public",
-              "name": "mysql_types"
-            },
-            "type": {
-              "name": "double"
-            },
-            "originalName": "c_double_precision"
-          }
-        },
-        {
-          "number": 17,
-          "column": {
-            "name": "c_char",
-            "length": -1,
-            "table": {
-              "schema": "public",
-              "name": "mysql_types"
-            },
-            "type": {
-              "name": "char"
-            },
-            "originalName": "c_char"
-          }
-        },
-        {
-          "number": 18,
-          "column": {
-            "name": "c_nchar",
-            "length": -1,
-            "table": {
-              "schema": "public",
-              "name": "mysql_types"
-            },
-            "type": {
-              "name": "char"
-            },
-            "originalName": "c_nchar"
-          }
-        },
-        {
-          "number": 19,
-          "column": {
-            "name": "c_national_char",
-            "length": -1,
-            "table": {
-              "schema": "public",
-              "name": "mysql_types"
-            },
-            "type": {
-              "name": "char"
-            },
-            "originalName": "c_national_char"
-          }
-        },
-        {
-          "number": 20,
-          "column": {
-            "name": "c_varchar",
-            "length": 100,
-            "table": {
-              "schema": "public",
-              "name": "mysql_types"
-            },
-            "type": {
-              "name": "varchar"
-            },
-            "originalName": "c_varchar"
-          }
-        },
-        {
-          "number": 21,
-          "column": {
-            "name": "c_tinytext",
-            "length": -1,
-            "table": {
-              "schema": "public",
-              "name": "mysql_types"
-            },
-            "type": {
-              "name": "tinytext"
-            },
-            "originalName": "c_tinytext"
-          }
-        },
-        {
-          "number": 22,
-          "column": {
-            "name": "c_mediumtext",
-            "length": -1,
-            "table": {
-              "schema": "public",
-              "name": "mysql_types"
-            },
-            "type": {
-              "name": "mediumtext"
-            },
-            "originalName": "c_mediumtext"
-          }
-        },
-        {
-          "number": 23,
-          "column": {
-            "name": "c_text",
-            "length": -1,
-            "table": {
-              "schema": "public",
-              "name": "mysql_types"
-            },
-            "type": {
-              "name": "text"
-            },
-            "originalName": "c_text"
-          }
-        },
-        {
-          "number": 24,
-          "column": {
-            "name": "c_longtext",
-            "length": -1,
-            "table": {
-              "schema": "public",
-              "name": "mysql_types"
-            },
-            "type": {
-              "name": "longtext"
-            },
-            "originalName": "c_longtext"
-          }
-        },
-        {
-          "number": 25,
-          "column": {
-            "name": "c_json",
-            "length": -1,
-            "table": {
-              "schema": "public",
-              "name": "mysql_types"
-            },
-            "type": {
-              "name": "json"
-            },
-            "originalName": "c_json"
-          }
-        },
-        {
-          "number": 26,
-          "column": {
-            "name": "c_json_string_override",
-            "length": -1,
-            "table": {
-              "schema": "public",
-              "name": "mysql_types"
-            },
-            "type": {
-              "name": "json"
-            },
-            "originalName": "c_json_string_override"
-          }
-        },
-        {
-          "number": 27,
-          "column": {
-            "name": "c_enum",
-            "length": 6,
-            "table": {
-              "schema": "public",
-              "name": "mysql_types"
-            },
-            "type": {
-              "name": "mysql_types_c_enum"
-            },
-            "originalName": "c_enum"
-          }
-        },
-        {
-          "number": 28,
-          "column": {
-            "name": "c_set",
-            "length": 15,
-            "table": {
-              "schema": "public",
-              "name": "mysql_types"
-            },
-            "type": {
-              "name": "mysql_types_c_set"
-            },
-            "originalName": "c_set"
-          }
-        },
-        {
-          "number": 29,
-          "column": {
-            "name": "c_year",
-            "length": -1,
-            "table": {
-              "schema": "public",
-              "name": "mysql_types"
-            },
-            "type": {
-              "name": "year"
-            },
-            "originalName": "c_year"
-          }
-        },
-        {
-          "number": 30,
-          "column": {
-            "name": "c_date",
-            "length": -1,
-            "table": {
-              "schema": "public",
-              "name": "mysql_types"
-            },
-            "type": {
-              "name": "date"
-            },
-            "originalName": "c_date"
-          }
-        },
-        {
-          "number": 31,
-          "column": {
-            "name": "c_datetime",
-            "length": 19,
-            "table": {
-              "schema": "public",
-              "name": "mysql_types"
-            },
-            "type": {
-              "name": "datetime"
-            },
-            "originalName": "c_datetime"
-          }
-        },
-        {
-          "number": 32,
-          "column": {
-            "name": "c_timestamp",
-            "length": 19,
-            "table": {
-              "schema": "public",
-              "name": "mysql_types"
-            },
-            "type": {
-              "name": "timestamp"
-            },
-            "originalName": "c_timestamp"
-          }
-        },
-        {
-          "number": 33,
-          "column": {
-            "name": "c_binary",
-            "length": 3,
-            "table": {
-              "schema": "public",
-              "name": "mysql_types"
-            },
-            "type": {
-              "name": "binary"
-            },
-            "originalName": "c_binary"
-          }
-        },
-        {
-          "number": 34,
-          "column": {
-            "name": "c_varbinary",
-            "length": 10,
-            "table": {
-              "schema": "public",
-              "name": "mysql_types"
-            },
-            "type": {
-              "name": "varbinary"
-            },
-            "originalName": "c_varbinary"
-          }
-        },
-        {
-          "number": 35,
-          "column": {
-            "name": "c_tinyblob",
-            "length": -1,
-            "table": {
-              "schema": "public",
-              "name": "mysql_types"
-            },
-            "type": {
-              "name": "tinyblob"
-            },
-            "originalName": "c_tinyblob"
-          }
-        },
-        {
-          "number": 36,
-          "column": {
-            "name": "c_blob",
-            "length": -1,
-            "table": {
-              "schema": "public",
-              "name": "mysql_types"
-            },
-            "type": {
-              "name": "blob"
-            },
-            "originalName": "c_blob"
-          }
-        },
-        {
-          "number": 37,
-          "column": {
-            "name": "c_mediumblob",
-            "length": -1,
-            "table": {
-              "schema": "public",
-              "name": "mysql_types"
-            },
-            "type": {
-              "name": "mediumblob"
-            },
-            "originalName": "c_mediumblob"
-          }
-        },
-        {
-          "number": 38,
-          "column": {
-            "name": "c_longblob",
-            "length": -1,
-            "table": {
-              "schema": "public",
-              "name": "mysql_types"
-            },
-            "type": {
-              "name": "longblob"
-            },
-            "originalName": "c_longblob"
-          }
-        }
-      ],
-      "filename": "query.sql",
-      "insert_into_table": {
-        "name": "mysql_types"
-      }
-    },
-    {
-      "text": "INSERT INTO mysql_types \n(c_bit, c_bool, c_boolean, c_tinyint, c_smallint, c_mediumint, c_int, c_integer, c_bigint, \n c_float, c_numeric, c_decimal, c_dec, c_fixed, c_double, c_double_precision, \n c_char, c_nchar, c_national_char, c_varchar, c_tinytext, c_mediumtext, c_text, c_longtext, \n c_json, c_json_string_override, c_enum, c_set, c_year, c_date, c_datetime, c_timestamp,\n c_binary, c_varbinary, c_tinyblob, c_blob, c_mediumblob, c_longblob) \nVALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-      "name": "InsertMysqlTypesBatch",
-      "cmd": ":copyfrom",
-      "parameters": [
-        {
-          "number": 1,
-          "column": {
-            "name": "c_bit",
-            "length": 8,
-            "table": {
-              "schema": "public",
-              "name": "mysql_types"
-            },
-            "type": {
-              "name": "bit"
-            },
-            "originalName": "c_bit"
-          }
-        },
-        {
-          "number": 2,
-          "column": {
-            "name": "c_bool",
-            "length": 1,
-            "table": {
-              "schema": "public",
-              "name": "mysql_types"
-            },
-            "type": {
-              "name": "tinyint"
-            },
-            "originalName": "c_bool"
-          }
-        },
-        {
-          "number": 3,
-          "column": {
-            "name": "c_boolean",
-            "length": 1,
-            "table": {
-              "schema": "public",
-              "name": "mysql_types"
-            },
-            "type": {
-              "name": "tinyint"
-            },
-            "originalName": "c_boolean"
-          }
-        },
-        {
-          "number": 4,
-          "column": {
-            "name": "c_tinyint",
-            "length": 3,
-            "table": {
-              "schema": "public",
-              "name": "mysql_types"
-            },
-            "type": {
-              "name": "tinyint"
-            },
-            "originalName": "c_tinyint"
-          }
-        },
-        {
-          "number": 5,
-          "column": {
-            "name": "c_smallint",
-            "length": -1,
-            "table": {
-              "schema": "public",
-              "name": "mysql_types"
-            },
-            "type": {
-              "name": "smallint"
-            },
-            "originalName": "c_smallint"
-          }
-        },
-        {
-          "number": 6,
-          "column": {
-            "name": "c_mediumint",
-            "length": -1,
-            "table": {
-              "schema": "public",
-              "name": "mysql_types"
-            },
-            "type": {
-              "name": "mediumint"
-            },
-            "originalName": "c_mediumint"
-          }
-        },
-        {
-          "number": 7,
-          "column": {
-            "name": "c_int",
-            "length": -1,
-            "table": {
-              "schema": "public",
-              "name": "mysql_types"
-            },
-            "type": {
-              "name": "int"
-            },
-            "originalName": "c_int"
-          }
-        },
-        {
-          "number": 8,
-          "column": {
-            "name": "c_integer",
-            "length": -1,
-            "table": {
-              "schema": "public",
-              "name": "mysql_types"
-            },
-            "type": {
-              "name": "int"
-            },
-            "originalName": "c_integer"
-          }
-        },
-        {
-          "number": 9,
-          "column": {
-            "name": "c_bigint",
-            "length": -1,
-            "table": {
-              "schema": "public",
-              "name": "mysql_types"
-            },
-            "type": {
-              "name": "bigint"
-            },
-            "originalName": "c_bigint"
-          }
-        },
-        {
-          "number": 10,
-          "column": {
-            "name": "c_float",
-            "length": -1,
-            "table": {
-              "schema": "public",
-              "name": "mysql_types"
-            },
-            "type": {
-              "name": "float"
-            },
-            "originalName": "c_float"
-          }
-        },
-        {
-          "number": 11,
-          "column": {
-            "name": "c_numeric",
-            "length": 10,
-            "table": {
-              "schema": "public",
-              "name": "mysql_types"
-            },
-            "type": {
-              "name": "decimal"
-            },
-            "originalName": "c_numeric"
-          }
-        },
-        {
-          "number": 12,
-          "column": {
-            "name": "c_decimal",
-            "length": 10,
-            "table": {
-              "schema": "public",
-              "name": "mysql_types"
-            },
-            "type": {
-              "name": "decimal"
-            },
-            "originalName": "c_decimal"
-          }
-        },
-        {
-          "number": 13,
-          "column": {
-            "name": "c_dec",
-            "length": 10,
-            "table": {
-              "schema": "public",
-              "name": "mysql_types"
-            },
-            "type": {
-              "name": "decimal"
-            },
-            "originalName": "c_dec"
-          }
-        },
-        {
-          "number": 14,
-          "column": {
-            "name": "c_fixed",
-            "length": 10,
-            "table": {
-              "schema": "public",
-              "name": "mysql_types"
-            },
-            "type": {
-              "name": "decimal"
-            },
-            "originalName": "c_fixed"
-          }
-        },
-        {
-          "number": 15,
-          "column": {
-            "name": "c_double",
-            "length": -1,
-            "table": {
-              "schema": "public",
-              "name": "mysql_types"
-            },
-            "type": {
-              "name": "double"
-            },
-            "originalName": "c_double"
-          }
-        },
-        {
-          "number": 16,
-          "column": {
-            "name": "c_double_precision",
-            "length": -1,
-            "table": {
-              "schema": "public",
-              "name": "mysql_types"
-            },
-            "type": {
-              "name": "double"
-            },
-            "originalName": "c_double_precision"
-          }
-        },
-        {
-          "number": 17,
-          "column": {
-            "name": "c_char",
-            "length": -1,
-            "table": {
-              "schema": "public",
-              "name": "mysql_types"
-            },
-            "type": {
-              "name": "char"
-            },
-            "originalName": "c_char"
-          }
-        },
-        {
-          "number": 18,
-          "column": {
-            "name": "c_nchar",
-            "length": -1,
-            "table": {
-              "schema": "public",
-              "name": "mysql_types"
-            },
-            "type": {
-              "name": "char"
-            },
-            "originalName": "c_nchar"
-          }
-        },
-        {
-          "number": 19,
-          "column": {
-            "name": "c_national_char",
-            "length": -1,
-            "table": {
-              "schema": "public",
-              "name": "mysql_types"
-            },
-            "type": {
-              "name": "char"
-            },
-            "originalName": "c_national_char"
-          }
-        },
-        {
-          "number": 20,
-          "column": {
-            "name": "c_varchar",
-            "length": 100,
-            "table": {
-              "schema": "public",
-              "name": "mysql_types"
-            },
-            "type": {
-              "name": "varchar"
-            },
-            "originalName": "c_varchar"
-          }
-        },
-        {
-          "number": 21,
-          "column": {
-            "name": "c_tinytext",
-            "length": -1,
-            "table": {
-              "schema": "public",
-              "name": "mysql_types"
-            },
-            "type": {
-              "name": "tinytext"
-            },
-            "originalName": "c_tinytext"
-          }
-        },
-        {
-          "number": 22,
-          "column": {
-            "name": "c_mediumtext",
-            "length": -1,
-            "table": {
-              "schema": "public",
-              "name": "mysql_types"
-            },
-            "type": {
-              "name": "mediumtext"
-            },
-            "originalName": "c_mediumtext"
-          }
-        },
-        {
-          "number": 23,
-          "column": {
-            "name": "c_text",
-            "length": -1,
-            "table": {
-              "schema": "public",
-              "name": "mysql_types"
-            },
-            "type": {
-              "name": "text"
-            },
-            "originalName": "c_text"
-          }
-        },
-        {
-          "number": 24,
-          "column": {
-            "name": "c_longtext",
-            "length": -1,
-            "table": {
-              "schema": "public",
-              "name": "mysql_types"
-            },
-            "type": {
-              "name": "longtext"
-            },
-            "originalName": "c_longtext"
-          }
-        },
-        {
-          "number": 25,
-          "column": {
-            "name": "c_json",
-            "length": -1,
-            "table": {
-              "schema": "public",
-              "name": "mysql_types"
-            },
-            "type": {
-              "name": "json"
-            },
-            "originalName": "c_json"
-          }
-        },
-        {
-          "number": 26,
-          "column": {
-            "name": "c_json_string_override",
-            "length": -1,
-            "table": {
-              "schema": "public",
-              "name": "mysql_types"
-            },
-            "type": {
-              "name": "json"
-            },
-            "originalName": "c_json_string_override"
-          }
-        },
-        {
-          "number": 27,
-          "column": {
-            "name": "c_enum",
-            "length": 6,
-            "table": {
-              "schema": "public",
-              "name": "mysql_types"
-            },
-            "type": {
-              "name": "mysql_types_c_enum"
-            },
-            "originalName": "c_enum"
-          }
-        },
-        {
-          "number": 28,
-          "column": {
-            "name": "c_set",
-            "length": 15,
-            "table": {
-              "schema": "public",
-              "name": "mysql_types"
-            },
-            "type": {
-              "name": "mysql_types_c_set"
-            },
-            "originalName": "c_set"
-          }
-        },
-        {
-          "number": 29,
-          "column": {
-            "name": "c_year",
-            "length": -1,
-            "table": {
-              "schema": "public",
-              "name": "mysql_types"
-            },
-            "type": {
-              "name": "year"
-            },
-            "originalName": "c_year"
-          }
-        },
-        {
-          "number": 30,
-          "column": {
-            "name": "c_date",
-            "length": -1,
-            "table": {
-              "schema": "public",
-              "name": "mysql_types"
-            },
-            "type": {
-              "name": "date"
-            },
-            "originalName": "c_date"
-          }
-        },
-        {
-          "number": 31,
-          "column": {
-            "name": "c_datetime",
-            "length": 19,
-            "table": {
-              "schema": "public",
-              "name": "mysql_types"
-            },
-            "type": {
-              "name": "datetime"
-            },
-            "originalName": "c_datetime"
-          }
-        },
-        {
-          "number": 32,
-          "column": {
-            "name": "c_timestamp",
-            "length": 19,
-            "table": {
-              "schema": "public",
-              "name": "mysql_types"
-            },
-            "type": {
-              "name": "timestamp"
-            },
-            "originalName": "c_timestamp"
-          }
-        },
-        {
-          "number": 33,
-          "column": {
-            "name": "c_binary",
-            "length": 3,
-            "table": {
-              "schema": "public",
-              "name": "mysql_types"
-            },
-            "type": {
-              "name": "binary"
-            },
-            "originalName": "c_binary"
-          }
-        },
-        {
-          "number": 34,
-          "column": {
-            "name": "c_varbinary",
-            "length": 10,
-            "table": {
-              "schema": "public",
-              "name": "mysql_types"
-            },
-            "type": {
-              "name": "varbinary"
-            },
-            "originalName": "c_varbinary"
-          }
-        },
-        {
-          "number": 35,
-          "column": {
-            "name": "c_tinyblob",
-            "length": -1,
-            "table": {
-              "schema": "public",
-              "name": "mysql_types"
-            },
-            "type": {
-              "name": "tinyblob"
-            },
-            "originalName": "c_tinyblob"
-          }
-        },
-        {
-          "number": 36,
-          "column": {
-            "name": "c_blob",
-            "length": -1,
-            "table": {
-              "schema": "public",
-              "name": "mysql_types"
-            },
-            "type": {
-              "name": "blob"
-            },
-            "originalName": "c_blob"
-          }
-        },
-        {
-          "number": 37,
-          "column": {
-            "name": "c_mediumblob",
-            "length": -1,
-            "table": {
-              "schema": "public",
-              "name": "mysql_types"
-            },
-            "type": {
-              "name": "mediumblob"
-            },
-            "originalName": "c_mediumblob"
-          }
-        },
-        {
-          "number": 38,
-          "column": {
-            "name": "c_longblob",
-            "length": -1,
-            "table": {
-              "schema": "public",
-              "name": "mysql_types"
-            },
-            "type": {
-              "name": "longblob"
-            },
-            "originalName": "c_longblob"
-          }
-        }
-      ],
-      "filename": "query.sql",
-      "insert_into_table": {
-        "name": "mysql_types"
-      }
-    },
-    {
-      "text": "SELECT c_bool, c_boolean, c_tinyint, c_smallint, c_mediumint, c_int, c_integer, c_bigint, c_float, c_decimal, c_dec, c_numeric, c_fixed, c_double, c_double_precision, c_year, c_date, c_time, c_datetime, c_timestamp, c_char, c_nchar, c_national_char, c_varchar, c_tinytext, c_mediumtext, c_text, c_longtext, c_json, c_json_string_override, c_enum, c_set, c_bit, c_binary, c_varbinary, c_tinyblob, c_blob, c_mediumblob, c_longblob FROM mysql_types LIMIT 1",
-      "name": "GetMysqlTypes",
-      "cmd": ":one",
-      "columns": [
-        {
-          "name": "c_bool",
-          "length": 1,
-          "table": {
-            "name": "mysql_types"
-          },
-          "type": {
-            "name": "tinyint"
-          },
-          "originalName": "c_bool"
-        },
-        {
-          "name": "c_boolean",
-          "length": 1,
-          "table": {
-            "name": "mysql_types"
-          },
-          "type": {
-            "name": "tinyint"
-          },
-          "originalName": "c_boolean"
-        },
-        {
-          "name": "c_tinyint",
-          "length": 3,
-          "table": {
-            "name": "mysql_types"
-          },
-          "type": {
-            "name": "tinyint"
-          },
-          "originalName": "c_tinyint"
-        },
-        {
-          "name": "c_smallint",
-          "length": -1,
-          "table": {
-            "name": "mysql_types"
-          },
-          "type": {
-            "name": "smallint"
-          },
-          "originalName": "c_smallint"
-        },
-        {
-          "name": "c_mediumint",
-          "length": -1,
-          "table": {
-            "name": "mysql_types"
-          },
-          "type": {
-            "name": "mediumint"
-          },
-          "originalName": "c_mediumint"
-        },
-        {
-          "name": "c_int",
-          "length": -1,
-          "table": {
-            "name": "mysql_types"
-          },
-          "type": {
-            "name": "int"
-          },
-          "originalName": "c_int"
-        },
-        {
-          "name": "c_integer",
-          "length": -1,
-          "table": {
-            "name": "mysql_types"
-          },
-          "type": {
-            "name": "int"
-          },
-          "originalName": "c_integer"
-        },
-        {
-          "name": "c_bigint",
-          "length": -1,
-          "table": {
-            "name": "mysql_types"
-          },
-          "type": {
-            "name": "bigint"
-          },
-          "originalName": "c_bigint"
-        },
-        {
-          "name": "c_float",
-          "length": -1,
-          "table": {
-            "name": "mysql_types"
-          },
-          "type": {
-            "name": "float"
-          },
-          "originalName": "c_float"
-        },
-        {
-          "name": "c_decimal",
-          "length": 10,
-          "table": {
-            "name": "mysql_types"
-          },
-          "type": {
-            "name": "decimal"
-          },
-          "originalName": "c_decimal"
-        },
-        {
-          "name": "c_dec",
-          "length": 10,
-          "table": {
-            "name": "mysql_types"
-          },
-          "type": {
-            "name": "decimal"
-          },
-          "originalName": "c_dec"
-        },
-        {
-          "name": "c_numeric",
-          "length": 10,
-          "table": {
-            "name": "mysql_types"
-          },
-          "type": {
-            "name": "decimal"
-          },
-          "originalName": "c_numeric"
-        },
-        {
-          "name": "c_fixed",
-          "length": 10,
-          "table": {
-            "name": "mysql_types"
-          },
-          "type": {
-            "name": "decimal"
-          },
-          "originalName": "c_fixed"
-        },
-        {
-          "name": "c_double",
-          "length": -1,
-          "table": {
-            "name": "mysql_types"
-          },
-          "type": {
-            "name": "double"
-          },
-          "originalName": "c_double"
-        },
-        {
-          "name": "c_double_precision",
-          "length": -1,
-          "table": {
-            "name": "mysql_types"
-          },
-          "type": {
-            "name": "double"
-          },
-          "originalName": "c_double_precision"
-        },
-        {
-          "name": "c_year",
-          "length": -1,
-          "table": {
-            "name": "mysql_types"
-          },
-          "type": {
-            "name": "year"
-          },
-          "originalName": "c_year"
-        },
-        {
-          "name": "c_date",
-          "length": -1,
-          "table": {
-            "name": "mysql_types"
-          },
-          "type": {
-            "name": "date"
-          },
-          "originalName": "c_date"
-        },
-        {
-          "name": "c_time",
-          "length": 10,
-          "table": {
-            "name": "mysql_types"
-          },
-          "type": {
-            "name": "time"
-          },
-          "originalName": "c_time"
-        },
-        {
-          "name": "c_datetime",
-          "length": 19,
-          "table": {
-            "name": "mysql_types"
-          },
-          "type": {
-            "name": "datetime"
-          },
-          "originalName": "c_datetime"
-        },
-        {
-          "name": "c_timestamp",
-          "length": 19,
-          "table": {
-            "name": "mysql_types"
-          },
-          "type": {
-            "name": "timestamp"
-          },
-          "originalName": "c_timestamp"
-        },
-        {
-          "name": "c_char",
-          "length": -1,
-          "table": {
-            "name": "mysql_types"
-          },
-          "type": {
-            "name": "char"
-          },
-          "originalName": "c_char"
-        },
-        {
-          "name": "c_nchar",
-          "length": -1,
-          "table": {
-            "name": "mysql_types"
-          },
-          "type": {
-            "name": "char"
-          },
-          "originalName": "c_nchar"
-        },
-        {
-          "name": "c_national_char",
-          "length": -1,
-          "table": {
-            "name": "mysql_types"
-          },
-          "type": {
-            "name": "char"
-          },
-          "originalName": "c_national_char"
-        },
-        {
-          "name": "c_varchar",
-          "length": 100,
-          "table": {
-            "name": "mysql_types"
-          },
-          "type": {
-            "name": "varchar"
-          },
-          "originalName": "c_varchar"
-        },
-        {
-          "name": "c_tinytext",
-          "length": -1,
-          "table": {
-            "name": "mysql_types"
-          },
-          "type": {
-            "name": "tinytext"
-          },
-          "originalName": "c_tinytext"
-        },
-        {
-          "name": "c_mediumtext",
-          "length": -1,
-          "table": {
-            "name": "mysql_types"
-          },
-          "type": {
-            "name": "mediumtext"
-          },
-          "originalName": "c_mediumtext"
-        },
-        {
-          "name": "c_text",
-          "length": -1,
-          "table": {
-            "name": "mysql_types"
-          },
-          "type": {
-            "name": "text"
-          },
-          "originalName": "c_text"
-        },
-        {
-          "name": "c_longtext",
-          "length": -1,
-          "table": {
-            "name": "mysql_types"
-          },
-          "type": {
-            "name": "longtext"
-          },
-          "originalName": "c_longtext"
-        },
-        {
-          "name": "c_json",
-          "length": -1,
-          "table": {
-            "name": "mysql_types"
-          },
-          "type": {
-            "name": "json"
-          },
-          "originalName": "c_json"
-        },
-        {
-          "name": "c_json_string_override",
-          "length": -1,
-          "table": {
-            "name": "mysql_types"
-          },
-          "type": {
-            "name": "json"
-          },
-          "originalName": "c_json_string_override"
-        },
-        {
-          "name": "c_enum",
-          "length": 6,
-          "table": {
-            "name": "mysql_types"
-          },
-          "type": {
-            "name": "mysql_types_c_enum"
-          },
-          "originalName": "c_enum"
-        },
-        {
-          "name": "c_set",
-          "length": 15,
-          "table": {
-            "name": "mysql_types"
-          },
-          "type": {
-            "name": "mysql_types_c_set"
-          },
-          "originalName": "c_set"
-        },
-        {
-          "name": "c_bit",
-          "length": 8,
-          "table": {
-            "name": "mysql_types"
-          },
-          "type": {
-            "name": "bit"
-          },
-          "originalName": "c_bit"
-        },
-        {
-          "name": "c_binary",
-          "length": 3,
-          "table": {
-            "name": "mysql_types"
-          },
-          "type": {
-            "name": "binary"
-          },
-          "originalName": "c_binary"
-        },
-        {
-          "name": "c_varbinary",
-          "length": 10,
-          "table": {
-            "name": "mysql_types"
-          },
-          "type": {
-            "name": "varbinary"
-          },
-          "originalName": "c_varbinary"
-        },
-        {
-          "name": "c_tinyblob",
-          "length": -1,
-          "table": {
-            "name": "mysql_types"
-          },
-          "type": {
-            "name": "tinyblob"
-          },
-          "originalName": "c_tinyblob"
-        },
-        {
-          "name": "c_blob",
-          "length": -1,
-          "table": {
-            "name": "mysql_types"
-          },
-          "type": {
-            "name": "blob"
-          },
-          "originalName": "c_blob"
-        },
-        {
-          "name": "c_mediumblob",
-          "length": -1,
-          "table": {
-            "name": "mysql_types"
-          },
-          "type": {
-            "name": "mediumblob"
-          },
-          "originalName": "c_mediumblob"
-        },
-        {
-          "name": "c_longblob",
-          "length": -1,
-          "table": {
-            "name": "mysql_types"
-          },
-          "type": {
-            "name": "longblob"
-          },
-          "originalName": "c_longblob"
-        }
-      ],
-      "filename": "query.sql"
-    },
-    {
-      "text": "SELECT COUNT(1) AS cnt, c_bool, c_boolean, c_bit, c_tinyint, c_smallint, c_mediumint, c_int, c_integer, c_bigint, \n       c_float, c_numeric, c_decimal, c_dec, c_fixed, c_double, c_double_precision, \n       c_char, c_nchar, c_national_char, c_varchar, c_tinytext, c_mediumtext, c_text, c_longtext, \n       c_json, c_json_string_override, c_enum, c_set, c_year, c_date, c_datetime, c_timestamp, \n       c_binary, c_varbinary, c_tinyblob, c_blob, c_mediumblob, c_longblob\nFROM mysql_types\nGROUP BY c_bool, c_boolean, c_bit, c_tinyint, c_smallint, c_mediumint, c_int, c_integer, c_bigint, \n         c_float, c_numeric, c_decimal, c_dec, c_fixed, c_double, c_double_precision, \n         c_char, c_nchar, c_national_char, c_varchar, c_tinytext, c_mediumtext, c_text, c_longtext, \n         c_json, c_json_string_override, c_enum, c_set, c_year, c_date, c_datetime, c_timestamp, \n         c_binary, c_varbinary, c_tinyblob, c_blob, c_mediumblob, c_longblob\nLIMIT 1",
-      "name": "GetMysqlTypesCnt",
-      "cmd": ":one",
-      "columns": [
-        {
-          "name": "cnt",
-          "notNull": true,
-          "length": -1,
-          "isFuncCall": true,
-          "type": {
-            "name": "bigint"
-          }
-        },
-        {
-          "name": "c_bool",
-          "length": 1,
-          "table": {
-            "name": "mysql_types"
-          },
-          "type": {
-            "name": "tinyint"
-          },
-          "originalName": "c_bool"
-        },
-        {
-          "name": "c_boolean",
-          "length": 1,
-          "table": {
-            "name": "mysql_types"
-          },
-          "type": {
-            "name": "tinyint"
-          },
-          "originalName": "c_boolean"
-        },
-        {
-          "name": "c_bit",
-          "length": 8,
-          "table": {
-            "name": "mysql_types"
-          },
-          "type": {
-            "name": "bit"
-          },
-          "originalName": "c_bit"
-        },
-        {
-          "name": "c_tinyint",
-          "length": 3,
-          "table": {
-            "name": "mysql_types"
-          },
-          "type": {
-            "name": "tinyint"
-          },
-          "originalName": "c_tinyint"
-        },
-        {
-          "name": "c_smallint",
-          "length": -1,
-          "table": {
-            "name": "mysql_types"
-          },
-          "type": {
-            "name": "smallint"
-          },
-          "originalName": "c_smallint"
-        },
-        {
-          "name": "c_mediumint",
-          "length": -1,
-          "table": {
-            "name": "mysql_types"
-          },
-          "type": {
-            "name": "mediumint"
-          },
-          "originalName": "c_mediumint"
-        },
-        {
-          "name": "c_int",
-          "length": -1,
-          "table": {
-            "name": "mysql_types"
-          },
-          "type": {
-            "name": "int"
-          },
-          "originalName": "c_int"
-        },
-        {
-          "name": "c_integer",
-          "length": -1,
-          "table": {
-            "name": "mysql_types"
-          },
-          "type": {
-            "name": "int"
-          },
-          "originalName": "c_integer"
-        },
-        {
-          "name": "c_bigint",
-          "length": -1,
-          "table": {
-            "name": "mysql_types"
-          },
-          "type": {
-            "name": "bigint"
-          },
-          "originalName": "c_bigint"
-        },
-        {
-          "name": "c_float",
-          "length": -1,
-          "table": {
-            "name": "mysql_types"
-          },
-          "type": {
-            "name": "float"
-          },
-          "originalName": "c_float"
-        },
-        {
-          "name": "c_numeric",
-          "length": 10,
-          "table": {
-            "name": "mysql_types"
-          },
-          "type": {
-            "name": "decimal"
-          },
-          "originalName": "c_numeric"
-        },
-        {
-          "name": "c_decimal",
-          "length": 10,
-          "table": {
-            "name": "mysql_types"
-          },
-          "type": {
-            "name": "decimal"
-          },
-          "originalName": "c_decimal"
-        },
-        {
-          "name": "c_dec",
-          "length": 10,
-          "table": {
-            "name": "mysql_types"
-          },
-          "type": {
-            "name": "decimal"
-          },
-          "originalName": "c_dec"
-        },
-        {
-          "name": "c_fixed",
-          "length": 10,
-          "table": {
-            "name": "mysql_types"
-          },
-          "type": {
-            "name": "decimal"
-          },
-          "originalName": "c_fixed"
-        },
-        {
-          "name": "c_double",
-          "length": -1,
-          "table": {
-            "name": "mysql_types"
-          },
-          "type": {
-            "name": "double"
-          },
-          "originalName": "c_double"
-        },
-        {
-          "name": "c_double_precision",
-          "length": -1,
-          "table": {
-            "name": "mysql_types"
-          },
-          "type": {
-            "name": "double"
-          },
-          "originalName": "c_double_precision"
-        },
-        {
-          "name": "c_char",
-          "length": -1,
-          "table": {
-            "name": "mysql_types"
-          },
-          "type": {
-            "name": "char"
-          },
-          "originalName": "c_char"
-        },
-        {
-          "name": "c_nchar",
-          "length": -1,
-          "table": {
-            "name": "mysql_types"
-          },
-          "type": {
-            "name": "char"
-          },
-          "originalName": "c_nchar"
-        },
-        {
-          "name": "c_national_char",
-          "length": -1,
-          "table": {
-            "name": "mysql_types"
-          },
-          "type": {
-            "name": "char"
-          },
-          "originalName": "c_national_char"
-        },
-        {
-          "name": "c_varchar",
-          "length": 100,
-          "table": {
-            "name": "mysql_types"
-          },
-          "type": {
-            "name": "varchar"
-          },
-          "originalName": "c_varchar"
-        },
-        {
-          "name": "c_tinytext",
-          "length": -1,
-          "table": {
-            "name": "mysql_types"
-          },
-          "type": {
-            "name": "tinytext"
-          },
-          "originalName": "c_tinytext"
-        },
-        {
-          "name": "c_mediumtext",
-          "length": -1,
-          "table": {
-            "name": "mysql_types"
-          },
-          "type": {
-            "name": "mediumtext"
-          },
-          "originalName": "c_mediumtext"
-        },
-        {
-          "name": "c_text",
-          "length": -1,
-          "table": {
-            "name": "mysql_types"
-          },
-          "type": {
-            "name": "text"
-          },
-          "originalName": "c_text"
-        },
-        {
-          "name": "c_longtext",
-          "length": -1,
-          "table": {
-            "name": "mysql_types"
-          },
-          "type": {
-            "name": "longtext"
-          },
-          "originalName": "c_longtext"
-        },
-        {
-          "name": "c_json",
-          "length": -1,
-          "table": {
-            "name": "mysql_types"
-          },
-          "type": {
-            "name": "json"
-          },
-          "originalName": "c_json"
-        },
-        {
-          "name": "c_json_string_override",
-          "length": -1,
-          "table": {
-            "name": "mysql_types"
-          },
-          "type": {
-            "name": "json"
-          },
-          "originalName": "c_json_string_override"
-        },
-        {
-          "name": "c_enum",
-          "length": 6,
-          "table": {
-            "name": "mysql_types"
-          },
-          "type": {
-            "name": "mysql_types_c_enum"
-          },
-          "originalName": "c_enum"
-        },
-        {
-          "name": "c_set",
-          "length": 15,
-          "table": {
-            "name": "mysql_types"
-          },
-          "type": {
-            "name": "mysql_types_c_set"
-          },
-          "originalName": "c_set"
-        },
-        {
-          "name": "c_year",
-          "length": -1,
-          "table": {
-            "name": "mysql_types"
-          },
-          "type": {
-            "name": "year"
-          },
-          "originalName": "c_year"
-        },
-        {
-          "name": "c_date",
-          "length": -1,
-          "table": {
-            "name": "mysql_types"
-          },
-          "type": {
-            "name": "date"
-          },
-          "originalName": "c_date"
-        },
-        {
-          "name": "c_datetime",
-          "length": 19,
-          "table": {
-            "name": "mysql_types"
-          },
-          "type": {
-            "name": "datetime"
-          },
-          "originalName": "c_datetime"
-        },
-        {
-          "name": "c_timestamp",
-          "length": 19,
-          "table": {
-            "name": "mysql_types"
-          },
-          "type": {
-            "name": "timestamp"
-          },
-          "originalName": "c_timestamp"
-        },
-        {
-          "name": "c_binary",
-          "length": 3,
-          "table": {
-            "name": "mysql_types"
-          },
-          "type": {
-            "name": "binary"
-          },
-          "originalName": "c_binary"
-        },
-        {
-          "name": "c_varbinary",
-          "length": 10,
-          "table": {
-            "name": "mysql_types"
-          },
-          "type": {
-            "name": "varbinary"
-          },
-          "originalName": "c_varbinary"
-        },
-        {
-          "name": "c_tinyblob",
-          "length": -1,
-          "table": {
-            "name": "mysql_types"
-          },
-          "type": {
-            "name": "tinyblob"
-          },
-          "originalName": "c_tinyblob"
-        },
-        {
-          "name": "c_blob",
-          "length": -1,
-          "table": {
-            "name": "mysql_types"
-          },
-          "type": {
-            "name": "blob"
-          },
-          "originalName": "c_blob"
-        },
-        {
-          "name": "c_mediumblob",
-          "length": -1,
-          "table": {
-            "name": "mysql_types"
-          },
-          "type": {
-            "name": "mediumblob"
-          },
-          "originalName": "c_mediumblob"
-        },
-        {
-          "name": "c_longblob",
-          "length": -1,
-          "table": {
-            "name": "mysql_types"
-          },
-          "type": {
-            "name": "longblob"
-          },
-          "originalName": "c_longblob"
-        }
-      ],
-      "filename": "query.sql"
-    },
-    {
-      "text": "SELECT MAX(c_int) AS max_int, MAX(c_varchar) AS max_varchar, MAX(c_timestamp) AS max_timestamp\nFROM mysql_types",
-      "name": "GetMysqlFunctions",
-      "cmd": ":one",
-      "columns": [
-        {
-          "name": "max_int",
-          "notNull": true,
-          "length": -1,
-          "isFuncCall": true,
-          "type": {
-            "name": "any"
-          }
-        },
-        {
-          "name": "max_varchar",
-          "notNull": true,
-          "length": -1,
-          "isFuncCall": true,
-          "type": {
-            "name": "any"
-          }
-        },
-        {
-          "name": "max_timestamp",
-          "notNull": true,
-          "length": -1,
-          "isFuncCall": true,
-          "type": {
-            "name": "any"
-          }
-        }
-      ],
-      "filename": "query.sql"
-    },
-    {
-      "text": "TRUNCATE TABLE mysql_types",
-      "name": "TruncateMysqlTypes",
-      "cmd": ":exec",
-      "filename": "query.sql"
-    },
-    {
       "text": "INSERT INTO extended.bios (author_name, name, bio_type, author_type) VALUES (?, ?, ?, ?)",
       "name": "CreateExtendedBio",
       "cmd": ":exec",
@@ -3529,6 +1477,2296 @@
       "text": "TRUNCATE TABLE extended.bios",
       "name": "TruncateExtendedBios",
       "cmd": ":exec",
+      "filename": "query.sql"
+    },
+    {
+      "text": "\nINSERT INTO mysql_numeric_types \n(\n    c_bool,\n    c_boolean,\n    c_tinyint,\n    c_smallint,\n    c_mediumint,\n    c_int,\n    c_integer,\n    c_bigint, \n    c_decimal, \n    c_dec, \n    c_numeric, \n    c_fixed, \n    c_float, \n    c_double, \n    c_double_precision\n) \nVALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+      "name": "InsertMysqlNumericTypes",
+      "cmd": ":exec",
+      "parameters": [
+        {
+          "number": 1,
+          "column": {
+            "name": "c_bool",
+            "length": 1,
+            "table": {
+              "schema": "public",
+              "name": "mysql_numeric_types"
+            },
+            "type": {
+              "name": "tinyint"
+            },
+            "originalName": "c_bool"
+          }
+        },
+        {
+          "number": 2,
+          "column": {
+            "name": "c_boolean",
+            "length": 1,
+            "table": {
+              "schema": "public",
+              "name": "mysql_numeric_types"
+            },
+            "type": {
+              "name": "tinyint"
+            },
+            "originalName": "c_boolean"
+          }
+        },
+        {
+          "number": 3,
+          "column": {
+            "name": "c_tinyint",
+            "length": 3,
+            "table": {
+              "schema": "public",
+              "name": "mysql_numeric_types"
+            },
+            "type": {
+              "name": "tinyint"
+            },
+            "originalName": "c_tinyint"
+          }
+        },
+        {
+          "number": 4,
+          "column": {
+            "name": "c_smallint",
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "mysql_numeric_types"
+            },
+            "type": {
+              "name": "smallint"
+            },
+            "originalName": "c_smallint"
+          }
+        },
+        {
+          "number": 5,
+          "column": {
+            "name": "c_mediumint",
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "mysql_numeric_types"
+            },
+            "type": {
+              "name": "mediumint"
+            },
+            "originalName": "c_mediumint"
+          }
+        },
+        {
+          "number": 6,
+          "column": {
+            "name": "c_int",
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "mysql_numeric_types"
+            },
+            "type": {
+              "name": "int"
+            },
+            "originalName": "c_int"
+          }
+        },
+        {
+          "number": 7,
+          "column": {
+            "name": "c_integer",
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "mysql_numeric_types"
+            },
+            "type": {
+              "name": "int"
+            },
+            "originalName": "c_integer"
+          }
+        },
+        {
+          "number": 8,
+          "column": {
+            "name": "c_bigint",
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "mysql_numeric_types"
+            },
+            "type": {
+              "name": "bigint"
+            },
+            "originalName": "c_bigint"
+          }
+        },
+        {
+          "number": 9,
+          "column": {
+            "name": "c_decimal",
+            "length": 10,
+            "table": {
+              "schema": "public",
+              "name": "mysql_numeric_types"
+            },
+            "type": {
+              "name": "decimal"
+            },
+            "originalName": "c_decimal"
+          }
+        },
+        {
+          "number": 10,
+          "column": {
+            "name": "c_dec",
+            "length": 10,
+            "table": {
+              "schema": "public",
+              "name": "mysql_numeric_types"
+            },
+            "type": {
+              "name": "decimal"
+            },
+            "originalName": "c_dec"
+          }
+        },
+        {
+          "number": 11,
+          "column": {
+            "name": "c_numeric",
+            "length": 10,
+            "table": {
+              "schema": "public",
+              "name": "mysql_numeric_types"
+            },
+            "type": {
+              "name": "decimal"
+            },
+            "originalName": "c_numeric"
+          }
+        },
+        {
+          "number": 12,
+          "column": {
+            "name": "c_fixed",
+            "length": 10,
+            "table": {
+              "schema": "public",
+              "name": "mysql_numeric_types"
+            },
+            "type": {
+              "name": "decimal"
+            },
+            "originalName": "c_fixed"
+          }
+        },
+        {
+          "number": 13,
+          "column": {
+            "name": "c_float",
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "mysql_numeric_types"
+            },
+            "type": {
+              "name": "float"
+            },
+            "originalName": "c_float"
+          }
+        },
+        {
+          "number": 14,
+          "column": {
+            "name": "c_double",
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "mysql_numeric_types"
+            },
+            "type": {
+              "name": "double"
+            },
+            "originalName": "c_double"
+          }
+        },
+        {
+          "number": 15,
+          "column": {
+            "name": "c_double_precision",
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "mysql_numeric_types"
+            },
+            "type": {
+              "name": "double"
+            },
+            "originalName": "c_double_precision"
+          }
+        }
+      ],
+      "comments": [
+        " Numeric types "
+      ],
+      "filename": "query.sql",
+      "insert_into_table": {
+        "name": "mysql_numeric_types"
+      }
+    },
+    {
+      "text": "INSERT INTO mysql_numeric_types \n(\n    c_bool,\n    c_boolean,\n    c_tinyint,\n    c_smallint,\n    c_mediumint,\n    c_int,\n    c_integer,\n    c_bigint, \n    c_float, \n    c_numeric, \n    c_decimal, \n    c_dec, \n    c_fixed, \n    c_double, \n    c_double_precision\n) \nVALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+      "name": "InsertMysqlNumericTypesBatch",
+      "cmd": ":copyfrom",
+      "parameters": [
+        {
+          "number": 1,
+          "column": {
+            "name": "c_bool",
+            "length": 1,
+            "table": {
+              "schema": "public",
+              "name": "mysql_numeric_types"
+            },
+            "type": {
+              "name": "tinyint"
+            },
+            "originalName": "c_bool"
+          }
+        },
+        {
+          "number": 2,
+          "column": {
+            "name": "c_boolean",
+            "length": 1,
+            "table": {
+              "schema": "public",
+              "name": "mysql_numeric_types"
+            },
+            "type": {
+              "name": "tinyint"
+            },
+            "originalName": "c_boolean"
+          }
+        },
+        {
+          "number": 3,
+          "column": {
+            "name": "c_tinyint",
+            "length": 3,
+            "table": {
+              "schema": "public",
+              "name": "mysql_numeric_types"
+            },
+            "type": {
+              "name": "tinyint"
+            },
+            "originalName": "c_tinyint"
+          }
+        },
+        {
+          "number": 4,
+          "column": {
+            "name": "c_smallint",
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "mysql_numeric_types"
+            },
+            "type": {
+              "name": "smallint"
+            },
+            "originalName": "c_smallint"
+          }
+        },
+        {
+          "number": 5,
+          "column": {
+            "name": "c_mediumint",
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "mysql_numeric_types"
+            },
+            "type": {
+              "name": "mediumint"
+            },
+            "originalName": "c_mediumint"
+          }
+        },
+        {
+          "number": 6,
+          "column": {
+            "name": "c_int",
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "mysql_numeric_types"
+            },
+            "type": {
+              "name": "int"
+            },
+            "originalName": "c_int"
+          }
+        },
+        {
+          "number": 7,
+          "column": {
+            "name": "c_integer",
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "mysql_numeric_types"
+            },
+            "type": {
+              "name": "int"
+            },
+            "originalName": "c_integer"
+          }
+        },
+        {
+          "number": 8,
+          "column": {
+            "name": "c_bigint",
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "mysql_numeric_types"
+            },
+            "type": {
+              "name": "bigint"
+            },
+            "originalName": "c_bigint"
+          }
+        },
+        {
+          "number": 9,
+          "column": {
+            "name": "c_float",
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "mysql_numeric_types"
+            },
+            "type": {
+              "name": "float"
+            },
+            "originalName": "c_float"
+          }
+        },
+        {
+          "number": 10,
+          "column": {
+            "name": "c_numeric",
+            "length": 10,
+            "table": {
+              "schema": "public",
+              "name": "mysql_numeric_types"
+            },
+            "type": {
+              "name": "decimal"
+            },
+            "originalName": "c_numeric"
+          }
+        },
+        {
+          "number": 11,
+          "column": {
+            "name": "c_decimal",
+            "length": 10,
+            "table": {
+              "schema": "public",
+              "name": "mysql_numeric_types"
+            },
+            "type": {
+              "name": "decimal"
+            },
+            "originalName": "c_decimal"
+          }
+        },
+        {
+          "number": 12,
+          "column": {
+            "name": "c_dec",
+            "length": 10,
+            "table": {
+              "schema": "public",
+              "name": "mysql_numeric_types"
+            },
+            "type": {
+              "name": "decimal"
+            },
+            "originalName": "c_dec"
+          }
+        },
+        {
+          "number": 13,
+          "column": {
+            "name": "c_fixed",
+            "length": 10,
+            "table": {
+              "schema": "public",
+              "name": "mysql_numeric_types"
+            },
+            "type": {
+              "name": "decimal"
+            },
+            "originalName": "c_fixed"
+          }
+        },
+        {
+          "number": 14,
+          "column": {
+            "name": "c_double",
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "mysql_numeric_types"
+            },
+            "type": {
+              "name": "double"
+            },
+            "originalName": "c_double"
+          }
+        },
+        {
+          "number": 15,
+          "column": {
+            "name": "c_double_precision",
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "mysql_numeric_types"
+            },
+            "type": {
+              "name": "double"
+            },
+            "originalName": "c_double_precision"
+          }
+        }
+      ],
+      "filename": "query.sql",
+      "insert_into_table": {
+        "name": "mysql_numeric_types"
+      }
+    },
+    {
+      "text": "SELECT c_bool, c_boolean, c_tinyint, c_smallint, c_mediumint, c_int, c_integer, c_bigint, c_float, c_decimal, c_dec, c_numeric, c_fixed, c_double, c_double_precision FROM mysql_numeric_types LIMIT 1",
+      "name": "GetMysqlNumericTypes",
+      "cmd": ":one",
+      "columns": [
+        {
+          "name": "c_bool",
+          "length": 1,
+          "table": {
+            "name": "mysql_numeric_types"
+          },
+          "type": {
+            "name": "tinyint"
+          },
+          "originalName": "c_bool"
+        },
+        {
+          "name": "c_boolean",
+          "length": 1,
+          "table": {
+            "name": "mysql_numeric_types"
+          },
+          "type": {
+            "name": "tinyint"
+          },
+          "originalName": "c_boolean"
+        },
+        {
+          "name": "c_tinyint",
+          "length": 3,
+          "table": {
+            "name": "mysql_numeric_types"
+          },
+          "type": {
+            "name": "tinyint"
+          },
+          "originalName": "c_tinyint"
+        },
+        {
+          "name": "c_smallint",
+          "length": -1,
+          "table": {
+            "name": "mysql_numeric_types"
+          },
+          "type": {
+            "name": "smallint"
+          },
+          "originalName": "c_smallint"
+        },
+        {
+          "name": "c_mediumint",
+          "length": -1,
+          "table": {
+            "name": "mysql_numeric_types"
+          },
+          "type": {
+            "name": "mediumint"
+          },
+          "originalName": "c_mediumint"
+        },
+        {
+          "name": "c_int",
+          "length": -1,
+          "table": {
+            "name": "mysql_numeric_types"
+          },
+          "type": {
+            "name": "int"
+          },
+          "originalName": "c_int"
+        },
+        {
+          "name": "c_integer",
+          "length": -1,
+          "table": {
+            "name": "mysql_numeric_types"
+          },
+          "type": {
+            "name": "int"
+          },
+          "originalName": "c_integer"
+        },
+        {
+          "name": "c_bigint",
+          "length": -1,
+          "table": {
+            "name": "mysql_numeric_types"
+          },
+          "type": {
+            "name": "bigint"
+          },
+          "originalName": "c_bigint"
+        },
+        {
+          "name": "c_float",
+          "length": -1,
+          "table": {
+            "name": "mysql_numeric_types"
+          },
+          "type": {
+            "name": "float"
+          },
+          "originalName": "c_float"
+        },
+        {
+          "name": "c_decimal",
+          "length": 10,
+          "table": {
+            "name": "mysql_numeric_types"
+          },
+          "type": {
+            "name": "decimal"
+          },
+          "originalName": "c_decimal"
+        },
+        {
+          "name": "c_dec",
+          "length": 10,
+          "table": {
+            "name": "mysql_numeric_types"
+          },
+          "type": {
+            "name": "decimal"
+          },
+          "originalName": "c_dec"
+        },
+        {
+          "name": "c_numeric",
+          "length": 10,
+          "table": {
+            "name": "mysql_numeric_types"
+          },
+          "type": {
+            "name": "decimal"
+          },
+          "originalName": "c_numeric"
+        },
+        {
+          "name": "c_fixed",
+          "length": 10,
+          "table": {
+            "name": "mysql_numeric_types"
+          },
+          "type": {
+            "name": "decimal"
+          },
+          "originalName": "c_fixed"
+        },
+        {
+          "name": "c_double",
+          "length": -1,
+          "table": {
+            "name": "mysql_numeric_types"
+          },
+          "type": {
+            "name": "double"
+          },
+          "originalName": "c_double"
+        },
+        {
+          "name": "c_double_precision",
+          "length": -1,
+          "table": {
+            "name": "mysql_numeric_types"
+          },
+          "type": {
+            "name": "double"
+          },
+          "originalName": "c_double_precision"
+        }
+      ],
+      "filename": "query.sql"
+    },
+    {
+      "text": "SELECT\n    COUNT(*) AS cnt,\n    c_bool,\n    c_boolean,\n    c_tinyint,\n    c_smallint,\n    c_mediumint,\n    c_int,\n    c_integer,\n    c_bigint,\n    c_float,\n    c_numeric,\n    c_decimal,\n    c_dec,\n    c_fixed,\n    c_double,\n    c_double_precision\nFROM mysql_numeric_types\nGROUP BY\n    c_bool,\n    c_boolean,\n    c_tinyint,\n    c_smallint,\n    c_mediumint,\n    c_int,\n    c_integer,\n    c_bigint,\n    c_float,\n    c_numeric,\n    c_decimal,\n    c_dec,\n    c_fixed,\n    c_double,\n    c_double_precision\nLIMIT 1",
+      "name": "GetMysqlNumericTypesCnt",
+      "cmd": ":one",
+      "columns": [
+        {
+          "name": "cnt",
+          "notNull": true,
+          "length": -1,
+          "isFuncCall": true,
+          "type": {
+            "name": "bigint"
+          }
+        },
+        {
+          "name": "c_bool",
+          "length": 1,
+          "table": {
+            "name": "mysql_numeric_types"
+          },
+          "type": {
+            "name": "tinyint"
+          },
+          "originalName": "c_bool"
+        },
+        {
+          "name": "c_boolean",
+          "length": 1,
+          "table": {
+            "name": "mysql_numeric_types"
+          },
+          "type": {
+            "name": "tinyint"
+          },
+          "originalName": "c_boolean"
+        },
+        {
+          "name": "c_tinyint",
+          "length": 3,
+          "table": {
+            "name": "mysql_numeric_types"
+          },
+          "type": {
+            "name": "tinyint"
+          },
+          "originalName": "c_tinyint"
+        },
+        {
+          "name": "c_smallint",
+          "length": -1,
+          "table": {
+            "name": "mysql_numeric_types"
+          },
+          "type": {
+            "name": "smallint"
+          },
+          "originalName": "c_smallint"
+        },
+        {
+          "name": "c_mediumint",
+          "length": -1,
+          "table": {
+            "name": "mysql_numeric_types"
+          },
+          "type": {
+            "name": "mediumint"
+          },
+          "originalName": "c_mediumint"
+        },
+        {
+          "name": "c_int",
+          "length": -1,
+          "table": {
+            "name": "mysql_numeric_types"
+          },
+          "type": {
+            "name": "int"
+          },
+          "originalName": "c_int"
+        },
+        {
+          "name": "c_integer",
+          "length": -1,
+          "table": {
+            "name": "mysql_numeric_types"
+          },
+          "type": {
+            "name": "int"
+          },
+          "originalName": "c_integer"
+        },
+        {
+          "name": "c_bigint",
+          "length": -1,
+          "table": {
+            "name": "mysql_numeric_types"
+          },
+          "type": {
+            "name": "bigint"
+          },
+          "originalName": "c_bigint"
+        },
+        {
+          "name": "c_float",
+          "length": -1,
+          "table": {
+            "name": "mysql_numeric_types"
+          },
+          "type": {
+            "name": "float"
+          },
+          "originalName": "c_float"
+        },
+        {
+          "name": "c_numeric",
+          "length": 10,
+          "table": {
+            "name": "mysql_numeric_types"
+          },
+          "type": {
+            "name": "decimal"
+          },
+          "originalName": "c_numeric"
+        },
+        {
+          "name": "c_decimal",
+          "length": 10,
+          "table": {
+            "name": "mysql_numeric_types"
+          },
+          "type": {
+            "name": "decimal"
+          },
+          "originalName": "c_decimal"
+        },
+        {
+          "name": "c_dec",
+          "length": 10,
+          "table": {
+            "name": "mysql_numeric_types"
+          },
+          "type": {
+            "name": "decimal"
+          },
+          "originalName": "c_dec"
+        },
+        {
+          "name": "c_fixed",
+          "length": 10,
+          "table": {
+            "name": "mysql_numeric_types"
+          },
+          "type": {
+            "name": "decimal"
+          },
+          "originalName": "c_fixed"
+        },
+        {
+          "name": "c_double",
+          "length": -1,
+          "table": {
+            "name": "mysql_numeric_types"
+          },
+          "type": {
+            "name": "double"
+          },
+          "originalName": "c_double"
+        },
+        {
+          "name": "c_double_precision",
+          "length": -1,
+          "table": {
+            "name": "mysql_numeric_types"
+          },
+          "type": {
+            "name": "double"
+          },
+          "originalName": "c_double_precision"
+        }
+      ],
+      "filename": "query.sql"
+    },
+    {
+      "text": "TRUNCATE TABLE mysql_numeric_types",
+      "name": "TruncateMysqlNumericTypes",
+      "cmd": ":exec",
+      "filename": "query.sql"
+    },
+    {
+      "text": "\nINSERT INTO mysql_string_types \n(\n    c_char,\n    c_nchar,\n    c_national_char,\n    c_varchar,\n    c_tinytext,\n    c_mediumtext,\n    c_text,\n    c_longtext, \n    c_json,\n    c_json_string_override,\n    c_enum,\n    c_set\n) \nVALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+      "name": "InsertMysqlStringTypes",
+      "cmd": ":exec",
+      "parameters": [
+        {
+          "number": 1,
+          "column": {
+            "name": "c_char",
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "mysql_string_types"
+            },
+            "type": {
+              "name": "char"
+            },
+            "originalName": "c_char"
+          }
+        },
+        {
+          "number": 2,
+          "column": {
+            "name": "c_nchar",
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "mysql_string_types"
+            },
+            "type": {
+              "name": "char"
+            },
+            "originalName": "c_nchar"
+          }
+        },
+        {
+          "number": 3,
+          "column": {
+            "name": "c_national_char",
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "mysql_string_types"
+            },
+            "type": {
+              "name": "char"
+            },
+            "originalName": "c_national_char"
+          }
+        },
+        {
+          "number": 4,
+          "column": {
+            "name": "c_varchar",
+            "length": 100,
+            "table": {
+              "schema": "public",
+              "name": "mysql_string_types"
+            },
+            "type": {
+              "name": "varchar"
+            },
+            "originalName": "c_varchar"
+          }
+        },
+        {
+          "number": 5,
+          "column": {
+            "name": "c_tinytext",
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "mysql_string_types"
+            },
+            "type": {
+              "name": "tinytext"
+            },
+            "originalName": "c_tinytext"
+          }
+        },
+        {
+          "number": 6,
+          "column": {
+            "name": "c_mediumtext",
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "mysql_string_types"
+            },
+            "type": {
+              "name": "mediumtext"
+            },
+            "originalName": "c_mediumtext"
+          }
+        },
+        {
+          "number": 7,
+          "column": {
+            "name": "c_text",
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "mysql_string_types"
+            },
+            "type": {
+              "name": "text"
+            },
+            "originalName": "c_text"
+          }
+        },
+        {
+          "number": 8,
+          "column": {
+            "name": "c_longtext",
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "mysql_string_types"
+            },
+            "type": {
+              "name": "longtext"
+            },
+            "originalName": "c_longtext"
+          }
+        },
+        {
+          "number": 9,
+          "column": {
+            "name": "c_json",
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "mysql_string_types"
+            },
+            "type": {
+              "name": "json"
+            },
+            "originalName": "c_json"
+          }
+        },
+        {
+          "number": 10,
+          "column": {
+            "name": "c_json_string_override",
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "mysql_string_types"
+            },
+            "type": {
+              "name": "json"
+            },
+            "originalName": "c_json_string_override"
+          }
+        },
+        {
+          "number": 11,
+          "column": {
+            "name": "c_enum",
+            "length": 6,
+            "table": {
+              "schema": "public",
+              "name": "mysql_string_types"
+            },
+            "type": {
+              "name": "mysql_string_types_c_enum"
+            },
+            "originalName": "c_enum"
+          }
+        },
+        {
+          "number": 12,
+          "column": {
+            "name": "c_set",
+            "length": 15,
+            "table": {
+              "schema": "public",
+              "name": "mysql_string_types"
+            },
+            "type": {
+              "name": "mysql_string_types_c_set"
+            },
+            "originalName": "c_set"
+          }
+        }
+      ],
+      "comments": [
+        " String types "
+      ],
+      "filename": "query.sql",
+      "insert_into_table": {
+        "name": "mysql_string_types"
+      }
+    },
+    {
+      "text": "INSERT INTO mysql_string_types \n(\n    c_char,\n    c_nchar,\n    c_national_char,\n    c_varchar,\n    c_tinytext,\n    c_mediumtext,\n    c_text,\n    c_longtext, \n    c_json,\n    c_json_string_override,\n    c_enum,\n    c_set\n) \nVALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+      "name": "InsertMysqlStringTypesBatch",
+      "cmd": ":copyfrom",
+      "parameters": [
+        {
+          "number": 1,
+          "column": {
+            "name": "c_char",
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "mysql_string_types"
+            },
+            "type": {
+              "name": "char"
+            },
+            "originalName": "c_char"
+          }
+        },
+        {
+          "number": 2,
+          "column": {
+            "name": "c_nchar",
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "mysql_string_types"
+            },
+            "type": {
+              "name": "char"
+            },
+            "originalName": "c_nchar"
+          }
+        },
+        {
+          "number": 3,
+          "column": {
+            "name": "c_national_char",
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "mysql_string_types"
+            },
+            "type": {
+              "name": "char"
+            },
+            "originalName": "c_national_char"
+          }
+        },
+        {
+          "number": 4,
+          "column": {
+            "name": "c_varchar",
+            "length": 100,
+            "table": {
+              "schema": "public",
+              "name": "mysql_string_types"
+            },
+            "type": {
+              "name": "varchar"
+            },
+            "originalName": "c_varchar"
+          }
+        },
+        {
+          "number": 5,
+          "column": {
+            "name": "c_tinytext",
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "mysql_string_types"
+            },
+            "type": {
+              "name": "tinytext"
+            },
+            "originalName": "c_tinytext"
+          }
+        },
+        {
+          "number": 6,
+          "column": {
+            "name": "c_mediumtext",
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "mysql_string_types"
+            },
+            "type": {
+              "name": "mediumtext"
+            },
+            "originalName": "c_mediumtext"
+          }
+        },
+        {
+          "number": 7,
+          "column": {
+            "name": "c_text",
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "mysql_string_types"
+            },
+            "type": {
+              "name": "text"
+            },
+            "originalName": "c_text"
+          }
+        },
+        {
+          "number": 8,
+          "column": {
+            "name": "c_longtext",
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "mysql_string_types"
+            },
+            "type": {
+              "name": "longtext"
+            },
+            "originalName": "c_longtext"
+          }
+        },
+        {
+          "number": 9,
+          "column": {
+            "name": "c_json",
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "mysql_string_types"
+            },
+            "type": {
+              "name": "json"
+            },
+            "originalName": "c_json"
+          }
+        },
+        {
+          "number": 10,
+          "column": {
+            "name": "c_json_string_override",
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "mysql_string_types"
+            },
+            "type": {
+              "name": "json"
+            },
+            "originalName": "c_json_string_override"
+          }
+        },
+        {
+          "number": 11,
+          "column": {
+            "name": "c_enum",
+            "length": 6,
+            "table": {
+              "schema": "public",
+              "name": "mysql_string_types"
+            },
+            "type": {
+              "name": "mysql_string_types_c_enum"
+            },
+            "originalName": "c_enum"
+          }
+        },
+        {
+          "number": 12,
+          "column": {
+            "name": "c_set",
+            "length": 15,
+            "table": {
+              "schema": "public",
+              "name": "mysql_string_types"
+            },
+            "type": {
+              "name": "mysql_string_types_c_set"
+            },
+            "originalName": "c_set"
+          }
+        }
+      ],
+      "filename": "query.sql",
+      "insert_into_table": {
+        "name": "mysql_string_types"
+      }
+    },
+    {
+      "text": "SELECT c_char, c_nchar, c_national_char, c_varchar, c_tinytext, c_mediumtext, c_text, c_longtext, c_json, c_json_string_override, c_enum, c_set FROM mysql_string_types LIMIT 1",
+      "name": "GetMysqlStringTypes",
+      "cmd": ":one",
+      "columns": [
+        {
+          "name": "c_char",
+          "length": -1,
+          "table": {
+            "name": "mysql_string_types"
+          },
+          "type": {
+            "name": "char"
+          },
+          "originalName": "c_char"
+        },
+        {
+          "name": "c_nchar",
+          "length": -1,
+          "table": {
+            "name": "mysql_string_types"
+          },
+          "type": {
+            "name": "char"
+          },
+          "originalName": "c_nchar"
+        },
+        {
+          "name": "c_national_char",
+          "length": -1,
+          "table": {
+            "name": "mysql_string_types"
+          },
+          "type": {
+            "name": "char"
+          },
+          "originalName": "c_national_char"
+        },
+        {
+          "name": "c_varchar",
+          "length": 100,
+          "table": {
+            "name": "mysql_string_types"
+          },
+          "type": {
+            "name": "varchar"
+          },
+          "originalName": "c_varchar"
+        },
+        {
+          "name": "c_tinytext",
+          "length": -1,
+          "table": {
+            "name": "mysql_string_types"
+          },
+          "type": {
+            "name": "tinytext"
+          },
+          "originalName": "c_tinytext"
+        },
+        {
+          "name": "c_mediumtext",
+          "length": -1,
+          "table": {
+            "name": "mysql_string_types"
+          },
+          "type": {
+            "name": "mediumtext"
+          },
+          "originalName": "c_mediumtext"
+        },
+        {
+          "name": "c_text",
+          "length": -1,
+          "table": {
+            "name": "mysql_string_types"
+          },
+          "type": {
+            "name": "text"
+          },
+          "originalName": "c_text"
+        },
+        {
+          "name": "c_longtext",
+          "length": -1,
+          "table": {
+            "name": "mysql_string_types"
+          },
+          "type": {
+            "name": "longtext"
+          },
+          "originalName": "c_longtext"
+        },
+        {
+          "name": "c_json",
+          "length": -1,
+          "table": {
+            "name": "mysql_string_types"
+          },
+          "type": {
+            "name": "json"
+          },
+          "originalName": "c_json"
+        },
+        {
+          "name": "c_json_string_override",
+          "length": -1,
+          "table": {
+            "name": "mysql_string_types"
+          },
+          "type": {
+            "name": "json"
+          },
+          "originalName": "c_json_string_override"
+        },
+        {
+          "name": "c_enum",
+          "length": 6,
+          "table": {
+            "name": "mysql_string_types"
+          },
+          "type": {
+            "name": "mysql_string_types_c_enum"
+          },
+          "originalName": "c_enum"
+        },
+        {
+          "name": "c_set",
+          "length": 15,
+          "table": {
+            "name": "mysql_string_types"
+          },
+          "type": {
+            "name": "mysql_string_types_c_set"
+          },
+          "originalName": "c_set"
+        }
+      ],
+      "filename": "query.sql"
+    },
+    {
+      "text": "SELECT\n    COUNT(*) AS cnt,\n    c_char,\n    c_nchar,\n    c_national_char,\n    c_varchar,\n    c_tinytext,\n    c_mediumtext,\n    c_text,\n    c_longtext,\n    c_json,\n    c_json_string_override,\n    c_enum,\n    c_set\nFROM mysql_string_types\nGROUP BY\n    c_char,\n    c_nchar,\n    c_national_char,\n    c_varchar,\n    c_tinytext,\n    c_mediumtext,\n    c_text,\n    c_longtext,\n    c_json,\n    c_json_string_override,\n    c_enum,\n    c_set\nLIMIT 1",
+      "name": "GetMysqlStringTypesCnt",
+      "cmd": ":one",
+      "columns": [
+        {
+          "name": "cnt",
+          "notNull": true,
+          "length": -1,
+          "isFuncCall": true,
+          "type": {
+            "name": "bigint"
+          }
+        },
+        {
+          "name": "c_char",
+          "length": -1,
+          "table": {
+            "name": "mysql_string_types"
+          },
+          "type": {
+            "name": "char"
+          },
+          "originalName": "c_char"
+        },
+        {
+          "name": "c_nchar",
+          "length": -1,
+          "table": {
+            "name": "mysql_string_types"
+          },
+          "type": {
+            "name": "char"
+          },
+          "originalName": "c_nchar"
+        },
+        {
+          "name": "c_national_char",
+          "length": -1,
+          "table": {
+            "name": "mysql_string_types"
+          },
+          "type": {
+            "name": "char"
+          },
+          "originalName": "c_national_char"
+        },
+        {
+          "name": "c_varchar",
+          "length": 100,
+          "table": {
+            "name": "mysql_string_types"
+          },
+          "type": {
+            "name": "varchar"
+          },
+          "originalName": "c_varchar"
+        },
+        {
+          "name": "c_tinytext",
+          "length": -1,
+          "table": {
+            "name": "mysql_string_types"
+          },
+          "type": {
+            "name": "tinytext"
+          },
+          "originalName": "c_tinytext"
+        },
+        {
+          "name": "c_mediumtext",
+          "length": -1,
+          "table": {
+            "name": "mysql_string_types"
+          },
+          "type": {
+            "name": "mediumtext"
+          },
+          "originalName": "c_mediumtext"
+        },
+        {
+          "name": "c_text",
+          "length": -1,
+          "table": {
+            "name": "mysql_string_types"
+          },
+          "type": {
+            "name": "text"
+          },
+          "originalName": "c_text"
+        },
+        {
+          "name": "c_longtext",
+          "length": -1,
+          "table": {
+            "name": "mysql_string_types"
+          },
+          "type": {
+            "name": "longtext"
+          },
+          "originalName": "c_longtext"
+        },
+        {
+          "name": "c_json",
+          "length": -1,
+          "table": {
+            "name": "mysql_string_types"
+          },
+          "type": {
+            "name": "json"
+          },
+          "originalName": "c_json"
+        },
+        {
+          "name": "c_json_string_override",
+          "length": -1,
+          "table": {
+            "name": "mysql_string_types"
+          },
+          "type": {
+            "name": "json"
+          },
+          "originalName": "c_json_string_override"
+        },
+        {
+          "name": "c_enum",
+          "length": 6,
+          "table": {
+            "name": "mysql_string_types"
+          },
+          "type": {
+            "name": "mysql_string_types_c_enum"
+          },
+          "originalName": "c_enum"
+        },
+        {
+          "name": "c_set",
+          "length": 15,
+          "table": {
+            "name": "mysql_string_types"
+          },
+          "type": {
+            "name": "mysql_string_types_c_set"
+          },
+          "originalName": "c_set"
+        }
+      ],
+      "filename": "query.sql"
+    },
+    {
+      "text": "TRUNCATE TABLE mysql_string_types",
+      "name": "TruncateMysqlStringTypes",
+      "cmd": ":exec",
+      "filename": "query.sql"
+    },
+    {
+      "text": "\nINSERT INTO mysql_datetime_types \n(\n    c_year,\n    c_date,\n    c_datetime,\n    c_timestamp,\n    c_time\n) \nVALUES (?, ?, ?, ?, ?)",
+      "name": "InsertMysqlDatetimeTypes",
+      "cmd": ":exec",
+      "parameters": [
+        {
+          "number": 1,
+          "column": {
+            "name": "c_year",
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "mysql_datetime_types"
+            },
+            "type": {
+              "name": "year"
+            },
+            "originalName": "c_year"
+          }
+        },
+        {
+          "number": 2,
+          "column": {
+            "name": "c_date",
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "mysql_datetime_types"
+            },
+            "type": {
+              "name": "date"
+            },
+            "originalName": "c_date"
+          }
+        },
+        {
+          "number": 3,
+          "column": {
+            "name": "c_datetime",
+            "length": 19,
+            "table": {
+              "schema": "public",
+              "name": "mysql_datetime_types"
+            },
+            "type": {
+              "name": "datetime"
+            },
+            "originalName": "c_datetime"
+          }
+        },
+        {
+          "number": 4,
+          "column": {
+            "name": "c_timestamp",
+            "length": 19,
+            "table": {
+              "schema": "public",
+              "name": "mysql_datetime_types"
+            },
+            "type": {
+              "name": "timestamp"
+            },
+            "originalName": "c_timestamp"
+          }
+        },
+        {
+          "number": 5,
+          "column": {
+            "name": "c_time",
+            "length": 10,
+            "table": {
+              "schema": "public",
+              "name": "mysql_datetime_types"
+            },
+            "type": {
+              "name": "time"
+            },
+            "originalName": "c_time"
+          }
+        }
+      ],
+      "comments": [
+        " Datetime types "
+      ],
+      "filename": "query.sql",
+      "insert_into_table": {
+        "name": "mysql_datetime_types"
+      }
+    },
+    {
+      "text": "INSERT INTO mysql_datetime_types \n(\n    c_year,\n    c_date,\n    c_datetime,\n    c_timestamp,\n    c_time\n) \nVALUES (?, ?, ?, ?, ?)",
+      "name": "InsertMysqlDatetimeTypesBatch",
+      "cmd": ":copyfrom",
+      "parameters": [
+        {
+          "number": 1,
+          "column": {
+            "name": "c_year",
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "mysql_datetime_types"
+            },
+            "type": {
+              "name": "year"
+            },
+            "originalName": "c_year"
+          }
+        },
+        {
+          "number": 2,
+          "column": {
+            "name": "c_date",
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "mysql_datetime_types"
+            },
+            "type": {
+              "name": "date"
+            },
+            "originalName": "c_date"
+          }
+        },
+        {
+          "number": 3,
+          "column": {
+            "name": "c_datetime",
+            "length": 19,
+            "table": {
+              "schema": "public",
+              "name": "mysql_datetime_types"
+            },
+            "type": {
+              "name": "datetime"
+            },
+            "originalName": "c_datetime"
+          }
+        },
+        {
+          "number": 4,
+          "column": {
+            "name": "c_timestamp",
+            "length": 19,
+            "table": {
+              "schema": "public",
+              "name": "mysql_datetime_types"
+            },
+            "type": {
+              "name": "timestamp"
+            },
+            "originalName": "c_timestamp"
+          }
+        },
+        {
+          "number": 5,
+          "column": {
+            "name": "c_time",
+            "length": 10,
+            "table": {
+              "schema": "public",
+              "name": "mysql_datetime_types"
+            },
+            "type": {
+              "name": "time"
+            },
+            "originalName": "c_time"
+          }
+        }
+      ],
+      "filename": "query.sql",
+      "insert_into_table": {
+        "name": "mysql_datetime_types"
+      }
+    },
+    {
+      "text": "SELECT c_year, c_date, c_datetime, c_timestamp, c_time FROM mysql_datetime_types LIMIT 1",
+      "name": "GetMysqlDatetimeTypes",
+      "cmd": ":one",
+      "columns": [
+        {
+          "name": "c_year",
+          "length": -1,
+          "table": {
+            "name": "mysql_datetime_types"
+          },
+          "type": {
+            "name": "year"
+          },
+          "originalName": "c_year"
+        },
+        {
+          "name": "c_date",
+          "length": -1,
+          "table": {
+            "name": "mysql_datetime_types"
+          },
+          "type": {
+            "name": "date"
+          },
+          "originalName": "c_date"
+        },
+        {
+          "name": "c_datetime",
+          "length": 19,
+          "table": {
+            "name": "mysql_datetime_types"
+          },
+          "type": {
+            "name": "datetime"
+          },
+          "originalName": "c_datetime"
+        },
+        {
+          "name": "c_timestamp",
+          "length": 19,
+          "table": {
+            "name": "mysql_datetime_types"
+          },
+          "type": {
+            "name": "timestamp"
+          },
+          "originalName": "c_timestamp"
+        },
+        {
+          "name": "c_time",
+          "length": 10,
+          "table": {
+            "name": "mysql_datetime_types"
+          },
+          "type": {
+            "name": "time"
+          },
+          "originalName": "c_time"
+        }
+      ],
+      "filename": "query.sql"
+    },
+    {
+      "text": "SELECT\n    COUNT(*) AS cnt,\n    c_year,\n    c_date,\n    c_datetime,\n    c_timestamp,\n    c_time\nFROM mysql_datetime_types\nGROUP BY\n    c_year,\n    c_date,\n    c_datetime,\n    c_timestamp,\n    c_time\nLIMIT 1",
+      "name": "GetMysqlDatetimeTypesCnt",
+      "cmd": ":one",
+      "columns": [
+        {
+          "name": "cnt",
+          "notNull": true,
+          "length": -1,
+          "isFuncCall": true,
+          "type": {
+            "name": "bigint"
+          }
+        },
+        {
+          "name": "c_year",
+          "length": -1,
+          "table": {
+            "name": "mysql_datetime_types"
+          },
+          "type": {
+            "name": "year"
+          },
+          "originalName": "c_year"
+        },
+        {
+          "name": "c_date",
+          "length": -1,
+          "table": {
+            "name": "mysql_datetime_types"
+          },
+          "type": {
+            "name": "date"
+          },
+          "originalName": "c_date"
+        },
+        {
+          "name": "c_datetime",
+          "length": 19,
+          "table": {
+            "name": "mysql_datetime_types"
+          },
+          "type": {
+            "name": "datetime"
+          },
+          "originalName": "c_datetime"
+        },
+        {
+          "name": "c_timestamp",
+          "length": 19,
+          "table": {
+            "name": "mysql_datetime_types"
+          },
+          "type": {
+            "name": "timestamp"
+          },
+          "originalName": "c_timestamp"
+        },
+        {
+          "name": "c_time",
+          "length": 10,
+          "table": {
+            "name": "mysql_datetime_types"
+          },
+          "type": {
+            "name": "time"
+          },
+          "originalName": "c_time"
+        }
+      ],
+      "filename": "query.sql"
+    },
+    {
+      "text": "TRUNCATE TABLE mysql_datetime_types",
+      "name": "TruncateMysqlDatetimeTypes",
+      "cmd": ":exec",
+      "filename": "query.sql"
+    },
+    {
+      "text": "\nINSERT INTO mysql_binary_types \n(\n    c_bit,\n    c_binary, \n    c_varbinary, \n    c_tinyblob, \n    c_blob, \n    c_mediumblob, \n    c_longblob\n) \nVALUES (?, ?, ?, ?, ?, ?, ?)",
+      "name": "InsertMysqlBinaryTypes",
+      "cmd": ":exec",
+      "parameters": [
+        {
+          "number": 1,
+          "column": {
+            "name": "c_bit",
+            "length": 8,
+            "table": {
+              "schema": "public",
+              "name": "mysql_binary_types"
+            },
+            "type": {
+              "name": "bit"
+            },
+            "originalName": "c_bit"
+          }
+        },
+        {
+          "number": 2,
+          "column": {
+            "name": "c_binary",
+            "length": 3,
+            "table": {
+              "schema": "public",
+              "name": "mysql_binary_types"
+            },
+            "type": {
+              "name": "binary"
+            },
+            "originalName": "c_binary"
+          }
+        },
+        {
+          "number": 3,
+          "column": {
+            "name": "c_varbinary",
+            "length": 10,
+            "table": {
+              "schema": "public",
+              "name": "mysql_binary_types"
+            },
+            "type": {
+              "name": "varbinary"
+            },
+            "originalName": "c_varbinary"
+          }
+        },
+        {
+          "number": 4,
+          "column": {
+            "name": "c_tinyblob",
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "mysql_binary_types"
+            },
+            "type": {
+              "name": "tinyblob"
+            },
+            "originalName": "c_tinyblob"
+          }
+        },
+        {
+          "number": 5,
+          "column": {
+            "name": "c_blob",
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "mysql_binary_types"
+            },
+            "type": {
+              "name": "blob"
+            },
+            "originalName": "c_blob"
+          }
+        },
+        {
+          "number": 6,
+          "column": {
+            "name": "c_mediumblob",
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "mysql_binary_types"
+            },
+            "type": {
+              "name": "mediumblob"
+            },
+            "originalName": "c_mediumblob"
+          }
+        },
+        {
+          "number": 7,
+          "column": {
+            "name": "c_longblob",
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "mysql_binary_types"
+            },
+            "type": {
+              "name": "longblob"
+            },
+            "originalName": "c_longblob"
+          }
+        }
+      ],
+      "comments": [
+        " Binary types "
+      ],
+      "filename": "query.sql",
+      "insert_into_table": {
+        "name": "mysql_binary_types"
+      }
+    },
+    {
+      "text": "INSERT INTO mysql_binary_types \n(\n    c_bit,\n    c_binary, \n    c_varbinary, \n    c_tinyblob, \n    c_blob, \n    c_mediumblob, \n    c_longblob\n) \nVALUES (?, ?, ?, ?, ?, ?, ?)",
+      "name": "InsertMysqlBinaryTypesBatch",
+      "cmd": ":copyfrom",
+      "parameters": [
+        {
+          "number": 1,
+          "column": {
+            "name": "c_bit",
+            "length": 8,
+            "table": {
+              "schema": "public",
+              "name": "mysql_binary_types"
+            },
+            "type": {
+              "name": "bit"
+            },
+            "originalName": "c_bit"
+          }
+        },
+        {
+          "number": 2,
+          "column": {
+            "name": "c_binary",
+            "length": 3,
+            "table": {
+              "schema": "public",
+              "name": "mysql_binary_types"
+            },
+            "type": {
+              "name": "binary"
+            },
+            "originalName": "c_binary"
+          }
+        },
+        {
+          "number": 3,
+          "column": {
+            "name": "c_varbinary",
+            "length": 10,
+            "table": {
+              "schema": "public",
+              "name": "mysql_binary_types"
+            },
+            "type": {
+              "name": "varbinary"
+            },
+            "originalName": "c_varbinary"
+          }
+        },
+        {
+          "number": 4,
+          "column": {
+            "name": "c_tinyblob",
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "mysql_binary_types"
+            },
+            "type": {
+              "name": "tinyblob"
+            },
+            "originalName": "c_tinyblob"
+          }
+        },
+        {
+          "number": 5,
+          "column": {
+            "name": "c_blob",
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "mysql_binary_types"
+            },
+            "type": {
+              "name": "blob"
+            },
+            "originalName": "c_blob"
+          }
+        },
+        {
+          "number": 6,
+          "column": {
+            "name": "c_mediumblob",
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "mysql_binary_types"
+            },
+            "type": {
+              "name": "mediumblob"
+            },
+            "originalName": "c_mediumblob"
+          }
+        },
+        {
+          "number": 7,
+          "column": {
+            "name": "c_longblob",
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "mysql_binary_types"
+            },
+            "type": {
+              "name": "longblob"
+            },
+            "originalName": "c_longblob"
+          }
+        }
+      ],
+      "filename": "query.sql",
+      "insert_into_table": {
+        "name": "mysql_binary_types"
+      }
+    },
+    {
+      "text": "SELECT c_bit, c_binary, c_varbinary, c_tinyblob, c_blob, c_mediumblob, c_longblob FROM mysql_binary_types LIMIT 1",
+      "name": "GetMysqlBinaryTypes",
+      "cmd": ":one",
+      "columns": [
+        {
+          "name": "c_bit",
+          "length": 8,
+          "table": {
+            "name": "mysql_binary_types"
+          },
+          "type": {
+            "name": "bit"
+          },
+          "originalName": "c_bit"
+        },
+        {
+          "name": "c_binary",
+          "length": 3,
+          "table": {
+            "name": "mysql_binary_types"
+          },
+          "type": {
+            "name": "binary"
+          },
+          "originalName": "c_binary"
+        },
+        {
+          "name": "c_varbinary",
+          "length": 10,
+          "table": {
+            "name": "mysql_binary_types"
+          },
+          "type": {
+            "name": "varbinary"
+          },
+          "originalName": "c_varbinary"
+        },
+        {
+          "name": "c_tinyblob",
+          "length": -1,
+          "table": {
+            "name": "mysql_binary_types"
+          },
+          "type": {
+            "name": "tinyblob"
+          },
+          "originalName": "c_tinyblob"
+        },
+        {
+          "name": "c_blob",
+          "length": -1,
+          "table": {
+            "name": "mysql_binary_types"
+          },
+          "type": {
+            "name": "blob"
+          },
+          "originalName": "c_blob"
+        },
+        {
+          "name": "c_mediumblob",
+          "length": -1,
+          "table": {
+            "name": "mysql_binary_types"
+          },
+          "type": {
+            "name": "mediumblob"
+          },
+          "originalName": "c_mediumblob"
+        },
+        {
+          "name": "c_longblob",
+          "length": -1,
+          "table": {
+            "name": "mysql_binary_types"
+          },
+          "type": {
+            "name": "longblob"
+          },
+          "originalName": "c_longblob"
+        }
+      ],
+      "filename": "query.sql"
+    },
+    {
+      "text": "SELECT\n    COUNT(*) AS cnt,\n    c_bit,\n    c_binary,\n    c_varbinary,\n    c_tinyblob,\n    c_blob,\n    c_mediumblob,\n    c_longblob\nFROM mysql_binary_types\nGROUP BY\n    c_bit,\n    c_binary,\n    c_varbinary,\n    c_tinyblob,\n    c_blob,\n    c_mediumblob,\n    c_longblob\nLIMIT 1",
+      "name": "GetMysqlBinaryTypesCnt",
+      "cmd": ":one",
+      "columns": [
+        {
+          "name": "cnt",
+          "notNull": true,
+          "length": -1,
+          "isFuncCall": true,
+          "type": {
+            "name": "bigint"
+          }
+        },
+        {
+          "name": "c_bit",
+          "length": 8,
+          "table": {
+            "name": "mysql_binary_types"
+          },
+          "type": {
+            "name": "bit"
+          },
+          "originalName": "c_bit"
+        },
+        {
+          "name": "c_binary",
+          "length": 3,
+          "table": {
+            "name": "mysql_binary_types"
+          },
+          "type": {
+            "name": "binary"
+          },
+          "originalName": "c_binary"
+        },
+        {
+          "name": "c_varbinary",
+          "length": 10,
+          "table": {
+            "name": "mysql_binary_types"
+          },
+          "type": {
+            "name": "varbinary"
+          },
+          "originalName": "c_varbinary"
+        },
+        {
+          "name": "c_tinyblob",
+          "length": -1,
+          "table": {
+            "name": "mysql_binary_types"
+          },
+          "type": {
+            "name": "tinyblob"
+          },
+          "originalName": "c_tinyblob"
+        },
+        {
+          "name": "c_blob",
+          "length": -1,
+          "table": {
+            "name": "mysql_binary_types"
+          },
+          "type": {
+            "name": "blob"
+          },
+          "originalName": "c_blob"
+        },
+        {
+          "name": "c_mediumblob",
+          "length": -1,
+          "table": {
+            "name": "mysql_binary_types"
+          },
+          "type": {
+            "name": "mediumblob"
+          },
+          "originalName": "c_mediumblob"
+        },
+        {
+          "name": "c_longblob",
+          "length": -1,
+          "table": {
+            "name": "mysql_binary_types"
+          },
+          "type": {
+            "name": "longblob"
+          },
+          "originalName": "c_longblob"
+        }
+      ],
+      "filename": "query.sql"
+    },
+    {
+      "text": "TRUNCATE TABLE mysql_binary_types",
+      "name": "TruncateMysqlBinaryTypes",
+      "cmd": ":exec",
+      "filename": "query.sql"
+    },
+    {
+      "text": "\nSELECT\n    MAX(c_int) AS max_int,\n    MAX(c_varchar) AS max_varchar,\n    MAX(c_timestamp) AS max_timestamp\nFROM mysql_numeric_types\nCROSS JOIN mysql_string_types\nCROSS JOIN mysql_datetime_types",
+      "name": "GetMysqlFunctions",
+      "cmd": ":one",
+      "columns": [
+        {
+          "name": "max_int",
+          "notNull": true,
+          "length": -1,
+          "isFuncCall": true,
+          "type": {
+            "name": "any"
+          }
+        },
+        {
+          "name": "max_varchar",
+          "notNull": true,
+          "length": -1,
+          "isFuncCall": true,
+          "type": {
+            "name": "any"
+          }
+        },
+        {
+          "name": "max_timestamp",
+          "notNull": true,
+          "length": -1,
+          "isFuncCall": true,
+          "type": {
+            "name": "any"
+          }
+        }
+      ],
+      "comments": [
+        " Functions "
+      ],
       "filename": "query.sql"
     }
   ],

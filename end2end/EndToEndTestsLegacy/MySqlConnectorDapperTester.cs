@@ -14,8 +14,11 @@ namespace EndToEndTests
         public async Task EmptyTestsTable()
         {
             await QuerySql.DeleteAllAuthors();
-            await QuerySql.TruncateMysqlTypes();
             await QuerySql.TruncateExtendedBios();
+            await QuerySql.TruncateMysqlNumericTypes();
+            await QuerySql.TruncateMysqlStringTypes();
+            await QuerySql.TruncateMysqlDatetimeTypes();
+            await QuerySql.TruncateMysqlBinaryTypes();
         }
     }
 }
