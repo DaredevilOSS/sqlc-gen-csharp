@@ -63,6 +63,7 @@ public enum KnownTestType
     PostgresFloatingPointCopyFrom,
     PostgresDateTimeCopyFrom,
     PostgresGuidCopyFrom,
+    PostgresJsonCopyFrom,
     PostgresNetworkCopyFrom,
     PostgresArrayCopyFrom,
     PostgresGeoCopyFrom,
@@ -179,6 +180,7 @@ internal static class Config
         KnownTestType.PostgresFloatingPointCopyFrom,
         KnownTestType.PostgresDateTimeCopyFrom,
         KnownTestType.PostgresGuidCopyFrom,
+        KnownTestType.PostgresJsonCopyFrom,
         KnownTestType.PostgresArrayCopyFrom,
         KnownTestType.PostgresNetworkCopyFrom
     ];

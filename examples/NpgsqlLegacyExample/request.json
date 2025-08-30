@@ -13,7 +13,7 @@
     "codegen": {
       "out": "examples/NpgsqlLegacyExample",
       "plugin": "csharp",
-      "options": "eyJkZWJ1Z1JlcXVlc3QiOnRydWUsImdlbmVyYXRlQ3Nwcm9qIjp0cnVlLCJuYW1lc3BhY2VOYW1lIjoiTnBnc3FsTGVnYWN5RXhhbXBsZUdlbiIsIm92ZXJyaWRlcyI6W3siY29sdW1uIjoiR2V0UG9zdGdyZXNGdW5jdGlvbnM6bWF4X2ludGVnZXIiLCJjc2hhcnBfdHlwZSI6eyJub3ROdWxsIjpmYWxzZSwidHlwZSI6ImludCJ9fSx7ImNvbHVtbiI6IkdldFBvc3RncmVzRnVuY3Rpb25zOm1heF92YXJjaGFyIiwiY3NoYXJwX3R5cGUiOnsibm90TnVsbCI6ZmFsc2UsInR5cGUiOiJzdHJpbmcifX0seyJjb2x1bW4iOiJHZXRQb3N0Z3Jlc0Z1bmN0aW9uczptYXhfdGltZXN0YW1wIiwiY3NoYXJwX3R5cGUiOnsibm90TnVsbCI6dHJ1ZSwidHlwZSI6IkRhdGVUaW1lIn19LHsiY29sdW1uIjoiKjpjX2pzb25fc3RyaW5nX292ZXJyaWRlIiwiY3NoYXJwX3R5cGUiOnsibm90TnVsbCI6ZmFsc2UsInR5cGUiOiJzdHJpbmcifX0seyJjb2x1bW4iOiIqOmNfeG1sX3N0cmluZ19vdmVycmlkZSIsImNzaGFycF90eXBlIjp7Im5vdE51bGwiOmZhbHNlLCJ0eXBlIjoic3RyaW5nIn19LHsiY29sdW1uIjoiKjpjX21hY2FkZHI4IiwiY3NoYXJwX3R5cGUiOnsibm90TnVsbCI6ZmFsc2UsInR5cGUiOiJzdHJpbmcifX1dLCJ0YXJnZXRGcmFtZXdvcmsiOiJuZXRzdGFuZGFyZDIuMCIsInVzZURhcHBlciI6ZmFsc2V9",
+      "options": "eyJkZWJ1Z1JlcXVlc3QiOnRydWUsImdlbmVyYXRlQ3Nwcm9qIjp0cnVlLCJuYW1lc3BhY2VOYW1lIjoiTnBnc3FsTGVnYWN5RXhhbXBsZUdlbiIsIm92ZXJyaWRlcyI6W3siY29sdW1uIjoiR2V0UG9zdGdyZXNGdW5jdGlvbnM6bWF4X2ludGVnZXIiLCJjc2hhcnBfdHlwZSI6eyJub3ROdWxsIjpmYWxzZSwidHlwZSI6ImludCJ9fSx7ImNvbHVtbiI6IkdldFBvc3RncmVzRnVuY3Rpb25zOm1heF92YXJjaGFyIiwiY3NoYXJwX3R5cGUiOnsibm90TnVsbCI6ZmFsc2UsInR5cGUiOiJzdHJpbmcifX0seyJjb2x1bW4iOiJHZXRQb3N0Z3Jlc0Z1bmN0aW9uczptYXhfdGltZXN0YW1wIiwiY3NoYXJwX3R5cGUiOnsibm90TnVsbCI6dHJ1ZSwidHlwZSI6IkRhdGVUaW1lIn19LHsiY29sdW1uIjoiR2V0UG9zdGdyZXNTcGVjaWFsVHlwZXNDbnQ6Y19qc29uIiwiY3NoYXJwX3R5cGUiOnsibm90TnVsbCI6ZmFsc2UsInR5cGUiOiJKc29uRWxlbWVudCJ9fSx7ImNvbHVtbiI6IkdldFBvc3RncmVzU3BlY2lhbFR5cGVzQ250OmNfanNvbmIiLCJjc2hhcnBfdHlwZSI6eyJub3ROdWxsIjpmYWxzZSwidHlwZSI6Ikpzb25FbGVtZW50In19LHsiY29sdW1uIjoiKjpjX2pzb25fc3RyaW5nX292ZXJyaWRlIiwiY3NoYXJwX3R5cGUiOnsibm90TnVsbCI6ZmFsc2UsInR5cGUiOiJzdHJpbmcifX0seyJjb2x1bW4iOiIqOmNfeG1sX3N0cmluZ19vdmVycmlkZSIsImNzaGFycF90eXBlIjp7Im5vdE51bGwiOmZhbHNlLCJ0eXBlIjoic3RyaW5nIn19LHsiY29sdW1uIjoiKjpjX21hY2FkZHI4IiwiY3NoYXJwX3R5cGUiOnsibm90TnVsbCI6ZmFsc2UsInR5cGUiOiJzdHJpbmcifX1dLCJ0YXJnZXRGcmFtZXdvcmsiOiJuZXRzdGFuZGFyZDIuMCIsInVzZURhcHBlciI6ZmFsc2V9",
       "process": {
         "cmd": "./dist/LocalRunner"
       }
@@ -35032,7 +35032,7 @@
       }
     },
     {
-      "text": "\nINSERT INTO postgres_special_types\n(\n    c_json,\n    c_json_string_override,\n    c_jsonb,\n    c_jsonpath,\n    c_xml,\n    c_xml_string_override,\n    c_uuid,\n    c_enum\n)\nVALUES (\n    $1::json, \n    $2::json, \n    $3::jsonb,\n    $4::jsonpath,\n    $5::xml,\n    $6::xml,\n    $7,\n    $8::c_enum\n)",
+      "text": "\nINSERT INTO postgres_special_types\n(\n    c_json,\n    c_json_string_override,\n    c_jsonb,\n    c_jsonpath,\n    c_xml,\n    c_xml_string_override,\n    c_uuid,\n    c_enum\n)\nVALUES (\n    $1, \n    $2::json, \n    $3,\n    $4::jsonpath,\n    $5::xml,\n    $6::xml,\n    $7,\n    $8::c_enum\n)",
       "name": "InsertPostgresSpecialTypes",
       "cmd": ":exec",
       "parameters": [
@@ -35041,9 +35041,15 @@
           "column": {
             "name": "c_json",
             "length": -1,
+            "isNamedParam": true,
+            "table": {
+              "schema": "public",
+              "name": "postgres_special_types"
+            },
             "type": {
               "name": "json"
-            }
+            },
+            "originalName": "c_json"
           }
         },
         {
@@ -35061,9 +35067,15 @@
           "column": {
             "name": "c_jsonb",
             "length": -1,
+            "isNamedParam": true,
+            "table": {
+              "schema": "public",
+              "name": "postgres_special_types"
+            },
             "type": {
               "name": "jsonb"
-            }
+            },
+            "originalName": "c_jsonb"
           }
         },
         {
@@ -35234,7 +35246,7 @@
       "filename": "query.sql"
     },
     {
-      "text": "INSERT INTO postgres_special_types\n(\n    c_uuid\n)\nVALUES (\n    $1\n)",
+      "text": "INSERT INTO postgres_special_types\n(\n    c_uuid,\n    c_json,\n    c_jsonb\n)\nVALUES (\n    $1,\n    $2,\n    $3\n)",
       "name": "InsertPostgresSpecialTypesBatch",
       "cmd": ":copyfrom",
       "parameters": [
@@ -35252,6 +35264,36 @@
             },
             "originalName": "c_uuid"
           }
+        },
+        {
+          "number": 2,
+          "column": {
+            "name": "c_json",
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "postgres_special_types"
+            },
+            "type": {
+              "name": "json"
+            },
+            "originalName": "c_json"
+          }
+        },
+        {
+          "number": 3,
+          "column": {
+            "name": "c_jsonb",
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "postgres_special_types"
+            },
+            "type": {
+              "name": "jsonb"
+            },
+            "originalName": "c_jsonb"
+          }
         }
       ],
       "filename": "query.sql",
@@ -35260,7 +35302,7 @@
       }
     },
     {
-      "text": "SELECT\n    c_uuid,\n    COUNT(*) AS cnt\nFROM postgres_special_types\nGROUP BY\n    c_uuid\nLIMIT 1",
+      "text": "WITH grouped_json_types AS (\n    SELECT\n        c_uuid,\n        c_json::text AS c_json,\n        c_jsonb::text AS c_jsonb,\n        COUNT(*) AS cnt\n    FROM postgres_special_types\n    GROUP BY\n        c_uuid,\n        c_json::text,\n        c_jsonb::text\n)\n\nSELECT \n    c_uuid, \n    c_json::json AS c_json, \n    c_jsonb::jsonb AS c_jsonb, \n    cnt\nFROM grouped_json_types\nLIMIT 1",
       "name": "GetPostgresSpecialTypesCnt",
       "cmd": ":one",
       "columns": [
@@ -35268,7 +35310,7 @@
           "name": "c_uuid",
           "length": -1,
           "table": {
-            "name": "postgres_special_types"
+            "name": "grouped_json_types"
           },
           "type": {
             "name": "uuid"
@@ -35276,13 +35318,32 @@
           "originalName": "c_uuid"
         },
         {
+          "name": "c_json",
+          "notNull": true,
+          "length": -1,
+          "type": {
+            "name": "json"
+          }
+        },
+        {
+          "name": "c_jsonb",
+          "notNull": true,
+          "length": -1,
+          "type": {
+            "name": "jsonb"
+          }
+        },
+        {
           "name": "cnt",
           "notNull": true,
           "length": -1,
-          "isFuncCall": true,
+          "table": {
+            "name": "grouped_json_types"
+          },
           "type": {
             "name": "bigint"
-          }
+          },
+          "originalName": "cnt"
         }
       ],
       "filename": "query.sql"
@@ -36061,5 +36122,5 @@
     }
   ],
   "sqlc_version": "v1.27.0",
-  "plugin_options": "eyJvdmVycmlkZURyaXZlclZlcnNpb24iOiIiLCJnZW5lcmF0ZUNzcHJvaiI6dHJ1ZSwidGFyZ2V0RnJhbWV3b3JrIjoibmV0c3RhbmRhcmQyLjAiLCJuYW1lc3BhY2VOYW1lIjoiTnBnc3FsTGVnYWN5RXhhbXBsZUdlbiIsInVzZURhcHBlciI6ZmFsc2UsIm92ZXJyaWRlRGFwcGVyVmVyc2lvbiI6IiIsIm92ZXJyaWRlcyI6W3siY29sdW1uIjoiR2V0UG9zdGdyZXNGdW5jdGlvbnM6bWF4X2ludGVnZXIiLCJjc2hhcnBfdHlwZSI6eyJ0eXBlIjoiaW50Iiwibm90TnVsbCI6ZmFsc2V9fSx7ImNvbHVtbiI6IkdldFBvc3RncmVzRnVuY3Rpb25zOm1heF92YXJjaGFyIiwiY3NoYXJwX3R5cGUiOnsidHlwZSI6InN0cmluZyIsIm5vdE51bGwiOmZhbHNlfX0seyJjb2x1bW4iOiJHZXRQb3N0Z3Jlc0Z1bmN0aW9uczptYXhfdGltZXN0YW1wIiwiY3NoYXJwX3R5cGUiOnsidHlwZSI6IkRhdGVUaW1lIiwibm90TnVsbCI6dHJ1ZX19LHsiY29sdW1uIjoiKjpjX2pzb25fc3RyaW5nX292ZXJyaWRlIiwiY3NoYXJwX3R5cGUiOnsidHlwZSI6InN0cmluZyIsIm5vdE51bGwiOmZhbHNlfX0seyJjb2x1bW4iOiIqOmNfeG1sX3N0cmluZ19vdmVycmlkZSIsImNzaGFycF90eXBlIjp7InR5cGUiOiJzdHJpbmciLCJub3ROdWxsIjpmYWxzZX19LHsiY29sdW1uIjoiKjpjX21hY2FkZHI4IiwiY3NoYXJwX3R5cGUiOnsidHlwZSI6InN0cmluZyIsIm5vdE51bGwiOmZhbHNlfX1dLCJkZWJ1Z1JlcXVlc3QiOmZhbHNlfQ=="
+  "plugin_options": "eyJvdmVycmlkZURyaXZlclZlcnNpb24iOiIiLCJnZW5lcmF0ZUNzcHJvaiI6dHJ1ZSwidGFyZ2V0RnJhbWV3b3JrIjoibmV0c3RhbmRhcmQyLjAiLCJuYW1lc3BhY2VOYW1lIjoiTnBnc3FsTGVnYWN5RXhhbXBsZUdlbiIsInVzZURhcHBlciI6ZmFsc2UsIm92ZXJyaWRlRGFwcGVyVmVyc2lvbiI6IiIsIm92ZXJyaWRlcyI6W3siY29sdW1uIjoiR2V0UG9zdGdyZXNGdW5jdGlvbnM6bWF4X2ludGVnZXIiLCJjc2hhcnBfdHlwZSI6eyJ0eXBlIjoiaW50Iiwibm90TnVsbCI6ZmFsc2V9fSx7ImNvbHVtbiI6IkdldFBvc3RncmVzRnVuY3Rpb25zOm1heF92YXJjaGFyIiwiY3NoYXJwX3R5cGUiOnsidHlwZSI6InN0cmluZyIsIm5vdE51bGwiOmZhbHNlfX0seyJjb2x1bW4iOiJHZXRQb3N0Z3Jlc0Z1bmN0aW9uczptYXhfdGltZXN0YW1wIiwiY3NoYXJwX3R5cGUiOnsidHlwZSI6IkRhdGVUaW1lIiwibm90TnVsbCI6dHJ1ZX19LHsiY29sdW1uIjoiR2V0UG9zdGdyZXNTcGVjaWFsVHlwZXNDbnQ6Y19qc29uIiwiY3NoYXJwX3R5cGUiOnsidHlwZSI6Ikpzb25FbGVtZW50Iiwibm90TnVsbCI6ZmFsc2V9fSx7ImNvbHVtbiI6IkdldFBvc3RncmVzU3BlY2lhbFR5cGVzQ250OmNfanNvbmIiLCJjc2hhcnBfdHlwZSI6eyJ0eXBlIjoiSnNvbkVsZW1lbnQiLCJub3ROdWxsIjpmYWxzZX19LHsiY29sdW1uIjoiKjpjX2pzb25fc3RyaW5nX292ZXJyaWRlIiwiY3NoYXJwX3R5cGUiOnsidHlwZSI6InN0cmluZyIsIm5vdE51bGwiOmZhbHNlfX0seyJjb2x1bW4iOiIqOmNfeG1sX3N0cmluZ19vdmVycmlkZSIsImNzaGFycF90eXBlIjp7InR5cGUiOiJzdHJpbmciLCJub3ROdWxsIjpmYWxzZX19LHsiY29sdW1uIjoiKjpjX21hY2FkZHI4IiwiY3NoYXJwX3R5cGUiOnsidHlwZSI6InN0cmluZyIsIm5vdE51bGwiOmZhbHNlfX1dLCJkZWJ1Z1JlcXVlc3QiOmZhbHNlfQ=="
 }

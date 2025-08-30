@@ -156,6 +156,23 @@ public sealed partial class MySqlConnectorDriver(
 
     public override string TransactionClassName => "MySqlTransaction";
 
+    private const string JsonElementTypeHandler = """
+        private class JsonElementTypeHandler : SqlMapper.TypeHandler<JsonElement>
+        {
+            public override JsonElement Parse(object value)
+            {
+                if (value is string s)
+                    return JsonDocument.Parse(s).RootElement;
+                throw new DataException($"Cannot convert {value?.GetType()} to JsonElement");
+            }
+
+            public override void SetValue(IDbDataParameter parameter, JsonElement value)
+            {
+                parameter.Value = value.GetRawText();
+            }
+        }
+        """;
+
     public MemberDeclarationSyntax OneDeclare(string queryTextConstant, string argInterface,
         string returnInterface, Query query)
     {
