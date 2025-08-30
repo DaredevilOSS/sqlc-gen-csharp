@@ -243,9 +243,9 @@ INSERT INTO postgres_special_types
     c_enum
 )
 VALUES (
-    sqlc.narg('c_json')::json, 
+    sqlc.narg('c_json'), 
     sqlc.narg('c_json_string_override')::json, 
-    sqlc.narg('c_jsonb')::jsonb,
+    sqlc.narg('c_jsonb'),
     sqlc.narg('c_jsonpath')::jsonpath,
     sqlc.narg('c_xml')::xml,
     sqlc.narg('c_xml_string_override')::xml,
@@ -272,19 +272,36 @@ TRUNCATE TABLE postgres_special_types;
 -- name: InsertPostgresSpecialTypesBatch :copyfrom
 INSERT INTO postgres_special_types
 (
-    c_uuid
+    c_uuid,
+    c_json,
+    c_jsonb
 )
 VALUES (
-    $1
+    $1,
+    $2,
+    $3
 );
 
 -- name: GetPostgresSpecialTypesCnt :one
-SELECT
-    c_uuid,
-    COUNT(*) AS cnt
-FROM postgres_special_types
-GROUP BY
-    c_uuid
+WITH grouped_json_types AS (
+    SELECT
+        c_uuid,
+        c_json::text AS c_json,
+        c_jsonb::text AS c_jsonb,
+        COUNT(*) AS cnt
+    FROM postgres_special_types
+    GROUP BY
+        c_uuid,
+        c_json::text,
+        c_jsonb::text
+)
+
+SELECT 
+    c_uuid, 
+    c_json::json AS c_json, 
+    c_jsonb::jsonb AS c_jsonb, 
+    cnt
+FROM grouped_json_types
 LIMIT 1;
 
 /* Array types */

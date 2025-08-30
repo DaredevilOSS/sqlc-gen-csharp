@@ -1679,7 +1679,7 @@ public class QuerySql
         }
     }
 
-    private const string InsertPostgresSpecialTypesSql = " INSERT INTO postgres_special_types ( c_json, c_json_string_override, c_jsonb, c_jsonpath, c_xml, c_xml_string_override, c_uuid, c_enum ) VALUES ( @c_json::json, @c_json_string_override::json, @c_jsonb::jsonb, @c_jsonpath::jsonpath, @c_xml::xml, @c_xml_string_override::xml, @c_uuid, @c_enum::c_enum )";
+    private const string InsertPostgresSpecialTypesSql = " INSERT INTO postgres_special_types ( c_json, c_json_string_override, c_jsonb, c_jsonpath, c_xml, c_xml_string_override, c_uuid, c_enum ) VALUES ( @c_json, @c_json_string_override::json, @c_jsonb, @c_jsonpath::jsonpath, @c_xml::xml, @c_xml_string_override::xml, @c_uuid, @c_enum::c_enum )";
     public readonly record struct InsertPostgresSpecialTypesArgs(JsonElement? CJson, string? CJsonStringOverride, JsonElement? CJsonb, string? CJsonpath, XmlDocument? CXml, string? CXmlStringOverride, Guid? CUuid, CEnum? CEnum);
     public async Task InsertPostgresSpecialTypes(InsertPostgresSpecialTypesArgs args)
     {
@@ -1689,9 +1689,9 @@ public class QuerySql
             {
                 using (var command = connection.CreateCommand(InsertPostgresSpecialTypesSql))
                 {
-                    command.Parameters.AddWithValue("@c_json", args.CJson.HasValue ? args.CJson.Value.GetRawText() : (object)DBNull.Value);
+                    command.Parameters.AddWithValue("@c_json", args.CJson.HasValue ? (object)args.CJson.Value : (object)DBNull.Value);
                     command.Parameters.AddWithValue("@c_json_string_override", args.CJsonStringOverride ?? (object)DBNull.Value);
-                    command.Parameters.AddWithValue("@c_jsonb", args.CJsonb.HasValue ? args.CJsonb.Value.GetRawText() : (object)DBNull.Value);
+                    command.Parameters.AddWithValue("@c_jsonb", args.CJsonb.HasValue ? (object)args.CJsonb.Value : (object)DBNull.Value);
                     command.Parameters.AddWithValue("@c_jsonpath", args.CJsonpath ?? (object)DBNull.Value);
                     command.Parameters.AddWithValue("@c_xml", args.CXml != null ? args.CXml.OuterXml : (object)DBNull.Value);
                     command.Parameters.AddWithValue("@c_xml_string_override", args.CXmlStringOverride ?? (object)DBNull.Value);
@@ -1710,9 +1710,9 @@ public class QuerySql
         {
             command.CommandText = InsertPostgresSpecialTypesSql;
             command.Transaction = this.Transaction;
-            command.Parameters.AddWithValue("@c_json", args.CJson.HasValue ? args.CJson.Value.GetRawText() : (object)DBNull.Value);
+            command.Parameters.AddWithValue("@c_json", args.CJson.HasValue ? (object)args.CJson.Value : (object)DBNull.Value);
             command.Parameters.AddWithValue("@c_json_string_override", args.CJsonStringOverride ?? (object)DBNull.Value);
-            command.Parameters.AddWithValue("@c_jsonb", args.CJsonb.HasValue ? args.CJsonb.Value.GetRawText() : (object)DBNull.Value);
+            command.Parameters.AddWithValue("@c_jsonb", args.CJsonb.HasValue ? (object)args.CJsonb.Value : (object)DBNull.Value);
             command.Parameters.AddWithValue("@c_jsonpath", args.CJsonpath ?? (object)DBNull.Value);
             command.Parameters.AddWithValue("@c_xml", args.CXml != null ? args.CXml.OuterXml : (object)DBNull.Value);
             command.Parameters.AddWithValue("@c_xml_string_override", args.CXmlStringOverride ?? (object)DBNull.Value);
@@ -1819,8 +1819,8 @@ public class QuerySql
         }
     }
 
-    private const string InsertPostgresSpecialTypesBatchSql = "COPY postgres_special_types (c_uuid) FROM STDIN (FORMAT BINARY)";
-    public readonly record struct InsertPostgresSpecialTypesBatchArgs(Guid? CUuid);
+    private const string InsertPostgresSpecialTypesBatchSql = "COPY postgres_special_types (c_uuid, c_json, c_jsonb) FROM STDIN (FORMAT BINARY)";
+    public readonly record struct InsertPostgresSpecialTypesBatchArgs(Guid? CUuid, JsonElement? CJson, JsonElement? CJsonb);
     public async Task InsertPostgresSpecialTypesBatch(List<InsertPostgresSpecialTypesBatchArgs> args)
     {
         using (var connection = new NpgsqlConnection(ConnectionString))
@@ -1832,6 +1832,8 @@ public class QuerySql
                 {
                     await writer.StartRowAsync();
                     await writer.WriteAsync(row.CUuid ?? (object)DBNull.Value);
+                    await writer.WriteAsync(row.CJson.HasValue ? (object)row.CJson.Value : (object)DBNull.Value, NpgsqlDbType.Json);
+                    await writer.WriteAsync(row.CJsonb.HasValue ? (object)row.CJsonb.Value : (object)DBNull.Value, NpgsqlDbType.Jsonb);
                 }
 
                 await writer.CompleteAsync();
@@ -1841,8 +1843,8 @@ public class QuerySql
         }
     }
 
-    private const string GetPostgresSpecialTypesCntSql = "SELECT c_uuid, COUNT(*) AS cnt FROM postgres_special_types GROUP BY c_uuid LIMIT 1";
-    public readonly record struct GetPostgresSpecialTypesCntRow(Guid? CUuid, long Cnt);
+    private const string GetPostgresSpecialTypesCntSql = "WITH grouped_json_types AS ( SELECT c_uuid, c_json::text AS c_json, c_jsonb::text AS c_jsonb, COUNT(*) AS cnt FROM postgres_special_types GROUP BY c_uuid, c_json::text, c_jsonb::text ) SELECT c_uuid, c_json::json AS c_json, c_jsonb::jsonb AS c_jsonb, cnt FROM grouped_json_types LIMIT 1";
+    public readonly record struct GetPostgresSpecialTypesCntRow(Guid? CUuid, JsonElement? CJson, JsonElement? CJsonb, long Cnt);
     public async Task<GetPostgresSpecialTypesCntRow?> GetPostgresSpecialTypesCnt()
     {
         if (this.Transaction == null)
@@ -1858,7 +1860,9 @@ public class QuerySql
                             return new GetPostgresSpecialTypesCntRow
                             {
                                 CUuid = reader.IsDBNull(0) ? null : reader.GetFieldValue<Guid>(0),
-                                Cnt = reader.GetInt64(1)
+                                CJson = reader.IsDBNull(1) ? null : JsonSerializer.Deserialize<JsonElement>(reader.GetString(1)),
+                                CJsonb = reader.IsDBNull(2) ? null : JsonSerializer.Deserialize<JsonElement>(reader.GetString(2)),
+                                Cnt = reader.GetInt64(3)
                             };
                         }
                     }
@@ -1881,7 +1885,9 @@ public class QuerySql
                     return new GetPostgresSpecialTypesCntRow
                     {
                         CUuid = reader.IsDBNull(0) ? null : reader.GetFieldValue<Guid>(0),
-                        Cnt = reader.GetInt64(1)
+                        CJson = reader.IsDBNull(1) ? null : JsonSerializer.Deserialize<JsonElement>(reader.GetString(1)),
+                        CJsonb = reader.IsDBNull(2) ? null : JsonSerializer.Deserialize<JsonElement>(reader.GetString(2)),
+                        Cnt = reader.GetInt64(3)
                     };
                 }
             }

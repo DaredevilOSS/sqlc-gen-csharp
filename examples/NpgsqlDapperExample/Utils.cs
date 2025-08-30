@@ -22,7 +22,7 @@ public static class Utils
 
         public override void SetValue(IDbDataParameter parameter, JsonElement value)
         {
-            parameter.Value = value.GetRawText();
+            parameter.Value = value;
         }
     }
 

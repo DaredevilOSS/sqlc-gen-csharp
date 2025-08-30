@@ -509,6 +509,53 @@ public static class PostgresTests
                      }
                      """
         },
+        [KnownTestType.PostgresJsonCopyFrom] = new TestImpl
+        {
+            Impl = $$"""
+                     [Test]
+                     [TestCase(100, "{\"song\": \"Pinball Wizard\", \"album\": \"Tommy\", \"artist\": \"The Who\"}")]
+                     [TestCase(10, null)]
+                     public async Task TestPostgresJsonCopyFrom(int batchSize, string cJson)
+                     {
+                         JsonElement? cParsedJson = null;
+                         if (cJson != null)
+                            cParsedJson = JsonDocument.Parse(cJson).RootElement;
+
+                         var batchArgs = Enumerable.Range(0, batchSize)
+                             .Select(_ => new QuerySql.InsertPostgresSpecialTypesBatchArgs
+                             {
+                                 CJson = cParsedJson,
+                                 CJsonb = cParsedJson
+                             })
+                             .ToList();
+                         await QuerySql.InsertPostgresSpecialTypesBatch(batchArgs);
+
+                         var expected = new QuerySql.GetPostgresSpecialTypesCntRow
+                         {
+                             Cnt = batchSize,
+                             CJson = cParsedJson,
+                             CJsonb = cParsedJson
+                         };
+                         var actual = await QuerySql.GetPostgresSpecialTypesCnt();
+                         AssertSingularEquals(expected, actual{{Consts.UnknownRecordValuePlaceholder}});
+
+                         void AssertSingularEquals(QuerySql.GetPostgresSpecialTypesCntRow x, QuerySql.GetPostgresSpecialTypesCntRow y)
+                         {
+                             var options = new JsonSerializerOptions
+                             {
+                                 WriteIndented = false
+                             };
+                             Assert.That(y.Cnt, Is.EqualTo(x.Cnt));
+                             Assert.That(y.CJson.HasValue, Is.EqualTo(x.CJson.HasValue));
+                             if (y.CJson.HasValue)
+                                Assert.That(JsonSerializer.Serialize(y.CJson.Value, options), Is.EqualTo(JsonSerializer.Serialize(x.CJson.Value, options)));
+                             Assert.That(y.CJsonb.HasValue, Is.EqualTo(x.CJsonb.HasValue));
+                             if (y.CJsonb.HasValue)
+                                Assert.That(JsonSerializer.Serialize(y.CJsonb.Value, options), Is.EqualTo(JsonSerializer.Serialize(x.CJsonb.Value, options)));
+                         }
+                     }
+                     """
+        },
         [KnownTestType.PostgresInvalidJson] = new TestImpl
         {
             Impl = $$"""
