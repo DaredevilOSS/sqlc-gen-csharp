@@ -12,8 +12,8 @@ version: "2"
 plugins:
 - name: csharp
   wasm:
-    url: https://github.com/DaredevilOSS/sqlc-gen-csharp/releases/download/v0.21.0/sqlc-gen-csharp.wasm
-    sha256: 6a01b8c24418abff5d3c272dd1b4ad69f2b43939bb8866243947db3d167a079c
+    url: https://github.com/DaredevilOSS/sqlc-gen-csharp/releases/download/v0.21.1/sqlc-gen-csharp.wasm
+    sha256: f687963c30bbe2a3d4a2abe8343538f3daa1271f683580e779065285304787b9
 sql:
   # For PostgresSQL
   - schema: schema.sql
@@ -219,8 +219,8 @@ we consider support for the different data types separately for batch inserts an
 | tsvector                                | ✅         | ❌                   |
 | tsquery                                 | ✅         | ❌                   |
 | uuid                                    | ✅         | ✅                  |
-| json                                    | ✅         | ⚠️                  |
-| jsonb                                   | ✅         | ⚠️                  |
+| json                                    | ✅         | ✅                  |
+| jsonb                                   | ✅         | ✅                  |
 | jsonpath                                | ✅         | ⚠️                  |
 | xml                                     | ✅         | ⚠️                  |
 | enum                                    | ✅         | ⚠️                  |
@@ -443,6 +443,14 @@ overrides:
   csharp_type:
     type: "DateTime"
     notNull: true
+- column: "GetPostgresSpecialTypesCnt:c_json"
+  csharp_type:
+    type: "JsonElement"
+    notNull: false
+- column: "GetPostgresSpecialTypesCnt:c_jsonb"
+  csharp_type:
+    type: "JsonElement"
+    notNull: false
 - column: "*:c_json_string_override"
   csharp_type:
     type: "string"
@@ -482,6 +490,14 @@ overrides:
   csharp_type:
     type: "DateTime"
     notNull: true
+- column: "GetPostgresSpecialTypesCnt:c_json"
+  csharp_type:
+    type: "JsonElement"
+    notNull: false
+- column: "GetPostgresSpecialTypesCnt:c_jsonb"
+  csharp_type:
+    type: "JsonElement"
+    notNull: false
 - column: "*:c_json_string_override"
   csharp_type:
     type: "string"
@@ -521,6 +537,14 @@ overrides:
   csharp_type:
     type: "DateTime"
     notNull: true
+- column: "GetPostgresSpecialTypesCnt:c_json"
+  csharp_type:
+    type: "JsonElement"
+    notNull: false
+- column: "GetPostgresSpecialTypesCnt:c_jsonb"
+  csharp_type:
+    type: "JsonElement"
+    notNull: false
 - column: "*:c_json_string_override"
   csharp_type:
     type: "string"
@@ -560,6 +584,14 @@ overrides:
   csharp_type:
     type: "DateTime"
     notNull: true
+- column: "GetPostgresSpecialTypesCnt:c_json"
+  csharp_type:
+    type: "JsonElement"
+    notNull: false
+- column: "GetPostgresSpecialTypesCnt:c_jsonb"
+  csharp_type:
+    type: "JsonElement"
+    notNull: false
 - column: "*:c_json_string_override"
   csharp_type:
     type: "string"
