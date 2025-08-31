@@ -17,5 +17,5 @@ jobs:
         uses: crs-k/stale-branches@v8.2.2
         with:
           days-before-stale: 30
-          days-before-delete: 90
+          days-before-delete: 30
           pr-check: true
