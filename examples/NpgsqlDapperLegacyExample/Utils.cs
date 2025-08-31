@@ -23,7 +23,7 @@ namespace NpgsqlDapperLegacyExampleGen
 
             public override void SetValue(IDbDataParameter parameter, JsonElement value)
             {
-                parameter.Value = value.GetRawText();
+                parameter.Value = value;
             }
         }
 

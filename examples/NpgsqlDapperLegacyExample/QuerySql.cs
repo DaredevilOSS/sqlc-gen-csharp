@@ -1149,7 +1149,7 @@ namespace NpgsqlDapperLegacyExampleGen
             }
         }
 
-        private const string InsertPostgresSpecialTypesSql = " INSERT INTO postgres_special_types ( c_json, c_json_string_override, c_jsonb, c_jsonpath, c_xml, c_xml_string_override, c_uuid, c_enum ) VALUES ( @c_json::json, @c_json_string_override::json, @c_jsonb::jsonb, @c_jsonpath::jsonpath, @c_xml::xml, @c_xml_string_override::xml, @c_uuid, @c_enum::c_enum )";
+        private const string InsertPostgresSpecialTypesSql = " INSERT INTO postgres_special_types ( c_json, c_json_string_override, c_jsonb, c_jsonpath, c_xml, c_xml_string_override, c_uuid, c_enum ) VALUES ( @c_json, @c_json_string_override::json, @c_jsonb, @c_jsonpath::jsonpath, @c_xml::xml, @c_xml_string_override::xml, @c_uuid, @c_enum::c_enum )";
         public class InsertPostgresSpecialTypesArgs
         {
             public JsonElement? CJson { get; set; }
@@ -1164,9 +1164,9 @@ namespace NpgsqlDapperLegacyExampleGen
         public async Task InsertPostgresSpecialTypes(InsertPostgresSpecialTypesArgs args)
         {
             var queryParams = new Dictionary<string, object>();
-            queryParams.Add("c_json", args.CJson.HasValue ? args.CJson.Value.GetRawText() : null);
+            queryParams.Add("c_json", args.CJson.HasValue ? (object)args.CJson.Value : null);
             queryParams.Add("c_json_string_override", args.CJsonStringOverride);
-            queryParams.Add("c_jsonb", args.CJsonb.HasValue ? args.CJsonb.Value.GetRawText() : null);
+            queryParams.Add("c_jsonb", args.CJsonb.HasValue ? (object)args.CJsonb.Value : null);
             queryParams.Add("c_jsonpath", args.CJsonpath);
             queryParams.Add("c_xml", args.CXml != null ? args.CXml.OuterXml : null);
             queryParams.Add("c_xml_string_override", args.CXmlStringOverride);
@@ -1227,10 +1227,12 @@ namespace NpgsqlDapperLegacyExampleGen
             await this.Transaction.Connection.ExecuteAsync(TruncatePostgresSpecialTypesSql, transaction: this.Transaction);
         }
 
-        private const string InsertPostgresSpecialTypesBatchSql = "COPY postgres_special_types (c_uuid) FROM STDIN (FORMAT BINARY)";
+        private const string InsertPostgresSpecialTypesBatchSql = "COPY postgres_special_types (c_uuid, c_json, c_jsonb) FROM STDIN (FORMAT BINARY)";
         public class InsertPostgresSpecialTypesBatchArgs
         {
             public Guid? CUuid { get; set; }
+            public JsonElement? CJson { get; set; }
+            public JsonElement? CJsonb { get; set; }
         };
         public async Task InsertPostgresSpecialTypesBatch(List<InsertPostgresSpecialTypesBatchArgs> args)
         {
@@ -1243,6 +1245,8 @@ namespace NpgsqlDapperLegacyExampleGen
                     {
                         await writer.StartRowAsync();
                         await writer.WriteAsync(row.CUuid);
+                        await writer.WriteAsync(row.CJson.HasValue ? (object)row.CJson.Value : (object)DBNull.Value, NpgsqlDbType.Json);
+                        await writer.WriteAsync(row.CJsonb.HasValue ? (object)row.CJsonb.Value : (object)DBNull.Value, NpgsqlDbType.Jsonb);
                     }
 
                     await writer.CompleteAsync();
@@ -1252,10 +1256,12 @@ namespace NpgsqlDapperLegacyExampleGen
             }
         }
 
-        private const string GetPostgresSpecialTypesCntSql = "SELECT c_uuid, COUNT(*) AS cnt FROM postgres_special_types GROUP BY c_uuid LIMIT 1";
+        private const string GetPostgresSpecialTypesCntSql = "WITH grouped_json_types AS ( SELECT c_uuid, c_json::text AS c_json, c_jsonb::text AS c_jsonb, COUNT(*) AS cnt FROM postgres_special_types GROUP BY c_uuid, c_json::text, c_jsonb::text ) SELECT c_uuid, c_json::json AS c_json, c_jsonb::jsonb AS c_jsonb, cnt FROM grouped_json_types LIMIT 1";
         public class GetPostgresSpecialTypesCntRow
         {
             public Guid? CUuid { get; set; }
+            public JsonElement? CJson { get; set; }
+            public JsonElement? CJsonb { get; set; }
             public long Cnt { get; set; }
         };
         public async Task<GetPostgresSpecialTypesCntRow> GetPostgresSpecialTypesCnt()

@@ -57,23 +57,6 @@ public abstract class DbDriver
 
     protected abstract Dictionary<string, ColumnMapping> ColumnMappings { get; }
 
-    protected const string JsonElementTypeHandler = """
-        private class JsonElementTypeHandler : SqlMapper.TypeHandler<JsonElement>
-        {
-            public override JsonElement Parse(object value)
-            {
-                if (value is string s)
-                    return JsonDocument.Parse(s).RootElement;
-                throw new DataException($"Cannot convert {value?.GetType()} to JsonElement");
-            }
-
-            public override void SetValue(IDbDataParameter parameter, JsonElement value)
-            {
-                parameter.Value = value.GetRawText();
-            }
-        }
-        """;
-
     protected const string TransformQueryForSliceArgsImpl = """
            public static string TransformQueryForSliceArgs(string originalSql, int sliceSize, string paramName)
            {

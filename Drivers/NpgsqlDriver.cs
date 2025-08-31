@@ -143,16 +143,16 @@ public sealed class NpgsqlDriver : EnumDbDriver, IOne, IMany, IExec, IExecRows, 
             ["JsonElement"] = new(
                 new()
                 {
-                    { "json", new() },
-                    { "jsonb", new() }
+                    { "json", new(NpgsqlTypeOverride: "NpgsqlDbType.Json") },
+                    { "jsonb", new(NpgsqlTypeOverride: "NpgsqlDbType.Jsonb") }
                 },
                 readerFn: ordinal => $"JsonSerializer.Deserialize<JsonElement>(reader.GetString({ordinal}))",
                 writerFn: (el, notNull, isDapper) =>
                 {
                     if (notNull)
-                        return $"{el}.GetRawText()";
+                        return $"{el}";
                     var nullValue = isDapper ? "null" : "(object)DBNull.Value";
-                    return $"{el}.HasValue ? {el}.Value.GetRawText() : {nullValue}";
+                    return $"{el}.HasValue ? (object) {el}.Value : {nullValue}";
                 },
                 usingDirective: "System.Text.Json",
                 sqlMapper: "SqlMapper.AddTypeHandler(typeof(JsonElement), new JsonElementTypeHandler());",
@@ -344,6 +344,23 @@ public sealed class NpgsqlDriver : EnumDbDriver, IOne, IMany, IExec, IExecRows, 
         };
 
     public override string TransactionClassName => "NpgsqlTransaction";
+
+    private const string JsonElementTypeHandler = """
+        private class JsonElementTypeHandler : SqlMapper.TypeHandler<JsonElement>
+        {
+            public override JsonElement Parse(object value)
+            {
+                if (value is string s)
+                    return JsonDocument.Parse(s).RootElement;
+                throw new DataException($"Cannot convert {value?.GetType()} to JsonElement");
+            }
+
+            public override void SetValue(IDbDataParameter parameter, JsonElement value)
+            {
+                parameter.Value = value;
+            }
+        }
+        """;
 
     private const string XmlDocumentTypeHandler =
         """
