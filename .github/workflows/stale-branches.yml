@@ -18,5 +18,4 @@ jobs:
         with:
           days-before-stale: 30
           days-before-delete: 90
-          max-issues: 50
           pr-check: true
