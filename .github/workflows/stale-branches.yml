@@ -1,8 +1,7 @@
 name: Remove Stale Branches
 
 on:
-  push:
-    branches: [ "256-clean-old-stale-branchs" ]
+  workflow_dispatch:
   schedule:
     - cron: '0 0 1 * *'
 
@@ -19,5 +18,5 @@ jobs:
         with:
           days-before-stale: 30
           days-before-delete: 90
+          max-issues: 50
           pr-check: true
-          dry-run: true
