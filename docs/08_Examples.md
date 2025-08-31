@@ -23,6 +23,14 @@ overrides:
   csharp_type:
     type: "DateTime"
     notNull: true
+- column: "GetPostgresSpecialTypesCnt:c_json"
+  csharp_type:
+    type: "JsonElement"
+    notNull: false
+- column: "GetPostgresSpecialTypesCnt:c_jsonb"
+  csharp_type:
+    type: "JsonElement"
+    notNull: false
 - column: "*:c_json_string_override"
   csharp_type:
     type: "string"
@@ -62,6 +70,14 @@ overrides:
   csharp_type:
     type: "DateTime"
     notNull: true
+- column: "GetPostgresSpecialTypesCnt:c_json"
+  csharp_type:
+    type: "JsonElement"
+    notNull: false
+- column: "GetPostgresSpecialTypesCnt:c_jsonb"
+  csharp_type:
+    type: "JsonElement"
+    notNull: false
 - column: "*:c_json_string_override"
   csharp_type:
     type: "string"
@@ -101,6 +117,14 @@ overrides:
   csharp_type:
     type: "DateTime"
     notNull: true
+- column: "GetPostgresSpecialTypesCnt:c_json"
+  csharp_type:
+    type: "JsonElement"
+    notNull: false
+- column: "GetPostgresSpecialTypesCnt:c_jsonb"
+  csharp_type:
+    type: "JsonElement"
+    notNull: false
 - column: "*:c_json_string_override"
   csharp_type:
     type: "string"
@@ -140,6 +164,14 @@ overrides:
   csharp_type:
     type: "DateTime"
     notNull: true
+- column: "GetPostgresSpecialTypesCnt:c_json"
+  csharp_type:
+    type: "JsonElement"
+    notNull: false
+- column: "GetPostgresSpecialTypesCnt:c_jsonb"
+  csharp_type:
+    type: "JsonElement"
+    notNull: false
 - column: "*:c_json_string_override"
   csharp_type:
     type: "string"
