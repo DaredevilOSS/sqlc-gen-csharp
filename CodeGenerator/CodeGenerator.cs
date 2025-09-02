@@ -115,10 +115,11 @@ public class CodeGenerator
                 }
             });
 
+        var enums = DbDriver is EnumDbDriver enumDbDriver ? enumDbDriver.Enums : [];
         var files = GetFileQueries()
             .Select(fq => QueriesGen.GenerateFile(fq.Value, fq.Key))
             .AddRangeExcludeNulls([
-                ModelsGen.GenerateFile(DbDriver.Tables, DbDriver.Enums),
+                ModelsGen.GenerateFile(DbDriver.Tables, enums),
                 UtilsGen.GenerateFile()
             ])
             .AddRangeIf([CsprojGen.GenerateFile()], Options.GenerateCsproj);

@@ -119,19 +119,9 @@ public static class CEnumExtensions
         [CEnum.Medium] = "medium",
         [CEnum.Big] = "big"
     };
-    public static CEnum ToCEnum(this string me)
-    {
-        return StringToEnum[me];
-    }
-
     public static string Stringify(this CEnum me)
     {
         return EnumToString[me];
-    }
-
-    public static HashSet<CEnum> ToCEnumSet(this string me)
-    {
-        return new HashSet<CEnum>(me.Split(',').ToList().Select(v => StringToEnum[v]));
     }
 }
 
@@ -159,18 +149,8 @@ public static class ExtendedBioTypeExtensions
         [ExtendedBioType.Biography] = "Biography",
         [ExtendedBioType.Memoir] = "Memoir"
     };
-    public static ExtendedBioType ToExtendedBioType(this string me)
-    {
-        return StringToEnum[me];
-    }
-
     public static string Stringify(this ExtendedBioType me)
     {
         return EnumToString[me];
-    }
-
-    public static HashSet<ExtendedBioType> ToExtendedBioTypeSet(this string me)
-    {
-        return new HashSet<ExtendedBioType>(me.Split(',').ToList().Select(v => StringToEnum[v]));
     }
 }

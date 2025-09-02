@@ -52,7 +52,7 @@ public class CommonGen(DbDriver dbDriver)
                             {{queryParamsVar}}.Add($"@{{p.Column.Name}}Arg{i}", {{argsVar}}.{{param}}[i]);
                         """;
 
-            if (dbDriver.Enums.ContainsKey(p.Column.Type.Name))
+            if (dbDriver is EnumDbDriver enumDbDriver && enumDbDriver.Enums.ContainsKey(p.Column.Type.Name))
                 param += "?.ToEnumString()";
 
             var notNull = dbDriver.IsColumnNotNull(p.Column, query);

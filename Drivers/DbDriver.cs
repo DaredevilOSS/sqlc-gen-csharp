@@ -19,8 +19,6 @@ public abstract class DbDriver
 
     public Dictionary<string, Dictionary<string, Table>> Tables { get; }
 
-    public Dictionary<string, Dictionary<string, Plugin.Enum>> Enums { get; }
-
     protected IList<Query> Queries { get; }
 
     private HashSet<string> NullableTypesInDotnetCore { get; } =
@@ -31,7 +29,7 @@ public abstract class DbDriver
         "IPAddress"
     ];
 
-    private HashSet<string> NullableTypes { get; } =
+    protected HashSet<string> NullableTypes { get; } =
     [
         "bool",
         "byte",
@@ -79,11 +77,6 @@ public abstract class DbDriver
         DefaultSchema = catalog.DefaultSchema;
         Tables = ConstructTablesLookup(catalog);
         Queries = queries;
-        Enums = ConstructEnumsLookup(catalog);
-
-        foreach (var schemaEnums in Enums)
-            foreach (var e in schemaEnums.Value)
-                NullableTypes.Add(e.Key.ToModelName(schemaEnums.Key, DefaultSchema));
 
         if (!Options.DotnetFramework.IsDotnetCore())
             return;
@@ -105,21 +98,6 @@ public abstract class DbDriver
             .ToDictionary(
                 s => s.Name == catalog.DefaultSchema ? string.Empty : s.Name,
                 s => s.Tables.ToDictionary(t => t.Rel.Name, t => t)
-            );
-    }
-
-    private static Dictionary<string, Dictionary<string, Plugin.Enum>> ConstructEnumsLookup(Catalog catalog)
-    {
-        return catalog
-            .Schemas
-            .SelectMany(s => s.Enums.Select(e => new { EnumItem = e, Schema = s.Name }))
-            .GroupBy(x => x.Schema == catalog.DefaultSchema ? string.Empty : x.Schema)
-            .ToDictionary(
-                group => group.Key,
-                group => group.ToDictionary(
-                    x => x.EnumItem.Name,
-                    x => x.EnumItem
-                )
             );
     }
 
@@ -193,21 +171,23 @@ public abstract class DbDriver
 
     public virtual MemberDeclarationSyntax[] GetMemberDeclarationsForUtils()
     {
-        var memberDeclarations = new List<MemberDeclarationSyntax>();
         if (!Options.UseDapper)
-            return [.. memberDeclarations];
-
-        memberDeclarations.AddRange(ColumnMappings
-            .Where(m => TypeExistsInQueries(m.Key) && m.Value.SqlMapperImpl is not null)
-            .Select(m => ParseMemberDeclaration(m.Value.SqlMapperImpl!)!));
-
-        return [.. memberDeclarations,
+            return [];
+        return [..
+            GetSqlMapperMemberDeclarations(),
             ParseMemberDeclaration($$"""
                  public static void ConfigureSqlMapper()
                  {
                      {{GetConfigureSqlMappings().JoinByNewLine()}}
                  }
                """)!];
+    }
+
+    private MemberDeclarationSyntax[] GetSqlMapperMemberDeclarations()
+    {
+        return [.. ColumnMappings
+            .Where(m => TypeExistsInQueries(m.Key) && m.Value.SqlMapperImpl is not null)
+            .Select(m => ParseMemberDeclaration(m.Value.SqlMapperImpl!)!)];
     }
 
     public abstract string TransformQueryText(Query query);

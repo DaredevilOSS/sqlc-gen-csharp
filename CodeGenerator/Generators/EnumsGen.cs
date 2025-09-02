@@ -10,52 +10,27 @@ internal class EnumsGen(DbDriver dbDriver)
 {
     public MemberDeclarationSyntax[] Generate(string name, IList<string> possibleValues)
     {
+        if (dbDriver is not EnumDbDriver enumDbDriver)
+            return [];
+
         var enumValuesDef = possibleValues
             .Select((v, i) => $"{v.ToPascalCase()} = {i + 1}")
             .JoinByComma();
 
         var enumType = ParseMemberDeclaration($$"""
-               public enum {{name}} 
-               {
-                   Invalid = 0, // reserved for invalid enum value
-                   {{enumValuesDef}}
-               }
-               """)!;
-        var enumExtensions = ParseMemberDeclaration($$"""
-               public static class {{name}}Extensions 
-               {
-                   private static readonly Dictionary<string, {{name}}> StringToEnum = new Dictionary<string, {{name}}>()
-                   {
-                       [string.Empty] = {{name}}.Invalid,
-                       {{possibleValues
-                            .Select(v => $"[\"{v}\"] = {name}.{v.ToPascalCase()}")
-                            .JoinByComma()}}
-                   };
+            public enum {{name}} 
+            {
+                Invalid = 0, // reserved for invalid enum value
+                {{enumValuesDef}}
+            }
+            """)!;
 
-                   private static readonly Dictionary<{{name}}, string> EnumToString = new Dictionary<{{name}}, string>()
-                   {
-                       [{{name}}.Invalid] = string.Empty,
-                       {{possibleValues
-                            .Select(v => $"[{name}.{v.ToPascalCase()}] = \"{v}\"")
-                            .JoinByComma()}}
-                   };
-                   
-                   public static {{name}} To{{name}}(this string me)
-                   {
-                       return StringToEnum[me];
-                   }
+        var classMembers = enumDbDriver.GetEnumExtensionsMembers(name, possibleValues);
+        if (classMembers.Length == 0)
+            return [enumType];
 
-                   public static string Stringify(this {{name}} me)
-                   {
-                       return EnumToString[me];
-                   }
-
-                   public static HashSet<{{name}}> To{{name}}Set(this string me)
-                   {
-                       return new HashSet<{{name}}>(me.Split(',').ToList().Select(v => StringToEnum[v]));
-                   }
-               }
-               """)!;
-        return [enumType, enumExtensions];
+        var enumExtensionsClass = (ClassDeclarationSyntax)ParseMemberDeclaration(
+            $$"""public static class {{name}}Extensions { }""")!;
+        return [enumType, enumExtensionsClass.AddMembers(classMembers)];
     }
 }
