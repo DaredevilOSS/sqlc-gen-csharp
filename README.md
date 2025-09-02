@@ -229,18 +229,16 @@ we consider support for the different data types separately for batch inserts an
 see [here](https://www.postgresql.org/docs/current/datatype-datetime.html#DATATYPE-DATETIME) -
 so we decided not to implement support for it.
 
-*** Some data types require conversion in the INSERT statement, and SQLC disallows argument conversion in queries with `:copyfrom` annotation, 
-which are used for batch inserts. These are the data types that require this conversion:
+*** Some data types require conversion in the INSERT statement, and SQLC disallows argument conversion in queries with `:copyfrom` annotation, which are used for batch inserts. 
+These are the data types that require this conversion:
 1. `macaddr8`
-2. `json`
-3. `jsonb`
-4. `jsonpath`
-5. `xml`
-6. `enum`
+2. `jsonpath`
+3. `xml`
+4. `enum`
 
 An example of this conversion:
 ```sql
-INSERT INTO tab1 (json_field) VALUES (sqlc.narg('json_field')::json);
+INSERT INTO tab1 (macaddr8_field) VALUES (sqlc.narg('macaddr8_field')::macaddr8);
 ```
 
 </details>
