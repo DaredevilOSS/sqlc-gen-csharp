@@ -113,6 +113,11 @@ namespace NpgsqlLegacyExampleGen
             ["medium"] = CEnum.Medium,
             ["big"] = CEnum.Big
         };
+        public static CEnum ToCEnum(this string me)
+        {
+            return StringToEnum[me];
+        }
+
         private static readonly Dictionary<CEnum, string> EnumToString = new Dictionary<CEnum, string>()
         {
             [CEnum.Invalid] = string.Empty,
@@ -120,19 +125,9 @@ namespace NpgsqlLegacyExampleGen
             [CEnum.Medium] = "medium",
             [CEnum.Big] = "big"
         };
-        public static CEnum ToCEnum(this string me)
-        {
-            return StringToEnum[me];
-        }
-
         public static string Stringify(this CEnum me)
         {
             return EnumToString[me];
-        }
-
-        public static HashSet<CEnum> ToCEnumSet(this string me)
-        {
-            return new HashSet<CEnum>(me.Split(',').ToList().Select(v => StringToEnum[v]));
         }
     }
 
@@ -153,6 +148,11 @@ namespace NpgsqlLegacyExampleGen
             ["Biography"] = ExtendedBioType.Biography,
             ["Memoir"] = ExtendedBioType.Memoir
         };
+        public static ExtendedBioType ToExtendedBioType(this string me)
+        {
+            return StringToEnum[me];
+        }
+
         private static readonly Dictionary<ExtendedBioType, string> EnumToString = new Dictionary<ExtendedBioType, string>()
         {
             [ExtendedBioType.Invalid] = string.Empty,
@@ -160,19 +160,9 @@ namespace NpgsqlLegacyExampleGen
             [ExtendedBioType.Biography] = "Biography",
             [ExtendedBioType.Memoir] = "Memoir"
         };
-        public static ExtendedBioType ToExtendedBioType(this string me)
-        {
-            return StringToEnum[me];
-        }
-
         public static string Stringify(this ExtendedBioType me)
         {
             return EnumToString[me];
-        }
-
-        public static HashSet<ExtendedBioType> ToExtendedBioTypeSet(this string me)
-        {
-            return new HashSet<ExtendedBioType>(me.Split(',').ToList().Select(v => StringToEnum[v]));
         }
     }
 }

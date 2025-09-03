@@ -275,6 +275,20 @@ public sealed partial class MySqlConnectorDriver(
             .AddRangeExcludeNulls(setSqlMappings);
     }
 
+    public override MemberDeclarationSyntax[] GetEnumExtensionsMembers(string name, IList<string> possibleValues)
+    {
+        return [.. base
+            .GetEnumExtensionsMembers(name, possibleValues)
+            .AddRangeExcludeNulls([
+                ParseMemberDeclaration($$"""
+                    public static HashSet<{{name}}> To{{name}}Set(this string me)
+                    {
+                        return new HashSet<{{name}}>(me.Split(',').ToList().Select(v => StringToEnum[v]));
+                    }
+                """)!
+            ])];
+    }
+
     private MemberDeclarationSyntax[] GetSetTypeHandlers()
     {
         var setTypeHandlerFunc = (string x) =>

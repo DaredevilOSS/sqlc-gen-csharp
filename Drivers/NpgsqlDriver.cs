@@ -479,6 +479,29 @@ public sealed class NpgsqlDriver : EnumDbDriver, IOne, IMany, IExec, IExecRows, 
         ];
     }
 
+    public override MemberDeclarationSyntax[] GetEnumExtensionsMembers(string name, IList<string> possibleValues)
+    {
+        return [.. base
+            .GetEnumExtensionsMembers(name, possibleValues)
+            .AddRangeExcludeNulls([
+                ParseMemberDeclaration($$"""
+                    private static readonly Dictionary<{{name}}, string> EnumToString = new Dictionary<{{name}}, string>()
+                    {
+                        [{{name}}.Invalid] = string.Empty,
+                        {{possibleValues
+                                .Select(v => $"[{name}.{v.ToPascalCase()}] = \"{v}\"")
+                                .JoinByComma()}}
+                    };
+                    """)!,
+                ParseMemberDeclaration($$"""
+                    public static string Stringify(this {{name}} me)
+                    {
+                        return EnumToString[me];
+                    }
+                    """)!
+            ])];
+    }
+
     public override ConnectionGenCommands EstablishConnection(Query query)
     {
         var connectionStringVar = Variable.ConnectionString.AsPropertyName();

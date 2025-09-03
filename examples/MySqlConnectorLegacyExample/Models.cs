@@ -94,21 +94,9 @@ namespace MySqlConnectorLegacyExampleGen
             ["Biography"] = BiosBioType.Biography,
             ["Memoir"] = BiosBioType.Memoir
         };
-        private static readonly Dictionary<BiosBioType, string> EnumToString = new Dictionary<BiosBioType, string>()
-        {
-            [BiosBioType.Invalid] = string.Empty,
-            [BiosBioType.Autobiography] = "Autobiography",
-            [BiosBioType.Biography] = "Biography",
-            [BiosBioType.Memoir] = "Memoir"
-        };
         public static BiosBioType ToBiosBioType(this string me)
         {
             return StringToEnum[me];
-        }
-
-        public static string Stringify(this BiosBioType me)
-        {
-            return EnumToString[me];
         }
 
         public static HashSet<BiosBioType> ToBiosBioTypeSet(this string me)
@@ -134,21 +122,9 @@ namespace MySqlConnectorLegacyExampleGen
             ["Editor"] = BiosAuthorType.Editor,
             ["Translator"] = BiosAuthorType.Translator
         };
-        private static readonly Dictionary<BiosAuthorType, string> EnumToString = new Dictionary<BiosAuthorType, string>()
-        {
-            [BiosAuthorType.Invalid] = string.Empty,
-            [BiosAuthorType.Author] = "Author",
-            [BiosAuthorType.Editor] = "Editor",
-            [BiosAuthorType.Translator] = "Translator"
-        };
         public static BiosAuthorType ToBiosAuthorType(this string me)
         {
             return StringToEnum[me];
-        }
-
-        public static string Stringify(this BiosAuthorType me)
-        {
-            return EnumToString[me];
         }
 
         public static HashSet<BiosAuthorType> ToBiosAuthorTypeSet(this string me)
@@ -174,21 +150,9 @@ namespace MySqlConnectorLegacyExampleGen
             ["medium"] = MysqlStringTypesCEnum.Medium,
             ["big"] = MysqlStringTypesCEnum.Big
         };
-        private static readonly Dictionary<MysqlStringTypesCEnum, string> EnumToString = new Dictionary<MysqlStringTypesCEnum, string>()
-        {
-            [MysqlStringTypesCEnum.Invalid] = string.Empty,
-            [MysqlStringTypesCEnum.Small] = "small",
-            [MysqlStringTypesCEnum.Medium] = "medium",
-            [MysqlStringTypesCEnum.Big] = "big"
-        };
         public static MysqlStringTypesCEnum ToMysqlStringTypesCEnum(this string me)
         {
             return StringToEnum[me];
-        }
-
-        public static string Stringify(this MysqlStringTypesCEnum me)
-        {
-            return EnumToString[me];
         }
 
         public static HashSet<MysqlStringTypesCEnum> ToMysqlStringTypesCEnumSet(this string me)
@@ -214,21 +178,9 @@ namespace MySqlConnectorLegacyExampleGen
             ["coffee"] = MysqlStringTypesCSet.Coffee,
             ["milk"] = MysqlStringTypesCSet.Milk
         };
-        private static readonly Dictionary<MysqlStringTypesCSet, string> EnumToString = new Dictionary<MysqlStringTypesCSet, string>()
-        {
-            [MysqlStringTypesCSet.Invalid] = string.Empty,
-            [MysqlStringTypesCSet.Tea] = "tea",
-            [MysqlStringTypesCSet.Coffee] = "coffee",
-            [MysqlStringTypesCSet.Milk] = "milk"
-        };
         public static MysqlStringTypesCSet ToMysqlStringTypesCSet(this string me)
         {
             return StringToEnum[me];
-        }
-
-        public static string Stringify(this MysqlStringTypesCSet me)
-        {
-            return EnumToString[me];
         }
 
         public static HashSet<MysqlStringTypesCSet> ToMysqlStringTypesCSetSet(this string me)
