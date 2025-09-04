@@ -48,8 +48,10 @@ public static class Utils
             throw new DataException($"Cannot convert {value?.GetType()} to HashSet<BiosAuthorType>");
         }
 
-        public override void SetValue(IDbDataParameter parameter, HashSet<BiosAuthorType> value)
+        public override void SetValue(IDbDataParameter parameter, HashSet<BiosAuthorType>? value)
         {
+            if (value is null)
+                return;
             parameter.Value = string.Join(",", value);
         }
     }
@@ -63,8 +65,10 @@ public static class Utils
             throw new DataException($"Cannot convert {value?.GetType()} to HashSet<MysqlStringTypesCSet>");
         }
 
-        public override void SetValue(IDbDataParameter parameter, HashSet<MysqlStringTypesCSet> value)
+        public override void SetValue(IDbDataParameter parameter, HashSet<MysqlStringTypesCSet>? value)
         {
+            if (value is null)
+                return;
             parameter.Value = string.Join(",", value);
         }
     }

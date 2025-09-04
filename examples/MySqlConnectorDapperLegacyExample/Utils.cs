@@ -51,6 +51,8 @@ namespace MySqlConnectorDapperLegacyExampleGen
 
             public override void SetValue(IDbDataParameter parameter, HashSet<BiosAuthorType> value)
             {
+                if (value is null)
+                    return;
                 parameter.Value = string.Join(",", value);
             }
         }
@@ -66,6 +68,8 @@ namespace MySqlConnectorDapperLegacyExampleGen
 
             public override void SetValue(IDbDataParameter parameter, HashSet<MysqlStringTypesCSet> value)
             {
+                if (value is null)
+                    return;
                 parameter.Value = string.Join(",", value);
             }
         }
