@@ -156,7 +156,7 @@ public sealed partial class MySqlConnectorDriver(
 
     public override string TransactionClassName => "MySqlTransaction";
 
-    private const string JsonElementTypeHandler = """
+    private static readonly Func<bool, string> JsonElementTypeHandler = _ => $$"""
         private class JsonElementTypeHandler : SqlMapper.TypeHandler<JsonElement>
         {
             public override JsonElement Parse(object value)
@@ -291,7 +291,8 @@ public sealed partial class MySqlConnectorDriver(
 
     private MemberDeclarationSyntax[] GetSetTypeHandlers()
     {
-        var setTypeHandlerFunc = (string x) =>
+        var optionalNullableSuffix = Options.DotnetFramework.IsDotnetCore() ? "?" : string.Empty;
+        string setTypeHandlerFunc(string x) =>
             $$"""
             private class {{x}}TypeHandler : SqlMapper.TypeHandler<HashSet<{{x}}>>
             {
@@ -302,14 +303,16 @@ public sealed partial class MySqlConnectorDriver(
                     throw new DataException($"Cannot convert {value?.GetType()} to HashSet<{{x}}>");
                 }
             
-                public override void SetValue(IDbDataParameter parameter, HashSet<{{x}}> value)
+                public override void SetValue(IDbDataParameter parameter, HashSet<{{x}}>{{optionalNullableSuffix}} value)
                 {
+                    if (value is null)
+                        return;
                     parameter.Value = string.Join(",", value);
                 }
             }
             """;
 
-        return Queries
+        return [.. Queries
             .SelectMany(q => q.Columns)
             .Where(c =>
             {
@@ -318,8 +321,7 @@ public sealed partial class MySqlConnectorDriver(
             })
             .Select(c => setTypeHandlerFunc(EnumToModelName(c)))
             .Distinct()
-            .Select(m => ParseMemberDeclaration(m)!)
-            .ToArray();
+            .Select(m => ParseMemberDeclaration(m)!)];
     }
 
     public override MemberDeclarationSyntax[] GetMemberDeclarationsForUtils()

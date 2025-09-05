@@ -43,6 +43,8 @@ namespace NpgsqlDapperLegacyExampleGen
 
             public override void SetValue(IDbDataParameter parameter, XmlDocument value)
             {
+                if (value is null)
+                    return;
                 parameter.Value = value.OuterXml;
             }
         }

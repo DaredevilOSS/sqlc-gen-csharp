@@ -13,7 +13,7 @@ public class ColumnMapping(
     Func<string, bool, bool, string>? writerFn = null,
     Func<string, string>? convertFunc = null,
     string? sqlMapper = null,
-    string? sqlMapperImpl = null)
+    Func<bool, string>? sqlMapperImpl = null)
 {
     public Dictionary<string, DbTypeInfo> DbTypes { get; } = dbTypes;
     public Func<int, string> ReaderFn { get; } = readerFn;
@@ -22,5 +22,5 @@ public class ColumnMapping(
     public Func<string, bool, bool, string>? WriterFn { get; } = writerFn;
     public Func<string, string>? ConvertFunc { get; } = convertFunc;
     public string? SqlMapper { get; } = sqlMapper;
-    public string? SqlMapperImpl { get; } = sqlMapperImpl;
+    public Func<bool, string>? SqlMapperImpl { get; } = sqlMapperImpl;
 }

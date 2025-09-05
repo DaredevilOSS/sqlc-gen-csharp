@@ -345,7 +345,7 @@ public sealed class NpgsqlDriver : EnumDbDriver, IOne, IMany, IExec, IExecRows, 
 
     public override string TransactionClassName => "NpgsqlTransaction";
 
-    private const string JsonElementTypeHandler = """
+    private static readonly Func<bool, string> JsonElementTypeHandler = _ => $$"""
         private class JsonElementTypeHandler : SqlMapper.TypeHandler<JsonElement>
         {
             public override JsonElement Parse(object value)
@@ -362,8 +362,7 @@ public sealed class NpgsqlDriver : EnumDbDriver, IOne, IMany, IExec, IExecRows, 
         }
         """;
 
-    private const string XmlDocumentTypeHandler =
-        """
+    private static readonly Func<bool, string> XmlDocumentTypeHandler = isDotnetCore => $$"""
         private class XmlDocumentTypeHandler : SqlMapper.TypeHandler<XmlDocument>
         {
             public override XmlDocument Parse(object value)
@@ -377,8 +376,10 @@ public sealed class NpgsqlDriver : EnumDbDriver, IOne, IMany, IExec, IExecRows, 
                 throw new DataException($"Cannot convert {value?.GetType()} to XmlDocument");
             }
 
-            public override void SetValue(IDbDataParameter parameter, XmlDocument value)
+            public override void SetValue(IDbDataParameter parameter, XmlDocument{{(isDotnetCore ? "?" : string.Empty)}} value)
             {
+                if (value is null)
+                    return;
                 parameter.Value = value.OuterXml;
             }
         }

@@ -40,8 +40,10 @@ public static class Utils
             throw new DataException($"Cannot convert {value?.GetType()} to XmlDocument");
         }
 
-        public override void SetValue(IDbDataParameter parameter, XmlDocument value)
+        public override void SetValue(IDbDataParameter parameter, XmlDocument? value)
         {
+            if (value is null)
+                return;
             parameter.Value = value.OuterXml;
         }
     }
