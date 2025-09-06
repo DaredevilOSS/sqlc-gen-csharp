@@ -330,7 +330,7 @@ public abstract class DbDriver
         return typeInfo.Length.Value == column.Length;
     }
 
-    public virtual Func<string, bool, bool, string>? GetWriterFn(Column column, Query query)
+    public virtual WriterFn? GetWriterFn(Column column, Query query)
     {
         var csharpType = GetCsharpTypeWithoutNullableSuffix(column, query);
         var writerFn = ColumnMappings.GetValueOrDefault(csharpType)?.WriterFn;

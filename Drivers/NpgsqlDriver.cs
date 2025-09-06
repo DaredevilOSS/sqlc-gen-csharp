@@ -345,7 +345,7 @@ public sealed class NpgsqlDriver : EnumDbDriver, IOne, IMany, IExec, IExecRows, 
 
     public override string TransactionClassName => "NpgsqlTransaction";
 
-    private static readonly Func<bool, string> JsonElementTypeHandler = _ => $$"""
+    private static readonly SqlMapperImplFunc JsonElementTypeHandler = _ => $$"""
         private class JsonElementTypeHandler : SqlMapper.TypeHandler<JsonElement>
         {
             public override JsonElement Parse(object value)
@@ -362,7 +362,7 @@ public sealed class NpgsqlDriver : EnumDbDriver, IOne, IMany, IExec, IExecRows, 
         }
         """;
 
-    private static readonly Func<bool, string> XmlDocumentTypeHandler = isDotnetCore => $$"""
+    private static readonly SqlMapperImplFunc XmlDocumentTypeHandler = isDotnetCore => $$"""
         private class XmlDocumentTypeHandler : SqlMapper.TypeHandler<XmlDocument>
         {
             public override XmlDocument Parse(object value)
@@ -597,7 +597,7 @@ public sealed class NpgsqlDriver : EnumDbDriver, IOne, IMany, IExec, IExecRows, 
         }
     }
 
-    public override Func<string, bool, bool, string>? GetWriterFn(Column column, Query query)
+    public override WriterFn? GetWriterFn(Column column, Query query)
     {
         var csharpType = GetCsharpTypeWithoutNullableSuffix(column, query);
         var writerFn = ColumnMappings.GetValueOrDefault(csharpType)?.WriterFn;

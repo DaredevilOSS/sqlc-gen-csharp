@@ -156,7 +156,7 @@ public sealed partial class MySqlConnectorDriver(
 
     public override string TransactionClassName => "MySqlTransaction";
 
-    private static readonly Func<bool, string> JsonElementTypeHandler = _ => $$"""
+    private static readonly SqlMapperImplFunc JsonElementTypeHandler = _ => $$"""
         private class JsonElementTypeHandler : SqlMapper.TypeHandler<JsonElement>
         {
             public override JsonElement Parse(object value)
@@ -613,7 +613,7 @@ public sealed partial class MySqlConnectorDriver(
         return enumType is not null && IsSetDataType(column, enumType);
     }
 
-    public override Func<string, bool, bool, string>? GetWriterFn(Column column, Query query)
+    public override WriterFn? GetWriterFn(Column column, Query query)
     {
         var csharpType = GetCsharpTypeWithoutNullableSuffix(column, query);
         var writerFn = ColumnMappings.GetValueOrDefault(csharpType)?.WriterFn;
