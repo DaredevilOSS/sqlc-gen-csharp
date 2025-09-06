@@ -1246,6 +1246,6 @@
       "filename": "query.sql"
     }
   ],
-  "sqlc_version": "v1.27.0",
+  "sqlc_version": "v1.30.0",
   "plugin_options": "eyJvdmVycmlkZURyaXZlclZlcnNpb24iOiIiLCJnZW5lcmF0ZUNzcHJvaiI6dHJ1ZSwidGFyZ2V0RnJhbWV3b3JrIjoibmV0c3RhbmRhcmQyLjAiLCJuYW1lc3BhY2VOYW1lIjoiU3FsaXRlRGFwcGVyTGVnYWN5RXhhbXBsZUdlbiIsInVzZURhcHBlciI6dHJ1ZSwib3ZlcnJpZGVEYXBwZXJWZXJzaW9uIjoiIiwib3ZlcnJpZGVzIjpbeyJjb2x1bW4iOiJHZXRTcWxpdGVGdW5jdGlvbnM6bWF4X2ludGVnZXIiLCJjc2hhcnBfdHlwZSI6eyJ0eXBlIjoiaW50Iiwibm90TnVsbCI6ZmFsc2V9fSx7ImNvbHVtbiI6IkdldFNxbGl0ZUZ1bmN0aW9uczptYXhfdmFyY2hhciIsImNzaGFycF90eXBlIjp7InR5cGUiOiJzdHJpbmciLCJub3ROdWxsIjpmYWxzZX19LHsiY29sdW1uIjoiR2V0U3FsaXRlRnVuY3Rpb25zOm1heF9yZWFsIiwiY3NoYXJwX3R5cGUiOnsidHlwZSI6ImRlY2ltYWwiLCJub3ROdWxsIjp0cnVlfX1dLCJkZWJ1Z1JlcXVlc3QiOmZhbHNlfQ=="
 }
