@@ -5,7 +5,7 @@ defaults:
     
 env:
   DOTNET_VERSION: '8.0.x'
-  SQLC_VERSION: 1.27.0
+  SQLC_VERSION: 1.30.0
 
 on:
   push:

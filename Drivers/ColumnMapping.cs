@@ -5,22 +5,30 @@ namespace SqlcGenCsharp.Drivers;
 
 public record DbTypeInfo(int? Length = null, string? NpgsqlTypeOverride = null);
 
+public delegate string ReaderFn(int ordinal);
+
+public delegate string WriterFn(string el, bool notNull, bool isDapper);
+
+public delegate string ConvertFunc(string el);
+
+public delegate string SqlMapperImplFunc(bool isDotnetCore);
+
 public class ColumnMapping(
     Dictionary<string, DbTypeInfo> dbTypes,
-    Func<int, string> readerFn,
-    Func<int, string>? readerArrayFn = null,
+    ReaderFn readerFn,
+    ReaderFn? readerArrayFn = null,
     string? usingDirective = null,
-    Func<string, bool, bool, string>? writerFn = null,
-    Func<string, string>? convertFunc = null,
+    WriterFn? writerFn = null,
+    ConvertFunc? convertFunc = null,
     string? sqlMapper = null,
-    Func<bool, string>? sqlMapperImpl = null)
+    SqlMapperImplFunc? sqlMapperImpl = null)
 {
     public Dictionary<string, DbTypeInfo> DbTypes { get; } = dbTypes;
-    public Func<int, string> ReaderFn { get; } = readerFn;
-    public Func<int, string>? ReaderArrayFn { get; } = readerArrayFn;
+    public ReaderFn ReaderFn { get; } = readerFn;
+    public ReaderFn? ReaderArrayFn { get; } = readerArrayFn;
     public string? UsingDirective { get; } = usingDirective;
-    public Func<string, bool, bool, string>? WriterFn { get; } = writerFn;
-    public Func<string, string>? ConvertFunc { get; } = convertFunc;
+    public WriterFn? WriterFn { get; } = writerFn;
+    public ConvertFunc? ConvertFunc { get; } = convertFunc;
     public string? SqlMapper { get; } = sqlMapper;
-    public Func<bool, string>? SqlMapperImpl { get; } = sqlMapperImpl;
+    public SqlMapperImplFunc? SqlMapperImpl { get; } = sqlMapperImpl;
 }
