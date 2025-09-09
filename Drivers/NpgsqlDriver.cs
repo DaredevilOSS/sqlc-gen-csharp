@@ -663,5 +663,4 @@ public sealed class NpgsqlDriver : EnumDbDriver, IOne, IMany, IExec, IExecRows, 
         var (schemaName, enumName) = GetEnumSchemaAndName(column);
         return $"{schemaName}.{enumName}".ToPascalCase();
     }
-
 }
