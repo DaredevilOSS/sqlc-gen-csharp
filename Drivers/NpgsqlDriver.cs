@@ -608,11 +608,10 @@ public sealed class NpgsqlDriver : EnumDbDriver, IOne, IMany, IExec, IExecRows, 
         {
             return (el, notNull, isDapper) =>
             {
-                var enumToStringStmt = $"{el}.Value.Stringify()";
                 var nullValue = isDapper ? "null" : "(object)DBNull.Value";
                 return notNull
-                    ? enumToStringStmt
-                    : $"{el} != null ? {enumToStringStmt} : {nullValue}";
+                    ? $"{el}.Stringify()"
+                    : $"{el} != null ? {el}.Value.Stringify() : {nullValue}";
             };
         }
 
@@ -664,4 +663,5 @@ public sealed class NpgsqlDriver : EnumDbDriver, IOne, IMany, IExec, IExecRows, 
         var (schemaName, enumName) = GetEnumSchemaAndName(column);
         return $"{schemaName}.{enumName}".ToPascalCase();
     }
+
 }
