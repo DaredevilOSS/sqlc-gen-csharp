@@ -664,4 +664,3 @@ public sealed class NpgsqlDriver : EnumDbDriver, IOne, IMany, IExec, IExecRows, 
         return $"{schemaName}.{enumName}".ToPascalCase();
     }
 }
-
