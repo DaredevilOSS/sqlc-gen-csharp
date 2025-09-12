@@ -595,13 +595,23 @@
                 }
               },
               {
+                "name": "c_enum_not_null",
+                "notNull": true,
+                "length": -1,
+                "table": {
+                  "name": "postgres_special_types"
+                },
+                "type": {
+                  "name": "c_enum"
+                }
+              },
+              {
                 "name": "c_json",
                 "length": -1,
                 "table": {
                   "name": "postgres_special_types"
                 },
                 "type": {
-                  "schema": "pg_catalog",
                   "name": "json"
                 }
               },
@@ -612,7 +622,6 @@
                   "name": "postgres_special_types"
                 },
                 "type": {
-                  "schema": "pg_catalog",
                   "name": "json"
                 }
               },
@@ -35034,7 +35043,7 @@
       }
     },
     {
-      "text": "\nINSERT INTO postgres_special_types\n(\n    c_json,\n    c_json_string_override,\n    c_jsonb,\n    c_jsonpath,\n    c_xml,\n    c_xml_string_override,\n    c_uuid,\n    c_enum\n)\nVALUES (\n    $1, \n    $2::json, \n    $3,\n    $4::jsonpath,\n    $5::xml,\n    $6::xml,\n    $7,\n    $8::c_enum\n)",
+      "text": "\nINSERT INTO postgres_special_types\n(\n    c_json,\n    c_json_string_override,\n    c_jsonb,\n    c_jsonpath,\n    c_xml,\n    c_xml_string_override,\n    c_uuid,\n    c_enum,\n    c_enum_not_null\n)\nVALUES (\n    $1, \n    $2::json, \n    $3,\n    $4::jsonpath,\n    $5::xml,\n    $6::xml,\n    $7,\n    $8::c_enum,\n    $9::c_enum\n)",
       "name": "InsertPostgresSpecialTypes",
       "cmd": ":exec",
       "parameters": [
@@ -35049,7 +35058,7 @@
               "name": "postgres_special_types"
             },
             "type": {
-              "name": "pg_catalog.json"
+              "name": "json"
             },
             "originalName": "c_json"
           }
@@ -35060,7 +35069,6 @@
             "name": "c_json_string_override",
             "length": -1,
             "type": {
-              "schema": "pg_catalog",
               "name": "json"
             }
           }
@@ -35136,6 +35144,17 @@
               "name": "c_enum"
             }
           }
+        },
+        {
+          "number": 9,
+          "column": {
+            "name": "c_enum_not_null",
+            "notNull": true,
+            "length": -1,
+            "type": {
+              "name": "c_enum"
+            }
+          }
         }
       ],
       "comments": [
@@ -35147,7 +35166,7 @@
       }
     },
     {
-      "text": "SELECT\n    c_json,\n    c_json_string_override,\n    c_jsonb,\n    c_jsonpath,\n    c_xml,\n    c_xml_string_override,\n    c_uuid,\n    c_enum\nFROM postgres_special_types \nLIMIT 1",
+      "text": "SELECT\n    c_json,\n    c_json_string_override,\n    c_jsonb,\n    c_jsonpath,\n    c_xml,\n    c_xml_string_override,\n    c_uuid,\n    c_enum,\n    c_enum_not_null\nFROM postgres_special_types \nLIMIT 1",
       "name": "GetPostgresSpecialTypes",
       "cmd": ":one",
       "columns": [
@@ -35158,7 +35177,6 @@
             "name": "postgres_special_types"
           },
           "type": {
-            "schema": "pg_catalog",
             "name": "json"
           },
           "originalName": "c_json"
@@ -35170,7 +35188,6 @@
             "name": "postgres_special_types"
           },
           "type": {
-            "schema": "pg_catalog",
             "name": "json"
           },
           "originalName": "c_json_string_override"
@@ -35240,6 +35257,18 @@
             "name": "c_enum"
           },
           "originalName": "c_enum"
+        },
+        {
+          "name": "c_enum_not_null",
+          "notNull": true,
+          "length": -1,
+          "table": {
+            "name": "postgres_special_types"
+          },
+          "type": {
+            "name": "c_enum"
+          },
+          "originalName": "c_enum_not_null"
         }
       ],
       "filename": "query.sql"
@@ -35280,7 +35309,7 @@
               "name": "postgres_special_types"
             },
             "type": {
-              "name": "pg_catalog.json"
+              "name": "json"
             },
             "originalName": "c_json"
           }
@@ -35327,7 +35356,6 @@
           "notNull": true,
           "length": -1,
           "type": {
-            "schema": "pg_catalog",
             "name": "json"
           }
         },
@@ -36127,6 +36155,6 @@
       "filename": "query.sql"
     }
   ],
-  "sqlc_version": "v1.30.0",
+  "sqlc_version": "v1.27.0",
   "plugin_options": "eyJvdmVycmlkZURyaXZlclZlcnNpb24iOiIiLCJnZW5lcmF0ZUNzcHJvaiI6dHJ1ZSwidGFyZ2V0RnJhbWV3b3JrIjoibmV0OC4wIiwibmFtZXNwYWNlTmFtZSI6Ik5wZ3NxbEV4YW1wbGVHZW4iLCJ1c2VEYXBwZXIiOmZhbHNlLCJvdmVycmlkZURhcHBlclZlcnNpb24iOiIiLCJvdmVycmlkZXMiOlt7ImNvbHVtbiI6IkdldFBvc3RncmVzRnVuY3Rpb25zOm1heF9pbnRlZ2VyIiwiY3NoYXJwX3R5cGUiOnsidHlwZSI6ImludCIsIm5vdE51bGwiOmZhbHNlfX0seyJjb2x1bW4iOiJHZXRQb3N0Z3Jlc0Z1bmN0aW9uczptYXhfdmFyY2hhciIsImNzaGFycF90eXBlIjp7InR5cGUiOiJzdHJpbmciLCJub3ROdWxsIjpmYWxzZX19LHsiY29sdW1uIjoiR2V0UG9zdGdyZXNGdW5jdGlvbnM6bWF4X3RpbWVzdGFtcCIsImNzaGFycF90eXBlIjp7InR5cGUiOiJEYXRlVGltZSIsIm5vdE51bGwiOnRydWV9fSx7ImNvbHVtbiI6IkdldFBvc3RncmVzU3BlY2lhbFR5cGVzQ250OmNfanNvbiIsImNzaGFycF90eXBlIjp7InR5cGUiOiJKc29uRWxlbWVudCIsIm5vdE51bGwiOmZhbHNlfX0seyJjb2x1bW4iOiJHZXRQb3N0Z3Jlc1NwZWNpYWxUeXBlc0NudDpjX2pzb25iIiwiY3NoYXJwX3R5cGUiOnsidHlwZSI6Ikpzb25FbGVtZW50Iiwibm90TnVsbCI6ZmFsc2V9fSx7ImNvbHVtbiI6Iio6Y19qc29uX3N0cmluZ19vdmVycmlkZSIsImNzaGFycF90eXBlIjp7InR5cGUiOiJzdHJpbmciLCJub3ROdWxsIjpmYWxzZX19LHsiY29sdW1uIjoiKjpjX3htbF9zdHJpbmdfb3ZlcnJpZGUiLCJjc2hhcnBfdHlwZSI6eyJ0eXBlIjoic3RyaW5nIiwibm90TnVsbCI6ZmFsc2V9fSx7ImNvbHVtbiI6Iio6Y19tYWNhZGRyOCIsImNzaGFycF90eXBlIjp7InR5cGUiOiJzdHJpbmciLCJub3ROdWxsIjpmYWxzZX19XSwiZGVidWdSZXF1ZXN0IjpmYWxzZX0="
 }

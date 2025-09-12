@@ -1679,8 +1679,8 @@ public class QuerySql
         }
     }
 
-    private const string InsertPostgresSpecialTypesSql = " INSERT INTO postgres_special_types ( c_json, c_json_string_override, c_jsonb, c_jsonpath, c_xml, c_xml_string_override, c_uuid, c_enum ) VALUES ( @c_json, @c_json_string_override::json, @c_jsonb, @c_jsonpath::jsonpath, @c_xml::xml, @c_xml_string_override::xml, @c_uuid, @c_enum::c_enum )";
-    public readonly record struct InsertPostgresSpecialTypesArgs(JsonElement? CJson, string? CJsonStringOverride, JsonElement? CJsonb, string? CJsonpath, XmlDocument? CXml, string? CXmlStringOverride, Guid? CUuid, CEnum? CEnum);
+    private const string InsertPostgresSpecialTypesSql = " INSERT INTO postgres_special_types ( c_json, c_json_string_override, c_jsonb, c_jsonpath, c_xml, c_xml_string_override, c_uuid, c_enum, c_enum_not_null ) VALUES ( @c_json, @c_json_string_override::json, @c_jsonb, @c_jsonpath::jsonpath, @c_xml::xml, @c_xml_string_override::xml, @c_uuid, @c_enum::c_enum, @c_enum_not_null::c_enum )";
+    public readonly record struct InsertPostgresSpecialTypesArgs(JsonElement? CJson, string? CJsonStringOverride, JsonElement? CJsonb, string? CJsonpath, XmlDocument? CXml, string? CXmlStringOverride, Guid? CUuid, CEnum? CEnum, CEnum CEnumNotNull);
     public async Task InsertPostgresSpecialTypes(InsertPostgresSpecialTypesArgs args)
     {
         if (this.Transaction == null)
@@ -1697,6 +1697,7 @@ public class QuerySql
                     command.Parameters.AddWithValue("@c_xml_string_override", args.CXmlStringOverride ?? (object)DBNull.Value);
                     command.Parameters.AddWithValue("@c_uuid", args.CUuid ?? (object)DBNull.Value);
                     command.Parameters.AddWithValue("@c_enum", args.CEnum != null ? args.CEnum.Value.Stringify() : (object)DBNull.Value);
+                    command.Parameters.AddWithValue("@c_enum_not_null", args.CEnumNotNull.Stringify());
                     await command.ExecuteNonQueryAsync();
                 }
             }
@@ -1718,12 +1719,13 @@ public class QuerySql
             command.Parameters.AddWithValue("@c_xml_string_override", args.CXmlStringOverride ?? (object)DBNull.Value);
             command.Parameters.AddWithValue("@c_uuid", args.CUuid ?? (object)DBNull.Value);
             command.Parameters.AddWithValue("@c_enum", args.CEnum != null ? args.CEnum.Value.Stringify() : (object)DBNull.Value);
+            command.Parameters.AddWithValue("@c_enum_not_null", args.CEnumNotNull.Stringify());
             await command.ExecuteNonQueryAsync();
         }
     }
 
-    private const string GetPostgresSpecialTypesSql = "SELECT c_json, c_json_string_override, c_jsonb, c_jsonpath, c_xml, c_xml_string_override, c_uuid, c_enum FROM postgres_special_types LIMIT 1";
-    public readonly record struct GetPostgresSpecialTypesRow(JsonElement? CJson, string? CJsonStringOverride, JsonElement? CJsonb, string? CJsonpath, XmlDocument? CXml, string? CXmlStringOverride, Guid? CUuid, CEnum? CEnum);
+    private const string GetPostgresSpecialTypesSql = "SELECT c_json, c_json_string_override, c_jsonb, c_jsonpath, c_xml, c_xml_string_override, c_uuid, c_enum, c_enum_not_null FROM postgres_special_types LIMIT 1";
+    public readonly record struct GetPostgresSpecialTypesRow(JsonElement? CJson, string? CJsonStringOverride, JsonElement? CJsonb, string? CJsonpath, XmlDocument? CXml, string? CXmlStringOverride, Guid? CUuid, CEnum? CEnum, CEnum CEnumNotNull);
     public async Task<GetPostgresSpecialTypesRow?> GetPostgresSpecialTypes()
     {
         if (this.Transaction == null)
@@ -1750,7 +1752,8 @@ public class QuerySql
                                 }))(reader, 4),
                                 CXmlStringOverride = reader.IsDBNull(5) ? null : reader.GetString(5),
                                 CUuid = reader.IsDBNull(6) ? null : reader.GetFieldValue<Guid>(6),
-                                CEnum = reader.IsDBNull(7) ? null : reader.GetString(7).ToCEnum()
+                                CEnum = reader.IsDBNull(7) ? null : reader.GetString(7).ToCEnum(),
+                                CEnumNotNull = reader.GetString(8).ToCEnum()
                             };
                         }
                     }
@@ -1784,7 +1787,8 @@ public class QuerySql
                         }))(reader, 4),
                         CXmlStringOverride = reader.IsDBNull(5) ? null : reader.GetString(5),
                         CUuid = reader.IsDBNull(6) ? null : reader.GetFieldValue<Guid>(6),
-                        CEnum = reader.IsDBNull(7) ? null : reader.GetString(7).ToCEnum()
+                        CEnum = reader.IsDBNull(7) ? null : reader.GetString(7).ToCEnum(),
+                        CEnumNotNull = reader.GetString(8).ToCEnum()
                     };
                 }
             }

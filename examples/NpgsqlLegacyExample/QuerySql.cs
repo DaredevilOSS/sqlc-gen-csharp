@@ -1934,7 +1934,7 @@ namespace NpgsqlLegacyExampleGen
             }
         }
 
-        private const string InsertPostgresSpecialTypesSql = " INSERT INTO postgres_special_types ( c_json, c_json_string_override, c_jsonb, c_jsonpath, c_xml, c_xml_string_override, c_uuid, c_enum ) VALUES ( @c_json, @c_json_string_override::json, @c_jsonb, @c_jsonpath::jsonpath, @c_xml::xml, @c_xml_string_override::xml, @c_uuid, @c_enum::c_enum )";
+        private const string InsertPostgresSpecialTypesSql = " INSERT INTO postgres_special_types ( c_json, c_json_string_override, c_jsonb, c_jsonpath, c_xml, c_xml_string_override, c_uuid, c_enum, c_enum_not_null ) VALUES ( @c_json, @c_json_string_override::json, @c_jsonb, @c_jsonpath::jsonpath, @c_xml::xml, @c_xml_string_override::xml, @c_uuid, @c_enum::c_enum, @c_enum_not_null::c_enum )";
         public class InsertPostgresSpecialTypesArgs
         {
             public JsonElement? CJson { get; set; }
@@ -1945,6 +1945,7 @@ namespace NpgsqlLegacyExampleGen
             public string CXmlStringOverride { get; set; }
             public Guid? CUuid { get; set; }
             public CEnum? CEnum { get; set; }
+            public CEnum CEnumNotNull { get; set; }
         };
         public async Task InsertPostgresSpecialTypes(InsertPostgresSpecialTypesArgs args)
         {
@@ -1962,6 +1963,7 @@ namespace NpgsqlLegacyExampleGen
                         command.Parameters.AddWithValue("@c_xml_string_override", args.CXmlStringOverride ?? (object)DBNull.Value);
                         command.Parameters.AddWithValue("@c_uuid", args.CUuid ?? (object)DBNull.Value);
                         command.Parameters.AddWithValue("@c_enum", args.CEnum != null ? args.CEnum.Value.Stringify() : (object)DBNull.Value);
+                        command.Parameters.AddWithValue("@c_enum_not_null", args.CEnumNotNull.Stringify());
                         await command.ExecuteNonQueryAsync();
                     }
                 }
@@ -1983,11 +1985,12 @@ namespace NpgsqlLegacyExampleGen
                 command.Parameters.AddWithValue("@c_xml_string_override", args.CXmlStringOverride ?? (object)DBNull.Value);
                 command.Parameters.AddWithValue("@c_uuid", args.CUuid ?? (object)DBNull.Value);
                 command.Parameters.AddWithValue("@c_enum", args.CEnum != null ? args.CEnum.Value.Stringify() : (object)DBNull.Value);
+                command.Parameters.AddWithValue("@c_enum_not_null", args.CEnumNotNull.Stringify());
                 await command.ExecuteNonQueryAsync();
             }
         }
 
-        private const string GetPostgresSpecialTypesSql = "SELECT c_json, c_json_string_override, c_jsonb, c_jsonpath, c_xml, c_xml_string_override, c_uuid, c_enum FROM postgres_special_types LIMIT 1";
+        private const string GetPostgresSpecialTypesSql = "SELECT c_json, c_json_string_override, c_jsonb, c_jsonpath, c_xml, c_xml_string_override, c_uuid, c_enum, c_enum_not_null FROM postgres_special_types LIMIT 1";
         public class GetPostgresSpecialTypesRow
         {
             public JsonElement? CJson { get; set; }
@@ -1998,6 +2001,7 @@ namespace NpgsqlLegacyExampleGen
             public string CXmlStringOverride { get; set; }
             public Guid? CUuid { get; set; }
             public CEnum? CEnum { get; set; }
+            public CEnum CEnumNotNull { get; set; }
         };
         public async Task<GetPostgresSpecialTypesRow> GetPostgresSpecialTypes()
         {
@@ -2025,7 +2029,8 @@ namespace NpgsqlLegacyExampleGen
                                     }))(reader, 4),
                                     CXmlStringOverride = reader.IsDBNull(5) ? null : reader.GetString(5),
                                     CUuid = reader.IsDBNull(6) ? (Guid? )null : reader.GetFieldValue<Guid>(6),
-                                    CEnum = reader.IsDBNull(7) ? (CEnum? )null : reader.GetString(7).ToCEnum()
+                                    CEnum = reader.IsDBNull(7) ? (CEnum? )null : reader.GetString(7).ToCEnum(),
+                                    CEnumNotNull = reader.GetString(8).ToCEnum()
                                 };
                             }
                         }
@@ -2059,7 +2064,8 @@ namespace NpgsqlLegacyExampleGen
                             }))(reader, 4),
                             CXmlStringOverride = reader.IsDBNull(5) ? null : reader.GetString(5),
                             CUuid = reader.IsDBNull(6) ? (Guid? )null : reader.GetFieldValue<Guid>(6),
-                            CEnum = reader.IsDBNull(7) ? (CEnum? )null : reader.GetString(7).ToCEnum()
+                            CEnum = reader.IsDBNull(7) ? (CEnum? )null : reader.GetString(7).ToCEnum(),
+                            CEnumNotNull = reader.GetString(8).ToCEnum()
                         };
                     }
                 }

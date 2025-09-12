@@ -1149,7 +1149,7 @@ namespace NpgsqlDapperLegacyExampleGen
             }
         }
 
-        private const string InsertPostgresSpecialTypesSql = " INSERT INTO postgres_special_types ( c_json, c_json_string_override, c_jsonb, c_jsonpath, c_xml, c_xml_string_override, c_uuid, c_enum ) VALUES ( @c_json, @c_json_string_override::json, @c_jsonb, @c_jsonpath::jsonpath, @c_xml::xml, @c_xml_string_override::xml, @c_uuid, @c_enum::c_enum )";
+        private const string InsertPostgresSpecialTypesSql = " INSERT INTO postgres_special_types ( c_json, c_json_string_override, c_jsonb, c_jsonpath, c_xml, c_xml_string_override, c_uuid, c_enum, c_enum_not_null ) VALUES ( @c_json, @c_json_string_override::json, @c_jsonb, @c_jsonpath::jsonpath, @c_xml::xml, @c_xml_string_override::xml, @c_uuid, @c_enum::c_enum, @c_enum_not_null::c_enum )";
         public class InsertPostgresSpecialTypesArgs
         {
             public JsonElement? CJson { get; set; }
@@ -1160,6 +1160,7 @@ namespace NpgsqlDapperLegacyExampleGen
             public string CXmlStringOverride { get; set; }
             public Guid? CUuid { get; set; }
             public CEnum? CEnum { get; set; }
+            public CEnum CEnumNotNull { get; set; }
         };
         public async Task InsertPostgresSpecialTypes(InsertPostgresSpecialTypesArgs args)
         {
@@ -1172,6 +1173,7 @@ namespace NpgsqlDapperLegacyExampleGen
             queryParams.Add("c_xml_string_override", args.CXmlStringOverride);
             queryParams.Add("c_uuid", args.CUuid);
             queryParams.Add("c_enum", args.CEnum != null ? args.CEnum.Value.Stringify() : null);
+            queryParams.Add("c_enum_not_null", args.CEnumNotNull.Stringify());
             if (this.Transaction == null)
             {
                 using (var connection = new NpgsqlConnection(ConnectionString))
@@ -1184,7 +1186,7 @@ namespace NpgsqlDapperLegacyExampleGen
             await this.Transaction.Connection.ExecuteAsync(InsertPostgresSpecialTypesSql, queryParams, transaction: this.Transaction);
         }
 
-        private const string GetPostgresSpecialTypesSql = "SELECT c_json, c_json_string_override, c_jsonb, c_jsonpath, c_xml, c_xml_string_override, c_uuid, c_enum FROM postgres_special_types LIMIT 1";
+        private const string GetPostgresSpecialTypesSql = "SELECT c_json, c_json_string_override, c_jsonb, c_jsonpath, c_xml, c_xml_string_override, c_uuid, c_enum, c_enum_not_null FROM postgres_special_types LIMIT 1";
         public class GetPostgresSpecialTypesRow
         {
             public JsonElement? CJson { get; set; }
@@ -1195,6 +1197,7 @@ namespace NpgsqlDapperLegacyExampleGen
             public string CXmlStringOverride { get; set; }
             public Guid? CUuid { get; set; }
             public CEnum? CEnum { get; set; }
+            public CEnum CEnumNotNull { get; set; }
         };
         public async Task<GetPostgresSpecialTypesRow> GetPostgresSpecialTypes()
         {
