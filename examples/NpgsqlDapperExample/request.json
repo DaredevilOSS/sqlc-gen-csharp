@@ -612,6 +612,7 @@
                   "name": "postgres_special_types"
                 },
                 "type": {
+                  "schema": "pg_catalog",
                   "name": "json"
                 }
               },
@@ -622,6 +623,7 @@
                   "name": "postgres_special_types"
                 },
                 "type": {
+                  "schema": "pg_catalog",
                   "name": "json"
                 }
               },
@@ -35058,7 +35060,7 @@
               "name": "postgres_special_types"
             },
             "type": {
-              "name": "json"
+              "name": "pg_catalog.json"
             },
             "originalName": "c_json"
           }
@@ -35069,6 +35071,7 @@
             "name": "c_json_string_override",
             "length": -1,
             "type": {
+              "schema": "pg_catalog",
               "name": "json"
             }
           }
@@ -35177,6 +35180,7 @@
             "name": "postgres_special_types"
           },
           "type": {
+            "schema": "pg_catalog",
             "name": "json"
           },
           "originalName": "c_json"
@@ -35188,6 +35192,7 @@
             "name": "postgres_special_types"
           },
           "type": {
+            "schema": "pg_catalog",
             "name": "json"
           },
           "originalName": "c_json_string_override"
@@ -35309,7 +35314,7 @@
               "name": "postgres_special_types"
             },
             "type": {
-              "name": "json"
+              "name": "pg_catalog.json"
             },
             "originalName": "c_json"
           }
@@ -35356,6 +35361,7 @@
           "notNull": true,
           "length": -1,
           "type": {
+            "schema": "pg_catalog",
             "name": "json"
           }
         },
@@ -36155,6 +36161,6 @@
       "filename": "query.sql"
     }
   ],
-  "sqlc_version": "v1.27.0",
+  "sqlc_version": "v1.30.0",
   "plugin_options": "eyJvdmVycmlkZURyaXZlclZlcnNpb24iOiIiLCJnZW5lcmF0ZUNzcHJvaiI6dHJ1ZSwidGFyZ2V0RnJhbWV3b3JrIjoibmV0OC4wIiwibmFtZXNwYWNlTmFtZSI6Ik5wZ3NxbERhcHBlckV4YW1wbGVHZW4iLCJ1c2VEYXBwZXIiOnRydWUsIm92ZXJyaWRlRGFwcGVyVmVyc2lvbiI6IiIsIm92ZXJyaWRlcyI6W3siY29sdW1uIjoiR2V0UG9zdGdyZXNGdW5jdGlvbnM6bWF4X2ludGVnZXIiLCJjc2hhcnBfdHlwZSI6eyJ0eXBlIjoiaW50Iiwibm90TnVsbCI6ZmFsc2V9fSx7ImNvbHVtbiI6IkdldFBvc3RncmVzRnVuY3Rpb25zOm1heF92YXJjaGFyIiwiY3NoYXJwX3R5cGUiOnsidHlwZSI6InN0cmluZyIsIm5vdE51bGwiOmZhbHNlfX0seyJjb2x1bW4iOiJHZXRQb3N0Z3Jlc0Z1bmN0aW9uczptYXhfdGltZXN0YW1wIiwiY3NoYXJwX3R5cGUiOnsidHlwZSI6IkRhdGVUaW1lIiwibm90TnVsbCI6dHJ1ZX19LHsiY29sdW1uIjoiR2V0UG9zdGdyZXNTcGVjaWFsVHlwZXNDbnQ6Y19qc29uIiwiY3NoYXJwX3R5cGUiOnsidHlwZSI6Ikpzb25FbGVtZW50Iiwibm90TnVsbCI6ZmFsc2V9fSx7ImNvbHVtbiI6IkdldFBvc3RncmVzU3BlY2lhbFR5cGVzQ250OmNfanNvbmIiLCJjc2hhcnBfdHlwZSI6eyJ0eXBlIjoiSnNvbkVsZW1lbnQiLCJub3ROdWxsIjpmYWxzZX19LHsiY29sdW1uIjoiKjpjX2pzb25fc3RyaW5nX292ZXJyaWRlIiwiY3NoYXJwX3R5cGUiOnsidHlwZSI6InN0cmluZyIsIm5vdE51bGwiOmZhbHNlfX0seyJjb2x1bW4iOiIqOmNfeG1sX3N0cmluZ19vdmVycmlkZSIsImNzaGFycF90eXBlIjp7InR5cGUiOiJzdHJpbmciLCJub3ROdWxsIjpmYWxzZX19LHsiY29sdW1uIjoiKjpjX21hY2FkZHI4IiwiY3NoYXJwX3R5cGUiOnsidHlwZSI6InN0cmluZyIsIm5vdE51bGwiOmZhbHNlfX1dLCJkZWJ1Z1JlcXVlc3QiOmZhbHNlfQ=="
 }

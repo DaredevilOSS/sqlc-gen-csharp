@@ -3,7 +3,7 @@
 2
 postgresql-examples/config/postgresql/authors/schema.sql+examples/config/postgresql/types/schema.sql",examples/config/postgresql/authors/query.sql"*examples/config/postgresql/types/query.sqlb¥
 examples/NpgsqlDapperExamplecsharpæ{"debugRequest":true,"generateCsproj":true,"namespaceName":"NpgsqlDapperExampleGen","overrides":[{"column":"GetPostgresFunctions:max_integer","csharp_type":{"notNull":false,"type":"int"}},{"column":"GetPostgresFunctions:max_varchar","csharp_type":{"notNull":false,"type":"string"}},{"column":"GetPostgresFunctions:max_timestamp","csharp_type":{"notNull":true,"type":"DateTime"}},{"column":"GetPostgresSpecialTypesCnt:c_json","csharp_type":{"notNull":false,"type":"JsonElement"}},{"column":"GetPostgresSpecialTypesCnt:c_jsonb","csharp_type":{"notNull":false,"type":"JsonElement"}},{"column":"*:c_json_string_override","csharp_type":{"notNull":false,"type":"string"}},{"column":"*:c_xml_string_override","csharp_type":{"notNull":false,"type":"string"}},{"column":"*:c_macaddr8","csharp_type":{"notNull":false,"type":"string"}}],"targetFramework":"net8.0","useDapper":true}*
-./dist/LocalRunner‡ípublic"Épublicƒ
+./dist/LocalRunnerŸípublic"ápublicƒ
 	authors)
 id0ÿÿÿÿÿÿÿÿÿR	authorsb	bigserial&
 name0ÿÿÿÿÿÿÿÿÿR	authorsbtext#
@@ -81,13 +81,15 @@ pg_catalog	timestampˆµ
 c_box0ÿÿÿÿÿÿÿÿÿRpostgres_geometric_typesbbox7
 c_path0ÿÿÿÿÿÿÿÿÿRpostgres_geometric_typesbpath=
 	c_polygon0ÿÿÿÿÿÿÿÿÿRpostgres_geometric_typesb	polygon;
-c_circle0ÿÿÿÿÿÿÿÿÿRpostgres_geometric_typesbcircle¾
+c_circle0ÿÿÿÿÿÿÿÿÿRpostgres_geometric_typesbcircleÖ
 postgres_special_types5
 c_uuid0ÿÿÿÿÿÿÿÿÿRpostgres_special_typesbuuid7
 c_enum0ÿÿÿÿÿÿÿÿÿRpostgres_special_typesbc_enumB
-c_enum_not_null0ÿÿÿÿÿÿÿÿÿRpostgres_special_typesbc_enum5
-c_json0ÿÿÿÿÿÿÿÿÿRpostgres_special_typesbjsonE
-c_json_string_override0ÿÿÿÿÿÿÿÿÿRpostgres_special_typesbjson7
+c_enum_not_null0ÿÿÿÿÿÿÿÿÿRpostgres_special_typesbc_enumA
+c_json0ÿÿÿÿÿÿÿÿÿRpostgres_special_typesb
+pg_catalogjsonQ
+c_json_string_override0ÿÿÿÿÿÿÿÿÿRpostgres_special_typesb
+pg_catalogjson7
 c_jsonb0ÿÿÿÿÿÿÿÿÿRpostgres_special_typesbjsonb=
 
 c_jsonpath0ÿÿÿÿÿÿÿÿÿRpostgres_special_typesb
@@ -10671,7 +10673,7 @@ LIMIT 1GetPostgresNetworkTypesCnt:one"=
 ) VALUES ($1, $2, $3)InsertPostgresNetworkTypesBatch	:copyfrom*IE
 c_cidr0ÿÿÿÿÿÿÿÿÿR publicpostgres_network_typesbcidrzc_cidr*IE
 c_inet0ÿÿÿÿÿÿÿÿÿR publicpostgres_network_typesbinetzc_inet*RN
-	c_macaddr0ÿÿÿÿÿÿÿÿÿR publicpostgres_network_typesb	macaddrz	c_macaddr:	query.sqlBpostgres_network_typesû
+	c_macaddr0ÿÿÿÿÿÿÿÿÿR publicpostgres_network_typesb	macaddrz	c_macaddr:	query.sqlBpostgres_network_types’
 ¼
 INSERT INTO postgres_special_types
 (
@@ -10695,9 +10697,10 @@ VALUES (
     $7,
     $8::c_enum,
     $9::c_enum
-)InsertPostgresSpecialTypes:exec*KG
-c_json0ÿÿÿÿÿÿÿÿÿ8R publicpostgres_special_typesbjsonzc_json*/+
-c_json_string_override0ÿÿÿÿÿÿÿÿÿbjson*NJ
+)InsertPostgresSpecialTypes:exec*VR
+c_json0ÿÿÿÿÿÿÿÿÿ8R publicpostgres_special_typesbpg_catalog.jsonzc_json*;7
+c_json_string_override0ÿÿÿÿÿÿÿÿÿb
+pg_catalogjson*NJ
 c_jsonb0ÿÿÿÿÿÿÿÿÿ8R publicpostgres_special_typesbjsonbzc_jsonb*'#
 
 c_jsonpath0ÿÿÿÿÿÿÿÿÿb
@@ -10706,7 +10709,7 @@ c_jsonpath0ÿÿÿÿÿÿÿÿÿb
 c_xml_string_override0ÿÿÿÿÿÿÿÿÿbxml*KG
 c_uuid0ÿÿÿÿÿÿÿÿÿ8R publicpostgres_special_typesbuuidzc_uuid*!
 c_enum0ÿÿÿÿÿÿÿÿÿbc_enum*,	(
-c_enum_not_null0ÿÿÿÿÿÿÿÿÿbc_enum2 Special types :	query.sqlBpostgres_special_types‡
+c_enum_not_null0ÿÿÿÿÿÿÿÿÿbc_enum2 Special types :	query.sqlBpostgres_special_typesŸ
 ÂSELECT
     c_json,
     c_json_string_override,
@@ -10718,9 +10721,11 @@ c_jsonpath0ÿÿÿÿÿÿÿÿÿb
     c_enum,
     c_enum_not_null
 FROM postgres_special_types 
-LIMIT 1GetPostgresSpecialTypes:one"=
-c_json0ÿÿÿÿÿÿÿÿÿRpostgres_special_typesbjsonzc_json"]
-c_json_string_override0ÿÿÿÿÿÿÿÿÿRpostgres_special_typesbjsonzc_json_string_override"@
+LIMIT 1GetPostgresSpecialTypes:one"I
+c_json0ÿÿÿÿÿÿÿÿÿRpostgres_special_typesb
+pg_catalogjsonzc_json"i
+c_json_string_override0ÿÿÿÿÿÿÿÿÿRpostgres_special_typesb
+pg_catalogjsonzc_json_string_override"@
 c_jsonb0ÿÿÿÿÿÿÿÿÿRpostgres_special_typesbjsonbzc_jsonb"I
 
 c_jsonpath0ÿÿÿÿÿÿÿÿÿRpostgres_special_typesb
@@ -10731,7 +10736,7 @@ c_jsonpath":
 c_uuid0ÿÿÿÿÿÿÿÿÿRpostgres_special_typesbuuidzc_uuid"?
 c_enum0ÿÿÿÿÿÿÿÿÿRpostgres_special_typesbc_enumzc_enum"S
 c_enum_not_null0ÿÿÿÿÿÿÿÿÿRpostgres_special_typesbc_enumzc_enum_not_null:	query.sqlW
-%TRUNCATE TABLE postgres_special_typesTruncatePostgresSpecialTypes:exec:	query.sql£
+%TRUNCATE TABLE postgres_special_typesTruncatePostgresSpecialTypes:exec:	query.sql®
 lINSERT INTO postgres_special_types
 (
     c_uuid,
@@ -10743,9 +10748,9 @@ VALUES (
     $2,
     $3
 )InsertPostgresSpecialTypesBatch	:copyfrom*IE
-c_uuid0ÿÿÿÿÿÿÿÿÿR publicpostgres_special_typesbuuidzc_uuid*IE
-c_json0ÿÿÿÿÿÿÿÿÿR publicpostgres_special_typesbjsonzc_json*LH
-c_jsonb0ÿÿÿÿÿÿÿÿÿR publicpostgres_special_typesbjsonbzc_jsonb:	query.sqlBpostgres_special_typesÛ
+c_uuid0ÿÿÿÿÿÿÿÿÿR publicpostgres_special_typesbuuidzc_uuid*TP
+c_json0ÿÿÿÿÿÿÿÿÿR publicpostgres_special_typesbpg_catalog.jsonzc_json*LH
+c_jsonb0ÿÿÿÿÿÿÿÿÿR publicpostgres_special_typesbjsonbzc_jsonb:	query.sqlBpostgres_special_typesç
 ÷WITH grouped_json_types AS (
     SELECT
         c_uuid,
@@ -10766,8 +10771,9 @@ SELECT
     cnt
 FROM grouped_json_types
 LIMIT 1GetPostgresSpecialTypesCnt:one"9
-c_uuid0ÿÿÿÿÿÿÿÿÿRgrouped_json_typesbuuidzc_uuid"
-c_json0ÿÿÿÿÿÿÿÿÿbjson"
+c_uuid0ÿÿÿÿÿÿÿÿÿRgrouped_json_typesbuuidzc_uuid")
+c_json0ÿÿÿÿÿÿÿÿÿb
+pg_catalogjson"
 c_jsonb0ÿÿÿÿÿÿÿÿÿbjsonb"7
 cnt0ÿÿÿÿÿÿÿÿÿRgrouped_json_typesbbigintzcnt:	query.sqlİ
 Ï
@@ -10895,4 +10901,4 @@ hSELECT c_point, c_line, c_lseg, c_box, c_path, c_polygon, c_circle FROM postgre
 c_path0ÿÿÿÿÿÿÿÿÿRpostgres_geometric_typesbpathzc_path"H
 	c_polygon0ÿÿÿÿÿÿÿÿÿRpostgres_geometric_typesb	polygonz	c_polygon"E
 c_circle0ÿÿÿÿÿÿÿÿÿRpostgres_geometric_typesbcirclezc_circle:	query.sqlU
-'TRUNCATE TABLE postgres_geometric_typesTruncatePostgresGeoTypes:exec:	query.sql"v1.27.0*{"overrideDriverVersion":"","generateCsproj":true,"targetFramework":"net8.0","namespaceName":"NpgsqlDapperExampleGen","useDapper":true,"overrideDapperVersion":"","overrides":[{"column":"GetPostgresFunctions:max_integer","csharp_type":{"type":"int","notNull":false}},{"column":"GetPostgresFunctions:max_varchar","csharp_type":{"type":"string","notNull":false}},{"column":"GetPostgresFunctions:max_timestamp","csharp_type":{"type":"DateTime","notNull":true}},{"column":"GetPostgresSpecialTypesCnt:c_json","csharp_type":{"type":"JsonElement","notNull":false}},{"column":"GetPostgresSpecialTypesCnt:c_jsonb","csharp_type":{"type":"JsonElement","notNull":false}},{"column":"*:c_json_string_override","csharp_type":{"type":"string","notNull":false}},{"column":"*:c_xml_string_override","csharp_type":{"type":"string","notNull":false}},{"column":"*:c_macaddr8","csharp_type":{"type":"string","notNull":false}}],"debugRequest":false}
+'TRUNCATE TABLE postgres_geometric_typesTruncatePostgresGeoTypes:exec:	query.sql"v1.30.0*{"overrideDriverVersion":"","generateCsproj":true,"targetFramework":"net8.0","namespaceName":"NpgsqlDapperExampleGen","useDapper":true,"overrideDapperVersion":"","overrides":[{"column":"GetPostgresFunctions:max_integer","csharp_type":{"type":"int","notNull":false}},{"column":"GetPostgresFunctions:max_varchar","csharp_type":{"type":"string","notNull":false}},{"column":"GetPostgresFunctions:max_timestamp","csharp_type":{"type":"DateTime","notNull":true}},{"column":"GetPostgresSpecialTypesCnt:c_json","csharp_type":{"type":"JsonElement","notNull":false}},{"column":"GetPostgresSpecialTypesCnt:c_jsonb","csharp_type":{"type":"JsonElement","notNull":false}},{"column":"*:c_json_string_override","csharp_type":{"type":"string","notNull":false}},{"column":"*:c_xml_string_override","csharp_type":{"type":"string","notNull":false}},{"column":"*:c_macaddr8","csharp_type":{"type":"string","notNull":false}}],"debugRequest":false}
