@@ -3,6 +3,6 @@ CREATE TABLE types_sqlite (
     c_real      REAL,
     c_text      TEXT,
     c_blob      BLOB,
-    created_at  TEXT DEFAULT (datetime('now')),
-    updated_at  INTEGER DEFAULT (datetime('now'))
+    created_at  TEXT    DEFAULT (datetime('now')),
+    updated_at  INTEGER DEFAULT (strftime('%s','now'))
 );

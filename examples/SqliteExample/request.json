@@ -1115,7 +1115,7 @@
       }
     },
     {
-      "text": "SELECT c_integer, c_real, c_text, c_blob, created_at, updated_at FROM types_sqlite LIMIT 1",
+      "text": "SELECT\n    c_integer,\n    c_real,\n    c_text,\n    c_blob,\n    created_at,\n    datetime(updated_at, 'unixepoch') AS updated_at\nFROM types_sqlite\nLIMIT 1",
       "name": "GetSqliteTypes",
       "cmd": ":one",
       "columns": [
@@ -1177,19 +1177,16 @@
         {
           "name": "updated_at",
           "length": -1,
-          "table": {
-            "name": "types_sqlite"
-          },
+          "isFuncCall": true,
           "type": {
-            "name": "INTEGER"
-          },
-          "originalName": "updated_at"
+            "name": "any"
+          }
         }
       ],
       "filename": "query.sql"
     },
     {
-      "text": "SELECT\n    c_integer,\n    c_real,\n    c_text,\n    c_blob,\n    COUNT(*) AS cnt\nFROM types_sqlite\nGROUP BY c_integer, c_real, c_text, c_blob\nLIMIT 1",
+      "text": "SELECT\n    c_integer,\n    c_real,\n    c_text,\n    c_blob,\n    count(*) AS cnt\nFROM types_sqlite\nGROUP BY c_integer, c_real, c_text, c_blob\nLIMIT 1",
       "name": "GetSqliteTypesCnt",
       "cmd": ":one",
       "columns": [
@@ -1250,7 +1247,7 @@
       "filename": "query.sql"
     },
     {
-      "text": "SELECT\n    MAX(c_integer) AS max_integer,\n    MAX(c_real) AS max_real,\n    MAX(c_text) AS max_text\nFROM types_sqlite",
+      "text": "SELECT\n    max(c_integer) AS max_integer,\n    max(c_real) AS max_real,\n    max(c_text) AS max_text\nFROM types_sqlite",
       "name": "GetSqliteFunctions",
       "cmd": ":one",
       "columns": [

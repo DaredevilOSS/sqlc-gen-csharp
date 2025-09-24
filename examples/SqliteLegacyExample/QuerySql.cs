@@ -853,7 +853,7 @@ namespace SqliteLegacyExampleGen
             }
         }
 
-        private const string GetSqliteTypesSql = "SELECT c_integer, c_real, c_text, c_blob, created_at, updated_at FROM types_sqlite LIMIT 1";
+        private const string GetSqliteTypesSql = "SELECT c_integer, c_real, c_text, c_blob, created_at, datetime(updated_at, 'unixepoch') AS updated_at FROM types_sqlite LIMIT 1";
         public class GetSqliteTypesRow
         {
             public int? CInteger { get; set; }
@@ -919,7 +919,7 @@ namespace SqliteLegacyExampleGen
             return null;
         }
 
-        private const string GetSqliteTypesCntSql = "SELECT c_integer, c_real, c_text, c_blob, COUNT(*) AS cnt FROM types_sqlite GROUP BY c_integer, c_real, c_text, c_blob LIMIT 1";
+        private const string GetSqliteTypesCntSql = "SELECT c_integer, c_real, c_text, c_blob, count(*) AS cnt FROM types_sqlite GROUP BY c_integer, c_real, c_text, c_blob LIMIT 1";
         public class GetSqliteTypesCntRow
         {
             public int? CInteger { get; set; }
@@ -982,7 +982,7 @@ namespace SqliteLegacyExampleGen
             return null;
         }
 
-        private const string GetSqliteFunctionsSql = "SELECT MAX(c_integer) AS max_integer, MAX(c_real) AS max_real, MAX(c_text) AS max_text FROM types_sqlite";
+        private const string GetSqliteFunctionsSql = "SELECT max(c_integer) AS max_integer, max(c_real) AS max_real, max(c_text) AS max_text FROM types_sqlite";
         public class GetSqliteFunctionsRow
         {
             public int? MaxInteger { get; set; }
