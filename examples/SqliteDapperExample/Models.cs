@@ -21,4 +21,6 @@ public class TypesSqlite
     public decimal? CReal { get; init; }
     public string? CText { get; init; }
     public byte[]? CBlob { get; init; }
+    public string? CreatedAt { get; init; }
+    public int? UpdatedAt { get; init; }
 };

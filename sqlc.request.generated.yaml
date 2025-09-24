@@ -327,6 +327,14 @@ sql:
               csharp_type:
                 type: "decimal"
                 notNull: true
+            - column: "*:created_at"
+              csharp_type:
+                type: "DateTime"
+                notNull: true
+            - column: "*:updated_at"
+              csharp_type:
+                type: "DateTime"
+                notNull: false
           debugRequest: true
   - schema: ["examples/config/sqlite/authors/schema.sql", "examples/config/sqlite/types/schema.sql"]
     queries: ["examples/config/sqlite/authors/query.sql", "examples/config/sqlite/types/query.sql"]
@@ -352,6 +360,14 @@ sql:
               csharp_type:
                 type: "decimal"
                 notNull: true
+            - column: "*:created_at"
+              csharp_type:
+                type: "DateTime"
+                notNull: true
+            - column: "*:updated_at"
+              csharp_type:
+                type: "DateTime"
+                notNull: false
           debugRequest: true
   - schema: ["examples/config/sqlite/authors/schema.sql", "examples/config/sqlite/types/schema.sql"]
     queries: ["examples/config/sqlite/authors/query.sql", "examples/config/sqlite/types/query.sql"]
@@ -377,6 +393,14 @@ sql:
               csharp_type:
                 type: "decimal"
                 notNull: true
+            - column: "*:created_at"
+              csharp_type:
+                type: "DateTime"
+                notNull: true
+            - column: "*:updated_at"
+              csharp_type:
+                type: "DateTime"
+                notNull: false
           debugRequest: true
   - schema: ["examples/config/sqlite/authors/schema.sql", "examples/config/sqlite/types/schema.sql"]
     queries: ["examples/config/sqlite/authors/query.sql", "examples/config/sqlite/types/query.sql"]
@@ -402,4 +426,12 @@ sql:
               csharp_type:
                 type: "decimal"
                 notNull: true
+            - column: "*:created_at"
+              csharp_type:
+                type: "DateTime"
+                notNull: true
+            - column: "*:updated_at"
+              csharp_type:
+                type: "DateTime"
+                notNull: false
           debugRequest: true

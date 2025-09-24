@@ -576,13 +576,15 @@ namespace SqliteDapperLegacyExampleGen
             }
         }
 
-        private const string GetSqliteTypesSql = "SELECT c_integer, c_real, c_text, c_blob FROM types_sqlite LIMIT 1";
+        private const string GetSqliteTypesSql = "SELECT c_integer, c_real, c_text, c_blob, created_at, updated_at FROM types_sqlite LIMIT 1";
         public class GetSqliteTypesRow
         {
             public int? CInteger { get; set; }
             public decimal? CReal { get; set; }
             public string CText { get; set; }
             public byte[] CBlob { get; set; }
+            public DateTime CreatedAt { get; set; }
+            public DateTime? UpdatedAt { get; set; }
         };
         public async Task<GetSqliteTypesRow> GetSqliteTypes()
         {

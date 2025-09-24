@@ -853,13 +853,15 @@ namespace SqliteLegacyExampleGen
             }
         }
 
-        private const string GetSqliteTypesSql = "SELECT c_integer, c_real, c_text, c_blob FROM types_sqlite LIMIT 1";
+        private const string GetSqliteTypesSql = "SELECT c_integer, c_real, c_text, c_blob, created_at, updated_at FROM types_sqlite LIMIT 1";
         public class GetSqliteTypesRow
         {
             public int? CInteger { get; set; }
             public decimal? CReal { get; set; }
             public string CText { get; set; }
             public byte[] CBlob { get; set; }
+            public DateTime CreatedAt { get; set; }
+            public DateTime? UpdatedAt { get; set; }
         };
         public async Task<GetSqliteTypesRow> GetSqliteTypes()
         {
@@ -879,7 +881,9 @@ namespace SqliteLegacyExampleGen
                                     CInteger = reader.IsDBNull(0) ? (int? )null : reader.GetInt32(0),
                                     CReal = reader.IsDBNull(1) ? (decimal? )null : reader.GetDecimal(1),
                                     CText = reader.IsDBNull(2) ? null : reader.GetString(2),
-                                    CBlob = reader.IsDBNull(3) ? null : reader.GetFieldValue<byte[]>(3)
+                                    CBlob = reader.IsDBNull(3) ? null : reader.GetFieldValue<byte[]>(3),
+                                    CreatedAt = DateTime.Parse(reader.GetString(4)),
+                                    UpdatedAt = reader.IsDBNull(5) ? (DateTime? )null : DateTime.Parse(reader.GetString(5))
                                 };
                             }
                         }
@@ -904,7 +908,9 @@ namespace SqliteLegacyExampleGen
                             CInteger = reader.IsDBNull(0) ? (int? )null : reader.GetInt32(0),
                             CReal = reader.IsDBNull(1) ? (decimal? )null : reader.GetDecimal(1),
                             CText = reader.IsDBNull(2) ? null : reader.GetString(2),
-                            CBlob = reader.IsDBNull(3) ? null : reader.GetFieldValue<byte[]>(3)
+                            CBlob = reader.IsDBNull(3) ? null : reader.GetFieldValue<byte[]>(3),
+                            CreatedAt = DateTime.Parse(reader.GetString(4)),
+                            UpdatedAt = reader.IsDBNull(5) ? (DateTime? )null : DateTime.Parse(reader.GetString(5))
                         };
                     }
                 }

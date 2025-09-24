@@ -22,14 +22,14 @@ public sealed partial class SqliteDriver(
                 {
                     {"blob", new()}
                 },
-                ordinal => $"reader.GetFieldValue<byte[]>({ordinal})"
+                readerFn: ordinal => $"reader.GetFieldValue<byte[]>({ordinal})"
             ),
             ["string"] = new(
                 new()
                 {
                     {"text", new()}
                 },
-                ordinal => $"reader.GetString({ordinal})"
+                readerFn: ordinal => $"reader.GetString({ordinal})"
             ),
             ["int"] = new(
                 new()
@@ -37,7 +37,7 @@ public sealed partial class SqliteDriver(
                     { "integer", new() },
                     { "integernotnulldefaultunixepoch", new() }
                 },
-                ordinal => $"reader.GetInt32({ordinal})",
+                readerFn: ordinal => $"reader.GetInt32({ordinal})",
                 convertFunc: x => $"Convert.ToInt32({x})"
             ),
             ["decimal"] = new(
@@ -45,7 +45,11 @@ public sealed partial class SqliteDriver(
                 {
                     {"real", new()}
                 },
-                ordinal => $"reader.GetDecimal({ordinal})"
+                readerFn: ordinal => $"reader.GetDecimal({ordinal})"
+            ),
+            ["DateTime"] = new(
+                new() { },
+                readerFn: ordinal => $"DateTime.Parse(reader.GetString({ordinal}))"
             ),
             ["object"] = new(
                 new()

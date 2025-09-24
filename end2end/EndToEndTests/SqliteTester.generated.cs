@@ -339,7 +339,9 @@ namespace EndToEndTests
                 CInteger = cInteger,
                 CReal = cReal,
                 CText = cText,
-                CBlob = cBlob
+                CBlob = cBlob,
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow
             };
             var actual = await QuerySql.GetSqliteTypes();
             AssertSingularEquals(expected, actual.Value);
@@ -349,6 +351,26 @@ namespace EndToEndTests
                 Assert.That(x.CReal, Is.EqualTo(y.CReal));
                 Assert.That(x.CText, Is.EqualTo(y.CText));
                 Assert.That(x.CBlob, Is.EqualTo(y.CBlob));
+                AssertDateTimeValueEquals(x.CreatedAt, y.CreatedAt);
+                AssertDateTimeEquals(x.UpdatedAt, y.UpdatedAt);
+            }
+
+            void AssertDateTimeEquals(DateTime? x, DateTime? y)
+            {
+                if (x.HasValue)
+                    Assert.That(y.HasValue);
+                else
+                    AssertDateTimeValueEquals(x.Value, y.Value);
+            }
+
+            void AssertDateTimeValueEquals(DateTime x, DateTime y)
+            {
+                Assert.That(x.Year, Is.EqualTo(y.Year));
+                Assert.That(x.Month, Is.EqualTo(y.Month));
+                Assert.That(x.Day, Is.EqualTo(y.Day));
+                Assert.That(x.Hour, Is.EqualTo(y.Hour));
+                Assert.That(x.Minute, Is.EqualTo(y.Minute));
+                Assert.That(x.Second, Is.EqualTo(y.Second));
             }
         }
 

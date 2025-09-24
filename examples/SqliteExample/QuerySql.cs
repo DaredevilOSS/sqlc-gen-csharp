@@ -740,8 +740,8 @@ public class QuerySql
         }
     }
 
-    private const string GetSqliteTypesSql = "SELECT c_integer, c_real, c_text, c_blob FROM types_sqlite LIMIT 1";
-    public readonly record struct GetSqliteTypesRow(int? CInteger, decimal? CReal, string? CText, byte[]? CBlob);
+    private const string GetSqliteTypesSql = "SELECT c_integer, c_real, c_text, c_blob, created_at, updated_at FROM types_sqlite LIMIT 1";
+    public readonly record struct GetSqliteTypesRow(int? CInteger, decimal? CReal, string? CText, byte[]? CBlob, DateTime CreatedAt, DateTime? UpdatedAt);
     public async Task<GetSqliteTypesRow?> GetSqliteTypes()
     {
         if (this.Transaction == null)
@@ -760,7 +760,9 @@ public class QuerySql
                                 CInteger = reader.IsDBNull(0) ? null : reader.GetInt32(0),
                                 CReal = reader.IsDBNull(1) ? null : reader.GetDecimal(1),
                                 CText = reader.IsDBNull(2) ? null : reader.GetString(2),
-                                CBlob = reader.IsDBNull(3) ? null : reader.GetFieldValue<byte[]>(3)
+                                CBlob = reader.IsDBNull(3) ? null : reader.GetFieldValue<byte[]>(3),
+                                CreatedAt = DateTime.Parse(reader.GetString(4)),
+                                UpdatedAt = reader.IsDBNull(5) ? null : DateTime.Parse(reader.GetString(5))
                             };
                         }
                     }
@@ -785,7 +787,9 @@ public class QuerySql
                         CInteger = reader.IsDBNull(0) ? null : reader.GetInt32(0),
                         CReal = reader.IsDBNull(1) ? null : reader.GetDecimal(1),
                         CText = reader.IsDBNull(2) ? null : reader.GetString(2),
-                        CBlob = reader.IsDBNull(3) ? null : reader.GetFieldValue<byte[]>(3)
+                        CBlob = reader.IsDBNull(3) ? null : reader.GetFieldValue<byte[]>(3),
+                        CreatedAt = DateTime.Parse(reader.GetString(4)),
+                        UpdatedAt = reader.IsDBNull(5) ? null : DateTime.Parse(reader.GetString(5))
                     };
                 }
             }

@@ -257,8 +257,10 @@ public abstract class DbDriver
     {
         if (query is null)
             return null;
-        return Options.Overrides.FirstOrDefault(o =>
-            o.Column == $"{query.Name}:{column.Name}" || o.Column == $"*:{column.Name}");
+        foreach (var overrideOption in Options.Overrides)
+            if (overrideOption.Column == $"{query.Name}:{column.Name}" || overrideOption.Column == $"*:{column.Name}")
+                return overrideOption;
+        return null;
     }
 
     // If the column data type is overridden, we need to check for nulls in generated code

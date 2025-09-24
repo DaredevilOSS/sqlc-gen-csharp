@@ -13,7 +13,7 @@
     "codegen": {
       "out": "examples/SqliteLegacyExample",
       "plugin": "csharp",
-      "options": "eyJkZWJ1Z1JlcXVlc3QiOnRydWUsImdlbmVyYXRlQ3Nwcm9qIjp0cnVlLCJuYW1lc3BhY2VOYW1lIjoiU3FsaXRlTGVnYWN5RXhhbXBsZUdlbiIsIm92ZXJyaWRlcyI6W3siY29sdW1uIjoiR2V0U3FsaXRlRnVuY3Rpb25zOm1heF9pbnRlZ2VyIiwiY3NoYXJwX3R5cGUiOnsibm90TnVsbCI6ZmFsc2UsInR5cGUiOiJpbnQifX0seyJjb2x1bW4iOiJHZXRTcWxpdGVGdW5jdGlvbnM6bWF4X3ZhcmNoYXIiLCJjc2hhcnBfdHlwZSI6eyJub3ROdWxsIjpmYWxzZSwidHlwZSI6InN0cmluZyJ9fSx7ImNvbHVtbiI6IkdldFNxbGl0ZUZ1bmN0aW9uczptYXhfcmVhbCIsImNzaGFycF90eXBlIjp7Im5vdE51bGwiOnRydWUsInR5cGUiOiJkZWNpbWFsIn19XSwidGFyZ2V0RnJhbWV3b3JrIjoibmV0c3RhbmRhcmQyLjAiLCJ1c2VEYXBwZXIiOmZhbHNlfQ==",
+      "options": "eyJkZWJ1Z1JlcXVlc3QiOnRydWUsImdlbmVyYXRlQ3Nwcm9qIjp0cnVlLCJuYW1lc3BhY2VOYW1lIjoiU3FsaXRlTGVnYWN5RXhhbXBsZUdlbiIsIm92ZXJyaWRlcyI6W3siY29sdW1uIjoiR2V0U3FsaXRlRnVuY3Rpb25zOm1heF9pbnRlZ2VyIiwiY3NoYXJwX3R5cGUiOnsibm90TnVsbCI6ZmFsc2UsInR5cGUiOiJpbnQifX0seyJjb2x1bW4iOiJHZXRTcWxpdGVGdW5jdGlvbnM6bWF4X3ZhcmNoYXIiLCJjc2hhcnBfdHlwZSI6eyJub3ROdWxsIjpmYWxzZSwidHlwZSI6InN0cmluZyJ9fSx7ImNvbHVtbiI6IkdldFNxbGl0ZUZ1bmN0aW9uczptYXhfcmVhbCIsImNzaGFycF90eXBlIjp7Im5vdE51bGwiOnRydWUsInR5cGUiOiJkZWNpbWFsIn19LHsiY29sdW1uIjoiKjpjcmVhdGVkX2F0IiwiY3NoYXJwX3R5cGUiOnsibm90TnVsbCI6dHJ1ZSwidHlwZSI6IkRhdGVUaW1lIn19LHsiY29sdW1uIjoiKjp1cGRhdGVkX2F0IiwiY3NoYXJwX3R5cGUiOnsibm90TnVsbCI6ZmFsc2UsInR5cGUiOiJEYXRlVGltZSJ9fV0sInRhcmdldEZyYW1ld29yayI6Im5ldHN0YW5kYXJkMi4wIiwidXNlRGFwcGVyIjpmYWxzZX0=",
       "process": {
         "cmd": "./dist/LocalRunner"
       }
@@ -157,6 +157,26 @@
                 },
                 "type": {
                   "name": "BLOB"
+                }
+              },
+              {
+                "name": "created_at",
+                "length": -1,
+                "table": {
+                  "name": "types_sqlite"
+                },
+                "type": {
+                  "name": "TEXT"
+                }
+              },
+              {
+                "name": "updated_at",
+                "length": -1,
+                "table": {
+                  "name": "types_sqlite"
+                },
+                "type": {
+                  "name": "INTEGER"
                 }
               }
             ]
@@ -1095,7 +1115,7 @@
       }
     },
     {
-      "text": "SELECT c_integer, c_real, c_text, c_blob FROM types_sqlite LIMIT 1",
+      "text": "SELECT c_integer, c_real, c_text, c_blob, created_at, updated_at FROM types_sqlite LIMIT 1",
       "name": "GetSqliteTypes",
       "cmd": ":one",
       "columns": [
@@ -1142,6 +1162,28 @@
             "name": "BLOB"
           },
           "originalName": "c_blob"
+        },
+        {
+          "name": "created_at",
+          "length": -1,
+          "table": {
+            "name": "types_sqlite"
+          },
+          "type": {
+            "name": "TEXT"
+          },
+          "originalName": "created_at"
+        },
+        {
+          "name": "updated_at",
+          "length": -1,
+          "table": {
+            "name": "types_sqlite"
+          },
+          "type": {
+            "name": "INTEGER"
+          },
+          "originalName": "updated_at"
         }
       ],
       "filename": "query.sql"
@@ -1247,5 +1289,5 @@
     }
   ],
   "sqlc_version": "v1.30.0",
-  "plugin_options": "eyJvdmVycmlkZURyaXZlclZlcnNpb24iOiIiLCJnZW5lcmF0ZUNzcHJvaiI6dHJ1ZSwidGFyZ2V0RnJhbWV3b3JrIjoibmV0c3RhbmRhcmQyLjAiLCJuYW1lc3BhY2VOYW1lIjoiU3FsaXRlTGVnYWN5RXhhbXBsZUdlbiIsInVzZURhcHBlciI6ZmFsc2UsIm92ZXJyaWRlRGFwcGVyVmVyc2lvbiI6IiIsIm92ZXJyaWRlcyI6W3siY29sdW1uIjoiR2V0U3FsaXRlRnVuY3Rpb25zOm1heF9pbnRlZ2VyIiwiY3NoYXJwX3R5cGUiOnsidHlwZSI6ImludCIsIm5vdE51bGwiOmZhbHNlfX0seyJjb2x1bW4iOiJHZXRTcWxpdGVGdW5jdGlvbnM6bWF4X3ZhcmNoYXIiLCJjc2hhcnBfdHlwZSI6eyJ0eXBlIjoic3RyaW5nIiwibm90TnVsbCI6ZmFsc2V9fSx7ImNvbHVtbiI6IkdldFNxbGl0ZUZ1bmN0aW9uczptYXhfcmVhbCIsImNzaGFycF90eXBlIjp7InR5cGUiOiJkZWNpbWFsIiwibm90TnVsbCI6dHJ1ZX19XSwiZGVidWdSZXF1ZXN0IjpmYWxzZX0="
+  "plugin_options": "eyJvdmVycmlkZURyaXZlclZlcnNpb24iOiIiLCJnZW5lcmF0ZUNzcHJvaiI6dHJ1ZSwidGFyZ2V0RnJhbWV3b3JrIjoibmV0c3RhbmRhcmQyLjAiLCJuYW1lc3BhY2VOYW1lIjoiU3FsaXRlTGVnYWN5RXhhbXBsZUdlbiIsInVzZURhcHBlciI6ZmFsc2UsIm92ZXJyaWRlRGFwcGVyVmVyc2lvbiI6IiIsIm92ZXJyaWRlcyI6W3siY29sdW1uIjoiR2V0U3FsaXRlRnVuY3Rpb25zOm1heF9pbnRlZ2VyIiwiY3NoYXJwX3R5cGUiOnsidHlwZSI6ImludCIsIm5vdE51bGwiOmZhbHNlfX0seyJjb2x1bW4iOiJHZXRTcWxpdGVGdW5jdGlvbnM6bWF4X3ZhcmNoYXIiLCJjc2hhcnBfdHlwZSI6eyJ0eXBlIjoic3RyaW5nIiwibm90TnVsbCI6ZmFsc2V9fSx7ImNvbHVtbiI6IkdldFNxbGl0ZUZ1bmN0aW9uczptYXhfcmVhbCIsImNzaGFycF90eXBlIjp7InR5cGUiOiJkZWNpbWFsIiwibm90TnVsbCI6dHJ1ZX19LHsiY29sdW1uIjoiKjpjcmVhdGVkX2F0IiwiY3NoYXJwX3R5cGUiOnsidHlwZSI6IkRhdGVUaW1lIiwibm90TnVsbCI6dHJ1ZX19LHsiY29sdW1uIjoiKjp1cGRhdGVkX2F0IiwiY3NoYXJwX3R5cGUiOnsidHlwZSI6IkRhdGVUaW1lIiwibm90TnVsbCI6ZmFsc2V9fV0sImRlYnVnUmVxdWVzdCI6ZmFsc2V9"
 }

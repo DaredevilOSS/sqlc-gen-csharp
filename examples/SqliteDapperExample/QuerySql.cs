@@ -575,13 +575,15 @@ public class QuerySql
         }
     }
 
-    private const string GetSqliteTypesSql = "SELECT c_integer, c_real, c_text, c_blob FROM types_sqlite LIMIT 1";
+    private const string GetSqliteTypesSql = "SELECT c_integer, c_real, c_text, c_blob, created_at, updated_at FROM types_sqlite LIMIT 1";
     public class GetSqliteTypesRow
     {
         public int? CInteger { get; init; }
         public decimal? CReal { get; init; }
         public string? CText { get; init; }
         public byte[]? CBlob { get; init; }
+        public required DateTime CreatedAt { get; init; }
+        public DateTime? UpdatedAt { get; init; }
     };
     public async Task<GetSqliteTypesRow?> GetSqliteTypes()
     {
