@@ -21,5 +21,6 @@ public partial class NpgsqlTester
         await QuerySql.TruncatePostgresNetworkTypes();
         await QuerySql.TruncatePostgresArrayTypes();
         await QuerySql.TruncatePostgresSpecialTypes();
+        await QuerySql.TruncatePostgresNotNullTypes();
     }
 }
