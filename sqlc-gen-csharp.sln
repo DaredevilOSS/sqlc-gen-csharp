@@ -49,7 +49,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SqliteDapperExample", "exam
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SqliteExample", "examples\SqliteExample\SqliteExample.csproj", "{0A345279-6E13-4E7E-B1A0-E1E6ABDAE06F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodegenTests", "CodegenTests\CodegenTests.csproj", "{9FD3C47C-88A5-4C4A-A807-1E36114CBB38}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodegenTests", "unit-tests\CodegenTests\CodegenTests.csproj", "{9FD3C47C-88A5-4C4A-A807-1E36114CBB38}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EndToEndCommon", "end2end\EndToEndCommon\EndToEndCommon.csproj", "{FE5AA465-DC0E-4B14-9BD3-16B47813FB97}"
 EndProject
@@ -59,7 +59,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExampleDocGen", "docs\Examp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EndToEndScaffold", "end2end\EndToEndScaffold\EndToEndScaffold.csproj", "{2A101C54-4F0C-41AC-86B2-FFF6DFBFD0C0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RepositoryTests", "RepositoryTests\RepositoryTests.csproj", "{7FEF697A-841D-4E32-A8ED-0F36C4436B55}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RepositoryTests", "unit-tests\RepositoryTests\RepositoryTests.csproj", "{7FEF697A-841D-4E32-A8ED-0F36C4436B55}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RequestRunner", "RequestRunner\RequestRunner.csproj", "{645E834B-743F-4D80-9073-98878995FE87}"
 EndProject

@@ -1,5 +1,5 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
-    
+<Project Sdk="Microsoft.NET.Sdk">
+
     <PropertyGroup>
         <TargetFramework>net8.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
@@ -9,11 +9,11 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <Content Include="../.env">
+        <Content Include="test-requests/**">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </Content>
     </ItemGroup>
-
+    
     <ItemGroup>
         <PackageReference Include="coverlet.collector" Version="6.0.0"/>
         <PackageReference Include="dotenv.net" Version="3.2.1" />
@@ -29,9 +29,9 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\CodeGenerator\CodeGenerator.csproj" />
-        <ProjectReference Include="..\Drivers\Drivers.csproj" />
-        <ProjectReference Include="..\GeneratedProtobuf\GeneratedProtobuf.csproj" />
+      <ProjectReference Include="..\..\CodeGenerator\CodeGenerator.csproj" />
+      <ProjectReference Include="..\..\Drivers\Drivers.csproj" />
+      <ProjectReference Include="..\..\GeneratedProtobuf\GeneratedProtobuf.csproj" />
     </ItemGroup>
 
 </Project>

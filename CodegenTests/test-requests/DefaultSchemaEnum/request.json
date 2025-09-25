@@ -3,10 +3,10 @@
     "version": "2",
     "engine": "mysql",
     "schema": [
-      "CodegenTests/test-requests/DefaultSchemaEnum/schema.sql"
+      "unit-tests/CodegenTests/test-requests/DefaultSchemaEnum/schema.sql"
     ],
     "queries": [
-      "CodegenTests/test-requests/DefaultSchemaEnum/query.sql"
+      "unit-tests/CodegenTests/test-requests/DefaultSchemaEnum/query.sql"
     ],
     "codegen": {
       "out": "./CodegenTests/test-requests/DefaultSchemaEnum",
