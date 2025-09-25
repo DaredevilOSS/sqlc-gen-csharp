@@ -682,7 +682,7 @@ public class QuerySql
         }
     }
 
-    private const string InsertSqliteTypesSql = "INSERT INTO types_sqlite (c_integer, c_real, c_text, c_blob, c_text_datetime_override, c_integer_datetime_override) VALUES (@c_integer, @c_real, @c_text, @c_blob, @c_text_datetime_override, @c_integer_datetime_override)";
+    private const string InsertSqliteTypesSql = "INSERT INTO types_sqlite ( c_integer, c_real, c_text, c_blob, c_text_datetime_override, c_integer_datetime_override ) VALUES (@c_integer, @c_real, @c_text, @c_blob, @c_text_datetime_override, @c_integer_datetime_override)";
     public readonly record struct InsertSqliteTypesArgs(int? CInteger, decimal? CReal, string? CText, byte[]? CBlob, DateTime? CTextDatetimeOverride, DateTime? CIntegerDatetimeOverride);
     public async Task InsertSqliteTypes(InsertSqliteTypesArgs args)
     {

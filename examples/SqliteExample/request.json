@@ -988,7 +988,7 @@
       "filename": "query.sql"
     },
     {
-      "text": "INSERT INTO types_sqlite \n(c_integer, c_real, c_text, c_blob, c_text_datetime_override, c_integer_datetime_override) \nVALUES (?, ?, ?, ?, ?, ?)",
+      "text": "INSERT INTO types_sqlite \n(\n    c_integer,\n    c_real,\n    c_text,\n    c_blob,\n    c_text_datetime_override,\n    c_integer_datetime_override\n) \nVALUES (?, ?, ?, ?, ?, ?)",
       "name": "InsertSqliteTypes",
       "cmd": ":exec",
       "parameters": [
@@ -1145,7 +1145,7 @@
       }
     },
     {
-      "text": "SELECT\n    c_integer,\n    c_real,\n    c_text,\n    c_blob,\n    c_text_datetime_override,\n    datetime(c_integer_datetime_override, 'unixepoch') AS c_integer_datetime_override\nFROM types_sqlite\nLIMIT 1",
+      "text": "SELECT\n    c_integer,\n    c_real,\n    c_text,\n    c_blob,\n    c_text_datetime_override,\n    datetime(c_integer_datetime_override, 'unixepoch')\n        AS c_integer_datetime_override\nFROM types_sqlite\nLIMIT 1",
       "name": "GetSqliteTypes",
       "cmd": ":one",
       "columns": [
