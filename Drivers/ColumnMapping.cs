@@ -1,13 +1,12 @@
-using System;
 using System.Collections.Generic;
 
 namespace SqlcGenCsharp.Drivers;
 
 public record DbTypeInfo(int? Length = null, string? NpgsqlTypeOverride = null);
 
-public delegate string ReaderFn(int ordinal);
+public delegate string ReaderFn(int ordinal, string dbType);
 
-public delegate string WriterFn(string el, bool notNull, bool isDapper);
+public delegate string WriterFn(string el, string dbType, bool notNull, bool isDapper, bool isLegacy);
 
 public delegate string ConvertFunc(string el);
 

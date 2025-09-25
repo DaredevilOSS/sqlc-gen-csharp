@@ -522,13 +522,15 @@ namespace SqliteDapperLegacyExampleGen
             await this.Transaction.Connection.ExecuteAsync(DeleteAllAuthorsSql, transaction: this.Transaction);
         }
 
-        private const string InsertSqliteTypesSql = "INSERT INTO types_sqlite (c_integer, c_real, c_text, c_blob) VALUES (@c_integer, @c_real, @c_text, @c_blob)";
+        private const string InsertSqliteTypesSql = "INSERT INTO types_sqlite (c_integer, c_real, c_text, c_blob, c_text_datetime_override, c_integer_datetime_override) VALUES (@c_integer, @c_real, @c_text, @c_blob, @c_text_datetime_override, @c_integer_datetime_override)";
         public class InsertSqliteTypesArgs
         {
             public int? CInteger { get; set; }
             public decimal? CReal { get; set; }
             public string CText { get; set; }
             public byte[] CBlob { get; set; }
+            public DateTime? CTextDatetimeOverride { get; set; }
+            public DateTime? CIntegerDatetimeOverride { get; set; }
         };
         public async Task InsertSqliteTypes(InsertSqliteTypesArgs args)
         {
@@ -537,6 +539,8 @@ namespace SqliteDapperLegacyExampleGen
             queryParams.Add("c_real", args.CReal);
             queryParams.Add("c_text", args.CText);
             queryParams.Add("c_blob", args.CBlob);
+            queryParams.Add("c_text_datetime_override", args.CTextDatetimeOverride != null ? args.CTextDatetimeOverride.Value.ToString("yyyy-MM-dd HH:mm:ss") : null);
+            queryParams.Add("c_integer_datetime_override", args.CIntegerDatetimeOverride != null ? (int? )new DateTimeOffset(args.CIntegerDatetimeOverride.Value.ToUniversalTime()).ToUnixTimeSeconds() : null);
             if (this.Transaction == null)
             {
                 using (var connection = new SqliteConnection(ConnectionString))
@@ -576,15 +580,15 @@ namespace SqliteDapperLegacyExampleGen
             }
         }
 
-        private const string GetSqliteTypesSql = "SELECT c_integer, c_real, c_text, c_blob, created_at, datetime(updated_at, 'unixepoch') AS updated_at FROM types_sqlite LIMIT 1";
+        private const string GetSqliteTypesSql = "SELECT c_integer, c_real, c_text, c_blob, c_text_datetime_override, datetime(c_integer_datetime_override, 'unixepoch') AS c_integer_datetime_override FROM types_sqlite LIMIT 1";
         public class GetSqliteTypesRow
         {
             public int? CInteger { get; set; }
             public decimal? CReal { get; set; }
             public string CText { get; set; }
             public byte[] CBlob { get; set; }
-            public DateTime CreatedAt { get; set; }
-            public DateTime? UpdatedAt { get; set; }
+            public DateTime? CTextDatetimeOverride { get; set; }
+            public DateTime? CIntegerDatetimeOverride { get; set; }
         };
         public async Task<GetSqliteTypesRow> GetSqliteTypes()
         {

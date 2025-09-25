@@ -322,11 +322,11 @@ sql:
               csharp_type:
                 type: "decimal"
                 notNull: true
-            - column: "*:created_at"
+            - column: "*:c_text_datetime_override"
               csharp_type:
                 type: "DateTime"
-                notNull: true
-            - column: "*:updated_at"
+                notNull: false
+            - column: "*:c_integer_datetime_override"
               csharp_type:
                 type: "DateTime"
                 notNull: false
@@ -354,11 +354,11 @@ sql:
               csharp_type:
                 type: "decimal"
                 notNull: true
-            - column: "*:created_at"
+            - column: "*:c_text_datetime_override"
               csharp_type:
                 type: "DateTime"
-                notNull: true
-            - column: "*:updated_at"
+                notNull: false
+            - column: "*:c_integer_datetime_override"
               csharp_type:
                 type: "DateTime"
                 notNull: false
@@ -386,11 +386,11 @@ sql:
               csharp_type:
                 type: "decimal"
                 notNull: true
-            - column: "*:created_at"
+            - column: "*:c_text_datetime_override"
               csharp_type:
                 type: "DateTime"
-                notNull: true
-            - column: "*:updated_at"
+                notNull: false
+            - column: "*:c_integer_datetime_override"
               csharp_type:
                 type: "DateTime"
                 notNull: false
@@ -418,11 +418,11 @@ sql:
               csharp_type:
                 type: "decimal"
                 notNull: true
-            - column: "*:created_at"
+            - column: "*:c_text_datetime_override"
               csharp_type:
                 type: "DateTime"
-                notNull: true
-            - column: "*:updated_at"
+                notNull: false
+            - column: "*:c_integer_datetime_override"
               csharp_type:
                 type: "DateTime"
                 notNull: false

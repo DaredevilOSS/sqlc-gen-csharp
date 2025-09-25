@@ -4,4 +4,4 @@ using System.Linq;
 namespace SqliteExampleGen;
 public readonly record struct Author(int Id, string Name, string? Bio);
 public readonly record struct Book(int Id, string Name, int AuthorId, string? Description);
-public readonly record struct TypesSqlite(int? CInteger, decimal? CReal, string? CText, byte[]? CBlob, string? CreatedAt, int? UpdatedAt);
+public readonly record struct TypesSqlite(int? CInteger, decimal? CReal, string? CText, byte[]? CBlob, string? CTextDatetimeOverride, int? CIntegerDatetimeOverride);

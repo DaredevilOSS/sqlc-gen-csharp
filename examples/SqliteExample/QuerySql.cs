@@ -682,8 +682,8 @@ public class QuerySql
         }
     }
 
-    private const string InsertSqliteTypesSql = "INSERT INTO types_sqlite (c_integer, c_real, c_text, c_blob) VALUES (@c_integer, @c_real, @c_text, @c_blob)";
-    public readonly record struct InsertSqliteTypesArgs(int? CInteger, decimal? CReal, string? CText, byte[]? CBlob);
+    private const string InsertSqliteTypesSql = "INSERT INTO types_sqlite (c_integer, c_real, c_text, c_blob, c_text_datetime_override, c_integer_datetime_override) VALUES (@c_integer, @c_real, @c_text, @c_blob, @c_text_datetime_override, @c_integer_datetime_override)";
+    public readonly record struct InsertSqliteTypesArgs(int? CInteger, decimal? CReal, string? CText, byte[]? CBlob, DateTime? CTextDatetimeOverride, DateTime? CIntegerDatetimeOverride);
     public async Task InsertSqliteTypes(InsertSqliteTypesArgs args)
     {
         if (this.Transaction == null)
@@ -697,6 +697,8 @@ public class QuerySql
                     command.Parameters.AddWithValue("@c_real", args.CReal ?? (object)DBNull.Value);
                     command.Parameters.AddWithValue("@c_text", args.CText ?? (object)DBNull.Value);
                     command.Parameters.AddWithValue("@c_blob", args.CBlob ?? (object)DBNull.Value);
+                    command.Parameters.AddWithValue("@c_text_datetime_override", args.CTextDatetimeOverride != null ? args.CTextDatetimeOverride.Value.ToString("yyyy-MM-dd HH:mm:ss") : (object)DBNull.Value);
+                    command.Parameters.AddWithValue("@c_integer_datetime_override", args.CIntegerDatetimeOverride != null ? (int? )new DateTimeOffset(args.CIntegerDatetimeOverride.Value.ToUniversalTime()).ToUnixTimeSeconds() : (object)DBNull.Value);
                     await command.ExecuteNonQueryAsync();
                 }
             }
@@ -714,6 +716,8 @@ public class QuerySql
             command.Parameters.AddWithValue("@c_real", args.CReal ?? (object)DBNull.Value);
             command.Parameters.AddWithValue("@c_text", args.CText ?? (object)DBNull.Value);
             command.Parameters.AddWithValue("@c_blob", args.CBlob ?? (object)DBNull.Value);
+            command.Parameters.AddWithValue("@c_text_datetime_override", args.CTextDatetimeOverride != null ? args.CTextDatetimeOverride.Value.ToString("yyyy-MM-dd HH:mm:ss") : (object)DBNull.Value);
+            command.Parameters.AddWithValue("@c_integer_datetime_override", args.CIntegerDatetimeOverride != null ? (int? )new DateTimeOffset(args.CIntegerDatetimeOverride.Value.ToUniversalTime()).ToUnixTimeSeconds() : (object)DBNull.Value);
             await command.ExecuteNonQueryAsync();
         }
     }
@@ -740,8 +744,8 @@ public class QuerySql
         }
     }
 
-    private const string GetSqliteTypesSql = "SELECT c_integer, c_real, c_text, c_blob, created_at, datetime(updated_at, 'unixepoch') AS updated_at FROM types_sqlite LIMIT 1";
-    public readonly record struct GetSqliteTypesRow(int? CInteger, decimal? CReal, string? CText, byte[]? CBlob, DateTime CreatedAt, DateTime? UpdatedAt);
+    private const string GetSqliteTypesSql = "SELECT c_integer, c_real, c_text, c_blob, c_text_datetime_override, datetime(c_integer_datetime_override, 'unixepoch') AS c_integer_datetime_override FROM types_sqlite LIMIT 1";
+    public readonly record struct GetSqliteTypesRow(int? CInteger, decimal? CReal, string? CText, byte[]? CBlob, DateTime? CTextDatetimeOverride, DateTime? CIntegerDatetimeOverride);
     public async Task<GetSqliteTypesRow?> GetSqliteTypes()
     {
         if (this.Transaction == null)
@@ -761,8 +765,8 @@ public class QuerySql
                                 CReal = reader.IsDBNull(1) ? null : reader.GetDecimal(1),
                                 CText = reader.IsDBNull(2) ? null : reader.GetString(2),
                                 CBlob = reader.IsDBNull(3) ? null : reader.GetFieldValue<byte[]>(3),
-                                CreatedAt = DateTime.Parse(reader.GetString(4)),
-                                UpdatedAt = reader.IsDBNull(5) ? null : DateTime.Parse(reader.GetString(5))
+                                CTextDatetimeOverride = reader.IsDBNull(4) ? null : DateTime.Parse(reader.GetString(4)),
+                                CIntegerDatetimeOverride = reader.IsDBNull(5) ? null : DateTime.Parse(reader.GetString(5))
                             };
                         }
                     }
@@ -788,8 +792,8 @@ public class QuerySql
                         CReal = reader.IsDBNull(1) ? null : reader.GetDecimal(1),
                         CText = reader.IsDBNull(2) ? null : reader.GetString(2),
                         CBlob = reader.IsDBNull(3) ? null : reader.GetFieldValue<byte[]>(3),
-                        CreatedAt = DateTime.Parse(reader.GetString(4)),
-                        UpdatedAt = reader.IsDBNull(5) ? null : DateTime.Parse(reader.GetString(5))
+                        CTextDatetimeOverride = reader.IsDBNull(4) ? null : DateTime.Parse(reader.GetString(4)),
+                        CIntegerDatetimeOverride = reader.IsDBNull(5) ? null : DateTime.Parse(reader.GetString(5))
                     };
                 }
             }

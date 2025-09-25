@@ -1,7 +1,6 @@
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Plugin;
 using SqlcGenCsharp.Drivers.Generators;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -38,16 +37,16 @@ public sealed class NpgsqlDriver : EnumDbDriver, IOne, IMany, IExec, IExecRows, 
                     { "bool", new() },
                     { "boolean", new() }
                 },
-                readerFn: ordinal => $"reader.GetBoolean({ordinal})",
-                readerArrayFn: ordinal => $"reader.GetFieldValue<bool[]>({ordinal})"
+                readerFn: (ordinal, _) => $"reader.GetBoolean({ordinal})",
+                readerArrayFn: (ordinal, _) => $"reader.GetFieldValue<bool[]>({ordinal})"
             ),
             ["short"] = new(
                 new()
                 {
                     { "int2", new() }
                 },
-                readerFn: ordinal => $"reader.GetInt16({ordinal})",
-                readerArrayFn: ordinal => $"reader.GetFieldValue<short[]>({ordinal})",
+                readerFn: (ordinal, _) => $"reader.GetInt16({ordinal})",
+                readerArrayFn: (ordinal, _) => $"reader.GetFieldValue<short[]>({ordinal})",
                 convertFunc: x => $"Convert.ToInt16({x})"
             ),
             ["int"] = new(
@@ -58,8 +57,8 @@ public sealed class NpgsqlDriver : EnumDbDriver, IOne, IMany, IExec, IExecRows, 
                     { "int4", new() },
                     { "serial", new() }
                 },
-                readerFn: ordinal => $"reader.GetInt32({ordinal})",
-                readerArrayFn: ordinal => $"reader.GetFieldValue<int[]>({ordinal})",
+                readerFn: (ordinal, _) => $"reader.GetInt32({ordinal})",
+                readerArrayFn: (ordinal, _) => $"reader.GetFieldValue<int[]>({ordinal})",
                 convertFunc: x => $"Convert.ToInt32({x})"
             ),
             ["long"] = new(
@@ -69,8 +68,8 @@ public sealed class NpgsqlDriver : EnumDbDriver, IOne, IMany, IExec, IExecRows, 
                     { "bigint", new() },
                     { "bigserial", new() }
                 },
-                readerFn: ordinal => $"reader.GetInt64({ordinal})",
-                readerArrayFn: ordinal => $"reader.GetFieldValue<long[]>({ordinal})",
+                readerFn: (ordinal, _) => $"reader.GetInt64({ordinal})",
+                readerArrayFn: (ordinal, _) => $"reader.GetFieldValue<long[]>({ordinal})",
                 convertFunc: x => $"Convert.ToInt64({x})"
             ),
             ["float"] = new(
@@ -79,8 +78,8 @@ public sealed class NpgsqlDriver : EnumDbDriver, IOne, IMany, IExec, IExecRows, 
                     { "float4", new() },
                     { "real", new() }
                 },
-                readerFn: ordinal => $"reader.GetFloat({ordinal})",
-                readerArrayFn: ordinal => $"reader.GetFieldValue<float[]>({ordinal})"
+                readerFn: (ordinal, _) => $"reader.GetFloat({ordinal})",
+                readerArrayFn: (ordinal, _) => $"reader.GetFieldValue<float[]>({ordinal})"
             ),
             ["decimal"] = new(
                 new()
@@ -89,16 +88,16 @@ public sealed class NpgsqlDriver : EnumDbDriver, IOne, IMany, IExec, IExecRows, 
                     { "decimal", new() },
                     { "money", new(NpgsqlTypeOverride: "NpgsqlDbType.Money") }
                 },
-                readerFn: ordinal => $"reader.GetDecimal({ordinal})",
-                readerArrayFn: ordinal => $"reader.GetFieldValue<decimal[]>({ordinal})"
+                readerFn: (ordinal, _) => $"reader.GetDecimal({ordinal})",
+                readerArrayFn: (ordinal, _) => $"reader.GetFieldValue<decimal[]>({ordinal})"
             ),
             ["double"] = new(
                 new()
                 {
                     { "float8", new() }
                 },
-                readerFn: ordinal => $"reader.GetDouble({ordinal})",
-                readerArrayFn: ordinal => $"reader.GetFieldValue<double[]>({ordinal})"
+                readerFn: (ordinal, _) => $"reader.GetDouble({ordinal})",
+                readerArrayFn: (ordinal, _) => $"reader.GetFieldValue<double[]>({ordinal})"
             ),
 
             /* String data types */
@@ -114,8 +113,8 @@ public sealed class NpgsqlDriver : EnumDbDriver, IOne, IMany, IExec, IExecRows, 
                     { "jsonpath", new() },
                     { "macaddr8", new() }
                 },
-                readerFn: ordinal => $"reader.GetString({ordinal})",
-                readerArrayFn: ordinal => $"reader.GetFieldValue<string[]>({ordinal})"
+                readerFn: (ordinal, _) => $"reader.GetString({ordinal})",
+                readerArrayFn: (ordinal, _) => $"reader.GetFieldValue<string[]>({ordinal})"
             ),
 
             /* Date and time data types */
@@ -125,8 +124,8 @@ public sealed class NpgsqlDriver : EnumDbDriver, IOne, IMany, IExec, IExecRows, 
                     { "time", new(NpgsqlTypeOverride: "NpgsqlDbType.Time") },
                     { "interval", new(NpgsqlTypeOverride: "NpgsqlDbType.Interval") }
                 },
-                readerFn: ordinal => $"reader.GetFieldValue<TimeSpan>({ordinal})",
-                readerArrayFn: ordinal => $"reader.GetFieldValue<TimeSpan[]>({ordinal})"
+                readerFn: (ordinal, _) => $"reader.GetFieldValue<TimeSpan>({ordinal})",
+                readerArrayFn: (ordinal, _) => $"reader.GetFieldValue<TimeSpan[]>({ordinal})"
             ),
             ["DateTime"] = new(
                 new()
@@ -135,8 +134,8 @@ public sealed class NpgsqlDriver : EnumDbDriver, IOne, IMany, IExec, IExecRows, 
                     { "timestamp", new() },
                     { "timestamptz", new() }
                 },
-                readerFn: ordinal => $"reader.GetDateTime({ordinal})",
-                readerArrayFn: ordinal => $"reader.GetFieldValue<DateTime[]>({ordinal})"
+                readerFn: (ordinal, _) => $"reader.GetDateTime({ordinal})",
+                readerArrayFn: (ordinal, _) => $"reader.GetFieldValue<DateTime[]>({ordinal})"
             ),
 
             /* Unstructured data types */
@@ -146,8 +145,8 @@ public sealed class NpgsqlDriver : EnumDbDriver, IOne, IMany, IExec, IExecRows, 
                     { "json", new(NpgsqlTypeOverride: "NpgsqlDbType.Json") },
                     { "jsonb", new(NpgsqlTypeOverride: "NpgsqlDbType.Jsonb") }
                 },
-                readerFn: ordinal => $"JsonSerializer.Deserialize<JsonElement>(reader.GetString({ordinal}))",
-                writerFn: (el, notNull, isDapper) =>
+                readerFn: (ordinal, _) => $"JsonSerializer.Deserialize<JsonElement>(reader.GetString({ordinal}))",
+                writerFn: (el, _, notNull, isDapper, isLegacy) =>
                 {
                     if (notNull)
                         return $"{el}";
@@ -163,7 +162,7 @@ public sealed class NpgsqlDriver : EnumDbDriver, IOne, IMany, IExec, IExecRows, 
                 {
                     { "xml", new(NpgsqlTypeOverride: "NpgsqlDbType.Xml") }
                 },
-                readerFn: ordinal => $$"""
+                readerFn: (ordinal, dbType) => $$"""
                     (new Func<NpgsqlDataReader, int, XmlDocument>((r, o) =>
                     {
                        var xmlDoc = new XmlDocument(); 
@@ -171,7 +170,7 @@ public sealed class NpgsqlDriver : EnumDbDriver, IOne, IMany, IExec, IExecRows, 
                        return xmlDoc; 
                     }))({{Variable.Reader.AsVarName()}}, {{ordinal}})
                 """,
-                writerFn: (el, notNull, isDapper) =>
+                writerFn: (el, dbType, notNull, isDapper, isLegacy) =>
                 {
                     if (notNull)
                         return $"{el}.OuterXml";
@@ -189,8 +188,8 @@ public sealed class NpgsqlDriver : EnumDbDriver, IOne, IMany, IExec, IExecRows, 
                 {
                     { "point", new() }
                 },
-                readerFn: ordinal => $"reader.GetFieldValue<NpgsqlPoint>({ordinal})",
-                readerArrayFn: ordinal => $"reader.GetFieldValue<NpgsqlPoint[]>({ordinal})",
+                readerFn: (ordinal, _) => $"reader.GetFieldValue<NpgsqlPoint>({ordinal})",
+                readerArrayFn: (ordinal, _) => $"reader.GetFieldValue<NpgsqlPoint[]>({ordinal})",
                 usingDirective: "NpgsqlTypes",
                 sqlMapper: "SqlMapper.AddTypeHandler(typeof(NpgsqlPoint), new NpgsqlTypeHandler<NpgsqlPoint>());"
             ),
@@ -199,8 +198,8 @@ public sealed class NpgsqlDriver : EnumDbDriver, IOne, IMany, IExec, IExecRows, 
                 {
                     { "line", new() }
                 },
-                readerFn: ordinal => $"reader.GetFieldValue<NpgsqlLine>({ordinal})",
-                readerArrayFn: ordinal => $"reader.GetFieldValue<NpgsqlLine[]>({ordinal})",
+                readerFn: (ordinal, _) => $"reader.GetFieldValue<NpgsqlLine>({ordinal})",
+                readerArrayFn: (ordinal, _) => $"reader.GetFieldValue<NpgsqlLine[]>({ordinal})",
                 usingDirective: "NpgsqlTypes",
                 sqlMapper: "SqlMapper.AddTypeHandler(typeof(NpgsqlLine), new NpgsqlTypeHandler<NpgsqlLine>());"
             ),
@@ -209,8 +208,8 @@ public sealed class NpgsqlDriver : EnumDbDriver, IOne, IMany, IExec, IExecRows, 
                 {
                     { "lseg", new() }
                 },
-                readerFn: ordinal => $"reader.GetFieldValue<NpgsqlLSeg>({ordinal})",
-                readerArrayFn: ordinal => $"reader.GetFieldValue<NpgsqlLSeg[]>({ordinal})",
+                readerFn: (ordinal, _) => $"reader.GetFieldValue<NpgsqlLSeg>({ordinal})",
+                readerArrayFn: (ordinal, _) => $"reader.GetFieldValue<NpgsqlLSeg[]>({ordinal})",
                 usingDirective: "NpgsqlTypes",
                 sqlMapper: "SqlMapper.AddTypeHandler(typeof(NpgsqlLSeg), new NpgsqlTypeHandler<NpgsqlLSeg>());"
             ),
@@ -219,8 +218,8 @@ public sealed class NpgsqlDriver : EnumDbDriver, IOne, IMany, IExec, IExecRows, 
                 {
                     { "box", new() }
                 },
-                readerFn: ordinal => $"reader.GetFieldValue<NpgsqlBox>({ordinal})",
-                readerArrayFn: ordinal => $"reader.GetFieldValue<NpgsqlBox[]>({ordinal})",
+                readerFn: (ordinal, _) => $"reader.GetFieldValue<NpgsqlBox>({ordinal})",
+                readerArrayFn: (ordinal, _) => $"reader.GetFieldValue<NpgsqlBox[]>({ordinal})",
                 usingDirective: "NpgsqlTypes",
                 sqlMapper: "SqlMapper.AddTypeHandler(typeof(NpgsqlBox), new NpgsqlTypeHandler<NpgsqlBox>());"
             ),
@@ -229,8 +228,8 @@ public sealed class NpgsqlDriver : EnumDbDriver, IOne, IMany, IExec, IExecRows, 
                 {
                     { "path", new() }
                 },
-                readerFn: ordinal => $"reader.GetFieldValue<NpgsqlPath>({ordinal})",
-                readerArrayFn: ordinal => $"reader.GetFieldValue<NpgsqlPath[]>({ordinal})",
+                readerFn: (ordinal, _) => $"reader.GetFieldValue<NpgsqlPath>({ordinal})",
+                readerArrayFn: (ordinal, _) => $"reader.GetFieldValue<NpgsqlPath[]>({ordinal})",
                 usingDirective: "NpgsqlTypes",
                 sqlMapper: "SqlMapper.AddTypeHandler(typeof(NpgsqlPath), new NpgsqlTypeHandler<NpgsqlPath>());"
             ),
@@ -239,8 +238,8 @@ public sealed class NpgsqlDriver : EnumDbDriver, IOne, IMany, IExec, IExecRows, 
                 {
                     { "polygon", new() }
                 },
-                readerFn: ordinal => $"reader.GetFieldValue<NpgsqlPolygon>({ordinal})",
-                readerArrayFn: ordinal => $"reader.GetFieldValue<NpgsqlPolygon[]>({ordinal})",
+                readerFn: (ordinal, _) => $"reader.GetFieldValue<NpgsqlPolygon>({ordinal})",
+                readerArrayFn: (ordinal, _) => $"reader.GetFieldValue<NpgsqlPolygon[]>({ordinal})",
                 usingDirective: "NpgsqlTypes",
                 sqlMapper: "SqlMapper.AddTypeHandler(typeof(NpgsqlPolygon), new NpgsqlTypeHandler<NpgsqlPolygon>());"
             ),
@@ -249,8 +248,8 @@ public sealed class NpgsqlDriver : EnumDbDriver, IOne, IMany, IExec, IExecRows, 
                 {
                     { "circle", new() }
                 },
-                readerFn: ordinal => $"reader.GetFieldValue<NpgsqlCircle>({ordinal})",
-                readerArrayFn: ordinal => $"reader.GetFieldValue<NpgsqlCircle[]>({ordinal})",
+                readerFn: (ordinal, _) => $"reader.GetFieldValue<NpgsqlCircle>({ordinal})",
+                readerArrayFn: (ordinal, _) => $"reader.GetFieldValue<NpgsqlCircle[]>({ordinal})",
                 usingDirective: "NpgsqlTypes",
                 sqlMapper: "SqlMapper.AddTypeHandler(typeof(NpgsqlCircle), new NpgsqlTypeHandler<NpgsqlCircle>());"
             ),
@@ -261,8 +260,8 @@ public sealed class NpgsqlDriver : EnumDbDriver, IOne, IMany, IExec, IExecRows, 
                 {
                     { "cidr", new() }
                 },
-                readerFn: ordinal => $"reader.GetFieldValue<NpgsqlCidr>({ordinal})",
-                readerArrayFn: ordinal => $"reader.GetFieldValue<NpgsqlCidr[]>({ordinal})",
+                readerFn: (ordinal, _) => $"reader.GetFieldValue<NpgsqlCidr>({ordinal})",
+                readerArrayFn: (ordinal, _) => $"reader.GetFieldValue<NpgsqlCidr[]>({ordinal})",
                 usingDirective: "NpgsqlTypes",
                 sqlMapper: "SqlMapper.AddTypeHandler(typeof(NpgsqlCidr), new NpgsqlTypeHandler<NpgsqlCidr>());"
             ),
@@ -271,8 +270,8 @@ public sealed class NpgsqlDriver : EnumDbDriver, IOne, IMany, IExec, IExecRows, 
                 {
                     { "inet", new() }
                 },
-                readerFn: ordinal => $"reader.GetFieldValue<IPAddress>({ordinal})",
-                readerArrayFn: ordinal => $"reader.GetFieldValue<IPAddress[]>({ordinal})",
+                readerFn: (ordinal, _) => $"reader.GetFieldValue<IPAddress>({ordinal})",
+                readerArrayFn: (ordinal, _) => $"reader.GetFieldValue<IPAddress[]>({ordinal})",
                 usingDirective: "System.Net",
                 sqlMapper: "SqlMapper.AddTypeHandler(typeof(IPAddress), new NpgsqlTypeHandler<IPAddress>());"
             ),
@@ -281,8 +280,8 @@ public sealed class NpgsqlDriver : EnumDbDriver, IOne, IMany, IExec, IExecRows, 
                 {
                     { "macaddr", new() }
                 },
-                readerFn: ordinal => $"reader.GetFieldValue<PhysicalAddress>({ordinal})",
-                readerArrayFn: ordinal => $"reader.GetFieldValue<PhysicalAddress[]>({ordinal})",
+                readerFn: (ordinal, _) => $"reader.GetFieldValue<PhysicalAddress>({ordinal})",
+                readerArrayFn: (ordinal, _) => $"reader.GetFieldValue<PhysicalAddress[]>({ordinal})",
                 usingDirective: "System.Net.NetworkInformation",
                 sqlMapper: "SqlMapper.AddTypeHandler(typeof(PhysicalAddress), new NpgsqlTypeHandler<PhysicalAddress>());"
             ),
@@ -293,8 +292,8 @@ public sealed class NpgsqlDriver : EnumDbDriver, IOne, IMany, IExec, IExecRows, 
                 {
                     { "tsquery", new() }
                 },
-                readerFn: ordinal => $"reader.GetFieldValue<NpgsqlTsQuery>({ordinal})",
-                readerArrayFn: ordinal => $"reader.GetFieldValue<NpgsqlTsQuery[]>({ordinal})",
+                readerFn: (ordinal, _) => $"reader.GetFieldValue<NpgsqlTsQuery>({ordinal})",
+                readerArrayFn: (ordinal, _) => $"reader.GetFieldValue<NpgsqlTsQuery[]>({ordinal})",
                 usingDirective: "NpgsqlTypes",
                 sqlMapper: "SqlMapper.AddTypeHandler(typeof(NpgsqlTsQuery), new NpgsqlTypeHandler<NpgsqlTsQuery>());"
             ),
@@ -303,8 +302,8 @@ public sealed class NpgsqlDriver : EnumDbDriver, IOne, IMany, IExec, IExecRows, 
                 {
                     { "tsvector", new() }
                 },
-                readerFn: ordinal => $"reader.GetFieldValue<NpgsqlTsVector>({ordinal})",
-                readerArrayFn: ordinal => $"reader.GetFieldValue<NpgsqlTsVector[]>({ordinal})",
+                readerFn: (ordinal, _) => $"reader.GetFieldValue<NpgsqlTsVector>({ordinal})",
+                readerArrayFn: (ordinal, _) => $"reader.GetFieldValue<NpgsqlTsVector[]>({ordinal})",
                 usingDirective: "NpgsqlTypes",
                 sqlMapper: "SqlMapper.AddTypeHandler(typeof(NpgsqlTsVector), new NpgsqlTypeHandler<NpgsqlTsVector>());"
             ),
@@ -315,8 +314,8 @@ public sealed class NpgsqlDriver : EnumDbDriver, IOne, IMany, IExec, IExecRows, 
                 {
                     { "uuid", new() }
                 },
-                readerFn: ordinal => $"reader.GetFieldValue<Guid>({ordinal})",
-                readerArrayFn: ordinal => $"reader.GetFieldValue<Guid[]>({ordinal})",
+                readerFn: (ordinal, _) => $"reader.GetFieldValue<Guid>({ordinal})",
+                readerArrayFn: (ordinal, _) => $"reader.GetFieldValue<Guid[]>({ordinal})",
                 convertFunc: x => $"Guid.Parse({x}?.ToString())"
             ),
             ["byte[]"] = new(
@@ -331,15 +330,15 @@ public sealed class NpgsqlDriver : EnumDbDriver, IOne, IMany, IExec, IExecRows, 
                     { "tinyblob", new() },
                     { "varbinary", new() }
                 },
-                readerFn: ordinal => $"reader.GetFieldValue<byte[]>({ordinal})",
-                readerArrayFn: ordinal => $"reader.GetFieldValue<byte[][]>({ordinal})"
+                readerFn: (ordinal, _) => $"reader.GetFieldValue<byte[]>({ordinal})",
+                readerArrayFn: (ordinal, _) => $"reader.GetFieldValue<byte[][]>({ordinal})"
             ),
             ["object"] = new(
                 new()
                 {
                     { "anyarray", new() }
                 },
-                ordinal => $"reader.GetValue({ordinal})"
+                readerFn: (ordinal, _) => $"reader.GetValue({ordinal})"
             )
         };
 
@@ -580,7 +579,7 @@ public sealed class NpgsqlDriver : EnumDbDriver, IOne, IMany, IExec, IExecRows, 
                         var typeOverride = GetColumnDbTypeOverride(p.Column);
                         var param = $"{rowVar}.{p.Column.Name.ToPascalCase()}";
                         var writerFn = GetWriterFn(p.Column, query);
-                        var paramToWrite = writerFn is null ? param : writerFn(param, p.Column.NotNull, false);
+                        var paramToWrite = writerFn is null ? param : writerFn(param, p.Column.Type.Name, p.Column.NotNull, false, !Options.DotnetFramework.IsDotnetLegacy());
                         var partialStmt = $"await {writerVar}.WriteAsync({paramToWrite}";
                         return typeOverride is null
                             ? $"{partialStmt});"
@@ -606,7 +605,7 @@ public sealed class NpgsqlDriver : EnumDbDriver, IOne, IMany, IExec, IExecRows, 
 
         if (GetEnumType(column) is not null)
         {
-            return (el, notNull, isDapper) =>
+            return (el, dbType, notNull, isDapper, isLegacy) =>
             {
                 var nullValue = isDapper ? "null" : "(object)DBNull.Value";
                 return notNull
@@ -615,7 +614,7 @@ public sealed class NpgsqlDriver : EnumDbDriver, IOne, IMany, IExec, IExecRows, 
             };
         }
 
-        static string DefaultWriterFn(string el, bool notNull, bool isDapper) => notNull ? el : $"{el} ?? (object)DBNull.Value";
+        static string DefaultWriterFn(string el, string dbType, bool notNull, bool isDapper, bool isLegacy) => notNull ? el : $"{el} ?? (object)DBNull.Value";
         return Options.UseDapper ? null : DefaultWriterFn;
     }
 

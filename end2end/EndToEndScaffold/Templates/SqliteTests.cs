@@ -10,21 +10,27 @@ public static class SqliteTests
         {
             Impl = $$"""
                      [Test]
-                     [TestCase(-54355, 9787.66, "Songs of Love and Hate", new byte[] { 0x15, 0x20, 0x33 })]
-                     [TestCase(null, null, null, new byte[] { })]
-                     [TestCase(null, null, null, null)]
+                     [TestCase(-54355, 9787.66, "Songs of Love and Hate", new byte[] { 0x15, 0x20, 0x33 }, "2020-01-01 14:15:16", "2025-01-01 17:18:19")]
+                     [TestCase(null, null, null, new byte[] { }, null, null)]
+                     [TestCase(null, null, null, null, null, null)]
                      public async Task TestSqliteTypes(
                           int? cInteger,
                           decimal? cReal,
                           string cText,
-                          byte[] cBlob)
+                          byte[] cBlob,
+                          DateTime cTextDatetimeOverride,
+                          DateTime? cIntegerDatetimeOverride)
                      {
+                         if (cIntegerDatetimeOverride.HasValue && cIntegerDatetimeOverride.Value.Kind != DateTimeKind.Utc)
+                             cIntegerDatetimeOverride = DateTime.SpecifyKind(cTextDatetimeOverride, DateTimeKind.Utc);
                          await QuerySql.InsertSqliteTypes(new QuerySql.InsertSqliteTypesArgs
                          {
                              CInteger = cInteger,
                              CReal = cReal,
                              CText = cText,
-                             CBlob = cBlob
+                             CBlob = cBlob,
+                             CTextDatetimeOverride = cTextDatetimeOverride,
+                             CIntegerDatetimeOverride = cIntegerDatetimeOverride
                          });
                      
                          var expected = new QuerySql.GetSqliteTypesRow
@@ -33,8 +39,8 @@ public static class SqliteTests
                              CReal = cReal,
                              CText = cText,
                              CBlob = cBlob,
-                             CreatedAt = DateTime.UtcNow,
-                             UpdatedAt = DateTime.UtcNow
+                             CTextDatetimeOverride = cTextDatetimeOverride,
+                             CIntegerDatetimeOverride = cIntegerDatetimeOverride
                          };
                          var actual = await QuerySql.GetSqliteTypes();
                          AssertSingularEquals(expected, actual{{Consts.UnknownRecordValuePlaceholder}});
@@ -45,26 +51,24 @@ public static class SqliteTests
                              Assert.That(x.CReal, Is.EqualTo(y.CReal));
                              Assert.That(x.CText, Is.EqualTo(y.CText));
                              Assert.That(x.CBlob, Is.EqualTo(y.CBlob));
-                             AssertDateTimeValueEquals(x.CreatedAt, y.CreatedAt);
-                             AssertDateTimeEquals(x.UpdatedAt, y.UpdatedAt);
+                             AssertDateTimeEquals(x.CTextDatetimeOverride, y.CTextDatetimeOverride);
+                             AssertDateTimeEquals(x.CIntegerDatetimeOverride, y.CIntegerDatetimeOverride);
                          }
 
                          void AssertDateTimeEquals(DateTime? x, DateTime? y)
                          {
-                             if (x.HasValue)
-                                 Assert.That(y.HasValue);
-                             else
-                                 AssertDateTimeValueEquals(x.Value, y.Value);
-                         }
-
-                         void AssertDateTimeValueEquals(DateTime x, DateTime y)
-                         {
-                             Assert.That(x.Year, Is.EqualTo(y.Year));
-                             Assert.That(x.Month, Is.EqualTo(y.Month));
-                             Assert.That(x.Day, Is.EqualTo(y.Day));
-                             Assert.That(x.Hour, Is.EqualTo(y.Hour));
-                             Assert.That(x.Minute, Is.EqualTo(y.Minute));
-                             Assert.That(x.Second, Is.EqualTo(y.Second));
+                             Assert.That(x.HasValue, Is.EqualTo(y.HasValue));
+                             if (!x.HasValue)
+                                return;
+                             
+                             var xv = x.Value;
+                             var yv = y.Value;
+                             Assert.That(xv.Year, Is.EqualTo(yv.Year));
+                             Assert.That(xv.Month, Is.EqualTo(yv.Month));
+                             Assert.That(xv.Day, Is.EqualTo(yv.Day));
+                             Assert.That(xv.Hour, Is.EqualTo(yv.Hour));
+                             Assert.That(xv.Minute, Is.EqualTo(yv.Minute));
+                             Assert.That(xv.Second, Is.EqualTo(yv.Second));
                          }
                      }
                      """

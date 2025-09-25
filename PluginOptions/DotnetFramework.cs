@@ -35,4 +35,9 @@ public static class DotnetFrameworkExtensions
     {
         return me == DotnetFramework.Dotnet80;
     }
+
+    public static bool IsDotnetLegacy(this DotnetFramework me)
+    {
+        return !IsDotnetCore(me);
+    }
 }
