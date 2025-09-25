@@ -82,13 +82,16 @@ public class PostgresSpecialType
 {
     public Guid? CUuid { get; init; }
     public CEnum? CEnum { get; init; }
-    public required CEnum CEnumNotNull { get; init; }
     public JsonElement? CJson { get; init; }
     public JsonElement? CJsonStringOverride { get; init; }
     public JsonElement? CJsonb { get; init; }
     public string? CJsonpath { get; init; }
     public XmlDocument? CXml { get; init; }
     public XmlDocument? CXmlStringOverride { get; init; }
+};
+public class PostgresNotNullType
+{
+    public required CEnum CEnumNotNull { get; init; }
 };
 public class ExtendedBio
 {

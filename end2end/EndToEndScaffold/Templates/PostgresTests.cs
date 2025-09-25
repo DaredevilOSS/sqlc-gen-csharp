@@ -482,7 +482,6 @@ public static class PostgresTests
                              CJsonb = cParsedJson,
                              CJsonStringOverride = cJson,
                              CJsonpath = cJsonpath,
-                             CEnumNotNull = CEnum.Small
                          });
 
                          var expected = new QuerySql.GetPostgresSpecialTypesRow
@@ -491,7 +490,6 @@ public static class PostgresTests
                              CJsonb = cParsedJson,
                              CJsonStringOverride = cJson,
                              CJsonpath = cJsonpath,
-                             CEnumNotNull = CEnum.Small
                          };
 
                          var actual = await QuerySql.GetPostgresSpecialTypes();
@@ -507,7 +505,6 @@ public static class PostgresTests
                                 Assert.That(x.CJsonb.Value.GetRawText(), Is.EqualTo(y.CJsonb.Value.GetRawText()));
                              Assert.That(x.CJsonStringOverride, Is.EqualTo(y.CJsonStringOverride));
                              Assert.That(x.CJsonpath, Is.EqualTo(y.CJsonpath));
-                             Assert.That(x.CEnumNotNull, Is.EqualTo(y.CEnumNotNull));
                          }
                      }
                      """
@@ -569,14 +566,12 @@ public static class PostgresTests
                             QuerySql.InsertPostgresSpecialTypes(new QuerySql.InsertPostgresSpecialTypesArgs
                             {
                                 CJsonStringOverride = "SOME INVALID JSON",
-                                CEnumNotNull = CEnum.Small
                             }));
                         
                         Assert.ThrowsAsync<Npgsql.PostgresException>(async () => await 
                             QuerySql.InsertPostgresSpecialTypes(new QuerySql.InsertPostgresSpecialTypesArgs
                             {
                                 CJsonpath = "SOME INVALID JSONPATH",
-                                CEnumNotNull = CEnum.Small
                             }));
                      }
                      """
@@ -1025,13 +1020,11 @@ public static class PostgresTests
                          await QuerySql.InsertPostgresSpecialTypes(new QuerySql.InsertPostgresSpecialTypesArgs
                          {
                             CUuid = cUuid,
-                            CEnumNotNull = CEnum.Small
                          });
 
                          var expected = new QuerySql.GetPostgresSpecialTypesRow
                          {
                              CUuid = cUuid,
-                             CEnumNotNull = CEnum.Small
                          };
                          var actual = await QuerySql.GetPostgresSpecialTypes();
                          AssertSingularEquals(expected, actual{{Consts.UnknownRecordValuePlaceholder}});
@@ -1039,7 +1032,6 @@ public static class PostgresTests
                          void AssertSingularEquals(QuerySql.GetPostgresSpecialTypesRow x, QuerySql.GetPostgresSpecialTypesRow y)
                          {
                              Assert.That(x.CUuid, Is.EqualTo(y.CUuid));
-                             Assert.That(x.CEnumNotNull, Is.EqualTo(y.CEnumNotNull));
                          }
                      }
                      """
@@ -1102,13 +1094,11 @@ public static class PostgresTests
                          await QuerySql.InsertPostgresSpecialTypes(new QuerySql.InsertPostgresSpecialTypesArgs
                          {
                             CXml = parsedXml,
-                            CEnumNotNull = CEnum.Small
                          });
 
                          var expected = new QuerySql.GetPostgresSpecialTypesRow
                          {
                              CXml = parsedXml,
-                             CEnumNotNull = CEnum.Small
                          };
 
                          var actual = await QuerySql.GetPostgresSpecialTypes();
@@ -1119,7 +1109,6 @@ public static class PostgresTests
                              Assert.That(x.CXml == null, Is.EqualTo(y.CXml == null));
                              if (x.CXml != null)
                                  Assert.That(x.CXml.OuterXml, Is.EqualTo(y.CXml.OuterXml));
-                             Assert.That(x.CEnumNotNull, Is.EqualTo(y.CEnumNotNull));
                          }
                      }
                      """
@@ -1135,7 +1124,6 @@ public static class PostgresTests
                             QuerySql.InsertPostgresSpecialTypes(new QuerySql.InsertPostgresSpecialTypesArgs
                             {
                                 CXmlStringOverride = "<root>SOME INVALID XML",
-                                CEnumNotNull = CEnum.Small
                             }));
                      }
                      """
@@ -1204,20 +1192,18 @@ public static class PostgresTests
         {
             Impl = $$"""
                      [Test]
-                     [TestCase(CEnum.Medium, CEnum.Big)]
-                     [TestCase(null, CEnum.Small)]
-                     public async Task TestPostgresEnumTypes(CEnum? cEnum, CEnum cEnumNotNull)
+                     [TestCase(CEnum.Medium)]
+                     [TestCase(null)]
+                     public async Task TestPostgresEnumTypes(CEnum? cEnum)
                      {
                          await QuerySql.InsertPostgresSpecialTypes(new QuerySql.InsertPostgresSpecialTypesArgs
                          {
                               CEnum = cEnum,
-                              CEnumNotNull = cEnumNotNull
                          });
                          
                          var expected = new QuerySql.GetPostgresSpecialTypesRow
                          {
                               CEnum = cEnum,
-                              CEnumNotNull = cEnumNotNull
                          };
                          var actual = await QuerySql.GetPostgresSpecialTypes();
                          AssertSingularEquals(expected, actual{{Consts.UnknownRecordValuePlaceholder}});
@@ -1225,6 +1211,31 @@ public static class PostgresTests
                          void AssertSingularEquals(QuerySql.GetPostgresSpecialTypesRow x, QuerySql.GetPostgresSpecialTypesRow y)
                          {
                              Assert.That(x.CEnum, Is.EqualTo(y.CEnum));
+                         }
+                     }
+                     """
+        },
+        [KnownTestType.PostgresNotNullTypes] = new TestImpl
+        {
+            Impl = $$"""
+                     [Test]
+                     [TestCase(CEnum.Small)]
+                     public async Task TestPostgresNotNullTypes(CEnum cEnumNotNull)
+                     {
+                         await QuerySql.InsertPostgresNotNullTypes(new QuerySql.InsertPostgresNotNullTypesArgs
+                         {
+                              CEnumNotNull = cEnumNotNull
+                         });
+                         
+                         var expected = new QuerySql.GetPostgresNotNullTypesRow
+                         {
+                              CEnumNotNull = cEnumNotNull
+                         };
+                         var actual = await QuerySql.GetPostgresNotNullTypes();
+                         AssertSingularEquals(expected, actual{{Consts.UnknownRecordValuePlaceholder}});
+
+                         void AssertSingularEquals(QuerySql.GetPostgresNotNullTypesRow x, QuerySql.GetPostgresNotNullTypesRow y)
+                         {
                              Assert.That(x.CEnumNotNull, Is.EqualTo(y.CEnumNotNull));
                          }
                      }

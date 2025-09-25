@@ -83,13 +83,16 @@ namespace NpgsqlLegacyExampleGen
     {
         public Guid? CUuid { get; set; }
         public CEnum? CEnum { get; set; }
-        public CEnum CEnumNotNull { get; set; }
         public JsonElement? CJson { get; set; }
         public JsonElement? CJsonStringOverride { get; set; }
         public JsonElement? CJsonb { get; set; }
         public string CJsonpath { get; set; }
         public XmlDocument CXml { get; set; }
         public XmlDocument CXmlStringOverride { get; set; }
+    };
+    public class PostgresNotNullType
+    {
+        public CEnum CEnumNotNull { get; set; }
     };
     public class ExtendedBio
     {

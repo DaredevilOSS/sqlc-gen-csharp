@@ -1934,7 +1934,7 @@ namespace NpgsqlLegacyExampleGen
             }
         }
 
-        private const string InsertPostgresSpecialTypesSql = " INSERT INTO postgres_special_types ( c_json, c_json_string_override, c_jsonb, c_jsonpath, c_xml, c_xml_string_override, c_uuid, c_enum, c_enum_not_null ) VALUES ( @c_json, @c_json_string_override::json, @c_jsonb, @c_jsonpath::jsonpath, @c_xml::xml, @c_xml_string_override::xml, @c_uuid, @c_enum::c_enum, @c_enum_not_null::c_enum )";
+        private const string InsertPostgresSpecialTypesSql = " INSERT INTO postgres_special_types ( c_json, c_json_string_override, c_jsonb, c_jsonpath, c_xml, c_xml_string_override, c_uuid, c_enum ) VALUES ( @c_json, @c_json_string_override::json, @c_jsonb, @c_jsonpath::jsonpath, @c_xml::xml, @c_xml_string_override::xml, @c_uuid, @c_enum::c_enum )";
         public class InsertPostgresSpecialTypesArgs
         {
             public JsonElement? CJson { get; set; }
@@ -1945,7 +1945,6 @@ namespace NpgsqlLegacyExampleGen
             public string CXmlStringOverride { get; set; }
             public Guid? CUuid { get; set; }
             public CEnum? CEnum { get; set; }
-            public CEnum CEnumNotNull { get; set; }
         };
         public async Task InsertPostgresSpecialTypes(InsertPostgresSpecialTypesArgs args)
         {
@@ -1963,7 +1962,6 @@ namespace NpgsqlLegacyExampleGen
                         command.Parameters.AddWithValue("@c_xml_string_override", args.CXmlStringOverride ?? (object)DBNull.Value);
                         command.Parameters.AddWithValue("@c_uuid", args.CUuid ?? (object)DBNull.Value);
                         command.Parameters.AddWithValue("@c_enum", args.CEnum != null ? args.CEnum.Value.Stringify() : (object)DBNull.Value);
-                        command.Parameters.AddWithValue("@c_enum_not_null", args.CEnumNotNull.Stringify());
                         await command.ExecuteNonQueryAsync();
                     }
                 }
@@ -1985,12 +1983,119 @@ namespace NpgsqlLegacyExampleGen
                 command.Parameters.AddWithValue("@c_xml_string_override", args.CXmlStringOverride ?? (object)DBNull.Value);
                 command.Parameters.AddWithValue("@c_uuid", args.CUuid ?? (object)DBNull.Value);
                 command.Parameters.AddWithValue("@c_enum", args.CEnum != null ? args.CEnum.Value.Stringify() : (object)DBNull.Value);
+                await command.ExecuteNonQueryAsync();
+            }
+        }
+
+        private const string InsertPostgresNotNullTypesSql = "INSERT INTO postgres_not_null_types ( c_enum_not_null ) VALUES ( @c_enum_not_null::c_enum )";
+        public class InsertPostgresNotNullTypesArgs
+        {
+            public CEnum CEnumNotNull { get; set; }
+        };
+        public async Task InsertPostgresNotNullTypes(InsertPostgresNotNullTypesArgs args)
+        {
+            if (this.Transaction == null)
+            {
+                using (var connection = NpgsqlDataSource.Create(ConnectionString))
+                {
+                    using (var command = connection.CreateCommand(InsertPostgresNotNullTypesSql))
+                    {
+                        command.Parameters.AddWithValue("@c_enum_not_null", args.CEnumNotNull.Stringify());
+                        await command.ExecuteNonQueryAsync();
+                    }
+                }
+
+                return;
+            }
+
+            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+                throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+            using (var command = this.Transaction.Connection.CreateCommand())
+            {
+                command.CommandText = InsertPostgresNotNullTypesSql;
+                command.Transaction = this.Transaction;
                 command.Parameters.AddWithValue("@c_enum_not_null", args.CEnumNotNull.Stringify());
                 await command.ExecuteNonQueryAsync();
             }
         }
 
-        private const string GetPostgresSpecialTypesSql = "SELECT c_json, c_json_string_override, c_jsonb, c_jsonpath, c_xml, c_xml_string_override, c_uuid, c_enum, c_enum_not_null FROM postgres_special_types LIMIT 1";
+        private const string GetPostgresNotNullTypesSql = "SELECT c_enum_not_null FROM postgres_not_null_types LIMIT 1";
+        public class GetPostgresNotNullTypesRow
+        {
+            public CEnum CEnumNotNull { get; set; }
+        };
+        public async Task<GetPostgresNotNullTypesRow> GetPostgresNotNullTypes()
+        {
+            if (this.Transaction == null)
+            {
+                using (var connection = NpgsqlDataSource.Create(ConnectionString))
+                {
+                    using (var command = connection.CreateCommand(GetPostgresNotNullTypesSql))
+                    {
+                        using (var reader = await command.ExecuteReaderAsync())
+                        {
+                            if (await reader.ReadAsync())
+                            {
+                                return new GetPostgresNotNullTypesRow
+                                {
+                                    CEnumNotNull = reader.GetString(0).ToCEnum()
+                                };
+                            }
+                        }
+                    }
+                }
+
+                return null;
+            }
+
+            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+                throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+            using (var command = this.Transaction.Connection.CreateCommand())
+            {
+                command.CommandText = GetPostgresNotNullTypesSql;
+                command.Transaction = this.Transaction;
+                using (var reader = await command.ExecuteReaderAsync())
+                {
+                    if (await reader.ReadAsync())
+                    {
+                        return new GetPostgresNotNullTypesRow
+                        {
+                            CEnumNotNull = reader.GetString(0).ToCEnum()
+                        };
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        private const string TruncatePostgresNotNullTypesSql = "TRUNCATE TABLE postgres_not_null_types";
+        public async Task TruncatePostgresNotNullTypes()
+        {
+            if (this.Transaction == null)
+            {
+                using (var connection = NpgsqlDataSource.Create(ConnectionString))
+                {
+                    using (var command = connection.CreateCommand(TruncatePostgresNotNullTypesSql))
+                    {
+                        await command.ExecuteNonQueryAsync();
+                    }
+                }
+
+                return;
+            }
+
+            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+                throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+            using (var command = this.Transaction.Connection.CreateCommand())
+            {
+                command.CommandText = TruncatePostgresNotNullTypesSql;
+                command.Transaction = this.Transaction;
+                await command.ExecuteNonQueryAsync();
+            }
+        }
+
+        private const string GetPostgresSpecialTypesSql = "SELECT c_json, c_json_string_override, c_jsonb, c_jsonpath, c_xml, c_xml_string_override, c_uuid, c_enum FROM postgres_special_types LIMIT 1";
         public class GetPostgresSpecialTypesRow
         {
             public JsonElement? CJson { get; set; }
@@ -2001,7 +2106,6 @@ namespace NpgsqlLegacyExampleGen
             public string CXmlStringOverride { get; set; }
             public Guid? CUuid { get; set; }
             public CEnum? CEnum { get; set; }
-            public CEnum CEnumNotNull { get; set; }
         };
         public async Task<GetPostgresSpecialTypesRow> GetPostgresSpecialTypes()
         {
@@ -2029,8 +2133,7 @@ namespace NpgsqlLegacyExampleGen
                                     }))(reader, 4),
                                     CXmlStringOverride = reader.IsDBNull(5) ? null : reader.GetString(5),
                                     CUuid = reader.IsDBNull(6) ? (Guid? )null : reader.GetFieldValue<Guid>(6),
-                                    CEnum = reader.IsDBNull(7) ? (CEnum? )null : reader.GetString(7).ToCEnum(),
-                                    CEnumNotNull = reader.GetString(8).ToCEnum()
+                                    CEnum = reader.IsDBNull(7) ? (CEnum? )null : reader.GetString(7).ToCEnum()
                                 };
                             }
                         }
@@ -2064,8 +2167,7 @@ namespace NpgsqlLegacyExampleGen
                             }))(reader, 4),
                             CXmlStringOverride = reader.IsDBNull(5) ? null : reader.GetString(5),
                             CUuid = reader.IsDBNull(6) ? (Guid? )null : reader.GetFieldValue<Guid>(6),
-                            CEnum = reader.IsDBNull(7) ? (CEnum? )null : reader.GetString(7).ToCEnum(),
-                            CEnumNotNull = reader.GetString(8).ToCEnum()
+                            CEnum = reader.IsDBNull(7) ? (CEnum? )null : reader.GetString(7).ToCEnum()
                         };
                     }
                 }
