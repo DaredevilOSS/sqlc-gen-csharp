@@ -33,7 +33,7 @@ jobs:
       - name: Setup Dotnet
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: ${{ env.DOTNET_VERSION }}
+          global-json-file: global.json
 
       - name: install Wasi workload
         run: dotnet workload install wasi-experimental
@@ -53,7 +53,7 @@ jobs:
         shell: bash
         run: |
           set -e
-          WASI_SDK_PATH="$(pwd)/${{ env.WASI_SDK_FOLDER_NAME }}" dotnet publish WasmRunner -c release -f net8.0
+          WASI_SDK_PATH="$(pwd)/${{ env.WASI_SDK_FOLDER_NAME }}" dotnet publish WasmRunner -c release
           ./scripts/wasm/copy_plugin_to.sh dist
 
       - name: upload wasm plugin as artifact
