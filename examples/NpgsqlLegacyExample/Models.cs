@@ -90,6 +90,10 @@ namespace NpgsqlLegacyExampleGen
         public XmlDocument CXml { get; set; }
         public XmlDocument CXmlStringOverride { get; set; }
     };
+    public class PostgresNotNullType
+    {
+        public CEnum CEnumNotNull { get; set; }
+    };
     public class ExtendedBio
     {
         public string AuthorName { get; set; }

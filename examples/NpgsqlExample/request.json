@@ -657,6 +657,24 @@
                 }
               }
             ]
+          },
+          {
+            "rel": {
+              "name": "postgres_not_null_types"
+            },
+            "columns": [
+              {
+                "name": "c_enum_not_null",
+                "notNull": true,
+                "length": -1,
+                "table": {
+                  "name": "postgres_not_null_types"
+                },
+                "type": {
+                  "name": "c_enum"
+                }
+              }
+            ]
           }
         ],
         "enums": [
@@ -35145,6 +35163,54 @@
       "insert_into_table": {
         "name": "postgres_special_types"
       }
+    },
+    {
+      "text": "INSERT INTO postgres_not_null_types\n(\n    c_enum_not_null\n)\nVALUES (\n    $1::c_enum\n)",
+      "name": "InsertPostgresNotNullTypes",
+      "cmd": ":exec",
+      "parameters": [
+        {
+          "number": 1,
+          "column": {
+            "name": "c_enum_not_null",
+            "notNull": true,
+            "length": -1,
+            "type": {
+              "name": "c_enum"
+            }
+          }
+        }
+      ],
+      "filename": "query.sql",
+      "insert_into_table": {
+        "name": "postgres_not_null_types"
+      }
+    },
+    {
+      "text": "SELECT\n    c_enum_not_null\nFROM postgres_not_null_types \nLIMIT 1",
+      "name": "GetPostgresNotNullTypes",
+      "cmd": ":one",
+      "columns": [
+        {
+          "name": "c_enum_not_null",
+          "notNull": true,
+          "length": -1,
+          "table": {
+            "name": "postgres_not_null_types"
+          },
+          "type": {
+            "name": "c_enum"
+          },
+          "originalName": "c_enum_not_null"
+        }
+      ],
+      "filename": "query.sql"
+    },
+    {
+      "text": "TRUNCATE TABLE postgres_not_null_types",
+      "name": "TruncatePostgresNotNullTypes",
+      "cmd": ":exec",
+      "filename": "query.sql"
     },
     {
       "text": "SELECT\n    c_json,\n    c_json_string_override,\n    c_jsonb,\n    c_jsonpath,\n    c_xml,\n    c_xml_string_override,\n    c_uuid,\n    c_enum\nFROM postgres_special_types \nLIMIT 1",

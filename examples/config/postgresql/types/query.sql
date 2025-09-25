@@ -253,6 +253,24 @@ VALUES (
     sqlc.narg('c_enum')::c_enum
 );
 
+-- name: InsertPostgresNotNullTypes :exec
+INSERT INTO postgres_not_null_types
+(
+    c_enum_not_null
+)
+VALUES (
+    sqlc.arg('c_enum_not_null')::c_enum
+);
+
+-- name: GetPostgresNotNullTypes :one
+SELECT
+    c_enum_not_null
+FROM postgres_not_null_types 
+LIMIT 1;
+
+-- name: TruncatePostgresNotNullTypes :exec
+TRUNCATE TABLE postgres_not_null_types;
+
 -- name: GetPostgresSpecialTypes :one
 SELECT
     c_json,

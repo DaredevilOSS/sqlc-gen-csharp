@@ -1722,6 +1722,108 @@ public class QuerySql
         }
     }
 
+    private const string InsertPostgresNotNullTypesSql = "INSERT INTO postgres_not_null_types ( c_enum_not_null ) VALUES ( @c_enum_not_null::c_enum )";
+    public readonly record struct InsertPostgresNotNullTypesArgs(CEnum CEnumNotNull);
+    public async Task InsertPostgresNotNullTypes(InsertPostgresNotNullTypesArgs args)
+    {
+        if (this.Transaction == null)
+        {
+            using (var connection = NpgsqlDataSource.Create(ConnectionString!))
+            {
+                using (var command = connection.CreateCommand(InsertPostgresNotNullTypesSql))
+                {
+                    command.Parameters.AddWithValue("@c_enum_not_null", args.CEnumNotNull.Stringify());
+                    await command.ExecuteNonQueryAsync();
+                }
+            }
+
+            return;
+        }
+
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+        using (var command = this.Transaction.Connection.CreateCommand())
+        {
+            command.CommandText = InsertPostgresNotNullTypesSql;
+            command.Transaction = this.Transaction;
+            command.Parameters.AddWithValue("@c_enum_not_null", args.CEnumNotNull.Stringify());
+            await command.ExecuteNonQueryAsync();
+        }
+    }
+
+    private const string GetPostgresNotNullTypesSql = "SELECT c_enum_not_null FROM postgres_not_null_types LIMIT 1";
+    public readonly record struct GetPostgresNotNullTypesRow(CEnum CEnumNotNull);
+    public async Task<GetPostgresNotNullTypesRow?> GetPostgresNotNullTypes()
+    {
+        if (this.Transaction == null)
+        {
+            using (var connection = NpgsqlDataSource.Create(ConnectionString!))
+            {
+                using (var command = connection.CreateCommand(GetPostgresNotNullTypesSql))
+                {
+                    using (var reader = await command.ExecuteReaderAsync())
+                    {
+                        if (await reader.ReadAsync())
+                        {
+                            return new GetPostgresNotNullTypesRow
+                            {
+                                CEnumNotNull = reader.GetString(0).ToCEnum()
+                            };
+                        }
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+        using (var command = this.Transaction.Connection.CreateCommand())
+        {
+            command.CommandText = GetPostgresNotNullTypesSql;
+            command.Transaction = this.Transaction;
+            using (var reader = await command.ExecuteReaderAsync())
+            {
+                if (await reader.ReadAsync())
+                {
+                    return new GetPostgresNotNullTypesRow
+                    {
+                        CEnumNotNull = reader.GetString(0).ToCEnum()
+                    };
+                }
+            }
+        }
+
+        return null;
+    }
+
+    private const string TruncatePostgresNotNullTypesSql = "TRUNCATE TABLE postgres_not_null_types";
+    public async Task TruncatePostgresNotNullTypes()
+    {
+        if (this.Transaction == null)
+        {
+            using (var connection = NpgsqlDataSource.Create(ConnectionString!))
+            {
+                using (var command = connection.CreateCommand(TruncatePostgresNotNullTypesSql))
+                {
+                    await command.ExecuteNonQueryAsync();
+                }
+            }
+
+            return;
+        }
+
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+        using (var command = this.Transaction.Connection.CreateCommand())
+        {
+            command.CommandText = TruncatePostgresNotNullTypesSql;
+            command.Transaction = this.Transaction;
+            await command.ExecuteNonQueryAsync();
+        }
+    }
+
     private const string GetPostgresSpecialTypesSql = "SELECT c_json, c_json_string_override, c_jsonb, c_jsonpath, c_xml, c_xml_string_override, c_uuid, c_enum FROM postgres_special_types LIMIT 1";
     public readonly record struct GetPostgresSpecialTypesRow(JsonElement? CJson, string? CJsonStringOverride, JsonElement? CJsonb, string? CJsonpath, XmlDocument? CXml, string? CXmlStringOverride, Guid? CUuid, CEnum? CEnum);
     public async Task<GetPostgresSpecialTypesRow?> GetPostgresSpecialTypes()

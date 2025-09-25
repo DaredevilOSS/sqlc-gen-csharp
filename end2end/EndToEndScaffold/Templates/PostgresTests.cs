@@ -1192,9 +1192,11 @@ public static class PostgresTests
         {
             Impl = $$"""
                      [Test]
+                     [TestCase(CEnum.Small)]
                      [TestCase(CEnum.Medium)]
+                     [TestCase(CEnum.Big)]
                      [TestCase(null)]
-                     public async Task TestPostgresStringTypes(CEnum? cEnum)
+                     public async Task TestPostgresEnumTypes(CEnum? cEnum)
                      {
                          await QuerySql.InsertPostgresSpecialTypes(new QuerySql.InsertPostgresSpecialTypesArgs
                          {
@@ -1211,6 +1213,32 @@ public static class PostgresTests
                          void AssertSingularEquals(QuerySql.GetPostgresSpecialTypesRow x, QuerySql.GetPostgresSpecialTypesRow y)
                          {
                              Assert.That(x.CEnum, Is.EqualTo(y.CEnum));
+                         }
+                     }
+                     """
+        },
+        [KnownTestType.PostgresNotNullTypes] = new TestImpl
+        {
+            Impl = $$"""
+                     [Test]
+                     [TestCase(CEnum.Small)]
+                     public async Task TestPostgresNotNullTypes(CEnum cEnumNotNull)
+                     {
+                         await QuerySql.InsertPostgresNotNullTypes(new QuerySql.InsertPostgresNotNullTypesArgs
+                         {
+                              CEnumNotNull = cEnumNotNull
+                         });
+                         
+                         var expected = new QuerySql.GetPostgresNotNullTypesRow
+                         {
+                              CEnumNotNull = cEnumNotNull
+                         };
+                         var actual = await QuerySql.GetPostgresNotNullTypes();
+                         AssertSingularEquals(expected, actual{{Consts.UnknownRecordValuePlaceholder}});
+
+                         void AssertSingularEquals(QuerySql.GetPostgresNotNullTypesRow x, QuerySql.GetPostgresNotNullTypesRow y)
+                         {
+                             Assert.That(x.CEnumNotNull, Is.EqualTo(y.CEnumNotNull));
                          }
                      }
                      """

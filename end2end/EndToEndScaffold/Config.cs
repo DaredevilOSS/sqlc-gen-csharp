@@ -56,6 +56,7 @@ public enum KnownTestType
     PostgresJsonDataTypes,
     PostgresXmlDataTypes,
     PostgresEnumDataType,
+    PostgresNotNullTypes,
 
     // :copyfrom (Batch)
     PostgresStringCopyFrom,
@@ -171,6 +172,7 @@ internal static class Config
         KnownTestType.PostgresNetworkDataTypes,
         KnownTestType.PostgresXmlDataTypes,
         KnownTestType.PostgresEnumDataType,
+        KnownTestType.PostgresNotNullTypes,
         KnownTestType.PostgresFullTextSearchDataTypes,
 
         // :copyfrom (Batch)
