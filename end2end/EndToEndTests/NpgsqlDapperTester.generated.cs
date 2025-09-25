@@ -400,14 +400,14 @@ namespace EndToEndTests
         [Test]
         public void TestPostgresInvalidJson()
         {
-            Assert.ThrowsAsync<Npgsql.PostgresException>(async () => await QuerySql.InsertPostgresSpecialTypes(new QuerySql.InsertPostgresSpecialTypesArgs { CJsonStringOverride = "SOME INVALID JSON", }));
-            Assert.ThrowsAsync<Npgsql.PostgresException>(async () => await QuerySql.InsertPostgresSpecialTypes(new QuerySql.InsertPostgresSpecialTypesArgs { CJsonpath = "SOME INVALID JSONPATH", }));
+            Assert.ThrowsAsync<Npgsql.PostgresException>(async () => await QuerySql.InsertPostgresSpecialTypes(new QuerySql.InsertPostgresSpecialTypesArgs { CJsonStringOverride = "SOME INVALID JSON" }));
+            Assert.ThrowsAsync<Npgsql.PostgresException>(async () => await QuerySql.InsertPostgresSpecialTypes(new QuerySql.InsertPostgresSpecialTypesArgs { CJsonpath = "SOME INVALID JSONPATH" }));
         }
 
         [Test]
         public void TestPostgresInvalidXml()
         {
-            Assert.ThrowsAsync<Npgsql.PostgresException>(async () => await QuerySql.InsertPostgresSpecialTypes(new QuerySql.InsertPostgresSpecialTypesArgs { CXmlStringOverride = "<root>SOME INVALID XML", }));
+            Assert.ThrowsAsync<Npgsql.PostgresException>(async () => await QuerySql.InsertPostgresSpecialTypes(new QuerySql.InsertPostgresSpecialTypesArgs { CXmlStringOverride = "<root>SOME INVALID XML" }));
         }
 
         [Test]
@@ -564,10 +564,10 @@ namespace EndToEndTests
         [TestCaseSource(nameof(PostgresGuidDataTypesTestCases))]
         public async Task TestPostgresGuidDataTypes(Guid? cUuid)
         {
-            await QuerySql.InsertPostgresSpecialTypes(new QuerySql.InsertPostgresSpecialTypesArgs { CUuid = cUuid, });
+            await QuerySql.InsertPostgresSpecialTypes(new QuerySql.InsertPostgresSpecialTypesArgs { CUuid = cUuid });
             var expected = new QuerySql.GetPostgresSpecialTypesRow
             {
-                CUuid = cUuid,
+                CUuid = cUuid
             };
             var actual = await QuerySql.GetPostgresSpecialTypes();
             AssertSingularEquals(expected, actual);
@@ -678,13 +678,13 @@ namespace EndToEndTests
             JsonElement? cParsedJson = null;
             if (cJson != null)
                 cParsedJson = JsonDocument.Parse(cJson).RootElement;
-            await QuerySql.InsertPostgresSpecialTypes(new QuerySql.InsertPostgresSpecialTypesArgs { CJson = cParsedJson, CJsonb = cParsedJson, CJsonStringOverride = cJson, CJsonpath = cJsonpath, });
+            await QuerySql.InsertPostgresSpecialTypes(new QuerySql.InsertPostgresSpecialTypesArgs { CJson = cParsedJson, CJsonb = cParsedJson, CJsonStringOverride = cJson, CJsonpath = cJsonpath });
             var expected = new QuerySql.GetPostgresSpecialTypesRow
             {
                 CJson = cParsedJson,
                 CJsonb = cParsedJson,
                 CJsonStringOverride = cJson,
-                CJsonpath = cJsonpath,
+                CJsonpath = cJsonpath
             };
             var actual = await QuerySql.GetPostgresSpecialTypes();
             AssertSingularEquals(expected, actual);
@@ -713,10 +713,10 @@ namespace EndToEndTests
                 parsedXml.LoadXml(cXml);
             }
 
-            await QuerySql.InsertPostgresSpecialTypes(new QuerySql.InsertPostgresSpecialTypesArgs { CXml = parsedXml, });
+            await QuerySql.InsertPostgresSpecialTypes(new QuerySql.InsertPostgresSpecialTypesArgs { CXml = parsedXml });
             var expected = new QuerySql.GetPostgresSpecialTypesRow
             {
-                CXml = parsedXml,
+                CXml = parsedXml
             };
             var actual = await QuerySql.GetPostgresSpecialTypes();
             AssertSingularEquals(expected, actual);
@@ -729,14 +729,16 @@ namespace EndToEndTests
         }
 
         [Test]
+        [TestCase(CEnum.Small)]
         [TestCase(CEnum.Medium)]
+        [TestCase(CEnum.Big)]
         [TestCase(null)]
         public async Task TestPostgresEnumTypes(CEnum? cEnum)
         {
-            await QuerySql.InsertPostgresSpecialTypes(new QuerySql.InsertPostgresSpecialTypesArgs { CEnum = cEnum, });
+            await QuerySql.InsertPostgresSpecialTypes(new QuerySql.InsertPostgresSpecialTypesArgs { CEnum = cEnum });
             var expected = new QuerySql.GetPostgresSpecialTypesRow
             {
-                CEnum = cEnum,
+                CEnum = cEnum
             };
             var actual = await QuerySql.GetPostgresSpecialTypes();
             AssertSingularEquals(expected, actual);
