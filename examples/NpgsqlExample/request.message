@@ -3,7 +3,7 @@
 2
 postgresql-examples/config/postgresql/authors/schema.sql+examples/config/postgresql/types/schema.sql",examples/config/postgresql/authors/query.sql"*examples/config/postgresql/types/query.sqlbš
 examples/NpgsqlExamplecsharpá{"debugRequest":true,"generateCsproj":true,"namespaceName":"NpgsqlExampleGen","overrides":[{"column":"GetPostgresFunctions:max_integer","csharp_type":{"notNull":false,"type":"int"}},{"column":"GetPostgresFunctions:max_varchar","csharp_type":{"notNull":false,"type":"string"}},{"column":"GetPostgresFunctions:max_timestamp","csharp_type":{"notNull":true,"type":"DateTime"}},{"column":"GetPostgresSpecialTypesCnt:c_json","csharp_type":{"notNull":false,"type":"JsonElement"}},{"column":"GetPostgresSpecialTypesCnt:c_jsonb","csharp_type":{"notNull":false,"type":"JsonElement"}},{"column":"*:c_json_string_override","csharp_type":{"notNull":false,"type":"string"}},{"column":"*:c_xml_string_override","csharp_type":{"notNull":false,"type":"string"}},{"column":"*:c_macaddr8","csharp_type":{"notNull":false,"type":"string"}}],"targetFramework":"net8.0","useDapper":false}*
-./dist/LocalRunnerÛìpublic"publicƒ
+./dist/LocalRunner½ípublic"ÿpublicƒ
 	authors)
 id0ÿÿÿÿÿÿÿÿÿR	authorsb	bigserial&
 name0ÿÿÿÿÿÿÿÿÿR	authorsbtext#
@@ -94,7 +94,9 @@ pg_catalogjson7
 c_jsonpath0ÿÿÿÿÿÿÿÿÿRpostgres_special_typesb
 jsonpath3
 c_xml0ÿÿÿÿÿÿÿÿÿRpostgres_special_typesbxmlC
-c_xml_string_override0ÿÿÿÿÿÿÿÿÿRpostgres_special_typesbxml"
+c_xml_string_override0ÿÿÿÿÿÿÿÿÿRpostgres_special_typesbxml`
+postgres_not_null_typesC
+c_enum_not_null0ÿÿÿÿÿÿÿÿÿRpostgres_not_null_typesbc_enum"
 c_enumsmallmediumbig"	pg_temp"æ²
 pg_catalog‰
 &
@@ -10705,7 +10707,21 @@ c_jsonpath0ÿÿÿÿÿÿÿÿÿb
 c_xml0ÿÿÿÿÿÿÿÿÿbxml*-)
 c_xml_string_override0ÿÿÿÿÿÿÿÿÿbxml*KG
 c_uuid0ÿÿÿÿÿÿÿÿÿ8R publicpostgres_special_typesbuuidzc_uuid*!
-c_enum0ÿÿÿÿÿÿÿÿÿbc_enum2 Special types :	query.sqlBpostgres_special_typesµ
+c_enum0ÿÿÿÿÿÿÿÿÿbc_enum2 Special types :	query.sqlBpostgres_special_typesÎ
+UINSERT INTO postgres_not_null_types
+(
+    c_enum_not_null
+)
+VALUES (
+    $1::c_enum
+)InsertPostgresNotNullTypes:exec*,(
+c_enum_not_null0ÿÿÿÿÿÿÿÿÿbc_enum:	query.sqlBpostgres_not_null_typesÂ
+@SELECT
+    c_enum_not_null
+FROM postgres_not_null_types 
+LIMIT 1GetPostgresNotNullTypes:one"T
+c_enum_not_null0ÿÿÿÿÿÿÿÿÿRpostgres_not_null_typesbc_enumzc_enum_not_null:	query.sqlX
+&TRUNCATE TABLE postgres_not_null_typesTruncatePostgresNotNullTypes:exec:	query.sqlµ
 ­SELECT
     c_json,
     c_json_string_override,

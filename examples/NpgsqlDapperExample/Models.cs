@@ -89,6 +89,10 @@ public class PostgresSpecialType
     public XmlDocument? CXml { get; init; }
     public XmlDocument? CXmlStringOverride { get; init; }
 };
+public class PostgresNotNullType
+{
+    public required CEnum CEnumNotNull { get; init; }
+};
 public class ExtendedBio
 {
     public required string AuthorName { get; init; }

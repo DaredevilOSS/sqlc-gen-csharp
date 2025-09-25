@@ -73,3 +73,7 @@ CREATE TABLE postgres_special_types (
     c_xml                  XML,
     c_xml_string_override  XML
 );
+
+CREATE TABLE postgres_not_null_types (
+    c_enum_not_null        c_enum NOT NULL DEFAULT 'small'
+);

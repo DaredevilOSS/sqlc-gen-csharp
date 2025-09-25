@@ -18,6 +18,7 @@ public readonly record struct PostgresNetworkType(NpgsqlCidr? CCidr, IPAddress? 
 public readonly record struct PostgresArrayType(byte[]? CBytea, bool[]? CBooleanArray, string[]? CTextArray, int[]? CIntegerArray, decimal[]? CDecimalArray, DateTime[]? CDateArray, DateTime[]? CTimestampArray);
 public readonly record struct PostgresGeometricType(NpgsqlPoint? CPoint, NpgsqlLine? CLine, NpgsqlLSeg? CLseg, NpgsqlBox? CBox, NpgsqlPath? CPath, NpgsqlPolygon? CPolygon, NpgsqlCircle? CCircle);
 public readonly record struct PostgresSpecialType(Guid? CUuid, CEnum? CEnum, JsonElement? CJson, JsonElement? CJsonStringOverride, JsonElement? CJsonb, string? CJsonpath, XmlDocument? CXml, XmlDocument? CXmlStringOverride);
+public readonly record struct PostgresNotNullType(CEnum CEnumNotNull);
 public readonly record struct ExtendedBio(string AuthorName, string Name, ExtendedBioType? BioType);
 public enum CEnum
 {
