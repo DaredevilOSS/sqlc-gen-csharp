@@ -6,7 +6,6 @@ defaults:
 env:
   SQLC_VERSION: 1.30.0
   WASI_SDK_VERSION: 22
-  DOTNET_VERSION: '8.0.x'
 
 on:
   push:
@@ -74,7 +73,7 @@ jobs:
       - name: Set up .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: ${{ env.DOTNET_VERSION }}
+          global-json-file: global.json
 
       - name: .NET Lint
         uses: zyactions/dotnet-lint@v1
@@ -101,7 +100,7 @@ jobs:
        - name: Setup Dotnet
          uses: actions/setup-dotnet@v4
          with:
-           dotnet-version: ${{ env.DOTNET_VERSION }}
+           global-json-file: global.json
 
        - uses: sqlc-dev/setup-sqlc@v4
          with:
