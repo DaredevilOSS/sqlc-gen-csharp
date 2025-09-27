@@ -12,8 +12,8 @@ version: "2"
 plugins:
 - name: csharp
   wasm:
-    url: https://github.com/DaredevilOSS/sqlc-gen-csharp/releases/download/v0.21.2/sqlc-gen-csharp.wasm
-    sha256: 98990c2a46b0e315c7f062f5643e3404ed4150a5ef2808c47a4e10084443506e
+    url: https://github.com/DaredevilOSS/sqlc-gen-csharp/releases/download/v0.21.3/sqlc-gen-csharp.wasm
+    sha256: a295dd8438c93c1b93d9d6d9e7706913dfade92caf19dbe86ed533214d3dc1ed
 sql:
   # For PostgresSQL
   - schema: schema.sql
@@ -363,6 +363,17 @@ INSERT INTO tab1 (field1, field2) VALUES
 | real    | ✅         |
 | text    | ✅         |
 | blob    | ✅         |
+
+## Useful Overrides
+It's possible to use the override data type functionality of the plugin thus overcoming the limited
+amount of data types that are supported by SQLite. The supported overrides are specified below:
+
+| DB Type | C# Type Override | Supported? | Description                                                      |
+|---------|------------------|------------|------------------------------------------------------------------|
+| integer | DateTime         | ✅         | Unix Epoch - seconds since 1-1-1970                              |
+| text    | DateTime         | ✅         | String representation of the datetime in a configurable format   |
+| integer | bool             | ❌         | If x equals 0 -> False, otherwise -> True                        |
+| text    | bool             | ❌         | Converts string to a boolean value using Convert.ToBoolean rules |
 
 </details>
 
@@ -753,6 +764,14 @@ overrides:
   csharp_type:
     type: "decimal"
     notNull: true
+- column: "*:c_text_datetime_override"
+  csharp_type:
+    type: "DateTime"
+    notNull: false
+- column: "*:c_integer_datetime_override"
+  csharp_type:
+    type: "DateTime"
+    notNull: false
 ```
 
 </details>
@@ -780,6 +799,14 @@ overrides:
   csharp_type:
     type: "decimal"
     notNull: true
+- column: "*:c_text_datetime_override"
+  csharp_type:
+    type: "DateTime"
+    notNull: false
+- column: "*:c_integer_datetime_override"
+  csharp_type:
+    type: "DateTime"
+    notNull: false
 ```
 
 </details>
@@ -807,6 +834,14 @@ overrides:
   csharp_type:
     type: "decimal"
     notNull: true
+- column: "*:c_text_datetime_override"
+  csharp_type:
+    type: "DateTime"
+    notNull: false
+- column: "*:c_integer_datetime_override"
+  csharp_type:
+    type: "DateTime"
+    notNull: false
 ```
 
 </details>
@@ -834,6 +869,14 @@ overrides:
   csharp_type:
     type: "decimal"
     notNull: true
+- column: "*:c_text_datetime_override"
+  csharp_type:
+    type: "DateTime"
+    notNull: false
+- column: "*:c_integer_datetime_override"
+  csharp_type:
+    type: "DateTime"
+    notNull: false
 ```
 
 </details>
