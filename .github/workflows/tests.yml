@@ -37,8 +37,8 @@ jobs:
           
       - name: Run Tests
         run: |
-          dotnet test RepositoryTests
-          dotnet test CodegenTests
+          dotnet test unit-tests/RepositoryTests
+          dotnet test unit-tests/CodegenTests
     
   end2end-tests:
     name: End-to-End Tests

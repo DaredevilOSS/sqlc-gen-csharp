@@ -4,10 +4,11 @@ PWD 		:= $(shell pwd)
 dotnet-build:
 	dotnet build
 
+.PHONY: unit-tests
 unit-tests:
-	dotnet test RepositoryTests
+	dotnet test unit-tests/RepositoryTests
 	sqlc generate -f sqlc.unit.test.yaml
-	dotnet test CodegenTests
+	dotnet test unit-tests/CodegenTests
 
 generate-end2end-tests:
 	./end2end/scripts/generate_tests.sh

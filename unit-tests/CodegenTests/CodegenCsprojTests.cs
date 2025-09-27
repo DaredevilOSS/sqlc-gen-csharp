@@ -1,4 +1,5 @@
 using Google.Protobuf;
+using NUnit.Framework;
 using Plugin;
 using SqlcGenCsharp;
 using System.Text;
