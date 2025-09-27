@@ -15,7 +15,9 @@ public sealed partial class SqliteDriver(
     IList<Query> queries) :
     DbDriver(options, catalog, queries), IOne, IMany, IExec, IExecRows, IExecLastId, ICopyFrom
 {
-    private static readonly HashSet<string> IntegerDbTypes = new() { "integer", "integernotnulldefaultunixepoch" };
+    private static readonly HashSet<string> IntegerDbTypes = ["integer", "integernotnulldefaultunixepoch"];
+
+    private const string DateTimeStringFormat = "yyyy-MM-dd HH:mm:ss"; // Default format for DateTime strings - TODO make configurable via Options
 
     protected override Dictionary<string, ColumnMapping> ColumnMappings { get; } =
         new()
@@ -64,7 +66,7 @@ public sealed partial class SqliteDriver(
                     var elWithOptionalNull = notNull ? el : $"{el}.Value";
                     if (IntegerDbTypes.Contains(dbType.ToLower()))
                         return $"{el} != null ? (int?) new DateTimeOffset({elWithOptionalNull}.ToUniversalTime()).ToUnixTimeSeconds() : {nullValue}";
-                    return $"{el} != null ? {elWithOptionalNull}.ToString(\"yyyy-MM-dd HH:mm:ss\") : {nullValue}";
+                    return $"{el} != null ? {elWithOptionalNull}.ToString(\"{DateTimeStringFormat}\") : {nullValue}";
                 }
             ),
             ["object"] = new(
