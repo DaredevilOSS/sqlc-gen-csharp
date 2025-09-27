@@ -12,6 +12,30 @@
         <Content Include="test-requests/**">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </Content>
+        <Content Include="../../examples/NpgsqlExample/request.message">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+            <TargetPath>NpgsqlExampleRequest.message</TargetPath>
+        </Content>
+        <Content Include="../../examples/NpgsqlDapperExample/request.message">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+            <TargetPath>NpgsqlDapperExampleRequest.message</TargetPath>
+        </Content>
+        <Content Include="../../examples/MySqlConnectorExample/request.message">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+            <TargetPath>MySqlConnectorExampleRequest.message</TargetPath>
+        </Content>
+        <Content Include="../../examples/MySqlConnectorDapperExample/request.message">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+            <TargetPath>MySqlConnectorDapperExampleRequest.message</TargetPath>
+        </Content>
+        <Content Include="../../examples/SqliteExample/request.message">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+            <TargetPath>SqliteExampleRequest.message</TargetPath>
+        </Content>
+        <Content Include="../../examples/SqliteDapperExample/request.message">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+            <TargetPath>SqliteDapperExampleRequest.message</TargetPath>
+        </Content>
     </ItemGroup>
     
     <ItemGroup>
@@ -22,10 +46,6 @@
         <PackageReference Include="NUnit.Analyzers" Version="3.9.0"/>
         <PackageReference Include="NUnit3TestAdapter" Version="4.5.0"/>
         <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.9.2"/>
-    </ItemGroup>
-
-    <ItemGroup>
-        <Using Include="NUnit.Framework"/>
     </ItemGroup>
 
     <ItemGroup>

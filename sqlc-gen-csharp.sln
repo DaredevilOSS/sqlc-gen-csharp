@@ -61,8 +61,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EndToEndScaffold", "end2end
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RepositoryTests", "unit-tests\RepositoryTests\RepositoryTests.csproj", "{7FEF697A-841D-4E32-A8ED-0F36C4436B55}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RequestRunner", "RequestRunner\RequestRunner.csproj", "{645E834B-743F-4D80-9073-98878995FE87}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
