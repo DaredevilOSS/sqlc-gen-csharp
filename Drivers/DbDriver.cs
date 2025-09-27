@@ -257,8 +257,10 @@ public abstract class DbDriver
     {
         if (query is null)
             return null;
-        return Options.Overrides.FirstOrDefault(o =>
-            o.Column == $"{query.Name}:{column.Name}" || o.Column == $"*:{column.Name}");
+        foreach (var overrideOption in Options.Overrides)
+            if (overrideOption.Column == $"{query.Name}:{column.Name}" || overrideOption.Column == $"*:{column.Name}")
+                return overrideOption;
+        return null;
     }
 
     // If the column data type is overridden, we need to check for nulls in generated code
@@ -337,29 +339,29 @@ public abstract class DbDriver
         if (writerFn is not null)
             return writerFn;
 
-        static string DefaultWriterFn(string el, bool notNull, bool isDapper) => notNull ? el : $"{el} ?? (object)DBNull.Value";
+        static string DefaultWriterFn(string el, string dbType, bool notNull, bool isDapper, bool isLegacy) => notNull ? el : $"{el} ?? (object)DBNull.Value";
         return Options.UseDapper ? null : DefaultWriterFn;
     }
 
     /* Column reader methods */
-    private string GetColumnReader(CsharpTypeOption csharpTypeOption, int ordinal)
+    private string GetColumnReader(CsharpTypeOption csharpTypeOption, Column column, int ordinal)
     {
         if (ColumnMappings.TryGetValue(csharpTypeOption.Type, out var value))
-            return value.ReaderFn(ordinal);
+            return value.ReaderFn(ordinal, column.Type.Name);
         throw new NotSupportedException($"Could not find column mapping for type override: {csharpTypeOption.Type}");
     }
 
     public virtual string GetColumnReader(Column column, int ordinal, Query? query)
     {
         if (FindOverrideForQueryColumn(query, column) is { CsharpType: var csharpType })
-            return GetColumnReader(csharpType, ordinal);
+            return GetColumnReader(csharpType, column, ordinal);
 
         foreach (var columnMapping in ColumnMappings.Values
                      .Where(columnMapping => DoesColumnMappingApply(columnMapping, column)))
         {
             if (column.IsArray)
-                return columnMapping.ReaderArrayFn?.Invoke(ordinal) ?? throw new InvalidOperationException("ReaderArrayFn is null");
-            return columnMapping.ReaderFn(ordinal);
+                return columnMapping.ReaderArrayFn?.Invoke(ordinal, column.Type.Name) ?? throw new InvalidOperationException("ReaderArrayFn is null");
+            return columnMapping.ReaderFn(ordinal, column.Type.Name);
         }
         throw new NotSupportedException($"column {column.Name} has unsupported column type: {column.Type.Name} in {GetType().Name}");
     }

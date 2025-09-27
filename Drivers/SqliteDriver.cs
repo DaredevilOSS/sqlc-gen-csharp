@@ -1,6 +1,7 @@
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Plugin;
 using SqlcGenCsharp.Drivers.Generators;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -14,6 +15,10 @@ public sealed partial class SqliteDriver(
     IList<Query> queries) :
     DbDriver(options, catalog, queries), IOne, IMany, IExec, IExecRows, IExecLastId, ICopyFrom
 {
+    private static readonly HashSet<string> IntegerDbTypes = ["integer", "integernotnulldefaultunixepoch"];
+
+    private const string DateTimeStringFormat = "yyyy-MM-dd HH:mm:ss"; // Default format for DateTime strings - TODO make configurable via Options
+
     protected override Dictionary<string, ColumnMapping> ColumnMappings { get; } =
         new()
         {
@@ -22,14 +27,14 @@ public sealed partial class SqliteDriver(
                 {
                     {"blob", new()}
                 },
-                ordinal => $"reader.GetFieldValue<byte[]>({ordinal})"
+                readerFn: (ordinal, _) => $"reader.GetFieldValue<byte[]>({ordinal})"
             ),
             ["string"] = new(
                 new()
                 {
                     {"text", new()}
                 },
-                ordinal => $"reader.GetString({ordinal})"
+                readerFn: (ordinal, _) => $"reader.GetString({ordinal})"
             ),
             ["int"] = new(
                 new()
@@ -37,7 +42,7 @@ public sealed partial class SqliteDriver(
                     { "integer", new() },
                     { "integernotnulldefaultunixepoch", new() }
                 },
-                ordinal => $"reader.GetInt32({ordinal})",
+                readerFn: (ordinal, _) => $"reader.GetInt32({ordinal})",
                 convertFunc: x => $"Convert.ToInt32({x})"
             ),
             ["decimal"] = new(
@@ -45,14 +50,31 @@ public sealed partial class SqliteDriver(
                 {
                     {"real", new()}
                 },
-                ordinal => $"reader.GetDecimal({ordinal})"
+                readerFn: (ordinal, _) => $"reader.GetDecimal({ordinal})"
+            ),
+            ["DateTime"] = new(
+                [],
+                readerFn: (ordinal, dbType) =>
+                {
+                    if (IntegerDbTypes.Contains(dbType))
+                        return $"DateTime.UnixEpoch.AddSeconds(reader.GetInt32({ordinal}))";
+                    return $"DateTime.Parse(reader.GetString({ordinal}))";
+                },
+                writerFn: (el, dbType, notNull, isDapper, isLegacy) =>
+                {
+                    var nullValue = isDapper ? "null" : "(object)DBNull.Value";
+                    var elWithOptionalNull = notNull ? el : $"{el}.Value";
+                    if (IntegerDbTypes.Contains(dbType.ToLower()))
+                        return $"{el} != null ? (int?) new DateTimeOffset({elWithOptionalNull}.ToUniversalTime()).ToUnixTimeSeconds() : {nullValue}";
+                    return $"{el} != null ? {elWithOptionalNull}.ToString(\"{DateTimeStringFormat}\") : {nullValue}";
+                }
             ),
             ["object"] = new(
                 new()
                 {
                     { "any", new() }
                 },
-                ordinal => $"reader.GetValue({ordinal})"
+                readerFn: (ordinal, _) => $"reader.GetValue({ordinal})"
             )
         };
 

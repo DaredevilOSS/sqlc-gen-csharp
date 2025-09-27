@@ -22,5 +22,7 @@ namespace SqliteLegacyExampleGen
         public decimal? CReal { get; set; }
         public string CText { get; set; }
         public byte[] CBlob { get; set; }
+        public string CTextDatetimeOverride { get; set; }
+        public int? CIntegerDatetimeOverride { get; set; }
     };
 }

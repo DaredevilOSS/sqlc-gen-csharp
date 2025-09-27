@@ -26,7 +26,7 @@ public sealed partial class MySqlConnectorDriver(
                 {
                     { "tinyint", new(Length: 1) }
                 },
-                ordinal => $"reader.GetBoolean({ordinal})"
+                readerFn: (ordinal, _) => $"reader.GetBoolean({ordinal})"
             ),
             ["short"] = new(
                 new()
@@ -35,7 +35,7 @@ public sealed partial class MySqlConnectorDriver(
                     { "smallint", new() },
                     { "year", new() }
                 },
-                ordinal => $"reader.GetInt16({ordinal})"
+                readerFn: (ordinal, _) => $"reader.GetInt16({ordinal})"
             ),
             ["int"] = new(
                 new()
@@ -44,7 +44,7 @@ public sealed partial class MySqlConnectorDriver(
                     { "integer", new() },
                     { "mediumint", new() }
                 },
-                ordinal => $"reader.GetInt32({ordinal})",
+                readerFn: (ordinal, _) => $"reader.GetInt32({ordinal})",
                 convertFunc: x => $"Convert.ToInt32{x}"
             ),
             ["long"] = new(
@@ -52,7 +52,7 @@ public sealed partial class MySqlConnectorDriver(
                 {
                     { "bigint", new() }
                 },
-                ordinal => $"reader.GetInt64({ordinal})",
+                readerFn: (ordinal, _) => $"reader.GetInt64({ordinal})",
                 convertFunc: x => $"Convert.ToInt64{x}"
             ),
             ["double"] = new(
@@ -61,14 +61,14 @@ public sealed partial class MySqlConnectorDriver(
                     { "double", new() },
                     { "float", new() }
                 },
-                ordinal => $"reader.GetDouble({ordinal})"
+                readerFn: (ordinal, _) => $"reader.GetDouble({ordinal})"
             ),
             ["decimal"] = new(
                 new()
                 {
                     { "decimal", new() }
                 },
-                ordinal => $"reader.GetDecimal({ordinal})"
+                readerFn: (ordinal, _) => $"reader.GetDecimal({ordinal})"
             ),
 
             /* Binary data types */
@@ -77,7 +77,7 @@ public sealed partial class MySqlConnectorDriver(
                 {
                     { "bit", new() }
                 },
-                ordinal => $"reader.GetFieldValue<byte>({ordinal})"
+                readerFn: (ordinal, _) => $"reader.GetFieldValue<byte>({ordinal})"
             ),
             ["byte[]"] = new(
                 new()
@@ -89,7 +89,7 @@ public sealed partial class MySqlConnectorDriver(
                     { "tinyblob", new() },
                     { "varbinary", new() }
                 },
-                ordinal => $"reader.GetFieldValue<byte[]>({ordinal})"
+                readerFn: (ordinal, _) => $"reader.GetFieldValue<byte[]>({ordinal})"
             ),
 
             /* String data types */
@@ -104,7 +104,7 @@ public sealed partial class MySqlConnectorDriver(
                     { "varchar", new() },
                     { "var_string", new() },
                 },
-                ordinal => $"reader.GetString({ordinal})"
+                readerFn: (ordinal, _) => $"reader.GetString({ordinal})"
             ),
 
             /* Date and time data types */
@@ -115,14 +115,14 @@ public sealed partial class MySqlConnectorDriver(
                     { "datetime", new() },
                     { "timestamp", new() }
                 },
-                readerFn: ordinal => $"reader.GetDateTime({ordinal})"
+                readerFn: (ordinal, _) => $"reader.GetDateTime({ordinal})"
             ),
             ["TimeSpan"] = new(
                 new()
                 {
                     { "time", new() }
                 },
-                readerFn: ordinal => $"reader.GetFieldValue<TimeSpan>({ordinal})"
+                readerFn: (ordinal, _) => $"reader.GetFieldValue<TimeSpan>({ordinal})"
             ),
 
             /* Unstructured data types */
@@ -131,8 +131,8 @@ public sealed partial class MySqlConnectorDriver(
                 {
                     { "json", new() }
                 },
-                readerFn: ordinal => $"JsonSerializer.Deserialize<JsonElement>(reader.GetString({ordinal}))",
-                writerFn: (el, notNull, isDapper) =>
+                readerFn: (ordinal, _) => $"JsonSerializer.Deserialize<JsonElement>(reader.GetString({ordinal}))",
+                writerFn: (el, _, notNull, isDapper, isLegacy) =>
                 {
                     if (notNull)
                         return $"{el}.GetRawText()";
@@ -150,7 +150,7 @@ public sealed partial class MySqlConnectorDriver(
                 {
                     { "any", new() }
                 },
-                ordinal => $"reader.GetValue({ordinal})"
+                readerFn: (ordinal, _) => $"reader.GetValue({ordinal})"
             )
         };
 
@@ -621,7 +621,7 @@ public sealed partial class MySqlConnectorDriver(
             return writerFn;
 
         if (GetEnumType(column) is { } enumType && IsSetDataType(column, enumType))
-            return (el, notNull, isDapper) =>
+            return (el, dbType, notNull, isDapper, isLegacy) =>
             {
                 var stringJoinStmt = $"string.Join(\",\", {el})";
                 var nullValue = isDapper ? "null" : "(object)DBNull.Value";
@@ -630,7 +630,7 @@ public sealed partial class MySqlConnectorDriver(
                     : $"{el} != null ? {stringJoinStmt} : {nullValue}";
             };
 
-        static string DefaultWriterFn(string el, bool notNull, bool isDapper) => notNull ? el : $"{el} ?? (object)DBNull.Value";
+        static string DefaultWriterFn(string el, string dbType, bool notNull, bool isDapper, bool isLegacy) => notNull ? el : $"{el} ?? (object)DBNull.Value";
         return Options.UseDapper ? null : DefaultWriterFn;
     }
 

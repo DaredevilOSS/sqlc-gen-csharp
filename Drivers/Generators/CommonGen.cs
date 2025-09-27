@@ -28,7 +28,7 @@ public class CommonGen(DbDriver dbDriver)
 
             var notNull = dbDriver.IsColumnNotNull(p.Column, query);
             var writerFn = dbDriver.GetWriterFn(p.Column, query);
-            var paramToWrite = writerFn is null ? param : writerFn(param, notNull, dbDriver.Options.UseDapper);
+            var paramToWrite = writerFn is null ? param : writerFn(param, p.Column.Type.Name, notNull, dbDriver.Options.UseDapper, dbDriver.Options.DotnetFramework.IsDotnetLegacy());
             var addParamToCommand = $"""{commandVar}.Parameters.AddWithValue("@{p.Column.Name}", {paramToWrite});""";
             return addParamToCommand;
         }).JoinByNewLine();
@@ -57,7 +57,7 @@ public class CommonGen(DbDriver dbDriver)
 
             var notNull = dbDriver.IsColumnNotNull(p.Column, query);
             var writerFn = dbDriver.GetWriterFn(p.Column, query);
-            var paramToWrite = writerFn is null ? $"{argsVar}.{param}" : writerFn($"{argsVar}.{param}", notNull, dbDriver.Options.UseDapper);
+            var paramToWrite = writerFn is null ? $"{argsVar}.{param}" : writerFn($"{argsVar}.{param}", p.Column.Type.Name, notNull, dbDriver.Options.UseDapper, dbDriver.Options.DotnetFramework.IsDotnetLegacy());
             var addParamToDict = $"{queryParamsVar}.Add(\"{p.Column.Name}\", {paramToWrite});";
             return addParamToDict;
         });

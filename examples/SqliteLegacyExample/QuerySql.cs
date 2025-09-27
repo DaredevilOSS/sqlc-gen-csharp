@@ -784,13 +784,15 @@ namespace SqliteLegacyExampleGen
             }
         }
 
-        private const string InsertSqliteTypesSql = "INSERT INTO types_sqlite (c_integer, c_real, c_text, c_blob) VALUES (@c_integer, @c_real, @c_text, @c_blob)";
+        private const string InsertSqliteTypesSql = "INSERT INTO types_sqlite ( c_integer, c_real, c_text, c_blob, c_text_datetime_override, c_integer_datetime_override ) VALUES (@c_integer, @c_real, @c_text, @c_blob, @c_text_datetime_override, @c_integer_datetime_override)";
         public class InsertSqliteTypesArgs
         {
             public int? CInteger { get; set; }
             public decimal? CReal { get; set; }
             public string CText { get; set; }
             public byte[] CBlob { get; set; }
+            public DateTime? CTextDatetimeOverride { get; set; }
+            public DateTime? CIntegerDatetimeOverride { get; set; }
         };
         public async Task InsertSqliteTypes(InsertSqliteTypesArgs args)
         {
@@ -805,6 +807,8 @@ namespace SqliteLegacyExampleGen
                         command.Parameters.AddWithValue("@c_real", args.CReal ?? (object)DBNull.Value);
                         command.Parameters.AddWithValue("@c_text", args.CText ?? (object)DBNull.Value);
                         command.Parameters.AddWithValue("@c_blob", args.CBlob ?? (object)DBNull.Value);
+                        command.Parameters.AddWithValue("@c_text_datetime_override", args.CTextDatetimeOverride != null ? args.CTextDatetimeOverride.Value.ToString("yyyy-MM-dd HH:mm:ss") : (object)DBNull.Value);
+                        command.Parameters.AddWithValue("@c_integer_datetime_override", args.CIntegerDatetimeOverride != null ? (int? )new DateTimeOffset(args.CIntegerDatetimeOverride.Value.ToUniversalTime()).ToUnixTimeSeconds() : (object)DBNull.Value);
                         await command.ExecuteNonQueryAsync();
                     }
                 }
@@ -822,6 +826,8 @@ namespace SqliteLegacyExampleGen
                 command.Parameters.AddWithValue("@c_real", args.CReal ?? (object)DBNull.Value);
                 command.Parameters.AddWithValue("@c_text", args.CText ?? (object)DBNull.Value);
                 command.Parameters.AddWithValue("@c_blob", args.CBlob ?? (object)DBNull.Value);
+                command.Parameters.AddWithValue("@c_text_datetime_override", args.CTextDatetimeOverride != null ? args.CTextDatetimeOverride.Value.ToString("yyyy-MM-dd HH:mm:ss") : (object)DBNull.Value);
+                command.Parameters.AddWithValue("@c_integer_datetime_override", args.CIntegerDatetimeOverride != null ? (int? )new DateTimeOffset(args.CIntegerDatetimeOverride.Value.ToUniversalTime()).ToUnixTimeSeconds() : (object)DBNull.Value);
                 await command.ExecuteNonQueryAsync();
             }
         }
@@ -853,13 +859,15 @@ namespace SqliteLegacyExampleGen
             }
         }
 
-        private const string GetSqliteTypesSql = "SELECT c_integer, c_real, c_text, c_blob FROM types_sqlite LIMIT 1";
+        private const string GetSqliteTypesSql = "SELECT c_integer, c_real, c_text, c_blob, c_text_datetime_override, datetime(c_integer_datetime_override, 'unixepoch') AS c_integer_datetime_override FROM types_sqlite LIMIT 1";
         public class GetSqliteTypesRow
         {
             public int? CInteger { get; set; }
             public decimal? CReal { get; set; }
             public string CText { get; set; }
             public byte[] CBlob { get; set; }
+            public DateTime? CTextDatetimeOverride { get; set; }
+            public DateTime? CIntegerDatetimeOverride { get; set; }
         };
         public async Task<GetSqliteTypesRow> GetSqliteTypes()
         {
@@ -879,7 +887,9 @@ namespace SqliteLegacyExampleGen
                                     CInteger = reader.IsDBNull(0) ? (int? )null : reader.GetInt32(0),
                                     CReal = reader.IsDBNull(1) ? (decimal? )null : reader.GetDecimal(1),
                                     CText = reader.IsDBNull(2) ? null : reader.GetString(2),
-                                    CBlob = reader.IsDBNull(3) ? null : reader.GetFieldValue<byte[]>(3)
+                                    CBlob = reader.IsDBNull(3) ? null : reader.GetFieldValue<byte[]>(3),
+                                    CTextDatetimeOverride = reader.IsDBNull(4) ? (DateTime? )null : DateTime.Parse(reader.GetString(4)),
+                                    CIntegerDatetimeOverride = reader.IsDBNull(5) ? (DateTime? )null : DateTime.Parse(reader.GetString(5))
                                 };
                             }
                         }
@@ -904,7 +914,9 @@ namespace SqliteLegacyExampleGen
                             CInteger = reader.IsDBNull(0) ? (int? )null : reader.GetInt32(0),
                             CReal = reader.IsDBNull(1) ? (decimal? )null : reader.GetDecimal(1),
                             CText = reader.IsDBNull(2) ? null : reader.GetString(2),
-                            CBlob = reader.IsDBNull(3) ? null : reader.GetFieldValue<byte[]>(3)
+                            CBlob = reader.IsDBNull(3) ? null : reader.GetFieldValue<byte[]>(3),
+                            CTextDatetimeOverride = reader.IsDBNull(4) ? (DateTime? )null : DateTime.Parse(reader.GetString(4)),
+                            CIntegerDatetimeOverride = reader.IsDBNull(5) ? (DateTime? )null : DateTime.Parse(reader.GetString(5))
                         };
                     }
                 }
@@ -913,7 +925,7 @@ namespace SqliteLegacyExampleGen
             return null;
         }
 
-        private const string GetSqliteTypesCntSql = "SELECT c_integer, c_real, c_text, c_blob, COUNT(*) AS cnt FROM types_sqlite GROUP BY c_integer, c_real, c_text, c_blob LIMIT 1";
+        private const string GetSqliteTypesCntSql = "SELECT c_integer, c_real, c_text, c_blob, count(*) AS cnt FROM types_sqlite GROUP BY c_integer, c_real, c_text, c_blob LIMIT 1";
         public class GetSqliteTypesCntRow
         {
             public int? CInteger { get; set; }
@@ -976,7 +988,7 @@ namespace SqliteLegacyExampleGen
             return null;
         }
 
-        private const string GetSqliteFunctionsSql = "SELECT MAX(c_integer) AS max_integer, MAX(c_real) AS max_real, MAX(c_text) AS max_text FROM types_sqlite";
+        private const string GetSqliteFunctionsSql = "SELECT max(c_integer) AS max_integer, max(c_real) AS max_real, max(c_text) AS max_text FROM types_sqlite";
         public class GetSqliteFunctionsRow
         {
             public int? MaxInteger { get; set; }
