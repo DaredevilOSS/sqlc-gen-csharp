@@ -335,6 +335,14 @@ overrides:
   csharp_type:
     type: "decimal"
     notNull: true
+- column: "*:c_text_datetime_override"
+  csharp_type:
+    type: "DateTime"
+    notNull: false
+- column: "*:c_integer_datetime_override"
+  csharp_type:
+    type: "DateTime"
+    notNull: false
 ```
 
 </details>
@@ -362,6 +370,14 @@ overrides:
   csharp_type:
     type: "decimal"
     notNull: true
+- column: "*:c_text_datetime_override"
+  csharp_type:
+    type: "DateTime"
+    notNull: false
+- column: "*:c_integer_datetime_override"
+  csharp_type:
+    type: "DateTime"
+    notNull: false
 ```
 
 </details>
@@ -389,6 +405,14 @@ overrides:
   csharp_type:
     type: "decimal"
     notNull: true
+- column: "*:c_text_datetime_override"
+  csharp_type:
+    type: "DateTime"
+    notNull: false
+- column: "*:c_integer_datetime_override"
+  csharp_type:
+    type: "DateTime"
+    notNull: false
 ```
 
 </details>
@@ -416,6 +440,14 @@ overrides:
   csharp_type:
     type: "decimal"
     notNull: true
+- column: "*:c_text_datetime_override"
+  csharp_type:
+    type: "DateTime"
+    notNull: false
+- column: "*:c_integer_datetime_override"
+  csharp_type:
+    type: "DateTime"
+    notNull: false
 ```
 
 </details>
