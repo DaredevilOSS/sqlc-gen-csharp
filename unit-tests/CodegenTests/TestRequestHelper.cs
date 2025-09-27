@@ -1,5 +1,3 @@
-using File = System.IO.File;
-
 namespace CodegenTests;
 
 public static class TestRequestHelper

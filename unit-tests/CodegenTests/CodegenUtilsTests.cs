@@ -1,5 +1,6 @@
 using Google.Protobuf;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using NUnit.Framework;
 using Plugin;
 using SqlcGenCsharp;
 using SqlcGenCsharp.Drivers;
