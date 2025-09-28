@@ -1,10 +1,0 @@
-
-õ
-2mysqlAunit-tests/CodegenTests/test-requests/SchemaScopedEnum/schema.sql"@unit-tests/CodegenTests/test-requests/SchemaScopedEnum/query.sqlbd
--./CodegenTests/test-requests/SchemaScopedEnumcsharp{"debugRequest":true}*
-./dist/LocalRunner®public"*public" 
-dummy_table_dummy_columnxy"xdummy_schemah
-dummy_schemadummy_tableI
-dummy_column0Rdummy_schemadummy_tablebdummy_table_dummy_column«
-9SELECT dummy_column FROM dummy_schema.dummy_table LIMIT 1Test:one"W
-dummy_column0Rdummy_schemadummy_tablebdummy_table_dummy_columnzdummy_column:	query.sql"v1.30.0*³{"overrideDriverVersion":"","generateCsproj":true,"targetFramework":"net8.0","namespaceName":"","useDapper":false,"overrideDapperVersion":"","overrides":null,"debugRequest":false}
