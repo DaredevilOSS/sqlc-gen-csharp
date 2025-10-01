@@ -13,7 +13,7 @@
     "codegen": {
       "out": "examples/SqliteExample",
       "plugin": "csharp",
-      "options": "eyJkZWJ1Z1JlcXVlc3QiOnRydWUsImdlbmVyYXRlQ3Nwcm9qIjp0cnVlLCJuYW1lc3BhY2VOYW1lIjoiU3FsaXRlRXhhbXBsZUdlbiIsIm92ZXJyaWRlcyI6W3siY29sdW1uIjoiR2V0U3FsaXRlRnVuY3Rpb25zOm1heF9pbnRlZ2VyIiwiY3NoYXJwX3R5cGUiOnsibm90TnVsbCI6ZmFsc2UsInR5cGUiOiJpbnQifX0seyJjb2x1bW4iOiJHZXRTcWxpdGVGdW5jdGlvbnM6bWF4X3ZhcmNoYXIiLCJjc2hhcnBfdHlwZSI6eyJub3ROdWxsIjpmYWxzZSwidHlwZSI6InN0cmluZyJ9fSx7ImNvbHVtbiI6IkdldFNxbGl0ZUZ1bmN0aW9uczptYXhfcmVhbCIsImNzaGFycF90eXBlIjp7Im5vdE51bGwiOnRydWUsInR5cGUiOiJkZWNpbWFsIn19LHsiY29sdW1uIjoiKjpjX3RleHRfZGF0ZXRpbWVfb3ZlcnJpZGUiLCJjc2hhcnBfdHlwZSI6eyJub3ROdWxsIjpmYWxzZSwidHlwZSI6IkRhdGVUaW1lIn19LHsiY29sdW1uIjoiKjpjX2ludGVnZXJfZGF0ZXRpbWVfb3ZlcnJpZGUiLCJjc2hhcnBfdHlwZSI6eyJub3ROdWxsIjpmYWxzZSwidHlwZSI6IkRhdGVUaW1lIn19XSwidGFyZ2V0RnJhbWV3b3JrIjoibmV0OC4wIiwidXNlRGFwcGVyIjpmYWxzZX0=",
+      "options": "eyJkZWJ1Z1JlcXVlc3QiOnRydWUsImdlbmVyYXRlQ3Nwcm9qIjp0cnVlLCJuYW1lc3BhY2VOYW1lIjoiU3FsaXRlRXhhbXBsZUdlbiIsIm92ZXJyaWRlcyI6W3siY29sdW1uIjoiR2V0U3FsaXRlRnVuY3Rpb25zOm1heF9pbnRlZ2VyIiwiY3NoYXJwX3R5cGUiOnsidHlwZSI6ImludCJ9fSx7ImNvbHVtbiI6IkdldFNxbGl0ZUZ1bmN0aW9uczptYXhfdmFyY2hhciIsImNzaGFycF90eXBlIjp7InR5cGUiOiJzdHJpbmcifX0seyJjb2x1bW4iOiJHZXRTcWxpdGVGdW5jdGlvbnM6bWF4X3JlYWwiLCJjc2hhcnBfdHlwZSI6eyJ0eXBlIjoiZGVjaW1hbCJ9fSx7ImNvbHVtbiI6Iio6Y190ZXh0X2RhdGV0aW1lX292ZXJyaWRlIiwiY3NoYXJwX3R5cGUiOnsidHlwZSI6IkRhdGVUaW1lIn19LHsiY29sdW1uIjoiKjpjX2ludGVnZXJfZGF0ZXRpbWVfb3ZlcnJpZGUiLCJjc2hhcnBfdHlwZSI6eyJ0eXBlIjoiRGF0ZVRpbWUifX0seyJjb2x1bW4iOiIqOmNfdGV4dF9ib29sX292ZXJyaWRlIiwiY3NoYXJwX3R5cGUiOnsidHlwZSI6ImJvb2wifX0seyJjb2x1bW4iOiIqOmNfaW50ZWdlcl9ib29sX292ZXJyaWRlIiwiY3NoYXJwX3R5cGUiOnsidHlwZSI6ImJvb2wifX1dLCJ0YXJnZXRGcmFtZXdvcmsiOiJuZXQ4LjAiLCJ1c2VEYXBwZXIiOmZhbHNlfQ==",
       "process": {
         "cmd": "./dist/LocalRunner"
       }
@@ -171,6 +171,26 @@
               },
               {
                 "name": "c_integer_datetime_override",
+                "length": -1,
+                "table": {
+                  "name": "types_sqlite"
+                },
+                "type": {
+                  "name": "INTEGER"
+                }
+              },
+              {
+                "name": "c_text_bool_override",
+                "length": -1,
+                "table": {
+                  "name": "types_sqlite"
+                },
+                "type": {
+                  "name": "TEXT"
+                }
+              },
+              {
+                "name": "c_integer_bool_override",
                 "length": -1,
                 "table": {
                   "name": "types_sqlite"
@@ -988,7 +1008,7 @@
       "filename": "query.sql"
     },
     {
-      "text": "INSERT INTO types_sqlite \n(\n    c_integer,\n    c_real,\n    c_text,\n    c_blob,\n    c_text_datetime_override,\n    c_integer_datetime_override\n) \nVALUES (?, ?, ?, ?, ?, ?)",
+      "text": "INSERT INTO types_sqlite \n(\n    c_integer,\n    c_real,\n    c_text,\n    c_blob,\n    c_text_datetime_override,\n    c_integer_datetime_override,\n    c_text_bool_override,\n    c_integer_bool_override\n) \nVALUES (?, ?, ?, ?, ?, ?, ?, ?)",
       "name": "InsertSqliteTypes",
       "cmd": ":exec",
       "parameters": [
@@ -1081,6 +1101,36 @@
             },
             "originalName": "c_integer_datetime_override"
           }
+        },
+        {
+          "number": 7,
+          "column": {
+            "name": "c_text_bool_override",
+            "length": -1,
+            "table": {
+              "schema": "main",
+              "name": "types_sqlite"
+            },
+            "type": {
+              "name": "TEXT"
+            },
+            "originalName": "c_text_bool_override"
+          }
+        },
+        {
+          "number": 8,
+          "column": {
+            "name": "c_integer_bool_override",
+            "length": -1,
+            "table": {
+              "schema": "main",
+              "name": "types_sqlite"
+            },
+            "type": {
+              "name": "INTEGER"
+            },
+            "originalName": "c_integer_bool_override"
+          }
         }
       ],
       "filename": "query.sql",
@@ -1145,7 +1195,7 @@
       }
     },
     {
-      "text": "SELECT\n    c_integer,\n    c_real,\n    c_text,\n    c_blob,\n    c_text_datetime_override,\n    datetime(c_integer_datetime_override, 'unixepoch')\n        AS c_integer_datetime_override\nFROM types_sqlite\nLIMIT 1",
+      "text": "SELECT\n    c_integer,\n    c_real,\n    c_text,\n    c_blob,\n    c_text_datetime_override,\n    c_integer_datetime_override,\n    c_text_bool_override,\n    c_integer_bool_override\nFROM types_sqlite\nLIMIT 1",
       "name": "GetSqliteTypes",
       "cmd": ":one",
       "columns": [
@@ -1207,10 +1257,35 @@
         {
           "name": "c_integer_datetime_override",
           "length": -1,
-          "isFuncCall": true,
+          "table": {
+            "name": "types_sqlite"
+          },
           "type": {
-            "name": "any"
-          }
+            "name": "INTEGER"
+          },
+          "originalName": "c_integer_datetime_override"
+        },
+        {
+          "name": "c_text_bool_override",
+          "length": -1,
+          "table": {
+            "name": "types_sqlite"
+          },
+          "type": {
+            "name": "TEXT"
+          },
+          "originalName": "c_text_bool_override"
+        },
+        {
+          "name": "c_integer_bool_override",
+          "length": -1,
+          "table": {
+            "name": "types_sqlite"
+          },
+          "type": {
+            "name": "INTEGER"
+          },
+          "originalName": "c_integer_bool_override"
         }
       ],
       "filename": "query.sql"
@@ -1316,5 +1391,5 @@
     }
   ],
   "sqlc_version": "v1.30.0",
-  "plugin_options": "eyJvdmVycmlkZURyaXZlclZlcnNpb24iOiIiLCJnZW5lcmF0ZUNzcHJvaiI6dHJ1ZSwidGFyZ2V0RnJhbWV3b3JrIjoibmV0OC4wIiwibmFtZXNwYWNlTmFtZSI6IlNxbGl0ZUV4YW1wbGVHZW4iLCJ1c2VEYXBwZXIiOmZhbHNlLCJvdmVycmlkZURhcHBlclZlcnNpb24iOiIiLCJvdmVycmlkZXMiOlt7ImNvbHVtbiI6IkdldFNxbGl0ZUZ1bmN0aW9uczptYXhfaW50ZWdlciIsImNzaGFycF90eXBlIjp7InR5cGUiOiJpbnQiLCJub3ROdWxsIjpmYWxzZX19LHsiY29sdW1uIjoiR2V0U3FsaXRlRnVuY3Rpb25zOm1heF92YXJjaGFyIiwiY3NoYXJwX3R5cGUiOnsidHlwZSI6InN0cmluZyIsIm5vdE51bGwiOmZhbHNlfX0seyJjb2x1bW4iOiJHZXRTcWxpdGVGdW5jdGlvbnM6bWF4X3JlYWwiLCJjc2hhcnBfdHlwZSI6eyJ0eXBlIjoiZGVjaW1hbCIsIm5vdE51bGwiOnRydWV9fSx7ImNvbHVtbiI6Iio6Y190ZXh0X2RhdGV0aW1lX292ZXJyaWRlIiwiY3NoYXJwX3R5cGUiOnsidHlwZSI6IkRhdGVUaW1lIiwibm90TnVsbCI6ZmFsc2V9fSx7ImNvbHVtbiI6Iio6Y19pbnRlZ2VyX2RhdGV0aW1lX292ZXJyaWRlIiwiY3NoYXJwX3R5cGUiOnsidHlwZSI6IkRhdGVUaW1lIiwibm90TnVsbCI6ZmFsc2V9fV0sImRlYnVnUmVxdWVzdCI6ZmFsc2V9"
+  "plugin_options": "eyJvdmVycmlkZURyaXZlclZlcnNpb24iOiIiLCJnZW5lcmF0ZUNzcHJvaiI6dHJ1ZSwidGFyZ2V0RnJhbWV3b3JrIjoibmV0OC4wIiwibmFtZXNwYWNlTmFtZSI6IlNxbGl0ZUV4YW1wbGVHZW4iLCJ1c2VEYXBwZXIiOmZhbHNlLCJvdmVycmlkZURhcHBlclZlcnNpb24iOiIiLCJvdmVycmlkZXMiOlt7ImNvbHVtbiI6IkdldFNxbGl0ZUZ1bmN0aW9uczptYXhfaW50ZWdlciIsImNzaGFycF90eXBlIjp7InR5cGUiOiJpbnQiLCJub3ROdWxsIjpmYWxzZX19LHsiY29sdW1uIjoiR2V0U3FsaXRlRnVuY3Rpb25zOm1heF92YXJjaGFyIiwiY3NoYXJwX3R5cGUiOnsidHlwZSI6InN0cmluZyIsIm5vdE51bGwiOmZhbHNlfX0seyJjb2x1bW4iOiJHZXRTcWxpdGVGdW5jdGlvbnM6bWF4X3JlYWwiLCJjc2hhcnBfdHlwZSI6eyJ0eXBlIjoiZGVjaW1hbCIsIm5vdE51bGwiOmZhbHNlfX0seyJjb2x1bW4iOiIqOmNfdGV4dF9kYXRldGltZV9vdmVycmlkZSIsImNzaGFycF90eXBlIjp7InR5cGUiOiJEYXRlVGltZSIsIm5vdE51bGwiOmZhbHNlfX0seyJjb2x1bW4iOiIqOmNfaW50ZWdlcl9kYXRldGltZV9vdmVycmlkZSIsImNzaGFycF90eXBlIjp7InR5cGUiOiJEYXRlVGltZSIsIm5vdE51bGwiOmZhbHNlfX0seyJjb2x1bW4iOiIqOmNfdGV4dF9ib29sX292ZXJyaWRlIiwiY3NoYXJwX3R5cGUiOnsidHlwZSI6ImJvb2wiLCJub3ROdWxsIjpmYWxzZX19LHsiY29sdW1uIjoiKjpjX2ludGVnZXJfYm9vbF9vdmVycmlkZSIsImNzaGFycF90eXBlIjp7InR5cGUiOiJib29sIiwibm90TnVsbCI6ZmFsc2V9fV0sImRlYnVnUmVxdWVzdCI6ZmFsc2V9"
 }

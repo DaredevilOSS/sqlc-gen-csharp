@@ -23,4 +23,6 @@ public class TypesSqlite
     public byte[]? CBlob { get; init; }
     public string? CTextDatetimeOverride { get; init; }
     public int? CIntegerDatetimeOverride { get; init; }
+    public string? CTextBoolOverride { get; init; }
+    public int? CIntegerBoolOverride { get; init; }
 };

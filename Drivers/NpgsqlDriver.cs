@@ -344,7 +344,7 @@ public sealed class NpgsqlDriver : EnumDbDriver, IOne, IMany, IExec, IExecRows, 
 
     public override string TransactionClassName => "NpgsqlTransaction";
 
-    private static readonly SqlMapperImplFunc JsonElementTypeHandler = _ => $$"""
+    private static readonly SqlMapperImplFunc JsonElementTypeHandler = (_, _) => $$"""
         private class JsonElementTypeHandler : SqlMapper.TypeHandler<JsonElement>
         {
             public override JsonElement Parse(object value)
@@ -361,7 +361,7 @@ public sealed class NpgsqlDriver : EnumDbDriver, IOne, IMany, IExec, IExecRows, 
         }
         """;
 
-    private static readonly SqlMapperImplFunc XmlDocumentTypeHandler = isDotnetCore => $$"""
+    private static readonly SqlMapperImplFunc XmlDocumentTypeHandler = (isDotnetCore, _) => $$"""
         private class XmlDocumentTypeHandler : SqlMapper.TypeHandler<XmlDocument>
         {
             public override XmlDocument Parse(object value)

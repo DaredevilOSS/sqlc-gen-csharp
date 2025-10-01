@@ -6,9 +6,11 @@ INSERT INTO types_sqlite
     c_text,
     c_blob,
     c_text_datetime_override,
-    c_integer_datetime_override
+    c_integer_datetime_override,
+    c_text_bool_override,
+    c_integer_bool_override
 ) 
-VALUES (?, ?, ?, ?, ?, ?);
+VALUES (?, ?, ?, ?, ?, ?, ?, ?);
 
 -- name: InsertSqliteTypesBatch :copyfrom
 INSERT INTO types_sqlite (c_integer, c_real, c_text) VALUES (?, ?, ?);
@@ -20,8 +22,9 @@ SELECT
     c_text,
     c_blob,
     c_text_datetime_override,
-    datetime(c_integer_datetime_override, 'unixepoch')
-        AS c_integer_datetime_override
+    c_integer_datetime_override,
+    c_text_bool_override,
+    c_integer_bool_override
 FROM types_sqlite
 LIMIT 1;
 

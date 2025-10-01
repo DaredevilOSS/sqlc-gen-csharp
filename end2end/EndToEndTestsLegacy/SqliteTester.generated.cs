@@ -328,20 +328,24 @@ namespace EndToEndTests
         }
 
         [Test]
-        [TestCase(-54355, 9787.66, "Songs of Love and Hate", new byte[] { 0x15, 0x20, 0x33 }, "2020-01-01 14:15:16", "2025-01-01 17:18:19")]
-        [TestCase(null, null, null, new byte[] { }, null, null)]
-        [TestCase(null, null, null, null, null, null)]
-        public async Task TestSqliteTypes(int? cInteger, decimal? cReal, string cText, byte[] cBlob, DateTime cTextDatetimeOverride, DateTime? cIntegerDatetimeOverride)
+        [TestCase(-54355, 9787.66, "Songs of Love and Hate", new byte[] { 0x15, 0x20, 0x33 }, true, false, "2020-01-01 14:15:16", "2025-01-01 17:18:19")]
+        [TestCase(null, null, null, new byte[] { }, null, null, null, null)]
+        [TestCase(null, null, null, null, null, null, null, null)]
+        public async Task TestSqliteTypes(int? cInteger, decimal? cReal, string cText, byte[] cBlob, bool? cTextBoolOverride, bool? cIntegerBoolOverride, DateTime? cTextDatetimeOverride, DateTime? cIntegerDatetimeOverride)
         {
+            if (cTextDatetimeOverride.HasValue && cTextDatetimeOverride.Value.Kind != DateTimeKind.Utc)
+                cTextDatetimeOverride = DateTime.SpecifyKind(cTextDatetimeOverride.Value, DateTimeKind.Utc);
             if (cIntegerDatetimeOverride.HasValue && cIntegerDatetimeOverride.Value.Kind != DateTimeKind.Utc)
-                cIntegerDatetimeOverride = DateTime.SpecifyKind(cTextDatetimeOverride, DateTimeKind.Utc);
-            await QuerySql.InsertSqliteTypes(new QuerySql.InsertSqliteTypesArgs { CInteger = cInteger, CReal = cReal, CText = cText, CBlob = cBlob, CTextDatetimeOverride = cTextDatetimeOverride, CIntegerDatetimeOverride = cIntegerDatetimeOverride });
+                cIntegerDatetimeOverride = DateTime.SpecifyKind(cIntegerDatetimeOverride.Value, DateTimeKind.Utc);
+            await QuerySql.InsertSqliteTypes(new QuerySql.InsertSqliteTypesArgs { CInteger = cInteger, CReal = cReal, CText = cText, CBlob = cBlob, CTextBoolOverride = cTextBoolOverride, CIntegerBoolOverride = cIntegerBoolOverride, CTextDatetimeOverride = cTextDatetimeOverride, CIntegerDatetimeOverride = cIntegerDatetimeOverride });
             var expected = new QuerySql.GetSqliteTypesRow
             {
                 CInteger = cInteger,
                 CReal = cReal,
                 CText = cText,
                 CBlob = cBlob,
+                CTextBoolOverride = cTextBoolOverride,
+                CIntegerBoolOverride = cIntegerBoolOverride,
                 CTextDatetimeOverride = cTextDatetimeOverride,
                 CIntegerDatetimeOverride = cIntegerDatetimeOverride
             };
@@ -353,6 +357,8 @@ namespace EndToEndTests
                 Assert.That(x.CReal, Is.EqualTo(y.CReal));
                 Assert.That(x.CText, Is.EqualTo(y.CText));
                 Assert.That(x.CBlob, Is.EqualTo(y.CBlob));
+                Assert.That(x.CTextBoolOverride, Is.EqualTo(y.CTextBoolOverride));
+                Assert.That(x.CIntegerBoolOverride, Is.EqualTo(y.CIntegerBoolOverride));
                 AssertDateTimeEquals(x.CTextDatetimeOverride, y.CTextDatetimeOverride);
                 AssertDateTimeEquals(x.CIntegerDatetimeOverride, y.CIntegerDatetimeOverride);
             }

@@ -156,7 +156,7 @@ public sealed partial class MySqlConnectorDriver(
 
     public override string TransactionClassName => "MySqlTransaction";
 
-    private static readonly SqlMapperImplFunc JsonElementTypeHandler = _ => $$"""
+    private static readonly SqlMapperImplFunc JsonElementTypeHandler = (_, _) => $$"""
         private class JsonElementTypeHandler : SqlMapper.TypeHandler<JsonElement>
         {
             public override JsonElement Parse(object value)
