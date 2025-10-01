@@ -95,7 +95,7 @@ public sealed partial class SqliteDriver(
             )
         };
 
-    private static readonly SqlMapperImplFunc DateTimeTypeHandler = (_, dbType) => $$"""
+    private static readonly SqlMapperImplFunc DateTimeTypeHandler = _ => $$"""
         private class DateTimeTypeHandler : SqlMapper.TypeHandler<DateTime>
         {
             public override DateTime Parse(object value)

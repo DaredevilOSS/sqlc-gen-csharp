@@ -10,7 +10,7 @@ public delegate string WriterFn(string el, string dbType, bool notNull, bool isD
 
 public delegate string ConvertFunc(string el);
 
-public delegate string SqlMapperImplFunc(bool isDotnetCore, string? dbType);
+public delegate string SqlMapperImplFunc(bool isDotnetCore);
 
 public class ColumnMapping(
     Dictionary<string, DbTypeInfo> dbTypes,

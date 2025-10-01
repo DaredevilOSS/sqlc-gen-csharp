@@ -187,7 +187,7 @@ public abstract class DbDriver
     {
         return [.. ColumnMappings
             .Where(m => TypeExistsInQueries(m.Key) && m.Value.SqlMapperImpl is not null)
-            .Select(m => ParseMemberDeclaration(m.Value.SqlMapperImpl!(Options.DotnetFramework.IsDotnetCore(), null))!)];
+            .Select(m => ParseMemberDeclaration(m.Value.SqlMapperImpl!(Options.DotnetFramework.IsDotnetCore()))!)];
     }
 
     public abstract string TransformQueryText(Query query);
