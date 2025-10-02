@@ -372,11 +372,10 @@ amount of data types that are supported by SQLite. The supported overrides are s
 |---------|------------------|------------|------------------------------------------------------------------|
 | integer | DateTime         | ✅         | Unix Epoch - seconds since 1-1-1970                              |
 | text    | DateTime         | ✅         | String representation of the datetime in a configurable format   |
-| integer | bool             | ❌         | If x equals 0 -> False, otherwise -> True                        |
-| text    | bool             | ❌         | Converts string to a boolean value using Convert.ToBoolean rules |
+| integer | bool             | ✅         | If x equals 0 -> False, otherwise -> True                        |
+| text    | bool             | ✅         | Converts string to a boolean value using Convert.ToBoolean rules |
 
 </details>
-
 # Contributing
 ## Local plugin development
 ### Prerequisites
