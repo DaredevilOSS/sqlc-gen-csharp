@@ -522,7 +522,7 @@ namespace SqliteDapperLegacyExampleGen
             await this.Transaction.Connection.ExecuteAsync(DeleteAllAuthorsSql, transaction: this.Transaction);
         }
 
-        private const string InsertSqliteTypesSql = "INSERT INTO types_sqlite ( c_integer, c_real, c_text, c_blob, c_text_datetime_override, c_integer_datetime_override ) VALUES (@c_integer, @c_real, @c_text, @c_blob, @c_text_datetime_override, @c_integer_datetime_override)";
+        private const string InsertSqliteTypesSql = "INSERT INTO types_sqlite ( c_integer, c_real, c_text, c_blob, c_text_datetime_override, c_integer_datetime_override, c_text_bool_override, c_integer_bool_override ) VALUES (@c_integer, @c_real, @c_text, @c_blob, @c_text_datetime_override, @c_integer_datetime_override, @c_text_bool_override, @c_integer_bool_override)";
         public class InsertSqliteTypesArgs
         {
             public int? CInteger { get; set; }
@@ -531,6 +531,8 @@ namespace SqliteDapperLegacyExampleGen
             public byte[] CBlob { get; set; }
             public DateTime? CTextDatetimeOverride { get; set; }
             public DateTime? CIntegerDatetimeOverride { get; set; }
+            public bool? CTextBoolOverride { get; set; }
+            public bool? CIntegerBoolOverride { get; set; }
         };
         public async Task InsertSqliteTypes(InsertSqliteTypesArgs args)
         {
@@ -541,6 +543,8 @@ namespace SqliteDapperLegacyExampleGen
             queryParams.Add("c_blob", args.CBlob);
             queryParams.Add("c_text_datetime_override", args.CTextDatetimeOverride != null ? args.CTextDatetimeOverride.Value.ToString("yyyy-MM-dd HH:mm:ss") : null);
             queryParams.Add("c_integer_datetime_override", args.CIntegerDatetimeOverride != null ? (int? )new DateTimeOffset(args.CIntegerDatetimeOverride.Value.ToUniversalTime()).ToUnixTimeSeconds() : null);
+            queryParams.Add("c_text_bool_override", args.CTextBoolOverride != null ? Convert.ToString(args.CTextBoolOverride) : null);
+            queryParams.Add("c_integer_bool_override", args.CIntegerBoolOverride != null ? (int? )Convert.ToInt32(args.CIntegerBoolOverride) : null);
             if (this.Transaction == null)
             {
                 using (var connection = new SqliteConnection(ConnectionString))
@@ -580,7 +584,7 @@ namespace SqliteDapperLegacyExampleGen
             }
         }
 
-        private const string GetSqliteTypesSql = "SELECT c_integer, c_real, c_text, c_blob, c_text_datetime_override, datetime(c_integer_datetime_override, 'unixepoch') AS c_integer_datetime_override FROM types_sqlite LIMIT 1";
+        private const string GetSqliteTypesSql = "SELECT c_integer, c_real, c_text, c_blob, c_text_datetime_override, c_integer_datetime_override, c_text_bool_override, c_integer_bool_override FROM types_sqlite LIMIT 1";
         public class GetSqliteTypesRow
         {
             public int? CInteger { get; set; }
@@ -589,6 +593,8 @@ namespace SqliteDapperLegacyExampleGen
             public byte[] CBlob { get; set; }
             public DateTime? CTextDatetimeOverride { get; set; }
             public DateTime? CIntegerDatetimeOverride { get; set; }
+            public bool? CTextBoolOverride { get; set; }
+            public bool? CIntegerBoolOverride { get; set; }
         };
         public async Task<GetSqliteTypesRow> GetSqliteTypes()
         {
@@ -635,7 +641,7 @@ namespace SqliteDapperLegacyExampleGen
         public class GetSqliteFunctionsRow
         {
             public int? MaxInteger { get; set; }
-            public decimal MaxReal { get; set; }
+            public decimal? MaxReal { get; set; }
             public object MaxText { get; set; }
         };
         public async Task<GetSqliteFunctionsRow> GetSqliteFunctions()

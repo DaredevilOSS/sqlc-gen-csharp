@@ -8,8 +8,26 @@ using System.Text.RegularExpressions;
 namespace SqliteDapperExampleGen;
 public static class Utils
 {
+    private class DateTimeTypeHandler : SqlMapper.TypeHandler<DateTime>
+    {
+        public override DateTime Parse(object value)
+        {
+            if (value is string s)
+                return DateTime.Parse(s);
+            if (value is long l)
+                return DateTimeOffset.FromUnixTimeSeconds(l).DateTime;
+            throw new DataException($"Cannot convert {value?.GetType()} to DateTime");
+        }
+
+        public override void SetValue(IDbDataParameter parameter, DateTime value)
+        {
+            parameter.Value = value;
+        }
+    }
+
     public static void ConfigureSqlMapper()
     {
+        SqlMapper.AddTypeHandler(typeof(DateTime), new DateTimeTypeHandler());
     }
 
     public static string TransformQueryForSliceArgs(string originalSql, int sliceSize, string paramName)

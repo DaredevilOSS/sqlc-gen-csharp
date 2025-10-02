@@ -24,5 +24,7 @@ namespace SqliteLegacyExampleGen
         public byte[] CBlob { get; set; }
         public string CTextDatetimeOverride { get; set; }
         public int? CIntegerDatetimeOverride { get; set; }
+        public string CTextBoolOverride { get; set; }
+        public int? CIntegerBoolOverride { get; set; }
     };
 }

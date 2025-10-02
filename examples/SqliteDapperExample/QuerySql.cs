@@ -521,7 +521,7 @@ public class QuerySql
         await this.Transaction.Connection.ExecuteAsync(DeleteAllAuthorsSql, transaction: this.Transaction);
     }
 
-    private const string InsertSqliteTypesSql = "INSERT INTO types_sqlite ( c_integer, c_real, c_text, c_blob, c_text_datetime_override, c_integer_datetime_override ) VALUES (@c_integer, @c_real, @c_text, @c_blob, @c_text_datetime_override, @c_integer_datetime_override)";
+    private const string InsertSqliteTypesSql = "INSERT INTO types_sqlite ( c_integer, c_real, c_text, c_blob, c_text_datetime_override, c_integer_datetime_override, c_text_bool_override, c_integer_bool_override ) VALUES (@c_integer, @c_real, @c_text, @c_blob, @c_text_datetime_override, @c_integer_datetime_override, @c_text_bool_override, @c_integer_bool_override)";
     public class InsertSqliteTypesArgs
     {
         public int? CInteger { get; init; }
@@ -530,6 +530,8 @@ public class QuerySql
         public byte[]? CBlob { get; init; }
         public DateTime? CTextDatetimeOverride { get; init; }
         public DateTime? CIntegerDatetimeOverride { get; init; }
+        public bool? CTextBoolOverride { get; init; }
+        public bool? CIntegerBoolOverride { get; init; }
     };
     public async Task InsertSqliteTypes(InsertSqliteTypesArgs args)
     {
@@ -540,6 +542,8 @@ public class QuerySql
         queryParams.Add("c_blob", args.CBlob);
         queryParams.Add("c_text_datetime_override", args.CTextDatetimeOverride != null ? args.CTextDatetimeOverride.Value.ToString("yyyy-MM-dd HH:mm:ss") : null);
         queryParams.Add("c_integer_datetime_override", args.CIntegerDatetimeOverride != null ? (int? )new DateTimeOffset(args.CIntegerDatetimeOverride.Value.ToUniversalTime()).ToUnixTimeSeconds() : null);
+        queryParams.Add("c_text_bool_override", args.CTextBoolOverride != null ? Convert.ToString(args.CTextBoolOverride) : null);
+        queryParams.Add("c_integer_bool_override", args.CIntegerBoolOverride != null ? (int? )Convert.ToInt32(args.CIntegerBoolOverride) : null);
         if (this.Transaction == null)
         {
             using (var connection = new SqliteConnection(ConnectionString))
@@ -579,7 +583,7 @@ public class QuerySql
         }
     }
 
-    private const string GetSqliteTypesSql = "SELECT c_integer, c_real, c_text, c_blob, c_text_datetime_override, datetime(c_integer_datetime_override, 'unixepoch') AS c_integer_datetime_override FROM types_sqlite LIMIT 1";
+    private const string GetSqliteTypesSql = "SELECT c_integer, c_real, c_text, c_blob, c_text_datetime_override, c_integer_datetime_override, c_text_bool_override, c_integer_bool_override FROM types_sqlite LIMIT 1";
     public class GetSqliteTypesRow
     {
         public int? CInteger { get; init; }
@@ -588,6 +592,8 @@ public class QuerySql
         public byte[]? CBlob { get; init; }
         public DateTime? CTextDatetimeOverride { get; init; }
         public DateTime? CIntegerDatetimeOverride { get; init; }
+        public bool? CTextBoolOverride { get; init; }
+        public bool? CIntegerBoolOverride { get; init; }
     };
     public async Task<GetSqliteTypesRow?> GetSqliteTypes()
     {
@@ -634,7 +640,7 @@ public class QuerySql
     public class GetSqliteFunctionsRow
     {
         public int? MaxInteger { get; init; }
-        public required decimal MaxReal { get; init; }
+        public decimal? MaxReal { get; init; }
         public object? MaxText { get; init; }
     };
     public async Task<GetSqliteFunctionsRow?> GetSqliteFunctions()

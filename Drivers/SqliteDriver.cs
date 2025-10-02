@@ -27,14 +27,14 @@ public sealed partial class SqliteDriver(
                 {
                     {"blob", new()}
                 },
-                readerFn: (ordinal, _) => $"reader.GetFieldValue<byte[]>({ordinal})"
+                readerFn: (ordinal, _) => $"{Variable.Reader.AsVarName()}.GetFieldValue<byte[]>({ordinal})"
             ),
             ["string"] = new(
                 new()
                 {
                     {"text", new()}
                 },
-                readerFn: (ordinal, _) => $"reader.GetString({ordinal})"
+                readerFn: (ordinal, _) => $"{Variable.Reader.AsVarName()}.GetString({ordinal})"
             ),
             ["int"] = new(
                 new()
@@ -42,7 +42,7 @@ public sealed partial class SqliteDriver(
                     { "integer", new() },
                     { "integernotnulldefaultunixepoch", new() }
                 },
-                readerFn: (ordinal, _) => $"reader.GetInt32({ordinal})",
+                readerFn: (ordinal, _) => $"{Variable.Reader.AsVarName()}.GetInt32({ordinal})",
                 convertFunc: x => $"Convert.ToInt32({x})"
             ),
             ["decimal"] = new(
@@ -50,15 +50,15 @@ public sealed partial class SqliteDriver(
                 {
                     {"real", new()}
                 },
-                readerFn: (ordinal, _) => $"reader.GetDecimal({ordinal})"
+                readerFn: (ordinal, _) => $"{Variable.Reader.AsVarName()}.GetDecimal({ordinal})"
             ),
             ["DateTime"] = new(
                 [],
                 readerFn: (ordinal, dbType) =>
                 {
-                    if (IntegerDbTypes.Contains(dbType))
-                        return $"DateTime.UnixEpoch.AddSeconds(reader.GetInt32({ordinal}))";
-                    return $"DateTime.Parse(reader.GetString({ordinal}))";
+                    if (IntegerDbTypes.Contains(dbType.ToLower()))
+                        return $"DateTimeOffset.FromUnixTimeSeconds({Variable.Reader.AsVarName()}.GetInt32({ordinal})).DateTime";
+                    return $"DateTime.Parse({Variable.Reader.AsVarName()}.GetString({ordinal}))";
                 },
                 writerFn: (el, dbType, notNull, isDapper, isLegacy) =>
                 {
@@ -67,6 +67,23 @@ public sealed partial class SqliteDriver(
                     if (IntegerDbTypes.Contains(dbType.ToLower()))
                         return $"{el} != null ? (int?) new DateTimeOffset({elWithOptionalNull}.ToUniversalTime()).ToUnixTimeSeconds() : {nullValue}";
                     return $"{el} != null ? {elWithOptionalNull}.ToString(\"{DateTimeStringFormat}\") : {nullValue}";
+                },
+                sqlMapper: "SqlMapper.AddTypeHandler(typeof(DateTime), new DateTimeTypeHandler());",
+                sqlMapperImpl: DateTimeTypeHandler
+            ),
+            ["bool"] = new(
+                [],
+                readerFn: (ordinal, dbType) =>
+                {
+                    var getFunc = IntegerDbTypes.Contains(dbType.ToLower()) ? "GetInt32" : "GetString";
+                    return $"Convert.ToBoolean({Variable.Reader.AsVarName()}.{getFunc}({ordinal}))";
+                },
+                writerFn: (el, dbType, notNull, isDapper, isLegacy) =>
+                {
+                    var nullValue = isDapper ? "null" : "(object)DBNull.Value";
+                    var optionalCast = notNull ? string.Empty : "(int?)";
+                    var convertFunc = IntegerDbTypes.Contains(dbType.ToLower()) ? $"{optionalCast} Convert.ToInt32" : "Convert.ToString";
+                    return $"{el} != null ? {convertFunc}({el}) : {nullValue}";
                 }
             ),
             ["object"] = new(
@@ -74,9 +91,28 @@ public sealed partial class SqliteDriver(
                 {
                     { "any", new() }
                 },
-                readerFn: (ordinal, _) => $"reader.GetValue({ordinal})"
+                readerFn: (ordinal, _) => $"{Variable.Reader.AsVarName()}.GetValue({ordinal})"
             )
         };
+
+    private static readonly SqlMapperImplFunc DateTimeTypeHandler = _ => $$"""
+        private class DateTimeTypeHandler : SqlMapper.TypeHandler<DateTime>
+        {
+            public override DateTime Parse(object value)
+            {
+                if (value is string s)
+                    return DateTime.Parse(s);
+                if (value is long l)
+                    return DateTimeOffset.FromUnixTimeSeconds(l).DateTime;
+                throw new DataException($"Cannot convert {value?.GetType()} to DateTime");
+            }
+
+            public override void SetValue(IDbDataParameter parameter, DateTime value)
+            {
+                parameter.Value = value;
+            }
+        }
+        """;
 
     public override string TransactionClassName => "SqliteTransaction";
 
