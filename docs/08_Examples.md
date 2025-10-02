@@ -326,23 +326,24 @@ overrides:
 - column: "GetSqliteFunctions:max_integer"
   csharp_type:
     type: "int"
-    notNull: false
 - column: "GetSqliteFunctions:max_varchar"
   csharp_type:
     type: "string"
-    notNull: false
 - column: "GetSqliteFunctions:max_real"
   csharp_type:
     type: "decimal"
-    notNull: true
 - column: "*:c_text_datetime_override"
   csharp_type:
     type: "DateTime"
-    notNull: false
 - column: "*:c_integer_datetime_override"
   csharp_type:
     type: "DateTime"
-    notNull: false
+- column: "*:c_text_bool_override"
+  csharp_type:
+    type: "bool"
+- column: "*:c_integer_bool_override"
+  csharp_type:
+    type: "bool"
 ```
 
 </details>
@@ -361,23 +362,24 @@ overrides:
 - column: "GetSqliteFunctions:max_integer"
   csharp_type:
     type: "int"
-    notNull: false
 - column: "GetSqliteFunctions:max_varchar"
   csharp_type:
     type: "string"
-    notNull: false
 - column: "GetSqliteFunctions:max_real"
   csharp_type:
     type: "decimal"
-    notNull: true
 - column: "*:c_text_datetime_override"
   csharp_type:
     type: "DateTime"
-    notNull: false
 - column: "*:c_integer_datetime_override"
   csharp_type:
     type: "DateTime"
-    notNull: false
+- column: "*:c_text_bool_override"
+  csharp_type:
+    type: "bool"
+- column: "*:c_integer_bool_override"
+  csharp_type:
+    type: "bool"
 ```
 
 </details>
@@ -396,23 +398,24 @@ overrides:
 - column: "GetSqliteFunctions:max_integer"
   csharp_type:
     type: "int"
-    notNull: false
 - column: "GetSqliteFunctions:max_varchar"
   csharp_type:
     type: "string"
-    notNull: false
 - column: "GetSqliteFunctions:max_real"
   csharp_type:
     type: "decimal"
-    notNull: true
 - column: "*:c_text_datetime_override"
   csharp_type:
     type: "DateTime"
-    notNull: false
 - column: "*:c_integer_datetime_override"
   csharp_type:
     type: "DateTime"
-    notNull: false
+- column: "*:c_text_bool_override"
+  csharp_type:
+    type: "bool"
+- column: "*:c_integer_bool_override"
+  csharp_type:
+    type: "bool"
 ```
 
 </details>
@@ -431,23 +434,24 @@ overrides:
 - column: "GetSqliteFunctions:max_integer"
   csharp_type:
     type: "int"
-    notNull: false
 - column: "GetSqliteFunctions:max_varchar"
   csharp_type:
     type: "string"
-    notNull: false
 - column: "GetSqliteFunctions:max_real"
   csharp_type:
     type: "decimal"
-    notNull: true
 - column: "*:c_text_datetime_override"
   csharp_type:
     type: "DateTime"
-    notNull: false
 - column: "*:c_integer_datetime_override"
   csharp_type:
     type: "DateTime"
-    notNull: false
+- column: "*:c_text_bool_override"
+  csharp_type:
+    type: "bool"
+- column: "*:c_integer_bool_override"
+  csharp_type:
+    type: "bool"
 ```
 
 </details>
