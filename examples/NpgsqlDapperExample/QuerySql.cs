@@ -921,7 +921,7 @@ public class QuerySql
         queryParams.Add("c_timestamp", args.CTimestamp);
         queryParams.Add("c_timestamp_with_tz", args.CTimestampWithTz);
         queryParams.Add("c_interval", args.CInterval);
-        queryParams.Add("c_timestamp_noda_instant_override", args.CTimestampNodaInstantOverride?.ToDateTimeUtc().ToLocalTime() ?? null);
+        queryParams.Add("c_timestamp_noda_instant_override", args.CTimestampNodaInstantOverride is null ? null : (DateTime? )DateTime.SpecifyKind(args.CTimestampNodaInstantOverride.Value.ToDateTimeUtc(), DateTimeKind.Unspecified));
         if (this.Transaction == null)
         {
             using (var connection = new NpgsqlConnection(ConnectionString))

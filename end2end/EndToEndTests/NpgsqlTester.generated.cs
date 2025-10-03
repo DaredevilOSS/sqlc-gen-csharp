@@ -682,7 +682,7 @@ namespace EndToEndTests
         }
 
         [Test]
-        [TestCase("{\"name\": \"Swordfishtrombones\", \"year\": 1983}", "$.\"name\"")]
+        [TestCase("{\"name\": \"Swordfishtrombones\", \"year\" :1983}", "$.\"name\"")]
         [TestCase(null, null)]
         public async Task TestPostgresJsonDataTypes(string cJson, string cJsonpath)
         {
@@ -701,14 +701,21 @@ namespace EndToEndTests
             AssertSingularEquals(expected, actual.Value);
             void AssertSingularEquals(QuerySql.GetPostgresSpecialTypesRow x, QuerySql.GetPostgresSpecialTypesRow y)
             {
-                Assert.That(x.CJson.HasValue, Is.EqualTo(y.CJson.HasValue));
-                if (x.CJson.HasValue)
-                    Assert.That(x.CJson.Value.GetRawText(), Is.EqualTo(y.CJson.Value.GetRawText()));
-                Assert.That(x.CJsonb.HasValue, Is.EqualTo(y.CJsonb.HasValue));
-                if (x.CJsonb.HasValue)
-                    Assert.That(x.CJsonb.Value.GetRawText(), Is.EqualTo(y.CJsonb.Value.GetRawText()));
-                Assert.That(x.CJsonStringOverride, Is.EqualTo(y.CJsonStringOverride));
-                Assert.That(x.CJsonpath, Is.EqualTo(y.CJsonpath));
+                AssertJsonElementEquals(y.CJson, x.CJson);
+                AssertJsonElementEquals(y.CJsonb, x.CJsonb);
+                Assert.That(y.CJsonStringOverride, Is.EqualTo(x.CJsonStringOverride));
+                Assert.That(y.CJsonpath, Is.EqualTo(x.CJsonpath));
+            }
+
+            void AssertJsonElementEquals(JsonElement? x, JsonElement? y)
+            {
+                var options = new JsonSerializerOptions
+                {
+                    WriteIndented = false
+                };
+                Assert.That(y.HasValue, Is.EqualTo(x.HasValue));
+                if (y.HasValue)
+                    Assert.That(JsonSerializer.Serialize(y.Value, options), Is.EqualTo(JsonSerializer.Serialize(x.Value, options)));
             }
         }
 
@@ -942,17 +949,20 @@ namespace EndToEndTests
             AssertSingularEquals(expected, actual.Value);
             void AssertSingularEquals(QuerySql.GetPostgresSpecialTypesCntRow x, QuerySql.GetPostgresSpecialTypesCntRow y)
             {
+                Assert.That(y.Cnt, Is.EqualTo(x.Cnt));
+                AssertJsonElementEquals(y.CJson, x.CJson);
+                AssertJsonElementEquals(y.CJsonb, x.CJsonb);
+            }
+
+            void AssertJsonElementEquals(JsonElement? x, JsonElement? y)
+            {
                 var options = new JsonSerializerOptions
                 {
                     WriteIndented = false
                 };
-                Assert.That(y.Cnt, Is.EqualTo(x.Cnt));
-                Assert.That(y.CJson.HasValue, Is.EqualTo(x.CJson.HasValue));
-                if (y.CJson.HasValue)
-                    Assert.That(JsonSerializer.Serialize(y.CJson.Value, options), Is.EqualTo(JsonSerializer.Serialize(x.CJson.Value, options)));
-                Assert.That(y.CJsonb.HasValue, Is.EqualTo(x.CJsonb.HasValue));
-                if (y.CJsonb.HasValue)
-                    Assert.That(JsonSerializer.Serialize(y.CJsonb.Value, options), Is.EqualTo(JsonSerializer.Serialize(x.CJsonb.Value, options)));
+                Assert.That(y.HasValue, Is.EqualTo(x.HasValue));
+                if (y.HasValue)
+                    Assert.That(JsonSerializer.Serialize(y.Value, options), Is.EqualTo(JsonSerializer.Serialize(x.Value, options)));
             }
         }
 

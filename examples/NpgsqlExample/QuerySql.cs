@@ -1304,7 +1304,7 @@ public class QuerySql
                     command.Parameters.AddWithValue("@c_timestamp", NpgsqlDbType.Timestamp, args.CTimestamp ?? (object)DBNull.Value);
                     command.Parameters.AddWithValue("@c_timestamp_with_tz", NpgsqlDbType.TimestampTz, args.CTimestampWithTz ?? (object)DBNull.Value);
                     command.Parameters.AddWithValue("@c_interval", NpgsqlDbType.Interval, args.CInterval ?? (object)DBNull.Value);
-                    command.Parameters.AddWithValue("@c_timestamp_noda_instant_override", NpgsqlDbType.Timestamp, args.CTimestampNodaInstantOverride?.ToDateTimeUtc().ToLocalTime() ?? (object)DBNull.Value);
+                    command.Parameters.AddWithValue("@c_timestamp_noda_instant_override", NpgsqlDbType.Timestamp, args.CTimestampNodaInstantOverride is null ? (object)DBNull.Value : (DateTime? )DateTime.SpecifyKind(args.CTimestampNodaInstantOverride.Value.ToDateTimeUtc(), DateTimeKind.Unspecified));
                     await command.ExecuteNonQueryAsync();
                 }
             }
@@ -1323,7 +1323,7 @@ public class QuerySql
             command.Parameters.AddWithValue("@c_timestamp", NpgsqlDbType.Timestamp, args.CTimestamp ?? (object)DBNull.Value);
             command.Parameters.AddWithValue("@c_timestamp_with_tz", NpgsqlDbType.TimestampTz, args.CTimestampWithTz ?? (object)DBNull.Value);
             command.Parameters.AddWithValue("@c_interval", NpgsqlDbType.Interval, args.CInterval ?? (object)DBNull.Value);
-            command.Parameters.AddWithValue("@c_timestamp_noda_instant_override", NpgsqlDbType.Timestamp, args.CTimestampNodaInstantOverride?.ToDateTimeUtc().ToLocalTime() ?? (object)DBNull.Value);
+            command.Parameters.AddWithValue("@c_timestamp_noda_instant_override", NpgsqlDbType.Timestamp, args.CTimestampNodaInstantOverride is null ? (object)DBNull.Value : (DateTime? )DateTime.SpecifyKind(args.CTimestampNodaInstantOverride.Value.ToDateTimeUtc(), DateTimeKind.Unspecified));
             await command.ExecuteNonQueryAsync();
         }
     }
@@ -1349,7 +1349,13 @@ public class QuerySql
                                 CTimestamp = reader.IsDBNull(2) ? null : reader.GetDateTime(2),
                                 CTimestampWithTz = reader.IsDBNull(3) ? null : reader.GetDateTime(3),
                                 CInterval = reader.IsDBNull(4) ? null : reader.GetFieldValue<TimeSpan>(4),
-                                CTimestampNodaInstantOverride = reader.IsDBNull(5) ? null : reader.GetDateTime(5).ToInstant()
+                                CTimestampNodaInstantOverride = reader.IsDBNull(5) ? null : (new Func<NpgsqlDataReader, int, Instant>((r, o) =>
+                                {
+                                    var dt = reader.GetDateTime(o);
+                                    if (dt.Kind != DateTimeKind.Utc)
+                                        dt = DateTime.SpecifyKind(dt, DateTimeKind.Utc);
+                                    return dt.ToInstant();
+                                }))(reader, 5)
                             };
                         }
                     }
@@ -1376,7 +1382,13 @@ public class QuerySql
                         CTimestamp = reader.IsDBNull(2) ? null : reader.GetDateTime(2),
                         CTimestampWithTz = reader.IsDBNull(3) ? null : reader.GetDateTime(3),
                         CInterval = reader.IsDBNull(4) ? null : reader.GetFieldValue<TimeSpan>(4),
-                        CTimestampNodaInstantOverride = reader.IsDBNull(5) ? null : reader.GetDateTime(5).ToInstant()
+                        CTimestampNodaInstantOverride = reader.IsDBNull(5) ? null : (new Func<NpgsqlDataReader, int, Instant>((r, o) =>
+                        {
+                            var dt = reader.GetDateTime(o);
+                            if (dt.Kind != DateTimeKind.Utc)
+                                dt = DateTime.SpecifyKind(dt, DateTimeKind.Utc);
+                            return dt.ToInstant();
+                        }))(reader, 5)
                     };
                 }
             }

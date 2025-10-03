@@ -20,7 +20,12 @@ namespace NpgsqlDapperLegacyExampleGen
             public override Instant Parse(object value)
             {
                 if (value is DateTime dt)
+                {
+                    if (dt.Kind != DateTimeKind.Utc)
+                        dt = DateTime.SpecifyKind(dt, DateTimeKind.Utc);
                     return dt.ToInstant();
+                }
+
                 throw new DataException($"Cannot convert {value?.GetType()} to Instant");
             }
 

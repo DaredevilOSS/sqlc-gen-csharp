@@ -139,13 +139,21 @@ public sealed class NpgsqlDriver : EnumDbDriver, IOne, IMany, IExec, IExecRows, 
             ),
             ["Instant"] = new(
                 [],
-                readerFn: (ordinal, _) => $"{Variable.Reader.AsVarName()}.GetDateTime({ordinal}).ToInstant()",
+                readerFn: (ordinal, _) => $$"""
+                    (new Func<NpgsqlDataReader, int, Instant>((r, o) =>
+                    {
+                       var dt = {{Variable.Reader.AsVarName()}}.GetDateTime(o);
+                       if (dt.Kind != DateTimeKind.Utc)
+                           dt = DateTime.SpecifyKind(dt, DateTimeKind.Utc);
+                       return dt.ToInstant();
+                    }))({{Variable.Reader.AsVarName()}}, {{ordinal}})
+                """,
                 writerFn: (el, _, notNull, isDapper, isLegacy) =>
                 {
                     if (notNull)
-                        return $"{el}.ToDateTimeUtc().ToLocalTime()";
+                        return $"DateTime.SpecifyKind({el}.ToDateTimeUtc(), DateTimeKind.Unspecified)";
                     var nullValue = isDapper ? "null" : "(object)DBNull.Value";
-                    return $"{el}?.ToDateTimeUtc().ToLocalTime() ?? {nullValue}";
+                    return $"{el} is null ? {nullValue} : (DateTime?) DateTime.SpecifyKind({el}.Value.ToDateTimeUtc(), DateTimeKind.Unspecified)";
                 },
                 usingDirectives: ["System", "NodaTime", "NodaTime.Extensions"],
                 sqlMapper: "SqlMapper.AddTypeHandler(typeof(Instant), new NodaInstantTypeHandler());",
