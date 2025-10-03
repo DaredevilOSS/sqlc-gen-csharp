@@ -4,6 +4,8 @@
 // ReSharper disable ConvertToUsingDeclaration
 // ReSharper disable NotAccessedPositionalProperty.Global
 // ReSharper disable UnusedAutoPropertyAccessor.Global
+using NodaTime;
+using NodaTime.Extensions;
 using Npgsql;
 using NpgsqlTypes;
 using System;
@@ -813,7 +815,7 @@ public class QuerySql
                     command.Parameters.AddWithValue("@c_numeric", args.CNumeric ?? (object)DBNull.Value);
                     command.Parameters.AddWithValue("@c_real", args.CReal ?? (object)DBNull.Value);
                     command.Parameters.AddWithValue("@c_double_precision", args.CDoublePrecision ?? (object)DBNull.Value);
-                    command.Parameters.AddWithValue("@c_money", args.CMoney ?? (object)DBNull.Value);
+                    command.Parameters.AddWithValue("@c_money", NpgsqlDbType.Money, args.CMoney ?? (object)DBNull.Value);
                     await command.ExecuteNonQueryAsync();
                 }
             }
@@ -836,7 +838,7 @@ public class QuerySql
             command.Parameters.AddWithValue("@c_numeric", args.CNumeric ?? (object)DBNull.Value);
             command.Parameters.AddWithValue("@c_real", args.CReal ?? (object)DBNull.Value);
             command.Parameters.AddWithValue("@c_double_precision", args.CDoublePrecision ?? (object)DBNull.Value);
-            command.Parameters.AddWithValue("@c_money", args.CMoney ?? (object)DBNull.Value);
+            command.Parameters.AddWithValue("@c_money", NpgsqlDbType.Money, args.CMoney ?? (object)DBNull.Value);
             await command.ExecuteNonQueryAsync();
         }
     }
@@ -1287,8 +1289,8 @@ public class QuerySql
         return null;
     }
 
-    private const string InsertPostgresDateTimeTypesSql = " INSERT INTO postgres_datetime_types ( c_date, c_time, c_timestamp, c_timestamp_with_tz, c_interval ) VALUES (@c_date, @c_time, @c_timestamp, @c_timestamp_with_tz, @c_interval)";
-    public readonly record struct InsertPostgresDateTimeTypesArgs(DateTime? CDate, TimeSpan? CTime, DateTime? CTimestamp, DateTime? CTimestampWithTz, TimeSpan? CInterval);
+    private const string InsertPostgresDateTimeTypesSql = " INSERT INTO postgres_datetime_types ( c_date, c_time, c_timestamp, c_timestamp_with_tz, c_interval, c_timestamp_noda_instant_override ) VALUES (@c_date, @c_time, @c_timestamp, @c_timestamp_with_tz, @c_interval, @c_timestamp_noda_instant_override)";
+    public readonly record struct InsertPostgresDateTimeTypesArgs(DateTime? CDate, TimeSpan? CTime, DateTime? CTimestamp, DateTime? CTimestampWithTz, TimeSpan? CInterval, Instant? CTimestampNodaInstantOverride);
     public async Task InsertPostgresDateTimeTypes(InsertPostgresDateTimeTypesArgs args)
     {
         if (this.Transaction == null)
@@ -1297,11 +1299,12 @@ public class QuerySql
             {
                 using (var command = connection.CreateCommand(InsertPostgresDateTimeTypesSql))
                 {
-                    command.Parameters.AddWithValue("@c_date", args.CDate ?? (object)DBNull.Value);
-                    command.Parameters.AddWithValue("@c_time", args.CTime ?? (object)DBNull.Value);
-                    command.Parameters.AddWithValue("@c_timestamp", args.CTimestamp ?? (object)DBNull.Value);
-                    command.Parameters.AddWithValue("@c_timestamp_with_tz", args.CTimestampWithTz ?? (object)DBNull.Value);
-                    command.Parameters.AddWithValue("@c_interval", args.CInterval ?? (object)DBNull.Value);
+                    command.Parameters.AddWithValue("@c_date", NpgsqlDbType.Date, args.CDate ?? (object)DBNull.Value);
+                    command.Parameters.AddWithValue("@c_time", NpgsqlDbType.Time, args.CTime ?? (object)DBNull.Value);
+                    command.Parameters.AddWithValue("@c_timestamp", NpgsqlDbType.Timestamp, args.CTimestamp ?? (object)DBNull.Value);
+                    command.Parameters.AddWithValue("@c_timestamp_with_tz", NpgsqlDbType.TimestampTz, args.CTimestampWithTz ?? (object)DBNull.Value);
+                    command.Parameters.AddWithValue("@c_interval", NpgsqlDbType.Interval, args.CInterval ?? (object)DBNull.Value);
+                    command.Parameters.AddWithValue("@c_timestamp_noda_instant_override", NpgsqlDbType.Timestamp, args.CTimestampNodaInstantOverride?.ToDateTimeUtc().ToLocalTime() ?? (object)DBNull.Value);
                     await command.ExecuteNonQueryAsync();
                 }
             }
@@ -1315,17 +1318,18 @@ public class QuerySql
         {
             command.CommandText = InsertPostgresDateTimeTypesSql;
             command.Transaction = this.Transaction;
-            command.Parameters.AddWithValue("@c_date", args.CDate ?? (object)DBNull.Value);
-            command.Parameters.AddWithValue("@c_time", args.CTime ?? (object)DBNull.Value);
-            command.Parameters.AddWithValue("@c_timestamp", args.CTimestamp ?? (object)DBNull.Value);
-            command.Parameters.AddWithValue("@c_timestamp_with_tz", args.CTimestampWithTz ?? (object)DBNull.Value);
-            command.Parameters.AddWithValue("@c_interval", args.CInterval ?? (object)DBNull.Value);
+            command.Parameters.AddWithValue("@c_date", NpgsqlDbType.Date, args.CDate ?? (object)DBNull.Value);
+            command.Parameters.AddWithValue("@c_time", NpgsqlDbType.Time, args.CTime ?? (object)DBNull.Value);
+            command.Parameters.AddWithValue("@c_timestamp", NpgsqlDbType.Timestamp, args.CTimestamp ?? (object)DBNull.Value);
+            command.Parameters.AddWithValue("@c_timestamp_with_tz", NpgsqlDbType.TimestampTz, args.CTimestampWithTz ?? (object)DBNull.Value);
+            command.Parameters.AddWithValue("@c_interval", NpgsqlDbType.Interval, args.CInterval ?? (object)DBNull.Value);
+            command.Parameters.AddWithValue("@c_timestamp_noda_instant_override", NpgsqlDbType.Timestamp, args.CTimestampNodaInstantOverride?.ToDateTimeUtc().ToLocalTime() ?? (object)DBNull.Value);
             await command.ExecuteNonQueryAsync();
         }
     }
 
-    private const string GetPostgresDateTimeTypesSql = "SELECT c_date, c_time, c_timestamp, c_timestamp_with_tz, c_interval FROM postgres_datetime_types LIMIT 1";
-    public readonly record struct GetPostgresDateTimeTypesRow(DateTime? CDate, TimeSpan? CTime, DateTime? CTimestamp, DateTime? CTimestampWithTz, TimeSpan? CInterval);
+    private const string GetPostgresDateTimeTypesSql = "SELECT c_date, c_time, c_timestamp, c_timestamp_with_tz, c_interval, c_timestamp_noda_instant_override FROM postgres_datetime_types LIMIT 1";
+    public readonly record struct GetPostgresDateTimeTypesRow(DateTime? CDate, TimeSpan? CTime, DateTime? CTimestamp, DateTime? CTimestampWithTz, TimeSpan? CInterval, Instant? CTimestampNodaInstantOverride);
     public async Task<GetPostgresDateTimeTypesRow?> GetPostgresDateTimeTypes()
     {
         if (this.Transaction == null)
@@ -1344,7 +1348,8 @@ public class QuerySql
                                 CTime = reader.IsDBNull(1) ? null : reader.GetFieldValue<TimeSpan>(1),
                                 CTimestamp = reader.IsDBNull(2) ? null : reader.GetDateTime(2),
                                 CTimestampWithTz = reader.IsDBNull(3) ? null : reader.GetDateTime(3),
-                                CInterval = reader.IsDBNull(4) ? null : reader.GetFieldValue<TimeSpan>(4)
+                                CInterval = reader.IsDBNull(4) ? null : reader.GetFieldValue<TimeSpan>(4),
+                                CTimestampNodaInstantOverride = reader.IsDBNull(5) ? null : reader.GetDateTime(5).ToInstant()
                             };
                         }
                     }
@@ -1370,7 +1375,8 @@ public class QuerySql
                         CTime = reader.IsDBNull(1) ? null : reader.GetFieldValue<TimeSpan>(1),
                         CTimestamp = reader.IsDBNull(2) ? null : reader.GetDateTime(2),
                         CTimestampWithTz = reader.IsDBNull(3) ? null : reader.GetDateTime(3),
-                        CInterval = reader.IsDBNull(4) ? null : reader.GetFieldValue<TimeSpan>(4)
+                        CInterval = reader.IsDBNull(4) ? null : reader.GetFieldValue<TimeSpan>(4),
+                        CTimestampNodaInstantOverride = reader.IsDBNull(5) ? null : reader.GetDateTime(5).ToInstant()
                     };
                 }
             }
@@ -1476,8 +1482,8 @@ public class QuerySql
                     await writer.StartRowAsync();
                     await writer.WriteAsync(row.CDate ?? (object)DBNull.Value, NpgsqlDbType.Date);
                     await writer.WriteAsync(row.CTime ?? (object)DBNull.Value, NpgsqlDbType.Time);
-                    await writer.WriteAsync(row.CTimestamp ?? (object)DBNull.Value);
-                    await writer.WriteAsync(row.CTimestampWithTz ?? (object)DBNull.Value);
+                    await writer.WriteAsync(row.CTimestamp ?? (object)DBNull.Value, NpgsqlDbType.Timestamp);
+                    await writer.WriteAsync(row.CTimestampWithTz ?? (object)DBNull.Value, NpgsqlDbType.TimestampTz);
                     await writer.WriteAsync(row.CInterval ?? (object)DBNull.Value, NpgsqlDbType.Interval);
                 }
 
@@ -1689,12 +1695,12 @@ public class QuerySql
             {
                 using (var command = connection.CreateCommand(InsertPostgresSpecialTypesSql))
                 {
-                    command.Parameters.AddWithValue("@c_json", args.CJson.HasValue ? (object)args.CJson.Value : (object)DBNull.Value);
-                    command.Parameters.AddWithValue("@c_json_string_override", args.CJsonStringOverride ?? (object)DBNull.Value);
-                    command.Parameters.AddWithValue("@c_jsonb", args.CJsonb.HasValue ? (object)args.CJsonb.Value : (object)DBNull.Value);
+                    command.Parameters.AddWithValue("@c_json", NpgsqlDbType.Json, args.CJson.HasValue ? (object)args.CJson.Value : (object)DBNull.Value);
+                    command.Parameters.AddWithValue("@c_json_string_override", NpgsqlDbType.Json, args.CJsonStringOverride ?? (object)DBNull.Value);
+                    command.Parameters.AddWithValue("@c_jsonb", NpgsqlDbType.Jsonb, args.CJsonb.HasValue ? (object)args.CJsonb.Value : (object)DBNull.Value);
                     command.Parameters.AddWithValue("@c_jsonpath", args.CJsonpath ?? (object)DBNull.Value);
-                    command.Parameters.AddWithValue("@c_xml", args.CXml != null ? args.CXml.OuterXml : (object)DBNull.Value);
-                    command.Parameters.AddWithValue("@c_xml_string_override", args.CXmlStringOverride ?? (object)DBNull.Value);
+                    command.Parameters.AddWithValue("@c_xml", NpgsqlDbType.Xml, args.CXml != null ? args.CXml.OuterXml : (object)DBNull.Value);
+                    command.Parameters.AddWithValue("@c_xml_string_override", NpgsqlDbType.Xml, args.CXmlStringOverride ?? (object)DBNull.Value);
                     command.Parameters.AddWithValue("@c_uuid", args.CUuid ?? (object)DBNull.Value);
                     command.Parameters.AddWithValue("@c_enum", args.CEnum != null ? args.CEnum.Value.Stringify() : (object)DBNull.Value);
                     await command.ExecuteNonQueryAsync();
@@ -1710,12 +1716,12 @@ public class QuerySql
         {
             command.CommandText = InsertPostgresSpecialTypesSql;
             command.Transaction = this.Transaction;
-            command.Parameters.AddWithValue("@c_json", args.CJson.HasValue ? (object)args.CJson.Value : (object)DBNull.Value);
-            command.Parameters.AddWithValue("@c_json_string_override", args.CJsonStringOverride ?? (object)DBNull.Value);
-            command.Parameters.AddWithValue("@c_jsonb", args.CJsonb.HasValue ? (object)args.CJsonb.Value : (object)DBNull.Value);
+            command.Parameters.AddWithValue("@c_json", NpgsqlDbType.Json, args.CJson.HasValue ? (object)args.CJson.Value : (object)DBNull.Value);
+            command.Parameters.AddWithValue("@c_json_string_override", NpgsqlDbType.Json, args.CJsonStringOverride ?? (object)DBNull.Value);
+            command.Parameters.AddWithValue("@c_jsonb", NpgsqlDbType.Jsonb, args.CJsonb.HasValue ? (object)args.CJsonb.Value : (object)DBNull.Value);
             command.Parameters.AddWithValue("@c_jsonpath", args.CJsonpath ?? (object)DBNull.Value);
-            command.Parameters.AddWithValue("@c_xml", args.CXml != null ? args.CXml.OuterXml : (object)DBNull.Value);
-            command.Parameters.AddWithValue("@c_xml_string_override", args.CXmlStringOverride ?? (object)DBNull.Value);
+            command.Parameters.AddWithValue("@c_xml", NpgsqlDbType.Xml, args.CXml != null ? args.CXml.OuterXml : (object)DBNull.Value);
+            command.Parameters.AddWithValue("@c_xml_string_override", NpgsqlDbType.Xml, args.CXmlStringOverride ?? (object)DBNull.Value);
             command.Parameters.AddWithValue("@c_uuid", args.CUuid ?? (object)DBNull.Value);
             command.Parameters.AddWithValue("@c_enum", args.CEnum != null ? args.CEnum.Value.Stringify() : (object)DBNull.Value);
             await command.ExecuteNonQueryAsync();

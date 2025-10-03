@@ -4,6 +4,7 @@ using System.Net;
 using System.Net.NetworkInformation;
 using System.Text.Json;
 using System.Xml;
+using NodaTime;
 using NUnit.Framework;
 using NUnit.Framework.Legacy;
 using System;
@@ -486,19 +487,28 @@ namespace EndToEndTests
             }
         }
 
-        [Test]
-        [TestCase("2000-1-30", "12:13:14", "1983-11-3 02:01:22", "2022-10-2 15:44:01+09:00", "02:03:04")]
-        [TestCase(null, null, null, null, null)]
-        public async Task TestPostgresDateTimeTypes(DateTime? cDate, TimeSpan? cTime, DateTime? cTimestamp, DateTime? cTimestampWithTz, TimeSpan? cInterval)
+        private static IEnumerable<TestCaseData> PostgresDateTimeTypesTestCases
         {
-            await QuerySql.InsertPostgresDateTimeTypes(new QuerySql.InsertPostgresDateTimeTypesArgs { CDate = cDate, CTime = cTime, CTimestamp = cTimestamp, CTimestampWithTz = cTimestampWithTz, CInterval = cInterval });
+            get
+            {
+                yield return new TestCaseData(DateTime.Parse("2000-1-30"), TimeSpan.Parse("12:13:14"), DateTime.Parse("1983-11-3 02:01:22"), DateTime.Parse("2022-10-2 15:44:01+09:00").ToUniversalTime(), TimeSpan.Parse("02:03:04"), Instant.FromUtc(2022, 10, 2, 15, 44, 1)).SetName("DateTimeTypes with values");
+                yield return new TestCaseData(null, null, null, null, null, null).SetName("DateTimeTypes with null values");
+            }
+        }
+
+        [Test]
+        [TestCaseSource(nameof(PostgresDateTimeTypesTestCases))]
+        public async Task TestPostgresDateTimeTypes(DateTime? cDate, TimeSpan? cTime, DateTime? cTimestamp, DateTime? cTimestampWithTz, TimeSpan? cInterval, Instant? cTimestampNodaInstantOverride)
+        {
+            await QuerySql.InsertPostgresDateTimeTypes(new QuerySql.InsertPostgresDateTimeTypesArgs { CDate = cDate, CTime = cTime, CTimestamp = cTimestamp, CTimestampWithTz = cTimestampWithTz, CInterval = cInterval, CTimestampNodaInstantOverride = cTimestampNodaInstantOverride });
             var expected = new QuerySql.GetPostgresDateTimeTypesRow
             {
                 CDate = cDate,
                 CTime = cTime,
                 CTimestamp = cTimestamp,
                 CTimestampWithTz = cTimestampWithTz,
-                CInterval = cInterval
+                CInterval = cInterval,
+                CTimestampNodaInstantOverride = cTimestampNodaInstantOverride
             };
             var actual = await QuerySql.GetPostgresDateTimeTypes();
             AssertSingularEquals(expected, actual.Value);
@@ -509,6 +519,7 @@ namespace EndToEndTests
                 Assert.That(x.CTimestamp, Is.EqualTo(y.CTimestamp));
                 Assert.That(x.CTimestampWithTz, Is.EqualTo(y.CTimestampWithTz));
                 Assert.That(x.CInterval, Is.EqualTo(y.CInterval));
+                Assert.That(x.CTimestampNodaInstantOverride, Is.EqualTo(y.CTimestampNodaInstantOverride));
             }
         }
 

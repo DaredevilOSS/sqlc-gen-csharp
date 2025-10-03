@@ -1,4 +1,5 @@
 using SqliteDapperLegacyExampleGen;
+using NodaTime;
 using NUnit.Framework;
 using NUnit.Framework.Legacy;
 using System;

@@ -24,7 +24,8 @@ CREATE TABLE postgres_datetime_types (
     c_time TIME,
     c_timestamp TIMESTAMP,
     c_timestamp_with_tz TIMESTAMP WITH TIME ZONE,
-    c_interval INTERVAL
+    c_interval INTERVAL,
+    c_timestamp_noda_instant_override TIMESTAMP
 );
 
 CREATE TABLE postgres_network_types (

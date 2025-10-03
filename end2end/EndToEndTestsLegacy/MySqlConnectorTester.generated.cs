@@ -1,5 +1,6 @@
 using MySqlConnectorLegacyExampleGen;
 using System.Text.Json;
+using NodaTime;
 using NUnit.Framework;
 using NUnit.Framework.Legacy;
 using System;

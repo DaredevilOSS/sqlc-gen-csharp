@@ -81,5 +81,5 @@
     }
   ],
   "sqlc_version": "v1.30.0",
-  "plugin_options": "eyJvdmVycmlkZURyaXZlclZlcnNpb24iOiIiLCJnZW5lcmF0ZUNzcHJvaiI6dHJ1ZSwidGFyZ2V0RnJhbWV3b3JrIjoibmV0OC4wIiwibmFtZXNwYWNlTmFtZSI6IiIsInVzZURhcHBlciI6ZmFsc2UsIm92ZXJyaWRlRGFwcGVyVmVyc2lvbiI6IiIsIm92ZXJyaWRlcyI6bnVsbCwiZGVidWdSZXF1ZXN0IjpmYWxzZX0="
+  "plugin_options": "eyJvdmVycmlkZURyaXZlclZlcnNpb24iOiIiLCJnZW5lcmF0ZUNzcHJvaiI6dHJ1ZSwidGFyZ2V0RnJhbWV3b3JrIjoibmV0OC4wIiwibmFtZXNwYWNlTmFtZSI6IiIsInVzZURhcHBlciI6ZmFsc2UsIm92ZXJyaWRlRGFwcGVyVmVyc2lvbiI6IiIsInVzZU5vZGFUaW1lIjpmYWxzZSwib3ZlcnJpZGVzIjpudWxsLCJkZWJ1Z1JlcXVlc3QiOmZhbHNlfQ=="
 }

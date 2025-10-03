@@ -19,6 +19,7 @@ public class Options
         UseDapper = rawOptions.UseDapper;
         OverrideDapperVersion = rawOptions.OverrideDapperVersion;
         NamespaceName = rawOptions.NamespaceName;
+        UseNodaTime = rawOptions.UseNodaTime;
         DotnetFramework = DotnetFrameworkExtensions.ParseName(rawOptions.TargetFramework);
         Overrides = rawOptions.Overrides ?? [];
 
@@ -39,9 +40,9 @@ public class Options
 
     public string OverrideDapperVersion { get; }
 
-    public string NamespaceName { get; }
+    public bool UseNodaTime { get; }
 
-    public bool NotNull { get; }
+    public string NamespaceName { get; }
 
     public List<OverrideOption> Overrides { get; }
 

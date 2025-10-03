@@ -10,4 +10,4 @@
 dummy_column0Rdummy_tablebdummy_table_dummy_columnzdummy_column:	query.sql·
 1INSERT INTO dummy_table (dummy_column) VALUES (?)
 TestInsert:exec*UQ
-dummy_column0Rpublicdummy_tablebdummy_table_dummy_columnzdummy_column:	query.sqlBdummy_table"v1.30.0*³{"overrideDriverVersion":"","generateCsproj":true,"targetFramework":"net8.0","namespaceName":"","useDapper":false,"overrideDapperVersion":"","overrides":null,"debugRequest":false}
+dummy_column0Rpublicdummy_tablebdummy_table_dummy_columnzdummy_column:	query.sqlBdummy_table"v1.30.0*Ç{"overrideDriverVersion":"","generateCsproj":true,"targetFramework":"net8.0","namespaceName":"","useDapper":false,"overrideDapperVersion":"","useNodaTime":false,"overrides":null,"debugRequest":false}

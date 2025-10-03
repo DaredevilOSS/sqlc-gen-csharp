@@ -60,6 +60,7 @@ internal class CsprojGen(string outputDirectory, string projectName, string name
             return $"""
                 <ItemGroup>
                     <PackageReference Include="{options.DriverName.ToName()}" Version="{GetDriverVersion(options)}"/>{optionalDapperPackageReference}{optionalCsvHelper}{optionalSystemTextJson}
+                    <PackageReference Include="NodaTime" Version="3.2.0"/>
                 </ItemGroup>
             """;
         }
