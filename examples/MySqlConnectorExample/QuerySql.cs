@@ -8,6 +8,8 @@ using CsvHelper;
 using CsvHelper.Configuration;
 using CsvHelper.TypeConversion;
 using MySqlConnector;
+using NodaTime;
+using NodaTime.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -1312,8 +1314,8 @@ public class QuerySql
         }
     }
 
-    private const string InsertMysqlDatetimeTypesSql = " INSERT INTO mysql_datetime_types ( c_year, c_date, c_datetime, c_timestamp, c_time ) VALUES (@c_year, @c_date, @c_datetime, @c_timestamp, @c_time)";
-    public readonly record struct InsertMysqlDatetimeTypesArgs(short? CYear, DateTime? CDate, DateTime? CDatetime, DateTime? CTimestamp, TimeSpan? CTime);
+    private const string InsertMysqlDatetimeTypesSql = " INSERT INTO mysql_datetime_types ( c_year, c_date, c_datetime, c_timestamp, c_time, c_timestamp_noda_instant_override ) VALUES (@c_year, @c_date, @c_datetime, @c_timestamp, @c_time, @c_timestamp_noda_instant_override)";
+    public readonly record struct InsertMysqlDatetimeTypesArgs(short? CYear, DateTime? CDate, DateTime? CDatetime, DateTime? CTimestamp, TimeSpan? CTime, Instant? CTimestampNodaInstantOverride);
     public async Task InsertMysqlDatetimeTypes(InsertMysqlDatetimeTypesArgs args)
     {
         if (this.Transaction == null)
@@ -1328,6 +1330,7 @@ public class QuerySql
                     command.Parameters.AddWithValue("@c_datetime", args.CDatetime ?? (object)DBNull.Value);
                     command.Parameters.AddWithValue("@c_timestamp", args.CTimestamp ?? (object)DBNull.Value);
                     command.Parameters.AddWithValue("@c_time", args.CTime ?? (object)DBNull.Value);
+                    command.Parameters.AddWithValue("@c_timestamp_noda_instant_override", args.CTimestampNodaInstantOverride is null ? (object)DBNull.Value : (DateTime? )DateTime.SpecifyKind(args.CTimestampNodaInstantOverride.Value.ToDateTimeUtc(), DateTimeKind.Unspecified));
                     await command.ExecuteNonQueryAsync();
                 }
             }
@@ -1346,6 +1349,7 @@ public class QuerySql
             command.Parameters.AddWithValue("@c_datetime", args.CDatetime ?? (object)DBNull.Value);
             command.Parameters.AddWithValue("@c_timestamp", args.CTimestamp ?? (object)DBNull.Value);
             command.Parameters.AddWithValue("@c_time", args.CTime ?? (object)DBNull.Value);
+            command.Parameters.AddWithValue("@c_timestamp_noda_instant_override", args.CTimestampNodaInstantOverride is null ? (object)DBNull.Value : (DateTime? )DateTime.SpecifyKind(args.CTimestampNodaInstantOverride.Value.ToDateTimeUtc(), DateTimeKind.Unspecified));
             await command.ExecuteNonQueryAsync();
         }
     }
@@ -1398,8 +1402,8 @@ public class QuerySql
         }
     }
 
-    private const string GetMysqlDatetimeTypesSql = "SELECT c_year, c_date, c_datetime, c_timestamp, c_time FROM mysql_datetime_types LIMIT 1";
-    public readonly record struct GetMysqlDatetimeTypesRow(short? CYear, DateTime? CDate, DateTime? CDatetime, DateTime? CTimestamp, TimeSpan? CTime);
+    private const string GetMysqlDatetimeTypesSql = "SELECT c_year, c_date, c_datetime, c_timestamp, c_time, c_timestamp_noda_instant_override FROM mysql_datetime_types LIMIT 1";
+    public readonly record struct GetMysqlDatetimeTypesRow(short? CYear, DateTime? CDate, DateTime? CDatetime, DateTime? CTimestamp, TimeSpan? CTime, Instant? CTimestampNodaInstantOverride);
     public async Task<GetMysqlDatetimeTypesRow?> GetMysqlDatetimeTypes()
     {
         if (this.Transaction == null)
@@ -1419,7 +1423,14 @@ public class QuerySql
                                 CDate = reader.IsDBNull(1) ? null : reader.GetDateTime(1),
                                 CDatetime = reader.IsDBNull(2) ? null : reader.GetDateTime(2),
                                 CTimestamp = reader.IsDBNull(3) ? null : reader.GetDateTime(3),
-                                CTime = reader.IsDBNull(4) ? null : reader.GetFieldValue<TimeSpan>(4)
+                                CTime = reader.IsDBNull(4) ? null : reader.GetFieldValue<TimeSpan>(4),
+                                CTimestampNodaInstantOverride = reader.IsDBNull(5) ? null : (new Func<MySqlDataReader, int, Instant>((r, o) =>
+                                {
+                                    var dt = reader.GetDateTime(o);
+                                    if (dt.Kind != DateTimeKind.Utc)
+                                        dt = DateTime.SpecifyKind(dt, DateTimeKind.Utc);
+                                    return dt.ToInstant();
+                                }))(reader, 5)
                             };
                         }
                     }
@@ -1445,7 +1456,14 @@ public class QuerySql
                         CDate = reader.IsDBNull(1) ? null : reader.GetDateTime(1),
                         CDatetime = reader.IsDBNull(2) ? null : reader.GetDateTime(2),
                         CTimestamp = reader.IsDBNull(3) ? null : reader.GetDateTime(3),
-                        CTime = reader.IsDBNull(4) ? null : reader.GetFieldValue<TimeSpan>(4)
+                        CTime = reader.IsDBNull(4) ? null : reader.GetFieldValue<TimeSpan>(4),
+                        CTimestampNodaInstantOverride = reader.IsDBNull(5) ? null : (new Func<MySqlDataReader, int, Instant>((r, o) =>
+                        {
+                            var dt = reader.GetDateTime(o);
+                            if (dt.Kind != DateTimeKind.Utc)
+                                dt = DateTime.SpecifyKind(dt, DateTimeKind.Utc);
+                            return dt.ToInstant();
+                        }))(reader, 5)
                     };
                 }
             }

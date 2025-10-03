@@ -124,6 +124,29 @@ public sealed partial class MySqlConnectorDriver(
                 },
                 readerFn: (ordinal, _) => $"{Variable.Reader.AsVarName()}.GetFieldValue<TimeSpan>({ordinal})"
             ),
+            ["Instant"] = new(
+                [],
+                readerFn: (ordinal, _) => $$"""
+                    (new Func<MySqlDataReader, int, Instant>((r, o) =>
+                    {
+                       var dt = {{Variable.Reader.AsVarName()}}.GetDateTime(o);
+                       if (dt.Kind != DateTimeKind.Utc)
+                           dt = DateTime.SpecifyKind(dt, DateTimeKind.Utc);
+                       return dt.ToInstant();
+                    }))({{Variable.Reader.AsVarName()}}, {{ordinal}})
+                """,
+                writerFn: (el, _, notNull, isDapper, isLegacy) =>
+                {
+                    if (notNull)
+                        return $"DateTime.SpecifyKind({el}.ToDateTimeUtc(), DateTimeKind.Unspecified)";
+                    var nullValue = isDapper ? "null" : "(object)DBNull.Value";
+                    return $"{el} is null ? {nullValue} : (DateTime?) DateTime.SpecifyKind({el}.Value.ToDateTimeUtc(), DateTimeKind.Unspecified)";
+                },
+                usingDirectives: ["System", "NodaTime", "NodaTime.Extensions"],
+                sqlMapper: "SqlMapper.AddTypeHandler(typeof(Instant), new NodaInstantTypeHandler());",
+                sqlMapperImpl: NodaInstantTypeHandler
+            ),
+
 
             /* Unstructured data types */
             ["JsonElement"] = new(

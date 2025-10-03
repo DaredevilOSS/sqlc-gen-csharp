@@ -228,6 +228,10 @@ sql:
               csharp_type:
                 type: "string"
                 notNull: false
+            - column: "*:c_timestamp_noda_instant_override"
+              csharp_type:
+                type: "Instant"
+                notNull: false
   - schema: ["examples/config/mysql/authors/schema.sql", "examples/config/mysql/types/schema.sql"]
     queries: ["examples/config/mysql/authors/query.sql", "examples/config/mysql/types/query.sql"]
     engine: "mysql"
@@ -255,6 +259,10 @@ sql:
             - column: "*:c_json_string_override"
               csharp_type:
                 type: "string"
+                notNull: false
+            - column: "*:c_timestamp_noda_instant_override"
+              csharp_type:
+                type: "Instant"
                 notNull: false
   - schema: ["examples/config/mysql/authors/schema.sql", "examples/config/mysql/types/schema.sql"]
     queries: ["examples/config/mysql/authors/query.sql", "examples/config/mysql/types/query.sql"]
@@ -284,6 +292,10 @@ sql:
               csharp_type:
                 type: "string"
                 notNull: false
+            - column: "*:c_timestamp_noda_instant_override"
+              csharp_type:
+                type: "Instant"
+                notNull: false
   - schema: ["examples/config/mysql/authors/schema.sql", "examples/config/mysql/types/schema.sql"]
     queries: ["examples/config/mysql/authors/query.sql", "examples/config/mysql/types/query.sql"]
     engine: "mysql"
@@ -311,6 +323,10 @@ sql:
             - column: "*:c_json_string_override"
               csharp_type:
                 type: "string"
+                notNull: false
+            - column: "*:c_timestamp_noda_instant_override"
+              csharp_type:
+                type: "Instant"
                 notNull: false
 
   # Sqlite
