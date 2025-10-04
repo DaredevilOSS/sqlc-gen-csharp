@@ -2,6 +2,9 @@
 namespace SqliteDapperLegacyExampleGen
 {
     using Dapper;
+    using NodaTime;
+    using NodaTime.Extensions;
+    using NodaTime.Text;
     using System;
     using System.Data;
     using System.Linq;
@@ -26,9 +29,27 @@ namespace SqliteDapperLegacyExampleGen
             }
         }
 
+        private class NodaInstantTypeHandler : SqlMapper.TypeHandler<Instant>
+        {
+            public override Instant Parse(object value)
+            {
+                if (value is string s)
+                    return InstantPattern.CreateWithInvariantCulture("yyyy-MM-dd HH:mm:ss").Parse(s).Value;
+                if (value is long l)
+                    return Instant.FromUnixTimeSeconds(l);
+                throw new DataException($"Cannot convert {value?.GetType()} to Instant");
+            }
+
+            public override void SetValue(IDbDataParameter parameter, Instant value)
+            {
+                parameter.Value = value;
+            }
+        }
+
         public static void ConfigureSqlMapper()
         {
             SqlMapper.AddTypeHandler(typeof(DateTime), new DateTimeTypeHandler());
+            SqlMapper.AddTypeHandler(typeof(Instant), new NodaInstantTypeHandler());
         }
 
         public static string TransformQueryForSliceArgs(string originalSql, int sliceSize, string paramName)

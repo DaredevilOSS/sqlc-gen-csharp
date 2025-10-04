@@ -7,10 +7,12 @@ INSERT INTO types_sqlite
     c_blob,
     c_text_datetime_override,
     c_integer_datetime_override,
+    c_text_noda_instant_override,
+    c_integer_noda_instant_override,
     c_text_bool_override,
     c_integer_bool_override
 ) 
-VALUES (?, ?, ?, ?, ?, ?, ?, ?);
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
 
 -- name: InsertSqliteTypesBatch :copyfrom
 INSERT INTO types_sqlite (c_integer, c_real, c_text) VALUES (?, ?, ?);
@@ -23,6 +25,8 @@ SELECT
     c_blob,
     c_text_datetime_override,
     c_integer_datetime_override,
+    c_text_noda_instant_override,
+    c_integer_noda_instant_override,
     c_text_bool_override,
     c_integer_bool_override
 FROM types_sqlite

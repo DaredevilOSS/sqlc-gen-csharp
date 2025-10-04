@@ -144,7 +144,7 @@ public sealed partial class MySqlConnectorDriver(
                 },
                 usingDirectives: ["System", "NodaTime", "NodaTime.Extensions"],
                 sqlMapper: "SqlMapper.AddTypeHandler(typeof(Instant), new NodaInstantTypeHandler());",
-                sqlMapperImpl: NodaInstantTypeHandler
+                sqlMapperImpl: DateTimeNodaInstantTypeHandler
             ),
 
 

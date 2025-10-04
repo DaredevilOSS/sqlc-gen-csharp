@@ -368,6 +368,12 @@ sql:
             - column: "*:c_integer_bool_override"
               csharp_type:
                 type: "bool"
+            - column: "*:c_text_noda_instant_override"
+              csharp_type:
+                type: "Instant"
+            - column: "*:c_integer_noda_instant_override"
+              csharp_type:
+                type: "Instant"
           debugRequest: true
   - schema: ["examples/config/sqlite/authors/schema.sql", "examples/config/sqlite/types/schema.sql"]
     queries: ["examples/config/sqlite/authors/query.sql", "examples/config/sqlite/types/query.sql"]
@@ -402,6 +408,12 @@ sql:
             - column: "*:c_integer_bool_override"
               csharp_type:
                 type: "bool"
+            - column: "*:c_text_noda_instant_override"
+              csharp_type:
+                type: "Instant"
+            - column: "*:c_integer_noda_instant_override"
+              csharp_type:
+                type: "Instant"
           debugRequest: true
   - schema: ["examples/config/sqlite/authors/schema.sql", "examples/config/sqlite/types/schema.sql"]
     queries: ["examples/config/sqlite/authors/query.sql", "examples/config/sqlite/types/query.sql"]
@@ -436,6 +448,12 @@ sql:
             - column: "*:c_integer_bool_override"
               csharp_type:
                 type: "bool"
+            - column: "*:c_text_noda_instant_override"
+              csharp_type:
+                type: "Instant"
+            - column: "*:c_integer_noda_instant_override"
+              csharp_type:
+                type: "Instant"
           debugRequest: true
   - schema: ["examples/config/sqlite/authors/schema.sql", "examples/config/sqlite/types/schema.sql"]
     queries: ["examples/config/sqlite/authors/query.sql", "examples/config/sqlite/types/query.sql"]
@@ -470,4 +488,10 @@ sql:
             - column: "*:c_integer_bool_override"
               csharp_type:
                 type: "bool"
+            - column: "*:c_text_noda_instant_override"
+              csharp_type:
+                type: "Instant"
+            - column: "*:c_integer_noda_instant_override"
+              csharp_type:
+                type: "Instant"
           debugRequest: true

@@ -13,7 +13,7 @@
     "codegen": {
       "out": "examples/SqliteDapperLegacyExample",
       "plugin": "csharp",
-      "options": "eyJkZWJ1Z1JlcXVlc3QiOnRydWUsImdlbmVyYXRlQ3Nwcm9qIjp0cnVlLCJuYW1lc3BhY2VOYW1lIjoiU3FsaXRlRGFwcGVyTGVnYWN5RXhhbXBsZUdlbiIsIm92ZXJyaWRlcyI6W3siY29sdW1uIjoiR2V0U3FsaXRlRnVuY3Rpb25zOm1heF9pbnRlZ2VyIiwiY3NoYXJwX3R5cGUiOnsidHlwZSI6ImludCJ9fSx7ImNvbHVtbiI6IkdldFNxbGl0ZUZ1bmN0aW9uczptYXhfdmFyY2hhciIsImNzaGFycF90eXBlIjp7InR5cGUiOiJzdHJpbmcifX0seyJjb2x1bW4iOiJHZXRTcWxpdGVGdW5jdGlvbnM6bWF4X3JlYWwiLCJjc2hhcnBfdHlwZSI6eyJ0eXBlIjoiZGVjaW1hbCJ9fSx7ImNvbHVtbiI6Iio6Y190ZXh0X2RhdGV0aW1lX292ZXJyaWRlIiwiY3NoYXJwX3R5cGUiOnsidHlwZSI6IkRhdGVUaW1lIn19LHsiY29sdW1uIjoiKjpjX2ludGVnZXJfZGF0ZXRpbWVfb3ZlcnJpZGUiLCJjc2hhcnBfdHlwZSI6eyJ0eXBlIjoiRGF0ZVRpbWUifX0seyJjb2x1bW4iOiIqOmNfdGV4dF9ib29sX292ZXJyaWRlIiwiY3NoYXJwX3R5cGUiOnsidHlwZSI6ImJvb2wifX0seyJjb2x1bW4iOiIqOmNfaW50ZWdlcl9ib29sX292ZXJyaWRlIiwiY3NoYXJwX3R5cGUiOnsidHlwZSI6ImJvb2wifX1dLCJ0YXJnZXRGcmFtZXdvcmsiOiJuZXRzdGFuZGFyZDIuMCIsInVzZURhcHBlciI6dHJ1ZX0=",
+      "options": "eyJkZWJ1Z1JlcXVlc3QiOnRydWUsImdlbmVyYXRlQ3Nwcm9qIjp0cnVlLCJuYW1lc3BhY2VOYW1lIjoiU3FsaXRlRGFwcGVyTGVnYWN5RXhhbXBsZUdlbiIsIm92ZXJyaWRlcyI6W3siY29sdW1uIjoiR2V0U3FsaXRlRnVuY3Rpb25zOm1heF9pbnRlZ2VyIiwiY3NoYXJwX3R5cGUiOnsidHlwZSI6ImludCJ9fSx7ImNvbHVtbiI6IkdldFNxbGl0ZUZ1bmN0aW9uczptYXhfdmFyY2hhciIsImNzaGFycF90eXBlIjp7InR5cGUiOiJzdHJpbmcifX0seyJjb2x1bW4iOiJHZXRTcWxpdGVGdW5jdGlvbnM6bWF4X3JlYWwiLCJjc2hhcnBfdHlwZSI6eyJ0eXBlIjoiZGVjaW1hbCJ9fSx7ImNvbHVtbiI6Iio6Y190ZXh0X2RhdGV0aW1lX292ZXJyaWRlIiwiY3NoYXJwX3R5cGUiOnsidHlwZSI6IkRhdGVUaW1lIn19LHsiY29sdW1uIjoiKjpjX2ludGVnZXJfZGF0ZXRpbWVfb3ZlcnJpZGUiLCJjc2hhcnBfdHlwZSI6eyJ0eXBlIjoiRGF0ZVRpbWUifX0seyJjb2x1bW4iOiIqOmNfdGV4dF9ib29sX292ZXJyaWRlIiwiY3NoYXJwX3R5cGUiOnsidHlwZSI6ImJvb2wifX0seyJjb2x1bW4iOiIqOmNfaW50ZWdlcl9ib29sX292ZXJyaWRlIiwiY3NoYXJwX3R5cGUiOnsidHlwZSI6ImJvb2wifX0seyJjb2x1bW4iOiIqOmNfdGV4dF9ub2RhX2luc3RhbnRfb3ZlcnJpZGUiLCJjc2hhcnBfdHlwZSI6eyJ0eXBlIjoiSW5zdGFudCJ9fSx7ImNvbHVtbiI6Iio6Y19pbnRlZ2VyX25vZGFfaW5zdGFudF9vdmVycmlkZSIsImNzaGFycF90eXBlIjp7InR5cGUiOiJJbnN0YW50In19XSwidGFyZ2V0RnJhbWV3b3JrIjoibmV0c3RhbmRhcmQyLjAiLCJ1c2VEYXBwZXIiOnRydWV9",
       "process": {
         "cmd": "./dist/LocalRunner"
       }
@@ -171,6 +171,26 @@
               },
               {
                 "name": "c_integer_datetime_override",
+                "length": -1,
+                "table": {
+                  "name": "types_sqlite"
+                },
+                "type": {
+                  "name": "INTEGER"
+                }
+              },
+              {
+                "name": "c_text_noda_instant_override",
+                "length": -1,
+                "table": {
+                  "name": "types_sqlite"
+                },
+                "type": {
+                  "name": "TEXT"
+                }
+              },
+              {
+                "name": "c_integer_noda_instant_override",
                 "length": -1,
                 "table": {
                   "name": "types_sqlite"
@@ -1008,7 +1028,7 @@
       "filename": "query.sql"
     },
     {
-      "text": "INSERT INTO types_sqlite \n(\n    c_integer,\n    c_real,\n    c_text,\n    c_blob,\n    c_text_datetime_override,\n    c_integer_datetime_override,\n    c_text_bool_override,\n    c_integer_bool_override\n) \nVALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+      "text": "INSERT INTO types_sqlite \n(\n    c_integer,\n    c_real,\n    c_text,\n    c_blob,\n    c_text_datetime_override,\n    c_integer_datetime_override,\n    c_text_noda_instant_override,\n    c_integer_noda_instant_override,\n    c_text_bool_override,\n    c_integer_bool_override\n) \nVALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
       "name": "InsertSqliteTypes",
       "cmd": ":exec",
       "parameters": [
@@ -1105,6 +1125,36 @@
         {
           "number": 7,
           "column": {
+            "name": "c_text_noda_instant_override",
+            "length": -1,
+            "table": {
+              "schema": "main",
+              "name": "types_sqlite"
+            },
+            "type": {
+              "name": "TEXT"
+            },
+            "originalName": "c_text_noda_instant_override"
+          }
+        },
+        {
+          "number": 8,
+          "column": {
+            "name": "c_integer_noda_instant_override",
+            "length": -1,
+            "table": {
+              "schema": "main",
+              "name": "types_sqlite"
+            },
+            "type": {
+              "name": "INTEGER"
+            },
+            "originalName": "c_integer_noda_instant_override"
+          }
+        },
+        {
+          "number": 9,
+          "column": {
             "name": "c_text_bool_override",
             "length": -1,
             "table": {
@@ -1118,7 +1168,7 @@
           }
         },
         {
-          "number": 8,
+          "number": 10,
           "column": {
             "name": "c_integer_bool_override",
             "length": -1,
@@ -1195,7 +1245,7 @@
       }
     },
     {
-      "text": "SELECT\n    c_integer,\n    c_real,\n    c_text,\n    c_blob,\n    c_text_datetime_override,\n    c_integer_datetime_override,\n    c_text_bool_override,\n    c_integer_bool_override\nFROM types_sqlite\nLIMIT 1",
+      "text": "SELECT\n    c_integer,\n    c_real,\n    c_text,\n    c_blob,\n    c_text_datetime_override,\n    c_integer_datetime_override,\n    c_text_noda_instant_override,\n    c_integer_noda_instant_override,\n    c_text_bool_override,\n    c_integer_bool_override\nFROM types_sqlite\nLIMIT 1",
       "name": "GetSqliteTypes",
       "cmd": ":one",
       "columns": [
@@ -1264,6 +1314,28 @@
             "name": "INTEGER"
           },
           "originalName": "c_integer_datetime_override"
+        },
+        {
+          "name": "c_text_noda_instant_override",
+          "length": -1,
+          "table": {
+            "name": "types_sqlite"
+          },
+          "type": {
+            "name": "TEXT"
+          },
+          "originalName": "c_text_noda_instant_override"
+        },
+        {
+          "name": "c_integer_noda_instant_override",
+          "length": -1,
+          "table": {
+            "name": "types_sqlite"
+          },
+          "type": {
+            "name": "INTEGER"
+          },
+          "originalName": "c_integer_noda_instant_override"
         },
         {
           "name": "c_text_bool_override",
@@ -1391,5 +1463,5 @@
     }
   ],
   "sqlc_version": "v1.30.0",
-  "plugin_options": "eyJvdmVycmlkZURyaXZlclZlcnNpb24iOiIiLCJnZW5lcmF0ZUNzcHJvaiI6dHJ1ZSwidGFyZ2V0RnJhbWV3b3JrIjoibmV0c3RhbmRhcmQyLjAiLCJuYW1lc3BhY2VOYW1lIjoiU3FsaXRlRGFwcGVyTGVnYWN5RXhhbXBsZUdlbiIsInVzZURhcHBlciI6dHJ1ZSwib3ZlcnJpZGVEYXBwZXJWZXJzaW9uIjoiIiwidXNlTm9kYVRpbWUiOmZhbHNlLCJvdmVycmlkZXMiOlt7ImNvbHVtbiI6IkdldFNxbGl0ZUZ1bmN0aW9uczptYXhfaW50ZWdlciIsImNzaGFycF90eXBlIjp7InR5cGUiOiJpbnQiLCJub3ROdWxsIjpmYWxzZX19LHsiY29sdW1uIjoiR2V0U3FsaXRlRnVuY3Rpb25zOm1heF92YXJjaGFyIiwiY3NoYXJwX3R5cGUiOnsidHlwZSI6InN0cmluZyIsIm5vdE51bGwiOmZhbHNlfX0seyJjb2x1bW4iOiJHZXRTcWxpdGVGdW5jdGlvbnM6bWF4X3JlYWwiLCJjc2hhcnBfdHlwZSI6eyJ0eXBlIjoiZGVjaW1hbCIsIm5vdE51bGwiOmZhbHNlfX0seyJjb2x1bW4iOiIqOmNfdGV4dF9kYXRldGltZV9vdmVycmlkZSIsImNzaGFycF90eXBlIjp7InR5cGUiOiJEYXRlVGltZSIsIm5vdE51bGwiOmZhbHNlfX0seyJjb2x1bW4iOiIqOmNfaW50ZWdlcl9kYXRldGltZV9vdmVycmlkZSIsImNzaGFycF90eXBlIjp7InR5cGUiOiJEYXRlVGltZSIsIm5vdE51bGwiOmZhbHNlfX0seyJjb2x1bW4iOiIqOmNfdGV4dF9ib29sX292ZXJyaWRlIiwiY3NoYXJwX3R5cGUiOnsidHlwZSI6ImJvb2wiLCJub3ROdWxsIjpmYWxzZX19LHsiY29sdW1uIjoiKjpjX2ludGVnZXJfYm9vbF9vdmVycmlkZSIsImNzaGFycF90eXBlIjp7InR5cGUiOiJib29sIiwibm90TnVsbCI6ZmFsc2V9fV0sImRlYnVnUmVxdWVzdCI6ZmFsc2V9"
+  "plugin_options": "eyJvdmVycmlkZURyaXZlclZlcnNpb24iOiIiLCJnZW5lcmF0ZUNzcHJvaiI6dHJ1ZSwidGFyZ2V0RnJhbWV3b3JrIjoibmV0c3RhbmRhcmQyLjAiLCJuYW1lc3BhY2VOYW1lIjoiU3FsaXRlRGFwcGVyTGVnYWN5RXhhbXBsZUdlbiIsInVzZURhcHBlciI6dHJ1ZSwib3ZlcnJpZGVEYXBwZXJWZXJzaW9uIjoiIiwidXNlTm9kYVRpbWUiOmZhbHNlLCJvdmVycmlkZXMiOlt7ImNvbHVtbiI6IkdldFNxbGl0ZUZ1bmN0aW9uczptYXhfaW50ZWdlciIsImNzaGFycF90eXBlIjp7InR5cGUiOiJpbnQiLCJub3ROdWxsIjpmYWxzZX19LHsiY29sdW1uIjoiR2V0U3FsaXRlRnVuY3Rpb25zOm1heF92YXJjaGFyIiwiY3NoYXJwX3R5cGUiOnsidHlwZSI6InN0cmluZyIsIm5vdE51bGwiOmZhbHNlfX0seyJjb2x1bW4iOiJHZXRTcWxpdGVGdW5jdGlvbnM6bWF4X3JlYWwiLCJjc2hhcnBfdHlwZSI6eyJ0eXBlIjoiZGVjaW1hbCIsIm5vdE51bGwiOmZhbHNlfX0seyJjb2x1bW4iOiIqOmNfdGV4dF9kYXRldGltZV9vdmVycmlkZSIsImNzaGFycF90eXBlIjp7InR5cGUiOiJEYXRlVGltZSIsIm5vdE51bGwiOmZhbHNlfX0seyJjb2x1bW4iOiIqOmNfaW50ZWdlcl9kYXRldGltZV9vdmVycmlkZSIsImNzaGFycF90eXBlIjp7InR5cGUiOiJEYXRlVGltZSIsIm5vdE51bGwiOmZhbHNlfX0seyJjb2x1bW4iOiIqOmNfdGV4dF9ib29sX292ZXJyaWRlIiwiY3NoYXJwX3R5cGUiOnsidHlwZSI6ImJvb2wiLCJub3ROdWxsIjpmYWxzZX19LHsiY29sdW1uIjoiKjpjX2ludGVnZXJfYm9vbF9vdmVycmlkZSIsImNzaGFycF90eXBlIjp7InR5cGUiOiJib29sIiwibm90TnVsbCI6ZmFsc2V9fSx7ImNvbHVtbiI6Iio6Y190ZXh0X25vZGFfaW5zdGFudF9vdmVycmlkZSIsImNzaGFycF90eXBlIjp7InR5cGUiOiJJbnN0YW50Iiwibm90TnVsbCI6ZmFsc2V9fSx7ImNvbHVtbiI6Iio6Y19pbnRlZ2VyX25vZGFfaW5zdGFudF9vdmVycmlkZSIsImNzaGFycF90eXBlIjp7InR5cGUiOiJJbnN0YW50Iiwibm90TnVsbCI6ZmFsc2V9fV0sImRlYnVnUmVxdWVzdCI6ZmFsc2V9"
 }

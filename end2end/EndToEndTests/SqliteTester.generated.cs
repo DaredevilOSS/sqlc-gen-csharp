@@ -328,17 +328,21 @@ namespace EndToEndTests
             }
         }
 
-        [Test]
-        [TestCase(-54355, 9787.66, "Songs of Love and Hate", new byte[] { 0x15, 0x20, 0x33 }, true, false, "2020-01-01 14:15:16", "2025-01-01 17:18:19")]
-        [TestCase(null, null, null, new byte[] { }, null, null, null, null)]
-        [TestCase(null, null, null, null, null, null, null, null)]
-        public async Task TestSqliteTypes(int? cInteger, decimal? cReal, string cText, byte[] cBlob, bool? cTextBoolOverride, bool? cIntegerBoolOverride, DateTime? cTextDatetimeOverride, DateTime? cIntegerDatetimeOverride)
+        private static IEnumerable<TestCaseData> SqliteTypesTestCases
         {
-            if (cTextDatetimeOverride.HasValue && cTextDatetimeOverride.Value.Kind != DateTimeKind.Utc)
-                cTextDatetimeOverride = DateTime.SpecifyKind(cTextDatetimeOverride.Value, DateTimeKind.Utc);
-            if (cIntegerDatetimeOverride.HasValue && cIntegerDatetimeOverride.Value.Kind != DateTimeKind.Utc)
-                cIntegerDatetimeOverride = DateTime.SpecifyKind(cIntegerDatetimeOverride.Value, DateTimeKind.Utc);
-            await QuerySql.InsertSqliteTypes(new QuerySql.InsertSqliteTypesArgs { CInteger = cInteger, CReal = cReal, CText = cText, CBlob = cBlob, CTextBoolOverride = cTextBoolOverride, CIntegerBoolOverride = cIntegerBoolOverride, CTextDatetimeOverride = cTextDatetimeOverride, CIntegerDatetimeOverride = cIntegerDatetimeOverride });
+            get
+            {
+                yield return new TestCaseData(-54355, 9787.66m, "Songs of Love and Hate", new byte[] { 0x15, 0x20, 0x33 }, true, false, DateTime.SpecifyKind(DateTime.Parse("2020-01-01 14:15:16"), DateTimeKind.Utc), DateTime.SpecifyKind(DateTime.Parse("2025-01-01 17:18:19"), DateTimeKind.Utc), Instant.FromUtc(2025, 10, 15, 19, 55, 2), Instant.FromUtc(1993, 9, 27, 03, 55, 2)).SetName("SqliteTypes with values");
+                yield return new TestCaseData(null, null, null, new byte[] { }, null, null, null, null, null, null).SetName("SqliteTypes with empty values");
+                yield return new TestCaseData(null, null, null, null, null, null, null, null, null, null).SetName("SqliteTypes with null values");
+            }
+        }
+
+        [Test]
+        [TestCaseSource(nameof(SqliteTypesTestCases))]
+        public async Task TestSqliteTypes(int? cInteger, decimal? cReal, string cText, byte[] cBlob, bool? cTextBoolOverride, bool? cIntegerBoolOverride, DateTime? cTextDatetimeOverride, DateTime? cIntegerDatetimeOverride, Instant? cTextNodaInstantOverride, Instant? cIntegerNodaInstantOverride)
+        {
+            await QuerySql.InsertSqliteTypes(new QuerySql.InsertSqliteTypesArgs { CInteger = cInteger, CReal = cReal, CText = cText, CBlob = cBlob, CTextBoolOverride = cTextBoolOverride, CIntegerBoolOverride = cIntegerBoolOverride, CTextDatetimeOverride = cTextDatetimeOverride, CIntegerDatetimeOverride = cIntegerDatetimeOverride, CTextNodaInstantOverride = cTextNodaInstantOverride, CIntegerNodaInstantOverride = cIntegerNodaInstantOverride });
             var expected = new QuerySql.GetSqliteTypesRow
             {
                 CInteger = cInteger,
@@ -348,7 +352,9 @@ namespace EndToEndTests
                 CTextBoolOverride = cTextBoolOverride,
                 CIntegerBoolOverride = cIntegerBoolOverride,
                 CTextDatetimeOverride = cTextDatetimeOverride,
-                CIntegerDatetimeOverride = cIntegerDatetimeOverride
+                CIntegerDatetimeOverride = cIntegerDatetimeOverride,
+                CTextNodaInstantOverride = cTextNodaInstantOverride,
+                CIntegerNodaInstantOverride = cIntegerNodaInstantOverride
             };
             var actual = await QuerySql.GetSqliteTypes();
             AssertSingularEquals(expected, actual.Value);
@@ -360,23 +366,10 @@ namespace EndToEndTests
                 Assert.That(x.CBlob, Is.EqualTo(y.CBlob));
                 Assert.That(x.CTextBoolOverride, Is.EqualTo(y.CTextBoolOverride));
                 Assert.That(x.CIntegerBoolOverride, Is.EqualTo(y.CIntegerBoolOverride));
-                AssertDateTimeEquals(x.CTextDatetimeOverride, y.CTextDatetimeOverride);
-                AssertDateTimeEquals(x.CIntegerDatetimeOverride, y.CIntegerDatetimeOverride);
-            }
-
-            void AssertDateTimeEquals(DateTime? x, DateTime? y)
-            {
-                Assert.That(x.HasValue, Is.EqualTo(y.HasValue));
-                if (!x.HasValue)
-                    return;
-                var xv = x.Value;
-                var yv = y.Value;
-                Assert.That(xv.Year, Is.EqualTo(yv.Year));
-                Assert.That(xv.Month, Is.EqualTo(yv.Month));
-                Assert.That(xv.Day, Is.EqualTo(yv.Day));
-                Assert.That(xv.Hour, Is.EqualTo(yv.Hour));
-                Assert.That(xv.Minute, Is.EqualTo(yv.Minute));
-                Assert.That(xv.Second, Is.EqualTo(yv.Second));
+                Assert.That(x.CTextDatetimeOverride, Is.EqualTo(y.CTextDatetimeOverride));
+                Assert.That(x.CIntegerDatetimeOverride, Is.EqualTo(y.CIntegerDatetimeOverride));
+                Assert.That(x.CTextNodaInstantOverride, Is.EqualTo(y.CTextNodaInstantOverride));
+                Assert.That(x.CIntegerNodaInstantOverride, Is.EqualTo(y.CIntegerNodaInstantOverride));
             }
         }
 

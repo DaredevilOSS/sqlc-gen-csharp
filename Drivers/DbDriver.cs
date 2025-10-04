@@ -69,7 +69,7 @@ public abstract class DbDriver
              throw new InvalidOperationException("Transaction is provided, but its connection is null.");
          """;
 
-    protected static readonly SqlMapperImplFunc NodaInstantTypeHandler = _ => $$"""
+    protected static readonly SqlMapperImplFunc DateTimeNodaInstantTypeHandler = _ => $$"""
         private class NodaInstantTypeHandler : SqlMapper.TypeHandler<Instant>
         {
             public override Instant Parse(object value)

@@ -157,7 +157,7 @@ public sealed class NpgsqlDriver : EnumDbDriver, IOne, IMany, IExec, IExecRows, 
                 },
                 usingDirectives: ["System", "NodaTime", "NodaTime.Extensions"],
                 sqlMapper: "SqlMapper.AddTypeHandler(typeof(Instant), new NodaInstantTypeHandler());",
-                sqlMapperImpl: NodaInstantTypeHandler
+                sqlMapperImpl: DateTimeNodaInstantTypeHandler
             ),
 
             /* Unstructured data types */
