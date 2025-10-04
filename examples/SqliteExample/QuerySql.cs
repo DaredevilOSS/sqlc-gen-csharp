@@ -5,6 +5,9 @@
 // ReSharper disable NotAccessedPositionalProperty.Global
 // ReSharper disable UnusedAutoPropertyAccessor.Global
 using Microsoft.Data.Sqlite;
+using NodaTime;
+using NodaTime.Extensions;
+using NodaTime.Text;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -682,8 +685,8 @@ public class QuerySql
         }
     }
 
-    private const string InsertSqliteTypesSql = "INSERT INTO types_sqlite ( c_integer, c_real, c_text, c_blob, c_text_datetime_override, c_integer_datetime_override, c_text_bool_override, c_integer_bool_override ) VALUES (@c_integer, @c_real, @c_text, @c_blob, @c_text_datetime_override, @c_integer_datetime_override, @c_text_bool_override, @c_integer_bool_override)";
-    public readonly record struct InsertSqliteTypesArgs(int? CInteger, decimal? CReal, string? CText, byte[]? CBlob, DateTime? CTextDatetimeOverride, DateTime? CIntegerDatetimeOverride, bool? CTextBoolOverride, bool? CIntegerBoolOverride);
+    private const string InsertSqliteTypesSql = "INSERT INTO types_sqlite ( c_integer, c_real, c_text, c_blob, c_text_datetime_override, c_integer_datetime_override, c_text_noda_instant_override, c_integer_noda_instant_override, c_text_bool_override, c_integer_bool_override ) VALUES (@c_integer, @c_real, @c_text, @c_blob, @c_text_datetime_override, @c_integer_datetime_override, @c_text_noda_instant_override, @c_integer_noda_instant_override, @c_text_bool_override, @c_integer_bool_override)";
+    public readonly record struct InsertSqliteTypesArgs(int? CInteger, decimal? CReal, string? CText, byte[]? CBlob, DateTime? CTextDatetimeOverride, DateTime? CIntegerDatetimeOverride, Instant? CTextNodaInstantOverride, Instant? CIntegerNodaInstantOverride, bool? CTextBoolOverride, bool? CIntegerBoolOverride);
     public async Task InsertSqliteTypes(InsertSqliteTypesArgs args)
     {
         if (this.Transaction == null)
@@ -699,6 +702,8 @@ public class QuerySql
                     command.Parameters.AddWithValue("@c_blob", args.CBlob ?? (object)DBNull.Value);
                     command.Parameters.AddWithValue("@c_text_datetime_override", args.CTextDatetimeOverride != null ? args.CTextDatetimeOverride.Value.ToString("yyyy-MM-dd HH:mm:ss") : (object)DBNull.Value);
                     command.Parameters.AddWithValue("@c_integer_datetime_override", args.CIntegerDatetimeOverride != null ? (int? )new DateTimeOffset(args.CIntegerDatetimeOverride.Value.ToUniversalTime()).ToUnixTimeSeconds() : (object)DBNull.Value);
+                    command.Parameters.AddWithValue("@c_text_noda_instant_override", args.CTextNodaInstantOverride != null ? InstantPattern.CreateWithInvariantCulture("yyyy-MM-dd HH:mm:ss").Format(args.CTextNodaInstantOverride.Value) : (object)DBNull.Value);
+                    command.Parameters.AddWithValue("@c_integer_noda_instant_override", args.CIntegerNodaInstantOverride != null ? (long? )args.CIntegerNodaInstantOverride.Value.ToUnixTimeSeconds() : (object)DBNull.Value);
                     command.Parameters.AddWithValue("@c_text_bool_override", args.CTextBoolOverride != null ? Convert.ToString(args.CTextBoolOverride) : (object)DBNull.Value);
                     command.Parameters.AddWithValue("@c_integer_bool_override", args.CIntegerBoolOverride != null ? (int? )Convert.ToInt32(args.CIntegerBoolOverride) : (object)DBNull.Value);
                     await command.ExecuteNonQueryAsync();
@@ -720,6 +725,8 @@ public class QuerySql
             command.Parameters.AddWithValue("@c_blob", args.CBlob ?? (object)DBNull.Value);
             command.Parameters.AddWithValue("@c_text_datetime_override", args.CTextDatetimeOverride != null ? args.CTextDatetimeOverride.Value.ToString("yyyy-MM-dd HH:mm:ss") : (object)DBNull.Value);
             command.Parameters.AddWithValue("@c_integer_datetime_override", args.CIntegerDatetimeOverride != null ? (int? )new DateTimeOffset(args.CIntegerDatetimeOverride.Value.ToUniversalTime()).ToUnixTimeSeconds() : (object)DBNull.Value);
+            command.Parameters.AddWithValue("@c_text_noda_instant_override", args.CTextNodaInstantOverride != null ? InstantPattern.CreateWithInvariantCulture("yyyy-MM-dd HH:mm:ss").Format(args.CTextNodaInstantOverride.Value) : (object)DBNull.Value);
+            command.Parameters.AddWithValue("@c_integer_noda_instant_override", args.CIntegerNodaInstantOverride != null ? (long? )args.CIntegerNodaInstantOverride.Value.ToUnixTimeSeconds() : (object)DBNull.Value);
             command.Parameters.AddWithValue("@c_text_bool_override", args.CTextBoolOverride != null ? Convert.ToString(args.CTextBoolOverride) : (object)DBNull.Value);
             command.Parameters.AddWithValue("@c_integer_bool_override", args.CIntegerBoolOverride != null ? (int? )Convert.ToInt32(args.CIntegerBoolOverride) : (object)DBNull.Value);
             await command.ExecuteNonQueryAsync();
@@ -748,8 +755,8 @@ public class QuerySql
         }
     }
 
-    private const string GetSqliteTypesSql = "SELECT c_integer, c_real, c_text, c_blob, c_text_datetime_override, c_integer_datetime_override, c_text_bool_override, c_integer_bool_override FROM types_sqlite LIMIT 1";
-    public readonly record struct GetSqliteTypesRow(int? CInteger, decimal? CReal, string? CText, byte[]? CBlob, DateTime? CTextDatetimeOverride, DateTime? CIntegerDatetimeOverride, bool? CTextBoolOverride, bool? CIntegerBoolOverride);
+    private const string GetSqliteTypesSql = "SELECT c_integer, c_real, c_text, c_blob, c_text_datetime_override, c_integer_datetime_override, c_text_noda_instant_override, c_integer_noda_instant_override, c_text_bool_override, c_integer_bool_override FROM types_sqlite LIMIT 1";
+    public readonly record struct GetSqliteTypesRow(int? CInteger, decimal? CReal, string? CText, byte[]? CBlob, DateTime? CTextDatetimeOverride, DateTime? CIntegerDatetimeOverride, Instant? CTextNodaInstantOverride, Instant? CIntegerNodaInstantOverride, bool? CTextBoolOverride, bool? CIntegerBoolOverride);
     public async Task<GetSqliteTypesRow?> GetSqliteTypes()
     {
         if (this.Transaction == null)
@@ -771,8 +778,10 @@ public class QuerySql
                                 CBlob = reader.IsDBNull(3) ? null : reader.GetFieldValue<byte[]>(3),
                                 CTextDatetimeOverride = reader.IsDBNull(4) ? null : DateTime.Parse(reader.GetString(4)),
                                 CIntegerDatetimeOverride = reader.IsDBNull(5) ? null : DateTimeOffset.FromUnixTimeSeconds(reader.GetInt32(5)).DateTime,
-                                CTextBoolOverride = reader.IsDBNull(6) ? null : Convert.ToBoolean(reader.GetString(6)),
-                                CIntegerBoolOverride = reader.IsDBNull(7) ? null : Convert.ToBoolean(reader.GetInt32(7))
+                                CTextNodaInstantOverride = reader.IsDBNull(6) ? null : InstantPattern.CreateWithInvariantCulture("yyyy-MM-dd HH:mm:ss").Parse(reader.GetString(6)).Value,
+                                CIntegerNodaInstantOverride = reader.IsDBNull(7) ? null : Instant.FromUnixTimeSeconds(reader.GetInt32(7)),
+                                CTextBoolOverride = reader.IsDBNull(8) ? null : Convert.ToBoolean(reader.GetString(8)),
+                                CIntegerBoolOverride = reader.IsDBNull(9) ? null : Convert.ToBoolean(reader.GetInt32(9))
                             };
                         }
                     }
@@ -800,8 +809,10 @@ public class QuerySql
                         CBlob = reader.IsDBNull(3) ? null : reader.GetFieldValue<byte[]>(3),
                         CTextDatetimeOverride = reader.IsDBNull(4) ? null : DateTime.Parse(reader.GetString(4)),
                         CIntegerDatetimeOverride = reader.IsDBNull(5) ? null : DateTimeOffset.FromUnixTimeSeconds(reader.GetInt32(5)).DateTime,
-                        CTextBoolOverride = reader.IsDBNull(6) ? null : Convert.ToBoolean(reader.GetString(6)),
-                        CIntegerBoolOverride = reader.IsDBNull(7) ? null : Convert.ToBoolean(reader.GetInt32(7))
+                        CTextNodaInstantOverride = reader.IsDBNull(6) ? null : InstantPattern.CreateWithInvariantCulture("yyyy-MM-dd HH:mm:ss").Parse(reader.GetString(6)).Value,
+                        CIntegerNodaInstantOverride = reader.IsDBNull(7) ? null : Instant.FromUnixTimeSeconds(reader.GetInt32(7)),
+                        CTextBoolOverride = reader.IsDBNull(8) ? null : Convert.ToBoolean(reader.GetString(8)),
+                        CIntegerBoolOverride = reader.IsDBNull(9) ? null : Convert.ToBoolean(reader.GetInt32(9))
                     };
                 }
             }

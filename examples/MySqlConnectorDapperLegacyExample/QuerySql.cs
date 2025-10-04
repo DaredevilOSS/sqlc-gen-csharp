@@ -11,6 +11,8 @@ namespace MySqlConnectorDapperLegacyExampleGen
     using CsvHelper.TypeConversion;
     using Dapper;
     using MySqlConnector;
+    using NodaTime;
+    using NodaTime.Extensions;
     using System;
     using System.Collections.Generic;
     using System.Globalization;
@@ -952,7 +954,7 @@ namespace MySqlConnectorDapperLegacyExampleGen
             await this.Transaction.Connection.ExecuteAsync(TruncateMysqlStringTypesSql, transaction: this.Transaction);
         }
 
-        private const string InsertMysqlDatetimeTypesSql = " INSERT INTO mysql_datetime_types ( c_year, c_date, c_datetime, c_timestamp, c_time ) VALUES (@c_year, @c_date, @c_datetime, @c_timestamp, @c_time)";
+        private const string InsertMysqlDatetimeTypesSql = " INSERT INTO mysql_datetime_types ( c_year, c_date, c_datetime, c_timestamp, c_time, c_timestamp_noda_instant_override ) VALUES (@c_year, @c_date, @c_datetime, @c_timestamp, @c_time, @c_timestamp_noda_instant_override)";
         public class InsertMysqlDatetimeTypesArgs
         {
             public short? CYear { get; set; }
@@ -960,6 +962,7 @@ namespace MySqlConnectorDapperLegacyExampleGen
             public DateTime? CDatetime { get; set; }
             public DateTime? CTimestamp { get; set; }
             public TimeSpan? CTime { get; set; }
+            public Instant? CTimestampNodaInstantOverride { get; set; }
         };
         public async Task InsertMysqlDatetimeTypes(InsertMysqlDatetimeTypesArgs args)
         {
@@ -969,6 +972,7 @@ namespace MySqlConnectorDapperLegacyExampleGen
             queryParams.Add("c_datetime", args.CDatetime);
             queryParams.Add("c_timestamp", args.CTimestamp);
             queryParams.Add("c_time", args.CTime);
+            queryParams.Add("c_timestamp_noda_instant_override", args.CTimestampNodaInstantOverride is null ? null : (DateTime? )DateTime.SpecifyKind(args.CTimestampNodaInstantOverride.Value.ToDateTimeUtc(), DateTimeKind.Unspecified));
             if (this.Transaction == null)
             {
                 using (var connection = new MySqlConnection(ConnectionString))
@@ -1036,7 +1040,7 @@ namespace MySqlConnectorDapperLegacyExampleGen
             }
         }
 
-        private const string GetMysqlDatetimeTypesSql = "SELECT c_year, c_date, c_datetime, c_timestamp, c_time FROM mysql_datetime_types LIMIT 1";
+        private const string GetMysqlDatetimeTypesSql = "SELECT c_year, c_date, c_datetime, c_timestamp, c_time, c_timestamp_noda_instant_override FROM mysql_datetime_types LIMIT 1";
         public class GetMysqlDatetimeTypesRow
         {
             public short? CYear { get; set; }
@@ -1044,6 +1048,7 @@ namespace MySqlConnectorDapperLegacyExampleGen
             public DateTime? CDatetime { get; set; }
             public DateTime? CTimestamp { get; set; }
             public TimeSpan? CTime { get; set; }
+            public Instant? CTimestampNodaInstantOverride { get; set; }
         };
         public async Task<GetMysqlDatetimeTypesRow> GetMysqlDatetimeTypes()
         {

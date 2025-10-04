@@ -19,6 +19,25 @@ public sealed partial class SqliteDriver(
 
     private const string DateTimeStringFormat = "yyyy-MM-dd HH:mm:ss"; // Default format for DateTime strings - TODO make configurable via Options
 
+    private static readonly SqlMapperImplFunc NodaInstantTypeHandler = _ => $$"""
+        private class NodaInstantTypeHandler : SqlMapper.TypeHandler<Instant>
+        {
+            public override Instant Parse(object value)
+            {
+                if (value is string s)
+                    return InstantPattern.CreateWithInvariantCulture("{{DateTimeStringFormat}}").Parse(s).Value;
+                if (value is long l)
+                    return Instant.FromUnixTimeSeconds(l);
+                throw new DataException($"Cannot convert {value?.GetType()} to Instant");
+            }
+
+            public override void SetValue(IDbDataParameter parameter, Instant value)
+            {
+                parameter.Value = value;
+            }
+        }
+        """;
+
     protected override Dictionary<string, ColumnMapping> ColumnMappings { get; } =
         new()
         {
@@ -70,6 +89,25 @@ public sealed partial class SqliteDriver(
                 },
                 sqlMapper: "SqlMapper.AddTypeHandler(typeof(DateTime), new DateTimeTypeHandler());",
                 sqlMapperImpl: DateTimeTypeHandler
+            ),
+            ["Instant"] = new(
+                [],
+                readerFn: (ordinal, dbType) =>
+                {
+                    if (IntegerDbTypes.Contains(dbType.ToLower()))
+                        return $"Instant.FromUnixTimeSeconds({Variable.Reader.AsVarName()}.GetInt32({ordinal}))";
+                    return $"InstantPattern.CreateWithInvariantCulture(\"{DateTimeStringFormat}\").Parse({Variable.Reader.AsVarName()}.GetString({ordinal})).Value";
+                },
+                writerFn: (el, dbType, notNull, isDapper, isLegacy) =>
+                {
+                    var nullValue = isDapper ? "null" : "(object)DBNull.Value";
+                    if (IntegerDbTypes.Contains(dbType.ToLower()))
+                        return $"{el} != null ? (long?) {el}.Value.ToUnixTimeSeconds() : {nullValue}";
+                    return $"{el} != null ? InstantPattern.CreateWithInvariantCulture(\"{DateTimeStringFormat}\").Format({el}.Value) : {nullValue}";
+                },
+                usingDirectives: ["NodaTime", "NodaTime.Extensions", "NodaTime.Text"],
+                sqlMapper: "SqlMapper.AddTypeHandler(typeof(Instant), new NodaInstantTypeHandler());",
+                sqlMapperImpl: NodaInstantTypeHandler
             ),
             ["bool"] = new(
                 [],

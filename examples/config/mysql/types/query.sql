@@ -169,9 +169,10 @@ INSERT INTO mysql_datetime_types
     c_date,
     c_datetime,
     c_timestamp,
-    c_time
+    c_time,
+    c_timestamp_noda_instant_override
 ) 
-VALUES (?, ?, ?, ?, ?);
+VALUES (?, ?, ?, ?, ?, ?);
 
 -- name: InsertMysqlDatetimeTypesBatch :copyfrom
 INSERT INTO mysql_datetime_types 

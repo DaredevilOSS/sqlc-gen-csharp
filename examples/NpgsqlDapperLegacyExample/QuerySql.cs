@@ -7,6 +7,8 @@
 namespace NpgsqlDapperLegacyExampleGen
 {
     using Dapper;
+    using NodaTime;
+    using NodaTime.Extensions;
     using Npgsql;
     using NpgsqlTypes;
     using System;
@@ -902,7 +904,7 @@ namespace NpgsqlDapperLegacyExampleGen
             return await this.Transaction.Connection.QueryFirstOrDefaultAsync<GetPostgresStringTypesTextSearchRow>(GetPostgresStringTypesTextSearchSql, queryParams, transaction: this.Transaction);
         }
 
-        private const string InsertPostgresDateTimeTypesSql = " INSERT INTO postgres_datetime_types ( c_date, c_time, c_timestamp, c_timestamp_with_tz, c_interval ) VALUES (@c_date, @c_time, @c_timestamp, @c_timestamp_with_tz, @c_interval)";
+        private const string InsertPostgresDateTimeTypesSql = " INSERT INTO postgres_datetime_types ( c_date, c_time, c_timestamp, c_timestamp_with_tz, c_interval, c_timestamp_noda_instant_override ) VALUES (@c_date, @c_time, @c_timestamp, @c_timestamp_with_tz, @c_interval, @c_timestamp_noda_instant_override)";
         public class InsertPostgresDateTimeTypesArgs
         {
             public DateTime? CDate { get; set; }
@@ -910,6 +912,7 @@ namespace NpgsqlDapperLegacyExampleGen
             public DateTime? CTimestamp { get; set; }
             public DateTime? CTimestampWithTz { get; set; }
             public TimeSpan? CInterval { get; set; }
+            public Instant? CTimestampNodaInstantOverride { get; set; }
         };
         public async Task InsertPostgresDateTimeTypes(InsertPostgresDateTimeTypesArgs args)
         {
@@ -919,6 +922,7 @@ namespace NpgsqlDapperLegacyExampleGen
             queryParams.Add("c_timestamp", args.CTimestamp);
             queryParams.Add("c_timestamp_with_tz", args.CTimestampWithTz);
             queryParams.Add("c_interval", args.CInterval);
+            queryParams.Add("c_timestamp_noda_instant_override", args.CTimestampNodaInstantOverride is null ? null : (DateTime? )DateTime.SpecifyKind(args.CTimestampNodaInstantOverride.Value.ToDateTimeUtc(), DateTimeKind.Unspecified));
             if (this.Transaction == null)
             {
                 using (var connection = new NpgsqlConnection(ConnectionString))
@@ -931,7 +935,7 @@ namespace NpgsqlDapperLegacyExampleGen
             await this.Transaction.Connection.ExecuteAsync(InsertPostgresDateTimeTypesSql, queryParams, transaction: this.Transaction);
         }
 
-        private const string GetPostgresDateTimeTypesSql = "SELECT c_date, c_time, c_timestamp, c_timestamp_with_tz, c_interval FROM postgres_datetime_types LIMIT 1";
+        private const string GetPostgresDateTimeTypesSql = "SELECT c_date, c_time, c_timestamp, c_timestamp_with_tz, c_interval, c_timestamp_noda_instant_override FROM postgres_datetime_types LIMIT 1";
         public class GetPostgresDateTimeTypesRow
         {
             public DateTime? CDate { get; set; }
@@ -939,6 +943,7 @@ namespace NpgsqlDapperLegacyExampleGen
             public DateTime? CTimestamp { get; set; }
             public DateTime? CTimestampWithTz { get; set; }
             public TimeSpan? CInterval { get; set; }
+            public Instant? CTimestampNodaInstantOverride { get; set; }
         };
         public async Task<GetPostgresDateTimeTypesRow> GetPostgresDateTimeTypes()
         {
@@ -1018,8 +1023,8 @@ namespace NpgsqlDapperLegacyExampleGen
                         await writer.StartRowAsync();
                         await writer.WriteAsync(row.CDate, NpgsqlDbType.Date);
                         await writer.WriteAsync(row.CTime, NpgsqlDbType.Time);
-                        await writer.WriteAsync(row.CTimestamp);
-                        await writer.WriteAsync(row.CTimestampWithTz);
+                        await writer.WriteAsync(row.CTimestamp, NpgsqlDbType.Timestamp);
+                        await writer.WriteAsync(row.CTimestampWithTz, NpgsqlDbType.TimestampTz);
                         await writer.WriteAsync(row.CInterval, NpgsqlDbType.Interval);
                     }
 

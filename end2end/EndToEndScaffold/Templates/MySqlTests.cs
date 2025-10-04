@@ -174,15 +174,39 @@ public static class MySqlTests
         [KnownTestType.MySqlDateTimeDataTypes] = new TestImpl
         {
             Impl = $$"""
+
+                     private static IEnumerable<TestCaseData> MySqlDateTimeTypesTestCases
+                     {
+                         get
+                         {
+                             yield return new TestCaseData(
+                                (short) 1999, 
+                                DateTime.Parse("2000-1-30"), 
+                                DateTime.Parse("1983-11-3 02:01:22"), 
+                                DateTime.Parse("2010-1-30 08:11:00"), 
+                                TimeSpan.Parse("02:01:22"), 
+                                Instant.FromUtc(2025, 10, 15, 19, 55, 2)
+                             ).SetName("DateTimeTypes with values");
+                             yield return new TestCaseData(
+                                null, 
+                                null, 
+                                null, 
+                                null, 
+                                null, 
+                                null
+                            ).SetName("DateTimeTypes with null values");
+                         }
+                     }
+
                      [Test]
-                     [TestCase(1999, "2000-1-30", "1983-11-3 02:01:22", "2010-1-30 08:11:00", "02:01:22")]
-                     [TestCase(null, null, null, null, null)]
+                     [TestCaseSource(nameof(MySqlDateTimeTypesTestCases))]
                      public async Task TestMySqlDateTimeTypes(
                          short? cYear,
                          DateTime? cDate, 
                          DateTime? cDatetime,
                          DateTime? cTimestamp,
-                         TimeSpan? cTime)
+                         TimeSpan? cTime,
+                         Instant? cTimestampNodaInstantOverride)
                      {
                          await QuerySql.InsertMysqlDatetimeTypes(new QuerySql.InsertMysqlDatetimeTypesArgs
                          {
@@ -190,7 +214,8 @@ public static class MySqlTests
                               CDate = cDate,
                               CDatetime = cDatetime,
                               CTimestamp = cTimestamp,
-                              CTime = cTime
+                              CTime = cTime,
+                              CTimestampNodaInstantOverride = cTimestampNodaInstantOverride
                          });
                      
                          var expected = new QuerySql.GetMysqlDatetimeTypesRow
@@ -199,7 +224,8 @@ public static class MySqlTests
                               CDate = cDate,
                               CDatetime = cDatetime,
                               CTimestamp = cTimestamp,
-                              CTime = cTime
+                              CTime = cTime,
+                              CTimestampNodaInstantOverride = cTimestampNodaInstantOverride
                          };
                          var actual = await QuerySql.GetMysqlDatetimeTypes();
                          AssertSingularEquals(expected, actual{{Consts.UnknownRecordValuePlaceholder}});
@@ -211,6 +237,7 @@ public static class MySqlTests
                              Assert.That(x.CDatetime, Is.EqualTo(y.CDatetime));
                              Assert.That(x.CTimestamp, Is.EqualTo(y.CTimestamp));
                              Assert.That(x.CTime, Is.EqualTo(y.CTime));
+                             Assert.That(x.CTimestampNodaInstantOverride, Is.EqualTo(y.CTimestampNodaInstantOverride));
                          }
                      }
                      """

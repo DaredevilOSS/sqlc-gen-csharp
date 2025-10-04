@@ -143,8 +143,9 @@ INSERT INTO postgres_datetime_types
     c_time,
     c_timestamp,
     c_timestamp_with_tz,
-    c_interval
-) VALUES ($1, $2, $3, $4, $5);
+    c_interval,
+    c_timestamp_noda_instant_override
+) VALUES ($1, $2, $3, $4, $5, $6);
 
 -- name: GetPostgresDateTimeTypes :one
 SELECT * FROM postgres_datetime_types LIMIT 1;

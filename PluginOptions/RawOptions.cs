@@ -23,6 +23,9 @@ public record RawOptions
     [JsonPropertyName("overrideDapperVersion")]
     public string OverrideDapperVersion { get; init; } = string.Empty;
 
+    [JsonPropertyName("useNodaTime")]
+    public bool UseNodaTime { get; init; }
+
     [JsonPropertyName("overrides")]
     public List<OverrideOption>? Overrides { get; init; }
 

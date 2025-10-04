@@ -69,7 +69,7 @@ public class ExecRowsDeclareGen(DbDriver dbDriver)
     {
         var (establishConnection, connectionOpen) = dbDriver.EstablishConnection(query);
         var createSqlCommand = dbDriver.CreateSqlCommand(sqlVar);
-        var commandParameters = CommonGen.AddParametersToCommand(query);
+        var commandParameters = dbDriver.AddParametersToCommand(query);
         return $$"""
                     using ({{establishConnection}})
                     {
@@ -87,7 +87,7 @@ public class ExecRowsDeclareGen(DbDriver dbDriver)
     {
         var transactionProperty = Variable.Transaction.AsPropertyName();
         var commandVar = Variable.Command.AsVarName();
-        var commandParameters = CommonGen.AddParametersToCommand(query);
+        var commandParameters = dbDriver.AddParametersToCommand(query);
 
         return $$"""
                     {{dbDriver.TransactionConnectionNullExcetionThrow}}

@@ -32,11 +32,12 @@ CREATE TABLE mysql_string_types (
 );
 
 CREATE TABLE mysql_datetime_types (
-  c_year        YEAR,
-  c_date        DATE,
-  c_datetime    DATETIME,
-  c_timestamp   TIMESTAMP,
-  c_time        TIME
+  c_year                            YEAR,
+  c_date                            DATE,
+  c_datetime                        DATETIME,
+  c_timestamp                       TIMESTAMP,
+  c_time                            TIME,
+  c_timestamp_noda_instant_override TIMESTAMP
 );
 
 CREATE TABLE mysql_binary_types (

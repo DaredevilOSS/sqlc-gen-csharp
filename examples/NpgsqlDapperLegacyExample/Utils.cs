@@ -2,7 +2,10 @@
 namespace NpgsqlDapperLegacyExampleGen
 {
     using Dapper;
+    using NodaTime;
+    using NodaTime.Extensions;
     using NpgsqlTypes;
+    using System;
     using System.Data;
     using System.Linq;
     using System.Net;
@@ -12,6 +15,26 @@ namespace NpgsqlDapperLegacyExampleGen
 
     public static class Utils
     {
+        private class NodaInstantTypeHandler : SqlMapper.TypeHandler<Instant>
+        {
+            public override Instant Parse(object value)
+            {
+                if (value is DateTime dt)
+                {
+                    if (dt.Kind != DateTimeKind.Utc)
+                        dt = DateTime.SpecifyKind(dt, DateTimeKind.Utc);
+                    return dt.ToInstant();
+                }
+
+                throw new DataException($"Cannot convert {value?.GetType()} to Instant");
+            }
+
+            public override void SetValue(IDbDataParameter parameter, Instant value)
+            {
+                parameter.Value = value;
+            }
+        }
+
         private class JsonElementTypeHandler : SqlMapper.TypeHandler<JsonElement>
         {
             public override JsonElement Parse(object value)
@@ -51,6 +74,7 @@ namespace NpgsqlDapperLegacyExampleGen
 
         public static void ConfigureSqlMapper()
         {
+            SqlMapper.AddTypeHandler(typeof(Instant), new NodaInstantTypeHandler());
             SqlMapper.AddTypeHandler(typeof(JsonElement), new JsonElementTypeHandler());
             SqlMapper.AddTypeHandler(typeof(XmlDocument), new XmlDocumentTypeHandler());
             SqlMapper.AddTypeHandler(typeof(NpgsqlPoint), new NpgsqlTypeHandler<NpgsqlPoint>());

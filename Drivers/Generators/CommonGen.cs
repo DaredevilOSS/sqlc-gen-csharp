@@ -13,27 +13,6 @@ public class CommonGen(DbDriver dbDriver)
             : $"{argInterface} {Variable.Args.AsVarName()}")}";
     }
 
-    // TODO: extract AddWithValue statement generation to a method + possible override for Npgsql for type override
-    public string AddParametersToCommand(Query query)
-    {
-        return query.Params.Select(p =>
-        {
-            var commandVar = Variable.Command.AsVarName();
-            var param = $"{Variable.Args.AsVarName()}.{p.Column.Name.ToPascalCase()}";
-            if (p.Column.IsSqlcSlice)
-                return $$"""
-                         for (int i = 0; i < {{param}}.Length; i++)
-                             {{commandVar}}.Parameters.AddWithValue($"@{{p.Column.Name}}Arg{i}", {{param}}[i]);
-                         """;
-
-            var notNull = dbDriver.IsColumnNotNull(p.Column, query);
-            var writerFn = dbDriver.GetWriterFn(p.Column, query);
-            var paramToWrite = writerFn is null ? param : writerFn(param, p.Column.Type.Name, notNull, dbDriver.Options.UseDapper, dbDriver.Options.DotnetFramework.IsDotnetLegacy());
-            var addParamToCommand = $"""{commandVar}.Parameters.AddWithValue("@{p.Column.Name}", {paramToWrite});""";
-            return addParamToCommand;
-        }).JoinByNewLine();
-    }
-
     public string ConstructDapperParamsDict(Query query)
     {
         if (!query.Params.Any()) return string.Empty;
