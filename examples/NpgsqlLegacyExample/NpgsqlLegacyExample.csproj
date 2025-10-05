@@ -11,9 +11,10 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Npgsql" Version="8.0.6"/>
+        <PackageReference Include="Dapper" Version="2.1.66"/>
         <PackageReference Include="System.Text.Json" Version="9.0.6"/>
         <PackageReference Include="NodaTime" Version="3.2.0"/>
+        <PackageReference Include="Npgsql" Version="8.0.6"/>
     </ItemGroup>
 
 </Project>

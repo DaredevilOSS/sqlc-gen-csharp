@@ -11,6 +11,10 @@ public record ConnectionGenCommands(string EstablishConnection, string Connectio
 
 public abstract class DbDriver
 {
+    protected const string DefaultDapperVersion = "2.1.66";
+    protected const string DefaultSystemTextJsonVersion = "9.0.6";
+    protected const string DefaultNodaTimeVersion = "3.2.0";
+
     public Options Options { get; }
 
     public string DefaultSchema { get; }
@@ -121,6 +125,21 @@ public abstract class DbDriver
                 s => s.Name == catalog.DefaultSchema ? string.Empty : s.Name,
                 s => s.Tables.ToDictionary(t => t.Rel.Name, t => t)
             );
+    }
+
+    public virtual IDictionary<string, string> GetPackageReferences()
+    {
+        return new Dictionary<string, string> {
+            { "Dapper", Options.OverrideDapperVersion != string.Empty ? Options.OverrideDapperVersion : DefaultDapperVersion }
+         }
+        .MergeIf(new Dictionary<string, string>
+        {
+            { "System.Text.Json", DefaultSystemTextJsonVersion }
+        }, IsSystemTextJsonNeeded())
+        .MergeIf(new Dictionary<string, string>
+        {
+            { "NodaTime", DefaultNodaTimeVersion }
+        }, TypeExistsInQueries("Instant"));
     }
 
     public virtual ISet<string> GetUsingDirectivesForQueries()
@@ -332,19 +351,6 @@ public abstract class DbDriver
         return IsTypeNullable(csharpType) ? $"{csharpType}?" : csharpType;
     }
 
-    protected string? GetColumnDbTypeOverride(Column column)
-    {
-        if (column.IsArray)
-            return null;
-        var columnType = column.Type.Name.ToLower();
-        foreach (var columnMapping in ColumnMappings.Values)
-        {
-            if (columnMapping.DbTypes.TryGetValue(columnType, out var dbTypeOverride))
-                return dbTypeOverride.NpgsqlTypeOverride;
-        }
-        return null;
-    }
-
     public bool IsTypeNullable(string csharpType)
     {
         if (NullableTypes.Contains(csharpType.Replace("?", ""))) return true;
@@ -413,5 +419,12 @@ public abstract class DbDriver
             return columnMapping.ReaderFn(ordinal, column.Type.Name);
         }
         throw new NotSupportedException($"column {column.Name} has unsupported column type: {column.Type.Name} in {GetType().Name}");
+    }
+
+    private bool IsSystemTextJsonNeeded()
+    {
+        if (Options.DotnetFramework.IsDotnetCore())
+            return false;
+        return TypeExistsInQueries("JsonElement");
     }
 }

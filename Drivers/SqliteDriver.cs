@@ -1,7 +1,6 @@
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Plugin;
 using SqlcGenCsharp.Drivers.Generators;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -15,6 +14,8 @@ public sealed partial class SqliteDriver(
     IList<Query> queries) :
     DbDriver(options, catalog, queries), IOne, IMany, IExec, IExecRows, IExecLastId, ICopyFrom
 {
+    private const string DefaultSqliteVersion = "9.0.0";
+
     private static readonly HashSet<string> IntegerDbTypes = ["integer", "integernotnulldefaultunixepoch"];
 
     private const string DateTimeStringFormat = "yyyy-MM-dd HH:mm:ss"; // Default format for DateTime strings - TODO make configurable via Options
@@ -153,6 +154,16 @@ public sealed partial class SqliteDriver(
         """;
 
     public override string TransactionClassName => "SqliteTransaction";
+
+    public override IDictionary<string, string> GetPackageReferences()
+    {
+        return base
+            .GetPackageReferences()
+            .Merge(new Dictionary<string, string>
+            {
+                { "Microsoft.Data.Sqlite", Options.OverrideDriverVersion != string.Empty ? Options.OverrideDriverVersion : DefaultSqliteVersion }
+            });
+    }
 
     public override ISet<string> GetUsingDirectivesForQueries()
     {

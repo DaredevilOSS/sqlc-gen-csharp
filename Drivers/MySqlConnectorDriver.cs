@@ -17,6 +17,9 @@ public sealed partial class MySqlConnectorDriver(
     EnumDbDriver(options, catalog, queries),
     IOne, IMany, IExec, IExecRows, IExecLastId, ICopyFrom
 {
+    private const string DefaultMysqlConnectorVersion = "2.4.0";
+    private const string DefaultCsvHelperVersion = "33.0.1";
+
     protected override Dictionary<string, ColumnMapping> ColumnMappings { get; } =
         new()
         {
@@ -226,6 +229,20 @@ public sealed partial class MySqlConnectorDriver(
     public MemberDeclarationSyntax CopyFromDeclare(string queryTextConstant, string argInterface, Query query)
     {
         return new CopyFromDeclareGen(this).Generate(queryTextConstant, argInterface, query);
+    }
+
+    public override IDictionary<string, string> GetPackageReferences()
+    {
+        return base
+            .GetPackageReferences()
+            .Merge(new Dictionary<string, string>
+            {
+                { "MySqlConnector", Options.OverrideDriverVersion != string.Empty ? Options.OverrideDriverVersion : DefaultMysqlConnectorVersion }
+            })
+            .MergeIf(new Dictionary<string, string>
+            {
+                { "CsvHelper", DefaultCsvHelperVersion }
+            }, CopyFromQueryExists());
     }
 
     public override ISet<string> GetUsingDirectivesForQueries()

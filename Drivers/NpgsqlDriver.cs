@@ -11,6 +11,8 @@ namespace SqlcGenCsharp.Drivers;
 
 public sealed class NpgsqlDriver : EnumDbDriver, IOne, IMany, IExec, IExecRows, IExecLastId, ICopyFrom
 {
+    private const string DefaultNpgsqlVersion = "8.0.6";
+
     public NpgsqlDriver(
         Options options,
         Catalog catalog,
@@ -438,6 +440,16 @@ public sealed class NpgsqlDriver : EnumDbDriver, IOne, IMany, IExec, IExecRows, 
         return new CopyFromDeclareGen(this).Generate(queryTextConstant, argInterface, query);
     }
 
+    public override IDictionary<string, string> GetPackageReferences()
+    {
+        return base
+            .GetPackageReferences()
+            .Merge(new Dictionary<string, string>
+            {
+                { "Npgsql", Options.OverrideDriverVersion != string.Empty ? Options.OverrideDriverVersion : DefaultNpgsqlVersion }
+            });
+    }
+
     public override ISet<string> GetUsingDirectivesForQueries()
     {
         return base.GetUsingDirectivesForQueries().AddRangeExcludeNulls(
@@ -622,6 +634,19 @@ public sealed class NpgsqlDriver : EnumDbDriver, IOne, IMany, IExec, IExecRows, 
                      }
                      """;
         }
+    }
+
+    private string? GetColumnDbTypeOverride(Column column)
+    {
+        if (column.IsArray)
+            return null; // TODO: handle array columns
+        var columnType = column.Type.Name.ToLower();
+        foreach (var columnMapping in ColumnMappings.Values)
+        {
+            if (columnMapping.DbTypes.TryGetValue(columnType, out var dbTypeOverride))
+                return dbTypeOverride.NpgsqlTypeOverride;
+        }
+        return null;
     }
 
     public override WriterFn? GetWriterFn(Column column, Query query)

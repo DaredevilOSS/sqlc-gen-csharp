@@ -85,7 +85,7 @@ public class CodeGenerator
         DbDriver = InstantiateDriver();
 
         // initialize file generators
-        CsprojGen = new(outputDirectory, projectName, namespaceName, Options);
+        CsprojGen = new(DbDriver, outputDirectory, projectName, namespaceName);
         QueriesGen = new(DbDriver, namespaceName);
         ModelsGen = new(DbDriver, namespaceName);
         UtilsGen = new(DbDriver, namespaceName);
