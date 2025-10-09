@@ -13,7 +13,7 @@
     "codegen": {
       "out": "examples/NpgsqlDapperLegacyExample",
       "plugin": "csharp",
-      "options": "eyJkZWJ1Z1JlcXVlc3QiOnRydWUsImdlbmVyYXRlQ3Nwcm9qIjp0cnVlLCJuYW1lc3BhY2VOYW1lIjoiTnBnc3FsRGFwcGVyTGVnYWN5RXhhbXBsZUdlbiIsIm92ZXJyaWRlcyI6W3siY29sdW1uIjoiR2V0UG9zdGdyZXNGdW5jdGlvbnM6bWF4X2ludGVnZXIiLCJjc2hhcnBfdHlwZSI6eyJub3ROdWxsIjpmYWxzZSwidHlwZSI6ImludCJ9fSx7ImNvbHVtbiI6IkdldFBvc3RncmVzRnVuY3Rpb25zOm1heF92YXJjaGFyIiwiY3NoYXJwX3R5cGUiOnsibm90TnVsbCI6ZmFsc2UsInR5cGUiOiJzdHJpbmcifX0seyJjb2x1bW4iOiJHZXRQb3N0Z3Jlc0Z1bmN0aW9uczptYXhfdGltZXN0YW1wIiwiY3NoYXJwX3R5cGUiOnsibm90TnVsbCI6dHJ1ZSwidHlwZSI6IkRhdGVUaW1lIn19LHsiY29sdW1uIjoiR2V0UG9zdGdyZXNTcGVjaWFsVHlwZXNDbnQ6Y19qc29uIiwiY3NoYXJwX3R5cGUiOnsibm90TnVsbCI6ZmFsc2UsInR5cGUiOiJKc29uRWxlbWVudCJ9fSx7ImNvbHVtbiI6IkdldFBvc3RncmVzU3BlY2lhbFR5cGVzQ250OmNfanNvbmIiLCJjc2hhcnBfdHlwZSI6eyJub3ROdWxsIjpmYWxzZSwidHlwZSI6Ikpzb25FbGVtZW50In19LHsiY29sdW1uIjoiKjpjX2pzb25fc3RyaW5nX292ZXJyaWRlIiwiY3NoYXJwX3R5cGUiOnsibm90TnVsbCI6ZmFsc2UsInR5cGUiOiJzdHJpbmcifX0seyJjb2x1bW4iOiIqOmNfeG1sX3N0cmluZ19vdmVycmlkZSIsImNzaGFycF90eXBlIjp7Im5vdE51bGwiOmZhbHNlLCJ0eXBlIjoic3RyaW5nIn19LHsiY29sdW1uIjoiKjpjX21hY2FkZHI4IiwiY3NoYXJwX3R5cGUiOnsibm90TnVsbCI6ZmFsc2UsInR5cGUiOiJzdHJpbmcifX1dLCJ0YXJnZXRGcmFtZXdvcmsiOiJuZXRzdGFuZGFyZDIuMCIsInVzZURhcHBlciI6dHJ1ZX0=",
+      "options": "eyJkZWJ1Z1JlcXVlc3QiOnRydWUsImdlbmVyYXRlQ3Nwcm9qIjp0cnVlLCJuYW1lc3BhY2VOYW1lIjoiTnBnc3FsRGFwcGVyTGVnYWN5RXhhbXBsZUdlbiIsIm92ZXJyaWRlcyI6W3siY29sdW1uIjoiR2V0UG9zdGdyZXNGdW5jdGlvbnM6bWF4X2ludGVnZXIiLCJjc2hhcnBfdHlwZSI6eyJub3ROdWxsIjpmYWxzZSwidHlwZSI6ImludCJ9fSx7ImNvbHVtbiI6IkdldFBvc3RncmVzRnVuY3Rpb25zOm1heF92YXJjaGFyIiwiY3NoYXJwX3R5cGUiOnsibm90TnVsbCI6ZmFsc2UsInR5cGUiOiJzdHJpbmcifX0seyJjb2x1bW4iOiJHZXRQb3N0Z3Jlc0Z1bmN0aW9uczptYXhfdGltZXN0YW1wIiwiY3NoYXJwX3R5cGUiOnsibm90TnVsbCI6dHJ1ZSwidHlwZSI6IkRhdGVUaW1lIn19LHsiY29sdW1uIjoiR2V0UG9zdGdyZXNTcGVjaWFsVHlwZXNDbnQ6Y19qc29uIiwiY3NoYXJwX3R5cGUiOnsibm90TnVsbCI6ZmFsc2UsInR5cGUiOiJKc29uRWxlbWVudCJ9fSx7ImNvbHVtbiI6IkdldFBvc3RncmVzU3BlY2lhbFR5cGVzQ250OmNfanNvbmIiLCJjc2hhcnBfdHlwZSI6eyJub3ROdWxsIjpmYWxzZSwidHlwZSI6Ikpzb25FbGVtZW50In19LHsiY29sdW1uIjoiKjpjX2pzb25fc3RyaW5nX292ZXJyaWRlIiwiY3NoYXJwX3R5cGUiOnsibm90TnVsbCI6ZmFsc2UsInR5cGUiOiJzdHJpbmcifX0seyJjb2x1bW4iOiIqOmNfeG1sX3N0cmluZ19vdmVycmlkZSIsImNzaGFycF90eXBlIjp7Im5vdE51bGwiOmZhbHNlLCJ0eXBlIjoic3RyaW5nIn19LHsiY29sdW1uIjoiKjpjX21hY2FkZHI4IiwiY3NoYXJwX3R5cGUiOnsibm90TnVsbCI6ZmFsc2UsInR5cGUiOiJzdHJpbmcifX0seyJjb2x1bW4iOiIqOmNfdGltZXN0YW1wX25vZGFfaW5zdGFudF9vdmVycmlkZSIsImNzaGFycF90eXBlIjp7Im5vdE51bGwiOmZhbHNlLCJ0eXBlIjoiSW5zdGFudCJ9fV0sInRhcmdldEZyYW1ld29yayI6Im5ldHN0YW5kYXJkMi4wIiwidXNlRGFwcGVyIjp0cnVlfQ==",
       "process": {
         "cmd": "./dist/LocalRunner"
       }
@@ -348,6 +348,17 @@
                 "type": {
                   "schema": "pg_catalog",
                   "name": "interval"
+                }
+              },
+              {
+                "name": "c_timestamp_noda_instant_override",
+                "length": -1,
+                "table": {
+                  "name": "postgres_datetime_types"
+                },
+                "type": {
+                  "schema": "pg_catalog",
+                  "name": "timestamp"
                 }
               }
             ]
@@ -34495,7 +34506,7 @@
       "filename": "query.sql"
     },
     {
-      "text": "\nINSERT INTO postgres_datetime_types\n(\n    c_date,\n    c_time,\n    c_timestamp,\n    c_timestamp_with_tz,\n    c_interval\n) VALUES ($1, $2, $3, $4, $5)",
+      "text": "\nINSERT INTO postgres_datetime_types\n(\n    c_date,\n    c_time,\n    c_timestamp,\n    c_timestamp_with_tz,\n    c_interval,\n    c_timestamp_noda_instant_override\n) VALUES ($1, $2, $3, $4, $5, $6)",
       "name": "InsertPostgresDateTimeTypes",
       "cmd": ":exec",
       "parameters": [
@@ -34573,6 +34584,21 @@
             },
             "originalName": "c_interval"
           }
+        },
+        {
+          "number": 6,
+          "column": {
+            "name": "c_timestamp_noda_instant_override",
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "postgres_datetime_types"
+            },
+            "type": {
+              "name": "pg_catalog.timestamp"
+            },
+            "originalName": "c_timestamp_noda_instant_override"
+          }
         }
       ],
       "comments": [
@@ -34584,7 +34610,7 @@
       }
     },
     {
-      "text": "SELECT c_date, c_time, c_timestamp, c_timestamp_with_tz, c_interval FROM postgres_datetime_types LIMIT 1",
+      "text": "SELECT c_date, c_time, c_timestamp, c_timestamp_with_tz, c_interval, c_timestamp_noda_instant_override FROM postgres_datetime_types LIMIT 1",
       "name": "GetPostgresDateTimeTypes",
       "cmd": ":one",
       "columns": [
@@ -34646,6 +34672,18 @@
             "name": "interval"
           },
           "originalName": "c_interval"
+        },
+        {
+          "name": "c_timestamp_noda_instant_override",
+          "length": -1,
+          "table": {
+            "name": "postgres_datetime_types"
+          },
+          "type": {
+            "schema": "pg_catalog",
+            "name": "timestamp"
+          },
+          "originalName": "c_timestamp_noda_instant_override"
         }
       ],
       "filename": "query.sql"
@@ -36194,5 +36232,5 @@
     }
   ],
   "sqlc_version": "v1.30.0",
-  "plugin_options": "eyJvdmVycmlkZURyaXZlclZlcnNpb24iOiIiLCJnZW5lcmF0ZUNzcHJvaiI6dHJ1ZSwidGFyZ2V0RnJhbWV3b3JrIjoibmV0c3RhbmRhcmQyLjAiLCJuYW1lc3BhY2VOYW1lIjoiTnBnc3FsRGFwcGVyTGVnYWN5RXhhbXBsZUdlbiIsInVzZURhcHBlciI6dHJ1ZSwib3ZlcnJpZGVEYXBwZXJWZXJzaW9uIjoiIiwib3ZlcnJpZGVzIjpbeyJjb2x1bW4iOiJHZXRQb3N0Z3Jlc0Z1bmN0aW9uczptYXhfaW50ZWdlciIsImNzaGFycF90eXBlIjp7InR5cGUiOiJpbnQiLCJub3ROdWxsIjpmYWxzZX19LHsiY29sdW1uIjoiR2V0UG9zdGdyZXNGdW5jdGlvbnM6bWF4X3ZhcmNoYXIiLCJjc2hhcnBfdHlwZSI6eyJ0eXBlIjoic3RyaW5nIiwibm90TnVsbCI6ZmFsc2V9fSx7ImNvbHVtbiI6IkdldFBvc3RncmVzRnVuY3Rpb25zOm1heF90aW1lc3RhbXAiLCJjc2hhcnBfdHlwZSI6eyJ0eXBlIjoiRGF0ZVRpbWUiLCJub3ROdWxsIjp0cnVlfX0seyJjb2x1bW4iOiJHZXRQb3N0Z3Jlc1NwZWNpYWxUeXBlc0NudDpjX2pzb24iLCJjc2hhcnBfdHlwZSI6eyJ0eXBlIjoiSnNvbkVsZW1lbnQiLCJub3ROdWxsIjpmYWxzZX19LHsiY29sdW1uIjoiR2V0UG9zdGdyZXNTcGVjaWFsVHlwZXNDbnQ6Y19qc29uYiIsImNzaGFycF90eXBlIjp7InR5cGUiOiJKc29uRWxlbWVudCIsIm5vdE51bGwiOmZhbHNlfX0seyJjb2x1bW4iOiIqOmNfanNvbl9zdHJpbmdfb3ZlcnJpZGUiLCJjc2hhcnBfdHlwZSI6eyJ0eXBlIjoic3RyaW5nIiwibm90TnVsbCI6ZmFsc2V9fSx7ImNvbHVtbiI6Iio6Y194bWxfc3RyaW5nX292ZXJyaWRlIiwiY3NoYXJwX3R5cGUiOnsidHlwZSI6InN0cmluZyIsIm5vdE51bGwiOmZhbHNlfX0seyJjb2x1bW4iOiIqOmNfbWFjYWRkcjgiLCJjc2hhcnBfdHlwZSI6eyJ0eXBlIjoic3RyaW5nIiwibm90TnVsbCI6ZmFsc2V9fV0sImRlYnVnUmVxdWVzdCI6ZmFsc2V9"
+  "plugin_options": "eyJvdmVycmlkZURyaXZlclZlcnNpb24iOiIiLCJnZW5lcmF0ZUNzcHJvaiI6dHJ1ZSwidGFyZ2V0RnJhbWV3b3JrIjoibmV0c3RhbmRhcmQyLjAiLCJuYW1lc3BhY2VOYW1lIjoiTnBnc3FsRGFwcGVyTGVnYWN5RXhhbXBsZUdlbiIsInVzZURhcHBlciI6dHJ1ZSwib3ZlcnJpZGVEYXBwZXJWZXJzaW9uIjoiIiwib3ZlcnJpZGVzIjpbeyJjb2x1bW4iOiJHZXRQb3N0Z3Jlc0Z1bmN0aW9uczptYXhfaW50ZWdlciIsImNzaGFycF90eXBlIjp7InR5cGUiOiJpbnQiLCJub3ROdWxsIjpmYWxzZX19LHsiY29sdW1uIjoiR2V0UG9zdGdyZXNGdW5jdGlvbnM6bWF4X3ZhcmNoYXIiLCJjc2hhcnBfdHlwZSI6eyJ0eXBlIjoic3RyaW5nIiwibm90TnVsbCI6ZmFsc2V9fSx7ImNvbHVtbiI6IkdldFBvc3RncmVzRnVuY3Rpb25zOm1heF90aW1lc3RhbXAiLCJjc2hhcnBfdHlwZSI6eyJ0eXBlIjoiRGF0ZVRpbWUiLCJub3ROdWxsIjp0cnVlfX0seyJjb2x1bW4iOiJHZXRQb3N0Z3Jlc1NwZWNpYWxUeXBlc0NudDpjX2pzb24iLCJjc2hhcnBfdHlwZSI6eyJ0eXBlIjoiSnNvbkVsZW1lbnQiLCJub3ROdWxsIjpmYWxzZX19LHsiY29sdW1uIjoiR2V0UG9zdGdyZXNTcGVjaWFsVHlwZXNDbnQ6Y19qc29uYiIsImNzaGFycF90eXBlIjp7InR5cGUiOiJKc29uRWxlbWVudCIsIm5vdE51bGwiOmZhbHNlfX0seyJjb2x1bW4iOiIqOmNfanNvbl9zdHJpbmdfb3ZlcnJpZGUiLCJjc2hhcnBfdHlwZSI6eyJ0eXBlIjoic3RyaW5nIiwibm90TnVsbCI6ZmFsc2V9fSx7ImNvbHVtbiI6Iio6Y194bWxfc3RyaW5nX292ZXJyaWRlIiwiY3NoYXJwX3R5cGUiOnsidHlwZSI6InN0cmluZyIsIm5vdE51bGwiOmZhbHNlfX0seyJjb2x1bW4iOiIqOmNfbWFjYWRkcjgiLCJjc2hhcnBfdHlwZSI6eyJ0eXBlIjoic3RyaW5nIiwibm90TnVsbCI6ZmFsc2V9fSx7ImNvbHVtbiI6Iio6Y190aW1lc3RhbXBfbm9kYV9pbnN0YW50X292ZXJyaWRlIiwiY3NoYXJwX3R5cGUiOnsidHlwZSI6Ikluc3RhbnQiLCJub3ROdWxsIjpmYWxzZX19XSwiZGVidWdSZXF1ZXN0IjpmYWxzZX0="
 }

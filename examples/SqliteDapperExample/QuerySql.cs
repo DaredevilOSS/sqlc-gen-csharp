@@ -6,6 +6,9 @@
 // ReSharper disable UnusedAutoPropertyAccessor.Global
 using Dapper;
 using Microsoft.Data.Sqlite;
+using NodaTime;
+using NodaTime.Extensions;
+using NodaTime.Text;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -521,7 +524,7 @@ public class QuerySql
         await this.Transaction.Connection.ExecuteAsync(DeleteAllAuthorsSql, transaction: this.Transaction);
     }
 
-    private const string InsertSqliteTypesSql = "INSERT INTO types_sqlite ( c_integer, c_real, c_text, c_blob, c_text_datetime_override, c_integer_datetime_override, c_text_bool_override, c_integer_bool_override ) VALUES (@c_integer, @c_real, @c_text, @c_blob, @c_text_datetime_override, @c_integer_datetime_override, @c_text_bool_override, @c_integer_bool_override)";
+    private const string InsertSqliteTypesSql = "INSERT INTO types_sqlite ( c_integer, c_real, c_text, c_blob, c_text_datetime_override, c_integer_datetime_override, c_text_noda_instant_override, c_integer_noda_instant_override, c_text_bool_override, c_integer_bool_override ) VALUES (@c_integer, @c_real, @c_text, @c_blob, @c_text_datetime_override, @c_integer_datetime_override, @c_text_noda_instant_override, @c_integer_noda_instant_override, @c_text_bool_override, @c_integer_bool_override)";
     public class InsertSqliteTypesArgs
     {
         public int? CInteger { get; init; }
@@ -530,6 +533,8 @@ public class QuerySql
         public byte[]? CBlob { get; init; }
         public DateTime? CTextDatetimeOverride { get; init; }
         public DateTime? CIntegerDatetimeOverride { get; init; }
+        public Instant? CTextNodaInstantOverride { get; init; }
+        public Instant? CIntegerNodaInstantOverride { get; init; }
         public bool? CTextBoolOverride { get; init; }
         public bool? CIntegerBoolOverride { get; init; }
     };
@@ -542,6 +547,8 @@ public class QuerySql
         queryParams.Add("c_blob", args.CBlob);
         queryParams.Add("c_text_datetime_override", args.CTextDatetimeOverride != null ? args.CTextDatetimeOverride.Value.ToString("yyyy-MM-dd HH:mm:ss") : null);
         queryParams.Add("c_integer_datetime_override", args.CIntegerDatetimeOverride != null ? (int? )new DateTimeOffset(args.CIntegerDatetimeOverride.Value.ToUniversalTime()).ToUnixTimeSeconds() : null);
+        queryParams.Add("c_text_noda_instant_override", args.CTextNodaInstantOverride != null ? InstantPattern.CreateWithInvariantCulture("yyyy-MM-dd HH:mm:ss").Format(args.CTextNodaInstantOverride.Value) : null);
+        queryParams.Add("c_integer_noda_instant_override", args.CIntegerNodaInstantOverride != null ? (long? )args.CIntegerNodaInstantOverride.Value.ToUnixTimeSeconds() : null);
         queryParams.Add("c_text_bool_override", args.CTextBoolOverride != null ? Convert.ToString(args.CTextBoolOverride) : null);
         queryParams.Add("c_integer_bool_override", args.CIntegerBoolOverride != null ? (int? )Convert.ToInt32(args.CIntegerBoolOverride) : null);
         if (this.Transaction == null)
@@ -583,7 +590,7 @@ public class QuerySql
         }
     }
 
-    private const string GetSqliteTypesSql = "SELECT c_integer, c_real, c_text, c_blob, c_text_datetime_override, c_integer_datetime_override, c_text_bool_override, c_integer_bool_override FROM types_sqlite LIMIT 1";
+    private const string GetSqliteTypesSql = "SELECT c_integer, c_real, c_text, c_blob, c_text_datetime_override, c_integer_datetime_override, c_text_noda_instant_override, c_integer_noda_instant_override, c_text_bool_override, c_integer_bool_override FROM types_sqlite LIMIT 1";
     public class GetSqliteTypesRow
     {
         public int? CInteger { get; init; }
@@ -592,6 +599,8 @@ public class QuerySql
         public byte[]? CBlob { get; init; }
         public DateTime? CTextDatetimeOverride { get; init; }
         public DateTime? CIntegerDatetimeOverride { get; init; }
+        public Instant? CTextNodaInstantOverride { get; init; }
+        public Instant? CIntegerNodaInstantOverride { get; init; }
         public bool? CTextBoolOverride { get; init; }
         public bool? CIntegerBoolOverride { get; init; }
     };

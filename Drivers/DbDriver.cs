@@ -11,6 +11,10 @@ public record ConnectionGenCommands(string EstablishConnection, string Connectio
 
 public abstract class DbDriver
 {
+    protected const string DefaultDapperVersion = "2.1.66";
+    protected const string DefaultSystemTextJsonVersion = "9.0.6";
+    protected const string DefaultNodaTimeVersion = "3.2.0";
+
     public Options Options { get; }
 
     public string DefaultSchema { get; }
@@ -51,6 +55,7 @@ public abstract class DbDriver
         "NpgsqlCircle",
         "JsonElement",
         "NpgsqlCidr",
+        "Instant"
     ];
 
     protected abstract Dictionary<string, ColumnMapping> ColumnMappings { get; }
@@ -67,6 +72,27 @@ public abstract class DbDriver
          if (this.{Variable.Transaction.AsPropertyName()}?.Connection == null || this.{Variable.Transaction.AsPropertyName()}?.Connection.State != System.Data.ConnectionState.Open)
              throw new InvalidOperationException("Transaction is provided, but its connection is null.");
          """;
+
+    protected static readonly SqlMapperImplFunc DateTimeNodaInstantTypeHandler = _ => $$"""
+        private class NodaInstantTypeHandler : SqlMapper.TypeHandler<Instant>
+        {
+            public override Instant Parse(object value)
+            {
+                if (value is DateTime dt)
+                {
+                    if (dt.Kind != DateTimeKind.Utc)
+                        dt = DateTime.SpecifyKind(dt, DateTimeKind.Utc);
+                    return dt.ToInstant();
+                }
+                throw new DataException($"Cannot convert {value?.GetType()} to Instant");
+            }
+
+            public override void SetValue(IDbDataParameter parameter, Instant value)
+            {
+                parameter.Value = value;
+            }
+        }
+        """;
 
     protected DbDriver(
         Options options,
@@ -101,6 +127,21 @@ public abstract class DbDriver
             );
     }
 
+    public virtual IDictionary<string, string> GetPackageReferences()
+    {
+        return new Dictionary<string, string> {
+            { "Dapper", Options.OverrideDapperVersion != string.Empty ? Options.OverrideDapperVersion : DefaultDapperVersion }
+         }
+        .MergeIf(new Dictionary<string, string>
+        {
+            { "System.Text.Json", DefaultSystemTextJsonVersion }
+        }, IsSystemTextJsonNeeded())
+        .MergeIf(new Dictionary<string, string>
+        {
+            { "NodaTime", DefaultNodaTimeVersion }
+        }, TypeExistsInQueries("Instant"));
+    }
+
     public virtual ISet<string> GetUsingDirectivesForQueries()
     {
         return new HashSet<string>
@@ -118,17 +159,16 @@ public abstract class DbDriver
     private ISet<string> GetUsingDirectivesForColumnMappings()
     {
         var usingDirectives = new HashSet<string>();
-        foreach (var schemaTables in Tables.Values)
-            foreach (var table in schemaTables.Values)
-                foreach (var column in table.Columns)
-                {
-                    var csharpType = GetCsharpTypeWithoutNullableSuffix(column, null);
-                    if (!ColumnMappings.ContainsKey(csharpType))
-                        continue;
+        foreach (var query in Queries)
+            foreach (var column in query.Columns)
+            {
+                var csharpType = GetCsharpTypeWithoutNullableSuffix(column, query);
+                if (!ColumnMappings.ContainsKey(csharpType))
+                    continue;
 
-                    var columnMapping = ColumnMappings[csharpType];
-                    usingDirectives.AddRangeExcludeNulls([columnMapping.UsingDirective]);
-                }
+                var columnMapping = ColumnMappings[csharpType];
+                usingDirectives.AddRangeIf(columnMapping.UsingDirectives!, columnMapping.UsingDirectives is not null);
+            }
         return usingDirectives;
     }
 
@@ -223,6 +263,32 @@ public abstract class DbDriver
         ];
     }
 
+    public virtual string AddParametersToCommand(Query query)
+    {
+        return query.Params.Select(p =>
+        {
+            var commandVar = Variable.Command.AsVarName();
+            var param = $"{Variable.Args.AsVarName()}.{p.Column.Name.ToPascalCase()}";
+            var columnMapping = GetCsharpTypeWithoutNullableSuffix(p.Column, query);
+
+            if (p.Column.IsSqlcSlice)
+                return $$"""
+                         for (int i = 0; i < {{param}}.Length; i++)
+                             {{commandVar}}.Parameters.AddWithValue($"@{{p.Column.Name}}Arg{i}", {{param}}[i]);
+                         """;
+
+            var writerFn = GetWriterFn(p.Column, query);
+            var paramToWrite = writerFn is null ? param : writerFn(
+                param,
+                p.Column.Type.Name,
+                IsColumnNotNull(p.Column, query),
+                Options.UseDapper,
+                Options.DotnetFramework.IsDotnetLegacy());
+            var addParamToCommand = $"""{commandVar}.Parameters.AddWithValue("@{p.Column.Name}", {paramToWrite});""";
+            return addParamToCommand;
+        }).JoinByNewLine();
+    }
+
     public Column GetColumnFromParam(Parameter queryParam, Query query)
     {
         if (string.IsNullOrEmpty(queryParam.Column.Name))
@@ -283,17 +349,6 @@ public abstract class DbDriver
         if (notNull)
             return csharpType;
         return IsTypeNullable(csharpType) ? $"{csharpType}?" : csharpType;
-    }
-
-    protected string? GetColumnDbTypeOverride(Column column)
-    {
-        var columnType = column.Type.Name.ToLower();
-        foreach (var columnMapping in ColumnMappings.Values)
-        {
-            if (columnMapping.DbTypes.TryGetValue(columnType, out var dbTypeOverride))
-                return dbTypeOverride.NpgsqlTypeOverride;
-        }
-        throw new NotSupportedException($"Column {column.Name} has unsupported column type: {column.Type.Name}");
     }
 
     public bool IsTypeNullable(string csharpType)
@@ -364,5 +419,12 @@ public abstract class DbDriver
             return columnMapping.ReaderFn(ordinal, column.Type.Name);
         }
         throw new NotSupportedException($"column {column.Name} has unsupported column type: {column.Type.Name} in {GetType().Name}");
+    }
+
+    private bool IsSystemTextJsonNeeded()
+    {
+        if (Options.DotnetFramework.IsDotnetCore())
+            return false;
+        return TypeExistsInQueries("JsonElement");
     }
 }

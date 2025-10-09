@@ -138,15 +138,39 @@ public static class PostgresTests
         [KnownTestType.PostgresDateTimeDataTypes] = new TestImpl
         {
             Impl = $$"""
+
+                     private static IEnumerable<TestCaseData> PostgresDateTimeTypesTestCases
+                     {
+                         get
+                         {
+                             yield return new TestCaseData(
+                                 DateTime.Parse("2000-1-30"), 
+                                 TimeSpan.Parse("12:13:14"), 
+                                 DateTime.Parse("1983-11-3 02:01:22"),
+                                 DateTime.Parse("2022-10-2 15:44:01+09:00").ToUniversalTime(), 
+                                 TimeSpan.Parse("02:03:04"), 
+                                 Instant.FromUtc(2022, 10, 2, 15, 44, 1)
+                             ).SetName("DateTimeTypes with values");
+                             yield return new TestCaseData(
+                                 null, 
+                                 null, 
+                                 null, 
+                                 null, 
+                                 null, 
+                                 null
+                             ).SetName("DateTimeTypes with null values");
+                         }
+                     }
+
                      [Test]
-                     [TestCase("2000-1-30", "12:13:14", "1983-11-3 02:01:22", "2022-10-2 15:44:01+09:00", "02:03:04")]
-                     [TestCase(null, null, null, null, null)]
+                     [TestCaseSource(nameof(PostgresDateTimeTypesTestCases))]
                      public async Task TestPostgresDateTimeTypes(
                          DateTime? cDate,
                          TimeSpan? cTime, 
                          DateTime? cTimestamp,
                          DateTime? cTimestampWithTz,
-                         TimeSpan? cInterval)
+                         TimeSpan? cInterval,
+                         Instant? cTimestampNodaInstantOverride)
                      {
                          await QuerySql.InsertPostgresDateTimeTypes(new QuerySql.InsertPostgresDateTimeTypesArgs
                          {
@@ -154,7 +178,8 @@ public static class PostgresTests
                              CTime = cTime,
                              CTimestamp = cTimestamp,
                              CTimestampWithTz = cTimestampWithTz,
-                             CInterval = cInterval
+                             CInterval = cInterval,
+                             CTimestampNodaInstantOverride = cTimestampNodaInstantOverride
                          });
                      
                          var expected = new QuerySql.GetPostgresDateTimeTypesRow
@@ -163,7 +188,8 @@ public static class PostgresTests
                              CTime = cTime,
                              CTimestamp = cTimestamp,
                              CTimestampWithTz = cTimestampWithTz,
-                             CInterval = cInterval
+                             CInterval = cInterval,
+                             CTimestampNodaInstantOverride = cTimestampNodaInstantOverride
                          };
                          var actual = await QuerySql.GetPostgresDateTimeTypes();
                          AssertSingularEquals(expected, actual{{Consts.UnknownRecordValuePlaceholder}});
@@ -175,7 +201,8 @@ public static class PostgresTests
                              Assert.That(x.CTimestamp, Is.EqualTo(y.CTimestamp));
                              Assert.That(x.CTimestampWithTz, Is.EqualTo(y.CTimestampWithTz));
                              Assert.That(x.CInterval, Is.EqualTo(y.CInterval));
-                         }  
+                             Assert.That(x.CTimestampNodaInstantOverride, Is.EqualTo(y.CTimestampNodaInstantOverride));
+                         }
                      }
                      """
         },
@@ -466,7 +493,7 @@ public static class PostgresTests
         {
             Impl = $$"""
                      [Test]
-                     [TestCase("{\"name\": \"Swordfishtrombones\", \"year\": 1983}", "$.\"name\"")]
+                     [TestCase("{\"name\": \"Swordfishtrombones\", \"year\" :1983}", "$.\"name\"")]
                      [TestCase(null, null)]
                      public async Task TestPostgresJsonDataTypes(
                         string cJson,
@@ -497,14 +524,18 @@ public static class PostgresTests
 
                          void AssertSingularEquals(QuerySql.GetPostgresSpecialTypesRow x, QuerySql.GetPostgresSpecialTypesRow y)
                          {
-                             Assert.That(x.CJson.HasValue, Is.EqualTo(y.CJson.HasValue));
-                             if (x.CJson.HasValue)
-                                Assert.That(x.CJson.Value.GetRawText(), Is.EqualTo(y.CJson.Value.GetRawText()));
-                             Assert.That(x.CJsonb.HasValue, Is.EqualTo(y.CJsonb.HasValue));
-                             if (x.CJsonb.HasValue)
-                                Assert.That(x.CJsonb.Value.GetRawText(), Is.EqualTo(y.CJsonb.Value.GetRawText()));
-                             Assert.That(x.CJsonStringOverride, Is.EqualTo(y.CJsonStringOverride));
-                             Assert.That(x.CJsonpath, Is.EqualTo(y.CJsonpath));
+                             AssertJsonElementEquals(y.CJson, x.CJson);
+                             AssertJsonElementEquals(y.CJsonb, x.CJsonb);
+                             Assert.That(y.CJsonStringOverride, Is.EqualTo(x.CJsonStringOverride));
+                             Assert.That(y.CJsonpath, Is.EqualTo(x.CJsonpath));
+                         }
+
+                         void AssertJsonElementEquals(JsonElement? x, JsonElement? y)
+                         { 
+                             var options = new JsonSerializerOptions { WriteIndented = false };
+                             Assert.That(y.HasValue, Is.EqualTo(x.HasValue));
+                             if (y.HasValue)
+                                Assert.That(JsonSerializer.Serialize(y.Value, options), Is.EqualTo(JsonSerializer.Serialize(x.Value, options)));
                          }
                      }
                      """
@@ -541,17 +572,17 @@ public static class PostgresTests
 
                          void AssertSingularEquals(QuerySql.GetPostgresSpecialTypesCntRow x, QuerySql.GetPostgresSpecialTypesCntRow y)
                          {
-                             var options = new JsonSerializerOptions
-                             {
-                                 WriteIndented = false
-                             };
                              Assert.That(y.Cnt, Is.EqualTo(x.Cnt));
-                             Assert.That(y.CJson.HasValue, Is.EqualTo(x.CJson.HasValue));
-                             if (y.CJson.HasValue)
-                                Assert.That(JsonSerializer.Serialize(y.CJson.Value, options), Is.EqualTo(JsonSerializer.Serialize(x.CJson.Value, options)));
-                             Assert.That(y.CJsonb.HasValue, Is.EqualTo(x.CJsonb.HasValue));
-                             if (y.CJsonb.HasValue)
-                                Assert.That(JsonSerializer.Serialize(y.CJsonb.Value, options), Is.EqualTo(JsonSerializer.Serialize(x.CJsonb.Value, options)));
+                             AssertJsonElementEquals(y.CJson, x.CJson);
+                             AssertJsonElementEquals(y.CJsonb, x.CJsonb);
+                         }
+
+                         void AssertJsonElementEquals(JsonElement? x, JsonElement? y)
+                         { 
+                             var options = new JsonSerializerOptions { WriteIndented = false };
+                             Assert.That(y.HasValue, Is.EqualTo(x.HasValue));
+                             if (y.HasValue)
+                                Assert.That(JsonSerializer.Serialize(y.Value, options), Is.EqualTo(JsonSerializer.Serialize(x.Value, options)));
                          }
                      }
                      """

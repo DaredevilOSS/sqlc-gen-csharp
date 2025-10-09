@@ -16,7 +16,7 @@ public class ColumnMapping(
     Dictionary<string, DbTypeInfo> dbTypes,
     ReaderFn readerFn,
     ReaderFn? readerArrayFn = null,
-    string? usingDirective = null,
+    string[]? usingDirectives = null,
     WriterFn? writerFn = null,
     ConvertFunc? convertFunc = null,
     string? sqlMapper = null,
@@ -25,7 +25,7 @@ public class ColumnMapping(
     public Dictionary<string, DbTypeInfo> DbTypes { get; } = dbTypes;
     public ReaderFn ReaderFn { get; } = readerFn;
     public ReaderFn? ReaderArrayFn { get; } = readerArrayFn;
-    public string? UsingDirective { get; } = usingDirective;
+    public string[]? UsingDirectives { get; } = usingDirectives;
     public WriterFn? WriterFn { get; } = writerFn;
     public ConvertFunc? ConvertFunc { get; } = convertFunc;
     public string? SqlMapper { get; } = sqlMapper;

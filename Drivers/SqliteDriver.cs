@@ -1,7 +1,6 @@
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Plugin;
 using SqlcGenCsharp.Drivers.Generators;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -15,9 +14,30 @@ public sealed partial class SqliteDriver(
     IList<Query> queries) :
     DbDriver(options, catalog, queries), IOne, IMany, IExec, IExecRows, IExecLastId, ICopyFrom
 {
+    private const string DefaultSqliteVersion = "9.0.0";
+
     private static readonly HashSet<string> IntegerDbTypes = ["integer", "integernotnulldefaultunixepoch"];
 
     private const string DateTimeStringFormat = "yyyy-MM-dd HH:mm:ss"; // Default format for DateTime strings - TODO make configurable via Options
+
+    private static readonly SqlMapperImplFunc NodaInstantTypeHandler = _ => $$"""
+        private class NodaInstantTypeHandler : SqlMapper.TypeHandler<Instant>
+        {
+            public override Instant Parse(object value)
+            {
+                if (value is string s)
+                    return InstantPattern.CreateWithInvariantCulture("{{DateTimeStringFormat}}").Parse(s).Value;
+                if (value is long l)
+                    return Instant.FromUnixTimeSeconds(l);
+                throw new DataException($"Cannot convert {value?.GetType()} to Instant");
+            }
+
+            public override void SetValue(IDbDataParameter parameter, Instant value)
+            {
+                parameter.Value = value;
+            }
+        }
+        """;
 
     protected override Dictionary<string, ColumnMapping> ColumnMappings { get; } =
         new()
@@ -71,6 +91,25 @@ public sealed partial class SqliteDriver(
                 sqlMapper: "SqlMapper.AddTypeHandler(typeof(DateTime), new DateTimeTypeHandler());",
                 sqlMapperImpl: DateTimeTypeHandler
             ),
+            ["Instant"] = new(
+                [],
+                readerFn: (ordinal, dbType) =>
+                {
+                    if (IntegerDbTypes.Contains(dbType.ToLower()))
+                        return $"Instant.FromUnixTimeSeconds({Variable.Reader.AsVarName()}.GetInt32({ordinal}))";
+                    return $"InstantPattern.CreateWithInvariantCulture(\"{DateTimeStringFormat}\").Parse({Variable.Reader.AsVarName()}.GetString({ordinal})).Value";
+                },
+                writerFn: (el, dbType, notNull, isDapper, isLegacy) =>
+                {
+                    var nullValue = isDapper ? "null" : "(object)DBNull.Value";
+                    if (IntegerDbTypes.Contains(dbType.ToLower()))
+                        return $"{el} != null ? (long?) {el}.Value.ToUnixTimeSeconds() : {nullValue}";
+                    return $"{el} != null ? InstantPattern.CreateWithInvariantCulture(\"{DateTimeStringFormat}\").Format({el}.Value) : {nullValue}";
+                },
+                usingDirectives: ["NodaTime", "NodaTime.Extensions", "NodaTime.Text"],
+                sqlMapper: "SqlMapper.AddTypeHandler(typeof(Instant), new NodaInstantTypeHandler());",
+                sqlMapperImpl: NodaInstantTypeHandler
+            ),
             ["bool"] = new(
                 [],
                 readerFn: (ordinal, dbType) =>
@@ -115,6 +154,16 @@ public sealed partial class SqliteDriver(
         """;
 
     public override string TransactionClassName => "SqliteTransaction";
+
+    public override IDictionary<string, string> GetPackageReferences()
+    {
+        return base
+            .GetPackageReferences()
+            .Merge(new Dictionary<string, string>
+            {
+                { "Microsoft.Data.Sqlite", Options.OverrideDriverVersion != string.Empty ? Options.OverrideDriverVersion : DefaultSqliteVersion }
+            });
+    }
 
     public override ISet<string> GetUsingDirectivesForQueries()
     {

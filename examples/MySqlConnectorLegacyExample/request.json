@@ -13,7 +13,7 @@
     "codegen": {
       "out": "examples/MySqlConnectorLegacyExample",
       "plugin": "csharp",
-      "options": "eyJkZWJ1Z1JlcXVlc3QiOnRydWUsImdlbmVyYXRlQ3Nwcm9qIjp0cnVlLCJuYW1lc3BhY2VOYW1lIjoiTXlTcWxDb25uZWN0b3JMZWdhY3lFeGFtcGxlR2VuIiwib3ZlcnJpZGVzIjpbeyJjb2x1bW4iOiJHZXRNeXNxbEZ1bmN0aW9uczptYXhfaW50IiwiY3NoYXJwX3R5cGUiOnsibm90TnVsbCI6ZmFsc2UsInR5cGUiOiJpbnQifX0seyJjb2x1bW4iOiJHZXRNeXNxbEZ1bmN0aW9uczptYXhfdmFyY2hhciIsImNzaGFycF90eXBlIjp7Im5vdE51bGwiOmZhbHNlLCJ0eXBlIjoic3RyaW5nIn19LHsiY29sdW1uIjoiR2V0TXlzcWxGdW5jdGlvbnM6bWF4X3RpbWVzdGFtcCIsImNzaGFycF90eXBlIjp7Im5vdE51bGwiOnRydWUsInR5cGUiOiJEYXRlVGltZSJ9fSx7ImNvbHVtbiI6Iio6Y19qc29uX3N0cmluZ19vdmVycmlkZSIsImNzaGFycF90eXBlIjp7Im5vdE51bGwiOmZhbHNlLCJ0eXBlIjoic3RyaW5nIn19XSwidGFyZ2V0RnJhbWV3b3JrIjoibmV0c3RhbmRhcmQyLjAiLCJ1c2VEYXBwZXIiOmZhbHNlfQ==",
+      "options": "eyJkZWJ1Z1JlcXVlc3QiOnRydWUsImdlbmVyYXRlQ3Nwcm9qIjp0cnVlLCJuYW1lc3BhY2VOYW1lIjoiTXlTcWxDb25uZWN0b3JMZWdhY3lFeGFtcGxlR2VuIiwib3ZlcnJpZGVzIjpbeyJjb2x1bW4iOiJHZXRNeXNxbEZ1bmN0aW9uczptYXhfaW50IiwiY3NoYXJwX3R5cGUiOnsibm90TnVsbCI6ZmFsc2UsInR5cGUiOiJpbnQifX0seyJjb2x1bW4iOiJHZXRNeXNxbEZ1bmN0aW9uczptYXhfdmFyY2hhciIsImNzaGFycF90eXBlIjp7Im5vdE51bGwiOmZhbHNlLCJ0eXBlIjoic3RyaW5nIn19LHsiY29sdW1uIjoiR2V0TXlzcWxGdW5jdGlvbnM6bWF4X3RpbWVzdGFtcCIsImNzaGFycF90eXBlIjp7Im5vdE51bGwiOnRydWUsInR5cGUiOiJEYXRlVGltZSJ9fSx7ImNvbHVtbiI6Iio6Y19qc29uX3N0cmluZ19vdmVycmlkZSIsImNzaGFycF90eXBlIjp7Im5vdE51bGwiOmZhbHNlLCJ0eXBlIjoic3RyaW5nIn19LHsiY29sdW1uIjoiKjpjX3RpbWVzdGFtcF9ub2RhX2luc3RhbnRfb3ZlcnJpZGUiLCJjc2hhcnBfdHlwZSI6eyJub3ROdWxsIjpmYWxzZSwidHlwZSI6Ikluc3RhbnQifX1dLCJ0YXJnZXRGcmFtZXdvcmsiOiJuZXRzdGFuZGFyZDIuMCIsInVzZURhcHBlciI6ZmFsc2V9",
       "process": {
         "cmd": "./dist/LocalRunner"
       }
@@ -451,6 +451,16 @@
                 },
                 "type": {
                   "name": "time"
+                }
+              },
+              {
+                "name": "c_timestamp_noda_instant_override",
+                "length": 19,
+                "table": {
+                  "name": "mysql_datetime_types"
+                },
+                "type": {
+                  "name": "timestamp"
                 }
               }
             ]
@@ -2996,7 +3006,7 @@
       "filename": "query.sql"
     },
     {
-      "text": "\nINSERT INTO mysql_datetime_types \n(\n    c_year,\n    c_date,\n    c_datetime,\n    c_timestamp,\n    c_time\n) \nVALUES (?, ?, ?, ?, ?)",
+      "text": "\nINSERT INTO mysql_datetime_types \n(\n    c_year,\n    c_date,\n    c_datetime,\n    c_timestamp,\n    c_time,\n    c_timestamp_noda_instant_override\n) \nVALUES (?, ?, ?, ?, ?, ?)",
       "name": "InsertMysqlDatetimeTypes",
       "cmd": ":exec",
       "parameters": [
@@ -3073,6 +3083,21 @@
               "name": "time"
             },
             "originalName": "c_time"
+          }
+        },
+        {
+          "number": 6,
+          "column": {
+            "name": "c_timestamp_noda_instant_override",
+            "length": 19,
+            "table": {
+              "schema": "public",
+              "name": "mysql_datetime_types"
+            },
+            "type": {
+              "name": "timestamp"
+            },
+            "originalName": "c_timestamp_noda_instant_override"
           }
         }
       ],
@@ -3171,7 +3196,7 @@
       }
     },
     {
-      "text": "SELECT c_year, c_date, c_datetime, c_timestamp, c_time FROM mysql_datetime_types LIMIT 1",
+      "text": "SELECT c_year, c_date, c_datetime, c_timestamp, c_time, c_timestamp_noda_instant_override FROM mysql_datetime_types LIMIT 1",
       "name": "GetMysqlDatetimeTypes",
       "cmd": ":one",
       "columns": [
@@ -3229,6 +3254,17 @@
             "name": "time"
           },
           "originalName": "c_time"
+        },
+        {
+          "name": "c_timestamp_noda_instant_override",
+          "length": 19,
+          "table": {
+            "name": "mysql_datetime_types"
+          },
+          "type": {
+            "name": "timestamp"
+          },
+          "originalName": "c_timestamp_noda_instant_override"
         }
       ],
       "filename": "query.sql"
@@ -3771,5 +3807,5 @@
     }
   ],
   "sqlc_version": "v1.30.0",
-  "plugin_options": "eyJvdmVycmlkZURyaXZlclZlcnNpb24iOiIiLCJnZW5lcmF0ZUNzcHJvaiI6dHJ1ZSwidGFyZ2V0RnJhbWV3b3JrIjoibmV0c3RhbmRhcmQyLjAiLCJuYW1lc3BhY2VOYW1lIjoiTXlTcWxDb25uZWN0b3JMZWdhY3lFeGFtcGxlR2VuIiwidXNlRGFwcGVyIjpmYWxzZSwib3ZlcnJpZGVEYXBwZXJWZXJzaW9uIjoiIiwib3ZlcnJpZGVzIjpbeyJjb2x1bW4iOiJHZXRNeXNxbEZ1bmN0aW9uczptYXhfaW50IiwiY3NoYXJwX3R5cGUiOnsidHlwZSI6ImludCIsIm5vdE51bGwiOmZhbHNlfX0seyJjb2x1bW4iOiJHZXRNeXNxbEZ1bmN0aW9uczptYXhfdmFyY2hhciIsImNzaGFycF90eXBlIjp7InR5cGUiOiJzdHJpbmciLCJub3ROdWxsIjpmYWxzZX19LHsiY29sdW1uIjoiR2V0TXlzcWxGdW5jdGlvbnM6bWF4X3RpbWVzdGFtcCIsImNzaGFycF90eXBlIjp7InR5cGUiOiJEYXRlVGltZSIsIm5vdE51bGwiOnRydWV9fSx7ImNvbHVtbiI6Iio6Y19qc29uX3N0cmluZ19vdmVycmlkZSIsImNzaGFycF90eXBlIjp7InR5cGUiOiJzdHJpbmciLCJub3ROdWxsIjpmYWxzZX19XSwiZGVidWdSZXF1ZXN0IjpmYWxzZX0="
+  "plugin_options": "eyJvdmVycmlkZURyaXZlclZlcnNpb24iOiIiLCJnZW5lcmF0ZUNzcHJvaiI6dHJ1ZSwidGFyZ2V0RnJhbWV3b3JrIjoibmV0c3RhbmRhcmQyLjAiLCJuYW1lc3BhY2VOYW1lIjoiTXlTcWxDb25uZWN0b3JMZWdhY3lFeGFtcGxlR2VuIiwidXNlRGFwcGVyIjpmYWxzZSwib3ZlcnJpZGVEYXBwZXJWZXJzaW9uIjoiIiwib3ZlcnJpZGVzIjpbeyJjb2x1bW4iOiJHZXRNeXNxbEZ1bmN0aW9uczptYXhfaW50IiwiY3NoYXJwX3R5cGUiOnsidHlwZSI6ImludCIsIm5vdE51bGwiOmZhbHNlfX0seyJjb2x1bW4iOiJHZXRNeXNxbEZ1bmN0aW9uczptYXhfdmFyY2hhciIsImNzaGFycF90eXBlIjp7InR5cGUiOiJzdHJpbmciLCJub3ROdWxsIjpmYWxzZX19LHsiY29sdW1uIjoiR2V0TXlzcWxGdW5jdGlvbnM6bWF4X3RpbWVzdGFtcCIsImNzaGFycF90eXBlIjp7InR5cGUiOiJEYXRlVGltZSIsIm5vdE51bGwiOnRydWV9fSx7ImNvbHVtbiI6Iio6Y19qc29uX3N0cmluZ19vdmVycmlkZSIsImNzaGFycF90eXBlIjp7InR5cGUiOiJzdHJpbmciLCJub3ROdWxsIjpmYWxzZX19LHsiY29sdW1uIjoiKjpjX3RpbWVzdGFtcF9ub2RhX2luc3RhbnRfb3ZlcnJpZGUiLCJjc2hhcnBfdHlwZSI6eyJ0eXBlIjoiSW5zdGFudCIsIm5vdE51bGwiOmZhbHNlfX1dLCJkZWJ1Z1JlcXVlc3QiOmZhbHNlfQ=="
 }

@@ -67,7 +67,7 @@ public class ExecLastIdDeclareGen(DbDriver dbDriver)
     {
         var (establishConnection, connectionOpen) = dbDriver.EstablishConnection(query);
         var createSqlCommand = dbDriver.CreateSqlCommand(sqlVar);
-        var commandParameters = CommonGen.AddParametersToCommand(query);
+        var commandParameters = dbDriver.AddParametersToCommand(query);
         var returnLastId = ((IExecLastId)dbDriver).GetLastIdStatement(query).JoinByNewLine();
         return $$"""
                     using ({{establishConnection}})
@@ -86,7 +86,7 @@ public class ExecLastIdDeclareGen(DbDriver dbDriver)
     {
         var transactionProperty = Variable.Transaction.AsPropertyName();
         var commandVar = Variable.Command.AsVarName();
-        var commandParameters = CommonGen.AddParametersToCommand(query);
+        var commandParameters = dbDriver.AddParametersToCommand(query);
         var returnLastId = ((IExecLastId)dbDriver).GetLastIdStatement(query).JoinByNewLine();
 
         return $$"""

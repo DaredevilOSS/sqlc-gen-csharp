@@ -54,6 +54,7 @@ public static class Program
                  {{optionalUsingSystemNetNetworkInformation}}
                  {{optionalUsingSystemTextJson}}
                  {{optionalUsingSystemXml}}
+                 using NodaTime;
                  using NUnit.Framework;
                  using NUnit.Framework.Legacy;
                  using System;
