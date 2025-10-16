@@ -8,6 +8,7 @@
         <TargetFramework>net8.0</TargetFramework>
         <RootNamespace>SqliteDapperExampleGen</RootNamespace>
         <OutputType>Library</OutputType>
+        <Nullable>enable</Nullable>
     </PropertyGroup>
 
     <ItemGroup>

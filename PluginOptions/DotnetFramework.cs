@@ -31,7 +31,7 @@ public static class DotnetFrameworkExtensions
 
     public static bool IsDotnetCore(this DotnetFramework me)
     {
-        return new List<DotnetFramework> { DotnetFramework.Dotnet80 }.Contains(me);
+        return me == DotnetFramework.Dotnet80;
     }
 
     public static bool IsDotnetLegacy(this DotnetFramework me)

@@ -86,7 +86,8 @@ public static class Program
     {
         var testGen = TestImplementations[testType];
         var impl = testGen.Impl
-            .Replace(Consts.UnknownRecordValuePlaceholder, string.Empty)
+            .Replace(Consts.UnknownRecordValuePlaceholder,
+                RecordsAreInUse(testClassName, isLegacyDotnet) ? ".Value" : string.Empty)
             .Replace(Consts.UnknownNullableIndicatorPlaceholder,
                 isLegacyDotnet ? string.Empty : "?");
         return impl;
