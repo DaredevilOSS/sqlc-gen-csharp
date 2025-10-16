@@ -5,7 +5,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net9.0</TargetFramework>
+        <TargetFramework>net8.0</TargetFramework>
         <RootNamespace>SqliteDapperExampleGen</RootNamespace>
         <OutputType>Library</OutputType>
     </PropertyGroup>

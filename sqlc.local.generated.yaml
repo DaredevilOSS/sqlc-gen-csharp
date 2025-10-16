@@ -13,7 +13,7 @@ sql:
         out: examples/NpgsqlExample
         options:
           useDapper: false
-          targetFramework: net9.0
+          targetFramework: net8.0
           generateCsproj: true
           namespaceName: NpgsqlExampleGen
           overrides:
@@ -61,7 +61,7 @@ sql:
         out: examples/NpgsqlDapperExample
         options:
           useDapper: true
-          targetFramework: net9.0
+          targetFramework: net8.0
           generateCsproj: true
           namespaceName: NpgsqlDapperExampleGen
           overrides:
@@ -109,7 +109,7 @@ sql:
         out: examples/NpgsqlLegacyExample
         options:
           useDapper: false
-          targetFramework: net9.0
+          targetFramework: net8.0
           generateCsproj: true
           namespaceName: NpgsqlLegacyExampleGen
           overrides:
@@ -157,7 +157,7 @@ sql:
         out: examples/NpgsqlDapperLegacyExample
         options:
           useDapper: true
-          targetFramework: net9.0
+          targetFramework: net8.0
           generateCsproj: true
           namespaceName: NpgsqlDapperLegacyExampleGen
           overrides:
@@ -206,7 +206,7 @@ sql:
         out: examples/MySqlConnectorExample
         options:
           useDapper: false
-          targetFramework: net9.0
+          targetFramework: net8.0
           generateCsproj: true
           namespaceName: MySqlConnectorExampleGen
           overrides:
@@ -238,7 +238,7 @@ sql:
         out: examples/MySqlConnectorDapperExample
         options:
           useDapper: true
-          targetFramework: net9.0
+          targetFramework: net8.0
           generateCsproj: true
           namespaceName: MySqlConnectorDapperExampleGen
           overrides:
@@ -270,7 +270,7 @@ sql:
         out: examples/MySqlConnectorLegacyExample
         options:
           useDapper: false
-          targetFramework: net9.0
+          targetFramework: net8.0
           generateCsproj: true
           namespaceName: MySqlConnectorLegacyExampleGen
           overrides:
@@ -302,7 +302,7 @@ sql:
         out: examples/MySqlConnectorDapperLegacyExample
         options:
           useDapper: true
-          targetFramework: net9.0
+          targetFramework: net8.0
           generateCsproj: true
           namespaceName: MySqlConnectorDapperLegacyExampleGen
           overrides:
@@ -335,7 +335,7 @@ sql:
         out: examples/SqliteExample
         options:
           useDapper: false
-          targetFramework: net9.0
+          targetFramework: net8.0
           generateCsproj: true
           namespaceName: SqliteExampleGen
           overrides:
@@ -374,7 +374,7 @@ sql:
         out: examples/SqliteDapperExample
         options:
           useDapper: true
-          targetFramework: net9.0
+          targetFramework: net8.0
           generateCsproj: true
           namespaceName: SqliteDapperExampleGen
           overrides:
@@ -413,7 +413,7 @@ sql:
         out: examples/SqliteLegacyExample
         options:
           useDapper: false
-          targetFramework: net9.0
+          targetFramework: net8.0
           generateCsproj: true
           namespaceName: SqliteLegacyExampleGen
           overrides:
@@ -452,7 +452,7 @@ sql:
         out: examples/SqliteDapperLegacyExample
         options:
           useDapper: true
-          targetFramework: net9.0
+          targetFramework: net8.0
           generateCsproj: true
           namespaceName: SqliteDapperLegacyExampleGen
           overrides:
