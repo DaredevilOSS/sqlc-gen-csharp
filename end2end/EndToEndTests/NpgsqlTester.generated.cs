@@ -29,7 +29,7 @@ namespace EndToEndTests
                 Bio = "Back in the 90s he was in a very famous TV show"
             };
             var actual = await this.QuerySql.GetAuthor(new QuerySql.GetAuthorArgs { Name = "Bojack Horseman" });
-            AssertSingularEquals(expected, actual.Value);
+            AssertSingularEquals(expected, actual);
             void AssertSingularEquals(QuerySql.GetAuthorRow x, QuerySql.GetAuthorRow y)
             {
                 Assert.That(x.Id, Is.EqualTo(y.Id));
@@ -135,7 +135,7 @@ namespace EndToEndTests
                 Bio = "Quote that everyone always attribute to Einstein"
             };
             var actual = await QuerySql.GetAuthorById(new QuerySql.GetAuthorByIdArgs { Id = id1 });
-            AssertSingularEquals(expected, actual.Value);
+            AssertSingularEquals(expected, actual);
             void AssertSingularEquals(QuerySql.GetAuthorByIdRow x, QuerySql.GetAuthorByIdRow y)
             {
                 Assert.That(x.Id, Is.EqualTo(y.Id));
@@ -171,12 +171,12 @@ namespace EndToEndTests
             AssertSequenceEquals(expected, actual);
             void AssertSingularEquals(QuerySql.GetDuplicateAuthorsRow x, QuerySql.GetDuplicateAuthorsRow y)
             {
-                Assert.That(x.Author.Value.Id, Is.EqualTo(y.Author.Value.Id));
-                Assert.That(x.Author.Value.Name, Is.EqualTo(y.Author.Value.Name));
-                Assert.That(x.Author.Value.Bio, Is.EqualTo(y.Author.Value.Bio));
-                Assert.That(x.Author2.Value.Id, Is.EqualTo(y.Author2.Value.Id));
-                Assert.That(x.Author2.Value.Name, Is.EqualTo(y.Author2.Value.Name));
-                Assert.That(x.Author2.Value.Bio, Is.EqualTo(y.Author2.Value.Bio));
+                Assert.That(x.Author.Id, Is.EqualTo(y.Author.Id));
+                Assert.That(x.Author.Name, Is.EqualTo(y.Author.Name));
+                Assert.That(x.Author.Bio, Is.EqualTo(y.Author.Bio));
+                Assert.That(x.Author2.Id, Is.EqualTo(y.Author2.Id));
+                Assert.That(x.Author2.Name, Is.EqualTo(y.Author2.Name));
+                Assert.That(x.Author2.Bio, Is.EqualTo(y.Author2.Bio));
             }
 
             void AssertSequenceEquals(List<QuerySql.GetDuplicateAuthorsRow> x, List<QuerySql.GetDuplicateAuthorsRow> y)
@@ -231,12 +231,12 @@ namespace EndToEndTests
             AssertSequenceEquals(expected, actual);
             void AssertSingularEquals(QuerySql.ListAllAuthorsBooksRow x, QuerySql.ListAllAuthorsBooksRow y)
             {
-                Assert.That(x.Author.Value.Id, Is.EqualTo(y.Author.Value.Id));
-                Assert.That(x.Author.Value.Name, Is.EqualTo(y.Author.Value.Name));
-                Assert.That(x.Author.Value.Bio, Is.EqualTo(y.Author.Value.Bio));
-                Assert.That(x.Book.Value.Id, Is.EqualTo(y.Book.Value.Id));
-                Assert.That(x.Book.Value.AuthorId, Is.EqualTo(y.Book.Value.AuthorId));
-                Assert.That(x.Book.Value.Name, Is.EqualTo(y.Book.Value.Name));
+                Assert.That(x.Author.Id, Is.EqualTo(y.Author.Id));
+                Assert.That(x.Author.Name, Is.EqualTo(y.Author.Name));
+                Assert.That(x.Author.Bio, Is.EqualTo(y.Author.Bio));
+                Assert.That(x.Book.Id, Is.EqualTo(y.Book.Id));
+                Assert.That(x.Book.AuthorId, Is.EqualTo(y.Book.AuthorId));
+                Assert.That(x.Book.Name, Is.EqualTo(y.Book.Name));
             }
 
             void AssertSequenceEquals(List<QuerySql.ListAllAuthorsBooksRow> x, List<QuerySql.ListAllAuthorsBooksRow> y)
@@ -333,7 +333,7 @@ namespace EndToEndTests
                 Bio = "Back in the 90s he was in a very famous TV show"
             };
             actual = await QuerySql.GetAuthor(new QuerySql.GetAuthorArgs { Name = "Bojack Horseman" });
-            AssertSingularEquals(expected, actual.Value);
+            AssertSingularEquals(expected, actual);
             void AssertSingularEquals(QuerySql.GetAuthorRow x, QuerySql.GetAuthorRow y)
             {
                 Assert.That(x.Id, Is.EqualTo(y.Id));
@@ -389,7 +389,7 @@ namespace EndToEndTests
                 MaxTimestamp = cTimestamp
             };
             var actual = await QuerySql.GetPostgresFunctions();
-            AssertSingularEquals(expected, actual.Value);
+            AssertSingularEquals(expected, actual);
             void AssertSingularEquals(QuerySql.GetPostgresFunctionsRow x, QuerySql.GetPostgresFunctionsRow y)
             {
                 Assert.That(x.MaxInteger, Is.EqualTo(y.MaxInteger));
@@ -426,7 +426,7 @@ namespace EndToEndTests
                 CText = cText,
             };
             var actual = await QuerySql.GetPostgresStringTypes();
-            AssertSingularEquals(expected, actual.Value);
+            AssertSingularEquals(expected, actual);
             void AssertSingularEquals(QuerySql.GetPostgresStringTypesRow x, QuerySql.GetPostgresStringTypesRow y)
             {
                 Assert.That(x.CChar, Is.EqualTo(y.CChar));
@@ -451,7 +451,7 @@ namespace EndToEndTests
                 CBigint = cBigint
             };
             var actual = await QuerySql.GetPostgresNumericTypes();
-            AssertSingularEquals(expected, actual.Value);
+            AssertSingularEquals(expected, actual);
             void AssertSingularEquals(QuerySql.GetPostgresNumericTypesRow x, QuerySql.GetPostgresNumericTypesRow y)
             {
                 Assert.That(x.CBoolean, Is.EqualTo(y.CBoolean));
@@ -476,7 +476,7 @@ namespace EndToEndTests
                 CMoney = cMoney
             };
             var actual = await QuerySql.GetPostgresNumericTypes();
-            AssertSingularEquals(expected, actual.Value);
+            AssertSingularEquals(expected, actual);
             void AssertSingularEquals(QuerySql.GetPostgresNumericTypesRow x, QuerySql.GetPostgresNumericTypesRow y)
             {
                 Assert.That(x.CReal, Is.EqualTo(y.CReal));
@@ -511,7 +511,7 @@ namespace EndToEndTests
                 CTimestampNodaInstantOverride = cTimestampNodaInstantOverride
             };
             var actual = await QuerySql.GetPostgresDateTimeTypes();
-            AssertSingularEquals(expected, actual.Value);
+            AssertSingularEquals(expected, actual);
             void AssertSingularEquals(QuerySql.GetPostgresDateTimeTypesRow x, QuerySql.GetPostgresDateTimeTypesRow y)
             {
                 Assert.That(x.CDate, Is.EqualTo(y.CDate));
@@ -549,7 +549,7 @@ namespace EndToEndTests
                 CTimestampArray = cTimestampArray
             };
             var actual = await QuerySql.GetPostgresArrayTypes();
-            AssertSingularEquals(expected, actual.Value);
+            AssertSingularEquals(expected, actual);
             void AssertSingularEquals(QuerySql.GetPostgresArrayTypesRow x, QuerySql.GetPostgresArrayTypesRow y)
             {
                 Assert.That(x.CBytea, Is.EqualTo(y.CBytea));
@@ -581,7 +581,7 @@ namespace EndToEndTests
                 CUuid = cUuid
             };
             var actual = await QuerySql.GetPostgresSpecialTypes();
-            AssertSingularEquals(expected, actual.Value);
+            AssertSingularEquals(expected, actual);
             void AssertSingularEquals(QuerySql.GetPostgresSpecialTypesRow x, QuerySql.GetPostgresSpecialTypesRow y)
             {
                 Assert.That(x.CUuid, Is.EqualTo(y.CUuid));
@@ -601,7 +601,7 @@ namespace EndToEndTests
                 Tsv = NpgsqlTsVector.Parse("hello:1 world:2"),
                 Rnk = 0.07f
             };
-            AssertSingularEquals(expected, actual.Value);
+            AssertSingularEquals(expected, actual);
             void AssertSingularEquals(QuerySql.GetPostgresStringTypesTextSearchRow x, QuerySql.GetPostgresStringTypesTextSearchRow y)
             {
                 Assert.That(y.CText, Is.EqualTo(x.CText));
@@ -633,7 +633,7 @@ namespace EndToEndTests
                 CMacaddr8 = cMacaddr8
             };
             var actual = await QuerySql.GetPostgresNetworkTypes();
-            AssertSingularEquals(expected, actual.Value);
+            AssertSingularEquals(expected, actual);
             void AssertSingularEquals(QuerySql.GetPostgresNetworkTypesRow x, QuerySql.GetPostgresNetworkTypesRow y)
             {
                 Assert.That(x.CCidr, Is.EqualTo(y.CCidr));
@@ -668,7 +668,7 @@ namespace EndToEndTests
                 CCircle = cCircle
             };
             var actual = await QuerySql.GetPostgresGeoTypes();
-            AssertSingularEquals(expected, actual.Value);
+            AssertSingularEquals(expected, actual);
             void AssertSingularEquals(QuerySql.GetPostgresGeoTypesRow x, QuerySql.GetPostgresGeoTypesRow y)
             {
                 Assert.That(x.CPoint, Is.EqualTo(y.CPoint));
@@ -698,7 +698,7 @@ namespace EndToEndTests
                 CJsonpath = cJsonpath
             };
             var actual = await QuerySql.GetPostgresSpecialTypes();
-            AssertSingularEquals(expected, actual.Value);
+            AssertSingularEquals(expected, actual);
             void AssertSingularEquals(QuerySql.GetPostgresSpecialTypesRow x, QuerySql.GetPostgresSpecialTypesRow y)
             {
                 AssertJsonElementEquals(y.CJson, x.CJson);
@@ -737,7 +737,7 @@ namespace EndToEndTests
                 CXml = parsedXml
             };
             var actual = await QuerySql.GetPostgresSpecialTypes();
-            AssertSingularEquals(expected, actual.Value);
+            AssertSingularEquals(expected, actual);
             void AssertSingularEquals(QuerySql.GetPostgresSpecialTypesRow x, QuerySql.GetPostgresSpecialTypesRow y)
             {
                 Assert.That(x.CXml == null, Is.EqualTo(y.CXml == null));
@@ -759,7 +759,7 @@ namespace EndToEndTests
                 CEnum = cEnum
             };
             var actual = await QuerySql.GetPostgresSpecialTypes();
-            AssertSingularEquals(expected, actual.Value);
+            AssertSingularEquals(expected, actual);
             void AssertSingularEquals(QuerySql.GetPostgresSpecialTypesRow x, QuerySql.GetPostgresSpecialTypesRow y)
             {
                 Assert.That(x.CEnum, Is.EqualTo(y.CEnum));
@@ -776,7 +776,7 @@ namespace EndToEndTests
                 CEnumNotNull = cEnumNotNull
             };
             var actual = await QuerySql.GetPostgresNotNullTypes();
-            AssertSingularEquals(expected, actual.Value);
+            AssertSingularEquals(expected, actual);
             void AssertSingularEquals(QuerySql.GetPostgresNotNullTypesRow x, QuerySql.GetPostgresNotNullTypesRow y)
             {
                 Assert.That(x.CEnumNotNull, Is.EqualTo(y.CEnumNotNull));
@@ -800,7 +800,7 @@ namespace EndToEndTests
                 CText = cText
             };
             var actual = await QuerySql.GetPostgresStringTypesCnt();
-            AssertSingularEquals(expected, actual.Value);
+            AssertSingularEquals(expected, actual);
             void AssertSingularEquals(QuerySql.GetPostgresStringTypesCntRow x, QuerySql.GetPostgresStringTypesCntRow y)
             {
                 Assert.That(x.Cnt, Is.EqualTo(y.Cnt));
@@ -828,7 +828,7 @@ namespace EndToEndTests
                 CBigint = cBigint
             };
             var actual = await QuerySql.GetPostgresNumericTypesCnt();
-            AssertSingularEquals(expected, actual.Value);
+            AssertSingularEquals(expected, actual);
             void AssertSingularEquals(QuerySql.GetPostgresNumericTypesCntRow x, QuerySql.GetPostgresNumericTypesCntRow y)
             {
                 Assert.That(x.Cnt, Is.EqualTo(y.Cnt));
@@ -856,7 +856,7 @@ namespace EndToEndTests
                 CMoney = cMoney
             };
             var actual = await QuerySql.GetPostgresNumericTypesCnt();
-            AssertSingularEquals(expected, actual.Value);
+            AssertSingularEquals(expected, actual);
             void AssertSingularEquals(QuerySql.GetPostgresNumericTypesCntRow x, QuerySql.GetPostgresNumericTypesCntRow y)
             {
                 Assert.That(x.Cnt, Is.EqualTo(y.Cnt));
@@ -888,7 +888,7 @@ namespace EndToEndTests
                 CInterval = cInterval
             };
             var actual = await QuerySql.GetPostgresDateTimeTypesCnt();
-            AssertSingularEquals(expected, actual.Value);
+            AssertSingularEquals(expected, actual);
             void AssertSingularEquals(QuerySql.GetPostgresDateTimeTypesCntRow x, QuerySql.GetPostgresDateTimeTypesCntRow y)
             {
                 Assert.That(x.Cnt, Is.EqualTo(y.Cnt));
@@ -921,7 +921,7 @@ namespace EndToEndTests
                 CUuid = cUuid
             };
             var actual = await QuerySql.GetPostgresSpecialTypesCnt();
-            AssertSingularEquals(expected, actual.Value);
+            AssertSingularEquals(expected, actual);
             void AssertSingularEquals(QuerySql.GetPostgresSpecialTypesCntRow x, QuerySql.GetPostgresSpecialTypesCntRow y)
             {
                 Assert.That(x.Cnt, Is.EqualTo(y.Cnt));
@@ -946,7 +946,7 @@ namespace EndToEndTests
                 CJsonb = cParsedJson
             };
             var actual = await QuerySql.GetPostgresSpecialTypesCnt();
-            AssertSingularEquals(expected, actual.Value);
+            AssertSingularEquals(expected, actual);
             void AssertSingularEquals(QuerySql.GetPostgresSpecialTypesCntRow x, QuerySql.GetPostgresSpecialTypesCntRow y)
             {
                 Assert.That(y.Cnt, Is.EqualTo(x.Cnt));
@@ -989,7 +989,7 @@ namespace EndToEndTests
                 CMacaddr = cMacaddr
             };
             var actual = await QuerySql.GetPostgresNetworkTypesCnt();
-            AssertSingularEquals(expected, actual.Value);
+            AssertSingularEquals(expected, actual);
             void AssertSingularEquals(QuerySql.GetPostgresNetworkTypesCntRow x, QuerySql.GetPostgresNetworkTypesCntRow y)
             {
                 Assert.That(x.Cnt, Is.EqualTo(y.Cnt));
@@ -1026,7 +1026,7 @@ namespace EndToEndTests
                 CTimestampArray = cTimestampArray
             };
             var actual = await QuerySql.GetPostgresArrayTypesCnt();
-            AssertSingularEquals(expected, actual.Value);
+            AssertSingularEquals(expected, actual);
             void AssertSingularEquals(QuerySql.GetPostgresArrayTypesCntRow x, QuerySql.GetPostgresArrayTypesCntRow y)
             {
                 Assert.That(x.Cnt, Is.EqualTo(y.Cnt));
@@ -1065,7 +1065,7 @@ namespace EndToEndTests
                 CCircle = cCircle
             };
             var actual = await QuerySql.GetPostgresGeoTypes();
-            AssertSingularEquals(expected, actual.Value);
+            AssertSingularEquals(expected, actual);
             void AssertSingularEquals(QuerySql.GetPostgresGeoTypesRow x, QuerySql.GetPostgresGeoTypesRow y)
             {
                 Assert.That(x.CPoint, Is.EqualTo(y.CPoint));
