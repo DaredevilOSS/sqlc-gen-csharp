@@ -5,7 +5,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>netstandard2.0</TargetFramework>
+        <TargetFramework>net9.0</TargetFramework>
         <RootNamespace>SqliteLegacyExampleGen</RootNamespace>
         <OutputType>Library</OutputType>
     </PropertyGroup>

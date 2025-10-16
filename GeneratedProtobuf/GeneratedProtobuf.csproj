@@ -1,14 +1,14 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net8.0</TargetFramework>
+        <TargetFramework>net9.0</TargetFramework>
         <Nullable>enable</Nullable>
         <RootNamespace>SqlcGenCsharp</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Google.Protobuf" Version="3.26.0-rc2"/>
-        <PackageReference Include="Grpc.Core.Api" Version="2.61.0"/>
+        <PackageReference Include="Google.Protobuf" Version="3.33.0" />
+        <PackageReference Include="Grpc.Core.Api" Version="2.71.0" />
     </ItemGroup>
 
 </Project>
