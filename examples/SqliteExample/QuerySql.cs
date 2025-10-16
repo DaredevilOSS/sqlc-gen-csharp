@@ -4,63 +4,96 @@
 // ReSharper disable ConvertToUsingDeclaration
 // ReSharper disable NotAccessedPositionalProperty.Global
 // ReSharper disable UnusedAutoPropertyAccessor.Global
-using Microsoft.Data.Sqlite;
-using NodaTime;
-using NodaTime.Extensions;
-using NodaTime.Text;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-
-namespace SqliteExampleGen;
-public class QuerySql
+namespace SqliteExampleGen
 {
-    public QuerySql()
-    {
-    }
+    using Microsoft.Data.Sqlite;
+    using NodaTime;
+    using NodaTime.Extensions;
+    using NodaTime.Text;
+    using System;
+    using System.Collections.Generic;
+    using System.Threading.Tasks;
 
-    public QuerySql(string connectionString) : this()
+    public class QuerySql
     {
-        this.ConnectionString = connectionString;
-    }
-
-    private QuerySql(SqliteTransaction transaction) : this()
-    {
-        this.Transaction = transaction;
-    }
-
-    public static QuerySql WithTransaction(SqliteTransaction transaction)
-    {
-        return new QuerySql(transaction);
-    }
-
-    private SqliteTransaction? Transaction { get; }
-    private string? ConnectionString { get; }
-
-    private const string GetAuthorSql = "SELECT id, name, bio FROM authors WHERE name = @name LIMIT 1";
-    public readonly record struct GetAuthorRow(int Id, string Name, string? Bio);
-    public readonly record struct GetAuthorArgs(string Name);
-    public async Task<GetAuthorRow?> GetAuthor(GetAuthorArgs args)
-    {
-        if (this.Transaction == null)
+        public QuerySql()
         {
-            using (var connection = new SqliteConnection(ConnectionString))
+        }
+
+        public QuerySql(string connectionString) : this()
+        {
+            this.ConnectionString = connectionString;
+        }
+
+        private QuerySql(SqliteTransaction transaction) : this()
+        {
+            this.Transaction = transaction;
+        }
+
+        public static QuerySql WithTransaction(SqliteTransaction transaction)
+        {
+            return new QuerySql(transaction);
+        }
+
+        private SqliteTransaction Transaction { get; }
+        private string ConnectionString { get; }
+
+        private const string GetAuthorSql = "SELECT id, name, bio FROM authors WHERE name = @name LIMIT 1";
+        public class GetAuthorRow
+        {
+            public int Id { get; set; }
+            public string Name { get; set; }
+            public string Bio { get; set; }
+        };
+        public class GetAuthorArgs
+        {
+            public string Name { get; set; }
+        };
+        public async Task<GetAuthorRow> GetAuthor(GetAuthorArgs args)
+        {
+            if (this.Transaction == null)
             {
-                await connection.OpenAsync();
-                using (var command = new SqliteCommand(GetAuthorSql, connection))
+                using (var connection = new SqliteConnection(ConnectionString))
                 {
-                    command.Parameters.AddWithValue("@name", args.Name);
-                    using (var reader = await command.ExecuteReaderAsync())
+                    await connection.OpenAsync();
+                    using (var command = new SqliteCommand(GetAuthorSql, connection))
                     {
-                        if (await reader.ReadAsync())
+                        command.Parameters.AddWithValue("@name", args.Name);
+                        using (var reader = await command.ExecuteReaderAsync())
                         {
-                            return new GetAuthorRow
+                            if (await reader.ReadAsync())
                             {
-                                Id = reader.GetInt32(0),
-                                Name = reader.GetString(1),
-                                Bio = reader.IsDBNull(2) ? null : reader.GetString(2)
-                            };
+                                return new GetAuthorRow
+                                {
+                                    Id = reader.GetInt32(0),
+                                    Name = reader.GetString(1),
+                                    Bio = reader.IsDBNull(2) ? null : reader.GetString(2)
+                                };
+                            }
                         }
+                    }
+                }
+
+                return null;
+            }
+
+            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+                throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+            using (var command = this.Transaction.Connection.CreateCommand())
+            {
+                command.CommandText = GetAuthorSql;
+                command.Transaction = this.Transaction;
+                command.Parameters.AddWithValue("@name", args.Name);
+                using (var reader = await command.ExecuteReaderAsync())
+                {
+                    if (await reader.ReadAsync())
+                    {
+                        return new GetAuthorRow
+                        {
+                            Id = reader.GetInt32(0),
+                            Name = reader.GetString(1),
+                            Bio = reader.IsDBNull(2) ? null : reader.GetString(2)
+                        };
                     }
                 }
             }
@@ -68,164 +101,193 @@ public class QuerySql
             return null;
         }
 
-        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
-            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
-        using (var command = this.Transaction.Connection.CreateCommand())
+        private const string ListAuthorsSql = "SELECT id, name, bio FROM authors ORDER BY name LIMIT @limit OFFSET @offset";
+        public class ListAuthorsRow
         {
-            command.CommandText = GetAuthorSql;
-            command.Transaction = this.Transaction;
-            command.Parameters.AddWithValue("@name", args.Name);
-            using (var reader = await command.ExecuteReaderAsync())
-            {
-                if (await reader.ReadAsync())
-                {
-                    return new GetAuthorRow
-                    {
-                        Id = reader.GetInt32(0),
-                        Name = reader.GetString(1),
-                        Bio = reader.IsDBNull(2) ? null : reader.GetString(2)
-                    };
-                }
-            }
-        }
-
-        return null;
-    }
-
-    private const string ListAuthorsSql = "SELECT id, name, bio FROM authors ORDER BY name LIMIT @limit OFFSET @offset";
-    public readonly record struct ListAuthorsRow(int Id, string Name, string? Bio);
-    public readonly record struct ListAuthorsArgs(int Offset, int Limit);
-    public async Task<List<ListAuthorsRow>> ListAuthors(ListAuthorsArgs args)
-    {
-        if (this.Transaction == null)
+            public int Id { get; set; }
+            public string Name { get; set; }
+            public string Bio { get; set; }
+        };
+        public class ListAuthorsArgs
         {
-            using (var connection = new SqliteConnection(ConnectionString))
+            public int Offset { get; set; }
+            public int Limit { get; set; }
+        };
+        public async Task<List<ListAuthorsRow>> ListAuthors(ListAuthorsArgs args)
+        {
+            if (this.Transaction == null)
             {
-                await connection.OpenAsync();
-                using (var command = new SqliteCommand(ListAuthorsSql, connection))
+                using (var connection = new SqliteConnection(ConnectionString))
                 {
-                    command.Parameters.AddWithValue("@offset", args.Offset);
-                    command.Parameters.AddWithValue("@limit", args.Limit);
-                    using (var reader = await command.ExecuteReaderAsync())
+                    await connection.OpenAsync();
+                    using (var command = new SqliteCommand(ListAuthorsSql, connection))
                     {
-                        var result = new List<ListAuthorsRow>();
-                        while (await reader.ReadAsync())
-                            result.Add(new ListAuthorsRow { Id = reader.GetInt32(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2) });
-                        return result;
+                        command.Parameters.AddWithValue("@offset", args.Offset);
+                        command.Parameters.AddWithValue("@limit", args.Limit);
+                        using (var reader = await command.ExecuteReaderAsync())
+                        {
+                            var result = new List<ListAuthorsRow>();
+                            while (await reader.ReadAsync())
+                                result.Add(new ListAuthorsRow { Id = reader.GetInt32(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2) });
+                            return result;
+                        }
                     }
                 }
             }
-        }
 
-        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
-            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
-        using (var command = this.Transaction.Connection.CreateCommand())
-        {
-            command.CommandText = ListAuthorsSql;
-            command.Transaction = this.Transaction;
-            command.Parameters.AddWithValue("@offset", args.Offset);
-            command.Parameters.AddWithValue("@limit", args.Limit);
-            using (var reader = await command.ExecuteReaderAsync())
+            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+                throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+            using (var command = this.Transaction.Connection.CreateCommand())
             {
-                var result = new List<ListAuthorsRow>();
-                while (await reader.ReadAsync())
-                    result.Add(new ListAuthorsRow { Id = reader.GetInt32(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2) });
-                return result;
-            }
-        }
-    }
-
-    private const string CreateAuthorSql = "INSERT INTO authors (id, name, bio) VALUES (@id, @name, @bio)";
-    public readonly record struct CreateAuthorArgs(int Id, string Name, string? Bio);
-    public async Task CreateAuthor(CreateAuthorArgs args)
-    {
-        if (this.Transaction == null)
-        {
-            using (var connection = new SqliteConnection(ConnectionString))
-            {
-                await connection.OpenAsync();
-                using (var command = new SqliteCommand(CreateAuthorSql, connection))
+                command.CommandText = ListAuthorsSql;
+                command.Transaction = this.Transaction;
+                command.Parameters.AddWithValue("@offset", args.Offset);
+                command.Parameters.AddWithValue("@limit", args.Limit);
+                using (var reader = await command.ExecuteReaderAsync())
                 {
-                    command.Parameters.AddWithValue("@id", args.Id);
-                    command.Parameters.AddWithValue("@name", args.Name);
-                    command.Parameters.AddWithValue("@bio", args.Bio ?? (object)DBNull.Value);
-                    await command.ExecuteNonQueryAsync();
-                }
-            }
-
-            return;
-        }
-
-        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
-            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
-        using (var command = this.Transaction.Connection.CreateCommand())
-        {
-            command.CommandText = CreateAuthorSql;
-            command.Transaction = this.Transaction;
-            command.Parameters.AddWithValue("@id", args.Id);
-            command.Parameters.AddWithValue("@name", args.Name);
-            command.Parameters.AddWithValue("@bio", args.Bio ?? (object)DBNull.Value);
-            await command.ExecuteNonQueryAsync();
-        }
-    }
-
-    private const string CreateAuthorReturnIdSql = "INSERT INTO authors (name, bio) VALUES (@name, @bio) RETURNING id";
-    public readonly record struct CreateAuthorReturnIdRow(int Id);
-    public readonly record struct CreateAuthorReturnIdArgs(string Name, string? Bio);
-    public async Task<int> CreateAuthorReturnId(CreateAuthorReturnIdArgs args)
-    {
-        if (this.Transaction == null)
-        {
-            using (var connection = new SqliteConnection(ConnectionString))
-            {
-                await connection.OpenAsync();
-                using (var command = new SqliteCommand(CreateAuthorReturnIdSql, connection))
-                {
-                    command.Parameters.AddWithValue("@name", args.Name);
-                    command.Parameters.AddWithValue("@bio", args.Bio ?? (object)DBNull.Value);
-                    var result = await command.ExecuteScalarAsync();
-                    return Convert.ToInt32(result);
+                    var result = new List<ListAuthorsRow>();
+                    while (await reader.ReadAsync())
+                        result.Add(new ListAuthorsRow { Id = reader.GetInt32(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2) });
+                    return result;
                 }
             }
         }
 
-        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
-            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
-        using (var command = this.Transaction.Connection.CreateCommand())
+        private const string CreateAuthorSql = "INSERT INTO authors (id, name, bio) VALUES (@id, @name, @bio)";
+        public class CreateAuthorArgs
         {
-            command.CommandText = CreateAuthorReturnIdSql;
-            command.Transaction = this.Transaction;
-            command.Parameters.AddWithValue("@name", args.Name);
-            command.Parameters.AddWithValue("@bio", args.Bio ?? (object)DBNull.Value);
-            var result = await command.ExecuteScalarAsync();
-            return Convert.ToInt32(result);
-        }
-    }
-
-    private const string GetAuthorByIdSql = "SELECT id, name, bio FROM authors WHERE id = @id LIMIT 1";
-    public readonly record struct GetAuthorByIdRow(int Id, string Name, string? Bio);
-    public readonly record struct GetAuthorByIdArgs(int Id);
-    public async Task<GetAuthorByIdRow?> GetAuthorById(GetAuthorByIdArgs args)
-    {
-        if (this.Transaction == null)
+            public int Id { get; set; }
+            public string Name { get; set; }
+            public string Bio { get; set; }
+        };
+        public async Task CreateAuthor(CreateAuthorArgs args)
         {
-            using (var connection = new SqliteConnection(ConnectionString))
+            if (this.Transaction == null)
             {
-                await connection.OpenAsync();
-                using (var command = new SqliteCommand(GetAuthorByIdSql, connection))
+                using (var connection = new SqliteConnection(ConnectionString))
                 {
-                    command.Parameters.AddWithValue("@id", args.Id);
-                    using (var reader = await command.ExecuteReaderAsync())
+                    await connection.OpenAsync();
+                    using (var command = new SqliteCommand(CreateAuthorSql, connection))
                     {
-                        if (await reader.ReadAsync())
+                        command.Parameters.AddWithValue("@id", args.Id);
+                        command.Parameters.AddWithValue("@name", args.Name);
+                        command.Parameters.AddWithValue("@bio", args.Bio ?? (object)DBNull.Value);
+                        await command.ExecuteNonQueryAsync();
+                    }
+                }
+
+                return;
+            }
+
+            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+                throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+            using (var command = this.Transaction.Connection.CreateCommand())
+            {
+                command.CommandText = CreateAuthorSql;
+                command.Transaction = this.Transaction;
+                command.Parameters.AddWithValue("@id", args.Id);
+                command.Parameters.AddWithValue("@name", args.Name);
+                command.Parameters.AddWithValue("@bio", args.Bio ?? (object)DBNull.Value);
+                await command.ExecuteNonQueryAsync();
+            }
+        }
+
+        private const string CreateAuthorReturnIdSql = "INSERT INTO authors (name, bio) VALUES (@name, @bio) RETURNING id";
+        public class CreateAuthorReturnIdRow
+        {
+            public int Id { get; set; }
+        };
+        public class CreateAuthorReturnIdArgs
+        {
+            public string Name { get; set; }
+            public string Bio { get; set; }
+        };
+        public async Task<int> CreateAuthorReturnId(CreateAuthorReturnIdArgs args)
+        {
+            if (this.Transaction == null)
+            {
+                using (var connection = new SqliteConnection(ConnectionString))
+                {
+                    await connection.OpenAsync();
+                    using (var command = new SqliteCommand(CreateAuthorReturnIdSql, connection))
+                    {
+                        command.Parameters.AddWithValue("@name", args.Name);
+                        command.Parameters.AddWithValue("@bio", args.Bio ?? (object)DBNull.Value);
+                        var result = await command.ExecuteScalarAsync();
+                        return Convert.ToInt32(result);
+                    }
+                }
+            }
+
+            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+                throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+            using (var command = this.Transaction.Connection.CreateCommand())
+            {
+                command.CommandText = CreateAuthorReturnIdSql;
+                command.Transaction = this.Transaction;
+                command.Parameters.AddWithValue("@name", args.Name);
+                command.Parameters.AddWithValue("@bio", args.Bio ?? (object)DBNull.Value);
+                var result = await command.ExecuteScalarAsync();
+                return Convert.ToInt32(result);
+            }
+        }
+
+        private const string GetAuthorByIdSql = "SELECT id, name, bio FROM authors WHERE id = @id LIMIT 1";
+        public class GetAuthorByIdRow
+        {
+            public int Id { get; set; }
+            public string Name { get; set; }
+            public string Bio { get; set; }
+        };
+        public class GetAuthorByIdArgs
+        {
+            public int Id { get; set; }
+        };
+        public async Task<GetAuthorByIdRow> GetAuthorById(GetAuthorByIdArgs args)
+        {
+            if (this.Transaction == null)
+            {
+                using (var connection = new SqliteConnection(ConnectionString))
+                {
+                    await connection.OpenAsync();
+                    using (var command = new SqliteCommand(GetAuthorByIdSql, connection))
+                    {
+                        command.Parameters.AddWithValue("@id", args.Id);
+                        using (var reader = await command.ExecuteReaderAsync())
                         {
-                            return new GetAuthorByIdRow
+                            if (await reader.ReadAsync())
                             {
-                                Id = reader.GetInt32(0),
-                                Name = reader.GetString(1),
-                                Bio = reader.IsDBNull(2) ? null : reader.GetString(2)
-                            };
+                                return new GetAuthorByIdRow
+                                {
+                                    Id = reader.GetInt32(0),
+                                    Name = reader.GetString(1),
+                                    Bio = reader.IsDBNull(2) ? null : reader.GetString(2)
+                                };
+                            }
                         }
+                    }
+                }
+
+                return null;
+            }
+
+            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+                throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+            using (var command = this.Transaction.Connection.CreateCommand())
+            {
+                command.CommandText = GetAuthorByIdSql;
+                command.Transaction = this.Transaction;
+                command.Parameters.AddWithValue("@id", args.Id);
+                using (var reader = await command.ExecuteReaderAsync())
+                {
+                    if (await reader.ReadAsync())
+                    {
+                        return new GetAuthorByIdRow
+                        {
+                            Id = reader.GetInt32(0),
+                            Name = reader.GetString(1),
+                            Bio = reader.IsDBNull(2) ? null : reader.GetString(2)
+                        };
                     }
                 }
             }
@@ -233,55 +295,65 @@ public class QuerySql
             return null;
         }
 
-        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
-            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
-        using (var command = this.Transaction.Connection.CreateCommand())
+        private const string GetAuthorByIdWithMultipleNamedParamSql = "SELECT id, name, bio FROM authors WHERE id = @id_arg AND id = @id_arg LIMIT @take";
+        public class GetAuthorByIdWithMultipleNamedParamRow
         {
-            command.CommandText = GetAuthorByIdSql;
-            command.Transaction = this.Transaction;
-            command.Parameters.AddWithValue("@id", args.Id);
-            using (var reader = await command.ExecuteReaderAsync())
-            {
-                if (await reader.ReadAsync())
-                {
-                    return new GetAuthorByIdRow
-                    {
-                        Id = reader.GetInt32(0),
-                        Name = reader.GetString(1),
-                        Bio = reader.IsDBNull(2) ? null : reader.GetString(2)
-                    };
-                }
-            }
-        }
-
-        return null;
-    }
-
-    private const string GetAuthorByIdWithMultipleNamedParamSql = "SELECT id, name, bio FROM authors WHERE id = @id_arg AND id = @id_arg LIMIT @take";
-    public readonly record struct GetAuthorByIdWithMultipleNamedParamRow(int Id, string Name, string? Bio);
-    public readonly record struct GetAuthorByIdWithMultipleNamedParamArgs(int IdArg, int? Take);
-    public async Task<GetAuthorByIdWithMultipleNamedParamRow?> GetAuthorByIdWithMultipleNamedParam(GetAuthorByIdWithMultipleNamedParamArgs args)
-    {
-        if (this.Transaction == null)
+            public int Id { get; set; }
+            public string Name { get; set; }
+            public string Bio { get; set; }
+        };
+        public class GetAuthorByIdWithMultipleNamedParamArgs
         {
-            using (var connection = new SqliteConnection(ConnectionString))
+            public int IdArg { get; set; }
+            public int? Take { get; set; }
+        };
+        public async Task<GetAuthorByIdWithMultipleNamedParamRow> GetAuthorByIdWithMultipleNamedParam(GetAuthorByIdWithMultipleNamedParamArgs args)
+        {
+            if (this.Transaction == null)
             {
-                await connection.OpenAsync();
-                using (var command = new SqliteCommand(GetAuthorByIdWithMultipleNamedParamSql, connection))
+                using (var connection = new SqliteConnection(ConnectionString))
                 {
-                    command.Parameters.AddWithValue("@id_arg", args.IdArg);
-                    command.Parameters.AddWithValue("@take", args.Take ?? (object)DBNull.Value);
-                    using (var reader = await command.ExecuteReaderAsync())
+                    await connection.OpenAsync();
+                    using (var command = new SqliteCommand(GetAuthorByIdWithMultipleNamedParamSql, connection))
                     {
-                        if (await reader.ReadAsync())
+                        command.Parameters.AddWithValue("@id_arg", args.IdArg);
+                        command.Parameters.AddWithValue("@take", args.Take ?? (object)DBNull.Value);
+                        using (var reader = await command.ExecuteReaderAsync())
                         {
-                            return new GetAuthorByIdWithMultipleNamedParamRow
+                            if (await reader.ReadAsync())
                             {
-                                Id = reader.GetInt32(0),
-                                Name = reader.GetString(1),
-                                Bio = reader.IsDBNull(2) ? null : reader.GetString(2)
-                            };
+                                return new GetAuthorByIdWithMultipleNamedParamRow
+                                {
+                                    Id = reader.GetInt32(0),
+                                    Name = reader.GetString(1),
+                                    Bio = reader.IsDBNull(2) ? null : reader.GetString(2)
+                                };
+                            }
                         }
+                    }
+                }
+
+                return null;
+            }
+
+            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+                throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+            using (var command = this.Transaction.Connection.CreateCommand())
+            {
+                command.CommandText = GetAuthorByIdWithMultipleNamedParamSql;
+                command.Transaction = this.Transaction;
+                command.Parameters.AddWithValue("@id_arg", args.IdArg);
+                command.Parameters.AddWithValue("@take", args.Take ?? (object)DBNull.Value);
+                using (var reader = await command.ExecuteReaderAsync())
+                {
+                    if (await reader.ReadAsync())
+                    {
+                        return new GetAuthorByIdWithMultipleNamedParamRow
+                        {
+                            Id = reader.GetInt32(0),
+                            Name = reader.GetString(1),
+                            Bio = reader.IsDBNull(2) ? null : reader.GetString(2)
+                        };
                     }
                 }
             }
@@ -289,501 +361,590 @@ public class QuerySql
             return null;
         }
 
-        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
-            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
-        using (var command = this.Transaction.Connection.CreateCommand())
+        private const string GetAuthorByNamePatternSql = "SELECT id, name, bio FROM authors WHERE name LIKE COALESCE(@name_pattern, '%')";
+        public class GetAuthorByNamePatternRow
         {
-            command.CommandText = GetAuthorByIdWithMultipleNamedParamSql;
-            command.Transaction = this.Transaction;
-            command.Parameters.AddWithValue("@id_arg", args.IdArg);
-            command.Parameters.AddWithValue("@take", args.Take ?? (object)DBNull.Value);
-            using (var reader = await command.ExecuteReaderAsync())
-            {
-                if (await reader.ReadAsync())
-                {
-                    return new GetAuthorByIdWithMultipleNamedParamRow
-                    {
-                        Id = reader.GetInt32(0),
-                        Name = reader.GetString(1),
-                        Bio = reader.IsDBNull(2) ? null : reader.GetString(2)
-                    };
-                }
-            }
-        }
-
-        return null;
-    }
-
-    private const string GetAuthorByNamePatternSql = "SELECT id, name, bio FROM authors WHERE name LIKE COALESCE(@name_pattern, '%')";
-    public readonly record struct GetAuthorByNamePatternRow(int Id, string Name, string? Bio);
-    public readonly record struct GetAuthorByNamePatternArgs(string? NamePattern);
-    public async Task<List<GetAuthorByNamePatternRow>> GetAuthorByNamePattern(GetAuthorByNamePatternArgs args)
-    {
-        if (this.Transaction == null)
+            public int Id { get; set; }
+            public string Name { get; set; }
+            public string Bio { get; set; }
+        };
+        public class GetAuthorByNamePatternArgs
         {
-            using (var connection = new SqliteConnection(ConnectionString))
+            public string NamePattern { get; set; }
+        };
+        public async Task<List<GetAuthorByNamePatternRow>> GetAuthorByNamePattern(GetAuthorByNamePatternArgs args)
+        {
+            if (this.Transaction == null)
             {
-                await connection.OpenAsync();
-                using (var command = new SqliteCommand(GetAuthorByNamePatternSql, connection))
+                using (var connection = new SqliteConnection(ConnectionString))
                 {
-                    command.Parameters.AddWithValue("@name_pattern", args.NamePattern ?? (object)DBNull.Value);
-                    using (var reader = await command.ExecuteReaderAsync())
+                    await connection.OpenAsync();
+                    using (var command = new SqliteCommand(GetAuthorByNamePatternSql, connection))
                     {
-                        var result = new List<GetAuthorByNamePatternRow>();
-                        while (await reader.ReadAsync())
-                            result.Add(new GetAuthorByNamePatternRow { Id = reader.GetInt32(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2) });
-                        return result;
+                        command.Parameters.AddWithValue("@name_pattern", args.NamePattern ?? (object)DBNull.Value);
+                        using (var reader = await command.ExecuteReaderAsync())
+                        {
+                            var result = new List<GetAuthorByNamePatternRow>();
+                            while (await reader.ReadAsync())
+                                result.Add(new GetAuthorByNamePatternRow { Id = reader.GetInt32(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2) });
+                            return result;
+                        }
                     }
                 }
             }
-        }
 
-        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
-            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
-        using (var command = this.Transaction.Connection.CreateCommand())
-        {
-            command.CommandText = GetAuthorByNamePatternSql;
-            command.Transaction = this.Transaction;
-            command.Parameters.AddWithValue("@name_pattern", args.NamePattern ?? (object)DBNull.Value);
-            using (var reader = await command.ExecuteReaderAsync())
+            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+                throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+            using (var command = this.Transaction.Connection.CreateCommand())
             {
-                var result = new List<GetAuthorByNamePatternRow>();
-                while (await reader.ReadAsync())
-                    result.Add(new GetAuthorByNamePatternRow { Id = reader.GetInt32(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2) });
-                return result;
-            }
-        }
-    }
-
-    private const string UpdateAuthorsSql = "UPDATE authors SET bio = @bio WHERE bio IS NOT NULL";
-    public readonly record struct UpdateAuthorsArgs(string? Bio);
-    public async Task<long> UpdateAuthors(UpdateAuthorsArgs args)
-    {
-        if (this.Transaction == null)
-        {
-            using (var connection = new SqliteConnection(ConnectionString))
-            {
-                await connection.OpenAsync();
-                using (var command = new SqliteCommand(UpdateAuthorsSql, connection))
+                command.CommandText = GetAuthorByNamePatternSql;
+                command.Transaction = this.Transaction;
+                command.Parameters.AddWithValue("@name_pattern", args.NamePattern ?? (object)DBNull.Value);
+                using (var reader = await command.ExecuteReaderAsync())
                 {
-                    command.Parameters.AddWithValue("@bio", args.Bio ?? (object)DBNull.Value);
-                    return await command.ExecuteNonQueryAsync();
+                    var result = new List<GetAuthorByNamePatternRow>();
+                    while (await reader.ReadAsync())
+                        result.Add(new GetAuthorByNamePatternRow { Id = reader.GetInt32(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2) });
+                    return result;
                 }
             }
         }
 
-        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
-            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
-        using (var command = this.Transaction.Connection.CreateCommand())
+        private const string UpdateAuthorsSql = "UPDATE authors SET bio = @bio WHERE bio IS NOT NULL";
+        public class UpdateAuthorsArgs
         {
-            command.CommandText = UpdateAuthorsSql;
-            command.Transaction = this.Transaction;
-            command.Parameters.AddWithValue("@bio", args.Bio ?? (object)DBNull.Value);
-            return await command.ExecuteNonQueryAsync();
-        }
-    }
+            public string Bio { get; set; }
+        };
+        public async Task<long> UpdateAuthors(UpdateAuthorsArgs args)
+        {
+            if (this.Transaction == null)
+            {
+                using (var connection = new SqliteConnection(ConnectionString))
+                {
+                    await connection.OpenAsync();
+                    using (var command = new SqliteCommand(UpdateAuthorsSql, connection))
+                    {
+                        command.Parameters.AddWithValue("@bio", args.Bio ?? (object)DBNull.Value);
+                        return await command.ExecuteNonQueryAsync();
+                    }
+                }
+            }
 
-    private const string GetAuthorsByIdsSql = "SELECT id, name, bio FROM authors WHERE id IN (/*SLICE:ids*/@ids)";
-    public readonly record struct GetAuthorsByIdsRow(int Id, string Name, string? Bio);
-    public readonly record struct GetAuthorsByIdsArgs(int[] Ids);
-    public async Task<List<GetAuthorsByIdsRow>> GetAuthorsByIds(GetAuthorsByIdsArgs args)
-    {
-        var transformedSql = GetAuthorsByIdsSql;
-        transformedSql = Utils.TransformQueryForSliceArgs(transformedSql, args.Ids.Length, "ids");
-        if (this.Transaction == null)
+            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+                throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+            using (var command = this.Transaction.Connection.CreateCommand())
+            {
+                command.CommandText = UpdateAuthorsSql;
+                command.Transaction = this.Transaction;
+                command.Parameters.AddWithValue("@bio", args.Bio ?? (object)DBNull.Value);
+                return await command.ExecuteNonQueryAsync();
+            }
+        }
+
+        private const string GetAuthorsByIdsSql = "SELECT id, name, bio FROM authors WHERE id IN (/*SLICE:ids*/@ids)";
+        public class GetAuthorsByIdsRow
+        {
+            public int Id { get; set; }
+            public string Name { get; set; }
+            public string Bio { get; set; }
+        };
+        public class GetAuthorsByIdsArgs
+        {
+            public int[] Ids { get; set; }
+        };
+        public async Task<List<GetAuthorsByIdsRow>> GetAuthorsByIds(GetAuthorsByIdsArgs args)
+        {
+            var transformedSql = GetAuthorsByIdsSql;
+            transformedSql = Utils.TransformQueryForSliceArgs(transformedSql, args.Ids.Length, "ids");
+            if (this.Transaction == null)
+            {
+                using (var connection = new SqliteConnection(ConnectionString))
+                {
+                    await connection.OpenAsync();
+                    using (var command = new SqliteCommand(transformedSql, connection))
+                    {
+                        for (int i = 0; i < args.Ids.Length; i++)
+                            command.Parameters.AddWithValue($"@idsArg{i}", args.Ids[i]);
+                        using (var reader = await command.ExecuteReaderAsync())
+                        {
+                            var result = new List<GetAuthorsByIdsRow>();
+                            while (await reader.ReadAsync())
+                                result.Add(new GetAuthorsByIdsRow { Id = reader.GetInt32(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2) });
+                            return result;
+                        }
+                    }
+                }
+            }
+
+            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+                throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+            using (var command = this.Transaction.Connection.CreateCommand())
+            {
+                command.CommandText = transformedSql;
+                command.Transaction = this.Transaction;
+                for (int i = 0; i < args.Ids.Length; i++)
+                    command.Parameters.AddWithValue($"@idsArg{i}", args.Ids[i]);
+                using (var reader = await command.ExecuteReaderAsync())
+                {
+                    var result = new List<GetAuthorsByIdsRow>();
+                    while (await reader.ReadAsync())
+                        result.Add(new GetAuthorsByIdsRow { Id = reader.GetInt32(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2) });
+                    return result;
+                }
+            }
+        }
+
+        private const string GetAuthorsByIdsAndNamesSql = "SELECT id, name, bio FROM authors WHERE id IN (/*SLICE:ids*/@ids) AND name IN (/*SLICE:names*/@names)";
+        public class GetAuthorsByIdsAndNamesRow
+        {
+            public int Id { get; set; }
+            public string Name { get; set; }
+            public string Bio { get; set; }
+        };
+        public class GetAuthorsByIdsAndNamesArgs
+        {
+            public int[] Ids { get; set; }
+            public string[] Names { get; set; }
+        };
+        public async Task<List<GetAuthorsByIdsAndNamesRow>> GetAuthorsByIdsAndNames(GetAuthorsByIdsAndNamesArgs args)
+        {
+            var transformedSql = GetAuthorsByIdsAndNamesSql;
+            transformedSql = Utils.TransformQueryForSliceArgs(transformedSql, args.Ids.Length, "ids");
+            transformedSql = Utils.TransformQueryForSliceArgs(transformedSql, args.Names.Length, "names");
+            if (this.Transaction == null)
+            {
+                using (var connection = new SqliteConnection(ConnectionString))
+                {
+                    await connection.OpenAsync();
+                    using (var command = new SqliteCommand(transformedSql, connection))
+                    {
+                        for (int i = 0; i < args.Ids.Length; i++)
+                            command.Parameters.AddWithValue($"@idsArg{i}", args.Ids[i]);
+                        for (int i = 0; i < args.Names.Length; i++)
+                            command.Parameters.AddWithValue($"@namesArg{i}", args.Names[i]);
+                        using (var reader = await command.ExecuteReaderAsync())
+                        {
+                            var result = new List<GetAuthorsByIdsAndNamesRow>();
+                            while (await reader.ReadAsync())
+                                result.Add(new GetAuthorsByIdsAndNamesRow { Id = reader.GetInt32(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2) });
+                            return result;
+                        }
+                    }
+                }
+            }
+
+            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+                throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+            using (var command = this.Transaction.Connection.CreateCommand())
+            {
+                command.CommandText = transformedSql;
+                command.Transaction = this.Transaction;
+                for (int i = 0; i < args.Ids.Length; i++)
+                    command.Parameters.AddWithValue($"@idsArg{i}", args.Ids[i]);
+                for (int i = 0; i < args.Names.Length; i++)
+                    command.Parameters.AddWithValue($"@namesArg{i}", args.Names[i]);
+                using (var reader = await command.ExecuteReaderAsync())
+                {
+                    var result = new List<GetAuthorsByIdsAndNamesRow>();
+                    while (await reader.ReadAsync())
+                        result.Add(new GetAuthorsByIdsAndNamesRow { Id = reader.GetInt32(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2) });
+                    return result;
+                }
+            }
+        }
+
+        private const string DeleteAuthorSql = "DELETE FROM authors WHERE name = @name";
+        public class DeleteAuthorArgs
+        {
+            public string Name { get; set; }
+        };
+        public async Task DeleteAuthor(DeleteAuthorArgs args)
+        {
+            if (this.Transaction == null)
+            {
+                using (var connection = new SqliteConnection(ConnectionString))
+                {
+                    await connection.OpenAsync();
+                    using (var command = new SqliteCommand(DeleteAuthorSql, connection))
+                    {
+                        command.Parameters.AddWithValue("@name", args.Name);
+                        await command.ExecuteNonQueryAsync();
+                    }
+                }
+
+                return;
+            }
+
+            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+                throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+            using (var command = this.Transaction.Connection.CreateCommand())
+            {
+                command.CommandText = DeleteAuthorSql;
+                command.Transaction = this.Transaction;
+                command.Parameters.AddWithValue("@name", args.Name);
+                await command.ExecuteNonQueryAsync();
+            }
+        }
+
+        private const string CreateBookSql = "INSERT INTO books (name, author_id) VALUES (@name, @author_id) RETURNING id";
+        public class CreateBookRow
+        {
+            public int Id { get; set; }
+        };
+        public class CreateBookArgs
+        {
+            public string Name { get; set; }
+            public int AuthorId { get; set; }
+        };
+        public async Task<int> CreateBook(CreateBookArgs args)
+        {
+            if (this.Transaction == null)
+            {
+                using (var connection = new SqliteConnection(ConnectionString))
+                {
+                    await connection.OpenAsync();
+                    using (var command = new SqliteCommand(CreateBookSql, connection))
+                    {
+                        command.Parameters.AddWithValue("@name", args.Name);
+                        command.Parameters.AddWithValue("@author_id", args.AuthorId);
+                        var result = await command.ExecuteScalarAsync();
+                        return Convert.ToInt32(result);
+                    }
+                }
+            }
+
+            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+                throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+            using (var command = this.Transaction.Connection.CreateCommand())
+            {
+                command.CommandText = CreateBookSql;
+                command.Transaction = this.Transaction;
+                command.Parameters.AddWithValue("@name", args.Name);
+                command.Parameters.AddWithValue("@author_id", args.AuthorId);
+                var result = await command.ExecuteScalarAsync();
+                return Convert.ToInt32(result);
+            }
+        }
+
+        private const string ListAllAuthorsBooksSql = "SELECT authors.id, authors.name, authors.bio, books.id, books.name, books.author_id, books.description FROM authors INNER JOIN books ON authors.id = books.author_id ORDER BY authors.name";
+        public class ListAllAuthorsBooksRow
+        {
+            public Author Author { get; set; }
+            public Book Book { get; set; }
+        };
+        public async Task<List<ListAllAuthorsBooksRow>> ListAllAuthorsBooks()
+        {
+            if (this.Transaction == null)
+            {
+                using (var connection = new SqliteConnection(ConnectionString))
+                {
+                    await connection.OpenAsync();
+                    using (var command = new SqliteCommand(ListAllAuthorsBooksSql, connection))
+                    {
+                        using (var reader = await command.ExecuteReaderAsync())
+                        {
+                            var result = new List<ListAllAuthorsBooksRow>();
+                            while (await reader.ReadAsync())
+                                result.Add(new ListAllAuthorsBooksRow { Author = new Author { Id = reader.GetInt32(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2) }, Book = new Book { Id = reader.GetInt32(3), Name = reader.GetString(4), AuthorId = reader.GetInt32(5), Description = reader.IsDBNull(6) ? null : reader.GetString(6) } });
+                            return result;
+                        }
+                    }
+                }
+            }
+
+            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+                throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+            using (var command = this.Transaction.Connection.CreateCommand())
+            {
+                command.CommandText = ListAllAuthorsBooksSql;
+                command.Transaction = this.Transaction;
+                using (var reader = await command.ExecuteReaderAsync())
+                {
+                    var result = new List<ListAllAuthorsBooksRow>();
+                    while (await reader.ReadAsync())
+                        result.Add(new ListAllAuthorsBooksRow { Author = new Author { Id = reader.GetInt32(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2) }, Book = new Book { Id = reader.GetInt32(3), Name = reader.GetString(4), AuthorId = reader.GetInt32(5), Description = reader.IsDBNull(6) ? null : reader.GetString(6) } });
+                    return result;
+                }
+            }
+        }
+
+        private const string GetDuplicateAuthorsSql = "SELECT authors1.id, authors1.name, authors1.bio, authors2.id, authors2.name, authors2.bio FROM authors AS authors1 INNER JOIN authors AS authors2 ON authors1.name = authors2.name WHERE authors1.id < authors2.id";
+        public class GetDuplicateAuthorsRow
+        {
+            public Author Author { get; set; }
+            public Author Author2 { get; set; }
+        };
+        public async Task<List<GetDuplicateAuthorsRow>> GetDuplicateAuthors()
+        {
+            if (this.Transaction == null)
+            {
+                using (var connection = new SqliteConnection(ConnectionString))
+                {
+                    await connection.OpenAsync();
+                    using (var command = new SqliteCommand(GetDuplicateAuthorsSql, connection))
+                    {
+                        using (var reader = await command.ExecuteReaderAsync())
+                        {
+                            var result = new List<GetDuplicateAuthorsRow>();
+                            while (await reader.ReadAsync())
+                                result.Add(new GetDuplicateAuthorsRow { Author = new Author { Id = reader.GetInt32(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2) }, Author2 = new Author { Id = reader.GetInt32(3), Name = reader.GetString(4), Bio = reader.IsDBNull(5) ? null : reader.GetString(5) } });
+                            return result;
+                        }
+                    }
+                }
+            }
+
+            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+                throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+            using (var command = this.Transaction.Connection.CreateCommand())
+            {
+                command.CommandText = GetDuplicateAuthorsSql;
+                command.Transaction = this.Transaction;
+                using (var reader = await command.ExecuteReaderAsync())
+                {
+                    var result = new List<GetDuplicateAuthorsRow>();
+                    while (await reader.ReadAsync())
+                        result.Add(new GetDuplicateAuthorsRow { Author = new Author { Id = reader.GetInt32(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2) }, Author2 = new Author { Id = reader.GetInt32(3), Name = reader.GetString(4), Bio = reader.IsDBNull(5) ? null : reader.GetString(5) } });
+                    return result;
+                }
+            }
+        }
+
+        private const string GetAuthorsByBookNameSql = "SELECT authors.id, authors.name, authors.bio, books.id, books.name, books.author_id, books.description FROM authors INNER JOIN books ON authors.id = books.author_id WHERE books.name = @name";
+        public class GetAuthorsByBookNameRow
+        {
+            public int Id { get; set; }
+            public string Name { get; set; }
+            public string Bio { get; set; }
+            public Book Book { get; set; }
+        };
+        public class GetAuthorsByBookNameArgs
+        {
+            public string Name { get; set; }
+        };
+        public async Task<List<GetAuthorsByBookNameRow>> GetAuthorsByBookName(GetAuthorsByBookNameArgs args)
+        {
+            if (this.Transaction == null)
+            {
+                using (var connection = new SqliteConnection(ConnectionString))
+                {
+                    await connection.OpenAsync();
+                    using (var command = new SqliteCommand(GetAuthorsByBookNameSql, connection))
+                    {
+                        command.Parameters.AddWithValue("@name", args.Name);
+                        using (var reader = await command.ExecuteReaderAsync())
+                        {
+                            var result = new List<GetAuthorsByBookNameRow>();
+                            while (await reader.ReadAsync())
+                                result.Add(new GetAuthorsByBookNameRow { Id = reader.GetInt32(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2), Book = new Book { Id = reader.GetInt32(3), Name = reader.GetString(4), AuthorId = reader.GetInt32(5), Description = reader.IsDBNull(6) ? null : reader.GetString(6) } });
+                            return result;
+                        }
+                    }
+                }
+            }
+
+            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+                throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+            using (var command = this.Transaction.Connection.CreateCommand())
+            {
+                command.CommandText = GetAuthorsByBookNameSql;
+                command.Transaction = this.Transaction;
+                command.Parameters.AddWithValue("@name", args.Name);
+                using (var reader = await command.ExecuteReaderAsync())
+                {
+                    var result = new List<GetAuthorsByBookNameRow>();
+                    while (await reader.ReadAsync())
+                        result.Add(new GetAuthorsByBookNameRow { Id = reader.GetInt32(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2), Book = new Book { Id = reader.GetInt32(3), Name = reader.GetString(4), AuthorId = reader.GetInt32(5), Description = reader.IsDBNull(6) ? null : reader.GetString(6) } });
+                    return result;
+                }
+            }
+        }
+
+        private const string DeleteAllAuthorsSql = "DELETE FROM authors";
+        public async Task DeleteAllAuthors()
+        {
+            if (this.Transaction == null)
+            {
+                using (var connection = new SqliteConnection(ConnectionString))
+                {
+                    await connection.OpenAsync();
+                    using (var command = new SqliteCommand(DeleteAllAuthorsSql, connection))
+                    {
+                        await command.ExecuteNonQueryAsync();
+                    }
+                }
+
+                return;
+            }
+
+            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+                throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+            using (var command = this.Transaction.Connection.CreateCommand())
+            {
+                command.CommandText = DeleteAllAuthorsSql;
+                command.Transaction = this.Transaction;
+                await command.ExecuteNonQueryAsync();
+            }
+        }
+
+        private const string InsertSqliteTypesSql = "INSERT INTO types_sqlite ( c_integer, c_real, c_text, c_blob, c_text_datetime_override, c_integer_datetime_override, c_text_noda_instant_override, c_integer_noda_instant_override, c_text_bool_override, c_integer_bool_override ) VALUES (@c_integer, @c_real, @c_text, @c_blob, @c_text_datetime_override, @c_integer_datetime_override, @c_text_noda_instant_override, @c_integer_noda_instant_override, @c_text_bool_override, @c_integer_bool_override)";
+        public class InsertSqliteTypesArgs
+        {
+            public int? CInteger { get; set; }
+            public decimal? CReal { get; set; }
+            public string CText { get; set; }
+            public byte[] CBlob { get; set; }
+            public DateTime? CTextDatetimeOverride { get; set; }
+            public DateTime? CIntegerDatetimeOverride { get; set; }
+            public Instant? CTextNodaInstantOverride { get; set; }
+            public Instant? CIntegerNodaInstantOverride { get; set; }
+            public bool? CTextBoolOverride { get; set; }
+            public bool? CIntegerBoolOverride { get; set; }
+        };
+        public async Task InsertSqliteTypes(InsertSqliteTypesArgs args)
+        {
+            if (this.Transaction == null)
+            {
+                using (var connection = new SqliteConnection(ConnectionString))
+                {
+                    await connection.OpenAsync();
+                    using (var command = new SqliteCommand(InsertSqliteTypesSql, connection))
+                    {
+                        command.Parameters.AddWithValue("@c_integer", args.CInteger ?? (object)DBNull.Value);
+                        command.Parameters.AddWithValue("@c_real", args.CReal ?? (object)DBNull.Value);
+                        command.Parameters.AddWithValue("@c_text", args.CText ?? (object)DBNull.Value);
+                        command.Parameters.AddWithValue("@c_blob", args.CBlob ?? (object)DBNull.Value);
+                        command.Parameters.AddWithValue("@c_text_datetime_override", args.CTextDatetimeOverride != null ? args.CTextDatetimeOverride.Value.ToString("yyyy-MM-dd HH:mm:ss") : (object)DBNull.Value);
+                        command.Parameters.AddWithValue("@c_integer_datetime_override", args.CIntegerDatetimeOverride != null ? (int? )new DateTimeOffset(args.CIntegerDatetimeOverride.Value.ToUniversalTime()).ToUnixTimeSeconds() : (object)DBNull.Value);
+                        command.Parameters.AddWithValue("@c_text_noda_instant_override", args.CTextNodaInstantOverride != null ? InstantPattern.CreateWithInvariantCulture("yyyy-MM-dd HH:mm:ss").Format(args.CTextNodaInstantOverride.Value) : (object)DBNull.Value);
+                        command.Parameters.AddWithValue("@c_integer_noda_instant_override", args.CIntegerNodaInstantOverride != null ? (long? )args.CIntegerNodaInstantOverride.Value.ToUnixTimeSeconds() : (object)DBNull.Value);
+                        command.Parameters.AddWithValue("@c_text_bool_override", args.CTextBoolOverride != null ? Convert.ToString(args.CTextBoolOverride) : (object)DBNull.Value);
+                        command.Parameters.AddWithValue("@c_integer_bool_override", args.CIntegerBoolOverride != null ? (int? )Convert.ToInt32(args.CIntegerBoolOverride) : (object)DBNull.Value);
+                        await command.ExecuteNonQueryAsync();
+                    }
+                }
+
+                return;
+            }
+
+            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+                throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+            using (var command = this.Transaction.Connection.CreateCommand())
+            {
+                command.CommandText = InsertSqliteTypesSql;
+                command.Transaction = this.Transaction;
+                command.Parameters.AddWithValue("@c_integer", args.CInteger ?? (object)DBNull.Value);
+                command.Parameters.AddWithValue("@c_real", args.CReal ?? (object)DBNull.Value);
+                command.Parameters.AddWithValue("@c_text", args.CText ?? (object)DBNull.Value);
+                command.Parameters.AddWithValue("@c_blob", args.CBlob ?? (object)DBNull.Value);
+                command.Parameters.AddWithValue("@c_text_datetime_override", args.CTextDatetimeOverride != null ? args.CTextDatetimeOverride.Value.ToString("yyyy-MM-dd HH:mm:ss") : (object)DBNull.Value);
+                command.Parameters.AddWithValue("@c_integer_datetime_override", args.CIntegerDatetimeOverride != null ? (int? )new DateTimeOffset(args.CIntegerDatetimeOverride.Value.ToUniversalTime()).ToUnixTimeSeconds() : (object)DBNull.Value);
+                command.Parameters.AddWithValue("@c_text_noda_instant_override", args.CTextNodaInstantOverride != null ? InstantPattern.CreateWithInvariantCulture("yyyy-MM-dd HH:mm:ss").Format(args.CTextNodaInstantOverride.Value) : (object)DBNull.Value);
+                command.Parameters.AddWithValue("@c_integer_noda_instant_override", args.CIntegerNodaInstantOverride != null ? (long? )args.CIntegerNodaInstantOverride.Value.ToUnixTimeSeconds() : (object)DBNull.Value);
+                command.Parameters.AddWithValue("@c_text_bool_override", args.CTextBoolOverride != null ? Convert.ToString(args.CTextBoolOverride) : (object)DBNull.Value);
+                command.Parameters.AddWithValue("@c_integer_bool_override", args.CIntegerBoolOverride != null ? (int? )Convert.ToInt32(args.CIntegerBoolOverride) : (object)DBNull.Value);
+                await command.ExecuteNonQueryAsync();
+            }
+        }
+
+        private const string InsertSqliteTypesBatchSql = "INSERT INTO types_sqlite (c_integer, c_real, c_text) VALUES (@c_integer, @c_real, @c_text)";
+        public class InsertSqliteTypesBatchArgs
+        {
+            public int? CInteger { get; set; }
+            public decimal? CReal { get; set; }
+            public string CText { get; set; }
+        };
+        public async Task InsertSqliteTypesBatch(List<InsertSqliteTypesBatchArgs> args)
         {
             using (var connection = new SqliteConnection(ConnectionString))
             {
                 await connection.OpenAsync();
+                var transformedSql = Utils.TransformQueryForSqliteBatch(InsertSqliteTypesBatchSql, args.Count);
                 using (var command = new SqliteCommand(transformedSql, connection))
                 {
-                    for (int i = 0; i < args.Ids.Length; i++)
-                        command.Parameters.AddWithValue($"@idsArg{i}", args.Ids[i]);
-                    using (var reader = await command.ExecuteReaderAsync())
+                    for (int i = 0; i < args.Count; i++)
                     {
-                        var result = new List<GetAuthorsByIdsRow>();
-                        while (await reader.ReadAsync())
-                            result.Add(new GetAuthorsByIdsRow { Id = reader.GetInt32(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2) });
-                        return result;
+                        command.Parameters.AddWithValue($"@c_integer{i}", args[i].CInteger ?? (object)DBNull.Value);
+                        command.Parameters.AddWithValue($"@c_real{i}", args[i].CReal ?? (object)DBNull.Value);
+                        command.Parameters.AddWithValue($"@c_text{i}", args[i].CText ?? (object)DBNull.Value);
                     }
+
+                    await command.ExecuteScalarAsync();
                 }
             }
         }
 
-        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
-            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
-        using (var command = this.Transaction.Connection.CreateCommand())
+        private const string GetSqliteTypesSql = "SELECT c_integer, c_real, c_text, c_blob, c_text_datetime_override, c_integer_datetime_override, c_text_noda_instant_override, c_integer_noda_instant_override, c_text_bool_override, c_integer_bool_override FROM types_sqlite LIMIT 1";
+        public class GetSqliteTypesRow
         {
-            command.CommandText = transformedSql;
-            command.Transaction = this.Transaction;
-            for (int i = 0; i < args.Ids.Length; i++)
-                command.Parameters.AddWithValue($"@idsArg{i}", args.Ids[i]);
-            using (var reader = await command.ExecuteReaderAsync())
-            {
-                var result = new List<GetAuthorsByIdsRow>();
-                while (await reader.ReadAsync())
-                    result.Add(new GetAuthorsByIdsRow { Id = reader.GetInt32(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2) });
-                return result;
-            }
-        }
-    }
-
-    private const string GetAuthorsByIdsAndNamesSql = "SELECT id, name, bio FROM authors WHERE id IN (/*SLICE:ids*/@ids) AND name IN (/*SLICE:names*/@names)";
-    public readonly record struct GetAuthorsByIdsAndNamesRow(int Id, string Name, string? Bio);
-    public readonly record struct GetAuthorsByIdsAndNamesArgs(int[] Ids, string[] Names);
-    public async Task<List<GetAuthorsByIdsAndNamesRow>> GetAuthorsByIdsAndNames(GetAuthorsByIdsAndNamesArgs args)
-    {
-        var transformedSql = GetAuthorsByIdsAndNamesSql;
-        transformedSql = Utils.TransformQueryForSliceArgs(transformedSql, args.Ids.Length, "ids");
-        transformedSql = Utils.TransformQueryForSliceArgs(transformedSql, args.Names.Length, "names");
-        if (this.Transaction == null)
+            public int? CInteger { get; set; }
+            public decimal? CReal { get; set; }
+            public string CText { get; set; }
+            public byte[] CBlob { get; set; }
+            public DateTime? CTextDatetimeOverride { get; set; }
+            public DateTime? CIntegerDatetimeOverride { get; set; }
+            public Instant? CTextNodaInstantOverride { get; set; }
+            public Instant? CIntegerNodaInstantOverride { get; set; }
+            public bool? CTextBoolOverride { get; set; }
+            public bool? CIntegerBoolOverride { get; set; }
+        };
+        public async Task<GetSqliteTypesRow> GetSqliteTypes()
         {
-            using (var connection = new SqliteConnection(ConnectionString))
+            if (this.Transaction == null)
             {
-                await connection.OpenAsync();
-                using (var command = new SqliteCommand(transformedSql, connection))
+                using (var connection = new SqliteConnection(ConnectionString))
                 {
-                    for (int i = 0; i < args.Ids.Length; i++)
-                        command.Parameters.AddWithValue($"@idsArg{i}", args.Ids[i]);
-                    for (int i = 0; i < args.Names.Length; i++)
-                        command.Parameters.AddWithValue($"@namesArg{i}", args.Names[i]);
-                    using (var reader = await command.ExecuteReaderAsync())
+                    await connection.OpenAsync();
+                    using (var command = new SqliteCommand(GetSqliteTypesSql, connection))
                     {
-                        var result = new List<GetAuthorsByIdsAndNamesRow>();
-                        while (await reader.ReadAsync())
-                            result.Add(new GetAuthorsByIdsAndNamesRow { Id = reader.GetInt32(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2) });
-                        return result;
-                    }
-                }
-            }
-        }
-
-        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
-            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
-        using (var command = this.Transaction.Connection.CreateCommand())
-        {
-            command.CommandText = transformedSql;
-            command.Transaction = this.Transaction;
-            for (int i = 0; i < args.Ids.Length; i++)
-                command.Parameters.AddWithValue($"@idsArg{i}", args.Ids[i]);
-            for (int i = 0; i < args.Names.Length; i++)
-                command.Parameters.AddWithValue($"@namesArg{i}", args.Names[i]);
-            using (var reader = await command.ExecuteReaderAsync())
-            {
-                var result = new List<GetAuthorsByIdsAndNamesRow>();
-                while (await reader.ReadAsync())
-                    result.Add(new GetAuthorsByIdsAndNamesRow { Id = reader.GetInt32(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2) });
-                return result;
-            }
-        }
-    }
-
-    private const string DeleteAuthorSql = "DELETE FROM authors WHERE name = @name";
-    public readonly record struct DeleteAuthorArgs(string Name);
-    public async Task DeleteAuthor(DeleteAuthorArgs args)
-    {
-        if (this.Transaction == null)
-        {
-            using (var connection = new SqliteConnection(ConnectionString))
-            {
-                await connection.OpenAsync();
-                using (var command = new SqliteCommand(DeleteAuthorSql, connection))
-                {
-                    command.Parameters.AddWithValue("@name", args.Name);
-                    await command.ExecuteNonQueryAsync();
-                }
-            }
-
-            return;
-        }
-
-        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
-            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
-        using (var command = this.Transaction.Connection.CreateCommand())
-        {
-            command.CommandText = DeleteAuthorSql;
-            command.Transaction = this.Transaction;
-            command.Parameters.AddWithValue("@name", args.Name);
-            await command.ExecuteNonQueryAsync();
-        }
-    }
-
-    private const string CreateBookSql = "INSERT INTO books (name, author_id) VALUES (@name, @author_id) RETURNING id";
-    public readonly record struct CreateBookRow(int Id);
-    public readonly record struct CreateBookArgs(string Name, int AuthorId);
-    public async Task<int> CreateBook(CreateBookArgs args)
-    {
-        if (this.Transaction == null)
-        {
-            using (var connection = new SqliteConnection(ConnectionString))
-            {
-                await connection.OpenAsync();
-                using (var command = new SqliteCommand(CreateBookSql, connection))
-                {
-                    command.Parameters.AddWithValue("@name", args.Name);
-                    command.Parameters.AddWithValue("@author_id", args.AuthorId);
-                    var result = await command.ExecuteScalarAsync();
-                    return Convert.ToInt32(result);
-                }
-            }
-        }
-
-        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
-            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
-        using (var command = this.Transaction.Connection.CreateCommand())
-        {
-            command.CommandText = CreateBookSql;
-            command.Transaction = this.Transaction;
-            command.Parameters.AddWithValue("@name", args.Name);
-            command.Parameters.AddWithValue("@author_id", args.AuthorId);
-            var result = await command.ExecuteScalarAsync();
-            return Convert.ToInt32(result);
-        }
-    }
-
-    private const string ListAllAuthorsBooksSql = "SELECT authors.id, authors.name, authors.bio, books.id, books.name, books.author_id, books.description FROM authors INNER JOIN books ON authors.id = books.author_id ORDER BY authors.name";
-    public readonly record struct ListAllAuthorsBooksRow(Author? Author, Book? Book);
-    public async Task<List<ListAllAuthorsBooksRow>> ListAllAuthorsBooks()
-    {
-        if (this.Transaction == null)
-        {
-            using (var connection = new SqliteConnection(ConnectionString))
-            {
-                await connection.OpenAsync();
-                using (var command = new SqliteCommand(ListAllAuthorsBooksSql, connection))
-                {
-                    using (var reader = await command.ExecuteReaderAsync())
-                    {
-                        var result = new List<ListAllAuthorsBooksRow>();
-                        while (await reader.ReadAsync())
-                            result.Add(new ListAllAuthorsBooksRow { Author = new Author { Id = reader.GetInt32(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2) }, Book = new Book { Id = reader.GetInt32(3), Name = reader.GetString(4), AuthorId = reader.GetInt32(5), Description = reader.IsDBNull(6) ? null : reader.GetString(6) } });
-                        return result;
-                    }
-                }
-            }
-        }
-
-        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
-            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
-        using (var command = this.Transaction.Connection.CreateCommand())
-        {
-            command.CommandText = ListAllAuthorsBooksSql;
-            command.Transaction = this.Transaction;
-            using (var reader = await command.ExecuteReaderAsync())
-            {
-                var result = new List<ListAllAuthorsBooksRow>();
-                while (await reader.ReadAsync())
-                    result.Add(new ListAllAuthorsBooksRow { Author = new Author { Id = reader.GetInt32(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2) }, Book = new Book { Id = reader.GetInt32(3), Name = reader.GetString(4), AuthorId = reader.GetInt32(5), Description = reader.IsDBNull(6) ? null : reader.GetString(6) } });
-                return result;
-            }
-        }
-    }
-
-    private const string GetDuplicateAuthorsSql = "SELECT authors1.id, authors1.name, authors1.bio, authors2.id, authors2.name, authors2.bio FROM authors AS authors1 INNER JOIN authors AS authors2 ON authors1.name = authors2.name WHERE authors1.id < authors2.id";
-    public readonly record struct GetDuplicateAuthorsRow(Author? Author, Author? Author2);
-    public async Task<List<GetDuplicateAuthorsRow>> GetDuplicateAuthors()
-    {
-        if (this.Transaction == null)
-        {
-            using (var connection = new SqliteConnection(ConnectionString))
-            {
-                await connection.OpenAsync();
-                using (var command = new SqliteCommand(GetDuplicateAuthorsSql, connection))
-                {
-                    using (var reader = await command.ExecuteReaderAsync())
-                    {
-                        var result = new List<GetDuplicateAuthorsRow>();
-                        while (await reader.ReadAsync())
-                            result.Add(new GetDuplicateAuthorsRow { Author = new Author { Id = reader.GetInt32(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2) }, Author2 = new Author { Id = reader.GetInt32(3), Name = reader.GetString(4), Bio = reader.IsDBNull(5) ? null : reader.GetString(5) } });
-                        return result;
-                    }
-                }
-            }
-        }
-
-        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
-            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
-        using (var command = this.Transaction.Connection.CreateCommand())
-        {
-            command.CommandText = GetDuplicateAuthorsSql;
-            command.Transaction = this.Transaction;
-            using (var reader = await command.ExecuteReaderAsync())
-            {
-                var result = new List<GetDuplicateAuthorsRow>();
-                while (await reader.ReadAsync())
-                    result.Add(new GetDuplicateAuthorsRow { Author = new Author { Id = reader.GetInt32(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2) }, Author2 = new Author { Id = reader.GetInt32(3), Name = reader.GetString(4), Bio = reader.IsDBNull(5) ? null : reader.GetString(5) } });
-                return result;
-            }
-        }
-    }
-
-    private const string GetAuthorsByBookNameSql = "SELECT authors.id, authors.name, authors.bio, books.id, books.name, books.author_id, books.description FROM authors INNER JOIN books ON authors.id = books.author_id WHERE books.name = @name";
-    public readonly record struct GetAuthorsByBookNameRow(int Id, string Name, string? Bio, Book? Book);
-    public readonly record struct GetAuthorsByBookNameArgs(string Name);
-    public async Task<List<GetAuthorsByBookNameRow>> GetAuthorsByBookName(GetAuthorsByBookNameArgs args)
-    {
-        if (this.Transaction == null)
-        {
-            using (var connection = new SqliteConnection(ConnectionString))
-            {
-                await connection.OpenAsync();
-                using (var command = new SqliteCommand(GetAuthorsByBookNameSql, connection))
-                {
-                    command.Parameters.AddWithValue("@name", args.Name);
-                    using (var reader = await command.ExecuteReaderAsync())
-                    {
-                        var result = new List<GetAuthorsByBookNameRow>();
-                        while (await reader.ReadAsync())
-                            result.Add(new GetAuthorsByBookNameRow { Id = reader.GetInt32(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2), Book = new Book { Id = reader.GetInt32(3), Name = reader.GetString(4), AuthorId = reader.GetInt32(5), Description = reader.IsDBNull(6) ? null : reader.GetString(6) } });
-                        return result;
-                    }
-                }
-            }
-        }
-
-        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
-            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
-        using (var command = this.Transaction.Connection.CreateCommand())
-        {
-            command.CommandText = GetAuthorsByBookNameSql;
-            command.Transaction = this.Transaction;
-            command.Parameters.AddWithValue("@name", args.Name);
-            using (var reader = await command.ExecuteReaderAsync())
-            {
-                var result = new List<GetAuthorsByBookNameRow>();
-                while (await reader.ReadAsync())
-                    result.Add(new GetAuthorsByBookNameRow { Id = reader.GetInt32(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2), Book = new Book { Id = reader.GetInt32(3), Name = reader.GetString(4), AuthorId = reader.GetInt32(5), Description = reader.IsDBNull(6) ? null : reader.GetString(6) } });
-                return result;
-            }
-        }
-    }
-
-    private const string DeleteAllAuthorsSql = "DELETE FROM authors";
-    public async Task DeleteAllAuthors()
-    {
-        if (this.Transaction == null)
-        {
-            using (var connection = new SqliteConnection(ConnectionString))
-            {
-                await connection.OpenAsync();
-                using (var command = new SqliteCommand(DeleteAllAuthorsSql, connection))
-                {
-                    await command.ExecuteNonQueryAsync();
-                }
-            }
-
-            return;
-        }
-
-        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
-            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
-        using (var command = this.Transaction.Connection.CreateCommand())
-        {
-            command.CommandText = DeleteAllAuthorsSql;
-            command.Transaction = this.Transaction;
-            await command.ExecuteNonQueryAsync();
-        }
-    }
-
-    private const string InsertSqliteTypesSql = "INSERT INTO types_sqlite ( c_integer, c_real, c_text, c_blob, c_text_datetime_override, c_integer_datetime_override, c_text_noda_instant_override, c_integer_noda_instant_override, c_text_bool_override, c_integer_bool_override ) VALUES (@c_integer, @c_real, @c_text, @c_blob, @c_text_datetime_override, @c_integer_datetime_override, @c_text_noda_instant_override, @c_integer_noda_instant_override, @c_text_bool_override, @c_integer_bool_override)";
-    public readonly record struct InsertSqliteTypesArgs(int? CInteger, decimal? CReal, string? CText, byte[]? CBlob, DateTime? CTextDatetimeOverride, DateTime? CIntegerDatetimeOverride, Instant? CTextNodaInstantOverride, Instant? CIntegerNodaInstantOverride, bool? CTextBoolOverride, bool? CIntegerBoolOverride);
-    public async Task InsertSqliteTypes(InsertSqliteTypesArgs args)
-    {
-        if (this.Transaction == null)
-        {
-            using (var connection = new SqliteConnection(ConnectionString))
-            {
-                await connection.OpenAsync();
-                using (var command = new SqliteCommand(InsertSqliteTypesSql, connection))
-                {
-                    command.Parameters.AddWithValue("@c_integer", args.CInteger ?? (object)DBNull.Value);
-                    command.Parameters.AddWithValue("@c_real", args.CReal ?? (object)DBNull.Value);
-                    command.Parameters.AddWithValue("@c_text", args.CText ?? (object)DBNull.Value);
-                    command.Parameters.AddWithValue("@c_blob", args.CBlob ?? (object)DBNull.Value);
-                    command.Parameters.AddWithValue("@c_text_datetime_override", args.CTextDatetimeOverride != null ? args.CTextDatetimeOverride.Value.ToString("yyyy-MM-dd HH:mm:ss") : (object)DBNull.Value);
-                    command.Parameters.AddWithValue("@c_integer_datetime_override", args.CIntegerDatetimeOverride != null ? (int? )new DateTimeOffset(args.CIntegerDatetimeOverride.Value.ToUniversalTime()).ToUnixTimeSeconds() : (object)DBNull.Value);
-                    command.Parameters.AddWithValue("@c_text_noda_instant_override", args.CTextNodaInstantOverride != null ? InstantPattern.CreateWithInvariantCulture("yyyy-MM-dd HH:mm:ss").Format(args.CTextNodaInstantOverride.Value) : (object)DBNull.Value);
-                    command.Parameters.AddWithValue("@c_integer_noda_instant_override", args.CIntegerNodaInstantOverride != null ? (long? )args.CIntegerNodaInstantOverride.Value.ToUnixTimeSeconds() : (object)DBNull.Value);
-                    command.Parameters.AddWithValue("@c_text_bool_override", args.CTextBoolOverride != null ? Convert.ToString(args.CTextBoolOverride) : (object)DBNull.Value);
-                    command.Parameters.AddWithValue("@c_integer_bool_override", args.CIntegerBoolOverride != null ? (int? )Convert.ToInt32(args.CIntegerBoolOverride) : (object)DBNull.Value);
-                    await command.ExecuteNonQueryAsync();
-                }
-            }
-
-            return;
-        }
-
-        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
-            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
-        using (var command = this.Transaction.Connection.CreateCommand())
-        {
-            command.CommandText = InsertSqliteTypesSql;
-            command.Transaction = this.Transaction;
-            command.Parameters.AddWithValue("@c_integer", args.CInteger ?? (object)DBNull.Value);
-            command.Parameters.AddWithValue("@c_real", args.CReal ?? (object)DBNull.Value);
-            command.Parameters.AddWithValue("@c_text", args.CText ?? (object)DBNull.Value);
-            command.Parameters.AddWithValue("@c_blob", args.CBlob ?? (object)DBNull.Value);
-            command.Parameters.AddWithValue("@c_text_datetime_override", args.CTextDatetimeOverride != null ? args.CTextDatetimeOverride.Value.ToString("yyyy-MM-dd HH:mm:ss") : (object)DBNull.Value);
-            command.Parameters.AddWithValue("@c_integer_datetime_override", args.CIntegerDatetimeOverride != null ? (int? )new DateTimeOffset(args.CIntegerDatetimeOverride.Value.ToUniversalTime()).ToUnixTimeSeconds() : (object)DBNull.Value);
-            command.Parameters.AddWithValue("@c_text_noda_instant_override", args.CTextNodaInstantOverride != null ? InstantPattern.CreateWithInvariantCulture("yyyy-MM-dd HH:mm:ss").Format(args.CTextNodaInstantOverride.Value) : (object)DBNull.Value);
-            command.Parameters.AddWithValue("@c_integer_noda_instant_override", args.CIntegerNodaInstantOverride != null ? (long? )args.CIntegerNodaInstantOverride.Value.ToUnixTimeSeconds() : (object)DBNull.Value);
-            command.Parameters.AddWithValue("@c_text_bool_override", args.CTextBoolOverride != null ? Convert.ToString(args.CTextBoolOverride) : (object)DBNull.Value);
-            command.Parameters.AddWithValue("@c_integer_bool_override", args.CIntegerBoolOverride != null ? (int? )Convert.ToInt32(args.CIntegerBoolOverride) : (object)DBNull.Value);
-            await command.ExecuteNonQueryAsync();
-        }
-    }
-
-    private const string InsertSqliteTypesBatchSql = "INSERT INTO types_sqlite (c_integer, c_real, c_text) VALUES (@c_integer, @c_real, @c_text)";
-    public readonly record struct InsertSqliteTypesBatchArgs(int? CInteger, decimal? CReal, string? CText);
-    public async Task InsertSqliteTypesBatch(List<InsertSqliteTypesBatchArgs> args)
-    {
-        using (var connection = new SqliteConnection(ConnectionString))
-        {
-            await connection.OpenAsync();
-            var transformedSql = Utils.TransformQueryForSqliteBatch(InsertSqliteTypesBatchSql, args.Count);
-            using (var command = new SqliteCommand(transformedSql, connection))
-            {
-                for (int i = 0; i < args.Count; i++)
-                {
-                    command.Parameters.AddWithValue($"@c_integer{i}", args[i].CInteger ?? (object)DBNull.Value);
-                    command.Parameters.AddWithValue($"@c_real{i}", args[i].CReal ?? (object)DBNull.Value);
-                    command.Parameters.AddWithValue($"@c_text{i}", args[i].CText ?? (object)DBNull.Value);
-                }
-
-                await command.ExecuteScalarAsync();
-            }
-        }
-    }
-
-    private const string GetSqliteTypesSql = "SELECT c_integer, c_real, c_text, c_blob, c_text_datetime_override, c_integer_datetime_override, c_text_noda_instant_override, c_integer_noda_instant_override, c_text_bool_override, c_integer_bool_override FROM types_sqlite LIMIT 1";
-    public readonly record struct GetSqliteTypesRow(int? CInteger, decimal? CReal, string? CText, byte[]? CBlob, DateTime? CTextDatetimeOverride, DateTime? CIntegerDatetimeOverride, Instant? CTextNodaInstantOverride, Instant? CIntegerNodaInstantOverride, bool? CTextBoolOverride, bool? CIntegerBoolOverride);
-    public async Task<GetSqliteTypesRow?> GetSqliteTypes()
-    {
-        if (this.Transaction == null)
-        {
-            using (var connection = new SqliteConnection(ConnectionString))
-            {
-                await connection.OpenAsync();
-                using (var command = new SqliteCommand(GetSqliteTypesSql, connection))
-                {
-                    using (var reader = await command.ExecuteReaderAsync())
-                    {
-                        if (await reader.ReadAsync())
+                        using (var reader = await command.ExecuteReaderAsync())
                         {
-                            return new GetSqliteTypesRow
+                            if (await reader.ReadAsync())
                             {
-                                CInteger = reader.IsDBNull(0) ? null : reader.GetInt32(0),
-                                CReal = reader.IsDBNull(1) ? null : reader.GetDecimal(1),
-                                CText = reader.IsDBNull(2) ? null : reader.GetString(2),
-                                CBlob = reader.IsDBNull(3) ? null : reader.GetFieldValue<byte[]>(3),
-                                CTextDatetimeOverride = reader.IsDBNull(4) ? null : DateTime.Parse(reader.GetString(4)),
-                                CIntegerDatetimeOverride = reader.IsDBNull(5) ? null : DateTimeOffset.FromUnixTimeSeconds(reader.GetInt32(5)).DateTime,
-                                CTextNodaInstantOverride = reader.IsDBNull(6) ? null : InstantPattern.CreateWithInvariantCulture("yyyy-MM-dd HH:mm:ss").Parse(reader.GetString(6)).Value,
-                                CIntegerNodaInstantOverride = reader.IsDBNull(7) ? null : Instant.FromUnixTimeSeconds(reader.GetInt32(7)),
-                                CTextBoolOverride = reader.IsDBNull(8) ? null : Convert.ToBoolean(reader.GetString(8)),
-                                CIntegerBoolOverride = reader.IsDBNull(9) ? null : Convert.ToBoolean(reader.GetInt32(9))
-                            };
+                                return new GetSqliteTypesRow
+                                {
+                                    CInteger = reader.IsDBNull(0) ? (int? )null : reader.GetInt32(0),
+                                    CReal = reader.IsDBNull(1) ? (decimal? )null : reader.GetDecimal(1),
+                                    CText = reader.IsDBNull(2) ? null : reader.GetString(2),
+                                    CBlob = reader.IsDBNull(3) ? null : reader.GetFieldValue<byte[]>(3),
+                                    CTextDatetimeOverride = reader.IsDBNull(4) ? (DateTime? )null : DateTime.Parse(reader.GetString(4)),
+                                    CIntegerDatetimeOverride = reader.IsDBNull(5) ? (DateTime? )null : DateTimeOffset.FromUnixTimeSeconds(reader.GetInt32(5)).DateTime,
+                                    CTextNodaInstantOverride = reader.IsDBNull(6) ? (Instant? )null : InstantPattern.CreateWithInvariantCulture("yyyy-MM-dd HH:mm:ss").Parse(reader.GetString(6)).Value,
+                                    CIntegerNodaInstantOverride = reader.IsDBNull(7) ? (Instant? )null : Instant.FromUnixTimeSeconds(reader.GetInt32(7)),
+                                    CTextBoolOverride = reader.IsDBNull(8) ? (bool? )null : Convert.ToBoolean(reader.GetString(8)),
+                                    CIntegerBoolOverride = reader.IsDBNull(9) ? (bool? )null : Convert.ToBoolean(reader.GetInt32(9))
+                                };
+                            }
                         }
+                    }
+                }
+
+                return null;
+            }
+
+            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+                throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+            using (var command = this.Transaction.Connection.CreateCommand())
+            {
+                command.CommandText = GetSqliteTypesSql;
+                command.Transaction = this.Transaction;
+                using (var reader = await command.ExecuteReaderAsync())
+                {
+                    if (await reader.ReadAsync())
+                    {
+                        return new GetSqliteTypesRow
+                        {
+                            CInteger = reader.IsDBNull(0) ? (int? )null : reader.GetInt32(0),
+                            CReal = reader.IsDBNull(1) ? (decimal? )null : reader.GetDecimal(1),
+                            CText = reader.IsDBNull(2) ? null : reader.GetString(2),
+                            CBlob = reader.IsDBNull(3) ? null : reader.GetFieldValue<byte[]>(3),
+                            CTextDatetimeOverride = reader.IsDBNull(4) ? (DateTime? )null : DateTime.Parse(reader.GetString(4)),
+                            CIntegerDatetimeOverride = reader.IsDBNull(5) ? (DateTime? )null : DateTimeOffset.FromUnixTimeSeconds(reader.GetInt32(5)).DateTime,
+                            CTextNodaInstantOverride = reader.IsDBNull(6) ? (Instant? )null : InstantPattern.CreateWithInvariantCulture("yyyy-MM-dd HH:mm:ss").Parse(reader.GetString(6)).Value,
+                            CIntegerNodaInstantOverride = reader.IsDBNull(7) ? (Instant? )null : Instant.FromUnixTimeSeconds(reader.GetInt32(7)),
+                            CTextBoolOverride = reader.IsDBNull(8) ? (bool? )null : Convert.ToBoolean(reader.GetString(8)),
+                            CIntegerBoolOverride = reader.IsDBNull(9) ? (bool? )null : Convert.ToBoolean(reader.GetInt32(9))
+                        };
                     }
                 }
             }
@@ -791,60 +952,62 @@ public class QuerySql
             return null;
         }
 
-        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
-            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
-        using (var command = this.Transaction.Connection.CreateCommand())
+        private const string GetSqliteTypesCntSql = "SELECT c_integer, c_real, c_text, c_blob, count(*) AS cnt FROM types_sqlite GROUP BY c_integer, c_real, c_text, c_blob LIMIT 1";
+        public class GetSqliteTypesCntRow
         {
-            command.CommandText = GetSqliteTypesSql;
-            command.Transaction = this.Transaction;
-            using (var reader = await command.ExecuteReaderAsync())
-            {
-                if (await reader.ReadAsync())
-                {
-                    return new GetSqliteTypesRow
-                    {
-                        CInteger = reader.IsDBNull(0) ? null : reader.GetInt32(0),
-                        CReal = reader.IsDBNull(1) ? null : reader.GetDecimal(1),
-                        CText = reader.IsDBNull(2) ? null : reader.GetString(2),
-                        CBlob = reader.IsDBNull(3) ? null : reader.GetFieldValue<byte[]>(3),
-                        CTextDatetimeOverride = reader.IsDBNull(4) ? null : DateTime.Parse(reader.GetString(4)),
-                        CIntegerDatetimeOverride = reader.IsDBNull(5) ? null : DateTimeOffset.FromUnixTimeSeconds(reader.GetInt32(5)).DateTime,
-                        CTextNodaInstantOverride = reader.IsDBNull(6) ? null : InstantPattern.CreateWithInvariantCulture("yyyy-MM-dd HH:mm:ss").Parse(reader.GetString(6)).Value,
-                        CIntegerNodaInstantOverride = reader.IsDBNull(7) ? null : Instant.FromUnixTimeSeconds(reader.GetInt32(7)),
-                        CTextBoolOverride = reader.IsDBNull(8) ? null : Convert.ToBoolean(reader.GetString(8)),
-                        CIntegerBoolOverride = reader.IsDBNull(9) ? null : Convert.ToBoolean(reader.GetInt32(9))
-                    };
-                }
-            }
-        }
-
-        return null;
-    }
-
-    private const string GetSqliteTypesCntSql = "SELECT c_integer, c_real, c_text, c_blob, count(*) AS cnt FROM types_sqlite GROUP BY c_integer, c_real, c_text, c_blob LIMIT 1";
-    public readonly record struct GetSqliteTypesCntRow(int? CInteger, decimal? CReal, string? CText, byte[]? CBlob, int Cnt);
-    public async Task<GetSqliteTypesCntRow?> GetSqliteTypesCnt()
-    {
-        if (this.Transaction == null)
+            public int? CInteger { get; set; }
+            public decimal? CReal { get; set; }
+            public string CText { get; set; }
+            public byte[] CBlob { get; set; }
+            public int Cnt { get; set; }
+        };
+        public async Task<GetSqliteTypesCntRow> GetSqliteTypesCnt()
         {
-            using (var connection = new SqliteConnection(ConnectionString))
+            if (this.Transaction == null)
             {
-                await connection.OpenAsync();
-                using (var command = new SqliteCommand(GetSqliteTypesCntSql, connection))
+                using (var connection = new SqliteConnection(ConnectionString))
                 {
-                    using (var reader = await command.ExecuteReaderAsync())
+                    await connection.OpenAsync();
+                    using (var command = new SqliteCommand(GetSqliteTypesCntSql, connection))
                     {
-                        if (await reader.ReadAsync())
+                        using (var reader = await command.ExecuteReaderAsync())
                         {
-                            return new GetSqliteTypesCntRow
+                            if (await reader.ReadAsync())
                             {
-                                CInteger = reader.IsDBNull(0) ? null : reader.GetInt32(0),
-                                CReal = reader.IsDBNull(1) ? null : reader.GetDecimal(1),
-                                CText = reader.IsDBNull(2) ? null : reader.GetString(2),
-                                CBlob = reader.IsDBNull(3) ? null : reader.GetFieldValue<byte[]>(3),
-                                Cnt = reader.GetInt32(4)
-                            };
+                                return new GetSqliteTypesCntRow
+                                {
+                                    CInteger = reader.IsDBNull(0) ? (int? )null : reader.GetInt32(0),
+                                    CReal = reader.IsDBNull(1) ? (decimal? )null : reader.GetDecimal(1),
+                                    CText = reader.IsDBNull(2) ? null : reader.GetString(2),
+                                    CBlob = reader.IsDBNull(3) ? null : reader.GetFieldValue<byte[]>(3),
+                                    Cnt = reader.GetInt32(4)
+                                };
+                            }
                         }
+                    }
+                }
+
+                return null;
+            }
+
+            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+                throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+            using (var command = this.Transaction.Connection.CreateCommand())
+            {
+                command.CommandText = GetSqliteTypesCntSql;
+                command.Transaction = this.Transaction;
+                using (var reader = await command.ExecuteReaderAsync())
+                {
+                    if (await reader.ReadAsync())
+                    {
+                        return new GetSqliteTypesCntRow
+                        {
+                            CInteger = reader.IsDBNull(0) ? (int? )null : reader.GetInt32(0),
+                            CReal = reader.IsDBNull(1) ? (decimal? )null : reader.GetDecimal(1),
+                            CText = reader.IsDBNull(2) ? null : reader.GetString(2),
+                            CBlob = reader.IsDBNull(3) ? null : reader.GetFieldValue<byte[]>(3),
+                            Cnt = reader.GetInt32(4)
+                        };
                     }
                 }
             }
@@ -852,53 +1015,56 @@ public class QuerySql
             return null;
         }
 
-        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
-            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
-        using (var command = this.Transaction.Connection.CreateCommand())
+        private const string GetSqliteFunctionsSql = "SELECT max(c_integer) AS max_integer, max(c_real) AS max_real, max(c_text) AS max_text FROM types_sqlite";
+        public class GetSqliteFunctionsRow
         {
-            command.CommandText = GetSqliteTypesCntSql;
-            command.Transaction = this.Transaction;
-            using (var reader = await command.ExecuteReaderAsync())
-            {
-                if (await reader.ReadAsync())
-                {
-                    return new GetSqliteTypesCntRow
-                    {
-                        CInteger = reader.IsDBNull(0) ? null : reader.GetInt32(0),
-                        CReal = reader.IsDBNull(1) ? null : reader.GetDecimal(1),
-                        CText = reader.IsDBNull(2) ? null : reader.GetString(2),
-                        CBlob = reader.IsDBNull(3) ? null : reader.GetFieldValue<byte[]>(3),
-                        Cnt = reader.GetInt32(4)
-                    };
-                }
-            }
-        }
-
-        return null;
-    }
-
-    private const string GetSqliteFunctionsSql = "SELECT max(c_integer) AS max_integer, max(c_real) AS max_real, max(c_text) AS max_text FROM types_sqlite";
-    public readonly record struct GetSqliteFunctionsRow(int? MaxInteger, decimal? MaxReal, object? MaxText);
-    public async Task<GetSqliteFunctionsRow?> GetSqliteFunctions()
-    {
-        if (this.Transaction == null)
+            public int? MaxInteger { get; set; }
+            public decimal? MaxReal { get; set; }
+            public object MaxText { get; set; }
+        };
+        public async Task<GetSqliteFunctionsRow> GetSqliteFunctions()
         {
-            using (var connection = new SqliteConnection(ConnectionString))
+            if (this.Transaction == null)
             {
-                await connection.OpenAsync();
-                using (var command = new SqliteCommand(GetSqliteFunctionsSql, connection))
+                using (var connection = new SqliteConnection(ConnectionString))
                 {
-                    using (var reader = await command.ExecuteReaderAsync())
+                    await connection.OpenAsync();
+                    using (var command = new SqliteCommand(GetSqliteFunctionsSql, connection))
                     {
-                        if (await reader.ReadAsync())
+                        using (var reader = await command.ExecuteReaderAsync())
                         {
-                            return new GetSqliteFunctionsRow
+                            if (await reader.ReadAsync())
                             {
-                                MaxInteger = reader.IsDBNull(0) ? null : reader.GetInt32(0),
-                                MaxReal = reader.IsDBNull(1) ? null : reader.GetDecimal(1),
-                                MaxText = reader.IsDBNull(2) ? null : reader.GetValue(2)
-                            };
+                                return new GetSqliteFunctionsRow
+                                {
+                                    MaxInteger = reader.IsDBNull(0) ? (int? )null : reader.GetInt32(0),
+                                    MaxReal = reader.IsDBNull(1) ? (decimal? )null : reader.GetDecimal(1),
+                                    MaxText = reader.IsDBNull(2) ? null : reader.GetValue(2)
+                                };
+                            }
                         }
+                    }
+                }
+
+                return null;
+            }
+
+            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+                throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+            using (var command = this.Transaction.Connection.CreateCommand())
+            {
+                command.CommandText = GetSqliteFunctionsSql;
+                command.Transaction = this.Transaction;
+                using (var reader = await command.ExecuteReaderAsync())
+                {
+                    if (await reader.ReadAsync())
+                    {
+                        return new GetSqliteFunctionsRow
+                        {
+                            MaxInteger = reader.IsDBNull(0) ? (int? )null : reader.GetInt32(0),
+                            MaxReal = reader.IsDBNull(1) ? (decimal? )null : reader.GetDecimal(1),
+                            MaxText = reader.IsDBNull(2) ? null : reader.GetValue(2)
+                        };
                     }
                 }
             }
@@ -906,53 +1072,31 @@ public class QuerySql
             return null;
         }
 
-        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
-            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
-        using (var command = this.Transaction.Connection.CreateCommand())
+        private const string DeleteAllSqliteTypesSql = "DELETE FROM types_sqlite";
+        public async Task DeleteAllSqliteTypes()
         {
-            command.CommandText = GetSqliteFunctionsSql;
-            command.Transaction = this.Transaction;
-            using (var reader = await command.ExecuteReaderAsync())
+            if (this.Transaction == null)
             {
-                if (await reader.ReadAsync())
+                using (var connection = new SqliteConnection(ConnectionString))
                 {
-                    return new GetSqliteFunctionsRow
+                    await connection.OpenAsync();
+                    using (var command = new SqliteCommand(DeleteAllSqliteTypesSql, connection))
                     {
-                        MaxInteger = reader.IsDBNull(0) ? null : reader.GetInt32(0),
-                        MaxReal = reader.IsDBNull(1) ? null : reader.GetDecimal(1),
-                        MaxText = reader.IsDBNull(2) ? null : reader.GetValue(2)
-                    };
+                        await command.ExecuteNonQueryAsync();
+                    }
                 }
+
+                return;
             }
-        }
 
-        return null;
-    }
-
-    private const string DeleteAllSqliteTypesSql = "DELETE FROM types_sqlite";
-    public async Task DeleteAllSqliteTypes()
-    {
-        if (this.Transaction == null)
-        {
-            using (var connection = new SqliteConnection(ConnectionString))
+            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+                throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+            using (var command = this.Transaction.Connection.CreateCommand())
             {
-                await connection.OpenAsync();
-                using (var command = new SqliteCommand(DeleteAllSqliteTypesSql, connection))
-                {
-                    await command.ExecuteNonQueryAsync();
-                }
+                command.CommandText = DeleteAllSqliteTypesSql;
+                command.Transaction = this.Transaction;
+                await command.ExecuteNonQueryAsync();
             }
-
-            return;
-        }
-
-        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
-            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
-        using (var command = this.Transaction.Connection.CreateCommand())
-        {
-            command.CommandText = DeleteAllSqliteTypesSql;
-            command.Transaction = this.Transaction;
-            await command.ExecuteNonQueryAsync();
         }
     }
 }

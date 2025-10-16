@@ -8,7 +8,6 @@
         <TargetFramework>net9.0</TargetFramework>
         <RootNamespace>SqliteExampleGen</RootNamespace>
         <OutputType>Library</OutputType>
-        <Nullable>enable</Nullable>
     </PropertyGroup>
 
     <ItemGroup>
