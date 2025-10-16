@@ -127,7 +127,30 @@ internal partial class QueriesGen(DbDriver dbDriver, string namespaceName)
     private MemberDeclarationSyntax? GetQueryParamsDataclass(Query query)
     {
         if (query.Params.Count <= 0) return null;
-        var columns = query.Params.Select(p => dbDriver.GetColumnFromParam(p, query)).ToList();
+        
+        // Group parameters by Column.Name to detect duplicates and conflicts
+        var parameterGroups = query.Params.GroupBy(p => p.Column.Name).ToList();
+        
+        // Check for nullable/non-nullable conflicts
+        foreach (var group in parameterGroups)
+        {
+            if (group.Count() > 1)
+            {
+                var nullabilityStates = group.Select(p => dbDriver.IsColumnNotNull(p.Column, query)).Distinct().ToList();
+                if (nullabilityStates.Count > 1)
+                {
+                    throw new InvalidOperationException(
+                        $"Duplicate identifier '{group.Key}' used on nullable and non-nullable arguments in query '{query.Name}'");
+                }
+            }
+        }
+        
+        // Deduplicate parameters by Column.Name to handle cases where the same named parameter
+        // is used multiple times in the SQL query (e.g., sqlc.narg(last_created_at) used 3 times)
+        var columns = parameterGroups
+            .Select(g => g.First()) // Take the first parameter for each unique name
+            .Select(p => dbDriver.GetColumnFromParam(p, query))
+            .ToList();
         return DataClassesGen.Generate(query.Name, ClassMember.Args, columns, dbDriver.Options, query);
     }
 
