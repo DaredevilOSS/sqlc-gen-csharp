@@ -1,19 +1,19 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net8.0</TargetFramework>
+        <TargetFramework>net9.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <RootNamespace>SqlcGenCsharp</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\CodeGenerator\CodeGenerator.csproj"/>
+        <ProjectReference Include="..\CodeGenerator\CodeGenerator.csproj" />
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Google.Protobuf" Version="3.26.0-rc2"/>
-        <PackageReference Include="protobuf-net" Version="3.2.30"/>
+        <PackageReference Include="Google.Protobuf" Version="3.33.0" />
+        <PackageReference Include="protobuf-net" Version="3.2.56" />
     </ItemGroup>
 
 </Project>
