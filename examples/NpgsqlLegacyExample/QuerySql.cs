@@ -796,7 +796,7 @@ namespace NpgsqlLegacyExampleGen
                                 {
                                     AuthorName = reader.GetString(0),
                                     Name = reader.GetString(1),
-                                    BioType = reader.IsDBNull(2) ? (ExtendedBioType? )null : reader.GetString(2).ToExtendedBioType()
+                                    BioType = reader.IsDBNull(2) ? (ExtendedBioType?)null : reader.GetString(2).ToExtendedBioType()
                                 };
                             }
                         }
@@ -821,7 +821,7 @@ namespace NpgsqlLegacyExampleGen
                         {
                             AuthorName = reader.GetString(0),
                             Name = reader.GetString(1),
-                            BioType = reader.IsDBNull(2) ? (ExtendedBioType? )null : reader.GetString(2).ToExtendedBioType()
+                            BioType = reader.IsDBNull(2) ? (ExtendedBioType?)null : reader.GetString(2).ToExtendedBioType()
                         };
                     }
                 }
@@ -877,7 +877,7 @@ namespace NpgsqlLegacyExampleGen
                             {
                                 return new GetPostgresFunctionsRow
                                 {
-                                    MaxInteger = reader.IsDBNull(0) ? (int? )null : reader.GetInt32(0),
+                                    MaxInteger = reader.IsDBNull(0) ? (int?)null : reader.GetInt32(0),
                                     MaxVarchar = reader.IsDBNull(1) ? null : reader.GetString(1),
                                     MaxTimestamp = reader.GetDateTime(2)
                                 };
@@ -901,7 +901,7 @@ namespace NpgsqlLegacyExampleGen
                     {
                         return new GetPostgresFunctionsRow
                         {
-                            MaxInteger = reader.IsDBNull(0) ? (int? )null : reader.GetInt32(0),
+                            MaxInteger = reader.IsDBNull(0) ? (int?)null : reader.GetInt32(0),
                             MaxVarchar = reader.IsDBNull(1) ? null : reader.GetString(1),
                             MaxTimestamp = reader.GetDateTime(2)
                         };
@@ -999,16 +999,16 @@ namespace NpgsqlLegacyExampleGen
                             {
                                 return new GetPostgresNumericTypesRow
                                 {
-                                    CBoolean = reader.IsDBNull(0) ? (bool? )null : reader.GetBoolean(0),
+                                    CBoolean = reader.IsDBNull(0) ? (bool?)null : reader.GetBoolean(0),
                                     CBit = reader.IsDBNull(1) ? null : reader.GetFieldValue<byte[]>(1),
-                                    CSmallint = reader.IsDBNull(2) ? (short? )null : reader.GetInt16(2),
-                                    CInteger = reader.IsDBNull(3) ? (int? )null : reader.GetInt32(3),
-                                    CBigint = reader.IsDBNull(4) ? (long? )null : reader.GetInt64(4),
-                                    CDecimal = reader.IsDBNull(5) ? (decimal? )null : reader.GetDecimal(5),
-                                    CNumeric = reader.IsDBNull(6) ? (decimal? )null : reader.GetDecimal(6),
-                                    CReal = reader.IsDBNull(7) ? (float? )null : reader.GetFloat(7),
-                                    CDoublePrecision = reader.IsDBNull(8) ? (double? )null : reader.GetDouble(8),
-                                    CMoney = reader.IsDBNull(9) ? (decimal? )null : reader.GetDecimal(9)
+                                    CSmallint = reader.IsDBNull(2) ? (short?)null : reader.GetInt16(2),
+                                    CInteger = reader.IsDBNull(3) ? (int?)null : reader.GetInt32(3),
+                                    CBigint = reader.IsDBNull(4) ? (long?)null : reader.GetInt64(4),
+                                    CDecimal = reader.IsDBNull(5) ? (decimal?)null : reader.GetDecimal(5),
+                                    CNumeric = reader.IsDBNull(6) ? (decimal?)null : reader.GetDecimal(6),
+                                    CReal = reader.IsDBNull(7) ? (float?)null : reader.GetFloat(7),
+                                    CDoublePrecision = reader.IsDBNull(8) ? (double?)null : reader.GetDouble(8),
+                                    CMoney = reader.IsDBNull(9) ? (decimal?)null : reader.GetDecimal(9)
                                 };
                             }
                         }
@@ -1030,16 +1030,16 @@ namespace NpgsqlLegacyExampleGen
                     {
                         return new GetPostgresNumericTypesRow
                         {
-                            CBoolean = reader.IsDBNull(0) ? (bool? )null : reader.GetBoolean(0),
+                            CBoolean = reader.IsDBNull(0) ? (bool?)null : reader.GetBoolean(0),
                             CBit = reader.IsDBNull(1) ? null : reader.GetFieldValue<byte[]>(1),
-                            CSmallint = reader.IsDBNull(2) ? (short? )null : reader.GetInt16(2),
-                            CInteger = reader.IsDBNull(3) ? (int? )null : reader.GetInt32(3),
-                            CBigint = reader.IsDBNull(4) ? (long? )null : reader.GetInt64(4),
-                            CDecimal = reader.IsDBNull(5) ? (decimal? )null : reader.GetDecimal(5),
-                            CNumeric = reader.IsDBNull(6) ? (decimal? )null : reader.GetDecimal(6),
-                            CReal = reader.IsDBNull(7) ? (float? )null : reader.GetFloat(7),
-                            CDoublePrecision = reader.IsDBNull(8) ? (double? )null : reader.GetDouble(8),
-                            CMoney = reader.IsDBNull(9) ? (decimal? )null : reader.GetDecimal(9)
+                            CSmallint = reader.IsDBNull(2) ? (short?)null : reader.GetInt16(2),
+                            CInteger = reader.IsDBNull(3) ? (int?)null : reader.GetInt32(3),
+                            CBigint = reader.IsDBNull(4) ? (long?)null : reader.GetInt64(4),
+                            CDecimal = reader.IsDBNull(5) ? (decimal?)null : reader.GetDecimal(5),
+                            CNumeric = reader.IsDBNull(6) ? (decimal?)null : reader.GetDecimal(6),
+                            CReal = reader.IsDBNull(7) ? (float?)null : reader.GetFloat(7),
+                            CDoublePrecision = reader.IsDBNull(8) ? (double?)null : reader.GetDouble(8),
+                            CMoney = reader.IsDBNull(9) ? (decimal?)null : reader.GetDecimal(9)
                         };
                     }
                 }
@@ -1103,16 +1103,16 @@ namespace NpgsqlLegacyExampleGen
                             {
                                 return new GetPostgresNumericTypesCntRow
                                 {
-                                    CBoolean = reader.IsDBNull(0) ? (bool? )null : reader.GetBoolean(0),
+                                    CBoolean = reader.IsDBNull(0) ? (bool?)null : reader.GetBoolean(0),
                                     CBit = reader.IsDBNull(1) ? null : reader.GetFieldValue<byte[]>(1),
-                                    CSmallint = reader.IsDBNull(2) ? (short? )null : reader.GetInt16(2),
-                                    CInteger = reader.IsDBNull(3) ? (int? )null : reader.GetInt32(3),
-                                    CBigint = reader.IsDBNull(4) ? (long? )null : reader.GetInt64(4),
-                                    CDecimal = reader.IsDBNull(5) ? (decimal? )null : reader.GetDecimal(5),
-                                    CNumeric = reader.IsDBNull(6) ? (decimal? )null : reader.GetDecimal(6),
-                                    CReal = reader.IsDBNull(7) ? (float? )null : reader.GetFloat(7),
-                                    CDoublePrecision = reader.IsDBNull(8) ? (double? )null : reader.GetDouble(8),
-                                    CMoney = reader.IsDBNull(9) ? (decimal? )null : reader.GetDecimal(9),
+                                    CSmallint = reader.IsDBNull(2) ? (short?)null : reader.GetInt16(2),
+                                    CInteger = reader.IsDBNull(3) ? (int?)null : reader.GetInt32(3),
+                                    CBigint = reader.IsDBNull(4) ? (long?)null : reader.GetInt64(4),
+                                    CDecimal = reader.IsDBNull(5) ? (decimal?)null : reader.GetDecimal(5),
+                                    CNumeric = reader.IsDBNull(6) ? (decimal?)null : reader.GetDecimal(6),
+                                    CReal = reader.IsDBNull(7) ? (float?)null : reader.GetFloat(7),
+                                    CDoublePrecision = reader.IsDBNull(8) ? (double?)null : reader.GetDouble(8),
+                                    CMoney = reader.IsDBNull(9) ? (decimal?)null : reader.GetDecimal(9),
                                     Cnt = reader.GetInt64(10)
                                 };
                             }
@@ -1135,16 +1135,16 @@ namespace NpgsqlLegacyExampleGen
                     {
                         return new GetPostgresNumericTypesCntRow
                         {
-                            CBoolean = reader.IsDBNull(0) ? (bool? )null : reader.GetBoolean(0),
+                            CBoolean = reader.IsDBNull(0) ? (bool?)null : reader.GetBoolean(0),
                             CBit = reader.IsDBNull(1) ? null : reader.GetFieldValue<byte[]>(1),
-                            CSmallint = reader.IsDBNull(2) ? (short? )null : reader.GetInt16(2),
-                            CInteger = reader.IsDBNull(3) ? (int? )null : reader.GetInt32(3),
-                            CBigint = reader.IsDBNull(4) ? (long? )null : reader.GetInt64(4),
-                            CDecimal = reader.IsDBNull(5) ? (decimal? )null : reader.GetDecimal(5),
-                            CNumeric = reader.IsDBNull(6) ? (decimal? )null : reader.GetDecimal(6),
-                            CReal = reader.IsDBNull(7) ? (float? )null : reader.GetFloat(7),
-                            CDoublePrecision = reader.IsDBNull(8) ? (double? )null : reader.GetDouble(8),
-                            CMoney = reader.IsDBNull(9) ? (decimal? )null : reader.GetDecimal(9),
+                            CSmallint = reader.IsDBNull(2) ? (short?)null : reader.GetInt16(2),
+                            CInteger = reader.IsDBNull(3) ? (int?)null : reader.GetInt32(3),
+                            CBigint = reader.IsDBNull(4) ? (long?)null : reader.GetInt64(4),
+                            CDecimal = reader.IsDBNull(5) ? (decimal?)null : reader.GetDecimal(5),
+                            CNumeric = reader.IsDBNull(6) ? (decimal?)null : reader.GetDecimal(6),
+                            CReal = reader.IsDBNull(7) ? (float?)null : reader.GetFloat(7),
+                            CDoublePrecision = reader.IsDBNull(8) ? (double?)null : reader.GetDouble(8),
+                            CMoney = reader.IsDBNull(9) ? (decimal?)null : reader.GetDecimal(9),
                             Cnt = reader.GetInt64(10)
                         };
                     }
@@ -1515,7 +1515,7 @@ namespace NpgsqlLegacyExampleGen
                         command.Parameters.AddWithValue("@c_timestamp", NpgsqlDbType.Timestamp, args.CTimestamp ?? (object)DBNull.Value);
                         command.Parameters.AddWithValue("@c_timestamp_with_tz", NpgsqlDbType.TimestampTz, args.CTimestampWithTz ?? (object)DBNull.Value);
                         command.Parameters.AddWithValue("@c_interval", NpgsqlDbType.Interval, args.CInterval ?? (object)DBNull.Value);
-                        command.Parameters.AddWithValue("@c_timestamp_noda_instant_override", NpgsqlDbType.Timestamp, args.CTimestampNodaInstantOverride is null ? (object)DBNull.Value : (DateTime? )DateTime.SpecifyKind(args.CTimestampNodaInstantOverride.Value.ToDateTimeUtc(), DateTimeKind.Unspecified));
+                        command.Parameters.AddWithValue("@c_timestamp_noda_instant_override", NpgsqlDbType.Timestamp, args.CTimestampNodaInstantOverride is null ? (object)DBNull.Value : (DateTime?)DateTime.SpecifyKind(args.CTimestampNodaInstantOverride.Value.ToDateTimeUtc(), DateTimeKind.Unspecified));
                         await command.ExecuteNonQueryAsync();
                     }
                 }
@@ -1534,7 +1534,7 @@ namespace NpgsqlLegacyExampleGen
                 command.Parameters.AddWithValue("@c_timestamp", NpgsqlDbType.Timestamp, args.CTimestamp ?? (object)DBNull.Value);
                 command.Parameters.AddWithValue("@c_timestamp_with_tz", NpgsqlDbType.TimestampTz, args.CTimestampWithTz ?? (object)DBNull.Value);
                 command.Parameters.AddWithValue("@c_interval", NpgsqlDbType.Interval, args.CInterval ?? (object)DBNull.Value);
-                command.Parameters.AddWithValue("@c_timestamp_noda_instant_override", NpgsqlDbType.Timestamp, args.CTimestampNodaInstantOverride is null ? (object)DBNull.Value : (DateTime? )DateTime.SpecifyKind(args.CTimestampNodaInstantOverride.Value.ToDateTimeUtc(), DateTimeKind.Unspecified));
+                command.Parameters.AddWithValue("@c_timestamp_noda_instant_override", NpgsqlDbType.Timestamp, args.CTimestampNodaInstantOverride is null ? (object)DBNull.Value : (DateTime?)DateTime.SpecifyKind(args.CTimestampNodaInstantOverride.Value.ToDateTimeUtc(), DateTimeKind.Unspecified));
                 await command.ExecuteNonQueryAsync();
             }
         }
@@ -1563,12 +1563,12 @@ namespace NpgsqlLegacyExampleGen
                             {
                                 return new GetPostgresDateTimeTypesRow
                                 {
-                                    CDate = reader.IsDBNull(0) ? (DateTime? )null : reader.GetDateTime(0),
-                                    CTime = reader.IsDBNull(1) ? (TimeSpan? )null : reader.GetFieldValue<TimeSpan>(1),
-                                    CTimestamp = reader.IsDBNull(2) ? (DateTime? )null : reader.GetDateTime(2),
-                                    CTimestampWithTz = reader.IsDBNull(3) ? (DateTime? )null : reader.GetDateTime(3),
-                                    CInterval = reader.IsDBNull(4) ? (TimeSpan? )null : reader.GetFieldValue<TimeSpan>(4),
-                                    CTimestampNodaInstantOverride = reader.IsDBNull(5) ? (Instant? )null : (new Func<NpgsqlDataReader, int, Instant>((r, o) =>
+                                    CDate = reader.IsDBNull(0) ? (DateTime?)null : reader.GetDateTime(0),
+                                    CTime = reader.IsDBNull(1) ? (TimeSpan?)null : reader.GetFieldValue<TimeSpan>(1),
+                                    CTimestamp = reader.IsDBNull(2) ? (DateTime?)null : reader.GetDateTime(2),
+                                    CTimestampWithTz = reader.IsDBNull(3) ? (DateTime?)null : reader.GetDateTime(3),
+                                    CInterval = reader.IsDBNull(4) ? (TimeSpan?)null : reader.GetFieldValue<TimeSpan>(4),
+                                    CTimestampNodaInstantOverride = reader.IsDBNull(5) ? (Instant?)null : (new Func<NpgsqlDataReader, int, Instant>((r, o) =>
                                     {
                                         var dt = reader.GetDateTime(o);
                                         if (dt.Kind != DateTimeKind.Utc)
@@ -1596,12 +1596,12 @@ namespace NpgsqlLegacyExampleGen
                     {
                         return new GetPostgresDateTimeTypesRow
                         {
-                            CDate = reader.IsDBNull(0) ? (DateTime? )null : reader.GetDateTime(0),
-                            CTime = reader.IsDBNull(1) ? (TimeSpan? )null : reader.GetFieldValue<TimeSpan>(1),
-                            CTimestamp = reader.IsDBNull(2) ? (DateTime? )null : reader.GetDateTime(2),
-                            CTimestampWithTz = reader.IsDBNull(3) ? (DateTime? )null : reader.GetDateTime(3),
-                            CInterval = reader.IsDBNull(4) ? (TimeSpan? )null : reader.GetFieldValue<TimeSpan>(4),
-                            CTimestampNodaInstantOverride = reader.IsDBNull(5) ? (Instant? )null : (new Func<NpgsqlDataReader, int, Instant>((r, o) =>
+                            CDate = reader.IsDBNull(0) ? (DateTime?)null : reader.GetDateTime(0),
+                            CTime = reader.IsDBNull(1) ? (TimeSpan?)null : reader.GetFieldValue<TimeSpan>(1),
+                            CTimestamp = reader.IsDBNull(2) ? (DateTime?)null : reader.GetDateTime(2),
+                            CTimestampWithTz = reader.IsDBNull(3) ? (DateTime?)null : reader.GetDateTime(3),
+                            CInterval = reader.IsDBNull(4) ? (TimeSpan?)null : reader.GetFieldValue<TimeSpan>(4),
+                            CTimestampNodaInstantOverride = reader.IsDBNull(5) ? (Instant?)null : (new Func<NpgsqlDataReader, int, Instant>((r, o) =>
                             {
                                 var dt = reader.GetDateTime(o);
                                 if (dt.Kind != DateTimeKind.Utc)
@@ -1666,11 +1666,11 @@ namespace NpgsqlLegacyExampleGen
                             {
                                 return new GetPostgresDateTimeTypesCntRow
                                 {
-                                    CDate = reader.IsDBNull(0) ? (DateTime? )null : reader.GetDateTime(0),
-                                    CTime = reader.IsDBNull(1) ? (TimeSpan? )null : reader.GetFieldValue<TimeSpan>(1),
-                                    CTimestamp = reader.IsDBNull(2) ? (DateTime? )null : reader.GetDateTime(2),
-                                    CTimestampWithTz = reader.IsDBNull(3) ? (DateTime? )null : reader.GetDateTime(3),
-                                    CInterval = reader.IsDBNull(4) ? (TimeSpan? )null : reader.GetFieldValue<TimeSpan>(4),
+                                    CDate = reader.IsDBNull(0) ? (DateTime?)null : reader.GetDateTime(0),
+                                    CTime = reader.IsDBNull(1) ? (TimeSpan?)null : reader.GetFieldValue<TimeSpan>(1),
+                                    CTimestamp = reader.IsDBNull(2) ? (DateTime?)null : reader.GetDateTime(2),
+                                    CTimestampWithTz = reader.IsDBNull(3) ? (DateTime?)null : reader.GetDateTime(3),
+                                    CInterval = reader.IsDBNull(4) ? (TimeSpan?)null : reader.GetFieldValue<TimeSpan>(4),
                                     Cnt = reader.GetInt64(5)
                                 };
                             }
@@ -1693,11 +1693,11 @@ namespace NpgsqlLegacyExampleGen
                     {
                         return new GetPostgresDateTimeTypesCntRow
                         {
-                            CDate = reader.IsDBNull(0) ? (DateTime? )null : reader.GetDateTime(0),
-                            CTime = reader.IsDBNull(1) ? (TimeSpan? )null : reader.GetFieldValue<TimeSpan>(1),
-                            CTimestamp = reader.IsDBNull(2) ? (DateTime? )null : reader.GetDateTime(2),
-                            CTimestampWithTz = reader.IsDBNull(3) ? (DateTime? )null : reader.GetDateTime(3),
-                            CInterval = reader.IsDBNull(4) ? (TimeSpan? )null : reader.GetFieldValue<TimeSpan>(4),
+                            CDate = reader.IsDBNull(0) ? (DateTime?)null : reader.GetDateTime(0),
+                            CTime = reader.IsDBNull(1) ? (TimeSpan?)null : reader.GetFieldValue<TimeSpan>(1),
+                            CTimestamp = reader.IsDBNull(2) ? (DateTime?)null : reader.GetDateTime(2),
+                            CTimestampWithTz = reader.IsDBNull(3) ? (DateTime?)null : reader.GetDateTime(3),
+                            CInterval = reader.IsDBNull(4) ? (TimeSpan?)null : reader.GetFieldValue<TimeSpan>(4),
                             Cnt = reader.GetInt64(5)
                         };
                     }
@@ -1803,7 +1803,7 @@ namespace NpgsqlLegacyExampleGen
                             {
                                 return new GetPostgresNetworkTypesRow
                                 {
-                                    CCidr = reader.IsDBNull(0) ? (NpgsqlCidr? )null : reader.GetFieldValue<NpgsqlCidr>(0),
+                                    CCidr = reader.IsDBNull(0) ? (NpgsqlCidr?)null : reader.GetFieldValue<NpgsqlCidr>(0),
                                     CInet = reader.IsDBNull(1) ? null : reader.GetFieldValue<IPAddress>(1),
                                     CMacaddr = reader.IsDBNull(2) ? null : reader.GetFieldValue<PhysicalAddress>(2),
                                     CMacaddr8 = reader.IsDBNull(3) ? null : reader.GetString(3)
@@ -1828,7 +1828,7 @@ namespace NpgsqlLegacyExampleGen
                     {
                         return new GetPostgresNetworkTypesRow
                         {
-                            CCidr = reader.IsDBNull(0) ? (NpgsqlCidr? )null : reader.GetFieldValue<NpgsqlCidr>(0),
+                            CCidr = reader.IsDBNull(0) ? (NpgsqlCidr?)null : reader.GetFieldValue<NpgsqlCidr>(0),
                             CInet = reader.IsDBNull(1) ? null : reader.GetFieldValue<IPAddress>(1),
                             CMacaddr = reader.IsDBNull(2) ? null : reader.GetFieldValue<PhysicalAddress>(2),
                             CMacaddr8 = reader.IsDBNull(3) ? null : reader.GetString(3)
@@ -1888,7 +1888,7 @@ namespace NpgsqlLegacyExampleGen
                             {
                                 return new GetPostgresNetworkTypesCntRow
                                 {
-                                    CCidr = reader.IsDBNull(0) ? (NpgsqlCidr? )null : reader.GetFieldValue<NpgsqlCidr>(0),
+                                    CCidr = reader.IsDBNull(0) ? (NpgsqlCidr?)null : reader.GetFieldValue<NpgsqlCidr>(0),
                                     CInet = reader.IsDBNull(1) ? null : reader.GetFieldValue<IPAddress>(1),
                                     CMacaddr = reader.IsDBNull(2) ? null : reader.GetFieldValue<PhysicalAddress>(2),
                                     Cnt = reader.GetInt64(3)
@@ -1913,7 +1913,7 @@ namespace NpgsqlLegacyExampleGen
                     {
                         return new GetPostgresNetworkTypesCntRow
                         {
-                            CCidr = reader.IsDBNull(0) ? (NpgsqlCidr? )null : reader.GetFieldValue<NpgsqlCidr>(0),
+                            CCidr = reader.IsDBNull(0) ? (NpgsqlCidr?)null : reader.GetFieldValue<NpgsqlCidr>(0),
                             CInet = reader.IsDBNull(1) ? null : reader.GetFieldValue<IPAddress>(1),
                             CMacaddr = reader.IsDBNull(2) ? null : reader.GetFieldValue<PhysicalAddress>(2),
                             Cnt = reader.GetInt64(3)
@@ -2141,9 +2141,9 @@ namespace NpgsqlLegacyExampleGen
                             {
                                 return new GetPostgresSpecialTypesRow
                                 {
-                                    CJson = reader.IsDBNull(0) ? (JsonElement? )null : JsonSerializer.Deserialize<JsonElement>(reader.GetString(0)),
+                                    CJson = reader.IsDBNull(0) ? (JsonElement?)null : JsonSerializer.Deserialize<JsonElement>(reader.GetString(0)),
                                     CJsonStringOverride = reader.IsDBNull(1) ? null : reader.GetString(1),
-                                    CJsonb = reader.IsDBNull(2) ? (JsonElement? )null : JsonSerializer.Deserialize<JsonElement>(reader.GetString(2)),
+                                    CJsonb = reader.IsDBNull(2) ? (JsonElement?)null : JsonSerializer.Deserialize<JsonElement>(reader.GetString(2)),
                                     CJsonpath = reader.IsDBNull(3) ? null : reader.GetString(3),
                                     CXml = reader.IsDBNull(4) ? null : (new Func<NpgsqlDataReader, int, XmlDocument>((r, o) =>
                                     {
@@ -2152,8 +2152,8 @@ namespace NpgsqlLegacyExampleGen
                                         return xmlDoc;
                                     }))(reader, 4),
                                     CXmlStringOverride = reader.IsDBNull(5) ? null : reader.GetString(5),
-                                    CUuid = reader.IsDBNull(6) ? (Guid? )null : reader.GetFieldValue<Guid>(6),
-                                    CEnum = reader.IsDBNull(7) ? (CEnum? )null : reader.GetString(7).ToCEnum()
+                                    CUuid = reader.IsDBNull(6) ? (Guid?)null : reader.GetFieldValue<Guid>(6),
+                                    CEnum = reader.IsDBNull(7) ? (CEnum?)null : reader.GetString(7).ToCEnum()
                                 };
                             }
                         }
@@ -2175,9 +2175,9 @@ namespace NpgsqlLegacyExampleGen
                     {
                         return new GetPostgresSpecialTypesRow
                         {
-                            CJson = reader.IsDBNull(0) ? (JsonElement? )null : JsonSerializer.Deserialize<JsonElement>(reader.GetString(0)),
+                            CJson = reader.IsDBNull(0) ? (JsonElement?)null : JsonSerializer.Deserialize<JsonElement>(reader.GetString(0)),
                             CJsonStringOverride = reader.IsDBNull(1) ? null : reader.GetString(1),
-                            CJsonb = reader.IsDBNull(2) ? (JsonElement? )null : JsonSerializer.Deserialize<JsonElement>(reader.GetString(2)),
+                            CJsonb = reader.IsDBNull(2) ? (JsonElement?)null : JsonSerializer.Deserialize<JsonElement>(reader.GetString(2)),
                             CJsonpath = reader.IsDBNull(3) ? null : reader.GetString(3),
                             CXml = reader.IsDBNull(4) ? null : (new Func<NpgsqlDataReader, int, XmlDocument>((r, o) =>
                             {
@@ -2186,8 +2186,8 @@ namespace NpgsqlLegacyExampleGen
                                 return xmlDoc;
                             }))(reader, 4),
                             CXmlStringOverride = reader.IsDBNull(5) ? null : reader.GetString(5),
-                            CUuid = reader.IsDBNull(6) ? (Guid? )null : reader.GetFieldValue<Guid>(6),
-                            CEnum = reader.IsDBNull(7) ? (CEnum? )null : reader.GetString(7).ToCEnum()
+                            CUuid = reader.IsDBNull(6) ? (Guid?)null : reader.GetFieldValue<Guid>(6),
+                            CEnum = reader.IsDBNull(7) ? (CEnum?)null : reader.GetString(7).ToCEnum()
                         };
                     }
                 }
@@ -2273,9 +2273,9 @@ namespace NpgsqlLegacyExampleGen
                             {
                                 return new GetPostgresSpecialTypesCntRow
                                 {
-                                    CUuid = reader.IsDBNull(0) ? (Guid? )null : reader.GetFieldValue<Guid>(0),
-                                    CJson = reader.IsDBNull(1) ? (JsonElement? )null : JsonSerializer.Deserialize<JsonElement>(reader.GetString(1)),
-                                    CJsonb = reader.IsDBNull(2) ? (JsonElement? )null : JsonSerializer.Deserialize<JsonElement>(reader.GetString(2)),
+                                    CUuid = reader.IsDBNull(0) ? (Guid?)null : reader.GetFieldValue<Guid>(0),
+                                    CJson = reader.IsDBNull(1) ? (JsonElement?)null : JsonSerializer.Deserialize<JsonElement>(reader.GetString(1)),
+                                    CJsonb = reader.IsDBNull(2) ? (JsonElement?)null : JsonSerializer.Deserialize<JsonElement>(reader.GetString(2)),
                                     Cnt = reader.GetInt64(3)
                                 };
                             }
@@ -2298,9 +2298,9 @@ namespace NpgsqlLegacyExampleGen
                     {
                         return new GetPostgresSpecialTypesCntRow
                         {
-                            CUuid = reader.IsDBNull(0) ? (Guid? )null : reader.GetFieldValue<Guid>(0),
-                            CJson = reader.IsDBNull(1) ? (JsonElement? )null : JsonSerializer.Deserialize<JsonElement>(reader.GetString(1)),
-                            CJsonb = reader.IsDBNull(2) ? (JsonElement? )null : JsonSerializer.Deserialize<JsonElement>(reader.GetString(2)),
+                            CUuid = reader.IsDBNull(0) ? (Guid?)null : reader.GetFieldValue<Guid>(0),
+                            CJson = reader.IsDBNull(1) ? (JsonElement?)null : JsonSerializer.Deserialize<JsonElement>(reader.GetString(1)),
+                            CJsonb = reader.IsDBNull(2) ? (JsonElement?)null : JsonSerializer.Deserialize<JsonElement>(reader.GetString(2)),
                             Cnt = reader.GetInt64(3)
                         };
                     }
@@ -2669,13 +2669,13 @@ namespace NpgsqlLegacyExampleGen
                             {
                                 return new GetPostgresGeoTypesRow
                                 {
-                                    CPoint = reader.IsDBNull(0) ? (NpgsqlPoint? )null : reader.GetFieldValue<NpgsqlPoint>(0),
-                                    CLine = reader.IsDBNull(1) ? (NpgsqlLine? )null : reader.GetFieldValue<NpgsqlLine>(1),
-                                    CLseg = reader.IsDBNull(2) ? (NpgsqlLSeg? )null : reader.GetFieldValue<NpgsqlLSeg>(2),
-                                    CBox = reader.IsDBNull(3) ? (NpgsqlBox? )null : reader.GetFieldValue<NpgsqlBox>(3),
-                                    CPath = reader.IsDBNull(4) ? (NpgsqlPath? )null : reader.GetFieldValue<NpgsqlPath>(4),
-                                    CPolygon = reader.IsDBNull(5) ? (NpgsqlPolygon? )null : reader.GetFieldValue<NpgsqlPolygon>(5),
-                                    CCircle = reader.IsDBNull(6) ? (NpgsqlCircle? )null : reader.GetFieldValue<NpgsqlCircle>(6)
+                                    CPoint = reader.IsDBNull(0) ? (NpgsqlPoint?)null : reader.GetFieldValue<NpgsqlPoint>(0),
+                                    CLine = reader.IsDBNull(1) ? (NpgsqlLine?)null : reader.GetFieldValue<NpgsqlLine>(1),
+                                    CLseg = reader.IsDBNull(2) ? (NpgsqlLSeg?)null : reader.GetFieldValue<NpgsqlLSeg>(2),
+                                    CBox = reader.IsDBNull(3) ? (NpgsqlBox?)null : reader.GetFieldValue<NpgsqlBox>(3),
+                                    CPath = reader.IsDBNull(4) ? (NpgsqlPath?)null : reader.GetFieldValue<NpgsqlPath>(4),
+                                    CPolygon = reader.IsDBNull(5) ? (NpgsqlPolygon?)null : reader.GetFieldValue<NpgsqlPolygon>(5),
+                                    CCircle = reader.IsDBNull(6) ? (NpgsqlCircle?)null : reader.GetFieldValue<NpgsqlCircle>(6)
                                 };
                             }
                         }
@@ -2697,13 +2697,13 @@ namespace NpgsqlLegacyExampleGen
                     {
                         return new GetPostgresGeoTypesRow
                         {
-                            CPoint = reader.IsDBNull(0) ? (NpgsqlPoint? )null : reader.GetFieldValue<NpgsqlPoint>(0),
-                            CLine = reader.IsDBNull(1) ? (NpgsqlLine? )null : reader.GetFieldValue<NpgsqlLine>(1),
-                            CLseg = reader.IsDBNull(2) ? (NpgsqlLSeg? )null : reader.GetFieldValue<NpgsqlLSeg>(2),
-                            CBox = reader.IsDBNull(3) ? (NpgsqlBox? )null : reader.GetFieldValue<NpgsqlBox>(3),
-                            CPath = reader.IsDBNull(4) ? (NpgsqlPath? )null : reader.GetFieldValue<NpgsqlPath>(4),
-                            CPolygon = reader.IsDBNull(5) ? (NpgsqlPolygon? )null : reader.GetFieldValue<NpgsqlPolygon>(5),
-                            CCircle = reader.IsDBNull(6) ? (NpgsqlCircle? )null : reader.GetFieldValue<NpgsqlCircle>(6)
+                            CPoint = reader.IsDBNull(0) ? (NpgsqlPoint?)null : reader.GetFieldValue<NpgsqlPoint>(0),
+                            CLine = reader.IsDBNull(1) ? (NpgsqlLine?)null : reader.GetFieldValue<NpgsqlLine>(1),
+                            CLseg = reader.IsDBNull(2) ? (NpgsqlLSeg?)null : reader.GetFieldValue<NpgsqlLSeg>(2),
+                            CBox = reader.IsDBNull(3) ? (NpgsqlBox?)null : reader.GetFieldValue<NpgsqlBox>(3),
+                            CPath = reader.IsDBNull(4) ? (NpgsqlPath?)null : reader.GetFieldValue<NpgsqlPath>(4),
+                            CPolygon = reader.IsDBNull(5) ? (NpgsqlPolygon?)null : reader.GetFieldValue<NpgsqlPolygon>(5),
+                            CCircle = reader.IsDBNull(6) ? (NpgsqlCircle?)null : reader.GetFieldValue<NpgsqlCircle>(6)
                         };
                     }
                 }

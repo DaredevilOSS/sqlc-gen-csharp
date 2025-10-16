@@ -547,11 +547,11 @@ namespace SqliteDapperLegacyExampleGen
             queryParams.Add("c_text", args.CText);
             queryParams.Add("c_blob", args.CBlob);
             queryParams.Add("c_text_datetime_override", args.CTextDatetimeOverride != null ? args.CTextDatetimeOverride.Value.ToString("yyyy-MM-dd HH:mm:ss") : null);
-            queryParams.Add("c_integer_datetime_override", args.CIntegerDatetimeOverride != null ? (int? )new DateTimeOffset(args.CIntegerDatetimeOverride.Value.ToUniversalTime()).ToUnixTimeSeconds() : null);
+            queryParams.Add("c_integer_datetime_override", args.CIntegerDatetimeOverride != null ? (int?)new DateTimeOffset(args.CIntegerDatetimeOverride.Value.ToUniversalTime()).ToUnixTimeSeconds() : null);
             queryParams.Add("c_text_noda_instant_override", args.CTextNodaInstantOverride != null ? InstantPattern.CreateWithInvariantCulture("yyyy-MM-dd HH:mm:ss").Format(args.CTextNodaInstantOverride.Value) : null);
-            queryParams.Add("c_integer_noda_instant_override", args.CIntegerNodaInstantOverride != null ? (long? )args.CIntegerNodaInstantOverride.Value.ToUnixTimeSeconds() : null);
+            queryParams.Add("c_integer_noda_instant_override", args.CIntegerNodaInstantOverride != null ? (long?)args.CIntegerNodaInstantOverride.Value.ToUnixTimeSeconds() : null);
             queryParams.Add("c_text_bool_override", args.CTextBoolOverride != null ? Convert.ToString(args.CTextBoolOverride) : null);
-            queryParams.Add("c_integer_bool_override", args.CIntegerBoolOverride != null ? (int? )Convert.ToInt32(args.CIntegerBoolOverride) : null);
+            queryParams.Add("c_integer_bool_override", args.CIntegerBoolOverride != null ? (int?)Convert.ToInt32(args.CIntegerBoolOverride) : null);
             if (this.Transaction == null)
             {
                 using (var connection = new SqliteConnection(ConnectionString))

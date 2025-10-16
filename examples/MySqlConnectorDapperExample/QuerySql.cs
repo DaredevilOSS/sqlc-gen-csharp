@@ -972,7 +972,7 @@ namespace MySqlConnectorDapperExampleGen
             queryParams.Add("c_datetime", args.CDatetime);
             queryParams.Add("c_timestamp", args.CTimestamp);
             queryParams.Add("c_time", args.CTime);
-            queryParams.Add("c_timestamp_noda_instant_override", args.CTimestampNodaInstantOverride is null ? null : (DateTime? )DateTime.SpecifyKind(args.CTimestampNodaInstantOverride.Value.ToDateTimeUtc(), DateTimeKind.Unspecified));
+            queryParams.Add("c_timestamp_noda_instant_override", args.CTimestampNodaInstantOverride is null ? null : (DateTime?)DateTime.SpecifyKind(args.CTimestampNodaInstantOverride.Value.ToDateTimeUtc(), DateTimeKind.Unspecified));
             if (this.Transaction == null)
             {
                 using (var connection = new MySqlConnection(ConnectionString))

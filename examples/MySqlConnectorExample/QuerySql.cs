@@ -791,7 +791,7 @@ namespace MySqlConnectorExampleGen
                                 {
                                     AuthorName = reader.IsDBNull(0) ? null : reader.GetString(0),
                                     Name = reader.IsDBNull(1) ? null : reader.GetString(1),
-                                    BioType = reader.IsDBNull(2) ? (BiosBioType? )null : reader.GetString(2).ToBiosBioType(),
+                                    BioType = reader.IsDBNull(2) ? (BiosBioType?)null : reader.GetString(2).ToBiosBioType(),
                                     AuthorType = reader.IsDBNull(3) ? null : reader.GetString(3).ToBiosAuthorTypeSet()
                                 };
                             }
@@ -817,7 +817,7 @@ namespace MySqlConnectorExampleGen
                         {
                             AuthorName = reader.IsDBNull(0) ? null : reader.GetString(0),
                             Name = reader.IsDBNull(1) ? null : reader.GetString(1),
-                            BioType = reader.IsDBNull(2) ? (BiosBioType? )null : reader.GetString(2).ToBiosBioType(),
+                            BioType = reader.IsDBNull(2) ? (BiosBioType?)null : reader.GetString(2).ToBiosBioType(),
                             AuthorType = reader.IsDBNull(3) ? null : reader.GetString(3).ToBiosAuthorTypeSet()
                         };
                     }
@@ -1032,21 +1032,21 @@ namespace MySqlConnectorExampleGen
                             {
                                 return new GetMysqlNumericTypesRow
                                 {
-                                    CBool = reader.IsDBNull(0) ? (bool? )null : reader.GetBoolean(0),
-                                    CBoolean = reader.IsDBNull(1) ? (bool? )null : reader.GetBoolean(1),
-                                    CTinyint = reader.IsDBNull(2) ? (short? )null : reader.GetInt16(2),
-                                    CSmallint = reader.IsDBNull(3) ? (short? )null : reader.GetInt16(3),
-                                    CMediumint = reader.IsDBNull(4) ? (int? )null : reader.GetInt32(4),
-                                    CInt = reader.IsDBNull(5) ? (int? )null : reader.GetInt32(5),
-                                    CInteger = reader.IsDBNull(6) ? (int? )null : reader.GetInt32(6),
-                                    CBigint = reader.IsDBNull(7) ? (long? )null : reader.GetInt64(7),
-                                    CFloat = reader.IsDBNull(8) ? (double? )null : reader.GetDouble(8),
-                                    CDecimal = reader.IsDBNull(9) ? (decimal? )null : reader.GetDecimal(9),
-                                    CDec = reader.IsDBNull(10) ? (decimal? )null : reader.GetDecimal(10),
-                                    CNumeric = reader.IsDBNull(11) ? (decimal? )null : reader.GetDecimal(11),
-                                    CFixed = reader.IsDBNull(12) ? (decimal? )null : reader.GetDecimal(12),
-                                    CDouble = reader.IsDBNull(13) ? (double? )null : reader.GetDouble(13),
-                                    CDoublePrecision = reader.IsDBNull(14) ? (double? )null : reader.GetDouble(14)
+                                    CBool = reader.IsDBNull(0) ? (bool?)null : reader.GetBoolean(0),
+                                    CBoolean = reader.IsDBNull(1) ? (bool?)null : reader.GetBoolean(1),
+                                    CTinyint = reader.IsDBNull(2) ? (short?)null : reader.GetInt16(2),
+                                    CSmallint = reader.IsDBNull(3) ? (short?)null : reader.GetInt16(3),
+                                    CMediumint = reader.IsDBNull(4) ? (int?)null : reader.GetInt32(4),
+                                    CInt = reader.IsDBNull(5) ? (int?)null : reader.GetInt32(5),
+                                    CInteger = reader.IsDBNull(6) ? (int?)null : reader.GetInt32(6),
+                                    CBigint = reader.IsDBNull(7) ? (long?)null : reader.GetInt64(7),
+                                    CFloat = reader.IsDBNull(8) ? (double?)null : reader.GetDouble(8),
+                                    CDecimal = reader.IsDBNull(9) ? (decimal?)null : reader.GetDecimal(9),
+                                    CDec = reader.IsDBNull(10) ? (decimal?)null : reader.GetDecimal(10),
+                                    CNumeric = reader.IsDBNull(11) ? (decimal?)null : reader.GetDecimal(11),
+                                    CFixed = reader.IsDBNull(12) ? (decimal?)null : reader.GetDecimal(12),
+                                    CDouble = reader.IsDBNull(13) ? (double?)null : reader.GetDouble(13),
+                                    CDoublePrecision = reader.IsDBNull(14) ? (double?)null : reader.GetDouble(14)
                                 };
                             }
                         }
@@ -1068,21 +1068,21 @@ namespace MySqlConnectorExampleGen
                     {
                         return new GetMysqlNumericTypesRow
                         {
-                            CBool = reader.IsDBNull(0) ? (bool? )null : reader.GetBoolean(0),
-                            CBoolean = reader.IsDBNull(1) ? (bool? )null : reader.GetBoolean(1),
-                            CTinyint = reader.IsDBNull(2) ? (short? )null : reader.GetInt16(2),
-                            CSmallint = reader.IsDBNull(3) ? (short? )null : reader.GetInt16(3),
-                            CMediumint = reader.IsDBNull(4) ? (int? )null : reader.GetInt32(4),
-                            CInt = reader.IsDBNull(5) ? (int? )null : reader.GetInt32(5),
-                            CInteger = reader.IsDBNull(6) ? (int? )null : reader.GetInt32(6),
-                            CBigint = reader.IsDBNull(7) ? (long? )null : reader.GetInt64(7),
-                            CFloat = reader.IsDBNull(8) ? (double? )null : reader.GetDouble(8),
-                            CDecimal = reader.IsDBNull(9) ? (decimal? )null : reader.GetDecimal(9),
-                            CDec = reader.IsDBNull(10) ? (decimal? )null : reader.GetDecimal(10),
-                            CNumeric = reader.IsDBNull(11) ? (decimal? )null : reader.GetDecimal(11),
-                            CFixed = reader.IsDBNull(12) ? (decimal? )null : reader.GetDecimal(12),
-                            CDouble = reader.IsDBNull(13) ? (double? )null : reader.GetDouble(13),
-                            CDoublePrecision = reader.IsDBNull(14) ? (double? )null : reader.GetDouble(14)
+                            CBool = reader.IsDBNull(0) ? (bool?)null : reader.GetBoolean(0),
+                            CBoolean = reader.IsDBNull(1) ? (bool?)null : reader.GetBoolean(1),
+                            CTinyint = reader.IsDBNull(2) ? (short?)null : reader.GetInt16(2),
+                            CSmallint = reader.IsDBNull(3) ? (short?)null : reader.GetInt16(3),
+                            CMediumint = reader.IsDBNull(4) ? (int?)null : reader.GetInt32(4),
+                            CInt = reader.IsDBNull(5) ? (int?)null : reader.GetInt32(5),
+                            CInteger = reader.IsDBNull(6) ? (int?)null : reader.GetInt32(6),
+                            CBigint = reader.IsDBNull(7) ? (long?)null : reader.GetInt64(7),
+                            CFloat = reader.IsDBNull(8) ? (double?)null : reader.GetDouble(8),
+                            CDecimal = reader.IsDBNull(9) ? (decimal?)null : reader.GetDecimal(9),
+                            CDec = reader.IsDBNull(10) ? (decimal?)null : reader.GetDecimal(10),
+                            CNumeric = reader.IsDBNull(11) ? (decimal?)null : reader.GetDecimal(11),
+                            CFixed = reader.IsDBNull(12) ? (decimal?)null : reader.GetDecimal(12),
+                            CDouble = reader.IsDBNull(13) ? (double?)null : reader.GetDouble(13),
+                            CDoublePrecision = reader.IsDBNull(14) ? (double?)null : reader.GetDouble(14)
                         };
                     }
                 }
@@ -1127,21 +1127,21 @@ namespace MySqlConnectorExampleGen
                                 return new GetMysqlNumericTypesCntRow
                                 {
                                     Cnt = reader.GetInt64(0),
-                                    CBool = reader.IsDBNull(1) ? (bool? )null : reader.GetBoolean(1),
-                                    CBoolean = reader.IsDBNull(2) ? (bool? )null : reader.GetBoolean(2),
-                                    CTinyint = reader.IsDBNull(3) ? (short? )null : reader.GetInt16(3),
-                                    CSmallint = reader.IsDBNull(4) ? (short? )null : reader.GetInt16(4),
-                                    CMediumint = reader.IsDBNull(5) ? (int? )null : reader.GetInt32(5),
-                                    CInt = reader.IsDBNull(6) ? (int? )null : reader.GetInt32(6),
-                                    CInteger = reader.IsDBNull(7) ? (int? )null : reader.GetInt32(7),
-                                    CBigint = reader.IsDBNull(8) ? (long? )null : reader.GetInt64(8),
-                                    CFloat = reader.IsDBNull(9) ? (double? )null : reader.GetDouble(9),
-                                    CNumeric = reader.IsDBNull(10) ? (decimal? )null : reader.GetDecimal(10),
-                                    CDecimal = reader.IsDBNull(11) ? (decimal? )null : reader.GetDecimal(11),
-                                    CDec = reader.IsDBNull(12) ? (decimal? )null : reader.GetDecimal(12),
-                                    CFixed = reader.IsDBNull(13) ? (decimal? )null : reader.GetDecimal(13),
-                                    CDouble = reader.IsDBNull(14) ? (double? )null : reader.GetDouble(14),
-                                    CDoublePrecision = reader.IsDBNull(15) ? (double? )null : reader.GetDouble(15)
+                                    CBool = reader.IsDBNull(1) ? (bool?)null : reader.GetBoolean(1),
+                                    CBoolean = reader.IsDBNull(2) ? (bool?)null : reader.GetBoolean(2),
+                                    CTinyint = reader.IsDBNull(3) ? (short?)null : reader.GetInt16(3),
+                                    CSmallint = reader.IsDBNull(4) ? (short?)null : reader.GetInt16(4),
+                                    CMediumint = reader.IsDBNull(5) ? (int?)null : reader.GetInt32(5),
+                                    CInt = reader.IsDBNull(6) ? (int?)null : reader.GetInt32(6),
+                                    CInteger = reader.IsDBNull(7) ? (int?)null : reader.GetInt32(7),
+                                    CBigint = reader.IsDBNull(8) ? (long?)null : reader.GetInt64(8),
+                                    CFloat = reader.IsDBNull(9) ? (double?)null : reader.GetDouble(9),
+                                    CNumeric = reader.IsDBNull(10) ? (decimal?)null : reader.GetDecimal(10),
+                                    CDecimal = reader.IsDBNull(11) ? (decimal?)null : reader.GetDecimal(11),
+                                    CDec = reader.IsDBNull(12) ? (decimal?)null : reader.GetDecimal(12),
+                                    CFixed = reader.IsDBNull(13) ? (decimal?)null : reader.GetDecimal(13),
+                                    CDouble = reader.IsDBNull(14) ? (double?)null : reader.GetDouble(14),
+                                    CDoublePrecision = reader.IsDBNull(15) ? (double?)null : reader.GetDouble(15)
                                 };
                             }
                         }
@@ -1164,21 +1164,21 @@ namespace MySqlConnectorExampleGen
                         return new GetMysqlNumericTypesCntRow
                         {
                             Cnt = reader.GetInt64(0),
-                            CBool = reader.IsDBNull(1) ? (bool? )null : reader.GetBoolean(1),
-                            CBoolean = reader.IsDBNull(2) ? (bool? )null : reader.GetBoolean(2),
-                            CTinyint = reader.IsDBNull(3) ? (short? )null : reader.GetInt16(3),
-                            CSmallint = reader.IsDBNull(4) ? (short? )null : reader.GetInt16(4),
-                            CMediumint = reader.IsDBNull(5) ? (int? )null : reader.GetInt32(5),
-                            CInt = reader.IsDBNull(6) ? (int? )null : reader.GetInt32(6),
-                            CInteger = reader.IsDBNull(7) ? (int? )null : reader.GetInt32(7),
-                            CBigint = reader.IsDBNull(8) ? (long? )null : reader.GetInt64(8),
-                            CFloat = reader.IsDBNull(9) ? (double? )null : reader.GetDouble(9),
-                            CNumeric = reader.IsDBNull(10) ? (decimal? )null : reader.GetDecimal(10),
-                            CDecimal = reader.IsDBNull(11) ? (decimal? )null : reader.GetDecimal(11),
-                            CDec = reader.IsDBNull(12) ? (decimal? )null : reader.GetDecimal(12),
-                            CFixed = reader.IsDBNull(13) ? (decimal? )null : reader.GetDecimal(13),
-                            CDouble = reader.IsDBNull(14) ? (double? )null : reader.GetDouble(14),
-                            CDoublePrecision = reader.IsDBNull(15) ? (double? )null : reader.GetDouble(15)
+                            CBool = reader.IsDBNull(1) ? (bool?)null : reader.GetBoolean(1),
+                            CBoolean = reader.IsDBNull(2) ? (bool?)null : reader.GetBoolean(2),
+                            CTinyint = reader.IsDBNull(3) ? (short?)null : reader.GetInt16(3),
+                            CSmallint = reader.IsDBNull(4) ? (short?)null : reader.GetInt16(4),
+                            CMediumint = reader.IsDBNull(5) ? (int?)null : reader.GetInt32(5),
+                            CInt = reader.IsDBNull(6) ? (int?)null : reader.GetInt32(6),
+                            CInteger = reader.IsDBNull(7) ? (int?)null : reader.GetInt32(7),
+                            CBigint = reader.IsDBNull(8) ? (long?)null : reader.GetInt64(8),
+                            CFloat = reader.IsDBNull(9) ? (double?)null : reader.GetDouble(9),
+                            CNumeric = reader.IsDBNull(10) ? (decimal?)null : reader.GetDecimal(10),
+                            CDecimal = reader.IsDBNull(11) ? (decimal?)null : reader.GetDecimal(11),
+                            CDec = reader.IsDBNull(12) ? (decimal?)null : reader.GetDecimal(12),
+                            CFixed = reader.IsDBNull(13) ? (decimal?)null : reader.GetDecimal(13),
+                            CDouble = reader.IsDBNull(14) ? (double?)null : reader.GetDouble(14),
+                            CDoublePrecision = reader.IsDBNull(15) ? (double?)null : reader.GetDouble(15)
                         };
                     }
                 }
@@ -1382,9 +1382,9 @@ namespace MySqlConnectorExampleGen
                                     CMediumtext = reader.IsDBNull(5) ? null : reader.GetString(5),
                                     CText = reader.IsDBNull(6) ? null : reader.GetString(6),
                                     CLongtext = reader.IsDBNull(7) ? null : reader.GetString(7),
-                                    CJson = reader.IsDBNull(8) ? (JsonElement? )null : JsonSerializer.Deserialize<JsonElement>(reader.GetString(8)),
+                                    CJson = reader.IsDBNull(8) ? (JsonElement?)null : JsonSerializer.Deserialize<JsonElement>(reader.GetString(8)),
                                     CJsonStringOverride = reader.IsDBNull(9) ? null : reader.GetString(9),
-                                    CEnum = reader.IsDBNull(10) ? (MysqlStringTypesCEnum? )null : reader.GetString(10).ToMysqlStringTypesCEnum(),
+                                    CEnum = reader.IsDBNull(10) ? (MysqlStringTypesCEnum?)null : reader.GetString(10).ToMysqlStringTypesCEnum(),
                                     CSet = reader.IsDBNull(11) ? null : reader.GetString(11).ToMysqlStringTypesCSetSet()
                                 };
                             }
@@ -1415,9 +1415,9 @@ namespace MySqlConnectorExampleGen
                             CMediumtext = reader.IsDBNull(5) ? null : reader.GetString(5),
                             CText = reader.IsDBNull(6) ? null : reader.GetString(6),
                             CLongtext = reader.IsDBNull(7) ? null : reader.GetString(7),
-                            CJson = reader.IsDBNull(8) ? (JsonElement? )null : JsonSerializer.Deserialize<JsonElement>(reader.GetString(8)),
+                            CJson = reader.IsDBNull(8) ? (JsonElement?)null : JsonSerializer.Deserialize<JsonElement>(reader.GetString(8)),
                             CJsonStringOverride = reader.IsDBNull(9) ? null : reader.GetString(9),
-                            CEnum = reader.IsDBNull(10) ? (MysqlStringTypesCEnum? )null : reader.GetString(10).ToMysqlStringTypesCEnum(),
+                            CEnum = reader.IsDBNull(10) ? (MysqlStringTypesCEnum?)null : reader.GetString(10).ToMysqlStringTypesCEnum(),
                             CSet = reader.IsDBNull(11) ? null : reader.GetString(11).ToMysqlStringTypesCSetSet()
                         };
                     }
@@ -1468,9 +1468,9 @@ namespace MySqlConnectorExampleGen
                                     CMediumtext = reader.IsDBNull(6) ? null : reader.GetString(6),
                                     CText = reader.IsDBNull(7) ? null : reader.GetString(7),
                                     CLongtext = reader.IsDBNull(8) ? null : reader.GetString(8),
-                                    CJson = reader.IsDBNull(9) ? (JsonElement? )null : JsonSerializer.Deserialize<JsonElement>(reader.GetString(9)),
+                                    CJson = reader.IsDBNull(9) ? (JsonElement?)null : JsonSerializer.Deserialize<JsonElement>(reader.GetString(9)),
                                     CJsonStringOverride = reader.IsDBNull(10) ? null : reader.GetString(10),
-                                    CEnum = reader.IsDBNull(11) ? (MysqlStringTypesCEnum? )null : reader.GetString(11).ToMysqlStringTypesCEnum(),
+                                    CEnum = reader.IsDBNull(11) ? (MysqlStringTypesCEnum?)null : reader.GetString(11).ToMysqlStringTypesCEnum(),
                                     CSet = reader.IsDBNull(12) ? null : reader.GetString(12).ToMysqlStringTypesCSetSet()
                                 };
                             }
@@ -1502,9 +1502,9 @@ namespace MySqlConnectorExampleGen
                             CMediumtext = reader.IsDBNull(6) ? null : reader.GetString(6),
                             CText = reader.IsDBNull(7) ? null : reader.GetString(7),
                             CLongtext = reader.IsDBNull(8) ? null : reader.GetString(8),
-                            CJson = reader.IsDBNull(9) ? (JsonElement? )null : JsonSerializer.Deserialize<JsonElement>(reader.GetString(9)),
+                            CJson = reader.IsDBNull(9) ? (JsonElement?)null : JsonSerializer.Deserialize<JsonElement>(reader.GetString(9)),
                             CJsonStringOverride = reader.IsDBNull(10) ? null : reader.GetString(10),
-                            CEnum = reader.IsDBNull(11) ? (MysqlStringTypesCEnum? )null : reader.GetString(11).ToMysqlStringTypesCEnum(),
+                            CEnum = reader.IsDBNull(11) ? (MysqlStringTypesCEnum?)null : reader.GetString(11).ToMysqlStringTypesCEnum(),
                             CSet = reader.IsDBNull(12) ? null : reader.GetString(12).ToMysqlStringTypesCSetSet()
                         };
                     }
@@ -1565,7 +1565,7 @@ namespace MySqlConnectorExampleGen
                         command.Parameters.AddWithValue("@c_datetime", args.CDatetime ?? (object)DBNull.Value);
                         command.Parameters.AddWithValue("@c_timestamp", args.CTimestamp ?? (object)DBNull.Value);
                         command.Parameters.AddWithValue("@c_time", args.CTime ?? (object)DBNull.Value);
-                        command.Parameters.AddWithValue("@c_timestamp_noda_instant_override", args.CTimestampNodaInstantOverride is null ? (object)DBNull.Value : (DateTime? )DateTime.SpecifyKind(args.CTimestampNodaInstantOverride.Value.ToDateTimeUtc(), DateTimeKind.Unspecified));
+                        command.Parameters.AddWithValue("@c_timestamp_noda_instant_override", args.CTimestampNodaInstantOverride is null ? (object)DBNull.Value : (DateTime?)DateTime.SpecifyKind(args.CTimestampNodaInstantOverride.Value.ToDateTimeUtc(), DateTimeKind.Unspecified));
                         await command.ExecuteNonQueryAsync();
                     }
                 }
@@ -1584,7 +1584,7 @@ namespace MySqlConnectorExampleGen
                 command.Parameters.AddWithValue("@c_datetime", args.CDatetime ?? (object)DBNull.Value);
                 command.Parameters.AddWithValue("@c_timestamp", args.CTimestamp ?? (object)DBNull.Value);
                 command.Parameters.AddWithValue("@c_time", args.CTime ?? (object)DBNull.Value);
-                command.Parameters.AddWithValue("@c_timestamp_noda_instant_override", args.CTimestampNodaInstantOverride is null ? (object)DBNull.Value : (DateTime? )DateTime.SpecifyKind(args.CTimestampNodaInstantOverride.Value.ToDateTimeUtc(), DateTimeKind.Unspecified));
+                command.Parameters.AddWithValue("@c_timestamp_noda_instant_override", args.CTimestampNodaInstantOverride is null ? (object)DBNull.Value : (DateTime?)DateTime.SpecifyKind(args.CTimestampNodaInstantOverride.Value.ToDateTimeUtc(), DateTimeKind.Unspecified));
                 await command.ExecuteNonQueryAsync();
             }
         }
@@ -1669,12 +1669,12 @@ namespace MySqlConnectorExampleGen
                             {
                                 return new GetMysqlDatetimeTypesRow
                                 {
-                                    CYear = reader.IsDBNull(0) ? (short? )null : reader.GetInt16(0),
-                                    CDate = reader.IsDBNull(1) ? (DateTime? )null : reader.GetDateTime(1),
-                                    CDatetime = reader.IsDBNull(2) ? (DateTime? )null : reader.GetDateTime(2),
-                                    CTimestamp = reader.IsDBNull(3) ? (DateTime? )null : reader.GetDateTime(3),
-                                    CTime = reader.IsDBNull(4) ? (TimeSpan? )null : reader.GetFieldValue<TimeSpan>(4),
-                                    CTimestampNodaInstantOverride = reader.IsDBNull(5) ? (Instant? )null : (new Func<MySqlDataReader, int, Instant>((r, o) =>
+                                    CYear = reader.IsDBNull(0) ? (short?)null : reader.GetInt16(0),
+                                    CDate = reader.IsDBNull(1) ? (DateTime?)null : reader.GetDateTime(1),
+                                    CDatetime = reader.IsDBNull(2) ? (DateTime?)null : reader.GetDateTime(2),
+                                    CTimestamp = reader.IsDBNull(3) ? (DateTime?)null : reader.GetDateTime(3),
+                                    CTime = reader.IsDBNull(4) ? (TimeSpan?)null : reader.GetFieldValue<TimeSpan>(4),
+                                    CTimestampNodaInstantOverride = reader.IsDBNull(5) ? (Instant?)null : (new Func<MySqlDataReader, int, Instant>((r, o) =>
                                     {
                                         var dt = reader.GetDateTime(o);
                                         if (dt.Kind != DateTimeKind.Utc)
@@ -1702,12 +1702,12 @@ namespace MySqlConnectorExampleGen
                     {
                         return new GetMysqlDatetimeTypesRow
                         {
-                            CYear = reader.IsDBNull(0) ? (short? )null : reader.GetInt16(0),
-                            CDate = reader.IsDBNull(1) ? (DateTime? )null : reader.GetDateTime(1),
-                            CDatetime = reader.IsDBNull(2) ? (DateTime? )null : reader.GetDateTime(2),
-                            CTimestamp = reader.IsDBNull(3) ? (DateTime? )null : reader.GetDateTime(3),
-                            CTime = reader.IsDBNull(4) ? (TimeSpan? )null : reader.GetFieldValue<TimeSpan>(4),
-                            CTimestampNodaInstantOverride = reader.IsDBNull(5) ? (Instant? )null : (new Func<MySqlDataReader, int, Instant>((r, o) =>
+                            CYear = reader.IsDBNull(0) ? (short?)null : reader.GetInt16(0),
+                            CDate = reader.IsDBNull(1) ? (DateTime?)null : reader.GetDateTime(1),
+                            CDatetime = reader.IsDBNull(2) ? (DateTime?)null : reader.GetDateTime(2),
+                            CTimestamp = reader.IsDBNull(3) ? (DateTime?)null : reader.GetDateTime(3),
+                            CTime = reader.IsDBNull(4) ? (TimeSpan?)null : reader.GetFieldValue<TimeSpan>(4),
+                            CTimestampNodaInstantOverride = reader.IsDBNull(5) ? (Instant?)null : (new Func<MySqlDataReader, int, Instant>((r, o) =>
                             {
                                 var dt = reader.GetDateTime(o);
                                 if (dt.Kind != DateTimeKind.Utc)
@@ -1748,11 +1748,11 @@ namespace MySqlConnectorExampleGen
                                 return new GetMysqlDatetimeTypesCntRow
                                 {
                                     Cnt = reader.GetInt64(0),
-                                    CYear = reader.IsDBNull(1) ? (short? )null : reader.GetInt16(1),
-                                    CDate = reader.IsDBNull(2) ? (DateTime? )null : reader.GetDateTime(2),
-                                    CDatetime = reader.IsDBNull(3) ? (DateTime? )null : reader.GetDateTime(3),
-                                    CTimestamp = reader.IsDBNull(4) ? (DateTime? )null : reader.GetDateTime(4),
-                                    CTime = reader.IsDBNull(5) ? (TimeSpan? )null : reader.GetFieldValue<TimeSpan>(5)
+                                    CYear = reader.IsDBNull(1) ? (short?)null : reader.GetInt16(1),
+                                    CDate = reader.IsDBNull(2) ? (DateTime?)null : reader.GetDateTime(2),
+                                    CDatetime = reader.IsDBNull(3) ? (DateTime?)null : reader.GetDateTime(3),
+                                    CTimestamp = reader.IsDBNull(4) ? (DateTime?)null : reader.GetDateTime(4),
+                                    CTime = reader.IsDBNull(5) ? (TimeSpan?)null : reader.GetFieldValue<TimeSpan>(5)
                                 };
                             }
                         }
@@ -1775,11 +1775,11 @@ namespace MySqlConnectorExampleGen
                         return new GetMysqlDatetimeTypesCntRow
                         {
                             Cnt = reader.GetInt64(0),
-                            CYear = reader.IsDBNull(1) ? (short? )null : reader.GetInt16(1),
-                            CDate = reader.IsDBNull(2) ? (DateTime? )null : reader.GetDateTime(2),
-                            CDatetime = reader.IsDBNull(3) ? (DateTime? )null : reader.GetDateTime(3),
-                            CTimestamp = reader.IsDBNull(4) ? (DateTime? )null : reader.GetDateTime(4),
-                            CTime = reader.IsDBNull(5) ? (TimeSpan? )null : reader.GetFieldValue<TimeSpan>(5)
+                            CYear = reader.IsDBNull(1) ? (short?)null : reader.GetInt16(1),
+                            CDate = reader.IsDBNull(2) ? (DateTime?)null : reader.GetDateTime(2),
+                            CDatetime = reader.IsDBNull(3) ? (DateTime?)null : reader.GetDateTime(3),
+                            CTimestamp = reader.IsDBNull(4) ? (DateTime?)null : reader.GetDateTime(4),
+                            CTime = reader.IsDBNull(5) ? (TimeSpan?)null : reader.GetFieldValue<TimeSpan>(5)
                         };
                     }
                 }
@@ -1949,7 +1949,7 @@ namespace MySqlConnectorExampleGen
                             {
                                 return new GetMysqlBinaryTypesRow
                                 {
-                                    CBit = reader.IsDBNull(0) ? (byte? )null : reader.GetFieldValue<byte>(0),
+                                    CBit = reader.IsDBNull(0) ? (byte?)null : reader.GetFieldValue<byte>(0),
                                     CBinary = reader.IsDBNull(1) ? null : reader.GetFieldValue<byte[]>(1),
                                     CVarbinary = reader.IsDBNull(2) ? null : reader.GetFieldValue<byte[]>(2),
                                     CTinyblob = reader.IsDBNull(3) ? null : reader.GetFieldValue<byte[]>(3),
@@ -1977,7 +1977,7 @@ namespace MySqlConnectorExampleGen
                     {
                         return new GetMysqlBinaryTypesRow
                         {
-                            CBit = reader.IsDBNull(0) ? (byte? )null : reader.GetFieldValue<byte>(0),
+                            CBit = reader.IsDBNull(0) ? (byte?)null : reader.GetFieldValue<byte>(0),
                             CBinary = reader.IsDBNull(1) ? null : reader.GetFieldValue<byte[]>(1),
                             CVarbinary = reader.IsDBNull(2) ? null : reader.GetFieldValue<byte[]>(2),
                             CTinyblob = reader.IsDBNull(3) ? null : reader.GetFieldValue<byte[]>(3),
@@ -2020,7 +2020,7 @@ namespace MySqlConnectorExampleGen
                                 return new GetMysqlBinaryTypesCntRow
                                 {
                                     Cnt = reader.GetInt64(0),
-                                    CBit = reader.IsDBNull(1) ? (byte? )null : reader.GetFieldValue<byte>(1),
+                                    CBit = reader.IsDBNull(1) ? (byte?)null : reader.GetFieldValue<byte>(1),
                                     CBinary = reader.IsDBNull(2) ? null : reader.GetFieldValue<byte[]>(2),
                                     CVarbinary = reader.IsDBNull(3) ? null : reader.GetFieldValue<byte[]>(3),
                                     CTinyblob = reader.IsDBNull(4) ? null : reader.GetFieldValue<byte[]>(4),
@@ -2049,7 +2049,7 @@ namespace MySqlConnectorExampleGen
                         return new GetMysqlBinaryTypesCntRow
                         {
                             Cnt = reader.GetInt64(0),
-                            CBit = reader.IsDBNull(1) ? (byte? )null : reader.GetFieldValue<byte>(1),
+                            CBit = reader.IsDBNull(1) ? (byte?)null : reader.GetFieldValue<byte>(1),
                             CBinary = reader.IsDBNull(2) ? null : reader.GetFieldValue<byte[]>(2),
                             CVarbinary = reader.IsDBNull(3) ? null : reader.GetFieldValue<byte[]>(3),
                             CTinyblob = reader.IsDBNull(4) ? null : reader.GetFieldValue<byte[]>(4),
@@ -2113,7 +2113,7 @@ namespace MySqlConnectorExampleGen
                             {
                                 return new GetMysqlFunctionsRow
                                 {
-                                    MaxInt = reader.IsDBNull(0) ? (int? )null : reader.GetInt32(0),
+                                    MaxInt = reader.IsDBNull(0) ? (int?)null : reader.GetInt32(0),
                                     MaxVarchar = reader.IsDBNull(1) ? null : reader.GetString(1),
                                     MaxTimestamp = reader.GetDateTime(2)
                                 };
@@ -2137,7 +2137,7 @@ namespace MySqlConnectorExampleGen
                     {
                         return new GetMysqlFunctionsRow
                         {
-                            MaxInt = reader.IsDBNull(0) ? (int? )null : reader.GetInt32(0),
+                            MaxInt = reader.IsDBNull(0) ? (int?)null : reader.GetInt32(0),
                             MaxVarchar = reader.IsDBNull(1) ? null : reader.GetString(1),
                             MaxTimestamp = reader.GetDateTime(2)
                         };
