@@ -701,11 +701,11 @@ public class QuerySql
                     command.Parameters.AddWithValue("@c_text", args.CText ?? (object)DBNull.Value);
                     command.Parameters.AddWithValue("@c_blob", args.CBlob ?? (object)DBNull.Value);
                     command.Parameters.AddWithValue("@c_text_datetime_override", args.CTextDatetimeOverride != null ? args.CTextDatetimeOverride.Value.ToString("yyyy-MM-dd HH:mm:ss") : (object)DBNull.Value);
-                    command.Parameters.AddWithValue("@c_integer_datetime_override", args.CIntegerDatetimeOverride != null ? (int?)new DateTimeOffset(args.CIntegerDatetimeOverride.Value.ToUniversalTime()).ToUnixTimeSeconds() : (object)DBNull.Value);
+                    command.Parameters.AddWithValue("@c_integer_datetime_override", args.CIntegerDatetimeOverride != null ? (int? )new DateTimeOffset(args.CIntegerDatetimeOverride.Value.ToUniversalTime()).ToUnixTimeSeconds() : (object)DBNull.Value);
                     command.Parameters.AddWithValue("@c_text_noda_instant_override", args.CTextNodaInstantOverride != null ? InstantPattern.CreateWithInvariantCulture("yyyy-MM-dd HH:mm:ss").Format(args.CTextNodaInstantOverride.Value) : (object)DBNull.Value);
-                    command.Parameters.AddWithValue("@c_integer_noda_instant_override", args.CIntegerNodaInstantOverride != null ? (long?)args.CIntegerNodaInstantOverride.Value.ToUnixTimeSeconds() : (object)DBNull.Value);
+                    command.Parameters.AddWithValue("@c_integer_noda_instant_override", args.CIntegerNodaInstantOverride != null ? (long? )args.CIntegerNodaInstantOverride.Value.ToUnixTimeSeconds() : (object)DBNull.Value);
                     command.Parameters.AddWithValue("@c_text_bool_override", args.CTextBoolOverride != null ? Convert.ToString(args.CTextBoolOverride) : (object)DBNull.Value);
-                    command.Parameters.AddWithValue("@c_integer_bool_override", args.CIntegerBoolOverride != null ? (int?)Convert.ToInt32(args.CIntegerBoolOverride) : (object)DBNull.Value);
+                    command.Parameters.AddWithValue("@c_integer_bool_override", args.CIntegerBoolOverride != null ? (int? )Convert.ToInt32(args.CIntegerBoolOverride) : (object)DBNull.Value);
                     await command.ExecuteNonQueryAsync();
                 }
             }
@@ -724,11 +724,11 @@ public class QuerySql
             command.Parameters.AddWithValue("@c_text", args.CText ?? (object)DBNull.Value);
             command.Parameters.AddWithValue("@c_blob", args.CBlob ?? (object)DBNull.Value);
             command.Parameters.AddWithValue("@c_text_datetime_override", args.CTextDatetimeOverride != null ? args.CTextDatetimeOverride.Value.ToString("yyyy-MM-dd HH:mm:ss") : (object)DBNull.Value);
-            command.Parameters.AddWithValue("@c_integer_datetime_override", args.CIntegerDatetimeOverride != null ? (int?)new DateTimeOffset(args.CIntegerDatetimeOverride.Value.ToUniversalTime()).ToUnixTimeSeconds() : (object)DBNull.Value);
+            command.Parameters.AddWithValue("@c_integer_datetime_override", args.CIntegerDatetimeOverride != null ? (int? )new DateTimeOffset(args.CIntegerDatetimeOverride.Value.ToUniversalTime()).ToUnixTimeSeconds() : (object)DBNull.Value);
             command.Parameters.AddWithValue("@c_text_noda_instant_override", args.CTextNodaInstantOverride != null ? InstantPattern.CreateWithInvariantCulture("yyyy-MM-dd HH:mm:ss").Format(args.CTextNodaInstantOverride.Value) : (object)DBNull.Value);
-            command.Parameters.AddWithValue("@c_integer_noda_instant_override", args.CIntegerNodaInstantOverride != null ? (long?)args.CIntegerNodaInstantOverride.Value.ToUnixTimeSeconds() : (object)DBNull.Value);
+            command.Parameters.AddWithValue("@c_integer_noda_instant_override", args.CIntegerNodaInstantOverride != null ? (long? )args.CIntegerNodaInstantOverride.Value.ToUnixTimeSeconds() : (object)DBNull.Value);
             command.Parameters.AddWithValue("@c_text_bool_override", args.CTextBoolOverride != null ? Convert.ToString(args.CTextBoolOverride) : (object)DBNull.Value);
-            command.Parameters.AddWithValue("@c_integer_bool_override", args.CIntegerBoolOverride != null ? (int?)Convert.ToInt32(args.CIntegerBoolOverride) : (object)DBNull.Value);
+            command.Parameters.AddWithValue("@c_integer_bool_override", args.CIntegerBoolOverride != null ? (int? )Convert.ToInt32(args.CIntegerBoolOverride) : (object)DBNull.Value);
             await command.ExecuteNonQueryAsync();
         }
     }

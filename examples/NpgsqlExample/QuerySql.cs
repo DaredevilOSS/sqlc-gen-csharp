@@ -1304,7 +1304,7 @@ public class QuerySql
                     command.Parameters.AddWithValue("@c_timestamp", NpgsqlDbType.Timestamp, args.CTimestamp ?? (object)DBNull.Value);
                     command.Parameters.AddWithValue("@c_timestamp_with_tz", NpgsqlDbType.TimestampTz, args.CTimestampWithTz ?? (object)DBNull.Value);
                     command.Parameters.AddWithValue("@c_interval", NpgsqlDbType.Interval, args.CInterval ?? (object)DBNull.Value);
-                    command.Parameters.AddWithValue("@c_timestamp_noda_instant_override", NpgsqlDbType.Timestamp, args.CTimestampNodaInstantOverride is null ? (object)DBNull.Value : (DateTime?)DateTime.SpecifyKind(args.CTimestampNodaInstantOverride.Value.ToDateTimeUtc(), DateTimeKind.Unspecified));
+                    command.Parameters.AddWithValue("@c_timestamp_noda_instant_override", NpgsqlDbType.Timestamp, args.CTimestampNodaInstantOverride is null ? (object)DBNull.Value : (DateTime? )DateTime.SpecifyKind(args.CTimestampNodaInstantOverride.Value.ToDateTimeUtc(), DateTimeKind.Unspecified));
                     await command.ExecuteNonQueryAsync();
                 }
             }
@@ -1323,7 +1323,7 @@ public class QuerySql
             command.Parameters.AddWithValue("@c_timestamp", NpgsqlDbType.Timestamp, args.CTimestamp ?? (object)DBNull.Value);
             command.Parameters.AddWithValue("@c_timestamp_with_tz", NpgsqlDbType.TimestampTz, args.CTimestampWithTz ?? (object)DBNull.Value);
             command.Parameters.AddWithValue("@c_interval", NpgsqlDbType.Interval, args.CInterval ?? (object)DBNull.Value);
-            command.Parameters.AddWithValue("@c_timestamp_noda_instant_override", NpgsqlDbType.Timestamp, args.CTimestampNodaInstantOverride is null ? (object)DBNull.Value : (DateTime?)DateTime.SpecifyKind(args.CTimestampNodaInstantOverride.Value.ToDateTimeUtc(), DateTimeKind.Unspecified));
+            command.Parameters.AddWithValue("@c_timestamp_noda_instant_override", NpgsqlDbType.Timestamp, args.CTimestampNodaInstantOverride is null ? (object)DBNull.Value : (DateTime? )DateTime.SpecifyKind(args.CTimestampNodaInstantOverride.Value.ToDateTimeUtc(), DateTimeKind.Unspecified));
             await command.ExecuteNonQueryAsync();
         }
     }

@@ -1330,7 +1330,7 @@ public class QuerySql
                     command.Parameters.AddWithValue("@c_datetime", args.CDatetime ?? (object)DBNull.Value);
                     command.Parameters.AddWithValue("@c_timestamp", args.CTimestamp ?? (object)DBNull.Value);
                     command.Parameters.AddWithValue("@c_time", args.CTime ?? (object)DBNull.Value);
-                    command.Parameters.AddWithValue("@c_timestamp_noda_instant_override", args.CTimestampNodaInstantOverride is null ? (object)DBNull.Value : (DateTime?)DateTime.SpecifyKind(args.CTimestampNodaInstantOverride.Value.ToDateTimeUtc(), DateTimeKind.Unspecified));
+                    command.Parameters.AddWithValue("@c_timestamp_noda_instant_override", args.CTimestampNodaInstantOverride is null ? (object)DBNull.Value : (DateTime? )DateTime.SpecifyKind(args.CTimestampNodaInstantOverride.Value.ToDateTimeUtc(), DateTimeKind.Unspecified));
                     await command.ExecuteNonQueryAsync();
                 }
             }
@@ -1349,7 +1349,7 @@ public class QuerySql
             command.Parameters.AddWithValue("@c_datetime", args.CDatetime ?? (object)DBNull.Value);
             command.Parameters.AddWithValue("@c_timestamp", args.CTimestamp ?? (object)DBNull.Value);
             command.Parameters.AddWithValue("@c_time", args.CTime ?? (object)DBNull.Value);
-            command.Parameters.AddWithValue("@c_timestamp_noda_instant_override", args.CTimestampNodaInstantOverride is null ? (object)DBNull.Value : (DateTime?)DateTime.SpecifyKind(args.CTimestampNodaInstantOverride.Value.ToDateTimeUtc(), DateTimeKind.Unspecified));
+            command.Parameters.AddWithValue("@c_timestamp_noda_instant_override", args.CTimestampNodaInstantOverride is null ? (object)DBNull.Value : (DateTime? )DateTime.SpecifyKind(args.CTimestampNodaInstantOverride.Value.ToDateTimeUtc(), DateTimeKind.Unspecified));
             await command.ExecuteNonQueryAsync();
         }
     }
