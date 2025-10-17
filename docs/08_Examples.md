@@ -43,6 +43,10 @@ overrides:
   csharp_type:
     type: "string"
     notNull: false
+- column: "*:c_timestamp_noda_instant_override"
+  csharp_type:
+    type: "Instant"
+    notNull: false
 ```
 
 </details>
@@ -89,6 +93,10 @@ overrides:
 - column: "*:c_macaddr8"
   csharp_type:
     type: "string"
+    notNull: false
+- column: "*:c_timestamp_noda_instant_override"
+  csharp_type:
+    type: "Instant"
     notNull: false
 ```
 
@@ -137,6 +145,10 @@ overrides:
   csharp_type:
     type: "string"
     notNull: false
+- column: "*:c_timestamp_noda_instant_override"
+  csharp_type:
+    type: "Instant"
+    notNull: false
 ```
 
 </details>
@@ -184,6 +196,10 @@ overrides:
   csharp_type:
     type: "string"
     notNull: false
+- column: "*:c_timestamp_noda_instant_override"
+  csharp_type:
+    type: "Instant"
+    notNull: false
 ```
 
 </details>
@@ -214,6 +230,10 @@ overrides:
 - column: "*:c_json_string_override"
   csharp_type:
     type: "string"
+    notNull: false
+- column: "*:c_timestamp_noda_instant_override"
+  csharp_type:
+    type: "Instant"
     notNull: false
 ```
 
@@ -246,6 +266,10 @@ overrides:
   csharp_type:
     type: "string"
     notNull: false
+- column: "*:c_timestamp_noda_instant_override"
+  csharp_type:
+    type: "Instant"
+    notNull: false
 ```
 
 </details>
@@ -277,6 +301,10 @@ overrides:
   csharp_type:
     type: "string"
     notNull: false
+- column: "*:c_timestamp_noda_instant_override"
+  csharp_type:
+    type: "Instant"
+    notNull: false
 ```
 
 </details>
@@ -307,6 +335,10 @@ overrides:
 - column: "*:c_json_string_override"
   csharp_type:
     type: "string"
+    notNull: false
+- column: "*:c_timestamp_noda_instant_override"
+  csharp_type:
+    type: "Instant"
     notNull: false
 ```
 
@@ -344,6 +376,12 @@ overrides:
 - column: "*:c_integer_bool_override"
   csharp_type:
     type: "bool"
+- column: "*:c_text_noda_instant_override"
+  csharp_type:
+    type: "Instant"
+- column: "*:c_integer_noda_instant_override"
+  csharp_type:
+    type: "Instant"
 ```
 
 </details>
@@ -380,6 +418,12 @@ overrides:
 - column: "*:c_integer_bool_override"
   csharp_type:
     type: "bool"
+- column: "*:c_text_noda_instant_override"
+  csharp_type:
+    type: "Instant"
+- column: "*:c_integer_noda_instant_override"
+  csharp_type:
+    type: "Instant"
 ```
 
 </details>
@@ -416,6 +460,12 @@ overrides:
 - column: "*:c_integer_bool_override"
   csharp_type:
     type: "bool"
+- column: "*:c_text_noda_instant_override"
+  csharp_type:
+    type: "Instant"
+- column: "*:c_integer_noda_instant_override"
+  csharp_type:
+    type: "Instant"
 ```
 
 </details>
@@ -452,6 +502,12 @@ overrides:
 - column: "*:c_integer_bool_override"
   csharp_type:
     type: "bool"
+- column: "*:c_text_noda_instant_override"
+  csharp_type:
+    type: "Instant"
+- column: "*:c_integer_noda_instant_override"
+  csharp_type:
+    type: "Instant"
 ```
 
 </details>

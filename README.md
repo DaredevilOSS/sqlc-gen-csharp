@@ -12,8 +12,8 @@ version: "2"
 plugins:
 - name: csharp
   wasm:
-    url: https://github.com/DaredevilOSS/sqlc-gen-csharp/releases/download/v0.21.4/sqlc-gen-csharp.wasm
-    sha256: ceb948980f5a49e2922824f068f812f9ac70287da6dcc8c8199c8b4ceeaec858
+    url: https://github.com/DaredevilOSS/sqlc-gen-csharp/releases/download/v0.21.5-bonx/sqlc-gen-csharp.wasm
+    sha256: 0019dfc4b32d63c1392aa264aed2253c1e0c2fb09216f8e2cc269bbfb8bb49b5
 sql:
   # For PostgresSQL
   - schema: schema.sql
@@ -471,6 +471,10 @@ overrides:
   csharp_type:
     type: "string"
     notNull: false
+- column: "*:c_timestamp_noda_instant_override"
+  csharp_type:
+    type: "Instant"
+    notNull: false
 ```
 
 </details>
@@ -517,6 +521,10 @@ overrides:
 - column: "*:c_macaddr8"
   csharp_type:
     type: "string"
+    notNull: false
+- column: "*:c_timestamp_noda_instant_override"
+  csharp_type:
+    type: "Instant"
     notNull: false
 ```
 
@@ -565,6 +573,10 @@ overrides:
   csharp_type:
     type: "string"
     notNull: false
+- column: "*:c_timestamp_noda_instant_override"
+  csharp_type:
+    type: "Instant"
+    notNull: false
 ```
 
 </details>
@@ -612,6 +624,10 @@ overrides:
   csharp_type:
     type: "string"
     notNull: false
+- column: "*:c_timestamp_noda_instant_override"
+  csharp_type:
+    type: "Instant"
+    notNull: false
 ```
 
 </details>
@@ -642,6 +658,10 @@ overrides:
 - column: "*:c_json_string_override"
   csharp_type:
     type: "string"
+    notNull: false
+- column: "*:c_timestamp_noda_instant_override"
+  csharp_type:
+    type: "Instant"
     notNull: false
 ```
 
@@ -674,6 +694,10 @@ overrides:
   csharp_type:
     type: "string"
     notNull: false
+- column: "*:c_timestamp_noda_instant_override"
+  csharp_type:
+    type: "Instant"
+    notNull: false
 ```
 
 </details>
@@ -705,6 +729,10 @@ overrides:
   csharp_type:
     type: "string"
     notNull: false
+- column: "*:c_timestamp_noda_instant_override"
+  csharp_type:
+    type: "Instant"
+    notNull: false
 ```
 
 </details>
@@ -735,6 +763,10 @@ overrides:
 - column: "*:c_json_string_override"
   csharp_type:
     type: "string"
+    notNull: false
+- column: "*:c_timestamp_noda_instant_override"
+  csharp_type:
+    type: "Instant"
     notNull: false
 ```
 
@@ -772,6 +804,12 @@ overrides:
 - column: "*:c_integer_bool_override"
   csharp_type:
     type: "bool"
+- column: "*:c_text_noda_instant_override"
+  csharp_type:
+    type: "Instant"
+- column: "*:c_integer_noda_instant_override"
+  csharp_type:
+    type: "Instant"
 ```
 
 </details>
@@ -808,6 +846,12 @@ overrides:
 - column: "*:c_integer_bool_override"
   csharp_type:
     type: "bool"
+- column: "*:c_text_noda_instant_override"
+  csharp_type:
+    type: "Instant"
+- column: "*:c_integer_noda_instant_override"
+  csharp_type:
+    type: "Instant"
 ```
 
 </details>
@@ -844,6 +888,12 @@ overrides:
 - column: "*:c_integer_bool_override"
   csharp_type:
     type: "bool"
+- column: "*:c_text_noda_instant_override"
+  csharp_type:
+    type: "Instant"
+- column: "*:c_integer_noda_instant_override"
+  csharp_type:
+    type: "Instant"
 ```
 
 </details>
@@ -880,6 +930,12 @@ overrides:
 - column: "*:c_integer_bool_override"
   csharp_type:
     type: "bool"
+- column: "*:c_text_noda_instant_override"
+  csharp_type:
+    type: "Instant"
+- column: "*:c_integer_noda_instant_override"
+  csharp_type:
+    type: "Instant"
 ```
 
 </details>
