@@ -7,7 +7,7 @@
 
     <ItemGroup>
         <PackageReference Include="dotenv.net" Version="3.2.1" />
-        <PackageReference Include="Microsoft.Data.Sqlite" Version="9.0.0"/>
+        <PackageReference Include="Microsoft.Data.Sqlite" Version="9.0.10" />
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.9.0"/>
     </ItemGroup>
 

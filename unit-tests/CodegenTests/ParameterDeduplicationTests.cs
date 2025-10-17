@@ -37,23 +37,23 @@ public class ParameterDeduplicationTests
     public void TestParameterDeduplicationWithSameNamedParams()
     {
         // Arrange - Create a query that simulates duplicate parameter names
-        var duplicateColumn = new Column 
-        { 
-            Name = "param_a", 
+        var duplicateColumn = new Column
+        {
+            Name = "param_a",
             Type = new Identifier { Name = "text" },
             NotNull = false
         };
-        
-        var uniqueColumn1 = new Column 
-        { 
-            Name = "param_b", 
+
+        var uniqueColumn1 = new Column
+        {
+            Name = "param_b",
             Type = new Identifier { Name = "integer" },
             NotNull = false
         };
-        
-        var uniqueColumn2 = new Column 
-        { 
-            Name = "param_c", 
+
+        var uniqueColumn2 = new Column
+        {
+            Name = "param_c",
             Type = new Identifier { Name = "boolean" },
             NotNull = true
         };
@@ -98,23 +98,23 @@ public class ParameterDeduplicationTests
 
         // Assert
         Assert.That(response.Result.Files, Is.Not.Empty);
-        
+
         var queryFile = response.Result.Files.First(f => f.Name == "QuerySql.cs");
         Assert.That(queryFile, Is.Not.Null);
 
         var generatedCode = queryFile.Contents.ToStringUtf8();
         var compilationUnit = ParseCompilationUnit(generatedCode);
-        
+
         // Find the Args record/class
         var argsTypeDeclaration = compilationUnit.DescendantNodes()
             .OfType<TypeDeclarationSyntax>()
             .FirstOrDefault(t => t.Identifier.ValueText == "TestDuplicateParamsArgs");
-        
+
         Assert.That(argsTypeDeclaration, Is.Not.Null, "Args type should be generated");
 
         // Get all property/parameter names from the Args type
         var propertyNames = new List<string>();
-        
+
         if (argsTypeDeclaration is RecordDeclarationSyntax recordDecl)
         {
             // For record struct with primary constructor parameters
@@ -129,31 +129,31 @@ public class ParameterDeduplicationTests
         }
 
         // Verify that each parameter name appears only once
-        var expectedPropertyNames = new[] 
-        { 
-            "ParamB", 
+        var expectedPropertyNames = new[]
+        {
+            "ParamB",
             "ParamA",  // Should appear only once, not three times
             "ParamC"
         };
-        
-        CollectionAssert.AreEquivalent(expectedPropertyNames, propertyNames, 
+
+        CollectionAssert.AreEquivalent(expectedPropertyNames, propertyNames,
             "Args should contain each parameter only once, even if used multiple times in SQL");
-        
+
         // Verify that ParamA appears exactly once (not three times)
         var duplicateParamCount = propertyNames.Count(name => name == "ParamA");
-        Assert.That(duplicateParamCount, Is.EqualTo(1), 
+        Assert.That(duplicateParamCount, Is.EqualTo(1),
             "ParamA parameter should appear exactly once in Args, not duplicated");
 
         // Additional verification: ensure the generated code compiles without duplicate parameter errors
-        Assert.That(generatedCode.Contains("ParamA"), Is.True, 
+        Assert.That(generatedCode.Contains("ParamA"), Is.True,
             "Generated code should contain ParamA parameter");
-        
+
         // Verify that we don't have multiple consecutive ParamA parameters
         var paramAOccurrences = System.Text.RegularExpressions.Regex.Matches(
             generatedCode, @"\bParamA\b").Count;
-        
+
         // Should appear in parameter declaration and usage, but not duplicated in parameter list
-        Assert.That(paramAOccurrences, Is.LessThan(10), 
+        Assert.That(paramAOccurrences, Is.LessThan(10),
             "ParamA should not appear excessively due to duplication in parameter list");
     }
 
@@ -161,9 +161,9 @@ public class ParameterDeduplicationTests
     public void TestParameterDeduplicationPreservesOrder()
     {
         // Arrange - Test that deduplication preserves the order of first occurrence
-        var duplicateColumn = new Column 
-        { 
-            Name = "duplicate_param", 
+        var duplicateColumn = new Column
+        {
+            Name = "duplicate_param",
             Type = new Identifier { Name = "text" },
             NotNull = false
         };
@@ -179,7 +179,7 @@ public class ParameterDeduplicationTests
 
         var query = new Query
         {
-            Filename = "query.sql", 
+            Filename = "query.sql",
             Cmd = ":many",
             Name = "TestOrderQuery",
             Text = "SELECT 1",
@@ -202,11 +202,11 @@ public class ParameterDeduplicationTests
         var queryFile = response.Result.Files.First(f => f.Name == "QuerySql.cs");
         var generatedCode = queryFile.Contents.ToStringUtf8();
         var compilationUnit = ParseCompilationUnit(generatedCode);
-        
+
         var argsTypeDeclaration = compilationUnit.DescendantNodes()
             .OfType<TypeDeclarationSyntax>()
             .FirstOrDefault(t => t.Identifier.ValueText == "TestOrderQueryArgs");
-        
+
         Assert.That(argsTypeDeclaration, Is.Not.Null);
 
         // Get parameter order
@@ -219,7 +219,7 @@ public class ParameterDeduplicationTests
 
         // Verify order is preserved and duplicates are removed
         var expectedOrder = new[] { "FirstParam", "DuplicateParam", "MiddleParam", "LastParam" };
-        CollectionAssert.AreEqual(expectedOrder, propertyNames, 
+        CollectionAssert.AreEqual(expectedOrder, propertyNames,
             "Parameter order should be preserved with duplicates removed");
     }
 
@@ -237,7 +237,7 @@ public class ParameterDeduplicationTests
         var query = new Query
         {
             Filename = "query.sql",
-            Cmd = ":many", 
+            Cmd = ":many",
             Name = "UniqueParamsQuery",
             Text = "SELECT 1",
             Columns = { new Column { Name = "result", Type = new Identifier { Name = "integer" } } },
@@ -259,11 +259,11 @@ public class ParameterDeduplicationTests
         var queryFile = response.Result.Files.First(f => f.Name == "QuerySql.cs");
         var generatedCode = queryFile.Contents.ToStringUtf8();
         var compilationUnit = ParseCompilationUnit(generatedCode);
-        
+
         var argsTypeDeclaration = compilationUnit.DescendantNodes()
             .OfType<TypeDeclarationSyntax>()
             .FirstOrDefault(t => t.Identifier.ValueText == "UniqueParamsQueryArgs");
-        
+
         Assert.That(argsTypeDeclaration, Is.Not.Null);
 
         // Verify all unique parameters are present
@@ -277,8 +277,8 @@ public class ParameterDeduplicationTests
         var expectedParams = new[] { "Param1", "Param2", "Param3" };
         CollectionAssert.AreEquivalent(expectedParams, propertyNames,
             "All unique parameters should be present without any missing");
-        
-        Assert.That(propertyNames, Has.Count.EqualTo(3), 
+
+        Assert.That(propertyNames, Has.Count.EqualTo(3),
             "Should have exactly 3 parameters when all are unique");
     }
 
@@ -286,16 +286,16 @@ public class ParameterDeduplicationTests
     public void TestParameterNullabilityConflictThrowsError()
     {
         // Arrange - Create parameters with the same name but different nullability
-        var nullableColumn = new Column 
-        { 
-            Name = "conflicting_param", 
+        var nullableColumn = new Column
+        {
+            Name = "conflicting_param",
             Type = new Identifier { Name = "text" },
             NotNull = false  // This represents sqlc.narg - nullable
         };
-        
-        var nonNullableColumn = new Column 
-        { 
-            Name = "conflicting_param", 
+
+        var nonNullableColumn = new Column
+        {
+            Name = "conflicting_param",
             Type = new Identifier { Name = "text" },
             NotNull = true   // This represents sqlc.arg - non-nullable
         };
@@ -311,7 +311,7 @@ public class ParameterDeduplicationTests
         var query = new Query
         {
             Filename = "query.sql",
-            Cmd = ":many", 
+            Cmd = ":many",
             Name = "ConflictingNullabilityQuery",
             Text = "SELECT 1 WHERE other_param = $1 AND (conflicting_param IS NULL OR conflicting_param = $2 OR conflicting_param != $3) AND final_param = $4",
             Columns = { new Column { Name = "result", Type = new Identifier { Name = "integer" } } },
@@ -328,7 +328,7 @@ public class ParameterDeduplicationTests
 
         // Act & Assert - Should throw an exception about conflicting nullability
         var exception = Assert.Throws<InvalidOperationException>(() => CodeGenerator.Generate(request));
-        
+
         Assert.That(exception.Message, Contains.Substring("Duplicate identifier 'conflicting_param' used on nullable and non-nullable arguments"));
         Assert.That(exception.Message, Contains.Substring("query 'ConflictingNullabilityQuery'"));
     }
@@ -337,16 +337,16 @@ public class ParameterDeduplicationTests
     public void TestParameterSameNullabilityDoesNotThrowError()
     {
         // Arrange - Create parameters with the same name and same nullability (should work fine)
-        var nullableColumn1 = new Column 
-        { 
-            Name = "same_param", 
+        var nullableColumn1 = new Column
+        {
+            Name = "same_param",
             Type = new Identifier { Name = "text" },
             NotNull = false  // Both nullable
         };
-        
-        var nullableColumn2 = new Column 
-        { 
-            Name = "same_param", 
+
+        var nullableColumn2 = new Column
+        {
+            Name = "same_param",
             Type = new Identifier { Name = "text" },
             NotNull = false  // Both nullable
         };
@@ -361,7 +361,7 @@ public class ParameterDeduplicationTests
         var query = new Query
         {
             Filename = "query.sql",
-            Cmd = ":many", 
+            Cmd = ":many",
             Name = "SameNullabilityQuery",
             Text = "SELECT 1 WHERE other_param = $1 AND (same_param IS NULL OR same_param = $2 OR same_param = $3)",
             Columns = { new Column { Name = "result", Type = new Identifier { Name = "integer" } } },
@@ -377,7 +377,7 @@ public class ParameterDeduplicationTests
         };
 
         // Act & Assert - Should NOT throw an exception
-        Assert.DoesNotThrow(() => 
+        Assert.DoesNotThrow(() =>
         {
             var response = CodeGenerator.Generate(request);
             Assert.That(response.Result.Files, Is.Not.Empty);
