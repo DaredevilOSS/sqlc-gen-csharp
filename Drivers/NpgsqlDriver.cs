@@ -177,7 +177,7 @@ public sealed class NpgsqlDriver : EnumDbDriver, IOne, IMany, IExec, IExecRows, 
                     var nullValue = isDapper ? "null" : "(object)DBNull.Value";
                     return $"{el}.HasValue ? (object) {el}.Value : {nullValue}";
                 },
-                usingDirectives: ["System.Text.Json"],
+                usingDirectives: ["System.Text.Json", "NpgsqlTypes"],
                 sqlMapper: "SqlMapper.AddTypeHandler(typeof(JsonElement), new JsonElementTypeHandler());",
                 sqlMapperImpl: JsonElementTypeHandler
             ),
