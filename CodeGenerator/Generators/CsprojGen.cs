@@ -37,6 +37,8 @@ internal class CsprojGen(DbDriver dbDriver, string outputDirectory, string proje
                         <TargetFramework>{dbDriver.Options.DotnetFramework.ToName()}</TargetFramework>
                         <RootNamespace>{namespaceName}</RootNamespace>
                         <OutputType>Library</OutputType>{optionalNullableProperty}
+                        <!-- Opt out of centralized package management -->
+                        <ManagePackageVersionsCentrally>false</ManagePackageVersionsCentrally>
                     </PropertyGroup>
                 
                     <ItemGroup>
