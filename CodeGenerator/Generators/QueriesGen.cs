@@ -157,7 +157,7 @@ internal partial class QueriesGen(DbDriver dbDriver, string namespaceName)
                 .AppendNewLine();
         }
 
-        var singleLineQueryText = LongWhitespaceRegex().Replace(transformedQueryText, " ").Replace("\"", "\"\"");
+        var singleLineQueryText = LongWhitespaceRegex().Replace(transformedQueryText, " ");
         return ParseMemberDeclaration(
                 $"""private const string {memberName} = "{singleLineQueryText}";""")!
             .AppendNewLine();
