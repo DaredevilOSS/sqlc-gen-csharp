@@ -361,7 +361,7 @@
       }
     },
     {
-      "text": "SELECT id, name, bio FROM authors\nWHERE id = ? LIMIT 1",
+      "text": "SELECT id, name, bio FROM authors -- test comment\nWHERE id = ? LIMIT 1",
       "name": "GetAuthorById",
       "cmd": ":one",
       "columns": [

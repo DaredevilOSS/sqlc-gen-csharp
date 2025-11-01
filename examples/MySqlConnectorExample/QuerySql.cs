@@ -98,7 +98,10 @@ public class QuerySql
         return null;
     }
 
-    private const string ListAuthorsSql = "SELECT id, name, bio FROM authors ORDER BY name LIMIT @limit OFFSET @offset";
+    private const string ListAuthorsSql = @"SELECT id, name, bio 
+                                            FROM authors
+                                            ORDER BY name
+                                            LIMIT @limit OFFSET @offset";
     public readonly record struct ListAuthorsRow(long Id, string Name, string? Bio);
     public readonly record struct ListAuthorsArgs(int Limit, int Offset);
     public async Task<List<ListAuthorsRow>> ListAuthors(ListAuthorsArgs args)
@@ -262,7 +265,8 @@ public class QuerySql
         return null;
     }
 
-    private const string GetAuthorByNamePatternSql = "SELECT id, name, bio FROM authors WHERE name LIKE COALESCE(@name_pattern, '%')";
+    private const string GetAuthorByNamePatternSql = @"SELECT id, name, bio FROM authors
+                                                       WHERE name LIKE COALESCE(@name_pattern, '%')";
     public readonly record struct GetAuthorByNamePatternRow(long Id, string Name, string? Bio);
     public readonly record struct GetAuthorByNamePatternArgs(string? NamePattern);
     public async Task<List<GetAuthorByNamePatternRow>> GetAuthorByNamePattern(GetAuthorByNamePatternArgs args)
@@ -303,7 +307,8 @@ public class QuerySql
         }
     }
 
-    private const string DeleteAuthorSql = "DELETE FROM authors WHERE name = @name";
+    private const string DeleteAuthorSql = @"DELETE FROM authors
+                                             WHERE name = @name";
     public readonly record struct DeleteAuthorArgs(string Name);
     public async Task DeleteAuthor(DeleteAuthorArgs args)
     {
@@ -360,7 +365,9 @@ public class QuerySql
         }
     }
 
-    private const string UpdateAuthorsSql = "UPDATE authors SET bio = @bio WHERE bio IS NOT NULL";
+    private const string UpdateAuthorsSql = @"UPDATE authors
+                                              SET bio = @bio
+                                              WHERE bio IS NOT NULL";
     public readonly record struct UpdateAuthorsArgs(string? Bio);
     public async Task<long> UpdateAuthors(UpdateAuthorsArgs args)
     {
@@ -515,7 +522,9 @@ public class QuerySql
         }
     }
 
-    private const string ListAllAuthorsBooksSql = "SELECT authors.id, authors.name, authors.bio, books.id, books.name, books.author_id, books.description FROM authors JOIN books ON authors.id = books.author_id ORDER BY authors.name";
+    private const string ListAllAuthorsBooksSql = @"SELECT authors.id, authors.name, authors.bio, books.id, books.name, books.author_id, books.description 
+                                                    FROM authors JOIN books ON authors.id = books.author_id 
+                                                    ORDER BY authors.name";
     public readonly record struct ListAllAuthorsBooksRow(Author? Author, Book? Book);
     public async Task<List<ListAllAuthorsBooksRow>> ListAllAuthorsBooks()
     {
@@ -553,7 +562,9 @@ public class QuerySql
         }
     }
 
-    private const string GetDuplicateAuthorsSql = "SELECT authors1.id, authors1.name, authors1.bio, authors2.id, authors2.name, authors2.bio FROM authors authors1 JOIN authors authors2 ON authors1.name = authors2.name WHERE authors1.id < authors2.id";
+    private const string GetDuplicateAuthorsSql = @"SELECT authors1.id, authors1.name, authors1.bio, authors2.id, authors2.name, authors2.bio
+                                                    FROM authors authors1 JOIN authors authors2 ON authors1.name = authors2.name
+                                                    WHERE authors1.id < authors2.id";
     public readonly record struct GetDuplicateAuthorsRow(Author? Author, Author? Author2);
     public async Task<List<GetDuplicateAuthorsRow>> GetDuplicateAuthors()
     {
@@ -591,7 +602,9 @@ public class QuerySql
         }
     }
 
-    private const string GetAuthorsByBookNameSql = "SELECT authors.id, authors.name, authors.bio, books.id, books.name, books.author_id, books.description FROM authors JOIN books ON authors.id = books.author_id WHERE books.name = @name";
+    private const string GetAuthorsByBookNameSql = @"SELECT authors.id, authors.name, authors.bio, books.id, books.name, books.author_id, books.description
+                                                     FROM authors JOIN books ON authors.id = books.author_id
+                                                     WHERE books.name = @name";
     public readonly record struct GetAuthorsByBookNameRow(long Id, string Name, string? Bio, Book? Book);
     public readonly record struct GetAuthorsByBookNameArgs(string Name);
     public async Task<List<GetAuthorsByBookNameRow>> GetAuthorsByBookName(GetAuthorsByBookNameArgs args)
@@ -752,7 +765,26 @@ public class QuerySql
         }
     }
 
-    private const string InsertMysqlNumericTypesSql = " INSERT INTO mysql_numeric_types ( c_bool, c_boolean, c_tinyint, c_smallint, c_mediumint, c_int, c_integer, c_bigint, c_decimal, c_dec, c_numeric, c_fixed, c_float, c_double, c_double_precision ) VALUES (@c_bool, @c_boolean, @c_tinyint, @c_smallint, @c_mediumint, @c_int, @c_integer, @c_bigint, @c_decimal, @c_dec, @c_numeric, @c_fixed, @c_float, @c_double, @c_double_precision)";
+    private const string InsertMysqlNumericTypesSql = @"
+                                                        INSERT INTO mysql_numeric_types 
+                                                        (
+                                                            c_bool,
+                                                            c_boolean,
+                                                            c_tinyint,
+                                                            c_smallint,
+                                                            c_mediumint,
+                                                            c_int,
+                                                            c_integer,
+                                                            c_bigint, 
+                                                            c_decimal, 
+                                                            c_dec, 
+                                                            c_numeric, 
+                                                            c_fixed, 
+                                                            c_float, 
+                                                            c_double, 
+                                                            c_double_precision
+                                                        ) 
+                                                        VALUES (@c_bool, @c_boolean, @c_tinyint, @c_smallint, @c_mediumint, @c_int, @c_integer, @c_bigint, @c_decimal, @c_dec, @c_numeric, @c_fixed, @c_float, @c_double, @c_double_precision)";
     public readonly record struct InsertMysqlNumericTypesArgs(bool? CBool, bool? CBoolean, short? CTinyint, short? CSmallint, int? CMediumint, int? CInt, int? CInteger, long? CBigint, decimal? CDecimal, decimal? CDec, decimal? CNumeric, decimal? CFixed, double? CFloat, double? CDouble, double? CDoublePrecision);
     public async Task InsertMysqlNumericTypes(InsertMysqlNumericTypesArgs args)
     {
@@ -938,7 +970,41 @@ public class QuerySql
         return null;
     }
 
-    private const string GetMysqlNumericTypesCntSql = "SELECT COUNT(*) AS cnt, c_bool, c_boolean, c_tinyint, c_smallint, c_mediumint, c_int, c_integer, c_bigint, c_float, c_numeric, c_decimal, c_dec, c_fixed, c_double, c_double_precision FROM mysql_numeric_types GROUP BY c_bool, c_boolean, c_tinyint, c_smallint, c_mediumint, c_int, c_integer, c_bigint, c_float, c_numeric, c_decimal, c_dec, c_fixed, c_double, c_double_precision LIMIT 1";
+    private const string GetMysqlNumericTypesCntSql = @"SELECT
+                                                            COUNT(*) AS cnt,
+                                                            c_bool,
+                                                            c_boolean,
+                                                            c_tinyint,
+                                                            c_smallint,
+                                                            c_mediumint,
+                                                            c_int,
+                                                            c_integer,
+                                                            c_bigint,
+                                                            c_float,
+                                                            c_numeric,
+                                                            c_decimal,
+                                                            c_dec,
+                                                            c_fixed,
+                                                            c_double,
+                                                            c_double_precision
+                                                        FROM mysql_numeric_types
+                                                        GROUP BY
+                                                            c_bool,
+                                                            c_boolean,
+                                                            c_tinyint,
+                                                            c_smallint,
+                                                            c_mediumint,
+                                                            c_int,
+                                                            c_integer,
+                                                            c_bigint,
+                                                            c_float,
+                                                            c_numeric,
+                                                            c_decimal,
+                                                            c_dec,
+                                                            c_fixed,
+                                                            c_double,
+                                                            c_double_precision
+                                                        LIMIT 1";
     public readonly record struct GetMysqlNumericTypesCntRow(long Cnt, bool? CBool, bool? CBoolean, short? CTinyint, short? CSmallint, int? CMediumint, int? CInt, int? CInteger, long? CBigint, double? CFloat, decimal? CNumeric, decimal? CDecimal, decimal? CDec, decimal? CFixed, double? CDouble, double? CDoublePrecision);
     public async Task<GetMysqlNumericTypesCntRow?> GetMysqlNumericTypesCnt()
     {
@@ -1043,7 +1109,23 @@ public class QuerySql
         }
     }
 
-    private const string InsertMysqlStringTypesSql = " INSERT INTO mysql_string_types ( c_char, c_nchar, c_national_char, c_varchar, c_tinytext, c_mediumtext, c_text, c_longtext, c_json, c_json_string_override, c_enum, c_set ) VALUES (@c_char, @c_nchar, @c_national_char, @c_varchar, @c_tinytext, @c_mediumtext, @c_text, @c_longtext, @c_json, @c_json_string_override, @c_enum, @c_set)";
+    private const string InsertMysqlStringTypesSql = @"
+                                                       INSERT INTO mysql_string_types 
+                                                       (
+                                                           c_char,
+                                                           c_nchar,
+                                                           c_national_char,
+                                                           c_varchar,
+                                                           c_tinytext,
+                                                           c_mediumtext,
+                                                           c_text,
+                                                           c_longtext, 
+                                                           c_json,
+                                                           c_json_string_override,
+                                                           c_enum,
+                                                           c_set
+                                                       ) 
+                                                       VALUES (@c_char, @c_nchar, @c_national_char, @c_varchar, @c_tinytext, @c_mediumtext, @c_text, @c_longtext, @c_json, @c_json_string_override, @c_enum, @c_set)";
     public readonly record struct InsertMysqlStringTypesArgs(string? CChar, string? CNchar, string? CNationalChar, string? CVarchar, string? CTinytext, string? CMediumtext, string? CText, string? CLongtext, JsonElement? CJson, string? CJsonStringOverride, MysqlStringTypesCEnum? CEnum, HashSet<MysqlStringTypesCSet>? CSet);
     public async Task InsertMysqlStringTypes(InsertMysqlStringTypesArgs args)
     {
@@ -1215,7 +1297,35 @@ public class QuerySql
         return null;
     }
 
-    private const string GetMysqlStringTypesCntSql = "SELECT COUNT(*) AS cnt, c_char, c_nchar, c_national_char, c_varchar, c_tinytext, c_mediumtext, c_text, c_longtext, c_json, c_json_string_override, c_enum, c_set FROM mysql_string_types GROUP BY c_char, c_nchar, c_national_char, c_varchar, c_tinytext, c_mediumtext, c_text, c_longtext, c_json, c_json_string_override, c_enum, c_set LIMIT 1";
+    private const string GetMysqlStringTypesCntSql = @"SELECT
+                                                           COUNT(*) AS cnt,
+                                                           c_char,
+                                                           c_nchar,
+                                                           c_national_char,
+                                                           c_varchar,
+                                                           c_tinytext,
+                                                           c_mediumtext,
+                                                           c_text,
+                                                           c_longtext,
+                                                           c_json,
+                                                           c_json_string_override,
+                                                           c_enum,
+                                                           c_set
+                                                       FROM mysql_string_types
+                                                       GROUP BY
+                                                           c_char,
+                                                           c_nchar,
+                                                           c_national_char,
+                                                           c_varchar,
+                                                           c_tinytext,
+                                                           c_mediumtext,
+                                                           c_text,
+                                                           c_longtext,
+                                                           c_json,
+                                                           c_json_string_override,
+                                                           c_enum,
+                                                           c_set
+                                                       LIMIT 1";
     public readonly record struct GetMysqlStringTypesCntRow(long Cnt, string? CChar, string? CNchar, string? CNationalChar, string? CVarchar, string? CTinytext, string? CMediumtext, string? CText, string? CLongtext, JsonElement? CJson, string? CJsonStringOverride, MysqlStringTypesCEnum? CEnum, HashSet<MysqlStringTypesCSet>? CSet);
     public async Task<GetMysqlStringTypesCntRow?> GetMysqlStringTypesCnt()
     {
@@ -1314,7 +1424,17 @@ public class QuerySql
         }
     }
 
-    private const string InsertMysqlDatetimeTypesSql = " INSERT INTO mysql_datetime_types ( c_year, c_date, c_datetime, c_timestamp, c_time, c_timestamp_noda_instant_override ) VALUES (@c_year, @c_date, @c_datetime, @c_timestamp, @c_time, @c_timestamp_noda_instant_override)";
+    private const string InsertMysqlDatetimeTypesSql = @"
+                                                         INSERT INTO mysql_datetime_types 
+                                                         (
+                                                             c_year,
+                                                             c_date,
+                                                             c_datetime,
+                                                             c_timestamp,
+                                                             c_time,
+                                                             c_timestamp_noda_instant_override
+                                                         ) 
+                                                         VALUES (@c_year, @c_date, @c_datetime, @c_timestamp, @c_time, @c_timestamp_noda_instant_override)";
     public readonly record struct InsertMysqlDatetimeTypesArgs(short? CYear, DateTime? CDate, DateTime? CDatetime, DateTime? CTimestamp, TimeSpan? CTime, Instant? CTimestampNodaInstantOverride);
     public async Task InsertMysqlDatetimeTypes(InsertMysqlDatetimeTypesArgs args)
     {
@@ -1472,7 +1592,21 @@ public class QuerySql
         return null;
     }
 
-    private const string GetMysqlDatetimeTypesCntSql = "SELECT COUNT(*) AS cnt, c_year, c_date, c_datetime, c_timestamp, c_time FROM mysql_datetime_types GROUP BY c_year, c_date, c_datetime, c_timestamp, c_time LIMIT 1";
+    private const string GetMysqlDatetimeTypesCntSql = @"SELECT
+                                                             COUNT(*) AS cnt,
+                                                             c_year,
+                                                             c_date,
+                                                             c_datetime,
+                                                             c_timestamp,
+                                                             c_time
+                                                         FROM mysql_datetime_types
+                                                         GROUP BY
+                                                             c_year,
+                                                             c_date,
+                                                             c_datetime,
+                                                             c_timestamp,
+                                                             c_time
+                                                         LIMIT 1";
     public readonly record struct GetMysqlDatetimeTypesCntRow(long Cnt, short? CYear, DateTime? CDate, DateTime? CDatetime, DateTime? CTimestamp, TimeSpan? CTime);
     public async Task<GetMysqlDatetimeTypesCntRow?> GetMysqlDatetimeTypesCnt()
     {
@@ -1557,7 +1691,18 @@ public class QuerySql
         }
     }
 
-    private const string InsertMysqlBinaryTypesSql = " INSERT INTO mysql_binary_types ( c_bit, c_binary, c_varbinary, c_tinyblob, c_blob, c_mediumblob, c_longblob ) VALUES (@c_bit, @c_binary, @c_varbinary, @c_tinyblob, @c_blob, @c_mediumblob, @c_longblob)";
+    private const string InsertMysqlBinaryTypesSql = @"
+                                                       INSERT INTO mysql_binary_types 
+                                                       (
+                                                           c_bit,
+                                                           c_binary, 
+                                                           c_varbinary, 
+                                                           c_tinyblob, 
+                                                           c_blob, 
+                                                           c_mediumblob, 
+                                                           c_longblob
+                                                       ) 
+                                                       VALUES (@c_bit, @c_binary, @c_varbinary, @c_tinyblob, @c_blob, @c_mediumblob, @c_longblob)";
     public readonly record struct InsertMysqlBinaryTypesArgs(byte? CBit, byte[]? CBinary, byte[]? CVarbinary, byte[]? CTinyblob, byte[]? CBlob, byte[]? CMediumblob, byte[]? CLongblob);
     public async Task InsertMysqlBinaryTypes(InsertMysqlBinaryTypesArgs args)
     {
@@ -1708,7 +1853,25 @@ public class QuerySql
         return null;
     }
 
-    private const string GetMysqlBinaryTypesCntSql = "SELECT COUNT(*) AS cnt, c_bit, c_binary, c_varbinary, c_tinyblob, c_blob, c_mediumblob, c_longblob FROM mysql_binary_types GROUP BY c_bit, c_binary, c_varbinary, c_tinyblob, c_blob, c_mediumblob, c_longblob LIMIT 1";
+    private const string GetMysqlBinaryTypesCntSql = @"SELECT
+                                                           COUNT(*) AS cnt,
+                                                           c_bit,
+                                                           c_binary,
+                                                           c_varbinary,
+                                                           c_tinyblob,
+                                                           c_blob,
+                                                           c_mediumblob,
+                                                           c_longblob
+                                                       FROM mysql_binary_types
+                                                       GROUP BY
+                                                           c_bit,
+                                                           c_binary,
+                                                           c_varbinary,
+                                                           c_tinyblob,
+                                                           c_blob,
+                                                           c_mediumblob,
+                                                           c_longblob
+                                                       LIMIT 1";
     public readonly record struct GetMysqlBinaryTypesCntRow(long Cnt, byte? CBit, byte[]? CBinary, byte[]? CVarbinary, byte[]? CTinyblob, byte[]? CBlob, byte[]? CMediumblob, byte[]? CLongblob);
     public async Task<GetMysqlBinaryTypesCntRow?> GetMysqlBinaryTypesCnt()
     {
@@ -1797,7 +1960,14 @@ public class QuerySql
         }
     }
 
-    private const string GetMysqlFunctionsSql = " SELECT MAX(c_int) AS max_int, MAX(c_varchar) AS max_varchar, MAX(c_timestamp) AS max_timestamp FROM mysql_numeric_types CROSS JOIN mysql_string_types CROSS JOIN mysql_datetime_types";
+    private const string GetMysqlFunctionsSql = @"
+                                                  SELECT
+                                                      MAX(c_int) AS max_int,
+                                                      MAX(c_varchar) AS max_varchar,
+                                                      MAX(c_timestamp) AS max_timestamp
+                                                  FROM mysql_numeric_types
+                                                  CROSS JOIN mysql_string_types
+                                                  CROSS JOIN mysql_datetime_types";
     public readonly record struct GetMysqlFunctionsRow(int? MaxInt, string? MaxVarchar, DateTime MaxTimestamp);
     public async Task<GetMysqlFunctionsRow?> GetMysqlFunctions()
     {

@@ -137,11 +137,29 @@ internal partial class QueriesGen(DbDriver dbDriver, string namespaceName)
         if (transformedQueryText == string.Empty)
             return null;
 
-        var singleLineQueryText = LongWhitespaceRegex().Replace(transformedQueryText, " ");
+        var memberName = ClassMember.Sql.Name(query.Name);
+        if (transformedQueryText.IndexOfAny(['\r', '\n']) >= 0)
+        {
+            var queryWithEscapedQuotes = transformedQueryText.Replace("\"", "\"\"");
+            var declarationStart = $"private const string {memberName} = @\"";
+            var lines = queryWithEscapedQuotes.TrimEnd().Split(["\r\n", "\r", "\n"], StringSplitOptions.None);
+            var firstLine = lines[0];
+            var firstCharIndex = firstLine.TakeWhile(char.IsWhiteSpace).Count();
+            var baseIndent = new string(' ', 4); // Assuming a standard 4-space indentation for members
+            var indent = new string(' ', baseIndent.Length + declarationStart.Length + firstCharIndex);
+
+            var indentedQuery = string.Join(
+                Environment.NewLine + indent,
+                lines);
+
+            return ParseMemberDeclaration(
+                    $"{baseIndent}{declarationStart}{indentedQuery}\";")!
+                .AppendNewLine();
+        }
+
+        var singleLineQueryText = LongWhitespaceRegex().Replace(transformedQueryText, " ").Replace("\"", "\"\"");
         return ParseMemberDeclaration(
-                $"""
-                 private const string {ClassMember.Sql.Name(query.Name)} = "{singleLineQueryText}";
-                 """)!
+                $"""private const string {memberName} = "{singleLineQueryText}";""")!
             .AppendNewLine();
     }
 

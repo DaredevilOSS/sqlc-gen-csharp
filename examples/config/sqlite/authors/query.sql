@@ -15,7 +15,7 @@ INSERT INTO authors (id, name, bio) VALUES (?, ?, ?);
 INSERT INTO authors (name, bio) VALUES (?, ?) RETURNING id;
 
 -- name: GetAuthorById :one
-SELECT * FROM authors
+SELECT * FROM authors -- test comment
 WHERE id = ? LIMIT 1;
 
 -- name: GetAuthorByIdWithMultipleNamedParam :one

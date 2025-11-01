@@ -42,7 +42,8 @@ public class QuerySql
     private NpgsqlTransaction? Transaction { get; }
     private string? ConnectionString { get; }
 
-    private const string GetAuthorSql = "SELECT id, name, bio FROM authors WHERE name = @name LIMIT 1";
+    private const string GetAuthorSql = @"SELECT id, name, bio FROM authors
+                                          WHERE name = @name LIMIT 1";
     public readonly record struct GetAuthorRow(long Id, string Name, string? Bio);
     public readonly record struct GetAuthorArgs(string Name);
     public async Task<GetAuthorRow?> GetAuthor(GetAuthorArgs args)
@@ -96,7 +97,11 @@ public class QuerySql
         return null;
     }
 
-    private const string ListAuthorsSql = "SELECT id, name, bio FROM authors ORDER BY name LIMIT @limit OFFSET @offset";
+    private const string ListAuthorsSql = @"SELECT id, name, bio 
+                                            FROM authors
+                                            ORDER BY name
+                                            LIMIT @limit
+                                            OFFSET @offset";
     public readonly record struct ListAuthorsRow(long Id, string Name, string? Bio);
     public readonly record struct ListAuthorsArgs(int Offset, int Limit);
     public async Task<List<ListAuthorsRow>> ListAuthors(ListAuthorsArgs args)
@@ -228,7 +233,8 @@ public class QuerySql
         }
     }
 
-    private const string GetAuthorByIdSql = "SELECT id, name, bio FROM authors WHERE id = @id LIMIT 1";
+    private const string GetAuthorByIdSql = @"SELECT id, name, bio FROM authors
+                                              WHERE id = @id LIMIT 1";
     public readonly record struct GetAuthorByIdRow(long Id, string Name, string? Bio);
     public readonly record struct GetAuthorByIdArgs(long Id);
     public async Task<GetAuthorByIdRow?> GetAuthorById(GetAuthorByIdArgs args)
@@ -282,7 +288,8 @@ public class QuerySql
         return null;
     }
 
-    private const string GetAuthorByNamePatternSql = "SELECT id, name, bio FROM authors WHERE name LIKE COALESCE(@name_pattern, '%')";
+    private const string GetAuthorByNamePatternSql = @"SELECT id, name, bio FROM authors
+                                                       WHERE name LIKE COALESCE(@name_pattern, '%')";
     public readonly record struct GetAuthorByNamePatternRow(long Id, string Name, string? Bio);
     public readonly record struct GetAuthorByNamePatternArgs(string? NamePattern);
     public async Task<List<GetAuthorByNamePatternRow>> GetAuthorByNamePattern(GetAuthorByNamePatternArgs args)
@@ -322,7 +329,8 @@ public class QuerySql
         }
     }
 
-    private const string DeleteAuthorSql = "DELETE FROM authors WHERE name = @name";
+    private const string DeleteAuthorSql = @"DELETE FROM authors
+                                             WHERE name = @name";
     public readonly record struct DeleteAuthorArgs(string Name);
     public async Task DeleteAuthor(DeleteAuthorArgs args)
     {
@@ -377,7 +385,9 @@ public class QuerySql
         }
     }
 
-    private const string UpdateAuthorsSql = "UPDATE authors SET bio = @bio WHERE bio IS NOT NULL";
+    private const string UpdateAuthorsSql = @"UPDATE authors
+                                              SET bio = @bio
+                                              WHERE bio IS NOT NULL";
     public readonly record struct UpdateAuthorsArgs(string? Bio);
     public async Task<long> UpdateAuthors(UpdateAuthorsArgs args)
     {
@@ -404,7 +414,8 @@ public class QuerySql
         }
     }
 
-    private const string GetAuthorsByIdsSql = "SELECT id, name, bio FROM authors WHERE id = ANY(@longArr_1::BIGINT [])";
+    private const string GetAuthorsByIdsSql = @"SELECT id, name, bio FROM authors
+                                                WHERE id = ANY(@longArr_1::BIGINT [])";
     public readonly record struct GetAuthorsByIdsRow(long Id, string Name, string? Bio);
     public readonly record struct GetAuthorsByIdsArgs(long[] LongArr1);
     public async Task<List<GetAuthorsByIdsRow>> GetAuthorsByIds(GetAuthorsByIdsArgs args)
@@ -444,7 +455,9 @@ public class QuerySql
         }
     }
 
-    private const string GetAuthorsByIdsAndNamesSql = "SELECT id, name, bio FROM authors WHERE id = ANY(@longArr_1::BIGINT []) AND name = ANY(@stringArr_2::TEXT [])";
+    private const string GetAuthorsByIdsAndNamesSql = @"SELECT id, name, bio
+                                                        FROM authors
+                                                        WHERE id = ANY(@longArr_1::BIGINT []) AND name = ANY(@stringArr_2::TEXT [])";
     public readonly record struct GetAuthorsByIdsAndNamesRow(long Id, string Name, string? Bio);
     public readonly record struct GetAuthorsByIdsAndNamesArgs(long[] LongArr1, string[] StringArr2);
     public async Task<List<GetAuthorsByIdsAndNamesRow>> GetAuthorsByIdsAndNames(GetAuthorsByIdsAndNamesArgs args)
@@ -518,7 +531,12 @@ public class QuerySql
         }
     }
 
-    private const string ListAllAuthorsBooksSql = "SELECT authors.id, authors.name, authors.bio, books.id, books.name, books.author_id, books.description FROM authors INNER JOIN books ON authors.id = books.author_id ORDER BY authors.name";
+    private const string ListAllAuthorsBooksSql = @"SELECT
+                                                        authors.id, authors.name, authors.bio,
+                                                        books.id, books.name, books.author_id, books.description
+                                                    FROM authors
+                                                    INNER JOIN books ON authors.id = books.author_id
+                                                    ORDER BY authors.name";
     public readonly record struct ListAllAuthorsBooksRow(Author? Author, Book? Book);
     public async Task<List<ListAllAuthorsBooksRow>> ListAllAuthorsBooks()
     {
@@ -555,7 +573,12 @@ public class QuerySql
         }
     }
 
-    private const string GetDuplicateAuthorsSql = "SELECT authors1.id, authors1.name, authors1.bio, authors2.id, authors2.name, authors2.bio FROM authors AS authors1 INNER JOIN authors AS authors2 ON authors1.name = authors2.name WHERE authors1.id < authors2.id";
+    private const string GetDuplicateAuthorsSql = @"SELECT
+                                                        authors1.id, authors1.name, authors1.bio,
+                                                        authors2.id, authors2.name, authors2.bio
+                                                    FROM authors AS authors1
+                                                    INNER JOIN authors AS authors2 ON authors1.name = authors2.name
+                                                    WHERE authors1.id < authors2.id";
     public readonly record struct GetDuplicateAuthorsRow(Author? Author, Author? Author2);
     public async Task<List<GetDuplicateAuthorsRow>> GetDuplicateAuthors()
     {
@@ -592,7 +615,11 @@ public class QuerySql
         }
     }
 
-    private const string GetAuthorsByBookNameSql = "SELECT authors.id, authors.name, authors.bio, books.id, books.name, books.author_id, books.description FROM authors INNER JOIN books ON authors.id = books.author_id WHERE books.name = @name";
+    private const string GetAuthorsByBookNameSql = @"SELECT
+                                                         authors.id, authors.name, authors.bio,
+                                                         books.id, books.name, books.author_id, books.description
+                                                     FROM authors INNER JOIN books ON authors.id = books.author_id
+                                                     WHERE books.name = @name";
     public readonly record struct GetAuthorsByBookNameRow(long Id, string Name, string? Bio, Book? Book);
     public readonly record struct GetAuthorsByBookNameArgs(string Name);
     public async Task<List<GetAuthorsByBookNameRow>> GetAuthorsByBookName(GetAuthorsByBookNameArgs args)
@@ -745,7 +772,13 @@ public class QuerySql
         }
     }
 
-    private const string GetPostgresFunctionsSql = "SELECT MAX(c_integer) AS max_integer, MAX(c_varchar) AS max_varchar, MAX(c_timestamp) AS max_timestamp FROM postgres_datetime_types CROSS JOIN postgres_numeric_types CROSS JOIN postgres_string_types";
+    private const string GetPostgresFunctionsSql = @"SELECT
+                                                         MAX(c_integer) AS max_integer,
+                                                         MAX(c_varchar) AS max_varchar,
+                                                         MAX(c_timestamp) AS max_timestamp
+                                                     FROM postgres_datetime_types
+                                                     CROSS JOIN postgres_numeric_types
+                                                     CROSS JOIN postgres_string_types";
     public readonly record struct GetPostgresFunctionsRow(int? MaxInteger, string? MaxVarchar, DateTime MaxTimestamp);
     public async Task<GetPostgresFunctionsRow?> GetPostgresFunctions()
     {
@@ -796,7 +829,21 @@ public class QuerySql
         return null;
     }
 
-    private const string InsertPostgresNumericTypesSql = " INSERT INTO postgres_numeric_types ( c_boolean, c_bit, c_smallint, c_integer, c_bigint, c_decimal, c_numeric, c_real, c_double_precision, c_money ) VALUES (@c_boolean, @c_bit, @c_smallint, @c_integer, @c_bigint, @c_decimal, @c_numeric, @c_real, @c_double_precision, @c_money)";
+    private const string InsertPostgresNumericTypesSql = @"
+                                                           INSERT INTO postgres_numeric_types
+                                                           (
+                                                               c_boolean,
+                                                               c_bit,
+                                                               c_smallint,
+                                                               c_integer,
+                                                               c_bigint,
+                                                               c_decimal,
+                                                               c_numeric,
+                                                               c_real,
+                                                               c_double_precision,
+                                                               c_money
+                                                           )
+                                                           VALUES (@c_boolean, @c_bit, @c_smallint, @c_integer, @c_bigint, @c_decimal, @c_numeric, @c_real, @c_double_precision, @c_money)";
     public readonly record struct InsertPostgresNumericTypesArgs(bool? CBoolean, byte[]? CBit, short? CSmallint, int? CInteger, long? CBigint, decimal? CDecimal, decimal? CNumeric, float? CReal, double? CDoublePrecision, decimal? CMoney);
     public async Task InsertPostgresNumericTypes(InsertPostgresNumericTypesArgs args)
     {
@@ -934,7 +981,31 @@ public class QuerySql
         }
     }
 
-    private const string GetPostgresNumericTypesCntSql = "SELECT c_boolean, c_bit, c_smallint, c_integer, c_bigint, c_decimal, c_numeric, c_real, c_double_precision, c_money, COUNT(*) AS cnt FROM postgres_numeric_types GROUP BY c_boolean, c_bit, c_smallint, c_integer, c_bigint, c_decimal, c_numeric, c_real, c_double_precision, c_money LIMIT 1";
+    private const string GetPostgresNumericTypesCntSql = @"SELECT
+                                                               c_boolean,
+                                                               c_bit,
+                                                               c_smallint,
+                                                               c_integer,
+                                                               c_bigint,
+                                                               c_decimal,
+                                                               c_numeric,
+                                                               c_real,
+                                                               c_double_precision,
+                                                               c_money,
+                                                               COUNT(*) AS cnt
+                                                           FROM postgres_numeric_types
+                                                           GROUP BY
+                                                               c_boolean,
+                                                               c_bit,
+                                                               c_smallint,
+                                                               c_integer,
+                                                               c_bigint,
+                                                               c_decimal,
+                                                               c_numeric,
+                                                               c_real,
+                                                               c_double_precision,
+                                                               c_money
+                                                           LIMIT 1";
     public readonly record struct GetPostgresNumericTypesCntRow(bool? CBoolean, byte[]? CBit, short? CSmallint, int? CInteger, long? CBigint, decimal? CDecimal, decimal? CNumeric, float? CReal, double? CDoublePrecision, decimal? CMoney, long Cnt);
     public async Task<GetPostgresNumericTypesCntRow?> GetPostgresNumericTypesCnt()
     {
@@ -1032,7 +1103,16 @@ public class QuerySql
         }
     }
 
-    private const string InsertPostgresStringTypesSql = " INSERT INTO postgres_string_types ( c_char, c_varchar, c_character_varying, c_bpchar, c_text ) VALUES (@c_char, @c_varchar, @c_character_varying, @c_bpchar, @c_text)";
+    private const string InsertPostgresStringTypesSql = @"
+                                                          INSERT INTO postgres_string_types
+                                                          (
+                                                              c_char,
+                                                              c_varchar,
+                                                              c_character_varying,
+                                                              c_bpchar,
+                                                              c_text
+                                                          )
+                                                          VALUES (@c_char, @c_varchar, @c_character_varying, @c_bpchar, @c_text)";
     public readonly record struct InsertPostgresStringTypesArgs(string? CChar, string? CVarchar, string? CCharacterVarying, string? CBpchar, string? CText);
     public async Task InsertPostgresStringTypes(InsertPostgresStringTypesArgs args)
     {
@@ -1176,7 +1256,21 @@ public class QuerySql
         }
     }
 
-    private const string GetPostgresStringTypesCntSql = "SELECT c_char, c_varchar, c_character_varying, c_bpchar, c_text, COUNT(*) AS cnt FROM postgres_string_types GROUP BY c_char, c_varchar, c_character_varying, c_bpchar, c_text LIMIT 1";
+    private const string GetPostgresStringTypesCntSql = @"SELECT
+                                                              c_char,
+                                                              c_varchar,
+                                                              c_character_varying,
+                                                              c_bpchar,
+                                                              c_text,
+                                                              COUNT(*) AS cnt
+                                                          FROM postgres_string_types
+                                                          GROUP BY
+                                                              c_char,
+                                                              c_varchar,
+                                                              c_character_varying,
+                                                              c_bpchar,
+                                                              c_text
+                                                          LIMIT 1";
     public readonly record struct GetPostgresStringTypesCntRow(string? CChar, string? CVarchar, string? CCharacterVarying, string? CBpchar, string? CText, long Cnt);
     public async Task<GetPostgresStringTypesCntRow?> GetPostgresStringTypesCnt()
     {
@@ -1233,7 +1327,19 @@ public class QuerySql
         return null;
     }
 
-    private const string GetPostgresStringTypesTextSearchSql = "WITH txt_query AS ( SELECT c_text, to_tsquery('english', @to_tsquery) AS query, to_tsvector('english', c_text) AS tsv FROM postgres_string_types WHERE c_text @@ to_tsquery('english', @to_tsquery) ) SELECT txt_query.c_text, txt_query.query, txt_query.tsv, ts_rank(tsv, query) AS rnk FROM txt_query ORDER BY rnk DESC LIMIT 1";
+    private const string GetPostgresStringTypesTextSearchSql = @"WITH txt_query AS (
+                                                                     SELECT 
+                                                                         c_text, 
+                                                                         to_tsquery('english', @to_tsquery) AS query,
+                                                                         to_tsvector('english', c_text) AS tsv
+                                                                     FROM postgres_string_types 
+                                                                     WHERE c_text @@ to_tsquery('english', @to_tsquery)
+                                                                 )
+                                                                 
+                                                                 SELECT txt_query.c_text, txt_query.query, txt_query.tsv, ts_rank(tsv, query) AS rnk
+                                                                 FROM txt_query
+                                                                 ORDER BY rnk DESC
+                                                                 LIMIT 1";
     public readonly record struct GetPostgresStringTypesTextSearchRow(string? CText, NpgsqlTsQuery Query, NpgsqlTsVector Tsv, float Rnk);
     public readonly record struct GetPostgresStringTypesTextSearchArgs(string ToTsquery);
     public async Task<GetPostgresStringTypesTextSearchRow?> GetPostgresStringTypesTextSearch(GetPostgresStringTypesTextSearchArgs args)
@@ -1289,7 +1395,16 @@ public class QuerySql
         return null;
     }
 
-    private const string InsertPostgresDateTimeTypesSql = " INSERT INTO postgres_datetime_types ( c_date, c_time, c_timestamp, c_timestamp_with_tz, c_interval, c_timestamp_noda_instant_override ) VALUES (@c_date, @c_time, @c_timestamp, @c_timestamp_with_tz, @c_interval, @c_timestamp_noda_instant_override)";
+    private const string InsertPostgresDateTimeTypesSql = @"
+                                                            INSERT INTO postgres_datetime_types
+                                                            (
+                                                                c_date,
+                                                                c_time,
+                                                                c_timestamp,
+                                                                c_timestamp_with_tz,
+                                                                c_interval,
+                                                                c_timestamp_noda_instant_override
+                                                            ) VALUES (@c_date, @c_time, @c_timestamp, @c_timestamp_with_tz, @c_interval, @c_timestamp_noda_instant_override)";
     public readonly record struct InsertPostgresDateTimeTypesArgs(DateTime? CDate, TimeSpan? CTime, DateTime? CTimestamp, DateTime? CTimestampWithTz, TimeSpan? CInterval, Instant? CTimestampNodaInstantOverride);
     public async Task InsertPostgresDateTimeTypes(InsertPostgresDateTimeTypesArgs args)
     {
@@ -1423,7 +1538,21 @@ public class QuerySql
         }
     }
 
-    private const string GetPostgresDateTimeTypesCntSql = "SELECT c_date, c_time, c_timestamp, c_timestamp_with_tz, c_interval, COUNT(*) AS cnt FROM postgres_datetime_types GROUP BY c_date, c_time, c_timestamp, c_timestamp_with_tz, c_interval LIMIT 1";
+    private const string GetPostgresDateTimeTypesCntSql = @"SELECT
+                                                                c_date,
+                                                                c_time,
+                                                                c_timestamp,
+                                                                c_timestamp_with_tz,
+                                                                c_interval,
+                                                                COUNT(*) AS cnt
+                                                            FROM postgres_datetime_types
+                                                            GROUP BY
+                                                                c_date,
+                                                                c_time,
+                                                                c_timestamp,
+                                                                c_timestamp_with_tz,
+                                                                c_interval
+                                                            LIMIT 1";
     public readonly record struct GetPostgresDateTimeTypesCntRow(DateTime? CDate, TimeSpan? CTime, DateTime? CTimestamp, DateTime? CTimestampWithTz, TimeSpan? CInterval, long Cnt);
     public async Task<GetPostgresDateTimeTypesCntRow?> GetPostgresDateTimeTypesCnt()
     {
@@ -1506,7 +1635,19 @@ public class QuerySql
         }
     }
 
-    private const string InsertPostgresNetworkTypesSql = " INSERT INTO postgres_network_types ( c_cidr, c_inet, c_macaddr, c_macaddr8 ) VALUES ( @c_cidr, @c_inet, @c_macaddr, @c_macaddr8::macaddr8 )";
+    private const string InsertPostgresNetworkTypesSql = @"
+                                                           INSERT INTO postgres_network_types
+                                                           (
+                                                               c_cidr,
+                                                               c_inet,
+                                                               c_macaddr,
+                                                               c_macaddr8
+                                                           ) VALUES (
+                                                               @c_cidr, 
+                                                               @c_inet, 
+                                                               @c_macaddr, 
+                                                               @c_macaddr8::macaddr8
+                                                           )";
     public readonly record struct InsertPostgresNetworkTypesArgs(NpgsqlCidr? CCidr, IPAddress? CInet, PhysicalAddress? CMacaddr, string? CMacaddr8);
     public async Task InsertPostgresNetworkTypes(InsertPostgresNetworkTypesArgs args)
     {
@@ -1541,7 +1682,13 @@ public class QuerySql
         }
     }
 
-    private const string GetPostgresNetworkTypesSql = "SELECT c_cidr, c_inet, c_macaddr, c_macaddr8::TEXT AS c_macaddr8 FROM postgres_network_types LIMIT 1";
+    private const string GetPostgresNetworkTypesSql = @"SELECT
+                                                            c_cidr,
+                                                            c_inet,
+                                                            c_macaddr,
+                                                            c_macaddr8::TEXT AS c_macaddr8
+                                                        FROM postgres_network_types
+                                                        LIMIT 1";
     public readonly record struct GetPostgresNetworkTypesRow(NpgsqlCidr? CCidr, IPAddress? CInet, PhysicalAddress? CMacaddr, string? CMacaddr8);
     public async Task<GetPostgresNetworkTypesRow?> GetPostgresNetworkTypes()
     {
@@ -1620,7 +1767,17 @@ public class QuerySql
         }
     }
 
-    private const string GetPostgresNetworkTypesCntSql = "SELECT c_cidr, c_inet, c_macaddr, COUNT(*) AS cnt FROM postgres_network_types GROUP BY c_cidr, c_inet, c_macaddr LIMIT 1";
+    private const string GetPostgresNetworkTypesCntSql = @"SELECT
+                                                               c_cidr,
+                                                               c_inet,
+                                                               c_macaddr,
+                                                               COUNT(*) AS cnt
+                                                           FROM postgres_network_types
+                                                           GROUP BY
+                                                               c_cidr,
+                                                               c_inet,
+                                                               c_macaddr
+                                                           LIMIT 1";
     public readonly record struct GetPostgresNetworkTypesCntRow(NpgsqlCidr? CCidr, IPAddress? CInet, PhysicalAddress? CMacaddr, long Cnt);
     public async Task<GetPostgresNetworkTypesCntRow?> GetPostgresNetworkTypesCnt()
     {
@@ -1697,7 +1854,28 @@ public class QuerySql
         }
     }
 
-    private const string InsertPostgresSpecialTypesSql = " INSERT INTO postgres_special_types ( c_json, c_json_string_override, c_jsonb, c_jsonpath, c_xml, c_xml_string_override, c_uuid, c_enum ) VALUES ( @c_json, @c_json_string_override::json, @c_jsonb, @c_jsonpath::jsonpath, @c_xml::xml, @c_xml_string_override::xml, @c_uuid, @c_enum::c_enum )";
+    private const string InsertPostgresSpecialTypesSql = @"
+                                                           INSERT INTO postgres_special_types
+                                                           (
+                                                               c_json,
+                                                               c_json_string_override,
+                                                               c_jsonb,
+                                                               c_jsonpath,
+                                                               c_xml,
+                                                               c_xml_string_override,
+                                                               c_uuid,
+                                                               c_enum
+                                                           )
+                                                           VALUES (
+                                                               @c_json, 
+                                                               @c_json_string_override::json, 
+                                                               @c_jsonb,
+                                                               @c_jsonpath::jsonpath,
+                                                               @c_xml::xml,
+                                                               @c_xml_string_override::xml,
+                                                               @c_uuid,
+                                                               @c_enum::c_enum
+                                                           )";
     public readonly record struct InsertPostgresSpecialTypesArgs(JsonElement? CJson, string? CJsonStringOverride, JsonElement? CJsonb, string? CJsonpath, XmlDocument? CXml, string? CXmlStringOverride, Guid? CUuid, CEnum? CEnum);
     public async Task InsertPostgresSpecialTypes(InsertPostgresSpecialTypesArgs args)
     {
@@ -1740,7 +1918,13 @@ public class QuerySql
         }
     }
 
-    private const string InsertPostgresNotNullTypesSql = "INSERT INTO postgres_not_null_types ( c_enum_not_null ) VALUES ( @c_enum_not_null::c_enum )";
+    private const string InsertPostgresNotNullTypesSql = @"INSERT INTO postgres_not_null_types
+                                                           (
+                                                               c_enum_not_null
+                                                           )
+                                                           VALUES (
+                                                               @c_enum_not_null::c_enum
+                                                           )";
     public readonly record struct InsertPostgresNotNullTypesArgs(CEnum CEnumNotNull);
     public async Task InsertPostgresNotNullTypes(InsertPostgresNotNullTypesArgs args)
     {
@@ -1769,7 +1953,10 @@ public class QuerySql
         }
     }
 
-    private const string GetPostgresNotNullTypesSql = "SELECT c_enum_not_null FROM postgres_not_null_types LIMIT 1";
+    private const string GetPostgresNotNullTypesSql = @"SELECT
+                                                            c_enum_not_null
+                                                        FROM postgres_not_null_types 
+                                                        LIMIT 1";
     public readonly record struct GetPostgresNotNullTypesRow(CEnum CEnumNotNull);
     public async Task<GetPostgresNotNullTypesRow?> GetPostgresNotNullTypes()
     {
@@ -1842,7 +2029,17 @@ public class QuerySql
         }
     }
 
-    private const string GetPostgresSpecialTypesSql = "SELECT c_json, c_json_string_override, c_jsonb, c_jsonpath, c_xml, c_xml_string_override, c_uuid, c_enum FROM postgres_special_types LIMIT 1";
+    private const string GetPostgresSpecialTypesSql = @"SELECT
+                                                            c_json,
+                                                            c_json_string_override,
+                                                            c_jsonb,
+                                                            c_jsonpath,
+                                                            c_xml,
+                                                            c_xml_string_override,
+                                                            c_uuid,
+                                                            c_enum
+                                                        FROM postgres_special_types 
+                                                        LIMIT 1";
     public readonly record struct GetPostgresSpecialTypesRow(JsonElement? CJson, string? CJsonStringOverride, JsonElement? CJsonb, string? CJsonpath, XmlDocument? CXml, string? CXmlStringOverride, Guid? CUuid, CEnum? CEnum);
     public async Task<GetPostgresSpecialTypesRow?> GetPostgresSpecialTypes()
     {
@@ -1963,7 +2160,26 @@ public class QuerySql
         }
     }
 
-    private const string GetPostgresSpecialTypesCntSql = "WITH grouped_json_types AS ( SELECT c_uuid, c_json::text AS c_json, c_jsonb::text AS c_jsonb, COUNT(*) AS cnt FROM postgres_special_types GROUP BY c_uuid, c_json::text, c_jsonb::text ) SELECT c_uuid, c_json::json AS c_json, c_jsonb::jsonb AS c_jsonb, cnt FROM grouped_json_types LIMIT 1";
+    private const string GetPostgresSpecialTypesCntSql = @"WITH grouped_json_types AS (
+                                                               SELECT
+                                                                   c_uuid,
+                                                                   c_json::text AS c_json,
+                                                                   c_jsonb::text AS c_jsonb,
+                                                                   COUNT(*) AS cnt
+                                                               FROM postgres_special_types
+                                                               GROUP BY
+                                                                   c_uuid,
+                                                                   c_json::text,
+                                                                   c_jsonb::text
+                                                           )
+                                                           
+                                                           SELECT 
+                                                               c_uuid, 
+                                                               c_json::json AS c_json, 
+                                                               c_jsonb::jsonb AS c_jsonb, 
+                                                               cnt
+                                                           FROM grouped_json_types
+                                                           LIMIT 1";
     public readonly record struct GetPostgresSpecialTypesCntRow(Guid? CUuid, JsonElement? CJson, JsonElement? CJsonb, long Cnt);
     public async Task<GetPostgresSpecialTypesCntRow?> GetPostgresSpecialTypesCnt()
     {
@@ -2016,7 +2232,18 @@ public class QuerySql
         return null;
     }
 
-    private const string InsertPostgresArrayTypesSql = " INSERT INTO postgres_array_types ( c_bytea, c_boolean_array, c_text_array, c_integer_array, c_decimal_array, c_date_array, c_timestamp_array ) VALUES (@c_bytea, @c_boolean_array, @c_text_array, @c_integer_array, @c_decimal_array, @c_date_array, @c_timestamp_array)";
+    private const string InsertPostgresArrayTypesSql = @"
+                                                         INSERT INTO postgres_array_types
+                                                         (
+                                                             c_bytea,
+                                                             c_boolean_array,
+                                                             c_text_array,
+                                                             c_integer_array,
+                                                             c_decimal_array,
+                                                             c_date_array,
+                                                             c_timestamp_array
+                                                         )
+                                                         VALUES (@c_bytea, @c_boolean_array, @c_text_array, @c_integer_array, @c_decimal_array, @c_date_array, @c_timestamp_array)";
     public readonly record struct InsertPostgresArrayTypesArgs(byte[]? CBytea, bool[]? CBooleanArray, string[]? CTextArray, int[]? CIntegerArray, decimal[]? CDecimalArray, DateTime[]? CDateArray, DateTime[]? CTimestampArray);
     public async Task InsertPostgresArrayTypes(InsertPostgresArrayTypesArgs args)
     {
@@ -2143,7 +2370,23 @@ public class QuerySql
         }
     }
 
-    private const string GetPostgresArrayTypesCntSql = "SELECT c_bytea, c_boolean_array, c_text_array, c_integer_array, c_decimal_array, c_timestamp_array, COUNT(*) AS cnt FROM postgres_array_types GROUP BY c_bytea, c_boolean_array, c_text_array, c_integer_array, c_decimal_array, c_timestamp_array LIMIT 1";
+    private const string GetPostgresArrayTypesCntSql = @"SELECT
+                                                             c_bytea,
+                                                             c_boolean_array,
+                                                             c_text_array,
+                                                             c_integer_array,
+                                                             c_decimal_array,
+                                                             c_timestamp_array,
+                                                             COUNT(*) AS cnt
+                                                         FROM postgres_array_types
+                                                         GROUP BY
+                                                             c_bytea,
+                                                             c_boolean_array,
+                                                             c_text_array,
+                                                             c_integer_array,
+                                                             c_decimal_array,
+                                                             c_timestamp_array
+                                                         LIMIT 1";
     public readonly record struct GetPostgresArrayTypesCntRow(byte[]? CBytea, bool[]? CBooleanArray, string[]? CTextArray, int[]? CIntegerArray, decimal[]? CDecimalArray, DateTime[]? CTimestampArray, long Cnt);
     public async Task<GetPostgresArrayTypesCntRow?> GetPostgresArrayTypesCnt()
     {
@@ -2228,7 +2471,17 @@ public class QuerySql
         }
     }
 
-    private const string InsertPostgresGeoTypesSql = " INSERT INTO postgres_geometric_types ( c_point, c_line, c_lseg, c_box, c_path, c_polygon, c_circle ) VALUES (@c_point, @c_line, @c_lseg, @c_box, @c_path, @c_polygon, @c_circle)";
+    private const string InsertPostgresGeoTypesSql = @"
+                                                       INSERT INTO postgres_geometric_types (
+                                                           c_point, 
+                                                           c_line, 
+                                                           c_lseg, 
+                                                           c_box, 
+                                                           c_path, 
+                                                           c_polygon, 
+                                                           c_circle
+                                                       )
+                                                       VALUES (@c_point, @c_line, @c_lseg, @c_box, @c_path, @c_polygon, @c_circle)";
     public readonly record struct InsertPostgresGeoTypesArgs(NpgsqlPoint? CPoint, NpgsqlLine? CLine, NpgsqlLSeg? CLseg, NpgsqlBox? CBox, NpgsqlPath? CPath, NpgsqlPolygon? CPolygon, NpgsqlCircle? CCircle);
     public async Task InsertPostgresGeoTypes(InsertPostgresGeoTypesArgs args)
     {
