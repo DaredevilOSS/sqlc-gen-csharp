@@ -13,9 +13,7 @@ public class Options
         var text = Encoding.UTF8.GetString(generateRequest.PluginOptions.ToByteArray());
         // handle empty options case
         if (text.Trim() == string.Empty)
-        {
             text = "{}";
-        }
 
         var rawOptions = JsonSerializer.Deserialize<RawOptions>(text) ?? throw new InvalidOperationException();
 
