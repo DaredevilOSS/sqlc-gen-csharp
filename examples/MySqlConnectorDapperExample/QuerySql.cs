@@ -75,7 +75,10 @@ public class QuerySql
         return await this.Transaction.Connection.QueryFirstOrDefaultAsync<GetAuthorRow?>(GetAuthorSql, queryParams, transaction: this.Transaction);
     }
 
-    private const string ListAuthorsSql = "SELECT id, name, bio FROM authors ORDER BY name LIMIT @limit OFFSET @offset";
+    private const string ListAuthorsSql = @"SELECT id, name, bio 
+                                            FROM authors
+                                            ORDER BY name
+                                            LIMIT @limit OFFSET @offset";
     public class ListAuthorsRow
     {
         public required long Id { get; init; }
@@ -182,7 +185,8 @@ public class QuerySql
         return await this.Transaction.Connection.QueryFirstOrDefaultAsync<GetAuthorByIdRow?>(GetAuthorByIdSql, queryParams, transaction: this.Transaction);
     }
 
-    private const string GetAuthorByNamePatternSql = "SELECT id, name, bio FROM authors WHERE name LIKE COALESCE(@name_pattern, '%')";
+    private const string GetAuthorByNamePatternSql = @"SELECT id, name, bio FROM authors
+                                                       WHERE name LIKE COALESCE(@name_pattern, '%')";
     public class GetAuthorByNamePatternRow
     {
         public required long Id { get; init; }
@@ -211,7 +215,8 @@ public class QuerySql
         return (await this.Transaction.Connection.QueryAsync<GetAuthorByNamePatternRow>(GetAuthorByNamePatternSql, queryParams, transaction: this.Transaction)).AsList();
     }
 
-    private const string DeleteAuthorSql = "DELETE FROM authors WHERE name = @name";
+    private const string DeleteAuthorSql = @"DELETE FROM authors
+                                             WHERE name = @name";
     public class DeleteAuthorArgs
     {
         public required string Name { get; init; }
@@ -247,7 +252,9 @@ public class QuerySql
         await this.Transaction.Connection.ExecuteAsync(DeleteAllAuthorsSql, transaction: this.Transaction);
     }
 
-    private const string UpdateAuthorsSql = "UPDATE authors SET bio = @bio WHERE bio IS NOT NULL";
+    private const string UpdateAuthorsSql = @"UPDATE authors
+                                              SET bio = @bio
+                                              WHERE bio IS NOT NULL";
     public class UpdateAuthorsArgs
     {
         public string? Bio { get; init; }
@@ -357,7 +364,9 @@ public class QuerySql
         return await this.Transaction.Connection.QuerySingleAsync<long>(CreateBookSql, queryParams, transaction: this.Transaction);
     }
 
-    private const string ListAllAuthorsBooksSql = "SELECT authors.id, authors.name, authors.bio, books.id, books.name, books.author_id, books.description FROM authors JOIN books ON authors.id = books.author_id ORDER BY authors.name";
+    private const string ListAllAuthorsBooksSql = @"SELECT authors.id, authors.name, authors.bio, books.id, books.name, books.author_id, books.description 
+                                                    FROM authors JOIN books ON authors.id = books.author_id 
+                                                    ORDER BY authors.name";
     public class ListAllAuthorsBooksRow
     {
         public required Author? Author { get; init; }
@@ -399,7 +408,9 @@ public class QuerySql
         }
     }
 
-    private const string GetDuplicateAuthorsSql = "SELECT authors1.id, authors1.name, authors1.bio, authors2.id, authors2.name, authors2.bio FROM authors authors1 JOIN authors authors2 ON authors1.name = authors2.name WHERE authors1.id < authors2.id";
+    private const string GetDuplicateAuthorsSql = @"SELECT authors1.id, authors1.name, authors1.bio, authors2.id, authors2.name, authors2.bio
+                                                    FROM authors authors1 JOIN authors authors2 ON authors1.name = authors2.name
+                                                    WHERE authors1.id < authors2.id";
     public class GetDuplicateAuthorsRow
     {
         public required Author? Author { get; init; }
@@ -441,7 +452,9 @@ public class QuerySql
         }
     }
 
-    private const string GetAuthorsByBookNameSql = "SELECT authors.id, authors.name, authors.bio, books.id, books.name, books.author_id, books.description FROM authors JOIN books ON authors.id = books.author_id WHERE books.name = @name";
+    private const string GetAuthorsByBookNameSql = @"SELECT authors.id, authors.name, authors.bio, books.id, books.name, books.author_id, books.description
+                                                     FROM authors JOIN books ON authors.id = books.author_id
+                                                     WHERE books.name = @name";
     public class GetAuthorsByBookNameRow
     {
         public required long Id { get; init; }
@@ -563,7 +576,26 @@ public class QuerySql
         await this.Transaction.Connection.ExecuteAsync(TruncateExtendedBiosSql, transaction: this.Transaction);
     }
 
-    private const string InsertMysqlNumericTypesSql = " INSERT INTO mysql_numeric_types ( c_bool, c_boolean, c_tinyint, c_smallint, c_mediumint, c_int, c_integer, c_bigint, c_decimal, c_dec, c_numeric, c_fixed, c_float, c_double, c_double_precision ) VALUES (@c_bool, @c_boolean, @c_tinyint, @c_smallint, @c_mediumint, @c_int, @c_integer, @c_bigint, @c_decimal, @c_dec, @c_numeric, @c_fixed, @c_float, @c_double, @c_double_precision)";
+    private const string InsertMysqlNumericTypesSql = @"
+                                                        INSERT INTO mysql_numeric_types 
+                                                        (
+                                                            c_bool,
+                                                            c_boolean,
+                                                            c_tinyint,
+                                                            c_smallint,
+                                                            c_mediumint,
+                                                            c_int,
+                                                            c_integer,
+                                                            c_bigint, 
+                                                            c_decimal, 
+                                                            c_dec, 
+                                                            c_numeric, 
+                                                            c_fixed, 
+                                                            c_float, 
+                                                            c_double, 
+                                                            c_double_precision
+                                                        ) 
+                                                        VALUES (@c_bool, @c_boolean, @c_tinyint, @c_smallint, @c_mediumint, @c_int, @c_integer, @c_bigint, @c_decimal, @c_dec, @c_numeric, @c_fixed, @c_float, @c_double, @c_double_precision)";
     public class InsertMysqlNumericTypesArgs
     {
         public bool? CBool { get; init; }
@@ -716,7 +748,41 @@ public class QuerySql
         return await this.Transaction.Connection.QueryFirstOrDefaultAsync<GetMysqlNumericTypesRow?>(GetMysqlNumericTypesSql, transaction: this.Transaction);
     }
 
-    private const string GetMysqlNumericTypesCntSql = "SELECT COUNT(*) AS cnt, c_bool, c_boolean, c_tinyint, c_smallint, c_mediumint, c_int, c_integer, c_bigint, c_float, c_numeric, c_decimal, c_dec, c_fixed, c_double, c_double_precision FROM mysql_numeric_types GROUP BY c_bool, c_boolean, c_tinyint, c_smallint, c_mediumint, c_int, c_integer, c_bigint, c_float, c_numeric, c_decimal, c_dec, c_fixed, c_double, c_double_precision LIMIT 1";
+    private const string GetMysqlNumericTypesCntSql = @"SELECT
+                                                            COUNT(*) AS cnt,
+                                                            c_bool,
+                                                            c_boolean,
+                                                            c_tinyint,
+                                                            c_smallint,
+                                                            c_mediumint,
+                                                            c_int,
+                                                            c_integer,
+                                                            c_bigint,
+                                                            c_float,
+                                                            c_numeric,
+                                                            c_decimal,
+                                                            c_dec,
+                                                            c_fixed,
+                                                            c_double,
+                                                            c_double_precision
+                                                        FROM mysql_numeric_types
+                                                        GROUP BY
+                                                            c_bool,
+                                                            c_boolean,
+                                                            c_tinyint,
+                                                            c_smallint,
+                                                            c_mediumint,
+                                                            c_int,
+                                                            c_integer,
+                                                            c_bigint,
+                                                            c_float,
+                                                            c_numeric,
+                                                            c_decimal,
+                                                            c_dec,
+                                                            c_fixed,
+                                                            c_double,
+                                                            c_double_precision
+                                                        LIMIT 1";
     public class GetMysqlNumericTypesCntRow
     {
         public required long Cnt { get; init; }
@@ -767,7 +833,23 @@ public class QuerySql
         await this.Transaction.Connection.ExecuteAsync(TruncateMysqlNumericTypesSql, transaction: this.Transaction);
     }
 
-    private const string InsertMysqlStringTypesSql = " INSERT INTO mysql_string_types ( c_char, c_nchar, c_national_char, c_varchar, c_tinytext, c_mediumtext, c_text, c_longtext, c_json, c_json_string_override, c_enum, c_set ) VALUES (@c_char, @c_nchar, @c_national_char, @c_varchar, @c_tinytext, @c_mediumtext, @c_text, @c_longtext, @c_json, @c_json_string_override, @c_enum, @c_set)";
+    private const string InsertMysqlStringTypesSql = @"
+                                                       INSERT INTO mysql_string_types 
+                                                       (
+                                                           c_char,
+                                                           c_nchar,
+                                                           c_national_char,
+                                                           c_varchar,
+                                                           c_tinytext,
+                                                           c_mediumtext,
+                                                           c_text,
+                                                           c_longtext, 
+                                                           c_json,
+                                                           c_json_string_override,
+                                                           c_enum,
+                                                           c_set
+                                                       ) 
+                                                       VALUES (@c_char, @c_nchar, @c_national_char, @c_varchar, @c_tinytext, @c_mediumtext, @c_text, @c_longtext, @c_json, @c_json_string_override, @c_enum, @c_set)";
     public class InsertMysqlStringTypesArgs
     {
         public string? CChar { get; init; }
@@ -906,7 +988,35 @@ public class QuerySql
         return await this.Transaction.Connection.QueryFirstOrDefaultAsync<GetMysqlStringTypesRow?>(GetMysqlStringTypesSql, transaction: this.Transaction);
     }
 
-    private const string GetMysqlStringTypesCntSql = "SELECT COUNT(*) AS cnt, c_char, c_nchar, c_national_char, c_varchar, c_tinytext, c_mediumtext, c_text, c_longtext, c_json, c_json_string_override, c_enum, c_set FROM mysql_string_types GROUP BY c_char, c_nchar, c_national_char, c_varchar, c_tinytext, c_mediumtext, c_text, c_longtext, c_json, c_json_string_override, c_enum, c_set LIMIT 1";
+    private const string GetMysqlStringTypesCntSql = @"SELECT
+                                                           COUNT(*) AS cnt,
+                                                           c_char,
+                                                           c_nchar,
+                                                           c_national_char,
+                                                           c_varchar,
+                                                           c_tinytext,
+                                                           c_mediumtext,
+                                                           c_text,
+                                                           c_longtext,
+                                                           c_json,
+                                                           c_json_string_override,
+                                                           c_enum,
+                                                           c_set
+                                                       FROM mysql_string_types
+                                                       GROUP BY
+                                                           c_char,
+                                                           c_nchar,
+                                                           c_national_char,
+                                                           c_varchar,
+                                                           c_tinytext,
+                                                           c_mediumtext,
+                                                           c_text,
+                                                           c_longtext,
+                                                           c_json,
+                                                           c_json_string_override,
+                                                           c_enum,
+                                                           c_set
+                                                       LIMIT 1";
     public class GetMysqlStringTypesCntRow
     {
         public required long Cnt { get; init; }
@@ -954,7 +1064,17 @@ public class QuerySql
         await this.Transaction.Connection.ExecuteAsync(TruncateMysqlStringTypesSql, transaction: this.Transaction);
     }
 
-    private const string InsertMysqlDatetimeTypesSql = " INSERT INTO mysql_datetime_types ( c_year, c_date, c_datetime, c_timestamp, c_time, c_timestamp_noda_instant_override ) VALUES (@c_year, @c_date, @c_datetime, @c_timestamp, @c_time, @c_timestamp_noda_instant_override)";
+    private const string InsertMysqlDatetimeTypesSql = @"
+                                                         INSERT INTO mysql_datetime_types 
+                                                         (
+                                                             c_year,
+                                                             c_date,
+                                                             c_datetime,
+                                                             c_timestamp,
+                                                             c_time,
+                                                             c_timestamp_noda_instant_override
+                                                         ) 
+                                                         VALUES (@c_year, @c_date, @c_datetime, @c_timestamp, @c_time, @c_timestamp_noda_instant_override)";
     public class InsertMysqlDatetimeTypesArgs
     {
         public short? CYear { get; init; }
@@ -1066,7 +1186,21 @@ public class QuerySql
         return await this.Transaction.Connection.QueryFirstOrDefaultAsync<GetMysqlDatetimeTypesRow?>(GetMysqlDatetimeTypesSql, transaction: this.Transaction);
     }
 
-    private const string GetMysqlDatetimeTypesCntSql = "SELECT COUNT(*) AS cnt, c_year, c_date, c_datetime, c_timestamp, c_time FROM mysql_datetime_types GROUP BY c_year, c_date, c_datetime, c_timestamp, c_time LIMIT 1";
+    private const string GetMysqlDatetimeTypesCntSql = @"SELECT
+                                                             COUNT(*) AS cnt,
+                                                             c_year,
+                                                             c_date,
+                                                             c_datetime,
+                                                             c_timestamp,
+                                                             c_time
+                                                         FROM mysql_datetime_types
+                                                         GROUP BY
+                                                             c_year,
+                                                             c_date,
+                                                             c_datetime,
+                                                             c_timestamp,
+                                                             c_time
+                                                         LIMIT 1";
     public class GetMysqlDatetimeTypesCntRow
     {
         public required long Cnt { get; init; }
@@ -1107,7 +1241,18 @@ public class QuerySql
         await this.Transaction.Connection.ExecuteAsync(TruncateMysqlDatetimeTypesSql, transaction: this.Transaction);
     }
 
-    private const string InsertMysqlBinaryTypesSql = " INSERT INTO mysql_binary_types ( c_bit, c_binary, c_varbinary, c_tinyblob, c_blob, c_mediumblob, c_longblob ) VALUES (@c_bit, @c_binary, @c_varbinary, @c_tinyblob, @c_blob, @c_mediumblob, @c_longblob)";
+    private const string InsertMysqlBinaryTypesSql = @"
+                                                       INSERT INTO mysql_binary_types 
+                                                       (
+                                                           c_bit,
+                                                           c_binary, 
+                                                           c_varbinary, 
+                                                           c_tinyblob, 
+                                                           c_blob, 
+                                                           c_mediumblob, 
+                                                           c_longblob
+                                                       ) 
+                                                       VALUES (@c_bit, @c_binary, @c_varbinary, @c_tinyblob, @c_blob, @c_mediumblob, @c_longblob)";
     public class InsertMysqlBinaryTypesArgs
     {
         public byte? CBit { get; init; }
@@ -1225,7 +1370,25 @@ public class QuerySql
         return await this.Transaction.Connection.QueryFirstOrDefaultAsync<GetMysqlBinaryTypesRow?>(GetMysqlBinaryTypesSql, transaction: this.Transaction);
     }
 
-    private const string GetMysqlBinaryTypesCntSql = "SELECT COUNT(*) AS cnt, c_bit, c_binary, c_varbinary, c_tinyblob, c_blob, c_mediumblob, c_longblob FROM mysql_binary_types GROUP BY c_bit, c_binary, c_varbinary, c_tinyblob, c_blob, c_mediumblob, c_longblob LIMIT 1";
+    private const string GetMysqlBinaryTypesCntSql = @"SELECT
+                                                           COUNT(*) AS cnt,
+                                                           c_bit,
+                                                           c_binary,
+                                                           c_varbinary,
+                                                           c_tinyblob,
+                                                           c_blob,
+                                                           c_mediumblob,
+                                                           c_longblob
+                                                       FROM mysql_binary_types
+                                                       GROUP BY
+                                                           c_bit,
+                                                           c_binary,
+                                                           c_varbinary,
+                                                           c_tinyblob,
+                                                           c_blob,
+                                                           c_mediumblob,
+                                                           c_longblob
+                                                       LIMIT 1";
     public class GetMysqlBinaryTypesCntRow
     {
         public required long Cnt { get; init; }
@@ -1268,7 +1431,14 @@ public class QuerySql
         await this.Transaction.Connection.ExecuteAsync(TruncateMysqlBinaryTypesSql, transaction: this.Transaction);
     }
 
-    private const string GetMysqlFunctionsSql = " SELECT MAX(c_int) AS max_int, MAX(c_varchar) AS max_varchar, MAX(c_timestamp) AS max_timestamp FROM mysql_numeric_types CROSS JOIN mysql_string_types CROSS JOIN mysql_datetime_types";
+    private const string GetMysqlFunctionsSql = @"
+                                                  SELECT
+                                                      MAX(c_int) AS max_int,
+                                                      MAX(c_varchar) AS max_varchar,
+                                                      MAX(c_timestamp) AS max_timestamp
+                                                  FROM mysql_numeric_types
+                                                  CROSS JOIN mysql_string_types
+                                                  CROSS JOIN mysql_datetime_types";
     public class GetMysqlFunctionsRow
     {
         public int? MaxInt { get; init; }
