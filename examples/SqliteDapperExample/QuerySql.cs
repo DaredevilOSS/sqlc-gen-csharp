@@ -155,7 +155,7 @@ public class QuerySql
         return await this.Transaction.Connection.QuerySingleAsync<int>(CreateAuthorReturnIdSql, queryParams, transaction: this.Transaction);
     }
 
-    private const string GetAuthorByIdSql = @"SELECT id, name, bio FROM authors -- test comment
+    private const string GetAuthorByIdSql = @"SELECT id, name, bio FROM authors -- test rest of line comment
                                               WHERE id = @id LIMIT 1";
     public class GetAuthorByIdRow
     {
