@@ -4,6 +4,31 @@ plugins:
     process:
       cmd: ./dist/LocalRunner
 sql:
+  # Basic quick start examples
+  - schema: examples/config/postgresql/authors/schema.sql
+    queries: examples/config/postgresql/authors/query.sql
+    engine: postgresql
+    codegen:
+      - plugin: csharp
+        out: examples/QuickStartPostgresDalGen
+        options:
+          debugRequest: true
+  - schema: examples/config/mysql/authors/schema.sql
+    queries: examples/config/mysql/authors/query.sql
+    engine: mysql
+    codegen:
+      - plugin: csharp
+        out: examples/QuickStartMySqlDalGen
+        options:
+          debugRequest: true
+  - schema: examples/config/sqlite/authors/schema.sql
+    queries: examples/config/sqlite/authors/query.sql
+    engine: sqlite
+    codegen:
+      - plugin: csharp
+        out: examples/QuickStartSqliteDalGen
+        options:
+          debugRequest: true
   # PostgresSQL
   - schema: ["examples/config/postgresql/authors/schema.sql", "examples/config/postgresql/types/schema.sql"]
     queries: ["examples/config/postgresql/authors/query.sql", "examples/config/postgresql/types/query.sql"]
@@ -54,6 +79,7 @@ sql:
                 type: "Instant"
                 notNull: false
           debugRequest: true
+  # MySQL
   - schema: ["examples/config/postgresql/authors/schema.sql", "examples/config/postgresql/types/schema.sql"]
     queries: ["examples/config/postgresql/authors/query.sql", "examples/config/postgresql/types/query.sql"]
     engine: "postgresql"
@@ -235,6 +261,7 @@ sql:
                 type: "Instant"
                 notNull: false
           debugRequest: true
+  # Sqlite
   - schema: ["examples/config/mysql/authors/schema.sql", "examples/config/mysql/types/schema.sql"]
     queries: ["examples/config/mysql/authors/query.sql", "examples/config/mysql/types/query.sql"]
     engine: "mysql"
