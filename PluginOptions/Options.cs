@@ -16,7 +16,7 @@ public class Options
         {
             text = "{}";
         }
-        
+
         var rawOptions = JsonSerializer.Deserialize<RawOptions>(text) ?? throw new InvalidOperationException();
 
         DriverName = EngineToDriverMapping[generateRequest.Settings.Engine];
