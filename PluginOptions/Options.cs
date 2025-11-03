@@ -25,7 +25,7 @@ public class Options
         if (rawOptions.DebugRequest && generateRequest.Settings.Codegen.Wasm is not null)
             throw new ArgumentException("Debug request mode cannot be used with WASM plugin");
         DebugRequest = rawOptions.DebugRequest;
-        
+
         UseCentralPackageManagement = rawOptions.UseCentralPackageManagement;
     }
 

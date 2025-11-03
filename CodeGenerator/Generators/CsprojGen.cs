@@ -23,7 +23,7 @@ internal class CsprojGen(DbDriver dbDriver, string outputDirectory, string proje
     {
         var optionalNullableProperty = dbDriver.Options.DotnetFramework.IsDotnetCore() ? Environment.NewLine + "        <Nullable>enable</Nullable>" : "";
         var referenceItems = dbDriver.GetPackageReferences()
-            .Select(p => dbDriver.Options.UseCentralPackageManagement 
+            .Select(p => dbDriver.Options.UseCentralPackageManagement
                     ? $"""        <PackageReference Include="{p.Key}" />"""
                     : $"""        <PackageReference Include="{p.Key}" Version="{p.Value}"/>""")
             .JoinByNewLine();

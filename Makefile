@@ -40,3 +40,6 @@ setup-ci-wasm-plugin:
 # Manual
 generate-protobuf:
 	./scripts/generate_protobuf.sh
+
+dotnet-format:
+	dotnet format --exclude GeneratedProtobuf --exclude examples

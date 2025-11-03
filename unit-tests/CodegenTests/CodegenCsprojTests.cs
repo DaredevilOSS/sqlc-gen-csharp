@@ -109,7 +109,7 @@ public class CodegenCsprojTests
     [Test]
     public async Task TestGenerationWithoutCentralPackageManagement()
     {
-        GenerateRequest request = new () 
+        GenerateRequest request = new()
         {
             Settings = _mysqlSettings,
             Catalog = _emptyCatalog,
@@ -117,16 +117,16 @@ public class CodegenCsprojTests
                 ByteString.CopyFrom("{\"useCentralPackageManagement\": false}",
                     Encoding.UTF8)
         };
-        
+
         var response = await CodeGenerator.Generate(request);
         var csprojFile = response.Files.First(f => f.Name == $"{request.Settings.Codegen.Out}.csproj");
-        XmlDocument doc = new ();
+        XmlDocument doc = new();
         doc.LoadXml(csprojFile.Contents.ToStringUtf8());
 
         var centralPackageManagementNode = doc.SelectSingleNode("//ManagePackageVersionsCentrally");
         Assert.That(centralPackageManagementNode, Is.Not.Null);
         Assert.That(centralPackageManagementNode.InnerText, Is.EqualTo("False"));
-            
+
         var firstPackageReference = doc.SelectSingleNode("//PackageReference[@Version]");
         Assert.That(firstPackageReference, Is.Not.Null);
     }
@@ -134,7 +134,7 @@ public class CodegenCsprojTests
     [Test]
     public async Task TestGenerationWithCentralPackageManagement()
     {
-        GenerateRequest request = new () 
+        GenerateRequest request = new()
         {
             Settings = _mysqlSettings,
             Catalog = _emptyCatalog,
@@ -142,17 +142,17 @@ public class CodegenCsprojTests
                 ByteString.CopyFrom("{\"useCentralPackageManagement\": true}",
                     Encoding.UTF8)
         };
-        
+
         var response = await CodeGenerator.Generate(request);
         var csprojFile = response.Files.First(f => f.Name == $"{request.Settings.Codegen.Out}.csproj");
-        XmlDocument doc = new ();
+        XmlDocument doc = new();
         doc.LoadXml(csprojFile.Contents.ToStringUtf8());
 
         var centralPackageManagementNode = doc.SelectSingleNode("//ManagePackageVersionsCentrally");
         Assert.That(centralPackageManagementNode, Is.Not.Null);
         Assert.That(centralPackageManagementNode.InnerText, Is.EqualTo("True"));
-            
+
         var firstPackageReference = doc.SelectSingleNode("//PackageReference[@Version]");
-        Assert.That(firstPackageReference, Is.Null); 
+        Assert.That(firstPackageReference, Is.Null);
     }
 }
