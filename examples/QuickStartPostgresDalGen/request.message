@@ -10244,4 +10244,4 @@ pg_catalogvarcharzauthor_name"B
 pg_catalogvarcharzname"G
 bio_type0ÿÿÿÿÿÿÿÿÿRextendedbiosbextendedbio_typezbio_type*JF
 bio_type0ÿÿÿÿÿÿÿÿÿRextendedbiosbextended.bio_typezbio_type:	query.sqlF
-TRUNCATE TABLE extended.biosTruncateExtendedBios:exec:	query.sql"v1.30.0*³{"overrideDriverVersion":"","generateCsproj":true,"targetFramework":"net8.0","namespaceName":"","useDapper":false,"overrideDapperVersion":"","overrides":null,"debugRequest":false}
+TRUNCATE TABLE extended.biosTruncateExtendedBios:exec:	query.sql"v1.30.0*×{"overrideDriverVersion":"","generateCsproj":true,"targetFramework":"net8.0","namespaceName":"","useDapper":false,"overrideDapperVersion":"","overrides":null,"debugRequest":false,"useCentralPackageManagement":false}

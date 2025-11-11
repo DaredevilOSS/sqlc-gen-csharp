@@ -9,6 +9,7 @@
         <RootNamespace>QuickStartSqliteDalGen</RootNamespace>
         <OutputType>Library</OutputType>
         <Nullable>enable</Nullable>
+        <ManagePackageVersionsCentrally>False</ManagePackageVersionsCentrally>
     </PropertyGroup>
 
     <ItemGroup>
