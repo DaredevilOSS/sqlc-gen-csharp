@@ -23,7 +23,9 @@ internal class CsprojGen(DbDriver dbDriver, string outputDirectory, string proje
     {
         var optionalNullableProperty = dbDriver.Options.DotnetFramework.IsDotnetCore() ? Environment.NewLine + "        <Nullable>enable</Nullable>" : "";
         var referenceItems = dbDriver.GetPackageReferences()
-            .Select(p => $"""        <PackageReference Include="{p.Key}" Version="{p.Value}"/>""")
+            .Select(p => dbDriver.Options.UseCentralPackageManagement
+                    ? $"""        <PackageReference Include="{p.Key}" />"""
+                    : $"""        <PackageReference Include="{p.Key}" Version="{p.Value}"/>""")
             .JoinByNewLine();
 
         return $"""
@@ -37,6 +39,7 @@ internal class CsprojGen(DbDriver dbDriver, string outputDirectory, string proje
                         <TargetFramework>{dbDriver.Options.DotnetFramework.ToName()}</TargetFramework>
                         <RootNamespace>{namespaceName}</RootNamespace>
                         <OutputType>Library</OutputType>{optionalNullableProperty}
+                        <ManagePackageVersionsCentrally>{dbDriver.Options.UseCentralPackageManagement}</ManagePackageVersionsCentrally>
                     </PropertyGroup>
                 
                     <ItemGroup>

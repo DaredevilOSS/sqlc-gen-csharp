@@ -28,6 +28,9 @@ public record RawOptions
 
     [JsonPropertyName("debugRequest")]
     public bool DebugRequest { get; init; }
+
+    [JsonPropertyName("useCentralPackageManagement")]
+    public bool UseCentralPackageManagement { get; init; }
 }
 
 public class OverrideOption

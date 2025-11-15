@@ -29,6 +29,8 @@ public class Options
         if (rawOptions.DebugRequest && generateRequest.Settings.Codegen.Wasm is not null)
             throw new ArgumentException("Debug request mode cannot be used with WASM plugin");
         DebugRequest = rawOptions.DebugRequest;
+
+        UseCentralPackageManagement = rawOptions.UseCentralPackageManagement;
     }
 
     public DriverName DriverName { get; }
@@ -48,6 +50,12 @@ public class Options
     public List<OverrideOption> Overrides { get; }
 
     public bool DebugRequest { get; }
+
+    /// <summary>
+    /// When true generated code will opt in to central package management.
+    /// https://learn.microsoft.com/en-us/nuget/consume-packages/central-package-management
+    /// </summary>
+    public bool UseCentralPackageManagement { get; }
 
     private static readonly Dictionary<string, DriverName> EngineToDriverMapping = new()
     {
