@@ -77,9 +77,9 @@ namespace MySqlConnectorDapperLegacyExampleGen
         }
 
         private const string ListAuthorsSql = @"SELECT id, name, bio 
-                                            FROM authors
-                                            ORDER BY name
-                                            LIMIT @limit OFFSET @offset";
+                                                FROM authors
+                                                ORDER BY name
+                                                LIMIT @limit OFFSET @offset";
         public class ListAuthorsRow
         {
             public long Id { get; set; }
@@ -187,7 +187,7 @@ namespace MySqlConnectorDapperLegacyExampleGen
         }
 
         private const string GetAuthorByNamePatternSql = @"SELECT id, name, bio FROM authors
-                                                       WHERE name LIKE COALESCE(@name_pattern, '%')";
+                                                           WHERE name LIKE COALESCE(@name_pattern, '%')";
         public class GetAuthorByNamePatternRow
         {
             public long Id { get; set; }
@@ -217,7 +217,7 @@ namespace MySqlConnectorDapperLegacyExampleGen
         }
 
         private const string DeleteAuthorSql = @"DELETE FROM authors
-                                             WHERE name = @name";
+                                                 WHERE name = @name";
         public class DeleteAuthorArgs
         {
             public string Name { get; set; }
@@ -254,8 +254,8 @@ namespace MySqlConnectorDapperLegacyExampleGen
         }
 
         private const string UpdateAuthorsSql = @"UPDATE authors
-                                              SET bio = @bio
-                                              WHERE bio IS NOT NULL";
+                                                  SET bio = @bio
+                                                  WHERE bio IS NOT NULL";
         public class UpdateAuthorsArgs
         {
             public string Bio { get; set; }
@@ -366,8 +366,8 @@ namespace MySqlConnectorDapperLegacyExampleGen
         }
 
         private const string ListAllAuthorsBooksSql = @"SELECT authors.id, authors.name, authors.bio, books.id, books.name, books.author_id, books.description 
-                                                    FROM authors JOIN books ON authors.id = books.author_id 
-                                                    ORDER BY authors.name";
+                                                        FROM authors JOIN books ON authors.id = books.author_id 
+                                                        ORDER BY authors.name";
         public class ListAllAuthorsBooksRow
         {
             public Author Author { get; set; }
@@ -410,8 +410,8 @@ namespace MySqlConnectorDapperLegacyExampleGen
         }
 
         private const string GetDuplicateAuthorsSql = @"SELECT authors1.id, authors1.name, authors1.bio, authors2.id, authors2.name, authors2.bio
-                                                    FROM authors authors1 JOIN authors authors2 ON authors1.name = authors2.name
-                                                    WHERE authors1.id < authors2.id";
+                                                        FROM authors authors1 JOIN authors authors2 ON authors1.name = authors2.name
+                                                        WHERE authors1.id < authors2.id";
         public class GetDuplicateAuthorsRow
         {
             public Author Author { get; set; }
@@ -454,8 +454,8 @@ namespace MySqlConnectorDapperLegacyExampleGen
         }
 
         private const string GetAuthorsByBookNameSql = @"SELECT authors.id, authors.name, authors.bio, books.id, books.name, books.author_id, books.description
-                                                     FROM authors JOIN books ON authors.id = books.author_id
-                                                     WHERE books.name = @name";
+                                                         FROM authors JOIN books ON authors.id = books.author_id
+                                                         WHERE books.name = @name";
         public class GetAuthorsByBookNameRow
         {
             public long Id { get; set; }
@@ -578,25 +578,25 @@ namespace MySqlConnectorDapperLegacyExampleGen
         }
 
         private const string InsertMysqlNumericTypesSql = @"
-                                                        INSERT INTO mysql_numeric_types 
-                                                        (
-                                                            c_bool,
-                                                            c_boolean,
-                                                            c_tinyint,
-                                                            c_smallint,
-                                                            c_mediumint,
-                                                            c_int,
-                                                            c_integer,
-                                                            c_bigint, 
-                                                            c_decimal, 
-                                                            c_dec, 
-                                                            c_numeric, 
-                                                            c_fixed, 
-                                                            c_float, 
-                                                            c_double, 
-                                                            c_double_precision
-                                                        ) 
-                                                        VALUES (@c_bool, @c_boolean, @c_tinyint, @c_smallint, @c_mediumint, @c_int, @c_integer, @c_bigint, @c_decimal, @c_dec, @c_numeric, @c_fixed, @c_float, @c_double, @c_double_precision)";
+                                                            INSERT INTO mysql_numeric_types 
+                                                            (
+                                                                c_bool,
+                                                                c_boolean,
+                                                                c_tinyint,
+                                                                c_smallint,
+                                                                c_mediumint,
+                                                                c_int,
+                                                                c_integer,
+                                                                c_bigint, 
+                                                                c_decimal, 
+                                                                c_dec, 
+                                                                c_numeric, 
+                                                                c_fixed, 
+                                                                c_float, 
+                                                                c_double, 
+                                                                c_double_precision
+                                                            ) 
+                                                            VALUES (@c_bool, @c_boolean, @c_tinyint, @c_smallint, @c_mediumint, @c_int, @c_integer, @c_bigint, @c_decimal, @c_dec, @c_numeric, @c_fixed, @c_float, @c_double, @c_double_precision)";
         public class InsertMysqlNumericTypesArgs
         {
             public bool? CBool { get; set; }
@@ -750,40 +750,40 @@ namespace MySqlConnectorDapperLegacyExampleGen
         }
 
         private const string GetMysqlNumericTypesCntSql = @"SELECT
-                                                            COUNT(*) AS cnt,
-                                                            c_bool,
-                                                            c_boolean,
-                                                            c_tinyint,
-                                                            c_smallint,
-                                                            c_mediumint,
-                                                            c_int,
-                                                            c_integer,
-                                                            c_bigint,
-                                                            c_float,
-                                                            c_numeric,
-                                                            c_decimal,
-                                                            c_dec,
-                                                            c_fixed,
-                                                            c_double,
-                                                            c_double_precision
-                                                        FROM mysql_numeric_types
-                                                        GROUP BY
-                                                            c_bool,
-                                                            c_boolean,
-                                                            c_tinyint,
-                                                            c_smallint,
-                                                            c_mediumint,
-                                                            c_int,
-                                                            c_integer,
-                                                            c_bigint,
-                                                            c_float,
-                                                            c_numeric,
-                                                            c_decimal,
-                                                            c_dec,
-                                                            c_fixed,
-                                                            c_double,
-                                                            c_double_precision
-                                                        LIMIT 1";
+                                                                COUNT(*) AS cnt,
+                                                                c_bool,
+                                                                c_boolean,
+                                                                c_tinyint,
+                                                                c_smallint,
+                                                                c_mediumint,
+                                                                c_int,
+                                                                c_integer,
+                                                                c_bigint,
+                                                                c_float,
+                                                                c_numeric,
+                                                                c_decimal,
+                                                                c_dec,
+                                                                c_fixed,
+                                                                c_double,
+                                                                c_double_precision
+                                                            FROM mysql_numeric_types
+                                                            GROUP BY
+                                                                c_bool,
+                                                                c_boolean,
+                                                                c_tinyint,
+                                                                c_smallint,
+                                                                c_mediumint,
+                                                                c_int,
+                                                                c_integer,
+                                                                c_bigint,
+                                                                c_float,
+                                                                c_numeric,
+                                                                c_decimal,
+                                                                c_dec,
+                                                                c_fixed,
+                                                                c_double,
+                                                                c_double_precision
+                                                            LIMIT 1";
         public class GetMysqlNumericTypesCntRow
         {
             public long Cnt { get; set; }
@@ -835,22 +835,22 @@ namespace MySqlConnectorDapperLegacyExampleGen
         }
 
         private const string InsertMysqlStringTypesSql = @"
-                                                       INSERT INTO mysql_string_types 
-                                                       (
-                                                           c_char,
-                                                           c_nchar,
-                                                           c_national_char,
-                                                           c_varchar,
-                                                           c_tinytext,
-                                                           c_mediumtext,
-                                                           c_text,
-                                                           c_longtext, 
-                                                           c_json,
-                                                           c_json_string_override,
-                                                           c_enum,
-                                                           c_set
-                                                       ) 
-                                                       VALUES (@c_char, @c_nchar, @c_national_char, @c_varchar, @c_tinytext, @c_mediumtext, @c_text, @c_longtext, @c_json, @c_json_string_override, @c_enum, @c_set)";
+                                                           INSERT INTO mysql_string_types 
+                                                           (
+                                                               c_char,
+                                                               c_nchar,
+                                                               c_national_char,
+                                                               c_varchar,
+                                                               c_tinytext,
+                                                               c_mediumtext,
+                                                               c_text,
+                                                               c_longtext, 
+                                                               c_json,
+                                                               c_json_string_override,
+                                                               c_enum,
+                                                               c_set
+                                                           ) 
+                                                           VALUES (@c_char, @c_nchar, @c_national_char, @c_varchar, @c_tinytext, @c_mediumtext, @c_text, @c_longtext, @c_json, @c_json_string_override, @c_enum, @c_set)";
         public class InsertMysqlStringTypesArgs
         {
             public string CChar { get; set; }
@@ -989,34 +989,34 @@ namespace MySqlConnectorDapperLegacyExampleGen
         }
 
         private const string GetMysqlStringTypesCntSql = @"SELECT
-                                                           COUNT(*) AS cnt,
-                                                           c_char,
-                                                           c_nchar,
-                                                           c_national_char,
-                                                           c_varchar,
-                                                           c_tinytext,
-                                                           c_mediumtext,
-                                                           c_text,
-                                                           c_longtext,
-                                                           c_json,
-                                                           c_json_string_override,
-                                                           c_enum,
-                                                           c_set
-                                                       FROM mysql_string_types
-                                                       GROUP BY
-                                                           c_char,
-                                                           c_nchar,
-                                                           c_national_char,
-                                                           c_varchar,
-                                                           c_tinytext,
-                                                           c_mediumtext,
-                                                           c_text,
-                                                           c_longtext,
-                                                           c_json,
-                                                           c_json_string_override,
-                                                           c_enum,
-                                                           c_set
-                                                       LIMIT 1";
+                                                               COUNT(*) AS cnt,
+                                                               c_char,
+                                                               c_nchar,
+                                                               c_national_char,
+                                                               c_varchar,
+                                                               c_tinytext,
+                                                               c_mediumtext,
+                                                               c_text,
+                                                               c_longtext,
+                                                               c_json,
+                                                               c_json_string_override,
+                                                               c_enum,
+                                                               c_set
+                                                           FROM mysql_string_types
+                                                           GROUP BY
+                                                               c_char,
+                                                               c_nchar,
+                                                               c_national_char,
+                                                               c_varchar,
+                                                               c_tinytext,
+                                                               c_mediumtext,
+                                                               c_text,
+                                                               c_longtext,
+                                                               c_json,
+                                                               c_json_string_override,
+                                                               c_enum,
+                                                               c_set
+                                                           LIMIT 1";
         public class GetMysqlStringTypesCntRow
         {
             public long Cnt { get; set; }
@@ -1065,16 +1065,16 @@ namespace MySqlConnectorDapperLegacyExampleGen
         }
 
         private const string InsertMysqlDatetimeTypesSql = @"
-                                                         INSERT INTO mysql_datetime_types 
-                                                         (
-                                                             c_year,
-                                                             c_date,
-                                                             c_datetime,
-                                                             c_timestamp,
-                                                             c_time,
-                                                             c_timestamp_noda_instant_override
-                                                         ) 
-                                                         VALUES (@c_year, @c_date, @c_datetime, @c_timestamp, @c_time, @c_timestamp_noda_instant_override)";
+                                                             INSERT INTO mysql_datetime_types 
+                                                             (
+                                                                 c_year,
+                                                                 c_date,
+                                                                 c_datetime,
+                                                                 c_timestamp,
+                                                                 c_time,
+                                                                 c_timestamp_noda_instant_override
+                                                             ) 
+                                                             VALUES (@c_year, @c_date, @c_datetime, @c_timestamp, @c_time, @c_timestamp_noda_instant_override)";
         public class InsertMysqlDatetimeTypesArgs
         {
             public short? CYear { get; set; }
@@ -1187,20 +1187,20 @@ namespace MySqlConnectorDapperLegacyExampleGen
         }
 
         private const string GetMysqlDatetimeTypesCntSql = @"SELECT
-                                                             COUNT(*) AS cnt,
-                                                             c_year,
-                                                             c_date,
-                                                             c_datetime,
-                                                             c_timestamp,
-                                                             c_time
-                                                         FROM mysql_datetime_types
-                                                         GROUP BY
-                                                             c_year,
-                                                             c_date,
-                                                             c_datetime,
-                                                             c_timestamp,
-                                                             c_time
-                                                         LIMIT 1";
+                                                                 COUNT(*) AS cnt,
+                                                                 c_year,
+                                                                 c_date,
+                                                                 c_datetime,
+                                                                 c_timestamp,
+                                                                 c_time
+                                                             FROM mysql_datetime_types
+                                                             GROUP BY
+                                                                 c_year,
+                                                                 c_date,
+                                                                 c_datetime,
+                                                                 c_timestamp,
+                                                                 c_time
+                                                             LIMIT 1";
         public class GetMysqlDatetimeTypesCntRow
         {
             public long Cnt { get; set; }
@@ -1242,17 +1242,17 @@ namespace MySqlConnectorDapperLegacyExampleGen
         }
 
         private const string InsertMysqlBinaryTypesSql = @"
-                                                       INSERT INTO mysql_binary_types 
-                                                       (
-                                                           c_bit,
-                                                           c_binary, 
-                                                           c_varbinary, 
-                                                           c_tinyblob, 
-                                                           c_blob, 
-                                                           c_mediumblob, 
-                                                           c_longblob
-                                                       ) 
-                                                       VALUES (@c_bit, @c_binary, @c_varbinary, @c_tinyblob, @c_blob, @c_mediumblob, @c_longblob)";
+                                                           INSERT INTO mysql_binary_types 
+                                                           (
+                                                               c_bit,
+                                                               c_binary, 
+                                                               c_varbinary, 
+                                                               c_tinyblob, 
+                                                               c_blob, 
+                                                               c_mediumblob, 
+                                                               c_longblob
+                                                           ) 
+                                                           VALUES (@c_bit, @c_binary, @c_varbinary, @c_tinyblob, @c_blob, @c_mediumblob, @c_longblob)";
         public class InsertMysqlBinaryTypesArgs
         {
             public byte? CBit { get; set; }
@@ -1370,24 +1370,24 @@ namespace MySqlConnectorDapperLegacyExampleGen
         }
 
         private const string GetMysqlBinaryTypesCntSql = @"SELECT
-                                                           COUNT(*) AS cnt,
-                                                           c_bit,
-                                                           c_binary,
-                                                           c_varbinary,
-                                                           c_tinyblob,
-                                                           c_blob,
-                                                           c_mediumblob,
-                                                           c_longblob
-                                                       FROM mysql_binary_types
-                                                       GROUP BY
-                                                           c_bit,
-                                                           c_binary,
-                                                           c_varbinary,
-                                                           c_tinyblob,
-                                                           c_blob,
-                                                           c_mediumblob,
-                                                           c_longblob
-                                                       LIMIT 1";
+                                                               COUNT(*) AS cnt,
+                                                               c_bit,
+                                                               c_binary,
+                                                               c_varbinary,
+                                                               c_tinyblob,
+                                                               c_blob,
+                                                               c_mediumblob,
+                                                               c_longblob
+                                                           FROM mysql_binary_types
+                                                           GROUP BY
+                                                               c_bit,
+                                                               c_binary,
+                                                               c_varbinary,
+                                                               c_tinyblob,
+                                                               c_blob,
+                                                               c_mediumblob,
+                                                               c_longblob
+                                                           LIMIT 1";
         public class GetMysqlBinaryTypesCntRow
         {
             public long Cnt { get; set; }
@@ -1431,13 +1431,13 @@ namespace MySqlConnectorDapperLegacyExampleGen
         }
 
         private const string GetMysqlFunctionsSql = @"
-                                                  SELECT
-                                                      MAX(c_int) AS max_int,
-                                                      MAX(c_varchar) AS max_varchar,
-                                                      MAX(c_timestamp) AS max_timestamp
-                                                  FROM mysql_numeric_types
-                                                  CROSS JOIN mysql_string_types
-                                                  CROSS JOIN mysql_datetime_types";
+                                                      SELECT
+                                                          MAX(c_int) AS max_int,
+                                                          MAX(c_varchar) AS max_varchar,
+                                                          MAX(c_timestamp) AS max_timestamp
+                                                      FROM mysql_numeric_types
+                                                      CROSS JOIN mysql_string_types
+                                                      CROSS JOIN mysql_datetime_types";
         public class GetMysqlFunctionsRow
         {
             public int? MaxInt { get; set; }

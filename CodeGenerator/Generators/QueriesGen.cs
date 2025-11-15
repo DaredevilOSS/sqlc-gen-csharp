@@ -140,21 +140,23 @@ internal partial class QueriesGen(DbDriver dbDriver, string namespaceName)
         var memberName = ClassMember.Sql.Name(query.Name);
         if (transformedQueryText.IndexOfAny(['\r', '\n']) >= 0)
         {
-            var queryWithEscapedQuotes = transformedQueryText.Replace("\"", "\"\"");
-            var declarationStart = $"private const string {memberName} = @\"";
-            var lines = queryWithEscapedQuotes.TrimEnd().Split(["\r\n", "\r", "\n"], StringSplitOptions.None);
-            var firstLine = lines[0];
-            var firstCharIndex = firstLine.TakeWhile(char.IsWhiteSpace).Count();
-            var baseIndent = new string(' ', 4); // Assuming a standard 4-space indentation for members
-            var indent = new string(' ', baseIndent.Length + declarationStart.Length + firstCharIndex);
+            var queryText = transformedQueryText.Replace("\"", "\"\"");
+            var lines = queryText.TrimEnd().Split(["\r\n", "\r", "\n"], StringSplitOptions.None);
+            
+            // The indentation of the constant declaration itself. for legacy generation it 8 indents and for modern it 4.
+            string memberIndentPrefix = dbDriver.Options.DotnetFramework.IsDotnetLegacy() ? "        " : "    ";
+            var declaration = $"private const string {memberName} = @\"";
 
-            var indentedQuery = string.Join(
-                Environment.NewLine + indent,
-                lines);
+            // We need to calculate the indentation for subsequent lines so they align with the first.
+            // This is based on the member indent, the declaration length, and any leading space on the first SQL line.
+            var firstLineLeadingSpaceCount = lines[0].TakeWhile(char.IsWhiteSpace).Count();
+            var subsequentLineIndent = new string(' ', memberIndentPrefix.Length + declaration.Length + firstLineLeadingSpaceCount);
+
+            var indentedLines = lines.Skip(1).Select(line => subsequentLineIndent + line);
+            var fullQueryString = string.Join(Environment.NewLine, [lines[0], ..indentedLines]);
 
             return ParseMemberDeclaration(
-                    $"{baseIndent}{declarationStart}{indentedQuery}\";")!
-                .AppendNewLine();
+                $"{memberIndentPrefix}{declaration}{fullQueryString}\";")!;
         }
 
         var singleLineQueryText = LongWhitespaceRegex().Replace(transformedQueryText, " ");
