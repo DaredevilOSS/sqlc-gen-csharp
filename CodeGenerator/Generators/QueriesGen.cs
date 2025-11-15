@@ -142,7 +142,7 @@ internal partial class QueriesGen(DbDriver dbDriver, string namespaceName)
         {
             var queryText = transformedQueryText.Replace("\"", "\"\"");
             var lines = queryText.TrimEnd().Split(["\r\n", "\r", "\n"], StringSplitOptions.None);
-            
+
             // The indentation of the constant declaration itself. for legacy generation it 8 indents and for modern it 4.
             string memberIndentPrefix = dbDriver.Options.DotnetFramework.IsDotnetLegacy() ? "        " : "    ";
             var declaration = $"private const string {memberName} = @\"";
@@ -153,7 +153,7 @@ internal partial class QueriesGen(DbDriver dbDriver, string namespaceName)
             var subsequentLineIndent = new string(' ', memberIndentPrefix.Length + declaration.Length + firstLineLeadingSpaceCount);
 
             var indentedLines = lines.Skip(1).Select(line => subsequentLineIndent + line);
-            var fullQueryString = string.Join(Environment.NewLine, [lines[0], ..indentedLines]);
+            var fullQueryString = string.Join(Environment.NewLine, [lines[0], .. indentedLines]);
 
             return ParseMemberDeclaration(
                 $"{memberIndentPrefix}{declaration}{fullQueryString}\";")!;
