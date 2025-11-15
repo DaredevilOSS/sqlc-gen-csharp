@@ -35,7 +35,8 @@ public class QuerySql
     private NpgsqlTransaction? Transaction { get; }
     private string? ConnectionString { get; }
 
-    private const string GetAuthorSql = "SELECT id, name, bio FROM authors WHERE name = @name LIMIT 1";
+    private const string GetAuthorSql = @"SELECT id, name, bio FROM authors
+                                          WHERE name = @name LIMIT 1";
     public readonly record struct GetAuthorRow(long Id, string Name, string? Bio);
     public readonly record struct GetAuthorArgs(string Name);
     public async Task<GetAuthorRow?> GetAuthor(GetAuthorArgs args)
@@ -89,7 +90,11 @@ public class QuerySql
         return null;
     }
 
-    private const string ListAuthorsSql = "SELECT id, name, bio FROM authors ORDER BY name LIMIT @limit OFFSET @offset";
+    private const string ListAuthorsSql = @"SELECT id, name, bio 
+                                            FROM authors
+                                            ORDER BY name
+                                            LIMIT @limit
+                                            OFFSET @offset";
     public readonly record struct ListAuthorsRow(long Id, string Name, string? Bio);
     public readonly record struct ListAuthorsArgs(int Offset, int Limit);
     public async Task<List<ListAuthorsRow>> ListAuthors(ListAuthorsArgs args)
@@ -221,7 +226,8 @@ public class QuerySql
         }
     }
 
-    private const string GetAuthorByIdSql = "SELECT id, name, bio FROM authors WHERE id = @id LIMIT 1";
+    private const string GetAuthorByIdSql = @"SELECT id, name, bio FROM authors
+                                              WHERE id = @id LIMIT 1";
     public readonly record struct GetAuthorByIdRow(long Id, string Name, string? Bio);
     public readonly record struct GetAuthorByIdArgs(long Id);
     public async Task<GetAuthorByIdRow?> GetAuthorById(GetAuthorByIdArgs args)
@@ -275,7 +281,8 @@ public class QuerySql
         return null;
     }
 
-    private const string GetAuthorByNamePatternSql = "SELECT id, name, bio FROM authors WHERE name LIKE COALESCE(@name_pattern, '%')";
+    private const string GetAuthorByNamePatternSql = @"SELECT id, name, bio FROM authors
+                                                       WHERE name LIKE COALESCE(@name_pattern, '%')";
     public readonly record struct GetAuthorByNamePatternRow(long Id, string Name, string? Bio);
     public readonly record struct GetAuthorByNamePatternArgs(string? NamePattern);
     public async Task<List<GetAuthorByNamePatternRow>> GetAuthorByNamePattern(GetAuthorByNamePatternArgs args)
@@ -315,7 +322,8 @@ public class QuerySql
         }
     }
 
-    private const string DeleteAuthorSql = "DELETE FROM authors WHERE name = @name";
+    private const string DeleteAuthorSql = @"DELETE FROM authors
+                                             WHERE name = @name";
     public readonly record struct DeleteAuthorArgs(string Name);
     public async Task DeleteAuthor(DeleteAuthorArgs args)
     {
@@ -370,7 +378,9 @@ public class QuerySql
         }
     }
 
-    private const string UpdateAuthorsSql = "UPDATE authors SET bio = @bio WHERE bio IS NOT NULL";
+    private const string UpdateAuthorsSql = @"UPDATE authors
+                                              SET bio = @bio
+                                              WHERE bio IS NOT NULL";
     public readonly record struct UpdateAuthorsArgs(string? Bio);
     public async Task<long> UpdateAuthors(UpdateAuthorsArgs args)
     {
@@ -397,7 +407,8 @@ public class QuerySql
         }
     }
 
-    private const string GetAuthorsByIdsSql = "SELECT id, name, bio FROM authors WHERE id = ANY(@longArr_1::BIGINT [])";
+    private const string GetAuthorsByIdsSql = @"SELECT id, name, bio FROM authors
+                                                WHERE id = ANY(@longArr_1::BIGINT [])";
     public readonly record struct GetAuthorsByIdsRow(long Id, string Name, string? Bio);
     public readonly record struct GetAuthorsByIdsArgs(long[] LongArr1);
     public async Task<List<GetAuthorsByIdsRow>> GetAuthorsByIds(GetAuthorsByIdsArgs args)
@@ -437,7 +448,9 @@ public class QuerySql
         }
     }
 
-    private const string GetAuthorsByIdsAndNamesSql = "SELECT id, name, bio FROM authors WHERE id = ANY(@longArr_1::BIGINT []) AND name = ANY(@stringArr_2::TEXT [])";
+    private const string GetAuthorsByIdsAndNamesSql = @"SELECT id, name, bio
+                                                        FROM authors
+                                                        WHERE id = ANY(@longArr_1::BIGINT []) AND name = ANY(@stringArr_2::TEXT [])";
     public readonly record struct GetAuthorsByIdsAndNamesRow(long Id, string Name, string? Bio);
     public readonly record struct GetAuthorsByIdsAndNamesArgs(long[] LongArr1, string[] StringArr2);
     public async Task<List<GetAuthorsByIdsAndNamesRow>> GetAuthorsByIdsAndNames(GetAuthorsByIdsAndNamesArgs args)
@@ -511,7 +524,12 @@ public class QuerySql
         }
     }
 
-    private const string ListAllAuthorsBooksSql = "SELECT authors.id, authors.name, authors.bio, books.id, books.name, books.author_id, books.description FROM authors INNER JOIN books ON authors.id = books.author_id ORDER BY authors.name";
+    private const string ListAllAuthorsBooksSql = @"SELECT
+                                                        authors.id, authors.name, authors.bio,
+                                                        books.id, books.name, books.author_id, books.description
+                                                    FROM authors
+                                                    INNER JOIN books ON authors.id = books.author_id
+                                                    ORDER BY authors.name";
     public readonly record struct ListAllAuthorsBooksRow(Author? Author, Book? Book);
     public async Task<List<ListAllAuthorsBooksRow>> ListAllAuthorsBooks()
     {
@@ -548,7 +566,12 @@ public class QuerySql
         }
     }
 
-    private const string GetDuplicateAuthorsSql = "SELECT authors1.id, authors1.name, authors1.bio, authors2.id, authors2.name, authors2.bio FROM authors AS authors1 INNER JOIN authors AS authors2 ON authors1.name = authors2.name WHERE authors1.id < authors2.id";
+    private const string GetDuplicateAuthorsSql = @"SELECT
+                                                        authors1.id, authors1.name, authors1.bio,
+                                                        authors2.id, authors2.name, authors2.bio
+                                                    FROM authors AS authors1
+                                                    INNER JOIN authors AS authors2 ON authors1.name = authors2.name
+                                                    WHERE authors1.id < authors2.id";
     public readonly record struct GetDuplicateAuthorsRow(Author? Author, Author? Author2);
     public async Task<List<GetDuplicateAuthorsRow>> GetDuplicateAuthors()
     {
@@ -585,7 +608,11 @@ public class QuerySql
         }
     }
 
-    private const string GetAuthorsByBookNameSql = "SELECT authors.id, authors.name, authors.bio, books.id, books.name, books.author_id, books.description FROM authors INNER JOIN books ON authors.id = books.author_id WHERE books.name = @name";
+    private const string GetAuthorsByBookNameSql = @"SELECT
+                                                         authors.id, authors.name, authors.bio,
+                                                         books.id, books.name, books.author_id, books.description
+                                                     FROM authors INNER JOIN books ON authors.id = books.author_id
+                                                     WHERE books.name = @name";
     public readonly record struct GetAuthorsByBookNameRow(long Id, string Name, string? Bio, Book? Book);
     public readonly record struct GetAuthorsByBookNameArgs(string Name);
     public async Task<List<GetAuthorsByBookNameRow>> GetAuthorsByBookName(GetAuthorsByBookNameArgs args)
