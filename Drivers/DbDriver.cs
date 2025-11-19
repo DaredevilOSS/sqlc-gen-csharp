@@ -7,7 +7,7 @@ using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace SqlcGenCsharp.Drivers;
 
-public record ConnectionGenCommands(string EstablishConnection, string ConnectionOpen);
+public record ConnectionGenCommands(string EstablishConnection, string ConnectionOpen, bool WrapInUsing = true);
 
 public abstract class DbDriver
 {
@@ -69,7 +69,7 @@ public abstract class DbDriver
            """;
 
     public readonly string TransactionConnectionNullExcetionThrow = $"""
-         if (this.{Variable.Transaction.AsPropertyName()}?.Connection == null || this.{Variable.Transaction.AsPropertyName()}?.Connection.State != System.Data.ConnectionState.Open)
+         if (this.{Variable.Transaction.AsPropertyName()}?.Connection == null || this.{Variable.Transaction.AsPropertyName()}?.Connection.State != ConnectionState.Open)
              throw new InvalidOperationException("Transaction is provided, but its connection is null.");
          """;
 
@@ -148,6 +148,8 @@ public abstract class DbDriver
             {
                 "System",
                 "System.Collections.Generic",
+                "System.Data",
+                "System.Threading",
                 "System.Threading.Tasks"
             }
             .AddRangeIf([
@@ -191,7 +193,7 @@ public abstract class DbDriver
             .AddRangeExcludeNulls(GetUsingDirectivesForColumnMappings());
     }
 
-    public string[] GetConstructorStatements()
+    public virtual string[] GetConstructorStatements()
     {
         return [$"this.{Variable.ConnectionString.AsPropertyName()} = {Variable.ConnectionString.AsVarName()};"];
     }
@@ -199,6 +201,21 @@ public abstract class DbDriver
     public string[] GetTransactionConstructorStatements()
     {
         return [$"this.{Variable.Transaction.AsPropertyName()} = {Variable.Transaction.AsVarName()};"];
+    }
+
+    public virtual string[] GetClassBaseTypes()
+    {
+        return [];
+    }
+
+    public virtual MemberDeclarationSyntax[] GetAdditionalClassMembers()
+    {
+        return [];
+    }
+
+    public virtual MemberDeclarationSyntax? GetDisposeMethodImpl()
+    {
+        return null;
     }
 
     protected virtual ISet<string> GetConfigureSqlMappings()
@@ -220,7 +237,8 @@ public abstract class DbDriver
                  {
                      {{GetConfigureSqlMappings().JoinByNewLine()}}
                  }
-               """)!];
+               """)!
+            ];
     }
 
     private MemberDeclarationSyntax[] GetSqlMapperMemberDeclarations()

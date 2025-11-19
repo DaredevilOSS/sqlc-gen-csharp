@@ -13,6 +13,26 @@ public class CommonGen(DbDriver dbDriver)
             : $"{argInterface} {Variable.Args.AsVarName()}")}";
     }
 
+    public static string GetDapperArgs(Query query)
+    {
+        return query.Params.Count == 0 ? string.Empty : $", {Variable.QueryParams.AsVarName()}";
+    }
+
+    public static string ConditionallyWrapAsUsing(string usingStatement, string blockStatement, bool wrapInUsing)
+    {
+        return wrapInUsing
+            ? $$"""
+                using ({{usingStatement}})
+                {
+                    {{blockStatement}}
+                }
+                """
+            : $$"""
+                {{usingStatement}};
+                {{blockStatement}}
+                """;
+    }
+
     public string ConstructDapperParamsDict(Query query)
     {
         if (!query.Params.Any()) return string.Empty;

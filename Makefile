@@ -12,9 +12,6 @@ unit-tests:
 
 generate-end2end-tests:
 	./end2end/scripts/generate_tests.sh
-    
-run-end2end-tests:
-	./end2end/scripts/run_tests.sh
 
 # process type plugin
 dotnet-publish-process:
@@ -32,14 +29,23 @@ sqlc-generate: sync-sqlc-options dotnet-publish-process sqlc-generate-requests
 test-plugin: unit-tests sqlc-generate generate-end2end-tests dotnet-build run-end2end-tests
 
 # WASM type plugin
-setup-ci-wasm-plugin:
+setup-wasm-plugin:
 	dotnet publish WasmRunner -c release --output dist/
 	./scripts/wasm/copy_plugin_to.sh dist
 	./scripts/wasm/update_sha.sh sqlc.ci.yaml
+	./scripts/wasm/update_sha.sh sqlc.benchmark.yaml
 
+run-benchmark: setup-wasm-plugin
+	SQLCCACHE=./; sqlc -f sqlc.benchmark.yaml generate
+	./benchmark/scripts/run_benchmark.sh
+
+run-end2end-tests:
+	./end2end/scripts/run_tests.sh
+	
 # Manual
 generate-protobuf:
 	./scripts/generate_protobuf.sh
 
 dotnet-format:
 	dotnet format --exclude GeneratedProtobuf --exclude examples
+

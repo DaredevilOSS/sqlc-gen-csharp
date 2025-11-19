@@ -12,10 +12,12 @@ using NodaTime;
 using NodaTime.Extensions;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace MySqlConnectorExampleGen;
@@ -69,12 +71,12 @@ public class QuerySql
                         }
                     }
                 }
-            }
 
-            return null;
+                return null;
+            }
         }
 
-        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
             throw new InvalidOperationException("Transaction is provided, but its connection is null.");
         using (var command = this.Transaction.Connection.CreateCommand())
         {
@@ -126,7 +128,7 @@ public class QuerySql
             }
         }
 
-        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
             throw new InvalidOperationException("Transaction is provided, but its connection is null.");
         using (var command = this.Transaction.Connection.CreateCommand())
         {
@@ -160,12 +162,12 @@ public class QuerySql
                     command.Parameters.AddWithValue("@bio", args.Bio ?? (object)DBNull.Value);
                     await command.ExecuteNonQueryAsync();
                 }
-            }
 
-            return;
+                return;
+            }
         }
 
-        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
             throw new InvalidOperationException("Transaction is provided, but its connection is null.");
         using (var command = this.Transaction.Connection.CreateCommand())
         {
@@ -197,7 +199,7 @@ public class QuerySql
             }
         }
 
-        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
             throw new InvalidOperationException("Transaction is provided, but its connection is null.");
         using (var command = this.Transaction.Connection.CreateCommand())
         {
@@ -236,12 +238,12 @@ public class QuerySql
                         }
                     }
                 }
-            }
 
-            return null;
+                return null;
+            }
         }
 
-        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
             throw new InvalidOperationException("Transaction is provided, but its connection is null.");
         using (var command = this.Transaction.Connection.CreateCommand())
         {
@@ -290,7 +292,7 @@ public class QuerySql
             }
         }
 
-        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
             throw new InvalidOperationException("Transaction is provided, but its connection is null.");
         using (var command = this.Transaction.Connection.CreateCommand())
         {
@@ -322,12 +324,12 @@ public class QuerySql
                     command.Parameters.AddWithValue("@name", args.Name);
                     await command.ExecuteNonQueryAsync();
                 }
-            }
 
-            return;
+                return;
+            }
         }
 
-        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
             throw new InvalidOperationException("Transaction is provided, but its connection is null.");
         using (var command = this.Transaction.Connection.CreateCommand())
         {
@@ -350,12 +352,12 @@ public class QuerySql
                 {
                     await command.ExecuteNonQueryAsync();
                 }
-            }
 
-            return;
+                return;
+            }
         }
 
-        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
             throw new InvalidOperationException("Transaction is provided, but its connection is null.");
         using (var command = this.Transaction.Connection.CreateCommand())
         {
@@ -384,7 +386,7 @@ public class QuerySql
             }
         }
 
-        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
             throw new InvalidOperationException("Transaction is provided, but its connection is null.");
         using (var command = this.Transaction.Connection.CreateCommand())
         {
@@ -422,7 +424,7 @@ public class QuerySql
             }
         }
 
-        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
             throw new InvalidOperationException("Transaction is provided, but its connection is null.");
         using (var command = this.Transaction.Connection.CreateCommand())
         {
@@ -470,7 +472,7 @@ public class QuerySql
             }
         }
 
-        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
             throw new InvalidOperationException("Transaction is provided, but its connection is null.");
         using (var command = this.Transaction.Connection.CreateCommand())
         {
@@ -509,7 +511,7 @@ public class QuerySql
             }
         }
 
-        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
             throw new InvalidOperationException("Transaction is provided, but its connection is null.");
         using (var command = this.Transaction.Connection.CreateCommand())
         {
@@ -546,7 +548,7 @@ public class QuerySql
             }
         }
 
-        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
             throw new InvalidOperationException("Transaction is provided, but its connection is null.");
         using (var command = this.Transaction.Connection.CreateCommand())
         {
@@ -586,7 +588,7 @@ public class QuerySql
             }
         }
 
-        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
             throw new InvalidOperationException("Transaction is provided, but its connection is null.");
         using (var command = this.Transaction.Connection.CreateCommand())
         {
@@ -628,7 +630,7 @@ public class QuerySql
             }
         }
 
-        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
             throw new InvalidOperationException("Transaction is provided, but its connection is null.");
         using (var command = this.Transaction.Connection.CreateCommand())
         {
@@ -662,12 +664,12 @@ public class QuerySql
                     command.Parameters.AddWithValue("@author_type", args.AuthorType != null ? string.Join(",", args.AuthorType) : (object)DBNull.Value);
                     await command.ExecuteNonQueryAsync();
                 }
-            }
 
-            return;
+                return;
+            }
         }
 
-        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
             throw new InvalidOperationException("Transaction is provided, but its connection is null.");
         using (var command = this.Transaction.Connection.CreateCommand())
         {
@@ -708,12 +710,12 @@ public class QuerySql
                         }
                     }
                 }
-            }
 
-            return null;
+                return null;
+            }
         }
 
-        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
             throw new InvalidOperationException("Transaction is provided, but its connection is null.");
         using (var command = this.Transaction.Connection.CreateCommand())
         {
@@ -750,12 +752,12 @@ public class QuerySql
                 {
                     await command.ExecuteNonQueryAsync();
                 }
-            }
 
-            return;
+                return;
+            }
         }
 
-        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
             throw new InvalidOperationException("Transaction is provided, but its connection is null.");
         using (var command = this.Transaction.Connection.CreateCommand())
         {
@@ -812,12 +814,12 @@ public class QuerySql
                     command.Parameters.AddWithValue("@c_double_precision", args.CDoublePrecision ?? (object)DBNull.Value);
                     await command.ExecuteNonQueryAsync();
                 }
-            }
 
-            return;
+                return;
+            }
         }
 
-        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
             throw new InvalidOperationException("Transaction is provided, but its connection is null.");
         using (var command = this.Transaction.Connection.CreateCommand())
         {
@@ -930,12 +932,12 @@ public class QuerySql
                         }
                     }
                 }
-            }
 
-            return null;
+                return null;
+            }
         }
 
-        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
             throw new InvalidOperationException("Transaction is provided, but its connection is null.");
         using (var command = this.Transaction.Connection.CreateCommand())
         {
@@ -1041,12 +1043,12 @@ public class QuerySql
                         }
                     }
                 }
-            }
 
-            return null;
+                return null;
+            }
         }
 
-        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
             throw new InvalidOperationException("Transaction is provided, but its connection is null.");
         using (var command = this.Transaction.Connection.CreateCommand())
         {
@@ -1094,12 +1096,12 @@ public class QuerySql
                 {
                     await command.ExecuteNonQueryAsync();
                 }
-            }
 
-            return;
+                return;
+            }
         }
 
-        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
             throw new InvalidOperationException("Transaction is provided, but its connection is null.");
         using (var command = this.Transaction.Connection.CreateCommand())
         {
@@ -1150,12 +1152,12 @@ public class QuerySql
                     command.Parameters.AddWithValue("@c_set", args.CSet != null ? string.Join(",", args.CSet) : (object)DBNull.Value);
                     await command.ExecuteNonQueryAsync();
                 }
-            }
 
-            return;
+                return;
+            }
         }
 
-        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
             throw new InvalidOperationException("Transaction is provided, but its connection is null.");
         using (var command = this.Transaction.Connection.CreateCommand())
         {
@@ -1260,12 +1262,12 @@ public class QuerySql
                         }
                     }
                 }
-            }
 
-            return null;
+                return null;
+            }
         }
 
-        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
             throw new InvalidOperationException("Transaction is provided, but its connection is null.");
         using (var command = this.Transaction.Connection.CreateCommand())
         {
@@ -1359,12 +1361,12 @@ public class QuerySql
                         }
                     }
                 }
-            }
 
-            return null;
+                return null;
+            }
         }
 
-        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
             throw new InvalidOperationException("Transaction is provided, but its connection is null.");
         using (var command = this.Transaction.Connection.CreateCommand())
         {
@@ -1409,12 +1411,12 @@ public class QuerySql
                 {
                     await command.ExecuteNonQueryAsync();
                 }
-            }
 
-            return;
+                return;
+            }
         }
 
-        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
             throw new InvalidOperationException("Transaction is provided, but its connection is null.");
         using (var command = this.Transaction.Connection.CreateCommand())
         {
@@ -1453,12 +1455,12 @@ public class QuerySql
                     command.Parameters.AddWithValue("@c_timestamp_noda_instant_override", args.CTimestampNodaInstantOverride is null ? (object)DBNull.Value : (DateTime? )DateTime.SpecifyKind(args.CTimestampNodaInstantOverride.Value.ToDateTimeUtc(), DateTimeKind.Unspecified));
                     await command.ExecuteNonQueryAsync();
                 }
-            }
 
-            return;
+                return;
+            }
         }
 
-        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
             throw new InvalidOperationException("Transaction is provided, but its connection is null.");
         using (var command = this.Transaction.Connection.CreateCommand())
         {
@@ -1555,12 +1557,12 @@ public class QuerySql
                         }
                     }
                 }
-            }
 
-            return null;
+                return null;
+            }
         }
 
-        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
             throw new InvalidOperationException("Transaction is provided, but its connection is null.");
         using (var command = this.Transaction.Connection.CreateCommand())
         {
@@ -1633,12 +1635,12 @@ public class QuerySql
                         }
                     }
                 }
-            }
 
-            return null;
+                return null;
+            }
         }
 
-        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
             throw new InvalidOperationException("Transaction is provided, but its connection is null.");
         using (var command = this.Transaction.Connection.CreateCommand())
         {
@@ -1676,12 +1678,12 @@ public class QuerySql
                 {
                     await command.ExecuteNonQueryAsync();
                 }
-            }
 
-            return;
+                return;
+            }
         }
 
-        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
             throw new InvalidOperationException("Transaction is provided, but its connection is null.");
         using (var command = this.Transaction.Connection.CreateCommand())
         {
@@ -1722,12 +1724,12 @@ public class QuerySql
                     command.Parameters.AddWithValue("@c_longblob", args.CLongblob ?? (object)DBNull.Value);
                     await command.ExecuteNonQueryAsync();
                 }
-            }
 
-            return;
+                return;
+            }
         }
 
-        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
             throw new InvalidOperationException("Transaction is provided, but its connection is null.");
         using (var command = this.Transaction.Connection.CreateCommand())
         {
@@ -1821,12 +1823,12 @@ public class QuerySql
                         }
                     }
                 }
-            }
 
-            return null;
+                return null;
+            }
         }
 
-        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
             throw new InvalidOperationException("Transaction is provided, but its connection is null.");
         using (var command = this.Transaction.Connection.CreateCommand())
         {
@@ -1900,12 +1902,12 @@ public class QuerySql
                         }
                     }
                 }
-            }
 
-            return null;
+                return null;
+            }
         }
 
-        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
             throw new InvalidOperationException("Transaction is provided, but its connection is null.");
         using (var command = this.Transaction.Connection.CreateCommand())
         {
@@ -1945,12 +1947,12 @@ public class QuerySql
                 {
                     await command.ExecuteNonQueryAsync();
                 }
-            }
 
-            return;
+                return;
+            }
         }
 
-        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
             throw new InvalidOperationException("Transaction is provided, but its connection is null.");
         using (var command = this.Transaction.Connection.CreateCommand())
         {
@@ -1991,12 +1993,12 @@ public class QuerySql
                         }
                     }
                 }
-            }
 
-            return null;
+                return null;
+            }
         }
 
-        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
             throw new InvalidOperationException("Transaction is provided, but its connection is null.");
         using (var command = this.Transaction.Connection.CreateCommand())
         {

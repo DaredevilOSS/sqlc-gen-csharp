@@ -1,0 +1,15 @@
+version: "2"
+plugins:
+  - name: csharp
+    wasm:
+      url: file://dist/plugin.wasm
+      sha256: 4e4ab102ea10075be36b653c9b99871068f1c3de0d76ecf481257fdddafaef14
+sql:
+  - schema: "examples/config/postgresql/benchmark/schema.sql"
+    queries: "examples/config/postgresql/benchmark/query.sql"
+    engine: "postgresql"
+    codegen:
+      - plugin: csharp
+        out: benchmark/postgres/SqlcImpl
+        options:
+          namespaceName: PostgresSqlcImpl

@@ -13,6 +13,8 @@ namespace SqliteDapperLegacyExampleGen
     using NodaTime.Text;
     using System;
     using System.Collections.Generic;
+    using System.Data;
+    using System.Threading;
     using System.Threading.Tasks;
 
     public class QuerySql
@@ -20,7 +22,7 @@ namespace SqliteDapperLegacyExampleGen
         public QuerySql()
         {
             Utils.ConfigureSqlMapper();
-            Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
+            DefaultTypeMap.MatchNamesWithUnderscores = true;
         }
 
         public QuerySql(string connectionString) : this()
@@ -61,12 +63,13 @@ namespace SqliteDapperLegacyExampleGen
             {
                 using (var connection = new SqliteConnection(ConnectionString))
                 {
+                    await connection.OpenAsync();
                     var result = await connection.QueryFirstOrDefaultAsync<GetAuthorRow>(GetAuthorSql, queryParams);
                     return result;
                 }
             }
 
-            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
                 throw new InvalidOperationException("Transaction is provided, but its connection is null.");
             return await this.Transaction.Connection.QueryFirstOrDefaultAsync<GetAuthorRow>(GetAuthorSql, queryParams, transaction: this.Transaction);
         }
@@ -95,12 +98,13 @@ namespace SqliteDapperLegacyExampleGen
             {
                 using (var connection = new SqliteConnection(ConnectionString))
                 {
+                    await connection.OpenAsync();
                     var result = await connection.QueryAsync<ListAuthorsRow>(ListAuthorsSql, queryParams);
                     return result.AsList();
                 }
             }
 
-            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
                 throw new InvalidOperationException("Transaction is provided, but its connection is null.");
             return (await this.Transaction.Connection.QueryAsync<ListAuthorsRow>(ListAuthorsSql, queryParams, transaction: this.Transaction)).AsList();
         }
@@ -121,11 +125,14 @@ namespace SqliteDapperLegacyExampleGen
             if (this.Transaction == null)
             {
                 using (var connection = new SqliteConnection(ConnectionString))
+                {
+                    await connection.OpenAsync();
                     await connection.ExecuteAsync(CreateAuthorSql, queryParams);
-                return;
+                    return;
+                }
             }
 
-            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
                 throw new InvalidOperationException("Transaction is provided, but its connection is null.");
             await this.Transaction.Connection.ExecuteAsync(CreateAuthorSql, queryParams, transaction: this.Transaction);
         }
@@ -148,10 +155,13 @@ namespace SqliteDapperLegacyExampleGen
             if (this.Transaction == null)
             {
                 using (var connection = new SqliteConnection(ConnectionString))
+                {
+                    await connection.OpenAsync();
                     return await connection.QuerySingleAsync<int>(CreateAuthorReturnIdSql, queryParams);
+                }
             }
 
-            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
                 throw new InvalidOperationException("Transaction is provided, but its connection is null.");
             return await this.Transaction.Connection.QuerySingleAsync<int>(CreateAuthorReturnIdSql, queryParams, transaction: this.Transaction);
         }
@@ -176,12 +186,13 @@ namespace SqliteDapperLegacyExampleGen
             {
                 using (var connection = new SqliteConnection(ConnectionString))
                 {
+                    await connection.OpenAsync();
                     var result = await connection.QueryFirstOrDefaultAsync<GetAuthorByIdRow>(GetAuthorByIdSql, queryParams);
                     return result;
                 }
             }
 
-            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
                 throw new InvalidOperationException("Transaction is provided, but its connection is null.");
             return await this.Transaction.Connection.QueryFirstOrDefaultAsync<GetAuthorByIdRow>(GetAuthorByIdSql, queryParams, transaction: this.Transaction);
         }
@@ -207,12 +218,13 @@ namespace SqliteDapperLegacyExampleGen
             {
                 using (var connection = new SqliteConnection(ConnectionString))
                 {
+                    await connection.OpenAsync();
                     var result = await connection.QueryFirstOrDefaultAsync<GetAuthorByIdWithMultipleNamedParamRow>(GetAuthorByIdWithMultipleNamedParamSql, queryParams);
                     return result;
                 }
             }
 
-            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
                 throw new InvalidOperationException("Transaction is provided, but its connection is null.");
             return await this.Transaction.Connection.QueryFirstOrDefaultAsync<GetAuthorByIdWithMultipleNamedParamRow>(GetAuthorByIdWithMultipleNamedParamSql, queryParams, transaction: this.Transaction);
         }
@@ -237,12 +249,13 @@ namespace SqliteDapperLegacyExampleGen
             {
                 using (var connection = new SqliteConnection(ConnectionString))
                 {
+                    await connection.OpenAsync();
                     var result = await connection.QueryAsync<GetAuthorByNamePatternRow>(GetAuthorByNamePatternSql, queryParams);
                     return result.AsList();
                 }
             }
 
-            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
                 throw new InvalidOperationException("Transaction is provided, but its connection is null.");
             return (await this.Transaction.Connection.QueryAsync<GetAuthorByNamePatternRow>(GetAuthorByNamePatternSql, queryParams, transaction: this.Transaction)).AsList();
         }
@@ -261,10 +274,13 @@ namespace SqliteDapperLegacyExampleGen
             if (this.Transaction == null)
             {
                 using (var connection = new SqliteConnection(ConnectionString))
+                {
+                    await connection.OpenAsync();
                     return await connection.ExecuteAsync(UpdateAuthorsSql, queryParams);
+                }
             }
 
-            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
                 throw new InvalidOperationException("Transaction is provided, but its connection is null.");
             return await this.Transaction.Connection.ExecuteAsync(UpdateAuthorsSql, queryParams, transaction: this.Transaction);
         }
@@ -291,12 +307,13 @@ namespace SqliteDapperLegacyExampleGen
             {
                 using (var connection = new SqliteConnection(ConnectionString))
                 {
+                    await connection.OpenAsync();
                     var result = await connection.QueryAsync<GetAuthorsByIdsRow>(transformedSql, queryParams);
                     return result.AsList();
                 }
             }
 
-            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
                 throw new InvalidOperationException("Transaction is provided, but its connection is null.");
             return (await this.Transaction.Connection.QueryAsync<GetAuthorsByIdsRow>(transformedSql, queryParams, transaction: this.Transaction)).AsList();
         }
@@ -327,12 +344,13 @@ namespace SqliteDapperLegacyExampleGen
             {
                 using (var connection = new SqliteConnection(ConnectionString))
                 {
+                    await connection.OpenAsync();
                     var result = await connection.QueryAsync<GetAuthorsByIdsAndNamesRow>(transformedSql, queryParams);
                     return result.AsList();
                 }
             }
 
-            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
                 throw new InvalidOperationException("Transaction is provided, but its connection is null.");
             return (await this.Transaction.Connection.QueryAsync<GetAuthorsByIdsAndNamesRow>(transformedSql, queryParams, transaction: this.Transaction)).AsList();
         }
@@ -350,11 +368,14 @@ namespace SqliteDapperLegacyExampleGen
             if (this.Transaction == null)
             {
                 using (var connection = new SqliteConnection(ConnectionString))
+                {
+                    await connection.OpenAsync();
                     await connection.ExecuteAsync(DeleteAuthorSql, queryParams);
-                return;
+                    return;
+                }
             }
 
-            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
                 throw new InvalidOperationException("Transaction is provided, but its connection is null.");
             await this.Transaction.Connection.ExecuteAsync(DeleteAuthorSql, queryParams, transaction: this.Transaction);
         }
@@ -377,10 +398,13 @@ namespace SqliteDapperLegacyExampleGen
             if (this.Transaction == null)
             {
                 using (var connection = new SqliteConnection(ConnectionString))
+                {
+                    await connection.OpenAsync();
                     return await connection.QuerySingleAsync<int>(CreateBookSql, queryParams);
+                }
             }
 
-            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
                 throw new InvalidOperationException("Transaction is provided, but its connection is null.");
             return await this.Transaction.Connection.QuerySingleAsync<int>(CreateBookSql, queryParams, transaction: this.Transaction);
         }
@@ -415,7 +439,7 @@ namespace SqliteDapperLegacyExampleGen
                 }
             }
 
-            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
                 throw new InvalidOperationException("Transaction is provided, but its connection is null.");
             using (var command = this.Transaction.Connection.CreateCommand())
             {
@@ -462,7 +486,7 @@ namespace SqliteDapperLegacyExampleGen
                 }
             }
 
-            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
                 throw new InvalidOperationException("Transaction is provided, but its connection is null.");
             using (var command = this.Transaction.Connection.CreateCommand())
             {
@@ -515,7 +539,7 @@ namespace SqliteDapperLegacyExampleGen
                 }
             }
 
-            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
                 throw new InvalidOperationException("Transaction is provided, but its connection is null.");
             using (var command = this.Transaction.Connection.CreateCommand())
             {
@@ -538,11 +562,14 @@ namespace SqliteDapperLegacyExampleGen
             if (this.Transaction == null)
             {
                 using (var connection = new SqliteConnection(ConnectionString))
+                {
+                    await connection.OpenAsync();
                     await connection.ExecuteAsync(DeleteAllAuthorsSql);
-                return;
+                    return;
+                }
             }
 
-            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
                 throw new InvalidOperationException("Transaction is provided, but its connection is null.");
             await this.Transaction.Connection.ExecuteAsync(DeleteAllAuthorsSql, transaction: this.Transaction);
         }
@@ -590,11 +617,14 @@ namespace SqliteDapperLegacyExampleGen
             if (this.Transaction == null)
             {
                 using (var connection = new SqliteConnection(ConnectionString))
+                {
+                    await connection.OpenAsync();
                     await connection.ExecuteAsync(InsertSqliteTypesSql, queryParams);
-                return;
+                    return;
+                }
             }
 
-            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
                 throw new InvalidOperationException("Transaction is provided, but its connection is null.");
             await this.Transaction.Connection.ExecuteAsync(InsertSqliteTypesSql, queryParams, transaction: this.Transaction);
         }
@@ -658,12 +688,13 @@ namespace SqliteDapperLegacyExampleGen
             {
                 using (var connection = new SqliteConnection(ConnectionString))
                 {
+                    await connection.OpenAsync();
                     var result = await connection.QueryFirstOrDefaultAsync<GetSqliteTypesRow>(GetSqliteTypesSql);
                     return result;
                 }
             }
 
-            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
                 throw new InvalidOperationException("Transaction is provided, but its connection is null.");
             return await this.Transaction.Connection.QueryFirstOrDefaultAsync<GetSqliteTypesRow>(GetSqliteTypesSql, transaction: this.Transaction);
         }
@@ -691,12 +722,13 @@ namespace SqliteDapperLegacyExampleGen
             {
                 using (var connection = new SqliteConnection(ConnectionString))
                 {
+                    await connection.OpenAsync();
                     var result = await connection.QueryFirstOrDefaultAsync<GetSqliteTypesCntRow>(GetSqliteTypesCntSql);
                     return result;
                 }
             }
 
-            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
                 throw new InvalidOperationException("Transaction is provided, but its connection is null.");
             return await this.Transaction.Connection.QueryFirstOrDefaultAsync<GetSqliteTypesCntRow>(GetSqliteTypesCntSql, transaction: this.Transaction);
         }
@@ -718,12 +750,13 @@ namespace SqliteDapperLegacyExampleGen
             {
                 using (var connection = new SqliteConnection(ConnectionString))
                 {
+                    await connection.OpenAsync();
                     var result = await connection.QueryFirstOrDefaultAsync<GetSqliteFunctionsRow>(GetSqliteFunctionsSql);
                     return result;
                 }
             }
 
-            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
                 throw new InvalidOperationException("Transaction is provided, but its connection is null.");
             return await this.Transaction.Connection.QueryFirstOrDefaultAsync<GetSqliteFunctionsRow>(GetSqliteFunctionsSql, transaction: this.Transaction);
         }
@@ -734,11 +767,14 @@ namespace SqliteDapperLegacyExampleGen
             if (this.Transaction == null)
             {
                 using (var connection = new SqliteConnection(ConnectionString))
+                {
+                    await connection.OpenAsync();
                     await connection.ExecuteAsync(DeleteAllSqliteTypesSql);
-                return;
+                    return;
+                }
             }
 
-            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
                 throw new InvalidOperationException("Transaction is provided, but its connection is null.");
             await this.Transaction.Connection.ExecuteAsync(DeleteAllSqliteTypesSql, transaction: this.Transaction);
         }
