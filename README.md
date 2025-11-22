@@ -12,8 +12,8 @@ version: "2"
 plugins:
 - name: csharp
   wasm:
-    url: https://github.com/DaredevilOSS/sqlc-gen-csharp/releases/download/v0.21.4/sqlc-gen-csharp.wasm
-    sha256: ceb948980f5a49e2922824f068f812f9ac70287da6dcc8c8199c8b4ceeaec858
+    url: https://github.com/DaredevilOSS/sqlc-gen-csharp/releases/download/v0.22.0/sqlc-gen-csharp.wasm
+    sha256: 9de8713ddcde8f21787ed925fb65744aa04f027ea6c23320292dc31d28aab80d
 sql:
   # For PostgresSQL
   - schema: schema.sql
@@ -39,15 +39,18 @@ sql:
 ```
 # Usage
 ## Options
-| Option                | Possible values                                                                                | Optional | Info |
-|--------------------- |----------------------------------------------------------------------------------------------|----------|------|
-| overrideDriverVersion| default:<br/> `2.3.6` for MySqlConnector  (mysql)<br/>`8.0.3` for Npgsql (postgresql)<br/>`8.0.10` for Microsoft.Data.Sqlite (sqlite)<br/><br/>values: The desired driver version | Yes | Allows you to override the version of DB driver to be used. |
-| targetFramework      | default: `net8.0`<br/>values: `netstandard2.0`, `netstandard2.1`, `net8.0` | Yes | Determines the target framework for your generated code, meaning the generated code will be compiled to the specified runtime.<br/>For more information and help deciding on the right value, refer to the [Microsoft .NET Standard documentation](https://learn.microsoft.com/en-us/dotnet/standard/net-standard?tabs=net-standard-1-0). |
-| generateCsproj       | default: `true`<br/>values: `false`,`true` | Yes | Assists you with the integration of SQLC and csharp by generating a `.csproj` file. This converts the generated output to a .dll, a project that you can easily incorporate into your build process. |
-| namespaceName        | default: the generated project name | Yes | Allows you to override the namespace name to be different than the project name |
-| useDapper           | default: `false`<br/>values: `false`,`true` | Yes | Enables Dapper as a thin wrapper for the generated code. For more information, please refer to the [Dapper documentation](https://github.com/DapperLib/Dapper). |
-| overrideDapperVersion| default:<br/> `2.1.35`<br/>values: The desired Dapper version | Yes | If `useDapper` is set to `true`, this option allows you to override the version of Dapper to be used. |
-| Override            | values: A nested override value like [this](#override-option). | Yes | Allows you to override the generated C# data types for specific columns in specific queries. This option accepts a `query_name:column_name` mapping and the overriden data type. |                                                                                     |
+
+| Option                      | Possible values                                                                                                                                                                   | Optional | Info                                                                                                                                                                                                                                                                                                                                      |
+|-----------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| overrideDriverVersion       | default:<br/> `2.3.6` for MySqlConnector  (mysql)<br/>`8.0.3` for Npgsql (postgresql)<br/>`8.0.10` for Microsoft.Data.Sqlite (sqlite)<br/><br/>values: The desired driver version | Yes      | Allows you to override the version of DB driver to be used.                                                                                                                                                                                                                                                                               |
+| targetFramework             | default: `net8.0`<br/>values: `netstandard2.0`, `netstandard2.1`, `net8.0`                                                                                                        | Yes      | Determines the target framework for your generated code, meaning the generated code will be compiled to the specified runtime.<br/>For more information and help deciding on the right value, refer to the [Microsoft .NET Standard documentation](https://learn.microsoft.com/en-us/dotnet/standard/net-standard?tabs=net-standard-1-0). |
+| generateCsproj              | default: `true`<br/>values: `false`,`true`                                                                                                                                        | Yes      | Assists you with the integration of SQLC and csharp by generating a `.csproj` file. This converts the generated output to a .dll, a project that you can easily incorporate into your build process.                                                                                                                                      |
+| namespaceName               | default: the generated project name                                                                                                                                               | Yes      | Allows you to override the namespace name to be different than the project name                                                                                                                                                                                                                                                           |
+| useDapper                   | default: `false`<br/>values: `false`,`true`                                                                                                                                       | Yes      | Enables Dapper as a thin wrapper for the generated code. For more information, please refer to the [Dapper documentation](https://github.com/DapperLib/Dapper).                                                                                                                                                                           |
+| overrideDapperVersion       | default:<br/> `2.1.35`<br/>values: The desired Dapper version                                                                                                                     | Yes      | If `useDapper` is set to `true`, this option allows you to override the version of Dapper to be used.                                                                                                                                                                                                                                     |
+| Override                    | values: A nested override value like [this](#override-option).                                                                                                                    | Yes      | Allows you to override the generated C# data types for specific columns in specific queries. This option accepts a `query_name:column_name` mapping and the overriden data type.                                                                                                                                                          |                                                                                     |
+| useCentralPackageManagement | default: `false`<br/>values: `false`,`true`                                                                                                                                       | Yes      | If true, the code is generated to support central package management.                                                                                                                                                                                                                                                                     |
+| withAsyncSuffix             | default: `true`<br/>values: `false`,`true`                                                                                                                                       | Yes      | When true, async methods will have the "Async" suffix appended to their names (e.g., `GetAuthorAsync`). When false, async methods will not have the suffix (e.g., `GetAuthor`).                                                                                                                                                        |
 
 ### Override option
 Override for a specific query:
@@ -428,6 +431,36 @@ By default, the release script will bump the patch version. Adding `[release]` t
 The new created tag will create a draft release with it, in the release there will be the wasm plugin embedded in the release. <br/>
 # Examples
 <details>
+<summary>QuickStartPostgresDalGen</summary>
+
+## Engine `postgresql`: [QuickStartPostgresDalGen](examples/QuickStartPostgresDalGen)
+### [Schema](examples/config/postgresql/authors/schema.sql) | [Queries](examples/config/postgresql/authors/query.sql) | [End2End Test](end2end/EndToEndTests/QuickStartPostgresDalGen.cs)
+### Config
+```yaml
+```
+
+</details>
+<details>
+<summary>QuickStartMySqlDalGen</summary>
+
+## Engine `mysql`: [QuickStartMySqlDalGen](examples/QuickStartMySqlDalGen)
+### [Schema](examples/config/mysql/authors/schema.sql) | [Queries](examples/config/mysql/authors/query.sql) | [End2End Test](end2end/EndToEndTests/QuickStartMySqlDalGen.cs)
+### Config
+```yaml
+```
+
+</details>
+<details>
+<summary>QuickStartSqliteDalGen</summary>
+
+## Engine `sqlite`: [QuickStartSqliteDalGen](examples/QuickStartSqliteDalGen)
+### [Schema](examples/config/sqlite/authors/schema.sql) | [Queries](examples/config/sqlite/authors/query.sql) | [End2End Test](end2end/EndToEndTests/QuickStartSqliteDalGen.cs)
+### Config
+```yaml
+```
+
+</details>
+<details>
 <summary>Npgsql</summary>
 
 ## Engine `postgresql`: [NpgsqlExample](examples/NpgsqlExample)
@@ -470,6 +503,10 @@ overrides:
 - column: "*:c_macaddr8"
   csharp_type:
     type: "string"
+    notNull: false
+- column: "*:c_timestamp_noda_instant_override"
+  csharp_type:
+    type: "Instant"
     notNull: false
 ```
 
@@ -518,6 +555,10 @@ overrides:
   csharp_type:
     type: "string"
     notNull: false
+- column: "*:c_timestamp_noda_instant_override"
+  csharp_type:
+    type: "Instant"
+    notNull: false
 ```
 
 </details>
@@ -564,6 +605,10 @@ overrides:
 - column: "*:c_macaddr8"
   csharp_type:
     type: "string"
+    notNull: false
+- column: "*:c_timestamp_noda_instant_override"
+  csharp_type:
+    type: "Instant"
     notNull: false
 ```
 
@@ -612,6 +657,10 @@ overrides:
   csharp_type:
     type: "string"
     notNull: false
+- column: "*:c_timestamp_noda_instant_override"
+  csharp_type:
+    type: "Instant"
+    notNull: false
 ```
 
 </details>
@@ -642,6 +691,10 @@ overrides:
 - column: "*:c_json_string_override"
   csharp_type:
     type: "string"
+    notNull: false
+- column: "*:c_timestamp_noda_instant_override"
+  csharp_type:
+    type: "Instant"
     notNull: false
 ```
 
@@ -674,6 +727,10 @@ overrides:
   csharp_type:
     type: "string"
     notNull: false
+- column: "*:c_timestamp_noda_instant_override"
+  csharp_type:
+    type: "Instant"
+    notNull: false
 ```
 
 </details>
@@ -705,6 +762,10 @@ overrides:
   csharp_type:
     type: "string"
     notNull: false
+- column: "*:c_timestamp_noda_instant_override"
+  csharp_type:
+    type: "Instant"
+    notNull: false
 ```
 
 </details>
@@ -735,6 +796,10 @@ overrides:
 - column: "*:c_json_string_override"
   csharp_type:
     type: "string"
+    notNull: false
+- column: "*:c_timestamp_noda_instant_override"
+  csharp_type:
+    type: "Instant"
     notNull: false
 ```
 
@@ -772,6 +837,12 @@ overrides:
 - column: "*:c_integer_bool_override"
   csharp_type:
     type: "bool"
+- column: "*:c_text_noda_instant_override"
+  csharp_type:
+    type: "Instant"
+- column: "*:c_integer_noda_instant_override"
+  csharp_type:
+    type: "Instant"
 ```
 
 </details>
@@ -808,6 +879,12 @@ overrides:
 - column: "*:c_integer_bool_override"
   csharp_type:
     type: "bool"
+- column: "*:c_text_noda_instant_override"
+  csharp_type:
+    type: "Instant"
+- column: "*:c_integer_noda_instant_override"
+  csharp_type:
+    type: "Instant"
 ```
 
 </details>
@@ -844,6 +921,12 @@ overrides:
 - column: "*:c_integer_bool_override"
   csharp_type:
     type: "bool"
+- column: "*:c_text_noda_instant_override"
+  csharp_type:
+    type: "Instant"
+- column: "*:c_integer_noda_instant_override"
+  csharp_type:
+    type: "Instant"
 ```
 
 </details>
@@ -880,6 +963,12 @@ overrides:
 - column: "*:c_integer_bool_override"
   csharp_type:
     type: "bool"
+- column: "*:c_text_noda_instant_override"
+  csharp_type:
+    type: "Instant"
+- column: "*:c_integer_noda_instant_override"
+  csharp_type:
+    type: "Instant"
 ```
 
 </details>
