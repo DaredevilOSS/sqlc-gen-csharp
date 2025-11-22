@@ -13,8 +13,8 @@ namespace EndToEndTests
         [TearDown]
         public async Task EmptyTestsTable()
         {
-            await QuerySql.DeleteAllAuthors();
-            await QuerySql.DeleteAllSqliteTypes();
+            await QuerySql.DeleteAllAuthorsAsync();
+            await QuerySql.DeleteAllSqliteTypesAsync();
         }
     }
 }

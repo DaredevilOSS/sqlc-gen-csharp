@@ -50,7 +50,7 @@ namespace SqliteLegacyExampleGen
         {
             public string Name { get; set; }
         };
-        public async Task<GetAuthorRow> GetAuthor(GetAuthorArgs args)
+        public async Task<GetAuthorRow> GetAuthorAsync(GetAuthorArgs args)
         {
             if (this.Transaction == null)
             {
@@ -117,7 +117,7 @@ namespace SqliteLegacyExampleGen
             public int Offset { get; set; }
             public int Limit { get; set; }
         };
-        public async Task<List<ListAuthorsRow>> ListAuthors(ListAuthorsArgs args)
+        public async Task<List<ListAuthorsRow>> ListAuthorsAsync(ListAuthorsArgs args)
         {
             if (this.Transaction == null)
             {
@@ -164,7 +164,7 @@ namespace SqliteLegacyExampleGen
             public string Name { get; set; }
             public string Bio { get; set; }
         };
-        public async Task CreateAuthor(CreateAuthorArgs args)
+        public async Task CreateAuthorAsync(CreateAuthorArgs args)
         {
             if (this.Transaction == null)
             {
@@ -206,7 +206,7 @@ namespace SqliteLegacyExampleGen
             public string Name { get; set; }
             public string Bio { get; set; }
         };
-        public async Task<int> CreateAuthorReturnId(CreateAuthorReturnIdArgs args)
+        public async Task<int> CreateAuthorReturnIdAsync(CreateAuthorReturnIdArgs args)
         {
             if (this.Transaction == null)
             {
@@ -248,7 +248,7 @@ namespace SqliteLegacyExampleGen
         {
             public int Id { get; set; }
         };
-        public async Task<GetAuthorByIdRow> GetAuthorById(GetAuthorByIdArgs args)
+        public async Task<GetAuthorByIdRow> GetAuthorByIdAsync(GetAuthorByIdArgs args)
         {
             if (this.Transaction == null)
             {
@@ -312,7 +312,7 @@ namespace SqliteLegacyExampleGen
             public int IdArg { get; set; }
             public int? Take { get; set; }
         };
-        public async Task<GetAuthorByIdWithMultipleNamedParamRow> GetAuthorByIdWithMultipleNamedParam(GetAuthorByIdWithMultipleNamedParamArgs args)
+        public async Task<GetAuthorByIdWithMultipleNamedParamRow> GetAuthorByIdWithMultipleNamedParamAsync(GetAuthorByIdWithMultipleNamedParamArgs args)
         {
             if (this.Transaction == null)
             {
@@ -378,7 +378,7 @@ namespace SqliteLegacyExampleGen
         {
             public string NamePattern { get; set; }
         };
-        public async Task<List<GetAuthorByNamePatternRow>> GetAuthorByNamePattern(GetAuthorByNamePatternArgs args)
+        public async Task<List<GetAuthorByNamePatternRow>> GetAuthorByNamePatternAsync(GetAuthorByNamePatternArgs args)
         {
             if (this.Transaction == null)
             {
@@ -423,7 +423,7 @@ namespace SqliteLegacyExampleGen
         {
             public string Bio { get; set; }
         };
-        public async Task<long> UpdateAuthors(UpdateAuthorsArgs args)
+        public async Task<long> UpdateAuthorsAsync(UpdateAuthorsArgs args)
         {
             if (this.Transaction == null)
             {
@@ -460,7 +460,7 @@ namespace SqliteLegacyExampleGen
         {
             public int[] Ids { get; set; }
         };
-        public async Task<List<GetAuthorsByIdsRow>> GetAuthorsByIds(GetAuthorsByIdsArgs args)
+        public async Task<List<GetAuthorsByIdsRow>> GetAuthorsByIdsAsync(GetAuthorsByIdsArgs args)
         {
             var transformedSql = GetAuthorsByIdsSql;
             transformedSql = Utils.TransformQueryForSliceArgs(transformedSql, args.Ids.Length, "ids");
@@ -514,7 +514,7 @@ namespace SqliteLegacyExampleGen
             public int[] Ids { get; set; }
             public string[] Names { get; set; }
         };
-        public async Task<List<GetAuthorsByIdsAndNamesRow>> GetAuthorsByIdsAndNames(GetAuthorsByIdsAndNamesArgs args)
+        public async Task<List<GetAuthorsByIdsAndNamesRow>> GetAuthorsByIdsAndNamesAsync(GetAuthorsByIdsAndNamesArgs args)
         {
             var transformedSql = GetAuthorsByIdsAndNamesSql;
             transformedSql = Utils.TransformQueryForSliceArgs(transformedSql, args.Ids.Length, "ids");
@@ -567,7 +567,7 @@ namespace SqliteLegacyExampleGen
         {
             public string Name { get; set; }
         };
-        public async Task DeleteAuthor(DeleteAuthorArgs args)
+        public async Task DeleteAuthorAsync(DeleteAuthorArgs args)
         {
             if (this.Transaction == null)
             {
@@ -605,7 +605,7 @@ namespace SqliteLegacyExampleGen
             public string Name { get; set; }
             public int AuthorId { get; set; }
         };
-        public async Task<int> CreateBook(CreateBookArgs args)
+        public async Task<int> CreateBookAsync(CreateBookArgs args)
         {
             if (this.Transaction == null)
             {
@@ -645,7 +645,7 @@ namespace SqliteLegacyExampleGen
             public Author Author { get; set; }
             public Book Book { get; set; }
         };
-        public async Task<List<ListAllAuthorsBooksRow>> ListAllAuthorsBooks()
+        public async Task<List<ListAllAuthorsBooksRow>> ListAllAuthorsBooksAsync()
         {
             if (this.Transaction == null)
             {
@@ -692,7 +692,7 @@ namespace SqliteLegacyExampleGen
             public Author Author { get; set; }
             public Author Author2 { get; set; }
         };
-        public async Task<List<GetDuplicateAuthorsRow>> GetDuplicateAuthors()
+        public async Task<List<GetDuplicateAuthorsRow>> GetDuplicateAuthorsAsync()
         {
             if (this.Transaction == null)
             {
@@ -744,7 +744,7 @@ namespace SqliteLegacyExampleGen
         {
             public string Name { get; set; }
         };
-        public async Task<List<GetAuthorsByBookNameRow>> GetAuthorsByBookName(GetAuthorsByBookNameArgs args)
+        public async Task<List<GetAuthorsByBookNameRow>> GetAuthorsByBookNameAsync(GetAuthorsByBookNameArgs args)
         {
             if (this.Transaction == null)
             {
@@ -783,7 +783,7 @@ namespace SqliteLegacyExampleGen
         }
 
         private const string DeleteAllAuthorsSql = "DELETE FROM authors";
-        public async Task DeleteAllAuthors()
+        public async Task DeleteAllAuthorsAsync()
         {
             if (this.Transaction == null)
             {
@@ -836,7 +836,7 @@ namespace SqliteLegacyExampleGen
             public bool? CTextBoolOverride { get; set; }
             public bool? CIntegerBoolOverride { get; set; }
         };
-        public async Task InsertSqliteTypes(InsertSqliteTypesArgs args)
+        public async Task InsertSqliteTypesAsync(InsertSqliteTypesArgs args)
         {
             if (this.Transaction == null)
             {
@@ -889,7 +889,7 @@ namespace SqliteLegacyExampleGen
             public decimal? CReal { get; set; }
             public string CText { get; set; }
         };
-        public async Task InsertSqliteTypesBatch(List<InsertSqliteTypesBatchArgs> args)
+        public async Task InsertSqliteTypesBatchAsync(List<InsertSqliteTypesBatchArgs> args)
         {
             using (var connection = new SqliteConnection(ConnectionString))
             {
@@ -935,7 +935,7 @@ namespace SqliteLegacyExampleGen
             public bool? CTextBoolOverride { get; set; }
             public bool? CIntegerBoolOverride { get; set; }
         };
-        public async Task<GetSqliteTypesRow> GetSqliteTypes()
+        public async Task<GetSqliteTypesRow> GetSqliteTypesAsync()
         {
             if (this.Transaction == null)
             {
@@ -1016,7 +1016,7 @@ namespace SqliteLegacyExampleGen
             public byte[] CBlob { get; set; }
             public int Cnt { get; set; }
         };
-        public async Task<GetSqliteTypesCntRow> GetSqliteTypesCnt()
+        public async Task<GetSqliteTypesCntRow> GetSqliteTypesCntAsync()
         {
             if (this.Transaction == null)
             {
@@ -1081,7 +1081,7 @@ namespace SqliteLegacyExampleGen
             public decimal? MaxReal { get; set; }
             public object MaxText { get; set; }
         };
-        public async Task<GetSqliteFunctionsRow> GetSqliteFunctions()
+        public async Task<GetSqliteFunctionsRow> GetSqliteFunctionsAsync()
         {
             if (this.Transaction == null)
             {
@@ -1132,7 +1132,7 @@ namespace SqliteLegacyExampleGen
         }
 
         private const string DeleteAllSqliteTypesSql = "DELETE FROM types_sqlite";
-        public async Task DeleteAllSqliteTypes()
+        public async Task DeleteAllSqliteTypesAsync()
         {
             if (this.Transaction == null)
             {

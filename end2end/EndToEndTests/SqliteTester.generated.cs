@@ -13,17 +13,17 @@ namespace EndToEndTests
     public partial class SqliteTester
     {
         [Test]
-        public async Task TestOne()
+        public async Task TestOneAsync()
         {
-            await this.QuerySql.CreateAuthor(new QuerySql.CreateAuthorArgs { Id = 1111, Name = "Bojack Horseman", Bio = "Back in the 90s he was in a very famous TV show" });
-            await this.QuerySql.CreateAuthor(new QuerySql.CreateAuthorArgs { Id = 2222, Name = "Dr. Seuss", Bio = "You'll miss the best things if you keep your eyes shut" });
+            await this.QuerySql.CreateAuthorAsync(new QuerySql.CreateAuthorArgs { Id = 1111, Name = "Bojack Horseman", Bio = "Back in the 90s he was in a very famous TV show" });
+            await this.QuerySql.CreateAuthorAsync(new QuerySql.CreateAuthorArgs { Id = 2222, Name = "Dr. Seuss", Bio = "You'll miss the best things if you keep your eyes shut" });
             var expected = new QuerySql.GetAuthorRow
             {
                 Id = 1111,
                 Name = "Bojack Horseman",
                 Bio = "Back in the 90s he was in a very famous TV show"
             };
-            var actual = await this.QuerySql.GetAuthor(new QuerySql.GetAuthorArgs { Name = "Bojack Horseman" });
+            var actual = await this.QuerySql.GetAuthorAsync(new QuerySql.GetAuthorArgs { Name = "Bojack Horseman" });
             AssertSingularEquals(expected, actual.Value);
             void AssertSingularEquals(QuerySql.GetAuthorRow x, QuerySql.GetAuthorRow y)
             {
@@ -34,10 +34,10 @@ namespace EndToEndTests
         }
 
         [Test]
-        public async Task TestMany()
+        public async Task TestManyAsync()
         {
-            await this.QuerySql.CreateAuthor(new QuerySql.CreateAuthorArgs { Id = 1111, Name = "Bojack Horseman", Bio = "Back in the 90s he was in a very famous TV show" });
-            await this.QuerySql.CreateAuthor(new QuerySql.CreateAuthorArgs { Id = 2222, Name = "Dr. Seuss", Bio = "You'll miss the best things if you keep your eyes shut" });
+            await this.QuerySql.CreateAuthorAsync(new QuerySql.CreateAuthorArgs { Id = 1111, Name = "Bojack Horseman", Bio = "Back in the 90s he was in a very famous TV show" });
+            await this.QuerySql.CreateAuthorAsync(new QuerySql.CreateAuthorArgs { Id = 2222, Name = "Dr. Seuss", Bio = "You'll miss the best things if you keep your eyes shut" });
             var expected = new List<QuerySql.ListAuthorsRow>
             {
                 new QuerySql.ListAuthorsRow
@@ -53,7 +53,7 @@ namespace EndToEndTests
                     Bio = "You'll miss the best things if you keep your eyes shut"
                 }
             };
-            var actual = await this.QuerySql.ListAuthors(new QuerySql.ListAuthorsArgs { Limit = 2, Offset = 0 });
+            var actual = await this.QuerySql.ListAuthorsAsync(new QuerySql.ListAuthorsArgs { Limit = 2, Offset = 0 });
             AssertSequenceEquals(expected, actual);
             void AssertSingularEquals(QuerySql.ListAuthorsRow x, QuerySql.ListAuthorsRow y)
             {
@@ -71,21 +71,21 @@ namespace EndToEndTests
         }
 
         [Test]
-        public async Task TestExec()
+        public async Task TestExecAsync()
         {
-            await this.QuerySql.CreateAuthor(new QuerySql.CreateAuthorArgs { Id = 1111, Name = "Bojack Horseman", Bio = "Back in the 90s he was in a very famous TV show" });
-            await this.QuerySql.CreateAuthor(new QuerySql.CreateAuthorArgs { Id = 2222, Name = "Dr. Seuss", Bio = "You'll miss the best things if you keep your eyes shut" });
-            await this.QuerySql.DeleteAuthor(new QuerySql.DeleteAuthorArgs { Name = "Bojack Horseman" });
-            var actual = await this.QuerySql.GetAuthor(new QuerySql.GetAuthorArgs { Name = "Bojack Horseman" });
+            await this.QuerySql.CreateAuthorAsync(new QuerySql.CreateAuthorArgs { Id = 1111, Name = "Bojack Horseman", Bio = "Back in the 90s he was in a very famous TV show" });
+            await this.QuerySql.CreateAuthorAsync(new QuerySql.CreateAuthorArgs { Id = 2222, Name = "Dr. Seuss", Bio = "You'll miss the best things if you keep your eyes shut" });
+            await this.QuerySql.DeleteAuthorAsync(new QuerySql.DeleteAuthorArgs { Name = "Bojack Horseman" });
+            var actual = await this.QuerySql.GetAuthorAsync(new QuerySql.GetAuthorArgs { Name = "Bojack Horseman" });
             ClassicAssert.IsNull(actual);
         }
 
         [Test]
-        public async Task TestExecRows()
+        public async Task TestExecRowsAsync()
         {
-            await this.QuerySql.CreateAuthor(new QuerySql.CreateAuthorArgs { Id = 1111, Name = "Bojack Horseman", Bio = "Back in the 90s he was in a very famous TV show" });
-            await this.QuerySql.CreateAuthor(new QuerySql.CreateAuthorArgs { Id = 2222, Name = "Dr. Seuss", Bio = "You'll miss the best things if you keep your eyes shut" });
-            var affectedRows = await this.QuerySql.UpdateAuthors(new QuerySql.UpdateAuthorsArgs { Bio = "Quote that everyone always attribute to Einstein" });
+            await this.QuerySql.CreateAuthorAsync(new QuerySql.CreateAuthorArgs { Id = 1111, Name = "Bojack Horseman", Bio = "Back in the 90s he was in a very famous TV show" });
+            await this.QuerySql.CreateAuthorAsync(new QuerySql.CreateAuthorArgs { Id = 2222, Name = "Dr. Seuss", Bio = "You'll miss the best things if you keep your eyes shut" });
+            var affectedRows = await this.QuerySql.UpdateAuthorsAsync(new QuerySql.UpdateAuthorsArgs { Bio = "Quote that everyone always attribute to Einstein" });
             ClassicAssert.AreEqual(2, affectedRows);
             var expected = new List<QuerySql.ListAuthorsRow>
             {
@@ -102,7 +102,7 @@ namespace EndToEndTests
                     Bio = "Quote that everyone always attribute to Einstein"
                 }
             };
-            var actual = await this.QuerySql.ListAuthors(new QuerySql.ListAuthorsArgs { Limit = 2, Offset = 0 });
+            var actual = await this.QuerySql.ListAuthorsAsync(new QuerySql.ListAuthorsArgs { Limit = 2, Offset = 0 });
             AssertSequenceEquals(expected, actual);
             void AssertSingularEquals(QuerySql.ListAuthorsRow x, QuerySql.ListAuthorsRow y)
             {
@@ -120,16 +120,16 @@ namespace EndToEndTests
         }
 
         [Test]
-        public async Task TestExecLastId()
+        public async Task TestExecLastIdAsync()
         {
-            var id1 = await this.QuerySql.CreateAuthorReturnId(new QuerySql.CreateAuthorReturnIdArgs { Name = "Albert Einstein", Bio = "Quote that everyone always attribute to Einstein" });
+            var id1 = await this.QuerySql.CreateAuthorReturnIdAsync(new QuerySql.CreateAuthorReturnIdArgs { Name = "Albert Einstein", Bio = "Quote that everyone always attribute to Einstein" });
             var expected = new QuerySql.GetAuthorByIdRow
             {
                 Id = id1,
                 Name = "Albert Einstein",
                 Bio = "Quote that everyone always attribute to Einstein"
             };
-            var actual = await QuerySql.GetAuthorById(new QuerySql.GetAuthorByIdArgs { Id = id1 });
+            var actual = await QuerySql.GetAuthorByIdAsync(new QuerySql.GetAuthorByIdArgs { Id = id1 });
             AssertSingularEquals(expected, actual.Value);
             void AssertSingularEquals(QuerySql.GetAuthorByIdRow x, QuerySql.GetAuthorByIdRow y)
             {
@@ -140,10 +140,10 @@ namespace EndToEndTests
         }
 
         [Test]
-        public async Task TestSelfJoinEmbed()
+        public async Task TestSelfJoinEmbedAsync()
         {
-            var id1 = await this.QuerySql.CreateAuthorReturnId(new QuerySql.CreateAuthorReturnIdArgs { Name = "Albert Einstein", Bio = "Quote that everyone always attribute to Einstein" });
-            var id2 = await this.QuerySql.CreateAuthorReturnId(new QuerySql.CreateAuthorReturnIdArgs { Name = "Albert Einstein", Bio = "Only 2 things are infinite, the universe and human stupidity" });
+            var id1 = await this.QuerySql.CreateAuthorReturnIdAsync(new QuerySql.CreateAuthorReturnIdArgs { Name = "Albert Einstein", Bio = "Quote that everyone always attribute to Einstein" });
+            var id2 = await this.QuerySql.CreateAuthorReturnIdAsync(new QuerySql.CreateAuthorReturnIdArgs { Name = "Albert Einstein", Bio = "Only 2 things are infinite, the universe and human stupidity" });
             var expected = new List<QuerySql.GetDuplicateAuthorsRow>()
             {
                 new QuerySql.GetDuplicateAuthorsRow
@@ -162,7 +162,7 @@ namespace EndToEndTests
                     }
                 }
             };
-            var actual = await QuerySql.GetDuplicateAuthors();
+            var actual = await QuerySql.GetDuplicateAuthorsAsync();
             AssertSequenceEquals(expected, actual);
             void AssertSingularEquals(QuerySql.GetDuplicateAuthorsRow x, QuerySql.GetDuplicateAuthorsRow y)
             {
@@ -183,12 +183,12 @@ namespace EndToEndTests
         }
 
         [Test]
-        public async Task TestJoinEmbed()
+        public async Task TestJoinEmbedAsync()
         {
-            var bojackId = await this.QuerySql.CreateAuthorReturnId(new QuerySql.CreateAuthorReturnIdArgs { Name = "Bojack Horseman", Bio = "Back in the 90s he was in a very famous TV show" });
-            var bojackBookId = await QuerySql.CreateBook(new QuerySql.CreateBookArgs { Name = "One Trick Pony", AuthorId = bojackId });
-            var drSeussId = await this.QuerySql.CreateAuthorReturnId(new QuerySql.CreateAuthorReturnIdArgs { Name = "Dr. Seuss", Bio = "You'll miss the best things if you keep your eyes shut" });
-            var drSeussBookId = await QuerySql.CreateBook(new QuerySql.CreateBookArgs { AuthorId = drSeussId, Name = "How the Grinch Stole Christmas!" });
+            var bojackId = await this.QuerySql.CreateAuthorReturnIdAsync(new QuerySql.CreateAuthorReturnIdArgs { Name = "Bojack Horseman", Bio = "Back in the 90s he was in a very famous TV show" });
+            var bojackBookId = await QuerySql.CreateBookAsync(new QuerySql.CreateBookArgs { Name = "One Trick Pony", AuthorId = bojackId });
+            var drSeussId = await this.QuerySql.CreateAuthorReturnIdAsync(new QuerySql.CreateAuthorReturnIdArgs { Name = "Dr. Seuss", Bio = "You'll miss the best things if you keep your eyes shut" });
+            var drSeussBookId = await QuerySql.CreateBookAsync(new QuerySql.CreateBookArgs { AuthorId = drSeussId, Name = "How the Grinch Stole Christmas!" });
             var expected = new List<QuerySql.ListAllAuthorsBooksRow>()
             {
                 new QuerySql.ListAllAuthorsBooksRow
@@ -222,7 +222,7 @@ namespace EndToEndTests
                     }
                 }
             };
-            var actual = await QuerySql.ListAllAuthorsBooks();
+            var actual = await QuerySql.ListAllAuthorsBooksAsync();
             AssertSequenceEquals(expected, actual);
             void AssertSingularEquals(QuerySql.ListAllAuthorsBooksRow x, QuerySql.ListAllAuthorsBooksRow y)
             {
@@ -243,28 +243,28 @@ namespace EndToEndTests
         }
 
         [Test]
-        public async Task TestSlice()
+        public async Task TestSliceAsync()
         {
-            var id1 = await this.QuerySql.CreateAuthorReturnId(new QuerySql.CreateAuthorReturnIdArgs { Name = "Albert Einstein", Bio = "Quote that everyone always attribute to Einstein" });
-            var bojackId = await this.QuerySql.CreateAuthorReturnId(new QuerySql.CreateAuthorReturnIdArgs { Name = "Bojack Horseman", Bio = "Back in the 90s he was in a very famous TV show" });
-            var actual = await QuerySql.GetAuthorsByIds(new QuerySql.GetAuthorsByIdsArgs { Ids = new[] { id1, bojackId } });
+            var id1 = await this.QuerySql.CreateAuthorReturnIdAsync(new QuerySql.CreateAuthorReturnIdArgs { Name = "Albert Einstein", Bio = "Quote that everyone always attribute to Einstein" });
+            var bojackId = await this.QuerySql.CreateAuthorReturnIdAsync(new QuerySql.CreateAuthorReturnIdArgs { Name = "Bojack Horseman", Bio = "Back in the 90s he was in a very famous TV show" });
+            var actual = await QuerySql.GetAuthorsByIdsAsync(new QuerySql.GetAuthorsByIdsArgs { Ids = new[] { id1, bojackId } });
             ClassicAssert.AreEqual(2, actual.Count);
         }
 
         [Test]
-        public async Task TestMultipleSlices()
+        public async Task TestMultipleSlicesAsync()
         {
-            var id1 = await this.QuerySql.CreateAuthorReturnId(new QuerySql.CreateAuthorReturnIdArgs { Name = "Albert Einstein", Bio = "Quote that everyone always attribute to Einstein" });
-            var bojackId = await this.QuerySql.CreateAuthorReturnId(new QuerySql.CreateAuthorReturnIdArgs { Name = "Bojack Horseman", Bio = "Back in the 90s he was in a very famous TV show" });
-            var actual = await QuerySql.GetAuthorsByIdsAndNames(new QuerySql.GetAuthorsByIdsAndNamesArgs { Ids = new[] { id1, bojackId }, Names = new[] { "Albert Einstein" } });
+            var id1 = await this.QuerySql.CreateAuthorReturnIdAsync(new QuerySql.CreateAuthorReturnIdArgs { Name = "Albert Einstein", Bio = "Quote that everyone always attribute to Einstein" });
+            var bojackId = await this.QuerySql.CreateAuthorReturnIdAsync(new QuerySql.CreateAuthorReturnIdArgs { Name = "Bojack Horseman", Bio = "Back in the 90s he was in a very famous TV show" });
+            var actual = await QuerySql.GetAuthorsByIdsAndNamesAsync(new QuerySql.GetAuthorsByIdsAndNamesArgs { Ids = new[] { id1, bojackId }, Names = new[] { "Albert Einstein" } });
             ClassicAssert.AreEqual(1, actual.Count);
         }
 
         [Test]
-        public async Task TestNargNull()
+        public async Task TestNargNullAsync()
         {
-            await this.QuerySql.CreateAuthor(new QuerySql.CreateAuthorArgs { Id = 1111, Name = "Bojack Horseman", Bio = "Back in the 90s he was in a very famous TV show" });
-            await this.QuerySql.CreateAuthor(new QuerySql.CreateAuthorArgs { Id = 2222, Name = "Dr. Seuss", Bio = "You'll miss the best things if you keep your eyes shut" });
+            await this.QuerySql.CreateAuthorAsync(new QuerySql.CreateAuthorArgs { Id = 1111, Name = "Bojack Horseman", Bio = "Back in the 90s he was in a very famous TV show" });
+            await this.QuerySql.CreateAuthorAsync(new QuerySql.CreateAuthorArgs { Id = 2222, Name = "Dr. Seuss", Bio = "You'll miss the best things if you keep your eyes shut" });
             var expected = new List<QuerySql.GetAuthorByNamePatternRow>
             {
                 new QuerySql.GetAuthorByNamePatternRow
@@ -280,7 +280,7 @@ namespace EndToEndTests
                     Bio = "You'll miss the best things if you keep your eyes shut"
                 }
             };
-            var actual = await this.QuerySql.GetAuthorByNamePattern(new QuerySql.GetAuthorByNamePatternArgs());
+            var actual = await this.QuerySql.GetAuthorByNamePatternAsync(new QuerySql.GetAuthorByNamePatternArgs());
             AssertSequenceEquals(expected, actual);
             void AssertSequenceEquals(List<QuerySql.GetAuthorByNamePatternRow> x, List<QuerySql.GetAuthorByNamePatternRow> y)
             {
@@ -298,10 +298,10 @@ namespace EndToEndTests
         }
 
         [Test]
-        public async Task TestNargNotNull()
+        public async Task TestNargNotNullAsync()
         {
-            await this.QuerySql.CreateAuthor(new QuerySql.CreateAuthorArgs { Id = 1111, Name = "Bojack Horseman", Bio = "Back in the 90s he was in a very famous TV show" });
-            await this.QuerySql.CreateAuthor(new QuerySql.CreateAuthorArgs { Id = 2222, Name = "Dr. Seuss", Bio = "You'll miss the best things if you keep your eyes shut" });
+            await this.QuerySql.CreateAuthorAsync(new QuerySql.CreateAuthorArgs { Id = 1111, Name = "Bojack Horseman", Bio = "Back in the 90s he was in a very famous TV show" });
+            await this.QuerySql.CreateAuthorAsync(new QuerySql.CreateAuthorArgs { Id = 2222, Name = "Dr. Seuss", Bio = "You'll miss the best things if you keep your eyes shut" });
             var expected = new List<QuerySql.GetAuthorByNamePatternRow>
             {
                 new QuerySql.GetAuthorByNamePatternRow
@@ -311,7 +311,7 @@ namespace EndToEndTests
                     Bio = "Back in the 90s he was in a very famous TV show"
                 }
             };
-            var actual = await this.QuerySql.GetAuthorByNamePattern(new QuerySql.GetAuthorByNamePatternArgs { NamePattern = "Bojack%" });
+            var actual = await this.QuerySql.GetAuthorByNamePatternAsync(new QuerySql.GetAuthorByNamePatternArgs { NamePattern = "Bojack%" });
             AssertSequenceEquals(expected, actual);
             void AssertSequenceEquals(List<QuerySql.GetAuthorByNamePatternRow> x, List<QuerySql.GetAuthorByNamePatternRow> y)
             {
@@ -340,9 +340,9 @@ namespace EndToEndTests
 
         [Test]
         [TestCaseSource(nameof(SqliteTypesTestCases))]
-        public async Task TestSqliteTypes(int? cInteger, decimal? cReal, string cText, byte[] cBlob, bool? cTextBoolOverride, bool? cIntegerBoolOverride, DateTime? cTextDatetimeOverride, DateTime? cIntegerDatetimeOverride, Instant? cTextNodaInstantOverride, Instant? cIntegerNodaInstantOverride)
+        public async Task TestSqliteTypesAsync(int? cInteger, decimal? cReal, string cText, byte[] cBlob, bool? cTextBoolOverride, bool? cIntegerBoolOverride, DateTime? cTextDatetimeOverride, DateTime? cIntegerDatetimeOverride, Instant? cTextNodaInstantOverride, Instant? cIntegerNodaInstantOverride)
         {
-            await QuerySql.InsertSqliteTypes(new QuerySql.InsertSqliteTypesArgs { CInteger = cInteger, CReal = cReal, CText = cText, CBlob = cBlob, CTextBoolOverride = cTextBoolOverride, CIntegerBoolOverride = cIntegerBoolOverride, CTextDatetimeOverride = cTextDatetimeOverride, CIntegerDatetimeOverride = cIntegerDatetimeOverride, CTextNodaInstantOverride = cTextNodaInstantOverride, CIntegerNodaInstantOverride = cIntegerNodaInstantOverride });
+            await QuerySql.InsertSqliteTypesAsync(new QuerySql.InsertSqliteTypesArgs { CInteger = cInteger, CReal = cReal, CText = cText, CBlob = cBlob, CTextBoolOverride = cTextBoolOverride, CIntegerBoolOverride = cIntegerBoolOverride, CTextDatetimeOverride = cTextDatetimeOverride, CIntegerDatetimeOverride = cIntegerDatetimeOverride, CTextNodaInstantOverride = cTextNodaInstantOverride, CIntegerNodaInstantOverride = cIntegerNodaInstantOverride });
             var expected = new QuerySql.GetSqliteTypesRow
             {
                 CInteger = cInteger,
@@ -356,7 +356,7 @@ namespace EndToEndTests
                 CTextNodaInstantOverride = cTextNodaInstantOverride,
                 CIntegerNodaInstantOverride = cIntegerNodaInstantOverride
             };
-            var actual = await QuerySql.GetSqliteTypes();
+            var actual = await QuerySql.GetSqliteTypesAsync();
             AssertSingularEquals(expected, actual.Value);
             void AssertSingularEquals(QuerySql.GetSqliteTypesRow x, QuerySql.GetSqliteTypesRow y)
             {
@@ -374,16 +374,16 @@ namespace EndToEndTests
         }
 
         [Test]
-        public async Task TestGetAuthorByIdWithMultipleNamedParam()
+        public async Task TestGetAuthorByIdWithMultipleNamedParamAsync()
         {
-            await this.QuerySql.CreateAuthor(new QuerySql.CreateAuthorArgs { Id = 1111, Name = "Bojack Horseman", Bio = "Back in the 90s he was in a very famous TV show" });
+            await this.QuerySql.CreateAuthorAsync(new QuerySql.CreateAuthorArgs { Id = 1111, Name = "Bojack Horseman", Bio = "Back in the 90s he was in a very famous TV show" });
             var expected = new QuerySql.GetAuthorByIdWithMultipleNamedParamRow
             {
                 Id = 1111,
                 Name = "Bojack Horseman",
                 Bio = "Back in the 90s he was in a very famous TV show"
             };
-            var actual = await this.QuerySql.GetAuthorByIdWithMultipleNamedParam(new QuerySql.GetAuthorByIdWithMultipleNamedParamArgs { IdArg = 1111, Take = 1 });
+            var actual = await this.QuerySql.GetAuthorByIdWithMultipleNamedParamAsync(new QuerySql.GetAuthorByIdWithMultipleNamedParamArgs { IdArg = 1111, Take = 1 });
             AssertSingularEquals(expected, actual.Value);
             void AssertSingularEquals(QuerySql.GetAuthorByIdWithMultipleNamedParamRow x, QuerySql.GetAuthorByIdWithMultipleNamedParamRow y)
             {
@@ -396,16 +396,16 @@ namespace EndToEndTests
         [Test]
         [TestCase(-54355, 9787.66, "Have One On Me")]
         [TestCase(null, 0.0, null)]
-        public async Task TestSqliteDataTypesOverride(int? cInteger, decimal cReal, string cText)
+        public async Task TestSqliteDataTypesOverrideAsync(int? cInteger, decimal cReal, string cText)
         {
-            await QuerySql.InsertSqliteTypes(new QuerySql.InsertSqliteTypesArgs { CInteger = cInteger, CReal = cReal, CText = cText });
+            await QuerySql.InsertSqliteTypesAsync(new QuerySql.InsertSqliteTypesArgs { CInteger = cInteger, CReal = cReal, CText = cText });
             var expected = new QuerySql.GetSqliteFunctionsRow
             {
                 MaxInteger = cInteger,
                 MaxReal = cReal,
                 MaxText = cText
             };
-            var actual = await QuerySql.GetSqliteFunctions();
+            var actual = await QuerySql.GetSqliteFunctionsAsync();
             AssertSingularEquals(expected, actual.Value);
             void AssertSingularEquals(QuerySql.GetSqliteFunctionsRow x, QuerySql.GetSqliteFunctionsRow y)
             {
@@ -419,10 +419,10 @@ namespace EndToEndTests
         [TestCase(100, 312, -7541.3309, "Johnny B. Good")]
         [TestCase(500, -768, 8453.5678, "Bad to the Bone")]
         [TestCase(10, null, null, null)]
-        public async Task TestCopyFrom(int batchSize, int? cInteger, decimal? cReal, string cText)
+        public async Task TestCopyFromAsync(int batchSize, int? cInteger, decimal? cReal, string cText)
         {
             var batchArgs = Enumerable.Range(0, batchSize).Select(_ => new QuerySql.InsertSqliteTypesBatchArgs { CInteger = cInteger, CReal = cReal, CText = cText }).ToList();
-            await QuerySql.InsertSqliteTypesBatch(batchArgs);
+            await QuerySql.InsertSqliteTypesBatchAsync(batchArgs);
             var expected = new QuerySql.GetSqliteTypesCntRow
             {
                 Cnt = batchSize,
@@ -430,7 +430,7 @@ namespace EndToEndTests
                 CReal = cReal,
                 CText = cText
             };
-            var actual = await QuerySql.GetSqliteTypesCnt();
+            var actual = await QuerySql.GetSqliteTypesCntAsync();
             AssertSingularEquals(expected, actual.Value);
             void AssertSingularEquals(QuerySql.GetSqliteTypesCntRow x, QuerySql.GetSqliteTypesCntRow y)
             {
@@ -442,14 +442,14 @@ namespace EndToEndTests
         }
 
         [Test]
-        public async Task TestSqliteTransaction()
+        public async Task TestSqliteTransactionAsync()
         {
             var connection = new Microsoft.Data.Sqlite.SqliteConnection(Environment.GetEnvironmentVariable(EndToEndCommon.SqliteConnectionStringEnv));
             await connection.OpenAsync();
             var transaction = connection.BeginTransaction();
             var querySqlWithTx = QuerySql.WithTransaction(transaction);
-            await querySqlWithTx.CreateAuthor(new QuerySql.CreateAuthorArgs { Id = 1111, Name = "Bojack Horseman", Bio = "Back in the 90s he was in a very famous TV show" });
-            var actual = await QuerySql.GetAuthor(new QuerySql.GetAuthorArgs { Name = "Bojack Horseman" });
+            await querySqlWithTx.CreateAuthorAsync(new QuerySql.CreateAuthorArgs { Id = 1111, Name = "Bojack Horseman", Bio = "Back in the 90s he was in a very famous TV show" });
+            var actual = await QuerySql.GetAuthorAsync(new QuerySql.GetAuthorArgs { Name = "Bojack Horseman" });
             ClassicAssert.IsNull(actual);
             transaction.Commit();
             var expected = new QuerySql.GetAuthorRow
@@ -458,7 +458,7 @@ namespace EndToEndTests
                 Name = "Bojack Horseman",
                 Bio = "Back in the 90s he was in a very famous TV show"
             };
-            actual = await QuerySql.GetAuthor(new QuerySql.GetAuthorArgs { Name = "Bojack Horseman" });
+            actual = await QuerySql.GetAuthorAsync(new QuerySql.GetAuthorArgs { Name = "Bojack Horseman" });
             AssertSingularEquals(expected, actual.Value);
             void AssertSingularEquals(QuerySql.GetAuthorRow x, QuerySql.GetAuthorRow y)
             {
@@ -469,15 +469,15 @@ namespace EndToEndTests
         }
 
         [Test]
-        public async Task TestSqliteTransactionRollback()
+        public async Task TestSqliteTransactionRollbackAsync()
         {
             var connection = new Microsoft.Data.Sqlite.SqliteConnection(Environment.GetEnvironmentVariable(EndToEndCommon.SqliteConnectionStringEnv));
             await connection.OpenAsync();
             var transaction = connection.BeginTransaction();
             var sqlQueryWithTx = QuerySql.WithTransaction(transaction);
-            await sqlQueryWithTx.CreateAuthor(new QuerySql.CreateAuthorArgs { Id = 1111, Name = "Bojack Horseman", Bio = "Back in the 90s he was in a very famous TV show" });
+            await sqlQueryWithTx.CreateAuthorAsync(new QuerySql.CreateAuthorArgs { Id = 1111, Name = "Bojack Horseman", Bio = "Back in the 90s he was in a very famous TV show" });
             transaction.Rollback();
-            var actual = await this.QuerySql.GetAuthor(new QuerySql.GetAuthorArgs { Name = "Bojack Horseman" });
+            var actual = await this.QuerySql.GetAuthorAsync(new QuerySql.GetAuthorArgs { Name = "Bojack Horseman" });
             ClassicAssert.IsNull(actual);
         }
     }

@@ -55,7 +55,7 @@ namespace NpgsqlLegacyExampleGen
         {
             public string Name { get; set; }
         };
-        public async Task<GetAuthorRow> GetAuthor(GetAuthorArgs args)
+        public async Task<GetAuthorRow> GetAuthorAsync(GetAuthorArgs args)
         {
             if (this.Transaction == null)
             {
@@ -122,7 +122,7 @@ namespace NpgsqlLegacyExampleGen
             public int Offset { get; set; }
             public int Limit { get; set; }
         };
-        public async Task<List<ListAuthorsRow>> ListAuthors(ListAuthorsArgs args)
+        public async Task<List<ListAuthorsRow>> ListAuthorsAsync(ListAuthorsArgs args)
         {
             if (this.Transaction == null)
             {
@@ -174,7 +174,7 @@ namespace NpgsqlLegacyExampleGen
             public string Name { get; set; }
             public string Bio { get; set; }
         };
-        public async Task<CreateAuthorRow> CreateAuthor(CreateAuthorArgs args)
+        public async Task<CreateAuthorRow> CreateAuthorAsync(CreateAuthorArgs args)
         {
             if (this.Transaction == null)
             {
@@ -239,7 +239,7 @@ namespace NpgsqlLegacyExampleGen
             public string Name { get; set; }
             public string Bio { get; set; }
         };
-        public async Task<long> CreateAuthorReturnId(CreateAuthorReturnIdArgs args)
+        public async Task<long> CreateAuthorReturnIdAsync(CreateAuthorReturnIdArgs args)
         {
             if (this.Transaction == null)
             {
@@ -280,7 +280,7 @@ namespace NpgsqlLegacyExampleGen
         {
             public long Id { get; set; }
         };
-        public async Task<GetAuthorByIdRow> GetAuthorById(GetAuthorByIdArgs args)
+        public async Task<GetAuthorByIdRow> GetAuthorByIdAsync(GetAuthorByIdArgs args)
         {
             if (this.Transaction == null)
             {
@@ -343,7 +343,7 @@ namespace NpgsqlLegacyExampleGen
         {
             public string NamePattern { get; set; }
         };
-        public async Task<List<GetAuthorByNamePatternRow>> GetAuthorByNamePattern(GetAuthorByNamePatternArgs args)
+        public async Task<List<GetAuthorByNamePatternRow>> GetAuthorByNamePatternAsync(GetAuthorByNamePatternArgs args)
         {
             if (this.Transaction == null)
             {
@@ -386,7 +386,7 @@ namespace NpgsqlLegacyExampleGen
         {
             public string Name { get; set; }
         };
-        public async Task DeleteAuthor(DeleteAuthorArgs args)
+        public async Task DeleteAuthorAsync(DeleteAuthorArgs args)
         {
             if (this.Transaction == null)
             {
@@ -414,7 +414,7 @@ namespace NpgsqlLegacyExampleGen
         }
 
         private const string TruncateAuthorsSql = "TRUNCATE TABLE authors CASCADE";
-        public async Task TruncateAuthors()
+        public async Task TruncateAuthorsAsync()
         {
             if (this.Transaction == null)
             {
@@ -446,7 +446,7 @@ namespace NpgsqlLegacyExampleGen
         {
             public string Bio { get; set; }
         };
-        public async Task<long> UpdateAuthors(UpdateAuthorsArgs args)
+        public async Task<long> UpdateAuthorsAsync(UpdateAuthorsArgs args)
         {
             if (this.Transaction == null)
             {
@@ -483,7 +483,7 @@ namespace NpgsqlLegacyExampleGen
         {
             public long[] LongArr1 { get; set; }
         };
-        public async Task<List<GetAuthorsByIdsRow>> GetAuthorsByIds(GetAuthorsByIdsArgs args)
+        public async Task<List<GetAuthorsByIdsRow>> GetAuthorsByIdsAsync(GetAuthorsByIdsArgs args)
         {
             if (this.Transaction == null)
             {
@@ -534,7 +534,7 @@ namespace NpgsqlLegacyExampleGen
             public long[] LongArr1 { get; set; }
             public string[] StringArr2 { get; set; }
         };
-        public async Task<List<GetAuthorsByIdsAndNamesRow>> GetAuthorsByIdsAndNames(GetAuthorsByIdsAndNamesArgs args)
+        public async Task<List<GetAuthorsByIdsAndNamesRow>> GetAuthorsByIdsAndNamesAsync(GetAuthorsByIdsAndNamesArgs args)
         {
             if (this.Transaction == null)
             {
@@ -583,7 +583,7 @@ namespace NpgsqlLegacyExampleGen
             public string Name { get; set; }
             public long AuthorId { get; set; }
         };
-        public async Task<Guid> CreateBook(CreateBookArgs args)
+        public async Task<Guid> CreateBookAsync(CreateBookArgs args)
         {
             if (this.Transaction == null)
             {
@@ -623,7 +623,7 @@ namespace NpgsqlLegacyExampleGen
             public Author Author { get; set; }
             public Book Book { get; set; }
         };
-        public async Task<List<ListAllAuthorsBooksRow>> ListAllAuthorsBooks()
+        public async Task<List<ListAllAuthorsBooksRow>> ListAllAuthorsBooksAsync()
         {
             if (this.Transaction == null)
             {
@@ -669,7 +669,7 @@ namespace NpgsqlLegacyExampleGen
             public Author Author { get; set; }
             public Author Author2 { get; set; }
         };
-        public async Task<List<GetDuplicateAuthorsRow>> GetDuplicateAuthors()
+        public async Task<List<GetDuplicateAuthorsRow>> GetDuplicateAuthorsAsync()
         {
             if (this.Transaction == null)
             {
@@ -720,7 +720,7 @@ namespace NpgsqlLegacyExampleGen
         {
             public string Name { get; set; }
         };
-        public async Task<List<GetAuthorsByBookNameRow>> GetAuthorsByBookName(GetAuthorsByBookNameArgs args)
+        public async Task<List<GetAuthorsByBookNameRow>> GetAuthorsByBookNameAsync(GetAuthorsByBookNameArgs args)
         {
             if (this.Transaction == null)
             {
@@ -764,7 +764,7 @@ namespace NpgsqlLegacyExampleGen
             public string Name { get; set; }
             public ExtendedBioType? BioType { get; set; }
         };
-        public async Task CreateExtendedBio(CreateExtendedBioArgs args)
+        public async Task CreateExtendedBioAsync(CreateExtendedBioArgs args)
         {
             if (this.Transaction == null)
             {
@@ -806,7 +806,7 @@ namespace NpgsqlLegacyExampleGen
         {
             public ExtendedBioType? BioType { get; set; }
         };
-        public async Task<GetFirstExtendedBioByTypeRow> GetFirstExtendedBioByType(GetFirstExtendedBioByTypeArgs args)
+        public async Task<GetFirstExtendedBioByTypeRow> GetFirstExtendedBioByTypeAsync(GetFirstExtendedBioByTypeArgs args)
         {
             if (this.Transaction == null)
             {
@@ -858,7 +858,7 @@ namespace NpgsqlLegacyExampleGen
         }
 
         private const string TruncateExtendedBiosSql = "TRUNCATE TABLE extended.bios";
-        public async Task TruncateExtendedBios()
+        public async Task TruncateExtendedBiosAsync()
         {
             if (this.Transaction == null)
             {
@@ -896,7 +896,7 @@ namespace NpgsqlLegacyExampleGen
             public string MaxVarchar { get; set; }
             public DateTime MaxTimestamp { get; set; }
         };
-        public async Task<GetPostgresFunctionsRow> GetPostgresFunctions()
+        public async Task<GetPostgresFunctionsRow> GetPostgresFunctionsAsync()
         {
             if (this.Transaction == null)
             {
@@ -973,7 +973,7 @@ namespace NpgsqlLegacyExampleGen
             public double? CDoublePrecision { get; set; }
             public decimal? CMoney { get; set; }
         };
-        public async Task InsertPostgresNumericTypes(InsertPostgresNumericTypesArgs args)
+        public async Task InsertPostgresNumericTypesAsync(InsertPostgresNumericTypesArgs args)
         {
             if (this.Transaction == null)
             {
@@ -1032,7 +1032,7 @@ namespace NpgsqlLegacyExampleGen
             public double? CDoublePrecision { get; set; }
             public decimal? CMoney { get; set; }
         };
-        public async Task<GetPostgresNumericTypesRow> GetPostgresNumericTypes()
+        public async Task<GetPostgresNumericTypesRow> GetPostgresNumericTypesAsync()
         {
             if (this.Transaction == null)
             {
@@ -1096,7 +1096,7 @@ namespace NpgsqlLegacyExampleGen
         }
 
         private const string TruncatePostgresNumericTypesSql = "TRUNCATE TABLE postgres_numeric_types";
-        public async Task TruncatePostgresNumericTypes()
+        public async Task TruncatePostgresNumericTypesAsync()
         {
             if (this.Transaction == null)
             {
@@ -1160,7 +1160,7 @@ namespace NpgsqlLegacyExampleGen
             public decimal? CMoney { get; set; }
             public long Cnt { get; set; }
         };
-        public async Task<GetPostgresNumericTypesCntRow> GetPostgresNumericTypesCnt()
+        public async Task<GetPostgresNumericTypesCntRow> GetPostgresNumericTypesCntAsync()
         {
             if (this.Transaction == null)
             {
@@ -1239,7 +1239,7 @@ namespace NpgsqlLegacyExampleGen
             public double? CDoublePrecision { get; set; }
             public decimal? CMoney { get; set; }
         };
-        public async Task InsertPostgresNumericTypesBatch(List<InsertPostgresNumericTypesBatchArgs> args)
+        public async Task InsertPostgresNumericTypesBatchAsync(List<InsertPostgresNumericTypesBatchArgs> args)
         {
             using (var connection = new NpgsqlConnection(ConnectionString))
             {
@@ -1286,7 +1286,7 @@ namespace NpgsqlLegacyExampleGen
             public string CBpchar { get; set; }
             public string CText { get; set; }
         };
-        public async Task InsertPostgresStringTypes(InsertPostgresStringTypesArgs args)
+        public async Task InsertPostgresStringTypesAsync(InsertPostgresStringTypesArgs args)
         {
             if (this.Transaction == null)
             {
@@ -1330,7 +1330,7 @@ namespace NpgsqlLegacyExampleGen
             public string CBpchar { get; set; }
             public string CText { get; set; }
         };
-        public async Task InsertPostgresStringTypesBatch(List<InsertPostgresStringTypesBatchArgs> args)
+        public async Task InsertPostgresStringTypesBatchAsync(List<InsertPostgresStringTypesBatchArgs> args)
         {
             using (var connection = new NpgsqlConnection(ConnectionString))
             {
@@ -1363,7 +1363,7 @@ namespace NpgsqlLegacyExampleGen
             public string CBpchar { get; set; }
             public string CText { get; set; }
         };
-        public async Task<GetPostgresStringTypesRow> GetPostgresStringTypes()
+        public async Task<GetPostgresStringTypesRow> GetPostgresStringTypesAsync()
         {
             if (this.Transaction == null)
             {
@@ -1417,7 +1417,7 @@ namespace NpgsqlLegacyExampleGen
         }
 
         private const string TruncatePostgresStringTypesSql = "TRUNCATE TABLE postgres_string_types";
-        public async Task TruncatePostgresStringTypes()
+        public async Task TruncatePostgresStringTypesAsync()
         {
             if (this.Transaction == null)
             {
@@ -1466,7 +1466,7 @@ namespace NpgsqlLegacyExampleGen
             public string CText { get; set; }
             public long Cnt { get; set; }
         };
-        public async Task<GetPostgresStringTypesCntRow> GetPostgresStringTypesCnt()
+        public async Task<GetPostgresStringTypesCntRow> GetPostgresStringTypesCntAsync()
         {
             if (this.Transaction == null)
             {
@@ -1545,7 +1545,7 @@ namespace NpgsqlLegacyExampleGen
         {
             public string ToTsquery { get; set; }
         };
-        public async Task<GetPostgresStringTypesTextSearchRow> GetPostgresStringTypesTextSearch(GetPostgresStringTypesTextSearchArgs args)
+        public async Task<GetPostgresStringTypesTextSearchRow> GetPostgresStringTypesTextSearchAsync(GetPostgresStringTypesTextSearchArgs args)
         {
             if (this.Transaction == null)
             {
@@ -1617,7 +1617,7 @@ namespace NpgsqlLegacyExampleGen
             public TimeSpan? CInterval { get; set; }
             public Instant? CTimestampNodaInstantOverride { get; set; }
         };
-        public async Task InsertPostgresDateTimeTypes(InsertPostgresDateTimeTypesArgs args)
+        public async Task InsertPostgresDateTimeTypesAsync(InsertPostgresDateTimeTypesArgs args)
         {
             if (this.Transaction == null)
             {
@@ -1664,7 +1664,7 @@ namespace NpgsqlLegacyExampleGen
             public TimeSpan? CInterval { get; set; }
             public Instant? CTimestampNodaInstantOverride { get; set; }
         };
-        public async Task<GetPostgresDateTimeTypesRow> GetPostgresDateTimeTypes()
+        public async Task<GetPostgresDateTimeTypesRow> GetPostgresDateTimeTypesAsync()
         {
             if (this.Transaction == null)
             {
@@ -1732,7 +1732,7 @@ namespace NpgsqlLegacyExampleGen
         }
 
         private const string TruncatePostgresDateTimeTypesSql = "TRUNCATE TABLE postgres_datetime_types";
-        public async Task TruncatePostgresDateTimeTypes()
+        public async Task TruncatePostgresDateTimeTypesAsync()
         {
             if (this.Transaction == null)
             {
@@ -1781,7 +1781,7 @@ namespace NpgsqlLegacyExampleGen
             public TimeSpan? CInterval { get; set; }
             public long Cnt { get; set; }
         };
-        public async Task<GetPostgresDateTimeTypesCntRow> GetPostgresDateTimeTypesCnt()
+        public async Task<GetPostgresDateTimeTypesCntRow> GetPostgresDateTimeTypesCntAsync()
         {
             if (this.Transaction == null)
             {
@@ -1845,7 +1845,7 @@ namespace NpgsqlLegacyExampleGen
             public DateTime? CTimestampWithTz { get; set; }
             public TimeSpan? CInterval { get; set; }
         };
-        public async Task InsertPostgresDateTimeTypesBatch(List<InsertPostgresDateTimeTypesBatchArgs> args)
+        public async Task InsertPostgresDateTimeTypesBatchAsync(List<InsertPostgresDateTimeTypesBatchArgs> args)
         {
             using (var connection = new NpgsqlConnection(ConnectionString))
             {
@@ -1889,7 +1889,7 @@ namespace NpgsqlLegacyExampleGen
             public PhysicalAddress CMacaddr { get; set; }
             public string CMacaddr8 { get; set; }
         };
-        public async Task InsertPostgresNetworkTypes(InsertPostgresNetworkTypesArgs args)
+        public async Task InsertPostgresNetworkTypesAsync(InsertPostgresNetworkTypesArgs args)
         {
             if (this.Transaction == null)
             {
@@ -1936,7 +1936,7 @@ namespace NpgsqlLegacyExampleGen
             public PhysicalAddress CMacaddr { get; set; }
             public string CMacaddr8 { get; set; }
         };
-        public async Task<GetPostgresNetworkTypesRow> GetPostgresNetworkTypes()
+        public async Task<GetPostgresNetworkTypesRow> GetPostgresNetworkTypesAsync()
         {
             if (this.Transaction == null)
             {
@@ -1988,7 +1988,7 @@ namespace NpgsqlLegacyExampleGen
         }
 
         private const string TruncatePostgresNetworkTypesSql = "TRUNCATE TABLE postgres_network_types";
-        public async Task TruncatePostgresNetworkTypes()
+        public async Task TruncatePostgresNetworkTypesAsync()
         {
             if (this.Transaction == null)
             {
@@ -2031,7 +2031,7 @@ namespace NpgsqlLegacyExampleGen
             public PhysicalAddress CMacaddr { get; set; }
             public long Cnt { get; set; }
         };
-        public async Task<GetPostgresNetworkTypesCntRow> GetPostgresNetworkTypesCnt()
+        public async Task<GetPostgresNetworkTypesCntRow> GetPostgresNetworkTypesCntAsync()
         {
             if (this.Transaction == null)
             {
@@ -2089,7 +2089,7 @@ namespace NpgsqlLegacyExampleGen
             public IPAddress CInet { get; set; }
             public PhysicalAddress CMacaddr { get; set; }
         };
-        public async Task InsertPostgresNetworkTypesBatch(List<InsertPostgresNetworkTypesBatchArgs> args)
+        public async Task InsertPostgresNetworkTypesBatchAsync(List<InsertPostgresNetworkTypesBatchArgs> args)
         {
             using (var connection = new NpgsqlConnection(ConnectionString))
             {
@@ -2144,7 +2144,7 @@ namespace NpgsqlLegacyExampleGen
             public Guid? CUuid { get; set; }
             public CEnum? CEnum { get; set; }
         };
-        public async Task InsertPostgresSpecialTypes(InsertPostgresSpecialTypesArgs args)
+        public async Task InsertPostgresSpecialTypesAsync(InsertPostgresSpecialTypesArgs args)
         {
             if (this.Transaction == null)
             {
@@ -2196,7 +2196,7 @@ namespace NpgsqlLegacyExampleGen
         {
             public CEnum CEnumNotNull { get; set; }
         };
-        public async Task InsertPostgresNotNullTypes(InsertPostgresNotNullTypesArgs args)
+        public async Task InsertPostgresNotNullTypesAsync(InsertPostgresNotNullTypesArgs args)
         {
             if (this.Transaction == null)
             {
@@ -2231,7 +2231,7 @@ namespace NpgsqlLegacyExampleGen
         {
             public CEnum CEnumNotNull { get; set; }
         };
-        public async Task<GetPostgresNotNullTypesRow> GetPostgresNotNullTypes()
+        public async Task<GetPostgresNotNullTypesRow> GetPostgresNotNullTypesAsync()
         {
             if (this.Transaction == null)
             {
@@ -2277,7 +2277,7 @@ namespace NpgsqlLegacyExampleGen
         }
 
         private const string TruncatePostgresNotNullTypesSql = "TRUNCATE TABLE postgres_not_null_types";
-        public async Task TruncatePostgresNotNullTypes()
+        public async Task TruncatePostgresNotNullTypesAsync()
         {
             if (this.Transaction == null)
             {
@@ -2324,7 +2324,7 @@ namespace NpgsqlLegacyExampleGen
             public Guid? CUuid { get; set; }
             public CEnum? CEnum { get; set; }
         };
-        public async Task<GetPostgresSpecialTypesRow> GetPostgresSpecialTypes()
+        public async Task<GetPostgresSpecialTypesRow> GetPostgresSpecialTypesAsync()
         {
             if (this.Transaction == null)
             {
@@ -2394,7 +2394,7 @@ namespace NpgsqlLegacyExampleGen
         }
 
         private const string TruncatePostgresSpecialTypesSql = "TRUNCATE TABLE postgres_special_types";
-        public async Task TruncatePostgresSpecialTypes()
+        public async Task TruncatePostgresSpecialTypesAsync()
         {
             if (this.Transaction == null)
             {
@@ -2426,7 +2426,7 @@ namespace NpgsqlLegacyExampleGen
             public JsonElement? CJson { get; set; }
             public JsonElement? CJsonb { get; set; }
         };
-        public async Task InsertPostgresSpecialTypesBatch(List<InsertPostgresSpecialTypesBatchArgs> args)
+        public async Task InsertPostgresSpecialTypesBatchAsync(List<InsertPostgresSpecialTypesBatchArgs> args)
         {
             using (var connection = new NpgsqlConnection(ConnectionString))
             {
@@ -2475,7 +2475,7 @@ namespace NpgsqlLegacyExampleGen
             public JsonElement? CJsonb { get; set; }
             public long Cnt { get; set; }
         };
-        public async Task<GetPostgresSpecialTypesCntRow> GetPostgresSpecialTypesCnt()
+        public async Task<GetPostgresSpecialTypesCntRow> GetPostgresSpecialTypesCntAsync()
         {
             if (this.Transaction == null)
             {
@@ -2548,7 +2548,7 @@ namespace NpgsqlLegacyExampleGen
             public DateTime[] CDateArray { get; set; }
             public DateTime[] CTimestampArray { get; set; }
         };
-        public async Task InsertPostgresArrayTypes(InsertPostgresArrayTypesArgs args)
+        public async Task InsertPostgresArrayTypesAsync(InsertPostgresArrayTypesArgs args)
         {
             if (this.Transaction == null)
             {
@@ -2598,7 +2598,7 @@ namespace NpgsqlLegacyExampleGen
             public DateTime[] CDateArray { get; set; }
             public DateTime[] CTimestampArray { get; set; }
         };
-        public async Task<GetPostgresArrayTypesRow> GetPostgresArrayTypes()
+        public async Task<GetPostgresArrayTypesRow> GetPostgresArrayTypesAsync()
         {
             if (this.Transaction == null)
             {
@@ -2665,7 +2665,7 @@ namespace NpgsqlLegacyExampleGen
             public decimal[] CDecimalArray { get; set; }
             public DateTime[] CTimestampArray { get; set; }
         };
-        public async Task InsertPostgresArrayTypesBatch(List<InsertPostgresArrayTypesBatchArgs> args)
+        public async Task InsertPostgresArrayTypesBatchAsync(List<InsertPostgresArrayTypesBatchArgs> args)
         {
             using (var connection = new NpgsqlConnection(ConnectionString))
             {
@@ -2717,7 +2717,7 @@ namespace NpgsqlLegacyExampleGen
             public DateTime[] CTimestampArray { get; set; }
             public long Cnt { get; set; }
         };
-        public async Task<GetPostgresArrayTypesCntRow> GetPostgresArrayTypesCnt()
+        public async Task<GetPostgresArrayTypesCntRow> GetPostgresArrayTypesCntAsync()
         {
             if (this.Transaction == null)
             {
@@ -2775,7 +2775,7 @@ namespace NpgsqlLegacyExampleGen
         }
 
         private const string TruncatePostgresArrayTypesSql = "TRUNCATE TABLE postgres_array_types";
-        public async Task TruncatePostgresArrayTypes()
+        public async Task TruncatePostgresArrayTypesAsync()
         {
             if (this.Transaction == null)
             {
@@ -2821,7 +2821,7 @@ namespace NpgsqlLegacyExampleGen
             public NpgsqlPolygon? CPolygon { get; set; }
             public NpgsqlCircle? CCircle { get; set; }
         };
-        public async Task InsertPostgresGeoTypes(InsertPostgresGeoTypesArgs args)
+        public async Task InsertPostgresGeoTypesAsync(InsertPostgresGeoTypesArgs args)
         {
             if (this.Transaction == null)
             {
@@ -2871,7 +2871,7 @@ namespace NpgsqlLegacyExampleGen
             public NpgsqlPolygon? CPolygon { get; set; }
             public NpgsqlCircle? CCircle { get; set; }
         };
-        public async Task InsertPostgresGeoTypesBatch(List<InsertPostgresGeoTypesBatchArgs> args)
+        public async Task InsertPostgresGeoTypesBatchAsync(List<InsertPostgresGeoTypesBatchArgs> args)
         {
             using (var connection = new NpgsqlConnection(ConnectionString))
             {
@@ -2908,7 +2908,7 @@ namespace NpgsqlLegacyExampleGen
             public NpgsqlPolygon? CPolygon { get; set; }
             public NpgsqlCircle? CCircle { get; set; }
         };
-        public async Task<GetPostgresGeoTypesRow> GetPostgresGeoTypes()
+        public async Task<GetPostgresGeoTypesRow> GetPostgresGeoTypesAsync()
         {
             if (this.Transaction == null)
             {
@@ -2966,7 +2966,7 @@ namespace NpgsqlLegacyExampleGen
         }
 
         private const string TruncatePostgresGeoTypesSql = "TRUNCATE TABLE postgres_geometric_types";
-        public async Task TruncatePostgresGeoTypes()
+        public async Task TruncatePostgresGeoTypesAsync()
         {
             if (this.Transaction == null)
             {

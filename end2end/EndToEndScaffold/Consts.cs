@@ -20,7 +20,7 @@ public static class Consts
     public const string GenericQuote2 = "\"Only 2 things are infinite, the universe and human stupidity\"";
 
     public static readonly string CreateBojackAuthor = $$"""
-         await this.QuerySql.CreateAuthor(new QuerySql.CreateAuthorArgs 
+         await this.QuerySql.CreateAuthorAsync(new QuerySql.CreateAuthorArgs 
          {
              Id = {{BojackId}},
              Name = {{BojackAuthor}},
@@ -29,7 +29,7 @@ public static class Consts
          """;
 
     public const string CreateBojackAuthorWithId = $$"""
-         var bojackId = await this.QuerySql.CreateAuthorReturnId(new QuerySql.CreateAuthorReturnIdArgs 
+         var bojackId = await this.QuerySql.CreateAuthorReturnIdAsync(new QuerySql.CreateAuthorReturnIdArgs 
          {
              Name = {{BojackAuthor}},
              Bio = {{BojackTheme}}
@@ -37,7 +37,7 @@ public static class Consts
          """;
 
     public const string CreateBookByBojack = $$"""
-           var bojackBookId = await QuerySql.CreateBook(new QuerySql.CreateBookArgs
+           var bojackBookId = await QuerySql.CreateBookAsync(new QuerySql.CreateBookArgs
            {
                Name = {{BojackBookTitle}},
                AuthorId = bojackId
@@ -45,7 +45,7 @@ public static class Consts
            """;
 
     public static readonly string CreateDrSeussAuthor = $$"""
-          await this.QuerySql.CreateAuthor(new QuerySql.CreateAuthorArgs 
+          await this.QuerySql.CreateAuthorAsync(new QuerySql.CreateAuthorArgs 
           {
               Id = {{DrSeussId}},
               Name = {{DrSeussAuthor}},
@@ -54,7 +54,7 @@ public static class Consts
           """;
 
     public const string CreateDrSeussAuthorWithId = $$"""
-      var drSeussId = await this.QuerySql.CreateAuthorReturnId(new QuerySql.CreateAuthorReturnIdArgs
+      var drSeussId = await this.QuerySql.CreateAuthorReturnIdAsync(new QuerySql.CreateAuthorReturnIdArgs
       {
           Name = {{DrSeussAuthor}},
           Bio = {{DrSeussQuote}}
@@ -62,7 +62,7 @@ public static class Consts
       """;
 
     public const string CreateBookByDrSeuss = $$"""
-        var drSeussBookId = await QuerySql.CreateBook(new QuerySql.CreateBookArgs
+        var drSeussBookId = await QuerySql.CreateBookAsync(new QuerySql.CreateBookArgs
         {
             AuthorId = drSeussId,
             Name = {{DrSeussBookTitle}}
@@ -70,7 +70,7 @@ public static class Consts
         """;
 
     public const string CreateFirstGenericAuthor = $$"""
-         var id1 = await this.QuerySql.CreateAuthorReturnId(new QuerySql.CreateAuthorReturnIdArgs
+         var id1 = await this.QuerySql.CreateAuthorReturnIdAsync(new QuerySql.CreateAuthorReturnIdArgs
          {
              Name = {{GenericAuthor}},
              Bio = {{GenericQuote1}}
@@ -78,7 +78,7 @@ public static class Consts
          """;
 
     public const string CreateSecondGenericAuthor = $$"""
-          var id2 = await this.QuerySql.CreateAuthorReturnId(new QuerySql.CreateAuthorReturnIdArgs
+          var id2 = await this.QuerySql.CreateAuthorReturnIdAsync(new QuerySql.CreateAuthorReturnIdArgs
           {
               Name = {{GenericAuthor}},
               Bio = {{GenericQuote2}}

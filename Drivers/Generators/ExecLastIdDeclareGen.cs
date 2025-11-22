@@ -13,7 +13,7 @@ public class ExecLastIdDeclareGen(DbDriver dbDriver)
     {
         var parametersStr = CommonGen.GetMethodParameterList(argInterface, query.Params);
         return ParseMemberDeclaration($$"""
-            public async Task<{{dbDriver.GetIdColumnType(query)}}> {{query.Name}}({{parametersStr}})
+            public async Task<{{dbDriver.GetIdColumnType(query)}}> {{query.Name.ToMethodName(dbDriver.Options.WithAsyncSuffix)}}({{parametersStr}})
             {
                 {{GetMethodBody(queryTextConstant, query)}}
             }

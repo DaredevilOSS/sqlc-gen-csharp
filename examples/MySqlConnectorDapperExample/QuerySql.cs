@@ -57,7 +57,7 @@ public class QuerySql
     {
         public required string Name { get; init; }
     };
-    public async Task<GetAuthorRow?> GetAuthor(GetAuthorArgs args)
+    public async Task<GetAuthorRow?> GetAuthorAsync(GetAuthorArgs args)
     {
         var queryParams = new Dictionary<string, object?>();
         queryParams.Add("name", args.Name);
@@ -90,7 +90,7 @@ public class QuerySql
         public required int Limit { get; init; }
         public required int Offset { get; init; }
     };
-    public async Task<List<ListAuthorsRow>> ListAuthors(ListAuthorsArgs args)
+    public async Task<List<ListAuthorsRow>> ListAuthorsAsync(ListAuthorsArgs args)
     {
         var queryParams = new Dictionary<string, object?>();
         queryParams.Add("limit", args.Limit);
@@ -116,7 +116,7 @@ public class QuerySql
         public required string Name { get; init; }
         public string? Bio { get; init; }
     };
-    public async Task CreateAuthor(CreateAuthorArgs args)
+    public async Task CreateAuthorAsync(CreateAuthorArgs args)
     {
         var queryParams = new Dictionary<string, object?>();
         queryParams.Add("id", args.Id);
@@ -140,7 +140,7 @@ public class QuerySql
         public required string Name { get; init; }
         public string? Bio { get; init; }
     };
-    public async Task<long> CreateAuthorReturnId(CreateAuthorReturnIdArgs args)
+    public async Task<long> CreateAuthorReturnIdAsync(CreateAuthorReturnIdArgs args)
     {
         var queryParams = new Dictionary<string, object?>();
         queryParams.Add("name", args.Name);
@@ -167,7 +167,7 @@ public class QuerySql
     {
         public required long Id { get; init; }
     };
-    public async Task<GetAuthorByIdRow?> GetAuthorById(GetAuthorByIdArgs args)
+    public async Task<GetAuthorByIdRow?> GetAuthorByIdAsync(GetAuthorByIdArgs args)
     {
         var queryParams = new Dictionary<string, object?>();
         queryParams.Add("id", args.Id);
@@ -197,7 +197,7 @@ public class QuerySql
     {
         public string? NamePattern { get; init; }
     };
-    public async Task<List<GetAuthorByNamePatternRow>> GetAuthorByNamePattern(GetAuthorByNamePatternArgs args)
+    public async Task<List<GetAuthorByNamePatternRow>> GetAuthorByNamePatternAsync(GetAuthorByNamePatternArgs args)
     {
         var queryParams = new Dictionary<string, object?>();
         queryParams.Add("name_pattern", args.NamePattern);
@@ -221,7 +221,7 @@ public class QuerySql
     {
         public required string Name { get; init; }
     };
-    public async Task DeleteAuthor(DeleteAuthorArgs args)
+    public async Task DeleteAuthorAsync(DeleteAuthorArgs args)
     {
         var queryParams = new Dictionary<string, object?>();
         queryParams.Add("name", args.Name);
@@ -238,7 +238,7 @@ public class QuerySql
     }
 
     private const string DeleteAllAuthorsSql = "DELETE FROM authors";
-    public async Task DeleteAllAuthors()
+    public async Task DeleteAllAuthorsAsync()
     {
         if (this.Transaction == null)
         {
@@ -259,7 +259,7 @@ public class QuerySql
     {
         public string? Bio { get; init; }
     };
-    public async Task<long> UpdateAuthors(UpdateAuthorsArgs args)
+    public async Task<long> UpdateAuthorsAsync(UpdateAuthorsArgs args)
     {
         var queryParams = new Dictionary<string, object?>();
         queryParams.Add("bio", args.Bio);
@@ -285,7 +285,7 @@ public class QuerySql
     {
         public required long[] Ids { get; init; }
     };
-    public async Task<List<GetAuthorsByIdsRow>> GetAuthorsByIds(GetAuthorsByIdsArgs args)
+    public async Task<List<GetAuthorsByIdsRow>> GetAuthorsByIdsAsync(GetAuthorsByIdsArgs args)
     {
         var transformedSql = GetAuthorsByIdsSql;
         transformedSql = Utils.TransformQueryForSliceArgs(transformedSql, args.Ids.Length, "ids");
@@ -318,7 +318,7 @@ public class QuerySql
         public required long[] Ids { get; init; }
         public required string[] Names { get; init; }
     };
-    public async Task<List<GetAuthorsByIdsAndNamesRow>> GetAuthorsByIdsAndNames(GetAuthorsByIdsAndNamesArgs args)
+    public async Task<List<GetAuthorsByIdsAndNamesRow>> GetAuthorsByIdsAndNamesAsync(GetAuthorsByIdsAndNamesArgs args)
     {
         var transformedSql = GetAuthorsByIdsAndNamesSql;
         transformedSql = Utils.TransformQueryForSliceArgs(transformedSql, args.Ids.Length, "ids");
@@ -348,7 +348,7 @@ public class QuerySql
         public required string Name { get; init; }
         public required long AuthorId { get; init; }
     };
-    public async Task<long> CreateBook(CreateBookArgs args)
+    public async Task<long> CreateBookAsync(CreateBookArgs args)
     {
         var queryParams = new Dictionary<string, object?>();
         queryParams.Add("name", args.Name);
@@ -372,7 +372,7 @@ public class QuerySql
         public required Author? Author { get; init; }
         public required Book? Book { get; init; }
     };
-    public async Task<List<ListAllAuthorsBooksRow>> ListAllAuthorsBooks()
+    public async Task<List<ListAllAuthorsBooksRow>> ListAllAuthorsBooksAsync()
     {
         if (this.Transaction == null)
         {
@@ -416,7 +416,7 @@ public class QuerySql
         public required Author? Author { get; init; }
         public required Author? Author2 { get; init; }
     };
-    public async Task<List<GetDuplicateAuthorsRow>> GetDuplicateAuthors()
+    public async Task<List<GetDuplicateAuthorsRow>> GetDuplicateAuthorsAsync()
     {
         if (this.Transaction == null)
         {
@@ -466,7 +466,7 @@ public class QuerySql
     {
         public required string Name { get; init; }
     };
-    public async Task<List<GetAuthorsByBookNameRow>> GetAuthorsByBookName(GetAuthorsByBookNameArgs args)
+    public async Task<List<GetAuthorsByBookNameRow>> GetAuthorsByBookNameAsync(GetAuthorsByBookNameArgs args)
     {
         if (this.Transaction == null)
         {
@@ -512,7 +512,7 @@ public class QuerySql
         public BiosBioType? BioType { get; init; }
         public HashSet<BiosAuthorType>? AuthorType { get; init; }
     };
-    public async Task CreateExtendedBio(CreateExtendedBioArgs args)
+    public async Task CreateExtendedBioAsync(CreateExtendedBioArgs args)
     {
         var queryParams = new Dictionary<string, object?>();
         queryParams.Add("author_name", args.AuthorName);
@@ -543,7 +543,7 @@ public class QuerySql
     {
         public BiosBioType? BioType { get; init; }
     };
-    public async Task<GetFirstExtendedBioByTypeRow?> GetFirstExtendedBioByType(GetFirstExtendedBioByTypeArgs args)
+    public async Task<GetFirstExtendedBioByTypeRow?> GetFirstExtendedBioByTypeAsync(GetFirstExtendedBioByTypeArgs args)
     {
         var queryParams = new Dictionary<string, object?>();
         queryParams.Add("bio_type", args.BioType);
@@ -562,7 +562,7 @@ public class QuerySql
     }
 
     private const string TruncateExtendedBiosSql = "TRUNCATE TABLE extended.bios";
-    public async Task TruncateExtendedBios()
+    public async Task TruncateExtendedBiosAsync()
     {
         if (this.Transaction == null)
         {
@@ -614,7 +614,7 @@ public class QuerySql
         public double? CDouble { get; init; }
         public double? CDoublePrecision { get; init; }
     };
-    public async Task InsertMysqlNumericTypes(InsertMysqlNumericTypesArgs args)
+    public async Task InsertMysqlNumericTypesAsync(InsertMysqlNumericTypesArgs args)
     {
         var queryParams = new Dictionary<string, object?>();
         queryParams.Add("c_bool", args.CBool);
@@ -662,7 +662,7 @@ public class QuerySql
         public double? CDouble { get; init; }
         public double? CDoublePrecision { get; init; }
     };
-    public async Task InsertMysqlNumericTypesBatch(List<InsertMysqlNumericTypesBatchArgs> args)
+    public async Task InsertMysqlNumericTypesBatchAsync(List<InsertMysqlNumericTypesBatchArgs> args)
     {
         const string supportedDateTimeFormat = "yyyy-MM-dd H:mm:ss";
         var config = new CsvConfiguration(CultureInfo.CurrentCulture)
@@ -732,7 +732,7 @@ public class QuerySql
         public double? CDouble { get; init; }
         public double? CDoublePrecision { get; init; }
     };
-    public async Task<GetMysqlNumericTypesRow?> GetMysqlNumericTypes()
+    public async Task<GetMysqlNumericTypesRow?> GetMysqlNumericTypesAsync()
     {
         if (this.Transaction == null)
         {
@@ -802,7 +802,7 @@ public class QuerySql
         public double? CDouble { get; init; }
         public double? CDoublePrecision { get; init; }
     };
-    public async Task<GetMysqlNumericTypesCntRow?> GetMysqlNumericTypesCnt()
+    public async Task<GetMysqlNumericTypesCntRow?> GetMysqlNumericTypesCntAsync()
     {
         if (this.Transaction == null)
         {
@@ -819,7 +819,7 @@ public class QuerySql
     }
 
     private const string TruncateMysqlNumericTypesSql = "TRUNCATE TABLE mysql_numeric_types";
-    public async Task TruncateMysqlNumericTypes()
+    public async Task TruncateMysqlNumericTypesAsync()
     {
         if (this.Transaction == null)
         {
@@ -865,7 +865,7 @@ public class QuerySql
         public MysqlStringTypesCEnum? CEnum { get; init; }
         public HashSet<MysqlStringTypesCSet>? CSet { get; init; }
     };
-    public async Task InsertMysqlStringTypes(InsertMysqlStringTypesArgs args)
+    public async Task InsertMysqlStringTypesAsync(InsertMysqlStringTypesArgs args)
     {
         var queryParams = new Dictionary<string, object?>();
         queryParams.Add("c_char", args.CChar);
@@ -907,7 +907,7 @@ public class QuerySql
         public MysqlStringTypesCEnum? CEnum { get; init; }
         public HashSet<MysqlStringTypesCSet>? CSet { get; init; }
     };
-    public async Task InsertMysqlStringTypesBatch(List<InsertMysqlStringTypesBatchArgs> args)
+    public async Task InsertMysqlStringTypesBatchAsync(List<InsertMysqlStringTypesBatchArgs> args)
     {
         const string supportedDateTimeFormat = "yyyy-MM-dd H:mm:ss";
         var config = new CsvConfiguration(CultureInfo.CurrentCulture)
@@ -972,7 +972,7 @@ public class QuerySql
         public MysqlStringTypesCEnum? CEnum { get; init; }
         public HashSet<MysqlStringTypesCSet>? CSet { get; init; }
     };
-    public async Task<GetMysqlStringTypesRow?> GetMysqlStringTypes()
+    public async Task<GetMysqlStringTypesRow?> GetMysqlStringTypesAsync()
     {
         if (this.Transaction == null)
         {
@@ -1033,7 +1033,7 @@ public class QuerySql
         public MysqlStringTypesCEnum? CEnum { get; init; }
         public HashSet<MysqlStringTypesCSet>? CSet { get; init; }
     };
-    public async Task<GetMysqlStringTypesCntRow?> GetMysqlStringTypesCnt()
+    public async Task<GetMysqlStringTypesCntRow?> GetMysqlStringTypesCntAsync()
     {
         if (this.Transaction == null)
         {
@@ -1050,7 +1050,7 @@ public class QuerySql
     }
 
     private const string TruncateMysqlStringTypesSql = "TRUNCATE TABLE mysql_string_types";
-    public async Task TruncateMysqlStringTypes()
+    public async Task TruncateMysqlStringTypesAsync()
     {
         if (this.Transaction == null)
         {
@@ -1084,7 +1084,7 @@ public class QuerySql
         public TimeSpan? CTime { get; init; }
         public Instant? CTimestampNodaInstantOverride { get; init; }
     };
-    public async Task InsertMysqlDatetimeTypes(InsertMysqlDatetimeTypesArgs args)
+    public async Task InsertMysqlDatetimeTypesAsync(InsertMysqlDatetimeTypesArgs args)
     {
         var queryParams = new Dictionary<string, object?>();
         queryParams.Add("c_year", args.CYear);
@@ -1113,7 +1113,7 @@ public class QuerySql
         public DateTime? CTimestamp { get; init; }
         public TimeSpan? CTime { get; init; }
     };
-    public async Task InsertMysqlDatetimeTypesBatch(List<InsertMysqlDatetimeTypesBatchArgs> args)
+    public async Task InsertMysqlDatetimeTypesBatchAsync(List<InsertMysqlDatetimeTypesBatchArgs> args)
     {
         const string supportedDateTimeFormat = "yyyy-MM-dd H:mm:ss";
         var config = new CsvConfiguration(CultureInfo.CurrentCulture)
@@ -1170,7 +1170,7 @@ public class QuerySql
         public TimeSpan? CTime { get; init; }
         public Instant? CTimestampNodaInstantOverride { get; init; }
     };
-    public async Task<GetMysqlDatetimeTypesRow?> GetMysqlDatetimeTypes()
+    public async Task<GetMysqlDatetimeTypesRow?> GetMysqlDatetimeTypesAsync()
     {
         if (this.Transaction == null)
         {
@@ -1210,7 +1210,7 @@ public class QuerySql
         public DateTime? CTimestamp { get; init; }
         public TimeSpan? CTime { get; init; }
     };
-    public async Task<GetMysqlDatetimeTypesCntRow?> GetMysqlDatetimeTypesCnt()
+    public async Task<GetMysqlDatetimeTypesCntRow?> GetMysqlDatetimeTypesCntAsync()
     {
         if (this.Transaction == null)
         {
@@ -1227,7 +1227,7 @@ public class QuerySql
     }
 
     private const string TruncateMysqlDatetimeTypesSql = "TRUNCATE TABLE mysql_datetime_types";
-    public async Task TruncateMysqlDatetimeTypes()
+    public async Task TruncateMysqlDatetimeTypesAsync()
     {
         if (this.Transaction == null)
         {
@@ -1263,7 +1263,7 @@ public class QuerySql
         public byte[]? CMediumblob { get; init; }
         public byte[]? CLongblob { get; init; }
     };
-    public async Task InsertMysqlBinaryTypes(InsertMysqlBinaryTypesArgs args)
+    public async Task InsertMysqlBinaryTypesAsync(InsertMysqlBinaryTypesArgs args)
     {
         var queryParams = new Dictionary<string, object?>();
         queryParams.Add("c_bit", args.CBit);
@@ -1295,7 +1295,7 @@ public class QuerySql
         public byte[]? CMediumblob { get; init; }
         public byte[]? CLongblob { get; init; }
     };
-    public async Task InsertMysqlBinaryTypesBatch(List<InsertMysqlBinaryTypesBatchArgs> args)
+    public async Task InsertMysqlBinaryTypesBatchAsync(List<InsertMysqlBinaryTypesBatchArgs> args)
     {
         const string supportedDateTimeFormat = "yyyy-MM-dd H:mm:ss";
         var config = new CsvConfiguration(CultureInfo.CurrentCulture)
@@ -1354,7 +1354,7 @@ public class QuerySql
         public byte[]? CMediumblob { get; init; }
         public byte[]? CLongblob { get; init; }
     };
-    public async Task<GetMysqlBinaryTypesRow?> GetMysqlBinaryTypes()
+    public async Task<GetMysqlBinaryTypesRow?> GetMysqlBinaryTypesAsync()
     {
         if (this.Transaction == null)
         {
@@ -1400,7 +1400,7 @@ public class QuerySql
         public byte[]? CMediumblob { get; init; }
         public byte[]? CLongblob { get; init; }
     };
-    public async Task<GetMysqlBinaryTypesCntRow?> GetMysqlBinaryTypesCnt()
+    public async Task<GetMysqlBinaryTypesCntRow?> GetMysqlBinaryTypesCntAsync()
     {
         if (this.Transaction == null)
         {
@@ -1417,7 +1417,7 @@ public class QuerySql
     }
 
     private const string TruncateMysqlBinaryTypesSql = "TRUNCATE TABLE mysql_binary_types";
-    public async Task TruncateMysqlBinaryTypes()
+    public async Task TruncateMysqlBinaryTypesAsync()
     {
         if (this.Transaction == null)
         {
@@ -1445,7 +1445,7 @@ public class QuerySql
         public string? MaxVarchar { get; init; }
         public required DateTime MaxTimestamp { get; init; }
     };
-    public async Task<GetMysqlFunctionsRow?> GetMysqlFunctions()
+    public async Task<GetMysqlFunctionsRow?> GetMysqlFunctionsAsync()
     {
         if (this.Transaction == null)
         {

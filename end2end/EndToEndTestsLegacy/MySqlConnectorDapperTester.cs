@@ -13,12 +13,12 @@ namespace EndToEndTests
         [TearDown]
         public async Task EmptyTestsTable()
         {
-            await QuerySql.DeleteAllAuthors();
-            await QuerySql.TruncateExtendedBios();
-            await QuerySql.TruncateMysqlNumericTypes();
-            await QuerySql.TruncateMysqlStringTypes();
-            await QuerySql.TruncateMysqlDatetimeTypes();
-            await QuerySql.TruncateMysqlBinaryTypes();
+            await QuerySql.DeleteAllAuthorsAsync();
+            await QuerySql.TruncateExtendedBiosAsync();
+            await QuerySql.TruncateMysqlNumericTypesAsync();
+            await QuerySql.TruncateMysqlStringTypesAsync();
+            await QuerySql.TruncateMysqlDatetimeTypesAsync();
+            await QuerySql.TruncateMysqlBinaryTypesAsync();
         }
     }
 }

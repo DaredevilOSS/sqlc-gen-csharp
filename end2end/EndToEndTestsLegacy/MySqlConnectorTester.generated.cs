@@ -14,17 +14,17 @@ namespace EndToEndTests
     public partial class MySqlConnectorTester
     {
         [Test]
-        public async Task TestOne()
+        public async Task TestOneAsync()
         {
-            await this.QuerySql.CreateAuthor(new QuerySql.CreateAuthorArgs { Id = 1111, Name = "Bojack Horseman", Bio = "Back in the 90s he was in a very famous TV show" });
-            await this.QuerySql.CreateAuthor(new QuerySql.CreateAuthorArgs { Id = 2222, Name = "Dr. Seuss", Bio = "You'll miss the best things if you keep your eyes shut" });
+            await this.QuerySql.CreateAuthorAsync(new QuerySql.CreateAuthorArgs { Id = 1111, Name = "Bojack Horseman", Bio = "Back in the 90s he was in a very famous TV show" });
+            await this.QuerySql.CreateAuthorAsync(new QuerySql.CreateAuthorArgs { Id = 2222, Name = "Dr. Seuss", Bio = "You'll miss the best things if you keep your eyes shut" });
             var expected = new QuerySql.GetAuthorRow
             {
                 Id = 1111,
                 Name = "Bojack Horseman",
                 Bio = "Back in the 90s he was in a very famous TV show"
             };
-            var actual = await this.QuerySql.GetAuthor(new QuerySql.GetAuthorArgs { Name = "Bojack Horseman" });
+            var actual = await this.QuerySql.GetAuthorAsync(new QuerySql.GetAuthorArgs { Name = "Bojack Horseman" });
             AssertSingularEquals(expected, actual);
             void AssertSingularEquals(QuerySql.GetAuthorRow x, QuerySql.GetAuthorRow y)
             {
@@ -35,10 +35,10 @@ namespace EndToEndTests
         }
 
         [Test]
-        public async Task TestMany()
+        public async Task TestManyAsync()
         {
-            await this.QuerySql.CreateAuthor(new QuerySql.CreateAuthorArgs { Id = 1111, Name = "Bojack Horseman", Bio = "Back in the 90s he was in a very famous TV show" });
-            await this.QuerySql.CreateAuthor(new QuerySql.CreateAuthorArgs { Id = 2222, Name = "Dr. Seuss", Bio = "You'll miss the best things if you keep your eyes shut" });
+            await this.QuerySql.CreateAuthorAsync(new QuerySql.CreateAuthorArgs { Id = 1111, Name = "Bojack Horseman", Bio = "Back in the 90s he was in a very famous TV show" });
+            await this.QuerySql.CreateAuthorAsync(new QuerySql.CreateAuthorArgs { Id = 2222, Name = "Dr. Seuss", Bio = "You'll miss the best things if you keep your eyes shut" });
             var expected = new List<QuerySql.ListAuthorsRow>
             {
                 new QuerySql.ListAuthorsRow
@@ -54,7 +54,7 @@ namespace EndToEndTests
                     Bio = "You'll miss the best things if you keep your eyes shut"
                 }
             };
-            var actual = await this.QuerySql.ListAuthors(new QuerySql.ListAuthorsArgs { Limit = 2, Offset = 0 });
+            var actual = await this.QuerySql.ListAuthorsAsync(new QuerySql.ListAuthorsArgs { Limit = 2, Offset = 0 });
             AssertSequenceEquals(expected, actual);
             void AssertSingularEquals(QuerySql.ListAuthorsRow x, QuerySql.ListAuthorsRow y)
             {
@@ -72,21 +72,21 @@ namespace EndToEndTests
         }
 
         [Test]
-        public async Task TestExec()
+        public async Task TestExecAsync()
         {
-            await this.QuerySql.CreateAuthor(new QuerySql.CreateAuthorArgs { Id = 1111, Name = "Bojack Horseman", Bio = "Back in the 90s he was in a very famous TV show" });
-            await this.QuerySql.CreateAuthor(new QuerySql.CreateAuthorArgs { Id = 2222, Name = "Dr. Seuss", Bio = "You'll miss the best things if you keep your eyes shut" });
-            await this.QuerySql.DeleteAuthor(new QuerySql.DeleteAuthorArgs { Name = "Bojack Horseman" });
-            var actual = await this.QuerySql.GetAuthor(new QuerySql.GetAuthorArgs { Name = "Bojack Horseman" });
+            await this.QuerySql.CreateAuthorAsync(new QuerySql.CreateAuthorArgs { Id = 1111, Name = "Bojack Horseman", Bio = "Back in the 90s he was in a very famous TV show" });
+            await this.QuerySql.CreateAuthorAsync(new QuerySql.CreateAuthorArgs { Id = 2222, Name = "Dr. Seuss", Bio = "You'll miss the best things if you keep your eyes shut" });
+            await this.QuerySql.DeleteAuthorAsync(new QuerySql.DeleteAuthorArgs { Name = "Bojack Horseman" });
+            var actual = await this.QuerySql.GetAuthorAsync(new QuerySql.GetAuthorArgs { Name = "Bojack Horseman" });
             ClassicAssert.IsNull(actual);
         }
 
         [Test]
-        public async Task TestExecRows()
+        public async Task TestExecRowsAsync()
         {
-            await this.QuerySql.CreateAuthor(new QuerySql.CreateAuthorArgs { Id = 1111, Name = "Bojack Horseman", Bio = "Back in the 90s he was in a very famous TV show" });
-            await this.QuerySql.CreateAuthor(new QuerySql.CreateAuthorArgs { Id = 2222, Name = "Dr. Seuss", Bio = "You'll miss the best things if you keep your eyes shut" });
-            var affectedRows = await this.QuerySql.UpdateAuthors(new QuerySql.UpdateAuthorsArgs { Bio = "Quote that everyone always attribute to Einstein" });
+            await this.QuerySql.CreateAuthorAsync(new QuerySql.CreateAuthorArgs { Id = 1111, Name = "Bojack Horseman", Bio = "Back in the 90s he was in a very famous TV show" });
+            await this.QuerySql.CreateAuthorAsync(new QuerySql.CreateAuthorArgs { Id = 2222, Name = "Dr. Seuss", Bio = "You'll miss the best things if you keep your eyes shut" });
+            var affectedRows = await this.QuerySql.UpdateAuthorsAsync(new QuerySql.UpdateAuthorsArgs { Bio = "Quote that everyone always attribute to Einstein" });
             ClassicAssert.AreEqual(2, affectedRows);
             var expected = new List<QuerySql.ListAuthorsRow>
             {
@@ -103,7 +103,7 @@ namespace EndToEndTests
                     Bio = "Quote that everyone always attribute to Einstein"
                 }
             };
-            var actual = await this.QuerySql.ListAuthors(new QuerySql.ListAuthorsArgs { Limit = 2, Offset = 0 });
+            var actual = await this.QuerySql.ListAuthorsAsync(new QuerySql.ListAuthorsArgs { Limit = 2, Offset = 0 });
             AssertSequenceEquals(expected, actual);
             void AssertSingularEquals(QuerySql.ListAuthorsRow x, QuerySql.ListAuthorsRow y)
             {
@@ -121,16 +121,16 @@ namespace EndToEndTests
         }
 
         [Test]
-        public async Task TestExecLastId()
+        public async Task TestExecLastIdAsync()
         {
-            var id1 = await this.QuerySql.CreateAuthorReturnId(new QuerySql.CreateAuthorReturnIdArgs { Name = "Albert Einstein", Bio = "Quote that everyone always attribute to Einstein" });
+            var id1 = await this.QuerySql.CreateAuthorReturnIdAsync(new QuerySql.CreateAuthorReturnIdArgs { Name = "Albert Einstein", Bio = "Quote that everyone always attribute to Einstein" });
             var expected = new QuerySql.GetAuthorByIdRow
             {
                 Id = id1,
                 Name = "Albert Einstein",
                 Bio = "Quote that everyone always attribute to Einstein"
             };
-            var actual = await QuerySql.GetAuthorById(new QuerySql.GetAuthorByIdArgs { Id = id1 });
+            var actual = await QuerySql.GetAuthorByIdAsync(new QuerySql.GetAuthorByIdArgs { Id = id1 });
             AssertSingularEquals(expected, actual);
             void AssertSingularEquals(QuerySql.GetAuthorByIdRow x, QuerySql.GetAuthorByIdRow y)
             {
@@ -141,10 +141,10 @@ namespace EndToEndTests
         }
 
         [Test]
-        public async Task TestSelfJoinEmbed()
+        public async Task TestSelfJoinEmbedAsync()
         {
-            var id1 = await this.QuerySql.CreateAuthorReturnId(new QuerySql.CreateAuthorReturnIdArgs { Name = "Albert Einstein", Bio = "Quote that everyone always attribute to Einstein" });
-            var id2 = await this.QuerySql.CreateAuthorReturnId(new QuerySql.CreateAuthorReturnIdArgs { Name = "Albert Einstein", Bio = "Only 2 things are infinite, the universe and human stupidity" });
+            var id1 = await this.QuerySql.CreateAuthorReturnIdAsync(new QuerySql.CreateAuthorReturnIdArgs { Name = "Albert Einstein", Bio = "Quote that everyone always attribute to Einstein" });
+            var id2 = await this.QuerySql.CreateAuthorReturnIdAsync(new QuerySql.CreateAuthorReturnIdArgs { Name = "Albert Einstein", Bio = "Only 2 things are infinite, the universe and human stupidity" });
             var expected = new List<QuerySql.GetDuplicateAuthorsRow>()
             {
                 new QuerySql.GetDuplicateAuthorsRow
@@ -163,7 +163,7 @@ namespace EndToEndTests
                     }
                 }
             };
-            var actual = await QuerySql.GetDuplicateAuthors();
+            var actual = await QuerySql.GetDuplicateAuthorsAsync();
             AssertSequenceEquals(expected, actual);
             void AssertSingularEquals(QuerySql.GetDuplicateAuthorsRow x, QuerySql.GetDuplicateAuthorsRow y)
             {
@@ -184,12 +184,12 @@ namespace EndToEndTests
         }
 
         [Test]
-        public async Task TestJoinEmbed()
+        public async Task TestJoinEmbedAsync()
         {
-            var bojackId = await this.QuerySql.CreateAuthorReturnId(new QuerySql.CreateAuthorReturnIdArgs { Name = "Bojack Horseman", Bio = "Back in the 90s he was in a very famous TV show" });
-            var bojackBookId = await QuerySql.CreateBook(new QuerySql.CreateBookArgs { Name = "One Trick Pony", AuthorId = bojackId });
-            var drSeussId = await this.QuerySql.CreateAuthorReturnId(new QuerySql.CreateAuthorReturnIdArgs { Name = "Dr. Seuss", Bio = "You'll miss the best things if you keep your eyes shut" });
-            var drSeussBookId = await QuerySql.CreateBook(new QuerySql.CreateBookArgs { AuthorId = drSeussId, Name = "How the Grinch Stole Christmas!" });
+            var bojackId = await this.QuerySql.CreateAuthorReturnIdAsync(new QuerySql.CreateAuthorReturnIdArgs { Name = "Bojack Horseman", Bio = "Back in the 90s he was in a very famous TV show" });
+            var bojackBookId = await QuerySql.CreateBookAsync(new QuerySql.CreateBookArgs { Name = "One Trick Pony", AuthorId = bojackId });
+            var drSeussId = await this.QuerySql.CreateAuthorReturnIdAsync(new QuerySql.CreateAuthorReturnIdArgs { Name = "Dr. Seuss", Bio = "You'll miss the best things if you keep your eyes shut" });
+            var drSeussBookId = await QuerySql.CreateBookAsync(new QuerySql.CreateBookArgs { AuthorId = drSeussId, Name = "How the Grinch Stole Christmas!" });
             var expected = new List<QuerySql.ListAllAuthorsBooksRow>()
             {
                 new QuerySql.ListAllAuthorsBooksRow
@@ -223,7 +223,7 @@ namespace EndToEndTests
                     }
                 }
             };
-            var actual = await QuerySql.ListAllAuthorsBooks();
+            var actual = await QuerySql.ListAllAuthorsBooksAsync();
             AssertSequenceEquals(expected, actual);
             void AssertSingularEquals(QuerySql.ListAllAuthorsBooksRow x, QuerySql.ListAllAuthorsBooksRow y)
             {
@@ -244,28 +244,28 @@ namespace EndToEndTests
         }
 
         [Test]
-        public async Task TestSlice()
+        public async Task TestSliceAsync()
         {
-            var id1 = await this.QuerySql.CreateAuthorReturnId(new QuerySql.CreateAuthorReturnIdArgs { Name = "Albert Einstein", Bio = "Quote that everyone always attribute to Einstein" });
-            var bojackId = await this.QuerySql.CreateAuthorReturnId(new QuerySql.CreateAuthorReturnIdArgs { Name = "Bojack Horseman", Bio = "Back in the 90s he was in a very famous TV show" });
-            var actual = await QuerySql.GetAuthorsByIds(new QuerySql.GetAuthorsByIdsArgs { Ids = new[] { id1, bojackId } });
+            var id1 = await this.QuerySql.CreateAuthorReturnIdAsync(new QuerySql.CreateAuthorReturnIdArgs { Name = "Albert Einstein", Bio = "Quote that everyone always attribute to Einstein" });
+            var bojackId = await this.QuerySql.CreateAuthorReturnIdAsync(new QuerySql.CreateAuthorReturnIdArgs { Name = "Bojack Horseman", Bio = "Back in the 90s he was in a very famous TV show" });
+            var actual = await QuerySql.GetAuthorsByIdsAsync(new QuerySql.GetAuthorsByIdsArgs { Ids = new[] { id1, bojackId } });
             ClassicAssert.AreEqual(2, actual.Count);
         }
 
         [Test]
-        public async Task TestMultipleSlices()
+        public async Task TestMultipleSlicesAsync()
         {
-            var id1 = await this.QuerySql.CreateAuthorReturnId(new QuerySql.CreateAuthorReturnIdArgs { Name = "Albert Einstein", Bio = "Quote that everyone always attribute to Einstein" });
-            var bojackId = await this.QuerySql.CreateAuthorReturnId(new QuerySql.CreateAuthorReturnIdArgs { Name = "Bojack Horseman", Bio = "Back in the 90s he was in a very famous TV show" });
-            var actual = await QuerySql.GetAuthorsByIdsAndNames(new QuerySql.GetAuthorsByIdsAndNamesArgs { Ids = new[] { id1, bojackId }, Names = new[] { "Albert Einstein" } });
+            var id1 = await this.QuerySql.CreateAuthorReturnIdAsync(new QuerySql.CreateAuthorReturnIdArgs { Name = "Albert Einstein", Bio = "Quote that everyone always attribute to Einstein" });
+            var bojackId = await this.QuerySql.CreateAuthorReturnIdAsync(new QuerySql.CreateAuthorReturnIdArgs { Name = "Bojack Horseman", Bio = "Back in the 90s he was in a very famous TV show" });
+            var actual = await QuerySql.GetAuthorsByIdsAndNamesAsync(new QuerySql.GetAuthorsByIdsAndNamesArgs { Ids = new[] { id1, bojackId }, Names = new[] { "Albert Einstein" } });
             ClassicAssert.AreEqual(1, actual.Count);
         }
 
         [Test]
-        public async Task TestNargNull()
+        public async Task TestNargNullAsync()
         {
-            await this.QuerySql.CreateAuthor(new QuerySql.CreateAuthorArgs { Id = 1111, Name = "Bojack Horseman", Bio = "Back in the 90s he was in a very famous TV show" });
-            await this.QuerySql.CreateAuthor(new QuerySql.CreateAuthorArgs { Id = 2222, Name = "Dr. Seuss", Bio = "You'll miss the best things if you keep your eyes shut" });
+            await this.QuerySql.CreateAuthorAsync(new QuerySql.CreateAuthorArgs { Id = 1111, Name = "Bojack Horseman", Bio = "Back in the 90s he was in a very famous TV show" });
+            await this.QuerySql.CreateAuthorAsync(new QuerySql.CreateAuthorArgs { Id = 2222, Name = "Dr. Seuss", Bio = "You'll miss the best things if you keep your eyes shut" });
             var expected = new List<QuerySql.GetAuthorByNamePatternRow>
             {
                 new QuerySql.GetAuthorByNamePatternRow
@@ -281,7 +281,7 @@ namespace EndToEndTests
                     Bio = "You'll miss the best things if you keep your eyes shut"
                 }
             };
-            var actual = await this.QuerySql.GetAuthorByNamePattern(new QuerySql.GetAuthorByNamePatternArgs());
+            var actual = await this.QuerySql.GetAuthorByNamePatternAsync(new QuerySql.GetAuthorByNamePatternArgs());
             AssertSequenceEquals(expected, actual);
             void AssertSequenceEquals(List<QuerySql.GetAuthorByNamePatternRow> x, List<QuerySql.GetAuthorByNamePatternRow> y)
             {
@@ -299,10 +299,10 @@ namespace EndToEndTests
         }
 
         [Test]
-        public async Task TestNargNotNull()
+        public async Task TestNargNotNullAsync()
         {
-            await this.QuerySql.CreateAuthor(new QuerySql.CreateAuthorArgs { Id = 1111, Name = "Bojack Horseman", Bio = "Back in the 90s he was in a very famous TV show" });
-            await this.QuerySql.CreateAuthor(new QuerySql.CreateAuthorArgs { Id = 2222, Name = "Dr. Seuss", Bio = "You'll miss the best things if you keep your eyes shut" });
+            await this.QuerySql.CreateAuthorAsync(new QuerySql.CreateAuthorArgs { Id = 1111, Name = "Bojack Horseman", Bio = "Back in the 90s he was in a very famous TV show" });
+            await this.QuerySql.CreateAuthorAsync(new QuerySql.CreateAuthorArgs { Id = 2222, Name = "Dr. Seuss", Bio = "You'll miss the best things if you keep your eyes shut" });
             var expected = new List<QuerySql.GetAuthorByNamePatternRow>
             {
                 new QuerySql.GetAuthorByNamePatternRow
@@ -312,7 +312,7 @@ namespace EndToEndTests
                     Bio = "Back in the 90s he was in a very famous TV show"
                 }
             };
-            var actual = await this.QuerySql.GetAuthorByNamePattern(new QuerySql.GetAuthorByNamePatternArgs { NamePattern = "Bojack%" });
+            var actual = await this.QuerySql.GetAuthorByNamePatternAsync(new QuerySql.GetAuthorByNamePatternArgs { NamePattern = "Bojack%" });
             AssertSequenceEquals(expected, actual);
             void AssertSequenceEquals(List<QuerySql.GetAuthorByNamePatternRow> x, List<QuerySql.GetAuthorByNamePatternRow> y)
             {
@@ -336,8 +336,8 @@ namespace EndToEndTests
             await connection.OpenAsync();
             var transaction = connection.BeginTransaction();
             var querySqlWithTx = QuerySql.WithTransaction(transaction);
-            await querySqlWithTx.CreateAuthor(new QuerySql.CreateAuthorArgs { Id = 1111, Name = "Bojack Horseman", Bio = "Back in the 90s he was in a very famous TV show" });
-            var actual = await QuerySql.GetAuthor(new QuerySql.GetAuthorArgs { Name = "Bojack Horseman" });
+            await querySqlWithTx.CreateAuthorAsync(new QuerySql.CreateAuthorArgs { Id = 1111, Name = "Bojack Horseman", Bio = "Back in the 90s he was in a very famous TV show" });
+            var actual = await QuerySql.GetAuthorAsync(new QuerySql.GetAuthorArgs { Name = "Bojack Horseman" });
             ClassicAssert.IsNull(actual);
             await transaction.CommitAsync();
             var expected = new QuerySql.GetAuthorRow
@@ -346,7 +346,7 @@ namespace EndToEndTests
                 Name = "Bojack Horseman",
                 Bio = "Back in the 90s he was in a very famous TV show"
             };
-            actual = await QuerySql.GetAuthor(new QuerySql.GetAuthorArgs { Name = "Bojack Horseman" });
+            actual = await QuerySql.GetAuthorAsync(new QuerySql.GetAuthorArgs { Name = "Bojack Horseman" });
             AssertSingularEquals(expected, actual);
             void AssertSingularEquals(QuerySql.GetAuthorRow x, QuerySql.GetAuthorRow y)
             {
@@ -363,9 +363,9 @@ namespace EndToEndTests
             await connection.OpenAsync();
             var transaction = connection.BeginTransaction();
             var querySqlWithTx = QuerySql.WithTransaction(transaction);
-            await querySqlWithTx.CreateAuthor(new QuerySql.CreateAuthorArgs { Id = 1111, Name = "Bojack Horseman", Bio = "Back in the 90s he was in a very famous TV show" });
+            await querySqlWithTx.CreateAuthorAsync(new QuerySql.CreateAuthorArgs { Id = 1111, Name = "Bojack Horseman", Bio = "Back in the 90s he was in a very famous TV show" });
             await transaction.RollbackAsync();
-            var actual = await QuerySql.GetAuthor(new QuerySql.GetAuthorArgs { Name = "Bojack Horseman" });
+            var actual = await QuerySql.GetAuthorAsync(new QuerySql.GetAuthorArgs { Name = "Bojack Horseman" });
             ClassicAssert.IsNull(actual);
         }
 
@@ -374,16 +374,16 @@ namespace EndToEndTests
         [TestCase(null, null, "1971-01-01 00:00:00")]
         public async Task TestMySqlDataTypesOverride(int? cInt, string cVarchar, DateTime cTimestamp)
         {
-            await QuerySql.InsertMysqlNumericTypes(new QuerySql.InsertMysqlNumericTypesArgs { CInt = cInt });
-            await QuerySql.InsertMysqlStringTypes(new QuerySql.InsertMysqlStringTypesArgs { CVarchar = cVarchar });
-            await QuerySql.InsertMysqlDatetimeTypes(new QuerySql.InsertMysqlDatetimeTypesArgs { CTimestamp = cTimestamp });
+            await QuerySql.InsertMysqlNumericTypesAsync(new QuerySql.InsertMysqlNumericTypesArgs { CInt = cInt });
+            await QuerySql.InsertMysqlStringTypesAsync(new QuerySql.InsertMysqlStringTypesArgs { CVarchar = cVarchar });
+            await QuerySql.InsertMysqlDatetimeTypesAsync(new QuerySql.InsertMysqlDatetimeTypesArgs { CTimestamp = cTimestamp });
             var expected = new QuerySql.GetMysqlFunctionsRow
             {
                 MaxInt = cInt,
                 MaxVarchar = cVarchar,
                 MaxTimestamp = cTimestamp
             };
-            var actual = await QuerySql.GetMysqlFunctions();
+            var actual = await QuerySql.GetMysqlFunctionsAsync();
             AssertSingularEquals(expected, actual);
             void AssertSingularEquals(QuerySql.GetMysqlFunctionsRow x, QuerySql.GetMysqlFunctionsRow y)
             {
@@ -396,7 +396,7 @@ namespace EndToEndTests
         [Test]
         public async Task TestMySqlScopedSchemaEnum()
         {
-            await this.QuerySql.CreateExtendedBio(new QuerySql.CreateExtendedBioArgs { AuthorName = "Bojack Horseman", Name = "One Trick Pony", BioType = BiosBioType.Memoir, AuthorType = new HashSet<BiosAuthorType> { BiosAuthorType.Author, BiosAuthorType.Translator } });
+            await this.QuerySql.CreateExtendedBioAsync(new QuerySql.CreateExtendedBioArgs { AuthorName = "Bojack Horseman", Name = "One Trick Pony", BioType = BiosBioType.Memoir, AuthorType = new HashSet<BiosAuthorType> { BiosAuthorType.Author, BiosAuthorType.Translator } });
             var expected = new QuerySql.GetFirstExtendedBioByTypeRow
             {
                 AuthorName = "Bojack Horseman",
@@ -408,7 +408,7 @@ namespace EndToEndTests
                     BiosAuthorType.Translator
                 }
             };
-            var actual = await this.QuerySql.GetFirstExtendedBioByType(new QuerySql.GetFirstExtendedBioByTypeArgs { BioType = BiosBioType.Memoir });
+            var actual = await this.QuerySql.GetFirstExtendedBioByTypeAsync(new QuerySql.GetFirstExtendedBioByTypeArgs { BioType = BiosBioType.Memoir });
             AssertSingularEquals(expected, actual);
             void AssertSingularEquals(QuerySql.GetFirstExtendedBioByTypeRow x, QuerySql.GetFirstExtendedBioByTypeRow y)
             {
@@ -422,7 +422,7 @@ namespace EndToEndTests
         [Test]
         public void TestMySqlInvalidJson()
         {
-            Assert.ThrowsAsync<MySqlConnector.MySqlException>(async () => await QuerySql.InsertMysqlStringTypes(new QuerySql.InsertMysqlStringTypesArgs { CJsonStringOverride = "SOME INVALID JSON" }));
+            Assert.ThrowsAsync<MySqlConnector.MySqlException>(async () => await QuerySql.InsertMysqlStringTypesAsync(new QuerySql.InsertMysqlStringTypesArgs { CJsonStringOverride = "SOME INVALID JSON" }));
         }
 
         [Test]
@@ -430,7 +430,7 @@ namespace EndToEndTests
         [TestCase(null, null, null, null, null, null, null, null)]
         public async Task TestMySqlStringTypes(string cChar, string cNchar, string cNationalChar, string cVarchar, string cTinytext, string cMediumtext, string cText, string cLongtext)
         {
-            await QuerySql.InsertMysqlStringTypes(new QuerySql.InsertMysqlStringTypesArgs { CChar = cChar, CNchar = cNchar, CNationalChar = cNationalChar, CVarchar = cVarchar, CTinytext = cTinytext, CMediumtext = cMediumtext, CText = cText, CLongtext = cLongtext });
+            await QuerySql.InsertMysqlStringTypesAsync(new QuerySql.InsertMysqlStringTypesArgs { CChar = cChar, CNchar = cNchar, CNationalChar = cNationalChar, CVarchar = cVarchar, CTinytext = cTinytext, CMediumtext = cMediumtext, CText = cText, CLongtext = cLongtext });
             var expected = new QuerySql.GetMysqlStringTypesRow
             {
                 CChar = cChar,
@@ -442,7 +442,7 @@ namespace EndToEndTests
                 CText = cText,
                 CLongtext = cLongtext
             };
-            var actual = await QuerySql.GetMysqlStringTypes();
+            var actual = await QuerySql.GetMysqlStringTypesAsync();
             AssertSingularEquals(expected, actual);
             void AssertSingularEquals(QuerySql.GetMysqlStringTypesRow x, QuerySql.GetMysqlStringTypesRow y)
             {
@@ -462,7 +462,7 @@ namespace EndToEndTests
         [TestCase(null, null, null, null, null, null, null, null, null)]
         public async Task TestMySqlIntegerTypes(bool? cBool, bool? cBoolean, short? cTinyint, short? cYear, short? cSmallint, int? cMediumint, int? cInt, int? cInteger, long? cBigint)
         {
-            await QuerySql.InsertMysqlNumericTypes(new QuerySql.InsertMysqlNumericTypesArgs { CBool = cBool, CBoolean = cBoolean, CTinyint = cTinyint, CSmallint = cSmallint, CMediumint = cMediumint, CInt = cInt, CInteger = cInteger, CBigint = cBigint });
+            await QuerySql.InsertMysqlNumericTypesAsync(new QuerySql.InsertMysqlNumericTypesArgs { CBool = cBool, CBoolean = cBoolean, CTinyint = cTinyint, CSmallint = cSmallint, CMediumint = cMediumint, CInt = cInt, CInteger = cInteger, CBigint = cBigint });
             var expected = new QuerySql.GetMysqlNumericTypesRow
             {
                 CBool = cBool,
@@ -474,7 +474,7 @@ namespace EndToEndTests
                 CInteger = cInteger,
                 CBigint = cBigint
             };
-            var actual = await QuerySql.GetMysqlNumericTypes();
+            var actual = await QuerySql.GetMysqlNumericTypesAsync();
             AssertSingularEquals(expected, actual);
             void AssertSingularEquals(QuerySql.GetMysqlNumericTypesRow x, QuerySql.GetMysqlNumericTypesRow y)
             {
@@ -494,7 +494,7 @@ namespace EndToEndTests
         [TestCase(null, null, null, null, null, null, null)]
         public async Task TestMySqlFloatingPointTypes(float? cFloat, decimal? cNumeric, decimal? cDecimal, decimal? cDec, decimal? cFixed, double? cDouble, double? cDoublePrecision)
         {
-            await QuerySql.InsertMysqlNumericTypes(new QuerySql.InsertMysqlNumericTypesArgs { CFloat = cFloat, CNumeric = cNumeric, CDecimal = cDecimal, CDec = cDec, CFixed = cFixed, CDouble = cDouble, CDoublePrecision = cDoublePrecision });
+            await QuerySql.InsertMysqlNumericTypesAsync(new QuerySql.InsertMysqlNumericTypesArgs { CFloat = cFloat, CNumeric = cNumeric, CDecimal = cDecimal, CDec = cDec, CFixed = cFixed, CDouble = cDouble, CDoublePrecision = cDoublePrecision });
             var expected = new QuerySql.GetMysqlNumericTypesRow
             {
                 CFloat = cFloat,
@@ -505,7 +505,7 @@ namespace EndToEndTests
                 CDouble = cDouble,
                 CDoublePrecision = cDoublePrecision
             };
-            var actual = await QuerySql.GetMysqlNumericTypes();
+            var actual = await QuerySql.GetMysqlNumericTypesAsync();
             AssertSingularEquals(expected, actual);
             void AssertSingularEquals(QuerySql.GetMysqlNumericTypesRow x, QuerySql.GetMysqlNumericTypesRow y)
             {
@@ -532,7 +532,7 @@ namespace EndToEndTests
         [TestCaseSource(nameof(MySqlDateTimeTypesTestCases))]
         public async Task TestMySqlDateTimeTypes(short? cYear, DateTime? cDate, DateTime? cDatetime, DateTime? cTimestamp, TimeSpan? cTime, Instant? cTimestampNodaInstantOverride)
         {
-            await QuerySql.InsertMysqlDatetimeTypes(new QuerySql.InsertMysqlDatetimeTypesArgs { CYear = cYear, CDate = cDate, CDatetime = cDatetime, CTimestamp = cTimestamp, CTime = cTime, CTimestampNodaInstantOverride = cTimestampNodaInstantOverride });
+            await QuerySql.InsertMysqlDatetimeTypesAsync(new QuerySql.InsertMysqlDatetimeTypesArgs { CYear = cYear, CDate = cDate, CDatetime = cDatetime, CTimestamp = cTimestamp, CTime = cTime, CTimestampNodaInstantOverride = cTimestampNodaInstantOverride });
             var expected = new QuerySql.GetMysqlDatetimeTypesRow
             {
                 CYear = cYear,
@@ -542,7 +542,7 @@ namespace EndToEndTests
                 CTime = cTime,
                 CTimestampNodaInstantOverride = cTimestampNodaInstantOverride
             };
-            var actual = await QuerySql.GetMysqlDatetimeTypes();
+            var actual = await QuerySql.GetMysqlDatetimeTypesAsync();
             AssertSingularEquals(expected, actual);
             void AssertSingularEquals(QuerySql.GetMysqlDatetimeTypesRow x, QuerySql.GetMysqlDatetimeTypesRow y)
             {
@@ -561,7 +561,7 @@ namespace EndToEndTests
         [TestCase(null, null, null, null, null, null, null)]
         public async Task TestMySqlBinaryTypes(byte? cBit, byte[] cBinary, byte[] cVarbinary, byte[] cTinyblob, byte[] cBlob, byte[] cMediumblob, byte[] cLongblob)
         {
-            await QuerySql.InsertMysqlBinaryTypes(new QuerySql.InsertMysqlBinaryTypesArgs { CBit = cBit, CBinary = cBinary, CVarbinary = cVarbinary, CTinyblob = cTinyblob, CBlob = cBlob, CMediumblob = cMediumblob, CLongblob = cLongblob });
+            await QuerySql.InsertMysqlBinaryTypesAsync(new QuerySql.InsertMysqlBinaryTypesArgs { CBit = cBit, CBinary = cBinary, CVarbinary = cVarbinary, CTinyblob = cTinyblob, CBlob = cBlob, CMediumblob = cMediumblob, CLongblob = cLongblob });
             var expected = new QuerySql.GetMysqlBinaryTypesRow
             {
                 CBit = cBit,
@@ -572,7 +572,7 @@ namespace EndToEndTests
                 CMediumblob = cMediumblob,
                 CLongblob = cLongblob
             };
-            var actual = await QuerySql.GetMysqlBinaryTypes();
+            var actual = await QuerySql.GetMysqlBinaryTypesAsync();
             AssertSingularEquals(expected, actual);
             void AssertSingularEquals(QuerySql.GetMysqlBinaryTypesRow x, QuerySql.GetMysqlBinaryTypesRow y)
             {
@@ -599,13 +599,13 @@ namespace EndToEndTests
         [TestCaseSource(nameof(MySqlEnumTypesTestCases))]
         public async Task TestMySqlStringTypes(MysqlStringTypesCEnum? cEnum, HashSet<MysqlStringTypesCSet> cSet)
         {
-            await QuerySql.InsertMysqlStringTypes(new QuerySql.InsertMysqlStringTypesArgs { CEnum = cEnum, CSet = cSet });
+            await QuerySql.InsertMysqlStringTypesAsync(new QuerySql.InsertMysqlStringTypesArgs { CEnum = cEnum, CSet = cSet });
             var expected = new QuerySql.GetMysqlStringTypesRow
             {
                 CEnum = cEnum,
                 CSet = cSet
             };
-            var actual = await QuerySql.GetMysqlStringTypes();
+            var actual = await QuerySql.GetMysqlStringTypesAsync();
             AssertSingularEquals(expected, actual);
             void AssertSingularEquals(QuerySql.GetMysqlStringTypesRow x, QuerySql.GetMysqlStringTypesRow y)
             {
@@ -622,13 +622,13 @@ namespace EndToEndTests
             JsonElement? cParsedJson = null;
             if (cJson != null)
                 cParsedJson = JsonDocument.Parse(cJson).RootElement;
-            await QuerySql.InsertMysqlStringTypes(new QuerySql.InsertMysqlStringTypesArgs { CJson = cParsedJson, CJsonStringOverride = cJson });
+            await QuerySql.InsertMysqlStringTypesAsync(new QuerySql.InsertMysqlStringTypesArgs { CJson = cParsedJson, CJsonStringOverride = cJson });
             var expected = new QuerySql.GetMysqlStringTypesRow
             {
                 CJson = cParsedJson,
                 CJsonStringOverride = cJson
             };
-            var actual = await QuerySql.GetMysqlStringTypes();
+            var actual = await QuerySql.GetMysqlStringTypesAsync();
             AssertSingularEquals(expected, actual);
             void AssertSingularEquals(QuerySql.GetMysqlStringTypesRow x, QuerySql.GetMysqlStringTypesRow y)
             {
@@ -645,7 +645,7 @@ namespace EndToEndTests
         public async Task TestStringCopyFrom(int batchSize, string cChar, string cNchar, string cNationalChar, string cVarchar, string cTinytext, string cMediumtext, string cText, string cLongtext)
         {
             var batchArgs = Enumerable.Range(0, batchSize).Select(_ => new QuerySql.InsertMysqlStringTypesBatchArgs { CChar = cChar, CNchar = cNchar, CNationalChar = cNationalChar, CVarchar = cVarchar, CTinytext = cTinytext, CMediumtext = cMediumtext, CText = cText, CLongtext = cLongtext }).ToList();
-            await QuerySql.InsertMysqlStringTypesBatch(batchArgs);
+            await QuerySql.InsertMysqlStringTypesBatchAsync(batchArgs);
             var expected = new QuerySql.GetMysqlStringTypesCntRow
             {
                 Cnt = batchSize,
@@ -658,7 +658,7 @@ namespace EndToEndTests
                 CText = cText,
                 CLongtext = cLongtext
             };
-            var actual = await QuerySql.GetMysqlStringTypesCnt();
+            var actual = await QuerySql.GetMysqlStringTypesCntAsync();
             AssertSingularEquals(expected, actual);
             void AssertSingularEquals(QuerySql.GetMysqlStringTypesCntRow x, QuerySql.GetMysqlStringTypesCntRow y)
             {
@@ -680,7 +680,7 @@ namespace EndToEndTests
         public async Task TestIntegerCopyFrom(int batchSize, bool? cBool, bool? cBoolean, short? cTinyint, short? cSmallint, int? cMediumint, int? cInt, int? cInteger, long? cBigint)
         {
             var batchArgs = Enumerable.Range(0, batchSize).Select(_ => new QuerySql.InsertMysqlNumericTypesBatchArgs { CBool = cBool, CBoolean = cBoolean, CTinyint = cTinyint, CSmallint = cSmallint, CMediumint = cMediumint, CInt = cInt, CInteger = cInteger, CBigint = cBigint }).ToList();
-            await QuerySql.InsertMysqlNumericTypesBatch(batchArgs);
+            await QuerySql.InsertMysqlNumericTypesBatchAsync(batchArgs);
             var expected = new QuerySql.GetMysqlNumericTypesCntRow
             {
                 Cnt = batchSize,
@@ -693,7 +693,7 @@ namespace EndToEndTests
                 CInteger = cInteger,
                 CBigint = cBigint
             };
-            var actual = await QuerySql.GetMysqlNumericTypesCnt();
+            var actual = await QuerySql.GetMysqlNumericTypesCntAsync();
             AssertSingularEquals(expected, actual);
             void AssertSingularEquals(QuerySql.GetMysqlNumericTypesCntRow x, QuerySql.GetMysqlNumericTypesCntRow y)
             {
@@ -715,7 +715,7 @@ namespace EndToEndTests
         public async Task TestFloatingPointCopyFrom(int batchSize, float? cFloat, decimal? cNumeric, decimal? cDecimal, decimal? cDec, decimal? cFixed, double? cDouble, double? cDoublePrecision)
         {
             var batchArgs = Enumerable.Range(0, batchSize).Select(_ => new QuerySql.InsertMysqlNumericTypesBatchArgs { CFloat = cFloat, CNumeric = cNumeric, CDecimal = cDecimal, CDec = cDec, CFixed = cFixed, CDouble = cDouble, CDoublePrecision = cDoublePrecision }).ToList();
-            await QuerySql.InsertMysqlNumericTypesBatch(batchArgs);
+            await QuerySql.InsertMysqlNumericTypesBatchAsync(batchArgs);
             var expected = new QuerySql.GetMysqlNumericTypesCntRow
             {
                 Cnt = batchSize,
@@ -727,7 +727,7 @@ namespace EndToEndTests
                 CDouble = cDouble,
                 CDoublePrecision = cDoublePrecision
             };
-            var actual = await QuerySql.GetMysqlNumericTypesCnt();
+            var actual = await QuerySql.GetMysqlNumericTypesCntAsync();
             AssertSingularEquals(expected, actual);
             void AssertSingularEquals(QuerySql.GetMysqlNumericTypesCntRow x, QuerySql.GetMysqlNumericTypesCntRow y)
             {
@@ -748,7 +748,7 @@ namespace EndToEndTests
         public async Task TestDateTimeCopyFrom(int batchSize, short? cYear, DateTime? cDate, DateTime? cDatetime, DateTime? cTimestamp, TimeSpan? cTime)
         {
             var batchArgs = Enumerable.Range(0, batchSize).Select(_ => new QuerySql.InsertMysqlDatetimeTypesBatchArgs { CYear = cYear, CDate = cDate, CDatetime = cDatetime, CTimestamp = cTimestamp, CTime = cTime }).ToList();
-            await QuerySql.InsertMysqlDatetimeTypesBatch(batchArgs);
+            await QuerySql.InsertMysqlDatetimeTypesBatchAsync(batchArgs);
             var expected = new QuerySql.GetMysqlDatetimeTypesCntRow
             {
                 Cnt = batchSize,
@@ -758,7 +758,7 @@ namespace EndToEndTests
                 CTimestamp = cTimestamp,
                 CTime = cTime
             };
-            var actual = await QuerySql.GetMysqlDatetimeTypesCnt();
+            var actual = await QuerySql.GetMysqlDatetimeTypesCntAsync();
             AssertSingularEquals(expected, actual);
             void AssertSingularEquals(QuerySql.GetMysqlDatetimeTypesCntRow x, QuerySql.GetMysqlDatetimeTypesCntRow y)
             {
@@ -778,7 +778,7 @@ namespace EndToEndTests
         public async Task TestBinaryCopyFrom(int batchSize, byte? cBit, byte[] cBinary, byte[] cVarbinary, byte[] cTinyblob, byte[] cBlob, byte[] cMediumblob, byte[] cLongblob)
         {
             var batchArgs = Enumerable.Range(0, batchSize).Select(_ => new QuerySql.InsertMysqlBinaryTypesBatchArgs { CBit = cBit, CBinary = cBinary, CVarbinary = cVarbinary, CTinyblob = cTinyblob, CBlob = cBlob, CMediumblob = cMediumblob, CLongblob = cLongblob }).ToList();
-            await QuerySql.InsertMysqlBinaryTypesBatch(batchArgs);
+            await QuerySql.InsertMysqlBinaryTypesBatchAsync(batchArgs);
             var expected = new QuerySql.GetMysqlBinaryTypesCntRow
             {
                 Cnt = batchSize,
@@ -790,7 +790,7 @@ namespace EndToEndTests
                 CMediumblob = cMediumblob,
                 CLongblob = cLongblob
             };
-            var actual = await QuerySql.GetMysqlBinaryTypesCnt();
+            var actual = await QuerySql.GetMysqlBinaryTypesCntAsync();
             AssertSingularEquals(expected, actual);
             void AssertSingularEquals(QuerySql.GetMysqlBinaryTypesCntRow x, QuerySql.GetMysqlBinaryTypesCntRow y)
             {
@@ -819,14 +819,14 @@ namespace EndToEndTests
         public async Task TestCopyFrom(int batchSize, MysqlStringTypesCEnum? cEnum, HashSet<MysqlStringTypesCSet> cSet)
         {
             var batchArgs = Enumerable.Range(0, batchSize).Select(_ => new QuerySql.InsertMysqlStringTypesBatchArgs { CEnum = cEnum, CSet = cSet }).ToList();
-            await QuerySql.InsertMysqlStringTypesBatch(batchArgs);
+            await QuerySql.InsertMysqlStringTypesBatchAsync(batchArgs);
             var expected = new QuerySql.GetMysqlStringTypesCntRow
             {
                 Cnt = batchSize,
                 CEnum = cEnum,
                 CSet = cSet
             };
-            var actual = await QuerySql.GetMysqlStringTypesCnt();
+            var actual = await QuerySql.GetMysqlStringTypesCntAsync();
             AssertSingularEquals(expected, actual);
             void AssertSingularEquals(QuerySql.GetMysqlStringTypesCntRow x, QuerySql.GetMysqlStringTypesCntRow y)
             {
@@ -845,13 +845,13 @@ namespace EndToEndTests
             if (cJson != null)
                 cParsedJson = JsonDocument.Parse(cJson).RootElement;
             var batchArgs = Enumerable.Range(0, batchSize).Select(_ => new QuerySql.InsertMysqlStringTypesBatchArgs { CJson = cParsedJson }).ToList();
-            await QuerySql.InsertMysqlStringTypesBatch(batchArgs);
+            await QuerySql.InsertMysqlStringTypesBatchAsync(batchArgs);
             var expected = new QuerySql.GetMysqlStringTypesCntRow
             {
                 Cnt = batchSize,
                 CJson = cParsedJson
             };
-            var actual = await QuerySql.GetMysqlStringTypesCnt();
+            var actual = await QuerySql.GetMysqlStringTypesCntAsync();
             AssertSingularEquals(expected, actual);
             void AssertSingularEquals(QuerySql.GetMysqlStringTypesCntRow x, QuerySql.GetMysqlStringTypesCntRow y)
             {

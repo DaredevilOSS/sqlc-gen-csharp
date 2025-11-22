@@ -10,7 +10,7 @@ public static class MacroTests
         {
             Impl = $$"""
                       [Test]
-                      public async Task TestNargNull()
+                      public async Task TestNargNullAsync()
                       {
                           {{Consts.CreateBojackAuthor}}
                           {{Consts.CreateDrSeussAuthor}}
@@ -30,7 +30,7 @@ public static class MacroTests
                               }
                           };
                      
-                          var actual = await this.QuerySql.GetAuthorByNamePattern(new QuerySql.GetAuthorByNamePatternArgs());
+                          var actual = await this.QuerySql.GetAuthorByNamePatternAsync(new QuerySql.GetAuthorByNamePatternArgs());
                           AssertSequenceEquals(expected, actual);
 
                           void AssertSequenceEquals(List<QuerySql.GetAuthorByNamePatternRow> x, List<QuerySql.GetAuthorByNamePatternRow> y)
@@ -53,7 +53,7 @@ public static class MacroTests
         {
             Impl = $$"""
                       [Test]
-                      public async Task TestNargNotNull()
+                      public async Task TestNargNotNullAsync()
                       {
                           {{Consts.CreateBojackAuthor}}
                           {{Consts.CreateDrSeussAuthor}}
@@ -68,7 +68,7 @@ public static class MacroTests
                               }
                           };
                      
-                          var actual = await this.QuerySql.GetAuthorByNamePattern(new QuerySql.GetAuthorByNamePatternArgs { NamePattern = "Bojack%" });
+                          var actual = await this.QuerySql.GetAuthorByNamePatternAsync(new QuerySql.GetAuthorByNamePatternArgs { NamePattern = "Bojack%" });
                           AssertSequenceEquals(expected, actual);
 
                           void AssertSequenceEquals(List<QuerySql.GetAuthorByNamePatternRow> x, List<QuerySql.GetAuthorByNamePatternRow> y)
@@ -91,7 +91,7 @@ public static class MacroTests
         {
             Impl = $$"""
                      [Test]
-                     public async Task TestJoinEmbed()
+                     public async Task TestJoinEmbedAsync()
                      {
                          {{Consts.CreateBojackAuthorWithId}}
                          {{Consts.CreateBookByBojack}}
@@ -130,7 +130,7 @@ public static class MacroTests
                                  }
                              }
                          };
-                         var actual = await QuerySql.ListAllAuthorsBooks();
+                         var actual = await QuerySql.ListAllAuthorsBooksAsync();
                          AssertSequenceEquals(expected, actual);
 
                          void AssertSingularEquals(QuerySql.ListAllAuthorsBooksRow x, QuerySql.ListAllAuthorsBooksRow y)
@@ -156,7 +156,7 @@ public static class MacroTests
         {
             Impl = $$"""
                      [Test]
-                     public async Task TestSelfJoinEmbed()
+                     public async Task TestSelfJoinEmbedAsync()
                      {
                          {{Consts.CreateFirstGenericAuthor}}
                          {{Consts.CreateSecondGenericAuthor}}
@@ -178,7 +178,7 @@ public static class MacroTests
                                  }
                              }
                          };
-                         var actual = await QuerySql.GetDuplicateAuthors();
+                         var actual = await QuerySql.GetDuplicateAuthorsAsync();
                          AssertSequenceEquals(expected, actual);
 
                         void AssertSingularEquals(QuerySql.GetDuplicateAuthorsRow x, QuerySql.GetDuplicateAuthorsRow y)
@@ -204,7 +204,7 @@ public static class MacroTests
         {
             Impl = $$"""
                      [Test]
-                     public async Task TestPartialEmbed()
+                     public async Task TestPartialEmbedAsync()
                      {
                          {{Consts.CreateBojackAuthorWithId}}
                          {{Consts.CreateBookByBojack}}
@@ -225,7 +225,7 @@ public static class MacroTests
                                  }
                              }
                          };
-                         var actual = await QuerySql.GetAuthorsByBookName(new QuerySql.GetAuthorsByBookNameArgs 
+                         var actual = await QuerySql.GetAuthorsByBookNameAsync(new QuerySql.GetAuthorsByBookNameArgs 
                          { 
                              Name = {{Consts.BojackBookTitle}} 
                          });
@@ -254,11 +254,11 @@ public static class MacroTests
         {
             Impl = $$"""
                      [Test]
-                     public async Task TestSlice()
+                     public async Task TestSliceAsync()
                      {
                          {{Consts.CreateFirstGenericAuthor}}
                          {{Consts.CreateBojackAuthorWithId}}
-                         var actual = await QuerySql.GetAuthorsByIds(new QuerySql.GetAuthorsByIdsArgs 
+                         var actual = await QuerySql.GetAuthorsByIdsAsync(new QuerySql.GetAuthorsByIdsArgs 
                          { 
                              Ids = new[] { id1, bojackId } 
                          });
@@ -270,11 +270,11 @@ public static class MacroTests
         {
             Impl = $$"""
                      [Test]
-                     public async Task TestMultipleSlices()
+                     public async Task TestMultipleSlicesAsync()
                      {
                          {{Consts.CreateFirstGenericAuthor}}
                          {{Consts.CreateBojackAuthorWithId}}
-                         var actual = await QuerySql.GetAuthorsByIdsAndNames(new QuerySql.GetAuthorsByIdsAndNamesArgs 
+                         var actual = await QuerySql.GetAuthorsByIdsAndNamesAsync(new QuerySql.GetAuthorsByIdsAndNamesArgs 
                          { 
                              Ids = new[] { id1, bojackId }, 
                              Names = new[] { {{Consts.GenericAuthor}} } 

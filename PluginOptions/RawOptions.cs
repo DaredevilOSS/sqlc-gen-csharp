@@ -9,7 +9,7 @@ public record RawOptions
     public string OverrideDriverVersion { get; init; } = string.Empty;
 
     [JsonPropertyName("generateCsproj")]
-    public bool GenerateCsproj { get; init; } = true; // generating .csproj files by default
+    public bool GenerateCsproj { get; init; } = true;
 
     [JsonPropertyName("targetFramework")]
     public string TargetFramework { get; init; } = DotnetFramework.Dotnet80.ToName();
@@ -31,6 +31,9 @@ public record RawOptions
 
     [JsonPropertyName("useCentralPackageManagement")]
     public bool UseCentralPackageManagement { get; init; }
+
+    [JsonPropertyName("withAsyncSuffix")]
+    public bool WithAsyncSuffix { get; init; } = true;
 }
 
 public class OverrideOption

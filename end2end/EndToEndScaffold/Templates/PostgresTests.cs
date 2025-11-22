@@ -12,14 +12,14 @@ public static class PostgresTests
                      [Test]
                      [TestCase("E", "It takes a nation of millions to hold us back", "Rebel Without a Pause", "Master of Puppets", "Prophets of Rage")]
                      [TestCase(null, null, null, null, null)]
-                     public async Task TestPostgresStringTypes(
+                     public async Task TestPostgresStringTypesAsync(
                          string cChar, 
                          string cVarchar, 
                          string cCharacterVarying, 
                          string cBpchar,
                          string cText)
                      {
-                         await QuerySql.InsertPostgresStringTypes(new QuerySql.InsertPostgresStringTypesArgs
+                         await QuerySql.InsertPostgresStringTypesAsync(new QuerySql.InsertPostgresStringTypesArgs
                          {
                              CChar = cChar,
                              CVarchar = cVarchar,
@@ -37,7 +37,7 @@ public static class PostgresTests
                              CText = cText,
                          };
                          
-                         var actual = await QuerySql.GetPostgresStringTypes();
+                         var actual = await QuerySql.GetPostgresStringTypesAsync();
                          AssertSingularEquals(expected, actual{{Consts.UnknownRecordValuePlaceholder}});
 
                          void AssertSingularEquals(QuerySql.GetPostgresStringTypesRow x, QuerySql.GetPostgresStringTypesRow y)
@@ -57,13 +57,13 @@ public static class PostgresTests
                      [Test]
                      [TestCase(true, 35, -23423, 4235235263L)]
                      [TestCase(null, null, null, null)]
-                     public async Task TestPostgresIntegerTypes(
+                     public async Task TestPostgresIntegerTypesAsync(
                          bool cBoolean,
                          short cSmallint, 
                          int cInteger,
                          long cBigint)
                      {
-                         await QuerySql.InsertPostgresNumericTypes(new QuerySql.InsertPostgresNumericTypesArgs
+                         await QuerySql.InsertPostgresNumericTypesAsync(new QuerySql.InsertPostgresNumericTypesArgs
                          {
                              CBoolean = cBoolean,
                              CSmallint = cSmallint,
@@ -78,7 +78,7 @@ public static class PostgresTests
                              CInteger = cInteger,
                              CBigint = cBigint
                          };
-                         var actual = await QuerySql.GetPostgresNumericTypes();
+                         var actual = await QuerySql.GetPostgresNumericTypesAsync();
                          AssertSingularEquals(expected, actual{{Consts.UnknownRecordValuePlaceholder}});
                      
                          void AssertSingularEquals(QuerySql.GetPostgresNumericTypesRow x, QuerySql.GetPostgresNumericTypesRow y)
@@ -97,14 +97,14 @@ public static class PostgresTests
                      [Test]
                      [TestCase(3.83f, 4.5534, 998.432, -8403284.321435, 42332.53)]
                      [TestCase(null, null, null, null, null)]
-                     public async Task TestPostgresFloatingPointTypes(
+                     public async Task TestPostgresFloatingPointTypesAsync(
                          float? cReal, 
                          decimal? cNumeric, 
                          decimal? cDecimal, 
                          double? cDoublePrecision,
                          decimal? cMoney)
                      {
-                         await QuerySql.InsertPostgresNumericTypes(new QuerySql.InsertPostgresNumericTypesArgs
+                         await QuerySql.InsertPostgresNumericTypesAsync(new QuerySql.InsertPostgresNumericTypesArgs
                          {
                              CReal = cReal,
                              CNumeric = cNumeric,
@@ -121,7 +121,7 @@ public static class PostgresTests
                              CDoublePrecision = cDoublePrecision,
                              CMoney = cMoney
                          };
-                         var actual = await QuerySql.GetPostgresNumericTypes();
+                         var actual = await QuerySql.GetPostgresNumericTypesAsync();
                          AssertSingularEquals(expected, actual{{Consts.UnknownRecordValuePlaceholder}});
 
                          void AssertSingularEquals(QuerySql.GetPostgresNumericTypesRow x, QuerySql.GetPostgresNumericTypesRow y)
@@ -164,7 +164,7 @@ public static class PostgresTests
 
                      [Test]
                      [TestCaseSource(nameof(PostgresDateTimeTypesTestCases))]
-                     public async Task TestPostgresDateTimeTypes(
+                     public async Task TestPostgresDateTimeTypesAsync(
                          DateTime? cDate,
                          TimeSpan? cTime, 
                          DateTime? cTimestamp,
@@ -172,7 +172,7 @@ public static class PostgresTests
                          TimeSpan? cInterval,
                          Instant? cTimestampNodaInstantOverride)
                      {
-                         await QuerySql.InsertPostgresDateTimeTypes(new QuerySql.InsertPostgresDateTimeTypesArgs
+                         await QuerySql.InsertPostgresDateTimeTypesAsync(new QuerySql.InsertPostgresDateTimeTypesArgs
                          {
                              CDate = cDate,
                              CTime = cTime,
@@ -191,7 +191,7 @@ public static class PostgresTests
                              CInterval = cInterval,
                              CTimestampNodaInstantOverride = cTimestampNodaInstantOverride
                          };
-                         var actual = await QuerySql.GetPostgresDateTimeTypes();
+                         var actual = await QuerySql.GetPostgresDateTimeTypesAsync();
                          AssertSingularEquals(expected, actual{{Consts.UnknownRecordValuePlaceholder}});
 
                          void AssertSingularEquals(QuerySql.GetPostgresDateTimeTypesRow x, QuerySql.GetPostgresDateTimeTypesRow y)
@@ -247,7 +247,7 @@ public static class PostgresTests
 
                      [Test]
                      [TestCaseSource(nameof(PostgresArrayTypesTestCases))]
-                     public async Task TestPostgresArrayTypes(
+                     public async Task TestPostgresArrayTypesAsync(
                          byte[] cBytea,
                          bool[] cBooleanArray,
                          string[] cTextArray,
@@ -256,7 +256,7 @@ public static class PostgresTests
                          DateTime[] cDateArray,
                          DateTime[] cTimestampArray)
                      {
-                         await QuerySql.InsertPostgresArrayTypes(new QuerySql.InsertPostgresArrayTypesArgs
+                         await QuerySql.InsertPostgresArrayTypesAsync(new QuerySql.InsertPostgresArrayTypesArgs
                          {
                              CBytea = cBytea,
                              CBooleanArray = cBooleanArray,
@@ -277,7 +277,7 @@ public static class PostgresTests
                              CDateArray = cDateArray,
                              CTimestampArray = cTimestampArray
                          };
-                         var actual = await QuerySql.GetPostgresArrayTypes();
+                         var actual = await QuerySql.GetPostgresArrayTypesAsync();
                          AssertSingularEquals(expected, actual{{Consts.UnknownRecordValuePlaceholder}});
 
                          void AssertSingularEquals(QuerySql.GetPostgresArrayTypesRow x, QuerySql.GetPostgresArrayTypesRow y)
@@ -299,7 +299,7 @@ public static class PostgresTests
                      [Test]
                      [TestCase(100, "z", "Sex Pistols", "Anarchy in the U.K", "Yoshimi Battles the Pink Robots", "Never Mind the Bollocks...")]
                      [TestCase(10, null, null, null, null, null)]
-                     public async Task TestStringCopyFrom(
+                     public async Task TestStringCopyFromAsync(
                         int batchSize, 
                         string cChar, 
                         string cVarchar, 
@@ -317,7 +317,7 @@ public static class PostgresTests
                                  CText = cText
                              })
                              .ToList();
-                         await QuerySql.InsertPostgresStringTypesBatch(batchArgs);
+                         await QuerySql.InsertPostgresStringTypesBatchAsync(batchArgs);
                          var expected = new QuerySql.GetPostgresStringTypesCntRow
                          {
                              Cnt = batchSize,
@@ -327,7 +327,7 @@ public static class PostgresTests
                              CBpchar = cBpchar,
                              CText = cText
                          };
-                         var actual = await QuerySql.GetPostgresStringTypesCnt();
+                         var actual = await QuerySql.GetPostgresStringTypesCntAsync();
                          AssertSingularEquals(expected, actual{{Consts.UnknownRecordValuePlaceholder}});
 
                          void AssertSingularEquals(QuerySql.GetPostgresStringTypesCntRow x, QuerySql.GetPostgresStringTypesCntRow y)
@@ -348,7 +348,7 @@ public static class PostgresTests
                      [Test]
                      [TestCase(100, true, 3, 453, -1445214231L)]
                      [TestCase(10, null, null, null, null)]
-                     public async Task TestIntegerCopyFrom(
+                     public async Task TestIntegerCopyFromAsync(
                         int batchSize, 
                         bool? cBoolean, 
                         short? cSmallint, 
@@ -364,7 +364,7 @@ public static class PostgresTests
                                  CBigint = cBigint
                              })
                              .ToList();
-                         await QuerySql.InsertPostgresNumericTypesBatch(batchArgs);
+                         await QuerySql.InsertPostgresNumericTypesBatchAsync(batchArgs);
                          var expected = new QuerySql.GetPostgresNumericTypesCntRow
                          {
                              Cnt = batchSize,
@@ -373,7 +373,7 @@ public static class PostgresTests
                              CInteger = cInteger,
                              CBigint = cBigint
                          };
-                         var actual = await QuerySql.GetPostgresNumericTypesCnt();
+                         var actual = await QuerySql.GetPostgresNumericTypesCntAsync();
                          AssertSingularEquals(expected, actual{{Consts.UnknownRecordValuePlaceholder}});
 
                          void AssertSingularEquals(QuerySql.GetPostgresNumericTypesCntRow x, QuerySql.GetPostgresNumericTypesCntRow y)
@@ -393,7 +393,7 @@ public static class PostgresTests
                      [Test]
                      [TestCase(100, 666.6f, 336.3431, -99.999, -1377.996, -43242.43)]
                      [TestCase(10, null, null, null, null, null)]
-                     public async Task TestFloatingPointCopyFrom(
+                     public async Task TestFloatingPointCopyFromAsync(
                         int batchSize, 
                         float? cReal, 
                         decimal? cDecimal, 
@@ -411,7 +411,7 @@ public static class PostgresTests
                                  CMoney = cMoney
                              })
                              .ToList();
-                         await QuerySql.InsertPostgresNumericTypesBatch(batchArgs);
+                         await QuerySql.InsertPostgresNumericTypesBatchAsync(batchArgs);
                          var expected = new QuerySql.GetPostgresNumericTypesCntRow
                          {
                              Cnt = batchSize,
@@ -421,7 +421,7 @@ public static class PostgresTests
                              CDoublePrecision = cDoublePrecision,
                              CMoney = cMoney
                          };
-                         var actual = await QuerySql.GetPostgresNumericTypesCnt();
+                         var actual = await QuerySql.GetPostgresNumericTypesCntAsync();
                          AssertSingularEquals(expected, actual{{Consts.UnknownRecordValuePlaceholder}});
 
                          void AssertSingularEquals(QuerySql.GetPostgresNumericTypesCntRow x, QuerySql.GetPostgresNumericTypesCntRow y)
@@ -442,7 +442,7 @@ public static class PostgresTests
                      [Test]
                      [TestCase(100, "1973-12-3", "00:34:00", "1960-11-3 02:01:22", "2030-07-20 15:44:01+09:00", "02:03:04")]
                      [TestCase(10, null, null, null, null, null)]
-                     public async Task TestDateTimeCopyFrom(
+                     public async Task TestDateTimeCopyFromAsync(
                         int batchSize, 
                         DateTime? cDate, 
                         TimeSpan? cTime, 
@@ -464,7 +464,7 @@ public static class PostgresTests
                                  CInterval = cInterval
                              })
                              .ToList();
-                         await QuerySql.InsertPostgresDateTimeTypesBatch(batchArgs);
+                         await QuerySql.InsertPostgresDateTimeTypesBatchAsync(batchArgs);
                          var expected = new QuerySql.GetPostgresDateTimeTypesCntRow
                          {
                              Cnt = batchSize,
@@ -474,7 +474,7 @@ public static class PostgresTests
                              CTimestampWithTz = cTimestampWithTz,
                              CInterval = cInterval
                          };
-                         var actual = await QuerySql.GetPostgresDateTimeTypesCnt();
+                         var actual = await QuerySql.GetPostgresDateTimeTypesCntAsync();
                          AssertSingularEquals(expected, actual{{Consts.UnknownRecordValuePlaceholder}});
 
                          void AssertSingularEquals(QuerySql.GetPostgresDateTimeTypesCntRow x, QuerySql.GetPostgresDateTimeTypesCntRow y)
@@ -495,7 +495,7 @@ public static class PostgresTests
                      [Test]
                      [TestCase("{\"name\": \"Swordfishtrombones\", \"year\" :1983}", "$.\"name\"")]
                      [TestCase(null, null)]
-                     public async Task TestPostgresJsonDataTypes(
+                     public async Task TestPostgresJsonDataTypesAsync(
                         string cJson,
                         string cJsonpath)
                      {
@@ -503,7 +503,7 @@ public static class PostgresTests
                          if (cJson != null)
                             cParsedJson = JsonDocument.Parse(cJson).RootElement;
 
-                         await QuerySql.InsertPostgresSpecialTypes(new QuerySql.InsertPostgresSpecialTypesArgs
+                         await QuerySql.InsertPostgresSpecialTypesAsync(new QuerySql.InsertPostgresSpecialTypesArgs
                          {
                              CJson = cParsedJson,
                              CJsonb = cParsedJson,
@@ -519,7 +519,7 @@ public static class PostgresTests
                              CJsonpath = cJsonpath
                          };
 
-                         var actual = await QuerySql.GetPostgresSpecialTypes();
+                         var actual = await QuerySql.GetPostgresSpecialTypesAsync();
                          AssertSingularEquals(expected, actual{{Consts.UnknownRecordValuePlaceholder}});
 
                          void AssertSingularEquals(QuerySql.GetPostgresSpecialTypesRow x, QuerySql.GetPostgresSpecialTypesRow y)
@@ -546,7 +546,7 @@ public static class PostgresTests
                      [Test]
                      [TestCase(100, "{\"song\": \"Pinball Wizard\", \"album\": \"Tommy\", \"artist\": \"The Who\"}")]
                      [TestCase(10, null)]
-                     public async Task TestPostgresJsonCopyFrom(int batchSize, string cJson)
+                     public async Task TestPostgresJsonCopyFromAsync(int batchSize, string cJson)
                      {
                          JsonElement? cParsedJson = null;
                          if (cJson != null)
@@ -559,7 +559,7 @@ public static class PostgresTests
                                  CJsonb = cParsedJson
                              })
                              .ToList();
-                         await QuerySql.InsertPostgresSpecialTypesBatch(batchArgs);
+                         await QuerySql.InsertPostgresSpecialTypesBatchAsync(batchArgs);
 
                          var expected = new QuerySql.GetPostgresSpecialTypesCntRow
                          {
@@ -567,7 +567,7 @@ public static class PostgresTests
                              CJson = cParsedJson,
                              CJsonb = cParsedJson
                          };
-                         var actual = await QuerySql.GetPostgresSpecialTypesCnt();
+                         var actual = await QuerySql.GetPostgresSpecialTypesCntAsync();
                          AssertSingularEquals(expected, actual{{Consts.UnknownRecordValuePlaceholder}});
 
                          void AssertSingularEquals(QuerySql.GetPostgresSpecialTypesCntRow x, QuerySql.GetPostgresSpecialTypesCntRow y)
@@ -594,13 +594,13 @@ public static class PostgresTests
                      public void TestPostgresInvalidJson()
                      {
                          Assert.ThrowsAsync<Npgsql.PostgresException>(async () => await 
-                            QuerySql.InsertPostgresSpecialTypes(new QuerySql.InsertPostgresSpecialTypesArgs
+                            QuerySql.InsertPostgresSpecialTypesAsync(new QuerySql.InsertPostgresSpecialTypesArgs
                             {
                                 CJsonStringOverride = "SOME INVALID JSON"
                             }));
                         
                         Assert.ThrowsAsync<Npgsql.PostgresException>(async () => await 
-                            QuerySql.InsertPostgresSpecialTypes(new QuerySql.InsertPostgresSpecialTypesArgs
+                            QuerySql.InsertPostgresSpecialTypesAsync(new QuerySql.InsertPostgresSpecialTypesArgs
                             {
                                 CJsonpath = "SOME INVALID JSONPATH"
                             }));
@@ -632,13 +632,13 @@ public static class PostgresTests
 
                      [Test]
                      [TestCaseSource(nameof(PostgresNetworkDataTypesTestCases))]
-                     public async Task TestPostgresNetworkDataTypes(
+                     public async Task TestPostgresNetworkDataTypesAsync(
                         NpgsqlCidr? cCidr,
                         IPAddress cInet,
                         PhysicalAddress cMacaddr,
                         string cMacaddr8)
                      {
-                         await QuerySql.InsertPostgresNetworkTypes(new QuerySql.InsertPostgresNetworkTypesArgs 
+                         await QuerySql.InsertPostgresNetworkTypesAsync(new QuerySql.InsertPostgresNetworkTypesArgs 
                          { 
                              CCidr = cCidr,
                              CInet = cInet, 
@@ -654,7 +654,7 @@ public static class PostgresTests
                              CMacaddr8 = cMacaddr8
                          };
 
-                         var actual = await QuerySql.GetPostgresNetworkTypes();
+                         var actual = await QuerySql.GetPostgresNetworkTypesAsync();
                          AssertSingularEquals(expected, actual{{Consts.UnknownRecordValuePlaceholder}});
 
                          void AssertSingularEquals(QuerySql.GetPostgresNetworkTypesRow x, QuerySql.GetPostgresNetworkTypesRow y)
@@ -708,7 +708,7 @@ public static class PostgresTests
 
                      [Test]
                      [TestCaseSource(nameof(PostgresArrayCopyFromTestCases))]
-                     public async Task TestArrayCopyFrom(
+                     public async Task TestArrayCopyFromAsync(
                         int batchSize, 
                         byte[] cBytea,
                         bool[] cBooleanArray,
@@ -728,7 +728,7 @@ public static class PostgresTests
                                  CTimestampArray = cTimestampArray
                              })
                              .ToList();
-                         await QuerySql.InsertPostgresArrayTypesBatch(batchArgs);
+                         await QuerySql.InsertPostgresArrayTypesBatchAsync(batchArgs);
                          var expected = new QuerySql.GetPostgresArrayTypesCntRow
                          {
                              Cnt = batchSize,
@@ -740,7 +740,7 @@ public static class PostgresTests
                              CTimestampArray = cTimestampArray
                          };
                          
-                         var actual = await QuerySql.GetPostgresArrayTypesCnt();
+                         var actual = await QuerySql.GetPostgresArrayTypesCntAsync();
                          AssertSingularEquals(expected, actual{{Consts.UnknownRecordValuePlaceholder}});
 
                          void AssertSingularEquals(QuerySql.GetPostgresArrayTypesCntRow x, QuerySql.GetPostgresArrayTypesCntRow y)
@@ -760,11 +760,11 @@ public static class PostgresTests
         {
             Impl = $$"""
                      [Test]
-                     public async Task TestArray()
+                     public async Task TestArrayAsync()
                      {
                          {{Consts.CreateFirstGenericAuthor}}
                          {{Consts.CreateBojackAuthorWithId}}
-                         var actual = await QuerySql.GetAuthorsByIds(new QuerySql.GetAuthorsByIdsArgs 
+                         var actual = await QuerySql.GetAuthorsByIdsAsync(new QuerySql.GetAuthorsByIdsArgs 
                          { 
                              LongArr1 = new[] { id1, bojackId } 
                          });
@@ -776,13 +776,13 @@ public static class PostgresTests
         {
             Impl = $$"""
                      [Test]
-                     public async Task TestMultipleArrays()
+                     public async Task TestMultipleArraysAsync()
                      {
                          {{Consts.CreateFirstGenericAuthor}}
                          {{Consts.CreateSecondGenericAuthor}}
                          {{Consts.CreateBojackAuthorWithId}}
                      
-                         var actual = await QuerySql.GetAuthorsByIdsAndNames(new QuerySql.GetAuthorsByIdsAndNamesArgs 
+                         var actual = await QuerySql.GetAuthorsByIdsAndNamesAsync(new QuerySql.GetAuthorsByIdsAndNamesArgs 
                          { 
                              LongArr1 = new[] { id1, bojackId }, 
                              StringArr2 = new[] { {{Consts.GenericAuthor}} } 
@@ -822,9 +822,9 @@ public static class PostgresTests
 
                      [Test]
                      [TestCaseSource(nameof(PostgresGeoTypesTestCases))]
-                     public async Task TestPostgresGeoTypes(NpgsqlPoint? cPoint, NpgsqlLine? cLine, NpgsqlLSeg? cLSeg, NpgsqlBox? cBox, NpgsqlPath? cPath, NpgsqlPolygon? cPolygon, NpgsqlCircle? cCircle)
+                     public async Task TestPostgresGeoTypesAsync(NpgsqlPoint? cPoint, NpgsqlLine? cLine, NpgsqlLSeg? cLSeg, NpgsqlBox? cBox, NpgsqlPath? cPath, NpgsqlPolygon? cPolygon, NpgsqlCircle? cCircle)
                      {
-                         await QuerySql.InsertPostgresGeoTypes(new QuerySql.InsertPostgresGeoTypesArgs { CPoint = cPoint, CLine = cLine, CLseg = cLSeg, CBox = cBox, CPath = cPath, CPolygon = cPolygon, CCircle = cCircle });
+                         await QuerySql.InsertPostgresGeoTypesAsync(new QuerySql.InsertPostgresGeoTypesArgs { CPoint = cPoint, CLine = cLine, CLseg = cLSeg, CBox = cBox, CPath = cPath, CPolygon = cPolygon, CCircle = cCircle });
                          var expected = new QuerySql.GetPostgresGeoTypesRow
                          {
                              CPoint = cPoint,
@@ -835,7 +835,7 @@ public static class PostgresTests
                              CPolygon = cPolygon,
                              CCircle = cCircle
                          };
-                         var actual = await QuerySql.GetPostgresGeoTypes();
+                         var actual = await QuerySql.GetPostgresGeoTypesAsync();
                          AssertSingularEquals(expected, actual{{Consts.UnknownRecordValuePlaceholder}});
 
                          void AssertSingularEquals(QuerySql.GetPostgresGeoTypesRow x, QuerySql.GetPostgresGeoTypesRow y)
@@ -884,7 +884,7 @@ public static class PostgresTests
 
                      [Test]
                      [TestCaseSource(nameof(PostgresGeoCopyFromTestCases))]
-                     public async Task TestPostgresGeoCopyFrom(
+                     public async Task TestPostgresGeoCopyFromAsync(
                          int batchSize,
                          NpgsqlPoint? cPoint, 
                          NpgsqlLine? cLine, 
@@ -906,7 +906,7 @@ public static class PostgresTests
                                  CCircle = cCircle
                              })
                              .ToList();
-                         await QuerySql.InsertPostgresGeoTypesBatch(batchArgs);
+                         await QuerySql.InsertPostgresGeoTypesBatchAsync(batchArgs);
                          var expected = new QuerySql.GetPostgresGeoTypesRow
                          {
                              CPoint = cPoint,
@@ -917,7 +917,7 @@ public static class PostgresTests
                              CPolygon = cPolygon,
                              CCircle = cCircle
                          };
-                         var actual = await QuerySql.GetPostgresGeoTypes();
+                         var actual = await QuerySql.GetPostgresGeoTypesAsync();
                          AssertSingularEquals(expected, actual{{Consts.UnknownRecordValuePlaceholder}});
 
                          void AssertSingularEquals(QuerySql.GetPostgresGeoTypesRow x, QuerySql.GetPostgresGeoTypesRow y)
@@ -937,16 +937,16 @@ public static class PostgresTests
         {
             Impl = $$"""
                      [Test]
-                     public async Task TestPostgresTransaction()
+                     public async Task TestPostgresTransactionAsync()
                      {
                          var connection = new Npgsql.NpgsqlConnection(Environment.GetEnvironmentVariable(EndToEndCommon.PostgresConnectionStringEnv));
                          await connection.OpenAsync();
                          var transaction = connection.BeginTransaction();
 
                          var querySqlWithTx = QuerySql.WithTransaction(transaction);
-                         await querySqlWithTx.CreateAuthor(new QuerySql.CreateAuthorArgs { Id = {{Consts.BojackId}}, Name = {{Consts.BojackAuthor}}, Bio = {{Consts.BojackTheme}} });
+                         await querySqlWithTx.CreateAuthorAsync(new QuerySql.CreateAuthorArgs { Id = {{Consts.BojackId}}, Name = {{Consts.BojackAuthor}}, Bio = {{Consts.BojackTheme}} });
 
-                         var actual = await QuerySql.GetAuthor(new QuerySql.GetAuthorArgs { Name = {{Consts.BojackAuthor}} });
+                         var actual = await QuerySql.GetAuthorAsync(new QuerySql.GetAuthorArgs { Name = {{Consts.BojackAuthor}} });
                          ClassicAssert.IsNull(actual);
 
                          await transaction.CommitAsync();
@@ -957,7 +957,7 @@ public static class PostgresTests
                              Name = {{Consts.BojackAuthor}},
                              Bio = {{Consts.BojackTheme}}
                          };
-                         actual = await QuerySql.GetAuthor(new QuerySql.GetAuthorArgs { Name = {{Consts.BojackAuthor}} });
+                         actual = await QuerySql.GetAuthorAsync(new QuerySql.GetAuthorArgs { Name = {{Consts.BojackAuthor}} });
                          AssertSingularEquals(expected, actual{{Consts.UnknownRecordValuePlaceholder}});
 
                          void AssertSingularEquals(QuerySql.GetAuthorRow x, QuerySql.GetAuthorRow y)
@@ -973,18 +973,18 @@ public static class PostgresTests
         {
             Impl = $$"""
                      [Test]
-                     public async Task TestPostgresTransactionRollback()
+                     public async Task TestPostgresTransactionRollbackAsync()
                      {
                          var connection = new Npgsql.NpgsqlConnection(Environment.GetEnvironmentVariable(EndToEndCommon.PostgresConnectionStringEnv));
                          await connection.OpenAsync();
                          var transaction = connection.BeginTransaction();
 
                          var sqlQueryWithTx = QuerySql.WithTransaction(transaction);
-                         await sqlQueryWithTx.CreateAuthor(new QuerySql.CreateAuthorArgs { Id = {{Consts.BojackId}}, Name = {{Consts.BojackAuthor}}, Bio = {{Consts.BojackTheme}} });
+                         await sqlQueryWithTx.CreateAuthorAsync(new QuerySql.CreateAuthorArgs { Id = {{Consts.BojackId}}, Name = {{Consts.BojackAuthor}}, Bio = {{Consts.BojackTheme}} });
 
                          await transaction.RollbackAsync();
 
-                         var actual = await QuerySql.GetAuthor(new QuerySql.GetAuthorArgs { Name = {{Consts.BojackAuthor}} });
+                         var actual = await QuerySql.GetAuthorAsync(new QuerySql.GetAuthorArgs { Name = {{Consts.BojackAuthor}} });
                          ClassicAssert.IsNull(actual);
                      }
                      """
@@ -995,20 +995,20 @@ public static class PostgresTests
                      [Test]
                      [TestCase(-54355, "White Light from the Mouth of Infinity", "2022-10-2 15:44:01+09:00")]
                      [TestCase(null, null, "1970-01-01 00:00:00")]
-                     public async Task TestPostgresDataTypesOverride(
+                     public async Task TestPostgresDataTypesOverrideAsync(
                         int? cInteger,
                         string cVarchar,
                         DateTime cTimestamp)
                      {
-                         await QuerySql.InsertPostgresNumericTypes(new QuerySql.InsertPostgresNumericTypesArgs
+                         await QuerySql.InsertPostgresNumericTypesAsync(new QuerySql.InsertPostgresNumericTypesArgs
                          {
                              CInteger = cInteger
                          });
-                         await QuerySql.InsertPostgresDateTimeTypes(new QuerySql.InsertPostgresDateTimeTypesArgs
+                         await QuerySql.InsertPostgresDateTimeTypesAsync(new QuerySql.InsertPostgresDateTimeTypesArgs
                          {
                              CTimestamp = cTimestamp
                          });
-                         await QuerySql.InsertPostgresStringTypes(new QuerySql.InsertPostgresStringTypesArgs
+                         await QuerySql.InsertPostgresStringTypesAsync(new QuerySql.InsertPostgresStringTypesArgs
                          {
                              CVarchar = cVarchar
                          });
@@ -1020,7 +1020,7 @@ public static class PostgresTests
                              MaxTimestamp = cTimestamp
                          };
 
-                         var actual = await QuerySql.GetPostgresFunctions();
+                         var actual = await QuerySql.GetPostgresFunctionsAsync();
                          AssertSingularEquals(expected, actual{{Consts.UnknownRecordValuePlaceholder}});
 
                          void AssertSingularEquals(QuerySql.GetPostgresFunctionsRow x, QuerySql.GetPostgresFunctionsRow y)
@@ -1046,9 +1046,9 @@ public static class PostgresTests
 
                      [Test]
                      [TestCaseSource(nameof(PostgresGuidDataTypesTestCases))]
-                     public async Task TestPostgresGuidDataTypes(Guid? cUuid)
+                     public async Task TestPostgresGuidDataTypesAsync(Guid? cUuid)
                      {
-                         await QuerySql.InsertPostgresSpecialTypes(new QuerySql.InsertPostgresSpecialTypesArgs
+                         await QuerySql.InsertPostgresSpecialTypesAsync(new QuerySql.InsertPostgresSpecialTypesArgs
                          {
                             CUuid = cUuid
                          });
@@ -1057,7 +1057,7 @@ public static class PostgresTests
                          {
                              CUuid = cUuid
                          };
-                         var actual = await QuerySql.GetPostgresSpecialTypes();
+                         var actual = await QuerySql.GetPostgresSpecialTypesAsync();
                          AssertSingularEquals(expected, actual{{Consts.UnknownRecordValuePlaceholder}});
 
                          void AssertSingularEquals(QuerySql.GetPostgresSpecialTypesRow x, QuerySql.GetPostgresSpecialTypesRow y)
@@ -1081,7 +1081,7 @@ public static class PostgresTests
 
                      [Test]
                      [TestCaseSource(nameof(PostgresGuidCopyFromTestCases))]
-                     public async Task TestPostgresGuidCopyFrom(int batchSize, Guid? cUuid)
+                     public async Task TestPostgresGuidCopyFromAsync(int batchSize, Guid? cUuid)
                      {
                          var batchArgs = Enumerable.Range(0, batchSize)
                              .Select(_ => new QuerySql.InsertPostgresSpecialTypesBatchArgs
@@ -1089,14 +1089,14 @@ public static class PostgresTests
                                  CUuid = cUuid
                              })
                              .ToList();
-                         await QuerySql.InsertPostgresSpecialTypesBatch(batchArgs);
+                         await QuerySql.InsertPostgresSpecialTypesBatchAsync(batchArgs);
 
                          var expected = new QuerySql.GetPostgresSpecialTypesCntRow
                          {
                              Cnt = batchSize,
                              CUuid = cUuid
                          };
-                         var actual = await QuerySql.GetPostgresSpecialTypesCnt();
+                         var actual = await QuerySql.GetPostgresSpecialTypesCntAsync();
                          AssertSingularEquals(expected, actual{{Consts.UnknownRecordValuePlaceholder}});
 
                          void AssertSingularEquals(QuerySql.GetPostgresSpecialTypesCntRow x, QuerySql.GetPostgresSpecialTypesCntRow y)
@@ -1113,7 +1113,7 @@ public static class PostgresTests
                      [Test]
                      [TestCase("<root><child>Good morning xml, the world says hello</child></root>")]
                      [TestCase(null)]
-                     public async Task TestPostgresXmlDataTypes(string cXml)
+                     public async Task TestPostgresXmlDataTypesAsync(string cXml)
                      {
                          XmlDocument parsedXml = null;
                          if (cXml != null)
@@ -1122,7 +1122,7 @@ public static class PostgresTests
                              parsedXml.LoadXml(cXml);
                          }
 
-                         await QuerySql.InsertPostgresSpecialTypes(new QuerySql.InsertPostgresSpecialTypesArgs
+                         await QuerySql.InsertPostgresSpecialTypesAsync(new QuerySql.InsertPostgresSpecialTypesArgs
                          {
                             CXml = parsedXml
                          });
@@ -1132,7 +1132,7 @@ public static class PostgresTests
                              CXml = parsedXml
                          };
 
-                         var actual = await QuerySql.GetPostgresSpecialTypes();
+                         var actual = await QuerySql.GetPostgresSpecialTypesAsync();
                          AssertSingularEquals(expected, actual{{Consts.UnknownRecordValuePlaceholder}});
 
                          void AssertSingularEquals(QuerySql.GetPostgresSpecialTypesRow x, QuerySql.GetPostgresSpecialTypesRow y)
@@ -1152,7 +1152,7 @@ public static class PostgresTests
                      public void TestPostgresInvalidXml()
                      {
                          Assert.ThrowsAsync<Npgsql.PostgresException>(async () => await 
-                            QuerySql.InsertPostgresSpecialTypes(new QuerySql.InsertPostgresSpecialTypesArgs
+                            QuerySql.InsertPostgresSpecialTypesAsync(new QuerySql.InsertPostgresSpecialTypesArgs
                             {
                                 CXmlStringOverride = "<root>SOME INVALID XML"
                             }));
@@ -1183,7 +1183,7 @@ public static class PostgresTests
 
                      [Test]
                      [TestCaseSource(nameof(PostgresNetworkCopyFromTestCases))]
-                     public async Task TestPostgresNetworkCopyFrom(
+                     public async Task TestPostgresNetworkCopyFromAsync(
                         int batchSize, 
                         NpgsqlCidr? cCidr,
                         IPAddress cInet,
@@ -1197,7 +1197,7 @@ public static class PostgresTests
                                  CMacaddr = cMacaddr
                              })
                              .ToList();
-                         await QuerySql.InsertPostgresNetworkTypesBatch(batchArgs);
+                         await QuerySql.InsertPostgresNetworkTypesBatchAsync(batchArgs);
 
                          var expected = new QuerySql.GetPostgresNetworkTypesCntRow
                          {
@@ -1206,7 +1206,7 @@ public static class PostgresTests
                              CInet = cInet,
                              CMacaddr = cMacaddr
                          };
-                         var actual = await QuerySql.GetPostgresNetworkTypesCnt();
+                         var actual = await QuerySql.GetPostgresNetworkTypesCntAsync();
                          AssertSingularEquals(expected, actual{{Consts.UnknownRecordValuePlaceholder}});
 
                          void AssertSingularEquals(QuerySql.GetPostgresNetworkTypesCntRow x, QuerySql.GetPostgresNetworkTypesCntRow y)
@@ -1227,9 +1227,9 @@ public static class PostgresTests
                      [TestCase(CEnum.Medium)]
                      [TestCase(CEnum.Big)]
                      [TestCase(null)]
-                     public async Task TestPostgresEnumTypes(CEnum? cEnum)
+                     public async Task TestPostgresEnumTypesAsync(CEnum? cEnum)
                      {
-                         await QuerySql.InsertPostgresSpecialTypes(new QuerySql.InsertPostgresSpecialTypesArgs
+                         await QuerySql.InsertPostgresSpecialTypesAsync(new QuerySql.InsertPostgresSpecialTypesArgs
                          {
                               CEnum = cEnum
                          });
@@ -1238,7 +1238,7 @@ public static class PostgresTests
                          {
                               CEnum = cEnum
                          };
-                         var actual = await QuerySql.GetPostgresSpecialTypes();
+                         var actual = await QuerySql.GetPostgresSpecialTypesAsync();
                          AssertSingularEquals(expected, actual{{Consts.UnknownRecordValuePlaceholder}});
 
                          void AssertSingularEquals(QuerySql.GetPostgresSpecialTypesRow x, QuerySql.GetPostgresSpecialTypesRow y)
@@ -1253,9 +1253,9 @@ public static class PostgresTests
             Impl = $$"""
                      [Test]
                      [TestCase(CEnum.Small)]
-                     public async Task TestPostgresNotNullTypes(CEnum cEnumNotNull)
+                     public async Task TestPostgresNotNullTypesAsync(CEnum cEnumNotNull)
                      {
-                         await QuerySql.InsertPostgresNotNullTypes(new QuerySql.InsertPostgresNotNullTypesArgs
+                         await QuerySql.InsertPostgresNotNullTypesAsync(new QuerySql.InsertPostgresNotNullTypesArgs
                          {
                               CEnumNotNull = cEnumNotNull
                          });
@@ -1264,7 +1264,7 @@ public static class PostgresTests
                          {
                               CEnumNotNull = cEnumNotNull
                          };
-                         var actual = await QuerySql.GetPostgresNotNullTypes();
+                         var actual = await QuerySql.GetPostgresNotNullTypesAsync();
                          AssertSingularEquals(expected, actual{{Consts.UnknownRecordValuePlaceholder}});
 
                          void AssertSingularEquals(QuerySql.GetPostgresNotNullTypesRow x, QuerySql.GetPostgresNotNullTypesRow y)
@@ -1279,14 +1279,14 @@ public static class PostgresTests
             Impl = $$"""
                      [Test]
                      [Obsolete] // due to NpgsqlTsVector.Parse usage
-                     public async Task TestPostgresFullTextSearchDataTypes()
+                     public async Task TestPostgresFullTextSearchDataTypesAsync()
                      {
-                         await QuerySql.InsertPostgresStringTypes(new QuerySql.InsertPostgresStringTypesArgs
+                         await QuerySql.InsertPostgresStringTypesAsync(new QuerySql.InsertPostgresStringTypesArgs
                          {
                             CText = "Hello world"
                          });
 
-                         var actual = await QuerySql.GetPostgresStringTypesTextSearch(
+                         var actual = await QuerySql.GetPostgresStringTypesTextSearchAsync(
                             new QuerySql.GetPostgresStringTypesTextSearchArgs { ToTsquery = "Hello" });
 
                          var expected = new QuerySql.GetPostgresStringTypesTextSearchRow
