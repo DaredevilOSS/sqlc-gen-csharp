@@ -46,7 +46,8 @@ namespace NpgsqlDapperLegacyExampleGen
         private NpgsqlTransaction Transaction { get; }
         private string ConnectionString { get; }
 
-        private const string GetAuthorSql = "SELECT id, name, bio FROM authors WHERE name = @name LIMIT 1";
+        private const string GetAuthorSql = @"SELECT id, name, bio FROM authors
+                                              WHERE name = @name LIMIT 1";
         public class GetAuthorRow
         {
             public long Id { get; set; }
@@ -75,7 +76,11 @@ namespace NpgsqlDapperLegacyExampleGen
             return await this.Transaction.Connection.QueryFirstOrDefaultAsync<GetAuthorRow>(GetAuthorSql, queryParams, transaction: this.Transaction);
         }
 
-        private const string ListAuthorsSql = "SELECT id, name, bio FROM authors ORDER BY name LIMIT @limit OFFSET @offset";
+        private const string ListAuthorsSql = @"SELECT id, name, bio 
+                                                FROM authors
+                                                ORDER BY name
+                                                LIMIT @limit
+                                                OFFSET @offset";
         public class ListAuthorsRow
         {
             public long Id { get; set; }
@@ -165,7 +170,8 @@ namespace NpgsqlDapperLegacyExampleGen
             return await this.Transaction.Connection.QuerySingleAsync<long>(CreateAuthorReturnIdSql, queryParams, transaction: this.Transaction);
         }
 
-        private const string GetAuthorByIdSql = "SELECT id, name, bio FROM authors WHERE id = @id LIMIT 1";
+        private const string GetAuthorByIdSql = @"SELECT id, name, bio FROM authors
+                                                  WHERE id = @id LIMIT 1";
         public class GetAuthorByIdRow
         {
             public long Id { get; set; }
@@ -194,7 +200,8 @@ namespace NpgsqlDapperLegacyExampleGen
             return await this.Transaction.Connection.QueryFirstOrDefaultAsync<GetAuthorByIdRow>(GetAuthorByIdSql, queryParams, transaction: this.Transaction);
         }
 
-        private const string GetAuthorByNamePatternSql = "SELECT id, name, bio FROM authors WHERE name LIKE COALESCE(@name_pattern, '%')";
+        private const string GetAuthorByNamePatternSql = @"SELECT id, name, bio FROM authors
+                                                           WHERE name LIKE COALESCE(@name_pattern, '%')";
         public class GetAuthorByNamePatternRow
         {
             public long Id { get; set; }
@@ -223,7 +230,8 @@ namespace NpgsqlDapperLegacyExampleGen
             return (await this.Transaction.Connection.QueryAsync<GetAuthorByNamePatternRow>(GetAuthorByNamePatternSql, queryParams, transaction: this.Transaction)).AsList();
         }
 
-        private const string DeleteAuthorSql = "DELETE FROM authors WHERE name = @name";
+        private const string DeleteAuthorSql = @"DELETE FROM authors
+                                                 WHERE name = @name";
         public class DeleteAuthorArgs
         {
             public string Name { get; set; }
@@ -259,7 +267,9 @@ namespace NpgsqlDapperLegacyExampleGen
             await this.Transaction.Connection.ExecuteAsync(TruncateAuthorsSql, transaction: this.Transaction);
         }
 
-        private const string UpdateAuthorsSql = "UPDATE authors SET bio = @bio WHERE bio IS NOT NULL";
+        private const string UpdateAuthorsSql = @"UPDATE authors
+                                                  SET bio = @bio
+                                                  WHERE bio IS NOT NULL";
         public class UpdateAuthorsArgs
         {
             public string Bio { get; set; }
@@ -279,7 +289,8 @@ namespace NpgsqlDapperLegacyExampleGen
             return await this.Transaction.Connection.ExecuteAsync(UpdateAuthorsSql, queryParams, transaction: this.Transaction);
         }
 
-        private const string GetAuthorsByIdsSql = "SELECT id, name, bio FROM authors WHERE id = ANY(@longArr_1::BIGINT [])";
+        private const string GetAuthorsByIdsSql = @"SELECT id, name, bio FROM authors
+                                                    WHERE id = ANY(@longArr_1::BIGINT [])";
         public class GetAuthorsByIdsRow
         {
             public long Id { get; set; }
@@ -308,7 +319,9 @@ namespace NpgsqlDapperLegacyExampleGen
             return (await this.Transaction.Connection.QueryAsync<GetAuthorsByIdsRow>(GetAuthorsByIdsSql, queryParams, transaction: this.Transaction)).AsList();
         }
 
-        private const string GetAuthorsByIdsAndNamesSql = "SELECT id, name, bio FROM authors WHERE id = ANY(@longArr_1::BIGINT []) AND name = ANY(@stringArr_2::TEXT [])";
+        private const string GetAuthorsByIdsAndNamesSql = @"SELECT id, name, bio
+                                                            FROM authors
+                                                            WHERE id = ANY(@longArr_1::BIGINT []) AND name = ANY(@stringArr_2::TEXT [])";
         public class GetAuthorsByIdsAndNamesRow
         {
             public long Id { get; set; }
@@ -365,7 +378,12 @@ namespace NpgsqlDapperLegacyExampleGen
             return await this.Transaction.Connection.QuerySingleAsync<Guid>(CreateBookSql, queryParams, transaction: this.Transaction);
         }
 
-        private const string ListAllAuthorsBooksSql = "SELECT authors.id, authors.name, authors.bio, books.id, books.name, books.author_id, books.description FROM authors INNER JOIN books ON authors.id = books.author_id ORDER BY authors.name";
+        private const string ListAllAuthorsBooksSql = @"SELECT
+                                                            authors.id, authors.name, authors.bio,
+                                                            books.id, books.name, books.author_id, books.description
+                                                        FROM authors
+                                                        INNER JOIN books ON authors.id = books.author_id
+                                                        ORDER BY authors.name";
         public class ListAllAuthorsBooksRow
         {
             public Author Author { get; set; }
@@ -406,7 +424,12 @@ namespace NpgsqlDapperLegacyExampleGen
             }
         }
 
-        private const string GetDuplicateAuthorsSql = "SELECT authors1.id, authors1.name, authors1.bio, authors2.id, authors2.name, authors2.bio FROM authors AS authors1 INNER JOIN authors AS authors2 ON authors1.name = authors2.name WHERE authors1.id < authors2.id";
+        private const string GetDuplicateAuthorsSql = @"SELECT
+                                                            authors1.id, authors1.name, authors1.bio,
+                                                            authors2.id, authors2.name, authors2.bio
+                                                        FROM authors AS authors1
+                                                        INNER JOIN authors AS authors2 ON authors1.name = authors2.name
+                                                        WHERE authors1.id < authors2.id";
         public class GetDuplicateAuthorsRow
         {
             public Author Author { get; set; }
@@ -447,7 +470,11 @@ namespace NpgsqlDapperLegacyExampleGen
             }
         }
 
-        private const string GetAuthorsByBookNameSql = "SELECT authors.id, authors.name, authors.bio, books.id, books.name, books.author_id, books.description FROM authors INNER JOIN books ON authors.id = books.author_id WHERE books.name = @name";
+        private const string GetAuthorsByBookNameSql = @"SELECT
+                                                             authors.id, authors.name, authors.bio,
+                                                             books.id, books.name, books.author_id, books.description
+                                                         FROM authors INNER JOIN books ON authors.id = books.author_id
+                                                         WHERE books.name = @name";
         public class GetAuthorsByBookNameRow
         {
             public long Id { get; set; }
@@ -565,7 +592,13 @@ namespace NpgsqlDapperLegacyExampleGen
             await this.Transaction.Connection.ExecuteAsync(TruncateExtendedBiosSql, transaction: this.Transaction);
         }
 
-        private const string GetPostgresFunctionsSql = "SELECT MAX(c_integer) AS max_integer, MAX(c_varchar) AS max_varchar, MAX(c_timestamp) AS max_timestamp FROM postgres_datetime_types CROSS JOIN postgres_numeric_types CROSS JOIN postgres_string_types";
+        private const string GetPostgresFunctionsSql = @"SELECT
+                                                             MAX(c_integer) AS max_integer,
+                                                             MAX(c_varchar) AS max_varchar,
+                                                             MAX(c_timestamp) AS max_timestamp
+                                                         FROM postgres_datetime_types
+                                                         CROSS JOIN postgres_numeric_types
+                                                         CROSS JOIN postgres_string_types";
         public class GetPostgresFunctionsRow
         {
             public int? MaxInteger { get; set; }
@@ -588,7 +621,21 @@ namespace NpgsqlDapperLegacyExampleGen
             return await this.Transaction.Connection.QueryFirstOrDefaultAsync<GetPostgresFunctionsRow>(GetPostgresFunctionsSql, transaction: this.Transaction);
         }
 
-        private const string InsertPostgresNumericTypesSql = " INSERT INTO postgres_numeric_types ( c_boolean, c_bit, c_smallint, c_integer, c_bigint, c_decimal, c_numeric, c_real, c_double_precision, c_money ) VALUES (@c_boolean, @c_bit, @c_smallint, @c_integer, @c_bigint, @c_decimal, @c_numeric, @c_real, @c_double_precision, @c_money)";
+        private const string InsertPostgresNumericTypesSql = @"
+                                                               INSERT INTO postgres_numeric_types
+                                                               (
+                                                                   c_boolean,
+                                                                   c_bit,
+                                                                   c_smallint,
+                                                                   c_integer,
+                                                                   c_bigint,
+                                                                   c_decimal,
+                                                                   c_numeric,
+                                                                   c_real,
+                                                                   c_double_precision,
+                                                                   c_money
+                                                               )
+                                                               VALUES (@c_boolean, @c_bit, @c_smallint, @c_integer, @c_bigint, @c_decimal, @c_numeric, @c_real, @c_double_precision, @c_money)";
         public class InsertPostgresNumericTypesArgs
         {
             public bool? CBoolean { get; set; }
@@ -672,7 +719,31 @@ namespace NpgsqlDapperLegacyExampleGen
             await this.Transaction.Connection.ExecuteAsync(TruncatePostgresNumericTypesSql, transaction: this.Transaction);
         }
 
-        private const string GetPostgresNumericTypesCntSql = "SELECT c_boolean, c_bit, c_smallint, c_integer, c_bigint, c_decimal, c_numeric, c_real, c_double_precision, c_money, COUNT(*) AS cnt FROM postgres_numeric_types GROUP BY c_boolean, c_bit, c_smallint, c_integer, c_bigint, c_decimal, c_numeric, c_real, c_double_precision, c_money LIMIT 1";
+        private const string GetPostgresNumericTypesCntSql = @"SELECT
+                                                                   c_boolean,
+                                                                   c_bit,
+                                                                   c_smallint,
+                                                                   c_integer,
+                                                                   c_bigint,
+                                                                   c_decimal,
+                                                                   c_numeric,
+                                                                   c_real,
+                                                                   c_double_precision,
+                                                                   c_money,
+                                                                   COUNT(*) AS cnt
+                                                               FROM postgres_numeric_types
+                                                               GROUP BY
+                                                                   c_boolean,
+                                                                   c_bit,
+                                                                   c_smallint,
+                                                                   c_integer,
+                                                                   c_bigint,
+                                                                   c_decimal,
+                                                                   c_numeric,
+                                                                   c_real,
+                                                                   c_double_precision,
+                                                                   c_money
+                                                               LIMIT 1";
         public class GetPostgresNumericTypesCntRow
         {
             public bool? CBoolean { get; set; }
@@ -746,7 +817,16 @@ namespace NpgsqlDapperLegacyExampleGen
             }
         }
 
-        private const string InsertPostgresStringTypesSql = " INSERT INTO postgres_string_types ( c_char, c_varchar, c_character_varying, c_bpchar, c_text ) VALUES (@c_char, @c_varchar, @c_character_varying, @c_bpchar, @c_text)";
+        private const string InsertPostgresStringTypesSql = @"
+                                                              INSERT INTO postgres_string_types
+                                                              (
+                                                                  c_char,
+                                                                  c_varchar,
+                                                                  c_character_varying,
+                                                                  c_bpchar,
+                                                                  c_text
+                                                              )
+                                                              VALUES (@c_char, @c_varchar, @c_character_varying, @c_bpchar, @c_text)";
         public class InsertPostgresStringTypesArgs
         {
             public string CChar { get; set; }
@@ -848,7 +928,21 @@ namespace NpgsqlDapperLegacyExampleGen
             await this.Transaction.Connection.ExecuteAsync(TruncatePostgresStringTypesSql, transaction: this.Transaction);
         }
 
-        private const string GetPostgresStringTypesCntSql = "SELECT c_char, c_varchar, c_character_varying, c_bpchar, c_text, COUNT(*) AS cnt FROM postgres_string_types GROUP BY c_char, c_varchar, c_character_varying, c_bpchar, c_text LIMIT 1";
+        private const string GetPostgresStringTypesCntSql = @"SELECT
+                                                                  c_char,
+                                                                  c_varchar,
+                                                                  c_character_varying,
+                                                                  c_bpchar,
+                                                                  c_text,
+                                                                  COUNT(*) AS cnt
+                                                              FROM postgres_string_types
+                                                              GROUP BY
+                                                                  c_char,
+                                                                  c_varchar,
+                                                                  c_character_varying,
+                                                                  c_bpchar,
+                                                                  c_text
+                                                              LIMIT 1";
         public class GetPostgresStringTypesCntRow
         {
             public string CChar { get; set; }
@@ -874,7 +968,19 @@ namespace NpgsqlDapperLegacyExampleGen
             return await this.Transaction.Connection.QueryFirstOrDefaultAsync<GetPostgresStringTypesCntRow>(GetPostgresStringTypesCntSql, transaction: this.Transaction);
         }
 
-        private const string GetPostgresStringTypesTextSearchSql = "WITH txt_query AS ( SELECT c_text, to_tsquery('english', @to_tsquery) AS query, to_tsvector('english', c_text) AS tsv FROM postgres_string_types WHERE c_text @@ to_tsquery('english', @to_tsquery) ) SELECT txt_query.c_text, txt_query.query, txt_query.tsv, ts_rank(tsv, query) AS rnk FROM txt_query ORDER BY rnk DESC LIMIT 1";
+        private const string GetPostgresStringTypesTextSearchSql = @"WITH txt_query AS (
+                                                                         SELECT 
+                                                                             c_text, 
+                                                                             to_tsquery('english', @to_tsquery) AS query,
+                                                                             to_tsvector('english', c_text) AS tsv
+                                                                         FROM postgres_string_types 
+                                                                         WHERE c_text @@ to_tsquery('english', @to_tsquery)
+                                                                     )
+                                                                     
+                                                                     SELECT txt_query.c_text, txt_query.query, txt_query.tsv, ts_rank(tsv, query) AS rnk
+                                                                     FROM txt_query
+                                                                     ORDER BY rnk DESC
+                                                                     LIMIT 1";
         public class GetPostgresStringTypesTextSearchRow
         {
             public string CText { get; set; }
@@ -904,7 +1010,16 @@ namespace NpgsqlDapperLegacyExampleGen
             return await this.Transaction.Connection.QueryFirstOrDefaultAsync<GetPostgresStringTypesTextSearchRow>(GetPostgresStringTypesTextSearchSql, queryParams, transaction: this.Transaction);
         }
 
-        private const string InsertPostgresDateTimeTypesSql = " INSERT INTO postgres_datetime_types ( c_date, c_time, c_timestamp, c_timestamp_with_tz, c_interval, c_timestamp_noda_instant_override ) VALUES (@c_date, @c_time, @c_timestamp, @c_timestamp_with_tz, @c_interval, @c_timestamp_noda_instant_override)";
+        private const string InsertPostgresDateTimeTypesSql = @"
+                                                                INSERT INTO postgres_datetime_types
+                                                                (
+                                                                    c_date,
+                                                                    c_time,
+                                                                    c_timestamp,
+                                                                    c_timestamp_with_tz,
+                                                                    c_interval,
+                                                                    c_timestamp_noda_instant_override
+                                                                ) VALUES (@c_date, @c_time, @c_timestamp, @c_timestamp_with_tz, @c_interval, @c_timestamp_noda_instant_override)";
         public class InsertPostgresDateTimeTypesArgs
         {
             public DateTime? CDate { get; set; }
@@ -976,7 +1091,21 @@ namespace NpgsqlDapperLegacyExampleGen
             await this.Transaction.Connection.ExecuteAsync(TruncatePostgresDateTimeTypesSql, transaction: this.Transaction);
         }
 
-        private const string GetPostgresDateTimeTypesCntSql = "SELECT c_date, c_time, c_timestamp, c_timestamp_with_tz, c_interval, COUNT(*) AS cnt FROM postgres_datetime_types GROUP BY c_date, c_time, c_timestamp, c_timestamp_with_tz, c_interval LIMIT 1";
+        private const string GetPostgresDateTimeTypesCntSql = @"SELECT
+                                                                    c_date,
+                                                                    c_time,
+                                                                    c_timestamp,
+                                                                    c_timestamp_with_tz,
+                                                                    c_interval,
+                                                                    COUNT(*) AS cnt
+                                                                FROM postgres_datetime_types
+                                                                GROUP BY
+                                                                    c_date,
+                                                                    c_time,
+                                                                    c_timestamp,
+                                                                    c_timestamp_with_tz,
+                                                                    c_interval
+                                                                LIMIT 1";
         public class GetPostgresDateTimeTypesCntRow
         {
             public DateTime? CDate { get; set; }
@@ -1035,7 +1164,19 @@ namespace NpgsqlDapperLegacyExampleGen
             }
         }
 
-        private const string InsertPostgresNetworkTypesSql = " INSERT INTO postgres_network_types ( c_cidr, c_inet, c_macaddr, c_macaddr8 ) VALUES ( @c_cidr, @c_inet, @c_macaddr, @c_macaddr8::macaddr8 )";
+        private const string InsertPostgresNetworkTypesSql = @"
+                                                               INSERT INTO postgres_network_types
+                                                               (
+                                                                   c_cidr,
+                                                                   c_inet,
+                                                                   c_macaddr,
+                                                                   c_macaddr8
+                                                               ) VALUES (
+                                                                   @c_cidr, 
+                                                                   @c_inet, 
+                                                                   @c_macaddr, 
+                                                                   @c_macaddr8::macaddr8
+                                                               )";
         public class InsertPostgresNetworkTypesArgs
         {
             public NpgsqlCidr? CCidr { get; set; }
@@ -1062,7 +1203,13 @@ namespace NpgsqlDapperLegacyExampleGen
             await this.Transaction.Connection.ExecuteAsync(InsertPostgresNetworkTypesSql, queryParams, transaction: this.Transaction);
         }
 
-        private const string GetPostgresNetworkTypesSql = "SELECT c_cidr, c_inet, c_macaddr, c_macaddr8::TEXT AS c_macaddr8 FROM postgres_network_types LIMIT 1";
+        private const string GetPostgresNetworkTypesSql = @"SELECT
+                                                                c_cidr,
+                                                                c_inet,
+                                                                c_macaddr,
+                                                                c_macaddr8::TEXT AS c_macaddr8
+                                                            FROM postgres_network_types
+                                                            LIMIT 1";
         public class GetPostgresNetworkTypesRow
         {
             public NpgsqlCidr? CCidr { get; set; }
@@ -1101,7 +1248,17 @@ namespace NpgsqlDapperLegacyExampleGen
             await this.Transaction.Connection.ExecuteAsync(TruncatePostgresNetworkTypesSql, transaction: this.Transaction);
         }
 
-        private const string GetPostgresNetworkTypesCntSql = "SELECT c_cidr, c_inet, c_macaddr, COUNT(*) AS cnt FROM postgres_network_types GROUP BY c_cidr, c_inet, c_macaddr LIMIT 1";
+        private const string GetPostgresNetworkTypesCntSql = @"SELECT
+                                                                   c_cidr,
+                                                                   c_inet,
+                                                                   c_macaddr,
+                                                                   COUNT(*) AS cnt
+                                                               FROM postgres_network_types
+                                                               GROUP BY
+                                                                   c_cidr,
+                                                                   c_inet,
+                                                                   c_macaddr
+                                                               LIMIT 1";
         public class GetPostgresNetworkTypesCntRow
         {
             public NpgsqlCidr? CCidr { get; set; }
@@ -1154,7 +1311,28 @@ namespace NpgsqlDapperLegacyExampleGen
             }
         }
 
-        private const string InsertPostgresSpecialTypesSql = " INSERT INTO postgres_special_types ( c_json, c_json_string_override, c_jsonb, c_jsonpath, c_xml, c_xml_string_override, c_uuid, c_enum ) VALUES ( @c_json, @c_json_string_override::json, @c_jsonb, @c_jsonpath::jsonpath, @c_xml::xml, @c_xml_string_override::xml, @c_uuid, @c_enum::c_enum )";
+        private const string InsertPostgresSpecialTypesSql = @"
+                                                               INSERT INTO postgres_special_types
+                                                               (
+                                                                   c_json,
+                                                                   c_json_string_override,
+                                                                   c_jsonb,
+                                                                   c_jsonpath,
+                                                                   c_xml,
+                                                                   c_xml_string_override,
+                                                                   c_uuid,
+                                                                   c_enum
+                                                               )
+                                                               VALUES (
+                                                                   @c_json, 
+                                                                   @c_json_string_override::json, 
+                                                                   @c_jsonb,
+                                                                   @c_jsonpath::jsonpath,
+                                                                   @c_xml::xml,
+                                                                   @c_xml_string_override::xml,
+                                                                   @c_uuid,
+                                                                   @c_enum::c_enum
+                                                               )";
         public class InsertPostgresSpecialTypesArgs
         {
             public JsonElement? CJson { get; set; }
@@ -1189,7 +1367,13 @@ namespace NpgsqlDapperLegacyExampleGen
             await this.Transaction.Connection.ExecuteAsync(InsertPostgresSpecialTypesSql, queryParams, transaction: this.Transaction);
         }
 
-        private const string InsertPostgresNotNullTypesSql = "INSERT INTO postgres_not_null_types ( c_enum_not_null ) VALUES ( @c_enum_not_null::c_enum )";
+        private const string InsertPostgresNotNullTypesSql = @"INSERT INTO postgres_not_null_types
+                                                               (
+                                                                   c_enum_not_null
+                                                               )
+                                                               VALUES (
+                                                                   @c_enum_not_null::c_enum
+                                                               )";
         public class InsertPostgresNotNullTypesArgs
         {
             public CEnum CEnumNotNull { get; set; }
@@ -1210,7 +1394,10 @@ namespace NpgsqlDapperLegacyExampleGen
             await this.Transaction.Connection.ExecuteAsync(InsertPostgresNotNullTypesSql, queryParams, transaction: this.Transaction);
         }
 
-        private const string GetPostgresNotNullTypesSql = "SELECT c_enum_not_null FROM postgres_not_null_types LIMIT 1";
+        private const string GetPostgresNotNullTypesSql = @"SELECT
+                                                                c_enum_not_null
+                                                            FROM postgres_not_null_types 
+                                                            LIMIT 1";
         public class GetPostgresNotNullTypesRow
         {
             public CEnum CEnumNotNull { get; set; }
@@ -1246,7 +1433,17 @@ namespace NpgsqlDapperLegacyExampleGen
             await this.Transaction.Connection.ExecuteAsync(TruncatePostgresNotNullTypesSql, transaction: this.Transaction);
         }
 
-        private const string GetPostgresSpecialTypesSql = "SELECT c_json, c_json_string_override, c_jsonb, c_jsonpath, c_xml, c_xml_string_override, c_uuid, c_enum FROM postgres_special_types LIMIT 1";
+        private const string GetPostgresSpecialTypesSql = @"SELECT
+                                                                c_json,
+                                                                c_json_string_override,
+                                                                c_jsonb,
+                                                                c_jsonpath,
+                                                                c_xml,
+                                                                c_xml_string_override,
+                                                                c_uuid,
+                                                                c_enum
+                                                            FROM postgres_special_types 
+                                                            LIMIT 1";
         public class GetPostgresSpecialTypesRow
         {
             public JsonElement? CJson { get; set; }
@@ -1318,7 +1515,26 @@ namespace NpgsqlDapperLegacyExampleGen
             }
         }
 
-        private const string GetPostgresSpecialTypesCntSql = "WITH grouped_json_types AS ( SELECT c_uuid, c_json::text AS c_json, c_jsonb::text AS c_jsonb, COUNT(*) AS cnt FROM postgres_special_types GROUP BY c_uuid, c_json::text, c_jsonb::text ) SELECT c_uuid, c_json::json AS c_json, c_jsonb::jsonb AS c_jsonb, cnt FROM grouped_json_types LIMIT 1";
+        private const string GetPostgresSpecialTypesCntSql = @"WITH grouped_json_types AS (
+                                                                   SELECT
+                                                                       c_uuid,
+                                                                       c_json::text AS c_json,
+                                                                       c_jsonb::text AS c_jsonb,
+                                                                       COUNT(*) AS cnt
+                                                                   FROM postgres_special_types
+                                                                   GROUP BY
+                                                                       c_uuid,
+                                                                       c_json::text,
+                                                                       c_jsonb::text
+                                                               )
+                                                               
+                                                               SELECT 
+                                                                   c_uuid, 
+                                                                   c_json::json AS c_json, 
+                                                                   c_jsonb::jsonb AS c_jsonb, 
+                                                                   cnt
+                                                               FROM grouped_json_types
+                                                               LIMIT 1";
         public class GetPostgresSpecialTypesCntRow
         {
             public Guid? CUuid { get; set; }
@@ -1342,7 +1558,18 @@ namespace NpgsqlDapperLegacyExampleGen
             return await this.Transaction.Connection.QueryFirstOrDefaultAsync<GetPostgresSpecialTypesCntRow>(GetPostgresSpecialTypesCntSql, transaction: this.Transaction);
         }
 
-        private const string InsertPostgresArrayTypesSql = " INSERT INTO postgres_array_types ( c_bytea, c_boolean_array, c_text_array, c_integer_array, c_decimal_array, c_date_array, c_timestamp_array ) VALUES (@c_bytea, @c_boolean_array, @c_text_array, @c_integer_array, @c_decimal_array, @c_date_array, @c_timestamp_array)";
+        private const string InsertPostgresArrayTypesSql = @"
+                                                             INSERT INTO postgres_array_types
+                                                             (
+                                                                 c_bytea,
+                                                                 c_boolean_array,
+                                                                 c_text_array,
+                                                                 c_integer_array,
+                                                                 c_decimal_array,
+                                                                 c_date_array,
+                                                                 c_timestamp_array
+                                                             )
+                                                             VALUES (@c_bytea, @c_boolean_array, @c_text_array, @c_integer_array, @c_decimal_array, @c_date_array, @c_timestamp_array)";
         public class InsertPostgresArrayTypesArgs
         {
             public byte[] CBytea { get; set; }
@@ -1437,7 +1664,23 @@ namespace NpgsqlDapperLegacyExampleGen
             }
         }
 
-        private const string GetPostgresArrayTypesCntSql = "SELECT c_bytea, c_boolean_array, c_text_array, c_integer_array, c_decimal_array, c_timestamp_array, COUNT(*) AS cnt FROM postgres_array_types GROUP BY c_bytea, c_boolean_array, c_text_array, c_integer_array, c_decimal_array, c_timestamp_array LIMIT 1";
+        private const string GetPostgresArrayTypesCntSql = @"SELECT
+                                                                 c_bytea,
+                                                                 c_boolean_array,
+                                                                 c_text_array,
+                                                                 c_integer_array,
+                                                                 c_decimal_array,
+                                                                 c_timestamp_array,
+                                                                 COUNT(*) AS cnt
+                                                             FROM postgres_array_types
+                                                             GROUP BY
+                                                                 c_bytea,
+                                                                 c_boolean_array,
+                                                                 c_text_array,
+                                                                 c_integer_array,
+                                                                 c_decimal_array,
+                                                                 c_timestamp_array
+                                                             LIMIT 1";
         public class GetPostgresArrayTypesCntRow
         {
             public byte[] CBytea { get; set; }
@@ -1479,7 +1722,17 @@ namespace NpgsqlDapperLegacyExampleGen
             await this.Transaction.Connection.ExecuteAsync(TruncatePostgresArrayTypesSql, transaction: this.Transaction);
         }
 
-        private const string InsertPostgresGeoTypesSql = " INSERT INTO postgres_geometric_types ( c_point, c_line, c_lseg, c_box, c_path, c_polygon, c_circle ) VALUES (@c_point, @c_line, @c_lseg, @c_box, @c_path, @c_polygon, @c_circle)";
+        private const string InsertPostgresGeoTypesSql = @"
+                                                           INSERT INTO postgres_geometric_types (
+                                                               c_point, 
+                                                               c_line, 
+                                                               c_lseg, 
+                                                               c_box, 
+                                                               c_path, 
+                                                               c_polygon, 
+                                                               c_circle
+                                                           )
+                                                           VALUES (@c_point, @c_line, @c_lseg, @c_box, @c_path, @c_polygon, @c_circle)";
         public class InsertPostgresGeoTypesArgs
         {
             public NpgsqlPoint? CPoint { get; set; }

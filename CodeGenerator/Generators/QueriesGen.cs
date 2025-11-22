@@ -137,11 +137,31 @@ internal partial class QueriesGen(DbDriver dbDriver, string namespaceName)
         if (transformedQueryText == string.Empty)
             return null;
 
+        var memberName = ClassMember.Sql.Name(query.Name);
+        if (transformedQueryText.IndexOfAny(['\r', '\n']) >= 0)
+        {
+            var queryText = transformedQueryText.Replace("\"", "\"\"");
+            var lines = queryText.TrimEnd().Split(["\r\n", "\r", "\n"], StringSplitOptions.None);
+
+            // The indentation of the constant declaration itself. for legacy generation it 8 indents and for modern it 4.
+            string memberIndentPrefix = dbDriver.Options.DotnetFramework.IsDotnetLegacy() ? "        " : "    ";
+            var declaration = $"private const string {memberName} = @\"";
+
+            // We need to calculate the indentation for subsequent lines so they align with the first.
+            // This is based on the member indent, the declaration length, and any leading space on the first SQL line.
+            var firstLineLeadingSpaceCount = lines[0].TakeWhile(char.IsWhiteSpace).Count();
+            var subsequentLineIndent = new string(' ', memberIndentPrefix.Length + declaration.Length + firstLineLeadingSpaceCount);
+
+            var indentedLines = lines.Skip(1).Select(line => subsequentLineIndent + line);
+            var fullQueryString = string.Join(Environment.NewLine, [lines[0], .. indentedLines]);
+
+            return ParseMemberDeclaration(
+                $"{memberIndentPrefix}{declaration}{fullQueryString}\";")!;
+        }
+
         var singleLineQueryText = LongWhitespaceRegex().Replace(transformedQueryText, " ");
         return ParseMemberDeclaration(
-                $"""
-                 private const string {ClassMember.Sql.Name(query.Name)} = "{singleLineQueryText}";
-                 """)!
+                $"""private const string {memberName} = "{singleLineQueryText}";""")!
             .AppendNewLine();
     }
 
