@@ -1,5 +1,35 @@
 # Examples
 <details>
+<summary>QuickStartPostgresDalGen</summary>
+
+## Engine `postgresql`: [QuickStartPostgresDalGen](examples/QuickStartPostgresDalGen)
+### [Schema](examples/config/postgresql/authors/schema.sql) | [Queries](examples/config/postgresql/authors/query.sql) | [End2End Test](end2end/EndToEndTests/QuickStartPostgresDalGen.cs)
+### Config
+```yaml
+```
+
+</details>
+<details>
+<summary>QuickStartMySqlDalGen</summary>
+
+## Engine `mysql`: [QuickStartMySqlDalGen](examples/QuickStartMySqlDalGen)
+### [Schema](examples/config/mysql/authors/schema.sql) | [Queries](examples/config/mysql/authors/query.sql) | [End2End Test](end2end/EndToEndTests/QuickStartMySqlDalGen.cs)
+### Config
+```yaml
+```
+
+</details>
+<details>
+<summary>QuickStartSqliteDalGen</summary>
+
+## Engine `sqlite`: [QuickStartSqliteDalGen](examples/QuickStartSqliteDalGen)
+### [Schema](examples/config/sqlite/authors/schema.sql) | [Queries](examples/config/sqlite/authors/query.sql) | [End2End Test](end2end/EndToEndTests/QuickStartSqliteDalGen.cs)
+### Config
+```yaml
+```
+
+</details>
+<details>
 <summary>Npgsql</summary>
 
 ## Engine `postgresql`: [NpgsqlExample](examples/NpgsqlExample)
@@ -42,6 +72,10 @@ overrides:
 - column: "*:c_macaddr8"
   csharp_type:
     type: "string"
+    notNull: false
+- column: "*:c_timestamp_noda_instant_override"
+  csharp_type:
+    type: "Instant"
     notNull: false
 ```
 
@@ -90,6 +124,10 @@ overrides:
   csharp_type:
     type: "string"
     notNull: false
+- column: "*:c_timestamp_noda_instant_override"
+  csharp_type:
+    type: "Instant"
+    notNull: false
 ```
 
 </details>
@@ -136,6 +174,10 @@ overrides:
 - column: "*:c_macaddr8"
   csharp_type:
     type: "string"
+    notNull: false
+- column: "*:c_timestamp_noda_instant_override"
+  csharp_type:
+    type: "Instant"
     notNull: false
 ```
 
@@ -184,6 +226,10 @@ overrides:
   csharp_type:
     type: "string"
     notNull: false
+- column: "*:c_timestamp_noda_instant_override"
+  csharp_type:
+    type: "Instant"
+    notNull: false
 ```
 
 </details>
@@ -214,6 +260,10 @@ overrides:
 - column: "*:c_json_string_override"
   csharp_type:
     type: "string"
+    notNull: false
+- column: "*:c_timestamp_noda_instant_override"
+  csharp_type:
+    type: "Instant"
     notNull: false
 ```
 
@@ -246,6 +296,10 @@ overrides:
   csharp_type:
     type: "string"
     notNull: false
+- column: "*:c_timestamp_noda_instant_override"
+  csharp_type:
+    type: "Instant"
+    notNull: false
 ```
 
 </details>
@@ -277,6 +331,10 @@ overrides:
   csharp_type:
     type: "string"
     notNull: false
+- column: "*:c_timestamp_noda_instant_override"
+  csharp_type:
+    type: "Instant"
+    notNull: false
 ```
 
 </details>
@@ -307,6 +365,10 @@ overrides:
 - column: "*:c_json_string_override"
   csharp_type:
     type: "string"
+    notNull: false
+- column: "*:c_timestamp_noda_instant_override"
+  csharp_type:
+    type: "Instant"
     notNull: false
 ```
 
@@ -344,6 +406,12 @@ overrides:
 - column: "*:c_integer_bool_override"
   csharp_type:
     type: "bool"
+- column: "*:c_text_noda_instant_override"
+  csharp_type:
+    type: "Instant"
+- column: "*:c_integer_noda_instant_override"
+  csharp_type:
+    type: "Instant"
 ```
 
 </details>
@@ -380,6 +448,12 @@ overrides:
 - column: "*:c_integer_bool_override"
   csharp_type:
     type: "bool"
+- column: "*:c_text_noda_instant_override"
+  csharp_type:
+    type: "Instant"
+- column: "*:c_integer_noda_instant_override"
+  csharp_type:
+    type: "Instant"
 ```
 
 </details>
@@ -416,6 +490,12 @@ overrides:
 - column: "*:c_integer_bool_override"
   csharp_type:
     type: "bool"
+- column: "*:c_text_noda_instant_override"
+  csharp_type:
+    type: "Instant"
+- column: "*:c_integer_noda_instant_override"
+  csharp_type:
+    type: "Instant"
 ```
 
 </details>
@@ -452,6 +532,12 @@ overrides:
 - column: "*:c_integer_bool_override"
   csharp_type:
     type: "bool"
+- column: "*:c_text_noda_instant_override"
+  csharp_type:
+    type: "Instant"
+- column: "*:c_integer_noda_instant_override"
+  csharp_type:
+    type: "Instant"
 ```
 
 </details>
