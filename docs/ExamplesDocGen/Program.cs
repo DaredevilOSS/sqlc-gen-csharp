@@ -36,13 +36,6 @@ public static class ExamplesDocGen
         if (testClassName.Contains("Legacy"))
             testClassName = testClassName.Replace("Legacy", "");
 
-        var yamlStream = new YamlStream();
-        var yamlDocument = new YamlDocument(codegenObj["options"]);
-        yamlStream.Documents.Add(yamlDocument);
-        using var optionsWriter = new StringWriter();
-        yamlStream.Save(optionsWriter, false);
-        var optionsStr = optionsWriter.ToString().Trim().TrimEnd('.');
-
         return $"""
                 <details>
                 <summary>{projectName.Replace("Example", "")}</summary>
@@ -51,9 +44,21 @@ public static class ExamplesDocGen
                 ### [Schema]({item["schema"][0]}) | [Queries]({item["queries"][0]}) | [End2End Test](end2end/{testProject}/{testClassName}.cs)
                 ### Config
                 ```yaml
-                {optionsStr}```
+                {StringifyOptions(codegenObj)}```
                 
                 </details>
                 """;
+    }
+
+    private static string StringifyOptions(YamlMappingNode codegenObj)
+    {
+        if (!codegenObj.Children.ContainsKey(new YamlScalarNode("options")))
+            return string.Empty;
+
+        var yamlStream = new YamlStream();
+        yamlStream.Documents.Add(new YamlDocument(codegenObj["options"]));
+        using var writer = new StringWriter();
+        yamlStream.Save(writer, false);
+        return writer.ToString().Trim().TrimEnd('.');
     }
 }
