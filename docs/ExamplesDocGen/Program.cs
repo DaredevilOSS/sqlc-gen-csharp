@@ -36,18 +36,27 @@ public static class ExamplesDocGen
         if (testClassName.Contains("Legacy"))
             testClassName = testClassName.Replace("Legacy", "");
 
+        var optionsStr = StringifyOptions(codegenObj);
+
         return $"""
                 <details>
                 <summary>{projectName.Replace("Example", "")}</summary>
                 
                 ## Engine `{item["engine"]}`: [{projectName}]({outputDirectory})
-                ### [Schema]({item["schema"][0]}) | [Queries]({item["queries"][0]}) | [End2End Test](end2end/{testProject}/{testClassName}.cs)
+                ### [Schema]({GetYamlFirstValue(item["schema"])}) | [Queries]({GetYamlFirstValue(item["queries"])}) | [End2End Test](end2end/{testProject}/{testClassName}.cs)
                 ### Config
                 ```yaml
-                {StringifyOptions(codegenObj)}```
+                {optionsStr}```
                 
                 </details>
                 """;
+    }
+
+    private static string GetYamlFirstValue(YamlNode node)
+    {
+        return node is YamlSequenceNode sequence
+            ? sequence[0].ToString()
+            : node.ToString();
     }
 
     private static string StringifyOptions(YamlMappingNode codegenObj)
