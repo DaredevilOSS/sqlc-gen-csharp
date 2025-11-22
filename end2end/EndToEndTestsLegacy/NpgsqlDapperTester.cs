@@ -13,14 +13,14 @@ namespace EndToEndTests
         [TearDown]
         public async Task EmptyTestsTable()
         {
-            await QuerySql.TruncateAuthors();
-            await QuerySql.TruncatePostgresNumericTypes();
-            await QuerySql.TruncatePostgresStringTypes();
-            await QuerySql.TruncatePostgresDateTimeTypes();
-            await QuerySql.TruncatePostgresGeoTypes();
-            await QuerySql.TruncatePostgresNetworkTypes();
-            await QuerySql.TruncatePostgresArrayTypes();
-            await QuerySql.TruncatePostgresSpecialTypes();
+            await QuerySql.TruncateAuthorsAsync();
+            await QuerySql.TruncatePostgresNumericTypesAsync();
+            await QuerySql.TruncatePostgresStringTypesAsync();
+            await QuerySql.TruncatePostgresDateTimeTypesAsync();
+            await QuerySql.TruncatePostgresGeoTypesAsync();
+            await QuerySql.TruncatePostgresNetworkTypesAsync();
+            await QuerySql.TruncatePostgresArrayTypesAsync();
+            await QuerySql.TruncatePostgresSpecialTypesAsync();
         }
     }
 }

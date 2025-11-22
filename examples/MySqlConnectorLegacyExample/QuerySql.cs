@@ -55,7 +55,7 @@ namespace MySqlConnectorLegacyExampleGen
         {
             public string Name { get; set; }
         };
-        public async Task<GetAuthorRow> GetAuthor(GetAuthorArgs args)
+        public async Task<GetAuthorRow> GetAuthorAsync(GetAuthorArgs args)
         {
             if (this.Transaction == null)
             {
@@ -122,7 +122,7 @@ namespace MySqlConnectorLegacyExampleGen
             public int Limit { get; set; }
             public int Offset { get; set; }
         };
-        public async Task<List<ListAuthorsRow>> ListAuthors(ListAuthorsArgs args)
+        public async Task<List<ListAuthorsRow>> ListAuthorsAsync(ListAuthorsArgs args)
         {
             if (this.Transaction == null)
             {
@@ -169,7 +169,7 @@ namespace MySqlConnectorLegacyExampleGen
             public string Name { get; set; }
             public string Bio { get; set; }
         };
-        public async Task CreateAuthor(CreateAuthorArgs args)
+        public async Task CreateAuthorAsync(CreateAuthorArgs args)
         {
             if (this.Transaction == null)
             {
@@ -207,7 +207,7 @@ namespace MySqlConnectorLegacyExampleGen
             public string Name { get; set; }
             public string Bio { get; set; }
         };
-        public async Task<long> CreateAuthorReturnId(CreateAuthorReturnIdArgs args)
+        public async Task<long> CreateAuthorReturnIdAsync(CreateAuthorReturnIdArgs args)
         {
             if (this.Transaction == null)
             {
@@ -248,7 +248,7 @@ namespace MySqlConnectorLegacyExampleGen
         {
             public long Id { get; set; }
         };
-        public async Task<GetAuthorByIdRow> GetAuthorById(GetAuthorByIdArgs args)
+        public async Task<GetAuthorByIdRow> GetAuthorByIdAsync(GetAuthorByIdArgs args)
         {
             if (this.Transaction == null)
             {
@@ -312,7 +312,7 @@ namespace MySqlConnectorLegacyExampleGen
         {
             public string NamePattern { get; set; }
         };
-        public async Task<List<GetAuthorByNamePatternRow>> GetAuthorByNamePattern(GetAuthorByNamePatternArgs args)
+        public async Task<List<GetAuthorByNamePatternRow>> GetAuthorByNamePatternAsync(GetAuthorByNamePatternArgs args)
         {
             if (this.Transaction == null)
             {
@@ -356,7 +356,7 @@ namespace MySqlConnectorLegacyExampleGen
         {
             public string Name { get; set; }
         };
-        public async Task DeleteAuthor(DeleteAuthorArgs args)
+        public async Task DeleteAuthorAsync(DeleteAuthorArgs args)
         {
             if (this.Transaction == null)
             {
@@ -385,7 +385,7 @@ namespace MySqlConnectorLegacyExampleGen
         }
 
         private const string DeleteAllAuthorsSql = "DELETE FROM authors";
-        public async Task DeleteAllAuthors()
+        public async Task DeleteAllAuthorsAsync()
         {
             if (this.Transaction == null)
             {
@@ -418,7 +418,7 @@ namespace MySqlConnectorLegacyExampleGen
         {
             public string Bio { get; set; }
         };
-        public async Task<long> UpdateAuthors(UpdateAuthorsArgs args)
+        public async Task<long> UpdateAuthorsAsync(UpdateAuthorsArgs args)
         {
             if (this.Transaction == null)
             {
@@ -455,7 +455,7 @@ namespace MySqlConnectorLegacyExampleGen
         {
             public long[] Ids { get; set; }
         };
-        public async Task<List<GetAuthorsByIdsRow>> GetAuthorsByIds(GetAuthorsByIdsArgs args)
+        public async Task<List<GetAuthorsByIdsRow>> GetAuthorsByIdsAsync(GetAuthorsByIdsArgs args)
         {
             var transformedSql = GetAuthorsByIdsSql;
             transformedSql = Utils.TransformQueryForSliceArgs(transformedSql, args.Ids.Length, "ids");
@@ -509,7 +509,7 @@ namespace MySqlConnectorLegacyExampleGen
             public long[] Ids { get; set; }
             public string[] Names { get; set; }
         };
-        public async Task<List<GetAuthorsByIdsAndNamesRow>> GetAuthorsByIdsAndNames(GetAuthorsByIdsAndNamesArgs args)
+        public async Task<List<GetAuthorsByIdsAndNamesRow>> GetAuthorsByIdsAndNamesAsync(GetAuthorsByIdsAndNamesArgs args)
         {
             var transformedSql = GetAuthorsByIdsAndNamesSql;
             transformedSql = Utils.TransformQueryForSliceArgs(transformedSql, args.Ids.Length, "ids");
@@ -562,7 +562,7 @@ namespace MySqlConnectorLegacyExampleGen
             public string Name { get; set; }
             public long AuthorId { get; set; }
         };
-        public async Task<long> CreateBook(CreateBookArgs args)
+        public async Task<long> CreateBookAsync(CreateBookArgs args)
         {
             if (this.Transaction == null)
             {
@@ -600,7 +600,7 @@ namespace MySqlConnectorLegacyExampleGen
             public Author Author { get; set; }
             public Book Book { get; set; }
         };
-        public async Task<List<ListAllAuthorsBooksRow>> ListAllAuthorsBooks()
+        public async Task<List<ListAllAuthorsBooksRow>> ListAllAuthorsBooksAsync()
         {
             if (this.Transaction == null)
             {
@@ -644,7 +644,7 @@ namespace MySqlConnectorLegacyExampleGen
             public Author Author { get; set; }
             public Author Author2 { get; set; }
         };
-        public async Task<List<GetDuplicateAuthorsRow>> GetDuplicateAuthors()
+        public async Task<List<GetDuplicateAuthorsRow>> GetDuplicateAuthorsAsync()
         {
             if (this.Transaction == null)
             {
@@ -694,7 +694,7 @@ namespace MySqlConnectorLegacyExampleGen
         {
             public string Name { get; set; }
         };
-        public async Task<List<GetAuthorsByBookNameRow>> GetAuthorsByBookName(GetAuthorsByBookNameArgs args)
+        public async Task<List<GetAuthorsByBookNameRow>> GetAuthorsByBookNameAsync(GetAuthorsByBookNameArgs args)
         {
             if (this.Transaction == null)
             {
@@ -740,7 +740,7 @@ namespace MySqlConnectorLegacyExampleGen
             public BiosBioType? BioType { get; set; }
             public HashSet<BiosAuthorType> AuthorType { get; set; }
         };
-        public async Task CreateExtendedBio(CreateExtendedBioArgs args)
+        public async Task CreateExtendedBioAsync(CreateExtendedBioArgs args)
         {
             if (this.Transaction == null)
             {
@@ -786,7 +786,7 @@ namespace MySqlConnectorLegacyExampleGen
         {
             public BiosBioType? BioType { get; set; }
         };
-        public async Task<GetFirstExtendedBioByTypeRow> GetFirstExtendedBioByType(GetFirstExtendedBioByTypeArgs args)
+        public async Task<GetFirstExtendedBioByTypeRow> GetFirstExtendedBioByTypeAsync(GetFirstExtendedBioByTypeArgs args)
         {
             if (this.Transaction == null)
             {
@@ -841,7 +841,7 @@ namespace MySqlConnectorLegacyExampleGen
         }
 
         private const string TruncateExtendedBiosSql = "TRUNCATE TABLE extended.bios";
-        public async Task TruncateExtendedBios()
+        public async Task TruncateExtendedBiosAsync()
         {
             if (this.Transaction == null)
             {
@@ -905,7 +905,7 @@ namespace MySqlConnectorLegacyExampleGen
             public double? CDouble { get; set; }
             public double? CDoublePrecision { get; set; }
         };
-        public async Task InsertMysqlNumericTypes(InsertMysqlNumericTypesArgs args)
+        public async Task InsertMysqlNumericTypesAsync(InsertMysqlNumericTypesArgs args)
         {
             if (this.Transaction == null)
             {
@@ -979,7 +979,7 @@ namespace MySqlConnectorLegacyExampleGen
             public double? CDouble { get; set; }
             public double? CDoublePrecision { get; set; }
         };
-        public async Task InsertMysqlNumericTypesBatch(List<InsertMysqlNumericTypesBatchArgs> args)
+        public async Task InsertMysqlNumericTypesBatchAsync(List<InsertMysqlNumericTypesBatchArgs> args)
         {
             const string supportedDateTimeFormat = "yyyy-MM-dd H:mm:ss";
             var config = new CsvConfiguration(CultureInfo.CurrentCulture)
@@ -1049,7 +1049,7 @@ namespace MySqlConnectorLegacyExampleGen
             public double? CDouble { get; set; }
             public double? CDoublePrecision { get; set; }
         };
-        public async Task<GetMysqlNumericTypesRow> GetMysqlNumericTypes()
+        public async Task<GetMysqlNumericTypesRow> GetMysqlNumericTypesAsync()
         {
             if (this.Transaction == null)
             {
@@ -1177,7 +1177,7 @@ namespace MySqlConnectorLegacyExampleGen
             public double? CDouble { get; set; }
             public double? CDoublePrecision { get; set; }
         };
-        public async Task<GetMysqlNumericTypesCntRow> GetMysqlNumericTypesCnt()
+        public async Task<GetMysqlNumericTypesCntRow> GetMysqlNumericTypesCntAsync()
         {
             if (this.Transaction == null)
             {
@@ -1254,7 +1254,7 @@ namespace MySqlConnectorLegacyExampleGen
         }
 
         private const string TruncateMysqlNumericTypesSql = "TRUNCATE TABLE mysql_numeric_types";
-        public async Task TruncateMysqlNumericTypes()
+        public async Task TruncateMysqlNumericTypesAsync()
         {
             if (this.Transaction == null)
             {
@@ -1312,7 +1312,7 @@ namespace MySqlConnectorLegacyExampleGen
             public MysqlStringTypesCEnum? CEnum { get; set; }
             public HashSet<MysqlStringTypesCSet> CSet { get; set; }
         };
-        public async Task InsertMysqlStringTypes(InsertMysqlStringTypesArgs args)
+        public async Task InsertMysqlStringTypesAsync(InsertMysqlStringTypesArgs args)
         {
             if (this.Transaction == null)
             {
@@ -1377,7 +1377,7 @@ namespace MySqlConnectorLegacyExampleGen
             public MysqlStringTypesCEnum? CEnum { get; set; }
             public HashSet<MysqlStringTypesCSet> CSet { get; set; }
         };
-        public async Task InsertMysqlStringTypesBatch(List<InsertMysqlStringTypesBatchArgs> args)
+        public async Task InsertMysqlStringTypesBatchAsync(List<InsertMysqlStringTypesBatchArgs> args)
         {
             const string supportedDateTimeFormat = "yyyy-MM-dd H:mm:ss";
             var config = new CsvConfiguration(CultureInfo.CurrentCulture)
@@ -1441,7 +1441,7 @@ namespace MySqlConnectorLegacyExampleGen
             public MysqlStringTypesCEnum? CEnum { get; set; }
             public HashSet<MysqlStringTypesCSet> CSet { get; set; }
         };
-        public async Task<GetMysqlStringTypesRow> GetMysqlStringTypes()
+        public async Task<GetMysqlStringTypesRow> GetMysqlStringTypesAsync()
         {
             if (this.Transaction == null)
             {
@@ -1554,7 +1554,7 @@ namespace MySqlConnectorLegacyExampleGen
             public MysqlStringTypesCEnum? CEnum { get; set; }
             public HashSet<MysqlStringTypesCSet> CSet { get; set; }
         };
-        public async Task<GetMysqlStringTypesCntRow> GetMysqlStringTypesCnt()
+        public async Task<GetMysqlStringTypesCntRow> GetMysqlStringTypesCntAsync()
         {
             if (this.Transaction == null)
             {
@@ -1625,7 +1625,7 @@ namespace MySqlConnectorLegacyExampleGen
         }
 
         private const string TruncateMysqlStringTypesSql = "TRUNCATE TABLE mysql_string_types";
-        public async Task TruncateMysqlStringTypes()
+        public async Task TruncateMysqlStringTypesAsync()
         {
             if (this.Transaction == null)
             {
@@ -1671,7 +1671,7 @@ namespace MySqlConnectorLegacyExampleGen
             public TimeSpan? CTime { get; set; }
             public Instant? CTimestampNodaInstantOverride { get; set; }
         };
-        public async Task InsertMysqlDatetimeTypes(InsertMysqlDatetimeTypesArgs args)
+        public async Task InsertMysqlDatetimeTypesAsync(InsertMysqlDatetimeTypesArgs args)
         {
             if (this.Transaction == null)
             {
@@ -1717,7 +1717,7 @@ namespace MySqlConnectorLegacyExampleGen
             public DateTime? CTimestamp { get; set; }
             public TimeSpan? CTime { get; set; }
         };
-        public async Task InsertMysqlDatetimeTypesBatch(List<InsertMysqlDatetimeTypesBatchArgs> args)
+        public async Task InsertMysqlDatetimeTypesBatchAsync(List<InsertMysqlDatetimeTypesBatchArgs> args)
         {
             const string supportedDateTimeFormat = "yyyy-MM-dd H:mm:ss";
             var config = new CsvConfiguration(CultureInfo.CurrentCulture)
@@ -1774,7 +1774,7 @@ namespace MySqlConnectorLegacyExampleGen
             public TimeSpan? CTime { get; set; }
             public Instant? CTimestampNodaInstantOverride { get; set; }
         };
-        public async Task<GetMysqlDatetimeTypesRow> GetMysqlDatetimeTypes()
+        public async Task<GetMysqlDatetimeTypesRow> GetMysqlDatetimeTypesAsync()
         {
             if (this.Transaction == null)
             {
@@ -1866,7 +1866,7 @@ namespace MySqlConnectorLegacyExampleGen
             public DateTime? CTimestamp { get; set; }
             public TimeSpan? CTime { get; set; }
         };
-        public async Task<GetMysqlDatetimeTypesCntRow> GetMysqlDatetimeTypesCnt()
+        public async Task<GetMysqlDatetimeTypesCntRow> GetMysqlDatetimeTypesCntAsync()
         {
             if (this.Transaction == null)
             {
@@ -1923,7 +1923,7 @@ namespace MySqlConnectorLegacyExampleGen
         }
 
         private const string TruncateMysqlDatetimeTypesSql = "TRUNCATE TABLE mysql_datetime_types";
-        public async Task TruncateMysqlDatetimeTypes()
+        public async Task TruncateMysqlDatetimeTypesAsync()
         {
             if (this.Transaction == null)
             {
@@ -1971,7 +1971,7 @@ namespace MySqlConnectorLegacyExampleGen
             public byte[] CMediumblob { get; set; }
             public byte[] CLongblob { get; set; }
         };
-        public async Task InsertMysqlBinaryTypes(InsertMysqlBinaryTypesArgs args)
+        public async Task InsertMysqlBinaryTypesAsync(InsertMysqlBinaryTypesArgs args)
         {
             if (this.Transaction == null)
             {
@@ -2021,7 +2021,7 @@ namespace MySqlConnectorLegacyExampleGen
             public byte[] CMediumblob { get; set; }
             public byte[] CLongblob { get; set; }
         };
-        public async Task InsertMysqlBinaryTypesBatch(List<InsertMysqlBinaryTypesBatchArgs> args)
+        public async Task InsertMysqlBinaryTypesBatchAsync(List<InsertMysqlBinaryTypesBatchArgs> args)
         {
             const string supportedDateTimeFormat = "yyyy-MM-dd H:mm:ss";
             var config = new CsvConfiguration(CultureInfo.CurrentCulture)
@@ -2079,7 +2079,7 @@ namespace MySqlConnectorLegacyExampleGen
             public byte[] CMediumblob { get; set; }
             public byte[] CLongblob { get; set; }
         };
-        public async Task<GetMysqlBinaryTypesRow> GetMysqlBinaryTypes()
+        public async Task<GetMysqlBinaryTypesRow> GetMysqlBinaryTypesAsync()
         {
             if (this.Transaction == null)
             {
@@ -2167,7 +2167,7 @@ namespace MySqlConnectorLegacyExampleGen
             public byte[] CMediumblob { get; set; }
             public byte[] CLongblob { get; set; }
         };
-        public async Task<GetMysqlBinaryTypesCntRow> GetMysqlBinaryTypesCnt()
+        public async Task<GetMysqlBinaryTypesCntRow> GetMysqlBinaryTypesCntAsync()
         {
             if (this.Transaction == null)
             {
@@ -2228,7 +2228,7 @@ namespace MySqlConnectorLegacyExampleGen
         }
 
         private const string TruncateMysqlBinaryTypesSql = "TRUNCATE TABLE mysql_binary_types";
-        public async Task TruncateMysqlBinaryTypes()
+        public async Task TruncateMysqlBinaryTypesAsync()
         {
             if (this.Transaction == null)
             {
@@ -2268,7 +2268,7 @@ namespace MySqlConnectorLegacyExampleGen
             public string MaxVarchar { get; set; }
             public DateTime MaxTimestamp { get; set; }
         };
-        public async Task<GetMysqlFunctionsRow> GetMysqlFunctions()
+        public async Task<GetMysqlFunctionsRow> GetMysqlFunctionsAsync()
         {
             if (this.Transaction == null)
             {

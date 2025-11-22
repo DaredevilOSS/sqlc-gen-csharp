@@ -51,6 +51,12 @@ public static partial class StringExtensions
         return $"{schemaName}_{value.TrimEnd('s')}".ToPascalCase(); // TODO implement better way to turn words to singular
     }
 
+    public static string ToMethodName(this string value, bool withAsyncSuffix)
+    {
+        var methodName = value.ToPascalCase();
+        return withAsyncSuffix ? $"{methodName}Async" : methodName;
+    }
+
     public static string AppendSemicolonUnlessEmpty(this string input)
     {
         return input == string.Empty ? "" : $"{input};";

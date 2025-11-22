@@ -12,7 +12,7 @@ public static class AnnotationTests
         {
             Impl = $$"""
                      [Test]
-                     public async Task TestOne()
+                     public async Task TestOneAsync()
                      {
                          {{Consts.CreateBojackAuthor}}
                          {{Consts.CreateDrSeussAuthor}}
@@ -22,7 +22,7 @@ public static class AnnotationTests
                              Name = {{Consts.BojackAuthor}},
                              Bio = {{Consts.BojackTheme}}
                          };
-                         var actual = await this.QuerySql.GetAuthor(new QuerySql.GetAuthorArgs
+                         var actual = await this.QuerySql.GetAuthorAsync(new QuerySql.GetAuthorArgs
                          {
                              Name = {{Consts.BojackAuthor}}
                          });
@@ -41,7 +41,7 @@ public static class AnnotationTests
         {
             Impl = $$"""
                      [Test]
-                     public async Task TestMany()
+                     public async Task TestManyAsync()
                      {
                          {{Consts.CreateBojackAuthor}}
                          {{Consts.CreateDrSeussAuthor}}
@@ -60,7 +60,7 @@ public static class AnnotationTests
                                  Bio = {{Consts.DrSeussQuote}}
                              }
                          };
-                         var actual = await this.QuerySql.ListAuthors(new QuerySql.ListAuthorsArgs
+                         var actual = await this.QuerySql.ListAuthorsAsync(new QuerySql.ListAuthorsArgs
                          {
                              Limit = 2,
                              Offset = 0
@@ -87,15 +87,15 @@ public static class AnnotationTests
         {
             Impl = $$"""
                      [Test]
-                     public async Task TestExec()
+                     public async Task TestExecAsync()
                      {
                          {{Consts.CreateBojackAuthor}}
                          {{Consts.CreateDrSeussAuthor}}
-                         await this.QuerySql.DeleteAuthor(new QuerySql.DeleteAuthorArgs 
+                         await this.QuerySql.DeleteAuthorAsync(new QuerySql.DeleteAuthorArgs 
                          { 
                              Name = {{Consts.BojackAuthor}} 
                          });
-                         var actual = await this.QuerySql.GetAuthor(new QuerySql.GetAuthorArgs 
+                         var actual = await this.QuerySql.GetAuthorAsync(new QuerySql.GetAuthorArgs 
                          {
                              Name = {{Consts.BojackAuthor}}
                          });
@@ -107,11 +107,11 @@ public static class AnnotationTests
         {
             Impl = $$"""
                      [Test]
-                     public async Task TestExecRows()
+                     public async Task TestExecRowsAsync()
                      {
                          {{Consts.CreateBojackAuthor}}
                          {{Consts.CreateDrSeussAuthor}}
-                         var affectedRows = await this.QuerySql.UpdateAuthors(new QuerySql.UpdateAuthorsArgs
+                         var affectedRows = await this.QuerySql.UpdateAuthorsAsync(new QuerySql.UpdateAuthorsArgs
                          {
                              Bio = {{Consts.GenericQuote1}}
                          });
@@ -131,7 +131,7 @@ public static class AnnotationTests
                                  Bio = {{Consts.GenericQuote1}}
                              }
                          };
-                         var actual = await this.QuerySql.ListAuthors(new QuerySql.ListAuthorsArgs
+                         var actual = await this.QuerySql.ListAuthorsAsync(new QuerySql.ListAuthorsArgs
                          {
                              Limit = 2,
                              Offset = 0
@@ -158,7 +158,7 @@ public static class AnnotationTests
         {
             Impl = $$"""
                      [Test]
-                     public async Task TestExecLastId()
+                     public async Task TestExecLastIdAsync()
                      {
                          {{Consts.CreateFirstGenericAuthor}}
                          var expected = new QuerySql.GetAuthorByIdRow 
@@ -167,7 +167,7 @@ public static class AnnotationTests
                              Name = {{Consts.GenericAuthor}},
                              Bio = {{Consts.GenericQuote1}}
                          };
-                         var actual = await QuerySql.GetAuthorById(new QuerySql.GetAuthorByIdArgs 
+                         var actual = await QuerySql.GetAuthorByIdAsync(new QuerySql.GetAuthorByIdArgs 
                          {
                              Id = id1
                          });

@@ -57,7 +57,7 @@ public class QuerySql
     {
         public required string Name { get; init; }
     };
-    public async Task<GetAuthorRow?> GetAuthor(GetAuthorArgs args)
+    public async Task<GetAuthorRow?> GetAuthorAsync(GetAuthorArgs args)
     {
         var queryParams = new Dictionary<string, object?>();
         queryParams.Add("name", args.Name);
@@ -91,7 +91,7 @@ public class QuerySql
         public required int Offset { get; init; }
         public required int Limit { get; init; }
     };
-    public async Task<List<ListAuthorsRow>> ListAuthors(ListAuthorsArgs args)
+    public async Task<List<ListAuthorsRow>> ListAuthorsAsync(ListAuthorsArgs args)
     {
         var queryParams = new Dictionary<string, object?>();
         queryParams.Add("offset", args.Offset);
@@ -123,7 +123,7 @@ public class QuerySql
         public required string Name { get; init; }
         public string? Bio { get; init; }
     };
-    public async Task<CreateAuthorRow?> CreateAuthor(CreateAuthorArgs args)
+    public async Task<CreateAuthorRow?> CreateAuthorAsync(CreateAuthorArgs args)
     {
         var queryParams = new Dictionary<string, object?>();
         queryParams.Add("id", args.Id);
@@ -153,7 +153,7 @@ public class QuerySql
         public required string Name { get; init; }
         public string? Bio { get; init; }
     };
-    public async Task<long> CreateAuthorReturnId(CreateAuthorReturnIdArgs args)
+    public async Task<long> CreateAuthorReturnIdAsync(CreateAuthorReturnIdArgs args)
     {
         var queryParams = new Dictionary<string, object?>();
         queryParams.Add("name", args.Name);
@@ -181,7 +181,7 @@ public class QuerySql
     {
         public required long Id { get; init; }
     };
-    public async Task<GetAuthorByIdRow?> GetAuthorById(GetAuthorByIdArgs args)
+    public async Task<GetAuthorByIdRow?> GetAuthorByIdAsync(GetAuthorByIdArgs args)
     {
         var queryParams = new Dictionary<string, object?>();
         queryParams.Add("id", args.Id);
@@ -211,7 +211,7 @@ public class QuerySql
     {
         public string? NamePattern { get; init; }
     };
-    public async Task<List<GetAuthorByNamePatternRow>> GetAuthorByNamePattern(GetAuthorByNamePatternArgs args)
+    public async Task<List<GetAuthorByNamePatternRow>> GetAuthorByNamePatternAsync(GetAuthorByNamePatternArgs args)
     {
         var queryParams = new Dictionary<string, object?>();
         queryParams.Add("name_pattern", args.NamePattern);
@@ -235,7 +235,7 @@ public class QuerySql
     {
         public required string Name { get; init; }
     };
-    public async Task DeleteAuthor(DeleteAuthorArgs args)
+    public async Task DeleteAuthorAsync(DeleteAuthorArgs args)
     {
         var queryParams = new Dictionary<string, object?>();
         queryParams.Add("name", args.Name);
@@ -252,7 +252,7 @@ public class QuerySql
     }
 
     private const string TruncateAuthorsSql = "TRUNCATE TABLE authors CASCADE";
-    public async Task TruncateAuthors()
+    public async Task TruncateAuthorsAsync()
     {
         if (this.Transaction == null)
         {
@@ -273,7 +273,7 @@ public class QuerySql
     {
         public string? Bio { get; init; }
     };
-    public async Task<long> UpdateAuthors(UpdateAuthorsArgs args)
+    public async Task<long> UpdateAuthorsAsync(UpdateAuthorsArgs args)
     {
         var queryParams = new Dictionary<string, object?>();
         queryParams.Add("bio", args.Bio);
@@ -300,7 +300,7 @@ public class QuerySql
     {
         public required long[] LongArr1 { get; init; }
     };
-    public async Task<List<GetAuthorsByIdsRow>> GetAuthorsByIds(GetAuthorsByIdsArgs args)
+    public async Task<List<GetAuthorsByIdsRow>> GetAuthorsByIdsAsync(GetAuthorsByIdsArgs args)
     {
         var queryParams = new Dictionary<string, object?>();
         queryParams.Add("longArr_1", args.LongArr1);
@@ -332,7 +332,7 @@ public class QuerySql
         public required long[] LongArr1 { get; init; }
         public required string[] StringArr2 { get; init; }
     };
-    public async Task<List<GetAuthorsByIdsAndNamesRow>> GetAuthorsByIdsAndNames(GetAuthorsByIdsAndNamesArgs args)
+    public async Task<List<GetAuthorsByIdsAndNamesRow>> GetAuthorsByIdsAndNamesAsync(GetAuthorsByIdsAndNamesArgs args)
     {
         var queryParams = new Dictionary<string, object?>();
         queryParams.Add("longArr_1", args.LongArr1);
@@ -361,7 +361,7 @@ public class QuerySql
         public required string Name { get; init; }
         public required long AuthorId { get; init; }
     };
-    public async Task<Guid> CreateBook(CreateBookArgs args)
+    public async Task<Guid> CreateBookAsync(CreateBookArgs args)
     {
         var queryParams = new Dictionary<string, object?>();
         queryParams.Add("name", args.Name);
@@ -388,7 +388,7 @@ public class QuerySql
         public required Author? Author { get; init; }
         public required Book? Book { get; init; }
     };
-    public async Task<List<ListAllAuthorsBooksRow>> ListAllAuthorsBooks()
+    public async Task<List<ListAllAuthorsBooksRow>> ListAllAuthorsBooksAsync()
     {
         if (this.Transaction == null)
         {
@@ -434,7 +434,7 @@ public class QuerySql
         public required Author? Author { get; init; }
         public required Author? Author2 { get; init; }
     };
-    public async Task<List<GetDuplicateAuthorsRow>> GetDuplicateAuthors()
+    public async Task<List<GetDuplicateAuthorsRow>> GetDuplicateAuthorsAsync()
     {
         if (this.Transaction == null)
         {
@@ -485,7 +485,7 @@ public class QuerySql
     {
         public required string Name { get; init; }
     };
-    public async Task<List<GetAuthorsByBookNameRow>> GetAuthorsByBookName(GetAuthorsByBookNameArgs args)
+    public async Task<List<GetAuthorsByBookNameRow>> GetAuthorsByBookNameAsync(GetAuthorsByBookNameArgs args)
     {
         if (this.Transaction == null)
         {
@@ -529,7 +529,7 @@ public class QuerySql
         public required string Name { get; init; }
         public ExtendedBioType? BioType { get; init; }
     };
-    public async Task CreateExtendedBio(CreateExtendedBioArgs args)
+    public async Task CreateExtendedBioAsync(CreateExtendedBioArgs args)
     {
         var queryParams = new Dictionary<string, object?>();
         queryParams.Add("author_name", args.AuthorName);
@@ -558,7 +558,7 @@ public class QuerySql
     {
         public ExtendedBioType? BioType { get; init; }
     };
-    public async Task<GetFirstExtendedBioByTypeRow?> GetFirstExtendedBioByType(GetFirstExtendedBioByTypeArgs args)
+    public async Task<GetFirstExtendedBioByTypeRow?> GetFirstExtendedBioByTypeAsync(GetFirstExtendedBioByTypeArgs args)
     {
         var queryParams = new Dictionary<string, object?>();
         queryParams.Add("bio_type", args.BioType != null ? args.BioType.Value.Stringify() : null);
@@ -577,7 +577,7 @@ public class QuerySql
     }
 
     private const string TruncateExtendedBiosSql = "TRUNCATE TABLE extended.bios";
-    public async Task TruncateExtendedBios()
+    public async Task TruncateExtendedBiosAsync()
     {
         if (this.Transaction == null)
         {
@@ -604,7 +604,7 @@ public class QuerySql
         public string? MaxVarchar { get; init; }
         public required DateTime MaxTimestamp { get; init; }
     };
-    public async Task<GetPostgresFunctionsRow?> GetPostgresFunctions()
+    public async Task<GetPostgresFunctionsRow?> GetPostgresFunctionsAsync()
     {
         if (this.Transaction == null)
         {
@@ -648,7 +648,7 @@ public class QuerySql
         public double? CDoublePrecision { get; init; }
         public decimal? CMoney { get; init; }
     };
-    public async Task InsertPostgresNumericTypes(InsertPostgresNumericTypesArgs args)
+    public async Task InsertPostgresNumericTypesAsync(InsertPostgresNumericTypesArgs args)
     {
         var queryParams = new Dictionary<string, object?>();
         queryParams.Add("c_boolean", args.CBoolean);
@@ -687,7 +687,7 @@ public class QuerySql
         public double? CDoublePrecision { get; init; }
         public decimal? CMoney { get; init; }
     };
-    public async Task<GetPostgresNumericTypesRow?> GetPostgresNumericTypes()
+    public async Task<GetPostgresNumericTypesRow?> GetPostgresNumericTypesAsync()
     {
         if (this.Transaction == null)
         {
@@ -704,7 +704,7 @@ public class QuerySql
     }
 
     private const string TruncatePostgresNumericTypesSql = "TRUNCATE TABLE postgres_numeric_types";
-    public async Task TruncatePostgresNumericTypes()
+    public async Task TruncatePostgresNumericTypesAsync()
     {
         if (this.Transaction == null)
         {
@@ -757,7 +757,7 @@ public class QuerySql
         public decimal? CMoney { get; init; }
         public required long Cnt { get; init; }
     };
-    public async Task<GetPostgresNumericTypesCntRow?> GetPostgresNumericTypesCnt()
+    public async Task<GetPostgresNumericTypesCntRow?> GetPostgresNumericTypesCntAsync()
     {
         if (this.Transaction == null)
         {
@@ -787,7 +787,7 @@ public class QuerySql
         public double? CDoublePrecision { get; init; }
         public decimal? CMoney { get; init; }
     };
-    public async Task InsertPostgresNumericTypesBatch(List<InsertPostgresNumericTypesBatchArgs> args)
+    public async Task InsertPostgresNumericTypesBatchAsync(List<InsertPostgresNumericTypesBatchArgs> args)
     {
         using (var connection = new NpgsqlConnection(ConnectionString))
         {
@@ -834,7 +834,7 @@ public class QuerySql
         public string? CBpchar { get; init; }
         public string? CText { get; init; }
     };
-    public async Task InsertPostgresStringTypes(InsertPostgresStringTypesArgs args)
+    public async Task InsertPostgresStringTypesAsync(InsertPostgresStringTypesArgs args)
     {
         var queryParams = new Dictionary<string, object?>();
         queryParams.Add("c_char", args.CChar);
@@ -863,7 +863,7 @@ public class QuerySql
         public string? CBpchar { get; init; }
         public string? CText { get; init; }
     };
-    public async Task InsertPostgresStringTypesBatch(List<InsertPostgresStringTypesBatchArgs> args)
+    public async Task InsertPostgresStringTypesBatchAsync(List<InsertPostgresStringTypesBatchArgs> args)
     {
         using (var connection = new NpgsqlConnection(ConnectionString))
         {
@@ -896,7 +896,7 @@ public class QuerySql
         public string? CBpchar { get; init; }
         public string? CText { get; init; }
     };
-    public async Task<GetPostgresStringTypesRow?> GetPostgresStringTypes()
+    public async Task<GetPostgresStringTypesRow?> GetPostgresStringTypesAsync()
     {
         if (this.Transaction == null)
         {
@@ -913,7 +913,7 @@ public class QuerySql
     }
 
     private const string TruncatePostgresStringTypesSql = "TRUNCATE TABLE postgres_string_types";
-    public async Task TruncatePostgresStringTypes()
+    public async Task TruncatePostgresStringTypesAsync()
     {
         if (this.Transaction == null)
         {
@@ -951,7 +951,7 @@ public class QuerySql
         public string? CText { get; init; }
         public required long Cnt { get; init; }
     };
-    public async Task<GetPostgresStringTypesCntRow?> GetPostgresStringTypesCnt()
+    public async Task<GetPostgresStringTypesCntRow?> GetPostgresStringTypesCntAsync()
     {
         if (this.Transaction == null)
         {
@@ -991,7 +991,7 @@ public class QuerySql
     {
         public required string ToTsquery { get; init; }
     };
-    public async Task<GetPostgresStringTypesTextSearchRow?> GetPostgresStringTypesTextSearch(GetPostgresStringTypesTextSearchArgs args)
+    public async Task<GetPostgresStringTypesTextSearchRow?> GetPostgresStringTypesTextSearchAsync(GetPostgresStringTypesTextSearchArgs args)
     {
         var queryParams = new Dictionary<string, object?>();
         queryParams.Add("to_tsquery", args.ToTsquery);
@@ -1028,7 +1028,7 @@ public class QuerySql
         public TimeSpan? CInterval { get; init; }
         public Instant? CTimestampNodaInstantOverride { get; init; }
     };
-    public async Task InsertPostgresDateTimeTypes(InsertPostgresDateTimeTypesArgs args)
+    public async Task InsertPostgresDateTimeTypesAsync(InsertPostgresDateTimeTypesArgs args)
     {
         var queryParams = new Dictionary<string, object?>();
         queryParams.Add("c_date", args.CDate);
@@ -1059,7 +1059,7 @@ public class QuerySql
         public TimeSpan? CInterval { get; init; }
         public Instant? CTimestampNodaInstantOverride { get; init; }
     };
-    public async Task<GetPostgresDateTimeTypesRow?> GetPostgresDateTimeTypes()
+    public async Task<GetPostgresDateTimeTypesRow?> GetPostgresDateTimeTypesAsync()
     {
         if (this.Transaction == null)
         {
@@ -1076,7 +1076,7 @@ public class QuerySql
     }
 
     private const string TruncatePostgresDateTimeTypesSql = "TRUNCATE TABLE postgres_datetime_types";
-    public async Task TruncatePostgresDateTimeTypes()
+    public async Task TruncatePostgresDateTimeTypesAsync()
     {
         if (this.Transaction == null)
         {
@@ -1114,7 +1114,7 @@ public class QuerySql
         public TimeSpan? CInterval { get; init; }
         public required long Cnt { get; init; }
     };
-    public async Task<GetPostgresDateTimeTypesCntRow?> GetPostgresDateTimeTypesCnt()
+    public async Task<GetPostgresDateTimeTypesCntRow?> GetPostgresDateTimeTypesCntAsync()
     {
         if (this.Transaction == null)
         {
@@ -1139,7 +1139,7 @@ public class QuerySql
         public DateTime? CTimestampWithTz { get; init; }
         public TimeSpan? CInterval { get; init; }
     };
-    public async Task InsertPostgresDateTimeTypesBatch(List<InsertPostgresDateTimeTypesBatchArgs> args)
+    public async Task InsertPostgresDateTimeTypesBatchAsync(List<InsertPostgresDateTimeTypesBatchArgs> args)
     {
         using (var connection = new NpgsqlConnection(ConnectionString))
         {
@@ -1183,7 +1183,7 @@ public class QuerySql
         public PhysicalAddress? CMacaddr { get; init; }
         public string? CMacaddr8 { get; init; }
     };
-    public async Task InsertPostgresNetworkTypes(InsertPostgresNetworkTypesArgs args)
+    public async Task InsertPostgresNetworkTypesAsync(InsertPostgresNetworkTypesArgs args)
     {
         var queryParams = new Dictionary<string, object?>();
         queryParams.Add("c_cidr", args.CCidr);
@@ -1216,7 +1216,7 @@ public class QuerySql
         public PhysicalAddress? CMacaddr { get; init; }
         public string? CMacaddr8 { get; init; }
     };
-    public async Task<GetPostgresNetworkTypesRow?> GetPostgresNetworkTypes()
+    public async Task<GetPostgresNetworkTypesRow?> GetPostgresNetworkTypesAsync()
     {
         if (this.Transaction == null)
         {
@@ -1233,7 +1233,7 @@ public class QuerySql
     }
 
     private const string TruncatePostgresNetworkTypesSql = "TRUNCATE TABLE postgres_network_types";
-    public async Task TruncatePostgresNetworkTypes()
+    public async Task TruncatePostgresNetworkTypesAsync()
     {
         if (this.Transaction == null)
         {
@@ -1265,7 +1265,7 @@ public class QuerySql
         public PhysicalAddress? CMacaddr { get; init; }
         public required long Cnt { get; init; }
     };
-    public async Task<GetPostgresNetworkTypesCntRow?> GetPostgresNetworkTypesCnt()
+    public async Task<GetPostgresNetworkTypesCntRow?> GetPostgresNetworkTypesCntAsync()
     {
         if (this.Transaction == null)
         {
@@ -1288,7 +1288,7 @@ public class QuerySql
         public IPAddress? CInet { get; init; }
         public PhysicalAddress? CMacaddr { get; init; }
     };
-    public async Task InsertPostgresNetworkTypesBatch(List<InsertPostgresNetworkTypesBatchArgs> args)
+    public async Task InsertPostgresNetworkTypesBatchAsync(List<InsertPostgresNetworkTypesBatchArgs> args)
     {
         using (var connection = new NpgsqlConnection(ConnectionString))
         {
@@ -1343,7 +1343,7 @@ public class QuerySql
         public Guid? CUuid { get; init; }
         public CEnum? CEnum { get; init; }
     };
-    public async Task InsertPostgresSpecialTypes(InsertPostgresSpecialTypesArgs args)
+    public async Task InsertPostgresSpecialTypesAsync(InsertPostgresSpecialTypesArgs args)
     {
         var queryParams = new Dictionary<string, object?>();
         queryParams.Add("c_json", args.CJson.HasValue ? (object)args.CJson.Value : null);
@@ -1377,7 +1377,7 @@ public class QuerySql
     {
         public required CEnum CEnumNotNull { get; init; }
     };
-    public async Task InsertPostgresNotNullTypes(InsertPostgresNotNullTypesArgs args)
+    public async Task InsertPostgresNotNullTypesAsync(InsertPostgresNotNullTypesArgs args)
     {
         var queryParams = new Dictionary<string, object?>();
         queryParams.Add("c_enum_not_null", args.CEnumNotNull.Stringify());
@@ -1401,7 +1401,7 @@ public class QuerySql
     {
         public required CEnum CEnumNotNull { get; init; }
     };
-    public async Task<GetPostgresNotNullTypesRow?> GetPostgresNotNullTypes()
+    public async Task<GetPostgresNotNullTypesRow?> GetPostgresNotNullTypesAsync()
     {
         if (this.Transaction == null)
         {
@@ -1418,7 +1418,7 @@ public class QuerySql
     }
 
     private const string TruncatePostgresNotNullTypesSql = "TRUNCATE TABLE postgres_not_null_types";
-    public async Task TruncatePostgresNotNullTypes()
+    public async Task TruncatePostgresNotNullTypesAsync()
     {
         if (this.Transaction == null)
         {
@@ -1454,7 +1454,7 @@ public class QuerySql
         public Guid? CUuid { get; init; }
         public CEnum? CEnum { get; init; }
     };
-    public async Task<GetPostgresSpecialTypesRow?> GetPostgresSpecialTypes()
+    public async Task<GetPostgresSpecialTypesRow?> GetPostgresSpecialTypesAsync()
     {
         if (this.Transaction == null)
         {
@@ -1471,7 +1471,7 @@ public class QuerySql
     }
 
     private const string TruncatePostgresSpecialTypesSql = "TRUNCATE TABLE postgres_special_types";
-    public async Task TruncatePostgresSpecialTypes()
+    public async Task TruncatePostgresSpecialTypesAsync()
     {
         if (this.Transaction == null)
         {
@@ -1492,7 +1492,7 @@ public class QuerySql
         public JsonElement? CJson { get; init; }
         public JsonElement? CJsonb { get; init; }
     };
-    public async Task InsertPostgresSpecialTypesBatch(List<InsertPostgresSpecialTypesBatchArgs> args)
+    public async Task InsertPostgresSpecialTypesBatchAsync(List<InsertPostgresSpecialTypesBatchArgs> args)
     {
         using (var connection = new NpgsqlConnection(ConnectionString))
         {
@@ -1541,7 +1541,7 @@ public class QuerySql
         public JsonElement? CJsonb { get; init; }
         public required long Cnt { get; init; }
     };
-    public async Task<GetPostgresSpecialTypesCntRow?> GetPostgresSpecialTypesCnt()
+    public async Task<GetPostgresSpecialTypesCntRow?> GetPostgresSpecialTypesCntAsync()
     {
         if (this.Transaction == null)
         {
@@ -1579,7 +1579,7 @@ public class QuerySql
         public DateTime[]? CDateArray { get; init; }
         public DateTime[]? CTimestampArray { get; init; }
     };
-    public async Task InsertPostgresArrayTypes(InsertPostgresArrayTypesArgs args)
+    public async Task InsertPostgresArrayTypesAsync(InsertPostgresArrayTypesArgs args)
     {
         var queryParams = new Dictionary<string, object?>();
         queryParams.Add("c_bytea", args.CBytea);
@@ -1612,7 +1612,7 @@ public class QuerySql
         public DateTime[]? CDateArray { get; init; }
         public DateTime[]? CTimestampArray { get; init; }
     };
-    public async Task<GetPostgresArrayTypesRow?> GetPostgresArrayTypes()
+    public async Task<GetPostgresArrayTypesRow?> GetPostgresArrayTypesAsync()
     {
         if (this.Transaction == null)
         {
@@ -1638,7 +1638,7 @@ public class QuerySql
         public decimal[]? CDecimalArray { get; init; }
         public DateTime[]? CTimestampArray { get; init; }
     };
-    public async Task InsertPostgresArrayTypesBatch(List<InsertPostgresArrayTypesBatchArgs> args)
+    public async Task InsertPostgresArrayTypesBatchAsync(List<InsertPostgresArrayTypesBatchArgs> args)
     {
         using (var connection = new NpgsqlConnection(ConnectionString))
         {
@@ -1690,7 +1690,7 @@ public class QuerySql
         public DateTime[]? CTimestampArray { get; init; }
         public required long Cnt { get; init; }
     };
-    public async Task<GetPostgresArrayTypesCntRow?> GetPostgresArrayTypesCnt()
+    public async Task<GetPostgresArrayTypesCntRow?> GetPostgresArrayTypesCntAsync()
     {
         if (this.Transaction == null)
         {
@@ -1707,7 +1707,7 @@ public class QuerySql
     }
 
     private const string TruncatePostgresArrayTypesSql = "TRUNCATE TABLE postgres_array_types";
-    public async Task TruncatePostgresArrayTypes()
+    public async Task TruncatePostgresArrayTypesAsync()
     {
         if (this.Transaction == null)
         {
@@ -1742,7 +1742,7 @@ public class QuerySql
         public NpgsqlPolygon? CPolygon { get; init; }
         public NpgsqlCircle? CCircle { get; init; }
     };
-    public async Task InsertPostgresGeoTypes(InsertPostgresGeoTypesArgs args)
+    public async Task InsertPostgresGeoTypesAsync(InsertPostgresGeoTypesArgs args)
     {
         var queryParams = new Dictionary<string, object?>();
         queryParams.Add("c_point", args.CPoint);
@@ -1775,7 +1775,7 @@ public class QuerySql
         public NpgsqlPolygon? CPolygon { get; init; }
         public NpgsqlCircle? CCircle { get; init; }
     };
-    public async Task InsertPostgresGeoTypesBatch(List<InsertPostgresGeoTypesBatchArgs> args)
+    public async Task InsertPostgresGeoTypesBatchAsync(List<InsertPostgresGeoTypesBatchArgs> args)
     {
         using (var connection = new NpgsqlConnection(ConnectionString))
         {
@@ -1812,7 +1812,7 @@ public class QuerySql
         public NpgsqlPolygon? CPolygon { get; init; }
         public NpgsqlCircle? CCircle { get; init; }
     };
-    public async Task<GetPostgresGeoTypesRow?> GetPostgresGeoTypes()
+    public async Task<GetPostgresGeoTypesRow?> GetPostgresGeoTypesAsync()
     {
         if (this.Transaction == null)
         {
@@ -1829,7 +1829,7 @@ public class QuerySql
     }
 
     private const string TruncatePostgresGeoTypesSql = "TRUNCATE TABLE postgres_geometric_types";
-    public async Task TruncatePostgresGeoTypes()
+    public async Task TruncatePostgresGeoTypesAsync()
     {
         if (this.Transaction == null)
         {

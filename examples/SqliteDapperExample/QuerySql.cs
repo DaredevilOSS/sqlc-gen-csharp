@@ -52,7 +52,7 @@ public class QuerySql
     {
         public required string Name { get; init; }
     };
-    public async Task<GetAuthorRow?> GetAuthor(GetAuthorArgs args)
+    public async Task<GetAuthorRow?> GetAuthorAsync(GetAuthorArgs args)
     {
         var queryParams = new Dictionary<string, object?>();
         queryParams.Add("name", args.Name);
@@ -85,7 +85,7 @@ public class QuerySql
         public required int Offset { get; init; }
         public required int Limit { get; init; }
     };
-    public async Task<List<ListAuthorsRow>> ListAuthors(ListAuthorsArgs args)
+    public async Task<List<ListAuthorsRow>> ListAuthorsAsync(ListAuthorsArgs args)
     {
         var queryParams = new Dictionary<string, object?>();
         queryParams.Add("offset", args.Offset);
@@ -111,7 +111,7 @@ public class QuerySql
         public required string Name { get; init; }
         public string? Bio { get; init; }
     };
-    public async Task CreateAuthor(CreateAuthorArgs args)
+    public async Task CreateAuthorAsync(CreateAuthorArgs args)
     {
         var queryParams = new Dictionary<string, object?>();
         queryParams.Add("id", args.Id);
@@ -139,7 +139,7 @@ public class QuerySql
         public required string Name { get; init; }
         public string? Bio { get; init; }
     };
-    public async Task<int> CreateAuthorReturnId(CreateAuthorReturnIdArgs args)
+    public async Task<int> CreateAuthorReturnIdAsync(CreateAuthorReturnIdArgs args)
     {
         var queryParams = new Dictionary<string, object?>();
         queryParams.Add("name", args.Name);
@@ -167,7 +167,7 @@ public class QuerySql
     {
         public required int Id { get; init; }
     };
-    public async Task<GetAuthorByIdRow?> GetAuthorById(GetAuthorByIdArgs args)
+    public async Task<GetAuthorByIdRow?> GetAuthorByIdAsync(GetAuthorByIdArgs args)
     {
         var queryParams = new Dictionary<string, object?>();
         queryParams.Add("id", args.Id);
@@ -197,7 +197,7 @@ public class QuerySql
         public required int IdArg { get; init; }
         public int? Take { get; init; }
     };
-    public async Task<GetAuthorByIdWithMultipleNamedParamRow?> GetAuthorByIdWithMultipleNamedParam(GetAuthorByIdWithMultipleNamedParamArgs args)
+    public async Task<GetAuthorByIdWithMultipleNamedParamRow?> GetAuthorByIdWithMultipleNamedParamAsync(GetAuthorByIdWithMultipleNamedParamArgs args)
     {
         var queryParams = new Dictionary<string, object?>();
         queryParams.Add("id_arg", args.IdArg);
@@ -228,7 +228,7 @@ public class QuerySql
     {
         public string? NamePattern { get; init; }
     };
-    public async Task<List<GetAuthorByNamePatternRow>> GetAuthorByNamePattern(GetAuthorByNamePatternArgs args)
+    public async Task<List<GetAuthorByNamePatternRow>> GetAuthorByNamePatternAsync(GetAuthorByNamePatternArgs args)
     {
         var queryParams = new Dictionary<string, object?>();
         queryParams.Add("name_pattern", args.NamePattern);
@@ -253,7 +253,7 @@ public class QuerySql
     {
         public string? Bio { get; init; }
     };
-    public async Task<long> UpdateAuthors(UpdateAuthorsArgs args)
+    public async Task<long> UpdateAuthorsAsync(UpdateAuthorsArgs args)
     {
         var queryParams = new Dictionary<string, object?>();
         queryParams.Add("bio", args.Bio);
@@ -279,7 +279,7 @@ public class QuerySql
     {
         public required int[] Ids { get; init; }
     };
-    public async Task<List<GetAuthorsByIdsRow>> GetAuthorsByIds(GetAuthorsByIdsArgs args)
+    public async Task<List<GetAuthorsByIdsRow>> GetAuthorsByIdsAsync(GetAuthorsByIdsArgs args)
     {
         var transformedSql = GetAuthorsByIdsSql;
         transformedSql = Utils.TransformQueryForSliceArgs(transformedSql, args.Ids.Length, "ids");
@@ -312,7 +312,7 @@ public class QuerySql
         public required int[] Ids { get; init; }
         public required string[] Names { get; init; }
     };
-    public async Task<List<GetAuthorsByIdsAndNamesRow>> GetAuthorsByIdsAndNames(GetAuthorsByIdsAndNamesArgs args)
+    public async Task<List<GetAuthorsByIdsAndNamesRow>> GetAuthorsByIdsAndNamesAsync(GetAuthorsByIdsAndNamesArgs args)
     {
         var transformedSql = GetAuthorsByIdsAndNamesSql;
         transformedSql = Utils.TransformQueryForSliceArgs(transformedSql, args.Ids.Length, "ids");
@@ -342,7 +342,7 @@ public class QuerySql
     {
         public required string Name { get; init; }
     };
-    public async Task DeleteAuthor(DeleteAuthorArgs args)
+    public async Task DeleteAuthorAsync(DeleteAuthorArgs args)
     {
         var queryParams = new Dictionary<string, object?>();
         queryParams.Add("name", args.Name);
@@ -368,7 +368,7 @@ public class QuerySql
         public required string Name { get; init; }
         public required int AuthorId { get; init; }
     };
-    public async Task<int> CreateBook(CreateBookArgs args)
+    public async Task<int> CreateBookAsync(CreateBookArgs args)
     {
         var queryParams = new Dictionary<string, object?>();
         queryParams.Add("name", args.Name);
@@ -394,7 +394,7 @@ public class QuerySql
         public required Author? Author { get; init; }
         public required Book? Book { get; init; }
     };
-    public async Task<List<ListAllAuthorsBooksRow>> ListAllAuthorsBooks()
+    public async Task<List<ListAllAuthorsBooksRow>> ListAllAuthorsBooksAsync()
     {
         if (this.Transaction == null)
         {
@@ -441,7 +441,7 @@ public class QuerySql
         public required Author? Author { get; init; }
         public required Author? Author2 { get; init; }
     };
-    public async Task<List<GetDuplicateAuthorsRow>> GetDuplicateAuthors()
+    public async Task<List<GetDuplicateAuthorsRow>> GetDuplicateAuthorsAsync()
     {
         if (this.Transaction == null)
         {
@@ -493,7 +493,7 @@ public class QuerySql
     {
         public required string Name { get; init; }
     };
-    public async Task<List<GetAuthorsByBookNameRow>> GetAuthorsByBookName(GetAuthorsByBookNameArgs args)
+    public async Task<List<GetAuthorsByBookNameRow>> GetAuthorsByBookNameAsync(GetAuthorsByBookNameArgs args)
     {
         if (this.Transaction == null)
         {
@@ -532,7 +532,7 @@ public class QuerySql
     }
 
     private const string DeleteAllAuthorsSql = "DELETE FROM authors";
-    public async Task DeleteAllAuthors()
+    public async Task DeleteAllAuthorsAsync()
     {
         if (this.Transaction == null)
         {
@@ -573,7 +573,7 @@ public class QuerySql
         public bool? CTextBoolOverride { get; init; }
         public bool? CIntegerBoolOverride { get; init; }
     };
-    public async Task InsertSqliteTypes(InsertSqliteTypesArgs args)
+    public async Task InsertSqliteTypesAsync(InsertSqliteTypesArgs args)
     {
         var queryParams = new Dictionary<string, object?>();
         queryParams.Add("c_integer", args.CInteger);
@@ -605,7 +605,7 @@ public class QuerySql
         public decimal? CReal { get; init; }
         public string? CText { get; init; }
     };
-    public async Task InsertSqliteTypesBatch(List<InsertSqliteTypesBatchArgs> args)
+    public async Task InsertSqliteTypesBatchAsync(List<InsertSqliteTypesBatchArgs> args)
     {
         using (var connection = new SqliteConnection(ConnectionString))
         {
@@ -651,7 +651,7 @@ public class QuerySql
         public bool? CTextBoolOverride { get; init; }
         public bool? CIntegerBoolOverride { get; init; }
     };
-    public async Task<GetSqliteTypesRow?> GetSqliteTypes()
+    public async Task<GetSqliteTypesRow?> GetSqliteTypesAsync()
     {
         if (this.Transaction == null)
         {
@@ -684,7 +684,7 @@ public class QuerySql
         public byte[]? CBlob { get; init; }
         public required int Cnt { get; init; }
     };
-    public async Task<GetSqliteTypesCntRow?> GetSqliteTypesCnt()
+    public async Task<GetSqliteTypesCntRow?> GetSqliteTypesCntAsync()
     {
         if (this.Transaction == null)
         {
@@ -711,7 +711,7 @@ public class QuerySql
         public decimal? MaxReal { get; init; }
         public object? MaxText { get; init; }
     };
-    public async Task<GetSqliteFunctionsRow?> GetSqliteFunctions()
+    public async Task<GetSqliteFunctionsRow?> GetSqliteFunctionsAsync()
     {
         if (this.Transaction == null)
         {
@@ -728,7 +728,7 @@ public class QuerySql
     }
 
     private const string DeleteAllSqliteTypesSql = "DELETE FROM types_sqlite";
-    public async Task DeleteAllSqliteTypes()
+    public async Task DeleteAllSqliteTypesAsync()
     {
         if (this.Transaction == null)
         {

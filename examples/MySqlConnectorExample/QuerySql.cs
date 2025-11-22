@@ -46,7 +46,7 @@ public class QuerySql
     private const string GetAuthorSql = "SELECT id, name, bio FROM authors WHERE name = @name LIMIT 1";
     public readonly record struct GetAuthorRow(long Id, string Name, string? Bio);
     public readonly record struct GetAuthorArgs(string Name);
-    public async Task<GetAuthorRow?> GetAuthor(GetAuthorArgs args)
+    public async Task<GetAuthorRow?> GetAuthorAsync(GetAuthorArgs args)
     {
         if (this.Transaction == null)
         {
@@ -104,7 +104,7 @@ public class QuerySql
                                             LIMIT @limit OFFSET @offset";
     public readonly record struct ListAuthorsRow(long Id, string Name, string? Bio);
     public readonly record struct ListAuthorsArgs(int Limit, int Offset);
-    public async Task<List<ListAuthorsRow>> ListAuthors(ListAuthorsArgs args)
+    public async Task<List<ListAuthorsRow>> ListAuthorsAsync(ListAuthorsArgs args)
     {
         if (this.Transaction == null)
         {
@@ -146,7 +146,7 @@ public class QuerySql
 
     private const string CreateAuthorSql = "INSERT INTO authors (id, name, bio) VALUES (@id, @name, @bio)";
     public readonly record struct CreateAuthorArgs(long Id, string Name, string? Bio);
-    public async Task CreateAuthor(CreateAuthorArgs args)
+    public async Task CreateAuthorAsync(CreateAuthorArgs args)
     {
         if (this.Transaction == null)
         {
@@ -180,7 +180,7 @@ public class QuerySql
 
     private const string CreateAuthorReturnIdSql = "INSERT INTO authors (name, bio) VALUES (@name, @bio)";
     public readonly record struct CreateAuthorReturnIdArgs(string Name, string? Bio);
-    public async Task<long> CreateAuthorReturnId(CreateAuthorReturnIdArgs args)
+    public async Task<long> CreateAuthorReturnIdAsync(CreateAuthorReturnIdArgs args)
     {
         if (this.Transaction == null)
         {
@@ -213,7 +213,7 @@ public class QuerySql
     private const string GetAuthorByIdSql = "SELECT id, name, bio FROM authors WHERE id = @id LIMIT 1";
     public readonly record struct GetAuthorByIdRow(long Id, string Name, string? Bio);
     public readonly record struct GetAuthorByIdArgs(long Id);
-    public async Task<GetAuthorByIdRow?> GetAuthorById(GetAuthorByIdArgs args)
+    public async Task<GetAuthorByIdRow?> GetAuthorByIdAsync(GetAuthorByIdArgs args)
     {
         if (this.Transaction == null)
         {
@@ -269,7 +269,7 @@ public class QuerySql
                                                        WHERE name LIKE COALESCE(@name_pattern, '%')";
     public readonly record struct GetAuthorByNamePatternRow(long Id, string Name, string? Bio);
     public readonly record struct GetAuthorByNamePatternArgs(string? NamePattern);
-    public async Task<List<GetAuthorByNamePatternRow>> GetAuthorByNamePattern(GetAuthorByNamePatternArgs args)
+    public async Task<List<GetAuthorByNamePatternRow>> GetAuthorByNamePatternAsync(GetAuthorByNamePatternArgs args)
     {
         if (this.Transaction == null)
         {
@@ -310,7 +310,7 @@ public class QuerySql
     private const string DeleteAuthorSql = @"DELETE FROM authors
                                              WHERE name = @name";
     public readonly record struct DeleteAuthorArgs(string Name);
-    public async Task DeleteAuthor(DeleteAuthorArgs args)
+    public async Task DeleteAuthorAsync(DeleteAuthorArgs args)
     {
         if (this.Transaction == null)
         {
@@ -339,7 +339,7 @@ public class QuerySql
     }
 
     private const string DeleteAllAuthorsSql = "DELETE FROM authors";
-    public async Task DeleteAllAuthors()
+    public async Task DeleteAllAuthorsAsync()
     {
         if (this.Transaction == null)
         {
@@ -369,7 +369,7 @@ public class QuerySql
                                               SET bio = @bio
                                               WHERE bio IS NOT NULL";
     public readonly record struct UpdateAuthorsArgs(string? Bio);
-    public async Task<long> UpdateAuthors(UpdateAuthorsArgs args)
+    public async Task<long> UpdateAuthorsAsync(UpdateAuthorsArgs args)
     {
         if (this.Transaction == null)
         {
@@ -398,7 +398,7 @@ public class QuerySql
     private const string GetAuthorsByIdsSql = "SELECT id, name, bio FROM authors WHERE id IN (/*SLICE:ids*/@ids)";
     public readonly record struct GetAuthorsByIdsRow(long Id, string Name, string? Bio);
     public readonly record struct GetAuthorsByIdsArgs(long[] Ids);
-    public async Task<List<GetAuthorsByIdsRow>> GetAuthorsByIds(GetAuthorsByIdsArgs args)
+    public async Task<List<GetAuthorsByIdsRow>> GetAuthorsByIdsAsync(GetAuthorsByIdsArgs args)
     {
         var transformedSql = GetAuthorsByIdsSql;
         transformedSql = Utils.TransformQueryForSliceArgs(transformedSql, args.Ids.Length, "ids");
@@ -443,7 +443,7 @@ public class QuerySql
     private const string GetAuthorsByIdsAndNamesSql = "SELECT id, name, bio FROM authors WHERE id IN (/*SLICE:ids*/@ids) AND name IN (/*SLICE:names*/@names)";
     public readonly record struct GetAuthorsByIdsAndNamesRow(long Id, string Name, string? Bio);
     public readonly record struct GetAuthorsByIdsAndNamesArgs(long[] Ids, string[] Names);
-    public async Task<List<GetAuthorsByIdsAndNamesRow>> GetAuthorsByIdsAndNames(GetAuthorsByIdsAndNamesArgs args)
+    public async Task<List<GetAuthorsByIdsAndNamesRow>> GetAuthorsByIdsAndNamesAsync(GetAuthorsByIdsAndNamesArgs args)
     {
         var transformedSql = GetAuthorsByIdsAndNamesSql;
         transformedSql = Utils.TransformQueryForSliceArgs(transformedSql, args.Ids.Length, "ids");
@@ -492,7 +492,7 @@ public class QuerySql
 
     private const string CreateBookSql = "INSERT INTO books (name, author_id) VALUES (@name, @author_id)";
     public readonly record struct CreateBookArgs(string Name, long AuthorId);
-    public async Task<long> CreateBook(CreateBookArgs args)
+    public async Task<long> CreateBookAsync(CreateBookArgs args)
     {
         if (this.Transaction == null)
         {
@@ -526,7 +526,7 @@ public class QuerySql
                                                     FROM authors JOIN books ON authors.id = books.author_id 
                                                     ORDER BY authors.name";
     public readonly record struct ListAllAuthorsBooksRow(Author? Author, Book? Book);
-    public async Task<List<ListAllAuthorsBooksRow>> ListAllAuthorsBooks()
+    public async Task<List<ListAllAuthorsBooksRow>> ListAllAuthorsBooksAsync()
     {
         if (this.Transaction == null)
         {
@@ -566,7 +566,7 @@ public class QuerySql
                                                     FROM authors authors1 JOIN authors authors2 ON authors1.name = authors2.name
                                                     WHERE authors1.id < authors2.id";
     public readonly record struct GetDuplicateAuthorsRow(Author? Author, Author? Author2);
-    public async Task<List<GetDuplicateAuthorsRow>> GetDuplicateAuthors()
+    public async Task<List<GetDuplicateAuthorsRow>> GetDuplicateAuthorsAsync()
     {
         if (this.Transaction == null)
         {
@@ -607,7 +607,7 @@ public class QuerySql
                                                      WHERE books.name = @name";
     public readonly record struct GetAuthorsByBookNameRow(long Id, string Name, string? Bio, Book? Book);
     public readonly record struct GetAuthorsByBookNameArgs(string Name);
-    public async Task<List<GetAuthorsByBookNameRow>> GetAuthorsByBookName(GetAuthorsByBookNameArgs args)
+    public async Task<List<GetAuthorsByBookNameRow>> GetAuthorsByBookNameAsync(GetAuthorsByBookNameArgs args)
     {
         if (this.Transaction == null)
         {
@@ -647,7 +647,7 @@ public class QuerySql
 
     private const string CreateExtendedBioSql = "INSERT INTO extended.bios (author_name, name, bio_type, author_type) VALUES (@author_name, @name, @bio_type, @author_type)";
     public readonly record struct CreateExtendedBioArgs(string? AuthorName, string? Name, BiosBioType? BioType, HashSet<BiosAuthorType>? AuthorType);
-    public async Task CreateExtendedBio(CreateExtendedBioArgs args)
+    public async Task CreateExtendedBioAsync(CreateExtendedBioArgs args)
     {
         if (this.Transaction == null)
         {
@@ -684,7 +684,7 @@ public class QuerySql
     private const string GetFirstExtendedBioByTypeSql = "SELECT author_name, name, bio_type, author_type FROM extended.bios WHERE bio_type = @bio_type LIMIT 1";
     public readonly record struct GetFirstExtendedBioByTypeRow(string? AuthorName, string? Name, BiosBioType? BioType, HashSet<BiosAuthorType>? AuthorType);
     public readonly record struct GetFirstExtendedBioByTypeArgs(BiosBioType? BioType);
-    public async Task<GetFirstExtendedBioByTypeRow?> GetFirstExtendedBioByType(GetFirstExtendedBioByTypeArgs args)
+    public async Task<GetFirstExtendedBioByTypeRow?> GetFirstExtendedBioByTypeAsync(GetFirstExtendedBioByTypeArgs args)
     {
         if (this.Transaction == null)
         {
@@ -739,7 +739,7 @@ public class QuerySql
     }
 
     private const string TruncateExtendedBiosSql = "TRUNCATE TABLE extended.bios";
-    public async Task TruncateExtendedBios()
+    public async Task TruncateExtendedBiosAsync()
     {
         if (this.Transaction == null)
         {
@@ -786,7 +786,7 @@ public class QuerySql
                                                         ) 
                                                         VALUES (@c_bool, @c_boolean, @c_tinyint, @c_smallint, @c_mediumint, @c_int, @c_integer, @c_bigint, @c_decimal, @c_dec, @c_numeric, @c_fixed, @c_float, @c_double, @c_double_precision)";
     public readonly record struct InsertMysqlNumericTypesArgs(bool? CBool, bool? CBoolean, short? CTinyint, short? CSmallint, int? CMediumint, int? CInt, int? CInteger, long? CBigint, decimal? CDecimal, decimal? CDec, decimal? CNumeric, decimal? CFixed, double? CFloat, double? CDouble, double? CDoublePrecision);
-    public async Task InsertMysqlNumericTypes(InsertMysqlNumericTypesArgs args)
+    public async Task InsertMysqlNumericTypesAsync(InsertMysqlNumericTypesArgs args)
     {
         if (this.Transaction == null)
         {
@@ -843,7 +843,7 @@ public class QuerySql
     }
 
     public readonly record struct InsertMysqlNumericTypesBatchArgs(bool? CBool, bool? CBoolean, short? CTinyint, short? CSmallint, int? CMediumint, int? CInt, int? CInteger, long? CBigint, double? CFloat, decimal? CNumeric, decimal? CDecimal, decimal? CDec, decimal? CFixed, double? CDouble, double? CDoublePrecision);
-    public async Task InsertMysqlNumericTypesBatch(List<InsertMysqlNumericTypesBatchArgs> args)
+    public async Task InsertMysqlNumericTypesBatchAsync(List<InsertMysqlNumericTypesBatchArgs> args)
     {
         const string supportedDateTimeFormat = "yyyy-MM-dd H:mm:ss";
         var config = new CsvConfiguration(CultureInfo.CurrentCulture)
@@ -896,7 +896,7 @@ public class QuerySql
 
     private const string GetMysqlNumericTypesSql = "SELECT c_bool, c_boolean, c_tinyint, c_smallint, c_mediumint, c_int, c_integer, c_bigint, c_float, c_decimal, c_dec, c_numeric, c_fixed, c_double, c_double_precision FROM mysql_numeric_types LIMIT 1";
     public readonly record struct GetMysqlNumericTypesRow(bool? CBool, bool? CBoolean, short? CTinyint, short? CSmallint, int? CMediumint, int? CInt, int? CInteger, long? CBigint, double? CFloat, decimal? CDecimal, decimal? CDec, decimal? CNumeric, decimal? CFixed, double? CDouble, double? CDoublePrecision);
-    public async Task<GetMysqlNumericTypesRow?> GetMysqlNumericTypes()
+    public async Task<GetMysqlNumericTypesRow?> GetMysqlNumericTypesAsync()
     {
         if (this.Transaction == null)
         {
@@ -1006,7 +1006,7 @@ public class QuerySql
                                                             c_double_precision
                                                         LIMIT 1";
     public readonly record struct GetMysqlNumericTypesCntRow(long Cnt, bool? CBool, bool? CBoolean, short? CTinyint, short? CSmallint, int? CMediumint, int? CInt, int? CInteger, long? CBigint, double? CFloat, decimal? CNumeric, decimal? CDecimal, decimal? CDec, decimal? CFixed, double? CDouble, double? CDoublePrecision);
-    public async Task<GetMysqlNumericTypesCntRow?> GetMysqlNumericTypesCnt()
+    public async Task<GetMysqlNumericTypesCntRow?> GetMysqlNumericTypesCntAsync()
     {
         if (this.Transaction == null)
         {
@@ -1083,7 +1083,7 @@ public class QuerySql
     }
 
     private const string TruncateMysqlNumericTypesSql = "TRUNCATE TABLE mysql_numeric_types";
-    public async Task TruncateMysqlNumericTypes()
+    public async Task TruncateMysqlNumericTypesAsync()
     {
         if (this.Transaction == null)
         {
@@ -1127,7 +1127,7 @@ public class QuerySql
                                                        ) 
                                                        VALUES (@c_char, @c_nchar, @c_national_char, @c_varchar, @c_tinytext, @c_mediumtext, @c_text, @c_longtext, @c_json, @c_json_string_override, @c_enum, @c_set)";
     public readonly record struct InsertMysqlStringTypesArgs(string? CChar, string? CNchar, string? CNationalChar, string? CVarchar, string? CTinytext, string? CMediumtext, string? CText, string? CLongtext, JsonElement? CJson, string? CJsonStringOverride, MysqlStringTypesCEnum? CEnum, HashSet<MysqlStringTypesCSet>? CSet);
-    public async Task InsertMysqlStringTypes(InsertMysqlStringTypesArgs args)
+    public async Task InsertMysqlStringTypesAsync(InsertMysqlStringTypesArgs args)
     {
         if (this.Transaction == null)
         {
@@ -1178,7 +1178,7 @@ public class QuerySql
     }
 
     public readonly record struct InsertMysqlStringTypesBatchArgs(string? CChar, string? CNchar, string? CNationalChar, string? CVarchar, string? CTinytext, string? CMediumtext, string? CText, string? CLongtext, JsonElement? CJson, string? CJsonStringOverride, MysqlStringTypesCEnum? CEnum, HashSet<MysqlStringTypesCSet>? CSet);
-    public async Task InsertMysqlStringTypesBatch(List<InsertMysqlStringTypesBatchArgs> args)
+    public async Task InsertMysqlStringTypesBatchAsync(List<InsertMysqlStringTypesBatchArgs> args)
     {
         const string supportedDateTimeFormat = "yyyy-MM-dd H:mm:ss";
         var config = new CsvConfiguration(CultureInfo.CurrentCulture)
@@ -1229,7 +1229,7 @@ public class QuerySql
 
     private const string GetMysqlStringTypesSql = "SELECT c_char, c_nchar, c_national_char, c_varchar, c_tinytext, c_mediumtext, c_text, c_longtext, c_json, c_json_string_override, c_enum, c_set FROM mysql_string_types LIMIT 1";
     public readonly record struct GetMysqlStringTypesRow(string? CChar, string? CNchar, string? CNationalChar, string? CVarchar, string? CTinytext, string? CMediumtext, string? CText, string? CLongtext, JsonElement? CJson, string? CJsonStringOverride, MysqlStringTypesCEnum? CEnum, HashSet<MysqlStringTypesCSet>? CSet);
-    public async Task<GetMysqlStringTypesRow?> GetMysqlStringTypes()
+    public async Task<GetMysqlStringTypesRow?> GetMysqlStringTypesAsync()
     {
         if (this.Transaction == null)
         {
@@ -1327,7 +1327,7 @@ public class QuerySql
                                                            c_set
                                                        LIMIT 1";
     public readonly record struct GetMysqlStringTypesCntRow(long Cnt, string? CChar, string? CNchar, string? CNationalChar, string? CVarchar, string? CTinytext, string? CMediumtext, string? CText, string? CLongtext, JsonElement? CJson, string? CJsonStringOverride, MysqlStringTypesCEnum? CEnum, HashSet<MysqlStringTypesCSet>? CSet);
-    public async Task<GetMysqlStringTypesCntRow?> GetMysqlStringTypesCnt()
+    public async Task<GetMysqlStringTypesCntRow?> GetMysqlStringTypesCntAsync()
     {
         if (this.Transaction == null)
         {
@@ -1398,7 +1398,7 @@ public class QuerySql
     }
 
     private const string TruncateMysqlStringTypesSql = "TRUNCATE TABLE mysql_string_types";
-    public async Task TruncateMysqlStringTypes()
+    public async Task TruncateMysqlStringTypesAsync()
     {
         if (this.Transaction == null)
         {
@@ -1436,7 +1436,7 @@ public class QuerySql
                                                          ) 
                                                          VALUES (@c_year, @c_date, @c_datetime, @c_timestamp, @c_time, @c_timestamp_noda_instant_override)";
     public readonly record struct InsertMysqlDatetimeTypesArgs(short? CYear, DateTime? CDate, DateTime? CDatetime, DateTime? CTimestamp, TimeSpan? CTime, Instant? CTimestampNodaInstantOverride);
-    public async Task InsertMysqlDatetimeTypes(InsertMysqlDatetimeTypesArgs args)
+    public async Task InsertMysqlDatetimeTypesAsync(InsertMysqlDatetimeTypesArgs args)
     {
         if (this.Transaction == null)
         {
@@ -1475,7 +1475,7 @@ public class QuerySql
     }
 
     public readonly record struct InsertMysqlDatetimeTypesBatchArgs(short? CYear, DateTime? CDate, DateTime? CDatetime, DateTime? CTimestamp, TimeSpan? CTime);
-    public async Task InsertMysqlDatetimeTypesBatch(List<InsertMysqlDatetimeTypesBatchArgs> args)
+    public async Task InsertMysqlDatetimeTypesBatchAsync(List<InsertMysqlDatetimeTypesBatchArgs> args)
     {
         const string supportedDateTimeFormat = "yyyy-MM-dd H:mm:ss";
         var config = new CsvConfiguration(CultureInfo.CurrentCulture)
@@ -1524,7 +1524,7 @@ public class QuerySql
 
     private const string GetMysqlDatetimeTypesSql = "SELECT c_year, c_date, c_datetime, c_timestamp, c_time, c_timestamp_noda_instant_override FROM mysql_datetime_types LIMIT 1";
     public readonly record struct GetMysqlDatetimeTypesRow(short? CYear, DateTime? CDate, DateTime? CDatetime, DateTime? CTimestamp, TimeSpan? CTime, Instant? CTimestampNodaInstantOverride);
-    public async Task<GetMysqlDatetimeTypesRow?> GetMysqlDatetimeTypes()
+    public async Task<GetMysqlDatetimeTypesRow?> GetMysqlDatetimeTypesAsync()
     {
         if (this.Transaction == null)
         {
@@ -1608,7 +1608,7 @@ public class QuerySql
                                                              c_time
                                                          LIMIT 1";
     public readonly record struct GetMysqlDatetimeTypesCntRow(long Cnt, short? CYear, DateTime? CDate, DateTime? CDatetime, DateTime? CTimestamp, TimeSpan? CTime);
-    public async Task<GetMysqlDatetimeTypesCntRow?> GetMysqlDatetimeTypesCnt()
+    public async Task<GetMysqlDatetimeTypesCntRow?> GetMysqlDatetimeTypesCntAsync()
     {
         if (this.Transaction == null)
         {
@@ -1665,7 +1665,7 @@ public class QuerySql
     }
 
     private const string TruncateMysqlDatetimeTypesSql = "TRUNCATE TABLE mysql_datetime_types";
-    public async Task TruncateMysqlDatetimeTypes()
+    public async Task TruncateMysqlDatetimeTypesAsync()
     {
         if (this.Transaction == null)
         {
@@ -1704,7 +1704,7 @@ public class QuerySql
                                                        ) 
                                                        VALUES (@c_bit, @c_binary, @c_varbinary, @c_tinyblob, @c_blob, @c_mediumblob, @c_longblob)";
     public readonly record struct InsertMysqlBinaryTypesArgs(byte? CBit, byte[]? CBinary, byte[]? CVarbinary, byte[]? CTinyblob, byte[]? CBlob, byte[]? CMediumblob, byte[]? CLongblob);
-    public async Task InsertMysqlBinaryTypes(InsertMysqlBinaryTypesArgs args)
+    public async Task InsertMysqlBinaryTypesAsync(InsertMysqlBinaryTypesArgs args)
     {
         if (this.Transaction == null)
         {
@@ -1745,7 +1745,7 @@ public class QuerySql
     }
 
     public readonly record struct InsertMysqlBinaryTypesBatchArgs(byte? CBit, byte[]? CBinary, byte[]? CVarbinary, byte[]? CTinyblob, byte[]? CBlob, byte[]? CMediumblob, byte[]? CLongblob);
-    public async Task InsertMysqlBinaryTypesBatch(List<InsertMysqlBinaryTypesBatchArgs> args)
+    public async Task InsertMysqlBinaryTypesBatchAsync(List<InsertMysqlBinaryTypesBatchArgs> args)
     {
         const string supportedDateTimeFormat = "yyyy-MM-dd H:mm:ss";
         var config = new CsvConfiguration(CultureInfo.CurrentCulture)
@@ -1795,7 +1795,7 @@ public class QuerySql
 
     private const string GetMysqlBinaryTypesSql = "SELECT c_bit, c_binary, c_varbinary, c_tinyblob, c_blob, c_mediumblob, c_longblob FROM mysql_binary_types LIMIT 1";
     public readonly record struct GetMysqlBinaryTypesRow(byte? CBit, byte[]? CBinary, byte[]? CVarbinary, byte[]? CTinyblob, byte[]? CBlob, byte[]? CMediumblob, byte[]? CLongblob);
-    public async Task<GetMysqlBinaryTypesRow?> GetMysqlBinaryTypes()
+    public async Task<GetMysqlBinaryTypesRow?> GetMysqlBinaryTypesAsync()
     {
         if (this.Transaction == null)
         {
@@ -1873,7 +1873,7 @@ public class QuerySql
                                                            c_longblob
                                                        LIMIT 1";
     public readonly record struct GetMysqlBinaryTypesCntRow(long Cnt, byte? CBit, byte[]? CBinary, byte[]? CVarbinary, byte[]? CTinyblob, byte[]? CBlob, byte[]? CMediumblob, byte[]? CLongblob);
-    public async Task<GetMysqlBinaryTypesCntRow?> GetMysqlBinaryTypesCnt()
+    public async Task<GetMysqlBinaryTypesCntRow?> GetMysqlBinaryTypesCntAsync()
     {
         if (this.Transaction == null)
         {
@@ -1934,7 +1934,7 @@ public class QuerySql
     }
 
     private const string TruncateMysqlBinaryTypesSql = "TRUNCATE TABLE mysql_binary_types";
-    public async Task TruncateMysqlBinaryTypes()
+    public async Task TruncateMysqlBinaryTypesAsync()
     {
         if (this.Transaction == null)
         {
@@ -1969,7 +1969,7 @@ public class QuerySql
                                                   CROSS JOIN mysql_string_types
                                                   CROSS JOIN mysql_datetime_types";
     public readonly record struct GetMysqlFunctionsRow(int? MaxInt, string? MaxVarchar, DateTime MaxTimestamp);
-    public async Task<GetMysqlFunctionsRow?> GetMysqlFunctions()
+    public async Task<GetMysqlFunctionsRow?> GetMysqlFunctionsAsync()
     {
         if (this.Transaction == null)
         {

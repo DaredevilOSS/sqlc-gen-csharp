@@ -25,6 +25,7 @@ public class Options
         NamespaceName = rawOptions.NamespaceName;
         DotnetFramework = DotnetFrameworkExtensions.ParseName(rawOptions.TargetFramework);
         Overrides = rawOptions.Overrides ?? [];
+        WithAsyncSuffix = rawOptions.WithAsyncSuffix;
 
         if (rawOptions.DebugRequest && generateRequest.Settings.Codegen.Wasm is not null)
             throw new ArgumentException("Debug request mode cannot be used with WASM plugin");
@@ -56,6 +57,8 @@ public class Options
     /// https://learn.microsoft.com/en-us/nuget/consume-packages/central-package-management
     /// </summary>
     public bool UseCentralPackageManagement { get; }
+
+    public bool WithAsyncSuffix { get; }
 
     private static readonly Dictionary<string, DriverName> EngineToDriverMapping = new()
     {

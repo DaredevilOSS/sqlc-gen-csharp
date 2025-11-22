@@ -13,7 +13,7 @@ public class ExecRowsDeclareGen(DbDriver dbDriver)
     {
         var parametersStr = CommonGen.GetMethodParameterList(argInterface, query.Params);
         return ParseMemberDeclaration($$"""
-            public async Task<long> {{query.Name}}({{parametersStr}})
+            public async Task<long> {{query.Name.ToMethodName(dbDriver.Options.WithAsyncSuffix)}}({{parametersStr}})
             {
                 {{GetMethodBody(queryTextConstant, query)}}
             }

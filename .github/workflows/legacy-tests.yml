@@ -20,6 +20,11 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+
+      - name: Set up .NET from global.json
+        uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
           
       - name: Load .env file
         uses: xom9ikk/dotenv@v2.3.0

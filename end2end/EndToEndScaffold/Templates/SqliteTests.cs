@@ -38,7 +38,7 @@ public static class SqliteTests
             
                      [Test]
                      [TestCaseSource(nameof(SqliteTypesTestCases))]
-                     public async Task TestSqliteTypes(
+                     public async Task TestSqliteTypesAsync(
                           int? cInteger,
                           decimal? cReal,
                           string cText,
@@ -50,7 +50,7 @@ public static class SqliteTests
                           Instant? cTextNodaInstantOverride,
                           Instant? cIntegerNodaInstantOverride)
                      {
-                         await QuerySql.InsertSqliteTypes(new QuerySql.InsertSqliteTypesArgs
+                         await QuerySql.InsertSqliteTypesAsync(new QuerySql.InsertSqliteTypesArgs
                          {
                              CInteger = cInteger,
                              CReal = cReal,
@@ -77,7 +77,7 @@ public static class SqliteTests
                              CTextNodaInstantOverride = cTextNodaInstantOverride,
                              CIntegerNodaInstantOverride = cIntegerNodaInstantOverride
                          };
-                         var actual = await QuerySql.GetSqliteTypes();
+                         var actual = await QuerySql.GetSqliteTypesAsync();
                          AssertSingularEquals(expected, actual{{Consts.UnknownRecordValuePlaceholder}});
 
                          void AssertSingularEquals(QuerySql.GetSqliteTypesRow x, QuerySql.GetSqliteTypesRow y)
@@ -103,7 +103,7 @@ public static class SqliteTests
                      [TestCase(100, 312, -7541.3309, "Johnny B. Good")]
                      [TestCase(500, -768, 8453.5678, "Bad to the Bone")]
                      [TestCase(10, null, null, null)]
-                     public async Task TestCopyFrom(
+                     public async Task TestCopyFromAsync(
                         int batchSize, 
                         int? cInteger, 
                         decimal? cReal, 
@@ -117,7 +117,7 @@ public static class SqliteTests
                                  CText = cText
                              })
                              .ToList();
-                         await QuerySql.InsertSqliteTypesBatch(batchArgs);
+                         await QuerySql.InsertSqliteTypesBatchAsync(batchArgs);
                          var expected = new QuerySql.GetSqliteTypesCntRow
                          {
                              Cnt = batchSize,
@@ -125,7 +125,7 @@ public static class SqliteTests
                              CReal = cReal,
                              CText = cText
                          };
-                         var actual = await QuerySql.GetSqliteTypesCnt();
+                         var actual = await QuerySql.GetSqliteTypesCntAsync();
                          AssertSingularEquals(expected, actual{{Consts.UnknownRecordValuePlaceholder}});
                          
                          void AssertSingularEquals(QuerySql.GetSqliteTypesCntRow x, QuerySql.GetSqliteTypesCntRow y)
@@ -142,16 +142,16 @@ public static class SqliteTests
         {
             Impl = $$"""
                      [Test]
-                     public async Task TestSqliteTransaction()
+                     public async Task TestSqliteTransactionAsync()
                      {
                          var connection = new Microsoft.Data.Sqlite.SqliteConnection(Environment.GetEnvironmentVariable(EndToEndCommon.SqliteConnectionStringEnv));
                          await connection.OpenAsync();
                          var transaction = connection.BeginTransaction();
 
                          var querySqlWithTx = QuerySql.WithTransaction(transaction);
-                         await querySqlWithTx.CreateAuthor(new QuerySql.CreateAuthorArgs { Id = {{Consts.BojackId}}, Name = {{Consts.BojackAuthor}}, Bio = {{Consts.BojackTheme}} });
+                         await querySqlWithTx.CreateAuthorAsync(new QuerySql.CreateAuthorArgs { Id = {{Consts.BojackId}}, Name = {{Consts.BojackAuthor}}, Bio = {{Consts.BojackTheme}} });
 
-                         var actual = await QuerySql.GetAuthor(new QuerySql.GetAuthorArgs { Name = {{Consts.BojackAuthor}} });
+                         var actual = await QuerySql.GetAuthorAsync(new QuerySql.GetAuthorArgs { Name = {{Consts.BojackAuthor}} });
                          ClassicAssert.IsNull(actual);
 
                          transaction.Commit();
@@ -162,7 +162,7 @@ public static class SqliteTests
                              Name = {{Consts.BojackAuthor}},
                              Bio = {{Consts.BojackTheme}}
                          };
-                         actual = await QuerySql.GetAuthor(new QuerySql.GetAuthorArgs { Name = {{Consts.BojackAuthor}} });
+                         actual = await QuerySql.GetAuthorAsync(new QuerySql.GetAuthorArgs { Name = {{Consts.BojackAuthor}} });
                          AssertSingularEquals(expected, actual{{Consts.UnknownRecordValuePlaceholder}});
 
                          void AssertSingularEquals(QuerySql.GetAuthorRow x, QuerySql.GetAuthorRow y)
@@ -178,18 +178,18 @@ public static class SqliteTests
         {
             Impl = $$"""
                      [Test]
-                     public async Task TestSqliteTransactionRollback()
+                     public async Task TestSqliteTransactionRollbackAsync()
                      {
                          var connection = new Microsoft.Data.Sqlite.SqliteConnection(Environment.GetEnvironmentVariable(EndToEndCommon.SqliteConnectionStringEnv));
                          await connection.OpenAsync();
                          var transaction = connection.BeginTransaction();
 
                          var sqlQueryWithTx = QuerySql.WithTransaction(transaction);
-                         await sqlQueryWithTx.CreateAuthor(new QuerySql.CreateAuthorArgs { Id = {{Consts.BojackId}}, Name = {{Consts.BojackAuthor}}, Bio = {{Consts.BojackTheme}} });
+                         await sqlQueryWithTx.CreateAuthorAsync(new QuerySql.CreateAuthorArgs { Id = {{Consts.BojackId}}, Name = {{Consts.BojackAuthor}}, Bio = {{Consts.BojackTheme}} });
 
                          transaction.Rollback();
 
-                         var actual = await this.QuerySql.GetAuthor(new QuerySql.GetAuthorArgs { Name = {{Consts.BojackAuthor}} });
+                         var actual = await this.QuerySql.GetAuthorAsync(new QuerySql.GetAuthorArgs { Name = {{Consts.BojackAuthor}} });
                          ClassicAssert.IsNull(actual);
                      }
                      """
@@ -200,12 +200,12 @@ public static class SqliteTests
                      [Test]
                      [TestCase(-54355, 9787.66, "Have One On Me")]
                      [TestCase(null, 0.0, null)]
-                     public async Task TestSqliteDataTypesOverride(
+                     public async Task TestSqliteDataTypesOverrideAsync(
                         int? cInteger,
                         decimal cReal,
                         string cText)
                      {
-                         await QuerySql.InsertSqliteTypes(new QuerySql.InsertSqliteTypesArgs
+                         await QuerySql.InsertSqliteTypesAsync(new QuerySql.InsertSqliteTypesArgs
                          {
                              CInteger = cInteger,
                              CReal = cReal,
@@ -218,7 +218,7 @@ public static class SqliteTests
                              MaxReal = cReal,
                              MaxText = cText
                          };
-                         var actual = await QuerySql.GetSqliteFunctions();
+                         var actual = await QuerySql.GetSqliteFunctionsAsync();
                          AssertSingularEquals(expected, actual{{Consts.UnknownRecordValuePlaceholder}});
 
                          void AssertSingularEquals(QuerySql.GetSqliteFunctionsRow x, QuerySql.GetSqliteFunctionsRow y)
@@ -234,7 +234,7 @@ public static class SqliteTests
         {
             Impl = $$"""
                      [Test]
-                     public async Task TestGetAuthorByIdWithMultipleNamedParam()
+                     public async Task TestGetAuthorByIdWithMultipleNamedParamAsync()
                      {
                          {{Consts.CreateBojackAuthor}}
                          var expected = new QuerySql.GetAuthorByIdWithMultipleNamedParamRow
@@ -243,7 +243,7 @@ public static class SqliteTests
                              Name = {{Consts.BojackAuthor}},
                              Bio = {{Consts.BojackTheme}}
                          };
-                         var actual = await this.QuerySql.GetAuthorByIdWithMultipleNamedParam(new QuerySql.GetAuthorByIdWithMultipleNamedParamArgs
+                         var actual = await this.QuerySql.GetAuthorByIdWithMultipleNamedParamAsync(new QuerySql.GetAuthorByIdWithMultipleNamedParamArgs
                          {
                              IdArg = {{Consts.BojackId}},
                              Take = 1

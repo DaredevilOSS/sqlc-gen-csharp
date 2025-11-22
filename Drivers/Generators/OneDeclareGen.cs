@@ -15,7 +15,7 @@ public class OneDeclareGen(DbDriver dbDriver)
         var returnType = $"Task<{dbDriver.AddNullableSuffixIfNeeded(returnInterface, false)}>";
         var parametersStr = CommonGen.GetMethodParameterList(argInterface, query.Params);
         return ParseMemberDeclaration($$"""
-            public async {{returnType}} {{query.Name}}({{parametersStr}})
+            public async {{returnType}} {{query.Name.ToMethodName(dbDriver.Options.WithAsyncSuffix)}}({{parametersStr}})
             {
                 {{GetMethodBody(queryTextConstant, returnInterface, query)}}
             }

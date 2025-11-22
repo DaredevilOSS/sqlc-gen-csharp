@@ -46,7 +46,7 @@ public class QuerySql
                                           WHERE name = @name LIMIT 1";
     public readonly record struct GetAuthorRow(long Id, string Name, string? Bio);
     public readonly record struct GetAuthorArgs(string Name);
-    public async Task<GetAuthorRow?> GetAuthor(GetAuthorArgs args)
+    public async Task<GetAuthorRow?> GetAuthorAsync(GetAuthorArgs args)
     {
         if (this.Transaction == null)
         {
@@ -104,7 +104,7 @@ public class QuerySql
                                             OFFSET @offset";
     public readonly record struct ListAuthorsRow(long Id, string Name, string? Bio);
     public readonly record struct ListAuthorsArgs(int Offset, int Limit);
-    public async Task<List<ListAuthorsRow>> ListAuthors(ListAuthorsArgs args)
+    public async Task<List<ListAuthorsRow>> ListAuthorsAsync(ListAuthorsArgs args)
     {
         if (this.Transaction == null)
         {
@@ -146,7 +146,7 @@ public class QuerySql
     private const string CreateAuthorSql = "INSERT INTO authors (id, name, bio) VALUES (@id, @name, @bio) RETURNING id, name, bio";
     public readonly record struct CreateAuthorRow(long Id, string Name, string? Bio);
     public readonly record struct CreateAuthorArgs(long Id, string Name, string? Bio);
-    public async Task<CreateAuthorRow?> CreateAuthor(CreateAuthorArgs args)
+    public async Task<CreateAuthorRow?> CreateAuthorAsync(CreateAuthorArgs args)
     {
         if (this.Transaction == null)
         {
@@ -204,7 +204,7 @@ public class QuerySql
     private const string CreateAuthorReturnIdSql = "INSERT INTO authors (name, bio) VALUES (@name, @bio) RETURNING id";
     public readonly record struct CreateAuthorReturnIdRow(long Id);
     public readonly record struct CreateAuthorReturnIdArgs(string Name, string? Bio);
-    public async Task<long> CreateAuthorReturnId(CreateAuthorReturnIdArgs args)
+    public async Task<long> CreateAuthorReturnIdAsync(CreateAuthorReturnIdArgs args)
     {
         if (this.Transaction == null)
         {
@@ -237,7 +237,7 @@ public class QuerySql
                                               WHERE id = @id LIMIT 1";
     public readonly record struct GetAuthorByIdRow(long Id, string Name, string? Bio);
     public readonly record struct GetAuthorByIdArgs(long Id);
-    public async Task<GetAuthorByIdRow?> GetAuthorById(GetAuthorByIdArgs args)
+    public async Task<GetAuthorByIdRow?> GetAuthorByIdAsync(GetAuthorByIdArgs args)
     {
         if (this.Transaction == null)
         {
@@ -292,7 +292,7 @@ public class QuerySql
                                                        WHERE name LIKE COALESCE(@name_pattern, '%')";
     public readonly record struct GetAuthorByNamePatternRow(long Id, string Name, string? Bio);
     public readonly record struct GetAuthorByNamePatternArgs(string? NamePattern);
-    public async Task<List<GetAuthorByNamePatternRow>> GetAuthorByNamePattern(GetAuthorByNamePatternArgs args)
+    public async Task<List<GetAuthorByNamePatternRow>> GetAuthorByNamePatternAsync(GetAuthorByNamePatternArgs args)
     {
         if (this.Transaction == null)
         {
@@ -332,7 +332,7 @@ public class QuerySql
     private const string DeleteAuthorSql = @"DELETE FROM authors
                                              WHERE name = @name";
     public readonly record struct DeleteAuthorArgs(string Name);
-    public async Task DeleteAuthor(DeleteAuthorArgs args)
+    public async Task DeleteAuthorAsync(DeleteAuthorArgs args)
     {
         if (this.Transaction == null)
         {
@@ -360,7 +360,7 @@ public class QuerySql
     }
 
     private const string TruncateAuthorsSql = "TRUNCATE TABLE authors CASCADE";
-    public async Task TruncateAuthors()
+    public async Task TruncateAuthorsAsync()
     {
         if (this.Transaction == null)
         {
@@ -389,7 +389,7 @@ public class QuerySql
                                               SET bio = @bio
                                               WHERE bio IS NOT NULL";
     public readonly record struct UpdateAuthorsArgs(string? Bio);
-    public async Task<long> UpdateAuthors(UpdateAuthorsArgs args)
+    public async Task<long> UpdateAuthorsAsync(UpdateAuthorsArgs args)
     {
         if (this.Transaction == null)
         {
@@ -418,7 +418,7 @@ public class QuerySql
                                                 WHERE id = ANY(@longArr_1::BIGINT [])";
     public readonly record struct GetAuthorsByIdsRow(long Id, string Name, string? Bio);
     public readonly record struct GetAuthorsByIdsArgs(long[] LongArr1);
-    public async Task<List<GetAuthorsByIdsRow>> GetAuthorsByIds(GetAuthorsByIdsArgs args)
+    public async Task<List<GetAuthorsByIdsRow>> GetAuthorsByIdsAsync(GetAuthorsByIdsArgs args)
     {
         if (this.Transaction == null)
         {
@@ -460,7 +460,7 @@ public class QuerySql
                                                         WHERE id = ANY(@longArr_1::BIGINT []) AND name = ANY(@stringArr_2::TEXT [])";
     public readonly record struct GetAuthorsByIdsAndNamesRow(long Id, string Name, string? Bio);
     public readonly record struct GetAuthorsByIdsAndNamesArgs(long[] LongArr1, string[] StringArr2);
-    public async Task<List<GetAuthorsByIdsAndNamesRow>> GetAuthorsByIdsAndNames(GetAuthorsByIdsAndNamesArgs args)
+    public async Task<List<GetAuthorsByIdsAndNamesRow>> GetAuthorsByIdsAndNamesAsync(GetAuthorsByIdsAndNamesArgs args)
     {
         if (this.Transaction == null)
         {
@@ -502,7 +502,7 @@ public class QuerySql
     private const string CreateBookSql = "INSERT INTO books (name, author_id) VALUES (@name, @author_id) RETURNING id";
     public readonly record struct CreateBookRow(Guid Id);
     public readonly record struct CreateBookArgs(string Name, long AuthorId);
-    public async Task<Guid> CreateBook(CreateBookArgs args)
+    public async Task<Guid> CreateBookAsync(CreateBookArgs args)
     {
         if (this.Transaction == null)
         {
@@ -538,7 +538,7 @@ public class QuerySql
                                                     INNER JOIN books ON authors.id = books.author_id
                                                     ORDER BY authors.name";
     public readonly record struct ListAllAuthorsBooksRow(Author? Author, Book? Book);
-    public async Task<List<ListAllAuthorsBooksRow>> ListAllAuthorsBooks()
+    public async Task<List<ListAllAuthorsBooksRow>> ListAllAuthorsBooksAsync()
     {
         if (this.Transaction == null)
         {
@@ -580,7 +580,7 @@ public class QuerySql
                                                     INNER JOIN authors AS authors2 ON authors1.name = authors2.name
                                                     WHERE authors1.id < authors2.id";
     public readonly record struct GetDuplicateAuthorsRow(Author? Author, Author? Author2);
-    public async Task<List<GetDuplicateAuthorsRow>> GetDuplicateAuthors()
+    public async Task<List<GetDuplicateAuthorsRow>> GetDuplicateAuthorsAsync()
     {
         if (this.Transaction == null)
         {
@@ -622,7 +622,7 @@ public class QuerySql
                                                      WHERE books.name = @name";
     public readonly record struct GetAuthorsByBookNameRow(long Id, string Name, string? Bio, Book? Book);
     public readonly record struct GetAuthorsByBookNameArgs(string Name);
-    public async Task<List<GetAuthorsByBookNameRow>> GetAuthorsByBookName(GetAuthorsByBookNameArgs args)
+    public async Task<List<GetAuthorsByBookNameRow>> GetAuthorsByBookNameAsync(GetAuthorsByBookNameArgs args)
     {
         if (this.Transaction == null)
         {
@@ -661,7 +661,7 @@ public class QuerySql
 
     private const string CreateExtendedBioSql = "INSERT INTO extended.bios (author_name, name, bio_type) VALUES (@author_name, @name, @bio_type)";
     public readonly record struct CreateExtendedBioArgs(string AuthorName, string Name, ExtendedBioType? BioType);
-    public async Task CreateExtendedBio(CreateExtendedBioArgs args)
+    public async Task CreateExtendedBioAsync(CreateExtendedBioArgs args)
     {
         if (this.Transaction == null)
         {
@@ -695,7 +695,7 @@ public class QuerySql
     private const string GetFirstExtendedBioByTypeSql = "SELECT author_name, name, bio_type FROM extended.bios WHERE bio_type = @bio_type LIMIT 1";
     public readonly record struct GetFirstExtendedBioByTypeRow(string AuthorName, string Name, ExtendedBioType? BioType);
     public readonly record struct GetFirstExtendedBioByTypeArgs(ExtendedBioType? BioType);
-    public async Task<GetFirstExtendedBioByTypeRow?> GetFirstExtendedBioByType(GetFirstExtendedBioByTypeArgs args)
+    public async Task<GetFirstExtendedBioByTypeRow?> GetFirstExtendedBioByTypeAsync(GetFirstExtendedBioByTypeArgs args)
     {
         if (this.Transaction == null)
         {
@@ -747,7 +747,7 @@ public class QuerySql
     }
 
     private const string TruncateExtendedBiosSql = "TRUNCATE TABLE extended.bios";
-    public async Task TruncateExtendedBios()
+    public async Task TruncateExtendedBiosAsync()
     {
         if (this.Transaction == null)
         {
@@ -780,7 +780,7 @@ public class QuerySql
                                                      CROSS JOIN postgres_numeric_types
                                                      CROSS JOIN postgres_string_types";
     public readonly record struct GetPostgresFunctionsRow(int? MaxInteger, string? MaxVarchar, DateTime MaxTimestamp);
-    public async Task<GetPostgresFunctionsRow?> GetPostgresFunctions()
+    public async Task<GetPostgresFunctionsRow?> GetPostgresFunctionsAsync()
     {
         if (this.Transaction == null)
         {
@@ -845,7 +845,7 @@ public class QuerySql
                                                            )
                                                            VALUES (@c_boolean, @c_bit, @c_smallint, @c_integer, @c_bigint, @c_decimal, @c_numeric, @c_real, @c_double_precision, @c_money)";
     public readonly record struct InsertPostgresNumericTypesArgs(bool? CBoolean, byte[]? CBit, short? CSmallint, int? CInteger, long? CBigint, decimal? CDecimal, decimal? CNumeric, float? CReal, double? CDoublePrecision, decimal? CMoney);
-    public async Task InsertPostgresNumericTypes(InsertPostgresNumericTypesArgs args)
+    public async Task InsertPostgresNumericTypesAsync(InsertPostgresNumericTypesArgs args)
     {
         if (this.Transaction == null)
         {
@@ -892,7 +892,7 @@ public class QuerySql
 
     private const string GetPostgresNumericTypesSql = "SELECT c_boolean, c_bit, c_smallint, c_integer, c_bigint, c_decimal, c_numeric, c_real, c_double_precision, c_money FROM postgres_numeric_types LIMIT 1";
     public readonly record struct GetPostgresNumericTypesRow(bool? CBoolean, byte[]? CBit, short? CSmallint, int? CInteger, long? CBigint, decimal? CDecimal, decimal? CNumeric, float? CReal, double? CDoublePrecision, decimal? CMoney);
-    public async Task<GetPostgresNumericTypesRow?> GetPostgresNumericTypes()
+    public async Task<GetPostgresNumericTypesRow?> GetPostgresNumericTypesAsync()
     {
         if (this.Transaction == null)
         {
@@ -956,7 +956,7 @@ public class QuerySql
     }
 
     private const string TruncatePostgresNumericTypesSql = "TRUNCATE TABLE postgres_numeric_types";
-    public async Task TruncatePostgresNumericTypes()
+    public async Task TruncatePostgresNumericTypesAsync()
     {
         if (this.Transaction == null)
         {
@@ -1007,7 +1007,7 @@ public class QuerySql
                                                                c_money
                                                            LIMIT 1";
     public readonly record struct GetPostgresNumericTypesCntRow(bool? CBoolean, byte[]? CBit, short? CSmallint, int? CInteger, long? CBigint, decimal? CDecimal, decimal? CNumeric, float? CReal, double? CDoublePrecision, decimal? CMoney, long Cnt);
-    public async Task<GetPostgresNumericTypesCntRow?> GetPostgresNumericTypesCnt()
+    public async Task<GetPostgresNumericTypesCntRow?> GetPostgresNumericTypesCntAsync()
     {
         if (this.Transaction == null)
         {
@@ -1074,7 +1074,7 @@ public class QuerySql
 
     private const string InsertPostgresNumericTypesBatchSql = "COPY postgres_numeric_types (c_boolean, c_bit, c_smallint, c_integer, c_bigint, c_decimal, c_numeric, c_real, c_double_precision, c_money) FROM STDIN (FORMAT BINARY)";
     public readonly record struct InsertPostgresNumericTypesBatchArgs(bool? CBoolean, byte[]? CBit, short? CSmallint, int? CInteger, long? CBigint, decimal? CDecimal, decimal? CNumeric, float? CReal, double? CDoublePrecision, decimal? CMoney);
-    public async Task InsertPostgresNumericTypesBatch(List<InsertPostgresNumericTypesBatchArgs> args)
+    public async Task InsertPostgresNumericTypesBatchAsync(List<InsertPostgresNumericTypesBatchArgs> args)
     {
         using (var connection = new NpgsqlConnection(ConnectionString))
         {
@@ -1114,7 +1114,7 @@ public class QuerySql
                                                           )
                                                           VALUES (@c_char, @c_varchar, @c_character_varying, @c_bpchar, @c_text)";
     public readonly record struct InsertPostgresStringTypesArgs(string? CChar, string? CVarchar, string? CCharacterVarying, string? CBpchar, string? CText);
-    public async Task InsertPostgresStringTypes(InsertPostgresStringTypesArgs args)
+    public async Task InsertPostgresStringTypesAsync(InsertPostgresStringTypesArgs args)
     {
         if (this.Transaction == null)
         {
@@ -1151,7 +1151,7 @@ public class QuerySql
 
     private const string InsertPostgresStringTypesBatchSql = "COPY postgres_string_types (c_char, c_varchar, c_character_varying, c_bpchar, c_text) FROM STDIN (FORMAT BINARY)";
     public readonly record struct InsertPostgresStringTypesBatchArgs(string? CChar, string? CVarchar, string? CCharacterVarying, string? CBpchar, string? CText);
-    public async Task InsertPostgresStringTypesBatch(List<InsertPostgresStringTypesBatchArgs> args)
+    public async Task InsertPostgresStringTypesBatchAsync(List<InsertPostgresStringTypesBatchArgs> args)
     {
         using (var connection = new NpgsqlConnection(ConnectionString))
         {
@@ -1177,7 +1177,7 @@ public class QuerySql
 
     private const string GetPostgresStringTypesSql = "SELECT c_char, c_varchar, c_character_varying, c_bpchar, c_text FROM postgres_string_types LIMIT 1";
     public readonly record struct GetPostgresStringTypesRow(string? CChar, string? CVarchar, string? CCharacterVarying, string? CBpchar, string? CText);
-    public async Task<GetPostgresStringTypesRow?> GetPostgresStringTypes()
+    public async Task<GetPostgresStringTypesRow?> GetPostgresStringTypesAsync()
     {
         if (this.Transaction == null)
         {
@@ -1231,7 +1231,7 @@ public class QuerySql
     }
 
     private const string TruncatePostgresStringTypesSql = "TRUNCATE TABLE postgres_string_types";
-    public async Task TruncatePostgresStringTypes()
+    public async Task TruncatePostgresStringTypesAsync()
     {
         if (this.Transaction == null)
         {
@@ -1272,7 +1272,7 @@ public class QuerySql
                                                               c_text
                                                           LIMIT 1";
     public readonly record struct GetPostgresStringTypesCntRow(string? CChar, string? CVarchar, string? CCharacterVarying, string? CBpchar, string? CText, long Cnt);
-    public async Task<GetPostgresStringTypesCntRow?> GetPostgresStringTypesCnt()
+    public async Task<GetPostgresStringTypesCntRow?> GetPostgresStringTypesCntAsync()
     {
         if (this.Transaction == null)
         {
@@ -1342,7 +1342,7 @@ public class QuerySql
                                                                  LIMIT 1";
     public readonly record struct GetPostgresStringTypesTextSearchRow(string? CText, NpgsqlTsQuery Query, NpgsqlTsVector Tsv, float Rnk);
     public readonly record struct GetPostgresStringTypesTextSearchArgs(string ToTsquery);
-    public async Task<GetPostgresStringTypesTextSearchRow?> GetPostgresStringTypesTextSearch(GetPostgresStringTypesTextSearchArgs args)
+    public async Task<GetPostgresStringTypesTextSearchRow?> GetPostgresStringTypesTextSearchAsync(GetPostgresStringTypesTextSearchArgs args)
     {
         if (this.Transaction == null)
         {
@@ -1406,7 +1406,7 @@ public class QuerySql
                                                                 c_timestamp_noda_instant_override
                                                             ) VALUES (@c_date, @c_time, @c_timestamp, @c_timestamp_with_tz, @c_interval, @c_timestamp_noda_instant_override)";
     public readonly record struct InsertPostgresDateTimeTypesArgs(DateTime? CDate, TimeSpan? CTime, DateTime? CTimestamp, DateTime? CTimestampWithTz, TimeSpan? CInterval, Instant? CTimestampNodaInstantOverride);
-    public async Task InsertPostgresDateTimeTypes(InsertPostgresDateTimeTypesArgs args)
+    public async Task InsertPostgresDateTimeTypesAsync(InsertPostgresDateTimeTypesArgs args)
     {
         if (this.Transaction == null)
         {
@@ -1445,7 +1445,7 @@ public class QuerySql
 
     private const string GetPostgresDateTimeTypesSql = "SELECT c_date, c_time, c_timestamp, c_timestamp_with_tz, c_interval, c_timestamp_noda_instant_override FROM postgres_datetime_types LIMIT 1";
     public readonly record struct GetPostgresDateTimeTypesRow(DateTime? CDate, TimeSpan? CTime, DateTime? CTimestamp, DateTime? CTimestampWithTz, TimeSpan? CInterval, Instant? CTimestampNodaInstantOverride);
-    public async Task<GetPostgresDateTimeTypesRow?> GetPostgresDateTimeTypes()
+    public async Task<GetPostgresDateTimeTypesRow?> GetPostgresDateTimeTypesAsync()
     {
         if (this.Transaction == null)
         {
@@ -1513,7 +1513,7 @@ public class QuerySql
     }
 
     private const string TruncatePostgresDateTimeTypesSql = "TRUNCATE TABLE postgres_datetime_types";
-    public async Task TruncatePostgresDateTimeTypes()
+    public async Task TruncatePostgresDateTimeTypesAsync()
     {
         if (this.Transaction == null)
         {
@@ -1554,7 +1554,7 @@ public class QuerySql
                                                                 c_interval
                                                             LIMIT 1";
     public readonly record struct GetPostgresDateTimeTypesCntRow(DateTime? CDate, TimeSpan? CTime, DateTime? CTimestamp, DateTime? CTimestampWithTz, TimeSpan? CInterval, long Cnt);
-    public async Task<GetPostgresDateTimeTypesCntRow?> GetPostgresDateTimeTypesCnt()
+    public async Task<GetPostgresDateTimeTypesCntRow?> GetPostgresDateTimeTypesCntAsync()
     {
         if (this.Transaction == null)
         {
@@ -1611,7 +1611,7 @@ public class QuerySql
 
     private const string InsertPostgresDateTimeTypesBatchSql = "COPY postgres_datetime_types (c_date, c_time, c_timestamp, c_timestamp_with_tz, c_interval) FROM STDIN (FORMAT BINARY)";
     public readonly record struct InsertPostgresDateTimeTypesBatchArgs(DateTime? CDate, TimeSpan? CTime, DateTime? CTimestamp, DateTime? CTimestampWithTz, TimeSpan? CInterval);
-    public async Task InsertPostgresDateTimeTypesBatch(List<InsertPostgresDateTimeTypesBatchArgs> args)
+    public async Task InsertPostgresDateTimeTypesBatchAsync(List<InsertPostgresDateTimeTypesBatchArgs> args)
     {
         using (var connection = new NpgsqlConnection(ConnectionString))
         {
@@ -1649,7 +1649,7 @@ public class QuerySql
                                                                @c_macaddr8::macaddr8
                                                            )";
     public readonly record struct InsertPostgresNetworkTypesArgs(NpgsqlCidr? CCidr, IPAddress? CInet, PhysicalAddress? CMacaddr, string? CMacaddr8);
-    public async Task InsertPostgresNetworkTypes(InsertPostgresNetworkTypesArgs args)
+    public async Task InsertPostgresNetworkTypesAsync(InsertPostgresNetworkTypesArgs args)
     {
         if (this.Transaction == null)
         {
@@ -1690,7 +1690,7 @@ public class QuerySql
                                                         FROM postgres_network_types
                                                         LIMIT 1";
     public readonly record struct GetPostgresNetworkTypesRow(NpgsqlCidr? CCidr, IPAddress? CInet, PhysicalAddress? CMacaddr, string? CMacaddr8);
-    public async Task<GetPostgresNetworkTypesRow?> GetPostgresNetworkTypes()
+    public async Task<GetPostgresNetworkTypesRow?> GetPostgresNetworkTypesAsync()
     {
         if (this.Transaction == null)
         {
@@ -1742,7 +1742,7 @@ public class QuerySql
     }
 
     private const string TruncatePostgresNetworkTypesSql = "TRUNCATE TABLE postgres_network_types";
-    public async Task TruncatePostgresNetworkTypes()
+    public async Task TruncatePostgresNetworkTypesAsync()
     {
         if (this.Transaction == null)
         {
@@ -1779,7 +1779,7 @@ public class QuerySql
                                                                c_macaddr
                                                            LIMIT 1";
     public readonly record struct GetPostgresNetworkTypesCntRow(NpgsqlCidr? CCidr, IPAddress? CInet, PhysicalAddress? CMacaddr, long Cnt);
-    public async Task<GetPostgresNetworkTypesCntRow?> GetPostgresNetworkTypesCnt()
+    public async Task<GetPostgresNetworkTypesCntRow?> GetPostgresNetworkTypesCntAsync()
     {
         if (this.Transaction == null)
         {
@@ -1832,7 +1832,7 @@ public class QuerySql
 
     private const string InsertPostgresNetworkTypesBatchSql = "COPY postgres_network_types (c_cidr, c_inet, c_macaddr) FROM STDIN (FORMAT BINARY)";
     public readonly record struct InsertPostgresNetworkTypesBatchArgs(NpgsqlCidr? CCidr, IPAddress? CInet, PhysicalAddress? CMacaddr);
-    public async Task InsertPostgresNetworkTypesBatch(List<InsertPostgresNetworkTypesBatchArgs> args)
+    public async Task InsertPostgresNetworkTypesBatchAsync(List<InsertPostgresNetworkTypesBatchArgs> args)
     {
         using (var connection = new NpgsqlConnection(ConnectionString))
         {
@@ -1877,7 +1877,7 @@ public class QuerySql
                                                                @c_enum::c_enum
                                                            )";
     public readonly record struct InsertPostgresSpecialTypesArgs(JsonElement? CJson, string? CJsonStringOverride, JsonElement? CJsonb, string? CJsonpath, XmlDocument? CXml, string? CXmlStringOverride, Guid? CUuid, CEnum? CEnum);
-    public async Task InsertPostgresSpecialTypes(InsertPostgresSpecialTypesArgs args)
+    public async Task InsertPostgresSpecialTypesAsync(InsertPostgresSpecialTypesArgs args)
     {
         if (this.Transaction == null)
         {
@@ -1926,7 +1926,7 @@ public class QuerySql
                                                                @c_enum_not_null::c_enum
                                                            )";
     public readonly record struct InsertPostgresNotNullTypesArgs(CEnum CEnumNotNull);
-    public async Task InsertPostgresNotNullTypes(InsertPostgresNotNullTypesArgs args)
+    public async Task InsertPostgresNotNullTypesAsync(InsertPostgresNotNullTypesArgs args)
     {
         if (this.Transaction == null)
         {
@@ -1958,7 +1958,7 @@ public class QuerySql
                                                         FROM postgres_not_null_types 
                                                         LIMIT 1";
     public readonly record struct GetPostgresNotNullTypesRow(CEnum CEnumNotNull);
-    public async Task<GetPostgresNotNullTypesRow?> GetPostgresNotNullTypes()
+    public async Task<GetPostgresNotNullTypesRow?> GetPostgresNotNullTypesAsync()
     {
         if (this.Transaction == null)
         {
@@ -2004,7 +2004,7 @@ public class QuerySql
     }
 
     private const string TruncatePostgresNotNullTypesSql = "TRUNCATE TABLE postgres_not_null_types";
-    public async Task TruncatePostgresNotNullTypes()
+    public async Task TruncatePostgresNotNullTypesAsync()
     {
         if (this.Transaction == null)
         {
@@ -2041,7 +2041,7 @@ public class QuerySql
                                                         FROM postgres_special_types 
                                                         LIMIT 1";
     public readonly record struct GetPostgresSpecialTypesRow(JsonElement? CJson, string? CJsonStringOverride, JsonElement? CJsonb, string? CJsonpath, XmlDocument? CXml, string? CXmlStringOverride, Guid? CUuid, CEnum? CEnum);
-    public async Task<GetPostgresSpecialTypesRow?> GetPostgresSpecialTypes()
+    public async Task<GetPostgresSpecialTypesRow?> GetPostgresSpecialTypesAsync()
     {
         if (this.Transaction == null)
         {
@@ -2111,7 +2111,7 @@ public class QuerySql
     }
 
     private const string TruncatePostgresSpecialTypesSql = "TRUNCATE TABLE postgres_special_types";
-    public async Task TruncatePostgresSpecialTypes()
+    public async Task TruncatePostgresSpecialTypesAsync()
     {
         if (this.Transaction == null)
         {
@@ -2138,7 +2138,7 @@ public class QuerySql
 
     private const string InsertPostgresSpecialTypesBatchSql = "COPY postgres_special_types (c_uuid, c_json, c_jsonb) FROM STDIN (FORMAT BINARY)";
     public readonly record struct InsertPostgresSpecialTypesBatchArgs(Guid? CUuid, JsonElement? CJson, JsonElement? CJsonb);
-    public async Task InsertPostgresSpecialTypesBatch(List<InsertPostgresSpecialTypesBatchArgs> args)
+    public async Task InsertPostgresSpecialTypesBatchAsync(List<InsertPostgresSpecialTypesBatchArgs> args)
     {
         using (var connection = new NpgsqlConnection(ConnectionString))
         {
@@ -2181,7 +2181,7 @@ public class QuerySql
                                                            FROM grouped_json_types
                                                            LIMIT 1";
     public readonly record struct GetPostgresSpecialTypesCntRow(Guid? CUuid, JsonElement? CJson, JsonElement? CJsonb, long Cnt);
-    public async Task<GetPostgresSpecialTypesCntRow?> GetPostgresSpecialTypesCnt()
+    public async Task<GetPostgresSpecialTypesCntRow?> GetPostgresSpecialTypesCntAsync()
     {
         if (this.Transaction == null)
         {
@@ -2245,7 +2245,7 @@ public class QuerySql
                                                          )
                                                          VALUES (@c_bytea, @c_boolean_array, @c_text_array, @c_integer_array, @c_decimal_array, @c_date_array, @c_timestamp_array)";
     public readonly record struct InsertPostgresArrayTypesArgs(byte[]? CBytea, bool[]? CBooleanArray, string[]? CTextArray, int[]? CIntegerArray, decimal[]? CDecimalArray, DateTime[]? CDateArray, DateTime[]? CTimestampArray);
-    public async Task InsertPostgresArrayTypes(InsertPostgresArrayTypesArgs args)
+    public async Task InsertPostgresArrayTypesAsync(InsertPostgresArrayTypesArgs args)
     {
         if (this.Transaction == null)
         {
@@ -2286,7 +2286,7 @@ public class QuerySql
 
     private const string GetPostgresArrayTypesSql = "SELECT c_bytea, c_boolean_array, c_text_array, c_integer_array, c_decimal_array, c_date_array, c_timestamp_array FROM postgres_array_types LIMIT 1";
     public readonly record struct GetPostgresArrayTypesRow(byte[]? CBytea, bool[]? CBooleanArray, string[]? CTextArray, int[]? CIntegerArray, decimal[]? CDecimalArray, DateTime[]? CDateArray, DateTime[]? CTimestampArray);
-    public async Task<GetPostgresArrayTypesRow?> GetPostgresArrayTypes()
+    public async Task<GetPostgresArrayTypesRow?> GetPostgresArrayTypesAsync()
     {
         if (this.Transaction == null)
         {
@@ -2345,7 +2345,7 @@ public class QuerySql
 
     private const string InsertPostgresArrayTypesBatchSql = "COPY postgres_array_types (c_bytea, c_boolean_array, c_text_array, c_integer_array, c_decimal_array, c_timestamp_array) FROM STDIN (FORMAT BINARY)";
     public readonly record struct InsertPostgresArrayTypesBatchArgs(byte[]? CBytea, bool[]? CBooleanArray, string[]? CTextArray, int[]? CIntegerArray, decimal[]? CDecimalArray, DateTime[]? CTimestampArray);
-    public async Task InsertPostgresArrayTypesBatch(List<InsertPostgresArrayTypesBatchArgs> args)
+    public async Task InsertPostgresArrayTypesBatchAsync(List<InsertPostgresArrayTypesBatchArgs> args)
     {
         using (var connection = new NpgsqlConnection(ConnectionString))
         {
@@ -2388,7 +2388,7 @@ public class QuerySql
                                                              c_timestamp_array
                                                          LIMIT 1";
     public readonly record struct GetPostgresArrayTypesCntRow(byte[]? CBytea, bool[]? CBooleanArray, string[]? CTextArray, int[]? CIntegerArray, decimal[]? CDecimalArray, DateTime[]? CTimestampArray, long Cnt);
-    public async Task<GetPostgresArrayTypesCntRow?> GetPostgresArrayTypesCnt()
+    public async Task<GetPostgresArrayTypesCntRow?> GetPostgresArrayTypesCntAsync()
     {
         if (this.Transaction == null)
         {
@@ -2446,7 +2446,7 @@ public class QuerySql
     }
 
     private const string TruncatePostgresArrayTypesSql = "TRUNCATE TABLE postgres_array_types";
-    public async Task TruncatePostgresArrayTypes()
+    public async Task TruncatePostgresArrayTypesAsync()
     {
         if (this.Transaction == null)
         {
@@ -2483,7 +2483,7 @@ public class QuerySql
                                                        )
                                                        VALUES (@c_point, @c_line, @c_lseg, @c_box, @c_path, @c_polygon, @c_circle)";
     public readonly record struct InsertPostgresGeoTypesArgs(NpgsqlPoint? CPoint, NpgsqlLine? CLine, NpgsqlLSeg? CLseg, NpgsqlBox? CBox, NpgsqlPath? CPath, NpgsqlPolygon? CPolygon, NpgsqlCircle? CCircle);
-    public async Task InsertPostgresGeoTypes(InsertPostgresGeoTypesArgs args)
+    public async Task InsertPostgresGeoTypesAsync(InsertPostgresGeoTypesArgs args)
     {
         if (this.Transaction == null)
         {
@@ -2524,7 +2524,7 @@ public class QuerySql
 
     private const string InsertPostgresGeoTypesBatchSql = "COPY postgres_geometric_types (c_point, c_line, c_lseg, c_box, c_path, c_polygon, c_circle) FROM STDIN (FORMAT BINARY)";
     public readonly record struct InsertPostgresGeoTypesBatchArgs(NpgsqlPoint? CPoint, NpgsqlLine? CLine, NpgsqlLSeg? CLseg, NpgsqlBox? CBox, NpgsqlPath? CPath, NpgsqlPolygon? CPolygon, NpgsqlCircle? CCircle);
-    public async Task InsertPostgresGeoTypesBatch(List<InsertPostgresGeoTypesBatchArgs> args)
+    public async Task InsertPostgresGeoTypesBatchAsync(List<InsertPostgresGeoTypesBatchArgs> args)
     {
         using (var connection = new NpgsqlConnection(ConnectionString))
         {
@@ -2552,7 +2552,7 @@ public class QuerySql
 
     private const string GetPostgresGeoTypesSql = "SELECT c_point, c_line, c_lseg, c_box, c_path, c_polygon, c_circle FROM postgres_geometric_types LIMIT 1";
     public readonly record struct GetPostgresGeoTypesRow(NpgsqlPoint? CPoint, NpgsqlLine? CLine, NpgsqlLSeg? CLseg, NpgsqlBox? CBox, NpgsqlPath? CPath, NpgsqlPolygon? CPolygon, NpgsqlCircle? CCircle);
-    public async Task<GetPostgresGeoTypesRow?> GetPostgresGeoTypes()
+    public async Task<GetPostgresGeoTypesRow?> GetPostgresGeoTypesAsync()
     {
         if (this.Transaction == null)
         {
@@ -2610,7 +2610,7 @@ public class QuerySql
     }
 
     private const string TruncatePostgresGeoTypesSql = "TRUNCATE TABLE postgres_geometric_types";
-    public async Task TruncatePostgresGeoTypes()
+    public async Task TruncatePostgresGeoTypesAsync()
     {
         if (this.Transaction == null)
         {
