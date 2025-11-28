@@ -2,7 +2,7 @@ using Npgsql;
 
 namespace BenchmarkRunner.Utils;
 
-public static partial class DatabaseHelper
+public static partial class PostgresqlDatabaseHelper
 {
     public static async Task CleanupDatabaseAsync(string connectionString)
     {

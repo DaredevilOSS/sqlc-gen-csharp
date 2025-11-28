@@ -37,13 +37,6 @@ public class QuerySql : IDisposable
     private NpgsqlTransaction? Transaction { get; }
     private string? ConnectionString { get; }
 
-    public void Dispose()
-    {
-        GC.SuppressFinalize(this);
-        if (_dataSource?.IsValueCreated == true)
-            _dataSource.Value.Dispose();
-    }
-
     private readonly Lazy<NpgsqlDataSource>? _dataSource;
     private NpgsqlDataSource GetDataSource()
     {
@@ -177,5 +170,12 @@ public class QuerySql : IDisposable
 
             await connection.CloseAsync();
         }
+    }
+
+    public void Dispose()
+    {
+        GC.SuppressFinalize(this);
+        if (_dataSource?.IsValueCreated == true)
+            _dataSource.Value.Dispose();
     }
 }

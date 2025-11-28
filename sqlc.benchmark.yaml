@@ -3,13 +3,21 @@ plugins:
   - name: csharp
     wasm:
       url: file://dist/plugin.wasm
-      sha256: 4e4ab102ea10075be36b653c9b99871068f1c3de0d76ecf481257fdddafaef14
+      sha256: 8469cb92b17090aaf80617cc6a93b1108214aae68d218abbbaa60221309257e7
 sql:
   - schema: "examples/config/postgresql/benchmark/schema.sql"
     queries: "examples/config/postgresql/benchmark/query.sql"
     engine: "postgresql"
     codegen:
       - plugin: csharp
-        out: benchmark/postgres/SqlcImpl
+        out: benchmark/PostgresqlSqlcImpl
         options:
           namespaceName: PostgresSqlcImpl
+  - schema: "examples/config/sqlite/benchmark/schema.sql"
+    queries: "examples/config/sqlite/benchmark/query.sql"
+    engine: "sqlite"
+    codegen:
+      - plugin: csharp
+        out: benchmark/SqliteSqlcImpl
+        options:
+          namespaceName: SqliteSqlcImpl

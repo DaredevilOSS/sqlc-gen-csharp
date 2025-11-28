@@ -1,9 +1,9 @@
 using Microsoft.EntityFrameworkCore;
-using PostgresEFCoreImpl;
+using SqliteEFCoreImpl;
 
 namespace BenchmarkRunner.Utils;
 
-public class DatabaseSeeder(string connectionString)
+public class SqliteDatabaseSeeder(string connectionString)
 {
     private readonly SalesDbContext _efCoreContext = new(connectionString);
 
@@ -82,7 +82,7 @@ public class DatabaseSeeder(string connectionString)
         return products.Select(p => p.ProductId).ToList();
     }
 
-    private async Task<List<Guid>> SeedOrdersAsync(List<int> customerIds, int ordersPerCustomer)
+    private async Task<List<string>> SeedOrdersAsync(List<int> customerIds, int ordersPerCustomer)
     {
         var orders = new List<Order>();
         var random = new Random(42);
@@ -94,7 +94,7 @@ public class DatabaseSeeder(string connectionString)
             {
                 orders.Add(new Order
                 {
-                    OrderId = Guid.NewGuid(),
+                    OrderId = Guid.NewGuid().ToString(),
                     CustomerId = customerId,
                     OrderState = orderStates[random.Next(orderStates.Length)],
                     TotalAmount = (decimal)(random.NextDouble() * 5000 + 10),
@@ -109,7 +109,7 @@ public class DatabaseSeeder(string connectionString)
         return orders.Select(o => o.OrderId).ToList();
     }
 
-    private async Task SeedOrderItemsAsync(List<Guid> orderIds, List<int> productIds, int itemsPerOrder)
+    private async Task SeedOrderItemsAsync(List<string> orderIds, List<int> productIds, int itemsPerOrder)
     {
         var orderItems = new List<OrderItem>();
         var random = new Random(42);
@@ -144,7 +144,7 @@ public class DatabaseSeeder(string connectionString)
 
                 orderItems.Add(new OrderItem
                 {
-                    OrderItemId = Guid.NewGuid(),
+                    OrderItemId = Guid.NewGuid().ToString(),
                     OrderId = orderId,
                     ProductId = productId,
                     Quantity = quantity,

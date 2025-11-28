@@ -23,5 +23,17 @@ public static class Config
         }
         return connectionString;
     }
+
+    public static string GetSqliteConnectionString()
+    {
+        var connectionString = Environment.GetEnvironmentVariable("SQLITE_CONNECTION_STRING");
+        if (string.IsNullOrWhiteSpace(connectionString))
+        {
+            // Default to shared in-memory database for benchmarks
+            // Using shared cache allows multiple connections to access the same in-memory database
+            return "Data Source=:memory:;Cache=Shared";
+        }
+        return connectionString;
+    }
 }
 

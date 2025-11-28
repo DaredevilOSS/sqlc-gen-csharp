@@ -13,16 +13,16 @@ namespace BenchmarkRunner.Benchmarks;
 [MarkdownExporterAttribute.GitHub]
 [GroupBenchmarksBy(BenchmarkLogicalGroupRule.ByCategory)]
 [CategoriesColumn]
-public class WriteBenchmark
+public class PostgresqlWriteBenchmark
 {
     private QuerySql _sqlcImpl = null!;
     private Queries _efCoreImpl = null!;
     private SalesDbContext _dbContext = null!;
     private string _connectionString = null!;
 
-    private List<PostgresSqlcImpl.QuerySql.AddProductsArgs> _testProducts = null!;
-    private List<PostgresSqlcImpl.QuerySql.AddOrdersArgs> _testOrders = null!;
-    private List<PostgresSqlcImpl.QuerySql.AddOrderItemsArgs> _testOrderItems = null!;
+    private List<QuerySql.AddProductsArgs> _testProducts = null!;
+    private List<QuerySql.AddOrdersArgs> _testOrders = null!;
+    private List<QuerySql.AddOrderItemsArgs> _testOrderItems = null!;
 
     [Params(1000, 10000, 50000)]
     public int BatchSize { get; set; }
@@ -40,7 +40,7 @@ public class WriteBenchmark
     public void IterationSetup()
     {
         // Clean up before each iteration to ensure fair comparison
-        DatabaseHelper.CleanupDatabaseAsync(_connectionString).GetAwaiter().GetResult();
+        PostgresqlDatabaseHelper.CleanupDatabaseAsync(_connectionString).GetAwaiter().GetResult();
         PrepareTestDataAsync().GetAwaiter().GetResult();
     }
 
@@ -49,7 +49,7 @@ public class WriteBenchmark
         var random = new Random(42);
         var categories = new[] { "Electronics", "Clothing", "Books", "Food", "Toys" };
 
-        _testProducts = Enumerable.Range(0, BatchSize).Select(i => new PostgresSqlcImpl.QuerySql.AddProductsArgs(
+        _testProducts = Enumerable.Range(0, BatchSize).Select(i => new QuerySql.AddProductsArgs(
             Name: $"Test Product {i}",
             Category: categories[i % categories.Length],
             UnitPrice: (decimal)(random.NextDouble() * 1000 + 10),
@@ -58,13 +58,13 @@ public class WriteBenchmark
         )).ToList();
 
         // For orders, we need existing customers - seed a few
-        var seeder = new DatabaseSeeder(_connectionString);
+        var seeder = new PostgresqlDatabaseSeeder(_connectionString);
         await seeder.SeedAsync(customerCount: 10, productsPerCategory: 0, ordersPerCustomer: 0, itemsPerOrder: 0);
 
         var customerIds = await _dbContext.Customers.Select(c => c.CustomerId).Take(10).ToListAsync();
         var orderStates = new[] { "Pending", "Delivered", "Cancelled" };
 
-        _testOrders = Enumerable.Range(0, BatchSize).Select(i => new PostgresSqlcImpl.QuerySql.AddOrdersArgs(
+        _testOrders = Enumerable.Range(0, BatchSize).Select(i => new QuerySql.AddOrdersArgs(
             CustomerId: customerIds[i % customerIds.Count],
             OrderState: orderStates[i % orderStates.Length],
             TotalAmount: (decimal)(random.NextDouble() * 5000 + 10)
@@ -78,7 +78,7 @@ public class WriteBenchmark
         var orderIds = await _dbContext.Orders.Select(o => o.OrderId).Take(BatchSize).ToListAsync();
         var productIds = await _dbContext.Products.Select(p => p.ProductId).Take(100).ToListAsync();
 
-        _testOrderItems = Enumerable.Range(0, BatchSize).Select(i => new PostgresSqlcImpl.QuerySql.AddOrderItemsArgs(
+        _testOrderItems = Enumerable.Range(0, BatchSize).Select(i => new QuerySql.AddOrderItemsArgs(
             OrderId: orderIds[i % orderIds.Count],
             ProductId: productIds[i % productIds.Count],
             Quantity: random.Next(1, 10),
@@ -97,7 +97,7 @@ public class WriteBenchmark
     [Benchmark(Description = "EFCore - AddProducts")]
     public async Task EFCore_AddProducts()
     {
-        var args = _testProducts.Select(p => new PostgresEFCoreImpl.Queries.AddProductsArgs(
+        var args = _testProducts.Select(p => new Queries.AddProductsArgs(
             p.Name, p.Category, p.UnitPrice, p.StockQuantity, p.Description
         )).ToList();
         await _efCoreImpl.AddProducts(args);
@@ -114,7 +114,7 @@ public class WriteBenchmark
     [Benchmark(Description = "EFCore - AddOrders")]
     public async Task EFCore_AddOrders()
     {
-        var args = _testOrders.Select(o => new PostgresEFCoreImpl.Queries.AddOrdersArgs(
+        var args = _testOrders.Select(o => new Queries.AddOrdersArgs(
             o.CustomerId, o.OrderState, o.TotalAmount
         )).ToList();
         await _efCoreImpl.AddOrders(args);
@@ -131,7 +131,7 @@ public class WriteBenchmark
     [Benchmark(Description = "EFCore - AddOrderItems")]
     public async Task EFCore_AddOrderItems()
     {
-        var args = _testOrderItems.Select(i => new PostgresEFCoreImpl.Queries.AddOrderItemsArgs(
+        var args = _testOrderItems.Select(i => new Queries.AddOrderItemsArgs(
             i.OrderId, i.ProductId, i.Quantity, i.UnitPrice
         )).ToList();
         await _efCoreImpl.AddOrderItems(args);
@@ -141,7 +141,7 @@ public class WriteBenchmark
     public async Task GlobalCleanup()
     {
         await _dbContext.DisposeAsync();
-        await DatabaseHelper.CleanupDatabaseAsync(_connectionString);
+        await PostgresqlDatabaseHelper.CleanupDatabaseAsync(_connectionString);
     }
 }
 

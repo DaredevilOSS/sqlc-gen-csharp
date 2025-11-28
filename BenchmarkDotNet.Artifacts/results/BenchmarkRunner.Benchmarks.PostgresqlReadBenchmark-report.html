@@ -2,7 +2,7 @@
 <html lang='en'>
 <head>
 <meta charset='utf-8' />
-<title>BenchmarkRunner.Benchmarks.ReadBenchmark-20251123-222823</title>
+<title>BenchmarkRunner.Benchmarks.PostgresqlReadBenchmark-20251126-000223</title>
 
 <style type="text/css">
 	table { border-collapse: collapse; display: block; width: 100%; overflow: auto; }
@@ -17,7 +17,7 @@ BenchmarkDotNet v0.13.12, macOS 15.6.1 (24G90) [Darwin 24.6.0]
 Apple M2, 1 CPU, 8 logical and 8 physical cores
 .NET SDK 8.0.416
   [Host]     : .NET 8.0.22 (8.0.2225.52707), Arm64 RyuJIT AdvSIMD
-  Job-UWXHPN : .NET 8.0.22 (8.0.2225.52707), Arm64 RyuJIT AdvSIMD
+  Job-GPQXQZ : .NET 8.0.22 (8.0.2225.52707), Arm64 RyuJIT AdvSIMD
 </code></pre>
 <pre><code>Runtime=.NET 8.0  IterationCount=10  WarmupCount=3  
 Categories=Read  
@@ -26,8 +26,8 @@ Categories=Read
 <table>
 <thead><tr><th>Method                </th><th>Mean</th><th>Error</th><th>StdDev</th><th>Ratio</th><th>RatioSD</th><th>Gen0</th><th>Gen1</th><th>Gen2</th><th>Allocated</th><th>Alloc Ratio</th>
 </tr>
-</thead><tbody><tr><td>&#39;SQLC - GetCustomerOrders&#39;</td><td>30.01 ms</td><td>1.580 ms</td><td>0.940 ms</td><td>1.00</td><td>0.00</td><td>281.2500</td><td>281.2500</td><td>125.0000</td><td>1.48 MB</td><td>1.00</td>
-</tr><tr><td>&#39;EFCore - GetCustomerOrders&#39;</td><td>33.25 ms</td><td>0.782 ms</td><td>0.517 ms</td><td>1.11</td><td>0.04</td><td>200.0000</td><td>66.6667</td><td>-</td><td>1.85 MB</td><td>1.25</td>
+</thead><tbody><tr><td>&#39;SQLC - GetCustomerOrders&#39;</td><td>30.66 ms</td><td>0.795 ms</td><td>0.473 ms</td><td>1.00</td><td>0.00</td><td>437.5000</td><td>437.5000</td><td>125.0000</td><td>1.48 MB</td><td>1.00</td>
+</tr><tr><td>&#39;EFCore - GetCustomerOrders&#39;</td><td>33.28 ms</td><td>1.193 ms</td><td>0.710 ms</td><td>1.09</td><td>0.02</td><td>200.0000</td><td>66.6667</td><td>-</td><td>1.86 MB</td><td>1.25</td>
 </tr></tbody></table>
 </body>
 </html>

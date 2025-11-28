@@ -2,8 +2,8 @@ using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Configs;
 using BenchmarkDotNet.Jobs;
 using Microsoft.EntityFrameworkCore;
-using PostgresEFCoreImpl;
-using PostgresSqlcImpl;
+using SqliteEFCoreImpl;
+using SqliteSqlcImpl;
 using BenchmarkRunner.Utils;
 
 namespace BenchmarkRunner.Benchmarks;
@@ -13,7 +13,7 @@ namespace BenchmarkRunner.Benchmarks;
 [MarkdownExporterAttribute.GitHub]
 [GroupBenchmarksBy(BenchmarkLogicalGroupRule.ByCategory)]
 [CategoriesColumn]
-public class ReadBenchmark
+public class SqliteReadBenchmark
 {
     private QuerySql _sqlcImpl = null!;
     private Queries _efCoreImpl = null!;
@@ -23,19 +23,21 @@ public class ReadBenchmark
     [GlobalSetup]
     public async Task GlobalSetup()
     {
-        var connectionString = Config.GetConnectionString();
-        await DatabaseHelper.CleanupDatabaseAsync(connectionString);
+        var connectionString = Config.GetSqliteConnectionString();
+        
+        // Initialize database schema (assumes schema exists for EFCore)
+        await SqliteDatabaseHelper.InitializeDatabaseAsync(connectionString);
 
         _sqlcImpl = new QuerySql(connectionString);
         _dbContext = new SalesDbContext(connectionString);
         _efCoreImpl = new Queries(_dbContext);
 
         // Ensure database is seeded
-        var seeder = new DatabaseSeeder(connectionString);
+        var seeder = new SqliteDatabaseSeeder(connectionString);
         await seeder.SeedAsync(customerCount: 100, productsPerCategory: 100, ordersPerCustomer: 50, itemsPerOrder: 3);
 
         // Get a valid customer ID for testing
-        var firstCustomer = await _efCoreImpl.DbContext.Set<Customer>().FirstAsync();
+        var firstCustomer = await _efCoreImpl.DbContext.Set<SqliteEFCoreImpl.Customer>().FirstAsync();
         _testCustomerId = firstCustomer.CustomerId;
     }
 
@@ -47,7 +49,7 @@ public class ReadBenchmark
         // Run multiple queries to ensure measurable execution time
         for (int i = 0; i < 20; i++)
         {
-            var result = await _sqlcImpl.GetCustomerOrdersAsync(new PostgresSqlcImpl.QuerySql.GetCustomerOrdersArgs(
+            var result = await _sqlcImpl.GetCustomerOrdersAsync(new QuerySql.GetCustomerOrdersArgs(
                 CustomerId: _testCustomerId,
                 Offset: 0,
                 Limit: 100
@@ -59,13 +61,13 @@ public class ReadBenchmark
 
     [BenchmarkCategory("Read")]
     [Benchmark(Description = "EFCore - GetCustomerOrders")]
-    public async Task<List<PostgresEFCoreImpl.Queries.GetCustomerOrdersRow>> EFCore_GetCustomerOrders()
+    public async Task<List<Queries.GetCustomerOrdersRow>> EFCore_GetCustomerOrders()
     {
-        var results = new List<PostgresEFCoreImpl.Queries.GetCustomerOrdersRow>();
+        var results = new List<Queries.GetCustomerOrdersRow>();
         // Run multiple queries to ensure measurable execution time
         for (int i = 0; i < 20; i++)
         {
-            var result = await _efCoreImpl.GetCustomerOrders(new PostgresEFCoreImpl.Queries.GetCustomerOrdersArgs(
+            var result = await _efCoreImpl.GetCustomerOrders(new Queries.GetCustomerOrdersArgs(
                 CustomerId: _testCustomerId,
                 Offset: 0,
                 Limit: 100
@@ -79,8 +81,8 @@ public class ReadBenchmark
     public async Task GlobalCleanup()
     {
         await _dbContext.DisposeAsync();
-        var connectionString = Config.GetConnectionString();
-        await DatabaseHelper.CleanupDatabaseAsync(connectionString);
+        var connectionString = Config.GetSqliteConnectionString();
+        await SqliteDatabaseHelper.CleanupDatabaseAsync(connectionString);
     }
 }
 
