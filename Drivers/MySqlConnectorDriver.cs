@@ -529,7 +529,7 @@ public sealed partial class MySqlConnectorDriver(
         var nullConverterFn = Variable.NullConverterFn.AsVarName();
 
         var loaderColumns = query.Params.Select(p => $"\"{p.Column.Name}\"").JoinByComma();
-        var (establishConnection, connectionOpen) = EstablishConnection(query);
+        var connectionCommands = EstablishConnection(query);
 
         return $$"""
                  const string supportedDateTimeFormat = "yyyy-MM-dd H:mm:ss";
@@ -549,9 +549,9 @@ public sealed partial class MySqlConnectorDriver(
                     await {{csvWriterVar}}.WriteRecordsAsync({{Variable.Args.AsVarName()}});
                  }
                  
-                 using ({{establishConnection}})
+                 using ({{connectionCommands.EstablishConnection}})
                  {
-                     {{connectionOpen.AppendSemicolonUnlessEmpty()}}
+                     {{connectionCommands.ConnectionOpen.AppendSemicolonUnlessEmpty()}}
                      var {{loaderVar}} = new MySqlBulkLoader({{connectionVar}})
                      {
                          Local = true, 

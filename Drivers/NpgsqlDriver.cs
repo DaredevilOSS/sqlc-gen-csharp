@@ -1,6 +1,7 @@
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Plugin;
 using SqlcGenCsharp.Drivers.Generators;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -455,7 +456,6 @@ public sealed class NpgsqlDriver : EnumDbDriver, IOne, IMany, IExec, IExecRows, 
         return base.GetUsingDirectivesForQueries().AddRangeExcludeNulls(
         [
             "Npgsql",
-            "System.Data"
         ]);
     }
 
@@ -546,13 +546,68 @@ public sealed class NpgsqlDriver : EnumDbDriver, IOne, IMany, IExec, IExecRows, 
 
         return useOpenConnection
             ? new ConnectionGenCommands(
-                $"var {connectionVar} = new NpgsqlConnection({connectionStringVar})",
-                string.Empty
+                EstablishConnection: $"var {connectionVar} = new NpgsqlConnection({connectionStringVar})",
+                ConnectionOpen: string.Empty,
+                WrapInUsing: true
             )
             : new ConnectionGenCommands(
-                $"var {connectionVar} = NpgsqlDataSource.Create({connectionStringVar}{optionalNotNullVerify})",
-                string.Empty
+                EstablishConnection: $"var {connectionVar} = GetDataSource()",
+                ConnectionOpen: string.Empty,
+                WrapInUsing: false
             );
+    }
+
+    public override string[] GetClassBaseTypes()
+    {
+        return ["IDisposable"];
+    }
+
+    public override string[] GetConstructorStatements()
+    {
+        var baseStatements = base.GetConstructorStatements();
+        var dataSourceVar = Variable.DataSource.AsFieldName();
+        var connectionStringVar = Variable.ConnectionString.AsVarName();
+        var optionalNotNullVerify = Options.DotnetFramework.IsDotnetCore() ? "!" : string.Empty;
+
+        return
+        [
+            .. baseStatements,
+            $"""
+                {dataSourceVar} = new Lazy<NpgsqlDataSource>(() => NpgsqlDataSource.Create({connectionStringVar}{optionalNotNullVerify}), LazyThreadSafetyMode.ExecutionAndPublication);
+            """,
+        ];
+    }
+
+    public override MemberDeclarationSyntax[] GetAdditionalClassMembers()
+    {
+        var dataSourceField = Variable.DataSource.AsFieldName();
+        var optionalNotNullVerify = Options.DotnetFramework.IsDotnetCore() ? "?" : string.Empty;
+        var fieldDeclaration = ParseMemberDeclaration($$"""
+            private readonly Lazy<NpgsqlDataSource>{{optionalNotNullVerify}} {{dataSourceField}};
+        """)!;
+        
+        var getDataSourceMethod = ParseMemberDeclaration($$"""
+            private NpgsqlDataSource GetDataSource()
+            {
+                if ({{dataSourceField}} == null)
+                    throw new InvalidOperationException("ConnectionString is required when not using a transaction");
+                return {{dataSourceField}}.Value;
+            }
+            """)!;
+        
+        return [fieldDeclaration, getDataSourceMethod];
+    }
+
+    public override MemberDeclarationSyntax? GetDisposeMethodImpl()
+    {
+        return ParseMemberDeclaration($$"""
+            public void Dispose()
+            {
+                GC.SuppressFinalize(this);
+                if ({{Variable.DataSource.AsFieldName()}}?.IsValueCreated == true)
+                    {{Variable.DataSource.AsFieldName()}}.Value.Dispose();
+            }
+        """)!;
     }
 
     public override string CreateSqlCommand(string sqlTextConstant)
@@ -578,31 +633,34 @@ public sealed class NpgsqlDriver : EnumDbDriver, IOne, IMany, IExec, IExecRows, 
         string GetCopyCommand()
         {
             var copyParams = query.Params.Select(p => p.Column.Name).JoinByComma();
-            return $"COPY {query.InsertIntoTable.Name} ({copyParams}) FROM STDIN (FORMAT BINARY)";
+            var qualifiedTableName = !string.IsNullOrEmpty(query.InsertIntoTable.Schema) 
+                ? $"{query.InsertIntoTable.Schema}.{query.InsertIntoTable.Name}" 
+                : query.InsertIntoTable.Name;
+            return $"COPY {qualifiedTableName} ({copyParams}) FROM STDIN (FORMAT BINARY)";
         }
     }
 
     public string GetCopyFromImpl(Query query, string queryTextConstant)
     {
-        var (establishConnection, connectionOpen) = EstablishConnection(query);
+        var connectionCommands = EstablishConnection(query);
         var beginBinaryImport = $"{Variable.Connection.AsVarName()}.BeginBinaryImportAsync({queryTextConstant}";
         var connectionVar = Variable.Connection.AsVarName();
         var writerVar = Variable.Writer.AsVarName();
 
         var addRowsToCopyCommand = AddRowsToCopyCommand();
         return $$"""
-                 using ({{establishConnection}})
-                 {
-                     {{connectionOpen.AppendSemicolonUnlessEmpty()}}
-                     await {{connectionVar}}.OpenAsync();
-                     using (var {{writerVar}} = await {{beginBinaryImport}}))
-                     {
-                        {{addRowsToCopyCommand}}
-                        await {{writerVar}}.CompleteAsync();
-                     }
-                     await {{connectionVar}}.CloseAsync();
-                 }
-                 """;
+            using ({{connectionCommands.EstablishConnection}})
+            {
+                {{connectionCommands.ConnectionOpen.AppendSemicolonUnlessEmpty()}}
+                await {{connectionVar}}.OpenAsync();
+                using (var {{writerVar}} = await {{beginBinaryImport}}))
+                {
+                {{addRowsToCopyCommand}}
+                await {{writerVar}}.CompleteAsync();
+                }
+                await {{connectionVar}}.CloseAsync();
+            }
+        """;
 
         string AddRowsToCopyCommand()
         {

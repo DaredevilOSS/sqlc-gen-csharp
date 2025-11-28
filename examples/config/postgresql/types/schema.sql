@@ -60,7 +60,7 @@ CREATE TABLE postgres_geometric_types (
     c_circle    CIRCLE
 );
 
-CREATE EXTENSION "uuid-ossp";
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 CREATE TYPE c_enum AS ENUM ('small', 'medium', 'big');
 

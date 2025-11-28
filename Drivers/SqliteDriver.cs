@@ -295,16 +295,16 @@ public sealed partial class SqliteDriver(
     public string GetCopyFromImpl(Query query, string queryTextConstant)
     {
         var sqlTextVar = Variable.TransformedSql.AsVarName();
-        var (establishConnection, connectionOpen) = EstablishConnection(query);
+        var connectionCommands = EstablishConnection(query);
         var sqlTransformation = $"var {sqlTextVar} = Utils.TransformQueryForSqliteBatch({queryTextConstant}, {Variable.Args.AsVarName()}.Count);";
         var commandParameters = AddParametersToCommand();
         var createSqlCommand = CreateSqlCommand(sqlTextVar);
         var executeScalar = $"await {Variable.Command.AsVarName()}.ExecuteScalarAsync();";
 
         return $$"""
-                 using ({{establishConnection}})
+                 using ({{connectionCommands.EstablishConnection}})
                  {
-                     {{connectionOpen.AppendSemicolonUnlessEmpty()}}
+                     {{connectionCommands.ConnectionOpen.AppendSemicolonUnlessEmpty()}}
                      {{sqlTransformation}}
                      using ({{createSqlCommand}})
                      {
