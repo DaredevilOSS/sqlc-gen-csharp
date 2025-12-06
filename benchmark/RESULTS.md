@@ -14,14 +14,14 @@ This document presents comprehensive benchmark results comparing:
 
 | Implementation | Mean Time | Ratio vs SQLC | Memory | GC Collections | Winner |
 |---------------|-----------|---------------|--------|----------------|--------|
-| **SQLC** | 5.63 ms | 1.00 (baseline) | 1.77 MB | Gen0: 547, Gen1: 547, Gen2: 156 | ✅ **WINNER** |
-| **EFCore (NoTracking)** | 6.25 ms | 1.11x slower | 1.68 MB | Gen0: 203, Gen1: 70 | |
-| **EFCore (WithTracking)** | 6.34 ms | 1.13x slower | 1.67 MB | Gen0: 203, Gen1: 78 | |
+| **SQLC** | 5.64 ms | 1.00 (baseline) | 1.77 MB | Gen0: 547, Gen1: 547, Gen2: 156 | ✅ **WINNER** |
+| **EFCore (NoTracking)** | 6.35 ms | 1.13x slower | 1.68 MB | Gen0: 203, Gen1: 86 | |
+| **EFCore (WithTracking)** | 6.36 ms | 1.13x slower | 1.67 MB | Gen0: 203, Gen1: 78 | |
 
 **Key Findings:**
-- ✅ **SQLC is 11-13% faster** than EFCore implementations
+- ✅ **SQLC is 13% faster** than EFCore implementations
 - All implementations are nearly equivalent
-- Tracking overhead is negligible (1.4% difference)
+- Tracking overhead is negligible (0.2% difference)
 - EFCore uses slightly less memory (5-6% less)
 
 ---
@@ -30,14 +30,14 @@ This document presents comprehensive benchmark results comparing:
 
 | Implementation | Mean Time | Ratio vs SQLC | Memory | GC Collections | Winner |
 |---------------|-----------|---------------|--------|----------------|--------|
-| **SQLC** | 189.5 ms | 1.00 (baseline) | 1.48 MB | None | ✅ **WINNER** |
-| **EFCore (NoTracking)** | 274.2 ms | 1.45x slower | 5.11 MB | Gen0: 500 | |
-| **EFCore (WithTracking)** | 278.3 ms | 1.47x slower | 5.10 MB | Gen0: 500 | |
+| **SQLC** | 184.9 ms | 1.00 (baseline) | 1.48 MB | None | ✅ **WINNER** |
+| **EFCore (NoTracking)** | 271.4 ms | 1.47x slower | 5.12 MB | Gen0: 500 | |
+| **EFCore (WithTracking)** | 273.2 ms | 1.48x slower | 5.11 MB | Gen0: 500 | |
 
 **Key Findings:**
-- ✅ **SQLC is 45-47% faster** than EFCore implementations
+- ✅ **SQLC is 47-48% faster** than EFCore implementations
 - SQLC uses **71% less memory** than EFCore
-- Tracking vs NoTracking has minimal impact (1.5% difference)
+- Tracking vs NoTracking has minimal impact (0.7% difference)
 
 ---
 
@@ -45,14 +45,14 @@ This document presents comprehensive benchmark results comparing:
 
 | Implementation | Mean Time | Ratio vs SQLC | Memory | GC Collections | Winner |
 |---------------|-----------|---------------|--------|----------------|--------|
-| **SQLC** | 17.28 ms | 1.00 (baseline) | 1.54 MB | Gen0: 188, Gen1: 94, Gen2: 94 | ✅ **WINNER** |
-| **EFCore (NoTracking)** | 19.06 ms | 1.10x slower | 2.02 MB | Gen0: 250, Gen1: 94 | |
-| **EFCore (WithTracking)** | 18.86 ms | 1.09x slower | 1.98 MB | Gen0: 219, Gen1: 63 | |
+| **SQLC** | 17.36 ms | 1.00 (baseline) | 1.54 MB | Gen0: 188, Gen1: 94, Gen2: 94 | ✅ **WINNER** |
+| **EFCore (NoTracking)** | 19.31 ms | 1.11x slower | 2.01 MB | Gen0: 250, Gen1: 125 | |
+| **EFCore (WithTracking)** | 18.97 ms | 1.09x slower | 1.98 MB | Gen0: 219, Gen1: 63 | |
 
 **Key Findings:**
-- ✅ **SQLC is 9-10% faster** than EFCore implementations
+- ✅ **SQLC is 9-11% faster** than EFCore implementations
 - All implementations are nearly equivalent
-- Tracking vs NoTracking has minimal impact (1.0% difference)
+- Tracking vs NoTracking has minimal impact (1.8% difference)
 - SQLC uses 24-31% less memory
 
 ---
@@ -65,28 +65,28 @@ This document presents comprehensive benchmark results comparing:
 
 | Batch Size | SQLC | EFCore | Ratio | Memory Ratio | Winner |
 |-----------|------|--------|-------|--------------|--------|
-| 1,000 | 14.10 ms | 113.86 ms | 1:8.1 | 1:10.4 | ✅ **SQLC** |
-| 10,000 | 104.28 ms | 802.67 ms | 1:7.7 | 1:52.4 | ✅ **SQLC** |
-| 50,000 | 320.47 ms | 4,017.49 ms | 1:12.5 | 1:55.0 | ✅ **SQLC** |
+| 1,000 | 15.98 ms | 120.03 ms | 1:7.5 | 1:46.6 | ✅ **SQLC** |
+| 10,000 | 118.63 ms | 845.06 ms | 1:7.1 | 1:37.9 | ✅ **SQLC** |
+| 50,000 | 329.56 ms | 4,482.38 ms | 1:13.6 | 1:55.3 | ✅ **SQLC** |
 
 #### AddOrders
 
 | Batch Size | SQLC | EFCore | Ratio | Memory Ratio | Winner |
 |-----------|------|--------|-------|--------------|--------|
-| 1,000 | 9.08 ms | 126.41 ms | 1:13.9 | 1:11.7 | ✅ **SQLC** |
-| 10,000 | 48.68 ms | 741.02 ms | 1:15.2 | 1:50.8 | ✅ **SQLC** |
-| 50,000 | 196.48 ms | 3,981.40 ms | 1:20.3 | 1:74.7 | ✅ **SQLC** |
+| 1,000 | 10.99 ms | 138.65 ms | 1:12.6 | 1:58.8 | ✅ **SQLC** |
+| 10,000 | 45.68 ms | 787.13 ms | 1:17.2 | 1:49.8 | ✅ **SQLC** |
+| 50,000 | 193.58 ms | 4,112.80 ms | 1:21.2 | 1:76.5 | ✅ **SQLC** |
 
 #### AddProducts
 
 | Batch Size | SQLC | EFCore | Ratio | Memory Ratio | Winner |
 |-----------|------|--------|-------|--------------|--------|
-| 1,000 | 9.44 ms | 131.02 ms | 1:13.9 | 1:48.2 | ✅ **SQLC** |
-| 10,000 | 44.19 ms | 707.46 ms | 1:16.0 | 1:41.2 | ✅ **SQLC** |
-| 50,000 | 175.15 ms | 3,929.13 ms | 1:22.4 | 1:66.5 | ✅ **SQLC** |
+| 1,000 | 10.57 ms | 131.04 ms | 1:12.4 | 1:46.9 | ✅ **SQLC** |
+| 10,000 | 40.79 ms | 734.83 ms | 1:18.0 | 1:57.1 | ✅ **SQLC** |
+| 50,000 | 181.34 ms | 3,918.76 ms | 1:21.6 | 1:73.3 | ✅ **SQLC** |
 
 **MySQL Write Summary:**
-- **Winner**: ✅ **SQLC** (7.7-22.4x faster, 10-75x less memory)
+- **Winner**: ✅ **SQLC** (7.1-21.6x faster, 37-76x less memory)
 - Performance gap increases with batch size
 - SQLC uses dramatically less memory
 
@@ -98,29 +98,29 @@ This document presents comprehensive benchmark results comparing:
 
 | Batch Size | SQLC | EFCore | Ratio | Memory Ratio | Winner |
 |-----------|------|--------|-------|--------------|--------|
-| 1,000 | 10.08 ms | 101.15 ms | 1:10.0 | 1:102.2 | ✅ **SQLC** |
-| 10,000 | 87.61 ms | 397.74 ms | 1:4.5 | 1:444.1 | ✅ **SQLC** |
-| 50,000 | 461.42 ms | 2,225.20 ms | 1:4.8 | 1:446.0 | ✅ **SQLC** |
+| 1,000 | 10.54 ms | 95.81 ms | 1:9.1 | 1:102.1 | ✅ **SQLC** |
+| 10,000 | 89.60 ms | 362.61 ms | 1:4.0 | 1:444.1 | ✅ **SQLC** |
+| 50,000 | 459.32 ms | 2,213.44 ms | 1:4.8 | 1:446.0 | ✅ **SQLC** |
 
 #### AddOrders
 
 | Batch Size | SQLC | EFCore | Ratio | Memory Ratio | Winner |
 |-----------|------|--------|-------|--------------|--------|
-| 1,000 | 7.57 ms | 88.51 ms | 1:11.7 | 1:107.7 | ✅ **SQLC** |
-| 10,000 | 62.33 ms | 391.62 ms | 1:6.3 | 1:457.7 | ✅ **SQLC** |
-| 50,000 | 324.13 ms | 2,324.91 ms | 1:7.2 | 1:459.1 | ✅ **SQLC** |
+| 1,000 | 7.42 ms | 67.81 ms | 1:9.1 | 1:107.6 | ✅ **SQLC** |
+| 10,000 | 62.46 ms | 372.88 ms | 1:6.0 | 1:457.6 | ✅ **SQLC** |
+| 50,000 | 302.48 ms | 2,391.41 ms | 1:7.9 | 1:459.1 | ✅ **SQLC** |
 
 #### AddProducts
 
 | Batch Size | SQLC | EFCore | Ratio | Memory Ratio | Winner |
 |-----------|------|--------|-------|--------------|--------|
-| 1,000 | 4.98 ms | 64.69 ms | 1:13.0 | 1:257.5 | ✅ **SQLC** |
-| 10,000 | 13.00 ms | 354.03 ms | 1:27.3 | 1:466.4 | ✅ **SQLC** |
-| 50,000 | 56.40 ms | 2,253.94 ms | 1:40.0 | 1:466.3 | ✅ **SQLC** |
+| 1,000 | 5.16 ms | 107.72 ms | 1:20.9 | 1:257.1 | ✅ **SQLC** |
+| 10,000 | 13.10 ms | 368.33 ms | 1:28.1 | 1:465.5 | ✅ **SQLC** |
+| 50,000 | 68.83 ms | 2,219.23 ms | 1:32.2 | 1:466.1 | ✅ **SQLC** |
 
 **PostgreSQL Write Summary:**
-- **Winner**: ✅ **SQLC** (4.3-40.0x faster, 100-466x less memory)
-- Best performance: AddProducts (27-40x faster)
+- **Winner**: ✅ **SQLC** (4.0-32.2x faster, 100-466x less memory)
+- Best performance: AddProducts (20.9-32.2x faster)
 - SQLC uses dramatically less memory (100-466x less)
 
 ---
@@ -167,9 +167,9 @@ This document presents comprehensive benchmark results comparing:
 
 | Database | Winner | SQLC Advantage | EFCore (NoTracking) | EFCore (WithTracking) |
 |----------|--------|----------------|---------------------|----------------------|
-| **MySQL** | ✅ **SQLC** | **11-13% faster** | 5.63 ms | 6.34 ms |
-| **PostgreSQL** | ✅ **SQLC** | **45-47% faster** | 189.5 ms | 278.3 ms |
-| **SQLite** | ✅ **SQLC** | **9-10% faster** | 17.28 ms | 18.86 ms |
+| **MySQL** | ✅ **SQLC** | **13% faster** | 5.64 ms | 6.36 ms |
+| **PostgreSQL** | ✅ **SQLC** | **47-48% faster** | 184.9 ms | 273.2 ms |
+| **SQLite** | ✅ **SQLC** | **9-11% faster** | 17.36 ms | 18.97 ms |
 
 **Read Operations Winner**: ✅ **SQLC** (wins in all databases: 11-13% faster in MySQL, 45-47% faster in PostgreSQL, 9-10% faster in SQLite)
 
@@ -179,8 +179,8 @@ This document presents comprehensive benchmark results comparing:
 
 | Database | Winner | SQLC Advantage Range | Best Operation | Worst Operation |
 |----------|--------|---------------------|----------------|----------------|
-| **MySQL** | ✅ **SQLC** | **7.7-22.4x faster** | AddProducts (22.4x) | AddOrderItems (7.7x) |
-| **PostgreSQL** | ✅ **SQLC** | **4.3-38.1x faster** | AddProducts (38.1x) | AddOrderItems (4.3x) |
+| **MySQL** | ✅ **SQLC** | **7.1-21.6x faster** | AddProducts (21.6x) | AddOrderItems (7.1x) |
+| **PostgreSQL** | ✅ **SQLC** | **4.0-32.2x faster** | AddProducts (32.2x) | AddOrderItems (4.0x) |
 | **SQLite** | ✅ **SQLC** | **1.5-7.3x faster** | AddOrders (7.3x) | AddProducts (1.5x) |
 
 **Write Operations Winner**: ✅ **SQLC** (wins in all databases, all SQLite operations now working!)
@@ -193,9 +193,9 @@ This document presents comprehensive benchmark results comparing:
 
 | Database | SQLC | EFCore (NoTracking) | EFCore (WithTracking) | Winner |
 |----------|------|---------------------|----------------------|--------|
-| **MySQL** | 5.63 ms | 6.25 ms (11% slower) | 6.34 ms (13% slower) | ✅ **SQLC** |
-| **PostgreSQL** | 189.5 ms | 274.2 ms (45% slower) | 278.3 ms (47% slower) | ✅ **SQLC** |
-| **SQLite** | 17.28 ms | 19.06 ms (10% slower) | 18.86 ms (9% slower) | ✅ **SQLC** |
+| **MySQL** | 5.64 ms | 6.35 ms (13% slower) | 6.36 ms (13% slower) | ✅ **SQLC** |
+| **PostgreSQL** | 184.9 ms | 271.4 ms (47% slower) | 273.2 ms (48% slower) | ✅ **SQLC** |
+| **SQLite** | 17.36 ms | 19.31 ms (11% slower) | 18.97 ms (9% slower) | ✅ **SQLC** |
 
 ### Read Performance (Memory)
 
@@ -209,15 +209,15 @@ This document presents comprehensive benchmark results comparing:
 
 | Database | Operation | SQLC | EFCore | Ratio | Winner |
 |----------|-----------|------|--------|-------|--------|
-| **MySQL** | AddOrderItems | 320.47 ms | 4,017.49 ms | 1:12.5 | ✅ **SQLC** |
-| **MySQL** | AddOrders | 196.48 ms | 3,981.40 ms | 1:20.3 | ✅ **SQLC** |
-| **MySQL** | AddProducts | 175.15 ms | 3,929.13 ms | 1:22.4 | ✅ **SQLC** |
-| **PostgreSQL** | AddOrderItems | 463.13 ms | 2,197.90 ms | 1:4.7 | ✅ **SQLC** |
-| **PostgreSQL** | AddOrders | 306.53 ms | 2,415.53 ms | 1:7.9 | ✅ **SQLC** |
-| **PostgreSQL** | AddProducts | 59.82 ms | 2,307.92 ms | 1:38.6 | ✅ **SQLC** |
-| **SQLite** | AddOrders | 11.18 ms | 39.53 ms | 1:3.5 | ✅ **SQLC** |
-| **SQLite** | AddOrderItems | 16.41 ms | 53.21 ms | 1:3.2 | ✅ **SQLC** |
-| **SQLite** | AddProducts | 25.26 ms | 36.81 ms | 1:1.5 | ✅ **SQLC** |
+| **MySQL** | AddOrderItems | 329.56 ms | 4,482.38 ms | 1:13.6 | ✅ **SQLC** |
+| **MySQL** | AddOrders | 193.58 ms | 4,112.80 ms | 1:21.2 | ✅ **SQLC** |
+| **MySQL** | AddProducts | 181.34 ms | 3,918.76 ms | 1:21.6 | ✅ **SQLC** |
+| **PostgreSQL** | AddOrderItems | 459.32 ms | 2,213.44 ms | 1:4.8 | ✅ **SQLC** |
+| **PostgreSQL** | AddOrders | 302.48 ms | 2,391.41 ms | 1:7.9 | ✅ **SQLC** |
+| **PostgreSQL** | AddProducts | 68.83 ms | 2,219.23 ms | 1:32.2 | ✅ **SQLC** |
+| **SQLite** | AddOrders | 11.31 ms | 43.88 ms | 1:3.9 | ✅ **SQLC** |
+| **SQLite** | AddOrderItems | 16.47 ms | 56.04 ms | 1:3.4 | ✅ **SQLC** |
+| **SQLite** | AddProducts | 25.14 ms | 49.55 ms | 1:2.0 | ✅ **SQLC** |
 
 ### Write Performance (50K Batch - Memory)
 
@@ -239,23 +239,23 @@ This document presents comprehensive benchmark results comparing:
 
 ### 1. Read Operations
 
-- **MySQL**: EFCore is **5.6-5.7x faster** than SQLC (reversed from previous results with larger dataset)
-- **PostgreSQL**: SQLC has a **small 2-6% advantage** - both are viable options
-- **SQLite**: SQLC has a **small 1-2% advantage** - all implementations are nearly equivalent
-- **Tracking Impact**: Negligible (0.3-1.7% difference) - use `AsNoTracking()` for correctness, not performance
-- **Note**: MySQL results changed dramatically with reduced dataset size (matching PostgreSQL)
+- **MySQL**: SQLC is **13% faster** than EFCore implementations
+- **PostgreSQL**: SQLC is **47-48% faster** than EFCore implementations, uses **71% less memory**
+- **SQLite**: SQLC is **9-11% faster** than EFCore implementations
+- **Tracking Impact**: Negligible (0.2-1.8% difference) - use `AsNoTracking()` for correctness, not performance
+- **Overall**: SQLC wins in all databases for read operations
 
 ### 2. Write Operations
 
-- **All Databases**: SQLC is **2-41x faster** depending on database and operation
+- **All Databases**: SQLC is **1.5-32.2x faster** depending on database and operation
 - **Memory**: SQLC uses **5-466x less memory** - dramatic memory efficiency advantage
 - **Scaling**: SQLC scales linearly; EFCore performance degrades with larger batches
 
 ### 3. Database-Specific Patterns
 
-- **MySQL**: SQLC faster for reads (11-13%), SQLC faster for writes (7.3-25.5x)
-- **PostgreSQL**: SQLC faster for both reads (45-47%) and writes (3.8-40.5x)
-- **SQLite**: SQLC faster for both reads (9-10%) and writes (1.5-7.3x faster)
+- **MySQL**: SQLC faster for reads (13%), SQLC faster for writes (7.1-21.6x)
+- **PostgreSQL**: SQLC faster for both reads (47-48%) and writes (4.0-32.2x)
+- **SQLite**: SQLC faster for both reads (9-11%) and writes (1.5-7.3x faster)
 
 ### 4. Memory Efficiency
 
@@ -269,8 +269,8 @@ This document presents comprehensive benchmark results comparing:
 
 **Overall Winner**: ✅ **SQLC** (wins in all categories across all databases)
 
-- **Read Operations**: SQLC wins in all databases (11-13% faster in MySQL, 45-47% faster in PostgreSQL, 9-10% faster in SQLite).
-- **Write Operations**: SQLC wins in all databases (3.1-22.4x faster, 5-466x less memory). ✅ All SQLite write operations are now working!
+- **Read Operations**: SQLC wins in all databases (13% faster in MySQL, 47-48% faster in PostgreSQL, 9-11% faster in SQLite).
+- **Write Operations**: SQLC wins in all databases (1.5-32.2x faster, 5-466x less memory). ✅ All SQLite write operations are now working!
 - **Memory Efficiency**: SQLC is dramatically more efficient, especially for writes (5-466x less memory)
 - **Scaling**: SQLC scales better with larger batch sizes
 

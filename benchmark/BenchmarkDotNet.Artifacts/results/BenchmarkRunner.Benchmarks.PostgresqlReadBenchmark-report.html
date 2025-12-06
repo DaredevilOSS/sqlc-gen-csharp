@@ -2,7 +2,7 @@
 <html lang='en'>
 <head>
 <meta charset='utf-8' />
-<title>BenchmarkRunner.Benchmarks.PostgresqlReadBenchmark-20251206-222945</title>
+<title>BenchmarkRunner.Benchmarks.PostgresqlReadBenchmark-20251206-232208</title>
 
 <style type="text/css">
 	table { border-collapse: collapse; display: block; width: 100%; overflow: auto; }
@@ -17,7 +17,7 @@ BenchmarkDotNet v0.13.12, macOS 15.6.1 (24G90) [Darwin 24.6.0]
 Apple M2, 1 CPU, 8 logical and 8 physical cores
 .NET SDK 8.0.416
   [Host]     : .NET 8.0.22 (8.0.2225.52707), Arm64 RyuJIT AdvSIMD
-  Job-OANQBP : .NET 8.0.22 (8.0.2225.52707), Arm64 RyuJIT AdvSIMD
+  Job-NFWTJA : .NET 8.0.22 (8.0.2225.52707), Arm64 RyuJIT AdvSIMD
 </code></pre>
 <pre><code>Runtime=.NET 8.0  IterationCount=10  WarmupCount=3  
 Categories=Read  
@@ -26,9 +26,9 @@ Categories=Read
 <table>
 <thead><tr><th>Method                               </th><th>Mean</th><th>Error</th><th>StdDev</th><th>Ratio</th><th>RatioSD</th><th>Gen0</th><th>Allocated</th><th>Alloc Ratio</th>
 </tr>
-</thead><tbody><tr><td>&#39;SQLC - GetCustomerOrders&#39;</td><td>189.5 ms</td><td>2.75 ms</td><td>1.64 ms</td><td>1.00</td><td>0.00</td><td>-</td><td>1.48 MB</td><td>1.00</td>
-</tr><tr><td>&#39;EFCore (NoTracking) - GetCustomerOrders&#39;</td><td>274.2 ms</td><td>3.75 ms</td><td>2.23 ms</td><td>1.45</td><td>0.02</td><td>500.0000</td><td>5.11 MB</td><td>3.45</td>
-</tr><tr><td>&#39;EFCore (WithTracking) - GetCustomerOrders&#39;</td><td>278.3 ms</td><td>3.68 ms</td><td>2.44 ms</td><td>1.47</td><td>0.02</td><td>500.0000</td><td>5.1 MB</td><td>3.44</td>
+</thead><tbody><tr><td>&#39;SQLC - GetCustomerOrders&#39;</td><td>184.9 ms</td><td>3.51 ms</td><td>2.09 ms</td><td>1.00</td><td>0.00</td><td>-</td><td>1.48 MB</td><td>1.00</td>
+</tr><tr><td>&#39;EFCore (NoTracking) - GetCustomerOrders&#39;</td><td>271.4 ms</td><td>2.23 ms</td><td>1.48 ms</td><td>1.47</td><td>0.02</td><td>500.0000</td><td>5.12 MB</td><td>3.44</td>
+</tr><tr><td>&#39;EFCore (WithTracking) - GetCustomerOrders&#39;</td><td>273.2 ms</td><td>3.80 ms</td><td>2.26 ms</td><td>1.48</td><td>0.02</td><td>500.0000</td><td>5.11 MB</td><td>3.44</td>
 </tr></tbody></table>
 </body>
 </html>
