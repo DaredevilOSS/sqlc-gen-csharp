@@ -125,4 +125,3 @@ public class OrderItem
     [ForeignKey("ProductId")]
     public Product Product { get; set; } = null!;
 }
-

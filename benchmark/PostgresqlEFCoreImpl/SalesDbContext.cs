@@ -20,4 +20,3 @@ public class SalesDbContext(string connectionString) : DbContext
         base.OnModelCreating(modelBuilder);
     }
 }
-

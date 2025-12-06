@@ -1,8 +1,8 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
 
 namespace PostgresEFCoreImpl;
 
@@ -45,12 +45,12 @@ public class Queries
             .OrderByDescending(o => o.OrderedAt)
             .Skip(args.Offset)
             .Take(args.Limit);
-        
+
         if (!_useTracking)
         {
             query = query.AsNoTracking();
         }
-        
+
         var results = await query
             .SelectMany(o => o.OrderItems.Select(i => new
             {

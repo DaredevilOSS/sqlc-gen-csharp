@@ -1,8 +1,8 @@
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
 
 namespace MysqlEFCoreImpl;
 
@@ -43,14 +43,14 @@ public class Queries
         var ordersQuery = _dbContext.Orders.AsQueryable();
         var orderItemsQuery = _dbContext.OrderItems.AsQueryable();
         var productsQuery = _dbContext.Products.AsQueryable();
-        
+
         if (!_useTracking)
         {
             ordersQuery = ordersQuery.AsNoTracking();
             orderItemsQuery = orderItemsQuery.AsNoTracking();
             productsQuery = productsQuery.AsNoTracking();
         }
-        
+
         var query = (from o in ordersQuery
                      join i in orderItemsQuery on o.OrderId equals i.OrderId
                      join p in productsQuery on i.ProductId equals p.ProductId
@@ -70,7 +70,7 @@ public class Queries
                      ))
                      .Skip(args.Offset)
                      .Take(args.Limit);
-        
+
         var results = await query.ToListAsync();
 
         return results;
@@ -135,4 +135,3 @@ public class Queries
         await _dbContext.SaveChangesAsync();
     }
 }
-

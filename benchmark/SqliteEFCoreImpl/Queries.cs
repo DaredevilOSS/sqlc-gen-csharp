@@ -1,8 +1,8 @@
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
 
 namespace SqliteEFCoreImpl;
 
@@ -44,31 +44,31 @@ public class Queries
         var ordersQuery = _dbContext.Orders.AsQueryable();
         var orderItemsQuery = _dbContext.OrderItems.AsQueryable();
         var productsQuery = _dbContext.Products.AsQueryable();
-        
+
         if (!_useTracking)
         {
             ordersQuery = ordersQuery.AsNoTracking();
             orderItemsQuery = orderItemsQuery.AsNoTracking();
             productsQuery = productsQuery.AsNoTracking();
         }
-        
+
         var results = await (from o in ordersQuery
-                            join i in orderItemsQuery on o.OrderId equals i.OrderId
-                            join p in productsQuery on i.ProductId equals p.ProductId
-                            where o.CustomerId == args.CustomerId
-                            orderby o.OrderedAt descending
-                            select new GetCustomerOrdersRow(
-                                o.OrderId,
-                                o.OrderedAt.ToString("yyyy-MM-dd HH:mm:ss.FFFFFFF"),
-                                o.OrderState,
-                                o.TotalAmount,
-                                i.OrderItemId,
-                                i.Quantity,
-                                i.UnitPrice,
-                                p.ProductId,
-                                p.Name,
-                                p.Category
-                            ))
+                             join i in orderItemsQuery on o.OrderId equals i.OrderId
+                             join p in productsQuery on i.ProductId equals p.ProductId
+                             where o.CustomerId == args.CustomerId
+                             orderby o.OrderedAt descending
+                             select new GetCustomerOrdersRow(
+                                 o.OrderId,
+                                 o.OrderedAt.ToString("yyyy-MM-dd HH:mm:ss.FFFFFFF"),
+                                 o.OrderState,
+                                 o.TotalAmount,
+                                 i.OrderItemId,
+                                 i.Quantity,
+                                 i.UnitPrice,
+                                 p.ProductId,
+                                 p.Name,
+                                 p.Category
+                             ))
                             .Skip(args.Offset)
                             .Take(args.Limit)
                             .ToListAsync();
@@ -135,4 +135,3 @@ public class Queries
         await _dbContext.SaveChangesAsync();
     }
 }
-

@@ -45,4 +45,3 @@ public static partial class SqliteDatabaseHelper
         return builder.DataSource == ":memory:" ? null : builder.DataSource;
     }
 }
-

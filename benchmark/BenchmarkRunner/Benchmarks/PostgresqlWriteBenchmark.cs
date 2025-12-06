@@ -1,10 +1,10 @@
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Configs;
 using BenchmarkDotNet.Jobs;
+using BenchmarkRunner.Utils;
 using Microsoft.EntityFrameworkCore;
 using PostgresEFCoreImpl;
 using PostgresSqlcImpl;
-using BenchmarkRunner.Utils;
 
 namespace BenchmarkRunner.Benchmarks;
 
@@ -143,4 +143,3 @@ public class PostgresqlWriteBenchmark
         await PostgresqlDatabaseHelper.CleanupDatabaseAsync(_connectionString);
     }
 }
-

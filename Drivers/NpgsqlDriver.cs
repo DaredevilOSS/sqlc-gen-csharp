@@ -540,7 +540,7 @@ public sealed class NpgsqlDriver : EnumDbDriver, IOne, IMany, IExec, IExecRows, 
         var connectionVar = Variable.Connection.AsVarName();
         return new(
             GetConnectionOrDataSource: new($"var {connectionVar} = await GetDataSource().OpenConnectionAsync()", true)
-            // ConnectionOpen: string.Empty
+        // ConnectionOpen: string.Empty
         );
     }
 
@@ -572,7 +572,7 @@ public sealed class NpgsqlDriver : EnumDbDriver, IOne, IMany, IExec, IExecRows, 
         var fieldDeclaration = ParseMemberDeclaration($$"""
             private readonly Lazy<NpgsqlDataSource>{{optionalNotNullVerify}} {{dataSourceField}};
         """)!;
-        
+
         var getDataSourceMethod = ParseMemberDeclaration($$"""
             private NpgsqlDataSource GetDataSource()
             {
@@ -581,7 +581,7 @@ public sealed class NpgsqlDriver : EnumDbDriver, IOne, IMany, IExec, IExecRows, 
                 return {{dataSourceField}}.Value;
             }
             """)!;
-        
+
         return [fieldDeclaration, getDataSourceMethod];
     }
 
@@ -627,8 +627,8 @@ public sealed class NpgsqlDriver : EnumDbDriver, IOne, IMany, IExec, IExecRows, 
         string GetCopyCommand()
         {
             var copyParams = query.Params.Select(p => p.Column.Name).JoinByComma();
-            var qualifiedTableName = !string.IsNullOrEmpty(query.InsertIntoTable.Schema) 
-                ? $"{query.InsertIntoTable.Schema}.{query.InsertIntoTable.Name}" 
+            var qualifiedTableName = !string.IsNullOrEmpty(query.InsertIntoTable.Schema)
+                ? $"{query.InsertIntoTable.Schema}.{query.InsertIntoTable.Name}"
                 : query.InsertIntoTable.Name;
             return $"COPY {qualifiedTableName} ({copyParams}) FROM STDIN (FORMAT BINARY)";
         }

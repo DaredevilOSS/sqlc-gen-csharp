@@ -124,7 +124,7 @@ public class SqliteDatabaseSeeder(string connectionString)
             {
                 var productId = selectedProducts[i];
                 var product = await _efCoreContext.Products.FirstAsync(p => p.ProductId == productId);
-                
+
                 decimal unitPrice;
                 int quantity;
 
@@ -155,4 +155,3 @@ public class SqliteDatabaseSeeder(string connectionString)
         await _efCoreContext.SaveChangesAsync();
     }
 }
-

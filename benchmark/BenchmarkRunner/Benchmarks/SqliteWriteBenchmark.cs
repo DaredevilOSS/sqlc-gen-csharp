@@ -1,10 +1,10 @@
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Configs;
 using BenchmarkDotNet.Jobs;
+using BenchmarkRunner.Utils;
 using Microsoft.EntityFrameworkCore;
 using SqliteEFCoreImpl;
 using SqliteSqlcImpl;
-using BenchmarkRunner.Utils;
 
 namespace BenchmarkRunner.Benchmarks;
 
@@ -32,7 +32,7 @@ public class SqliteWriteBenchmark
     {
         _connectionString = Config.GetSqliteConnectionString();
         await SqliteDatabaseHelper.InitializeDatabaseAsync(_connectionString);
-        
+
         _sqlcImpl = new QuerySql(_connectionString);
         _dbContext = new SalesDbContext(_connectionString);
         _efCoreImpl = new Queries(_dbContext);
@@ -143,4 +143,3 @@ public class SqliteWriteBenchmark
         await SqliteDatabaseHelper.CleanupDatabaseAsync(_connectionString);
     }
 }
-

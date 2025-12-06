@@ -1,10 +1,10 @@
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Configs;
 using BenchmarkDotNet.Jobs;
+using BenchmarkRunner.Utils;
 using Microsoft.EntityFrameworkCore;
 using MysqlEFCoreImpl;
 using MysqlSqlcImpl;
-using BenchmarkRunner.Utils;
 
 namespace BenchmarkRunner.Benchmarks;
 
@@ -35,12 +35,12 @@ public class MysqlReadBenchmark
         _efCoreImplWithTracking = new Queries(_dbContextWithTracking, useTracking: true);
 
         var seeder = new MysqlDatabaseSeeder(connectionString);
-       await seeder.SeedAsync(
-            customerCount: 500, 
-            productsPerCategory: 150, 
-            ordersPerCustomer: 100, 
-            itemsPerOrder: 5
-        );
+        await seeder.SeedAsync(
+             customerCount: 500,
+             productsPerCategory: 150,
+             ordersPerCustomer: 100,
+             itemsPerOrder: 5
+         );
 
         var firstCustomer = await _efCoreImplNoTracking.DbContext.Set<MysqlEFCoreImpl.Customer>().FirstAsync();
         _testCustomerId = firstCustomer.CustomerId;
@@ -109,4 +109,3 @@ public class MysqlReadBenchmark
         await MysqlDatabaseHelper.CleanupDatabaseAsync(connectionString);
     }
 }
-

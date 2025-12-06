@@ -1,10 +1,10 @@
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Configs;
 using BenchmarkDotNet.Jobs;
+using BenchmarkRunner.Utils;
 using Microsoft.EntityFrameworkCore;
 using PostgresEFCoreImpl;
 using PostgresSqlcImpl;
-using BenchmarkRunner.Utils;
 
 namespace BenchmarkRunner.Benchmarks;
 
@@ -36,9 +36,9 @@ public class PostgresqlReadBenchmark
 
         var seeder = new PostgresqlDatabaseSeeder(connectionString);
         await seeder.SeedAsync(
-            customerCount: 500, 
-            productsPerCategory: 150, 
-            ordersPerCustomer: 100, 
+            customerCount: 500,
+            productsPerCategory: 150,
+            ordersPerCustomer: 100,
             itemsPerOrder: 5
         );
 
@@ -109,4 +109,3 @@ public class PostgresqlReadBenchmark
         await PostgresqlDatabaseHelper.CleanupDatabaseAsync(connectionString);
     }
 }
-

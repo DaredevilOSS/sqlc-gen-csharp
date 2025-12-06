@@ -474,9 +474,9 @@ public sealed partial class MySqlConnectorDriver(
     {
         return new(
             GetConnectionOrDataSource: new(
-                $"var {Variable.Connection.AsVarName()} = await GetDataSource().OpenConnectionAsync()", 
+                $"var {Variable.Connection.AsVarName()} = await GetDataSource().OpenConnectionAsync()",
                 true)
-            // ConnectionOpen: string.Empty
+        // ConnectionOpen: string.Empty
         );
     }
 
@@ -516,7 +516,7 @@ public sealed partial class MySqlConnectorDriver(
         var fieldDeclaration = ParseMemberDeclaration($$"""
             private readonly Lazy<MySqlDataSource>{{optionalNotNullVerify}} {{dataSourceField}};
         """)!;
-        
+
         var getDataSourceMethod = ParseMemberDeclaration($$"""
             private MySqlDataSource GetDataSource()
             {
@@ -525,7 +525,7 @@ public sealed partial class MySqlConnectorDriver(
                 return {{dataSourceField}}.Value;
             }
             """)!;
-        
+
         return [fieldDeclaration, getDataSourceMethod];
     }
 
@@ -545,10 +545,10 @@ public sealed partial class MySqlConnectorDriver(
     {
         var commandVar = Variable.Command.AsVarName();
         var connectionVar = Variable.Connection.AsVarName();
-        
+
         return new CommandGenCommands(
             CommandCreation: new(
-                $"var {commandVar} = {connectionVar}.CreateCommand()", 
+                $"var {commandVar} = {connectionVar}.CreateCommand()",
                 true),
             SetCommandText: $"{commandVar}.CommandText = {sqlTextConstant}",
             PrepareCommand: string.Empty
@@ -593,8 +593,8 @@ public sealed partial class MySqlConnectorDriver(
 
         var loaderColumns = query.Params.Select(p => $"\"{p.Column.Name}\"").JoinByComma();
         var connectionCommands = EstablishConnection(query);
-        var qualifiedTableName = !string.IsNullOrEmpty(query.InsertIntoTable.Schema) 
-            ? $"{query.InsertIntoTable.Schema}.{query.InsertIntoTable.Name}" 
+        var qualifiedTableName = !string.IsNullOrEmpty(query.InsertIntoTable.Schema)
+            ? $"{query.InsertIntoTable.Schema}.{query.InsertIntoTable.Name}"
             : query.InsertIntoTable.Name;
 
         var commandBlock = $$"""
@@ -742,7 +742,7 @@ public sealed partial class MySqlConnectorDriver(
         static string DefaultWriterFn(string el, string dbType, bool notNull, bool isDapper, bool isLegacy) => notNull ? el : $"{el} ?? (object)DBNull.Value";
         return Options.UseDapper ? null : DefaultWriterFn;
     }
-    
+
     protected override string GetEnumReader(Column column, int ordinal)
     {
         var enumName = EnumToModelName(column);

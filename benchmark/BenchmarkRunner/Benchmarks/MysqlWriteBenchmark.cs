@@ -1,10 +1,10 @@
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Configs;
 using BenchmarkDotNet.Jobs;
+using BenchmarkRunner.Utils;
 using Microsoft.EntityFrameworkCore;
 using MysqlEFCoreImpl;
 using MysqlSqlcImpl;
-using BenchmarkRunner.Utils;
 
 namespace BenchmarkRunner.Benchmarks;
 
@@ -153,4 +153,3 @@ public class MysqlWriteBenchmark
         await MysqlDatabaseHelper.CleanupDatabaseAsync(_connectionString);
     }
 }
-

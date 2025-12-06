@@ -31,4 +31,3 @@ public static partial class PostgresqlDatabaseHelper
         }
     }
 }
-

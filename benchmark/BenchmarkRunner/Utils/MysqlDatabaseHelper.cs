@@ -45,4 +45,3 @@ public static partial class MysqlDatabaseHelper
         }
     }
 }
-

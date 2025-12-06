@@ -11,7 +11,7 @@ public class GenCommand(string commandText, bool wrapInUsing)
 {
     public string WrapBlock(string blockText)
     {
-        return wrapInUsing 
+        return wrapInUsing
             ? $$"""
             using ({{commandText}})
             {
@@ -30,8 +30,8 @@ public record ConnectionGenCommands(
     string ConnectionOpen = "");
 
 public record CommandGenCommands(
-    GenCommand CommandCreation, 
-    string SetCommandText, 
+    GenCommand CommandCreation,
+    string SetCommandText,
     string PrepareCommand);
 
 public abstract class DbDriver

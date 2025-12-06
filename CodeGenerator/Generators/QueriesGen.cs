@@ -67,10 +67,10 @@ internal partial class QueriesGen(DbDriver dbDriver, string namespaceName)
                 DefaultTypeMap.MatchNamesWithUnderscores = true;
               """
             : string.Empty;
-        
+
         var baseTypes = dbDriver.GetClassBaseTypes();
         var baseTypesStr = baseTypes.Length > 0 ? $" : {string.Join(", ", baseTypes)}" : string.Empty;
-        
+
         var classDeclaration = (ClassDeclarationSyntax)ParseMemberDeclaration(
                 $$"""
                   public class {{className}}{{baseTypesStr}}
@@ -104,7 +104,7 @@ internal partial class QueriesGen(DbDriver dbDriver, string namespaceName)
             [.. dbDriver.GetAdditionalClassMembers()
                 .AddRangeExcludeNulls(classMembers)
                 .AddRangeIf(
-                    [dbDriver.GetDisposeMethodImpl()], 
+                    [dbDriver.GetDisposeMethodImpl()],
                     dbDriver.GetClassBaseTypes().Any(x => x == "IDisposable")
                 )]
         );

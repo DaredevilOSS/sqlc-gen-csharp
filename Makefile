@@ -57,5 +57,7 @@ generate-protobuf:
 	./scripts/generate_protobuf.sh
 
 dotnet-format:
-	dotnet format --exclude GeneratedProtobuf --exclude examples
-
+	dotnet format \
+		--exclude GeneratedProtobuf \
+		--exclude examples \
+		--exclude benchmark/*SqlcImpl

@@ -1,10 +1,10 @@
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Configs;
 using BenchmarkDotNet.Jobs;
+using BenchmarkRunner.Utils;
 using Microsoft.EntityFrameworkCore;
 using SqliteEFCoreImpl;
 using SqliteSqlcImpl;
-using BenchmarkRunner.Utils;
 
 namespace BenchmarkRunner.Benchmarks;
 
@@ -26,7 +26,7 @@ public class SqliteReadBenchmark
     public async Task GlobalSetup()
     {
         var connectionString = Config.GetSqliteConnectionString();
-        
+
         // Initialize database schema (assumes schema exists for EFCore)
         await SqliteDatabaseHelper.InitializeDatabaseAsync(connectionString);
 
@@ -38,9 +38,9 @@ public class SqliteReadBenchmark
 
         var seeder = new SqliteDatabaseSeeder(connectionString);
         await seeder.SeedAsync(
-            customerCount: 100, 
-            productsPerCategory: 100, 
-            ordersPerCustomer: 50, 
+            customerCount: 100,
+            productsPerCategory: 100,
+            ordersPerCustomer: 50,
             itemsPerOrder: 3
         );
 
@@ -111,4 +111,3 @@ public class SqliteReadBenchmark
         await SqliteDatabaseHelper.CleanupDatabaseAsync(connectionString);
     }
 }
-
