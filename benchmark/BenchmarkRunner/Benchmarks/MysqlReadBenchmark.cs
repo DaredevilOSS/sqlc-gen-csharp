@@ -34,11 +34,14 @@ public class MysqlReadBenchmark
         _efCoreImplNoTracking = new Queries(_dbContextNoTracking, useTracking: false);
         _efCoreImplWithTracking = new Queries(_dbContextWithTracking, useTracking: true);
 
-        // Ensure database is seeded with dataset matching PostgreSQL for consistency
         var seeder = new MysqlDatabaseSeeder(connectionString);
-        await seeder.SeedAsync(customerCount: 100, productsPerCategory: 100, ordersPerCustomer: 50, itemsPerOrder: 3);
+       await seeder.SeedAsync(
+            customerCount: 500, 
+            productsPerCategory: 150, 
+            ordersPerCustomer: 100, 
+            itemsPerOrder: 5
+        );
 
-        // Get a valid customer ID for testing
         var firstCustomer = await _efCoreImplNoTracking.DbContext.Set<MysqlEFCoreImpl.Customer>().FirstAsync();
         _testCustomerId = firstCustomer.CustomerId;
     }

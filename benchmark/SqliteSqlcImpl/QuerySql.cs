@@ -47,7 +47,7 @@ public class QuerySql
                                                   WHERE o.customer_id = @customer_id
                                                   ORDER BY o.ordered_at DESC
                                                   LIMIT @limit OFFSET @offset";
-    public readonly record struct GetCustomerOrdersRow(string OrderId, string OrderedAt, string OrderState, decimal TotalAmount, string OrderItemId, int Quantity, decimal UnitPrice, int ProductId, string ProductName, string ProductCategory);
+    public readonly record struct GetCustomerOrdersRow(int OrderId, string OrderedAt, string OrderState, decimal TotalAmount, int OrderItemId, int Quantity, decimal UnitPrice, int ProductId, string ProductName, string ProductCategory);
     public readonly record struct GetCustomerOrdersArgs(int CustomerId, int Offset, int Limit);
     public async Task<List<GetCustomerOrdersRow>> GetCustomerOrdersAsync(GetCustomerOrdersArgs args)
     {
@@ -66,7 +66,7 @@ public class QuerySql
                     {
                         var result = new List<GetCustomerOrdersRow>();
                         while (await reader.ReadAsync())
-                            result.Add(new GetCustomerOrdersRow { OrderId = reader.GetString(0), OrderedAt = reader.GetString(1), OrderState = reader.GetString(2), TotalAmount = reader.GetDecimal(3), OrderItemId = reader.GetString(4), Quantity = reader.GetInt32(5), UnitPrice = reader.GetDecimal(6), ProductId = reader.GetInt32(7), ProductName = reader.GetString(8), ProductCategory = reader.GetString(9) });
+                            result.Add(new GetCustomerOrdersRow { OrderId = reader.GetInt32(0), OrderedAt = reader.GetString(1), OrderState = reader.GetString(2), TotalAmount = reader.GetDecimal(3), OrderItemId = reader.GetInt32(4), Quantity = reader.GetInt32(5), UnitPrice = reader.GetDecimal(6), ProductId = reader.GetInt32(7), ProductName = reader.GetString(8), ProductCategory = reader.GetString(9) });
                         return result;
                     }
                 }
@@ -86,7 +86,7 @@ public class QuerySql
             {
                 var result = new List<GetCustomerOrdersRow>();
                 while (await reader.ReadAsync())
-                    result.Add(new GetCustomerOrdersRow { OrderId = reader.GetString(0), OrderedAt = reader.GetString(1), OrderState = reader.GetString(2), TotalAmount = reader.GetDecimal(3), OrderItemId = reader.GetString(4), Quantity = reader.GetInt32(5), UnitPrice = reader.GetDecimal(6), ProductId = reader.GetInt32(7), ProductName = reader.GetString(8), ProductCategory = reader.GetString(9) });
+                    result.Add(new GetCustomerOrdersRow { OrderId = reader.GetInt32(0), OrderedAt = reader.GetString(1), OrderState = reader.GetString(2), TotalAmount = reader.GetDecimal(3), OrderItemId = reader.GetInt32(4), Quantity = reader.GetInt32(5), UnitPrice = reader.GetDecimal(6), ProductId = reader.GetInt32(7), ProductName = reader.GetString(8), ProductCategory = reader.GetString(9) });
                 return result;
             }
         }
@@ -117,8 +117,8 @@ public class QuerySql
         }
     }
 
-    private const string AddOrdersSql = "INSERT INTO orders (order_id, customer_id, order_state, total_amount) VALUES (@order_id, @customer_id, @order_state, @total_amount)";
-    public readonly record struct AddOrdersArgs(string OrderId, int CustomerId, string OrderState, decimal TotalAmount);
+    private const string AddOrdersSql = "INSERT INTO orders (customer_id, order_state, total_amount) VALUES (@customer_id, @order_state, @total_amount)";
+    public readonly record struct AddOrdersArgs(int CustomerId, string OrderState, decimal TotalAmount);
     public async Task AddOrdersAsync(List<AddOrdersArgs> args)
     {
         using (var connection = new SqliteConnection(ConnectionString))
@@ -129,7 +129,6 @@ public class QuerySql
             {
                 for (int i = 0; i < args.Count; i++)
                 {
-                    command.Parameters.AddWithValue($"@order_id{i}", args[i].OrderId);
                     command.Parameters.AddWithValue($"@customer_id{i}", args[i].CustomerId);
                     command.Parameters.AddWithValue($"@order_state{i}", args[i].OrderState);
                     command.Parameters.AddWithValue($"@total_amount{i}", args[i].TotalAmount);
@@ -141,8 +140,8 @@ public class QuerySql
         }
     }
 
-    private const string AddOrderItemsSql = "INSERT INTO order_items (order_item_id, order_id, product_id, quantity, unit_price) VALUES (@order_item_id, @order_id, @product_id, @quantity, @unit_price)";
-    public readonly record struct AddOrderItemsArgs(string OrderItemId, string OrderId, int ProductId, int Quantity, decimal UnitPrice);
+    private const string AddOrderItemsSql = "INSERT INTO order_items (order_id, product_id, quantity, unit_price) VALUES (@order_id, @product_id, @quantity, @unit_price)";
+    public readonly record struct AddOrderItemsArgs(int OrderId, int ProductId, int Quantity, decimal UnitPrice);
     public async Task AddOrderItemsAsync(List<AddOrderItemsArgs> args)
     {
         using (var connection = new SqliteConnection(ConnectionString))
@@ -153,7 +152,6 @@ public class QuerySql
             {
                 for (int i = 0; i < args.Count; i++)
                 {
-                    command.Parameters.AddWithValue($"@order_item_id{i}", args[i].OrderItemId);
                     command.Parameters.AddWithValue($"@order_id{i}", args[i].OrderId);
                     command.Parameters.AddWithValue($"@product_id{i}", args[i].ProductId);
                     command.Parameters.AddWithValue($"@quantity{i}", args[i].Quantity);

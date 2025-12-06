@@ -21,11 +21,11 @@ public class Queries
 
     // Result type for GetCustomerOrders matching SqlC output
     public record GetCustomerOrdersRow(
-        string OrderId,
+        int OrderId,
         string OrderedAt,
         string OrderState,
         decimal TotalAmount,
-        string OrderItemId,
+        int OrderItemId,
         int Quantity,
         decimal UnitPrice,
         int ProductId,
@@ -97,7 +97,7 @@ public class Queries
         await _dbContext.SaveChangesAsync();
     }
 
-    public record AddOrdersArgs(string OrderId, int CustomerId, string OrderState, decimal TotalAmount);
+    public record AddOrdersArgs(int CustomerId, string OrderState, decimal TotalAmount);
 
     /// <summary>
     /// Bulk insert orders
@@ -106,7 +106,6 @@ public class Queries
     {
         var orders = args.Select(a => new Order
         {
-            OrderId = a.OrderId,
             CustomerId = a.CustomerId,
             OrderState = a.OrderState,
             TotalAmount = a.TotalAmount,
@@ -117,7 +116,7 @@ public class Queries
         await _dbContext.SaveChangesAsync();
     }
 
-    public record AddOrderItemsArgs(string OrderItemId, string OrderId, int ProductId, int Quantity, decimal UnitPrice);
+    public record AddOrderItemsArgs(int OrderId, int ProductId, int Quantity, decimal UnitPrice);
 
     /// <summary>
     /// Bulk insert order items
@@ -126,7 +125,6 @@ public class Queries
     {
         var orderItems = args.Select(a => new OrderItem
         {
-            OrderItemId = a.OrderItemId,
             OrderId = a.OrderId,
             ProductId = a.ProductId,
             Quantity = a.Quantity,

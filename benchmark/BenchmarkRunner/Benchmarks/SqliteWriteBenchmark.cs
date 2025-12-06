@@ -44,25 +44,19 @@ public class SqliteWriteBenchmark
         SqliteDatabaseHelper.CleanupDatabaseAsync(_connectionString).GetAwaiter().GetResult();
         PrepareTestDataAsync().GetAwaiter().GetResult();
     }
-    
-    private static string? GetDbFilePath(string connectionString)
-    {
-        var builder = new Microsoft.Data.Sqlite.SqliteConnectionStringBuilder(connectionString);
-        return builder.DataSource == ":memory:" ? null : builder.DataSource;
-    }
 
     private async Task PrepareTestDataAsync()
     {
         var random = new Random(42);
         var categories = new[] { "Electronics", "Clothing", "Books", "Food", "Toys" };
 
-        _testProducts = Enumerable.Range(0, BatchSize).Select(i => new QuerySql.AddProductsArgs(
+        _testProducts = [.. Enumerable.Range(0, BatchSize).Select(i => new QuerySql.AddProductsArgs(
             Name: $"Test Product {i}",
             Category: categories[i % categories.Length],
             UnitPrice: (decimal)(random.NextDouble() * 1000 + 10),
             StockQuantity: random.Next(0, 1000),
             Description: i % 2 == 0 ? $"Description {i}" : null
-        )).ToList();
+        ))];
 
         // For orders, we need existing customers - seed a few
         var seeder = new SqliteDatabaseSeeder(_connectionString);
@@ -71,28 +65,24 @@ public class SqliteWriteBenchmark
         var customerIds = await _dbContext.Customers.Select(c => c.CustomerId).Take(10).ToListAsync();
         var orderStates = new[] { "Pending", "Delivered", "Cancelled" };
 
-        _testOrders = Enumerable.Range(0, BatchSize).Select(i => new QuerySql.AddOrdersArgs(
-            OrderId: Guid.NewGuid().ToString(),
+        _testOrders = [.. Enumerable.Range(0, BatchSize).Select(i => new QuerySql.AddOrdersArgs(
             CustomerId: customerIds[i % customerIds.Count],
             OrderState: orderStates[i % orderStates.Length],
             TotalAmount: (decimal)(random.NextDouble() * 5000 + 10)
-        )).ToList();
+        ))];
 
-        // For order items, we need existing orders and products
-        // First add products and orders (these will be cleaned up in IterationSetup)
         await _sqlcImpl.AddProductsAsync(_testProducts);
         await _sqlcImpl.AddOrdersAsync(_testOrders);
 
         var orderIds = await _dbContext.Orders.Select(o => o.OrderId).Take(BatchSize).ToListAsync();
         var productIds = await _dbContext.Products.Select(p => p.ProductId).Take(100).ToListAsync();
 
-        _testOrderItems = Enumerable.Range(0, BatchSize).Select(i => new QuerySql.AddOrderItemsArgs(
-            OrderItemId: Guid.NewGuid().ToString(),
+        _testOrderItems = [.. Enumerable.Range(0, BatchSize).Select(i => new QuerySql.AddOrderItemsArgs(
             OrderId: orderIds[i % orderIds.Count],
             ProductId: productIds[i % productIds.Count],
             Quantity: random.Next(1, 10),
             UnitPrice: (decimal)(random.NextDouble() * 100 + 5)
-        )).ToList();
+        ))];
     }
 
     [BenchmarkCategory("Write-Products")]
@@ -124,7 +114,7 @@ public class SqliteWriteBenchmark
     public async Task EFCore_AddOrders()
     {
         var args = _testOrders.Select(o => new Queries.AddOrdersArgs(
-            o.OrderId, o.CustomerId, o.OrderState, o.TotalAmount
+            o.CustomerId, o.OrderState, o.TotalAmount
         )).ToList();
         await _efCoreImpl.AddOrders(args);
     }
@@ -141,7 +131,7 @@ public class SqliteWriteBenchmark
     public async Task EFCore_AddOrderItems()
     {
         var args = _testOrderItems.Select(i => new Queries.AddOrderItemsArgs(
-            i.OrderItemId, i.OrderId, i.ProductId, i.Quantity, i.UnitPrice
+            i.OrderId, i.ProductId, i.Quantity, i.UnitPrice
         )).ToList();
         await _efCoreImpl.AddOrderItems(args);
     }

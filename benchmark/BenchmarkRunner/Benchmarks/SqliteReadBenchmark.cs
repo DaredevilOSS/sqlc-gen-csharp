@@ -36,11 +36,14 @@ public class SqliteReadBenchmark
         _efCoreImplNoTracking = new Queries(_dbContextNoTracking, useTracking: false);
         _efCoreImplWithTracking = new Queries(_dbContextWithTracking, useTracking: true);
 
-        // Ensure database is seeded
         var seeder = new SqliteDatabaseSeeder(connectionString);
-        await seeder.SeedAsync(customerCount: 100, productsPerCategory: 100, ordersPerCustomer: 50, itemsPerOrder: 3);
+        await seeder.SeedAsync(
+            customerCount: 100, 
+            productsPerCategory: 100, 
+            ordersPerCustomer: 50, 
+            itemsPerOrder: 3
+        );
 
-        // Get a valid customer ID for testing
         var firstCustomer = await _efCoreImplNoTracking.DbContext.Set<SqliteEFCoreImpl.Customer>().FirstAsync();
         _testCustomerId = firstCustomer.CustomerId;
     }

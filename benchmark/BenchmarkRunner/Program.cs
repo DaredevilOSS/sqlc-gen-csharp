@@ -4,14 +4,7 @@ using Microsoft.Extensions.Logging;
 public class Program
 {
     public static async Task Main(string[] args)
-    {
-        // Test mode to capture SQL
-        if (args.Length > 0 && args[0] == "--test-sql")
-        {
-            TestSqlCapture.CaptureEfCoreSql();
-            return;
-        }
-        
+    {    
         using var loggerFactory = LoggerFactory.Create(builder =>
         {
             builder

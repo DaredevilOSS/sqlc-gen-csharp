@@ -191,7 +191,7 @@
                   "name": "orders"
                 },
                 "type": {
-                  "name": "TEXT"
+                  "name": "INTEGER"
                 }
               },
               {
@@ -253,7 +253,7 @@
                   "name": "order_items"
                 },
                 "type": {
-                  "name": "TEXT"
+                  "name": "INTEGER"
                 }
               },
               {
@@ -264,7 +264,7 @@
                   "name": "order_items"
                 },
                 "type": {
-                  "name": "TEXT"
+                  "name": "INTEGER"
                 }
               },
               {
@@ -320,7 +320,7 @@
             "name": "orders"
           },
           "type": {
-            "name": "TEXT"
+            "name": "INTEGER"
           },
           "originalName": "order_id"
         },
@@ -368,7 +368,7 @@
             "name": "order_items"
           },
           "type": {
-            "name": "TEXT"
+            "name": "INTEGER"
           },
           "originalName": "order_item_id"
         },
@@ -568,28 +568,12 @@
       }
     },
     {
-      "text": "INSERT INTO orders (order_id, customer_id, order_state, total_amount) VALUES (?, ?, ?, ?)",
+      "text": "INSERT INTO orders (customer_id, order_state, total_amount) VALUES (?, ?, ?)",
       "name": "AddOrders",
       "cmd": ":copyfrom",
       "parameters": [
         {
           "number": 1,
-          "column": {
-            "name": "order_id",
-            "notNull": true,
-            "length": -1,
-            "table": {
-              "schema": "main",
-              "name": "orders"
-            },
-            "type": {
-              "name": "TEXT"
-            },
-            "originalName": "order_id"
-          }
-        },
-        {
-          "number": 2,
           "column": {
             "name": "customer_id",
             "notNull": true,
@@ -605,7 +589,7 @@
           }
         },
         {
-          "number": 3,
+          "number": 2,
           "column": {
             "name": "order_state",
             "notNull": true,
@@ -621,7 +605,7 @@
           }
         },
         {
-          "number": 4,
+          "number": 3,
           "column": {
             "name": "total_amount",
             "notNull": true,
@@ -643,28 +627,12 @@
       }
     },
     {
-      "text": "INSERT INTO order_items (order_item_id, order_id, product_id, quantity, unit_price) VALUES (?, ?, ?, ?, ?)",
+      "text": "INSERT INTO order_items (order_id, product_id, quantity, unit_price) VALUES (?, ?, ?, ?)",
       "name": "AddOrderItems",
       "cmd": ":copyfrom",
       "parameters": [
         {
           "number": 1,
-          "column": {
-            "name": "order_item_id",
-            "notNull": true,
-            "length": -1,
-            "table": {
-              "schema": "main",
-              "name": "order_items"
-            },
-            "type": {
-              "name": "TEXT"
-            },
-            "originalName": "order_item_id"
-          }
-        },
-        {
-          "number": 2,
           "column": {
             "name": "order_id",
             "notNull": true,
@@ -674,13 +642,13 @@
               "name": "order_items"
             },
             "type": {
-              "name": "TEXT"
+              "name": "INTEGER"
             },
             "originalName": "order_id"
           }
         },
         {
-          "number": 3,
+          "number": 2,
           "column": {
             "name": "product_id",
             "notNull": true,
@@ -696,7 +664,7 @@
           }
         },
         {
-          "number": 4,
+          "number": 3,
           "column": {
             "name": "quantity",
             "notNull": true,
@@ -712,7 +680,7 @@
           }
         },
         {
-          "number": 5,
+          "number": 4,
           "column": {
             "name": "unit_price",
             "notNull": true,

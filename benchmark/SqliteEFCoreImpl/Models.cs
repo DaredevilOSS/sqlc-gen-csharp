@@ -72,7 +72,7 @@ public class Order
 {
     [Key]
     [Column("order_id")]
-    public string OrderId { get; set; } = string.Empty;
+    public int OrderId { get; set; }
 
     [Required]
     [Column("customer_id")]
@@ -101,11 +101,11 @@ public class OrderItem
 {
     [Key]
     [Column("order_item_id")]
-    public string OrderItemId { get; set; } = string.Empty;
+    public int OrderItemId { get; set; }
 
     [Required]
     [Column("order_id")]
-    public string OrderId { get; set; } = string.Empty;
+    public int OrderId { get; set; }
 
     [Required]
     [Column("product_id")]

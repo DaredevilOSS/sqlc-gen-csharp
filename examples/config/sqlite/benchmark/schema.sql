@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS products (
 );
 
 CREATE TABLE IF NOT EXISTS orders (
-    order_id        TEXT           PRIMARY KEY,
+    order_id        INTEGER        PRIMARY KEY AUTOINCREMENT,
     customer_id     INTEGER        NOT NULL,
     ordered_at      TEXT           NOT NULL DEFAULT (datetime('now')),
     order_state     TEXT           NOT NULL CHECK (order_state IN ('Pending', 'Delivered', 'Cancelled')),
@@ -27,8 +27,8 @@ CREATE TABLE IF NOT EXISTS orders (
 );
 
 CREATE TABLE IF NOT EXISTS order_items (
-    order_item_id   TEXT           PRIMARY KEY,
-    order_id        TEXT           NOT NULL,
+    order_item_id   INTEGER        PRIMARY KEY AUTOINCREMENT,
+    order_id        INTEGER        NOT NULL,
     product_id      INTEGER        NOT NULL,
     quantity        INTEGER        NOT NULL CHECK (quantity > 0),
     unit_price      REAL           NOT NULL,

@@ -15,8 +15,8 @@ LIMIT sqlc.arg('limit') OFFSET sqlc.arg('offset');
 INSERT INTO products (name, category, unit_price, stock_quantity, description) VALUES (?, ?, ?, ?, ?);
 
 -- name: AddOrders :copyfrom
-INSERT INTO orders (order_id, customer_id, order_state, total_amount) VALUES (?, ?, ?, ?);
+INSERT INTO orders (customer_id, order_state, total_amount) VALUES (?, ?, ?);
 
 -- name: AddOrderItems :copyfrom
-INSERT INTO order_items (order_item_id, order_id, product_id, quantity, unit_price) VALUES (?, ?, ?, ?, ?);
+INSERT INTO order_items (order_id, product_id, quantity, unit_price) VALUES (?, ?, ?, ?);
 

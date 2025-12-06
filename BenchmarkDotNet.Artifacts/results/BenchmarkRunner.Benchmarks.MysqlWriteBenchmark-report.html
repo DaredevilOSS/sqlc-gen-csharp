@@ -2,7 +2,7 @@
 <html lang='en'>
 <head>
 <meta charset='utf-8' />
-<title>BenchmarkRunner.Benchmarks.MysqlWriteBenchmark-20251206-205034</title>
+<title>BenchmarkRunner.Benchmarks.MysqlWriteBenchmark-20251206-224646</title>
 
 <style type="text/css">
 	table { border-collapse: collapse; display: block; width: 100%; overflow: auto; }
@@ -17,33 +17,33 @@ BenchmarkDotNet v0.13.12, macOS 15.6.1 (24G90) [Darwin 24.6.0]
 Apple M2, 1 CPU, 8 logical and 8 physical cores
 .NET SDK 8.0.416
   [Host]     : .NET 8.0.22 (8.0.2225.52707), Arm64 RyuJIT AdvSIMD
-  Job-QWPDYV : .NET 8.0.22 (8.0.2225.52707), Arm64 RyuJIT AdvSIMD
+  Job-OHJRPL : .NET 8.0.22 (8.0.2225.52707), Arm64 RyuJIT AdvSIMD
 </code></pre>
 <pre><code>Runtime=.NET 8.0  InvocationCount=1  IterationCount=10  
 UnrollFactor=1  WarmupCount=3  
 </code></pre>
 
 <table>
-<thead><tr><th>Method            </th><th>Categories</th><th>BatchSize</th><th>Mean  </th><th>Error</th><th>StdDev</th><th>Ratio</th><th>RatioSD</th><th>Gen0 </th><th>Gen1</th><th>Gen2</th><th>Allocated</th><th>Alloc Ratio</th>
+<thead><tr><th>Method            </th><th>Categories</th><th>BatchSize</th><th>Mean </th><th>Error </th><th>StdDev</th><th>Ratio</th><th>RatioSD</th><th>Gen0 </th><th>Gen1</th><th>Gen2</th><th>Allocated</th><th>Alloc Ratio</th>
 </tr>
-</thead><tbody><tr><td>&#39;SQLC - AddOrderItems&#39;</td><td>Write-OrderItems</td><td>1000</td><td>14.099 ms</td><td>2.5038 ms</td><td>1.4900 ms</td><td>1.00</td><td>0.00</td><td>-</td><td>-</td><td>-</td><td>1347.83 KB</td><td>1.00</td>
-</tr><tr><td>&#39;EFCore - AddOrderItems&#39;</td><td>Write-OrderItems</td><td>1000</td><td>113.864 ms</td><td>24.9883 ms</td><td>14.8702 ms</td><td>8.15</td><td>1.30</td><td>1000.0000</td><td>-</td><td>-</td><td>14048.16 KB</td><td>10.42</td>
-</tr><tr><td>&#39;SQLC - AddOrderItems&#39;</td><td>Write-OrderItems</td><td>10000</td><td>104.275 ms</td><td>14.2090 ms</td><td>8.4555 ms</td><td>1.00</td><td>0.00</td><td>-</td><td>-</td><td>-</td><td>2592.2 KB</td><td>1.00</td>
-</tr><tr><td>&#39;EFCore - AddOrderItems&#39;</td><td>Write-OrderItems</td><td>10000</td><td>802.666 ms</td><td>79.7034 ms</td><td>52.7189 ms</td><td>7.72</td><td>1.02</td><td>18000.0000</td><td>6000.0000</td><td>3000.0000</td><td>135905.55 KB</td><td>52.43</td>
-</tr><tr><td>&#39;SQLC - AddOrderItems&#39;</td><td>Write-OrderItems</td><td>50000</td><td>320.466 ms</td><td>50.8180 ms</td><td>33.6130 ms</td><td>1.00</td><td>0.00</td><td>1000.0000</td><td>-</td><td>-</td><td>12297.77 KB</td><td>1.00</td>
-</tr><tr><td>&#39;EFCore - AddOrderItems&#39;</td><td>Write-OrderItems</td><td>50000</td><td>4,017.491 ms</td><td>100.2461 ms</td><td>52.4306 ms</td><td>12.53</td><td>1.40</td><td>93000.0000</td><td>28000.0000</td><td>13000.0000</td><td>676430.41 KB</td><td>55.00</td>
-</tr><tr><td>&#39;SQLC - AddOrders&#39;</td><td>Write-Orders</td><td>1000</td><td>9.078 ms</td><td>0.4193 ms</td><td>0.2193 ms</td><td>1.00</td><td>0.00</td><td>-</td><td>-</td><td>-</td><td>1270.2 KB</td><td>1.00</td>
-</tr><tr><td>&#39;EFCore - AddOrders&#39;</td><td>Write-Orders</td><td>1000</td><td>126.409 ms</td><td>25.1822 ms</td><td>14.9855 ms</td><td>14.15</td><td>1.49</td><td>1000.0000</td><td>-</td><td>-</td><td>14898.34 KB</td><td>11.73</td>
-</tr><tr><td>&#39;SQLC - AddOrders&#39;</td><td>Write-Orders</td><td>10000</td><td>48.680 ms</td><td>8.6396 ms</td><td>5.7146 ms</td><td>1.00</td><td>0.00</td><td>-</td><td>-</td><td>-</td><td>2828.41 KB</td><td>1.00</td>
-</tr><tr><td>&#39;EFCore - AddOrders&#39;</td><td>Write-Orders</td><td>10000</td><td>741.023 ms</td><td>45.7978 ms</td><td>30.2924 ms</td><td>15.42</td><td>1.97</td><td>19000.0000</td><td>6000.0000</td><td>3000.0000</td><td>143807.53 KB</td><td>50.84</td>
-</tr><tr><td>&#39;SQLC - AddOrders&#39;</td><td>Write-Orders</td><td>50000</td><td>196.478 ms</td><td>3.7621 ms</td><td>2.2388 ms</td><td>1.00</td><td>0.00</td><td>-</td><td>-</td><td>-</td><td>9491.67 KB</td><td>1.00</td>
-</tr><tr><td>&#39;EFCore - AddOrders&#39;</td><td>Write-Orders</td><td>50000</td><td>3,981.397 ms</td><td>149.1842 ms</td><td>88.7771 ms</td><td>20.27</td><td>0.45</td><td>95000.0000</td><td>32000.0000</td><td>14000.0000</td><td>709360.05 KB</td><td>74.73</td>
-</tr><tr><td>&#39;SQLC - AddProducts&#39;</td><td>Write-Products</td><td>1000</td><td>9.435 ms</td><td>0.8168 ms</td><td>0.4861 ms</td><td>1.00</td><td>0.00</td><td>-</td><td>-</td><td>-</td><td>323.11 KB</td><td>1.00</td>
-</tr><tr><td>&#39;EFCore - AddProducts&#39;</td><td>Write-Products</td><td>1000</td><td>131.018 ms</td><td>16.1777 ms</td><td>10.7006 ms</td><td>14.02</td><td>1.39</td><td>1000.0000</td><td>-</td><td>-</td><td>15578.92 KB</td><td>48.22</td>
-</tr><tr><td>&#39;SQLC - AddProducts&#39;</td><td>Write-Products</td><td>10000</td><td>44.191 ms</td><td>14.3605 ms</td><td>9.4986 ms</td><td>1.00</td><td>0.00</td><td>-</td><td>-</td><td>-</td><td>3643.84 KB</td><td>1.00</td>
-</tr><tr><td>&#39;EFCore - AddProducts&#39;</td><td>Write-Products</td><td>10000</td><td>707.464 ms</td><td>44.2002 ms</td><td>29.2357 ms</td><td>16.73</td><td>3.80</td><td>20000.0000</td><td>7000.0000</td><td>3000.0000</td><td>150119.73 KB</td><td>41.20</td>
-</tr><tr><td>&#39;SQLC - AddProducts&#39;</td><td>Write-Products</td><td>50000</td><td>175.145 ms</td><td>10.5820 ms</td><td>6.9993 ms</td><td>1.00</td><td>0.00</td><td>-</td><td>-</td><td>-</td><td>11234.86 KB</td><td>1.00</td>
-</tr><tr><td>&#39;EFCore - AddProducts&#39;</td><td>Write-Products</td><td>50000</td><td>3,929.125 ms</td><td>188.8515 ms</td><td>124.9136 ms</td><td>22.45</td><td>0.86</td><td>102000.0000</td><td>35000.0000</td><td>15000.0000</td><td>747027.84 KB</td><td>66.49</td>
+</thead><tbody><tr><td>&#39;SQLC - AddOrderItems&#39;</td><td>Write-OrderItems</td><td>1000</td><td>16.58 ms</td><td>2.554 ms</td><td>1.336 ms</td><td>1.00</td><td>0.00</td><td>-</td><td>-</td><td>-</td><td>323.9 KB</td><td>1.00</td>
+</tr><tr><td>&#39;EFCore - AddOrderItems&#39;</td><td>Write-OrderItems</td><td>1000</td><td>138.62 ms</td><td>44.162 ms</td><td>26.280 ms</td><td>8.72</td><td>1.51</td><td>1000.0000</td><td>-</td><td>-</td><td>14028.09 KB</td><td>43.31</td>
+</tr><tr><td>&#39;SQLC - AddOrderItems&#39;</td><td>Write-OrderItems</td><td>10000</td><td>121.23 ms</td><td>12.989 ms</td><td>7.729 ms</td><td>1.00</td><td>0.00</td><td>-</td><td>-</td><td>-</td><td>2593.85 KB</td><td>1.00</td>
+</tr><tr><td>&#39;EFCore - AddOrderItems&#39;</td><td>Write-OrderItems</td><td>10000</td><td>885.36 ms</td><td>101.841 ms</td><td>67.361 ms</td><td>7.25</td><td>0.71</td><td>18000.0000</td><td>6000.0000</td><td>3000.0000</td><td>137467.42 KB</td><td>53.00</td>
+</tr><tr><td>&#39;SQLC - AddOrderItems&#39;</td><td>Write-OrderItems</td><td>50000</td><td>327.18 ms</td><td>13.331 ms</td><td>6.972 ms</td><td>1.00</td><td>0.00</td><td>1000.0000</td><td>-</td><td>-</td><td>13386.48 KB</td><td>1.00</td>
+</tr><tr><td>&#39;EFCore - AddOrderItems&#39;</td><td>Write-OrderItems</td><td>50000</td><td>4,355.25 ms</td><td>466.750 ms</td><td>308.726 ms</td><td>13.43</td><td>0.89</td><td>93000.0000</td><td>29000.0000</td><td>13000.0000</td><td>684428.73 KB</td><td>51.13</td>
+</tr><tr><td>&#39;SQLC - AddOrders&#39;</td><td>Write-Orders</td><td>1000</td><td>15.61 ms</td><td>6.912 ms</td><td>4.572 ms</td><td>1.00</td><td>0.00</td><td>-</td><td>-</td><td>-</td><td>1269.49 KB</td><td>1.00</td>
+</tr><tr><td>&#39;EFCore - AddOrders&#39;</td><td>Write-Orders</td><td>1000</td><td>117.66 ms</td><td>32.218 ms</td><td>19.172 ms</td><td>8.44</td><td>3.11</td><td>1000.0000</td><td>-</td><td>-</td><td>14674.71 KB</td><td>11.56</td>
+</tr><tr><td>&#39;SQLC - AddOrders&#39;</td><td>Write-Orders</td><td>10000</td><td>49.61 ms</td><td>8.812 ms</td><td>5.828 ms</td><td>1.00</td><td>0.00</td><td>-</td><td>-</td><td>-</td><td>1837.37 KB</td><td>1.00</td>
+</tr><tr><td>&#39;EFCore - AddOrders&#39;</td><td>Write-Orders</td><td>10000</td><td>720.41 ms</td><td>45.622 ms</td><td>30.176 ms</td><td>14.70</td><td>1.84</td><td>19000.0000</td><td>6000.0000</td><td>3000.0000</td><td>142898.49 KB</td><td>77.77</td>
+</tr><tr><td>&#39;SQLC - AddOrders&#39;</td><td>Write-Orders</td><td>50000</td><td>195.30 ms</td><td>4.890 ms</td><td>2.910 ms</td><td>1.00</td><td>0.00</td><td>-</td><td>-</td><td>-</td><td>9395.59 KB</td><td>1.00</td>
+</tr><tr><td>&#39;EFCore - AddOrders&#39;</td><td>Write-Orders</td><td>50000</td><td>4,519.79 ms</td><td>1,126.124 ms</td><td>744.862 ms</td><td>23.26</td><td>4.25</td><td>97000.0000</td><td>33000.0000</td><td>15000.0000</td><td>714349.64 KB</td><td>76.03</td>
+</tr><tr><td>&#39;SQLC - AddProducts&#39;</td><td>Write-Products</td><td>1000</td><td>11.20 ms</td><td>1.739 ms</td><td>1.035 ms</td><td>1.00</td><td>0.00</td><td>-</td><td>-</td><td>-</td><td>1346.43 KB</td><td>1.00</td>
+</tr><tr><td>&#39;EFCore - AddProducts&#39;</td><td>Write-Products</td><td>1000</td><td>129.88 ms</td><td>12.343 ms</td><td>8.164 ms</td><td>11.65</td><td>1.41</td><td>1000.0000</td><td>-</td><td>-</td><td>15591.68 KB</td><td>11.58</td>
+</tr><tr><td>&#39;SQLC - AddProducts&#39;</td><td>Write-Products</td><td>10000</td><td>40.13 ms</td><td>3.764 ms</td><td>2.240 ms</td><td>1.00</td><td>0.00</td><td>-</td><td>-</td><td>-</td><td>3643.2 KB</td><td>1.00</td>
+</tr><tr><td>&#39;EFCore - AddProducts&#39;</td><td>Write-Products</td><td>10000</td><td>1,025.40 ms</td><td>259.829 ms</td><td>154.620 ms</td><td>25.54</td><td>3.47</td><td>20000.0000</td><td>7000.0000</td><td>3000.0000</td><td>152017.67 KB</td><td>41.73</td>
+</tr><tr><td>&#39;SQLC - AddProducts&#39;</td><td>Write-Products</td><td>50000</td><td>184.04 ms</td><td>12.328 ms</td><td>6.448 ms</td><td>1.00</td><td>0.00</td><td>-</td><td>-</td><td>-</td><td>12354.99 KB</td><td>1.00</td>
+</tr><tr><td>&#39;EFCore - AddProducts&#39;</td><td>Write-Products</td><td>50000</td><td>4,490.14 ms</td><td>281.371 ms</td><td>147.163 ms</td><td>24.42</td><td>1.03</td><td>103000.0000</td><td>36000.0000</td><td>15000.0000</td><td>752338.07 KB</td><td>60.89</td>
 </tr></tbody></table>
 </body>
 </html>
