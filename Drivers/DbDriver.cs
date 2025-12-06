@@ -7,7 +7,32 @@ using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace SqlcGenCsharp.Drivers;
 
-public record ConnectionGenCommands(string EstablishConnection, string ConnectionOpen, bool WrapInUsing = true);
+public class GenCommand(string commandText, bool wrapInUsing)
+{
+    public string WrapBlock(string blockText)
+    {
+        return wrapInUsing 
+            ? $$"""
+            using ({{commandText}})
+            {
+                {{blockText}}
+            }
+            """
+            : $$"""
+            {{commandText}};
+            {{blockText}}
+            """;
+    }
+}
+
+public record ConnectionGenCommands(
+    GenCommand GetConnectionOrDataSource,
+    string ConnectionOpen = "");
+
+public record CommandGenCommands(
+    GenCommand CommandCreation, 
+    string SetCommandText, 
+    string PrepareCommand);
 
 public abstract class DbDriver
 {
@@ -252,7 +277,7 @@ public abstract class DbDriver
 
     public abstract ConnectionGenCommands EstablishConnection(Query query);
 
-    public abstract string CreateSqlCommand(string sqlTextConstant);
+    public abstract CommandGenCommands CreateSqlCommand(string sqlTextConstant);
 
     /* Since there is no indication of the primary key column in SQLC protobuf (assuming it is a single column),
        this method uses a few heuristics to assess the data type of the id column
@@ -403,6 +428,19 @@ public abstract class DbDriver
         if (typeInfo.Length is null)
             return true;
         return typeInfo.Length.Value == column.Length;
+    }
+
+    public string? GetColumnDbTypeOverride(Column column)
+    {
+        if (column.IsArray)
+            return null; // TODO: handle array columns
+        var columnType = column.Type.Name.ToLower();
+        foreach (var columnMapping in ColumnMappings.Values)
+        {
+            if (columnMapping.DbTypes.TryGetValue(columnType, out var dbTypeOverride))
+                return dbTypeOverride.DbTypeOverride;
+        }
+        return null;
     }
 
     public virtual WriterFn? GetWriterFn(Column column, Query query)

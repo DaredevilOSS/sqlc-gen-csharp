@@ -63,7 +63,6 @@ namespace SqliteDapperLegacyExampleGen
             {
                 using (var connection = new SqliteConnection(ConnectionString))
                 {
-                    await connection.OpenAsync();
                     var result = await connection.QueryFirstOrDefaultAsync<GetAuthorRow>(GetAuthorSql, queryParams);
                     return result;
                 }
@@ -98,7 +97,6 @@ namespace SqliteDapperLegacyExampleGen
             {
                 using (var connection = new SqliteConnection(ConnectionString))
                 {
-                    await connection.OpenAsync();
                     var result = await connection.QueryAsync<ListAuthorsRow>(ListAuthorsSql, queryParams);
                     return result.AsList();
                 }
@@ -126,7 +124,6 @@ namespace SqliteDapperLegacyExampleGen
             {
                 using (var connection = new SqliteConnection(ConnectionString))
                 {
-                    await connection.OpenAsync();
                     await connection.ExecuteAsync(CreateAuthorSql, queryParams);
                     return;
                 }
@@ -156,7 +153,6 @@ namespace SqliteDapperLegacyExampleGen
             {
                 using (var connection = new SqliteConnection(ConnectionString))
                 {
-                    await connection.OpenAsync();
                     return await connection.QuerySingleAsync<int>(CreateAuthorReturnIdSql, queryParams);
                 }
             }
@@ -186,7 +182,6 @@ namespace SqliteDapperLegacyExampleGen
             {
                 using (var connection = new SqliteConnection(ConnectionString))
                 {
-                    await connection.OpenAsync();
                     var result = await connection.QueryFirstOrDefaultAsync<GetAuthorByIdRow>(GetAuthorByIdSql, queryParams);
                     return result;
                 }
@@ -218,7 +213,6 @@ namespace SqliteDapperLegacyExampleGen
             {
                 using (var connection = new SqliteConnection(ConnectionString))
                 {
-                    await connection.OpenAsync();
                     var result = await connection.QueryFirstOrDefaultAsync<GetAuthorByIdWithMultipleNamedParamRow>(GetAuthorByIdWithMultipleNamedParamSql, queryParams);
                     return result;
                 }
@@ -249,7 +243,6 @@ namespace SqliteDapperLegacyExampleGen
             {
                 using (var connection = new SqliteConnection(ConnectionString))
                 {
-                    await connection.OpenAsync();
                     var result = await connection.QueryAsync<GetAuthorByNamePatternRow>(GetAuthorByNamePatternSql, queryParams);
                     return result.AsList();
                 }
@@ -275,7 +268,6 @@ namespace SqliteDapperLegacyExampleGen
             {
                 using (var connection = new SqliteConnection(ConnectionString))
                 {
-                    await connection.OpenAsync();
                     return await connection.ExecuteAsync(UpdateAuthorsSql, queryParams);
                 }
             }
@@ -307,7 +299,6 @@ namespace SqliteDapperLegacyExampleGen
             {
                 using (var connection = new SqliteConnection(ConnectionString))
                 {
-                    await connection.OpenAsync();
                     var result = await connection.QueryAsync<GetAuthorsByIdsRow>(transformedSql, queryParams);
                     return result.AsList();
                 }
@@ -344,7 +335,6 @@ namespace SqliteDapperLegacyExampleGen
             {
                 using (var connection = new SqliteConnection(ConnectionString))
                 {
-                    await connection.OpenAsync();
                     var result = await connection.QueryAsync<GetAuthorsByIdsAndNamesRow>(transformedSql, queryParams);
                     return result.AsList();
                 }
@@ -369,7 +359,6 @@ namespace SqliteDapperLegacyExampleGen
             {
                 using (var connection = new SqliteConnection(ConnectionString))
                 {
-                    await connection.OpenAsync();
                     await connection.ExecuteAsync(DeleteAuthorSql, queryParams);
                     return;
                 }
@@ -399,7 +388,6 @@ namespace SqliteDapperLegacyExampleGen
             {
                 using (var connection = new SqliteConnection(ConnectionString))
                 {
-                    await connection.OpenAsync();
                     return await connection.QuerySingleAsync<int>(CreateBookSql, queryParams);
                 }
             }
@@ -428,6 +416,7 @@ namespace SqliteDapperLegacyExampleGen
                     await connection.OpenAsync();
                     using (var command = new SqliteCommand(ListAllAuthorsBooksSql, connection))
                     {
+                        command.Prepare();
                         using (var reader = await command.ExecuteReaderAsync())
                         {
                             var result = new List<ListAllAuthorsBooksRow>();
@@ -475,6 +464,7 @@ namespace SqliteDapperLegacyExampleGen
                     await connection.OpenAsync();
                     using (var command = new SqliteCommand(GetDuplicateAuthorsSql, connection))
                     {
+                        command.Prepare();
                         using (var reader = await command.ExecuteReaderAsync())
                         {
                             var result = new List<GetDuplicateAuthorsRow>();
@@ -528,6 +518,7 @@ namespace SqliteDapperLegacyExampleGen
                     using (var command = new SqliteCommand(GetAuthorsByBookNameSql, connection))
                     {
                         command.Parameters.AddWithValue("@name", args.Name);
+                        command.Prepare();
                         using (var reader = await command.ExecuteReaderAsync())
                         {
                             var result = new List<GetAuthorsByBookNameRow>();
@@ -563,7 +554,6 @@ namespace SqliteDapperLegacyExampleGen
             {
                 using (var connection = new SqliteConnection(ConnectionString))
                 {
-                    await connection.OpenAsync();
                     await connection.ExecuteAsync(DeleteAllAuthorsSql);
                     return;
                 }
@@ -618,7 +608,6 @@ namespace SqliteDapperLegacyExampleGen
             {
                 using (var connection = new SqliteConnection(ConnectionString))
                 {
-                    await connection.OpenAsync();
                     await connection.ExecuteAsync(InsertSqliteTypesSql, queryParams);
                     return;
                 }
@@ -640,8 +629,8 @@ namespace SqliteDapperLegacyExampleGen
         {
             using (var connection = new SqliteConnection(ConnectionString))
             {
-                await connection.OpenAsync();
                 var transformedSql = Utils.TransformQueryForSqliteBatch(InsertSqliteTypesBatchSql, args.Count);
+                await connection.OpenAsync();
                 using (var command = new SqliteCommand(transformedSql, connection))
                 {
                     for (int i = 0; i < args.Count; i++)
@@ -651,6 +640,7 @@ namespace SqliteDapperLegacyExampleGen
                         command.Parameters.AddWithValue($"@c_text{i}", args[i].CText ?? (object)DBNull.Value);
                     }
 
+                    command.Prepare();
                     await command.ExecuteScalarAsync();
                 }
             }
@@ -688,7 +678,6 @@ namespace SqliteDapperLegacyExampleGen
             {
                 using (var connection = new SqliteConnection(ConnectionString))
                 {
-                    await connection.OpenAsync();
                     var result = await connection.QueryFirstOrDefaultAsync<GetSqliteTypesRow>(GetSqliteTypesSql);
                     return result;
                 }
@@ -722,7 +711,6 @@ namespace SqliteDapperLegacyExampleGen
             {
                 using (var connection = new SqliteConnection(ConnectionString))
                 {
-                    await connection.OpenAsync();
                     var result = await connection.QueryFirstOrDefaultAsync<GetSqliteTypesCntRow>(GetSqliteTypesCntSql);
                     return result;
                 }
@@ -750,7 +738,6 @@ namespace SqliteDapperLegacyExampleGen
             {
                 using (var connection = new SqliteConnection(ConnectionString))
                 {
-                    await connection.OpenAsync();
                     var result = await connection.QueryFirstOrDefaultAsync<GetSqliteFunctionsRow>(GetSqliteFunctionsSql);
                     return result;
                 }
@@ -768,7 +755,6 @@ namespace SqliteDapperLegacyExampleGen
             {
                 using (var connection = new SqliteConnection(ConnectionString))
                 {
-                    await connection.OpenAsync();
                     await connection.ExecuteAsync(DeleteAllSqliteTypesSql);
                     return;
                 }

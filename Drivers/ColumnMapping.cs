@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace SqlcGenCsharp.Drivers;
 
-public record DbTypeInfo(int? Length = null, string? NpgsqlTypeOverride = null);
+public record DbTypeInfo(int? Length = null, string? DbTypeOverride = null);
 
 public delegate string ReaderFn(int ordinal, string dbType);
 

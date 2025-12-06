@@ -1,7 +1,6 @@
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Plugin;
 using SqlcGenCsharp.Drivers.Generators;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -48,7 +47,7 @@ public sealed partial class MySqlConnectorDriver(
                     { "mediumint", new() }
                 },
                 readerFn: (ordinal, _) => $"{Variable.Reader.AsVarName()}.GetInt32({ordinal})",
-                convertFunc: x => $"Convert.ToInt32{x}"
+                convertFunc: x => $"Convert.ToInt32({x})"
             ),
             ["long"] = new(
                 new()
@@ -56,7 +55,7 @@ public sealed partial class MySqlConnectorDriver(
                     { "bigint", new() }
                 },
                 readerFn: (ordinal, _) => $"{Variable.Reader.AsVarName()}.GetInt64({ordinal})",
-                convertFunc: x => $"Convert.ToInt64{x}"
+                convertFunc: x => $"Convert.ToInt64({x})"
             ),
             ["double"] = new(
                 new()
@@ -130,7 +129,7 @@ public sealed partial class MySqlConnectorDriver(
             ["Instant"] = new(
                 [],
                 readerFn: (ordinal, _) => $$"""
-                    (new Func<MySqlDataReader, int, Instant>((r, o) =>
+                    (new Func<DbDataReader, int, Instant>((r, o) =>
                     {
                        var dt = {{Variable.Reader.AsVarName()}}.GetDateTime(o);
                        if (dt.Kind != DateTimeKind.Utc)
@@ -145,7 +144,7 @@ public sealed partial class MySqlConnectorDriver(
                     var nullValue = isDapper ? "null" : "(object)DBNull.Value";
                     return $"{el} is null ? {nullValue} : (DateTime?) DateTime.SpecifyKind({el}.Value.ToDateTimeUtc(), DateTimeKind.Unspecified)";
                 },
-                usingDirectives: ["System", "NodaTime", "NodaTime.Extensions"],
+                usingDirectives: ["System", "NodaTime", "NodaTime.Extensions", "System.Data.Common"],
                 sqlMapper: "SqlMapper.AddTypeHandler(typeof(Instant), new NodaInstantTypeHandler());",
                 sqlMapperImpl: DateTimeNodaInstantTypeHandler
             ),
@@ -474,14 +473,86 @@ public sealed partial class MySqlConnectorDriver(
     public override ConnectionGenCommands EstablishConnection(Query query)
     {
         return new(
-            $"var {Variable.Connection.AsVarName()} = new MySqlConnection({Variable.ConnectionString.AsPropertyName()})",
-            $"await {Variable.Connection.AsVarName()}.OpenAsync()"
+            GetConnectionOrDataSource: new(
+                $"var {Variable.Connection.AsVarName()} = await GetDataSource().OpenConnectionAsync()", 
+                true)
+            // ConnectionOpen: string.Empty
         );
     }
 
-    public override string CreateSqlCommand(string sqlTextConstant)
+    public override string[] GetClassBaseTypes()
     {
-        return $"var {Variable.Command.AsVarName()} = new MySqlCommand({sqlTextConstant}, {Variable.Connection.AsVarName()})";
+        return ["IDisposable"];
+    }
+
+    public override string[] GetConstructorStatements()
+    {
+        var baseStatements = base.GetConstructorStatements();
+        var dataSourceVar = Variable.DataSource.AsFieldName();
+        var connectionStringVar = Variable.ConnectionString.AsVarName();
+        var optionalNotNullVerify = Options.DotnetFramework.IsDotnetCore() ? "!" : string.Empty;
+
+        return
+        [
+            .. baseStatements,
+            $$"""
+                {{dataSourceVar}} = new Lazy<MySqlDataSource>(() =>
+                {
+                    var builder = new MySqlConnectionStringBuilder({{connectionStringVar}}{{optionalNotNullVerify}});
+                    builder.ConnectionReset = {{Options.MySqlConnectionReset.ToString().ToLower()}};
+                    // Pre-warm connection pool with minimum connections
+                    if (builder.MinimumPoolSize == 0)
+                        builder.MinimumPoolSize = 1;
+                    return new MySqlDataSourceBuilder(builder.ConnectionString).Build();
+                }, LazyThreadSafetyMode.ExecutionAndPublication);
+            """,
+        ];
+    }
+
+    public override MemberDeclarationSyntax[] GetAdditionalClassMembers()
+    {
+        var dataSourceField = Variable.DataSource.AsFieldName();
+        var optionalNotNullVerify = Options.DotnetFramework.IsDotnetCore() ? "?" : string.Empty;
+        var fieldDeclaration = ParseMemberDeclaration($$"""
+            private readonly Lazy<MySqlDataSource>{{optionalNotNullVerify}} {{dataSourceField}};
+        """)!;
+        
+        var getDataSourceMethod = ParseMemberDeclaration($$"""
+            private MySqlDataSource GetDataSource()
+            {
+                if ({{dataSourceField}} == null)
+                    throw new InvalidOperationException("ConnectionString is required when not using a transaction");
+                return {{dataSourceField}}.Value;
+            }
+            """)!;
+        
+        return [fieldDeclaration, getDataSourceMethod];
+    }
+
+    public override MemberDeclarationSyntax? GetDisposeMethodImpl()
+    {
+        return ParseMemberDeclaration($$"""
+            public void Dispose()
+            {
+                GC.SuppressFinalize(this);
+                if ({{Variable.DataSource.AsFieldName()}}?.IsValueCreated == true)
+                    {{Variable.DataSource.AsFieldName()}}.Value.Dispose();
+            }
+            """)!;
+    }
+
+    public override CommandGenCommands CreateSqlCommand(string sqlTextConstant)
+    {
+        var commandVar = Variable.Command.AsVarName();
+        var connectionVar = Variable.Connection.AsVarName();
+        
+        return new CommandGenCommands(
+            CommandCreation: new(
+                $"var {commandVar} = {connectionVar}.CreateCommand()", 
+                true),
+            SetCommandText: $"{commandVar}.CommandText = {sqlTextConstant}",
+            PrepareCommand: string.Empty
+        );
     }
 
     public override string TransformQueryText(Query query)
@@ -492,7 +563,7 @@ public sealed partial class MySqlConnectorDriver(
         var counter = 0;
         var queryText = query.Text;
         queryText = QueryParamRegex().Replace(queryText, _ => "@" + query.Params[counter++].Column.Name);
-        queryText = Options.UseDapper && query.Cmd == ":execlastid"
+        queryText = query.Cmd == ":execlastid"
             ? $"{queryText}; SELECT LAST_INSERT_ID()"
             : queryText;
 
@@ -501,15 +572,6 @@ public sealed partial class MySqlConnectorDriver(
 
     [GeneratedRegex(@"\?")]
     private static partial Regex QueryParamRegex();
-
-    public override string[] GetLastIdStatement(Query query)
-    {
-        return
-        [
-            $"await {Variable.Command.AsVarName()}.ExecuteNonQueryAsync();",
-            $"return {Variable.Command.AsVarName()}.LastInsertedId;"
-        ];
-    }
 
     /* :copyfrom methods */
     public const string NullToStringCsvConverter = "NullToStringCsvConverter";
@@ -525,11 +587,31 @@ public sealed partial class MySqlConnectorDriver(
         var csvWriterVar = Variable.CsvWriter.AsVarName();
         var loaderVar = Variable.Loader.AsVarName();
         var optionsVar = Variable.Options.AsVarName();
+        var dataSourceVar = Variable.DataSource.AsVarName();
         var connectionVar = Variable.Connection.AsVarName();
         var nullConverterFn = Variable.NullConverterFn.AsVarName();
 
         var loaderColumns = query.Params.Select(p => $"\"{p.Column.Name}\"").JoinByComma();
         var connectionCommands = EstablishConnection(query);
+        var qualifiedTableName = !string.IsNullOrEmpty(query.InsertIntoTable.Schema) 
+            ? $"{query.InsertIntoTable.Schema}.{query.InsertIntoTable.Name}" 
+            : query.InsertIntoTable.Name;
+
+        var commandBlock = $$"""
+            var {{loaderVar}} = new MySqlBulkLoader({{connectionVar}})
+            {
+                Local = true, 
+                TableName = "{{qualifiedTableName}}", 
+                FileName = "{{tempCsvFilename}}",
+                FieldTerminator = "{{csvDelimiter}}",
+                FieldQuotationCharacter = '"',
+                FieldQuotationOptional = true,
+                NumberOfLinesToSkip = 1,
+                LineTerminator = "\n"
+            };
+            {{loaderVar}}.Columns.AddRange(new List<string> { {{loaderColumns}} });
+            await {{loaderVar}}.LoadAsync();
+        """;
 
         return $$"""
                  const string supportedDateTimeFormat = "yyyy-MM-dd H:mm:ss";
@@ -548,25 +630,12 @@ public sealed partial class MySqlConnectorDriver(
                     {{GetCsvConverters(query).JoinByNewLine()}}
                     await {{csvWriterVar}}.WriteRecordsAsync({{Variable.Args.AsVarName()}});
                  }
-                 
-                 using ({{connectionCommands.EstablishConnection}})
-                 {
+                 {{connectionCommands.GetConnectionOrDataSource.WrapBlock(
+                     $$"""
                      {{connectionCommands.ConnectionOpen.AppendSemicolonUnlessEmpty()}}
-                     var {{loaderVar}} = new MySqlBulkLoader({{connectionVar}})
-                     {
-                         Local = true, 
-                         TableName = "{{query.InsertIntoTable.Name}}", 
-                         FileName = "{{tempCsvFilename}}",
-                         FieldTerminator = "{{csvDelimiter}}",
-                         FieldQuotationCharacter = '"',
-                         FieldQuotationOptional = true,
-                         NumberOfLinesToSkip = 1,
-                         LineTerminator = "\n"
-                     };
-                     {{loaderVar}}.Columns.AddRange(new List<string> { {{loaderColumns}} });
-                     await {{loaderVar}}.LoadAsync();
-                     await {{connectionVar}}.CloseAsync();
-                 }
+                     {{commandBlock}}
+                     """
+                 )}}
                  """;
     }
 
@@ -673,7 +742,7 @@ public sealed partial class MySqlConnectorDriver(
         static string DefaultWriterFn(string el, string dbType, bool notNull, bool isDapper, bool isLegacy) => notNull ? el : $"{el} ?? (object)DBNull.Value";
         return Options.UseDapper ? null : DefaultWriterFn;
     }
-
+    
     protected override string GetEnumReader(Column column, int ordinal)
     {
         var enumName = EnumToModelName(column);

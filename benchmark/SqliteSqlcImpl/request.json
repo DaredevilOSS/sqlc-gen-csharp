@@ -1,0 +1,739 @@
+{
+  "settings": {
+    "version": "2",
+    "engine": "sqlite",
+    "schema": [
+      "examples/config/sqlite/benchmark/schema.sql"
+    ],
+    "queries": [
+      "examples/config/sqlite/benchmark/query.sql"
+    ],
+    "codegen": {
+      "out": "benchmark/SqliteSqlcImpl",
+      "plugin": "csharp",
+      "options": "eyJkZWJ1Z1JlcXVlc3QiOnRydWUsIm5hbWVzcGFjZU5hbWUiOiJTcWxpdGVTcWxjSW1wbCJ9",
+      "process": {
+        "cmd": "./dist/LocalRunner"
+      }
+    }
+  },
+  "catalog": {
+    "defaultSchema": "main",
+    "schemas": [
+      {
+        "name": "main",
+        "tables": [
+          {
+            "rel": {
+              "name": "customers"
+            },
+            "columns": [
+              {
+                "name": "customer_id",
+                "notNull": true,
+                "length": -1,
+                "table": {
+                  "name": "customers"
+                },
+                "type": {
+                  "name": "INTEGER"
+                }
+              },
+              {
+                "name": "name",
+                "notNull": true,
+                "length": -1,
+                "table": {
+                  "name": "customers"
+                },
+                "type": {
+                  "name": "TEXT"
+                }
+              },
+              {
+                "name": "email",
+                "notNull": true,
+                "length": -1,
+                "table": {
+                  "name": "customers"
+                },
+                "type": {
+                  "name": "TEXT"
+                }
+              },
+              {
+                "name": "phone",
+                "notNull": true,
+                "length": -1,
+                "table": {
+                  "name": "customers"
+                },
+                "type": {
+                  "name": "TEXT"
+                }
+              },
+              {
+                "name": "address",
+                "length": -1,
+                "table": {
+                  "name": "customers"
+                },
+                "type": {
+                  "name": "TEXT"
+                }
+              },
+              {
+                "name": "registered_at",
+                "notNull": true,
+                "length": -1,
+                "table": {
+                  "name": "customers"
+                },
+                "type": {
+                  "name": "TEXT"
+                }
+              }
+            ]
+          },
+          {
+            "rel": {
+              "name": "products"
+            },
+            "columns": [
+              {
+                "name": "product_id",
+                "notNull": true,
+                "length": -1,
+                "table": {
+                  "name": "products"
+                },
+                "type": {
+                  "name": "INTEGER"
+                }
+              },
+              {
+                "name": "name",
+                "notNull": true,
+                "length": -1,
+                "table": {
+                  "name": "products"
+                },
+                "type": {
+                  "name": "TEXT"
+                }
+              },
+              {
+                "name": "category",
+                "notNull": true,
+                "length": -1,
+                "table": {
+                  "name": "products"
+                },
+                "type": {
+                  "name": "TEXT"
+                }
+              },
+              {
+                "name": "unit_price",
+                "notNull": true,
+                "length": -1,
+                "table": {
+                  "name": "products"
+                },
+                "type": {
+                  "name": "REAL"
+                }
+              },
+              {
+                "name": "stock_quantity",
+                "notNull": true,
+                "length": -1,
+                "table": {
+                  "name": "products"
+                },
+                "type": {
+                  "name": "INTEGER"
+                }
+              },
+              {
+                "name": "description",
+                "length": -1,
+                "table": {
+                  "name": "products"
+                },
+                "type": {
+                  "name": "TEXT"
+                }
+              },
+              {
+                "name": "added_at",
+                "notNull": true,
+                "length": -1,
+                "table": {
+                  "name": "products"
+                },
+                "type": {
+                  "name": "TEXT"
+                }
+              }
+            ]
+          },
+          {
+            "rel": {
+              "name": "orders"
+            },
+            "columns": [
+              {
+                "name": "order_id",
+                "notNull": true,
+                "length": -1,
+                "table": {
+                  "name": "orders"
+                },
+                "type": {
+                  "name": "TEXT"
+                }
+              },
+              {
+                "name": "customer_id",
+                "notNull": true,
+                "length": -1,
+                "table": {
+                  "name": "orders"
+                },
+                "type": {
+                  "name": "INTEGER"
+                }
+              },
+              {
+                "name": "ordered_at",
+                "notNull": true,
+                "length": -1,
+                "table": {
+                  "name": "orders"
+                },
+                "type": {
+                  "name": "TEXT"
+                }
+              },
+              {
+                "name": "order_state",
+                "notNull": true,
+                "length": -1,
+                "table": {
+                  "name": "orders"
+                },
+                "type": {
+                  "name": "TEXT"
+                }
+              },
+              {
+                "name": "total_amount",
+                "notNull": true,
+                "length": -1,
+                "table": {
+                  "name": "orders"
+                },
+                "type": {
+                  "name": "REAL"
+                }
+              }
+            ]
+          },
+          {
+            "rel": {
+              "name": "order_items"
+            },
+            "columns": [
+              {
+                "name": "order_item_id",
+                "notNull": true,
+                "length": -1,
+                "table": {
+                  "name": "order_items"
+                },
+                "type": {
+                  "name": "TEXT"
+                }
+              },
+              {
+                "name": "order_id",
+                "notNull": true,
+                "length": -1,
+                "table": {
+                  "name": "order_items"
+                },
+                "type": {
+                  "name": "TEXT"
+                }
+              },
+              {
+                "name": "product_id",
+                "notNull": true,
+                "length": -1,
+                "table": {
+                  "name": "order_items"
+                },
+                "type": {
+                  "name": "INTEGER"
+                }
+              },
+              {
+                "name": "quantity",
+                "notNull": true,
+                "length": -1,
+                "table": {
+                  "name": "order_items"
+                },
+                "type": {
+                  "name": "INTEGER"
+                }
+              },
+              {
+                "name": "unit_price",
+                "notNull": true,
+                "length": -1,
+                "table": {
+                  "name": "order_items"
+                },
+                "type": {
+                  "name": "REAL"
+                }
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "queries": [
+    {
+      "text": "SELECT \n    o.order_id, ordered_at, order_state, total_amount, order_item_id, i.quantity, i.unit_price, \n    p.product_id, p.name as product_name, p.category as product_category\nFROM orders o\nJOIN order_items i\nUSING (order_id)\nJOIN products p\nUSING (product_id)\nWHERE o.customer_id = ?1\nORDER BY o.ordered_at DESC\nLIMIT ?3 OFFSET ?2",
+      "name": "GetCustomerOrders",
+      "cmd": ":many",
+      "columns": [
+        {
+          "name": "order_id",
+          "notNull": true,
+          "length": -1,
+          "table": {
+            "name": "orders"
+          },
+          "type": {
+            "name": "TEXT"
+          },
+          "originalName": "order_id"
+        },
+        {
+          "name": "ordered_at",
+          "notNull": true,
+          "length": -1,
+          "table": {
+            "name": "orders"
+          },
+          "type": {
+            "name": "TEXT"
+          },
+          "originalName": "ordered_at"
+        },
+        {
+          "name": "order_state",
+          "notNull": true,
+          "length": -1,
+          "table": {
+            "name": "orders"
+          },
+          "type": {
+            "name": "TEXT"
+          },
+          "originalName": "order_state"
+        },
+        {
+          "name": "total_amount",
+          "notNull": true,
+          "length": -1,
+          "table": {
+            "name": "orders"
+          },
+          "type": {
+            "name": "REAL"
+          },
+          "originalName": "total_amount"
+        },
+        {
+          "name": "order_item_id",
+          "notNull": true,
+          "length": -1,
+          "table": {
+            "name": "order_items"
+          },
+          "type": {
+            "name": "TEXT"
+          },
+          "originalName": "order_item_id"
+        },
+        {
+          "name": "quantity",
+          "notNull": true,
+          "length": -1,
+          "table": {
+            "name": "order_items"
+          },
+          "type": {
+            "name": "INTEGER"
+          },
+          "originalName": "quantity"
+        },
+        {
+          "name": "unit_price",
+          "notNull": true,
+          "length": -1,
+          "table": {
+            "name": "order_items"
+          },
+          "type": {
+            "name": "REAL"
+          },
+          "originalName": "unit_price"
+        },
+        {
+          "name": "product_id",
+          "notNull": true,
+          "length": -1,
+          "table": {
+            "name": "products"
+          },
+          "type": {
+            "name": "INTEGER"
+          },
+          "originalName": "product_id"
+        },
+        {
+          "name": "product_name",
+          "notNull": true,
+          "length": -1,
+          "table": {
+            "name": "products"
+          },
+          "type": {
+            "name": "TEXT"
+          },
+          "originalName": "name"
+        },
+        {
+          "name": "product_category",
+          "notNull": true,
+          "length": -1,
+          "table": {
+            "name": "products"
+          },
+          "type": {
+            "name": "TEXT"
+          },
+          "originalName": "category"
+        }
+      ],
+      "parameters": [
+        {
+          "number": 1,
+          "column": {
+            "name": "customer_id",
+            "notNull": true,
+            "length": -1,
+            "isNamedParam": true,
+            "table": {
+              "name": "orders"
+            },
+            "type": {
+              "name": "INTEGER"
+            },
+            "originalName": "customer_id"
+          }
+        },
+        {
+          "number": 2,
+          "column": {
+            "name": "offset",
+            "notNull": true,
+            "length": -1,
+            "isNamedParam": true,
+            "type": {
+              "name": "integer"
+            }
+          }
+        },
+        {
+          "number": 3,
+          "column": {
+            "name": "limit",
+            "notNull": true,
+            "length": -1,
+            "isNamedParam": true,
+            "type": {
+              "name": "integer"
+            }
+          }
+        }
+      ],
+      "filename": "query.sql"
+    },
+    {
+      "text": "INSERT INTO products (name, category, unit_price, stock_quantity, description) VALUES (?, ?, ?, ?, ?)",
+      "name": "AddProducts",
+      "cmd": ":copyfrom",
+      "parameters": [
+        {
+          "number": 1,
+          "column": {
+            "name": "name",
+            "notNull": true,
+            "length": -1,
+            "table": {
+              "schema": "main",
+              "name": "products"
+            },
+            "type": {
+              "name": "TEXT"
+            },
+            "originalName": "name"
+          }
+        },
+        {
+          "number": 2,
+          "column": {
+            "name": "category",
+            "notNull": true,
+            "length": -1,
+            "table": {
+              "schema": "main",
+              "name": "products"
+            },
+            "type": {
+              "name": "TEXT"
+            },
+            "originalName": "category"
+          }
+        },
+        {
+          "number": 3,
+          "column": {
+            "name": "unit_price",
+            "notNull": true,
+            "length": -1,
+            "table": {
+              "schema": "main",
+              "name": "products"
+            },
+            "type": {
+              "name": "REAL"
+            },
+            "originalName": "unit_price"
+          }
+        },
+        {
+          "number": 4,
+          "column": {
+            "name": "stock_quantity",
+            "notNull": true,
+            "length": -1,
+            "table": {
+              "schema": "main",
+              "name": "products"
+            },
+            "type": {
+              "name": "INTEGER"
+            },
+            "originalName": "stock_quantity"
+          }
+        },
+        {
+          "number": 5,
+          "column": {
+            "name": "description",
+            "length": -1,
+            "table": {
+              "schema": "main",
+              "name": "products"
+            },
+            "type": {
+              "name": "TEXT"
+            },
+            "originalName": "description"
+          }
+        }
+      ],
+      "filename": "query.sql",
+      "insert_into_table": {
+        "name": "products"
+      }
+    },
+    {
+      "text": "INSERT INTO orders (order_id, customer_id, order_state, total_amount) VALUES (?, ?, ?, ?)",
+      "name": "AddOrders",
+      "cmd": ":copyfrom",
+      "parameters": [
+        {
+          "number": 1,
+          "column": {
+            "name": "order_id",
+            "notNull": true,
+            "length": -1,
+            "table": {
+              "schema": "main",
+              "name": "orders"
+            },
+            "type": {
+              "name": "TEXT"
+            },
+            "originalName": "order_id"
+          }
+        },
+        {
+          "number": 2,
+          "column": {
+            "name": "customer_id",
+            "notNull": true,
+            "length": -1,
+            "table": {
+              "schema": "main",
+              "name": "orders"
+            },
+            "type": {
+              "name": "INTEGER"
+            },
+            "originalName": "customer_id"
+          }
+        },
+        {
+          "number": 3,
+          "column": {
+            "name": "order_state",
+            "notNull": true,
+            "length": -1,
+            "table": {
+              "schema": "main",
+              "name": "orders"
+            },
+            "type": {
+              "name": "TEXT"
+            },
+            "originalName": "order_state"
+          }
+        },
+        {
+          "number": 4,
+          "column": {
+            "name": "total_amount",
+            "notNull": true,
+            "length": -1,
+            "table": {
+              "schema": "main",
+              "name": "orders"
+            },
+            "type": {
+              "name": "REAL"
+            },
+            "originalName": "total_amount"
+          }
+        }
+      ],
+      "filename": "query.sql",
+      "insert_into_table": {
+        "name": "orders"
+      }
+    },
+    {
+      "text": "INSERT INTO order_items (order_item_id, order_id, product_id, quantity, unit_price) VALUES (?, ?, ?, ?, ?)",
+      "name": "AddOrderItems",
+      "cmd": ":copyfrom",
+      "parameters": [
+        {
+          "number": 1,
+          "column": {
+            "name": "order_item_id",
+            "notNull": true,
+            "length": -1,
+            "table": {
+              "schema": "main",
+              "name": "order_items"
+            },
+            "type": {
+              "name": "TEXT"
+            },
+            "originalName": "order_item_id"
+          }
+        },
+        {
+          "number": 2,
+          "column": {
+            "name": "order_id",
+            "notNull": true,
+            "length": -1,
+            "table": {
+              "schema": "main",
+              "name": "order_items"
+            },
+            "type": {
+              "name": "TEXT"
+            },
+            "originalName": "order_id"
+          }
+        },
+        {
+          "number": 3,
+          "column": {
+            "name": "product_id",
+            "notNull": true,
+            "length": -1,
+            "table": {
+              "schema": "main",
+              "name": "order_items"
+            },
+            "type": {
+              "name": "INTEGER"
+            },
+            "originalName": "product_id"
+          }
+        },
+        {
+          "number": 4,
+          "column": {
+            "name": "quantity",
+            "notNull": true,
+            "length": -1,
+            "table": {
+              "schema": "main",
+              "name": "order_items"
+            },
+            "type": {
+              "name": "INTEGER"
+            },
+            "originalName": "quantity"
+          }
+        },
+        {
+          "number": 5,
+          "column": {
+            "name": "unit_price",
+            "notNull": true,
+            "length": -1,
+            "table": {
+              "schema": "main",
+              "name": "order_items"
+            },
+            "type": {
+              "name": "REAL"
+            },
+            "originalName": "unit_price"
+          }
+        }
+      ],
+      "filename": "query.sql",
+      "insert_into_table": {
+        "name": "order_items"
+      }
+    }
+  ],
+  "sqlc_version": "v1.30.0",
+  "plugin_options": "eyJvdmVycmlkZURyaXZlclZlcnNpb24iOiIiLCJnZW5lcmF0ZUNzcHJvaiI6dHJ1ZSwidGFyZ2V0RnJhbWV3b3JrIjoibmV0OC4wIiwibmFtZXNwYWNlTmFtZSI6IlNxbGl0ZVNxbGNJbXBsIiwidXNlRGFwcGVyIjpmYWxzZSwib3ZlcnJpZGVEYXBwZXJWZXJzaW9uIjoiIiwib3ZlcnJpZGVzIjpudWxsLCJkZWJ1Z1JlcXVlc3QiOmZhbHNlLCJ1c2VDZW50cmFsUGFja2FnZU1hbmFnZW1lbnQiOmZhbHNlLCJ3aXRoQXN5bmNTdWZmaXgiOnRydWUsIm15U3FsQ29ubmVjdGlvblJlc2V0IjpudWxsfQ=="
+}

@@ -51,18 +51,12 @@ public class OneDeclareGen(DbDriver dbDriver)
         var connectionCommands = dbDriver.EstablishConnection(query);
         var dapperArgs = CommonGen.GetDapperArgs(query);
         var returnType = dbDriver.AddNullableSuffixIfNeeded(returnInterface, false);
-        var runStatement = $$"""var {{Variable.Result.AsVarName()}} = await {{Variable.Connection.AsVarName()}}.QueryFirstOrDefaultAsync<{{returnType}}>({{sqlVar}}{{dapperArgs}});""";
-        var blockStatement = $$"""
-            {{connectionCommands.ConnectionOpen.AppendSemicolonUnlessEmpty()}}
-            {{runStatement}}
-            return {{Variable.Result.AsVarName()}};
-        """;
-
-        return CommonGen.ConditionallyWrapAsUsing(
-            connectionCommands.EstablishConnection, 
-            blockStatement, 
-            connectionCommands.WrapInUsing
-        );
+        var connectionVar = Variable.Connection.AsVarName();
+        var resultVar = Variable.Result.AsVarName();
+        return connectionCommands.GetConnectionOrDataSource.WrapBlock($$"""
+            var {{resultVar}} = await {{connectionVar}}.QueryFirstOrDefaultAsync<{{returnType}}>({{sqlVar}}{{dapperArgs}});
+            return {{resultVar}};
+        """);
     }
 
     private string GetDapperWithTxBody(string sqlVar, string returnInterface, Query query)
@@ -82,28 +76,32 @@ public class OneDeclareGen(DbDriver dbDriver)
     private string GetDriverNoTxBody(string sqlVar, string returnInterface, Query query)
     {
         var connectionCommands = dbDriver.EstablishConnection(query);
+        var sqlCommands = dbDriver.CreateSqlCommand(sqlVar);
         var returnDataclass = CommonGen.InstantiateDataclass([.. query.Columns], returnInterface, query);
-        var blockStatement = $$"""
-            {{connectionCommands.ConnectionOpen.AppendSemicolonUnlessEmpty()}}
-            using ({{dbDriver.CreateSqlCommand(sqlVar)}})
+        var commandBlock = sqlCommands.CommandCreation.WrapBlock(
+            $$"""
+            {{sqlCommands.SetCommandText.AppendSemicolonUnlessEmpty()}}
+            {{dbDriver.AddParametersToCommand(query)}}
+            {{sqlCommands.PrepareCommand.AppendSemicolonUnlessEmpty()}}
+            using ({{CommonGen.InitDataReader()}})
             {
-                {{dbDriver.AddParametersToCommand(query)}}
-                using ({{CommonGen.InitDataReader()}})
+                if ({{CommonGen.AwaitReaderRow()}})
                 {
-                    if ({{CommonGen.AwaitReaderRow()}})
-                    {
-                        return {{returnDataclass}};
-                    }
+                    return {{returnDataclass}};
                 }
             }
+            """
+        );
+        var wrappedBlock = connectionCommands.GetConnectionOrDataSource.WrapBlock(
+            $$"""
+            {{connectionCommands.ConnectionOpen.AppendSemicolonUnlessEmpty()}}
+            {{commandBlock}}
+            """
+        );
+        return $"""
+            {wrappedBlock};
             return null;
         """;
-
-        return CommonGen.ConditionallyWrapAsUsing(
-            connectionCommands.EstablishConnection, 
-            blockStatement, 
-            connectionCommands.WrapInUsing
-        );
     }
 
     private string GetDriverWithTxBody(string sqlVar, string returnInterface, Query query)

@@ -9,10 +9,12 @@ namespace SqliteEFCoreImpl;
 public class Queries
 {
     private readonly SalesDbContext _dbContext;
+    private readonly bool _useTracking;
 
-    public Queries(SalesDbContext dbContext)
+    public Queries(SalesDbContext dbContext, bool useTracking = false)
     {
         _dbContext = dbContext;
+        _useTracking = useTracking;
     }
 
     public DbContext DbContext => _dbContext;
@@ -39,9 +41,20 @@ public class Queries
     public async Task<List<GetCustomerOrdersRow>> GetCustomerOrders(GetCustomerOrdersArgs args)
     {
         // Use explicit joins instead of navigation properties to avoid loading issues
-        var results = await (from o in _dbContext.Orders
-                            join i in _dbContext.OrderItems on o.OrderId equals i.OrderId
-                            join p in _dbContext.Products on i.ProductId equals p.ProductId
+        var ordersQuery = _dbContext.Orders.AsQueryable();
+        var orderItemsQuery = _dbContext.OrderItems.AsQueryable();
+        var productsQuery = _dbContext.Products.AsQueryable();
+        
+        if (!_useTracking)
+        {
+            ordersQuery = ordersQuery.AsNoTracking();
+            orderItemsQuery = orderItemsQuery.AsNoTracking();
+            productsQuery = productsQuery.AsNoTracking();
+        }
+        
+        var results = await (from o in ordersQuery
+                            join i in orderItemsQuery on o.OrderId equals i.OrderId
+                            join p in productsQuery on i.ProductId equals p.ProductId
                             where o.CustomerId == args.CustomerId
                             orderby o.OrderedAt descending
                             select new GetCustomerOrdersRow(

@@ -5,7 +5,7 @@ set -ex
 if [ "$GITHUB_ACTIONS" = "true" ]; then
     echo "Running in Github Actions"
     dotnet build ./benchmark/BenchmarkRunner/BenchmarkRunner.csproj -c Release
-    dotnet run -c Release --no-build --project ./benchmark/BenchmarkRunner/BenchmarkRunner.csproj -- --sqlite
+    dotnet run -c Release --no-build --project ./benchmark/BenchmarkRunner/BenchmarkRunner.csproj
 else
     echo "Running in local"
     
@@ -18,5 +18,5 @@ else
     # Build with schema hash as build arg to ensure cache invalidation
     docker-compose up --build --detach --force-recreate --remove-orphans --wait
     dotnet build ./benchmark/BenchmarkRunner/BenchmarkRunner.csproj -c Release
-    dotnet run -c Release --no-build --project ./benchmark/BenchmarkRunner/BenchmarkRunner.csproj -- --sqlite
+    dotnet run -c Release --no-build --project ./benchmark/BenchmarkRunner/BenchmarkRunner.csproj
 fi

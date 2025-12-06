@@ -1,6 +1,6 @@
 CREATE SCHEMA sales;
 
-CREATE TABLE sales.customers (
+CREATE TABLE IF NOT EXISTS sales.customers (
     customer_id SERIAL PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
     email VARCHAR(255) UNIQUE NOT NULL,
@@ -9,7 +9,7 @@ CREATE TABLE sales.customers (
     registered_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE sales.products (
+CREATE TABLE IF NOT EXISTS sales.products (
     product_id SERIAL PRIMARY KEY,
     name VARCHAR(200) NOT NULL,
     category VARCHAR(100) NOT NULL,
@@ -21,7 +21,7 @@ CREATE TABLE sales.products (
 
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
-CREATE TABLE sales.orders (
+CREATE TABLE IF NOT EXISTS sales.orders (
     order_id        UUID           PRIMARY KEY DEFAULT uuid_generate_v4(),
     customer_id     INT            NOT NULL,
     ordered_at      TIMESTAMP      NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -30,7 +30,7 @@ CREATE TABLE sales.orders (
     CONSTRAINT      fk_customer    FOREIGN KEY (customer_id) REFERENCES sales.customers(customer_id)
 );
 
-CREATE TABLE sales.order_items (
+CREATE TABLE IF NOT EXISTS sales.order_items (
     order_item_id   UUID           PRIMARY KEY DEFAULT uuid_generate_v4(),
     order_id        UUID           NOT NULL,
     product_id      INT            NOT NULL,

@@ -45,12 +45,8 @@ $(WASM_PLUGIN_OUTPUT): $(WASM_SOURCES)
 	dotnet publish WasmRunner -c release --output dist/
 	./scripts/wasm/copy_plugin_to.sh dist
 	./scripts/wasm/update_sha.sh sqlc.ci.yaml
-	./scripts/wasm/update_sha.sh sqlc.benchmark.yaml
 
-sqlc-generate-benchmark: setup-wasm-plugin
-	SQLCCACHE=./; sqlc -f sqlc.benchmark.yaml generate
-
-run-benchmark: sqlc-generate-benchmark
+run-benchmark: sqlc-generate
 	./benchmark/scripts/run_benchmark.sh
 
 run-end2end-tests:

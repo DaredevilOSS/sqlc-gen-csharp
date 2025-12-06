@@ -47,15 +47,10 @@ public class ExecLastIdDeclareGen(DbDriver dbDriver)
     {
         var connectionCommands = dbDriver.EstablishConnection(query);
         var dapperArgs = CommonGen.GetDapperArgs(query);
-        var blockStatement = $$"""
-            {{connectionCommands.ConnectionOpen.AppendSemicolonUnlessEmpty()}}
-            return await {{Variable.Connection.AsVarName()}}.QuerySingleAsync<{{dbDriver.GetIdColumnType(query)}}>({{sqlVar}}{{dapperArgs}});
-        """;
-        return CommonGen.ConditionallyWrapAsUsing(
-            connectionCommands.EstablishConnection, 
-            blockStatement, 
-            connectionCommands.WrapInUsing
-        );
+        var idColumnType = dbDriver.GetIdColumnType(query);
+        return connectionCommands.GetConnectionOrDataSource.WrapBlock($"""
+            return await {Variable.Connection.AsVarName()}.QuerySingleAsync<{idColumnType}>({sqlVar}{dapperArgs});
+        """);
     }
 
     private string GetDapperWithTxBody(string sqlVar, Query query)
@@ -71,20 +66,21 @@ public class ExecLastIdDeclareGen(DbDriver dbDriver)
     private string GetDriverNoTxBody(string sqlVar, Query query)
     {
         var connectionCommands = dbDriver.EstablishConnection(query);
+        var sqlCommands = dbDriver.CreateSqlCommand(sqlVar);
         var returnLastId = ((IExecLastId)dbDriver).GetLastIdStatement(query).JoinByNewLine();
-        var blockStatement = $$"""
-                        {{connectionCommands.ConnectionOpen.AppendSemicolonUnlessEmpty()}}
-                        using ({{dbDriver.CreateSqlCommand(sqlVar)}})
-                        {
-                            {{dbDriver.AddParametersToCommand(query)}}
-                            {{returnLastId}}
-                        }
-                        """;
-        
-        return CommonGen.ConditionallyWrapAsUsing(
-            connectionCommands.EstablishConnection, 
-            blockStatement, 
-            connectionCommands.WrapInUsing
+        var commandBlock = sqlCommands.CommandCreation.WrapBlock(
+            $$"""
+            {{sqlCommands.SetCommandText.AppendSemicolonUnlessEmpty()}}
+            {{dbDriver.AddParametersToCommand(query)}}
+            {{sqlCommands.PrepareCommand.AppendSemicolonUnlessEmpty()}}
+            {{returnLastId}}
+            """
+        );
+        return connectionCommands.GetConnectionOrDataSource.WrapBlock(
+            $$"""
+            {{connectionCommands.ConnectionOpen.AppendSemicolonUnlessEmpty()}}
+            {{commandBlock}}
+            """
         );
     }
 

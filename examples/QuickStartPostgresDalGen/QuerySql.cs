@@ -53,24 +53,26 @@ public class QuerySql : IDisposable
     {
         if (this.Transaction == null)
         {
-            var connection = GetDataSource();
-            using (var command = connection.CreateCommand(GetAuthorSql))
+            using (var connection = await GetDataSource().OpenConnectionAsync())
             {
-                command.Parameters.AddWithValue("@name", args.Name);
-                using (var reader = await command.ExecuteReaderAsync())
+                using (var command = connection.CreateCommand())
                 {
-                    if (await reader.ReadAsync())
+                    command.CommandText = GetAuthorSql;
+                    command.Parameters.AddWithValue("@name", args.Name);
+                    using (var reader = await command.ExecuteReaderAsync())
                     {
-                        return new GetAuthorRow
+                        if (await reader.ReadAsync())
                         {
-                            Id = reader.GetInt64(0),
-                            Name = reader.GetString(1),
-                            Bio = reader.IsDBNull(2) ? null : reader.GetString(2)
-                        };
+                            return new GetAuthorRow
+                            {
+                                Id = reader.GetInt64(0),
+                                Name = reader.GetString(1),
+                                Bio = reader.IsDBNull(2) ? null : reader.GetString(2)
+                            };
+                        }
                     }
                 }
-            }
-
+            };
             return null;
         }
 
@@ -109,17 +111,20 @@ public class QuerySql : IDisposable
     {
         if (this.Transaction == null)
         {
-            var connection = GetDataSource();
-            using (var command = connection.CreateCommand(ListAuthorsSql))
+            using (var connection = await GetDataSource().OpenConnectionAsync())
             {
-                command.Parameters.AddWithValue("@offset", args.Offset);
-                command.Parameters.AddWithValue("@limit", args.Limit);
-                using (var reader = await command.ExecuteReaderAsync())
+                using (var command = connection.CreateCommand())
                 {
-                    var result = new List<ListAuthorsRow>();
-                    while (await reader.ReadAsync())
-                        result.Add(new ListAuthorsRow { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2) });
-                    return result;
+                    command.CommandText = ListAuthorsSql;
+                    command.Parameters.AddWithValue("@offset", args.Offset);
+                    command.Parameters.AddWithValue("@limit", args.Limit);
+                    using (var reader = await command.ExecuteReaderAsync())
+                    {
+                        var result = new List<ListAuthorsRow>();
+                        while (await reader.ReadAsync())
+                            result.Add(new ListAuthorsRow { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2) });
+                        return result;
+                    }
                 }
             }
         }
@@ -149,26 +154,28 @@ public class QuerySql : IDisposable
     {
         if (this.Transaction == null)
         {
-            var connection = GetDataSource();
-            using (var command = connection.CreateCommand(CreateAuthorSql))
+            using (var connection = await GetDataSource().OpenConnectionAsync())
             {
-                command.Parameters.AddWithValue("@id", args.Id);
-                command.Parameters.AddWithValue("@name", args.Name);
-                command.Parameters.AddWithValue("@bio", args.Bio ?? (object)DBNull.Value);
-                using (var reader = await command.ExecuteReaderAsync())
+                using (var command = connection.CreateCommand())
                 {
-                    if (await reader.ReadAsync())
+                    command.CommandText = CreateAuthorSql;
+                    command.Parameters.AddWithValue("@id", args.Id);
+                    command.Parameters.AddWithValue("@name", args.Name);
+                    command.Parameters.AddWithValue("@bio", args.Bio ?? (object)DBNull.Value);
+                    using (var reader = await command.ExecuteReaderAsync())
                     {
-                        return new CreateAuthorRow
+                        if (await reader.ReadAsync())
                         {
-                            Id = reader.GetInt64(0),
-                            Name = reader.GetString(1),
-                            Bio = reader.IsDBNull(2) ? null : reader.GetString(2)
-                        };
+                            return new CreateAuthorRow
+                            {
+                                Id = reader.GetInt64(0),
+                                Name = reader.GetString(1),
+                                Bio = reader.IsDBNull(2) ? null : reader.GetString(2)
+                            };
+                        }
                     }
                 }
-            }
-
+            };
             return null;
         }
 
@@ -205,13 +212,16 @@ public class QuerySql : IDisposable
     {
         if (this.Transaction == null)
         {
-            var connection = GetDataSource();
-            using (var command = connection.CreateCommand(CreateAuthorReturnIdSql))
+            using (var connection = await GetDataSource().OpenConnectionAsync())
             {
-                command.Parameters.AddWithValue("@name", args.Name);
-                command.Parameters.AddWithValue("@bio", args.Bio ?? (object)DBNull.Value);
-                var result = await command.ExecuteScalarAsync();
-                return Convert.ToInt64(result);
+                using (var command = connection.CreateCommand())
+                {
+                    command.CommandText = CreateAuthorReturnIdSql;
+                    command.Parameters.AddWithValue("@name", args.Name);
+                    command.Parameters.AddWithValue("@bio", args.Bio ?? (object)DBNull.Value);
+                    var result = await command.ExecuteScalarAsync();
+                    return Convert.ToInt64(result);
+                }
             }
         }
 
@@ -236,24 +246,26 @@ public class QuerySql : IDisposable
     {
         if (this.Transaction == null)
         {
-            var connection = GetDataSource();
-            using (var command = connection.CreateCommand(GetAuthorByIdSql))
+            using (var connection = await GetDataSource().OpenConnectionAsync())
             {
-                command.Parameters.AddWithValue("@id", args.Id);
-                using (var reader = await command.ExecuteReaderAsync())
+                using (var command = connection.CreateCommand())
                 {
-                    if (await reader.ReadAsync())
+                    command.CommandText = GetAuthorByIdSql;
+                    command.Parameters.AddWithValue("@id", args.Id);
+                    using (var reader = await command.ExecuteReaderAsync())
                     {
-                        return new GetAuthorByIdRow
+                        if (await reader.ReadAsync())
                         {
-                            Id = reader.GetInt64(0),
-                            Name = reader.GetString(1),
-                            Bio = reader.IsDBNull(2) ? null : reader.GetString(2)
-                        };
+                            return new GetAuthorByIdRow
+                            {
+                                Id = reader.GetInt64(0),
+                                Name = reader.GetString(1),
+                                Bio = reader.IsDBNull(2) ? null : reader.GetString(2)
+                            };
+                        }
                     }
                 }
-            }
-
+            };
             return null;
         }
 
@@ -289,16 +301,19 @@ public class QuerySql : IDisposable
     {
         if (this.Transaction == null)
         {
-            var connection = GetDataSource();
-            using (var command = connection.CreateCommand(GetAuthorByNamePatternSql))
+            using (var connection = await GetDataSource().OpenConnectionAsync())
             {
-                command.Parameters.AddWithValue("@name_pattern", args.NamePattern ?? (object)DBNull.Value);
-                using (var reader = await command.ExecuteReaderAsync())
+                using (var command = connection.CreateCommand())
                 {
-                    var result = new List<GetAuthorByNamePatternRow>();
-                    while (await reader.ReadAsync())
-                        result.Add(new GetAuthorByNamePatternRow { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2) });
-                    return result;
+                    command.CommandText = GetAuthorByNamePatternSql;
+                    command.Parameters.AddWithValue("@name_pattern", args.NamePattern ?? (object)DBNull.Value);
+                    using (var reader = await command.ExecuteReaderAsync())
+                    {
+                        var result = new List<GetAuthorByNamePatternRow>();
+                        while (await reader.ReadAsync())
+                            result.Add(new GetAuthorByNamePatternRow { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2) });
+                        return result;
+                    }
                 }
             }
         }
@@ -327,14 +342,17 @@ public class QuerySql : IDisposable
     {
         if (this.Transaction == null)
         {
-            var connection = GetDataSource();
-            using (var command = connection.CreateCommand(DeleteAuthorSql))
+            using (var connection = await GetDataSource().OpenConnectionAsync())
             {
-                command.Parameters.AddWithValue("@name", args.Name);
-                await command.ExecuteNonQueryAsync();
-            }
+                using (var command = connection.CreateCommand())
+                {
+                    command.CommandText = DeleteAuthorSql;
+                    command.Parameters.AddWithValue("@name", args.Name);
+                    await command.ExecuteNonQueryAsync();
+                }
 
-            return;
+                return;
+            }
         }
 
         if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
@@ -353,13 +371,16 @@ public class QuerySql : IDisposable
     {
         if (this.Transaction == null)
         {
-            var connection = GetDataSource();
-            using (var command = connection.CreateCommand(TruncateAuthorsSql))
+            using (var connection = await GetDataSource().OpenConnectionAsync())
             {
-                await command.ExecuteNonQueryAsync();
-            }
+                using (var command = connection.CreateCommand())
+                {
+                    command.CommandText = TruncateAuthorsSql;
+                    await command.ExecuteNonQueryAsync();
+                }
 
-            return;
+                return;
+            }
         }
 
         if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
@@ -380,11 +401,14 @@ public class QuerySql : IDisposable
     {
         if (this.Transaction == null)
         {
-            var connection = GetDataSource();
-            using (var command = connection.CreateCommand(UpdateAuthorsSql))
+            using (var connection = await GetDataSource().OpenConnectionAsync())
             {
-                command.Parameters.AddWithValue("@bio", args.Bio ?? (object)DBNull.Value);
-                return await command.ExecuteNonQueryAsync();
+                using (var command = connection.CreateCommand())
+                {
+                    command.CommandText = UpdateAuthorsSql;
+                    command.Parameters.AddWithValue("@bio", args.Bio ?? (object)DBNull.Value);
+                    return await command.ExecuteNonQueryAsync();
+                }
             }
         }
 
@@ -407,16 +431,19 @@ public class QuerySql : IDisposable
     {
         if (this.Transaction == null)
         {
-            var connection = GetDataSource();
-            using (var command = connection.CreateCommand(GetAuthorsByIdsSql))
+            using (var connection = await GetDataSource().OpenConnectionAsync())
             {
-                command.Parameters.AddWithValue("@longArr_1", args.LongArr1);
-                using (var reader = await command.ExecuteReaderAsync())
+                using (var command = connection.CreateCommand())
                 {
-                    var result = new List<GetAuthorsByIdsRow>();
-                    while (await reader.ReadAsync())
-                        result.Add(new GetAuthorsByIdsRow { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2) });
-                    return result;
+                    command.CommandText = GetAuthorsByIdsSql;
+                    command.Parameters.AddWithValue("@longArr_1", args.LongArr1);
+                    using (var reader = await command.ExecuteReaderAsync())
+                    {
+                        var result = new List<GetAuthorsByIdsRow>();
+                        while (await reader.ReadAsync())
+                            result.Add(new GetAuthorsByIdsRow { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2) });
+                        return result;
+                    }
                 }
             }
         }
@@ -447,17 +474,20 @@ public class QuerySql : IDisposable
     {
         if (this.Transaction == null)
         {
-            var connection = GetDataSource();
-            using (var command = connection.CreateCommand(GetAuthorsByIdsAndNamesSql))
+            using (var connection = await GetDataSource().OpenConnectionAsync())
             {
-                command.Parameters.AddWithValue("@longArr_1", args.LongArr1);
-                command.Parameters.AddWithValue("@stringArr_2", args.StringArr2);
-                using (var reader = await command.ExecuteReaderAsync())
+                using (var command = connection.CreateCommand())
                 {
-                    var result = new List<GetAuthorsByIdsAndNamesRow>();
-                    while (await reader.ReadAsync())
-                        result.Add(new GetAuthorsByIdsAndNamesRow { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2) });
-                    return result;
+                    command.CommandText = GetAuthorsByIdsAndNamesSql;
+                    command.Parameters.AddWithValue("@longArr_1", args.LongArr1);
+                    command.Parameters.AddWithValue("@stringArr_2", args.StringArr2);
+                    using (var reader = await command.ExecuteReaderAsync())
+                    {
+                        var result = new List<GetAuthorsByIdsAndNamesRow>();
+                        while (await reader.ReadAsync())
+                            result.Add(new GetAuthorsByIdsAndNamesRow { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2) });
+                        return result;
+                    }
                 }
             }
         }
@@ -487,13 +517,16 @@ public class QuerySql : IDisposable
     {
         if (this.Transaction == null)
         {
-            var connection = GetDataSource();
-            using (var command = connection.CreateCommand(CreateBookSql))
+            using (var connection = await GetDataSource().OpenConnectionAsync())
             {
-                command.Parameters.AddWithValue("@name", args.Name);
-                command.Parameters.AddWithValue("@author_id", args.AuthorId);
-                var result = await command.ExecuteScalarAsync();
-                return Guid.Parse(result?.ToString());
+                using (var command = connection.CreateCommand())
+                {
+                    command.CommandText = CreateBookSql;
+                    command.Parameters.AddWithValue("@name", args.Name);
+                    command.Parameters.AddWithValue("@author_id", args.AuthorId);
+                    var result = await command.ExecuteScalarAsync();
+                    return Guid.Parse(result?.ToString());
+                }
             }
         }
 
@@ -521,15 +554,18 @@ public class QuerySql : IDisposable
     {
         if (this.Transaction == null)
         {
-            var connection = GetDataSource();
-            using (var command = connection.CreateCommand(ListAllAuthorsBooksSql))
+            using (var connection = await GetDataSource().OpenConnectionAsync())
             {
-                using (var reader = await command.ExecuteReaderAsync())
+                using (var command = connection.CreateCommand())
                 {
-                    var result = new List<ListAllAuthorsBooksRow>();
-                    while (await reader.ReadAsync())
-                        result.Add(new ListAllAuthorsBooksRow { Author = new Author { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2) }, Book = new Book { Id = reader.GetFieldValue<Guid>(3), Name = reader.GetString(4), AuthorId = reader.GetInt64(5), Description = reader.IsDBNull(6) ? null : reader.GetString(6) } });
-                    return result;
+                    command.CommandText = ListAllAuthorsBooksSql;
+                    using (var reader = await command.ExecuteReaderAsync())
+                    {
+                        var result = new List<ListAllAuthorsBooksRow>();
+                        while (await reader.ReadAsync())
+                            result.Add(new ListAllAuthorsBooksRow { Author = new Author { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2) }, Book = new Book { Id = reader.GetFieldValue<Guid>(3), Name = reader.GetString(4), AuthorId = reader.GetInt64(5), Description = reader.IsDBNull(6) ? null : reader.GetString(6) } });
+                        return result;
+                    }
                 }
             }
         }
@@ -561,15 +597,18 @@ public class QuerySql : IDisposable
     {
         if (this.Transaction == null)
         {
-            var connection = GetDataSource();
-            using (var command = connection.CreateCommand(GetDuplicateAuthorsSql))
+            using (var connection = await GetDataSource().OpenConnectionAsync())
             {
-                using (var reader = await command.ExecuteReaderAsync())
+                using (var command = connection.CreateCommand())
                 {
-                    var result = new List<GetDuplicateAuthorsRow>();
-                    while (await reader.ReadAsync())
-                        result.Add(new GetDuplicateAuthorsRow { Author = new Author { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2) }, Author2 = new Author { Id = reader.GetInt64(3), Name = reader.GetString(4), Bio = reader.IsDBNull(5) ? null : reader.GetString(5) } });
-                    return result;
+                    command.CommandText = GetDuplicateAuthorsSql;
+                    using (var reader = await command.ExecuteReaderAsync())
+                    {
+                        var result = new List<GetDuplicateAuthorsRow>();
+                        while (await reader.ReadAsync())
+                            result.Add(new GetDuplicateAuthorsRow { Author = new Author { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2) }, Author2 = new Author { Id = reader.GetInt64(3), Name = reader.GetString(4), Bio = reader.IsDBNull(5) ? null : reader.GetString(5) } });
+                        return result;
+                    }
                 }
             }
         }
@@ -601,16 +640,19 @@ public class QuerySql : IDisposable
     {
         if (this.Transaction == null)
         {
-            var connection = GetDataSource();
-            using (var command = connection.CreateCommand(GetAuthorsByBookNameSql))
+            using (var connection = await GetDataSource().OpenConnectionAsync())
             {
-                command.Parameters.AddWithValue("@name", args.Name);
-                using (var reader = await command.ExecuteReaderAsync())
+                using (var command = connection.CreateCommand())
                 {
-                    var result = new List<GetAuthorsByBookNameRow>();
-                    while (await reader.ReadAsync())
-                        result.Add(new GetAuthorsByBookNameRow { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2), Book = new Book { Id = reader.GetFieldValue<Guid>(3), Name = reader.GetString(4), AuthorId = reader.GetInt64(5), Description = reader.IsDBNull(6) ? null : reader.GetString(6) } });
-                    return result;
+                    command.CommandText = GetAuthorsByBookNameSql;
+                    command.Parameters.AddWithValue("@name", args.Name);
+                    using (var reader = await command.ExecuteReaderAsync())
+                    {
+                        var result = new List<GetAuthorsByBookNameRow>();
+                        while (await reader.ReadAsync())
+                            result.Add(new GetAuthorsByBookNameRow { Id = reader.GetInt64(0), Name = reader.GetString(1), Bio = reader.IsDBNull(2) ? null : reader.GetString(2), Book = new Book { Id = reader.GetFieldValue<Guid>(3), Name = reader.GetString(4), AuthorId = reader.GetInt64(5), Description = reader.IsDBNull(6) ? null : reader.GetString(6) } });
+                        return result;
+                    }
                 }
             }
         }
@@ -638,16 +680,19 @@ public class QuerySql : IDisposable
     {
         if (this.Transaction == null)
         {
-            var connection = GetDataSource();
-            using (var command = connection.CreateCommand(CreateExtendedBioSql))
+            using (var connection = await GetDataSource().OpenConnectionAsync())
             {
-                command.Parameters.AddWithValue("@author_name", args.AuthorName);
-                command.Parameters.AddWithValue("@name", args.Name);
-                command.Parameters.AddWithValue("@bio_type", args.BioType != null ? args.BioType.Value.Stringify() : (object)DBNull.Value);
-                await command.ExecuteNonQueryAsync();
-            }
+                using (var command = connection.CreateCommand())
+                {
+                    command.CommandText = CreateExtendedBioSql;
+                    command.Parameters.AddWithValue("@author_name", args.AuthorName);
+                    command.Parameters.AddWithValue("@name", args.Name);
+                    command.Parameters.AddWithValue("@bio_type", args.BioType != null ? args.BioType.Value.Stringify() : (object)DBNull.Value);
+                    await command.ExecuteNonQueryAsync();
+                }
 
-            return;
+                return;
+            }
         }
 
         if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
@@ -670,24 +715,26 @@ public class QuerySql : IDisposable
     {
         if (this.Transaction == null)
         {
-            var connection = GetDataSource();
-            using (var command = connection.CreateCommand(GetFirstExtendedBioByTypeSql))
+            using (var connection = await GetDataSource().OpenConnectionAsync())
             {
-                command.Parameters.AddWithValue("@bio_type", args.BioType != null ? args.BioType.Value.Stringify() : (object)DBNull.Value);
-                using (var reader = await command.ExecuteReaderAsync())
+                using (var command = connection.CreateCommand())
                 {
-                    if (await reader.ReadAsync())
+                    command.CommandText = GetFirstExtendedBioByTypeSql;
+                    command.Parameters.AddWithValue("@bio_type", args.BioType != null ? args.BioType.Value.Stringify() : (object)DBNull.Value);
+                    using (var reader = await command.ExecuteReaderAsync())
                     {
-                        return new GetFirstExtendedBioByTypeRow
+                        if (await reader.ReadAsync())
                         {
-                            AuthorName = reader.GetString(0),
-                            Name = reader.GetString(1),
-                            BioType = reader.IsDBNull(2) ? null : reader.GetString(2).ToExtendedBioType()
-                        };
+                            return new GetFirstExtendedBioByTypeRow
+                            {
+                                AuthorName = reader.GetString(0),
+                                Name = reader.GetString(1),
+                                BioType = reader.IsDBNull(2) ? null : reader.GetString(2).ToExtendedBioType()
+                            };
+                        }
                     }
                 }
-            }
-
+            };
             return null;
         }
 
@@ -720,13 +767,16 @@ public class QuerySql : IDisposable
     {
         if (this.Transaction == null)
         {
-            var connection = GetDataSource();
-            using (var command = connection.CreateCommand(TruncateExtendedBiosSql))
+            using (var connection = await GetDataSource().OpenConnectionAsync())
             {
-                await command.ExecuteNonQueryAsync();
-            }
+                using (var command = connection.CreateCommand())
+                {
+                    command.CommandText = TruncateExtendedBiosSql;
+                    await command.ExecuteNonQueryAsync();
+                }
 
-            return;
+                return;
+            }
         }
 
         if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)

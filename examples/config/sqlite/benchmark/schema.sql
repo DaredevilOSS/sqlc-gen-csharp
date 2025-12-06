@@ -1,4 +1,4 @@
-CREATE TABLE customers (
+CREATE TABLE IF NOT EXISTS customers (
     customer_id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL,
     email TEXT UNIQUE NOT NULL,
@@ -7,7 +7,7 @@ CREATE TABLE customers (
     registered_at TEXT NOT NULL DEFAULT (datetime('now'))
 );
 
-CREATE TABLE products (
+CREATE TABLE IF NOT EXISTS products (
     product_id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL,
     category TEXT NOT NULL,
@@ -17,7 +17,7 @@ CREATE TABLE products (
     added_at TEXT NOT NULL DEFAULT (datetime('now'))
 );
 
-CREATE TABLE orders (
+CREATE TABLE IF NOT EXISTS orders (
     order_id        TEXT           PRIMARY KEY,
     customer_id     INTEGER        NOT NULL,
     ordered_at      TEXT           NOT NULL DEFAULT (datetime('now')),
@@ -26,7 +26,7 @@ CREATE TABLE orders (
     CONSTRAINT      fk_customer    FOREIGN KEY (customer_id) REFERENCES customers(customer_id)
 );
 
-CREATE TABLE order_items (
+CREATE TABLE IF NOT EXISTS order_items (
     order_item_id   TEXT           PRIMARY KEY,
     order_id        TEXT           NOT NULL,
     product_id      INTEGER        NOT NULL,

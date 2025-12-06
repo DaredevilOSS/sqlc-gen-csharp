@@ -62,18 +62,21 @@ public class QuerySql : IDisposable
     {
         if (this.Transaction == null)
         {
-            var connection = GetDataSource();
-            using (var command = connection.CreateCommand(GetCustomerOrdersSql))
+            using (var connection = await GetDataSource().OpenConnectionAsync())
             {
-                command.Parameters.AddWithValue("@customer_id", args.CustomerId);
-                command.Parameters.AddWithValue("@offset", args.Offset);
-                command.Parameters.AddWithValue("@limit", args.Limit);
-                using (var reader = await command.ExecuteReaderAsync())
+                using (var command = connection.CreateCommand())
                 {
-                    var result = new List<GetCustomerOrdersRow>();
-                    while (await reader.ReadAsync())
-                        result.Add(new GetCustomerOrdersRow { OrderId = reader.GetFieldValue<Guid>(0), OrderedAt = reader.GetDateTime(1), OrderState = reader.GetString(2), TotalAmount = reader.GetDecimal(3), OrderItemId = reader.GetFieldValue<Guid>(4), Quantity = reader.GetInt32(5), UnitPrice = reader.GetDecimal(6), ProductId = reader.GetInt32(7), ProductName = reader.GetString(8), ProductCategory = reader.GetString(9) });
-                    return result;
+                    command.CommandText = GetCustomerOrdersSql;
+                    command.Parameters.AddWithValue("@customer_id", args.CustomerId);
+                    command.Parameters.AddWithValue("@offset", args.Offset);
+                    command.Parameters.AddWithValue("@limit", args.Limit);
+                    using (var reader = await command.ExecuteReaderAsync())
+                    {
+                        var result = new List<GetCustomerOrdersRow>();
+                        while (await reader.ReadAsync())
+                            result.Add(new GetCustomerOrdersRow { OrderId = reader.GetFieldValue<Guid>(0), OrderedAt = reader.GetDateTime(1), OrderState = reader.GetString(2), TotalAmount = reader.GetDecimal(3), OrderItemId = reader.GetFieldValue<Guid>(4), Quantity = reader.GetInt32(5), UnitPrice = reader.GetDecimal(6), ProductId = reader.GetInt32(7), ProductName = reader.GetString(8), ProductCategory = reader.GetString(9) });
+                        return result;
+                    }
                 }
             }
         }
@@ -101,9 +104,8 @@ public class QuerySql : IDisposable
     public readonly record struct AddProductsArgs(string Name, string Category, decimal UnitPrice, int StockQuantity, string? Description);
     public async Task AddProductsAsync(List<AddProductsArgs> args)
     {
-        using (var connection = new NpgsqlConnection(ConnectionString))
+        using (var connection = await GetDataSource().OpenConnectionAsync())
         {
-            await connection.OpenAsync();
             using (var writer = await connection.BeginBinaryImportAsync(AddProductsSql))
             {
                 foreach (var row in args)
@@ -118,8 +120,6 @@ public class QuerySql : IDisposable
 
                 await writer.CompleteAsync();
             }
-
-            await connection.CloseAsync();
         }
     }
 
@@ -127,9 +127,8 @@ public class QuerySql : IDisposable
     public readonly record struct AddOrdersArgs(int CustomerId, string OrderState, decimal TotalAmount);
     public async Task AddOrdersAsync(List<AddOrdersArgs> args)
     {
-        using (var connection = new NpgsqlConnection(ConnectionString))
+        using (var connection = await GetDataSource().OpenConnectionAsync())
         {
-            await connection.OpenAsync();
             using (var writer = await connection.BeginBinaryImportAsync(AddOrdersSql))
             {
                 foreach (var row in args)
@@ -142,8 +141,6 @@ public class QuerySql : IDisposable
 
                 await writer.CompleteAsync();
             }
-
-            await connection.CloseAsync();
         }
     }
 
@@ -151,9 +148,8 @@ public class QuerySql : IDisposable
     public readonly record struct AddOrderItemsArgs(Guid OrderId, int ProductId, int Quantity, decimal UnitPrice);
     public async Task AddOrderItemsAsync(List<AddOrderItemsArgs> args)
     {
-        using (var connection = new NpgsqlConnection(ConnectionString))
+        using (var connection = await GetDataSource().OpenConnectionAsync())
         {
-            await connection.OpenAsync();
             using (var writer = await connection.BeginBinaryImportAsync(AddOrderItemsSql))
             {
                 foreach (var row in args)
@@ -167,8 +163,6 @@ public class QuerySql : IDisposable
 
                 await writer.CompleteAsync();
             }
-
-            await connection.CloseAsync();
         }
     }
 

@@ -61,6 +61,7 @@ public class QuerySql
                     command.Parameters.AddWithValue("@customer_id", args.CustomerId);
                     command.Parameters.AddWithValue("@offset", args.Offset);
                     command.Parameters.AddWithValue("@limit", args.Limit);
+                    command.Prepare();
                     using (var reader = await command.ExecuteReaderAsync())
                     {
                         var result = new List<GetCustomerOrdersRow>();
@@ -97,8 +98,8 @@ public class QuerySql
     {
         using (var connection = new SqliteConnection(ConnectionString))
         {
-            await connection.OpenAsync();
             var transformedSql = Utils.TransformQueryForSqliteBatch(AddProductsSql, args.Count);
+            await connection.OpenAsync();
             using (var command = new SqliteCommand(transformedSql, connection))
             {
                 for (int i = 0; i < args.Count; i++)
@@ -110,6 +111,7 @@ public class QuerySql
                     command.Parameters.AddWithValue($"@description{i}", args[i].Description ?? (object)DBNull.Value);
                 }
 
+                command.Prepare();
                 await command.ExecuteScalarAsync();
             }
         }
@@ -121,8 +123,8 @@ public class QuerySql
     {
         using (var connection = new SqliteConnection(ConnectionString))
         {
-            await connection.OpenAsync();
             var transformedSql = Utils.TransformQueryForSqliteBatch(AddOrdersSql, args.Count);
+            await connection.OpenAsync();
             using (var command = new SqliteCommand(transformedSql, connection))
             {
                 for (int i = 0; i < args.Count; i++)
@@ -133,6 +135,7 @@ public class QuerySql
                     command.Parameters.AddWithValue($"@total_amount{i}", args[i].TotalAmount);
                 }
 
+                command.Prepare();
                 await command.ExecuteScalarAsync();
             }
         }
@@ -144,8 +147,8 @@ public class QuerySql
     {
         using (var connection = new SqliteConnection(ConnectionString))
         {
-            await connection.OpenAsync();
             var transformedSql = Utils.TransformQueryForSqliteBatch(AddOrderItemsSql, args.Count);
+            await connection.OpenAsync();
             using (var command = new SqliteCommand(transformedSql, connection))
             {
                 for (int i = 0; i < args.Count; i++)
@@ -157,6 +160,7 @@ public class QuerySql
                     command.Parameters.AddWithValue($"@unit_price{i}", args[i].UnitPrice);
                 }
 
+                command.Prepare();
                 await command.ExecuteScalarAsync();
             }
         }

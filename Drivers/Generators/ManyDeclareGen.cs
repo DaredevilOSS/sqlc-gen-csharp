@@ -51,16 +51,12 @@ public class ManyDeclareGen(DbDriver dbDriver)
         var connectionCommands = dbDriver.EstablishConnection(query);
         var dapperArgs = CommonGen.GetDapperArgs(query);
         var returnType = dbDriver.AddNullableSuffixIfNeeded(returnInterface, true);
-        var blockStatement = $$"""
-            {{connectionCommands.ConnectionOpen.AppendSemicolonUnlessEmpty()}}
-            var {{Variable.Result.AsVarName()}} = await {{Variable.Connection.AsVarName()}}.QueryAsync<{{returnType}}>({{sqlVar}}{{dapperArgs}});
-            return {{Variable.Result.AsVarName()}}.AsList();
-        """;
-
-        return CommonGen.ConditionallyWrapAsUsing(
-            connectionCommands.EstablishConnection, 
-            blockStatement, 
-            connectionCommands.WrapInUsing
+        var resultVar = Variable.Result.AsVarName();
+        return connectionCommands.GetConnectionOrDataSource.WrapBlock(
+            $"""
+            var {resultVar} = await {Variable.Connection.AsVarName()}.QueryAsync<{returnType}>({sqlVar}{dapperArgs});
+            return {resultVar}.AsList();
+            """
         );
     }
 
@@ -87,24 +83,25 @@ public class ManyDeclareGen(DbDriver dbDriver)
             while ({{CommonGen.AwaitReaderRow()}})
                 {{resultVar}}.Add({{dataclassInit}});
         """;
-        var blockStatement = $$"""
-            {{connectionCommands.ConnectionOpen.AppendSemicolonUnlessEmpty()}}
-            using ({{dbDriver.CreateSqlCommand(sqlVar)}})
+        var sqlCommands = dbDriver.CreateSqlCommand(sqlVar);
+        var commandBlock = sqlCommands.CommandCreation.WrapBlock(
+            $$"""
+            {{sqlCommands.SetCommandText.AppendSemicolonUnlessEmpty()}}
+            {{dbDriver.AddParametersToCommand(query)}}
+            {{sqlCommands.PrepareCommand.AppendSemicolonUnlessEmpty()}}
+            using ({{CommonGen.InitDataReader()}})
             {
-                {{dbDriver.AddParametersToCommand(query)}}
-                using ({{CommonGen.InitDataReader()}})
-                {
-                    var {{resultVar}} = new List<{{returnInterface}}>();
-                    {{readWhileExists}}
-                    return {{resultVar}};
-                }
+                var {{resultVar}} = new List<{{returnInterface}}>();
+                {{readWhileExists}}
+                return {{resultVar}};
             }
-        """;
-        
-        return CommonGen.ConditionallyWrapAsUsing(
-            connectionCommands.EstablishConnection, 
-            blockStatement, 
-            connectionCommands.WrapInUsing
+            """
+        );
+        return connectionCommands.GetConnectionOrDataSource.WrapBlock(
+            $$"""
+            {{connectionCommands.ConnectionOpen.AppendSemicolonUnlessEmpty()}}
+            {{commandBlock}}
+            """
         );
     }
 

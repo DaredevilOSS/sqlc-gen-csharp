@@ -51,7 +51,7 @@ namespace EndToEndTests
         }
         private static void InitSqliteDb()
         {
-            var connectionString = Environment.GetEnvironmentVariable(EndToEndCommon.SqliteConnectionStringEnv);
+            var connectionString = Environment.GetEnvironmentVariable(SqliteConnectionStringEnv);
             using (var connection = new SqliteConnection(connectionString))
             {
                 connection.Open();

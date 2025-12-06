@@ -31,8 +31,6 @@ public class SqliteWriteBenchmark
     public async Task GlobalSetup()
     {
         _connectionString = Config.GetSqliteConnectionString();
-        
-        // Initialize database schema (assumes schema exists for EFCore)
         await SqliteDatabaseHelper.InitializeDatabaseAsync(_connectionString);
         
         _sqlcImpl = new QuerySql(_connectionString);
@@ -43,7 +41,6 @@ public class SqliteWriteBenchmark
     [IterationSetup]
     public void IterationSetup()
     {
-        // Clean up before each iteration to ensure fair comparison
         SqliteDatabaseHelper.CleanupDatabaseAsync(_connectionString).GetAwaiter().GetResult();
         PrepareTestDataAsync().GetAwaiter().GetResult();
     }

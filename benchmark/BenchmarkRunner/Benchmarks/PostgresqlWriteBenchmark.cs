@@ -30,7 +30,7 @@ public class PostgresqlWriteBenchmark
     [GlobalSetup]
     public void GlobalSetup()
     {
-        _connectionString = Config.GetConnectionString();
+        _connectionString = Config.GetPostgresConnectionString();
         _sqlcImpl = new QuerySql(_connectionString);
         _dbContext = new SalesDbContext(_connectionString);
         _efCoreImpl = new Queries(_dbContext);
@@ -39,7 +39,6 @@ public class PostgresqlWriteBenchmark
     [IterationSetup]
     public void IterationSetup()
     {
-        // Clean up before each iteration to ensure fair comparison
         PostgresqlDatabaseHelper.CleanupDatabaseAsync(_connectionString).GetAwaiter().GetResult();
         PrepareTestDataAsync().GetAwaiter().GetResult();
     }

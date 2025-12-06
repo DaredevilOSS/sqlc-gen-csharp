@@ -1,6 +1,5 @@
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Plugin;
-using System.Linq;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace SqlcGenCsharp.Drivers.Generators;
@@ -47,15 +46,8 @@ public class ExecRowsDeclareGen(DbDriver dbDriver)
     {
         var connectionCommands = dbDriver.EstablishConnection(query);
         var dapperArgs = CommonGen.GetDapperArgs(query);
-        var blockStatement = $$"""
-            {{connectionCommands.ConnectionOpen.AppendSemicolonUnlessEmpty()}}
-            return await {{Variable.Connection.AsVarName()}}.ExecuteAsync({{sqlVar}}{{dapperArgs}});
-        """;
-        
-        return CommonGen.ConditionallyWrapAsUsing(
-            connectionCommands.EstablishConnection, 
-            blockStatement, 
-            connectionCommands.WrapInUsing
+        return connectionCommands.GetConnectionOrDataSource.WrapBlock(
+            $"return await {Variable.Connection.AsVarName()}.ExecuteAsync({sqlVar}{dapperArgs});"
         );
     }
 
@@ -74,19 +66,20 @@ public class ExecRowsDeclareGen(DbDriver dbDriver)
     private string GetDriverNoTxBody(string sqlVar, Query query)
     {
         var connectionCommands = dbDriver.EstablishConnection(query);
-        var blockStatement = $$"""
+        var sqlCommands = dbDriver.CreateSqlCommand(sqlVar);
+        var commandBlock = sqlCommands.CommandCreation.WrapBlock(
+            $"""
+            {sqlCommands.SetCommandText.AppendSemicolonUnlessEmpty()}
+            {dbDriver.AddParametersToCommand(query)}
+            {sqlCommands.PrepareCommand.AppendSemicolonUnlessEmpty()}
+            return await {Variable.Command.AsVarName()}.ExecuteNonQueryAsync();
+            """
+        );
+        return connectionCommands.GetConnectionOrDataSource.WrapBlock(
+            $$"""
             {{connectionCommands.ConnectionOpen.AppendSemicolonUnlessEmpty()}}
-            using ({{dbDriver.CreateSqlCommand(sqlVar)}})
-            {
-                {{dbDriver.AddParametersToCommand(query)}}
-                return await {{Variable.Command.AsVarName()}}.ExecuteNonQueryAsync();
-            }
-        """;
-        
-        return CommonGen.ConditionallyWrapAsUsing(
-            connectionCommands.EstablishConnection, 
-            blockStatement, 
-            connectionCommands.WrapInUsing
+            {{commandBlock}}
+            """
         );
     }
 

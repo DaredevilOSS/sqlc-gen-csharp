@@ -1,0 +1,102 @@
+
+Ö
+2sqlite+examples/config/sqlite/benchmark/schema.sql"*examples/config/sqlite/benchmark/query.sqlbp
+benchmark/SqliteSqlcImplcsharp6{"debugRequest":true,"namespaceName":"SqliteSqlcImpl"}*
+./dist/LocalRunnerŒ	main"ƒ	mainŸ
+	customers2
+customer_id0ÿÿÿÿÿÿÿÿÿR	customersb	INTEGER(
+name0ÿÿÿÿÿÿÿÿÿR	customersbTEXT)
+email0ÿÿÿÿÿÿÿÿÿR	customersbTEXT)
+phone0ÿÿÿÿÿÿÿÿÿR	customersbTEXT)
+address0ÿÿÿÿÿÿÿÿÿR	customersbTEXT1
+registered_at0ÿÿÿÿÿÿÿÿÿR	customersbTEXTÔ
+
+products0
+
+product_id0ÿÿÿÿÿÿÿÿÿR
+productsb	INTEGER'
+name0ÿÿÿÿÿÿÿÿÿR
+productsbTEXT+
+category0ÿÿÿÿÿÿÿÿÿR
+productsbTEXT-
+
+unit_price0ÿÿÿÿÿÿÿÿÿR
+productsbREAL4
+stock_quantity0ÿÿÿÿÿÿÿÿÿR
+productsb	INTEGER,
+description0ÿÿÿÿÿÿÿÿÿR
+productsbTEXT+
+added_at0ÿÿÿÿÿÿÿÿÿR
+productsbTEXTð
+orders)
+order_id0ÿÿÿÿÿÿÿÿÿRordersbTEXT/
+customer_id0ÿÿÿÿÿÿÿÿÿRordersb	INTEGER+
+
+ordered_at0ÿÿÿÿÿÿÿÿÿRordersbTEXT,
+order_state0ÿÿÿÿÿÿÿÿÿRordersbTEXT-
+total_amount0ÿÿÿÿÿÿÿÿÿRordersbREALŽ
+order_items3
+order_item_id0ÿÿÿÿÿÿÿÿÿRorder_itemsbTEXT.
+order_id0ÿÿÿÿÿÿÿÿÿRorder_itemsbTEXT3
+
+product_id0ÿÿÿÿÿÿÿÿÿRorder_itemsb	INTEGER1
+quantity0ÿÿÿÿÿÿÿÿÿRorder_itemsb	INTEGER0
+
+unit_price0ÿÿÿÿÿÿÿÿÿRorder_itemsbREALá
+ÍSELECT 
+    o.order_id, ordered_at, order_state, total_amount, order_item_id, i.quantity, i.unit_price, 
+    p.product_id, p.name as product_name, p.category as product_category
+FROM orders o
+JOIN order_items i
+USING (order_id)
+JOIN products p
+USING (product_id)
+WHERE o.customer_id = ?1
+ORDER BY o.ordered_at DESC
+LIMIT ?3 OFFSET ?2GetCustomerOrders:many"3
+order_id0ÿÿÿÿÿÿÿÿÿRordersbTEXTzorder_id"7
+
+ordered_at0ÿÿÿÿÿÿÿÿÿRordersbTEXTz
+ordered_at"9
+order_state0ÿÿÿÿÿÿÿÿÿRordersbTEXTzorder_state";
+total_amount0ÿÿÿÿÿÿÿÿÿRordersbREALztotal_amount"B
+order_item_id0ÿÿÿÿÿÿÿÿÿRorder_itemsbTEXTzorder_item_id";
+quantity0ÿÿÿÿÿÿÿÿÿRorder_itemsb	INTEGERzquantity"<
+
+unit_price0ÿÿÿÿÿÿÿÿÿRorder_itemsbREALz
+unit_price"<
+
+product_id0ÿÿÿÿÿÿÿÿÿR
+productsb	INTEGERz
+product_id"5
+product_name0ÿÿÿÿÿÿÿÿÿR
+productsbTEXTzname"=
+product_category0ÿÿÿÿÿÿÿÿÿR
+productsbTEXTzcategory*B>
+customer_id0ÿÿÿÿÿÿÿÿÿ8Rordersb	INTEGERzcustomer_id*&"
+offset0ÿÿÿÿÿÿÿÿÿ8b	integer*%!
+limit0ÿÿÿÿÿÿÿÿÿ8b	integer:	query.sqlê
+eINSERT INTO products (name, category, unit_price, stock_quantity, description) VALUES (?, ?, ?, ?, ?)AddProducts	:copyfrom*73
+name0ÿÿÿÿÿÿÿÿÿRmainproductsbTEXTzname*?;
+category0ÿÿÿÿÿÿÿÿÿRmainproductsbTEXTzcategory*C?
+
+unit_price0ÿÿÿÿÿÿÿÿÿRmainproductsbREALz
+unit_price*NJ
+stock_quantity0ÿÿÿÿÿÿÿÿÿRmainproductsb	INTEGERzstock_quantity*C?
+description0ÿÿÿÿÿÿÿÿÿRmainproductsbTEXTzdescription:	query.sqlB
+products™
+YINSERT INTO orders (order_id, customer_id, order_state, total_amount) VALUES (?, ?, ?, ?)	AddOrders	:copyfrom*=9
+order_id0ÿÿÿÿÿÿÿÿÿRmainordersbTEXTzorder_id*FB
+customer_id0ÿÿÿÿÿÿÿÿÿRmainordersb	INTEGERzcustomer_id*C?
+order_state0ÿÿÿÿÿÿÿÿÿRmainordersbTEXTzorder_state*EA
+total_amount0ÿÿÿÿÿÿÿÿÿRmainordersbREALztotal_amount:	query.sqlBordersŒ
+jINSERT INTO order_items (order_item_id, order_id, product_id, quantity, unit_price) VALUES (?, ?, ?, ?, ?)AddOrderItems	:copyfrom*LH
+order_item_id0ÿÿÿÿÿÿÿÿÿRmainorder_itemsbTEXTzorder_item_id*B>
+order_id0ÿÿÿÿÿÿÿÿÿRmainorder_itemsbTEXTzorder_id*IE
+
+product_id0ÿÿÿÿÿÿÿÿÿRmainorder_itemsb	INTEGERz
+product_id*EA
+quantity0ÿÿÿÿÿÿÿÿÿRmainorder_itemsb	INTEGERzquantity*FB
+
+unit_price0ÿÿÿÿÿÿÿÿÿRmainorder_itemsbREALz
+unit_price:	query.sqlBorder_items"v1.30.0*˜{"overrideDriverVersion":"","generateCsproj":true,"targetFramework":"net8.0","namespaceName":"SqliteSqlcImpl","useDapper":false,"overrideDapperVersion":"","overrides":null,"debugRequest":false,"useCentralPackageManagement":false,"withAsyncSuffix":true,"mySqlConnectionReset":null}

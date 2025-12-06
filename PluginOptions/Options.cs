@@ -32,6 +32,7 @@ public class Options
         DebugRequest = rawOptions.DebugRequest;
 
         UseCentralPackageManagement = rawOptions.UseCentralPackageManagement;
+        MySqlConnectionReset = rawOptions.MySqlConnectionReset ?? false;
     }
 
     public DriverName DriverName { get; }
@@ -59,6 +60,13 @@ public class Options
     public bool UseCentralPackageManagement { get; }
 
     public bool WithAsyncSuffix { get; }
+
+    /// <summary>
+    /// When true, connections retrieved from the pool will be reset to a clean state.
+    /// When false (default), connections maintain their previous state (session variables, temporary tables, etc.).
+    /// Setting to true adds an extra round trip to the server but ensures clean connection state.
+    /// </summary>
+    public bool MySqlConnectionReset { get; }
 
     private static readonly Dictionary<string, DriverName> EngineToDriverMapping = new()
     {

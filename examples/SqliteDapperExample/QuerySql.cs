@@ -62,7 +62,6 @@ public class QuerySql
         {
             using (var connection = new SqliteConnection(ConnectionString))
             {
-                await connection.OpenAsync();
                 var result = await connection.QueryFirstOrDefaultAsync<GetAuthorRow?>(GetAuthorSql, queryParams);
                 return result;
             }
@@ -97,7 +96,6 @@ public class QuerySql
         {
             using (var connection = new SqliteConnection(ConnectionString))
             {
-                await connection.OpenAsync();
                 var result = await connection.QueryAsync<ListAuthorsRow>(ListAuthorsSql, queryParams);
                 return result.AsList();
             }
@@ -125,7 +123,6 @@ public class QuerySql
         {
             using (var connection = new SqliteConnection(ConnectionString))
             {
-                await connection.OpenAsync();
                 await connection.ExecuteAsync(CreateAuthorSql, queryParams);
                 return;
             }
@@ -155,7 +152,6 @@ public class QuerySql
         {
             using (var connection = new SqliteConnection(ConnectionString))
             {
-                await connection.OpenAsync();
                 return await connection.QuerySingleAsync<int>(CreateAuthorReturnIdSql, queryParams);
             }
         }
@@ -185,7 +181,6 @@ public class QuerySql
         {
             using (var connection = new SqliteConnection(ConnectionString))
             {
-                await connection.OpenAsync();
                 var result = await connection.QueryFirstOrDefaultAsync<GetAuthorByIdRow?>(GetAuthorByIdSql, queryParams);
                 return result;
             }
@@ -217,7 +212,6 @@ public class QuerySql
         {
             using (var connection = new SqliteConnection(ConnectionString))
             {
-                await connection.OpenAsync();
                 var result = await connection.QueryFirstOrDefaultAsync<GetAuthorByIdWithMultipleNamedParamRow?>(GetAuthorByIdWithMultipleNamedParamSql, queryParams);
                 return result;
             }
@@ -248,7 +242,6 @@ public class QuerySql
         {
             using (var connection = new SqliteConnection(ConnectionString))
             {
-                await connection.OpenAsync();
                 var result = await connection.QueryAsync<GetAuthorByNamePatternRow>(GetAuthorByNamePatternSql, queryParams);
                 return result.AsList();
             }
@@ -274,7 +267,6 @@ public class QuerySql
         {
             using (var connection = new SqliteConnection(ConnectionString))
             {
-                await connection.OpenAsync();
                 return await connection.ExecuteAsync(UpdateAuthorsSql, queryParams);
             }
         }
@@ -306,7 +298,6 @@ public class QuerySql
         {
             using (var connection = new SqliteConnection(ConnectionString))
             {
-                await connection.OpenAsync();
                 var result = await connection.QueryAsync<GetAuthorsByIdsRow>(transformedSql, queryParams);
                 return result.AsList();
             }
@@ -343,7 +334,6 @@ public class QuerySql
         {
             using (var connection = new SqliteConnection(ConnectionString))
             {
-                await connection.OpenAsync();
                 var result = await connection.QueryAsync<GetAuthorsByIdsAndNamesRow>(transformedSql, queryParams);
                 return result.AsList();
             }
@@ -368,7 +358,6 @@ public class QuerySql
         {
             using (var connection = new SqliteConnection(ConnectionString))
             {
-                await connection.OpenAsync();
                 await connection.ExecuteAsync(DeleteAuthorSql, queryParams);
                 return;
             }
@@ -398,7 +387,6 @@ public class QuerySql
         {
             using (var connection = new SqliteConnection(ConnectionString))
             {
-                await connection.OpenAsync();
                 return await connection.QuerySingleAsync<int>(CreateBookSql, queryParams);
             }
         }
@@ -427,6 +415,7 @@ public class QuerySql
                 await connection.OpenAsync();
                 using (var command = new SqliteCommand(ListAllAuthorsBooksSql, connection))
                 {
+                    command.Prepare();
                     using (var reader = await command.ExecuteReaderAsync())
                     {
                         var result = new List<ListAllAuthorsBooksRow>();
@@ -474,6 +463,7 @@ public class QuerySql
                 await connection.OpenAsync();
                 using (var command = new SqliteCommand(GetDuplicateAuthorsSql, connection))
                 {
+                    command.Prepare();
                     using (var reader = await command.ExecuteReaderAsync())
                     {
                         var result = new List<GetDuplicateAuthorsRow>();
@@ -527,6 +517,7 @@ public class QuerySql
                 using (var command = new SqliteCommand(GetAuthorsByBookNameSql, connection))
                 {
                     command.Parameters.AddWithValue("@name", args.Name);
+                    command.Prepare();
                     using (var reader = await command.ExecuteReaderAsync())
                     {
                         var result = new List<GetAuthorsByBookNameRow>();
@@ -562,7 +553,6 @@ public class QuerySql
         {
             using (var connection = new SqliteConnection(ConnectionString))
             {
-                await connection.OpenAsync();
                 await connection.ExecuteAsync(DeleteAllAuthorsSql);
                 return;
             }
@@ -617,7 +607,6 @@ public class QuerySql
         {
             using (var connection = new SqliteConnection(ConnectionString))
             {
-                await connection.OpenAsync();
                 await connection.ExecuteAsync(InsertSqliteTypesSql, queryParams);
                 return;
             }
@@ -639,8 +628,8 @@ public class QuerySql
     {
         using (var connection = new SqliteConnection(ConnectionString))
         {
-            await connection.OpenAsync();
             var transformedSql = Utils.TransformQueryForSqliteBatch(InsertSqliteTypesBatchSql, args.Count);
+            await connection.OpenAsync();
             using (var command = new SqliteCommand(transformedSql, connection))
             {
                 for (int i = 0; i < args.Count; i++)
@@ -650,6 +639,7 @@ public class QuerySql
                     command.Parameters.AddWithValue($"@c_text{i}", args[i].CText ?? (object)DBNull.Value);
                 }
 
+                command.Prepare();
                 await command.ExecuteScalarAsync();
             }
         }
@@ -687,7 +677,6 @@ public class QuerySql
         {
             using (var connection = new SqliteConnection(ConnectionString))
             {
-                await connection.OpenAsync();
                 var result = await connection.QueryFirstOrDefaultAsync<GetSqliteTypesRow?>(GetSqliteTypesSql);
                 return result;
             }
@@ -721,7 +710,6 @@ public class QuerySql
         {
             using (var connection = new SqliteConnection(ConnectionString))
             {
-                await connection.OpenAsync();
                 var result = await connection.QueryFirstOrDefaultAsync<GetSqliteTypesCntRow?>(GetSqliteTypesCntSql);
                 return result;
             }
@@ -749,7 +737,6 @@ public class QuerySql
         {
             using (var connection = new SqliteConnection(ConnectionString))
             {
-                await connection.OpenAsync();
                 var result = await connection.QueryFirstOrDefaultAsync<GetSqliteFunctionsRow?>(GetSqliteFunctionsSql);
                 return result;
             }
@@ -767,7 +754,6 @@ public class QuerySql
         {
             using (var connection = new SqliteConnection(ConnectionString))
             {
-                await connection.OpenAsync();
                 await connection.ExecuteAsync(DeleteAllSqliteTypesSql);
                 return;
             }

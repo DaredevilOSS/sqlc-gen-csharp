@@ -9,10 +9,12 @@ namespace PostgresEFCoreImpl;
 public class Queries
 {
     private readonly SalesDbContext _dbContext;
+    private readonly bool _useTracking;
 
-    public Queries(SalesDbContext dbContext)
+    public Queries(SalesDbContext dbContext, bool useTracking = false)
     {
         _dbContext = dbContext;
+        _useTracking = useTracking;
     }
 
     public DbContext DbContext => _dbContext;
@@ -38,11 +40,18 @@ public class Queries
     /// </summary>
     public async Task<List<GetCustomerOrdersRow>> GetCustomerOrders(GetCustomerOrdersArgs args)
     {
-        var results = await _dbContext.Orders
+        var query = _dbContext.Orders
             .Where(o => o.CustomerId == args.CustomerId)
             .OrderByDescending(o => o.OrderedAt)
             .Skip(args.Offset)
-            .Take(args.Limit)
+            .Take(args.Limit);
+        
+        if (!_useTracking)
+        {
+            query = query.AsNoTracking();
+        }
+        
+        var results = await query
             .SelectMany(o => o.OrderItems.Select(i => new
             {
                 Order = o,
