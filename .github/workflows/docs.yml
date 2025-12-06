@@ -13,6 +13,7 @@ env:
 on:
   release:
     types: [ published ]
+  workflow_dispatch:
     
 jobs:
   generate-and-push-docs:
