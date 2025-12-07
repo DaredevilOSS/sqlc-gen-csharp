@@ -2,13 +2,12 @@ using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Configs;
 using BenchmarkDotNet.Jobs;
 using BenchmarkRunner.Utils;
-using Microsoft.EntityFrameworkCore;
 using SqliteEFCoreImpl;
 using SqliteSqlcImpl;
 
 namespace BenchmarkRunner.Benchmarks;
 
-[SimpleJob(RuntimeMoniker.Net80, warmupCount: 2, iterationCount: 8)]
+[SimpleJob(RuntimeMoniker.Net80, warmupCount: 2, iterationCount: 10)]
 [MemoryDiagnoser]
 [MarkdownExporterAttribute.GitHub]
 [GroupBenchmarksBy(BenchmarkLogicalGroupRule.ByCategory)]
@@ -31,7 +30,7 @@ public class SqliteReadBenchmark
         _efCoreImplNoTracking = new Queries(new SalesDbContext(_connectionString), useTracking: false);
         _efCoreImplWithTracking = new Queries(new SalesDbContext(_connectionString), useTracking: true);
 
-        await SqliteDatabaseHelper.CleanupDatabaseAsync(_connectionString);
+        SqliteDatabaseHelper.CleanupDatabase(_connectionString);
         await SqliteDatabaseHelper.InitializeDatabaseAsync(_connectionString);
         var seeder = new SqliteDatabaseSeeder(_connectionString);
         await seeder.SeedAsync(
@@ -81,6 +80,6 @@ public class SqliteReadBenchmark
     {
         await _efCoreImplNoTracking.DbContext.DisposeAsync();
         await _efCoreImplWithTracking.DbContext.DisposeAsync();
-        await SqliteDatabaseHelper.CleanupDatabaseAsync(_connectionString);
+        SqliteDatabaseHelper.CleanupDatabase(_connectionString);
     }
 }

@@ -4,27 +4,19 @@ BenchmarkDotNet v0.13.12, macOS 15.6.1 (24G90) [Darwin 24.6.0]
 Apple M2, 1 CPU, 8 logical and 8 physical cores
 .NET SDK 8.0.416
   [Host]     : .NET 8.0.22 (8.0.2225.52707), Arm64 RyuJIT AdvSIMD
-  Job-YURDSC : .NET 8.0.22 (8.0.2225.52707), Arm64 RyuJIT AdvSIMD
+  Job-JZDQJD : .NET 8.0.22 (8.0.2225.52707), Arm64 RyuJIT AdvSIMD
 
-Runtime=.NET 8.0  IterationCount=8  WarmupCount=2  
+Runtime=.NET 8.0  IterationCount=10  WarmupCount=2  
 Categories=Write  
 
 ```
-| Method                   | BatchSize | Mean | Error | Ratio | RatioSD | Alloc Ratio |
-|------------------------- |---------- |-----:|------:|------:|--------:|------------:|
-| **&#39;SQLC - AddOrderItems&#39;**   | **100**       |   **NA** |    **NA** |     **?** |       **?** |           **?** |
-| &#39;EFCore - AddOrderItems&#39; | 100       |   NA |    NA |     ? |       ? |           ? |
-|                          |           |      |       |       |         |             |
-| **&#39;SQLC - AddOrderItems&#39;**   | **200**       |   **NA** |    **NA** |     **?** |       **?** |           **?** |
-| &#39;EFCore - AddOrderItems&#39; | 200       |   NA |    NA |     ? |       ? |           ? |
-|                          |           |      |       |       |         |             |
-| **&#39;SQLC - AddOrderItems&#39;**   | **500**       |   **NA** |    **NA** |     **?** |       **?** |           **?** |
-| &#39;EFCore - AddOrderItems&#39; | 500       |   NA |    NA |     ? |       ? |           ? |
-
-Benchmarks with issues:
-  SqliteWriteBenchmark.'SQLC - AddOrderItems': Job-YURDSC(Runtime=.NET 8.0, IterationCount=8, WarmupCount=2) [BatchSize=100]
-  SqliteWriteBenchmark.'EFCore - AddOrderItems': Job-YURDSC(Runtime=.NET 8.0, IterationCount=8, WarmupCount=2) [BatchSize=100]
-  SqliteWriteBenchmark.'SQLC - AddOrderItems': Job-YURDSC(Runtime=.NET 8.0, IterationCount=8, WarmupCount=2) [BatchSize=200]
-  SqliteWriteBenchmark.'EFCore - AddOrderItems': Job-YURDSC(Runtime=.NET 8.0, IterationCount=8, WarmupCount=2) [BatchSize=200]
-  SqliteWriteBenchmark.'SQLC - AddOrderItems': Job-YURDSC(Runtime=.NET 8.0, IterationCount=8, WarmupCount=2) [BatchSize=500]
-  SqliteWriteBenchmark.'EFCore - AddOrderItems': Job-YURDSC(Runtime=.NET 8.0, IterationCount=8, WarmupCount=2) [BatchSize=500]
+| Method                   | BatchSize | Mean      | Error      | StdDev     | Ratio | RatioSD | Gen0       | Gen1      | Gen2     | Allocated    | Alloc Ratio |
+|------------------------- |---------- |----------:|-----------:|-----------:|------:|--------:|-----------:|----------:|---------:|-------------:|------------:|
+| **&#39;SQLC - AddOrderItems&#39;**   | **100**       |  **1.102 ms** |  **0.0500 ms** |  **0.0298 ms** |  **1.00** |    **0.00** |    **25.3906** |    **1.9531** |        **-** |     **210.9 KB** |        **1.00** |
+| &#39;EFCore - AddOrderItems&#39; | 100       | 22.150 ms |  8.2696 ms |  5.4698 ms | 19.31 |    4.73 |  8546.8750 |  359.3750 |  15.6250 |  70521.61 KB |      334.39 |
+|                          |           |           |            |            |       |         |            |           |          |              |             |
+| **&#39;SQLC - AddOrderItems&#39;**   | **200**       |  **2.992 ms** |  **0.0238 ms** |  **0.0125 ms** |  **1.00** |    **0.00** |    **50.7813** |    **7.8125** |   **3.9063** |    **428.36 KB** |        **1.00** |
+| &#39;EFCore - AddOrderItems&#39; | 200       | 46.904 ms | 19.0756 ms | 12.6173 ms | 14.17 |    3.08 | 17109.3750 | 1078.1250 |  93.7500 | 141036.97 KB |      329.25 |
+|                          |           |           |            |            |       |         |            |           |          |              |             |
+| **&#39;SQLC - AddOrderItems&#39;**   | **500**       | **15.620 ms** |  **0.0654 ms** |  **0.0389 ms** |  **1.00** |    **0.00** |   **125.0000** |   **31.2500** |        **-** |   **1080.02 KB** |        **1.00** |
+| &#39;EFCore - AddOrderItems&#39; | 500       | 46.812 ms | 10.8090 ms |  7.1495 ms |  2.95 |    0.46 | 12142.8571 | 1071.4286 | 142.8571 |  99944.49 KB |       92.54 |

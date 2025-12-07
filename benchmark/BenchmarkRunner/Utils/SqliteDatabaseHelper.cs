@@ -1,5 +1,6 @@
 using Microsoft.Data.Sqlite;
-using System.IO;
+
+using System.Text.RegularExpressions;
 
 namespace BenchmarkRunner.Utils;
 
@@ -7,41 +8,32 @@ public static partial class SqliteDatabaseHelper
 {
     public static async Task InitializeDatabaseAsync(string connectionString)
     {
-        var dbFilePath = GetDbFilePath(connectionString);
-        if (!string.IsNullOrEmpty(dbFilePath) && File.Exists(dbFilePath))
-            File.Delete(dbFilePath);
-
         using var connection = new SqliteConnection(connectionString);
         await connection.OpenAsync();
+        if (!File.Exists("schema.sql"))
+            return;
 
-        var schemaSql = await File.ReadAllTextAsync(Path.Combine(AppContext.BaseDirectory, "schema.sql"));
+        var schemaSql = await File.ReadAllTextAsync("schema.sql");
         using var command = new SqliteCommand(schemaSql, connection);
         await command.ExecuteNonQueryAsync();
     }
 
-    public static async Task CleanupDatabaseAsync(string connectionString)
+    public static void CleanupDatabase(string connectionString)
     {
-        using var connection = new SqliteConnection(connectionString);
-        await connection.OpenAsync();
+        var dbFilename = SqliteFilenameRegex().Match(connectionString).Groups[1].Value;
+        Console.WriteLine($"Removing sqlite db from {dbFilename}");
+        if (!File.Exists(dbFilename)) return;
 
-        var cleanupCommands = new[]
+        try
         {
-            "DROP TABLE IF EXISTS order_items",
-            "DROP TABLE IF EXISTS orders",
-            "DROP TABLE IF EXISTS products",
-            "DROP TABLE IF EXISTS customers"
-        };
-
-        foreach (var command in cleanupCommands)
+            File.Delete(dbFilename);
+        }
+        catch (Exception)
         {
-            using var cmd = new SqliteCommand(command, connection);
-            await cmd.ExecuteNonQueryAsync();
+            // ignored
         }
     }
 
-    private static string? GetDbFilePath(string connectionString)
-    {
-        var builder = new SqliteConnectionStringBuilder(connectionString);
-        return builder.DataSource == ":memory:" ? null : builder.DataSource;
-    }
+    [GeneratedRegex(@"Data Source=([\w\.\/\-]+\.db);", RegexOptions.Compiled)]
+    private static partial Regex SqliteFilenameRegex();
 }

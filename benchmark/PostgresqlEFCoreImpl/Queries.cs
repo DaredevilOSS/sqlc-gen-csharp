@@ -6,20 +6,13 @@ using System.Threading.Tasks;
 
 namespace PostgresEFCoreImpl;
 
-public class Queries
+public class Queries(SalesDbContext dbContext, bool useTracking = false)
 {
-    private readonly SalesDbContext _dbContext;
-    private readonly bool _useTracking;
-
-    public Queries(SalesDbContext dbContext, bool useTracking = false)
-    {
-        _dbContext = dbContext;
-        _useTracking = useTracking;
-    }
+    private readonly SalesDbContext _dbContext = dbContext;
+    private readonly bool _useTracking = useTracking;
 
     public DbContext DbContext => _dbContext;
 
-    // Result type for GetCustomerOrders matching SqlC output
     public record GetCustomerOrdersRow(
         Guid OrderId,
         DateTime OrderedAt,
@@ -35,9 +28,6 @@ public class Queries
 
     public record GetCustomerOrdersArgs(int CustomerId, int Offset, int Limit);
 
-    /// <summary>
-    /// Get customer orders with all order items and product details, ordered by date descending with pagination
-    /// </summary>
     public async Task<List<GetCustomerOrdersRow>> GetCustomerOrders(GetCustomerOrdersArgs args)
     {
         var query = _dbContext.Orders
@@ -47,16 +37,14 @@ public class Queries
             .Take(args.Limit);
 
         if (!_useTracking)
-        {
             query = query.AsNoTracking();
-        }
 
         var results = await query
             .SelectMany(o => o.OrderItems.Select(i => new
             {
                 Order = o,
                 OrderItem = i,
-                Product = i.Product
+                Product = i.Product,
             }))
             .Select(x => new GetCustomerOrdersRow(
                 x.Order.OrderId,
@@ -71,15 +59,11 @@ public class Queries
                 x.Product.Category
             ))
             .ToListAsync();
-
         return results;
     }
 
     public record AddProductsArgs(string Name, string Category, decimal UnitPrice, int StockQuantity, string? Description);
 
-    /// <summary>
-    /// Bulk insert products
-    /// </summary>
     public async Task AddProducts(List<AddProductsArgs> args)
     {
         var products = args.Select(a => new Product

@@ -9,13 +9,11 @@ public static partial class MysqlDatabaseHelper
         using var connection = new MySqlConnection(connectionString);
         await connection.OpenAsync();
 
-        // Disable foreign key checks to allow TRUNCATE on all tables
         using (var disableFkCmd = new MySqlCommand("SET FOREIGN_KEY_CHECKS = 0", connection))
             await disableFkCmd.ExecuteNonQueryAsync();
 
         try
         {
-            // Now we can TRUNCATE all tables in any order
             var cleanupCommands = new[]
             {
                 "TRUNCATE TABLE sales.order_items",
@@ -27,14 +25,7 @@ public static partial class MysqlDatabaseHelper
             foreach (var command in cleanupCommands)
             {
                 using var cmd = new MySqlCommand(command, connection);
-                try
-                {
-                    await cmd.ExecuteNonQueryAsync();
-                }
-                catch (MySqlException)
-                {
-                    // Ignore errors if tables don't exist yet
-                }
+                await cmd.ExecuteNonQueryAsync();
             }
         }
         finally
