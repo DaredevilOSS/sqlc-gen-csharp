@@ -20,7 +20,7 @@ public class SqliteReadBenchmark
     private Queries _efCoreImplNoTracking = null!;
     private Queries _efCoreImplWithTracking = null!;
 
-    [Params(500, 2000, 5000)]
+    [Params(5000, 10000, 20000)]
     public int Limit { get; set; }
 
     [GlobalSetup]
