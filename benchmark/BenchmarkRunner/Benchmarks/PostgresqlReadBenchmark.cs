@@ -48,7 +48,7 @@ public class PostgresqlReadBenchmark
         return await _sqlcImpl.GetCustomerOrdersAsync(new QuerySql.GetCustomerOrdersArgs(
             CustomerId: Random.Shared.Next(1, CustomerCount),
             Offset: 0,
-            Limit: 1000
+            Limit: Limit
         ));
     }
 
@@ -59,7 +59,7 @@ public class PostgresqlReadBenchmark
         return await _efCoreImplNoTracking.GetCustomerOrders(new Queries.GetCustomerOrdersArgs(
             CustomerId: Random.Shared.Next(1, CustomerCount),
             Offset: 0,
-            Limit: 100
+            Limit: Limit
         ));
     }
 
@@ -70,7 +70,7 @@ public class PostgresqlReadBenchmark
         return await _efCoreImplWithTracking.GetCustomerOrders(new Queries.GetCustomerOrdersArgs(
             CustomerId: Random.Shared.Next(1, CustomerCount),
             Offset: 0,
-            Limit: 100
+            Limit: Limit
         ));
     }
 

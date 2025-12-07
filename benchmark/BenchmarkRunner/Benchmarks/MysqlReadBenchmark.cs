@@ -48,7 +48,7 @@ public class MysqlReadBenchmark
         return await _sqlcImpl.GetCustomerOrdersAsync(new QuerySql.GetCustomerOrdersArgs(
             CustomerId: Random.Shared.Next(1, CustomerCount),
             Offset: 0,
-            Limit: 5000
+            Limit: Limit
         ));
     }
 
@@ -59,7 +59,7 @@ public class MysqlReadBenchmark
         return await _efCoreImplNoTracking.GetCustomerOrders(new Queries.GetCustomerOrdersArgs(
             CustomerId: Random.Shared.Next(1, CustomerCount),
             Offset: 0,
-            Limit: 5000
+            Limit: Limit
         ));
     }
 
@@ -70,7 +70,7 @@ public class MysqlReadBenchmark
         return await _efCoreImplWithTracking.GetCustomerOrders(new Queries.GetCustomerOrdersArgs(
             CustomerId: Random.Shared.Next(1, CustomerCount),
             Offset: 0,
-            Limit: 5000
+            Limit: Limit
         ));
     }
 
