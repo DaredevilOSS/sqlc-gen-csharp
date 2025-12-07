@@ -5,6 +5,7 @@
 // ReSharper disable NotAccessedPositionalProperty.Global
 // ReSharper disable UnusedAutoPropertyAccessor.Global
 using Npgsql;
+using NpgsqlTypes;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -100,6 +101,29 @@ public class QuerySql : IDisposable
         }
     }
 
+    private const string AddCustomersSql = "COPY sales.customers (name, email, phone, address, registered_at) FROM STDIN (FORMAT BINARY)";
+    public readonly record struct AddCustomersArgs(string Name, string Email, string Phone, string? Address, DateTime RegisteredAt);
+    public async Task AddCustomersAsync(List<AddCustomersArgs> args)
+    {
+        using (var connection = await GetDataSource().OpenConnectionAsync())
+        {
+            using (var writer = await connection.BeginBinaryImportAsync(AddCustomersSql))
+            {
+                foreach (var row in args)
+                {
+                    await writer.StartRowAsync();
+                    await writer.WriteAsync(row.Name);
+                    await writer.WriteAsync(row.Email);
+                    await writer.WriteAsync(row.Phone);
+                    await writer.WriteAsync(row.Address ?? (object)DBNull.Value);
+                    await writer.WriteAsync(row.RegisteredAt, NpgsqlDbType.Timestamp);
+                }
+
+                await writer.CompleteAsync();
+            }
+        }
+    }
+
     private const string AddProductsSql = "COPY sales.products (name, category, unit_price, stock_quantity, description) FROM STDIN (FORMAT BINARY)";
     public readonly record struct AddProductsArgs(string Name, string Category, decimal UnitPrice, int StockQuantity, string? Description);
     public async Task AddProductsAsync(List<AddProductsArgs> args)
@@ -162,6 +186,211 @@ public class QuerySql : IDisposable
                 }
 
                 await writer.CompleteAsync();
+            }
+        }
+    }
+
+    private const string GetCustomerIdsSql = "SELECT customer_id FROM sales.customers ORDER BY customer_id LIMIT @limit";
+    public readonly record struct GetCustomerIdsRow(int CustomerId);
+    public readonly record struct GetCustomerIdsArgs(int Limit);
+    public async Task<List<GetCustomerIdsRow>> GetCustomerIdsAsync(GetCustomerIdsArgs args)
+    {
+        if (this.Transaction == null)
+        {
+            using (var connection = await GetDataSource().OpenConnectionAsync())
+            {
+                using (var command = connection.CreateCommand())
+                {
+                    command.CommandText = GetCustomerIdsSql;
+                    command.Parameters.AddWithValue("@limit", args.Limit);
+                    using (var reader = await command.ExecuteReaderAsync())
+                    {
+                        var result = new List<GetCustomerIdsRow>();
+                        while (await reader.ReadAsync())
+                            result.Add(new GetCustomerIdsRow { CustomerId = reader.GetInt32(0) });
+                        return result;
+                    }
+                }
+            }
+        }
+
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
+            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+        using (var command = this.Transaction.Connection.CreateCommand())
+        {
+            command.CommandText = GetCustomerIdsSql;
+            command.Transaction = this.Transaction;
+            command.Parameters.AddWithValue("@limit", args.Limit);
+            using (var reader = await command.ExecuteReaderAsync())
+            {
+                var result = new List<GetCustomerIdsRow>();
+                while (await reader.ReadAsync())
+                    result.Add(new GetCustomerIdsRow { CustomerId = reader.GetInt32(0) });
+                return result;
+            }
+        }
+    }
+
+    private const string GetProductIdsSql = "SELECT product_id FROM sales.products ORDER BY product_id LIMIT @limit";
+    public readonly record struct GetProductIdsRow(int ProductId);
+    public readonly record struct GetProductIdsArgs(int Limit);
+    public async Task<List<GetProductIdsRow>> GetProductIdsAsync(GetProductIdsArgs args)
+    {
+        if (this.Transaction == null)
+        {
+            using (var connection = await GetDataSource().OpenConnectionAsync())
+            {
+                using (var command = connection.CreateCommand())
+                {
+                    command.CommandText = GetProductIdsSql;
+                    command.Parameters.AddWithValue("@limit", args.Limit);
+                    using (var reader = await command.ExecuteReaderAsync())
+                    {
+                        var result = new List<GetProductIdsRow>();
+                        while (await reader.ReadAsync())
+                            result.Add(new GetProductIdsRow { ProductId = reader.GetInt32(0) });
+                        return result;
+                    }
+                }
+            }
+        }
+
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
+            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+        using (var command = this.Transaction.Connection.CreateCommand())
+        {
+            command.CommandText = GetProductIdsSql;
+            command.Transaction = this.Transaction;
+            command.Parameters.AddWithValue("@limit", args.Limit);
+            using (var reader = await command.ExecuteReaderAsync())
+            {
+                var result = new List<GetProductIdsRow>();
+                while (await reader.ReadAsync())
+                    result.Add(new GetProductIdsRow { ProductId = reader.GetInt32(0) });
+                return result;
+            }
+        }
+    }
+
+    private const string GetOrderIdsSql = "SELECT order_id FROM sales.orders ORDER BY ordered_at DESC LIMIT @limit";
+    public readonly record struct GetOrderIdsRow(Guid OrderId);
+    public readonly record struct GetOrderIdsArgs(int Limit);
+    public async Task<List<GetOrderIdsRow>> GetOrderIdsAsync(GetOrderIdsArgs args)
+    {
+        if (this.Transaction == null)
+        {
+            using (var connection = await GetDataSource().OpenConnectionAsync())
+            {
+                using (var command = connection.CreateCommand())
+                {
+                    command.CommandText = GetOrderIdsSql;
+                    command.Parameters.AddWithValue("@limit", args.Limit);
+                    using (var reader = await command.ExecuteReaderAsync())
+                    {
+                        var result = new List<GetOrderIdsRow>();
+                        while (await reader.ReadAsync())
+                            result.Add(new GetOrderIdsRow { OrderId = reader.GetFieldValue<Guid>(0) });
+                        return result;
+                    }
+                }
+            }
+        }
+
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
+            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+        using (var command = this.Transaction.Connection.CreateCommand())
+        {
+            command.CommandText = GetOrderIdsSql;
+            command.Transaction = this.Transaction;
+            command.Parameters.AddWithValue("@limit", args.Limit);
+            using (var reader = await command.ExecuteReaderAsync())
+            {
+                var result = new List<GetOrderIdsRow>();
+                while (await reader.ReadAsync())
+                    result.Add(new GetOrderIdsRow { OrderId = reader.GetFieldValue<Guid>(0) });
+                return result;
+            }
+        }
+    }
+
+    private const string GetOrderAmountsSql = "SELECT order_id, total_amount FROM sales.orders WHERE order_id = ANY(@order_ids)";
+    public readonly record struct GetOrderAmountsRow(Guid OrderId, decimal TotalAmount);
+    public readonly record struct GetOrderAmountsArgs(Guid OrderIds);
+    public async Task<List<GetOrderAmountsRow>> GetOrderAmountsAsync(GetOrderAmountsArgs args)
+    {
+        if (this.Transaction == null)
+        {
+            using (var connection = await GetDataSource().OpenConnectionAsync())
+            {
+                using (var command = connection.CreateCommand())
+                {
+                    command.CommandText = GetOrderAmountsSql;
+                    command.Parameters.AddWithValue("@order_ids", args.OrderIds);
+                    using (var reader = await command.ExecuteReaderAsync())
+                    {
+                        var result = new List<GetOrderAmountsRow>();
+                        while (await reader.ReadAsync())
+                            result.Add(new GetOrderAmountsRow { OrderId = reader.GetFieldValue<Guid>(0), TotalAmount = reader.GetDecimal(1) });
+                        return result;
+                    }
+                }
+            }
+        }
+
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
+            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+        using (var command = this.Transaction.Connection.CreateCommand())
+        {
+            command.CommandText = GetOrderAmountsSql;
+            command.Transaction = this.Transaction;
+            command.Parameters.AddWithValue("@order_ids", args.OrderIds);
+            using (var reader = await command.ExecuteReaderAsync())
+            {
+                var result = new List<GetOrderAmountsRow>();
+                while (await reader.ReadAsync())
+                    result.Add(new GetOrderAmountsRow { OrderId = reader.GetFieldValue<Guid>(0), TotalAmount = reader.GetDecimal(1) });
+                return result;
+            }
+        }
+    }
+
+    private const string GetProductPricesSql = "SELECT product_id, unit_price FROM sales.products WHERE product_id = ANY(@product_ids)";
+    public readonly record struct GetProductPricesRow(int ProductId, decimal UnitPrice);
+    public readonly record struct GetProductPricesArgs(int ProductIds);
+    public async Task<List<GetProductPricesRow>> GetProductPricesAsync(GetProductPricesArgs args)
+    {
+        if (this.Transaction == null)
+        {
+            using (var connection = await GetDataSource().OpenConnectionAsync())
+            {
+                using (var command = connection.CreateCommand())
+                {
+                    command.CommandText = GetProductPricesSql;
+                    command.Parameters.AddWithValue("@product_ids", args.ProductIds);
+                    using (var reader = await command.ExecuteReaderAsync())
+                    {
+                        var result = new List<GetProductPricesRow>();
+                        while (await reader.ReadAsync())
+                            result.Add(new GetProductPricesRow { ProductId = reader.GetInt32(0), UnitPrice = reader.GetDecimal(1) });
+                        return result;
+                    }
+                }
+            }
+        }
+
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
+            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+        using (var command = this.Transaction.Connection.CreateCommand())
+        {
+            command.CommandText = GetProductPricesSql;
+            command.Transaction = this.Transaction;
+            command.Parameters.AddWithValue("@product_ids", args.ProductIds);
+            using (var reader = await command.ExecuteReaderAsync())
+            {
+                var result = new List<GetProductPricesRow>();
+                while (await reader.ReadAsync())
+                    result.Add(new GetProductPricesRow { ProductId = reader.GetInt32(0), UnitPrice = reader.GetDecimal(1) });
+                return result;
             }
         }
     }

@@ -75,7 +75,13 @@ product_id"5
 productsbTEXTzcategory*B>
 customer_id0ÿÿÿÿÿÿÿÿÿ8Rordersb	INTEGERzcustomer_id*&"
 offset0ÿÿÿÿÿÿÿÿÿ8b	integer*%!
-limit0ÿÿÿÿÿÿÿÿÿ8b	integer:	query.sqlê
+limit0ÿÿÿÿÿÿÿÿÿ8b	integer:	query.sqlÈ
+YINSERT INTO customers (name, email, phone, address, registered_at) VALUES (?, ?, ?, ?, ?)AddCustomers	:copyfrom*84
+name0ÿÿÿÿÿÿÿÿÿRmain	customersbTEXTzname*:6
+email0ÿÿÿÿÿÿÿÿÿRmain	customersbTEXTzemail*:6
+phone0ÿÿÿÿÿÿÿÿÿRmain	customersbTEXTzphone*<8
+address0ÿÿÿÿÿÿÿÿÿRmain	customersbTEXTzaddress*JF
+registered_at0ÿÿÿÿÿÿÿÿÿRmain	customersbTEXTzregistered_at:	query.sqlB	customersê
 eINSERT INTO products (name, category, unit_price, stock_quantity, description) VALUES (?, ?, ?, ?, ?)AddProducts	:copyfrom*73
 name0ÿÿÿÿÿÿÿÿÿRmainproductsbTEXTzname*?;
 category0ÿÿÿÿÿÿÿÿÿRmainproductsbTEXTzcategory*C?
@@ -97,4 +103,33 @@ product_id*EA
 quantity0ÿÿÿÿÿÿÿÿÿRmainorder_itemsb	INTEGERzquantity*FB
 
 unit_price0ÿÿÿÿÿÿÿÿÿRmainorder_itemsbREALz
-unit_price:	query.sqlBorder_items"v1.30.0*˜{"overrideDriverVersion":"","generateCsproj":true,"targetFramework":"net8.0","namespaceName":"SqliteSqlcImpl","useDapper":false,"overrideDapperVersion":"","overrides":null,"debugRequest":false,"useCentralPackageManagement":false,"withAsyncSuffix":true,"mySqlConnectionReset":null}
+unit_price:	query.sqlBorder_itemsÈ
+>SELECT customer_id FROM customers ORDER BY customer_id LIMIT ?GetCustomerIds:many"?
+customer_id0ÿÿÿÿÿÿÿÿÿR	customersb	INTEGERzcustomer_id*#
+limit0ÿÿÿÿÿÿÿÿÿb	integer:	query.sqlÁ
+;SELECT product_id FROM products ORDER BY product_id LIMIT ?GetProductIds:many"<
+
+product_id0ÿÿÿÿÿÿÿÿÿR
+productsb	INTEGERz
+product_id*#
+limit0ÿÿÿÿÿÿÿÿÿb	integer:	query.sql³
+5SELECT order_id FROM orders ORDER BY order_id LIMIT ?GetOrderIds:many"6
+order_id0ÿÿÿÿÿÿÿÿÿRordersb	INTEGERzorder_id*#
+limit0ÿÿÿÿÿÿÿÿÿb	integer:	query.sql¨
+RSELECT order_id, total_amount FROM orders WHERE order_id IN (/*SLICE:order_ids*/?)GetOrderAmounts:many"6
+order_id0ÿÿÿÿÿÿÿÿÿRordersb	INTEGERzorder_id";
+total_amount0ÿÿÿÿÿÿÿÿÿRordersbREALztotal_amount*:6
+order_id0ÿÿÿÿÿÿÿÿÿRordersb	INTEGERzorder_id:	query.sql¹
+XSELECT product_id, unit_price FROM products WHERE product_id IN (/*SLICE:product_ids*/?)GetProductPrices:many"<
+
+product_id0ÿÿÿÿÿÿÿÿÿR
+productsb	INTEGERz
+product_id"9
+
+unit_price0ÿÿÿÿÿÿÿÿÿR
+productsbREALz
+unit_price*@<
+
+product_id0ÿÿÿÿÿÿÿÿÿR
+productsb	INTEGERz
+product_id:	query.sql"v1.30.0*˜{"overrideDriverVersion":"","generateCsproj":true,"targetFramework":"net8.0","namespaceName":"SqliteSqlcImpl","useDapper":false,"overrideDapperVersion":"","overrides":null,"debugRequest":false,"useCentralPackageManagement":false,"withAsyncSuffix":true,"mySqlConnectionReset":null}

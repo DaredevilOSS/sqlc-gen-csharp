@@ -8,106 +8,79 @@ using SqliteSqlcImpl;
 
 namespace BenchmarkRunner.Benchmarks;
 
-[SimpleJob(RuntimeMoniker.Net80, warmupCount: 3, iterationCount: 10)]
+[SimpleJob(RuntimeMoniker.Net80, warmupCount: 2, iterationCount: 8)]
 [MemoryDiagnoser]
 [MarkdownExporterAttribute.GitHub]
 [GroupBenchmarksBy(BenchmarkLogicalGroupRule.ByCategory)]
 [CategoriesColumn]
 public class SqliteReadBenchmark
 {
+    private const int CustomerCount = 500;
+    private readonly string _connectionString = Config.GetSqliteConnectionString();
     private QuerySql _sqlcImpl = null!;
     private Queries _efCoreImplNoTracking = null!;
     private Queries _efCoreImplWithTracking = null!;
-    private SalesDbContext _dbContextNoTracking = null!;
-    private SalesDbContext _dbContextWithTracking = null!;
-    private int _testCustomerId = 1;
+
+    [Params(500, 2000, 5000)]
+    public int Limit { get; set; }
 
     [GlobalSetup]
     public async Task GlobalSetup()
     {
-        var connectionString = Config.GetSqliteConnectionString();
+        _sqlcImpl = new QuerySql(_connectionString);
+        _efCoreImplNoTracking = new Queries(new SalesDbContext(_connectionString), useTracking: false);
+        _efCoreImplWithTracking = new Queries(new SalesDbContext(_connectionString), useTracking: true);
 
-        // Initialize database schema (assumes schema exists for EFCore)
-        await SqliteDatabaseHelper.InitializeDatabaseAsync(connectionString);
-
-        _sqlcImpl = new QuerySql(connectionString);
-        _dbContextNoTracking = new SalesDbContext(connectionString);
-        _dbContextWithTracking = new SalesDbContext(connectionString);
-        _efCoreImplNoTracking = new Queries(_dbContextNoTracking, useTracking: false);
-        _efCoreImplWithTracking = new Queries(_dbContextWithTracking, useTracking: true);
-
-        var seeder = new SqliteDatabaseSeeder(connectionString);
+        await SqliteDatabaseHelper.CleanupDatabaseAsync(_connectionString);
+        await SqliteDatabaseHelper.InitializeDatabaseAsync(_connectionString);
+        var seeder = new SqliteDatabaseSeeder(_connectionString);
         await seeder.SeedAsync(
-            customerCount: 100,
-            productsPerCategory: 100,
-            ordersPerCustomer: 50,
-            itemsPerOrder: 3
+            customerCount: CustomerCount, // with customer_id filter, this is 1/500 of the table returned
+            productsPerCategory: 150, 
+            ordersPerCustomer: 500,
+            itemsPerOrder: 10
+            // 10 * 500 = 5,000 possible rows returned
         );
-
-        var firstCustomer = await _efCoreImplNoTracking.DbContext.Set<SqliteEFCoreImpl.Customer>().FirstAsync();
-        _testCustomerId = firstCustomer.CustomerId;
     }
 
     [BenchmarkCategory("Read")]
     [Benchmark(Baseline = true, Description = "SQLC - GetCustomerOrders")]
     public async Task<List<QuerySql.GetCustomerOrdersRow>> Sqlc_GetCustomerOrders()
     {
-        var results = new List<QuerySql.GetCustomerOrdersRow>();
-        // Run multiple queries to ensure measurable execution time
-        for (int i = 0; i < 20; i++)
-        {
-            var result = await _sqlcImpl.GetCustomerOrdersAsync(new QuerySql.GetCustomerOrdersArgs(
-                CustomerId: _testCustomerId,
-                Offset: 0,
-                Limit: 100
-            ));
-            results.AddRange(result);
-        }
-        return results;
+        return await _sqlcImpl.GetCustomerOrdersAsync(new QuerySql.GetCustomerOrdersArgs(
+            CustomerId: Random.Shared.Next(1, CustomerCount),
+            Offset: 0,
+            Limit: Limit
+        ));
     }
 
     [BenchmarkCategory("Read")]
     [Benchmark(Description = "EFCore (NoTracking) - GetCustomerOrders")]
     public async Task<List<Queries.GetCustomerOrdersRow>> EFCore_NoTracking_GetCustomerOrders()
     {
-        var results = new List<Queries.GetCustomerOrdersRow>();
-        // Run multiple queries to ensure measurable execution time
-        for (int i = 0; i < 20; i++)
-        {
-            var result = await _efCoreImplNoTracking.GetCustomerOrders(new Queries.GetCustomerOrdersArgs(
-                CustomerId: _testCustomerId,
-                Offset: 0,
-                Limit: 100
-            ));
-            results.AddRange(result);
-        }
-        return results;
+        return await _efCoreImplNoTracking.GetCustomerOrders(new Queries.GetCustomerOrdersArgs(
+            CustomerId: Random.Shared.Next(1, CustomerCount),
+            Offset: 0,
+            Limit: Limit
+        ));
     }
 
     [BenchmarkCategory("Read")]
     [Benchmark(Description = "EFCore (WithTracking) - GetCustomerOrders")]
     public async Task<List<Queries.GetCustomerOrdersRow>> EFCore_WithTracking_GetCustomerOrders()
     {
-        var results = new List<Queries.GetCustomerOrdersRow>();
-        // Run multiple queries to ensure measurable execution time
-        for (int i = 0; i < 20; i++)
-        {
-            var result = await _efCoreImplWithTracking.GetCustomerOrders(new Queries.GetCustomerOrdersArgs(
-                CustomerId: _testCustomerId,
-                Offset: 0,
-                Limit: 100
-            ));
-            results.AddRange(result);
-        }
-        return results;
+        return await _efCoreImplWithTracking.GetCustomerOrders(new Queries.GetCustomerOrdersArgs(
+            CustomerId: Random.Shared.Next(1, CustomerCount),
+            Offset: 0,
+            Limit: Limit
+        ));
     }
 
     [GlobalCleanup]
     public async Task GlobalCleanup()
     {
-        await _dbContextNoTracking.DisposeAsync();
-        await _dbContextWithTracking.DisposeAsync();
-        var connectionString = Config.GetSqliteConnectionString();
-        await SqliteDatabaseHelper.CleanupDatabaseAsync(connectionString);
+        await _efCoreImplNoTracking.DbContext.DisposeAsync();
+        await _efCoreImplWithTracking.DbContext.DisposeAsync();
+        await SqliteDatabaseHelper.CleanupDatabaseAsync(_connectionString);
     }
 }

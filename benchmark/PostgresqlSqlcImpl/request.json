@@ -32385,6 +32385,97 @@
       "filename": "query.sql"
     },
     {
+      "text": "INSERT INTO sales.customers (name, email, phone, address, registered_at) VALUES ($1, $2, $3, $4, $5)",
+      "name": "AddCustomers",
+      "cmd": ":copyfrom",
+      "parameters": [
+        {
+          "number": 1,
+          "column": {
+            "name": "name",
+            "notNull": true,
+            "length": -1,
+            "table": {
+              "schema": "sales",
+              "name": "customers"
+            },
+            "type": {
+              "name": "pg_catalog.varchar"
+            },
+            "originalName": "name"
+          }
+        },
+        {
+          "number": 2,
+          "column": {
+            "name": "email",
+            "notNull": true,
+            "length": -1,
+            "table": {
+              "schema": "sales",
+              "name": "customers"
+            },
+            "type": {
+              "name": "pg_catalog.varchar"
+            },
+            "originalName": "email"
+          }
+        },
+        {
+          "number": 3,
+          "column": {
+            "name": "phone",
+            "notNull": true,
+            "length": -1,
+            "table": {
+              "schema": "sales",
+              "name": "customers"
+            },
+            "type": {
+              "name": "pg_catalog.varchar"
+            },
+            "originalName": "phone"
+          }
+        },
+        {
+          "number": 4,
+          "column": {
+            "name": "address",
+            "length": -1,
+            "table": {
+              "schema": "sales",
+              "name": "customers"
+            },
+            "type": {
+              "name": "pg_catalog.varchar"
+            },
+            "originalName": "address"
+          }
+        },
+        {
+          "number": 5,
+          "column": {
+            "name": "registered_at",
+            "notNull": true,
+            "length": -1,
+            "table": {
+              "schema": "sales",
+              "name": "customers"
+            },
+            "type": {
+              "name": "pg_catalog.timestamp"
+            },
+            "originalName": "registered_at"
+          }
+        }
+      ],
+      "filename": "query.sql",
+      "insert_into_table": {
+        "schema": "sales",
+        "name": "customers"
+      }
+    },
+    {
       "text": "INSERT INTO sales.products (name, category, unit_price, stock_quantity, description) VALUES ($1, $2, $3, $4, $5)",
       "name": "AddProducts",
       "cmd": ":copyfrom",
@@ -32610,6 +32701,219 @@
         "schema": "sales",
         "name": "order_items"
       }
+    },
+    {
+      "text": "SELECT customer_id FROM sales.customers ORDER BY customer_id LIMIT $1",
+      "name": "GetCustomerIds",
+      "cmd": ":many",
+      "columns": [
+        {
+          "name": "customer_id",
+          "notNull": true,
+          "length": -1,
+          "table": {
+            "schema": "sales",
+            "name": "customers"
+          },
+          "type": {
+            "name": "serial"
+          },
+          "originalName": "customer_id"
+        }
+      ],
+      "parameters": [
+        {
+          "number": 1,
+          "column": {
+            "name": "limit",
+            "notNull": true,
+            "length": -1,
+            "isNamedParam": true,
+            "type": {
+              "name": "integer"
+            }
+          }
+        }
+      ],
+      "filename": "query.sql"
+    },
+    {
+      "text": "SELECT product_id FROM sales.products ORDER BY product_id LIMIT $1",
+      "name": "GetProductIds",
+      "cmd": ":many",
+      "columns": [
+        {
+          "name": "product_id",
+          "notNull": true,
+          "length": -1,
+          "table": {
+            "schema": "sales",
+            "name": "products"
+          },
+          "type": {
+            "name": "serial"
+          },
+          "originalName": "product_id"
+        }
+      ],
+      "parameters": [
+        {
+          "number": 1,
+          "column": {
+            "name": "limit",
+            "notNull": true,
+            "length": -1,
+            "isNamedParam": true,
+            "type": {
+              "name": "integer"
+            }
+          }
+        }
+      ],
+      "filename": "query.sql"
+    },
+    {
+      "text": "SELECT order_id FROM sales.orders ORDER BY ordered_at DESC LIMIT $1",
+      "name": "GetOrderIds",
+      "cmd": ":many",
+      "columns": [
+        {
+          "name": "order_id",
+          "notNull": true,
+          "length": -1,
+          "table": {
+            "schema": "sales",
+            "name": "orders"
+          },
+          "type": {
+            "name": "uuid"
+          },
+          "originalName": "order_id"
+        }
+      ],
+      "parameters": [
+        {
+          "number": 1,
+          "column": {
+            "name": "limit",
+            "notNull": true,
+            "length": -1,
+            "isNamedParam": true,
+            "type": {
+              "name": "integer"
+            }
+          }
+        }
+      ],
+      "filename": "query.sql"
+    },
+    {
+      "text": "SELECT order_id, total_amount FROM sales.orders WHERE order_id = ANY($1)",
+      "name": "GetOrderAmounts",
+      "cmd": ":many",
+      "columns": [
+        {
+          "name": "order_id",
+          "notNull": true,
+          "length": -1,
+          "table": {
+            "schema": "sales",
+            "name": "orders"
+          },
+          "type": {
+            "name": "uuid"
+          },
+          "originalName": "order_id"
+        },
+        {
+          "name": "total_amount",
+          "notNull": true,
+          "length": -1,
+          "table": {
+            "schema": "sales",
+            "name": "orders"
+          },
+          "type": {
+            "schema": "pg_catalog",
+            "name": "numeric"
+          },
+          "originalName": "total_amount"
+        }
+      ],
+      "parameters": [
+        {
+          "number": 1,
+          "column": {
+            "name": "order_ids",
+            "notNull": true,
+            "length": -1,
+            "isNamedParam": true,
+            "table": {
+              "schema": "sales",
+              "name": "orders"
+            },
+            "type": {
+              "name": "uuid"
+            },
+            "originalName": "order_id"
+          }
+        }
+      ],
+      "filename": "query.sql"
+    },
+    {
+      "text": "SELECT product_id, unit_price FROM sales.products WHERE product_id = ANY($1)",
+      "name": "GetProductPrices",
+      "cmd": ":many",
+      "columns": [
+        {
+          "name": "product_id",
+          "notNull": true,
+          "length": -1,
+          "table": {
+            "schema": "sales",
+            "name": "products"
+          },
+          "type": {
+            "name": "serial"
+          },
+          "originalName": "product_id"
+        },
+        {
+          "name": "unit_price",
+          "notNull": true,
+          "length": -1,
+          "table": {
+            "schema": "sales",
+            "name": "products"
+          },
+          "type": {
+            "schema": "pg_catalog",
+            "name": "numeric"
+          },
+          "originalName": "unit_price"
+        }
+      ],
+      "parameters": [
+        {
+          "number": 1,
+          "column": {
+            "name": "product_ids",
+            "notNull": true,
+            "length": -1,
+            "isNamedParam": true,
+            "table": {
+              "schema": "sales",
+              "name": "products"
+            },
+            "type": {
+              "name": "serial"
+            },
+            "originalName": "product_id"
+          }
+        }
+      ],
+      "filename": "query.sql"
     }
   ],
   "sqlc_version": "v1.30.0",

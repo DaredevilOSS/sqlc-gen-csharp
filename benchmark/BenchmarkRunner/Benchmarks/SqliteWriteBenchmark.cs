@@ -8,125 +8,62 @@ using SqliteSqlcImpl;
 
 namespace BenchmarkRunner.Benchmarks;
 
-[SimpleJob(RuntimeMoniker.Net80, warmupCount: 3, iterationCount: 10)]
+[SimpleJob(RuntimeMoniker.Net80, warmupCount: 2, iterationCount: 8)]
 [MemoryDiagnoser]
 [MarkdownExporterAttribute.GitHub]
 [GroupBenchmarksBy(BenchmarkLogicalGroupRule.ByCategory)]
 [CategoriesColumn]
 public class SqliteWriteBenchmark
 {
+    private readonly string _connectionString = Config.GetSqliteConnectionString();
     private QuerySql _sqlcImpl = null!;
     private Queries _efCoreImpl = null!;
-    private SalesDbContext _dbContext = null!;
-    private string _connectionString = null!;
-
-    private List<QuerySql.AddProductsArgs> _testProducts = null!;
-    private List<QuerySql.AddOrdersArgs> _testOrders = null!;
     private List<QuerySql.AddOrderItemsArgs> _testOrderItems = null!;
 
     [Params(100, 200, 500)]
     public int BatchSize { get; set; }
 
+
     [GlobalSetup]
     public async Task GlobalSetup()
     {
-        _connectionString = Config.GetSqliteConnectionString();
-        await SqliteDatabaseHelper.InitializeDatabaseAsync(_connectionString);
-
         _sqlcImpl = new QuerySql(_connectionString);
-        _dbContext = new SalesDbContext(_connectionString);
-        _efCoreImpl = new Queries(_dbContext);
-    }
-
-    [IterationSetup]
-    public void IterationSetup()
-    {
-        SqliteDatabaseHelper.CleanupDatabaseAsync(_connectionString).GetAwaiter().GetResult();
+        _efCoreImpl = new Queries(new SalesDbContext(_connectionString));
+        
+        await SqliteDatabaseHelper.CleanupDatabaseAsync(_connectionString);
+        await SqliteDatabaseHelper.InitializeDatabaseAsync(_connectionString);
         PrepareTestDataAsync().GetAwaiter().GetResult();
     }
-
+    
     private async Task PrepareTestDataAsync()
     {
-        var random = new Random(42);
-        var categories = new[] { "Electronics", "Clothing", "Books", "Food", "Toys" };
-
-        _testProducts = [.. Enumerable.Range(0, BatchSize).Select(i => new QuerySql.AddProductsArgs(
-            Name: $"Test Product {i}",
-            Category: categories[i % categories.Length],
-            UnitPrice: (decimal)(random.NextDouble() * 1000 + 10),
-            StockQuantity: random.Next(0, 1000),
-            Description: i % 2 == 0 ? $"Description {i}" : null
-        ))];
-
-        // For orders, we need existing customers - seed a few
         var seeder = new SqliteDatabaseSeeder(_connectionString);
-        await seeder.SeedAsync(customerCount: 10, productsPerCategory: 0, ordersPerCustomer: 0, itemsPerOrder: 0);
+        await seeder.SeedAsync(
+            customerCount: 10, 
+            productsPerCategory: 15, 
+            ordersPerCustomer: 300, 
+            itemsPerOrder: 0
+        );
 
-        var customerIds = await _dbContext.Customers.Select(c => c.CustomerId).Take(10).ToListAsync();
-        var orderStates = new[] { "Pending", "Delivered", "Cancelled" };
-
-        _testOrders = [.. Enumerable.Range(0, BatchSize).Select(i => new QuerySql.AddOrdersArgs(
-            CustomerId: customerIds[i % customerIds.Count],
-            OrderState: orderStates[i % orderStates.Length],
-            TotalAmount: (decimal)(random.NextDouble() * 5000 + 10)
-        ))];
-
-        await _sqlcImpl.AddProductsAsync(_testProducts);
-        await _sqlcImpl.AddOrdersAsync(_testOrders);
-
-        var orderIds = await _dbContext.Orders.Select(o => o.OrderId).Take(BatchSize).ToListAsync();
-        var productIds = await _dbContext.Products.Select(p => p.ProductId).Take(100).ToListAsync();
+        var orderIds = await _sqlcImpl.GetOrderIdsAsync(new QuerySql.GetOrderIdsArgs(Limit: 1000));
+        var productIds = await _sqlcImpl.GetProductIdsAsync(new QuerySql.GetProductIdsArgs(Limit: 1000));
 
         _testOrderItems = [.. Enumerable.Range(0, BatchSize).Select(i => new QuerySql.AddOrderItemsArgs(
-            OrderId: orderIds[i % orderIds.Count],
-            ProductId: productIds[i % productIds.Count],
-            Quantity: random.Next(1, 10),
-            UnitPrice: (decimal)(random.NextDouble() * 100 + 5)
+            OrderId: orderIds[i % orderIds.Count].OrderId,
+            ProductId: productIds[i % productIds.Count].ProductId,
+            Quantity: Random.Shared.Next(1, 10),
+            UnitPrice: (decimal)(Random.Shared.NextDouble() * 100 + 5)
         ))];
     }
 
-    [BenchmarkCategory("Write-Products")]
-    [Benchmark(Baseline = true, Description = "SQLC - AddProducts")]
-    public async Task Sqlc_AddProducts()
-    {
-        await _sqlcImpl.AddProductsAsync(_testProducts);
-    }
-
-    [BenchmarkCategory("Write-Products")]
-    [Benchmark(Description = "EFCore - AddProducts")]
-    public async Task EFCore_AddProducts()
-    {
-        var args = _testProducts.Select(p => new Queries.AddProductsArgs(
-            p.Name, p.Category, p.UnitPrice, p.StockQuantity, p.Description
-        )).ToList();
-        await _efCoreImpl.AddProducts(args);
-    }
-
-    [BenchmarkCategory("Write-Orders")]
-    [Benchmark(Baseline = true, Description = "SQLC - AddOrders")]
-    public async Task Sqlc_AddOrders()
-    {
-        await _sqlcImpl.AddOrdersAsync(_testOrders);
-    }
-
-    [BenchmarkCategory("Write-Orders")]
-    [Benchmark(Description = "EFCore - AddOrders")]
-    public async Task EFCore_AddOrders()
-    {
-        var args = _testOrders.Select(o => new Queries.AddOrdersArgs(
-            o.CustomerId, o.OrderState, o.TotalAmount
-        )).ToList();
-        await _efCoreImpl.AddOrders(args);
-    }
-
-    [BenchmarkCategory("Write-OrderItems")]
+    [BenchmarkCategory("Write")]
     [Benchmark(Baseline = true, Description = "SQLC - AddOrderItems")]
     public async Task Sqlc_AddOrderItems()
     {
         await _sqlcImpl.AddOrderItemsAsync(_testOrderItems);
     }
 
-    [BenchmarkCategory("Write-OrderItems")]
+    [BenchmarkCategory("Write")]
     [Benchmark(Description = "EFCore - AddOrderItems")]
     public async Task EFCore_AddOrderItems()
     {
@@ -139,7 +76,7 @@ public class SqliteWriteBenchmark
     [GlobalCleanup]
     public async Task GlobalCleanup()
     {
-        await _dbContext.DisposeAsync();
+        await _efCoreImpl.DbContext.DisposeAsync();
         await SqliteDatabaseHelper.CleanupDatabaseAsync(_connectionString);
     }
 }

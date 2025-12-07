@@ -4,37 +4,27 @@ BenchmarkDotNet v0.13.12, macOS 15.6.1 (24G90) [Darwin 24.6.0]
 Apple M2, 1 CPU, 8 logical and 8 physical cores
 .NET SDK 8.0.416
   [Host]     : .NET 8.0.22 (8.0.2225.52707), Arm64 RyuJIT AdvSIMD
-  Job-EEWZTX : .NET 8.0.22 (8.0.2225.52707), Arm64 RyuJIT AdvSIMD
+  Job-VDLBPN : .NET 8.0.22 (8.0.2225.52707), Arm64 RyuJIT AdvSIMD
 
-Runtime=.NET 8.0  InvocationCount=1  IterationCount=10  
-UnrollFactor=1  WarmupCount=3  
+Runtime=.NET 8.0  IterationCount=8  WarmupCount=2  
+Categories=Write  
 
 ```
-| Method                   | Categories       | BatchSize | Mean        | Error        | StdDev       | Ratio | RatioSD | Gen0      | Allocated   | Alloc Ratio |
-|------------------------- |----------------- |---------- |------------:|-------------:|-------------:|------:|--------:|----------:|------------:|------------:|
-| **&#39;SQLC - AddOrderItems&#39;**   | **Write-OrderItems** | **100**       |  **1,252.4 μs** |     **73.52 μs** |     **38.45 μs** |  **1.00** |    **0.00** |         **-** |   **256.06 KB** |        **1.00** |
-| &#39;EFCore - AddOrderItems&#39; | Write-OrderItems | 100       |  6,223.1 μs |  1,045.73 μs |    546.94 μs |  4.98 |    0.55 |         - |   2201.9 KB |        8.60 |
-|                          |                  |           |             |              |              |       |         |           |             |             |
-| **&#39;SQLC - AddOrderItems&#39;**   | **Write-OrderItems** | **200**       |  **3,412.9 μs** |     **31.97 μs** |     **19.03 μs** |  **1.00** |    **0.00** |         **-** |   **516.23 KB** |        **1.00** |
-| &#39;EFCore - AddOrderItems&#39; | Write-OrderItems | 200       | 19,453.1 μs | 15,785.21 μs |  9,393.53 μs |  5.69 |    2.73 |         - |  4396.13 KB |        8.52 |
-|                          |                  |           |             |              |              |       |         |           |             |             |
-| **&#39;SQLC - AddOrderItems&#39;**   | **Write-OrderItems** | **500**       | **16,465.3 μs** |  **1,111.49 μs** |    **735.18 μs** |  **1.00** |    **0.00** |         **-** |  **1256.63 KB** |        **1.00** |
-| &#39;EFCore - AddOrderItems&#39; | Write-OrderItems | 500       | 56,035.0 μs | 14,151.52 μs |  9,360.36 μs |  3.42 |    0.63 | 1000.0000 | 10965.26 KB |        8.73 |
-|                          |                  |           |             |              |              |       |         |           |             |             |
-| **&#39;SQLC - AddOrders&#39;**       | **Write-Orders**     | **100**       |    **957.8 μs** |     **36.86 μs** |     **21.94 μs** |  **1.00** |    **0.00** |         **-** |   **220.72 KB** |        **1.00** |
-| &#39;EFCore - AddOrders&#39;     | Write-Orders     | 100       |  7,014.6 μs |  1,538.43 μs |    804.63 μs |  7.31 |    0.87 |         - |   2335.8 KB |       10.58 |
-|                          |                  |           |             |              |              |       |         |           |             |             |
-| **&#39;SQLC - AddOrders&#39;**       | **Write-Orders**     | **200**       |  **2,416.5 μs** |    **172.71 μs** |    **114.23 μs** |  **1.00** |    **0.00** |         **-** |   **442.61 KB** |        **1.00** |
-| &#39;EFCore - AddOrders&#39;     | Write-Orders     | 200       | 19,883.4 μs | 12,544.24 μs |  8,297.24 μs |  8.18 |    3.29 |         - |  4666.27 KB |       10.54 |
-|                          |                  |           |             |              |              |       |         |           |             |             |
-| **&#39;SQLC - AddOrders&#39;**       | **Write-Orders**     | **500**       | **11,309.9 μs** |  **1,402.56 μs** |    **834.64 μs** |  **1.00** |    **0.00** |         **-** |  **1068.16 KB** |        **1.00** |
-| &#39;EFCore - AddOrders&#39;     | Write-Orders     | 500       | 43,877.6 μs |  8,689.06 μs |  5,747.28 μs |  3.89 |    0.50 | 1000.0000 | 11631.52 KB |       10.89 |
-|                          |                  |           |             |              |              |       |         |           |             |             |
-| **&#39;SQLC - AddProducts&#39;**     | **Write-Products**   | **100**       |  **1,638.0 μs** |     **42.31 μs** |     **22.13 μs** |  **1.00** |    **0.00** |         **-** |   **298.88 KB** |        **1.00** |
-| &#39;EFCore - AddProducts&#39;   | Write-Products   | 100       |  7,046.9 μs |    994.92 μs |    520.36 μs |  4.31 |    0.37 |         - |  2383.55 KB |        7.97 |
-|                          |                  |           |             |              |              |       |         |           |             |             |
-| **&#39;SQLC - AddProducts&#39;**     | **Write-Products**   | **200**       |  **4,703.7 μs** |    **192.10 μs** |    **114.32 μs** |  **1.00** |    **0.00** |         **-** |   **603.66 KB** |        **1.00** |
-| &#39;EFCore - AddProducts&#39;   | Write-Products   | 200       | 15,759.4 μs |  7,461.98 μs |  4,935.64 μs |  3.36 |    1.16 |         - |  4761.41 KB |        7.89 |
-|                          |                  |           |             |              |              |       |         |           |             |             |
-| **&#39;SQLC - AddProducts&#39;**     | **Write-Products**   | **500**       | **25,136.4 μs** |    **432.52 μs** |    **257.39 μs** |  **1.00** |    **0.00** |         **-** |  **1755.19 KB** |        **1.00** |
-| &#39;EFCore - AddProducts&#39;   | Write-Products   | 500       | 49,546.5 μs | 18,166.99 μs | 12,016.34 μs |  1.89 |    0.43 | 1000.0000 | 11871.22 KB |        6.76 |
+| Method                   | BatchSize | Mean | Error | Ratio | RatioSD | Alloc Ratio |
+|------------------------- |---------- |-----:|------:|------:|--------:|------------:|
+| **&#39;SQLC - AddOrderItems&#39;**   | **100**       |   **NA** |    **NA** |     **?** |       **?** |           **?** |
+| &#39;EFCore - AddOrderItems&#39; | 100       |   NA |    NA |     ? |       ? |           ? |
+|                          |           |      |       |       |         |             |
+| **&#39;SQLC - AddOrderItems&#39;**   | **200**       |   **NA** |    **NA** |     **?** |       **?** |           **?** |
+| &#39;EFCore - AddOrderItems&#39; | 200       |   NA |    NA |     ? |       ? |           ? |
+|                          |           |      |       |       |         |             |
+| **&#39;SQLC - AddOrderItems&#39;**   | **500**       |   **NA** |    **NA** |     **?** |       **?** |           **?** |
+| &#39;EFCore - AddOrderItems&#39; | 500       |   NA |    NA |     ? |       ? |           ? |
+
+Benchmarks with issues:
+  SqliteWriteBenchmark.'SQLC - AddOrderItems': Job-VDLBPN(Runtime=.NET 8.0, IterationCount=8, WarmupCount=2) [BatchSize=100]
+  SqliteWriteBenchmark.'EFCore - AddOrderItems': Job-VDLBPN(Runtime=.NET 8.0, IterationCount=8, WarmupCount=2) [BatchSize=100]
+  SqliteWriteBenchmark.'SQLC - AddOrderItems': Job-VDLBPN(Runtime=.NET 8.0, IterationCount=8, WarmupCount=2) [BatchSize=200]
+  SqliteWriteBenchmark.'EFCore - AddOrderItems': Job-VDLBPN(Runtime=.NET 8.0, IterationCount=8, WarmupCount=2) [BatchSize=200]
+  SqliteWriteBenchmark.'SQLC - AddOrderItems': Job-VDLBPN(Runtime=.NET 8.0, IterationCount=8, WarmupCount=2) [BatchSize=500]
+  SqliteWriteBenchmark.'EFCore - AddOrderItems': Job-VDLBPN(Runtime=.NET 8.0, IterationCount=8, WarmupCount=2) [BatchSize=500]

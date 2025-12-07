@@ -10211,7 +10211,13 @@ pg_catalogvarcharzname"S
 pg_catalogvarcharzcategory*QM
 customer_id0ÿÿÿÿÿÿÿÿÿ8Rsalesordersbpg_catalog.int4zcustomer_id*&"
 offset0ÿÿÿÿÿÿÿÿÿ8b	integer*%!
-limit0ÿÿÿÿÿÿÿÿÿ8b	integer:	query.sql³
+limit0ÿÿÿÿÿÿÿÿÿ8b	integer:	query.sql§
+dINSERT INTO sales.customers (name, email, phone, address, registered_at) VALUES ($1, $2, $3, $4, $5)AddCustomers	:copyfrom*GC
+name0ÿÿÿÿÿÿÿÿÿRsales	customersbpg_catalog.varcharzname*IE
+email0ÿÿÿÿÿÿÿÿÿRsales	customersbpg_catalog.varcharzemail*IE
+phone0ÿÿÿÿÿÿÿÿÿRsales	customersbpg_catalog.varcharzphone*KG
+address0ÿÿÿÿÿÿÿÿÿRsales	customersbpg_catalog.varcharzaddress*[W
+registered_at0ÿÿÿÿÿÿÿÿÿRsales	customersbpg_catalog.timestampzregistered_at:	query.sqlBsales	customers³
 pINSERT INTO sales.products (name, category, unit_price, stock_quantity, description) VALUES ($1, $2, $3, $4, $5)AddProducts	:copyfrom*FB
 name0ÿÿÿÿÿÿÿÿÿRsalesproductsbpg_catalog.varcharzname*NJ
 category0ÿÿÿÿÿÿÿÿÿRsalesproductsbpg_catalog.varcharzcategory*RN
@@ -10232,4 +10238,30 @@ product_id*NJ
 quantity0ÿÿÿÿÿÿÿÿÿRsalesorder_itemsbpg_catalog.int4zquantity*UQ
 
 unit_price0ÿÿÿÿÿÿÿÿÿRsalesorder_itemsbpg_catalog.numericz
-unit_price:	query.sqlBsalesorder_items"v1.30.0*š{"overrideDriverVersion":"","generateCsproj":true,"targetFramework":"net8.0","namespaceName":"PostgresSqlcImpl","useDapper":false,"overrideDapperVersion":"","overrides":null,"debugRequest":false,"useCentralPackageManagement":false,"withAsyncSuffix":true,"mySqlConnectionReset":null}
+unit_price:	query.sqlBsalesorder_items×
+ESELECT customer_id FROM sales.customers ORDER BY customer_id LIMIT $1GetCustomerIds:many"E
+customer_id0ÿÿÿÿÿÿÿÿÿRsales	customersbserialzcustomer_id*%!
+limit0ÿÿÿÿÿÿÿÿÿ8b	integer:	query.sqlÐ
+BSELECT product_id FROM sales.products ORDER BY product_id LIMIT $1GetProductIds:many"B
+
+product_id0ÿÿÿÿÿÿÿÿÿRsalesproductsbserialz
+product_id*%!
+limit0ÿÿÿÿÿÿÿÿÿ8b	integer:	query.sqlÇ
+CSELECT order_id FROM sales.orders ORDER BY ordered_at DESC LIMIT $1GetOrderIds:many":
+order_id0ÿÿÿÿÿÿÿÿÿRsalesordersbuuidzorder_id*%!
+limit0ÿÿÿÿÿÿÿÿÿ8b	integer:	query.sql¿
+HSELECT order_id, total_amount FROM sales.orders WHERE order_id = ANY($1)GetOrderAmounts:many":
+order_id0ÿÿÿÿÿÿÿÿÿRsalesordersbuuidzorder_id"Q
+total_amount0ÿÿÿÿÿÿÿÿÿRsalesordersb
+pg_catalognumericztotal_amount*A=
+	order_ids0ÿÿÿÿÿÿÿÿÿ8Rsalesordersbuuidzorder_id:	query.sqlÒ
+LSELECT product_id, unit_price FROM sales.products WHERE product_id = ANY($1)GetProductPrices:many"B
+
+product_id0ÿÿÿÿÿÿÿÿÿRsalesproductsbserialz
+product_id"O
+
+unit_price0ÿÿÿÿÿÿÿÿÿRsalesproductsb
+pg_catalognumericz
+unit_price*IE
+product_ids0ÿÿÿÿÿÿÿÿÿ8Rsalesproductsbserialz
+product_id:	query.sql"v1.30.0*š{"overrideDriverVersion":"","generateCsproj":true,"targetFramework":"net8.0","namespaceName":"PostgresSqlcImpl","useDapper":false,"overrideDapperVersion":"","overrides":null,"debugRequest":false,"useCentralPackageManagement":false,"withAsyncSuffix":true,"mySqlConnectionReset":null}

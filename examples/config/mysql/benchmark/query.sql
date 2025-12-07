@@ -11,6 +11,9 @@ WHERE o.customer_id = ?
 ORDER BY o.ordered_at DESC
 LIMIT ? OFFSET ?;
 
+-- name: AddCustomers :copyfrom
+INSERT INTO sales.customers (name, email, phone, address, registered_at) VALUES (?, ?, ?, ?, ?);
+
 -- name: AddProducts :copyfrom
 INSERT INTO sales.products (name, category, unit_price, stock_quantity, description) VALUES (?, ?, ?, ?, ?);
 
@@ -19,4 +22,19 @@ INSERT INTO sales.orders (customer_id, order_state, total_amount) VALUES (?, ?, 
 
 -- name: AddOrderItems :copyfrom
 INSERT INTO sales.order_items (order_id, product_id, quantity, unit_price) VALUES (?, ?, ?, ?);
+
+-- name: GetCustomerIds :many
+SELECT customer_id FROM sales.customers ORDER BY customer_id LIMIT ?;
+
+-- name: GetProductIds :many
+SELECT product_id FROM sales.products ORDER BY product_id LIMIT ?;
+
+-- name: GetOrderIds :many
+SELECT order_id FROM sales.orders ORDER BY order_id LIMIT ?;
+
+-- name: GetOrderAmounts :many
+SELECT order_id, total_amount FROM sales.orders WHERE order_id IN (/*SLICE:order_ids*/?);
+
+-- name: GetProductPrices :many
+SELECT product_id, unit_price FROM sales.products WHERE product_id IN (/*SLICE:product_ids*/?);
 

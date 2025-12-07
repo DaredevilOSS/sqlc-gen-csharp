@@ -137,7 +137,8 @@ public sealed class NpgsqlDriver : EnumDbDriver, IOne, IMany, IExec, IExecRows, 
                     { "timestamptz", new(DbTypeOverride: "NpgsqlDbType.TimestampTz") }
                 },
                 readerFn: (ordinal, _) => $"{Variable.Reader.AsVarName()}.GetDateTime({ordinal})",
-                readerArrayFn: (ordinal, _) => $"{Variable.Reader.AsVarName()}.GetFieldValue<DateTime[]>({ordinal})"
+                readerArrayFn: (ordinal, _) => $"{Variable.Reader.AsVarName()}.GetFieldValue<DateTime[]>({ordinal})",
+                usingDirectives: ["NpgsqlTypes"]
             ),
             ["Instant"] = new(
                 [],

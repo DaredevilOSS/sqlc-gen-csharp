@@ -26,10 +26,10 @@ public static partial class SqliteDatabaseHelper
 
         var cleanupCommands = new[]
         {
-            "DELETE FROM order_items",
-            "DELETE FROM orders",
-            "DELETE FROM products",
-            "DELETE FROM customers"
+            "DROP TABLE IF EXISTS order_items",
+            "DROP TABLE IF EXISTS orders",
+            "DROP TABLE IF EXISTS products",
+            "DROP TABLE IF EXISTS customers"
         };
 
         foreach (var command in cleanupCommands)

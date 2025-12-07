@@ -20,14 +20,7 @@ public static partial class PostgresqlDatabaseHelper
         foreach (var command in cleanupCommands)
         {
             using var cmd = new NpgsqlCommand(command, connection);
-            try
-            {
-                await cmd.ExecuteNonQueryAsync();
-            }
-            catch (PostgresException)
-            {
-                // Ignore errors if tables don't exist yet
-            }
+            await cmd.ExecuteNonQueryAsync();
         }
     }
 }

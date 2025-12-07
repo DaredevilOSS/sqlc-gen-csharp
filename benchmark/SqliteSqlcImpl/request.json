@@ -478,6 +478,96 @@
       "filename": "query.sql"
     },
     {
+      "text": "INSERT INTO customers (name, email, phone, address, registered_at) VALUES (?, ?, ?, ?, ?)",
+      "name": "AddCustomers",
+      "cmd": ":copyfrom",
+      "parameters": [
+        {
+          "number": 1,
+          "column": {
+            "name": "name",
+            "notNull": true,
+            "length": -1,
+            "table": {
+              "schema": "main",
+              "name": "customers"
+            },
+            "type": {
+              "name": "TEXT"
+            },
+            "originalName": "name"
+          }
+        },
+        {
+          "number": 2,
+          "column": {
+            "name": "email",
+            "notNull": true,
+            "length": -1,
+            "table": {
+              "schema": "main",
+              "name": "customers"
+            },
+            "type": {
+              "name": "TEXT"
+            },
+            "originalName": "email"
+          }
+        },
+        {
+          "number": 3,
+          "column": {
+            "name": "phone",
+            "notNull": true,
+            "length": -1,
+            "table": {
+              "schema": "main",
+              "name": "customers"
+            },
+            "type": {
+              "name": "TEXT"
+            },
+            "originalName": "phone"
+          }
+        },
+        {
+          "number": 4,
+          "column": {
+            "name": "address",
+            "length": -1,
+            "table": {
+              "schema": "main",
+              "name": "customers"
+            },
+            "type": {
+              "name": "TEXT"
+            },
+            "originalName": "address"
+          }
+        },
+        {
+          "number": 5,
+          "column": {
+            "name": "registered_at",
+            "notNull": true,
+            "length": -1,
+            "table": {
+              "schema": "main",
+              "name": "customers"
+            },
+            "type": {
+              "name": "TEXT"
+            },
+            "originalName": "registered_at"
+          }
+        }
+      ],
+      "filename": "query.sql",
+      "insert_into_table": {
+        "name": "customers"
+      }
+    },
+    {
       "text": "INSERT INTO products (name, category, unit_price, stock_quantity, description) VALUES (?, ?, ?, ?, ?)",
       "name": "AddProducts",
       "cmd": ":copyfrom",
@@ -700,6 +790,203 @@
       "insert_into_table": {
         "name": "order_items"
       }
+    },
+    {
+      "text": "SELECT customer_id FROM customers ORDER BY customer_id LIMIT ?",
+      "name": "GetCustomerIds",
+      "cmd": ":many",
+      "columns": [
+        {
+          "name": "customer_id",
+          "notNull": true,
+          "length": -1,
+          "table": {
+            "name": "customers"
+          },
+          "type": {
+            "name": "INTEGER"
+          },
+          "originalName": "customer_id"
+        }
+      ],
+      "parameters": [
+        {
+          "number": 1,
+          "column": {
+            "name": "limit",
+            "notNull": true,
+            "length": -1,
+            "type": {
+              "name": "integer"
+            }
+          }
+        }
+      ],
+      "filename": "query.sql"
+    },
+    {
+      "text": "SELECT product_id FROM products ORDER BY product_id LIMIT ?",
+      "name": "GetProductIds",
+      "cmd": ":many",
+      "columns": [
+        {
+          "name": "product_id",
+          "notNull": true,
+          "length": -1,
+          "table": {
+            "name": "products"
+          },
+          "type": {
+            "name": "INTEGER"
+          },
+          "originalName": "product_id"
+        }
+      ],
+      "parameters": [
+        {
+          "number": 1,
+          "column": {
+            "name": "limit",
+            "notNull": true,
+            "length": -1,
+            "type": {
+              "name": "integer"
+            }
+          }
+        }
+      ],
+      "filename": "query.sql"
+    },
+    {
+      "text": "SELECT order_id FROM orders ORDER BY order_id LIMIT ?",
+      "name": "GetOrderIds",
+      "cmd": ":many",
+      "columns": [
+        {
+          "name": "order_id",
+          "notNull": true,
+          "length": -1,
+          "table": {
+            "name": "orders"
+          },
+          "type": {
+            "name": "INTEGER"
+          },
+          "originalName": "order_id"
+        }
+      ],
+      "parameters": [
+        {
+          "number": 1,
+          "column": {
+            "name": "limit",
+            "notNull": true,
+            "length": -1,
+            "type": {
+              "name": "integer"
+            }
+          }
+        }
+      ],
+      "filename": "query.sql"
+    },
+    {
+      "text": "SELECT order_id, total_amount FROM orders WHERE order_id IN (/*SLICE:order_ids*/?)",
+      "name": "GetOrderAmounts",
+      "cmd": ":many",
+      "columns": [
+        {
+          "name": "order_id",
+          "notNull": true,
+          "length": -1,
+          "table": {
+            "name": "orders"
+          },
+          "type": {
+            "name": "INTEGER"
+          },
+          "originalName": "order_id"
+        },
+        {
+          "name": "total_amount",
+          "notNull": true,
+          "length": -1,
+          "table": {
+            "name": "orders"
+          },
+          "type": {
+            "name": "REAL"
+          },
+          "originalName": "total_amount"
+        }
+      ],
+      "parameters": [
+        {
+          "number": 1,
+          "column": {
+            "name": "order_id",
+            "notNull": true,
+            "length": -1,
+            "table": {
+              "name": "orders"
+            },
+            "type": {
+              "name": "INTEGER"
+            },
+            "originalName": "order_id"
+          }
+        }
+      ],
+      "filename": "query.sql"
+    },
+    {
+      "text": "SELECT product_id, unit_price FROM products WHERE product_id IN (/*SLICE:product_ids*/?)",
+      "name": "GetProductPrices",
+      "cmd": ":many",
+      "columns": [
+        {
+          "name": "product_id",
+          "notNull": true,
+          "length": -1,
+          "table": {
+            "name": "products"
+          },
+          "type": {
+            "name": "INTEGER"
+          },
+          "originalName": "product_id"
+        },
+        {
+          "name": "unit_price",
+          "notNull": true,
+          "length": -1,
+          "table": {
+            "name": "products"
+          },
+          "type": {
+            "name": "REAL"
+          },
+          "originalName": "unit_price"
+        }
+      ],
+      "parameters": [
+        {
+          "number": 1,
+          "column": {
+            "name": "product_id",
+            "notNull": true,
+            "length": -1,
+            "table": {
+              "name": "products"
+            },
+            "type": {
+              "name": "INTEGER"
+            },
+            "originalName": "product_id"
+          }
+        }
+      ],
+      "filename": "query.sql"
     }
   ],
   "sqlc_version": "v1.30.0",

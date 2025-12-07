@@ -1,25 +1,27 @@
-using Microsoft.EntityFrameworkCore;
-using SqliteEFCoreImpl;
+using SqliteSqlcImpl;
 
 namespace BenchmarkRunner.Utils;
 
 public class SqliteDatabaseSeeder(string connectionString)
 {
-    private readonly SalesDbContext _efCoreContext = new(connectionString);
+    private const int BatchSize = 100;
+    
+    private readonly QuerySql _sqlc = new(connectionString);
 
-    public async Task SeedAsync(int customerCount = 100, int productsPerCategory = 100, int ordersPerCustomer = 50, int itemsPerOrder = 3)
+    public async Task SeedAsync(
+        int customerCount, 
+        int productsPerCategory, 
+        int ordersPerCustomer, 
+        int itemsPerOrder)
     {
-        // Seed customers
         var customers = await SeedCustomersAsync(customerCount);
         if (customers.Count > 0)
             Console.WriteLine($"Seeded {customers.Count} customers");
 
-        // Seed products
         var products = await SeedProductsAsync(productsPerCategory);
         if (products.Count > 0)
             Console.WriteLine($"Seeded {products.Count} products");
 
-        // Seed orders and order items
         var orders = await SeedOrdersAsync(customers, ordersPerCustomer);
         if (orders.Count > 0)
             Console.WriteLine($"Seeded {orders.Count} orders");
@@ -33,125 +35,105 @@ public class SqliteDatabaseSeeder(string connectionString)
 
     private async Task<List<int>> SeedCustomersAsync(int count)
     {
-        var customers = new List<Customer>();
-        var random = new Random(42); // Fixed seed for reproducibility
-
+        var customers = new List<QuerySql.AddCustomersArgs>();
         for (int i = 0; i < count; i++)
         {
-            customers.Add(new Customer
-            {
-                Name = $"Customer {i + 1}",
-                Email = $"customer{i + 1}@example.com",
-                Phone = $"+1-555-{1000 + i:D4}",
-                Address = $"{random.Next(100, 9999)} Main St, City {i % 10}",
-                RegisteredAt = DateTime.UtcNow.AddDays(-random.Next(0, 365))
-            });
+            var registeredAt = DateTime.UtcNow.AddDays(-Random.Shared.Next(0, 365));
+            customers.Add(new QuerySql.AddCustomersArgs(
+                Name: $"Customer {i + 1}",
+                Email: $"customer{i + 1}@example.com",
+                Phone: $"+1-555-{1000 + i:D4}",
+                Address: $"{Random.Shared.Next(100, 9999)} Main St, City {i % 10}",
+                RegisteredAt: registeredAt.ToString("yyyy-MM-dd HH:mm:ss.FFFFFFF")
+            ));
         }
 
-        _efCoreContext.Customers.AddRange(customers);
-        await _efCoreContext.SaveChangesAsync();
+        for (int i = 0; i < customers.Count; i += BatchSize)
+        {
+            var batch = customers.Skip(i).Take(BatchSize).ToList();
+            await _sqlc.AddCustomersAsync(batch);
+        }
 
-        return customers.Select(c => c.CustomerId).ToList();
+        var customerIds = await _sqlc.GetCustomerIdsAsync(new QuerySql.GetCustomerIdsArgs(Limit: count));
+        return customerIds.Select(r => r.CustomerId).ToList();
     }
 
     private async Task<List<int>> SeedProductsAsync(int perCategory)
     {
-        var categories = new[] { "Electronics", "Clothing", "Books", "Food", "Toys", "Home", "Sports", "Automotive", "Health", "Beauty" };
-        var products = new List<Product>();
-        var random = new Random(42);
+        var categories = new[] { "Electronics", "Clothing", "Books", "Toys", "Home", "Sports", "Beauty" };
+        var products = new List<QuerySql.AddProductsArgs>();
 
         foreach (var category in categories)
         {
             for (int i = 0; i < perCategory; i++)
             {
-                products.Add(new Product
-                {
-                    Name = $"{category} Product {i + 1}",
-                    Category = category,
-                    UnitPrice = (decimal)(random.NextDouble() * 1000 + 10),
-                    StockQuantity = random.Next(0, 1000),
-                    Description = $"Description for {category} Product {i + 1}",
-                    AddedAt = DateTime.UtcNow.AddDays(-random.Next(0, 180))
-                });
+                products.Add(new QuerySql.AddProductsArgs(
+                    Name: $"{category} Product {i + 1}",
+                    Category: category,
+                    UnitPrice: (decimal)(Random.Shared.NextDouble() * 1000 + 10),
+                    StockQuantity: Random.Shared.Next(0, 1000),
+                    Description: $"Description for {category} Product {i + 1}"
+                ));
             }
         }
 
-        _efCoreContext.Products.AddRange(products);
-        await _efCoreContext.SaveChangesAsync();
+        for (int i = 0; i < products.Count; i += BatchSize)
+        {
+            var batch = products.Skip(i).Take(BatchSize).ToList();
+            await _sqlc.AddProductsAsync(batch);
+        }
 
-        return products.Select(p => p.ProductId).ToList();
+        var productIds = await _sqlc.GetProductIdsAsync(new QuerySql.GetProductIdsArgs(Limit: products.Count));
+        return productIds.Select(r => r.ProductId).ToList();
     }
 
     private async Task<List<int>> SeedOrdersAsync(List<int> customerIds, int ordersPerCustomer)
     {
-        var orders = new List<Order>();
-        var random = new Random(42);
         var orderStates = new[] { "Pending", "Delivered", "Cancelled" };
+        var orders = new List<QuerySql.AddOrdersArgs>();
 
         foreach (var customerId in customerIds)
         {
             for (int i = 0; i < ordersPerCustomer; i++)
             {
-                orders.Add(new Order
-                {
-                    CustomerId = customerId,
-                    OrderState = orderStates[random.Next(orderStates.Length)],
-                    TotalAmount = (decimal)(random.NextDouble() * 5000 + 10),
-                    OrderedAt = DateTime.UtcNow.AddDays(-random.Next(0, 90))
-                });
+                orders.Add(new QuerySql.AddOrdersArgs(
+                    CustomerId: customerId,
+                    OrderState: orderStates[Random.Shared.Next(orderStates.Length)],
+                    TotalAmount: (decimal)(Random.Shared.NextDouble() * 5000 + 10)
+                ));
             }
         }
 
-        _efCoreContext.Orders.AddRange(orders);
-        await _efCoreContext.SaveChangesAsync();
+        for (int i = 0; i < orders.Count; i += BatchSize)
+        {
+            var batch = orders.Skip(i).Take(BatchSize).ToList();
+            await _sqlc.AddOrdersAsync(batch);
+        }
 
-        return orders.Select(o => o.OrderId).ToList();
+        var orderIds = await _sqlc.GetOrderIdsAsync(new QuerySql.GetOrderIdsArgs(Limit: orders.Count));
+        return orderIds.Select(r => r.OrderId).ToList();
     }
 
     private async Task SeedOrderItemsAsync(List<int> orderIds, List<int> productIds, int itemsPerOrder)
     {
-        var orderItems = new List<OrderItem>();
-        var random = new Random(42);
-
+        var orderItems = new List<QuerySql.AddOrderItemsArgs>();
         foreach (var orderId in orderIds)
         {
-            // Get the order to know its total amount
-            var order = await _efCoreContext.Orders.FirstAsync(o => o.OrderId == orderId);
-            var remainingAmount = order.TotalAmount;
-            var selectedProducts = productIds.OrderBy(_ => random.Next()).Take(itemsPerOrder).ToList();
-
-            for (int i = 0; i < selectedProducts.Count; i++)
-            {
-                var productId = selectedProducts[i];
-                var product = await _efCoreContext.Products.FirstAsync(p => p.ProductId == productId);
-
-                decimal unitPrice;
-                int quantity;
-
-                if (i == selectedProducts.Count - 1)
-                {
-                    // Last item gets the remaining amount
-                    quantity = random.Next(1, 10);
-                    unitPrice = remainingAmount / quantity;
-                }
-                else
-                {
-                    quantity = random.Next(1, 10);
-                    unitPrice = product.UnitPrice;
-                    remainingAmount -= unitPrice * quantity;
-                }
-
-                orderItems.Add(new OrderItem
-                {
-                    OrderId = orderId,
-                    ProductId = productId,
-                    Quantity = quantity,
-                    UnitPrice = unitPrice
-                });
+            for (int i = 0; i < itemsPerOrder; i++)
+            {       
+                orderItems.Add(new QuerySql.AddOrderItemsArgs(
+                    OrderId: orderId,
+                    ProductId: productIds[Random.Shared.Next(1, productIds.Count)],
+                    Quantity: Random.Shared.Next(1, 10),
+                    UnitPrice: (decimal)(Random.Shared.NextDouble() * 100 + 5)
+                ));
             }
         }
 
-        _efCoreContext.OrderItems.AddRange(orderItems);
-        await _efCoreContext.SaveChangesAsync();
+        for (int i = 0; i < orderItems.Count; i += BatchSize)
+        {
+            var batch = orderItems.Skip(i).Take(BatchSize).ToList();
+            await _sqlc.AddOrderItemsAsync(batch);
+        }
     }
 }

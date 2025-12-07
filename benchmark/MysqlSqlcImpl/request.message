@@ -75,7 +75,14 @@ product_id"7
 product_category0dRsalesproductsb	varcharzcategory*C?
 customer_id0ÿÿÿÿÿÿÿÿÿRsalesordersbintzcustomer_id*#
 limit0ÿÿÿÿÿÿÿÿÿb	integer*$ 
-offset0ÿÿÿÿÿÿÿÿÿb	integer:	query.sqlç
+offset0ÿÿÿÿÿÿÿÿÿb	integer:	query.sql¿
+_INSERT INTO sales.customers (name, email, phone, address, registered_at) VALUES (?, ?, ?, ?, ?)AddCustomers	:copyfrom*3/
+name0dRsales	customersb	varcharzname*62
+email0ÿRsales	customersb	varcharzemail*51
+phone02Rsales	customersb	varcharzphone*84
+address0ÿRsales	customersb	varcharzaddress*FB
+registered_at0Rsales	customersb
+datetimezregistered_at:	query.sqlBsales	customersç
 kINSERT INTO sales.products (name, category, unit_price, stock_quantity, description) VALUES (?, ?, ?, ?, ?)AddProducts	:copyfrom*3/
 name0ÈRsalesproductsb	varcharzname*:6
 category0dRsalesproductsb	varcharzcategory*>:
@@ -100,4 +107,31 @@ product_id*B>
 
 unit_price0
 Rsalesorder_itemsb	decimalz
-unit_price:	query.sqlBsalesorder_items"v1.30.0*—{"overrideDriverVersion":"","generateCsproj":true,"targetFramework":"net8.0","namespaceName":"MysqlSqlcImpl","useDapper":false,"overrideDapperVersion":"","overrides":null,"debugRequest":false,"useCentralPackageManagement":false,"withAsyncSuffix":true,"mySqlConnectionReset":null}
+unit_price:	query.sqlBsalesorder_itemsÑ
+DSELECT customer_id FROM sales.customers ORDER BY customer_id LIMIT ?GetCustomerIds:many"B
+customer_id0ÿÿÿÿÿÿÿÿÿRsales	customersbintzcustomer_id*#
+limit0ÿÿÿÿÿÿÿÿÿb	integer:	query.sqlÊ
+ASELECT product_id FROM sales.products ORDER BY product_id LIMIT ?GetProductIds:many"?
+
+product_id0ÿÿÿÿÿÿÿÿÿRsalesproductsbintz
+product_id*#
+limit0ÿÿÿÿÿÿÿÿÿb	integer:	query.sql¿
+;SELECT order_id FROM sales.orders ORDER BY order_id LIMIT ?GetOrderIds:many"<
+order_id0ÿÿÿÿÿÿÿÿÿRsalesordersbbigintzorder_id*#
+limit0ÿÿÿÿÿÿÿÿÿb	integer:	query.sql»
+XSELECT order_id, total_amount FROM sales.orders WHERE order_id IN (/*SLICE:order_ids*/?)GetOrderAmounts:many"<
+order_id0ÿÿÿÿÿÿÿÿÿRsalesordersbbigintzorder_id"<
+total_amount0
+Rsalesordersb	decimalztotal_amount*@<
+order_id0ÿÿÿÿÿÿÿÿÿRsalesordersbbigintzorder_id:	query.sqlÆ
+^SELECT product_id, unit_price FROM sales.products WHERE product_id IN (/*SLICE:product_ids*/?)GetProductPrices:many"?
+
+product_id0ÿÿÿÿÿÿÿÿÿRsalesproductsbintz
+product_id":
+
+unit_price0
+Rsalesproductsb	decimalz
+unit_price*C?
+
+product_id0ÿÿÿÿÿÿÿÿÿRsalesproductsbintz
+product_id:	query.sql"v1.30.0*—{"overrideDriverVersion":"","generateCsproj":true,"targetFramework":"net8.0","namespaceName":"MysqlSqlcImpl","useDapper":false,"overrideDapperVersion":"","overrides":null,"debugRequest":false,"useCentralPackageManagement":false,"withAsyncSuffix":true,"mySqlConnectionReset":null}
