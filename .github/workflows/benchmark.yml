@@ -37,7 +37,7 @@ jobs:
           services: mysql
 
       - name: Run Benchmark
-        run: ./benchmark/scripts/run_benchmark.sh mysql
+        run: ./benchmark/scripts/run_benchmark_for_db.sh mysql
     
   benchmark-postgresql:
     name: PostgreSQL Benchmark
@@ -62,7 +62,7 @@ jobs:
           services: postgresql
 
       - name: Run Benchmark
-        run: ./benchmark/scripts/run_benchmark.sh postgresql
+        run: ./benchmark/scripts/run_benchmark_for_db.sh postgresql
 
   benchmark-sqlite:
     name: SQLite Benchmark
@@ -82,4 +82,4 @@ jobs:
           load-mode: strict
 
       - name: Run Benchmark
-        run: ./benchmark/scripts/run_benchmark.sh sqlite
+        run: ./benchmark/scripts/run_benchmark_for_db.sh sqlite
