@@ -33,7 +33,14 @@ public class SqliteWriteBenchmark
         await SqliteDatabaseHelper.InitializeDatabaseAsync(_connectionString);
         PrepareTestDataAsync().GetAwaiter().GetResult();
     }
-    
+
+    [IterationSetup]
+    public static void IterationSetup()
+    {
+        GC.Collect();
+        GC.WaitForPendingFinalizers();
+    }
+
     private async Task PrepareTestDataAsync()
     {
         var seeder = new SqliteDatabaseSeeder(_connectionString);

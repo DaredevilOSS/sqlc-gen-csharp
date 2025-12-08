@@ -2,7 +2,7 @@
 <html lang='en'>
 <head>
 <meta charset='utf-8' />
-<title>BenchmarkRunner.Benchmarks.PostgresqlWriteBenchmark-20251208-001404</title>
+<title>BenchmarkRunner.Benchmarks.PostgresqlWriteBenchmark-20251208-010449</title>
 
 <style type="text/css">
 	table { border-collapse: collapse; display: block; width: 100%; overflow: auto; }
@@ -17,21 +17,21 @@ BenchmarkDotNet v0.13.12, macOS 15.6.1 (24G90) [Darwin 24.6.0]
 Apple M2, 1 CPU, 8 logical and 8 physical cores
 .NET SDK 8.0.416
   [Host]     : .NET 8.0.22 (8.0.2225.52707), Arm64 RyuJIT AdvSIMD
-  Job-TNXKWK : .NET 8.0.22 (8.0.2225.52707), Arm64 RyuJIT AdvSIMD
+  Job-NVWEVN : .NET 8.0.22 (8.0.2225.52707), Arm64 RyuJIT AdvSIMD
 </code></pre>
-<pre><code>Runtime=.NET 8.0  IterationCount=10  WarmupCount=2  
-Categories=Write  
+<pre><code>Runtime=.NET 8.0  InvocationCount=1  IterationCount=10  
+UnrollFactor=1  WarmupCount=2  Categories=Write  
 </code></pre>
 
 <table>
-<thead><tr><th>Method            </th><th>BatchSize</th><th>Mean  </th><th>Error</th><th>StdDev</th><th>Ratio</th><th>RatioSD</th><th>Gen0 </th><th>Gen1</th><th>Gen2</th><th>Allocated</th><th>Alloc Ratio</th>
+<thead><tr><th>Method            </th><th>BatchSize</th><th>Mean </th><th>Error</th><th>StdDev</th><th>Ratio</th><th>RatioSD</th><th>Gen0 </th><th>Gen1</th><th>Gen2</th><th>Allocated</th><th>Alloc Ratio</th>
 </tr>
-</thead><tbody><tr><td>&#39;SQLC - AddOrderItems&#39;</td><td>1000</td><td>9.916 ms</td><td>0.1718 ms</td><td>0.1022 ms</td><td>1.00</td><td>0.00</td><td>-</td><td>-</td><td>-</td><td>49.29 KB</td><td>1.00</td>
-</tr><tr><td>&#39;EFCore - AddOrderItems&#39;</td><td>1000</td><td>79.117 ms</td><td>15.8659 ms</td><td>10.4943 ms</td><td>7.83</td><td>0.96</td><td>13500.0000</td><td>1875.0000</td><td>500.0000</td><td>110904.23 KB</td><td>2,249.99</td>
-</tr><tr><td>&#39;SQLC - AddOrderItems&#39;</td><td>10000</td><td>89.947 ms</td><td>1.5952 ms</td><td>1.0551 ms</td><td>1.00</td><td>0.00</td><td>-</td><td>-</td><td>-</td><td>471.38 KB</td><td>1.00</td>
-</tr><tr><td>&#39;EFCore - AddOrderItems&#39;</td><td>10000</td><td>384.252 ms</td><td>24.3331 ms</td><td>14.4803 ms</td><td>4.27</td><td>0.16</td><td>25000.0000</td><td>6000.0000</td><td>2000.0000</td><td>209624.43 KB</td><td>444.71</td>
-</tr><tr><td>&#39;SQLC - AddOrderItems&#39;</td><td>50000</td><td>440.179 ms</td><td>13.8610 ms</td><td>9.1682 ms</td><td>1.00</td><td>0.00</td><td>-</td><td>-</td><td>-</td><td>2349.18 KB</td><td>1.00</td>
-</tr><tr><td>&#39;EFCore - AddOrderItems&#39;</td><td>50000</td><td>2,187.361 ms</td><td>131.7510 ms</td><td>87.1452 ms</td><td>4.97</td><td>0.19</td><td>121000.0000</td><td>16000.0000</td><td>3000.0000</td><td>1046832.8 KB</td><td>445.62</td>
+</thead><tbody><tr><td>&#39;SQLC - AddOrderItems&#39;</td><td>1000</td><td>11.00 ms</td><td>1.099 ms</td><td>0.727 ms</td><td>1.00</td><td>0.00</td><td>-</td><td>-</td><td>-</td><td>214.16 KB</td><td>1.00</td>
+</tr><tr><td>&#39;EFCore - AddOrderItems&#39;</td><td>1000</td><td>87.67 ms</td><td>24.251 ms</td><td>16.040 ms</td><td>7.98</td><td>1.41</td><td>2000.0000</td><td>1000.0000</td><td>-</td><td>20650.91 KB</td><td>96.43</td>
+</tr><tr><td>&#39;SQLC - AddOrderItems&#39;</td><td>10000</td><td>90.14 ms</td><td>1.946 ms</td><td>1.158 ms</td><td>1.00</td><td>0.00</td><td>-</td><td>-</td><td>-</td><td>472.91 KB</td><td>1.00</td>
+</tr><tr><td>&#39;EFCore - AddOrderItems&#39;</td><td>10000</td><td>393.80 ms</td><td>45.986 ms</td><td>27.366 ms</td><td>4.37</td><td>0.34</td><td>24000.0000</td><td>6000.0000</td><td>2000.0000</td><td>202275.55 KB</td><td>427.72</td>
+</tr><tr><td>&#39;SQLC - AddOrderItems&#39;</td><td>50000</td><td>461.89 ms</td><td>15.254 ms</td><td>10.089 ms</td><td>1.00</td><td>0.00</td><td>-</td><td>-</td><td>-</td><td>2347.91 KB</td><td>1.00</td>
+</tr><tr><td>&#39;EFCore - AddOrderItems&#39;</td><td>50000</td><td>2,140.85 ms</td><td>188.790 ms</td><td>124.873 ms</td><td>4.64</td><td>0.28</td><td>116000.0000</td><td>16000.0000</td><td>2000.0000</td><td>1097310.06 KB</td><td>467.36</td>
 </tr></tbody></table>
 </body>
 </html>

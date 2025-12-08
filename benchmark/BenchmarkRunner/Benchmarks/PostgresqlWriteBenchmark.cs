@@ -30,6 +30,12 @@ public class PostgresqlWriteBenchmark
         PostgresqlDatabaseHelper.CleanupDatabaseAsync(_connectionString).GetAwaiter().GetResult();
         PrepareTestDataAsync().GetAwaiter().GetResult();
     }
+    [IterationSetup]
+    public static void IterationSetup()
+    {
+        GC.Collect();
+        GC.WaitForPendingFinalizers();
+    }
 
     private async Task PrepareTestDataAsync()
     {

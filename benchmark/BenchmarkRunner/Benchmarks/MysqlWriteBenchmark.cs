@@ -32,6 +32,13 @@ public class MysqlWriteBenchmark
         PrepareTestDataAsync().GetAwaiter().GetResult();
     }
 
+    [IterationSetup]
+    public static void IterationSetup()
+    {
+        GC.Collect();
+        GC.WaitForPendingFinalizers();
+    }
+
     private async Task PrepareTestDataAsync()
     {
         var seeder = new MysqlDatabaseSeeder(_connectionString);

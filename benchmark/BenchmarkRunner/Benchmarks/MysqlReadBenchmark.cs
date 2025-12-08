@@ -41,6 +41,13 @@ public class MysqlReadBenchmark
          );
     }
 
+    [IterationSetup]
+    public static void IterationSetup()
+    {
+        GC.Collect();
+        GC.WaitForPendingFinalizers();
+    }
+
     [BenchmarkCategory("Read")]
     [Benchmark(Baseline = true, Description = "SQLC - GetCustomerOrders")]
     public async Task<List<QuerySql.GetCustomerOrdersRow>> Sqlc_GetCustomerOrders()
