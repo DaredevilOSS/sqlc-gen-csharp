@@ -47,7 +47,7 @@ $(WASM_PLUGIN_OUTPUT): $(WASM_SOURCES)
 	./scripts/wasm/update_sha.sh sqlc.ci.yaml
 
 run-benchmark: sqlc-generate
-	./benchmark/scripts/run_benchmark.sh
+	./benchmark/scripts/run_benchmark_all_dbs.sh
 
 run-end2end-tests:
 	./end2end/scripts/run_tests.sh

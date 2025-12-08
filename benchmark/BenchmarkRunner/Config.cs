@@ -29,9 +29,10 @@ public static class Config
         var connectionString = Environment.GetEnvironmentVariable("SQLITE_BENCHMARK_CONNECTION_STRING");
         if (string.IsNullOrWhiteSpace(connectionString))
         {
-            // Default to shared in-memory database for benchmarks
-            // Using shared cache allows multiple connections to access the same in-memory database
-            return "Data Source=:memory:;Cache=Shared";
+            // Default to file-based database with WAL mode for benchmarks
+            // WAL mode enables better concurrency (readers don't block writers)
+            // Using shared cache allows multiple connections to access the same database
+            return "Data Source=benchmark.db;Cache=Shared;Journal Mode=WAL";
         }
         return connectionString;
     }

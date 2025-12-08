@@ -46,12 +46,7 @@ public class MysqlDatabaseSeeder(string connectionString)
             ));
         }
 
-        for (int i = 0; i < customers.Count; i += BatchSize)
-        {
-            var batch = customers.Skip(i).Take(BatchSize).ToList();
-            await _sqlc.AddCustomersAsync(batch);
-        }
-
+        await Helpers.InsertInBatchesAsync(customers, BatchSize, _sqlc.AddCustomersAsync);
         var customerIds = await _sqlc.GetCustomerIdsAsync(new QuerySql.GetCustomerIdsArgs(Limit: count));
         return [.. customerIds.Select(r => r.CustomerId)];
     }
@@ -75,12 +70,7 @@ public class MysqlDatabaseSeeder(string connectionString)
             }
         }
 
-        for (int i = 0; i < products.Count; i += BatchSize)
-        {
-            var batch = products.Skip(i).Take(BatchSize).ToList();
-            await _sqlc.AddProductsAsync(batch);
-        }
-
+        await Helpers.InsertInBatchesAsync(products, BatchSize, _sqlc.AddProductsAsync);
         var productIds = await _sqlc.GetProductIdsAsync(new QuerySql.GetProductIdsArgs(Limit: products.Count));
         return [.. productIds.Select(r => r.ProductId)];
     }
@@ -102,12 +92,7 @@ public class MysqlDatabaseSeeder(string connectionString)
             }
         }
 
-        for (int i = 0; i < orders.Count; i += BatchSize)
-        {
-            var batch = orders.Skip(i).Take(BatchSize).ToList();
-            await _sqlc.AddOrdersAsync(batch);
-        }
-
+        await Helpers.InsertInBatchesAsync(orders, BatchSize, _sqlc.AddOrdersAsync);
         var orderIds = await _sqlc.GetOrderIdsAsync(new QuerySql.GetOrderIdsArgs(Limit: orders.Count));
         return [.. orderIds.Select(r => r.OrderId)];
     }
@@ -128,10 +113,6 @@ public class MysqlDatabaseSeeder(string connectionString)
             }
         }
 
-        for (int i = 0; i < orderItems.Count; i += BatchSize)
-        {
-            var batch = orderItems.Skip(i).Take(BatchSize).ToList();
-            await _sqlc.AddOrderItemsAsync(batch);
-        }
+        await Helpers.InsertInBatchesAsync(orderItems, BatchSize, _sqlc.AddOrderItemsAsync);
     }
 }

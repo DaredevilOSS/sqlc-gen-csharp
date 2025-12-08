@@ -7,13 +7,14 @@ using MysqlSqlcImpl;
 
 namespace BenchmarkRunner.Benchmarks;
 
-[SimpleJob(RuntimeMoniker.Net80, warmupCount: 2, iterationCount: 10)]
+[SimpleJob(RuntimeMoniker.Net80, warmupCount: 2, iterationCount: 15)]
 [MemoryDiagnoser]
 [MarkdownExporterAttribute.GitHub]
 [GroupBenchmarksBy(BenchmarkLogicalGroupRule.ByCategory)]
 [CategoriesColumn]
 public class MysqlWriteBenchmark
 {
+    private const int TotalRecords = 10000000; // 10 million records
     private readonly string _connectionString = Config.GetMysqlConnectionString();
     private QuerySql _sqlcImpl = null!;
     private Queries _efCoreImpl = null!;
@@ -27,21 +28,19 @@ public class MysqlWriteBenchmark
     {
         _sqlcImpl = new QuerySql(_connectionString);
         _efCoreImpl = new Queries(new SalesDbContext(_connectionString));
-
-        MysqlDatabaseHelper.CleanupDatabaseAsync(_connectionString).GetAwaiter().GetResult();
         PrepareTestDataAsync().GetAwaiter().GetResult();
     }
 
     [IterationSetup]
-    public static void IterationSetup()
+    public async Task IterationSetup()
     {
-        GC.Collect();
-        GC.WaitForPendingFinalizers();
-        GC.Collect();
+        await MysqlDatabaseHelper.CleanupWriteTableAsync(_connectionString);
+        Helpers.InvokeGarbageCollection();
     }
-
+    
     private async Task PrepareTestDataAsync()
     {
+        await MysqlDatabaseHelper.CleanupDatabaseAsync(_connectionString);
         var seeder = new MysqlDatabaseSeeder(_connectionString);
         await seeder.SeedAsync(
             customerCount: 10,
@@ -53,7 +52,7 @@ public class MysqlWriteBenchmark
         var orderIds = await _sqlcImpl.GetOrderIdsAsync(new QuerySql.GetOrderIdsArgs(Limit: 1000));
         var productIds = await _sqlcImpl.GetProductIdsAsync(new QuerySql.GetProductIdsArgs(Limit: 1000));
 
-        _testOrderItems = [.. Enumerable.Range(0, BatchSize).Select(i => new QuerySql.AddOrderItemsArgs(
+        _testOrderItems = [.. Enumerable.Range(0, TotalRecords).Select(i => new QuerySql.AddOrderItemsArgs(
             OrderId: orderIds[i % orderIds.Count].OrderId,
             ProductId: productIds[i % productIds.Count].ProductId,
             Quantity: Random.Shared.Next(1, 10),
@@ -65,7 +64,7 @@ public class MysqlWriteBenchmark
     [Benchmark(Baseline = true, Description = "SQLC - AddOrderItems")]
     public async Task Sqlc_AddOrderItems()
     {
-        await _sqlcImpl.AddOrderItemsAsync(_testOrderItems);
+        await Helpers.InsertInBatchesAsync(_testOrderItems, BatchSize, _sqlcImpl.AddOrderItemsAsync);
     }
 
     [BenchmarkCategory("Write")]
@@ -75,7 +74,7 @@ public class MysqlWriteBenchmark
         var args = _testOrderItems.Select(i => new Queries.AddOrderItemsArgs(
             i.OrderId, i.ProductId, i.Quantity, i.UnitPrice
         )).ToList();
-        await _efCoreImpl.AddOrderItems(args);
+        await Helpers.InsertInBatchesAsync(args, BatchSize, _efCoreImpl.AddOrderItems);
     }
 
     [GlobalCleanup]

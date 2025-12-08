@@ -21,19 +21,25 @@ public static partial class SqliteDatabaseHelper
     public static void CleanupDatabase(string connectionString)
     {
         var dbFilename = SqliteFilenameRegex().Match(connectionString).Groups[1].Value;
-        Console.WriteLine($"Removing sqlite db from {dbFilename}");
-        if (!File.Exists(dbFilename)) return;
+        if (string.IsNullOrEmpty(dbFilename))
+            return;
 
-        try
+        var filesToDelete = new [] {
+            dbFilename,
+            dbFilename + "-wal",
+            dbFilename + "-shm"
+        };
+
+        foreach (var file in filesToDelete)
         {
-            File.Delete(dbFilename);
-        }
-        catch (Exception)
-        {
-            // ignored
+            if (!File.Exists(file))
+                continue;
+
+            Console.WriteLine($"Removing sqlite db from {file}");
+            File.Delete(file);
         }
     }
 
-    [GeneratedRegex(@"Data Source=([\w\.\/\-]+\.db);", RegexOptions.Compiled)]
+    [GeneratedRegex(@"Data Source=([\w\.\/\-]+\.db)", RegexOptions.Compiled)]
     private static partial Regex SqliteFilenameRegex();
 }

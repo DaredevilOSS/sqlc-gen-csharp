@@ -1,0 +1,85 @@
+name: Performance Benchmark
+defaults:
+  run:
+    shell: bash
+    
+env:
+  DOTNET_VERSION: '8.0.x'
+
+on:
+  push:
+    branches: [ "add-performance-benchmark-with-efcore" ]
+  release:
+    types: [ published ]
+  workflow_dispatch:
+
+jobs:  
+  benchmark-mysql:
+    name: MySQL Benchmark
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Load .env file
+        uses: xom9ikk/dotenv@v2.3.0
+        with:
+          load-mode: strict
+
+      - name: Docker compose
+        uses: hoverkraft-tech/compose-action@v1.5.1
+        with:
+          services: mysql
+
+      - name: Run Benchmark
+        run: ./benchmark/scripts/run_benchmark.sh mysql
+    
+  benchmark-postgresql:
+    name: PostgreSQL Benchmark
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Load .env file
+        uses: xom9ikk/dotenv@v2.3.0
+        with:
+          load-mode: strict
+
+      - name: Docker compose
+        uses: hoverkraft-tech/compose-action@v1.5.1
+        with:
+          services: postgresql
+
+      - name: Run Benchmark
+        run: ./benchmark/scripts/run_benchmark.sh postgresql
+
+  benchmark-sqlite:
+    name: SQLite Benchmark
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+          
+      - name: Load .env file
+        uses: xom9ikk/dotenv@v2.3.0
+        with:
+          load-mode: strict
+
+      - name: Run Benchmark
+        run: ./benchmark/scripts/run_benchmark.sh sqlite

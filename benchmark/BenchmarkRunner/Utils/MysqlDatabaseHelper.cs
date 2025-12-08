@@ -4,6 +4,14 @@ namespace BenchmarkRunner.Utils;
 
 public static partial class MysqlDatabaseHelper
 {
+    public static async Task CleanupWriteTableAsync(string connectionString)
+    {
+        using var connection = new MySqlConnection(connectionString);
+        await connection.OpenAsync();
+        using var cmd = new MySqlCommand("TRUNCATE TABLE sales.order_items", connection);
+        await cmd.ExecuteNonQueryAsync();
+    }
+
     public static async Task CleanupDatabaseAsync(string connectionString)
     {
         using var connection = new MySqlConnection(connectionString);
@@ -16,7 +24,6 @@ public static partial class MysqlDatabaseHelper
         {
             var cleanupCommands = new[]
             {
-                "TRUNCATE TABLE sales.order_items",
                 "TRUNCATE TABLE sales.orders",
                 "TRUNCATE TABLE sales.products",
                 "TRUNCATE TABLE sales.customers"
@@ -27,10 +34,10 @@ public static partial class MysqlDatabaseHelper
                 using var cmd = new MySqlCommand(command, connection);
                 await cmd.ExecuteNonQueryAsync();
             }
+            await CleanupWriteTableAsync(connectionString);
         }
         finally
         {
-            // Re-enable foreign key checks
             using var enableFkCmd = new MySqlCommand("SET FOREIGN_KEY_CHECKS = 1", connection);
             await enableFkCmd.ExecuteNonQueryAsync();
         }

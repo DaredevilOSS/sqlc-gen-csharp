@@ -7,13 +7,14 @@ using SqliteSqlcImpl;
 
 namespace BenchmarkRunner.Benchmarks;
 
-[SimpleJob(RuntimeMoniker.Net80, warmupCount: 2, iterationCount: 10)]
+[SimpleJob(RuntimeMoniker.Net80, warmupCount: 2, iterationCount: 15)]
 [MemoryDiagnoser]
 [MarkdownExporterAttribute.GitHub]
 [GroupBenchmarksBy(BenchmarkLogicalGroupRule.ByCategory)]
 [CategoriesColumn]
 public class SqliteWriteBenchmark
 {
+    private const int TotalRecords = 1000000; // 1 million records
     private readonly string _connectionString = Config.GetSqliteConnectionString();
     private QuerySql _sqlcImpl = null!;
     private Queries _efCoreImpl = null!;
@@ -22,28 +23,24 @@ public class SqliteWriteBenchmark
     [Params(100, 200, 500)]
     public int BatchSize { get; set; }
 
-
     [GlobalSetup]
-    public async Task GlobalSetup()
+    public void GlobalSetup()
     {
         _sqlcImpl = new QuerySql(_connectionString);
         _efCoreImpl = new Queries(new SalesDbContext(_connectionString));
-
-        SqliteDatabaseHelper.CleanupDatabase(_connectionString);
-        await SqliteDatabaseHelper.InitializeDatabaseAsync(_connectionString);
-        PrepareTestDataAsync().GetAwaiter().GetResult();
     }
 
     [IterationSetup]
-    public static void IterationSetup()
+    public void IterationSetup()
     {
-        GC.Collect();
-        GC.WaitForPendingFinalizers();
-        GC.Collect();
+        PrepareTestDataAsync().GetAwaiter().GetResult();
+        Helpers.InvokeGarbageCollection();
     }
 
     private async Task PrepareTestDataAsync()
     {
+        SqliteDatabaseHelper.CleanupDatabase(_connectionString);
+        await SqliteDatabaseHelper.InitializeDatabaseAsync(_connectionString);
         var seeder = new SqliteDatabaseSeeder(_connectionString);
         await seeder.SeedAsync(
             customerCount: 10,
@@ -55,7 +52,7 @@ public class SqliteWriteBenchmark
         var orderIds = await _sqlcImpl.GetOrderIdsAsync(new QuerySql.GetOrderIdsArgs(Limit: 1000));
         var productIds = await _sqlcImpl.GetProductIdsAsync(new QuerySql.GetProductIdsArgs(Limit: 1000));
 
-        _testOrderItems = [.. Enumerable.Range(0, BatchSize).Select(i => new QuerySql.AddOrderItemsArgs(
+        _testOrderItems = [.. Enumerable.Range(0, TotalRecords).Select(i => new QuerySql.AddOrderItemsArgs(
             OrderId: orderIds[i % orderIds.Count].OrderId,
             ProductId: productIds[i % productIds.Count].ProductId,
             Quantity: Random.Shared.Next(1, 10),
@@ -67,7 +64,7 @@ public class SqliteWriteBenchmark
     [Benchmark(Baseline = true, Description = "SQLC - AddOrderItems")]
     public async Task Sqlc_AddOrderItems()
     {
-        await _sqlcImpl.AddOrderItemsAsync(_testOrderItems);
+        await Helpers.InsertInBatchesAsync(_testOrderItems, BatchSize, _sqlcImpl.AddOrderItemsAsync);
     }
 
     [BenchmarkCategory("Write")]
@@ -77,7 +74,7 @@ public class SqliteWriteBenchmark
         var args = _testOrderItems.Select(i => new Queries.AddOrderItemsArgs(
             i.OrderId, i.ProductId, i.Quantity, i.UnitPrice
         )).ToList();
-        await _efCoreImpl.AddOrderItems(args);
+        await Helpers.InsertInBatchesAsync(args, BatchSize, _efCoreImpl.AddOrderItems);
     }
 
     [GlobalCleanup]

@@ -1,5 +1,6 @@
 ﻿using BenchmarkRunner;
 using Microsoft.Extensions.Logging;
+using System.CommandLine;
 
 public class Program
 {
@@ -12,33 +13,50 @@ public class Program
                 .SetMinimumLevel(LogLevel.Information);
         });
 
-        // Determine which database(s) to benchmark
-        var runPostgresql = args.Length == 0 || args.Contains("--postgresql", StringComparer.OrdinalIgnoreCase);
-        var runSqlite = args.Length == 0 || args.Contains("--sqlite", StringComparer.OrdinalIgnoreCase);
-        var runMysql = args.Length == 0 || args.Contains("--mysql", StringComparer.OrdinalIgnoreCase);
-
-        if (runPostgresql)
+        var rootCommand = new RootCommand("Run database benchmarks");
+        var databaseOption = new Option<string>(
+            "--database",
+            "Database to benchmark (mysql, postgresql, or sqlite)")
         {
-            var logger = loggerFactory.CreateLogger<PostgresqlRunner>();
-            var connectionString = Config.GetPostgresConnectionString();
-            var postgresqlRunner = new PostgresqlRunner(connectionString, logger);
-            await postgresqlRunner.RunAsync();
-        }
-
-        if (runSqlite)
+            IsRequired = true
+        };
+        databaseOption.AddValidator(result =>
         {
-            var logger = loggerFactory.CreateLogger<SqliteRunner>();
-            var connectionString = Config.GetSqliteConnectionString();
-            var sqliteRunner = new SqliteRunner(connectionString, logger);
-            await sqliteRunner.RunAsync();
-        }
+            var value = result.GetValueForOption(databaseOption);
+            if (value != null && value != "mysql" && value != "postgresql" && value != "sqlite")
+            {
+                result.ErrorMessage = $"Invalid database: {value}. Must be one of: mysql, postgresql, sqlite";
+            }
+        });
+        rootCommand.AddOption(databaseOption);
 
-        if (runMysql)
+        rootCommand.SetHandler(async (database) =>
         {
-            var logger = loggerFactory.CreateLogger<MysqlRunner>();
-            var connectionString = Config.GetMysqlConnectionString();
-            var mysqlRunner = new MysqlRunner(connectionString, logger);
-            await mysqlRunner.RunAsync();
-        }
+            switch (database)
+            {
+                case "mysql":
+                    var mysqlRunner = new MysqlRunner(
+                        Config.GetMysqlConnectionString(), 
+                        loggerFactory.CreateLogger<MysqlRunner>());
+                    await mysqlRunner.RunAsync();
+                    break;
+                case "postgresql":
+                    var postgresqlRunner = new PostgresqlRunner(
+                        Config.GetPostgresConnectionString(), 
+                        loggerFactory.CreateLogger<PostgresqlRunner>());
+                    await postgresqlRunner.RunAsync();
+                    break;
+                case "sqlite":
+                    var sqliteRunner = new SqliteRunner(
+                        Config.GetSqliteConnectionString(), 
+                        loggerFactory.CreateLogger<SqliteRunner>());
+                    await sqliteRunner.RunAsync();
+                    break;
+                default:
+                    throw new ArgumentException($"Invalid database: {database}");
+            }
+        }, databaseOption);
+
+        await rootCommand.InvokeAsync(args);
     }
 }

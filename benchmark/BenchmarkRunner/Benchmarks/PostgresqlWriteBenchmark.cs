@@ -7,13 +7,14 @@ using PostgresSqlcImpl;
 
 namespace BenchmarkRunner.Benchmarks;
 
-[SimpleJob(RuntimeMoniker.Net80, warmupCount: 2, iterationCount: 10)]
+[SimpleJob(RuntimeMoniker.Net80, warmupCount: 2, iterationCount: 15)]
 [MemoryDiagnoser]
 [MarkdownExporterAttribute.GitHub]
 [GroupBenchmarksBy(BenchmarkLogicalGroupRule.ByCategory)]
 [CategoriesColumn]
 public class PostgresqlWriteBenchmark
 {
+    private const int TotalRecords = 10000000; // 10 million records
     private readonly string _connectionString = Config.GetPostgresConnectionString();
     private QuerySql _sqlcImpl = null!;
     private Queries _efCoreImpl = null!;
@@ -27,19 +28,19 @@ public class PostgresqlWriteBenchmark
     {
         _sqlcImpl = new QuerySql(_connectionString);
         _efCoreImpl = new Queries(new SalesDbContext(_connectionString));
-        PostgresqlDatabaseHelper.CleanupDatabaseAsync(_connectionString).GetAwaiter().GetResult();
         PrepareTestDataAsync().GetAwaiter().GetResult();
     }
-    [IterationSetup]
-    public static void IterationSetup()
-    {
-        GC.Collect();
-        GC.WaitForPendingFinalizers();
-        GC.Collect();
-    }
 
+    [IterationSetup]
+    public async Task IterationSetup()
+    {
+        await PostgresqlDatabaseHelper.CleanupWriteTableAsync(_connectionString);
+        Helpers.InvokeGarbageCollection();
+    }
+    
     private async Task PrepareTestDataAsync()
     {
+        PostgresqlDatabaseHelper.CleanupDatabaseAsync(_connectionString).GetAwaiter().GetResult();
         var seeder = new PostgresqlDatabaseSeeder(_connectionString);
         await seeder.SeedAsync(
             customerCount: 10,
@@ -51,7 +52,7 @@ public class PostgresqlWriteBenchmark
         var orderIds = await _sqlcImpl.GetOrderIdsAsync(new QuerySql.GetOrderIdsArgs(Limit: 1000));
         var productIds = await _sqlcImpl.GetProductIdsAsync(new QuerySql.GetProductIdsArgs(Limit: 1000));
 
-        _testOrderItems = [.. Enumerable.Range(0, BatchSize).Select(i => new QuerySql.AddOrderItemsArgs(
+        _testOrderItems = [.. Enumerable.Range(0, TotalRecords).Select(i => new QuerySql.AddOrderItemsArgs(
             OrderId: orderIds[i % orderIds.Count].OrderId,
             ProductId: productIds[i % productIds.Count].ProductId,
             Quantity: Random.Shared.Next(1, 10),
@@ -63,7 +64,7 @@ public class PostgresqlWriteBenchmark
     [Benchmark(Baseline = true, Description = "SQLC - AddOrderItems")]
     public async Task Sqlc_AddOrderItems()
     {
-        await _sqlcImpl.AddOrderItemsAsync(_testOrderItems);
+        await Helpers.InsertInBatchesAsync(_testOrderItems, BatchSize, _sqlcImpl.AddOrderItemsAsync);
     }
 
     [BenchmarkCategory("Write")]
@@ -73,7 +74,7 @@ public class PostgresqlWriteBenchmark
         var args = _testOrderItems.Select(i => new Queries.AddOrderItemsArgs(
             i.OrderId, i.ProductId, i.Quantity, i.UnitPrice
         )).ToList();
-        await _efCoreImpl.AddOrderItems(args);
+        await Helpers.InsertInBatchesAsync(args, BatchSize, _efCoreImpl.AddOrderItems);
     }
 
     [GlobalCleanup]
