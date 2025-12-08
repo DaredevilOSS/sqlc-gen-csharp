@@ -34,7 +34,7 @@ jobs:
       - name: Docker compose
         uses: hoverkraft-tech/compose-action@v1.5.1
         with:
-          services: mysql
+          services: mysqldb
 
       - name: Run Benchmark
         run: ./benchmark/scripts/run_benchmark_for_db.sh mysql
@@ -59,7 +59,7 @@ jobs:
       - name: Docker compose
         uses: hoverkraft-tech/compose-action@v1.5.1
         with:
-          services: postgresql
+          services: postgresdb
 
       - name: Run Benchmark
         run: ./benchmark/scripts/run_benchmark_for_db.sh postgresql
