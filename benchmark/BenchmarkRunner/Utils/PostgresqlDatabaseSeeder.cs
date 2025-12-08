@@ -8,9 +8,9 @@ public class PostgresqlDatabaseSeeder(string connectionString)
     private readonly QuerySql _sqlc = new(connectionString);
 
     public async Task SeedAsync(
-        int customerCount, 
-        int productsPerCategory, 
-        int ordersPerCustomer, 
+        int customerCount,
+        int productsPerCategory,
+        int ordersPerCustomer,
         int itemsPerOrder)
     {
         var customers = await SeedCustomersAsync(customerCount);
@@ -43,8 +43,8 @@ public class PostgresqlDatabaseSeeder(string connectionString)
                 Email: $"customer{i + 1}@example.com",
                 Phone: $"+1-555-{1000 + i:D4}",
                 Address: $"{Random.Shared.Next(100, 9999)} Main St, City {i % 10}",
-                RegisteredAt: registeredAt.Kind == DateTimeKind.Utc 
-                    ? DateTime.SpecifyKind(registeredAt, DateTimeKind.Unspecified) 
+                RegisteredAt: registeredAt.Kind == DateTimeKind.Utc
+                    ? DateTime.SpecifyKind(registeredAt, DateTimeKind.Unspecified)
                     : registeredAt
             ));
         }
@@ -104,7 +104,7 @@ public class PostgresqlDatabaseSeeder(string connectionString)
                 ));
             }
         }
-        
+
         for (int i = 0; i < orders.Count; i += BatchSize)
         {
             var batch = orders.Skip(i).Take(BatchSize).ToList();
@@ -121,7 +121,7 @@ public class PostgresqlDatabaseSeeder(string connectionString)
         foreach (var orderId in orderIds)
         {
             for (int i = 0; i < itemsPerOrder; i++)
-            {       
+            {
                 orderItems.Add(new QuerySql.AddOrderItemsArgs(
                     OrderId: orderId,
                     ProductId: productIds[Random.Shared.Next(1, productIds.Count)],

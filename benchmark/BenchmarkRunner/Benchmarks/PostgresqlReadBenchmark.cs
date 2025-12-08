@@ -37,7 +37,7 @@ public class PostgresqlReadBenchmark
             productsPerCategory: 150, // with customer_id filter, this is 1/500 of the table returned
             ordersPerCustomer: 1000,
             itemsPerOrder: 20
-            // 20 * 1000 = 20,000 possible rows returned
+        // 20 * 1000 = 20,000 possible rows returned
         );
     }
 

@@ -44,15 +44,15 @@ public class MysqlWriteBenchmark
     {
         var seeder = new MysqlDatabaseSeeder(_connectionString);
         await seeder.SeedAsync(
-            customerCount: 10, 
-            productsPerCategory: 15, 
-            ordersPerCustomer: 300, 
+            customerCount: 10,
+            productsPerCategory: 15,
+            ordersPerCustomer: 300,
             itemsPerOrder: 0
         );
 
         var orderIds = await _sqlcImpl.GetOrderIdsAsync(new QuerySql.GetOrderIdsArgs(Limit: 1000));
         var productIds = await _sqlcImpl.GetProductIdsAsync(new QuerySql.GetProductIdsArgs(Limit: 1000));
-  
+
         _testOrderItems = [.. Enumerable.Range(0, BatchSize).Select(i => new QuerySql.AddOrderItemsArgs(
             OrderId: orderIds[i % orderIds.Count].OrderId,
             ProductId: productIds[i % productIds.Count].ProductId,

@@ -5,13 +5,13 @@ namespace BenchmarkRunner.Utils;
 public class SqliteDatabaseSeeder(string connectionString)
 {
     private const int BatchSize = 100;
-    
+
     private readonly QuerySql _sqlc = new(connectionString);
 
     public async Task SeedAsync(
-        int customerCount, 
-        int productsPerCategory, 
-        int ordersPerCustomer, 
+        int customerCount,
+        int productsPerCategory,
+        int ordersPerCustomer,
         int itemsPerOrder)
     {
         var customers = await SeedCustomersAsync(customerCount);
@@ -120,7 +120,7 @@ public class SqliteDatabaseSeeder(string connectionString)
         foreach (var orderId in orderIds)
         {
             for (int i = 0; i < itemsPerOrder; i++)
-            {       
+            {
                 orderItems.Add(new QuerySql.AddOrderItemsArgs(
                     OrderId: orderId,
                     ProductId: productIds[Random.Shared.Next(1, productIds.Count)],

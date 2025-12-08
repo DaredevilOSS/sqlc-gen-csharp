@@ -42,9 +42,9 @@ public class PostgresqlWriteBenchmark
     {
         var seeder = new PostgresqlDatabaseSeeder(_connectionString);
         await seeder.SeedAsync(
-            customerCount: 10, 
-            productsPerCategory: 15, 
-            ordersPerCustomer: 300, 
+            customerCount: 10,
+            productsPerCategory: 15,
+            ordersPerCustomer: 300,
             itemsPerOrder: 0
         );
 

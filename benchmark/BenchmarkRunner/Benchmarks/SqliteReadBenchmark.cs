@@ -35,10 +35,10 @@ public class SqliteReadBenchmark
         var seeder = new SqliteDatabaseSeeder(_connectionString);
         await seeder.SeedAsync(
             customerCount: CustomerCount, // with customer_id filter, this is 1/500 of the table returned
-            productsPerCategory: 150, 
+            productsPerCategory: 150,
             ordersPerCustomer: 500,
             itemsPerOrder: 10
-            // 10 * 500 = 5,000 possible rows returned
+        // 10 * 500 = 5,000 possible rows returned
         );
     }
 

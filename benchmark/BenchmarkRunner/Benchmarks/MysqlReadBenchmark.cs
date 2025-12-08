@@ -37,7 +37,7 @@ public class MysqlReadBenchmark
              productsPerCategory: 150,
              ordersPerCustomer: 1000,
              itemsPerOrder: 20
-             // 20 * 1000 = 20,000 possible rows returned
+         // 20 * 1000 = 20,000 possible rows returned
          );
     }
 

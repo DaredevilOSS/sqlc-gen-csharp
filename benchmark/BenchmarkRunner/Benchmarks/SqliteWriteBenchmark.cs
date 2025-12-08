@@ -28,7 +28,7 @@ public class SqliteWriteBenchmark
     {
         _sqlcImpl = new QuerySql(_connectionString);
         _efCoreImpl = new Queries(new SalesDbContext(_connectionString));
-        
+
         SqliteDatabaseHelper.CleanupDatabase(_connectionString);
         await SqliteDatabaseHelper.InitializeDatabaseAsync(_connectionString);
         PrepareTestDataAsync().GetAwaiter().GetResult();
@@ -46,9 +46,9 @@ public class SqliteWriteBenchmark
     {
         var seeder = new SqliteDatabaseSeeder(_connectionString);
         await seeder.SeedAsync(
-            customerCount: 10, 
-            productsPerCategory: 15, 
-            ordersPerCustomer: 300, 
+            customerCount: 10,
+            productsPerCategory: 15,
+            ordersPerCustomer: 300,
             itemsPerOrder: 0
         );
 
