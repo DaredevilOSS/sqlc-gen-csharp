@@ -46,6 +46,7 @@ public class MysqlReadBenchmark
     {
         GC.Collect();
         GC.WaitForPendingFinalizers();
+        GC.Collect();
     }
 
     [BenchmarkCategory("Read")]

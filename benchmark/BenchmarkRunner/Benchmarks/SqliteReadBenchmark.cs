@@ -47,6 +47,7 @@ public class SqliteReadBenchmark
     {
         GC.Collect();
         GC.WaitForPendingFinalizers();
+        GC.Collect();
     }
 
     [BenchmarkCategory("Read")]

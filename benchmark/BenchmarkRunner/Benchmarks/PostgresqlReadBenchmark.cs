@@ -46,6 +46,7 @@ public class PostgresqlReadBenchmark
     {
         GC.Collect();
         GC.WaitForPendingFinalizers();
+        GC.Collect();
     }
 
 

@@ -39,6 +39,7 @@ public class SqliteWriteBenchmark
     {
         GC.Collect();
         GC.WaitForPendingFinalizers();
+        GC.Collect();
     }
 
     private async Task PrepareTestDataAsync()

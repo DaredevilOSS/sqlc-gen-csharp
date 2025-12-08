@@ -37,6 +37,7 @@ public class MysqlWriteBenchmark
     {
         GC.Collect();
         GC.WaitForPendingFinalizers();
+        GC.Collect();
     }
 
     private async Task PrepareTestDataAsync()
