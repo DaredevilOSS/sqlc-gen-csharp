@@ -48,9 +48,7 @@ jobs:
         if: always()
         with:
           name: mysql-results
-          path: |
-            benchmark/BenchmarkDotNet.Artifacts/results/BenchmarkRunner.Benchmarks.MysqlReadBenchmark-report-*
-            benchmark/BenchmarkDotNet.Artifacts/results/BenchmarkRunner.Benchmarks.MysqlWriteBenchmark-report-*
+          path: benchmark/BenchmarkDotNet.Artifacts/results/mysql/
     
   benchmark-postgresql:
     name: PostgreSQL Benchmark
@@ -82,9 +80,7 @@ jobs:
         if: always()
         with:
           name: postgresql-results
-          path: |
-            benchmark/BenchmarkDotNet.Artifacts/results/BenchmarkRunner.Benchmarks.PostgresqlReadBenchmark-report-*
-            benchmark/BenchmarkDotNet.Artifacts/results/BenchmarkRunner.Benchmarks.PostgresqlWriteBenchmark-report-*
+          path: benchmark/BenchmarkDotNet.Artifacts/results/postgresql/
 
   benchmark-sqlite:
     name: SQLite Benchmark
@@ -111,9 +107,7 @@ jobs:
         if: always()
         with:
           name: sqlite-results
-          path: |
-            benchmark/BenchmarkDotNet.Artifacts/results/BenchmarkRunner.Benchmarks.SqliteReadBenchmark-report-*
-            benchmark/BenchmarkDotNet.Artifacts/results/BenchmarkRunner.Benchmarks.SqliteWriteBenchmark-report-*
+          path: benchmark/BenchmarkDotNet.Artifacts/results/sqlite/
 
   push-results:
     name: Push Results

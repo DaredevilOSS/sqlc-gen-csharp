@@ -1,4 +1,5 @@
 using BenchmarkRunner.Benchmarks;
+using BenchmarkDotNet.Configs;
 using Microsoft.Extensions.Logging;
 
 public class SqliteRunner(string connectionString, ILogger<SqliteRunner> logger)
@@ -10,10 +11,13 @@ public class SqliteRunner(string connectionString, ILogger<SqliteRunner> logger)
 
     public Task RunAsync()
     {
+        var path = Path.Combine("benchmark", "BenchmarkDotNet.Artifacts", "results", "sqlite");
+        var config = DefaultConfig.Instance.WithArtifactsPath(path);
+        
         _logger.LogInformation("Running SQLite Reads benchmarks...");
-        BenchmarkDotNet.Running.BenchmarkRunner.Run<SqliteReadBenchmark>();
+        BenchmarkDotNet.Running.BenchmarkRunner.Run<SqliteReadBenchmark>(config);
         _logger.LogInformation("Running SQLite Writes benchmarks...");
-        BenchmarkDotNet.Running.BenchmarkRunner.Run<SqliteWriteBenchmark>();
+        BenchmarkDotNet.Running.BenchmarkRunner.Run<SqliteWriteBenchmark>(config);
         return Task.CompletedTask;
     }
 }
