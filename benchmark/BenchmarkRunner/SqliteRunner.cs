@@ -1,5 +1,5 @@
-using BenchmarkRunner.Benchmarks;
 using BenchmarkDotNet.Configs;
+using BenchmarkRunner.Benchmarks;
 using Microsoft.Extensions.Logging;
 
 public class SqliteRunner(string connectionString, ILogger<SqliteRunner> logger)
@@ -13,7 +13,7 @@ public class SqliteRunner(string connectionString, ILogger<SqliteRunner> logger)
     {
         var path = Path.Combine("benchmark", "BenchmarkDotNet.Artifacts", "results", "sqlite");
         var config = DefaultConfig.Instance.WithArtifactsPath(path);
-        
+
         _logger.LogInformation("Running SQLite Reads benchmarks...");
         BenchmarkDotNet.Running.BenchmarkRunner.Run<SqliteReadBenchmark>(config);
         _logger.LogInformation("Running SQLite Writes benchmarks...");

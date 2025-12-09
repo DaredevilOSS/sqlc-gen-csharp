@@ -1,5 +1,5 @@
-using BenchmarkRunner.Benchmarks;
 using BenchmarkDotNet.Configs;
+using BenchmarkRunner.Benchmarks;
 using Microsoft.Extensions.Logging;
 
 public class PostgresqlRunner(string connectionString, ILogger<PostgresqlRunner> logger)
@@ -13,7 +13,7 @@ public class PostgresqlRunner(string connectionString, ILogger<PostgresqlRunner>
     {
         var path = Path.Combine("benchmark", "BenchmarkDotNet.Artifacts", "results", "postgresql");
         var config = DefaultConfig.Instance.WithArtifactsPath(path);
-        
+
         _logger.LogInformation("Running PostgreSQL Reads benchmarks...");
         BenchmarkDotNet.Running.BenchmarkRunner.Run<PostgresqlReadBenchmark>(config);
         _logger.LogInformation("Running PostgreSQL Writes benchmarks...");
