@@ -14,9 +14,10 @@ namespace BenchmarkRunner.Benchmarks;
 [CategoriesColumn]
 public class PostgresqlReadBenchmark
 {
-    private const int CustomerCount = 500;
     private readonly string _connectionString = Config.GetPostgresConnectionString();
     private QuerySql _sqlcImpl = null!;
+    private const int CustomerCount = 500;
+    private const int QueriesToRun = 10000;
 
     [Params(5000, 10000, 20000)]
     public int Limit { get; set; }
@@ -48,7 +49,7 @@ public class PostgresqlReadBenchmark
     [Benchmark(Baseline = true, Description = "SQLC - GetCustomerOrders")]
     public async Task<List<QuerySql.GetCustomerOrdersRow>> Sqlc_GetCustomerOrders()
     {
-        return await Helpers.ExecuteConcurrentlyAsync(ConcurrentQueries, _ =>
+        return await Helpers.ExecuteConcurrentlyAsync(QueriesToRun, ConcurrentQueries, _ =>
         {
             return _sqlcImpl.GetCustomerOrdersAsync(new QuerySql.GetCustomerOrdersArgs(
                 CustomerId: Random.Shared.Next(1, CustomerCount),
@@ -62,7 +63,7 @@ public class PostgresqlReadBenchmark
     [Benchmark(Description = "EFCore (NoTracking) - GetCustomerOrders")]
     public async Task<List<Queries.GetCustomerOrdersRow>> EFCore_NoTracking_GetCustomerOrders()
     {
-        return await Helpers.ExecuteConcurrentlyAsync(ConcurrentQueries, async _ =>
+        return await Helpers.ExecuteConcurrentlyAsync(QueriesToRun, ConcurrentQueries, async _ =>
         {
             await using var dbContext = new SalesDbContext(_connectionString);
             var queries = new Queries(dbContext, useTracking: false);
@@ -78,7 +79,7 @@ public class PostgresqlReadBenchmark
     [Benchmark(Description = "EFCore (WithTracking) - GetCustomerOrders")]
     public async Task<List<Queries.GetCustomerOrdersRow>> EFCore_WithTracking_GetCustomerOrders()
     {
-        return await Helpers.ExecuteConcurrentlyAsync(ConcurrentQueries, async _ =>
+        return await Helpers.ExecuteConcurrentlyAsync(QueriesToRun, ConcurrentQueries, async _ =>
         {
             await using var dbContext = new SalesDbContext(_connectionString);
             var queries = new Queries(dbContext, useTracking: true);
