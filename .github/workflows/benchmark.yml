@@ -45,9 +45,14 @@ jobs:
 
       - name: Upload Results
         uses: actions/upload-artifact@v4
+        if: always()
         with:
           name: mysql-results
-          path: benchmark/BenchmarkDotNet.Artifacts/results/*.{md,html,csv}
+          path: |
+            benchmark/BenchmarkDotNet.Artifacts/results/*.md
+            benchmark/BenchmarkDotNet.Artifacts/results/*.html
+            benchmark/BenchmarkDotNet.Artifacts/results/*.csv
+          if-no-files-found: ignore
     
   benchmark-postgresql:
     name: PostgreSQL Benchmark
@@ -76,9 +81,14 @@ jobs:
 
       - name: Upload Results
         uses: actions/upload-artifact@v4
+        if: always()
         with:
           name: postgresql-results
-          path: benchmark/BenchmarkDotNet.Artifacts/results/*.{md,html,csv}
+          path: |
+            benchmark/BenchmarkDotNet.Artifacts/results/*.md
+            benchmark/BenchmarkDotNet.Artifacts/results/*.html
+            benchmark/BenchmarkDotNet.Artifacts/results/*.csv
+          if-no-files-found: ignore
 
   benchmark-sqlite:
     name: SQLite Benchmark
@@ -102,9 +112,14 @@ jobs:
 
       - name: Upload Results
         uses: actions/upload-artifact@v4
+        if: always()
         with:
           name: sqlite-results
-          path: benchmark/BenchmarkDotNet.Artifacts/results/*.{md,html,csv}
+          path: |
+            benchmark/BenchmarkDotNet.Artifacts/results/*.md
+            benchmark/BenchmarkDotNet.Artifacts/results/*.html
+            benchmark/BenchmarkDotNet.Artifacts/results/*.csv
+          if-no-files-found: ignore
 
   push-results:
     name: Push Results
