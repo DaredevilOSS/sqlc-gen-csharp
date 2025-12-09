@@ -1,8 +1,12 @@
-name: Performance Benchmark
+name: Performance Benchmarks
 defaults:
   run:
     shell: bash
-    
+  
+permissions:
+  contents: write
+  pull-requests: write
+
 env:
   DOTNET_VERSION: '8.0.x'
 
@@ -26,6 +30,9 @@ jobs:
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
+      - name: Dotnet Build
+        run: dotnet build ./benchmark/BenchmarkRunner/BenchmarkRunner.csproj -c Release
+
       - name: Load .env file
         uses: xom9ikk/dotenv@v2.3.0
         with:
@@ -38,6 +45,12 @@ jobs:
 
       - name: Run Benchmark
         run: ./benchmark/scripts/run_benchmark_for_db.sh mysql
+
+      - name: Upload Results
+        uses: actions/upload-artifact@v4
+        with:
+          name: mysql-results
+          path: benchmark/BenchmarkDotNet.Artifacts/results/*.{md,html,csv}
     
   benchmark-postgresql:
     name: PostgreSQL Benchmark
@@ -64,6 +77,12 @@ jobs:
       - name: Run Benchmark
         run: ./benchmark/scripts/run_benchmark_for_db.sh postgresql
 
+      - name: Upload Results
+        uses: actions/upload-artifact@v4
+        with:
+          name: postgresql-results
+          path: benchmark/BenchmarkDotNet.Artifacts/results/*.{md,html,csv}
+
   benchmark-sqlite:
     name: SQLite Benchmark
     runs-on: ubuntu-latest
@@ -75,6 +94,9 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
+      
+      - name: Dotnet Build
+        run: dotnet build ./benchmark/BenchmarkRunner/BenchmarkRunner.csproj -c Release
           
       - name: Load .env file
         uses: xom9ikk/dotenv@v2.3.0
@@ -83,3 +105,56 @@ jobs:
 
       - name: Run Benchmark
         run: ./benchmark/scripts/run_benchmark_for_db.sh sqlite
+
+      - name: Upload Results
+        uses: actions/upload-artifact@v4
+        with:
+          name: sqlite-results
+          path: benchmark/BenchmarkDotNet.Artifacts/results/*.{md,html,csv}
+
+  push-results:
+    name: Push Results
+    runs-on: ubuntu-latest
+    if: always()
+    needs: [benchmark-mysql, benchmark-postgresql, benchmark-sqlite]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+      
+      - name: Dotnet Build
+        run: dotnet build ./benchmark/BenchmarkRunner/BenchmarkRunner.csproj -c Release
+
+      - name: Download MySQL Results
+        uses: actions/download-artifact@v4
+        with:
+          name: mysql-results
+          path: benchmark/BenchmarkDotNet.Artifacts/results/mysql
+
+      - name: Download PostgreSQL Results
+        uses: actions/download-artifact@v4
+        with:
+          name: postgresql-results
+          path: benchmark/BenchmarkDotNet.Artifacts/results/postgresql
+
+      - name: Download SQLite Results
+        uses: actions/download-artifact@v4
+        with:
+          name: sqlite-results
+          path: benchmark/BenchmarkDotNet.Artifacts/results/sqlite
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v6
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          base: main
+          title: update benchmark results
+          commit-message: update benchmark results
+          branch: update-benchmark-results
+          branch-suffix: timestamp
+          delete-branch: true

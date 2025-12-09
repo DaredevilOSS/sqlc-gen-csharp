@@ -6,6 +6,8 @@ destroy() { docker-compose down --volumes; }
 trap destroy EXIT
 docker-compose up --build --detach --force-recreate --remove-orphans --wait
 
+dotnet build ./benchmark/BenchmarkRunner/BenchmarkRunner.csproj -c Release
+
 ./benchmark/scripts/run_benchmark_for_db.sh mysql
 ./benchmark/scripts/run_benchmark_for_db.sh postgresql
 ./benchmark/scripts/run_benchmark_for_db.sh sqlite

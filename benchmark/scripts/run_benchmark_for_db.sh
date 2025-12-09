@@ -3,7 +3,6 @@
 set -ex
 
 database_to_benchmark=$1
-dotnet build ./benchmark/BenchmarkRunner/BenchmarkRunner.csproj -c Release
 
 if [ "$GITHUB_ACTIONS" = "true" ]; then
     echo "Running in Github Actions"
