@@ -49,10 +49,8 @@ jobs:
         with:
           name: mysql-results
           path: |
-            benchmark/BenchmarkDotNet.Artifacts/results/*.md
-            benchmark/BenchmarkDotNet.Artifacts/results/*.html
-            benchmark/BenchmarkDotNet.Artifacts/results/*.csv
-          if-no-files-found: ignore
+            benchmark/BenchmarkDotNet.Artifacts/results/BenchmarkRunner.Benchmarks.MysqlReadBenchmark-report-*
+            benchmark/BenchmarkDotNet.Artifacts/results/BenchmarkRunner.Benchmarks.MysqlWriteBenchmark-report-*
     
   benchmark-postgresql:
     name: PostgreSQL Benchmark
@@ -85,10 +83,8 @@ jobs:
         with:
           name: postgresql-results
           path: |
-            benchmark/BenchmarkDotNet.Artifacts/results/*.md
-            benchmark/BenchmarkDotNet.Artifacts/results/*.html
-            benchmark/BenchmarkDotNet.Artifacts/results/*.csv
-          if-no-files-found: ignore
+            benchmark/BenchmarkDotNet.Artifacts/results/BenchmarkRunner.Benchmarks.PostgresqlReadBenchmark-report-*
+            benchmark/BenchmarkDotNet.Artifacts/results/BenchmarkRunner.Benchmarks.PostgresqlWriteBenchmark-report-*
 
   benchmark-sqlite:
     name: SQLite Benchmark
@@ -116,10 +112,8 @@ jobs:
         with:
           name: sqlite-results
           path: |
-            benchmark/BenchmarkDotNet.Artifacts/results/*.md
-            benchmark/BenchmarkDotNet.Artifacts/results/*.html
-            benchmark/BenchmarkDotNet.Artifacts/results/*.csv
-          if-no-files-found: ignore
+            benchmark/BenchmarkDotNet.Artifacts/results/BenchmarkRunner.Benchmarks.SqliteReadBenchmark-report-*
+            benchmark/BenchmarkDotNet.Artifacts/results/BenchmarkRunner.Benchmarks.SqliteWriteBenchmark-report-*
 
   push-results:
     name: Push Results
