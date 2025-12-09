@@ -37,7 +37,7 @@ public class PostgresqlWriteBenchmark
         await PostgresqlDatabaseHelper.CleanupWriteTableAsync(_connectionString);
         Helpers.InvokeGarbageCollection();
     }
-    
+
     private async Task PrepareTestDataAsync()
     {
         PostgresqlDatabaseHelper.CleanupDatabaseAsync(_connectionString).GetAwaiter().GetResult();

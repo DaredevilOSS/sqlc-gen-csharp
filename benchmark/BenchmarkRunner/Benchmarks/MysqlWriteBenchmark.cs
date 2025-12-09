@@ -37,7 +37,7 @@ public class MysqlWriteBenchmark
         await MysqlDatabaseHelper.CleanupWriteTableAsync(_connectionString);
         Helpers.InvokeGarbageCollection();
     }
-    
+
     private async Task PrepareTestDataAsync()
     {
         await MysqlDatabaseHelper.CleanupDatabaseAsync(_connectionString);

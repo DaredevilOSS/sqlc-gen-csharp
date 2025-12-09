@@ -24,7 +24,7 @@ public static partial class SqliteDatabaseHelper
         if (string.IsNullOrEmpty(dbFilename))
             return;
 
-        var filesToDelete = new [] {
+        var filesToDelete = new[] {
             dbFilename,
             dbFilename + "-wal",
             dbFilename + "-shm"

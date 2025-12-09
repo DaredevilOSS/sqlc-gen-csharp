@@ -36,19 +36,19 @@ public class Program
             {
                 case "mysql":
                     var mysqlRunner = new MysqlRunner(
-                        Config.GetMysqlConnectionString(), 
+                        Config.GetMysqlConnectionString(),
                         loggerFactory.CreateLogger<MysqlRunner>());
                     await mysqlRunner.RunAsync();
                     break;
                 case "postgresql":
                     var postgresqlRunner = new PostgresqlRunner(
-                        Config.GetPostgresConnectionString(), 
+                        Config.GetPostgresConnectionString(),
                         loggerFactory.CreateLogger<PostgresqlRunner>());
                     await postgresqlRunner.RunAsync();
                     break;
                 case "sqlite":
                     var sqliteRunner = new SqliteRunner(
-                        Config.GetSqliteConnectionString(), 
+                        Config.GetSqliteConnectionString(),
                         loggerFactory.CreateLogger<SqliteRunner>());
                     await sqliteRunner.RunAsync();
                     break;

@@ -32,4 +32,3 @@ public static class Helpers
         return [.. results.SelectMany(r => r)];
     }
 }
-
