@@ -30,9 +30,6 @@ jobs:
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
-      - name: Dotnet Build
-        run: dotnet build ./benchmark/BenchmarkRunner/BenchmarkRunner.csproj -c Release
-
       - name: Load .env file
         uses: xom9ikk/dotenv@v2.3.0
         with:
@@ -94,10 +91,7 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
-      
-      - name: Dotnet Build
-        run: dotnet build ./benchmark/BenchmarkRunner/BenchmarkRunner.csproj -c Release
-          
+    
       - name: Load .env file
         uses: xom9ikk/dotenv@v2.3.0
         with:
@@ -120,14 +114,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-
-      - name: Set up .NET
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: ${{ env.DOTNET_VERSION }}
-      
-      - name: Dotnet Build
-        run: dotnet build ./benchmark/BenchmarkRunner/BenchmarkRunner.csproj -c Release
 
       - name: Download MySQL Results
         uses: actions/download-artifact@v4
