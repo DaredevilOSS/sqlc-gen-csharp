@@ -28,12 +28,13 @@ public class SqliteWriteBenchmark
     {
         _sqlcImpl = new QuerySql(_connectionString);
         _efCoreImpl = new Queries(new SalesDbContext(_connectionString));
+        PrepareTestDataAsync().GetAwaiter().GetResult();
     }
 
     [IterationSetup]
-    public void IterationSetup()
+    public async Task IterationSetup()
     {
-        PrepareTestDataAsync().GetAwaiter().GetResult();
+        await SqliteDatabaseHelper.CleanupWriteTableAsync(_connectionString);
         Helpers.InvokeGarbageCollection();
     }
 

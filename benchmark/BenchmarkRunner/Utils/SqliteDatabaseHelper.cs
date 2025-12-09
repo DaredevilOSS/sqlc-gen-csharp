@@ -6,14 +6,27 @@ namespace BenchmarkRunner.Utils;
 
 public static partial class SqliteDatabaseHelper
 {
-    public static async Task InitializeDatabaseAsync(string connectionString)
+    public static async Task CleanupWriteTableAsync(string connectionString)
     {
         using var connection = new SqliteConnection(connectionString);
         await connection.OpenAsync();
+        using var cmd = new SqliteCommand("DROP TABLE IF EXISTS order_items", connection);
+        await cmd.ExecuteNonQueryAsync();
+        await CreateSchemaAsync(connectionString);
+    }
+
+    public static async Task InitializeDatabaseAsync(string connectionString)
+    {
         if (!File.Exists("schema.sql"))
             return;
+        await CreateSchemaAsync(connectionString);
+    }
 
+    private static async Task CreateSchemaAsync(string connectionString)
+    {
         var schemaSql = await File.ReadAllTextAsync("schema.sql");
+        using var connection = new SqliteConnection(connectionString);
+        await connection.OpenAsync();
         using var command = new SqliteCommand(schemaSql, connection);
         await command.ExecuteNonQueryAsync();
     }
