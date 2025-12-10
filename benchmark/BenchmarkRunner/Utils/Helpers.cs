@@ -22,7 +22,7 @@ public static class Helpers
 
     public static async Task<List<T>> ExecuteConcurrentlyAsync<T>(
         int totalTasks,
-        int maxConcurrency, 
+        int maxConcurrency,
         Func<int, Task<List<T>>> taskFactory)
     {
         var semaphore = new SemaphoreSlim(maxConcurrency, maxConcurrency);
