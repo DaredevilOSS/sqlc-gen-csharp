@@ -32,9 +32,9 @@ public class PostgresqlWriteBenchmark
     }
 
     [IterationSetup]
-    public async Task IterationSetup()
+    public void IterationSetup()
     {
-        await PostgresqlDatabaseHelper.CleanupWriteTableAsync(_connectionString);
+        PostgresqlDatabaseHelper.CleanupWriteTableAsync(_connectionString).GetAwaiter().GetResult();
         Helpers.InvokeGarbageCollection();
     }
 

@@ -32,9 +32,9 @@ public class SqliteWriteBenchmark
     }
 
     [IterationSetup]
-    public async Task IterationSetup()
+    public void IterationSetup()
     {
-        await SqliteDatabaseHelper.CleanupWriteTableAsync(_connectionString);
+        SqliteDatabaseHelper.CleanupWriteTableAsync(_connectionString).GetAwaiter().GetResult();
         Helpers.InvokeGarbageCollection();
     }
 

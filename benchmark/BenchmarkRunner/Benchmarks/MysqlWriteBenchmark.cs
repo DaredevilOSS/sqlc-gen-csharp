@@ -32,9 +32,9 @@ public class MysqlWriteBenchmark
     }
 
     [IterationSetup]
-    public async Task IterationSetup()
+    public void IterationSetup()
     {
-        await MysqlDatabaseHelper.CleanupWriteTableAsync(_connectionString);
+        MysqlDatabaseHelper.CleanupWriteTableAsync(_connectionString).GetAwaiter().GetResult();
         Helpers.InvokeGarbageCollection();
     }
 
