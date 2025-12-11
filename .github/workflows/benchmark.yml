@@ -45,7 +45,7 @@ jobs:
 
       - name: Upload Results
         uses: actions/upload-artifact@v4
-        if: always()
+        if: success()
         with:
           name: mysql-results
           path: benchmark/BenchmarkDotNet.Artifacts/results/mysql/
@@ -77,7 +77,7 @@ jobs:
 
       - name: Upload Results
         uses: actions/upload-artifact@v4
-        if: always()
+        if: success()
         with:
           name: postgresql-results
           path: benchmark/BenchmarkDotNet.Artifacts/results/postgresql/
@@ -104,7 +104,7 @@ jobs:
 
       - name: Upload Results
         uses: actions/upload-artifact@v4
-        if: always()
+        if: success()
         with:
           name: sqlite-results
           path: benchmark/BenchmarkDotNet.Artifacts/results/sqlite/
