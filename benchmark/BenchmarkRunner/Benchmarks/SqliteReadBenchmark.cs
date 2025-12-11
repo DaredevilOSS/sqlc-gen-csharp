@@ -17,7 +17,7 @@ public class SqliteReadBenchmark
     private readonly string _connectionString = Config.GetSqliteConnectionString();
     private QuerySql _sqlcImpl = null!;
     private const int CustomerCount = 250;
-    private const int QueriesToRun = 500;
+    private const int QueriesToRun = 1000;
 
     [Params(50, 500, 5000)]
     public int Limit { get; set; }
