@@ -20,11 +20,18 @@ public static class Helpers
         }
     }
 
+    private static int CalculateMaxConcurrency(int totalTasks, int maxConcurrency)
+    {
+        return new int[] { 
+            maxConcurrency, totalTasks, Environment.ProcessorCount 
+        }.Min(x => x);
+    }
     public static async Task<List<T>> ExecuteConcurrentlyAsync<T>(
         int totalTasks,
         int maxConcurrency,
         Func<int, Task<List<T>>> taskFactory)
     {
+        maxConcurrency = CalculateMaxConcurrency(totalTasks, maxConcurrency);
         var semaphore = new SemaphoreSlim(maxConcurrency, maxConcurrency);
         var tasks = new List<Task<List<T>>>();
         for (int i = 0; i < totalTasks; i++)
