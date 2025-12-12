@@ -14,7 +14,7 @@ namespace BenchmarkRunner.Benchmarks;
 [CategoriesColumn]
 public class MysqlWriteBenchmark
 {
-    private const int TotalRecords = 10000000; // 10 million records
+    private const int TotalRecords = 5000000; // 5 million records
     private readonly string _connectionString = Config.GetMysqlConnectionString();
     private QuerySql _sqlcImpl = null!;
     private Queries _efCoreImpl = null!;

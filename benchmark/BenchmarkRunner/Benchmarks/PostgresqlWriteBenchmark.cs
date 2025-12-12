@@ -14,13 +14,13 @@ namespace BenchmarkRunner.Benchmarks;
 [CategoriesColumn]
 public class PostgresqlWriteBenchmark
 {
-    private const int TotalRecords = 10000000; // 10 million records
+    private const int TotalRecords = 5000000; // 5 million records
     private readonly string _connectionString = Config.GetPostgresConnectionString();
     private QuerySql _sqlcImpl = null!;
     private Queries _efCoreImpl = null!;
     private List<QuerySql.AddOrderItemsArgs> _testOrderItems = null!;
 
-    [Params(1000, 10000, 50000)]
+    [Params(500, 1000, 3000)]
     public int BatchSize { get; set; }
 
     [GlobalSetup]

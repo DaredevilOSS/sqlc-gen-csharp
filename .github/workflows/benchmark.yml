@@ -122,19 +122,19 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: mysql-results
-          path: benchmark/BenchmarkDotNet.Artifacts/results/mysql
+          path: benchmark/BenchmarkDotNet.Artifacts/mysql
 
       - name: Download PostgreSQL Results
         uses: actions/download-artifact@v4
         with:
           name: postgresql-results
-          path: benchmark/BenchmarkDotNet.Artifacts/results/postgresql
+          path: benchmark/BenchmarkDotNet.Artifacts/postgresql
 
       - name: Download SQLite Results
         uses: actions/download-artifact@v4
         with:
           name: sqlite-results
-          path: benchmark/BenchmarkDotNet.Artifacts/results/sqlite
+          path: benchmark/BenchmarkDotNet.Artifacts/sqlite
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v6
