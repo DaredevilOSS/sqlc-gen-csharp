@@ -29,7 +29,7 @@ public class SqliteRunner(string connectionString, ILogger<SqliteRunner> logger)
         var writeTime = stopwatch.Elapsed; ;
 
         _logger.LogInformation("SQLite Reads benchmarks completed in {ElapsedTime}", Helpers.FormatElapsedTime(readTime));
-        _logger.LogInformation("SQLite Writes benchmarks completed in {ElapsedTime}", Helpers.FormatElapsedTime(writeTime))
+        _logger.LogInformation("SQLite Writes benchmarks completed in {ElapsedTime}", Helpers.FormatElapsedTime(writeTime));
         return Task.CompletedTask;
     }
 }
