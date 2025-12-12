@@ -1,8 +1,8 @@
-using System.Diagnostics;
 using BenchmarkDotNet.Configs;
 using BenchmarkRunner.Benchmarks;
 using BenchmarkRunner.Utils;
 using Microsoft.Extensions.Logging;
+using System.Diagnostics;
 
 public class PostgresqlRunner(string connectionString, ILogger<PostgresqlRunner> logger)
 {

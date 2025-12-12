@@ -18,7 +18,7 @@ public class SqliteReadBenchmark
     private QuerySql _sqlcImpl = null!;
     private const int CustomerCount = 250;
     private const int QueriesToRun = 500;
-    
+
     [Params(50, 500)]
     public int Limit { get; set; }
 

@@ -1,8 +1,8 @@
-using System.Diagnostics;
 using BenchmarkDotNet.Configs;
 using BenchmarkRunner.Benchmarks;
 using BenchmarkRunner.Utils;
 using Microsoft.Extensions.Logging;
+using System.Diagnostics;
 
 public class SqliteRunner(string connectionString, ILogger<SqliteRunner> logger)
 {
@@ -26,7 +26,7 @@ public class SqliteRunner(string connectionString, ILogger<SqliteRunner> logger)
         stopwatch.Restart();
         BenchmarkDotNet.Running.BenchmarkRunner.Run<SqliteWriteBenchmark>(config);
         stopwatch.Stop();
-        var writeTime = stopwatch.Elapsed;;
+        var writeTime = stopwatch.Elapsed; ;
 
         _logger.LogInformation("SQLite Reads benchmarks completed in {ElapsedTime}", Helpers.FormatElapsedTime(readTime));
         _logger.LogInformation("SQLite Writes benchmarks completed in {ElapsedTime}", Helpers.FormatElapsedTime(writeTime))
