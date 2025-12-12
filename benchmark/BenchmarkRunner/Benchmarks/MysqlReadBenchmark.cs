@@ -19,7 +19,7 @@ public class MysqlReadBenchmark
     private const int CustomerCount = 500;
     private const int QueriesToRun = 1000;
 
-    [Params(50, 500, 5000)]
+    [Params(50, 500, 1000)]
     public int Limit { get; set; }
 
     [Params(10, 50)]

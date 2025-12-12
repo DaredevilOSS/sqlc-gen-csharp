@@ -1,9 +1,18 @@
-using System.Linq;
+using Microsoft.Extensions.Logging;
 
 namespace BenchmarkRunner.Utils;
 
 public static class Helpers
 {
+    private static readonly ILoggerFactory LoggerFactory = Microsoft.Extensions.Logging.LoggerFactory.Create(builder =>
+    {
+        builder
+            .AddConsole()
+            .SetMinimumLevel(LogLevel.Information);
+    });
+
+    public static ILogger<T> CreateLogger<T>() => LoggerFactory.CreateLogger<T>();
+
     public static void InvokeGarbageCollection()
     {
         GC.Collect();
@@ -11,13 +20,25 @@ public static class Helpers
         GC.Collect();
     }
 
+    /// <summary>
+    /// Formats elapsed time in a human-readable format (e.g., "1m 23.45s" or "45.67s")
+    /// </summary>
+    public static string FormatElapsedTime(TimeSpan elapsed)
+    {
+        if (elapsed.TotalMinutes >= 1)
+        {
+            var minutes = (int)elapsed.TotalMinutes;
+            var seconds = elapsed.TotalSeconds % 60;
+            return $"{minutes}m {seconds:F2}s";
+        }
+        return $"{elapsed.TotalSeconds:F2}s";
+    }
+
     public static async Task InsertInBatchesAsync<T>(List<T> items, int batchSize, Func<List<T>, Task> insertBatch)
     {
-        for (int i = 0; i < items.Count; i += batchSize)
-        {
-            var batch = items.Skip(i).Take(batchSize).ToList();
-            await insertBatch(batch);
-        }
+        var batches = items.Chunk(batchSize);
+        foreach (var batch in batches)
+            await insertBatch([.. batch]);
     }
 
     private static int CalculateMaxConcurrency(int totalTasks, int maxConcurrency)
@@ -32,20 +53,20 @@ public static class Helpers
         Func<int, Task<List<T>>> taskFactory)
     {
         maxConcurrency = CalculateMaxConcurrency(totalTasks, maxConcurrency);
-        var semaphore = new SemaphoreSlim(maxConcurrency, maxConcurrency);
+        using var semaphore = new SemaphoreSlim(maxConcurrency, maxConcurrency);
         var tasks = new List<Task<List<T>>>();
         for (int i = 0; i < totalTasks; i++)
-            tasks.Add(ExecuteWithThrottleAsync(semaphore, () => taskFactory(i)));
+        {
+            var index = i; // Capture for closure
+            tasks.Add(ExecuteWithThrottleAsync(semaphore, () => taskFactory(index)));
+        }
 
-        var results = await Task.WhenAll(tasks);
+        var results = await Task.WhenAll([.. tasks]);
         return [.. results.SelectMany(r => r)];
     }
 
-    private static async Task<T> ExecuteWithThrottleAsync<T>(SemaphoreSlim? semaphore, Func<Task<T>> taskFactory)
+    private static async Task<List<T>> ExecuteWithThrottleAsync<T>(SemaphoreSlim semaphore, Func<Task<List<T>>> taskFactory)
     {
-        if (semaphore == null)
-            return await taskFactory();
-
         await semaphore.WaitAsync();
         try
         {

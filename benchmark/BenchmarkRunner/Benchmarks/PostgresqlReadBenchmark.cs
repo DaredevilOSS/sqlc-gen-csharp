@@ -19,7 +19,7 @@ public class PostgresqlReadBenchmark
     private const int CustomerCount = 500;
     private const int QueriesToRun = 1000;
 
-    [Params(50, 500, 5000)]
+    [Params(50, 500, 1000)]
     public int Limit { get; set; }
 
     [Params(10, 50)]
@@ -29,7 +29,6 @@ public class PostgresqlReadBenchmark
     public async Task GlobalSetup()
     {
         _sqlcImpl = new(_connectionString);
-
         await PostgresqlDatabaseHelper.CleanupDatabaseAsync(_connectionString);
         var seeder = new PostgresqlDatabaseSeeder(_connectionString);
         await seeder.SeedAsync(

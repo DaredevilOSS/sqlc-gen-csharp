@@ -18,7 +18,7 @@ public class SqliteReadBenchmark
     private QuerySql _sqlcImpl = null!;
     private const int CustomerCount = 250;
     private const int QueriesToRun = 500;
-
+    
     [Params(50, 500)]
     public int Limit { get; set; }
 
@@ -29,7 +29,6 @@ public class SqliteReadBenchmark
     public async Task GlobalSetup()
     {
         _sqlcImpl = new QuerySql(_connectionString);
-
         SqliteDatabaseHelper.CleanupDatabase(_connectionString);
         await SqliteDatabaseHelper.InitializeDatabaseAsync(_connectionString);
         var seeder = new SqliteDatabaseSeeder(_connectionString);
