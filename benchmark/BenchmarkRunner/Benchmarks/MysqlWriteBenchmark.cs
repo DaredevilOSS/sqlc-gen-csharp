@@ -15,13 +15,13 @@ namespace BenchmarkRunner.Benchmarks;
 [CategoriesColumn]
 public class MysqlWriteBenchmark
 {
-    private const int TotalRecords = 5000000; // 5 million records
+    private const int TotalRecords = 3000000; // 3 million records
     private readonly string _connectionString = Config.GetMysqlConnectionString();
     private QuerySql _sqlcImpl = null!;
     private Queries _efCoreImpl = null!;
     private List<QuerySql.AddOrderItemsArgs> _testOrderItems = null!;
 
-    [Params(500, 1000, 2000)]
+    [Params(100, 500, 1000)]
     public int BatchSize { get; set; }
 
     [GlobalSetup]
