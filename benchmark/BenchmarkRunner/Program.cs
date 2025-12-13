@@ -6,6 +6,37 @@ public class Program
 {
     private static readonly HashSet<string> _databases = ["mysql", "postgresql", "sqlite"];
     private static readonly HashSet<string> _types = ["reads", "writes"];
+    private static readonly ILoggerFactory _loggerFactory = LoggerFactory.Create(builder =>
+            builder
+                .AddConsole()
+                .SetMinimumLevel(LogLevel.Information));
+    private static readonly MysqlRunner _mysqlRunner = new(
+        Config.GetMysqlConnectionString(),
+        _loggerFactory.CreateLogger<MysqlRunner>());
+    private static readonly PostgresqlRunner _postgresqlRunner = new(
+        Config.GetPostgresConnectionString(),
+        _loggerFactory.CreateLogger<PostgresqlRunner>());
+    private static readonly SqliteRunner _sqliteRunner = new(
+        Config.GetSqliteConnectionString(),
+        _loggerFactory.CreateLogger<SqliteRunner>());
+    private static readonly Dictionary<string, Dictionary<string, Func<Task>>> _benchmarkConfigs = new()
+    {
+        { "mysql", new()
+        { 
+            { "reads", _mysqlRunner.RunReadsAsync }, 
+            { "writes", _mysqlRunner.RunWritesAsync } 
+        }},
+        { "postgresql", new()
+        { 
+            { "reads", _postgresqlRunner.RunReadsAsync }, 
+            { "writes", _postgresqlRunner.RunWritesAsync } 
+        }},
+        { "sqlite", new()
+        { 
+            { "reads", _sqliteRunner.RunReadsAsync }, 
+            { "writes", _sqliteRunner.RunWritesAsync } 
+        }}
+    };
 
     public static async Task Main(string[] args)
     {
@@ -17,7 +48,9 @@ public class Program
         var typeOption = GetTypeOption();
         rootCommand.AddOption(typeOption);
 
-        rootCommand.SetHandler(CommandHandler, databaseOption, typeOption);
+        rootCommand.SetHandler(
+            async (database, type) => await _benchmarkConfigs[database][type](), 
+            databaseOption, typeOption);
         await rootCommand.InvokeAsync(args);
     }
 
@@ -53,46 +86,5 @@ public class Program
                 result.ErrorMessage = $"Invalid type: {value}. Must be one of: {string.Join(", ", _types)}";
         });
         return option;
-    }
-    private static async Task CommandHandler(string database, string type)
-    {
-        using var loggerFactory = LoggerFactory.Create(builder =>
-            builder
-                .AddConsole()
-                .SetMinimumLevel(LogLevel.Information));
-
-        var mysqlRunner = new MysqlRunner(
-            Config.GetMysqlConnectionString(),
-            loggerFactory.CreateLogger<MysqlRunner>());
-        var postgresqlRunner = new PostgresqlRunner(
-            Config.GetPostgresConnectionString(),
-            loggerFactory.CreateLogger<PostgresqlRunner>());
-        var sqliteRunner = new SqliteRunner(
-            Config.GetSqliteConnectionString(),
-            loggerFactory.CreateLogger<SqliteRunner>());
-
-        switch (database, type)
-        {
-            case ("mysql", "read"):
-                await mysqlRunner.RunReadsAsync();
-                break;
-            case ("mysql", "write"):
-                await mysqlRunner.RunWritesAsync();
-                break;
-            case ("postgresql", "read"):
-                await postgresqlRunner.RunReadsAsync();
-                break;
-            case ("postgresql", "write"):
-                await postgresqlRunner.RunWritesAsync();
-                break;
-            case ("sqlite", "read"):
-                await sqliteRunner.RunReadsAsync();
-                break;
-            case ("sqlite", "write"):
-                await sqliteRunner.RunWritesAsync();
-                break;
-            default:
-                throw new ArgumentException($"Invalid database - {database}, type - {type}");
-        }
     }
 }
