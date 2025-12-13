@@ -3,15 +3,22 @@
 set -ex
 
 database_to_benchmark=$1
+type_to_benchmark=$2
+
+function dotnet_run() {
+    dotnet run -c Release --project ./benchmark/BenchmarkRunner/BenchmarkRunner.csproj -- \
+        --database $database_to_benchmark \
+        --type $type_to_benchmark
+}
 
 if [ "$GITHUB_ACTIONS" = "true" ]; then
     echo "Running in Github Actions"
-    dotnet run -c Release --project ./benchmark/BenchmarkRunner/BenchmarkRunner.csproj -- --database $database_to_benchmark
+    dotnet_run
 else
     destroy() { docker-compose down --volumes; }
     trap destroy EXIT
     
     echo "Running in local"
     docker-compose up --build --detach --force-recreate --remove-orphans --wait
-    dotnet run -c Release --project ./benchmark/BenchmarkRunner/BenchmarkRunner.csproj -- --database $database_to_benchmark
+    dotnet_run
 fi

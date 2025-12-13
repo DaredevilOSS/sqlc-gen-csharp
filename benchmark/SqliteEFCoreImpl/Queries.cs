@@ -95,6 +95,7 @@ public class Queries
 
         await _dbContext.Products.AddRangeAsync(products);
         await _dbContext.SaveChangesAsync();
+        _dbContext.ChangeTracker.Clear();
     }
 
     public record AddOrdersArgs(int CustomerId, string OrderState, decimal TotalAmount);
@@ -114,6 +115,7 @@ public class Queries
 
         await _dbContext.Orders.AddRangeAsync(orders);
         await _dbContext.SaveChangesAsync();
+        _dbContext.ChangeTracker.Clear();
     }
 
     public record AddOrderItemsArgs(int OrderId, int ProductId, int Quantity, decimal UnitPrice);
@@ -133,5 +135,6 @@ public class Queries
 
         await _dbContext.OrderItems.AddRangeAsync(orderItems);
         await _dbContext.SaveChangesAsync();
+        _dbContext.ChangeTracker.Clear();
     }
 }

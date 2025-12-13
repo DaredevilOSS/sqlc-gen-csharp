@@ -9,25 +9,34 @@ public class PostgresqlRunner(string connectionString, ILogger<PostgresqlRunner>
     private readonly string _connectionString = connectionString;
     private readonly ILogger<PostgresqlRunner> _logger = logger;
     public string ConnectionString => _connectionString;
+    private readonly Stopwatch _stopwatch = new();
 
-    public Task RunAsync()
+    public Task RunReadsAsync()
     {
-        var path = Path.Combine("benchmark", "BenchmarkDotNet.Artifacts", "results", "postgresql");
+        var path = Path.Combine("benchmark", "BenchmarkDotNet.Artifacts", "postgresql", "reads");
         var config = DefaultConfig.Instance.WithArtifactsPath(path);
 
         _logger.LogInformation("Running PostgreSQL Reads benchmarks...");
-        var stopwatch = Stopwatch.StartNew();
+        _stopwatch.Restart();
         BenchmarkDotNet.Running.BenchmarkRunner.Run<PostgresqlReadBenchmark>(config);
-        stopwatch.Stop();
-        var readTime = stopwatch.Elapsed;
-
-        _logger.LogInformation("Running PostgreSQL Writes benchmarks...");
-        stopwatch.Restart();
-        BenchmarkDotNet.Running.BenchmarkRunner.Run<PostgresqlWriteBenchmark>(config);
-        stopwatch.Stop();
-        var writeTime = stopwatch.Elapsed;
+        _stopwatch.Stop();
+        var readTime = _stopwatch.Elapsed;
 
         _logger.LogInformation("PostgreSQL Reads benchmarks completed in {ElapsedTime}", Helpers.FormatElapsedTime(readTime));
+        return Task.CompletedTask;
+    }
+
+    public Task RunWritesAsync()
+    {
+        var path = Path.Combine("benchmark", "BenchmarkDotNet.Artifacts", "postgresql", "writes");
+        var config = DefaultConfig.Instance.WithArtifactsPath(path);
+
+        _logger.LogInformation("Running PostgreSQL Writes benchmarks...");
+        _stopwatch.Restart();
+        BenchmarkDotNet.Running.BenchmarkRunner.Run<PostgresqlWriteBenchmark>(config);
+        _stopwatch.Stop();
+        var writeTime = _stopwatch.Elapsed;
+
         _logger.LogInformation("PostgreSQL Writes benchmarks completed in {ElapsedTime}", Helpers.FormatElapsedTime(writeTime));
         return Task.CompletedTask;
     }

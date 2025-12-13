@@ -78,6 +78,7 @@ public class Queries(SalesDbContext dbContext, bool useTracking = false)
 
         await _dbContext.Products.AddRangeAsync(products);
         await _dbContext.SaveChangesAsync();
+        _dbContext.ChangeTracker.Clear();
     }
 
     public record AddOrdersArgs(int CustomerId, string OrderState, decimal TotalAmount);
@@ -98,6 +99,7 @@ public class Queries(SalesDbContext dbContext, bool useTracking = false)
 
         await _dbContext.Orders.AddRangeAsync(orders);
         await _dbContext.SaveChangesAsync();
+        _dbContext.ChangeTracker.Clear();
     }
 
     public record AddOrderItemsArgs(Guid OrderId, int ProductId, int Quantity, decimal UnitPrice);
@@ -118,6 +120,6 @@ public class Queries(SalesDbContext dbContext, bool useTracking = false)
 
         await _dbContext.OrderItems.AddRangeAsync(orderItems);
         await _dbContext.SaveChangesAsync();
-        _dbContext.ChangeTracker.Clear(); // Clear tracking to prevent conflicts in batch operations
+        _dbContext.ChangeTracker.Clear();
     }
 }

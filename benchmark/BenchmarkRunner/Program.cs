@@ -4,59 +4,95 @@ using System.CommandLine;
 
 public class Program
 {
+    private static readonly HashSet<string> _databases = ["mysql", "postgresql", "sqlite"];
+    private static readonly HashSet<string> _types = ["reads", "writes"];
+
     public static async Task Main(string[] args)
     {
-        using var loggerFactory = LoggerFactory.Create(builder =>
-        {
-            builder
-                .AddConsole()
-                .SetMinimumLevel(LogLevel.Information);
-        });
+        var rootCommand = new RootCommand("Run benchmarks");
 
-        var rootCommand = new RootCommand("Run database benchmarks");
-        var databaseOption = new Option<string>(
+        var databaseOption = GetDatabaseOption();
+        rootCommand.AddOption(databaseOption);
+
+        var typeOption = GetTypeOption();
+        rootCommand.AddOption(typeOption);
+
+        rootCommand.SetHandler(CommandHandler, databaseOption, typeOption);
+        await rootCommand.InvokeAsync(args);
+    }
+
+    private static Option<string> GetDatabaseOption()
+    {
+        var option = new Option<string>(
             "--database",
             "Database to benchmark (mysql, postgresql, or sqlite)")
         {
             IsRequired = true
         };
-        databaseOption.AddValidator(result =>
+        option.AddValidator(result =>
         {
-            var value = result.GetValueForOption(databaseOption);
-            if (value != null && value != "mysql" && value != "postgresql" && value != "sqlite")
-            {
-                result.ErrorMessage = $"Invalid database: {value}. Must be one of: mysql, postgresql, sqlite";
-            }
+            var value = result.GetValueForOption(option);
+            if (value != null && !_databases.Contains(value))
+                result.ErrorMessage = $"Invalid database: {value}. Must be one of: {string.Join(", ", _databases)}";
         });
-        rootCommand.AddOption(databaseOption);
+        return option;
+    }
 
-        rootCommand.SetHandler(async (database) =>
+    private static Option<string> GetTypeOption()
+    {
+        var option = new Option<string>(
+            "--type",
+            $"Type of benchmark to run ({string.Join(", ", _types)})")
         {
-            switch (database)
-            {
-                case "mysql":
-                    var mysqlRunner = new MysqlRunner(
-                        Config.GetMysqlConnectionString(),
-                        loggerFactory.CreateLogger<MysqlRunner>());
-                    await mysqlRunner.RunAsync();
-                    break;
-                case "postgresql":
-                    var postgresqlRunner = new PostgresqlRunner(
-                        Config.GetPostgresConnectionString(),
-                        loggerFactory.CreateLogger<PostgresqlRunner>());
-                    await postgresqlRunner.RunAsync();
-                    break;
-                case "sqlite":
-                    var sqliteRunner = new SqliteRunner(
-                        Config.GetSqliteConnectionString(),
-                        loggerFactory.CreateLogger<SqliteRunner>());
-                    await sqliteRunner.RunAsync();
-                    break;
-                default:
-                    throw new ArgumentException($"Invalid database: {database}");
-            }
-        }, databaseOption);
+            IsRequired = true
+        };
+        option.AddValidator(result =>
+        {
+            var value = result.GetValueForOption(option);
+            if (value != null && !_types.Contains(value))
+                result.ErrorMessage = $"Invalid type: {value}. Must be one of: {string.Join(", ", _types)}";
+        });
+        return option;
+    }
+    private static async Task CommandHandler(string database, string type)
+    {
+        using var loggerFactory = LoggerFactory.Create(builder =>
+            builder
+                .AddConsole()
+                .SetMinimumLevel(LogLevel.Information));
 
-        await rootCommand.InvokeAsync(args);
+        var mysqlRunner = new MysqlRunner(
+            Config.GetMysqlConnectionString(),
+            loggerFactory.CreateLogger<MysqlRunner>());
+        var postgresqlRunner = new PostgresqlRunner(
+            Config.GetPostgresConnectionString(),
+            loggerFactory.CreateLogger<PostgresqlRunner>());
+        var sqliteRunner = new SqliteRunner(
+            Config.GetSqliteConnectionString(),
+            loggerFactory.CreateLogger<SqliteRunner>());
+
+        switch (database, type)
+        {
+            case ("mysql", "read"):
+                await mysqlRunner.RunReadsAsync();
+                break;
+            case ("mysql", "write"):
+                await mysqlRunner.RunWritesAsync();
+                break;
+            case ("postgresql", "read"):
+                await postgresqlRunner.RunReadsAsync();
+                break;
+            case ("postgresql", "write"):
+                await postgresqlRunner.RunWritesAsync();
+                break;
+            case ("sqlite", "read"):
+                await sqliteRunner.RunReadsAsync();
+                break;
+            case ("sqlite", "write"):
+                await sqliteRunner.RunWritesAsync();
+                break;
+            default:
+                throw new ArgumentException($"Invalid database - {database}, type - {type}");
+        }
     }
 }
