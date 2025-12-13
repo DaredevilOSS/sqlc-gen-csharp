@@ -133,5 +133,6 @@ public class Queries
 
         await _dbContext.OrderItems.AddRangeAsync(orderItems);
         await _dbContext.SaveChangesAsync();
+        _dbContext.ChangeTracker.Clear(); // Clear tracking to prevent conflicts in batch operations
     }
 }

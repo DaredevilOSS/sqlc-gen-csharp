@@ -14,7 +14,7 @@ namespace BenchmarkRunner.Benchmarks;
 [CategoriesColumn]
 public class SqliteWriteBenchmark
 {
-    private const int TotalRecords = 500000; // 500K records
+    private const int TotalRecords = 1000000; // 1 million records
     private readonly string _connectionString = Config.GetSqliteConnectionString();
     private QuerySql _sqlcImpl = null!;
     private Queries _efCoreImpl = null!;
@@ -27,7 +27,7 @@ public class SqliteWriteBenchmark
     public void GlobalSetup()
     {
         _sqlcImpl = new QuerySql(_connectionString);
-        _efCoreImpl = new Queries(new SalesDbContext(_connectionString));
+        _efCoreImpl = new Queries(new SalesDbContext(_connectionString), useTracking: false);
         PrepareTestDataAsync().GetAwaiter().GetResult();
     }
 

@@ -1,3 +1,4 @@
+
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Configs;
 using BenchmarkDotNet.Jobs;
@@ -20,14 +21,14 @@ public class MysqlWriteBenchmark
     private Queries _efCoreImpl = null!;
     private List<QuerySql.AddOrderItemsArgs> _testOrderItems = null!;
 
-    [Params(1000, 10000, 50000)]
+    [Params(500, 1000, 2000)]
     public int BatchSize { get; set; }
 
     [GlobalSetup]
     public void GlobalSetup()
     {
         _sqlcImpl = new QuerySql(_connectionString);
-        _efCoreImpl = new Queries(new SalesDbContext(_connectionString));
+        _efCoreImpl = new Queries(new SalesDbContext(_connectionString), useTracking: false);
         PrepareTestDataAsync().GetAwaiter().GetResult();
     }
 
