@@ -18,8 +18,8 @@ on:
   workflow_dispatch:
 
 jobs:  
-  benchmark-mysql:
-    name: MySQL Benchmark
+  benchmark-mysql-reads:
+    name: MySQL Reads Benchmark
     runs-on: ubuntu-latest
     
     steps:
@@ -41,17 +41,49 @@ jobs:
           services: mysqldb
 
       - name: Run Benchmark
-        run: ./benchmark/scripts/run_benchmark_for_db.sh mysql
+        run: ./benchmark/scripts/run_single_benchmark.sh mysql reads
 
       - name: Upload Results
         uses: actions/upload-artifact@v4
         if: success()
         with:
-          name: mysql-results
-          path: benchmark/BenchmarkDotNet.Artifacts/results/mysql/
+          name: mysql-reads-results
+          path: benchmark/BenchmarkDotNet.Artifacts/mysql/reads
+  
+  benchmark-mysql-writes:
+    name: MySQL Writes Benchmark
+    runs-on: ubuntu-latest
     
-  benchmark-postgresql:
-    name: PostgreSQL Benchmark
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Load .env file
+        uses: xom9ikk/dotenv@v2.3.0
+        with:
+          load-mode: strict
+
+      - name: Docker compose
+        uses: hoverkraft-tech/compose-action@v1.5.1
+        with:
+          services: mysqldb
+
+      - name: Run Benchmark
+        run: ./benchmark/scripts/run_single_benchmark.sh mysql writes
+
+      - name: Upload Results
+        uses: actions/upload-artifact@v4
+        if: success()
+        with:
+          name: mysql-writes-results
+          path: benchmark/BenchmarkDotNet.Artifacts/mysql/writes
+  
+  benchmark-postgresql-reads:
+    name: PostgreSQL Reads Benchmark
     runs-on: ubuntu-latest
     
     steps:
@@ -73,17 +105,49 @@ jobs:
           services: postgresdb
 
       - name: Run Benchmark
-        run: ./benchmark/scripts/run_benchmark_for_db.sh postgresql
+        run: ./benchmark/scripts/run_single_benchmark.sh postgresql reads
 
       - name: Upload Results
         uses: actions/upload-artifact@v4
         if: success()
         with:
-          name: postgresql-results
-          path: benchmark/BenchmarkDotNet.Artifacts/results/postgresql/
+          name: postgresql-reads-results
+          path: benchmark/BenchmarkDotNet.Artifacts/postgresql/reads
 
-  benchmark-sqlite:
-    name: SQLite Benchmark
+  benchmark-postgresql-writes:
+    name: PostgreSQL Writes Benchmark
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Load .env file
+        uses: xom9ikk/dotenv@v2.3.0
+        with:
+          load-mode: strict
+
+      - name: Docker compose
+        uses: hoverkraft-tech/compose-action@v1.5.1
+        with:
+          services: postgresdb
+
+      - name: Run Benchmark
+        run: ./benchmark/scripts/run_single_benchmark.sh postgresql writes
+
+      - name: Upload Results
+        uses: actions/upload-artifact@v4
+        if: success()
+        with:
+          name: postgresql-writes-results
+          path: benchmark/BenchmarkDotNet.Artifacts/postgresql/writes
+        
+  benchmark-sqlite-reads:
+    name: SQLite Reads Benchmark
     runs-on: ubuntu-latest
     
     steps:
@@ -100,41 +164,90 @@ jobs:
           load-mode: strict
 
       - name: Run Benchmark
-        run: ./benchmark/scripts/run_benchmark_for_db.sh sqlite
+        run: ./benchmark/scripts/run_single_benchmark.sh sqlite reads
 
       - name: Upload Results
         uses: actions/upload-artifact@v4
         if: success()
         with:
-          name: sqlite-results
-          path: benchmark/BenchmarkDotNet.Artifacts/results/sqlite/
+          name: sqlite-reads-results
+          path: benchmark/BenchmarkDotNet.Artifacts/sqlite/reads
 
+  benchmark-sqlite-writes:
+    name: SQLite Writes Benchmark
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+    
+      - name: Load .env file
+        uses: xom9ikk/dotenv@v2.3.0
+        with:
+          load-mode: strict
+
+      - name: Run Benchmark
+        run: ./benchmark/scripts/run_single_benchmark.sh sqlite writes
+
+      - name: Upload Results
+        uses: actions/upload-artifact@v4
+        if: success()
+        with:
+          name: sqlite-writes-results
+          path: benchmark/BenchmarkDotNet.Artifacts/sqlite/writes
+        
   push-results:
     name: Push Results
     runs-on: ubuntu-latest
     if: always()
-    needs: [benchmark-mysql, benchmark-postgresql, benchmark-sqlite]
+    needs: [
+      benchmark-mysql-reads, benchmark-mysql-writes, 
+      benchmark-postgresql-reads, benchmark-postgresql-writes, 
+      benchmark-sqlite-reads, benchmark-sqlite-writes
+    ]
 
     steps:
       - uses: actions/checkout@v4
 
-      - name: Download MySQL Results
+      - name: Download MySQL Reads Results
         uses: actions/download-artifact@v4
         with:
-          name: mysql-results
-          path: benchmark/BenchmarkDotNet.Artifacts/mysql
+          name: mysql-reads-results
+          path: benchmark/BenchmarkDotNet.Artifacts/mysql/reads
 
-      - name: Download PostgreSQL Results
+      - name: Download MySQL Writes Results
         uses: actions/download-artifact@v4
         with:
-          name: postgresql-results
-          path: benchmark/BenchmarkDotNet.Artifacts/postgresql
+          name: mysql-writes-results
+          path: benchmark/BenchmarkDotNet.Artifacts/mysql/writes
 
-      - name: Download SQLite Results
+      - name: Download PostgreSQL Reads Results
         uses: actions/download-artifact@v4
         with:
-          name: sqlite-results
-          path: benchmark/BenchmarkDotNet.Artifacts/sqlite
+          name: postgresql-reads-results
+          path: benchmark/BenchmarkDotNet.Artifacts/postgresql/reads
+
+      - name: Download PostgreSQL Writes Results
+        uses: actions/download-artifact@v4
+        with:
+          name: postgresql-writes-results
+          path: benchmark/BenchmarkDotNet.Artifacts/postgresql/writes
+
+      - name: Download SQLite Reads Results
+        uses: actions/download-artifact@v4
+        with:
+          name: sqlite-reads-results
+          path: benchmark/BenchmarkDotNet.Artifacts/sqlite/reads
+
+      - name: Download SQLite Writes Results
+        uses: actions/download-artifact@v4
+        with:
+          name: sqlite-writes-results
+          path: benchmark/BenchmarkDotNet.Artifacts/sqlite/writes
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v6
