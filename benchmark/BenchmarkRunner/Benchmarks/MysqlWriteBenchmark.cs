@@ -13,7 +13,7 @@ namespace BenchmarkRunner.Benchmarks;
 [MarkdownExporterAttribute.GitHub]
 [GroupBenchmarksBy(BenchmarkLogicalGroupRule.ByCategory)]
 [CategoriesColumn]
-public sealed class MysqlWriteBenchmark : BaseWriteBenchmark
+public class MysqlWriteBenchmark : BaseWriteBenchmark
 {
     private static readonly string _connectionString = Config.GetMysqlConnectionString();
     private readonly QuerySql _sqlcImpl = new(_connectionString);
@@ -54,7 +54,7 @@ public sealed class MysqlWriteBenchmark : BaseWriteBenchmark
     }
 
     [IterationSetup]
-    public void IterationSetup()
+    public static void IterationSetup()
     {
         MysqlDatabaseHelper.CleanupWriteTableAsync(_connectionString).GetAwaiter().GetResult();
         InvokeGarbageCollection();

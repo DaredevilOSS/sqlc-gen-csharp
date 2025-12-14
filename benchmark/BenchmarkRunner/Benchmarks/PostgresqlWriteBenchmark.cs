@@ -12,7 +12,7 @@ namespace BenchmarkRunner.Benchmarks;
 [MarkdownExporterAttribute.GitHub]
 [GroupBenchmarksBy(BenchmarkLogicalGroupRule.ByCategory)]
 [CategoriesColumn]
-public sealed class PostgresqlWriteBenchmark : BaseWriteBenchmark
+public class PostgresqlWriteBenchmark : BaseWriteBenchmark
 {
     private static readonly string _connectionString = Config.GetPostgresConnectionString();
     private readonly QuerySql _sqlcImpl = new(_connectionString);
@@ -52,7 +52,7 @@ public sealed class PostgresqlWriteBenchmark : BaseWriteBenchmark
     }
 
     [IterationSetup]
-    public void IterationSetup()
+    public static void IterationSetup()
     {
         PostgresqlDatabaseHelper.CleanupWriteTableAsync(_connectionString).GetAwaiter().GetResult();
         InvokeGarbageCollection();

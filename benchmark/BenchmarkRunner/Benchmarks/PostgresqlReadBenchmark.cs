@@ -12,7 +12,7 @@ namespace BenchmarkRunner.Benchmarks;
 [MarkdownExporterAttribute.GitHub]
 [GroupBenchmarksBy(BenchmarkLogicalGroupRule.ByCategory)]
 [CategoriesColumn]
-public sealed class PostgresqlReadBenchmark : BaseReadBenchmark
+public class PostgresqlReadBenchmark : BaseReadBenchmark
 {
     private static readonly string _connectionString = Config.GetPostgresConnectionString();
     private readonly QuerySql _sqlcImpl = new(_connectionString);

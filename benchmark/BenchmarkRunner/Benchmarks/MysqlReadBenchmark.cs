@@ -12,7 +12,7 @@ namespace BenchmarkRunner.Benchmarks;
 [MarkdownExporterAttribute.GitHub]
 [GroupBenchmarksBy(BenchmarkLogicalGroupRule.ByCategory)]
 [CategoriesColumn]
-public sealed class MysqlReadBenchmark : BaseReadBenchmark
+public class MysqlReadBenchmark : BaseReadBenchmark
 {
     private static readonly string _connectionString = Config.GetMysqlConnectionString();
     private readonly QuerySql _sqlcImpl = new(_connectionString);

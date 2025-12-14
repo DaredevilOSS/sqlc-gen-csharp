@@ -12,7 +12,7 @@ namespace BenchmarkRunner.Benchmarks;
 [MarkdownExporterAttribute.GitHub]
 [GroupBenchmarksBy(BenchmarkLogicalGroupRule.ByCategory)]
 [CategoriesColumn]
-public sealed class SqliteWriteBenchmark : BaseWriteBenchmark
+public class SqliteWriteBenchmark : BaseWriteBenchmark
 {
     private static readonly string _connectionString = Config.GetSqliteConnectionString();
     private readonly QuerySql _sqlcImpl = new(_connectionString);
@@ -55,7 +55,7 @@ public sealed class SqliteWriteBenchmark : BaseWriteBenchmark
     }
 
     [IterationSetup]
-    public void IterationSetup()
+    public static void IterationSetup()
     {
         SqliteDatabaseHelper.CleanupWriteTableAsync(_connectionString).GetAwaiter().GetResult();
         InvokeGarbageCollection();
