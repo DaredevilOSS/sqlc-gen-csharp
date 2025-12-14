@@ -23,7 +23,7 @@ public abstract class BaseReadBenchmark
             maxConcurrency, totalTasks, Environment.ProcessorCount
         }.Min(x => x);
     }
-    public static async Task<List<T>> ExecuteConcurrentlyAsync<T>(
+    protected static async Task<List<T>> ExecuteConcurrentlyAsync<T>(
         int totalTasks,
         int maxConcurrency,
         Func<int, Task<List<T>>> taskFactory)
@@ -41,7 +41,9 @@ public abstract class BaseReadBenchmark
         return [.. results.SelectMany(r => r)];
     }
 
-    private static async Task<List<T>> ExecuteWithThrottleAsync<T>(SemaphoreSlim semaphore, Func<Task<List<T>>> taskFactory)
+    private static async Task<List<T>> ExecuteWithThrottleAsync<T>(
+        SemaphoreSlim semaphore,
+        Func<Task<List<T>>> taskFactory)
     {
         await semaphore.WaitAsync();
         try

@@ -20,23 +20,6 @@ public class MysqlReadBenchmark : BaseReadBenchmark
     [Params(25, 100, 200)]
     public int ConcurrentQueries { get; set; }
 
-    [GlobalSetup]
-    public async Task GlobalSetup()
-    {
-        await Helpers.InitializeOnceAsync(async () =>
-        {
-            await MysqlDatabaseHelper.CleanupDatabaseAsync(_connectionString);
-            var seeder = new MysqlDatabaseSeeder(_connectionString);
-            await seeder.SeedAsync(
-                 customerCount: CustomerCount, // selectivity: 1/500 of the table returned
-                 productsPerCategory: 150,
-                 ordersPerCustomer: 1000,
-                 itemsPerOrder: 20
-             // 20 * 1000 = 20,000 possible rows returned
-             );
-        });
-    }
-
     [BenchmarkCategory("Read")]
     [Benchmark(Baseline = true, Description = "SQLC - GetCustomerOrders")]
     public override async Task Sqlc_GetCustomerOrders()
@@ -81,5 +64,20 @@ public class MysqlReadBenchmark : BaseReadBenchmark
                 Limit: Limit
             ));
         });
+    }
+
+    public static Func<Task> GetSeedMethod()
+    {
+        return async () =>
+        {
+            await MysqlDatabaseHelper.CleanupDatabaseAsync(_connectionString);
+            var seeder = new MysqlDatabaseSeeder(_connectionString);
+            await seeder.SeedAsync(
+                customerCount: 500, // selectivity: 1/500 of the table returned
+                productsPerCategory: 150,
+                ordersPerCustomer: 1000,
+                itemsPerOrder: 20 // 20 * 1000 = 20,000 possible rows returned
+            );
+        };
     }
 }

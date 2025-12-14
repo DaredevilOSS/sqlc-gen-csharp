@@ -28,27 +28,15 @@ public class PostgresqlWriteBenchmark : BaseWriteBenchmark
     [GlobalSetup]
     public async Task GlobalSetup()
     {
-        await Helpers.InitializeOnceAsync(async () =>
-        {
-            PostgresqlDatabaseHelper.CleanupDatabaseAsync(_connectionString).GetAwaiter().GetResult();
-            var seeder = new PostgresqlDatabaseSeeder(_connectionString);
-            await seeder.SeedAsync(
-                customerCount: 10,
-                productsPerCategory: 15,
-                ordersPerCustomer: 300,
-                itemsPerOrder: 0
-            );
+        var orderIds = await _sqlcImpl.GetOrderIdsAsync(new QuerySql.GetOrderIdsArgs(Limit: 1000));
+        var productIds = await _sqlcImpl.GetProductIdsAsync(new QuerySql.GetProductIdsArgs(Limit: 1000));
 
-            var orderIds = await _sqlcImpl.GetOrderIdsAsync(new QuerySql.GetOrderIdsArgs(Limit: 1000));
-            var productIds = await _sqlcImpl.GetProductIdsAsync(new QuerySql.GetProductIdsArgs(Limit: 1000));
-
-            _testOrderItems = [.. Enumerable.Range(0, TotalRecords).Select(i => new QuerySql.AddOrderItemsArgs(
-                OrderId: orderIds[i % orderIds.Count].OrderId,
-                ProductId: productIds[i % productIds.Count].ProductId,
-                Quantity: Random.Shared.Next(1, 10),
-                UnitPrice: (decimal)(Random.Shared.NextDouble() * 100 + 5)
-            ))];
-        });
+        _testOrderItems = [.. Enumerable.Range(0, TotalRecords).Select(i => new QuerySql.AddOrderItemsArgs(
+            OrderId: orderIds[i % orderIds.Count].OrderId,
+            ProductId: productIds[i % productIds.Count].ProductId,
+            Quantity: Random.Shared.Next(1, 10),
+            UnitPrice: (decimal)(Random.Shared.NextDouble() * 100 + 5)
+        ))];
     }
 
     [IterationSetup]
@@ -73,5 +61,20 @@ public class PostgresqlWriteBenchmark : BaseWriteBenchmark
             i.OrderId, i.ProductId, i.Quantity, i.UnitPrice
         )).ToList();
         await Helpers.InsertInBatchesAsync(args, BatchSize, _efCoreImpl.AddOrderItems);
+    }
+
+    public static Func<Task> GetSeedMethod()
+    {
+        return async () =>
+        {
+            PostgresqlDatabaseHelper.CleanupDatabaseAsync(_connectionString).GetAwaiter().GetResult();
+            var seeder = new PostgresqlDatabaseSeeder(_connectionString);
+            await seeder.SeedAsync(
+                customerCount: 10,
+                productsPerCategory: 15,
+                ordersPerCustomer: 300,
+                itemsPerOrder: 0
+            );
+        };
     }
 }

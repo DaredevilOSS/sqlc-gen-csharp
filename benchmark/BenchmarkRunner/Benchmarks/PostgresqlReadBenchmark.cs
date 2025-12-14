@@ -20,23 +20,6 @@ public class PostgresqlReadBenchmark : BaseReadBenchmark
     [Params(25, 50, 100)]
     public int ConcurrentQueries { get; set; }
 
-    [GlobalSetup]
-    public async Task GlobalSetup()
-    {
-        await Helpers.InitializeOnceAsync(async () =>
-        {
-            await PostgresqlDatabaseHelper.CleanupDatabaseAsync(_connectionString);
-            var seeder = new PostgresqlDatabaseSeeder(_connectionString);
-            await seeder.SeedAsync(
-                customerCount: CustomerCount,
-                productsPerCategory: 150, // with customer_id filter, this is 1/500 of the table returned
-                ordersPerCustomer: 1000,
-                itemsPerOrder: 20
-            // 20 * 1000 = 20,000 possible rows returned
-            );
-        });
-    }
-
     [BenchmarkCategory("Read")]
     [Benchmark(Baseline = true, Description = "SQLC - GetCustomerOrders")]
     public override async Task Sqlc_GetCustomerOrders()
@@ -81,5 +64,20 @@ public class PostgresqlReadBenchmark : BaseReadBenchmark
                 Limit: Limit
             ));
         });
+    }
+
+    public static Func<Task> GetSeedMethod()
+    {
+        return async () =>
+        {
+            await PostgresqlDatabaseHelper.CleanupDatabaseAsync(_connectionString);
+            var seeder = new PostgresqlDatabaseSeeder(_connectionString);
+            await seeder.SeedAsync(
+                customerCount: 500, // with customer_id filter, this is 1/500 of the table returned
+                productsPerCategory: 150,
+                ordersPerCustomer: 1000,
+                itemsPerOrder: 20 // 20 * 1000 = 20,000 possible rows returned
+            );
+        };
     }
 }

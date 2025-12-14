@@ -23,24 +23,6 @@ public class SqliteReadBenchmark : BaseReadBenchmark
     [Params(5, 25, 50)]
     public int ConcurrentQueries { get; set; }
 
-    [GlobalSetup]
-    public async Task GlobalSetup()
-    {
-        await Helpers.InitializeOnceAsync(async () =>
-        {
-            SqliteDatabaseHelper.CleanupDatabase(_connectionString);
-            await SqliteDatabaseHelper.InitializeDatabaseAsync(_connectionString);
-            var seeder = new SqliteDatabaseSeeder(_connectionString);
-            await seeder.SeedAsync(
-                customerCount: CustomerCount, // with customer_id filter, this is 1/500 of the table returned
-                productsPerCategory: 150,
-                ordersPerCustomer: 500,
-                itemsPerOrder: 10
-            // 10 * 500 = 5,000 possible rows returned
-            );
-        });
-    }
-
     [BenchmarkCategory("Read")]
     [Benchmark(Baseline = true, Description = "SQLC - GetCustomerOrders")]
     public override async Task Sqlc_GetCustomerOrders()
@@ -85,5 +67,21 @@ public class SqliteReadBenchmark : BaseReadBenchmark
                 Limit: Limit
             ));
         });
+    }
+
+    public static Func<Task> GetSeedMethod()
+    {
+        return async () =>
+        {
+            SqliteDatabaseHelper.CleanupDatabase(_connectionString);
+            await SqliteDatabaseHelper.InitializeDatabaseAsync(_connectionString);
+            var seeder = new SqliteDatabaseSeeder(_connectionString);
+            await seeder.SeedAsync(
+                customerCount: 500, // with customer_id filter, this is 1/500 of the table returned
+                productsPerCategory: 150,
+                ordersPerCustomer: 500,
+                itemsPerOrder: 10 // 10 * 500 = 5,000 possible rows returned
+            );
+        };
     }
 }

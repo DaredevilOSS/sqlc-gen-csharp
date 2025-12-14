@@ -1,4 +1,4 @@
-public abstract class BaseBenchmarkRunner
+public abstract class BaseRunner
 {
     public virtual string GetBasePath() => Path.Combine("benchmark", "BenchmarkDotNet.Artifacts");
     public abstract Task RunReadsAsync();
