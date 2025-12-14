@@ -1,24 +1,23 @@
 using BenchmarkDotNet.Configs;
 using BenchmarkRunner.Benchmarks;
-using BenchmarkRunner.Utils;
 
-public class PostgresqlRunner : IBenchmarkRunner
+public sealed class SqliteRunner : BaseBenchmarkRunner
 {
-    public static string GetBasePath() => Path.Combine(Helpers.GetBasePath(), "postgresql");
+    public override string GetBasePath() => Path.Combine(base.GetBasePath(), "sqlite");
 
-    public Task RunReadsAsync()
+    public override Task RunReadsAsync()
     {
         var path = Path.Combine(GetBasePath(), "reads");
-        BenchmarkDotNet.Running.BenchmarkRunner.Run<PostgresqlReadBenchmark>(
+        BenchmarkDotNet.Running.BenchmarkRunner.Run<SqliteReadBenchmark>(
             DefaultConfig.Instance.WithArtifactsPath(path)
         );
         return Task.CompletedTask;
     }
 
-    public Task RunWritesAsync()
+    public override Task RunWritesAsync()
     {
         var path = Path.Combine(GetBasePath(), "writes");
-        BenchmarkDotNet.Running.BenchmarkRunner.Run<PostgresqlWriteBenchmark>(
+        BenchmarkDotNet.Running.BenchmarkRunner.Run<SqliteWriteBenchmark>(
             DefaultConfig.Instance.WithArtifactsPath(path)
         );
         return Task.CompletedTask;

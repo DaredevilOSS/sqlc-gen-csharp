@@ -1,10 +1,7 @@
 using BenchmarkDotNet.Attributes;
 
-public abstract class WriteBenchmark
+public abstract class BaseWriteBenchmark : BaseBenchmark
 {
-    protected bool _isInitialized = false;
-    protected SemaphoreSlim _initLock = new(1, 1);
-
     [Params(2000000)]
     public int TotalRecords { get; set; }
 

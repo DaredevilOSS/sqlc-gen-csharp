@@ -1,24 +1,23 @@
 using BenchmarkDotNet.Configs;
 using BenchmarkRunner.Benchmarks;
-using BenchmarkRunner.Utils;
 
-public class MysqlRunner : IBenchmarkRunner
+public sealed class PostgresqlRunner : BaseBenchmarkRunner
 {
-    public static string GetBasePath() => Path.Combine(Helpers.GetBasePath(), "mysql");
+    public override string GetBasePath() => Path.Combine(base.GetBasePath(), "postgresql");
 
-    public Task RunReadsAsync()
+    public override Task RunReadsAsync()
     {
         var path = Path.Combine(GetBasePath(), "reads");
-        BenchmarkDotNet.Running.BenchmarkRunner.Run<MysqlReadBenchmark>(
+        BenchmarkDotNet.Running.BenchmarkRunner.Run<PostgresqlReadBenchmark>(
             DefaultConfig.Instance.WithArtifactsPath(path)
         );
         return Task.CompletedTask;
     }
 
-    public Task RunWritesAsync()
+    public override Task RunWritesAsync()
     {
         var path = Path.Combine(GetBasePath(), "writes");
-        BenchmarkDotNet.Running.BenchmarkRunner.Run<MysqlWriteBenchmark>(
+        BenchmarkDotNet.Running.BenchmarkRunner.Run<PostgresqlWriteBenchmark>(
             DefaultConfig.Instance.WithArtifactsPath(path)
         );
         return Task.CompletedTask;

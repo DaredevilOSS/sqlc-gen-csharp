@@ -12,7 +12,7 @@ namespace BenchmarkRunner.Benchmarks;
 [MarkdownExporterAttribute.GitHub]
 [GroupBenchmarksBy(BenchmarkLogicalGroupRule.ByCategory)]
 [CategoriesColumn]
-public class SqliteReadBenchmark : ReadBenchmark
+public sealed class SqliteReadBenchmark : BaseReadBenchmark
 {
     private static readonly string _connectionString = Config.GetSqliteConnectionString();
     private readonly QuerySql _sqlcImpl = new(_connectionString);
@@ -26,12 +26,8 @@ public class SqliteReadBenchmark : ReadBenchmark
     [GlobalSetup]
     public async Task GlobalSetup()
     {
-        if (_isInitialized) return;
-        await _initLock.WaitAsync();
-        try
+        await InitializeOnceAsync(async () =>
         {
-            if (_isInitialized) return;
-
             SqliteDatabaseHelper.CleanupDatabase(_connectionString);
             await SqliteDatabaseHelper.InitializeDatabaseAsync(_connectionString);
             var seeder = new SqliteDatabaseSeeder(_connectionString);
@@ -42,23 +38,14 @@ public class SqliteReadBenchmark : ReadBenchmark
                 itemsPerOrder: 10
             // 10 * 500 = 5,000 possible rows returned
             );
-
-            _isInitialized = true;
-        }
-        finally
-        {
-            _initLock.Release();
-        }
+        });
     }
-
-    [IterationSetup]
-    public static void IterationSetup() => Helpers.InvokeGarbageCollection();
 
     [BenchmarkCategory("Read")]
     [Benchmark(Baseline = true, Description = "SQLC - GetCustomerOrders")]
     public override async Task Sqlc_GetCustomerOrders()
     {
-        await Helpers.ExecuteConcurrentlyAsync(QueriesToRun, ConcurrentQueries, _ =>
+        await ExecuteConcurrentlyAsync(QueriesToRun, ConcurrentQueries, _ =>
         {
             return _sqlcImpl.GetCustomerOrdersAsync(new QuerySql.GetCustomerOrdersArgs(
                 CustomerId: Random.Shared.Next(1, CustomerCount),
@@ -72,7 +59,7 @@ public class SqliteReadBenchmark : ReadBenchmark
     [Benchmark(Description = "EFCore (NoTracking) - GetCustomerOrders")]
     public override async Task EFCore_NoTracking_GetCustomerOrders()
     {
-        await Helpers.ExecuteConcurrentlyAsync(QueriesToRun, ConcurrentQueries, async _ =>
+        await ExecuteConcurrentlyAsync(QueriesToRun, ConcurrentQueries, async _ =>
         {
             await using var dbContext = new SalesDbContext(_connectionString);
             var queries = new Queries(dbContext, useTracking: false);
@@ -88,7 +75,7 @@ public class SqliteReadBenchmark : ReadBenchmark
     [Benchmark(Description = "EFCore (WithTracking) - GetCustomerOrders")]
     public override async Task EFCore_WithTracking_GetCustomerOrders()
     {
-        await Helpers.ExecuteConcurrentlyAsync(QueriesToRun, ConcurrentQueries, async _ =>
+        await ExecuteConcurrentlyAsync(QueriesToRun, ConcurrentQueries, async _ =>
         {
             await using var dbContext = new SalesDbContext(_connectionString);
             var queries = new Queries(dbContext, useTracking: true);

@@ -13,7 +13,7 @@ namespace BenchmarkRunner.Benchmarks;
 [MarkdownExporterAttribute.GitHub]
 [GroupBenchmarksBy(BenchmarkLogicalGroupRule.ByCategory)]
 [CategoriesColumn]
-public class MysqlWriteBenchmark : WriteBenchmark
+public sealed class MysqlWriteBenchmark : BaseWriteBenchmark
 {
     private static readonly string _connectionString = Config.GetMysqlConnectionString();
     private readonly QuerySql _sqlcImpl = new(_connectionString);
@@ -30,12 +30,8 @@ public class MysqlWriteBenchmark : WriteBenchmark
     [GlobalSetup]
     public async Task GlobalSetup()
     {
-        if (_isInitialized) return;
-        await _initLock.WaitAsync();
-        try
+        await InitializeOnceAsync(async () =>
         {
-            if (_isInitialized) return;
-
             await MysqlDatabaseHelper.CleanupDatabaseAsync(_connectionString);
             var seeder = new MysqlDatabaseSeeder(_connectionString);
             await seeder.SeedAsync(
@@ -54,20 +50,14 @@ public class MysqlWriteBenchmark : WriteBenchmark
                 Quantity: Random.Shared.Next(1, 10),
                 UnitPrice: (decimal)(Random.Shared.NextDouble() * 100 + 5)
             ))];
-
-            _isInitialized = true;
-        }
-        finally
-        {
-            _initLock.Release();
-        }
+        });
     }
 
     [IterationSetup]
     public void IterationSetup()
     {
         MysqlDatabaseHelper.CleanupWriteTableAsync(_connectionString).GetAwaiter().GetResult();
-        Helpers.InvokeGarbageCollection();
+        InvokeGarbageCollection();
     }
 
     [BenchmarkCategory("Write")]

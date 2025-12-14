@@ -12,7 +12,7 @@ namespace BenchmarkRunner.Benchmarks;
 [MarkdownExporterAttribute.GitHub]
 [GroupBenchmarksBy(BenchmarkLogicalGroupRule.ByCategory)]
 [CategoriesColumn]
-public class PostgresqlWriteBenchmark : WriteBenchmark
+public sealed class PostgresqlWriteBenchmark : BaseWriteBenchmark
 {
     private static readonly string _connectionString = Config.GetPostgresConnectionString();
     private readonly QuerySql _sqlcImpl = new(_connectionString);
@@ -28,12 +28,8 @@ public class PostgresqlWriteBenchmark : WriteBenchmark
     [GlobalSetup]
     public async Task GlobalSetup()
     {
-        if (_isInitialized) return;
-        await _initLock.WaitAsync();
-        try
+        await InitializeOnceAsync(async () =>
         {
-            if (_isInitialized) return;
-
             PostgresqlDatabaseHelper.CleanupDatabaseAsync(_connectionString).GetAwaiter().GetResult();
             var seeder = new PostgresqlDatabaseSeeder(_connectionString);
             await seeder.SeedAsync(
@@ -52,20 +48,14 @@ public class PostgresqlWriteBenchmark : WriteBenchmark
                 Quantity: Random.Shared.Next(1, 10),
                 UnitPrice: (decimal)(Random.Shared.NextDouble() * 100 + 5)
             ))];
-
-            _isInitialized = true;
-        }
-        finally
-        {
-            _initLock.Release();
-        }
+        });
     }
 
     [IterationSetup]
     public void IterationSetup()
     {
         PostgresqlDatabaseHelper.CleanupWriteTableAsync(_connectionString).GetAwaiter().GetResult();
-        Helpers.InvokeGarbageCollection();
+        InvokeGarbageCollection();
     }
 
     [BenchmarkCategory("Write")]

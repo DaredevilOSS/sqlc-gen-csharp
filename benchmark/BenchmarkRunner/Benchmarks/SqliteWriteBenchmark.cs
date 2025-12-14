@@ -12,7 +12,7 @@ namespace BenchmarkRunner.Benchmarks;
 [MarkdownExporterAttribute.GitHub]
 [GroupBenchmarksBy(BenchmarkLogicalGroupRule.ByCategory)]
 [CategoriesColumn]
-public class SqliteWriteBenchmark : WriteBenchmark
+public sealed class SqliteWriteBenchmark : BaseWriteBenchmark
 {
     private static readonly string _connectionString = Config.GetSqliteConnectionString();
     private readonly QuerySql _sqlcImpl = new(_connectionString);
@@ -30,12 +30,8 @@ public class SqliteWriteBenchmark : WriteBenchmark
     [GlobalSetup]
     public async Task GlobalSetup()
     {
-        if (_isInitialized) return;
-        await _initLock.WaitAsync();
-        try
+        await InitializeOnceAsync(async () =>
         {
-            if (_isInitialized) return;
-
             SqliteDatabaseHelper.CleanupDatabase(_connectionString);
             await SqliteDatabaseHelper.InitializeDatabaseAsync(_connectionString);
             var seeder = new SqliteDatabaseSeeder(_connectionString);
@@ -55,20 +51,14 @@ public class SqliteWriteBenchmark : WriteBenchmark
                 Quantity: Random.Shared.Next(1, 10),
                 UnitPrice: (decimal)(Random.Shared.NextDouble() * 100 + 5)
             ))];
-
-            _isInitialized = true;
-        }
-        finally
-        {
-            _initLock.Release();
-        }
+        });
     }
 
     [IterationSetup]
     public void IterationSetup()
     {
         SqliteDatabaseHelper.CleanupWriteTableAsync(_connectionString).GetAwaiter().GetResult();
-        Helpers.InvokeGarbageCollection();
+        InvokeGarbageCollection();
     }
 
     [BenchmarkCategory("Write")]

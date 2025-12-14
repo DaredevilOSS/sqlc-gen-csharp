@@ -46,12 +46,28 @@ $(WASM_PLUGIN_OUTPUT): $(WASM_SOURCES)
 	./scripts/wasm/copy_plugin_to.sh dist
 	./scripts/wasm/update_sha.sh sqlc.ci.yaml
 
-run-benchmark: sqlc-generate
-	./benchmark/scripts/run_benchmark_all_dbs.sh
-
 run-end2end-tests:
 	./end2end/scripts/run_tests.sh
-	
+
+# Benchmarks
+run-benchmark-sqlite-reads: sqlc-generate
+	./benchmark/scripts/run_single_benchmark.sh sqlite reads
+
+run-benchmark-sqlite-writes: sqlc-generate
+	./benchmark/scripts/run_single_benchmark.sh sqlite writes
+
+run-benchmark-postgresql-reads: sqlc-generate
+	./benchmark/scripts/run_single_benchmark.sh postgresql reads
+
+run-benchmark-postgresql-writes: sqlc-generate
+	./benchmark/scripts/run_single_benchmark.sh postgresql writes
+
+run-benchmark-mysql-reads: sqlc-generate
+	./benchmark/scripts/run_single_benchmark.sh mysql reads
+
+run-benchmark-mysql-writes: sqlc-generate
+	./benchmark/scripts/run_single_benchmark.sh mysql writes
+
 # Manual
 generate-protobuf:
 	./scripts/generate_protobuf.sh
