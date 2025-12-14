@@ -17,7 +17,7 @@ public sealed class MysqlReadBenchmark : BaseReadBenchmark
     private static readonly string _connectionString = Config.GetMysqlConnectionString();
     private readonly QuerySql _sqlcImpl = new(_connectionString);
 
-    [Params(25, 100)]
+    [Params(25, 100, 200)]
     public int ConcurrentQueries { get; set; }
 
     [GlobalSetup]

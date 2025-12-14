@@ -20,7 +20,7 @@ public sealed class SqliteReadBenchmark : BaseReadBenchmark
     /// <summary>
     /// SQLite supports read concurrency, but less so then other relational databases.
     /// </summary>
-    [Params(5, 25)]
+    [Params(5, 25, 50)]
     public int ConcurrentQueries { get; set; }
 
     [GlobalSetup]
