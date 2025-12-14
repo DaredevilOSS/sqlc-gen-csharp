@@ -1,21 +1,26 @@
 using BenchmarkDotNet.Configs;
 using BenchmarkRunner.Benchmarks;
+using BenchmarkRunner.Utils;
 
-public class SqliteRunner
+public class SqliteRunner : IBenchmarkRunner
 {
-    public static Task RunReadsAsync()
+    public static string GetBasePath() => Path.Combine(Helpers.GetBasePath(), "sqlite");
+
+    public Task RunReadsAsync()
     {
-        var path = Path.Combine("benchmark", "BenchmarkDotNet.Artifacts", "sqlite", "reads");
-        var config = DefaultConfig.Instance.WithArtifactsPath(path);
-        BenchmarkDotNet.Running.BenchmarkRunner.Run<SqliteReadBenchmark>(config);
+        var path = Path.Combine(GetBasePath(), "reads");
+        BenchmarkDotNet.Running.BenchmarkRunner.Run<SqliteReadBenchmark>(
+            DefaultConfig.Instance.WithArtifactsPath(path)
+        );
         return Task.CompletedTask;
     }
 
-    public static Task RunWritesAsync()
+    public Task RunWritesAsync()
     {
-        var path = Path.Combine("benchmark", "BenchmarkDotNet.Artifacts", "sqlite", "writes");
-        var config = DefaultConfig.Instance.WithArtifactsPath(path);
-        BenchmarkDotNet.Running.BenchmarkRunner.Run<SqliteWriteBenchmark>(config);
+        var path = Path.Combine(GetBasePath(), "writes");
+        BenchmarkDotNet.Running.BenchmarkRunner.Run<SqliteWriteBenchmark>(
+            DefaultConfig.Instance.WithArtifactsPath(path)
+        );
         return Task.CompletedTask;
     }
 }

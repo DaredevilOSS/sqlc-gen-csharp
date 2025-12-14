@@ -37,7 +37,7 @@ public class QuerySql : IDisposable
         _dataSource = new Lazy<MySqlDataSource>(() =>
         {
             var builder = new MySqlConnectionStringBuilder(connectionString!);
-            builder.ConnectionReset = false;
+            builder.ConnectionReset = true;
             // Pre-warm connection pool with minimum connections
             if (builder.MinimumPoolSize == 0)
                 builder.MinimumPoolSize = 1;
@@ -64,6 +64,13 @@ public class QuerySql : IDisposable
         if (_dataSource == null)
             throw new InvalidOperationException("ConnectionString is required when not using a transaction");
         return _dataSource.Value;
+    }
+
+    public void Dispose()
+    {
+        GC.SuppressFinalize(this);
+        if (_dataSource?.IsValueCreated == true)
+            _dataSource.Value.Dispose();
     }
 
     private const string GetAuthorSql = "SELECT id, name, bio FROM authors WHERE name = @name LIMIT 1";
@@ -1503,12 +1510,5 @@ public class QuerySql : IDisposable
         if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
             throw new InvalidOperationException("Transaction is provided, but its connection is null.");
         return await this.Transaction.Connection.QueryFirstOrDefaultAsync<GetMysqlFunctionsRow?>(GetMysqlFunctionsSql, transaction: this.Transaction);
-    }
-
-    public void Dispose()
-    {
-        GC.SuppressFinalize(this);
-        if (_dataSource?.IsValueCreated == true)
-            _dataSource.Value.Dispose();
     }
 }

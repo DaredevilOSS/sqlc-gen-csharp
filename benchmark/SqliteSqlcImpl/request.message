@@ -132,4 +132,4 @@ unit_price*@<
 
 product_id0ÿÿÿÿÿÿÿÿÿR
 productsb	INTEGERz
-product_id:	query.sql"v1.30.0*˜{"overrideDriverVersion":"","generateCsproj":true,"targetFramework":"net8.0","namespaceName":"SqliteSqlcImpl","useDapper":false,"overrideDapperVersion":"","overrides":null,"debugRequest":false,"useCentralPackageManagement":false,"withAsyncSuffix":true,"mySqlConnectionReset":null}
+product_id:	query.sql"v1.30.0*ü{"overrideDriverVersion":"","generateCsproj":true,"targetFramework":"net8.0","namespaceName":"SqliteSqlcImpl","useDapper":false,"overrideDapperVersion":"","overrides":null,"debugRequest":false,"useCentralPackageManagement":false,"withAsyncSuffix":true}

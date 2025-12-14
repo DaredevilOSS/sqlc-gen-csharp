@@ -46,6 +46,13 @@ public class QuerySql : IDisposable
         return _dataSource.Value;
     }
 
+    public void Dispose()
+    {
+        GC.SuppressFinalize(this);
+        if (_dataSource?.IsValueCreated == true)
+            _dataSource.Value.Dispose();
+    }
+
     private const string GetCustomerOrdersSql = @"SELECT 
                                                       o.order_id, ordered_at, order_state, total_amount, order_item_id, i.quantity, i.unit_price, 
                                                       p.product_id, p.name as product_name, p.category as product_category
@@ -393,12 +400,5 @@ public class QuerySql : IDisposable
                 return result;
             }
         }
-    }
-
-    public void Dispose()
-    {
-        GC.SuppressFinalize(this);
-        if (_dataSource?.IsValueCreated == true)
-            _dataSource.Value.Dispose();
     }
 }

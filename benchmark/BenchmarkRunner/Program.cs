@@ -4,22 +4,25 @@ public class Program
 {
     private static readonly HashSet<string> _databases = ["mysql", "postgresql", "sqlite"];
     private static readonly HashSet<string> _types = ["reads", "writes"];
+    private static readonly MysqlRunner _mysqlRunner = new();
+    private static readonly PostgresqlRunner _postgresqlRunner = new();
+    private static readonly SqliteRunner _sqliteRunner = new();
     private static readonly Dictionary<string, Dictionary<string, Func<Task>>> _benchmarkConfigs = new()
     {
         { "mysql", new()
         {
-            { "reads", MysqlRunner.RunReadsAsync },
-            { "writes", MysqlRunner.RunWritesAsync }
+            { "reads", _mysqlRunner.RunReadsAsync },
+            { "writes", _mysqlRunner.RunWritesAsync }
         }},
         { "postgresql", new()
         {
-            { "reads", PostgresqlRunner.RunReadsAsync },
-            { "writes", PostgresqlRunner.RunWritesAsync }
+            { "reads", _postgresqlRunner.RunReadsAsync },
+            { "writes", _postgresqlRunner.RunWritesAsync }
         }},
         { "sqlite", new()
         {
-            { "reads", SqliteRunner.RunReadsAsync },
-            { "writes", SqliteRunner.RunWritesAsync }
+            { "reads", _sqliteRunner.RunReadsAsync },
+            { "writes", _sqliteRunner.RunWritesAsync }
         }}
     };
 

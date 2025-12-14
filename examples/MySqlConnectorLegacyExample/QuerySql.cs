@@ -35,7 +35,7 @@ namespace MySqlConnectorLegacyExampleGen
             _dataSource = new Lazy<MySqlDataSource>(() =>
             {
                 var builder = new MySqlConnectionStringBuilder(connectionString);
-                builder.ConnectionReset = false;
+                builder.ConnectionReset = true;
                 // Pre-warm connection pool with minimum connections
                 if (builder.MinimumPoolSize == 0)
                     builder.MinimumPoolSize = 1;
@@ -62,6 +62,13 @@ namespace MySqlConnectorLegacyExampleGen
             if (_dataSource == null)
                 throw new InvalidOperationException("ConnectionString is required when not using a transaction");
             return _dataSource.Value;
+        }
+
+        public void Dispose()
+        {
+            GC.SuppressFinalize(this);
+            if (_dataSource?.IsValueCreated == true)
+                _dataSource.Value.Dispose();
         }
 
         private const string GetAuthorSql = "SELECT id, name, bio FROM authors WHERE name = @name LIMIT 1";
@@ -2316,13 +2323,6 @@ namespace MySqlConnectorLegacyExampleGen
             }
 
             return null;
-        }
-
-        public void Dispose()
-        {
-            GC.SuppressFinalize(this);
-            if (_dataSource?.IsValueCreated == true)
-                _dataSource.Value.Dispose();
         }
     }
 }

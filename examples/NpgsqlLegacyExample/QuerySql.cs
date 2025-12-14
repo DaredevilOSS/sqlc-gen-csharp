@@ -53,6 +53,13 @@ namespace NpgsqlLegacyExampleGen
             return _dataSource.Value;
         }
 
+        public void Dispose()
+        {
+            GC.SuppressFinalize(this);
+            if (_dataSource?.IsValueCreated == true)
+                _dataSource.Value.Dispose();
+        }
+
         private const string GetAuthorSql = @"SELECT id, name, bio FROM authors
                                               WHERE name = @name LIMIT 1";
         public class GetAuthorRow
@@ -3008,13 +3015,6 @@ namespace NpgsqlLegacyExampleGen
                 command.Transaction = this.Transaction;
                 await command.ExecuteNonQueryAsync();
             }
-        }
-
-        public void Dispose()
-        {
-            GC.SuppressFinalize(this);
-            if (_dataSource?.IsValueCreated == true)
-                _dataSource.Value.Dispose();
         }
     }
 }

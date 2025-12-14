@@ -12,19 +12,17 @@ namespace BenchmarkRunner.Benchmarks;
 [MarkdownExporterAttribute.GitHub]
 [GroupBenchmarksBy(BenchmarkLogicalGroupRule.ByCategory)]
 [CategoriesColumn]
-public class PostgresqlWriteBenchmark
+public class PostgresqlWriteBenchmark : WriteBenchmark
 {
     private static readonly string _connectionString = Config.GetPostgresConnectionString();
     private readonly QuerySql _sqlcImpl = new(_connectionString);
     private readonly Queries _efCoreImpl = new(new SalesDbContext(_connectionString), useTracking: false);
     private List<QuerySql.AddOrderItemsArgs> _testOrderItems = null!;
-    private static bool _isInitialized = false;
-    private static readonly SemaphoreSlim _initLock = new(1, 1);
 
-    [Params(WriteBenchmarkConsts.TotalRecords)]
-    public int TotalRecords { get; set; }
-
-    [Params(100, 500, 1000)]
+    /// <summary>
+    /// PostgreSQL batch size can be larger in SQLC implementation due to using binary import.
+    /// </summary>
+    [Params(200, 500, 1000)]
     public int BatchSize { get; set; }
 
     [GlobalSetup]
@@ -72,14 +70,14 @@ public class PostgresqlWriteBenchmark
 
     [BenchmarkCategory("Write")]
     [Benchmark(Baseline = true, Description = "SQLC - AddOrderItems")]
-    public async Task Sqlc_AddOrderItems()
+    public override async Task Sqlc_AddOrderItems()
     {
         await Helpers.InsertInBatchesAsync(_testOrderItems, BatchSize, _sqlcImpl.AddOrderItemsAsync);
     }
 
     [BenchmarkCategory("Write")]
     [Benchmark(Description = "EFCore - AddOrderItems")]
-    public async Task EFCore_AddOrderItems()
+    public override async Task EFCore_AddOrderItems()
     {
         var args = _testOrderItems.Select(i => new Queries.AddOrderItemsArgs(
             i.OrderId, i.ProductId, i.Quantity, i.UnitPrice

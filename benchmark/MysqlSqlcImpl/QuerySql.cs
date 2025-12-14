@@ -30,7 +30,7 @@ public class QuerySql : IDisposable
         _dataSource = new Lazy<MySqlDataSource>(() =>
         {
             var builder = new MySqlConnectionStringBuilder(connectionString!);
-            builder.ConnectionReset = false;
+            builder.ConnectionReset = true;
             // Pre-warm connection pool with minimum connections
             if (builder.MinimumPoolSize == 0)
                 builder.MinimumPoolSize = 1;
@@ -57,6 +57,13 @@ public class QuerySql : IDisposable
         if (_dataSource == null)
             throw new InvalidOperationException("ConnectionString is required when not using a transaction");
         return _dataSource.Value;
+    }
+
+    public void Dispose()
+    {
+        GC.SuppressFinalize(this);
+        if (_dataSource?.IsValueCreated == true)
+            _dataSource.Value.Dispose();
     }
 
     private const string GetCustomerOrdersSql = @"SELECT 
@@ -500,12 +507,5 @@ public class QuerySql : IDisposable
                 return result;
             }
         }
-    }
-
-    public void Dispose()
-    {
-        GC.SuppressFinalize(this);
-        if (_dataSource?.IsValueCreated == true)
-            _dataSource.Value.Dispose();
     }
 }

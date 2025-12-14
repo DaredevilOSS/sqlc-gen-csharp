@@ -55,6 +55,13 @@ public class QuerySql : IDisposable
         return _dataSource.Value;
     }
 
+    public void Dispose()
+    {
+        GC.SuppressFinalize(this);
+        if (_dataSource?.IsValueCreated == true)
+            _dataSource.Value.Dispose();
+    }
+
     private const string GetAuthorSql = @"SELECT id, name, bio FROM authors
                                           WHERE name = @name LIMIT 1";
     public class GetAuthorRow
@@ -1879,12 +1886,5 @@ public class QuerySql : IDisposable
         if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
             throw new InvalidOperationException("Transaction is provided, but its connection is null.");
         await this.Transaction.Connection.ExecuteAsync(TruncatePostgresGeoTypesSql, transaction: this.Transaction);
-    }
-
-    public void Dispose()
-    {
-        GC.SuppressFinalize(this);
-        if (_dataSource?.IsValueCreated == true)
-            _dataSource.Value.Dispose();
     }
 }

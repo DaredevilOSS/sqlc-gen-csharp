@@ -12,23 +12,12 @@ namespace BenchmarkRunner.Benchmarks;
 [MarkdownExporterAttribute.GitHub]
 [GroupBenchmarksBy(BenchmarkLogicalGroupRule.ByCategory)]
 [CategoriesColumn]
-public class PostgresqlReadBenchmark
+public class PostgresqlReadBenchmark : ReadBenchmark
 {
     private static readonly string _connectionString = Config.GetPostgresConnectionString();
     private readonly QuerySql _sqlcImpl = new(_connectionString);
-    private static bool _isInitialized = false;
-    private static readonly SemaphoreSlim _initLock = new(1, 1);
 
-    [Params(ReadBenchmarkConsts.CustomerCount)]
-    public int CustomerCount { get; set; }
-
-    [Params(ReadBenchmarkConsts.QueriesToRun)]
-    public int QueriesToRun { get; set; }
-
-    [Params(100, 1000)]
-    public int Limit { get; set; }
-
-    [Params(10, 50)]
+    [Params(25, 100)]
     public int ConcurrentQueries { get; set; }
 
     [GlobalSetup]
@@ -64,9 +53,9 @@ public class PostgresqlReadBenchmark
 
     [BenchmarkCategory("Read")]
     [Benchmark(Baseline = true, Description = "SQLC - GetCustomerOrders")]
-    public async Task<List<QuerySql.GetCustomerOrdersRow>> Sqlc_GetCustomerOrders()
+    public override async Task Sqlc_GetCustomerOrders()
     {
-        return await Helpers.ExecuteConcurrentlyAsync(QueriesToRun, ConcurrentQueries, _ =>
+        await Helpers.ExecuteConcurrentlyAsync(QueriesToRun, ConcurrentQueries, _ =>
         {
             return _sqlcImpl.GetCustomerOrdersAsync(new QuerySql.GetCustomerOrdersArgs(
                 CustomerId: Random.Shared.Next(1, CustomerCount),
@@ -78,9 +67,9 @@ public class PostgresqlReadBenchmark
 
     [BenchmarkCategory("Read")]
     [Benchmark(Description = "EFCore (NoTracking) - GetCustomerOrders")]
-    public async Task<List<Queries.GetCustomerOrdersRow>> EFCore_NoTracking_GetCustomerOrders()
+    public override async Task EFCore_NoTracking_GetCustomerOrders()
     {
-        return await Helpers.ExecuteConcurrentlyAsync(QueriesToRun, ConcurrentQueries, async _ =>
+        await Helpers.ExecuteConcurrentlyAsync(QueriesToRun, ConcurrentQueries, async _ =>
         {
             await using var dbContext = new SalesDbContext(_connectionString);
             var queries = new Queries(dbContext, useTracking: false);
@@ -94,9 +83,9 @@ public class PostgresqlReadBenchmark
 
     [BenchmarkCategory("Read")]
     [Benchmark(Description = "EFCore (WithTracking) - GetCustomerOrders")]
-    public async Task<List<Queries.GetCustomerOrdersRow>> EFCore_WithTracking_GetCustomerOrders()
+    public override async Task EFCore_WithTracking_GetCustomerOrders()
     {
-        return await Helpers.ExecuteConcurrentlyAsync(QueriesToRun, ConcurrentQueries, async _ =>
+        await Helpers.ExecuteConcurrentlyAsync(QueriesToRun, ConcurrentQueries, async _ =>
         {
             await using var dbContext = new SalesDbContext(_connectionString);
             var queries = new Queries(dbContext, useTracking: true);
