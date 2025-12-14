@@ -50,7 +50,7 @@ public class SqliteDatabaseSeeder(string connectionString)
 
         await Helpers.InsertInBatchesAsync(customers, BatchSize, _sqlc.AddCustomersAsync);
         var customerIds = await _sqlc.GetCustomerIdsAsync(new QuerySql.GetCustomerIdsArgs(Limit: count));
-        return customerIds.Select(r => r.CustomerId).ToList();
+        return [.. customerIds.Select(r => r.CustomerId)];
     }
 
     private async Task<List<int>> SeedProductsAsync(int perCategory)
@@ -74,7 +74,7 @@ public class SqliteDatabaseSeeder(string connectionString)
 
         await Helpers.InsertInBatchesAsync(products, BatchSize, _sqlc.AddProductsAsync);
         var productIds = await _sqlc.GetProductIdsAsync(new QuerySql.GetProductIdsArgs(Limit: products.Count));
-        return productIds.Select(r => r.ProductId).ToList();
+        return [.. productIds.Select(r => r.ProductId)];
     }
 
     private async Task<List<int>> SeedOrdersAsync(List<int> customerIds, int ordersPerCustomer)

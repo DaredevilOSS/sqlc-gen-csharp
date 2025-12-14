@@ -11,10 +11,8 @@ public class Options
     public Options(GenerateRequest generateRequest)
     {
         var text = Encoding.UTF8.GetString(generateRequest.PluginOptions.ToByteArray());
-        // handle empty options case
-        if (text.Trim() == string.Empty)
+        if (NoOptionsProvided(text))
             text = "{}";
-
         var rawOptions = JsonSerializer.Deserialize<RawOptions>(text) ?? throw new InvalidOperationException();
 
         DriverName = EngineToDriverMapping[generateRequest.Settings.Engine];
@@ -26,13 +24,11 @@ public class Options
         DotnetFramework = DotnetFrameworkExtensions.ParseName(rawOptions.TargetFramework);
         Overrides = rawOptions.Overrides ?? [];
         WithAsyncSuffix = rawOptions.WithAsyncSuffix;
+        UseCentralPackageManagement = rawOptions.UseCentralPackageManagement;
 
         if (rawOptions.DebugRequest && generateRequest.Settings.Codegen.Wasm is not null)
             throw new ArgumentException("Debug request mode cannot be used with WASM plugin");
         DebugRequest = rawOptions.DebugRequest;
-
-        UseCentralPackageManagement = rawOptions.UseCentralPackageManagement;
-        MySqlConnectionReset = rawOptions.MySqlConnectionReset ?? false;
     }
 
     public DriverName DriverName { get; }
@@ -61,17 +57,15 @@ public class Options
 
     public bool WithAsyncSuffix { get; }
 
-    /// <summary>
-    /// When true, connections retrieved from the pool will be reset to a clean state.
-    /// When false (default), connections maintain their previous state (session variables, temporary tables, etc.).
-    /// Setting to true adds an extra round trip to the server but ensures clean connection state.
-    /// </summary>
-    public bool MySqlConnectionReset { get; }
-
     private static readonly Dictionary<string, DriverName> EngineToDriverMapping = new()
     {
         { "mysql", DriverName.MySqlConnector },
         { "postgresql", DriverName.Npgsql },
         { "sqlite", DriverName.Sqlite }
     };
+
+    private static bool NoOptionsProvided(string optionsText)
+    {
+        return optionsText.Trim() == string.Empty;
+    }
 }

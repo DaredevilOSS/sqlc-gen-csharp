@@ -238,11 +238,6 @@ public abstract class DbDriver
         return [];
     }
 
-    public virtual MemberDeclarationSyntax? GetDisposeMethodImpl()
-    {
-        return null;
-    }
-
     protected virtual ISet<string> GetConfigureSqlMappings()
     {
         return ColumnMappings

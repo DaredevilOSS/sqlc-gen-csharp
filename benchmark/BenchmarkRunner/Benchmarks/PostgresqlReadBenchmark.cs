@@ -14,13 +14,15 @@ namespace BenchmarkRunner.Benchmarks;
 [CategoriesColumn]
 public class PostgresqlReadBenchmark
 {
-    private readonly string _connectionString = Config.GetPostgresConnectionString();
-    private QuerySql _sqlcImpl = null!;
+    private static readonly string _connectionString = Config.GetPostgresConnectionString();
+    private readonly QuerySql _sqlcImpl = new(_connectionString);
+    private static bool _isInitialized = false;
+    private static readonly SemaphoreSlim _initLock = new(1, 1);
 
-    [Params(500)]
+    [Params(ReadBenchmarkConsts.CustomerCount)]
     public int CustomerCount { get; set; }
 
-    [Params(500)]
+    [Params(ReadBenchmarkConsts.QueriesToRun)]
     public int QueriesToRun { get; set; }
 
     [Params(100, 1000)]
@@ -32,16 +34,28 @@ public class PostgresqlReadBenchmark
     [GlobalSetup]
     public async Task GlobalSetup()
     {
-        _sqlcImpl = new(_connectionString);
-        await PostgresqlDatabaseHelper.CleanupDatabaseAsync(_connectionString);
-        var seeder = new PostgresqlDatabaseSeeder(_connectionString);
-        await seeder.SeedAsync(
-            customerCount: CustomerCount,
-            productsPerCategory: 150, // with customer_id filter, this is 1/500 of the table returned
-            ordersPerCustomer: 1000,
-            itemsPerOrder: 20
-        // 20 * 1000 = 20,000 possible rows returned
-        );
+        if (_isInitialized) return;
+        await _initLock.WaitAsync();
+        try
+        {
+            if (_isInitialized) return;
+
+            await PostgresqlDatabaseHelper.CleanupDatabaseAsync(_connectionString);
+            var seeder = new PostgresqlDatabaseSeeder(_connectionString);
+            await seeder.SeedAsync(
+                customerCount: CustomerCount,
+                productsPerCategory: 150, // with customer_id filter, this is 1/500 of the table returned
+                ordersPerCustomer: 1000,
+                itemsPerOrder: 20
+            // 20 * 1000 = 20,000 possible rows returned
+            );
+
+            _isInitialized = true;
+        }
+        finally
+        {
+            _initLock.Release();
+        }
     }
 
     [IterationSetup]
@@ -92,11 +106,5 @@ public class PostgresqlReadBenchmark
                 Limit: Limit
             ));
         });
-    }
-
-    [GlobalCleanup]
-    public async Task GlobalCleanup()
-    {
-        await PostgresqlDatabaseHelper.CleanupDatabaseAsync(_connectionString);
     }
 }

@@ -102,11 +102,7 @@ internal partial class QueriesGen(DbDriver dbDriver, string namespaceName)
 
         return classDeclaration.AddMembers(
             [.. dbDriver.GetAdditionalClassMembers()
-                .AddRangeExcludeNulls(classMembers)
-                .AddRangeIf(
-                    [dbDriver.GetDisposeMethodImpl()],
-                    dbDriver.GetClassBaseTypes().Any(x => x == "IDisposable")
-                )]
+                .AddRangeExcludeNulls(classMembers)]
         );
     }
 

@@ -499,7 +499,7 @@ public sealed partial class MySqlConnectorDriver(
                 {{dataSourceVar}} = new Lazy<MySqlDataSource>(() =>
                 {
                     var builder = new MySqlConnectionStringBuilder({{connectionStringVar}}{{optionalNotNullVerify}});
-                    builder.ConnectionReset = {{Options.MySqlConnectionReset.ToString().ToLower()}};
+                    builder.ConnectionReset = true;
                     // Pre-warm connection pool with minimum connections
                     if (builder.MinimumPoolSize == 0)
                         builder.MinimumPoolSize = 1;
@@ -513,32 +513,28 @@ public sealed partial class MySqlConnectorDriver(
     {
         var dataSourceField = Variable.DataSource.AsFieldName();
         var optionalNotNullVerify = Options.DotnetFramework.IsDotnetCore() ? "?" : string.Empty;
-        var fieldDeclaration = ParseMemberDeclaration($$"""
-            private readonly Lazy<MySqlDataSource>{{optionalNotNullVerify}} {{dataSourceField}};
-        """)!;
 
-        var getDataSourceMethod = ParseMemberDeclaration($$"""
+        return [
+            ParseMemberDeclaration($$"""
+                private readonly Lazy<MySqlDataSource>{{optionalNotNullVerify}} {{dataSourceField}};
+            """)!,
+            ParseMemberDeclaration($$"""
             private MySqlDataSource GetDataSource()
             {
                 if ({{dataSourceField}} == null)
                     throw new InvalidOperationException("ConnectionString is required when not using a transaction");
                 return {{dataSourceField}}.Value;
             }
-            """)!;
-
-        return [fieldDeclaration, getDataSourceMethod];
-    }
-
-    public override MemberDeclarationSyntax? GetDisposeMethodImpl()
-    {
-        return ParseMemberDeclaration($$"""
+            """)!,
+            ParseMemberDeclaration($$"""
             public void Dispose()
             {
                 GC.SuppressFinalize(this);
-                if ({{Variable.DataSource.AsFieldName()}}?.IsValueCreated == true)
-                    {{Variable.DataSource.AsFieldName()}}.Value.Dispose();
+                if ({{dataSourceField}}?.IsValueCreated == true)
+                    {{dataSourceField}}.Value.Dispose();
             }
-            """)!;
+            """)!
+        ];
     }
 
     public override CommandGenCommands CreateSqlCommand(string sqlTextConstant)

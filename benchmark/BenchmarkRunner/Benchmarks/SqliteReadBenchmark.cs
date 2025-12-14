@@ -14,13 +14,15 @@ namespace BenchmarkRunner.Benchmarks;
 [CategoriesColumn]
 public class SqliteReadBenchmark
 {
-    private readonly string _connectionString = Config.GetSqliteConnectionString();
-    private QuerySql _sqlcImpl = null!;
+    private static readonly string _connectionString = Config.GetSqliteConnectionString();
+    private readonly QuerySql _sqlcImpl = new(_connectionString);
+    private static bool _isInitialized = false;
+    private static readonly SemaphoreSlim _initLock = new(1, 1);
 
-    [Params(500)]
+    [Params(ReadBenchmarkConsts.CustomerCount)]
     public int CustomerCount { get; set; }
 
-    [Params(500)]
+    [Params(ReadBenchmarkConsts.QueriesToRun)]
     public int QueriesToRun { get; set; }
 
     [Params(50, 500)]
@@ -32,17 +34,29 @@ public class SqliteReadBenchmark
     [GlobalSetup]
     public async Task GlobalSetup()
     {
-        _sqlcImpl = new QuerySql(_connectionString);
-        SqliteDatabaseHelper.CleanupDatabase(_connectionString);
-        await SqliteDatabaseHelper.InitializeDatabaseAsync(_connectionString);
-        var seeder = new SqliteDatabaseSeeder(_connectionString);
-        await seeder.SeedAsync(
-            customerCount: CustomerCount, // with customer_id filter, this is 1/500 of the table returned
-            productsPerCategory: 150,
-            ordersPerCustomer: 500,
-            itemsPerOrder: 10
-        // 10 * 500 = 5,000 possible rows returned
-        );
+        if (_isInitialized) return;
+        await _initLock.WaitAsync();
+        try
+        {
+            if (_isInitialized) return;
+
+            SqliteDatabaseHelper.CleanupDatabase(_connectionString);
+            await SqliteDatabaseHelper.InitializeDatabaseAsync(_connectionString);
+            var seeder = new SqliteDatabaseSeeder(_connectionString);
+            await seeder.SeedAsync(
+                customerCount: CustomerCount, // with customer_id filter, this is 1/500 of the table returned
+                productsPerCategory: 150,
+                ordersPerCustomer: 500,
+                itemsPerOrder: 10
+            // 10 * 500 = 5,000 possible rows returned
+            );
+
+            _isInitialized = true;
+        }
+        finally
+        {
+            _initLock.Release();
+        }
     }
 
     [IterationSetup]
@@ -92,11 +106,5 @@ public class SqliteReadBenchmark
                 Limit: Limit
             ));
         });
-    }
-
-    [GlobalCleanup]
-    public void GlobalCleanup()
-    {
-        SqliteDatabaseHelper.CleanupDatabase(_connectionString);
     }
 }

@@ -34,9 +34,6 @@ public record RawOptions
 
     [JsonPropertyName("withAsyncSuffix")]
     public bool WithAsyncSuffix { get; init; } = true;
-
-    [JsonPropertyName("mySqlConnectionReset")]
-    public bool? MySqlConnectionReset { get; init; }
 }
 
 public class OverrideOption

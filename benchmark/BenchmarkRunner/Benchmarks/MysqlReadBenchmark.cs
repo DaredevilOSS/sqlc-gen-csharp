@@ -14,13 +14,15 @@ namespace BenchmarkRunner.Benchmarks;
 [CategoriesColumn]
 public class MysqlReadBenchmark
 {
-    private readonly string _connectionString = Config.GetMysqlConnectionString();
-    private QuerySql _sqlcImpl = null!;
+    private static readonly string _connectionString = Config.GetMysqlConnectionString();
+    private readonly QuerySql _sqlcImpl = new(_connectionString);
+    private static bool _isInitialized = false;
+    private static readonly SemaphoreSlim _initLock = new(1, 1);
 
-    [Params(500)]
+    [Params(ReadBenchmarkConsts.CustomerCount)]
     public int CustomerCount { get; set; }
 
-    [Params(1000)]
+    [Params(ReadBenchmarkConsts.QueriesToRun)]
     public int QueriesToRun { get; set; }
 
     [Params(100, 1000)]
@@ -32,16 +34,27 @@ public class MysqlReadBenchmark
     [GlobalSetup]
     public async Task GlobalSetup()
     {
-        _sqlcImpl = new(_connectionString);
-        await MysqlDatabaseHelper.CleanupDatabaseAsync(_connectionString);
-        var seeder = new MysqlDatabaseSeeder(_connectionString);
-        await seeder.SeedAsync(
-             customerCount: CustomerCount, // selectivity: 1/500 of the table returned
-             productsPerCategory: 150,
-             ordersPerCustomer: 1000,
-             itemsPerOrder: 20
-         // 20 * 1000 = 20,000 possible rows returned
-         );
+        if (_isInitialized) return;
+        await _initLock.WaitAsync();
+        try
+        {
+            if (_isInitialized) return;
+
+            await MysqlDatabaseHelper.CleanupDatabaseAsync(_connectionString);
+            var seeder = new MysqlDatabaseSeeder(_connectionString);
+            await seeder.SeedAsync(
+                 customerCount: CustomerCount, // selectivity: 1/500 of the table returned
+                 productsPerCategory: 150,
+                 ordersPerCustomer: 1000,
+                 itemsPerOrder: 20
+             // 20 * 1000 = 20,000 possible rows returned
+             );
+            _isInitialized = true;
+        }
+        finally
+        {
+            _initLock.Release();
+        }
     }
 
     [IterationSetup]
@@ -91,11 +104,5 @@ public class MysqlReadBenchmark
                 Limit: Limit
             ));
         });
-    }
-
-    [GlobalCleanup]
-    public async Task GlobalCleanup()
-    {
-        await MysqlDatabaseHelper.CleanupDatabaseAsync(_connectionString);
     }
 }

@@ -1,40 +1,25 @@
-﻿using BenchmarkRunner;
-using Microsoft.Extensions.Logging;
-using System.CommandLine;
+﻿using System.CommandLine;
 
 public class Program
 {
     private static readonly HashSet<string> _databases = ["mysql", "postgresql", "sqlite"];
     private static readonly HashSet<string> _types = ["reads", "writes"];
-    private static readonly ILoggerFactory _loggerFactory = LoggerFactory.Create(builder =>
-            builder
-                .AddConsole()
-                .SetMinimumLevel(LogLevel.Information));
-    private static readonly MysqlRunner _mysqlRunner = new(
-        Config.GetMysqlConnectionString(),
-        _loggerFactory.CreateLogger<MysqlRunner>());
-    private static readonly PostgresqlRunner _postgresqlRunner = new(
-        Config.GetPostgresConnectionString(),
-        _loggerFactory.CreateLogger<PostgresqlRunner>());
-    private static readonly SqliteRunner _sqliteRunner = new(
-        Config.GetSqliteConnectionString(),
-        _loggerFactory.CreateLogger<SqliteRunner>());
     private static readonly Dictionary<string, Dictionary<string, Func<Task>>> _benchmarkConfigs = new()
     {
         { "mysql", new()
         {
-            { "reads", _mysqlRunner.RunReadsAsync },
-            { "writes", _mysqlRunner.RunWritesAsync }
+            { "reads", MysqlRunner.RunReadsAsync },
+            { "writes", MysqlRunner.RunWritesAsync }
         }},
         { "postgresql", new()
         {
-            { "reads", _postgresqlRunner.RunReadsAsync },
-            { "writes", _postgresqlRunner.RunWritesAsync }
+            { "reads", PostgresqlRunner.RunReadsAsync },
+            { "writes", PostgresqlRunner.RunWritesAsync }
         }},
         { "sqlite", new()
         {
-            { "reads", _sqliteRunner.RunReadsAsync },
-            { "writes", _sqliteRunner.RunWritesAsync }
+            { "reads", SqliteRunner.RunReadsAsync },
+            { "writes", SqliteRunner.RunWritesAsync }
         }}
     };
 
