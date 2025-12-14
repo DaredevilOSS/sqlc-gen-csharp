@@ -4,7 +4,7 @@ public abstract class WriteBenchmark
 {
     protected bool _isInitialized = false;
     protected SemaphoreSlim _initLock = new(1, 1);
-    
+
     [Params(2000000)]
     protected int TotalRecords { get; set; }
 
