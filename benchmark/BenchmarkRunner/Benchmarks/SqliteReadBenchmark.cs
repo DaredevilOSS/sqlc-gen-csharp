@@ -26,7 +26,7 @@ public class SqliteReadBenchmark : BaseReadBenchmark
     [GlobalSetup]
     public async Task GlobalSetup()
     {
-        await InitializeOnceAsync(async () =>
+        await Helpers.InitializeOnceAsync(async () =>
         {
             SqliteDatabaseHelper.CleanupDatabase(_connectionString);
             await SqliteDatabaseHelper.InitializeDatabaseAsync(_connectionString);

@@ -1,6 +1,6 @@
 using BenchmarkDotNet.Attributes;
 
-public abstract class BaseWriteBenchmark : BaseBenchmark
+public abstract class BaseWriteBenchmark
 {
     [Params(2000000)]
     public int TotalRecords { get; set; }

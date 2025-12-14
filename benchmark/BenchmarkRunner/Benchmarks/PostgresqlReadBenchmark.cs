@@ -23,7 +23,7 @@ public class PostgresqlReadBenchmark : BaseReadBenchmark
     [GlobalSetup]
     public async Task GlobalSetup()
     {
-        await InitializeOnceAsync(async () =>
+        await Helpers.InitializeOnceAsync(async () =>
         {
             await PostgresqlDatabaseHelper.CleanupDatabaseAsync(_connectionString);
             var seeder = new PostgresqlDatabaseSeeder(_connectionString);

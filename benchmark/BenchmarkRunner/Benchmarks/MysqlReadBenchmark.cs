@@ -23,7 +23,7 @@ public class MysqlReadBenchmark : BaseReadBenchmark
     [GlobalSetup]
     public async Task GlobalSetup()
     {
-        await InitializeOnceAsync(async () =>
+        await Helpers.InitializeOnceAsync(async () =>
         {
             await MysqlDatabaseHelper.CleanupDatabaseAsync(_connectionString);
             var seeder = new MysqlDatabaseSeeder(_connectionString);

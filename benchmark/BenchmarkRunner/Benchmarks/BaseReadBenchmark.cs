@@ -1,6 +1,7 @@
 using BenchmarkDotNet.Attributes;
+using BenchmarkRunner.Utils;
 
-public abstract class BaseReadBenchmark : BaseBenchmark
+public abstract class BaseReadBenchmark
 {
     [Params(1000)]
     public int QueriesToRun { get; set; }
@@ -12,11 +13,10 @@ public abstract class BaseReadBenchmark : BaseBenchmark
     public int Limit { get; set; }
 
     [IterationSetup]
-    public static void IterationSetup() => InvokeGarbageCollection();
+    public static void IterationSetup() => Helpers.InvokeGarbageCollection();
     public abstract Task Sqlc_GetCustomerOrders();
     public abstract Task EFCore_NoTracking_GetCustomerOrders();
     public abstract Task EFCore_WithTracking_GetCustomerOrders();
-
     private static int CalculateMaxConcurrency(int totalTasks, int maxConcurrency)
     {
         return new int[] {

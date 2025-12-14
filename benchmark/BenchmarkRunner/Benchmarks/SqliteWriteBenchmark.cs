@@ -30,7 +30,7 @@ public class SqliteWriteBenchmark : BaseWriteBenchmark
     [GlobalSetup]
     public async Task GlobalSetup()
     {
-        await InitializeOnceAsync(async () =>
+        await Helpers.InitializeOnceAsync(async () =>
         {
             SqliteDatabaseHelper.CleanupDatabase(_connectionString);
             await SqliteDatabaseHelper.InitializeDatabaseAsync(_connectionString);
@@ -58,7 +58,7 @@ public class SqliteWriteBenchmark : BaseWriteBenchmark
     public static void IterationSetup()
     {
         SqliteDatabaseHelper.CleanupWriteTableAsync(_connectionString).GetAwaiter().GetResult();
-        InvokeGarbageCollection();
+        Helpers.InvokeGarbageCollection();
     }
 
     [BenchmarkCategory("Write")]

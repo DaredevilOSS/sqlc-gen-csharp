@@ -30,7 +30,7 @@ public class MysqlWriteBenchmark : BaseWriteBenchmark
     [GlobalSetup]
     public async Task GlobalSetup()
     {
-        await InitializeOnceAsync(async () =>
+        await Helpers.InitializeOnceAsync(async () =>
         {
             await MysqlDatabaseHelper.CleanupDatabaseAsync(_connectionString);
             var seeder = new MysqlDatabaseSeeder(_connectionString);
@@ -57,7 +57,7 @@ public class MysqlWriteBenchmark : BaseWriteBenchmark
     public static void IterationSetup()
     {
         MysqlDatabaseHelper.CleanupWriteTableAsync(_connectionString).GetAwaiter().GetResult();
-        InvokeGarbageCollection();
+        Helpers.InvokeGarbageCollection();
     }
 
     [BenchmarkCategory("Write")]

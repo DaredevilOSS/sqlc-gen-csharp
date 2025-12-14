@@ -28,7 +28,7 @@ public class PostgresqlWriteBenchmark : BaseWriteBenchmark
     [GlobalSetup]
     public async Task GlobalSetup()
     {
-        await InitializeOnceAsync(async () =>
+        await Helpers.InitializeOnceAsync(async () =>
         {
             PostgresqlDatabaseHelper.CleanupDatabaseAsync(_connectionString).GetAwaiter().GetResult();
             var seeder = new PostgresqlDatabaseSeeder(_connectionString);
@@ -55,7 +55,7 @@ public class PostgresqlWriteBenchmark : BaseWriteBenchmark
     public static void IterationSetup()
     {
         PostgresqlDatabaseHelper.CleanupWriteTableAsync(_connectionString).GetAwaiter().GetResult();
-        InvokeGarbageCollection();
+        Helpers.InvokeGarbageCollection();
     }
 
     [BenchmarkCategory("Write")]
