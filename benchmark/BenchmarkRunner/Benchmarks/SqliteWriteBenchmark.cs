@@ -7,17 +7,19 @@ using SqliteSqlcImpl;
 
 namespace BenchmarkRunner.Benchmarks;
 
-[SimpleJob(RuntimeMoniker.Net80, warmupCount: 2, iterationCount: 15)]
+[SimpleJob(RuntimeMoniker.Net80, warmupCount: 2, iterationCount: 10)]
 [MemoryDiagnoser]
 [MarkdownExporterAttribute.GitHub]
 [GroupBenchmarksBy(BenchmarkLogicalGroupRule.ByCategory)]
 [CategoriesColumn]
 public class SqliteWriteBenchmark
 {
-    private const int TotalRecords = 2000000; // 2 million records
     private readonly string _connectionString = Config.GetSqliteConnectionString();
     private QuerySql _sqlcImpl = null!;
     private Queries _efCoreImpl = null!;
+
+    [Params(2000000)]
+    public int TotalRecords { get; set; }
     private List<QuerySql.AddOrderItemsArgs> _testOrderItems = null!;
 
     [Params(50, 100, 200)]

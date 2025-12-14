@@ -22,19 +22,19 @@ public class Program
     private static readonly Dictionary<string, Dictionary<string, Func<Task>>> _benchmarkConfigs = new()
     {
         { "mysql", new()
-        { 
-            { "reads", _mysqlRunner.RunReadsAsync }, 
-            { "writes", _mysqlRunner.RunWritesAsync } 
+        {
+            { "reads", _mysqlRunner.RunReadsAsync },
+            { "writes", _mysqlRunner.RunWritesAsync }
         }},
         { "postgresql", new()
-        { 
-            { "reads", _postgresqlRunner.RunReadsAsync }, 
-            { "writes", _postgresqlRunner.RunWritesAsync } 
+        {
+            { "reads", _postgresqlRunner.RunReadsAsync },
+            { "writes", _postgresqlRunner.RunWritesAsync }
         }},
         { "sqlite", new()
-        { 
-            { "reads", _sqliteRunner.RunReadsAsync }, 
-            { "writes", _sqliteRunner.RunWritesAsync } 
+        {
+            { "reads", _sqliteRunner.RunReadsAsync },
+            { "writes", _sqliteRunner.RunWritesAsync }
         }}
     };
 
@@ -49,7 +49,7 @@ public class Program
         rootCommand.AddOption(typeOption);
 
         rootCommand.SetHandler(
-            async (database, type) => await _benchmarkConfigs[database][type](), 
+            async (database, type) => await _benchmarkConfigs[database][type](),
             databaseOption, typeOption);
         await rootCommand.InvokeAsync(args);
     }

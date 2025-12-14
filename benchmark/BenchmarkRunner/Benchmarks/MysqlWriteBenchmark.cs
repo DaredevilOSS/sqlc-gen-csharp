@@ -8,18 +8,20 @@ using MysqlSqlcImpl;
 
 namespace BenchmarkRunner.Benchmarks;
 
-[SimpleJob(RuntimeMoniker.Net80, warmupCount: 2, iterationCount: 15)]
+[SimpleJob(RuntimeMoniker.Net80, warmupCount: 2, iterationCount: 10)]
 [MemoryDiagnoser]
 [MarkdownExporterAttribute.GitHub]
 [GroupBenchmarksBy(BenchmarkLogicalGroupRule.ByCategory)]
 [CategoriesColumn]
 public class MysqlWriteBenchmark
 {
-    private const int TotalRecords = 3000000; // 3 million records
     private readonly string _connectionString = Config.GetMysqlConnectionString();
     private QuerySql _sqlcImpl = null!;
     private Queries _efCoreImpl = null!;
     private List<QuerySql.AddOrderItemsArgs> _testOrderItems = null!;
+
+    [Params(2000000)]
+    public int TotalRecords { get; set; }
 
     [Params(100, 500, 1000)]
     public int BatchSize { get; set; }

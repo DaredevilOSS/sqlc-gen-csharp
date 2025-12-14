@@ -8,7 +8,7 @@ public static partial class PostgresqlDatabaseHelper
     {
         using var connection = new NpgsqlConnection(connectionString);
         await connection.OpenAsync();
-        using var cmd = new NpgsqlCommand("TRUNCATE TABLE sales.order_items CASCADE", connection);
+        using var cmd = new NpgsqlCommand("TRUNCATE TABLE sales.order_items", connection);
         await cmd.ExecuteNonQueryAsync();
     }
     public static async Task CleanupDatabaseAsync(string connectionString)

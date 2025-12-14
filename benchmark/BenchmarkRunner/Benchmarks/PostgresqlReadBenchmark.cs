@@ -16,8 +16,12 @@ public class PostgresqlReadBenchmark
 {
     private readonly string _connectionString = Config.GetPostgresConnectionString();
     private QuerySql _sqlcImpl = null!;
-    private const int CustomerCount = 500;
-    private const int QueriesToRun = 500;
+
+    [Params(500)]
+    public int CustomerCount { get; set; }
+
+    [Params(500)]
+    public int QueriesToRun { get; set; }
 
     [Params(100, 1000)]
     public int Limit { get; set; }

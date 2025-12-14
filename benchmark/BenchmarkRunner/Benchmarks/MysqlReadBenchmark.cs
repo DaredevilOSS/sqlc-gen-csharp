@@ -16,8 +16,12 @@ public class MysqlReadBenchmark
 {
     private readonly string _connectionString = Config.GetMysqlConnectionString();
     private QuerySql _sqlcImpl = null!;
-    private const int CustomerCount = 500;
-    private const int QueriesToRun = 500;
+
+    [Params(500)]
+    public int CustomerCount { get; set; }
+
+    [Params(1000)]
+    public int QueriesToRun { get; set; }
 
     [Params(100, 1000)]
     public int Limit { get; set; }
