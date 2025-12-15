@@ -138,3 +138,4 @@ output/*
 docker-upload/*
 
 plugin.wasm
+sales.db

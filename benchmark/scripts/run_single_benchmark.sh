@@ -19,6 +19,10 @@ else
     trap destroy EXIT
     
     echo "Running in local"
-    docker-compose up --build --detach --force-recreate --remove-orphans --wait
+    if [ "$database_to_benchmark" = "mysql" ]; then
+        docker-compose up --build --detach --force-recreate --remove-orphans --wait mysqldb
+    elif [ "$database_to_benchmark" = "postgresql" ]; then
+        docker-compose up --build --detach --force-recreate --remove-orphans --wait postgresdb
+    fi
     dotnet_run
 fi

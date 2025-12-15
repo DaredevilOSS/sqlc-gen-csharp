@@ -27,19 +27,8 @@ public static partial class SqliteDatabaseHelper
         var schemaSql = await File.ReadAllTextAsync(schemaPath);
         using var connection = new SqliteConnection(connectionString);
         await connection.OpenAsync();
-        
-        // Split the SQL by semicolons and execute each statement separately
-        // SQLite doesn't handle multiple statements in a single ExecuteNonQueryAsync call
-        var statements = schemaSql
-            .Split(';', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
-            .Where(s => !string.IsNullOrWhiteSpace(s))
-            .ToArray();
-        
-        foreach (var statement in statements)
-        {
-            using var command = new SqliteCommand(statement, connection);
-            await command.ExecuteNonQueryAsync();
-        }
+        using var command = new SqliteCommand(schemaSql, connection);
+        await command.ExecuteNonQueryAsync();
     }
 
     public static void CleanupDatabase(string connectionString)
