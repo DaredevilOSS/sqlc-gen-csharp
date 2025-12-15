@@ -37,7 +37,7 @@ function copy_original_env() {
     cp .env.bak .env 
 }
 
-if [ -n "$GITHUB_ACTIONS" ]; then
+if ! [[ -n "$GITHUB_ACTIONS" ]]; then
     if [ "$database_to_benchmark" = "mysql" ]; then
         trap docker_destroy EXIT
         docker_compose_up mysqldb
