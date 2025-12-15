@@ -11,39 +11,43 @@ function dotnet_run() {
         --type $type_to_benchmark
 }
 
-function docker-compose-up() {
+function docker_compose_up() {
     service_name=$1
     docker-compose up --build --detach --force-recreate --remove-orphans --wait $service_name
 }
 
 # Adjust the SQLite connection string to use absolute path
-function adjust-sqlite-connection-string() {
+function adjust_sqlite_connection_string() {
     if [[ "$OSTYPE" == "darwin"* ]]; then
-        sed -i '' "s|Data Source=\([^;]*\.db\);|Data Source=$(pwd)/.sqlite/\1;|" .env
+        sed -i '' "s|Data Source=\([^;]*\.db\);|Data Source=$(pwd)/\1;|" .env
     else
-        sed -i "s|Data Source=\([^;]*\.db\);|Data Source=$(pwd)/.sqlite/\1;|" .env
+        sed -i "s|Data Source=\([^;]*\.db\);|Data Source=$(pwd)/\1;|" .env
     fi
 }
 
-function delete-current-sqlite-db() {
+function delete_current_sqlite_db() {
     rm -f $(pwd)/.sqlite/*.db
 }
 
+function docker_destroy() { 
+    docker-compose down --volumes
+}
 
-docker-destroy() { docker-compose down --volumes; }
-copy-original-env() { cp .env.bak .env; }
+function copy_original_env() { 
+    cp .env.bak .env 
+}
 
 if [ "$database_to_benchmark" = "mysql" ]; then
-    trap docker-destroy EXIT
-    docker-compose-up mysqldb
+    trap docker_destroy EXIT
+    docker_compose_up mysqldb
 elif [ "$database_to_benchmark" = "postgresql" ]; then
-    trap docker-destroy EXIT
-    docker-compose-up postgresdb
+    trap docker_destroy EXIT
+    docker_compose_up postgresdb
 elif [ "$database_to_benchmark" = "sqlite" ]; then
     cp .env .env.bak
-    trap copy-original-env EXIT
-    adjust-sqlite-connection-string
-    delete-current-sqlite-db
+    trap copy_original_env EXIT
+    adjust_sqlite_connection_string
+    delete_current_sqlite_db
 fi
 
 dotnet_run
