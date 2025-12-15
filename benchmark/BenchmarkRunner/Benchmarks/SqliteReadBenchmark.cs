@@ -2,6 +2,8 @@ using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Configs;
 using BenchmarkDotNet.Jobs;
 using BenchmarkRunner.Utils;
+using EndToEndTests;
+using Microsoft.Data.Sqlite;
 using SqliteEFCoreImpl;
 using SqliteSqlcImpl;
 
@@ -43,13 +45,20 @@ public class SqliteReadBenchmark : BaseReadBenchmark
     {
         await ExecuteConcurrentlyAsync(QueriesToRun, ConcurrentQueries, async _ =>
         {
-            await using var dbContext = new SalesDbContext(_connectionString);
-            var queries = new Queries(dbContext, useTracking: false);
-            return await queries.GetCustomerOrders(new Queries.GetCustomerOrdersArgs(
-                CustomerId: Random.Shared.Next(1, CustomerCount),
-                Offset: 0,
-                Limit: Limit
-            ));
+            try
+            {
+                await using var dbContext = new SalesDbContext(_connectionString);
+                var queries = new Queries(dbContext, useTracking: false);
+                return await queries.GetCustomerOrders(new Queries.GetCustomerOrdersArgs(
+                    CustomerId: Random.Shared.Next(1, CustomerCount),
+                    Offset: 0,
+                    Limit: Limit
+                ));
+            }
+            catch (SqliteException e)
+            {
+                throw new Exception($"Sqlite connection string: {_connectionString}, error: {e.Message}", e);
+            }
         });
     }
 
@@ -59,13 +68,20 @@ public class SqliteReadBenchmark : BaseReadBenchmark
     {
         await ExecuteConcurrentlyAsync(QueriesToRun, ConcurrentQueries, async _ =>
         {
-            await using var dbContext = new SalesDbContext(_connectionString);
-            var queries = new Queries(dbContext, useTracking: true);
-            return await queries.GetCustomerOrders(new Queries.GetCustomerOrdersArgs(
-                CustomerId: Random.Shared.Next(1, CustomerCount),
-                Offset: 0,
-                Limit: Limit
-            ));
+            try
+            {
+                await using var dbContext = new SalesDbContext(_connectionString);
+                var queries = new Queries(dbContext, useTracking: true);
+                return await queries.GetCustomerOrders(new Queries.GetCustomerOrdersArgs(
+                    CustomerId: Random.Shared.Next(1, CustomerCount),
+                    Offset: 0,
+                    Limit: Limit
+                ));
+            }
+            catch (SqliteException e)
+            {
+                throw new Exception($"Sqlite connection string: {_connectionString}, error: {e.Message}", e);
+            }
         });
     }
 
@@ -73,8 +89,7 @@ public class SqliteReadBenchmark : BaseReadBenchmark
     {
         return async () =>
         {
-            SqliteDatabaseHelper.CleanupDatabase(_connectionString);
-            await SqliteDatabaseHelper.InitializeDatabaseAsync(_connectionString);
+            EndToEndCommon.SetupBenchmarkSqliteDb();
             var seeder = new SqliteDatabaseSeeder(_connectionString);
             await seeder.SeedAsync(
                 customerCount: 500, // with customer_id filter, this is 1/500 of the table returned

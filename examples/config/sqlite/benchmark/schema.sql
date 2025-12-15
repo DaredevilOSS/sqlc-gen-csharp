@@ -35,4 +35,3 @@ CREATE TABLE IF NOT EXISTS order_items (
     CONSTRAINT      fk_order       FOREIGN KEY (order_id)   REFERENCES orders(order_id),
     CONSTRAINT      fk_product     FOREIGN KEY (product_id) REFERENCES products(product_id)
 );
-

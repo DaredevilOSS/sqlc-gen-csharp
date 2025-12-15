@@ -70,7 +70,6 @@ public class PostgresqlReadBenchmark : BaseReadBenchmark
     {
         return async () =>
         {
-            await PostgresqlDatabaseHelper.CleanupDatabaseAsync(_connectionString);
             var seeder = new PostgresqlDatabaseSeeder(_connectionString);
             await seeder.SeedAsync(
                 customerCount: 500, // with customer_id filter, this is 1/500 of the table returned

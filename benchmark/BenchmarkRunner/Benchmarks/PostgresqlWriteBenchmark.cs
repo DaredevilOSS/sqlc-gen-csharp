@@ -25,27 +25,6 @@ public class PostgresqlWriteBenchmark : BaseWriteBenchmark
     [Params(200, 500, 1000)]
     public int BatchSize { get; set; }
 
-    [GlobalSetup]
-    public async Task GlobalSetup()
-    {
-        var orderIds = await _sqlcImpl.GetOrderIdsAsync(new QuerySql.GetOrderIdsArgs(Limit: 1000));
-        var productIds = await _sqlcImpl.GetProductIdsAsync(new QuerySql.GetProductIdsArgs(Limit: 1000));
-
-        _testOrderItems = [.. Enumerable.Range(0, TotalRecords).Select(i => new QuerySql.AddOrderItemsArgs(
-            OrderId: orderIds[i % orderIds.Count].OrderId,
-            ProductId: productIds[i % productIds.Count].ProductId,
-            Quantity: Random.Shared.Next(1, 10),
-            UnitPrice: (decimal)(Random.Shared.NextDouble() * 100 + 5)
-        ))];
-    }
-
-    [IterationSetup]
-    public static void IterationSetup()
-    {
-        PostgresqlDatabaseHelper.CleanupWriteTableAsync(_connectionString).GetAwaiter().GetResult();
-        Helpers.InvokeGarbageCollection();
-    }
-
     [BenchmarkCategory("Write")]
     [Benchmark(Baseline = true, Description = "SQLC - AddOrderItems")]
     public override async Task Sqlc_AddOrderItems()
@@ -67,7 +46,6 @@ public class PostgresqlWriteBenchmark : BaseWriteBenchmark
     {
         return async () =>
         {
-            PostgresqlDatabaseHelper.CleanupDatabaseAsync(_connectionString).GetAwaiter().GetResult();
             var seeder = new PostgresqlDatabaseSeeder(_connectionString);
             await seeder.SeedAsync(
                 customerCount: 10,
@@ -76,5 +54,26 @@ public class PostgresqlWriteBenchmark : BaseWriteBenchmark
                 itemsPerOrder: 0
             );
         };
+    }
+
+    [GlobalSetup]
+    public async Task GlobalSetup()
+    {
+        var orderIds = await _sqlcImpl.GetOrderIdsAsync(new QuerySql.GetOrderIdsArgs(Limit: 1000));
+        var productIds = await _sqlcImpl.GetProductIdsAsync(new QuerySql.GetProductIdsArgs(Limit: 1000));
+
+        _testOrderItems = [.. Enumerable.Range(0, TotalRecords).Select(i => new QuerySql.AddOrderItemsArgs(
+            OrderId: orderIds[i % orderIds.Count].OrderId,
+            ProductId: productIds[i % productIds.Count].ProductId,
+            Quantity: Random.Shared.Next(1, 10),
+            UnitPrice: (decimal)(Random.Shared.NextDouble() * 100 + 5)
+        ))];
+    }
+
+    [IterationSetup]
+    public static void IterationSetup()
+    {
+        PostgresqlDatabaseHelper.CleanupWriteTableAsync(_connectionString).GetAwaiter().GetResult();
+        Helpers.InvokeGarbageCollection();
     }
 }

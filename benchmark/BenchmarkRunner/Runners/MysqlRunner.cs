@@ -3,12 +3,12 @@ using BenchmarkRunner.Benchmarks;
 
 public sealed class MysqlRunner : BaseRunner
 {
-    public override string GetBasePath() => Path.Combine(base.GetBasePath(), "mysql");
+    public override string GetOutputBasePath() => Path.Combine(base.GetOutputBasePath(), "mysql");
 
     public override async Task RunReadsAsync()
     {
-        await MysqlReadBenchmark.GetSeedMethod().Invoke();
-        var path = Path.Combine(GetBasePath(), "reads");
+        await MysqlReadBenchmark.GetSeedMethod()();
+        var path = Path.Combine(GetOutputBasePath(), "reads");
         BenchmarkDotNet.Running.BenchmarkRunner.Run<MysqlReadBenchmark>(
             DefaultConfig.Instance.WithArtifactsPath(path)
         );
@@ -16,8 +16,8 @@ public sealed class MysqlRunner : BaseRunner
 
     public override async Task RunWritesAsync()
     {
-        await MysqlWriteBenchmark.GetSeedMethod().Invoke();
-        var path = Path.Combine(GetBasePath(), "writes");
+        await MysqlWriteBenchmark.GetSeedMethod()();
+        var path = Path.Combine(GetOutputBasePath(), "writes");
         BenchmarkDotNet.Running.BenchmarkRunner.Run<MysqlWriteBenchmark>(
             DefaultConfig.Instance.WithArtifactsPath(path)
         );

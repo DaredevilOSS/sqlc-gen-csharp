@@ -70,7 +70,6 @@ public class MysqlReadBenchmark : BaseReadBenchmark
     {
         return async () =>
         {
-            await MysqlDatabaseHelper.CleanupDatabaseAsync(_connectionString);
             var seeder = new MysqlDatabaseSeeder(_connectionString);
             await seeder.SeedAsync(
                 customerCount: 500, // selectivity: 1/500 of the table returned

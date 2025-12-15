@@ -8,13 +8,13 @@ namespace EndToEndTests
         [OneTimeSetUp]
         public void SetUp()
         {
-            EndToEndCommon.SetUp();
+            EndToEndCommon.SetupTestsSqliteDb();
         }
 
         [OneTimeTearDown]
         public void TearDown()
         {
-            EndToEndCommon.TearDown();
+            EndToEndCommon.RemoveExistingSqliteDb(EndToEndCommon.SqliteConnectionStringEnv);
         }
     }
 }

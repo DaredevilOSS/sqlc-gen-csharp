@@ -138,4 +138,5 @@ output/*
 docker-upload/*
 
 plugin.wasm
-sales.db
+.sqlite/*
+.env.bak

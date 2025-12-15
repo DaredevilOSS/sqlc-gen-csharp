@@ -2,6 +2,7 @@ using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Configs;
 using BenchmarkDotNet.Jobs;
 using BenchmarkRunner.Utils;
+using EndToEndTests;
 using SqliteEFCoreImpl;
 using SqliteSqlcImpl;
 
@@ -27,27 +28,6 @@ public class SqliteWriteBenchmark : BaseWriteBenchmark
     [Params(50, 100, 200)]
     public int BatchSize { get; set; }
 
-    [GlobalSetup]
-    public async Task GlobalSetup()
-    {
-        var orderIds = await _sqlcImpl.GetOrderIdsAsync(new QuerySql.GetOrderIdsArgs(Limit: 1000));
-        var productIds = await _sqlcImpl.GetProductIdsAsync(new QuerySql.GetProductIdsArgs(Limit: 1000));
-
-        _testOrderItems = [.. Enumerable.Range(0, TotalRecords).Select(i => new QuerySql.AddOrderItemsArgs(
-            OrderId: orderIds[i % orderIds.Count].OrderId,
-            ProductId: productIds[i % productIds.Count].ProductId,
-            Quantity: Random.Shared.Next(1, 10),
-            UnitPrice: (decimal)(Random.Shared.NextDouble() * 100 + 5)
-        ))];
-    }
-
-    [IterationSetup]
-    public static void IterationSetup()
-    {
-        SqliteDatabaseHelper.CleanupWriteTableAsync(_connectionString).GetAwaiter().GetResult();
-        Helpers.InvokeGarbageCollection();
-    }
-
     [BenchmarkCategory("Write")]
     [Benchmark(Baseline = true, Description = "SQLC - AddOrderItems")]
     public override async Task Sqlc_AddOrderItems()
@@ -69,8 +49,7 @@ public class SqliteWriteBenchmark : BaseWriteBenchmark
     {
         return async () =>
         {
-            SqliteDatabaseHelper.CleanupDatabase(_connectionString);
-            await SqliteDatabaseHelper.InitializeDatabaseAsync(_connectionString);
+            EndToEndCommon.SetupBenchmarkSqliteDb();
             var seeder = new SqliteDatabaseSeeder(_connectionString);
             await seeder.SeedAsync(
                 customerCount: 10,
@@ -79,5 +58,26 @@ public class SqliteWriteBenchmark : BaseWriteBenchmark
                 itemsPerOrder: 0
             );
         };
+    }
+
+    [GlobalSetup]
+    public async Task GlobalSetup()
+    {
+        var orderIds = await _sqlcImpl.GetOrderIdsAsync(new QuerySql.GetOrderIdsArgs(Limit: 1000));
+        var productIds = await _sqlcImpl.GetProductIdsAsync(new QuerySql.GetProductIdsArgs(Limit: 1000));
+
+        _testOrderItems = [.. Enumerable.Range(0, TotalRecords).Select(i => new QuerySql.AddOrderItemsArgs(
+            OrderId: orderIds[i % orderIds.Count].OrderId,
+            ProductId: productIds[i % productIds.Count].ProductId,
+            Quantity: Random.Shared.Next(1, 10),
+            UnitPrice: (decimal)(Random.Shared.NextDouble() * 100 + 5)
+        ))];
+    }
+
+    [IterationSetup]
+    public void IterationSetup()
+    {
+        SqliteDatabaseHelper.CleanupWriteTableAsync(_connectionString).GetAwaiter().GetResult();
+        Helpers.InvokeGarbageCollection();
     }
 }
