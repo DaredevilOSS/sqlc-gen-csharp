@@ -37,13 +37,17 @@ function copy_original_env() {
     cp .env.bak .env 
 }
 
-if [ "$database_to_benchmark" = "mysql" ]; then
-    trap docker_destroy EXIT
-    docker_compose_up mysqldb
-elif [ "$database_to_benchmark" = "postgresql" ]; then
-    trap docker_destroy EXIT
-    docker_compose_up postgresdb
-elif [ "$database_to_benchmark" = "sqlite" ]; then
+if [ "$GITHUB_ACTIONS" = "true" ]; then
+    if [ "$database_to_benchmark" = "mysql" ]; then
+        trap docker_destroy EXIT
+        docker_compose_up mysqldb
+    elif [ "$database_to_benchmark" = "postgresql" ]; then
+        trap docker_destroy EXIT
+        docker_compose_up postgresdb
+    fi
+fi
+
+if [ "$database_to_benchmark" = "sqlite" ]; then
     cp .env .env.bak
     trap copy_original_env EXIT
     adjust_sqlite_connection_string
