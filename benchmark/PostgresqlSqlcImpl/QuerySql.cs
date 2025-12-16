@@ -279,6 +279,53 @@ public class QuerySql : IDisposable
         }
     }
 
+    private const string GetOrderItemsCountSql = "SELECT COUNT(*) AS cnt FROM sales.order_items";
+    public readonly record struct GetOrderItemsCountRow(long Cnt);
+    public async Task<GetOrderItemsCountRow?> GetOrderItemsCountAsync()
+    {
+        if (this.Transaction == null)
+        {
+            using (var connection = await GetDataSource().OpenConnectionAsync())
+            {
+                using (var command = connection.CreateCommand())
+                {
+                    command.CommandText = GetOrderItemsCountSql;
+                    using (var reader = await command.ExecuteReaderAsync())
+                    {
+                        if (await reader.ReadAsync())
+                        {
+                            return new GetOrderItemsCountRow
+                            {
+                                Cnt = reader.GetInt64(0)
+                            };
+                        }
+                    }
+                }
+            };
+            return null;
+        }
+
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
+            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+        using (var command = this.Transaction.Connection.CreateCommand())
+        {
+            command.CommandText = GetOrderItemsCountSql;
+            command.Transaction = this.Transaction;
+            using (var reader = await command.ExecuteReaderAsync())
+            {
+                if (await reader.ReadAsync())
+                {
+                    return new GetOrderItemsCountRow
+                    {
+                        Cnt = reader.GetInt64(0)
+                    };
+                }
+            }
+        }
+
+        return null;
+    }
+
     private const string GetOrderIdsSql = "SELECT order_id FROM sales.orders ORDER BY ordered_at DESC LIMIT @limit";
     public readonly record struct GetOrderIdsRow(int OrderId);
     public readonly record struct GetOrderIdsArgs(int Limit);

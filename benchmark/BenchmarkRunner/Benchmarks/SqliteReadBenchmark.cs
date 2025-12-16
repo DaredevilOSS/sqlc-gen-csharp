@@ -4,7 +4,6 @@ using BenchmarkDotNet.Jobs;
 using BenchmarkRunner.Utils;
 using EndToEndTests;
 using NUnit.Framework;
-using NUnit.Framework.Legacy;
 using SqliteEFCoreImpl;
 using SqliteSqlcImpl;
 

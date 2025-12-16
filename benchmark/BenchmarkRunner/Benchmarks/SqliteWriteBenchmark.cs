@@ -4,6 +4,7 @@ using BenchmarkDotNet.Jobs;
 using BenchmarkRunner.Utils;
 using EndToEndTests;
 using Microsoft.Data.Sqlite;
+using NUnit.Framework;
 using SqliteEFCoreImpl;
 using SqliteSqlcImpl;
 
@@ -16,15 +17,17 @@ namespace BenchmarkRunner.Benchmarks;
 [CategoriesColumn]
 public class SqliteWriteBenchmark : BaseWriteBenchmark
 {
+    private const int _totalRecordsForSetup = 200_000;
     private static readonly string _connectionString = Config.GetSqliteConnectionString();
     private readonly QuerySql _sqlcImpl = new(_connectionString);
     private readonly Queries _efCoreImpl = new(new SalesDbContext(_connectionString), useTracking: false);
-    private List<QuerySql.AddOrderItemsArgs> _testOrderItems = null!;
+    private List<QuerySql.AddOrderItemsArgs> _sqlcTestOrderItems = null!;
+    private List<Queries.AddOrderItemsArgs> _efCoreTestOrderItems = null!;
 
     public static IEnumerable<WriteBenchmarkArgs> GetSqlcArguments()
     {
-        yield return new WriteBenchmarkArgs(TotalRecords: 200_000, BatchSize: 50);
-        yield return new WriteBenchmarkArgs(TotalRecords: 200_000, BatchSize: 100);
+        yield return new WriteBenchmarkArgs(TotalRecords: _totalRecordsForSetup, BatchSize: 50);
+        yield return new WriteBenchmarkArgs(TotalRecords: _totalRecordsForSetup, BatchSize: 100);
     }
 
     [BenchmarkCategory("Write")]
@@ -32,12 +35,14 @@ public class SqliteWriteBenchmark : BaseWriteBenchmark
     [ArgumentsSource(nameof(GetSqlcArguments))]
     public override async Task Sqlc_AddOrderItems(WriteBenchmarkArgs args)
     {
-        await Helpers.InsertInBatchesAsync(_testOrderItems, args.BatchSize, _sqlcImpl.AddOrderItemsAsync);
+        await Helpers.InsertInBatchesAsync(_sqlcTestOrderItems[..args.TotalRecords], args.BatchSize, _sqlcImpl.AddOrderItemsAsync);
+        var result = await _sqlcImpl.GetOrderItemsCountAsync();
+        Assert.That(result?.Cnt, Is.EqualTo(args.TotalRecords));
     }
 
     public static IEnumerable<WriteBenchmarkArgs> GetEFCoreArguments()
     {
-        yield return new WriteBenchmarkArgs(TotalRecords: 200_000, BatchSize: 500);
+        yield return new WriteBenchmarkArgs(TotalRecords: _totalRecordsForSetup, BatchSize: 500);
     }
 
     [BenchmarkCategory("Write")]
@@ -45,10 +50,9 @@ public class SqliteWriteBenchmark : BaseWriteBenchmark
     [ArgumentsSource(nameof(GetEFCoreArguments))]
     public override async Task EFCore_AddOrderItems(WriteBenchmarkArgs args)
     {
-        var batchArgs = _testOrderItems.Select(i => new Queries.AddOrderItemsArgs(
-            i.OrderId, i.ProductId, i.Quantity, i.UnitPrice
-        )).ToList();
-        await Helpers.InsertInBatchesAsync(batchArgs, args.BatchSize, _efCoreImpl.AddOrderItems);
+        await Helpers.InsertInBatchesAsync(_efCoreTestOrderItems[..args.TotalRecords], args.BatchSize, _efCoreImpl.AddOrderItems);
+        var result = await _sqlcImpl.GetOrderItemsCountAsync();
+        Assert.That(result?.Cnt, Is.EqualTo(args.TotalRecords));
     }
 
     public static Func<Task> GetSeedMethod()
@@ -64,15 +68,10 @@ public class SqliteWriteBenchmark : BaseWriteBenchmark
     [GlobalSetup]
     public async Task GlobalSetup()
     {
-        var orderIds = await _sqlcImpl.GetOrderIdsAsync(new QuerySql.GetOrderIdsArgs(Limit: 1000));
-        var productIds = await _sqlcImpl.GetProductIdsAsync(new QuerySql.GetProductIdsArgs(Limit: 1000));
-
-        _testOrderItems = [.. Enumerable.Range(0, 5000).Select(i => new QuerySql.AddOrderItemsArgs(
-            OrderId: orderIds[i % orderIds.Count].OrderId,
-            ProductId: productIds[i % productIds.Count].ProductId,
-            Quantity: Random.Shared.Next(1, 10),
-            UnitPrice: (decimal)(Random.Shared.NextDouble() * 100 + 5)
-        ))];
+        var orderIds = await _sqlcImpl.GetOrderIdsAsync(new QuerySql.GetOrderIdsArgs(Limit: OrderIdsCountForSetup));
+        var productIds = await _sqlcImpl.GetProductIdsAsync(new QuerySql.GetProductIdsArgs(Limit: ProductIdsCountForSetup));
+        _sqlcTestOrderItems = GetSqlcTestOrderItemsAsync(orderIds, productIds);
+        _efCoreTestOrderItems = GetEFCoreTestOrderItems(orderIds, productIds);
     }
 
     [IterationSetup]
@@ -80,6 +79,30 @@ public class SqliteWriteBenchmark : BaseWriteBenchmark
     {
         CleanupWriteTableAsync(_connectionString).GetAwaiter().GetResult();
         Helpers.InvokeGarbageCollection();
+    }
+
+    private static List<QuerySql.AddOrderItemsArgs> GetSqlcTestOrderItemsAsync(
+        List<QuerySql.GetOrderIdsRow> orderIds,
+        List<QuerySql.GetProductIdsRow> productIds)
+    {
+        return [.. Enumerable.Range(0, _totalRecordsForSetup).Select(i => new QuerySql.AddOrderItemsArgs(
+            OrderId: orderIds[i % OrderIdsCountForSetup].OrderId,
+            ProductId: productIds[i % ProductIdsCountForSetup].ProductId,
+            Quantity: Random.Shared.Next(1, 10),
+            UnitPrice: (decimal)(Random.Shared.NextDouble() * 100 + 5)
+        ))];
+    }
+
+    private static List<Queries.AddOrderItemsArgs> GetEFCoreTestOrderItems(
+        List<QuerySql.GetOrderIdsRow> orderIds,
+        List<QuerySql.GetProductIdsRow> productIds)
+    {
+        return [.. Enumerable.Range(0, _totalRecordsForSetup).Select(i => new Queries.AddOrderItemsArgs(
+            OrderId: orderIds[i % OrderIdsCountForSetup].OrderId,
+            ProductId: productIds[i % ProductIdsCountForSetup].ProductId,
+            Quantity: Random.Shared.Next(1, 10),
+            UnitPrice: (decimal)(Random.Shared.NextDouble() * 100 + 5)
+        ))];
     }
 
     private static async Task CleanupWriteTableAsync(string connectionString)

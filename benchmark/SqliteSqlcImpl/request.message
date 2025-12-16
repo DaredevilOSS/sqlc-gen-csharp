@@ -115,7 +115,9 @@ product_id*#
 limit0ÿÿÿÿÿÿÿÿÿb	integer:	query.sql³
 5SELECT order_id FROM orders ORDER BY order_id LIMIT ?GetOrderIds:many"6
 order_id0ÿÿÿÿÿÿÿÿÿRordersb	INTEGERzorder_id*#
-limit0ÿÿÿÿÿÿÿÿÿb	integer:	query.sql¨
+limit0ÿÿÿÿÿÿÿÿÿb	integer:	query.sqlo
+'SELECT COUNT(*) AS cnt FROM order_itemsGetOrderItemsCount:one"
+cnt0ÿÿÿÿÿÿÿÿÿ@b	integer:	query.sql¨
 RSELECT order_id, total_amount FROM orders WHERE order_id IN (/*SLICE:order_ids*/?)GetOrderAmounts:many"6
 order_id0ÿÿÿÿÿÿÿÿÿRordersb	INTEGERzorder_id";
 total_amount0ÿÿÿÿÿÿÿÿÿRordersbREALztotal_amount*:6

@@ -9,6 +9,7 @@ public readonly record struct ReadBenchmarkParams(
 
 public abstract class BaseReadBenchmark
 {
+
     [IterationSetup]
     public static void IterationSetup() => Helpers.InvokeGarbageCollection();
     public abstract Task Sqlc_GetCustomerOrders();

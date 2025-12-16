@@ -32,6 +32,9 @@ SELECT product_id FROM products ORDER BY product_id LIMIT ?;
 -- name: GetOrderIds :many
 SELECT order_id FROM orders ORDER BY order_id LIMIT ?;
 
+-- name: GetOrderItemsCount :one
+SELECT COUNT(*) AS cnt FROM order_items;
+
 -- name: GetOrderAmounts :many
 SELECT order_id, total_amount FROM orders WHERE order_id IN (/*SLICE:order_ids*/?);
 

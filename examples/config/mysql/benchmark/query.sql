@@ -32,9 +32,11 @@ SELECT product_id FROM sales.products ORDER BY product_id LIMIT ?;
 -- name: GetOrderIds :many
 SELECT order_id FROM sales.orders ORDER BY order_id LIMIT ?;
 
+-- name: GetOrderItemsCount :one
+SELECT COUNT(*) AS cnt FROM sales.order_items;
+
 -- name: GetOrderAmounts :many
 SELECT order_id, total_amount FROM sales.orders WHERE order_id IN (/*SLICE:order_ids*/?);
 
 -- name: GetProductPrices :many
 SELECT product_id, unit_price FROM sales.products WHERE product_id IN (/*SLICE:product_ids*/?);
-

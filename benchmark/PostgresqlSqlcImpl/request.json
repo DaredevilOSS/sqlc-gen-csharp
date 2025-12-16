@@ -32774,6 +32774,23 @@
       "filename": "query.sql"
     },
     {
+      "text": "SELECT COUNT(*) AS cnt FROM sales.order_items",
+      "name": "GetOrderItemsCount",
+      "cmd": ":one",
+      "columns": [
+        {
+          "name": "cnt",
+          "notNull": true,
+          "length": -1,
+          "isFuncCall": true,
+          "type": {
+            "name": "bigint"
+          }
+        }
+      ],
+      "filename": "query.sql"
+    },
+    {
       "text": "SELECT order_id FROM sales.orders ORDER BY ordered_at DESC LIMIT $1",
       "name": "GetOrderIds",
       "cmd": ":many",

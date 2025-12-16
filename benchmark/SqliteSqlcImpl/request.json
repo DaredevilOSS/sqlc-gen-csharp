@@ -891,6 +891,23 @@
       "filename": "query.sql"
     },
     {
+      "text": "SELECT COUNT(*) AS cnt FROM order_items",
+      "name": "GetOrderItemsCount",
+      "cmd": ":one",
+      "columns": [
+        {
+          "name": "cnt",
+          "notNull": true,
+          "length": -1,
+          "isFuncCall": true,
+          "type": {
+            "name": "integer"
+          }
+        }
+      ],
+      "filename": "query.sql"
+    },
+    {
       "text": "SELECT order_id, total_amount FROM orders WHERE order_id IN (/*SLICE:order_ids*/?)",
       "name": "GetOrderAmounts",
       "cmd": ":many",

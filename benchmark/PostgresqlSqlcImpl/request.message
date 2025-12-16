@@ -10247,7 +10247,9 @@ BSELECT product_id FROM sales.products ORDER BY product_id LIMIT $1GetProductI
 
 product_id0ÿÿÿÿÿÿÿÿÿRsalesproductsbserialz
 product_id*%!
-limit0ÿÿÿÿÿÿÿÿÿ8b	integer:	query.sqlÉ
+limit0ÿÿÿÿÿÿÿÿÿ8b	integer:	query.sqlt
+-SELECT COUNT(*) AS cnt FROM sales.order_itemsGetOrderItemsCount:one"
+cnt0ÿÿÿÿÿÿÿÿÿ@bbigint:	query.sqlÉ
 CSELECT order_id FROM sales.orders ORDER BY ordered_at DESC LIMIT $1GetOrderIds:many"<
 order_id0ÿÿÿÿÿÿÿÿÿRsalesordersbserialzorder_id*%!
 limit0ÿÿÿÿÿÿÿÿÿ8b	integer:	query.sqlÃ

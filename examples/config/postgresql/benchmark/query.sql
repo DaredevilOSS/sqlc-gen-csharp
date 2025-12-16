@@ -29,6 +29,9 @@ SELECT customer_id FROM sales.customers ORDER BY customer_id LIMIT sqlc.arg('lim
 -- name: GetProductIds :many
 SELECT product_id FROM sales.products ORDER BY product_id LIMIT sqlc.arg('limit');
 
+-- name: GetOrderItemsCount :one
+SELECT COUNT(*) AS cnt FROM sales.order_items;
+
 -- name: GetOrderIds :many
 SELECT order_id FROM sales.orders ORDER BY ordered_at DESC LIMIT sqlc.arg('limit');
 

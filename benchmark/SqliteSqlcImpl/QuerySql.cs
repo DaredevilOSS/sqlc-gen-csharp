@@ -307,6 +307,53 @@ public class QuerySql
         }
     }
 
+    private const string GetOrderItemsCountSql = "SELECT COUNT(*) AS cnt FROM order_items";
+    public readonly record struct GetOrderItemsCountRow(int Cnt);
+    public async Task<GetOrderItemsCountRow?> GetOrderItemsCountAsync()
+    {
+        if (this.Transaction == null)
+        {
+            using (var connection = new SqliteConnection(ConnectionString))
+            {
+                await connection.OpenAsync();
+                using (var command = new SqliteCommand(GetOrderItemsCountSql, connection))
+                {
+                    using (var reader = await command.ExecuteReaderAsync())
+                    {
+                        if (await reader.ReadAsync())
+                        {
+                            return new GetOrderItemsCountRow
+                            {
+                                Cnt = reader.GetInt32(0)
+                            };
+                        }
+                    }
+                }
+            };
+            return null;
+        }
+
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
+            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+        using (var command = this.Transaction.Connection.CreateCommand())
+        {
+            command.CommandText = GetOrderItemsCountSql;
+            command.Transaction = this.Transaction;
+            using (var reader = await command.ExecuteReaderAsync())
+            {
+                if (await reader.ReadAsync())
+                {
+                    return new GetOrderItemsCountRow
+                    {
+                        Cnt = reader.GetInt32(0)
+                    };
+                }
+            }
+        }
+
+        return null;
+    }
+
     private const string GetOrderAmountsSql = "SELECT order_id, total_amount FROM orders WHERE order_id IN (/*SLICE:order_ids*/@order_id)";
     public readonly record struct GetOrderAmountsRow(int OrderId, decimal TotalAmount);
     public readonly record struct GetOrderAmountsArgs(int OrderId);

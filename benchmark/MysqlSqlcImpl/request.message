@@ -118,7 +118,9 @@ product_id*#
 limit0ÿÿÿÿÿÿÿÿÿb	integer:	query.sql¿
 ;SELECT order_id FROM sales.orders ORDER BY order_id LIMIT ?GetOrderIds:many"<
 order_id0ÿÿÿÿÿÿÿÿÿRsalesordersbbigintzorder_id*#
-limit0ÿÿÿÿÿÿÿÿÿb	integer:	query.sql»
+limit0ÿÿÿÿÿÿÿÿÿb	integer:	query.sqlt
+-SELECT COUNT(*) AS cnt FROM sales.order_itemsGetOrderItemsCount:one"
+cnt0ÿÿÿÿÿÿÿÿÿ@bbigint:	query.sql»
 XSELECT order_id, total_amount FROM sales.orders WHERE order_id IN (/*SLICE:order_ids*/?)GetOrderAmounts:many"<
 order_id0ÿÿÿÿÿÿÿÿÿRsalesordersbbigintzorder_id"<
 total_amount0
