@@ -20,7 +20,7 @@ public class PostgresqlWriteBenchmark : BaseWriteBenchmark
     private readonly Queries _efCoreImpl = new(new SalesDbContext(_connectionString), useTracking: false);
     private List<QuerySql.AddOrderItemsArgs> _testOrderItems = null!;
 
-    [Params(2_500_000)]
+    [Params(1_500_000)]
     public int TotalRecords { get; set; }
 
     [BenchmarkCategory("Write")]
