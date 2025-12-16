@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+<meta charset='utf-8' />
+<title>BenchmarkRunner.Benchmarks.MysqlReadBenchmark-20251216-212048</title>
+
+<style type="text/css">
+	table { border-collapse: collapse; display: block; width: 100%; overflow: auto; }
+	td, th { padding: 6px 13px; border: 1px solid #ddd; text-align: right; }
+	tr { background-color: #fff; border-top: 1px solid #ccc; }
+	tr:nth-child(even) { background: #f8f8f8; }
+</style>
+</head>
+<body>
+<pre><code>
+BenchmarkDotNet v0.13.12, Ubuntu 24.04.3 LTS (Noble Numbat)
+AMD EPYC 7763, 1 CPU, 4 logical and 2 physical cores
+.NET SDK 8.0.416
+  [Host]     : .NET 8.0.22 (8.0.2225.52707), X64 RyuJIT AVX2
+  Job-KOYNRB : .NET 8.0.22 (8.0.2225.52707), X64 RyuJIT AVX2
+</code></pre>
+<pre><code>Runtime=.NET 8.0  IterationCount=10  WarmupCount=2  
+Categories=Read  
+</code></pre>
+
+<table>
+<thead><tr><th>Method                               </th><th>Params        </th><th>Mean</th><th>Error</th><th>Ratio</th><th>RatioSD</th><th>Alloc Ratio</th>
+</tr>
+</thead><tbody><tr><td>&#39;SQLC - GetCustomerOrders&#39;</td><td>ReadB(...)000 } [79]</td><td>NA</td><td>NA</td><td>?</td><td>?</td><td>?</td>
+</tr><tr><td>&#39;EFCore (NoTracking) - GetCustomerOrders&#39;</td><td>ReadB(...)000 } [79]</td><td>NA</td><td>NA</td><td>?</td><td>?</td><td>?</td>
+</tr><tr><td>&#39;EFCore (WithTracking) - GetCustomerOrders&#39;</td><td>ReadB(...)000 } [79]</td><td>NA</td><td>NA</td><td>?</td><td>?</td><td>?</td>
+</tr><tr><td>&#39;SQLC - GetCustomerOrders&#39;</td><td>ReadB(...)000 } [77]</td><td>NA</td><td>NA</td><td>?</td><td>?</td><td>?</td>
+</tr><tr><td>&#39;EFCore (NoTracking) - GetCustomerOrders&#39;</td><td>ReadB(...)000 } [77]</td><td>NA</td><td>NA</td><td>?</td><td>?</td><td>?</td>
+</tr><tr><td>&#39;EFCore (WithTracking) - GetCustomerOrders&#39;</td><td>ReadB(...)000 } [77]</td><td>NA</td><td>NA</td><td>?</td><td>?</td><td>?</td>
+</tr></tbody></table>
+</body>
+</html>
