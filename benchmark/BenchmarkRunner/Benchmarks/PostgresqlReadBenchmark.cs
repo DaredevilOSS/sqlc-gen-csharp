@@ -39,7 +39,7 @@ public class PostgresqlReadBenchmark : BaseReadBenchmark
                 Limit: Params.Limit
             ));
 
-            Assert.Equals(results.Count, Params.Limit);
+            Assert.That(results.Count, Is.EqualTo(Params.Limit));
             return results;
         });
     }
@@ -58,7 +58,7 @@ public class PostgresqlReadBenchmark : BaseReadBenchmark
                 Limit: Params.Limit
             ));
 
-            Assert.Equals(results.Count, Params.Limit);
+            Assert.That(results.Count, Is.EqualTo(Params.Limit));
             return results;
         });
     }
@@ -77,7 +77,7 @@ public class PostgresqlReadBenchmark : BaseReadBenchmark
                 Limit: Params.Limit
             ));
 
-            Assert.Equals(results.Count, Params.Limit);
+            Assert.That(results.Count, Is.EqualTo(Params.Limit));
             return results;
         });
     }
