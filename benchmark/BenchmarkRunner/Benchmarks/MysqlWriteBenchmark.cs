@@ -24,7 +24,7 @@ public class MysqlWriteBenchmark : BaseWriteBenchmark
     /// MySQL batch size can be very large yet very performant in SQLC implementation due to 
     /// CSV load usage, so we wish to examine exceptionally large batches as well.
     /// </summary>
-    [Params(200, 1000, 5000)]
+    [Params(500, 1000, 2000)]
     public int BatchSize { get; set; }
 
     [BenchmarkCategory("Write")]
