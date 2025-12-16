@@ -78,7 +78,7 @@ public class Order
 {
     [Key]
     [Column("order_id")]
-    public Guid OrderId { get; set; }
+    public int OrderId { get; set; }
 
     [Required]
     [Column("customer_id")]
@@ -108,11 +108,11 @@ public class OrderItem
 {
     [Key]
     [Column("order_item_id")]
-    public Guid OrderItemId { get; set; }
+    public int OrderItemId { get; set; }
 
     [Required]
     [Column("order_id")]
-    public Guid OrderId { get; set; }
+    public int OrderId { get; set; }
 
     [Required]
     [Column("product_id")]

@@ -20,16 +20,16 @@ public class PostgresqlWriteBenchmark : BaseWriteBenchmark
     private List<QuerySql.AddOrderItemsArgs> _testOrderItems = null!;
 
     /// <summary>
-    /// PostgreSQL batch size can be larger in SQLC implementation due to using binary import.
+    /// PostgreSQL batch size can be larger in SQLC implementation due to using COPY FROM syntax.
     /// </summary>
-    [Params(200, 500, 1000)]
-    public int BatchSize { get; set; }
+    [Params(500, 1000)]
+    public int SqlcBatchSize { get; set; }
 
     [BenchmarkCategory("Write")]
     [Benchmark(Baseline = true, Description = "SQLC - AddOrderItems")]
     public override async Task Sqlc_AddOrderItems()
     {
-        await Helpers.InsertInBatchesAsync(_testOrderItems, BatchSize, _sqlcImpl.AddOrderItemsAsync);
+        await Helpers.InsertInBatchesAsync(_testOrderItems, SqlcBatchSize, _sqlcImpl.AddOrderItemsAsync);
     }
 
     [BenchmarkCategory("Write")]
@@ -39,7 +39,7 @@ public class PostgresqlWriteBenchmark : BaseWriteBenchmark
         var args = _testOrderItems.Select(i => new Queries.AddOrderItemsArgs(
             i.OrderId, i.ProductId, i.Quantity, i.UnitPrice
         )).ToList();
-        await Helpers.InsertInBatchesAsync(args, BatchSize, _efCoreImpl.AddOrderItems);
+        await Helpers.InsertInBatchesAsync(args, EFCoreBatchSize, _efCoreImpl.AddOrderItems);
     }
 
     public static Func<Task> GetSeedMethod()

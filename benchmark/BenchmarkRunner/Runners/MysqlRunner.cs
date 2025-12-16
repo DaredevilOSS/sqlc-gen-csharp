@@ -9,17 +9,23 @@ public sealed class MysqlRunner : BaseRunner
     {
         await MysqlReadBenchmark.GetSeedMethod()();
         var path = Path.Combine(GetOutputBasePath(), "reads");
-        BenchmarkDotNet.Running.BenchmarkRunner.Run<MysqlReadBenchmark>(
+        var summary = BenchmarkDotNet.Running.BenchmarkRunner.Run<MysqlReadBenchmark>(
             DefaultConfig.Instance.WithArtifactsPath(path)
         );
+
+        if (summary.HasCriticalValidationErrors)
+            throw new InvalidProgramException("Mysql reads benchmark failed");
     }
 
     public override async Task RunWritesAsync()
     {
         await MysqlWriteBenchmark.GetSeedMethod()();
         var path = Path.Combine(GetOutputBasePath(), "writes");
-        BenchmarkDotNet.Running.BenchmarkRunner.Run<MysqlWriteBenchmark>(
+        var summary = BenchmarkDotNet.Running.BenchmarkRunner.Run<MysqlWriteBenchmark>(
             DefaultConfig.Instance.WithArtifactsPath(path)
         );
+
+        if (summary.HasCriticalValidationErrors)
+            throw new InvalidProgramException("Mysql writes benchmark failed");
     }
 }

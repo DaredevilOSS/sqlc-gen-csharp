@@ -3,11 +3,7 @@ using BenchmarkRunner.Utils;
 
 public abstract class BaseReadBenchmark
 {
-    [Params(1000)]
-    public int QueriesToRun { get; set; }
-
-    [Params(500)]
-    public int CustomerCount { get; set; }
+    protected const int CustomerCount = 500;
 
     [Params(100, 500)]
     public int Limit { get; set; }

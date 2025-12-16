@@ -62,7 +62,6 @@ namespace SqliteLegacyExampleGen
                     using (var command = new SqliteCommand(GetAuthorSql, connection))
                     {
                         command.Parameters.AddWithValue("@name", args.Name);
-                        command.Prepare();
                         using (var reader = await command.ExecuteReaderAsync())
                         {
                             if (await reader.ReadAsync())
@@ -130,7 +129,6 @@ namespace SqliteLegacyExampleGen
                     {
                         command.Parameters.AddWithValue("@offset", args.Offset);
                         command.Parameters.AddWithValue("@limit", args.Limit);
-                        command.Prepare();
                         using (var reader = await command.ExecuteReaderAsync())
                         {
                             var result = new List<ListAuthorsRow>();
@@ -179,7 +177,6 @@ namespace SqliteLegacyExampleGen
                         command.Parameters.AddWithValue("@id", args.Id);
                         command.Parameters.AddWithValue("@name", args.Name);
                         command.Parameters.AddWithValue("@bio", args.Bio ?? (object)DBNull.Value);
-                        command.Prepare();
                         await command.ExecuteNonQueryAsync();
                     }
 
@@ -221,7 +218,6 @@ namespace SqliteLegacyExampleGen
                     {
                         command.Parameters.AddWithValue("@name", args.Name);
                         command.Parameters.AddWithValue("@bio", args.Bio ?? (object)DBNull.Value);
-                        command.Prepare();
                         var result = await command.ExecuteScalarAsync();
                         return Convert.ToInt32(result);
                     }
@@ -263,7 +259,6 @@ namespace SqliteLegacyExampleGen
                     using (var command = new SqliteCommand(GetAuthorByIdSql, connection))
                     {
                         command.Parameters.AddWithValue("@id", args.Id);
-                        command.Prepare();
                         using (var reader = await command.ExecuteReaderAsync())
                         {
                             if (await reader.ReadAsync())
@@ -328,7 +323,6 @@ namespace SqliteLegacyExampleGen
                     {
                         command.Parameters.AddWithValue("@id_arg", args.IdArg);
                         command.Parameters.AddWithValue("@take", args.Take ?? (object)DBNull.Value);
-                        command.Prepare();
                         using (var reader = await command.ExecuteReaderAsync())
                         {
                             if (await reader.ReadAsync())
@@ -393,7 +387,6 @@ namespace SqliteLegacyExampleGen
                     using (var command = new SqliteCommand(GetAuthorByNamePatternSql, connection))
                     {
                         command.Parameters.AddWithValue("@name_pattern", args.NamePattern ?? (object)DBNull.Value);
-                        command.Prepare();
                         using (var reader = await command.ExecuteReaderAsync())
                         {
                             var result = new List<GetAuthorByNamePatternRow>();
@@ -439,7 +432,6 @@ namespace SqliteLegacyExampleGen
                     using (var command = new SqliteCommand(UpdateAuthorsSql, connection))
                     {
                         command.Parameters.AddWithValue("@bio", args.Bio ?? (object)DBNull.Value);
-                        command.Prepare();
                         return await command.ExecuteNonQueryAsync();
                     }
                 }
@@ -480,7 +472,6 @@ namespace SqliteLegacyExampleGen
                     {
                         for (int i = 0; i < args.Ids.Length; i++)
                             command.Parameters.AddWithValue($"@idsArg{i}", args.Ids[i]);
-                        command.Prepare();
                         using (var reader = await command.ExecuteReaderAsync())
                         {
                             var result = new List<GetAuthorsByIdsRow>();
@@ -538,7 +529,6 @@ namespace SqliteLegacyExampleGen
                             command.Parameters.AddWithValue($"@idsArg{i}", args.Ids[i]);
                         for (int i = 0; i < args.Names.Length; i++)
                             command.Parameters.AddWithValue($"@namesArg{i}", args.Names[i]);
-                        command.Prepare();
                         using (var reader = await command.ExecuteReaderAsync())
                         {
                             var result = new List<GetAuthorsByIdsAndNamesRow>();
@@ -586,7 +576,6 @@ namespace SqliteLegacyExampleGen
                     using (var command = new SqliteCommand(DeleteAuthorSql, connection))
                     {
                         command.Parameters.AddWithValue("@name", args.Name);
-                        command.Prepare();
                         await command.ExecuteNonQueryAsync();
                     }
 
@@ -626,7 +615,6 @@ namespace SqliteLegacyExampleGen
                     {
                         command.Parameters.AddWithValue("@name", args.Name);
                         command.Parameters.AddWithValue("@author_id", args.AuthorId);
-                        command.Prepare();
                         var result = await command.ExecuteScalarAsync();
                         return Convert.ToInt32(result);
                     }
@@ -665,7 +653,6 @@ namespace SqliteLegacyExampleGen
                     await connection.OpenAsync();
                     using (var command = new SqliteCommand(ListAllAuthorsBooksSql, connection))
                     {
-                        command.Prepare();
                         using (var reader = await command.ExecuteReaderAsync())
                         {
                             var result = new List<ListAllAuthorsBooksRow>();
@@ -713,7 +700,6 @@ namespace SqliteLegacyExampleGen
                     await connection.OpenAsync();
                     using (var command = new SqliteCommand(GetDuplicateAuthorsSql, connection))
                     {
-                        command.Prepare();
                         using (var reader = await command.ExecuteReaderAsync())
                         {
                             var result = new List<GetDuplicateAuthorsRow>();
@@ -767,7 +753,6 @@ namespace SqliteLegacyExampleGen
                     using (var command = new SqliteCommand(GetAuthorsByBookNameSql, connection))
                     {
                         command.Parameters.AddWithValue("@name", args.Name);
-                        command.Prepare();
                         using (var reader = await command.ExecuteReaderAsync())
                         {
                             var result = new List<GetAuthorsByBookNameRow>();
@@ -806,7 +791,6 @@ namespace SqliteLegacyExampleGen
                     await connection.OpenAsync();
                     using (var command = new SqliteCommand(DeleteAllAuthorsSql, connection))
                     {
-                        command.Prepare();
                         await command.ExecuteNonQueryAsync();
                     }
 
@@ -870,7 +854,6 @@ namespace SqliteLegacyExampleGen
                         command.Parameters.AddWithValue("@c_integer_noda_instant_override", args.CIntegerNodaInstantOverride != null ? (long? )args.CIntegerNodaInstantOverride.Value.ToUnixTimeSeconds() : (object)DBNull.Value);
                         command.Parameters.AddWithValue("@c_text_bool_override", args.CTextBoolOverride != null ? Convert.ToString(args.CTextBoolOverride) : (object)DBNull.Value);
                         command.Parameters.AddWithValue("@c_integer_bool_override", args.CIntegerBoolOverride != null ? (int? )Convert.ToInt32(args.CIntegerBoolOverride) : (object)DBNull.Value);
-                        command.Prepare();
                         await command.ExecuteNonQueryAsync();
                     }
 
@@ -920,7 +903,6 @@ namespace SqliteLegacyExampleGen
                         command.Parameters.AddWithValue($"@c_text{i}", args[i].CText ?? (object)DBNull.Value);
                     }
 
-                    command.Prepare();
                     await command.ExecuteScalarAsync();
                 }
             }
@@ -961,7 +943,6 @@ namespace SqliteLegacyExampleGen
                     await connection.OpenAsync();
                     using (var command = new SqliteCommand(GetSqliteTypesSql, connection))
                     {
-                        command.Prepare();
                         using (var reader = await command.ExecuteReaderAsync())
                         {
                             if (await reader.ReadAsync())
@@ -1042,7 +1023,6 @@ namespace SqliteLegacyExampleGen
                     await connection.OpenAsync();
                     using (var command = new SqliteCommand(GetSqliteTypesCntSql, connection))
                     {
-                        command.Prepare();
                         using (var reader = await command.ExecuteReaderAsync())
                         {
                             if (await reader.ReadAsync())
@@ -1107,7 +1087,6 @@ namespace SqliteLegacyExampleGen
                     await connection.OpenAsync();
                     using (var command = new SqliteCommand(GetSqliteFunctionsSql, connection))
                     {
-                        command.Prepare();
                         using (var reader = await command.ExecuteReaderAsync())
                         {
                             if (await reader.ReadAsync())
@@ -1158,7 +1137,6 @@ namespace SqliteLegacyExampleGen
                     await connection.OpenAsync();
                     using (var command = new SqliteCommand(DeleteAllSqliteTypesSql, connection))
                     {
-                        command.Prepare();
                         await command.ExecuteNonQueryAsync();
                     }
 

@@ -32063,7 +32063,7 @@
                   "name": "orders"
                 },
                 "type": {
-                  "name": "uuid"
+                  "name": "serial"
                 }
               },
               {
@@ -32135,7 +32135,7 @@
                   "name": "order_items"
                 },
                 "type": {
-                  "name": "uuid"
+                  "name": "serial"
                 }
               },
               {
@@ -32147,7 +32147,8 @@
                   "name": "order_items"
                 },
                 "type": {
-                  "name": "uuid"
+                  "schema": "pg_catalog",
+                  "name": "int4"
                 }
               },
               {
@@ -32210,7 +32211,7 @@
             "name": "orders"
           },
           "type": {
-            "name": "uuid"
+            "name": "serial"
           },
           "originalName": "order_id"
         },
@@ -32265,7 +32266,7 @@
             "name": "order_items"
           },
           "type": {
-            "name": "uuid"
+            "name": "serial"
           },
           "originalName": "order_item_id"
         },
@@ -32642,7 +32643,7 @@
               "name": "order_items"
             },
             "type": {
-              "name": "uuid"
+              "name": "pg_catalog.int4"
             },
             "originalName": "order_id"
           }
@@ -32786,7 +32787,7 @@
             "name": "orders"
           },
           "type": {
-            "name": "uuid"
+            "name": "serial"
           },
           "originalName": "order_id"
         }
@@ -32821,7 +32822,7 @@
             "name": "orders"
           },
           "type": {
-            "name": "uuid"
+            "name": "serial"
           },
           "originalName": "order_id"
         },
@@ -32853,7 +32854,7 @@
               "name": "orders"
             },
             "type": {
-              "name": "uuid"
+              "name": "serial"
             },
             "originalName": "order_id"
           }

@@ -78,7 +78,7 @@ public class PostgresqlDatabaseSeeder(string connectionString)
         return [.. productIds.Select(r => r.ProductId)];
     }
 
-    private async Task<List<Guid>> SeedOrdersAsync(List<int> customerIds, int ordersPerCustomer)
+    private async Task<List<int>> SeedOrdersAsync(List<int> customerIds, int ordersPerCustomer)
     {
         var orderStates = new[] { "Pending", "Delivered", "Cancelled" };
         var orders = new List<QuerySql.AddOrdersArgs>();
@@ -100,7 +100,7 @@ public class PostgresqlDatabaseSeeder(string connectionString)
         return [.. orderIds.Select(r => r.OrderId)];
     }
 
-    private async Task SeedOrderItemsAsync(List<Guid> orderIds, List<int> productIds, int itemsPerOrder)
+    private async Task SeedOrderItemsAsync(List<int> orderIds, List<int> productIds, int itemsPerOrder)
     {
         var orderItems = new List<QuerySql.AddOrderItemsArgs>();
         foreach (var orderId in orderIds)

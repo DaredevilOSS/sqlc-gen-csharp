@@ -22,7 +22,6 @@ namespace EndToEndTests
             SqliteBenchmarkConnectionStringEnv,
             new string[] { "sqlite.schema.sql" }
         );
-
         public static void SetupSqliteDb(string connectionStringEnv, string[] schemaFiles)
         {
             if (!File.Exists(EnvFile))
@@ -32,28 +31,17 @@ namespace EndToEndTests
             RemoveExistingSqliteDb(connectionStringEnv);
             InitSqliteDb(connectionStringEnv, schemaFiles);
         }
-
         public static void RemoveExistingSqliteDb(string connectionStringEnv)
         {
             var connectionString = Environment.GetEnvironmentVariable(connectionStringEnv);
             if (string.IsNullOrWhiteSpace(connectionString))
                 throw new InvalidOperationException($"{connectionStringEnv} environment variable is not set");
 
-            connectionString = connectionString
-                .Replace("Mode=ReadWrite", "Mode=ReadWriteCreate")
-                .Replace("Data Source=", $"Data Source={AppContext.BaseDirectory}");
             var dbFilename = SqliteFilenameRegex.Match(connectionString).Groups[1].Value;
-            Console.WriteLine($"Removing sqlite db from {dbFilename}");
             if (!File.Exists(dbFilename)) return;
 
-            try
-            {
-                File.Delete(dbFilename);
-            }
-            catch (Exception)
-            {
-                // ignored
-            }
+            Console.WriteLine($"Removing sqlite db from {dbFilename}");
+            File.Delete(dbFilename);
         }
         private static void InitSqliteDb(string connectionStringEnv, string[] schemaFiles)
         {

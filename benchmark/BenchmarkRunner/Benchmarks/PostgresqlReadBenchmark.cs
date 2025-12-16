@@ -17,7 +17,10 @@ public class PostgresqlReadBenchmark : BaseReadBenchmark
     private static readonly string _connectionString = Config.GetPostgresConnectionString();
     private readonly QuerySql _sqlcImpl = new(_connectionString);
 
-    [Params(10, 20, 50)]
+    [Params(1000)]
+    public int QueriesToRun { get; set; }
+    
+    [Params(20, 50)]
     public int ConcurrentQueries { get; set; }
 
     [BenchmarkCategory("Read")]

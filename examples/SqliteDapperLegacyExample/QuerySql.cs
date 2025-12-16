@@ -416,7 +416,6 @@ namespace SqliteDapperLegacyExampleGen
                     await connection.OpenAsync();
                     using (var command = new SqliteCommand(ListAllAuthorsBooksSql, connection))
                     {
-                        command.Prepare();
                         using (var reader = await command.ExecuteReaderAsync())
                         {
                             var result = new List<ListAllAuthorsBooksRow>();
@@ -464,7 +463,6 @@ namespace SqliteDapperLegacyExampleGen
                     await connection.OpenAsync();
                     using (var command = new SqliteCommand(GetDuplicateAuthorsSql, connection))
                     {
-                        command.Prepare();
                         using (var reader = await command.ExecuteReaderAsync())
                         {
                             var result = new List<GetDuplicateAuthorsRow>();
@@ -518,7 +516,6 @@ namespace SqliteDapperLegacyExampleGen
                     using (var command = new SqliteCommand(GetAuthorsByBookNameSql, connection))
                     {
                         command.Parameters.AddWithValue("@name", args.Name);
-                        command.Prepare();
                         using (var reader = await command.ExecuteReaderAsync())
                         {
                             var result = new List<GetAuthorsByBookNameRow>();
@@ -640,7 +637,6 @@ namespace SqliteDapperLegacyExampleGen
                         command.Parameters.AddWithValue($"@c_text{i}", args[i].CText ?? (object)DBNull.Value);
                     }
 
-                    command.Prepare();
                     await command.ExecuteScalarAsync();
                 }
             }

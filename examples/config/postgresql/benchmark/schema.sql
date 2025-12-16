@@ -1,6 +1,6 @@
 CREATE SCHEMA sales;
 
-CREATE TABLE IF NOT EXISTS sales.customers (
+CREATE TABLE sales.customers (
     customer_id SERIAL PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
     email VARCHAR(255) UNIQUE NOT NULL,
@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS sales.customers (
     registered_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE IF NOT EXISTS sales.products (
+CREATE TABLE sales.products (
     product_id SERIAL PRIMARY KEY,
     name VARCHAR(200) NOT NULL,
     category VARCHAR(100) NOT NULL,
@@ -19,10 +19,8 @@ CREATE TABLE IF NOT EXISTS sales.products (
     added_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
-
-CREATE TABLE IF NOT EXISTS sales.orders (
-    order_id        UUID           PRIMARY KEY DEFAULT uuid_generate_v4(),
+CREATE TABLE sales.orders (
+    order_id        SERIAL         PRIMARY KEY,
     customer_id     INT            NOT NULL,
     ordered_at      TIMESTAMP      NOT NULL DEFAULT CURRENT_TIMESTAMP,
     order_state     VARCHAR(10)    NOT NULL CHECK (order_state IN ('Pending', 'Delivered', 'Cancelled')),
@@ -30,9 +28,9 @@ CREATE TABLE IF NOT EXISTS sales.orders (
     CONSTRAINT      fk_customer    FOREIGN KEY (customer_id) REFERENCES sales.customers(customer_id)
 );
 
-CREATE TABLE IF NOT EXISTS sales.order_items (
-    order_item_id   UUID           PRIMARY KEY DEFAULT uuid_generate_v4(),
-    order_id        UUID           NOT NULL,
+CREATE TABLE sales.order_items (
+    order_item_id   SERIAL         PRIMARY KEY,
+    order_id        INT            NOT NULL,
     product_id      INT            NOT NULL,
     quantity        INT            NOT NULL CHECK (quantity > 0),
     unit_price      DECIMAL(10,2)  NOT NULL,

@@ -9,17 +9,23 @@ public sealed partial class SqliteRunner : BaseRunner
     {
         await SqliteReadBenchmark.GetSeedMethod()();
         var path = Path.Combine(GetOutputBasePath(), "reads");
-        BenchmarkDotNet.Running.BenchmarkRunner.Run<SqliteReadBenchmark>(
+        var summary = BenchmarkDotNet.Running.BenchmarkRunner.Run<SqliteReadBenchmark>(
             DefaultConfig.Instance.WithArtifactsPath(path)
         );
+
+        if (summary.HasCriticalValidationErrors)
+            throw new InvalidProgramException("Sqlite reads benchmark failed");
     }
 
     public override async Task RunWritesAsync()
     {
         await SqliteWriteBenchmark.GetSeedMethod()();
         var path = Path.Combine(GetOutputBasePath(), "writes");
-        BenchmarkDotNet.Running.BenchmarkRunner.Run<SqliteWriteBenchmark>(
+        var summary = BenchmarkDotNet.Running.BenchmarkRunner.Run<SqliteWriteBenchmark>(
             DefaultConfig.Instance.WithArtifactsPath(path)
         );
+
+        if (summary.HasCriticalValidationErrors)
+            throw new InvalidProgramException("Sqlite writes benchmark failed");
     }
 }

@@ -64,7 +64,7 @@ public class QuerySql : IDisposable
                                                   WHERE o.customer_id = @customer_id
                                                   ORDER BY o.ordered_at DESC
                                                   LIMIT @limit OFFSET @offset";
-    public readonly record struct GetCustomerOrdersRow(Guid OrderId, DateTime OrderedAt, string OrderState, decimal TotalAmount, Guid OrderItemId, int Quantity, decimal UnitPrice, int ProductId, string ProductName, string ProductCategory);
+    public readonly record struct GetCustomerOrdersRow(int OrderId, DateTime OrderedAt, string OrderState, decimal TotalAmount, int OrderItemId, int Quantity, decimal UnitPrice, int ProductId, string ProductName, string ProductCategory);
     public readonly record struct GetCustomerOrdersArgs(int CustomerId, int Offset, int Limit);
     public async Task<List<GetCustomerOrdersRow>> GetCustomerOrdersAsync(GetCustomerOrdersArgs args)
     {
@@ -82,7 +82,7 @@ public class QuerySql : IDisposable
                     {
                         var result = new List<GetCustomerOrdersRow>();
                         while (await reader.ReadAsync())
-                            result.Add(new GetCustomerOrdersRow { OrderId = reader.GetFieldValue<Guid>(0), OrderedAt = reader.GetDateTime(1), OrderState = reader.GetString(2), TotalAmount = reader.GetDecimal(3), OrderItemId = reader.GetFieldValue<Guid>(4), Quantity = reader.GetInt32(5), UnitPrice = reader.GetDecimal(6), ProductId = reader.GetInt32(7), ProductName = reader.GetString(8), ProductCategory = reader.GetString(9) });
+                            result.Add(new GetCustomerOrdersRow { OrderId = reader.GetInt32(0), OrderedAt = reader.GetDateTime(1), OrderState = reader.GetString(2), TotalAmount = reader.GetDecimal(3), OrderItemId = reader.GetInt32(4), Quantity = reader.GetInt32(5), UnitPrice = reader.GetDecimal(6), ProductId = reader.GetInt32(7), ProductName = reader.GetString(8), ProductCategory = reader.GetString(9) });
                         return result;
                     }
                 }
@@ -102,7 +102,7 @@ public class QuerySql : IDisposable
             {
                 var result = new List<GetCustomerOrdersRow>();
                 while (await reader.ReadAsync())
-                    result.Add(new GetCustomerOrdersRow { OrderId = reader.GetFieldValue<Guid>(0), OrderedAt = reader.GetDateTime(1), OrderState = reader.GetString(2), TotalAmount = reader.GetDecimal(3), OrderItemId = reader.GetFieldValue<Guid>(4), Quantity = reader.GetInt32(5), UnitPrice = reader.GetDecimal(6), ProductId = reader.GetInt32(7), ProductName = reader.GetString(8), ProductCategory = reader.GetString(9) });
+                    result.Add(new GetCustomerOrdersRow { OrderId = reader.GetInt32(0), OrderedAt = reader.GetDateTime(1), OrderState = reader.GetString(2), TotalAmount = reader.GetDecimal(3), OrderItemId = reader.GetInt32(4), Quantity = reader.GetInt32(5), UnitPrice = reader.GetDecimal(6), ProductId = reader.GetInt32(7), ProductName = reader.GetString(8), ProductCategory = reader.GetString(9) });
                 return result;
             }
         }
@@ -176,7 +176,7 @@ public class QuerySql : IDisposable
     }
 
     private const string AddOrderItemsSql = "COPY sales.order_items (order_id, product_id, quantity, unit_price) FROM STDIN (FORMAT BINARY)";
-    public readonly record struct AddOrderItemsArgs(Guid OrderId, int ProductId, int Quantity, decimal UnitPrice);
+    public readonly record struct AddOrderItemsArgs(int OrderId, int ProductId, int Quantity, decimal UnitPrice);
     public async Task AddOrderItemsAsync(List<AddOrderItemsArgs> args)
     {
         using (var connection = await GetDataSource().OpenConnectionAsync())
@@ -280,7 +280,7 @@ public class QuerySql : IDisposable
     }
 
     private const string GetOrderIdsSql = "SELECT order_id FROM sales.orders ORDER BY ordered_at DESC LIMIT @limit";
-    public readonly record struct GetOrderIdsRow(Guid OrderId);
+    public readonly record struct GetOrderIdsRow(int OrderId);
     public readonly record struct GetOrderIdsArgs(int Limit);
     public async Task<List<GetOrderIdsRow>> GetOrderIdsAsync(GetOrderIdsArgs args)
     {
@@ -296,7 +296,7 @@ public class QuerySql : IDisposable
                     {
                         var result = new List<GetOrderIdsRow>();
                         while (await reader.ReadAsync())
-                            result.Add(new GetOrderIdsRow { OrderId = reader.GetFieldValue<Guid>(0) });
+                            result.Add(new GetOrderIdsRow { OrderId = reader.GetInt32(0) });
                         return result;
                     }
                 }
@@ -314,15 +314,15 @@ public class QuerySql : IDisposable
             {
                 var result = new List<GetOrderIdsRow>();
                 while (await reader.ReadAsync())
-                    result.Add(new GetOrderIdsRow { OrderId = reader.GetFieldValue<Guid>(0) });
+                    result.Add(new GetOrderIdsRow { OrderId = reader.GetInt32(0) });
                 return result;
             }
         }
     }
 
     private const string GetOrderAmountsSql = "SELECT order_id, total_amount FROM sales.orders WHERE order_id = ANY(@order_ids)";
-    public readonly record struct GetOrderAmountsRow(Guid OrderId, decimal TotalAmount);
-    public readonly record struct GetOrderAmountsArgs(Guid OrderIds);
+    public readonly record struct GetOrderAmountsRow(int OrderId, decimal TotalAmount);
+    public readonly record struct GetOrderAmountsArgs(int OrderIds);
     public async Task<List<GetOrderAmountsRow>> GetOrderAmountsAsync(GetOrderAmountsArgs args)
     {
         if (this.Transaction == null)
@@ -337,7 +337,7 @@ public class QuerySql : IDisposable
                     {
                         var result = new List<GetOrderAmountsRow>();
                         while (await reader.ReadAsync())
-                            result.Add(new GetOrderAmountsRow { OrderId = reader.GetFieldValue<Guid>(0), TotalAmount = reader.GetDecimal(1) });
+                            result.Add(new GetOrderAmountsRow { OrderId = reader.GetInt32(0), TotalAmount = reader.GetDecimal(1) });
                         return result;
                     }
                 }
@@ -355,7 +355,7 @@ public class QuerySql : IDisposable
             {
                 var result = new List<GetOrderAmountsRow>();
                 while (await reader.ReadAsync())
-                    result.Add(new GetOrderAmountsRow { OrderId = reader.GetFieldValue<Guid>(0), TotalAmount = reader.GetDecimal(1) });
+                    result.Add(new GetOrderAmountsRow { OrderId = reader.GetInt32(0), TotalAmount = reader.GetDecimal(1) });
                 return result;
             }
         }

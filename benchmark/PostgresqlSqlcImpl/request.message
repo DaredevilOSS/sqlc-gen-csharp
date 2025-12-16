@@ -3,7 +3,7 @@
 2
 postgresql/examples/config/postgresql/benchmark/schema.sql".examples/config/postgresql/benchmark/query.sqlbv
 benchmark/PostgresqlSqlcImplcsharp8{"debugRequest":true,"namespaceName":"PostgresSqlcImpl"}*
-./dist/LocalRunnerâÚpublic"public"	pg_temp"æ²
+./dist/LocalRunneròÚpublic"public"	pg_temp"æ²
 pg_catalog‰
 &
 
@@ -10124,7 +10124,7 @@ pg_cataloginformation_schemaviewsb	yes_or_noW
 pg_cataloginformation_schemaviewsb	yes_or_no]
 is_trigger_insertable_into0ÿÿÿÿÿÿÿÿÿR'
 
-pg_cataloginformation_schemaviewsb	yes_or_no"¬salesœ
+pg_cataloginformation_schemaviewsb	yes_or_no"¼salesœ
 sales	customers8
 customer_id0ÿÿÿÿÿÿÿÿÿRsales	customersbserial>
 name0ÿÿÿÿÿÿÿÿÿRsales	customersb
@@ -10151,9 +10151,9 @@ pg_catalognumericD
 pg_catalogint43
 description0ÿÿÿÿÿÿÿÿÿRsalesproductsbtextC
 added_at0ÿÿÿÿÿÿÿÿÿRsalesproductsb
-pg_catalog	timestampÒ
-salesorders0
-order_id0ÿÿÿÿÿÿÿÿÿRsalesordersbuuid?
+pg_catalog	timestampÔ
+salesorders2
+order_id0ÿÿÿÿÿÿÿÿÿRsalesordersbserial?
 customer_id0ÿÿÿÿÿÿÿÿÿRsalesordersb
 pg_catalogint4C
 
@@ -10162,10 +10162,11 @@ pg_catalog	timestampB
 order_state0ÿÿÿÿÿÿÿÿÿRsalesordersb
 pg_catalogvarcharC
 total_amount0ÿÿÿÿÿÿÿÿÿRsalesordersb
-pg_catalognumericÙ
-salesorder_items:
-order_item_id0ÿÿÿÿÿÿÿÿÿRsalesorder_itemsbuuid5
-order_id0ÿÿÿÿÿÿÿÿÿRsalesorder_itemsbuuidC
+pg_catalognumericç
+salesorder_items<
+order_item_id0ÿÿÿÿÿÿÿÿÿRsalesorder_itemsbserialA
+order_id0ÿÿÿÿÿÿÿÿÿRsalesorder_itemsb
+pg_catalogint4C
 
 product_id0ÿÿÿÿÿÿÿÿÿRsalesorder_itemsb
 pg_catalogint4A
@@ -10173,7 +10174,7 @@ pg_catalogint4A
 pg_catalogint4F
 
 unit_price0ÿÿÿÿÿÿÿÿÿRsalesorder_itemsb
-pg_catalognumeric¬
+pg_catalognumeric°
 
 ßSELECT 
     o.order_id, ordered_at, order_state, total_amount, order_item_id, i.quantity, i.unit_price, 
@@ -10185,8 +10186,8 @@ JOIN sales.products p
 USING (product_id)
 WHERE o.customer_id = $1
 ORDER BY o.ordered_at DESC
-LIMIT $3 OFFSET $2GetCustomerOrders:many":
-order_id0ÿÿÿÿÿÿÿÿÿRsalesordersbuuidzorder_id"O
+LIMIT $3 OFFSET $2GetCustomerOrders:many"<
+order_id0ÿÿÿÿÿÿÿÿÿRsalesordersbserialzorder_id"O
 
 ordered_at0ÿÿÿÿÿÿÿÿÿRsalesordersb
 pg_catalog	timestampz
@@ -10194,8 +10195,8 @@ ordered_at"O
 order_state0ÿÿÿÿÿÿÿÿÿRsalesordersb
 pg_catalogvarcharzorder_state"Q
 total_amount0ÿÿÿÿÿÿÿÿÿRsalesordersb
-pg_catalognumericztotal_amount"I
-order_item_id0ÿÿÿÿÿÿÿÿÿRsalesorder_itemsbuuidzorder_item_id"K
+pg_catalognumericztotal_amount"K
+order_item_id0ÿÿÿÿÿÿÿÿÿRsalesorder_itemsbserialzorder_item_id"K
 quantity0ÿÿÿÿÿÿÿÿÿRsalesorder_itemsb
 pg_catalogint4zquantity"R
 
@@ -10229,9 +10230,9 @@ unit_price*WS
 UINSERT INTO sales.orders (customer_id, order_state, total_amount) VALUES ($1, $2, $3)	AddOrders	:copyfrom*OK
 customer_id0ÿÿÿÿÿÿÿÿÿRsalesordersbpg_catalog.int4zcustomer_id*RN
 order_state0ÿÿÿÿÿÿÿÿÿRsalesordersbpg_catalog.varcharzorder_state*TP
-total_amount0ÿÿÿÿÿÿÿÿÿRsalesordersbpg_catalog.numericztotal_amount:	query.sqlBsalesordersß
-bINSERT INTO sales.order_items (order_id, product_id, quantity, unit_price) VALUES ($1, $2, $3, $4)AddOrderItems	:copyfrom*C?
-order_id0ÿÿÿÿÿÿÿÿÿRsalesorder_itemsbuuidzorder_id*RN
+total_amount0ÿÿÿÿÿÿÿÿÿRsalesordersbpg_catalog.numericztotal_amount:	query.sqlBsalesordersê
+bINSERT INTO sales.order_items (order_id, product_id, quantity, unit_price) VALUES ($1, $2, $3, $4)AddOrderItems	:copyfrom*NJ
+order_id0ÿÿÿÿÿÿÿÿÿRsalesorder_itemsbpg_catalog.int4zorder_id*RN
 
 product_id0ÿÿÿÿÿÿÿÿÿRsalesorder_itemsbpg_catalog.int4z
 product_id*NJ
@@ -10246,15 +10247,15 @@ BSELECT product_id FROM sales.products ORDER BY product_id LIMIT $1GetProductI
 
 product_id0ÿÿÿÿÿÿÿÿÿRsalesproductsbserialz
 product_id*%!
-limit0ÿÿÿÿÿÿÿÿÿ8b	integer:	query.sqlÇ
-CSELECT order_id FROM sales.orders ORDER BY ordered_at DESC LIMIT $1GetOrderIds:many":
-order_id0ÿÿÿÿÿÿÿÿÿRsalesordersbuuidzorder_id*%!
-limit0ÿÿÿÿÿÿÿÿÿ8b	integer:	query.sql¿
-HSELECT order_id, total_amount FROM sales.orders WHERE order_id = ANY($1)GetOrderAmounts:many":
-order_id0ÿÿÿÿÿÿÿÿÿRsalesordersbuuidzorder_id"Q
+limit0ÿÿÿÿÿÿÿÿÿ8b	integer:	query.sqlÉ
+CSELECT order_id FROM sales.orders ORDER BY ordered_at DESC LIMIT $1GetOrderIds:many"<
+order_id0ÿÿÿÿÿÿÿÿÿRsalesordersbserialzorder_id*%!
+limit0ÿÿÿÿÿÿÿÿÿ8b	integer:	query.sqlÃ
+HSELECT order_id, total_amount FROM sales.orders WHERE order_id = ANY($1)GetOrderAmounts:many"<
+order_id0ÿÿÿÿÿÿÿÿÿRsalesordersbserialzorder_id"Q
 total_amount0ÿÿÿÿÿÿÿÿÿRsalesordersb
-pg_catalognumericztotal_amount*A=
-	order_ids0ÿÿÿÿÿÿÿÿÿ8Rsalesordersbuuidzorder_id:	query.sqlÒ
+pg_catalognumericztotal_amount*C?
+	order_ids0ÿÿÿÿÿÿÿÿÿ8Rsalesordersbserialzorder_id:	query.sqlÒ
 LSELECT product_id, unit_price FROM sales.products WHERE product_id = ANY($1)GetProductPrices:many"B
 
 product_id0ÿÿÿÿÿÿÿÿÿRsalesproductsbserialz

@@ -7,5 +7,5 @@ using System.Linq;
 namespace PostgresSqlcImpl;
 public readonly record struct SalesCustomer(int CustomerId, string Name, string Email, string Phone, string? Address, DateTime RegisteredAt);
 public readonly record struct SalesProduct(int ProductId, string Name, string Category, decimal UnitPrice, int StockQuantity, string? Description, DateTime AddedAt);
-public readonly record struct SalesOrder(Guid OrderId, int CustomerId, DateTime OrderedAt, string OrderState, decimal TotalAmount);
-public readonly record struct SalesOrderItem(Guid OrderItemId, Guid OrderId, int ProductId, int Quantity, decimal UnitPrice);
+public readonly record struct SalesOrder(int OrderId, int CustomerId, DateTime OrderedAt, string OrderState, decimal TotalAmount);
+public readonly record struct SalesOrderItem(int OrderItemId, int OrderId, int ProductId, int Quantity, decimal UnitPrice);

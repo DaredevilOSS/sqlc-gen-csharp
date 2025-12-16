@@ -61,7 +61,6 @@ public class QuerySql
                     command.Parameters.AddWithValue("@customer_id", args.CustomerId);
                     command.Parameters.AddWithValue("@offset", args.Offset);
                     command.Parameters.AddWithValue("@limit", args.Limit);
-                    command.Prepare();
                     using (var reader = await command.ExecuteReaderAsync())
                     {
                         var result = new List<GetCustomerOrdersRow>();
@@ -111,7 +110,6 @@ public class QuerySql
                     command.Parameters.AddWithValue($"@registered_at{i}", args[i].RegisteredAt);
                 }
 
-                command.Prepare();
                 await command.ExecuteScalarAsync();
             }
         }
@@ -136,7 +134,6 @@ public class QuerySql
                     command.Parameters.AddWithValue($"@description{i}", args[i].Description ?? (object)DBNull.Value);
                 }
 
-                command.Prepare();
                 await command.ExecuteScalarAsync();
             }
         }
@@ -159,7 +156,6 @@ public class QuerySql
                     command.Parameters.AddWithValue($"@total_amount{i}", args[i].TotalAmount);
                 }
 
-                command.Prepare();
                 await command.ExecuteScalarAsync();
             }
         }
@@ -183,7 +179,6 @@ public class QuerySql
                     command.Parameters.AddWithValue($"@unit_price{i}", args[i].UnitPrice);
                 }
 
-                command.Prepare();
                 await command.ExecuteScalarAsync();
             }
         }
@@ -202,7 +197,6 @@ public class QuerySql
                 using (var command = new SqliteCommand(GetCustomerIdsSql, connection))
                 {
                     command.Parameters.AddWithValue("@limit", args.Limit);
-                    command.Prepare();
                     using (var reader = await command.ExecuteReaderAsync())
                     {
                         var result = new List<GetCustomerIdsRow>();
@@ -244,7 +238,6 @@ public class QuerySql
                 using (var command = new SqliteCommand(GetProductIdsSql, connection))
                 {
                     command.Parameters.AddWithValue("@limit", args.Limit);
-                    command.Prepare();
                     using (var reader = await command.ExecuteReaderAsync())
                     {
                         var result = new List<GetProductIdsRow>();
@@ -286,7 +279,6 @@ public class QuerySql
                 using (var command = new SqliteCommand(GetOrderIdsSql, connection))
                 {
                     command.Parameters.AddWithValue("@limit", args.Limit);
-                    command.Prepare();
                     using (var reader = await command.ExecuteReaderAsync())
                     {
                         var result = new List<GetOrderIdsRow>();
@@ -328,7 +320,6 @@ public class QuerySql
                 using (var command = new SqliteCommand(GetOrderAmountsSql, connection))
                 {
                     command.Parameters.AddWithValue("@order_id", args.OrderId);
-                    command.Prepare();
                     using (var reader = await command.ExecuteReaderAsync())
                     {
                         var result = new List<GetOrderAmountsRow>();
@@ -370,7 +361,6 @@ public class QuerySql
                 using (var command = new SqliteCommand(GetProductPricesSql, connection))
                 {
                     command.Parameters.AddWithValue("@product_id", args.ProductId);
-                    command.Prepare();
                     using (var reader = await command.ExecuteReaderAsync())
                     {
                         var result = new List<GetProductPricesRow>();

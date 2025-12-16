@@ -14,11 +14,11 @@ public class Queries(SalesDbContext dbContext, bool useTracking = false)
     public DbContext DbContext => _dbContext;
 
     public record GetCustomerOrdersRow(
-        Guid OrderId,
+        int OrderId,
         DateTime OrderedAt,
         string OrderState,
         decimal TotalAmount,
-        Guid OrderItemId,
+        int OrderItemId,
         int Quantity,
         decimal UnitPrice,
         int ProductId,
@@ -90,7 +90,6 @@ public class Queries(SalesDbContext dbContext, bool useTracking = false)
     {
         var orders = args.Select(a => new Order
         {
-            OrderId = Guid.NewGuid(),
             CustomerId = a.CustomerId,
             OrderState = a.OrderState,
             TotalAmount = a.TotalAmount,
@@ -102,7 +101,7 @@ public class Queries(SalesDbContext dbContext, bool useTracking = false)
         _dbContext.ChangeTracker.Clear();
     }
 
-    public record AddOrderItemsArgs(Guid OrderId, int ProductId, int Quantity, decimal UnitPrice);
+    public record AddOrderItemsArgs(int OrderId, int ProductId, int Quantity, decimal UnitPrice);
 
     /// <summary>
     /// Bulk insert order items
@@ -111,7 +110,6 @@ public class Queries(SalesDbContext dbContext, bool useTracking = false)
     {
         var orderItems = args.Select(a => new OrderItem
         {
-            OrderItemId = Guid.NewGuid(),
             OrderId = a.OrderId,
             ProductId = a.ProductId,
             Quantity = a.Quantity,

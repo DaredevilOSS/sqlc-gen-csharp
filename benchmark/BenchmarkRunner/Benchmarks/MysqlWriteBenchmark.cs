@@ -22,16 +22,16 @@ public class MysqlWriteBenchmark : BaseWriteBenchmark
 
     /// <summary>
     /// MySQL batch size can be very large yet very performant in SQLC implementation due to 
-    /// CSV load usage, so we wish to examine exceptionally large batches as well.
+    /// CSV load usage, so we wish to examine exceptionally large batches.
     /// </summary>
-    [Params(500, 1000, 2000)]
-    public int BatchSize { get; set; }
+    [Params(1000, 5000, 20000)]
+    public int SqlcBatchSize { get; set; }
 
     [BenchmarkCategory("Write")]
     [Benchmark(Baseline = true, Description = "SQLC - AddOrderItems")]
     public override async Task Sqlc_AddOrderItems()
     {
-        await Helpers.InsertInBatchesAsync(_testOrderItems, BatchSize, _sqlcImpl.AddOrderItemsAsync);
+        await Helpers.InsertInBatchesAsync(_testOrderItems, SqlcBatchSize, _sqlcImpl.AddOrderItemsAsync);
     }
 
     [BenchmarkCategory("Write")]
@@ -41,7 +41,7 @@ public class MysqlWriteBenchmark : BaseWriteBenchmark
         var args = _testOrderItems.Select(i => new Queries.AddOrderItemsArgs(
             i.OrderId, i.ProductId, i.Quantity, i.UnitPrice
         )).ToList();
-        await Helpers.InsertInBatchesAsync(args, BatchSize, _efCoreImpl.AddOrderItems);
+        await Helpers.InsertInBatchesAsync(args, EFCoreBatchSize, _efCoreImpl.AddOrderItems);
     }
 
     public static Func<Task> GetSeedMethod()

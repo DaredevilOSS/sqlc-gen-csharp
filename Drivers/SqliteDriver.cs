@@ -273,7 +273,7 @@ public sealed partial class SqliteDriver(
                 $"var {commandVar} = new SqliteCommand({sqlTextConstant}, {Variable.Connection.AsVarName()})",
                 true),
             SetCommandText: string.Empty,
-            PrepareCommand: $"{commandVar}.Prepare()"
+            PrepareCommand: string.Empty
         );
     }
 

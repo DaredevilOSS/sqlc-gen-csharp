@@ -21,18 +21,17 @@ public class SqliteWriteBenchmark : BaseWriteBenchmark
     private List<QuerySql.AddOrderItemsArgs> _testOrderItems = null!;
 
     /// <summary>
-    /// SQLite batch size for SQLC can be large but due to the plugin implementation of batch inserts 
-    /// for SQLite, there is a limitation of 1000 bind variables in the resulting SQL.
+    /// SQLite batch size for SQLC there is a limitation of 1000 bind variables in the resulting SQL.
     /// e.g. If we insert to a table with 10 columns, the maximum batch size is 1000 / 10 = 100.
     /// </summary>
-    [Params(50, 100, 200)]
-    public int BatchSize { get; set; }
+    [Params(50, 100)]
+    public int SqlcBatchSize { get; set; }
 
     [BenchmarkCategory("Write")]
     [Benchmark(Baseline = true, Description = "SQLC - AddOrderItems")]
     public override async Task Sqlc_AddOrderItems()
     {
-        await Helpers.InsertInBatchesAsync(_testOrderItems, BatchSize, _sqlcImpl.AddOrderItemsAsync);
+        await Helpers.InsertInBatchesAsync(_testOrderItems, SqlcBatchSize, _sqlcImpl.AddOrderItemsAsync);
     }
 
     [BenchmarkCategory("Write")]
@@ -42,7 +41,7 @@ public class SqliteWriteBenchmark : BaseWriteBenchmark
         var args = _testOrderItems.Select(i => new Queries.AddOrderItemsArgs(
             i.OrderId, i.ProductId, i.Quantity, i.UnitPrice
         )).ToList();
-        await Helpers.InsertInBatchesAsync(args, BatchSize, _efCoreImpl.AddOrderItems);
+        await Helpers.InsertInBatchesAsync(args, EFCoreBatchSize, _efCoreImpl.AddOrderItems);
     }
 
     public static Func<Task> GetSeedMethod()

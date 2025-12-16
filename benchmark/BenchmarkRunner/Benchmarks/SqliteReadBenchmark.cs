@@ -3,7 +3,6 @@ using BenchmarkDotNet.Configs;
 using BenchmarkDotNet.Jobs;
 using BenchmarkRunner.Utils;
 using EndToEndTests;
-using Microsoft.Data.Sqlite;
 using SqliteEFCoreImpl;
 using SqliteSqlcImpl;
 
@@ -19,10 +18,10 @@ public class SqliteReadBenchmark : BaseReadBenchmark
     private static readonly string _connectionString = Config.GetSqliteConnectionString();
     private readonly QuerySql _sqlcImpl = new(_connectionString);
 
-    /// <summary>
-    /// SQLite supports read concurrency, but less so then other relational databases.
-    /// </summary>
-    [Params(5, 10, 25)]
+    [Params(800)]
+    public int QueriesToRun { get; set; }
+    
+    [Params(10, 25)]
     public int ConcurrentQueries { get; set; }
 
     [BenchmarkCategory("Read")]
@@ -45,20 +44,13 @@ public class SqliteReadBenchmark : BaseReadBenchmark
     {
         await ExecuteConcurrentlyAsync(QueriesToRun, ConcurrentQueries, async _ =>
         {
-            try
-            {
-                await using var dbContext = new SalesDbContext(_connectionString);
-                var queries = new Queries(dbContext, useTracking: false);
-                return await queries.GetCustomerOrders(new Queries.GetCustomerOrdersArgs(
-                    CustomerId: Random.Shared.Next(1, CustomerCount),
-                    Offset: 0,
-                    Limit: Limit
-                ));
-            }
-            catch (SqliteException e)
-            {
-                throw new Exception($"Sqlite connection string: {_connectionString}, error: {e.Message}", e);
-            }
+            await using var dbContext = new SalesDbContext(_connectionString);
+            var queries = new Queries(dbContext, useTracking: false);
+            return await queries.GetCustomerOrders(new Queries.GetCustomerOrdersArgs(
+                CustomerId: Random.Shared.Next(1, CustomerCount),
+                Offset: 0,
+                Limit: Limit
+            ));
         });
     }
 
@@ -68,20 +60,13 @@ public class SqliteReadBenchmark : BaseReadBenchmark
     {
         await ExecuteConcurrentlyAsync(QueriesToRun, ConcurrentQueries, async _ =>
         {
-            try
-            {
-                await using var dbContext = new SalesDbContext(_connectionString);
-                var queries = new Queries(dbContext, useTracking: true);
-                return await queries.GetCustomerOrders(new Queries.GetCustomerOrdersArgs(
-                    CustomerId: Random.Shared.Next(1, CustomerCount),
-                    Offset: 0,
-                    Limit: Limit
-                ));
-            }
-            catch (SqliteException e)
-            {
-                throw new Exception($"Sqlite connection string: {_connectionString}, error: {e.Message}", e);
-            }
+            await using var dbContext = new SalesDbContext(_connectionString);
+            var queries = new Queries(dbContext, useTracking: true);
+            return await queries.GetCustomerOrders(new Queries.GetCustomerOrdersArgs(
+                CustomerId: Random.Shared.Next(1, CustomerCount),
+                Offset: 0,
+                Limit: Limit
+            ));
         });
     }
 
