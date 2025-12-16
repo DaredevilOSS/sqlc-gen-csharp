@@ -20,27 +20,34 @@ public class PostgresqlWriteBenchmark : BaseWriteBenchmark
     private readonly Queries _efCoreImpl = new(new SalesDbContext(_connectionString), useTracking: false);
     private List<QuerySql.AddOrderItemsArgs> _testOrderItems = null!;
 
-    [Params(500_000)]
-    public int TotalRecords { get; set; }
+    public static IEnumerable<WriteBenchmarkArgs> GetSqlcArguments()
+    {
+        yield return new WriteBenchmarkArgs(TotalRecords: 200_000, BatchSize: 1_000);
+        yield return new WriteBenchmarkArgs(TotalRecords: 200_000, BatchSize: 2_000);
+    }
 
     [BenchmarkCategory("Write")]
     [Benchmark(Baseline = true, Description = "SQLC - AddOrderItems")]
-    [Arguments(500)]
-    [Arguments(1_000)]
-    public override async Task Sqlc_AddOrderItems(int batchSize)
+    [ArgumentsSource(nameof(GetSqlcArguments))]
+    public override async Task Sqlc_AddOrderItems(WriteBenchmarkArgs args)
     {
-        await Helpers.InsertInBatchesAsync(_testOrderItems, batchSize, _sqlcImpl.AddOrderItemsAsync);
+        await Helpers.InsertInBatchesAsync(_testOrderItems, args.BatchSize, _sqlcImpl.AddOrderItemsAsync);
+    }
+
+    public static IEnumerable<WriteBenchmarkArgs> GetEFCoreArguments()
+    {
+        yield return new WriteBenchmarkArgs(TotalRecords: 200_000, BatchSize: 500);
     }
 
     [BenchmarkCategory("Write")]
     [Benchmark(Description = "EFCore - AddOrderItems")]
-    [Arguments(500)]
-    public override async Task EFCore_AddOrderItems(int batchSize)
+    [ArgumentsSource(nameof(GetEFCoreArguments))]
+    public override async Task EFCore_AddOrderItems(WriteBenchmarkArgs args)
     {
-        var args = _testOrderItems.Select(i => new Queries.AddOrderItemsArgs(
+        var batchArgs = _testOrderItems.Select(i => new Queries.AddOrderItemsArgs(
             i.OrderId, i.ProductId, i.Quantity, i.UnitPrice
         )).ToList();
-        await Helpers.InsertInBatchesAsync(args, batchSize, _efCoreImpl.AddOrderItems);
+        await Helpers.InsertInBatchesAsync(batchArgs, args.BatchSize, _efCoreImpl.AddOrderItems);
     }
 
     public static Func<Task> GetSeedMethod()
@@ -58,7 +65,7 @@ public class PostgresqlWriteBenchmark : BaseWriteBenchmark
         var orderIds = await _sqlcImpl.GetOrderIdsAsync(new QuerySql.GetOrderIdsArgs(Limit: 1000));
         var productIds = await _sqlcImpl.GetProductIdsAsync(new QuerySql.GetProductIdsArgs(Limit: 1000));
 
-        _testOrderItems = [.. Enumerable.Range(0, TotalRecords).Select(i => new QuerySql.AddOrderItemsArgs(
+        _testOrderItems = [.. Enumerable.Range(0, 5000).Select(i => new QuerySql.AddOrderItemsArgs(
             OrderId: orderIds[i % orderIds.Count].OrderId,
             ProductId: productIds[i % productIds.Count].ProductId,
             Quantity: Random.Shared.Next(1, 10),

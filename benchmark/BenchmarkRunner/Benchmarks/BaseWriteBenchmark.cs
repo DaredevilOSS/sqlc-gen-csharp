@@ -1,4 +1,7 @@
-using BenchmarkDotNet.Attributes;
+public readonly record struct WriteBenchmarkArgs(
+    int TotalRecords,
+    int BatchSize
+);
 
 public abstract class BaseWriteBenchmark
 {
@@ -9,6 +12,6 @@ public abstract class BaseWriteBenchmark
         ItemsPerOrder: 0
     );
 
-    public abstract Task Sqlc_AddOrderItems(int batchSize);
-    public abstract Task EFCore_AddOrderItems(int batchSize);
+    public abstract Task Sqlc_AddOrderItems(WriteBenchmarkArgs args);
+    public abstract Task EFCore_AddOrderItems(WriteBenchmarkArgs args);
 }

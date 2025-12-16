@@ -1,11 +1,14 @@
 using BenchmarkDotNet.Attributes;
 using BenchmarkRunner.Utils;
 
+public readonly record struct ReadBenchmarkParams(
+    int Limit,
+    int Concurrency,
+    int QueriesToSubmit
+);
+
 public abstract class BaseReadBenchmark
 {
-    [Params(100, 500)]
-    public int Limit { get; set; }
-
     [IterationSetup]
     public static void IterationSetup() => Helpers.InvokeGarbageCollection();
     public abstract Task Sqlc_GetCustomerOrders();
