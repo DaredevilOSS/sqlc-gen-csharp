@@ -20,8 +20,8 @@ public class PostgresqlReadBenchmark : BaseReadBenchmark
 
     public static IEnumerable<ReadBenchmarkParams> GetParams()
     {
-        yield return new ReadBenchmarkParams(Limit: 50, Concurrency: 100, QueriesToSubmit: 2_000);
-        yield return new ReadBenchmarkParams(Limit: 1000, Concurrency: 50, QueriesToSubmit: 1_000);
+        yield return new ReadBenchmarkParams(Limit: 50, Concurrency: 150, QueriesToSubmit: 4_000);
+        yield return new ReadBenchmarkParams(Limit: 1000, Concurrency: 75, QueriesToSubmit: 2_000);
     }
 
     [ParamsSource(nameof(GetParams))]
