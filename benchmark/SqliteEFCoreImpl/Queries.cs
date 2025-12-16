@@ -40,7 +40,6 @@ public class Queries
     /// </summary>
     public async Task<List<GetCustomerOrdersRow>> GetCustomerOrders(GetCustomerOrdersArgs args)
     {
-        // Use explicit joins instead of navigation properties to avoid loading issues
         var ordersQuery = _dbContext.Orders.AsQueryable();
         var orderItemsQuery = _dbContext.OrderItems.AsQueryable();
         var productsQuery = _dbContext.Products.AsQueryable();
@@ -71,8 +70,7 @@ public class Queries
                              ))
                             .Skip(args.Offset)
                             .Take(args.Limit)
-                            .ToListAsync();
-
+                            .ToListAsync(); 
         return results;
     }
 

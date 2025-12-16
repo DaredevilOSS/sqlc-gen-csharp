@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,40 +28,44 @@ public class Queries(SalesDbContext dbContext, bool useTracking = false)
 
     public record GetCustomerOrdersArgs(int CustomerId, int Offset, int Limit);
 
+    /// <summary>
+    /// Get customer orders with all order items and product details, ordered by date descending with pagination
+    /// </summary>
     public async Task<List<GetCustomerOrdersRow>> GetCustomerOrders(GetCustomerOrdersArgs args)
     {
-        var query = _dbContext.Orders
-            .Where(o => o.CustomerId == args.CustomerId)
-            .OrderByDescending(o => o.OrderedAt)
-            .Skip(args.Offset)
-            .Take(args.Limit);
+        var ordersQuery = _dbContext.Orders.AsQueryable();
+        var orderItemsQuery = _dbContext.OrderItems.AsQueryable();
+        var productsQuery = _dbContext.Products.AsQueryable();
 
         if (!_useTracking)
-            query = query.AsNoTracking();
+        {
+            ordersQuery = ordersQuery.AsNoTracking();
+            orderItemsQuery = orderItemsQuery.AsNoTracking();
+            productsQuery = productsQuery.AsNoTracking();
+        }
 
-        var results = await query
-            .SelectMany(o => o.OrderItems.Select(i => new
-            {
-                Order = o,
-                OrderItem = i,
-                Product = i.Product,
-            }))
-            .Select(x => new GetCustomerOrdersRow(
-                x.Order.OrderId,
-                x.Order.OrderedAt,
-                x.Order.OrderState,
-                x.Order.TotalAmount,
-                x.OrderItem.OrderItemId,
-                x.OrderItem.Quantity,
-                x.OrderItem.UnitPrice,
-                x.Product.ProductId,
-                x.Product.Name,
-                x.Product.Category
-            ))
-            .ToListAsync();
+        var results = await (from o in ordersQuery
+                             join i in orderItemsQuery on o.OrderId equals i.OrderId
+                             join p in productsQuery on i.ProductId equals p.ProductId
+                             where o.CustomerId == args.CustomerId
+                             orderby o.OrderedAt descending
+                             select new GetCustomerOrdersRow(
+                                 o.OrderId,
+                                 o.OrderedAt,
+                                 o.OrderState,
+                                 o.TotalAmount,
+                                 i.OrderItemId,
+                                 i.Quantity,
+                                 i.UnitPrice,
+                                 p.ProductId,
+                                 p.Name,
+                                 p.Category
+                             ))
+                            .Skip(args.Offset)
+                            .Take(args.Limit)
+                            .ToListAsync(); 
         return results;
     }
-
     public record AddProductsArgs(string Name, string Category, decimal UnitPrice, int StockQuantity, string? Description);
 
     public async Task AddProducts(List<AddProductsArgs> args)

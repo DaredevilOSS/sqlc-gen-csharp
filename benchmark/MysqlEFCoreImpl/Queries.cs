@@ -51,28 +51,26 @@ public class Queries
             productsQuery = productsQuery.AsNoTracking();
         }
 
-        var query = (from o in ordersQuery
-                     join i in orderItemsQuery on o.OrderId equals i.OrderId
-                     join p in productsQuery on i.ProductId equals p.ProductId
-                     where o.CustomerId == args.CustomerId
-                     orderby o.OrderedAt descending
-                     select new GetCustomerOrdersRow(
-                         o.OrderId,
-                         o.OrderedAt,
-                         o.OrderState,
-                         o.TotalAmount,
-                         i.OrderItemId,
-                         i.Quantity,
-                         i.UnitPrice,
-                         p.ProductId,
-                         p.Name,
-                         p.Category
-                     ))
-                     .Skip(args.Offset)
-                     .Take(args.Limit);
-
-        var results = await query.ToListAsync();
-
+        var results = await (from o in ordersQuery
+                             join i in orderItemsQuery on o.OrderId equals i.OrderId
+                             join p in productsQuery on i.ProductId equals p.ProductId
+                             where o.CustomerId == args.CustomerId
+                             orderby o.OrderedAt descending
+                             select new GetCustomerOrdersRow(
+                                 o.OrderId,
+                                 o.OrderedAt,
+                                 o.OrderState,
+                                 o.TotalAmount,
+                                 i.OrderItemId,
+                                 i.Quantity,
+                                 i.UnitPrice,
+                                 p.ProductId,
+                                 p.Name,
+                                 p.Category
+                             ))
+                            .Skip(args.Offset)
+                            .Take(args.Limit)
+                            .ToListAsync(); 
         return results;
     }
 
