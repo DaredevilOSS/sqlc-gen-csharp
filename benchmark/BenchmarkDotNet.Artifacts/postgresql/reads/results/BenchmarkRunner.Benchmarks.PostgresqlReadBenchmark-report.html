@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+<meta charset='utf-8' />
+<title>BenchmarkRunner.Benchmarks.PostgresqlReadBenchmark-20251216-162233</title>
+
+<style type="text/css">
+	table { border-collapse: collapse; display: block; width: 100%; overflow: auto; }
+	td, th { padding: 6px 13px; border: 1px solid #ddd; text-align: right; }
+	tr { background-color: #fff; border-top: 1px solid #ccc; }
+	tr:nth-child(even) { background: #f8f8f8; }
+</style>
+</head>
+<body>
+<pre><code>
+BenchmarkDotNet v0.13.12, Ubuntu 24.04.3 LTS (Noble Numbat)
+AMD EPYC 7763, 1 CPU, 4 logical and 2 physical cores
+.NET SDK 8.0.416
+  [Host]     : .NET 8.0.22 (8.0.2225.52707), X64 RyuJIT AVX2
+  Job-RUPCHT : .NET 8.0.22 (8.0.2225.52707), X64 RyuJIT AVX2
+</code></pre>
+<pre><code>Runtime=.NET 8.0  IterationCount=10  WarmupCount=2  
+Categories=Read  
+</code></pre>
+
+<table>
+<thead><tr><th>Method                               </th><th>QueriesToRun</th><th>ConcurrentQueries</th><th>Limit</th><th>Mean</th><th>Error</th><th>StdDev</th><th>Ratio</th><th>RatioSD</th><th>Gen0 </th><th>Gen1 </th><th>Gen2</th><th>Allocated</th><th>Alloc Ratio</th>
+</tr>
+</thead><tbody><tr><td>&#39;SQLC - GetCustomerOrders&#39;</td><td>1000</td><td>20</td><td>100</td><td>2.762 s</td><td>0.0373 s</td><td>0.0247 s</td><td>1.00</td><td>0.00</td><td>3000.0000</td><td>2000.0000</td><td>1000.0000</td><td>57.46 MB</td><td>1.00</td>
+</tr><tr><td>&#39;EFCore (NoTracking) - GetCustomerOrders&#39;</td><td>1000</td><td>20</td><td>100</td><td>3.644 s</td><td>0.0877 s</td><td>0.0580 s</td><td>1.32</td><td>0.02</td><td>59000.0000</td><td>58000.0000</td><td>2000.0000</td><td>942.95 MB</td><td>16.41</td>
+</tr><tr><td>&#39;EFCore (WithTracking) - GetCustomerOrders&#39;</td><td>1000</td><td>20</td><td>100</td><td>3.644 s</td><td>0.0749 s</td><td>0.0495 s</td><td>1.32</td><td>0.02</td><td>58000.0000</td><td>57000.0000</td><td>1000.0000</td><td>942.18 MB</td><td>16.40</td>
+</tr><tr><td>&#39;SQLC - GetCustomerOrders&#39;</td><td>1000</td><td>20</td><td>500</td><td>3.285 s</td><td>0.0354 s</td><td>0.0234 s</td><td>1.00</td><td>0.00</td><td>11000.0000</td><td>10000.0000</td><td>2000.0000</td><td>229.05 MB</td><td>1.00</td>
+</tr><tr><td>&#39;EFCore (NoTracking) - GetCustomerOrders&#39;</td><td>1000</td><td>20</td><td>500</td><td>16.054 s</td><td>0.2137 s</td><td>0.1414 s</td><td>4.89</td><td>0.04</td><td>275000.0000</td><td>274000.0000</td><td>7000.0000</td><td>4636.06 MB</td><td>20.24</td>
+</tr><tr><td>&#39;EFCore (WithTracking) - GetCustomerOrders&#39;</td><td>1000</td><td>20</td><td>500</td><td>15.894 s</td><td>0.1587 s</td><td>0.1050 s</td><td>4.84</td><td>0.03</td><td>275000.0000</td><td>274000.0000</td><td>7000.0000</td><td>4635.6 MB</td><td>20.24</td>
+</tr><tr><td>&#39;SQLC - GetCustomerOrders&#39;</td><td>1000</td><td>50</td><td>100</td><td>2.789 s</td><td>0.0351 s</td><td>0.0232 s</td><td>1.00</td><td>0.00</td><td>3000.0000</td><td>2000.0000</td><td>1000.0000</td><td>57.48 MB</td><td>1.00</td>
+</tr><tr><td>&#39;EFCore (NoTracking) - GetCustomerOrders&#39;</td><td>1000</td><td>50</td><td>100</td><td>3.660 s</td><td>0.0497 s</td><td>0.0328 s</td><td>1.31</td><td>0.02</td><td>58000.0000</td><td>57000.0000</td><td>1000.0000</td><td>942.62 MB</td><td>16.40</td>
+</tr><tr><td>&#39;EFCore (WithTracking) - GetCustomerOrders&#39;</td><td>1000</td><td>50</td><td>100</td><td>3.615 s</td><td>0.0747 s</td><td>0.0494 s</td><td>1.30</td><td>0.02</td><td>59000.0000</td><td>58000.0000</td><td>2000.0000</td><td>942.31 MB</td><td>16.39</td>
+</tr><tr><td>&#39;SQLC - GetCustomerOrders&#39;</td><td>1000</td><td>50</td><td>500</td><td>3.295 s</td><td>0.0307 s</td><td>0.0203 s</td><td>1.00</td><td>0.00</td><td>11000.0000</td><td>10000.0000</td><td>2000.0000</td><td>229.01 MB</td><td>1.00</td>
+</tr><tr><td>&#39;EFCore (NoTracking) - GetCustomerOrders&#39;</td><td>1000</td><td>50</td><td>500</td><td>15.443 s</td><td>0.2877 s</td><td>0.1903 s</td><td>4.69</td><td>0.05</td><td>275000.0000</td><td>274000.0000</td><td>7000.0000</td><td>4636.64 MB</td><td>20.25</td>
+</tr><tr><td>&#39;EFCore (WithTracking) - GetCustomerOrders&#39;</td><td>1000</td><td>50</td><td>500</td><td>15.383 s</td><td>0.1529 s</td><td>0.1011 s</td><td>4.67</td><td>0.05</td><td>269000.0000</td><td>268000.0000</td><td>1000.0000</td><td>4635.89 MB</td><td>20.24</td>
+</tr></tbody></table>
+</body>
+</html>
