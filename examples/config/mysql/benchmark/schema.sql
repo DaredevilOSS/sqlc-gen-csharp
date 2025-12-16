@@ -38,3 +38,5 @@ CREATE TABLE IF NOT EXISTS sales.order_items (
     CONSTRAINT      fk_product      FOREIGN KEY (product_id) REFERENCES products(product_id)
 );
 
+CREATE INDEX idx_customer_id_orders ON sales.orders (customer_id); -- lookup of orders by customer_id
+CREATE INDEX idx_order_id_order_items ON sales.order_items (order_id); -- lookup of order_items by order_id

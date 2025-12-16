@@ -3,6 +3,7 @@ using BenchmarkDotNet.Configs;
 using BenchmarkDotNet.Jobs;
 using BenchmarkRunner.Utils;
 using EndToEndTests;
+using Microsoft.Data.Sqlite;
 using SqliteEFCoreImpl;
 using SqliteSqlcImpl;
 
@@ -19,6 +20,9 @@ public class SqliteWriteBenchmark : BaseWriteBenchmark
     private readonly QuerySql _sqlcImpl = new(_connectionString);
     private readonly Queries _efCoreImpl = new(new SalesDbContext(_connectionString), useTracking: false);
     private List<QuerySql.AddOrderItemsArgs> _testOrderItems = null!;
+
+    [Params(2_500_000)]
+    public int TotalRecords { get; set; }
 
     [BenchmarkCategory("Write")]
     [Benchmark(Baseline = true, Description = "SQLC - AddOrderItems")]
@@ -45,13 +49,8 @@ public class SqliteWriteBenchmark : BaseWriteBenchmark
         return async () =>
         {
             EndToEndCommon.SetupBenchmarkSqliteDb();
-            var seeder = new SqliteDatabaseSeeder(_connectionString);
-            await seeder.SeedAsync(
-                customerCount: 10,
-                productsPerCategory: 15,
-                ordersPerCustomer: 300,
-                itemsPerOrder: 0
-            );
+            var seeder = new SqliteSeeder(_connectionString);
+            await seeder.SeedAsync(GetSeedConfig());
         };
     }
 
@@ -70,9 +69,17 @@ public class SqliteWriteBenchmark : BaseWriteBenchmark
     }
 
     [IterationSetup]
-    public void IterationSetup()
+    public static void IterationSetup()
     {
-        SqliteDatabaseHelper.CleanupWriteTableAsync(_connectionString).GetAwaiter().GetResult();
+        CleanupWriteTableAsync(_connectionString).GetAwaiter().GetResult();
         Helpers.InvokeGarbageCollection();
+    }
+
+    private static async Task CleanupWriteTableAsync(string connectionString)
+    {
+        using var connection = new SqliteConnection(connectionString);
+        await connection.OpenAsync();
+        using var cmd = new SqliteCommand("DELETE FROM order_items", connection);
+        await cmd.ExecuteNonQueryAsync();
     }
 }

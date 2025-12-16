@@ -18,7 +18,7 @@ public class SqliteReadBenchmark : BaseReadBenchmark
     private static readonly string _connectionString = Config.GetSqliteConnectionString();
     private readonly QuerySql _sqlcImpl = new(_connectionString);
 
-    [Params(800)]
+    [Params(1_000)]
     public int QueriesToRun { get; set; }
 
     [Params(10, 25)]
@@ -31,7 +31,7 @@ public class SqliteReadBenchmark : BaseReadBenchmark
         await ExecuteConcurrentlyAsync(QueriesToRun, ConcurrentQueries, _ =>
         {
             return _sqlcImpl.GetCustomerOrdersAsync(new QuerySql.GetCustomerOrdersArgs(
-                CustomerId: Random.Shared.Next(1, CustomerCount),
+                CustomerId: Random.Shared.Next(1, GetSeedConfig().CustomerCount),
                 Offset: 0,
                 Limit: Limit
             ));
@@ -47,7 +47,7 @@ public class SqliteReadBenchmark : BaseReadBenchmark
             await using var dbContext = new SalesDbContext(_connectionString);
             var queries = new Queries(dbContext, useTracking: false);
             return await queries.GetCustomerOrders(new Queries.GetCustomerOrdersArgs(
-                CustomerId: Random.Shared.Next(1, CustomerCount),
+                CustomerId: Random.Shared.Next(1, GetSeedConfig().CustomerCount),
                 Offset: 0,
                 Limit: Limit
             ));
@@ -63,7 +63,7 @@ public class SqliteReadBenchmark : BaseReadBenchmark
             await using var dbContext = new SalesDbContext(_connectionString);
             var queries = new Queries(dbContext, useTracking: true);
             return await queries.GetCustomerOrders(new Queries.GetCustomerOrdersArgs(
-                CustomerId: Random.Shared.Next(1, CustomerCount),
+                CustomerId: Random.Shared.Next(1, GetSeedConfig().CustomerCount),
                 Offset: 0,
                 Limit: Limit
             ));
@@ -75,13 +75,8 @@ public class SqliteReadBenchmark : BaseReadBenchmark
         return async () =>
         {
             EndToEndCommon.SetupBenchmarkSqliteDb();
-            var seeder = new SqliteDatabaseSeeder(_connectionString);
-            await seeder.SeedAsync(
-                customerCount: 500, // with customer_id filter, this is 1/500 of the table returned
-                productsPerCategory: 150,
-                ordersPerCustomer: 500,
-                itemsPerOrder: 10 // 10 * 500 = 5,000 possible rows returned
-            );
+            var seeder = new SqliteSeeder(_connectionString);
+            await seeder.SeedAsync(GetSeedConfig());
         };
     }
 }

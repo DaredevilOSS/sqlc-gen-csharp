@@ -31,6 +31,7 @@ public static class Helpers
         foreach (var batch in batches)
             await insertBatch([.. batch]);
     }
+
     public static void InvokeGarbageCollection()
     {
         GC.Collect();

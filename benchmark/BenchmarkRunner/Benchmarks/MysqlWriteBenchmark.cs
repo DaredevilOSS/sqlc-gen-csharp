@@ -3,6 +3,7 @@ using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Configs;
 using BenchmarkDotNet.Jobs;
 using BenchmarkRunner.Utils;
+using MySqlConnector;
 using MysqlEFCoreImpl;
 using MysqlSqlcImpl;
 
@@ -20,11 +21,13 @@ public class MysqlWriteBenchmark : BaseWriteBenchmark
     private readonly Queries _efCoreImpl = new(new SalesDbContext(_connectionString), useTracking: false);
     private List<QuerySql.AddOrderItemsArgs> _testOrderItems = null!;
 
+    [Params(1_250_000)]
+    public int TotalRecords { get; set; }
+
     [BenchmarkCategory("Write")]
     [Benchmark(Baseline = true, Description = "SQLC - AddOrderItems")]
-    [Arguments(1000)]
-    [Arguments(5000)]
-    [Arguments(20000)]
+    [Arguments(1_000)]
+    [Arguments(2_000)]
     public override async Task Sqlc_AddOrderItems(int batchSize)
     {
         await Helpers.InsertInBatchesAsync(_testOrderItems, batchSize, _sqlcImpl.AddOrderItemsAsync);
@@ -45,13 +48,8 @@ public class MysqlWriteBenchmark : BaseWriteBenchmark
     {
         return async () =>
         {
-            var seeder = new MysqlDatabaseSeeder(_connectionString);
-            await seeder.SeedAsync(
-                customerCount: 10,
-                productsPerCategory: 15,
-                ordersPerCustomer: 300,
-                itemsPerOrder: 0
-            );
+            var seeder = new MysqlSeeder(_connectionString);
+            await seeder.SeedAsync(GetSeedConfig());
         };
     }
 
@@ -72,7 +70,15 @@ public class MysqlWriteBenchmark : BaseWriteBenchmark
     [IterationSetup]
     public static void IterationSetup()
     {
-        MysqlDatabaseHelper.CleanupWriteTableAsync(_connectionString).GetAwaiter().GetResult();
+        CleanupWriteTableAsync(_connectionString).GetAwaiter().GetResult();
         Helpers.InvokeGarbageCollection();
+    }
+
+    private static async Task CleanupWriteTableAsync(string connectionString)
+    {
+        using var connection = new MySqlConnection(connectionString);
+        await connection.OpenAsync();
+        using var cmd = new MySqlCommand("TRUNCATE TABLE sales.order_items", connection);
+        await cmd.ExecuteNonQueryAsync();
     }
 }

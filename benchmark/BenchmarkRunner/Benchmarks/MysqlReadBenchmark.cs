@@ -17,7 +17,7 @@ public class MysqlReadBenchmark : BaseReadBenchmark
     private static readonly string _connectionString = Config.GetMysqlConnectionString();
     private readonly QuerySql _sqlcImpl = new(_connectionString);
 
-    [Params(3000)]
+    [Params(3_000)]
     public int QueriesToRun { get; set; }
 
     [Params(200, 500)]
@@ -30,7 +30,7 @@ public class MysqlReadBenchmark : BaseReadBenchmark
         await ExecuteConcurrentlyAsync(QueriesToRun, ConcurrentQueries, _ =>
         {
             return _sqlcImpl.GetCustomerOrdersAsync(new QuerySql.GetCustomerOrdersArgs(
-                CustomerId: Random.Shared.Next(1, CustomerCount),
+                CustomerId: Random.Shared.Next(1, GetSeedConfig().CustomerCount),
                 Offset: 0,
                 Limit: Limit
             ));
@@ -46,7 +46,7 @@ public class MysqlReadBenchmark : BaseReadBenchmark
             await using var dbContext = new SalesDbContext(_connectionString);
             var queries = new Queries(dbContext, useTracking: false);
             return await queries.GetCustomerOrders(new Queries.GetCustomerOrdersArgs(
-                CustomerId: Random.Shared.Next(1, CustomerCount),
+                CustomerId: Random.Shared.Next(1, GetSeedConfig().CustomerCount),
                 Offset: 0,
                 Limit: Limit
             ));
@@ -62,7 +62,7 @@ public class MysqlReadBenchmark : BaseReadBenchmark
             await using var dbContext = new SalesDbContext(_connectionString);
             var queries = new Queries(dbContext, useTracking: true);
             return await queries.GetCustomerOrders(new Queries.GetCustomerOrdersArgs(
-                CustomerId: Random.Shared.Next(1, CustomerCount),
+                CustomerId: Random.Shared.Next(1, GetSeedConfig().CustomerCount),
                 Offset: 0,
                 Limit: Limit
             ));
@@ -73,13 +73,8 @@ public class MysqlReadBenchmark : BaseReadBenchmark
     {
         return async () =>
         {
-            var seeder = new MysqlDatabaseSeeder(_connectionString);
-            await seeder.SeedAsync(
-                customerCount: 500, // selectivity: 1/500 of the table returned
-                productsPerCategory: 150,
-                ordersPerCustomer: 1000,
-                itemsPerOrder: 20 // 20 * 1000 = 20,000 possible rows returned
-            );
+            var seeder = new MysqlSeeder(_connectionString);
+            await seeder.SeedAsync(GetSeedConfig());
         };
     }
 }

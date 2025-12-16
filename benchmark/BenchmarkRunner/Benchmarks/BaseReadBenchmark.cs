@@ -3,8 +3,6 @@ using BenchmarkRunner.Utils;
 
 public abstract class BaseReadBenchmark
 {
-    protected const int CustomerCount = 500;
-
     [Params(100, 500)]
     public int Limit { get; set; }
 
@@ -13,6 +11,12 @@ public abstract class BaseReadBenchmark
     public abstract Task Sqlc_GetCustomerOrders();
     public abstract Task EFCore_NoTracking_GetCustomerOrders();
     public abstract Task EFCore_WithTracking_GetCustomerOrders();
+    public static DatabaseSeedConfig GetSeedConfig() => new(
+        CustomerCount: 500,
+        ProductsPerCategory: 150,
+        OrdersPerCustomer: 500,
+        ItemsPerOrder: 20
+    );
     private static int CalculateMaxConcurrency(int totalTasks, int maxConcurrency)
     {
         return new int[] {

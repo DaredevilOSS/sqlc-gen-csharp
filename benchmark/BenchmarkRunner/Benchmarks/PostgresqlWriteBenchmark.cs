@@ -2,6 +2,7 @@ using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Configs;
 using BenchmarkDotNet.Jobs;
 using BenchmarkRunner.Utils;
+using Npgsql;
 using PostgresEFCoreImpl;
 using PostgresSqlcImpl;
 
@@ -19,10 +20,13 @@ public class PostgresqlWriteBenchmark : BaseWriteBenchmark
     private readonly Queries _efCoreImpl = new(new SalesDbContext(_connectionString), useTracking: false);
     private List<QuerySql.AddOrderItemsArgs> _testOrderItems = null!;
 
+    [Params(2_500_000)]
+    public int TotalRecords { get; set; }
+
     [BenchmarkCategory("Write")]
     [Benchmark(Baseline = true, Description = "SQLC - AddOrderItems")]
     [Arguments(500)]
-    [Arguments(1000)]
+    [Arguments(1_000)]
     public override async Task Sqlc_AddOrderItems(int batchSize)
     {
         await Helpers.InsertInBatchesAsync(_testOrderItems, batchSize, _sqlcImpl.AddOrderItemsAsync);
@@ -43,13 +47,8 @@ public class PostgresqlWriteBenchmark : BaseWriteBenchmark
     {
         return async () =>
         {
-            var seeder = new PostgresqlDatabaseSeeder(_connectionString);
-            await seeder.SeedAsync(
-                customerCount: 10,
-                productsPerCategory: 15,
-                ordersPerCustomer: 300,
-                itemsPerOrder: 0
-            );
+            var seeder = new PostgresqlSeeder(_connectionString);
+            await seeder.SeedAsync(GetSeedConfig());
         };
     }
 
@@ -70,7 +69,15 @@ public class PostgresqlWriteBenchmark : BaseWriteBenchmark
     [IterationSetup]
     public static void IterationSetup()
     {
-        PostgresqlDatabaseHelper.CleanupWriteTableAsync(_connectionString).GetAwaiter().GetResult();
+        CleanupWriteTableAsync(_connectionString).GetAwaiter().GetResult();
         Helpers.InvokeGarbageCollection();
+    }
+
+    private static async Task CleanupWriteTableAsync(string connectionString)
+    {
+        using var connection = new NpgsqlConnection(connectionString);
+        await connection.OpenAsync();
+        using var cmd = new NpgsqlCommand("TRUNCATE TABLE sales.order_items", connection);
+        await cmd.ExecuteNonQueryAsync();
     }
 }

@@ -1,34 +1,29 @@
-using SqliteSqlcImpl;
+using PostgresSqlcImpl;
 
 namespace BenchmarkRunner.Utils;
 
-public class SqliteDatabaseSeeder(string connectionString)
+public class PostgresqlSeeder(string connectionString)
 {
-    private const int BatchSize = 100;
-
+    private const int BatchSize = 500;
     private readonly QuerySql _sqlc = new(connectionString);
 
-    public async Task SeedAsync(
-        int customerCount,
-        int productsPerCategory,
-        int ordersPerCustomer,
-        int itemsPerOrder)
+    public async Task SeedAsync(DatabaseSeedConfig config)
     {
-        var customers = await SeedCustomersAsync(customerCount);
+        var customers = await SeedCustomersAsync(config.CustomerCount);
         if (customers.Count > 0)
             Console.WriteLine($"Seeded {customers.Count} customers");
 
-        var products = await SeedProductsAsync(productsPerCategory);
+        var products = await SeedProductsAsync(config.ProductsPerCategory);
         if (products.Count > 0)
             Console.WriteLine($"Seeded {products.Count} products");
 
-        var orders = await SeedOrdersAsync(customers, ordersPerCustomer);
+        var orders = await SeedOrdersAsync(customers, config.OrdersPerCustomer);
         if (orders.Count > 0)
             Console.WriteLine($"Seeded {orders.Count} orders");
 
-        if (orders.Count > 0 && products.Count > 0 && itemsPerOrder > 0)
+        if (orders.Count > 0 && products.Count > 0 && config.ItemsPerOrder > 0)
         {
-            await SeedOrderItemsAsync(orders, products, itemsPerOrder);
+            await SeedOrderItemsAsync(orders, products, config.ItemsPerOrder);
             Console.WriteLine($"Seeded order items");
         }
     }
@@ -44,7 +39,9 @@ public class SqliteDatabaseSeeder(string connectionString)
                 Email: $"customer{i + 1}@example.com",
                 Phone: $"+1-555-{1000 + i:D4}",
                 Address: $"{Random.Shared.Next(100, 9999)} Main St, City {i % 10}",
-                RegisteredAt: registeredAt.ToString("yyyy-MM-dd HH:mm:ss.FFFFFFF")
+                RegisteredAt: registeredAt.Kind == DateTimeKind.Utc
+                    ? DateTime.SpecifyKind(registeredAt, DateTimeKind.Unspecified)
+                    : registeredAt
             ));
         }
 
@@ -96,7 +93,7 @@ public class SqliteDatabaseSeeder(string connectionString)
 
         await Helpers.InsertInBatchesAsync(orders, BatchSize, _sqlc.AddOrdersAsync);
         var orderIds = await _sqlc.GetOrderIdsAsync(new QuerySql.GetOrderIdsArgs(Limit: orders.Count));
-        return orderIds.Select(r => r.OrderId).ToList();
+        return [.. orderIds.Select(r => r.OrderId)];
     }
 
     private async Task SeedOrderItemsAsync(List<int> orderIds, List<int> productIds, int itemsPerOrder)

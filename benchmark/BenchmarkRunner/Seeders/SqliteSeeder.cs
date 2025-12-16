@@ -1,33 +1,29 @@
-using MysqlSqlcImpl;
+using SqliteSqlcImpl;
 
 namespace BenchmarkRunner.Utils;
 
-public class MysqlDatabaseSeeder(string connectionString)
+public class SqliteSeeder(string connectionString)
 {
-    private const int BatchSize = 10000;
+    private const int BatchSize = 100;
     private readonly QuerySql _sqlc = new(connectionString);
 
-    public async Task SeedAsync(
-        int customerCount,
-        int productsPerCategory,
-        int ordersPerCustomer,
-        int itemsPerOrder)
+    public async Task SeedAsync(DatabaseSeedConfig config)
     {
-        var customers = await SeedCustomersAsync(customerCount);
+        var customers = await SeedCustomersAsync(config.CustomerCount);
         if (customers.Count > 0)
             Console.WriteLine($"Seeded {customers.Count} customers");
 
-        var products = await SeedProductsAsync(productsPerCategory);
+        var products = await SeedProductsAsync(config.ProductsPerCategory);
         if (products.Count > 0)
             Console.WriteLine($"Seeded {products.Count} products");
 
-        var orders = await SeedOrdersAsync(customers, ordersPerCustomer);
+        var orders = await SeedOrdersAsync(customers, config.OrdersPerCustomer);
         if (orders.Count > 0)
             Console.WriteLine($"Seeded {orders.Count} orders");
 
-        if (orders.Count > 0 && products.Count > 0 && itemsPerOrder > 0)
+        if (orders.Count > 0 && products.Count > 0 && config.ItemsPerOrder > 0)
         {
-            await SeedOrderItemsAsync(orders, products, itemsPerOrder);
+            await SeedOrderItemsAsync(orders, products, config.ItemsPerOrder);
             Console.WriteLine($"Seeded order items");
         }
     }
@@ -37,12 +33,13 @@ public class MysqlDatabaseSeeder(string connectionString)
         var customers = new List<QuerySql.AddCustomersArgs>();
         for (int i = 0; i < count; i++)
         {
+            var registeredAt = DateTime.UtcNow.AddDays(-Random.Shared.Next(0, 365));
             customers.Add(new QuerySql.AddCustomersArgs(
                 Name: $"Customer {i + 1}",
                 Email: $"customer{i + 1}@example.com",
                 Phone: $"+1-555-{1000 + i:D4}",
                 Address: $"{Random.Shared.Next(100, 9999)} Main St, City {i % 10}",
-                RegisteredAt: DateTime.UtcNow.AddDays(-Random.Shared.Next(0, 365))
+                RegisteredAt: registeredAt.ToString("yyyy-MM-dd HH:mm:ss.FFFFFFF")
             ));
         }
 
@@ -75,7 +72,7 @@ public class MysqlDatabaseSeeder(string connectionString)
         return [.. productIds.Select(r => r.ProductId)];
     }
 
-    private async Task<List<long>> SeedOrdersAsync(List<int> customerIds, int ordersPerCustomer)
+    private async Task<List<int>> SeedOrdersAsync(List<int> customerIds, int ordersPerCustomer)
     {
         var orderStates = new[] { "Pending", "Delivered", "Cancelled" };
         var orders = new List<QuerySql.AddOrdersArgs>();
@@ -94,10 +91,10 @@ public class MysqlDatabaseSeeder(string connectionString)
 
         await Helpers.InsertInBatchesAsync(orders, BatchSize, _sqlc.AddOrdersAsync);
         var orderIds = await _sqlc.GetOrderIdsAsync(new QuerySql.GetOrderIdsArgs(Limit: orders.Count));
-        return [.. orderIds.Select(r => r.OrderId)];
+        return orderIds.Select(r => r.OrderId).ToList();
     }
 
-    private async Task SeedOrderItemsAsync(List<long> orderIds, List<int> productIds, int itemsPerOrder)
+    private async Task SeedOrderItemsAsync(List<int> orderIds, List<int> productIds, int itemsPerOrder)
     {
         var orderItems = new List<QuerySql.AddOrderItemsArgs>();
         foreach (var orderId in orderIds)
