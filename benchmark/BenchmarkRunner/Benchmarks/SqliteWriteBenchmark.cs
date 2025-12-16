@@ -17,7 +17,7 @@ namespace BenchmarkRunner.Benchmarks;
 [CategoriesColumn]
 public class SqliteWriteBenchmark : BaseWriteBenchmark
 {
-    private const int _totalRecordsForSetup = 200_000;
+    private const int _totalRecordsForSetup = 300_000;
     private static readonly string _connectionString = Config.GetSqliteConnectionString();
     private readonly QuerySql _sqlcImpl = new(_connectionString);
     private readonly Queries _efCoreImpl = new(new SalesDbContext(_connectionString), useTracking: false);
