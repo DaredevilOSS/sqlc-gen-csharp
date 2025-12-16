@@ -70,7 +70,7 @@ public class Queries
                              ))
                             .Skip(args.Offset)
                             .Take(args.Limit)
-                            .ToListAsync(); 
+                            .ToListAsync();
         return results;
     }
 

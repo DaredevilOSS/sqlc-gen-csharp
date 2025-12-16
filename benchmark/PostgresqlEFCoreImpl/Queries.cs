@@ -63,7 +63,7 @@ public class Queries(SalesDbContext dbContext, bool useTracking = false)
                              ))
                             .Skip(args.Offset)
                             .Take(args.Limit)
-                            .ToListAsync(); 
+                            .ToListAsync();
         return results;
     }
     public record AddProductsArgs(string Name, string Category, decimal UnitPrice, int StockQuantity, string? Description);
