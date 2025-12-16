@@ -21,7 +21,7 @@ public class MysqlWriteBenchmark : BaseWriteBenchmark
     private readonly Queries _efCoreImpl = new(new SalesDbContext(_connectionString), useTracking: false);
     private List<QuerySql.AddOrderItemsArgs> _testOrderItems = null!;
 
-    [Params(750_000)]
+    [Params(200_000)]
     public int TotalRecords { get; set; }
 
     [BenchmarkCategory("Write")]
