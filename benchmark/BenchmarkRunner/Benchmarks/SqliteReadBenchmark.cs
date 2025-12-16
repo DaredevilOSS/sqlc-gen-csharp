@@ -20,7 +20,7 @@ public class SqliteReadBenchmark : BaseReadBenchmark
 
     [Params(800)]
     public int QueriesToRun { get; set; }
-    
+
     [Params(10, 25)]
     public int ConcurrentQueries { get; set; }
 

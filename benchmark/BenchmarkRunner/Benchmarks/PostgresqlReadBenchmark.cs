@@ -19,7 +19,7 @@ public class PostgresqlReadBenchmark : BaseReadBenchmark
 
     [Params(1000)]
     public int QueriesToRun { get; set; }
-    
+
     [Params(20, 50)]
     public int ConcurrentQueries { get; set; }
 
