@@ -7,7 +7,7 @@ public abstract class BaseWriteBenchmark
 {
     public const int OrderIdsCountForSetup = 1000;
     public const int ProductIdsCountForSetup = 1000;
-    
+
     public static DatabaseSeedConfig GetSeedConfig() => new(
         CustomerCount: 500,
         ProductsPerCategory: 150,

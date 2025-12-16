@@ -67,7 +67,7 @@ public class MysqlWriteBenchmark : BaseWriteBenchmark
 
     [GlobalSetup]
     public async Task GlobalSetup()
-    {        
+    {
         var orderIds = await _sqlcImpl.GetOrderIdsAsync(new QuerySql.GetOrderIdsArgs(Limit: OrderIdsCountForSetup));
         var productIds = await _sqlcImpl.GetProductIdsAsync(new QuerySql.GetProductIdsArgs(Limit: ProductIdsCountForSetup));
         _sqlcTestOrderItems = GetSqlcTestOrderItemsAsync(orderIds, productIds);
