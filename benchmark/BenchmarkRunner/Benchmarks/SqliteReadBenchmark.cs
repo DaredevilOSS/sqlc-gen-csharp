@@ -21,8 +21,8 @@ public class SqliteReadBenchmark : BaseReadBenchmark
 
     public static IEnumerable<ReadBenchmarkParams> GetParams()
     {
-        yield return new ReadBenchmarkParams(Limit: 50, Concurrency: 100, QueriesToSubmit: 3_000);
-        yield return new ReadBenchmarkParams(Limit: 1000, Concurrency: 50, QueriesToSubmit: 1_500);
+        yield return new ReadBenchmarkParams(Limit: 50, Concurrency: 100, QueriesToSubmit: 3000);
+        yield return new ReadBenchmarkParams(Limit: 1000, Concurrency: 50, QueriesToSubmit: 1500);
     }
 
     [ParamsSource(nameof(GetParams))]
