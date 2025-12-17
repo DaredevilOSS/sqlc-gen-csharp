@@ -4,13 +4,23 @@ public static class NumberExtensions
 {
     public static string StringifyLargeNumbers(this int value)
     {
-        if (value < 1000) return value.ToString();
+        if (value < 1_000) return value.ToString();
 
-        var valueStr = value.ToString();
-        if (valueStr.Length is >= 4 and <= 6) return $"{valueStr[0]}.{valueStr[1]}K";
-        if (valueStr.Length is >= 7 and <= 9) return $"{valueStr[0]}.{valueStr[1]}M";
-        if (valueStr.Length is >= 10 and <= 12) return $"{valueStr[0]}.{valueStr[1]}B";
+        if (value < 1_000_000)
+            return FormatWithSuffix(value / 1_000, "K"); // Thousands: 1000-999999
 
-        throw new ArgumentException($"Number {value} is too large to stringify");
+        if (value < 1_000_000_000)
+            return FormatWithSuffix(value / 1_000_000, "M"); // Millions: 1000000-999999999
+
+        return FormatWithSuffix(value / 1_000_000_000, "B"); // Billions: 1000000000+
+    }
+
+    private static string FormatWithSuffix(double value, string suffix)
+    {
+        if (value % 1 == 0)
+            return $"{(int)value}{suffix}";
+
+        var formatted = $"{value:F1}{suffix}";
+        return formatted.EndsWith(".0" + suffix) ? $"{(int)value}{suffix}" : formatted;
     }
 }
