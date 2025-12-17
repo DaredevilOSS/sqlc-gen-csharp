@@ -12,7 +12,7 @@ namespace BenchmarkRunner.Benchmarks;
 [SimpleJob(RuntimeMoniker.Net80, warmupCount: 2, iterationCount: 10)]
 [MemoryDiagnoser]
 [MarkdownExporterAttribute.GitHub]
-[GroupBenchmarksBy(BenchmarkLogicalGroupRule.ByCategory)]
+[GroupBenchmarksBy(BenchmarkLogicalGroupRule.ByCategory), Description(BenchmarkLegend)]
 [CategoriesColumn]
 public class SqliteReadBenchmark : BaseReadBenchmark
 {
