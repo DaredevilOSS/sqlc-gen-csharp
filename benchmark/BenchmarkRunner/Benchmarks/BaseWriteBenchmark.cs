@@ -5,7 +5,7 @@ public readonly record struct WriteBenchmarkArgs(
     int BatchSize
 )
 {
-    public override string ToString() => $"R={TotalRecordsToLoad.StringifyLargeNumbers()},B={BatchSize.StringifyLargeNumbers()}";
+    public override string ToString() => $"Records={TotalRecordsToLoad.StringifyLargeNumbers()}, BatchSize={BatchSize.StringifyLargeNumbers()}";
 }
 
 public abstract class BaseWriteBenchmark

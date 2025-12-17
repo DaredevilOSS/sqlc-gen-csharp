@@ -8,7 +8,7 @@ public readonly record struct ReadBenchmarkParams(
     int QueriesToSubmit
 )
 {
-    public override string ToString() => $"L={Limit.StringifyLargeNumbers()},C={Concurrency.StringifyLargeNumbers()},Q={QueriesToSubmit.StringifyLargeNumbers()}";
+    public override string ToString() => $"Limit={Limit.StringifyLargeNumbers()}, Concurrency={Concurrency.StringifyLargeNumbers()}, Queries={QueriesToSubmit.StringifyLargeNumbers()}";
 }
 
 public abstract class BaseReadBenchmark
