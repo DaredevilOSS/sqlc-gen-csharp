@@ -5,7 +5,8 @@ public readonly record struct ReadBenchmarkParams(
     int Limit,
     int Concurrency,
     int QueriesToSubmit
-) {
+)
+{
     public override string ToString() => $"Limit={Limit}, Concurrency={Concurrency}, Queries={QueriesToSubmit:N0}";
 }
 

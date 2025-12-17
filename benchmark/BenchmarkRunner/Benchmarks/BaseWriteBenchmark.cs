@@ -1,7 +1,8 @@
 public readonly record struct WriteBenchmarkArgs(
     int TotalRecordsToLoad,
     int BatchSize
-) {
+)
+{
     public override string ToString() => $"Records={TotalRecordsToLoad:N0}, BatchSize={BatchSize:N0}";
 }
 
