@@ -1,5 +1,6 @@
 using BenchmarkDotNet.Attributes;
 using BenchmarkRunner.Utils;
+using SqlcGenCsharp;
 
 public readonly record struct ReadBenchmarkParams(
     int Limit,
@@ -7,12 +8,11 @@ public readonly record struct ReadBenchmarkParams(
     int QueriesToSubmit
 )
 {
-    public override string ToString() => $"Limit={Limit}, Concurrency={Concurrency}, Queries={QueriesToSubmit:N0}";
+    public override string ToString() => $"L={Limit.StringifyLargeNumbers()},C={Concurrency.StringifyLargeNumbers()},Q={QueriesToSubmit.StringifyLargeNumbers()}";
 }
 
 public abstract class BaseReadBenchmark
 {
-
     [IterationSetup]
     public static void IterationSetup() => Helpers.InvokeGarbageCollection();
     public abstract Task Sqlc_GetCustomerOrders();

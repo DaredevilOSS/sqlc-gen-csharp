@@ -9,6 +9,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\end2end\EndToEndCommon\EndToEndCommon.csproj" />
+    <ProjectReference Include="..\..\Extensions\Extensions.csproj" />
     <ProjectReference Include="..\PostgresqlSqlcImpl\PostgresqlSqlcImpl.csproj" />
     <ProjectReference Include="..\PostgresqlEFCoreImpl\PostgresqlEFCoreImpl.csproj" />
     <ProjectReference Include="..\SqliteSqlcImpl\SqliteSqlcImpl.csproj" />

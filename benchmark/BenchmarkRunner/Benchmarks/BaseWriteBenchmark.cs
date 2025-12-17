@@ -1,9 +1,11 @@
+using SqlcGenCsharp;
+
 public readonly record struct WriteBenchmarkArgs(
     int TotalRecordsToLoad,
     int BatchSize
 )
 {
-    public override string ToString() => $"Records={TotalRecordsToLoad:N0}, BatchSize={BatchSize:N0}";
+    public override string ToString() => $"R={TotalRecordsToLoad.StringifyLargeNumbers()},B={BatchSize.StringifyLargeNumbers()}";
 }
 
 public abstract class BaseWriteBenchmark
