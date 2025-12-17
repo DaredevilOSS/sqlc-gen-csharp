@@ -10,7 +10,6 @@ public readonly record struct WriteBenchmarkArgs(
 
 public abstract class BaseWriteBenchmark
 {
-    protected const string BenchmarkLegend = "Legend: R=Total Records, B=Batch Size";
     public const int TotalRecordsForSetup = 300000; // 3 million records
     public const int OrderIdsCountForSetup = 1000;
     public const int ProductIdsCountForSetup = 1000;

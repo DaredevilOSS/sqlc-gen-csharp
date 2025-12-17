@@ -13,8 +13,6 @@ public readonly record struct ReadBenchmarkParams(
 
 public abstract class BaseReadBenchmark
 {
-    protected const string BenchmarkLegend = "Legend: L=Query Limit, C=Concurrency, Q=Queries To Submit";
-
     [IterationSetup]
     public static void IterationSetup() => Helpers.InvokeGarbageCollection();
     public abstract Task Sqlc_GetCustomerOrders();

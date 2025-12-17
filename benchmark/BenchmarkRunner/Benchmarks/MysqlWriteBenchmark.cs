@@ -13,7 +13,7 @@ namespace BenchmarkRunner.Benchmarks;
 [SimpleJob(RuntimeMoniker.Net80, warmupCount: 2, iterationCount: 10)]
 [MemoryDiagnoser]
 [MarkdownExporterAttribute.GitHub]
-[GroupBenchmarksBy(BenchmarkLogicalGroupRule.ByCategory), Description(BenchmarkLegend)]
+[GroupBenchmarksBy(BenchmarkLogicalGroupRule.ByCategory)]
 [CategoriesColumn]
 public class MysqlWriteBenchmark : BaseWriteBenchmark
 {
