@@ -11,6 +11,7 @@ on:
     paths:
       - "**"
       - "!**.md"
+      - "!benchmark/BenchmarkDotNet.Artifacts/**"
 
 jobs:
   # As this can run only on Windows machines, these tests should run only in CI
