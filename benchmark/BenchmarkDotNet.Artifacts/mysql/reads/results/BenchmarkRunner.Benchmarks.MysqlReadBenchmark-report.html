@@ -2,7 +2,7 @@
 <html lang='en'>
 <head>
 <meta charset='utf-8' />
-<title>BenchmarkRunner.Benchmarks.MysqlReadBenchmark-20251217-124517</title>
+<title>BenchmarkRunner.Benchmarks.MysqlReadBenchmark-20251217-150806</title>
 
 <style type="text/css">
 	table { border-collapse: collapse; display: block; width: 100%; overflow: auto; }
@@ -17,7 +17,7 @@ BenchmarkDotNet v0.13.12, Ubuntu 24.04.3 LTS (Noble Numbat)
 AMD EPYC 7763, 1 CPU, 4 logical and 2 physical cores
 .NET SDK 8.0.416
   [Host]     : .NET 8.0.22 (8.0.2225.52707), X64 RyuJIT AVX2
-  Job-OVVOTJ : .NET 8.0.22 (8.0.2225.52707), X64 RyuJIT AVX2
+  Job-MKTQLE : .NET 8.0.22 (8.0.2225.52707), X64 RyuJIT AVX2
 </code></pre>
 <pre><code>Runtime=.NET 8.0  IterationCount=10  WarmupCount=2  
 Categories=Read  
@@ -26,12 +26,12 @@ Categories=Read
 <table>
 <thead><tr><th>Method                               </th><th>Params     </th><th>Mean</th><th>Error</th><th>StdDev</th><th>Ratio</th><th>RatioSD</th><th>Gen0</th><th>Gen1</th><th>Gen2</th><th>Allocated</th><th>Alloc Ratio</th>
 </tr>
-</thead><tbody><tr><td>&#39;SQLC - GetCustomerOrders&#39;</td><td>L=1K, C=100, Q=2K</td><td>6.180 s</td><td>0.1594 s</td><td>0.1055 s</td><td>1.00</td><td>0.00</td><td>50000.0000</td><td>28000.0000</td><td>6000.0000</td><td>1243.64 MB</td><td>1.00</td>
-</tr><tr><td>&#39;EFCore (NoTracking) - GetCustomerOrders&#39;</td><td>L=1K, C=100, Q=2K</td><td>10.794 s</td><td>0.7980 s</td><td>0.5278 s</td><td>1.75</td><td>0.08</td><td>94000.0000</td><td>48000.0000</td><td>2000.0000</td><td>1492.87 MB</td><td>1.20</td>
-</tr><tr><td>&#39;EFCore (WithTracking) - GetCustomerOrders&#39;</td><td>L=1K, C=100, Q=2K</td><td>10.626 s</td><td>0.2649 s</td><td>0.1576 s</td><td>1.72</td><td>0.03</td><td>94000.0000</td><td>48000.0000</td><td>2000.0000</td><td>1489.05 MB</td><td>1.20</td>
-</tr><tr><td>&#39;SQLC - GetCustomerOrders&#39;</td><td>L=50, C=200, Q=4K</td><td>2.942 s</td><td>0.0336 s</td><td>0.0200 s</td><td>1.00</td><td>0.00</td><td>10000.0000</td><td>6000.0000</td><td>2000.0000</td><td>178.25 MB</td><td>1.00</td>
-</tr><tr><td>&#39;EFCore (NoTracking) - GetCustomerOrders&#39;</td><td>L=50, C=200, Q=4K</td><td>16.741 s</td><td>2.1171 s</td><td>1.4003 s</td><td>5.67</td><td>0.52</td><td>50000.0000</td><td>10000.0000</td><td>1000.0000</td><td>783.88 MB</td><td>4.40</td>
-</tr><tr><td>&#39;EFCore (WithTracking) - GetCustomerOrders&#39;</td><td>L=50, C=200, Q=4K</td><td>15.781 s</td><td>0.8646 s</td><td>0.4522 s</td><td>5.36</td><td>0.17</td><td>48000.0000</td><td>9000.0000</td><td>-</td><td>776.08 MB</td><td>4.35</td>
+</thead><tbody><tr><td>&#39;SQLC - GetCustomerOrders&#39;</td><td>L=1K, C=100, Q=2K</td><td>6.040 s</td><td>0.1213 s</td><td>0.0803 s</td><td>1.00</td><td>0.00</td><td>50000.0000</td><td>28000.0000</td><td>6000.0000</td><td>1243.4 MB</td><td>1.00</td>
+</tr><tr><td>&#39;EFCore (NoTracking) - GetCustomerOrders&#39;</td><td>L=1K, C=100, Q=2K</td><td>10.158 s</td><td>0.2126 s</td><td>0.1112 s</td><td>1.68</td><td>0.03</td><td>94000.0000</td><td>48000.0000</td><td>2000.0000</td><td>1492.19 MB</td><td>1.20</td>
+</tr><tr><td>&#39;EFCore (WithTracking) - GetCustomerOrders&#39;</td><td>L=1K, C=100, Q=2K</td><td>10.192 s</td><td>0.2091 s</td><td>0.1383 s</td><td>1.69</td><td>0.03</td><td>94000.0000</td><td>48000.0000</td><td>2000.0000</td><td>1488.34 MB</td><td>1.20</td>
+</tr><tr><td>&#39;SQLC - GetCustomerOrders&#39;</td><td>L=50, C=200, Q=4K</td><td>2.849 s</td><td>0.0446 s</td><td>0.0295 s</td><td>1.00</td><td>0.00</td><td>10000.0000</td><td>6000.0000</td><td>2000.0000</td><td>178.09 MB</td><td>1.00</td>
+</tr><tr><td>&#39;EFCore (NoTracking) - GetCustomerOrders&#39;</td><td>L=50, C=200, Q=4K</td><td>15.472 s</td><td>3.6460 s</td><td>2.4116 s</td><td>5.43</td><td>0.84</td><td>50000.0000</td><td>10000.0000</td><td>1000.0000</td><td>783.42 MB</td><td>4.40</td>
+</tr><tr><td>&#39;EFCore (WithTracking) - GetCustomerOrders&#39;</td><td>L=50, C=200, Q=4K</td><td>15.419 s</td><td>2.5600 s</td><td>1.6933 s</td><td>5.42</td><td>0.63</td><td>50000.0000</td><td>11000.0000</td><td>2000.0000</td><td>775.5 MB</td><td>4.35</td>
 </tr></tbody></table>
 </body>
 </html>

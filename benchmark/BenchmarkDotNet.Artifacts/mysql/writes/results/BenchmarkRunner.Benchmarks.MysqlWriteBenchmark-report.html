@@ -2,7 +2,7 @@
 <html lang='en'>
 <head>
 <meta charset='utf-8' />
-<title>BenchmarkRunner.Benchmarks.MysqlWriteBenchmark-20251217-124409</title>
+<title>BenchmarkRunner.Benchmarks.MysqlWriteBenchmark-20251217-150708</title>
 
 <style type="text/css">
 	table { border-collapse: collapse; display: block; width: 100%; overflow: auto; }
@@ -17,7 +17,7 @@ BenchmarkDotNet v0.13.12, Ubuntu 24.04.3 LTS (Noble Numbat)
 AMD EPYC 7763, 1 CPU, 4 logical and 2 physical cores
 .NET SDK 8.0.416
   [Host]     : .NET 8.0.22 (8.0.2225.52707), X64 RyuJIT AVX2
-  Job-NSCXXI : .NET 8.0.22 (8.0.2225.52707), X64 RyuJIT AVX2
+  Job-NCFMTK : .NET 8.0.22 (8.0.2225.52707), X64 RyuJIT AVX2
 </code></pre>
 <pre><code>Runtime=.NET 8.0  InvocationCount=1  IterationCount=10  
 UnrollFactor=1  WarmupCount=2  Categories=Write  
@@ -26,9 +26,9 @@ UnrollFactor=1  WarmupCount=2  Categories=Write
 <table>
 <thead><tr><th>Method            </th><th>args   </th><th>Mean</th><th>Error</th><th>StdDev</th><th>Ratio</th><th>RatioSD</th><th>Gen0 </th><th>Gen1 </th><th>Allocated</th><th>Alloc Ratio</th>
 </tr>
-</thead><tbody><tr><td>&#39;SQLC - AddOrderItems&#39;</td><td>R=300K, B=1K</td><td>4.630 s</td><td>0.1233 s</td><td>0.0734 s</td><td>1.00</td><td>0.00</td><td>6000.0000</td><td>3000.0000</td><td>109.57 MB</td><td>1.00</td>
-</tr><tr><td>&#39;EFCore - AddOrderItems&#39;</td><td>R=300K, B=500</td><td>77.129 s</td><td>0.2735 s</td><td>0.1628 s</td><td>?</td><td>?</td><td>267000.0000</td><td>136000.0000</td><td>4257.75 MB</td><td>?</td>
-</tr><tr><td>&#39;SQLC - AddOrderItems&#39;</td><td>R=300K, B=5K</td><td>3.898 s</td><td>0.0851 s</td><td>0.0563 s</td><td>1.00</td><td>0.00</td><td>4000.0000</td><td>1000.0000</td><td>91.79 MB</td><td>1.00</td>
+</thead><tbody><tr><td>&#39;SQLC - AddOrderItems&#39;</td><td>R=300K, B=1K</td><td>4.816 s</td><td>0.2024 s</td><td>0.1339 s</td><td>1.00</td><td>0.00</td><td>6000.0000</td><td>3000.0000</td><td>109.58 MB</td><td>1.00</td>
+</tr><tr><td>&#39;EFCore - AddOrderItems&#39;</td><td>R=300K, B=500</td><td>77.764 s</td><td>0.4870 s</td><td>0.3221 s</td><td>?</td><td>?</td><td>267000.0000</td><td>136000.0000</td><td>4258.02 MB</td><td>?</td>
+</tr><tr><td>&#39;SQLC - AddOrderItems&#39;</td><td>R=300K, B=5K</td><td>3.958 s</td><td>0.0770 s</td><td>0.0458 s</td><td>1.00</td><td>0.00</td><td>4000.0000</td><td>1000.0000</td><td>91.79 MB</td><td>1.00</td>
 </tr></tbody></table>
 </body>
 </html>
