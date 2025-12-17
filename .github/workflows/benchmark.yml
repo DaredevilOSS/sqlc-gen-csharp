@@ -11,8 +11,6 @@ env:
   DOTNET_VERSION: '8.0.x'
 
 on:
-  push:
-    branches: [ "add-performance-benchmark-with-efcore" ]
   release:
     types: [ published ]
   workflow_dispatch:
