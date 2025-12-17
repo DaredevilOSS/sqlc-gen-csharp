@@ -8,10 +8,11 @@ using Npgsql;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace QuickStartPostgresDalGen;
-public class QuerySql
+public class QuerySql : IDisposable
 {
     public QuerySql()
     {
@@ -20,6 +21,7 @@ public class QuerySql
     public QuerySql(string connectionString) : this()
     {
         this.ConnectionString = connectionString;
+        _dataSource = new Lazy<NpgsqlDataSource>(() => NpgsqlDataSource.Create(connectionString!), LazyThreadSafetyMode.ExecutionAndPublication);
     }
 
     private QuerySql(NpgsqlTransaction transaction) : this()
@@ -35,6 +37,21 @@ public class QuerySql
     private NpgsqlTransaction? Transaction { get; }
     private string? ConnectionString { get; }
 
+    private readonly Lazy<NpgsqlDataSource>? _dataSource;
+    private NpgsqlDataSource GetDataSource()
+    {
+        if (_dataSource == null)
+            throw new InvalidOperationException("ConnectionString is required when not using a transaction");
+        return _dataSource.Value;
+    }
+
+    public void Dispose()
+    {
+        GC.SuppressFinalize(this);
+        if (_dataSource?.IsValueCreated == true)
+            _dataSource.Value.Dispose();
+    }
+
     private const string GetAuthorSql = @"SELECT id, name, bio FROM authors
                                           WHERE name = @name LIMIT 1";
     public readonly record struct GetAuthorRow(long Id, string Name, string? Bio);
@@ -43,10 +60,11 @@ public class QuerySql
     {
         if (this.Transaction == null)
         {
-            using (var connection = NpgsqlDataSource.Create(ConnectionString!))
+            using (var connection = await GetDataSource().OpenConnectionAsync())
             {
-                using (var command = connection.CreateCommand(GetAuthorSql))
+                using (var command = connection.CreateCommand())
                 {
+                    command.CommandText = GetAuthorSql;
                     command.Parameters.AddWithValue("@name", args.Name);
                     using (var reader = await command.ExecuteReaderAsync())
                     {
@@ -61,12 +79,11 @@ public class QuerySql
                         }
                     }
                 }
-            }
-
+            };
             return null;
         }
 
-        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
             throw new InvalidOperationException("Transaction is provided, but its connection is null.");
         using (var command = this.Transaction.Connection.CreateCommand())
         {
@@ -101,10 +118,11 @@ public class QuerySql
     {
         if (this.Transaction == null)
         {
-            using (var connection = NpgsqlDataSource.Create(ConnectionString!))
+            using (var connection = await GetDataSource().OpenConnectionAsync())
             {
-                using (var command = connection.CreateCommand(ListAuthorsSql))
+                using (var command = connection.CreateCommand())
                 {
+                    command.CommandText = ListAuthorsSql;
                     command.Parameters.AddWithValue("@offset", args.Offset);
                     command.Parameters.AddWithValue("@limit", args.Limit);
                     using (var reader = await command.ExecuteReaderAsync())
@@ -118,7 +136,7 @@ public class QuerySql
             }
         }
 
-        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
             throw new InvalidOperationException("Transaction is provided, but its connection is null.");
         using (var command = this.Transaction.Connection.CreateCommand())
         {
@@ -143,10 +161,11 @@ public class QuerySql
     {
         if (this.Transaction == null)
         {
-            using (var connection = NpgsqlDataSource.Create(ConnectionString!))
+            using (var connection = await GetDataSource().OpenConnectionAsync())
             {
-                using (var command = connection.CreateCommand(CreateAuthorSql))
+                using (var command = connection.CreateCommand())
                 {
+                    command.CommandText = CreateAuthorSql;
                     command.Parameters.AddWithValue("@id", args.Id);
                     command.Parameters.AddWithValue("@name", args.Name);
                     command.Parameters.AddWithValue("@bio", args.Bio ?? (object)DBNull.Value);
@@ -163,12 +182,11 @@ public class QuerySql
                         }
                     }
                 }
-            }
-
+            };
             return null;
         }
 
-        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
             throw new InvalidOperationException("Transaction is provided, but its connection is null.");
         using (var command = this.Transaction.Connection.CreateCommand())
         {
@@ -201,10 +219,11 @@ public class QuerySql
     {
         if (this.Transaction == null)
         {
-            using (var connection = NpgsqlDataSource.Create(ConnectionString!))
+            using (var connection = await GetDataSource().OpenConnectionAsync())
             {
-                using (var command = connection.CreateCommand(CreateAuthorReturnIdSql))
+                using (var command = connection.CreateCommand())
                 {
+                    command.CommandText = CreateAuthorReturnIdSql;
                     command.Parameters.AddWithValue("@name", args.Name);
                     command.Parameters.AddWithValue("@bio", args.Bio ?? (object)DBNull.Value);
                     var result = await command.ExecuteScalarAsync();
@@ -213,7 +232,7 @@ public class QuerySql
             }
         }
 
-        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
             throw new InvalidOperationException("Transaction is provided, but its connection is null.");
         using (var command = this.Transaction.Connection.CreateCommand())
         {
@@ -234,10 +253,11 @@ public class QuerySql
     {
         if (this.Transaction == null)
         {
-            using (var connection = NpgsqlDataSource.Create(ConnectionString!))
+            using (var connection = await GetDataSource().OpenConnectionAsync())
             {
-                using (var command = connection.CreateCommand(GetAuthorByIdSql))
+                using (var command = connection.CreateCommand())
                 {
+                    command.CommandText = GetAuthorByIdSql;
                     command.Parameters.AddWithValue("@id", args.Id);
                     using (var reader = await command.ExecuteReaderAsync())
                     {
@@ -252,12 +272,11 @@ public class QuerySql
                         }
                     }
                 }
-            }
-
+            };
             return null;
         }
 
-        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
             throw new InvalidOperationException("Transaction is provided, but its connection is null.");
         using (var command = this.Transaction.Connection.CreateCommand())
         {
@@ -289,10 +308,11 @@ public class QuerySql
     {
         if (this.Transaction == null)
         {
-            using (var connection = NpgsqlDataSource.Create(ConnectionString!))
+            using (var connection = await GetDataSource().OpenConnectionAsync())
             {
-                using (var command = connection.CreateCommand(GetAuthorByNamePatternSql))
+                using (var command = connection.CreateCommand())
                 {
+                    command.CommandText = GetAuthorByNamePatternSql;
                     command.Parameters.AddWithValue("@name_pattern", args.NamePattern ?? (object)DBNull.Value);
                     using (var reader = await command.ExecuteReaderAsync())
                     {
@@ -305,7 +325,7 @@ public class QuerySql
             }
         }
 
-        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
             throw new InvalidOperationException("Transaction is provided, but its connection is null.");
         using (var command = this.Transaction.Connection.CreateCommand())
         {
@@ -329,19 +349,20 @@ public class QuerySql
     {
         if (this.Transaction == null)
         {
-            using (var connection = NpgsqlDataSource.Create(ConnectionString!))
+            using (var connection = await GetDataSource().OpenConnectionAsync())
             {
-                using (var command = connection.CreateCommand(DeleteAuthorSql))
+                using (var command = connection.CreateCommand())
                 {
+                    command.CommandText = DeleteAuthorSql;
                     command.Parameters.AddWithValue("@name", args.Name);
                     await command.ExecuteNonQueryAsync();
                 }
-            }
 
-            return;
+                return;
+            }
         }
 
-        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
             throw new InvalidOperationException("Transaction is provided, but its connection is null.");
         using (var command = this.Transaction.Connection.CreateCommand())
         {
@@ -357,18 +378,19 @@ public class QuerySql
     {
         if (this.Transaction == null)
         {
-            using (var connection = NpgsqlDataSource.Create(ConnectionString!))
+            using (var connection = await GetDataSource().OpenConnectionAsync())
             {
-                using (var command = connection.CreateCommand(TruncateAuthorsSql))
+                using (var command = connection.CreateCommand())
                 {
+                    command.CommandText = TruncateAuthorsSql;
                     await command.ExecuteNonQueryAsync();
                 }
-            }
 
-            return;
+                return;
+            }
         }
 
-        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
             throw new InvalidOperationException("Transaction is provided, but its connection is null.");
         using (var command = this.Transaction.Connection.CreateCommand())
         {
@@ -386,17 +408,18 @@ public class QuerySql
     {
         if (this.Transaction == null)
         {
-            using (var connection = NpgsqlDataSource.Create(ConnectionString!))
+            using (var connection = await GetDataSource().OpenConnectionAsync())
             {
-                using (var command = connection.CreateCommand(UpdateAuthorsSql))
+                using (var command = connection.CreateCommand())
                 {
+                    command.CommandText = UpdateAuthorsSql;
                     command.Parameters.AddWithValue("@bio", args.Bio ?? (object)DBNull.Value);
                     return await command.ExecuteNonQueryAsync();
                 }
             }
         }
 
-        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
             throw new InvalidOperationException("Transaction is provided, but its connection is null.");
         using (var command = this.Transaction.Connection.CreateCommand())
         {
@@ -415,10 +438,11 @@ public class QuerySql
     {
         if (this.Transaction == null)
         {
-            using (var connection = NpgsqlDataSource.Create(ConnectionString!))
+            using (var connection = await GetDataSource().OpenConnectionAsync())
             {
-                using (var command = connection.CreateCommand(GetAuthorsByIdsSql))
+                using (var command = connection.CreateCommand())
                 {
+                    command.CommandText = GetAuthorsByIdsSql;
                     command.Parameters.AddWithValue("@longArr_1", args.LongArr1);
                     using (var reader = await command.ExecuteReaderAsync())
                     {
@@ -431,7 +455,7 @@ public class QuerySql
             }
         }
 
-        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
             throw new InvalidOperationException("Transaction is provided, but its connection is null.");
         using (var command = this.Transaction.Connection.CreateCommand())
         {
@@ -457,10 +481,11 @@ public class QuerySql
     {
         if (this.Transaction == null)
         {
-            using (var connection = NpgsqlDataSource.Create(ConnectionString!))
+            using (var connection = await GetDataSource().OpenConnectionAsync())
             {
-                using (var command = connection.CreateCommand(GetAuthorsByIdsAndNamesSql))
+                using (var command = connection.CreateCommand())
                 {
+                    command.CommandText = GetAuthorsByIdsAndNamesSql;
                     command.Parameters.AddWithValue("@longArr_1", args.LongArr1);
                     command.Parameters.AddWithValue("@stringArr_2", args.StringArr2);
                     using (var reader = await command.ExecuteReaderAsync())
@@ -474,7 +499,7 @@ public class QuerySql
             }
         }
 
-        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
             throw new InvalidOperationException("Transaction is provided, but its connection is null.");
         using (var command = this.Transaction.Connection.CreateCommand())
         {
@@ -499,10 +524,11 @@ public class QuerySql
     {
         if (this.Transaction == null)
         {
-            using (var connection = NpgsqlDataSource.Create(ConnectionString!))
+            using (var connection = await GetDataSource().OpenConnectionAsync())
             {
-                using (var command = connection.CreateCommand(CreateBookSql))
+                using (var command = connection.CreateCommand())
                 {
+                    command.CommandText = CreateBookSql;
                     command.Parameters.AddWithValue("@name", args.Name);
                     command.Parameters.AddWithValue("@author_id", args.AuthorId);
                     var result = await command.ExecuteScalarAsync();
@@ -511,7 +537,7 @@ public class QuerySql
             }
         }
 
-        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
             throw new InvalidOperationException("Transaction is provided, but its connection is null.");
         using (var command = this.Transaction.Connection.CreateCommand())
         {
@@ -535,10 +561,11 @@ public class QuerySql
     {
         if (this.Transaction == null)
         {
-            using (var connection = NpgsqlDataSource.Create(ConnectionString!))
+            using (var connection = await GetDataSource().OpenConnectionAsync())
             {
-                using (var command = connection.CreateCommand(ListAllAuthorsBooksSql))
+                using (var command = connection.CreateCommand())
                 {
+                    command.CommandText = ListAllAuthorsBooksSql;
                     using (var reader = await command.ExecuteReaderAsync())
                     {
                         var result = new List<ListAllAuthorsBooksRow>();
@@ -550,7 +577,7 @@ public class QuerySql
             }
         }
 
-        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
             throw new InvalidOperationException("Transaction is provided, but its connection is null.");
         using (var command = this.Transaction.Connection.CreateCommand())
         {
@@ -577,10 +604,11 @@ public class QuerySql
     {
         if (this.Transaction == null)
         {
-            using (var connection = NpgsqlDataSource.Create(ConnectionString!))
+            using (var connection = await GetDataSource().OpenConnectionAsync())
             {
-                using (var command = connection.CreateCommand(GetDuplicateAuthorsSql))
+                using (var command = connection.CreateCommand())
                 {
+                    command.CommandText = GetDuplicateAuthorsSql;
                     using (var reader = await command.ExecuteReaderAsync())
                     {
                         var result = new List<GetDuplicateAuthorsRow>();
@@ -592,7 +620,7 @@ public class QuerySql
             }
         }
 
-        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
             throw new InvalidOperationException("Transaction is provided, but its connection is null.");
         using (var command = this.Transaction.Connection.CreateCommand())
         {
@@ -619,10 +647,11 @@ public class QuerySql
     {
         if (this.Transaction == null)
         {
-            using (var connection = NpgsqlDataSource.Create(ConnectionString!))
+            using (var connection = await GetDataSource().OpenConnectionAsync())
             {
-                using (var command = connection.CreateCommand(GetAuthorsByBookNameSql))
+                using (var command = connection.CreateCommand())
                 {
+                    command.CommandText = GetAuthorsByBookNameSql;
                     command.Parameters.AddWithValue("@name", args.Name);
                     using (var reader = await command.ExecuteReaderAsync())
                     {
@@ -635,7 +664,7 @@ public class QuerySql
             }
         }
 
-        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
             throw new InvalidOperationException("Transaction is provided, but its connection is null.");
         using (var command = this.Transaction.Connection.CreateCommand())
         {
@@ -658,21 +687,22 @@ public class QuerySql
     {
         if (this.Transaction == null)
         {
-            using (var connection = NpgsqlDataSource.Create(ConnectionString!))
+            using (var connection = await GetDataSource().OpenConnectionAsync())
             {
-                using (var command = connection.CreateCommand(CreateExtendedBioSql))
+                using (var command = connection.CreateCommand())
                 {
+                    command.CommandText = CreateExtendedBioSql;
                     command.Parameters.AddWithValue("@author_name", args.AuthorName);
                     command.Parameters.AddWithValue("@name", args.Name);
                     command.Parameters.AddWithValue("@bio_type", args.BioType != null ? args.BioType.Value.Stringify() : (object)DBNull.Value);
                     await command.ExecuteNonQueryAsync();
                 }
-            }
 
-            return;
+                return;
+            }
         }
 
-        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
             throw new InvalidOperationException("Transaction is provided, but its connection is null.");
         using (var command = this.Transaction.Connection.CreateCommand())
         {
@@ -692,10 +722,11 @@ public class QuerySql
     {
         if (this.Transaction == null)
         {
-            using (var connection = NpgsqlDataSource.Create(ConnectionString!))
+            using (var connection = await GetDataSource().OpenConnectionAsync())
             {
-                using (var command = connection.CreateCommand(GetFirstExtendedBioByTypeSql))
+                using (var command = connection.CreateCommand())
                 {
+                    command.CommandText = GetFirstExtendedBioByTypeSql;
                     command.Parameters.AddWithValue("@bio_type", args.BioType != null ? args.BioType.Value.Stringify() : (object)DBNull.Value);
                     using (var reader = await command.ExecuteReaderAsync())
                     {
@@ -710,12 +741,11 @@ public class QuerySql
                         }
                     }
                 }
-            }
-
+            };
             return null;
         }
 
-        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
             throw new InvalidOperationException("Transaction is provided, but its connection is null.");
         using (var command = this.Transaction.Connection.CreateCommand())
         {
@@ -744,18 +774,19 @@ public class QuerySql
     {
         if (this.Transaction == null)
         {
-            using (var connection = NpgsqlDataSource.Create(ConnectionString!))
+            using (var connection = await GetDataSource().OpenConnectionAsync())
             {
-                using (var command = connection.CreateCommand(TruncateExtendedBiosSql))
+                using (var command = connection.CreateCommand())
                 {
+                    command.CommandText = TruncateExtendedBiosSql;
                     await command.ExecuteNonQueryAsync();
                 }
-            }
 
-            return;
+                return;
+            }
         }
 
-        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
             throw new InvalidOperationException("Transaction is provided, but its connection is null.");
         using (var command = this.Transaction.Connection.CreateCommand())
         {

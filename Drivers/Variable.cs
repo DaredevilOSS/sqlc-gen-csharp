@@ -6,6 +6,7 @@ public enum Variable
     Config,
     ConnectionString,
     Transaction,
+    DataSource,
     Connection,
     Command,
 
@@ -20,7 +21,7 @@ public enum Variable
     QueryParams,
     TransformedSql,
     Row,
-    Result
+    Result,
 }
 
 public static class VariablesExtensions
@@ -33,5 +34,10 @@ public static class VariablesExtensions
     public static string AsPropertyName(this Variable me)
     {
         return me.ToString().ToPascalCase();
+    }
+
+    public static string AsFieldName(this Variable me)
+    {
+        return $"_{me.AsVarName()}";
     }
 }

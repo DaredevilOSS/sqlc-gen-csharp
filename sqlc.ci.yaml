@@ -3,7 +3,7 @@ plugins:
   - name: csharp
     wasm:
       url: file://dist/plugin.wasm
-      sha256: 
+      sha256: 1ae4a957bea8be1b04cc1da33026f9cebfd9e280f9371b1f1d5fdbba388101be
 sql:
   # Basic quick start examples
   - schema: examples/config/postgresql/authors/schema.sql
@@ -24,7 +24,6 @@ sql:
     codegen:
       - plugin: csharp
         out: examples/QuickStartSqliteDalGen
-
   # PostgresSQL
   - schema: ["examples/config/postgresql/authors/schema.sql", "examples/config/postgresql/types/schema.sql"]
     queries: ["examples/config/postgresql/authors/query.sql", "examples/config/postgresql/types/query.sql"]
@@ -218,7 +217,6 @@ sql:
               csharp_type:
                 type: "Instant"
                 notNull: false
-                
   # MySQL
   - schema: ["examples/config/mysql/authors/schema.sql", "examples/config/mysql/types/schema.sql"]
     queries: ["examples/config/mysql/authors/query.sql", "examples/config/mysql/types/query.sql"]
@@ -348,7 +346,6 @@ sql:
               csharp_type:
                 type: "Instant"
                 notNull: false
-
   # Sqlite
   - schema: ["examples/config/sqlite/authors/schema.sql", "examples/config/sqlite/types/schema.sql"]
     queries: ["examples/config/sqlite/authors/query.sql", "examples/config/sqlite/types/query.sql"]
@@ -506,3 +503,28 @@ sql:
             - column: "*:c_integer_noda_instant_override"
               csharp_type:
                 type: "Instant"
+  # Benchmark
+  - schema: "examples/config/postgresql/benchmark/schema.sql"
+    queries: "examples/config/postgresql/benchmark/query.sql"
+    engine: "postgresql"
+    codegen:
+      - plugin: csharp
+        out: benchmark/PostgresqlSqlcImpl
+        options:
+          namespaceName: PostgresSqlcImpl
+  - schema: "examples/config/sqlite/benchmark/schema.sql"
+    queries: "examples/config/sqlite/benchmark/query.sql"
+    engine: "sqlite"
+    codegen:
+      - plugin: csharp
+        out: benchmark/SqliteSqlcImpl
+        options:
+          namespaceName: SqliteSqlcImpl
+  - schema: "examples/config/mysql/benchmark/schema.sql"
+    queries: "examples/config/mysql/benchmark/query.sql"
+    engine: "mysql"
+    codegen:
+      - plugin: csharp
+        out: benchmark/MysqlSqlcImpl
+        options:
+          namespaceName: MysqlSqlcImpl

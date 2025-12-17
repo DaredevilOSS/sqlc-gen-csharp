@@ -88,7 +88,7 @@ public sealed class NpgsqlDriver : EnumDbDriver, IOne, IMany, IExec, IExecRows, 
                 {
                     { "numeric", new() },
                     { "decimal", new() },
-                    { "money", new(NpgsqlTypeOverride: "NpgsqlDbType.Money") }
+                    { "money", new(DbTypeOverride: "NpgsqlDbType.Money") }
                 },
                 readerFn: (ordinal, _) => $"{Variable.Reader.AsVarName()}.GetDecimal({ordinal})",
                 readerArrayFn: (ordinal, _) => $"{Variable.Reader.AsVarName()}.GetFieldValue<decimal[]>({ordinal})"
@@ -123,8 +123,8 @@ public sealed class NpgsqlDriver : EnumDbDriver, IOne, IMany, IExec, IExecRows, 
             ["TimeSpan"] = new(
                 new()
                 {
-                    { "time", new(NpgsqlTypeOverride: "NpgsqlDbType.Time") },
-                    { "interval", new(NpgsqlTypeOverride: "NpgsqlDbType.Interval") }
+                    { "time", new(DbTypeOverride: "NpgsqlDbType.Time") },
+                    { "interval", new(DbTypeOverride: "NpgsqlDbType.Interval") }
                 },
                 readerFn: (ordinal, _) => $"{Variable.Reader.AsVarName()}.GetFieldValue<TimeSpan>({ordinal})",
                 readerArrayFn: (ordinal, _) => $"{Variable.Reader.AsVarName()}.GetFieldValue<TimeSpan[]>({ordinal})"
@@ -132,12 +132,13 @@ public sealed class NpgsqlDriver : EnumDbDriver, IOne, IMany, IExec, IExecRows, 
             ["DateTime"] = new(
                 new()
                 {
-                    { "date", new(NpgsqlTypeOverride: "NpgsqlDbType.Date") },
-                    { "timestamp", new(NpgsqlTypeOverride: "NpgsqlDbType.Timestamp") },
-                    { "timestamptz", new(NpgsqlTypeOverride: "NpgsqlDbType.TimestampTz") }
+                    { "date", new(DbTypeOverride: "NpgsqlDbType.Date") },
+                    { "timestamp", new(DbTypeOverride: "NpgsqlDbType.Timestamp") },
+                    { "timestamptz", new(DbTypeOverride: "NpgsqlDbType.TimestampTz") }
                 },
                 readerFn: (ordinal, _) => $"{Variable.Reader.AsVarName()}.GetDateTime({ordinal})",
-                readerArrayFn: (ordinal, _) => $"{Variable.Reader.AsVarName()}.GetFieldValue<DateTime[]>({ordinal})"
+                readerArrayFn: (ordinal, _) => $"{Variable.Reader.AsVarName()}.GetFieldValue<DateTime[]>({ordinal})",
+                usingDirectives: ["NpgsqlTypes"]
             ),
             ["Instant"] = new(
                 [],
@@ -166,8 +167,8 @@ public sealed class NpgsqlDriver : EnumDbDriver, IOne, IMany, IExec, IExecRows, 
             ["JsonElement"] = new(
                 new()
                 {
-                    { "json", new(NpgsqlTypeOverride: "NpgsqlDbType.Json") },
-                    { "jsonb", new(NpgsqlTypeOverride: "NpgsqlDbType.Jsonb") }
+                    { "json", new(DbTypeOverride: "NpgsqlDbType.Json") },
+                    { "jsonb", new(DbTypeOverride: "NpgsqlDbType.Jsonb") }
                 },
                 readerFn: (ordinal, _) => $"JsonSerializer.Deserialize<JsonElement>(reader.GetString({ordinal}))",
                 writerFn: (el, _, notNull, isDapper, isLegacy) =>
@@ -184,7 +185,7 @@ public sealed class NpgsqlDriver : EnumDbDriver, IOne, IMany, IExec, IExecRows, 
             ["XmlDocument"] = new(
                 new()
                 {
-                    { "xml", new(NpgsqlTypeOverride: "NpgsqlDbType.Xml") }
+                    { "xml", new(DbTypeOverride: "NpgsqlDbType.Xml") }
                 },
                 readerFn: (ordinal, dbType) => $$"""
                     (new Func<NpgsqlDataReader, int, XmlDocument>((r, o) =>
@@ -455,7 +456,6 @@ public sealed class NpgsqlDriver : EnumDbDriver, IOne, IMany, IExec, IExecRows, 
         return base.GetUsingDirectivesForQueries().AddRangeExcludeNulls(
         [
             "Npgsql",
-            "System.Data"
         ]);
     }
 
@@ -538,26 +538,72 @@ public sealed class NpgsqlDriver : EnumDbDriver, IOne, IMany, IExec, IExecRows, 
 
     public override ConnectionGenCommands EstablishConnection(Query query)
     {
-        var connectionStringVar = Variable.ConnectionString.AsPropertyName();
         var connectionVar = Variable.Connection.AsVarName();
-        var embedTableExists = query.Columns.Any(c => c.EmbedTable is not null);
-        var useOpenConnection = query.Cmd == ":copyfrom" || (Options.UseDapper && !embedTableExists);
-        var optionalNotNullVerify = Options.DotnetFramework.IsDotnetCore() ? "!" : string.Empty;
-
-        return useOpenConnection
-            ? new ConnectionGenCommands(
-                $"var {connectionVar} = new NpgsqlConnection({connectionStringVar})",
-                string.Empty
-            )
-            : new ConnectionGenCommands(
-                $"var {connectionVar} = NpgsqlDataSource.Create({connectionStringVar}{optionalNotNullVerify})",
-                string.Empty
-            );
+        return new(
+            GetConnectionOrDataSource: new($"var {connectionVar} = await GetDataSource().OpenConnectionAsync()", true)
+        // ConnectionOpen: string.Empty
+        );
     }
 
-    public override string CreateSqlCommand(string sqlTextConstant)
+    public override string[] GetClassBaseTypes()
     {
-        return $"var {Variable.Command.AsVarName()} = {Variable.Connection.AsVarName()}.CreateCommand({sqlTextConstant})";
+        return ["IDisposable"];
+    }
+
+    public override string[] GetConstructorStatements()
+    {
+        var baseStatements = base.GetConstructorStatements();
+        var dataSourceVar = Variable.DataSource.AsFieldName();
+        var connectionStringVar = Variable.ConnectionString.AsVarName();
+        var optionalNotNullVerify = Options.DotnetFramework.IsDotnetCore() ? "!" : string.Empty;
+
+        return
+        [
+            .. baseStatements,
+            $"""
+                {dataSourceVar} = new Lazy<NpgsqlDataSource>(() => NpgsqlDataSource.Create({connectionStringVar}{optionalNotNullVerify}), LazyThreadSafetyMode.ExecutionAndPublication);
+            """,
+        ];
+    }
+
+    public override MemberDeclarationSyntax[] GetAdditionalClassMembers()
+    {
+        var dataSourceField = Variable.DataSource.AsFieldName();
+        var optionalNotNullVerify = Options.DotnetFramework.IsDotnetCore() ? "?" : string.Empty;
+
+        return [
+            ParseMemberDeclaration($$"""
+                private readonly Lazy<NpgsqlDataSource>{{optionalNotNullVerify}} {{dataSourceField}};
+            """)!,
+            ParseMemberDeclaration($$"""
+            private NpgsqlDataSource GetDataSource()
+            {
+                if ({{dataSourceField}} == null)
+                    throw new InvalidOperationException("ConnectionString is required when not using a transaction");
+                return {{dataSourceField}}.Value;
+            }
+            """)!,
+            ParseMemberDeclaration($$"""
+            public void Dispose()
+            {
+                GC.SuppressFinalize(this);
+                if ({{dataSourceField}}?.IsValueCreated == true)
+                    {{dataSourceField}}.Value.Dispose();
+            }
+            """)!
+        ];
+    }
+
+    public override CommandGenCommands CreateSqlCommand(string sqlTextConstant)
+    {
+        var commandVar = Variable.Command.AsVarName();
+        return new CommandGenCommands(
+            CommandCreation: new(
+                $"var {commandVar} = {Variable.Connection.AsVarName()}.CreateCommand()",
+                true),
+            SetCommandText: $"{commandVar}.CommandText = {sqlTextConstant}",
+            PrepareCommand: string.Empty
+        );
     }
 
     public override string TransformQueryText(Query query)
@@ -578,31 +624,32 @@ public sealed class NpgsqlDriver : EnumDbDriver, IOne, IMany, IExec, IExecRows, 
         string GetCopyCommand()
         {
             var copyParams = query.Params.Select(p => p.Column.Name).JoinByComma();
-            return $"COPY {query.InsertIntoTable.Name} ({copyParams}) FROM STDIN (FORMAT BINARY)";
+            var qualifiedTableName = !string.IsNullOrEmpty(query.InsertIntoTable.Schema)
+                ? $"{query.InsertIntoTable.Schema}.{query.InsertIntoTable.Name}"
+                : query.InsertIntoTable.Name;
+            return $"COPY {qualifiedTableName} ({copyParams}) FROM STDIN (FORMAT BINARY)";
         }
     }
 
     public string GetCopyFromImpl(Query query, string queryTextConstant)
     {
-        var (establishConnection, connectionOpen) = EstablishConnection(query);
+        var connectionCommands = EstablishConnection(query);
         var beginBinaryImport = $"{Variable.Connection.AsVarName()}.BeginBinaryImportAsync({queryTextConstant}";
         var connectionVar = Variable.Connection.AsVarName();
         var writerVar = Variable.Writer.AsVarName();
-
-        var addRowsToCopyCommand = AddRowsToCopyCommand();
-        return $$"""
-                 using ({{establishConnection}})
-                 {
-                     {{connectionOpen.AppendSemicolonUnlessEmpty()}}
-                     await {{connectionVar}}.OpenAsync();
-                     using (var {{writerVar}} = await {{beginBinaryImport}}))
-                     {
-                        {{addRowsToCopyCommand}}
-                        await {{writerVar}}.CompleteAsync();
-                     }
-                     await {{connectionVar}}.CloseAsync();
-                 }
-                 """;
+        var commandBlock = $$"""
+            using (var {{writerVar}} = await {{beginBinaryImport}}))
+            {
+                {{AddRowsToCopyCommand()}}
+                await {{writerVar}}.CompleteAsync();
+            }
+        """;
+        return connectionCommands.GetConnectionOrDataSource.WrapBlock(
+            $$"""
+            {{connectionCommands.ConnectionOpen.AppendSemicolonUnlessEmpty()}}
+            {{commandBlock}}
+            """
+        );
 
         string AddRowsToCopyCommand()
         {
@@ -636,19 +683,6 @@ public sealed class NpgsqlDriver : EnumDbDriver, IOne, IMany, IExec, IExecRows, 
         }
     }
 
-    private string? GetColumnDbTypeOverride(Column column)
-    {
-        if (column.IsArray)
-            return null; // TODO: handle array columns
-        var columnType = column.Type.Name.ToLower();
-        foreach (var columnMapping in ColumnMappings.Values)
-        {
-            if (columnMapping.DbTypes.TryGetValue(columnType, out var dbTypeOverride))
-                return dbTypeOverride.NpgsqlTypeOverride;
-        }
-        return null;
-    }
-
     public override WriterFn? GetWriterFn(Column column, Query query)
     {
         var csharpType = GetCsharpTypeWithoutNullableSuffix(column, query);
@@ -677,13 +711,6 @@ public sealed class NpgsqlDriver : EnumDbDriver, IOne, IMany, IExec, IExecRows, 
         {
             var commandVar = Variable.Command.AsVarName();
             var param = $"{Variable.Args.AsVarName()}.{p.Column.Name.ToPascalCase()}";
-
-            if (p.Column.IsSqlcSlice)
-                return $$"""
-                         for (int i = 0; i < {{param}}.Length; i++)
-                             {{commandVar}}.Parameters.AddWithValue($"@{{p.Column.Name}}Arg{i}", {{param}}[i]);
-                         """;
-
             var writerFn = GetWriterFn(p.Column, query);
             var paramToWrite = writerFn is null
                 ? param
@@ -695,10 +722,10 @@ public sealed class NpgsqlDriver : EnumDbDriver, IOne, IMany, IExec, IExecRows, 
                     Options.DotnetFramework.IsDotnetLegacy());
 
             var typeOverride = GetColumnDbTypeOverride(p.Column);
-            var optionalNpgsqlTypeOverride = typeOverride is null
+            var optionalTypeOverride = typeOverride is null
                 ? string.Empty
                 : $"{typeOverride}, ";
-            var addParamToCommand = $"""{commandVar}.Parameters.AddWithValue("@{p.Column.Name}", {optionalNpgsqlTypeOverride}{paramToWrite});""";
+            var addParamToCommand = $"""{commandVar}.Parameters.AddWithValue("@{p.Column.Name}", {optionalTypeOverride}{paramToWrite});""";
             return addParamToCommand;
         }).JoinByNewLine();
     }

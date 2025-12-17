@@ -13,6 +13,11 @@ public class CommonGen(DbDriver dbDriver)
             : $"{argInterface} {Variable.Args.AsVarName()}")}";
     }
 
+    public static string GetDapperArgs(Query query)
+    {
+        return query.Params.Count == 0 ? string.Empty : $", {Variable.QueryParams.AsVarName()}";
+    }
+
     public string ConstructDapperParamsDict(Query query)
     {
         if (!query.Params.Any()) return string.Empty;

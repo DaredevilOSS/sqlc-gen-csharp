@@ -12,9 +12,6 @@ unit-tests:
 
 generate-end2end-tests:
 	./end2end/scripts/generate_tests.sh
-    
-run-end2end-tests:
-	./end2end/scripts/run_tests.sh
 
 # process type plugin
 dotnet-publish-process:
@@ -32,14 +29,51 @@ sqlc-generate: sync-sqlc-options dotnet-publish-process sqlc-generate-requests
 test-plugin: unit-tests sqlc-generate generate-end2end-tests dotnet-build run-end2end-tests
 
 # WASM type plugin
-setup-ci-wasm-plugin:
+# Source files that should trigger a rebuild
+WASM_SOURCES := $(shell find WasmRunner -name '*.cs' -o -name '*.csproj' 2>/dev/null | grep -v '/bin/' | grep -v '/obj/') \
+                $(shell find SqlcGenCsharp -name '*.cs' -o -name '*.csproj' 2>/dev/null | grep -v '/bin/' | grep -v '/obj/' || true)
+
+# Final output file - this is what we check for caching
+WASM_PLUGIN_OUTPUT := dist/plugin.wasm
+
+# Make setup-wasm-plugin depend on the actual output file (not phony)
+setup-wasm-plugin: $(WASM_PLUGIN_OUTPUT)
+	@echo "WASM plugin is up to date"
+
+# Build and copy plugin if output doesn't exist or sources are newer
+$(WASM_PLUGIN_OUTPUT): $(WASM_SOURCES)
 	dotnet publish WasmRunner -c release --output dist/
 	./scripts/wasm/copy_plugin_to.sh dist
 	./scripts/wasm/update_sha.sh sqlc.ci.yaml
+
+run-end2end-tests:
+	./end2end/scripts/run_tests.sh
+
+# Benchmarks
+run-benchmark-sqlite-reads: sqlc-generate
+	./benchmark/scripts/run_single_benchmark.sh sqlite reads
+
+run-benchmark-sqlite-writes: sqlc-generate
+	./benchmark/scripts/run_single_benchmark.sh sqlite writes
+
+run-benchmark-postgresql-reads: sqlc-generate
+	./benchmark/scripts/run_single_benchmark.sh postgresql reads
+
+run-benchmark-postgresql-writes: sqlc-generate
+	./benchmark/scripts/run_single_benchmark.sh postgresql writes
+
+run-benchmark-mysql-reads: sqlc-generate
+	./benchmark/scripts/run_single_benchmark.sh mysql reads
+
+run-benchmark-mysql-writes: sqlc-generate
+	./benchmark/scripts/run_single_benchmark.sh mysql writes
 
 # Manual
 generate-protobuf:
 	./scripts/generate_protobuf.sh
 
 dotnet-format:
-	dotnet format --exclude GeneratedProtobuf --exclude examples
+	dotnet format \
+		--exclude GeneratedProtobuf \
+		--exclude examples \
+		--exclude benchmark/*SqlcImpl

@@ -11,10 +11,8 @@ public class Options
     public Options(GenerateRequest generateRequest)
     {
         var text = Encoding.UTF8.GetString(generateRequest.PluginOptions.ToByteArray());
-        // handle empty options case
-        if (text.Trim() == string.Empty)
+        if (NoOptionsProvided(text))
             text = "{}";
-
         var rawOptions = JsonSerializer.Deserialize<RawOptions>(text) ?? throw new InvalidOperationException();
 
         DriverName = EngineToDriverMapping[generateRequest.Settings.Engine];
@@ -26,12 +24,11 @@ public class Options
         DotnetFramework = DotnetFrameworkExtensions.ParseName(rawOptions.TargetFramework);
         Overrides = rawOptions.Overrides ?? [];
         WithAsyncSuffix = rawOptions.WithAsyncSuffix;
+        UseCentralPackageManagement = rawOptions.UseCentralPackageManagement;
 
         if (rawOptions.DebugRequest && generateRequest.Settings.Codegen.Wasm is not null)
             throw new ArgumentException("Debug request mode cannot be used with WASM plugin");
         DebugRequest = rawOptions.DebugRequest;
-
-        UseCentralPackageManagement = rawOptions.UseCentralPackageManagement;
     }
 
     public DriverName DriverName { get; }
@@ -66,4 +63,9 @@ public class Options
         { "postgresql", DriverName.Npgsql },
         { "sqlite", DriverName.Sqlite }
     };
+
+    private static bool NoOptionsProvided(string optionsText)
+    {
+        return optionsText.Trim() == string.Empty;
+    }
 }

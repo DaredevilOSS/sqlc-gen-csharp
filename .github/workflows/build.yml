@@ -83,6 +83,7 @@ jobs:
           exclude: |
             GeneratedProtobuf
             examples
+            benchmark/*SqlcImpl
 
   codegen-tests:
      name: Codegen Tests

@@ -36,105 +36,96 @@ public class ManyDeclareGen(DbDriver dbDriver)
         var withTxBody = useDapper ? GetDapperWithTxBody(sqlVar, returnInterface, query) : GetDriverWithTxBody(sqlVar, returnInterface, query);
 
         return $$"""
-                    {{sqlTextTransform}}
-                    {{dapperParams}}
-                    if (this.{{transactionProperty}} == null)
-                    {
-                        {{noTxBody}}
-                    }
-                    {{withTxBody}}
-                 """;
+            {{sqlTextTransform}}
+            {{dapperParams}}
+            if (this.{{transactionProperty}} == null)
+            {
+                {{noTxBody}}
+            }
+            {{withTxBody}}
+        """;
     }
 
     private string GetDapperNoTxBody(string sqlVar, string returnInterface, Query query)
     {
-        var (establishConnection, _) = dbDriver.EstablishConnection(query);
-        var dapperArgs = query.Params.Any() ? $", {Variable.QueryParams.AsVarName()}" : string.Empty;
+        var connectionCommands = dbDriver.EstablishConnection(query);
+        var dapperArgs = CommonGen.GetDapperArgs(query);
         var returnType = dbDriver.AddNullableSuffixIfNeeded(returnInterface, true);
-
-        return $$"""
-                    using ({{establishConnection}})
-                    {
-                        var {{Variable.Result.AsVarName()}} = await {{Variable.Connection.AsVarName()}}.QueryAsync<{{returnType}}>({{sqlVar}}{{dapperArgs}});
-                        return {{Variable.Result.AsVarName()}}.AsList();
-                    }
-                 """;
+        var resultVar = Variable.Result.AsVarName();
+        return connectionCommands.GetConnectionOrDataSource.WrapBlock(
+            $"""
+            var {resultVar} = await {Variable.Connection.AsVarName()}.QueryAsync<{returnType}>({sqlVar}{dapperArgs});
+            return {resultVar}.AsList();
+            """
+        );
     }
 
     private string GetDapperWithTxBody(string sqlVar, string returnInterface, Query query)
     {
         var transactionProperty = Variable.Transaction.AsPropertyName();
-        var dapperArgs = query.Params.Any() ? $", {Variable.QueryParams.AsVarName()}" : string.Empty;
+        var dapperArgs = CommonGen.GetDapperArgs(query);
         var returnType = dbDriver.AddNullableSuffixIfNeeded(returnInterface, true);
 
         return $$"""
-                    {{dbDriver.TransactionConnectionNullExcetionThrow}}
-                    return (await this.{{transactionProperty}}.Connection.QueryAsync<{{returnType}}>(
-                            {{sqlVar}}{{dapperArgs}},
-                            transaction: this.{{transactionProperty}})).AsList();
-                 """;
+            {{dbDriver.TransactionConnectionNullExcetionThrow}}
+            return (await this.{{transactionProperty}}.Connection.QueryAsync<{{returnType}}>(
+                    {{sqlVar}}{{dapperArgs}},
+                    transaction: this.{{transactionProperty}})).AsList();
+        """;
     }
 
     private string GetDriverNoTxBody(string sqlVar, string returnInterface, Query query)
     {
-        var (establishConnection, connectionOpen) = dbDriver.EstablishConnection(query);
-        var createSqlCommand = dbDriver.CreateSqlCommand(sqlVar);
-        var commandParameters = dbDriver.AddParametersToCommand(query);
-        var initDataReader = CommonGen.InitDataReader();
-        var awaitReaderRow = CommonGen.AwaitReaderRow();
-        var dataclassInit = CommonGen.InstantiateDataclass(query.Columns.ToArray(), returnInterface, query);
+        var connectionCommands = dbDriver.EstablishConnection(query);
+        var dataclassInit = CommonGen.InstantiateDataclass([.. query.Columns], returnInterface, query);
         var resultVar = Variable.Result.AsVarName();
         var readWhileExists = $$"""
-                                while ({{awaitReaderRow}})
-                                    {{resultVar}}.Add({{dataclassInit}});
-                                """;
-        // TODO: add return null at end of code run so transaction code will not run?
-        return $$"""
-                     using ({{establishConnection}})
-                     {
-                         {{connectionOpen.AppendSemicolonUnlessEmpty()}}
-                         using ({{createSqlCommand}})
-                         {
-                             {{commandParameters}}
-                             using ({{initDataReader}})
-                             {
-                                 var {{resultVar}} = new List<{{returnInterface}}>();
-                                 {{readWhileExists}}
-                                 return {{resultVar}};
-                             }
-                         }
-                     }
-                     """;
+            while ({{CommonGen.AwaitReaderRow()}})
+                {{resultVar}}.Add({{dataclassInit}});
+        """;
+        var sqlCommands = dbDriver.CreateSqlCommand(sqlVar);
+        var commandBlock = sqlCommands.CommandCreation.WrapBlock(
+            $$"""
+            {{sqlCommands.SetCommandText.AppendSemicolonUnlessEmpty()}}
+            {{dbDriver.AddParametersToCommand(query)}}
+            {{sqlCommands.PrepareCommand.AppendSemicolonUnlessEmpty()}}
+            using ({{CommonGen.InitDataReader()}})
+            {
+                var {{resultVar}} = new List<{{returnInterface}}>();
+                {{readWhileExists}}
+                return {{resultVar}};
+            }
+            """
+        );
+        return connectionCommands.GetConnectionOrDataSource.WrapBlock(
+            $$"""
+            {{connectionCommands.ConnectionOpen.AppendSemicolonUnlessEmpty()}}
+            {{commandBlock}}
+            """
+        );
     }
 
     private string GetDriverWithTxBody(string sqlVar, string returnInterface, Query query)
     {
         var transactionProperty = Variable.Transaction.AsPropertyName();
         var commandVar = Variable.Command.AsVarName();
-        var commandParameters = dbDriver.AddParametersToCommand(query);
-        var initDataReader = CommonGen.InitDataReader();
-        var awaitReaderRow = CommonGen.AwaitReaderRow();
-        var dataclassInit = CommonGen.InstantiateDataclass(query.Columns.ToArray(), returnInterface, query);
         var resultVar = Variable.Result.AsVarName();
-        var readWhileExists = $$"""
-                                while ({{awaitReaderRow}})
-                                    {{resultVar}}.Add({{dataclassInit}});
-                                """;
 
         return $$"""
-                    {{dbDriver.TransactionConnectionNullExcetionThrow}}
-                    using (var {{commandVar}} = this.{{transactionProperty}}.Connection.CreateCommand())
-                    {
-                        {{commandVar}}.CommandText = {{sqlVar}};
-                        {{commandVar}}.Transaction = this.{{transactionProperty}};
-                        {{commandParameters}}
-                        using ({{initDataReader}})
-                        {
-                            var {{resultVar}} = new List<{{returnInterface}}>();
-                            {{readWhileExists}}
-                            return {{resultVar}};
-                        }
-                    }
-                 """;
+            {{dbDriver.TransactionConnectionNullExcetionThrow}}
+            using (var {{commandVar}} = this.{{transactionProperty}}.Connection.CreateCommand())
+            {
+                {{commandVar}}.CommandText = {{sqlVar}};
+                {{commandVar}}.Transaction = this.{{transactionProperty}};
+                {{dbDriver.AddParametersToCommand(query)}}
+                using ({{CommonGen.InitDataReader()}})
+                {
+                    var {{resultVar}} = new List<{{returnInterface}}>();
+                    while ({{CommonGen.AwaitReaderRow()}})
+                        {{resultVar}}.Add({{CommonGen.InstantiateDataclass([.. query.Columns], returnInterface, query)}});
+                    return {{resultVar}};
+                }
+            }
+        """;
     }
 }

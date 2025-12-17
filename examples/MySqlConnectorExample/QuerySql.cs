@@ -12,14 +12,17 @@ using NodaTime;
 using NodaTime.Extensions;
 using System;
 using System.Collections.Generic;
+using System.Data;
+using System.Data.Common;
 using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace MySqlConnectorExampleGen;
-public class QuerySql
+public class QuerySql : IDisposable
 {
     public QuerySql()
     {
@@ -28,6 +31,15 @@ public class QuerySql
     public QuerySql(string connectionString) : this()
     {
         this.ConnectionString = connectionString;
+        _dataSource = new Lazy<MySqlDataSource>(() =>
+        {
+            var builder = new MySqlConnectionStringBuilder(connectionString!);
+            builder.ConnectionReset = true;
+            // Pre-warm connection pool with minimum connections
+            if (builder.MinimumPoolSize == 0)
+                builder.MinimumPoolSize = 1;
+            return new MySqlDataSourceBuilder(builder.ConnectionString).Build();
+        }, LazyThreadSafetyMode.ExecutionAndPublication);
     }
 
     private QuerySql(MySqlTransaction transaction) : this()
@@ -43,6 +55,21 @@ public class QuerySql
     private MySqlTransaction? Transaction { get; }
     private string? ConnectionString { get; }
 
+    private readonly Lazy<MySqlDataSource>? _dataSource;
+    private MySqlDataSource GetDataSource()
+    {
+        if (_dataSource == null)
+            throw new InvalidOperationException("ConnectionString is required when not using a transaction");
+        return _dataSource.Value;
+    }
+
+    public void Dispose()
+    {
+        GC.SuppressFinalize(this);
+        if (_dataSource?.IsValueCreated == true)
+            _dataSource.Value.Dispose();
+    }
+
     private const string GetAuthorSql = "SELECT id, name, bio FROM authors WHERE name = @name LIMIT 1";
     public readonly record struct GetAuthorRow(long Id, string Name, string? Bio);
     public readonly record struct GetAuthorArgs(string Name);
@@ -50,11 +77,11 @@ public class QuerySql
     {
         if (this.Transaction == null)
         {
-            using (var connection = new MySqlConnection(ConnectionString))
+            using (var connection = await GetDataSource().OpenConnectionAsync())
             {
-                await connection.OpenAsync();
-                using (var command = new MySqlCommand(GetAuthorSql, connection))
+                using (var command = connection.CreateCommand())
                 {
+                    command.CommandText = GetAuthorSql;
                     command.Parameters.AddWithValue("@name", args.Name);
                     using (var reader = await command.ExecuteReaderAsync())
                     {
@@ -69,12 +96,11 @@ public class QuerySql
                         }
                     }
                 }
-            }
-
+            };
             return null;
         }
 
-        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
             throw new InvalidOperationException("Transaction is provided, but its connection is null.");
         using (var command = this.Transaction.Connection.CreateCommand())
         {
@@ -108,11 +134,11 @@ public class QuerySql
     {
         if (this.Transaction == null)
         {
-            using (var connection = new MySqlConnection(ConnectionString))
+            using (var connection = await GetDataSource().OpenConnectionAsync())
             {
-                await connection.OpenAsync();
-                using (var command = new MySqlCommand(ListAuthorsSql, connection))
+                using (var command = connection.CreateCommand())
                 {
+                    command.CommandText = ListAuthorsSql;
                     command.Parameters.AddWithValue("@limit", args.Limit);
                     command.Parameters.AddWithValue("@offset", args.Offset);
                     using (var reader = await command.ExecuteReaderAsync())
@@ -126,7 +152,7 @@ public class QuerySql
             }
         }
 
-        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
             throw new InvalidOperationException("Transaction is provided, but its connection is null.");
         using (var command = this.Transaction.Connection.CreateCommand())
         {
@@ -150,22 +176,22 @@ public class QuerySql
     {
         if (this.Transaction == null)
         {
-            using (var connection = new MySqlConnection(ConnectionString))
+            using (var connection = await GetDataSource().OpenConnectionAsync())
             {
-                await connection.OpenAsync();
-                using (var command = new MySqlCommand(CreateAuthorSql, connection))
+                using (var command = connection.CreateCommand())
                 {
+                    command.CommandText = CreateAuthorSql;
                     command.Parameters.AddWithValue("@id", args.Id);
                     command.Parameters.AddWithValue("@name", args.Name);
                     command.Parameters.AddWithValue("@bio", args.Bio ?? (object)DBNull.Value);
                     await command.ExecuteNonQueryAsync();
                 }
-            }
 
-            return;
+                return;
+            }
         }
 
-        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
             throw new InvalidOperationException("Transaction is provided, but its connection is null.");
         using (var command = this.Transaction.Connection.CreateCommand())
         {
@@ -178,26 +204,26 @@ public class QuerySql
         }
     }
 
-    private const string CreateAuthorReturnIdSql = "INSERT INTO authors (name, bio) VALUES (@name, @bio)";
+    private const string CreateAuthorReturnIdSql = "INSERT INTO authors (name, bio) VALUES (@name, @bio); SELECT LAST_INSERT_ID()";
     public readonly record struct CreateAuthorReturnIdArgs(string Name, string? Bio);
     public async Task<long> CreateAuthorReturnIdAsync(CreateAuthorReturnIdArgs args)
     {
         if (this.Transaction == null)
         {
-            using (var connection = new MySqlConnection(ConnectionString))
+            using (var connection = await GetDataSource().OpenConnectionAsync())
             {
-                await connection.OpenAsync();
-                using (var command = new MySqlCommand(CreateAuthorReturnIdSql, connection))
+                using (var command = connection.CreateCommand())
                 {
+                    command.CommandText = CreateAuthorReturnIdSql;
                     command.Parameters.AddWithValue("@name", args.Name);
                     command.Parameters.AddWithValue("@bio", args.Bio ?? (object)DBNull.Value);
-                    await command.ExecuteNonQueryAsync();
-                    return command.LastInsertedId;
+                    var result = await command.ExecuteScalarAsync();
+                    return Convert.ToInt64(result);
                 }
             }
         }
 
-        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
             throw new InvalidOperationException("Transaction is provided, but its connection is null.");
         using (var command = this.Transaction.Connection.CreateCommand())
         {
@@ -205,8 +231,8 @@ public class QuerySql
             command.Transaction = this.Transaction;
             command.Parameters.AddWithValue("@name", args.Name);
             command.Parameters.AddWithValue("@bio", args.Bio ?? (object)DBNull.Value);
-            await command.ExecuteNonQueryAsync();
-            return command.LastInsertedId;
+            var result = await command.ExecuteScalarAsync();
+            return Convert.ToInt64(result);
         }
     }
 
@@ -217,11 +243,11 @@ public class QuerySql
     {
         if (this.Transaction == null)
         {
-            using (var connection = new MySqlConnection(ConnectionString))
+            using (var connection = await GetDataSource().OpenConnectionAsync())
             {
-                await connection.OpenAsync();
-                using (var command = new MySqlCommand(GetAuthorByIdSql, connection))
+                using (var command = connection.CreateCommand())
                 {
+                    command.CommandText = GetAuthorByIdSql;
                     command.Parameters.AddWithValue("@id", args.Id);
                     using (var reader = await command.ExecuteReaderAsync())
                     {
@@ -236,12 +262,11 @@ public class QuerySql
                         }
                     }
                 }
-            }
-
+            };
             return null;
         }
 
-        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
             throw new InvalidOperationException("Transaction is provided, but its connection is null.");
         using (var command = this.Transaction.Connection.CreateCommand())
         {
@@ -273,11 +298,11 @@ public class QuerySql
     {
         if (this.Transaction == null)
         {
-            using (var connection = new MySqlConnection(ConnectionString))
+            using (var connection = await GetDataSource().OpenConnectionAsync())
             {
-                await connection.OpenAsync();
-                using (var command = new MySqlCommand(GetAuthorByNamePatternSql, connection))
+                using (var command = connection.CreateCommand())
                 {
+                    command.CommandText = GetAuthorByNamePatternSql;
                     command.Parameters.AddWithValue("@name_pattern", args.NamePattern ?? (object)DBNull.Value);
                     using (var reader = await command.ExecuteReaderAsync())
                     {
@@ -290,7 +315,7 @@ public class QuerySql
             }
         }
 
-        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
             throw new InvalidOperationException("Transaction is provided, but its connection is null.");
         using (var command = this.Transaction.Connection.CreateCommand())
         {
@@ -314,20 +339,20 @@ public class QuerySql
     {
         if (this.Transaction == null)
         {
-            using (var connection = new MySqlConnection(ConnectionString))
+            using (var connection = await GetDataSource().OpenConnectionAsync())
             {
-                await connection.OpenAsync();
-                using (var command = new MySqlCommand(DeleteAuthorSql, connection))
+                using (var command = connection.CreateCommand())
                 {
+                    command.CommandText = DeleteAuthorSql;
                     command.Parameters.AddWithValue("@name", args.Name);
                     await command.ExecuteNonQueryAsync();
                 }
-            }
 
-            return;
+                return;
+            }
         }
 
-        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
             throw new InvalidOperationException("Transaction is provided, but its connection is null.");
         using (var command = this.Transaction.Connection.CreateCommand())
         {
@@ -343,19 +368,19 @@ public class QuerySql
     {
         if (this.Transaction == null)
         {
-            using (var connection = new MySqlConnection(ConnectionString))
+            using (var connection = await GetDataSource().OpenConnectionAsync())
             {
-                await connection.OpenAsync();
-                using (var command = new MySqlCommand(DeleteAllAuthorsSql, connection))
+                using (var command = connection.CreateCommand())
                 {
+                    command.CommandText = DeleteAllAuthorsSql;
                     await command.ExecuteNonQueryAsync();
                 }
-            }
 
-            return;
+                return;
+            }
         }
 
-        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
             throw new InvalidOperationException("Transaction is provided, but its connection is null.");
         using (var command = this.Transaction.Connection.CreateCommand())
         {
@@ -373,18 +398,18 @@ public class QuerySql
     {
         if (this.Transaction == null)
         {
-            using (var connection = new MySqlConnection(ConnectionString))
+            using (var connection = await GetDataSource().OpenConnectionAsync())
             {
-                await connection.OpenAsync();
-                using (var command = new MySqlCommand(UpdateAuthorsSql, connection))
+                using (var command = connection.CreateCommand())
                 {
+                    command.CommandText = UpdateAuthorsSql;
                     command.Parameters.AddWithValue("@bio", args.Bio ?? (object)DBNull.Value);
                     return await command.ExecuteNonQueryAsync();
                 }
             }
         }
 
-        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
             throw new InvalidOperationException("Transaction is provided, but its connection is null.");
         using (var command = this.Transaction.Connection.CreateCommand())
         {
@@ -404,11 +429,11 @@ public class QuerySql
         transformedSql = Utils.TransformQueryForSliceArgs(transformedSql, args.Ids.Length, "ids");
         if (this.Transaction == null)
         {
-            using (var connection = new MySqlConnection(ConnectionString))
+            using (var connection = await GetDataSource().OpenConnectionAsync())
             {
-                await connection.OpenAsync();
-                using (var command = new MySqlCommand(transformedSql, connection))
+                using (var command = connection.CreateCommand())
                 {
+                    command.CommandText = transformedSql;
                     for (int i = 0; i < args.Ids.Length; i++)
                         command.Parameters.AddWithValue($"@idsArg{i}", args.Ids[i]);
                     using (var reader = await command.ExecuteReaderAsync())
@@ -422,7 +447,7 @@ public class QuerySql
             }
         }
 
-        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
             throw new InvalidOperationException("Transaction is provided, but its connection is null.");
         using (var command = this.Transaction.Connection.CreateCommand())
         {
@@ -450,11 +475,11 @@ public class QuerySql
         transformedSql = Utils.TransformQueryForSliceArgs(transformedSql, args.Names.Length, "names");
         if (this.Transaction == null)
         {
-            using (var connection = new MySqlConnection(ConnectionString))
+            using (var connection = await GetDataSource().OpenConnectionAsync())
             {
-                await connection.OpenAsync();
-                using (var command = new MySqlCommand(transformedSql, connection))
+                using (var command = connection.CreateCommand())
                 {
+                    command.CommandText = transformedSql;
                     for (int i = 0; i < args.Ids.Length; i++)
                         command.Parameters.AddWithValue($"@idsArg{i}", args.Ids[i]);
                     for (int i = 0; i < args.Names.Length; i++)
@@ -470,7 +495,7 @@ public class QuerySql
             }
         }
 
-        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
             throw new InvalidOperationException("Transaction is provided, but its connection is null.");
         using (var command = this.Transaction.Connection.CreateCommand())
         {
@@ -490,26 +515,26 @@ public class QuerySql
         }
     }
 
-    private const string CreateBookSql = "INSERT INTO books (name, author_id) VALUES (@name, @author_id)";
+    private const string CreateBookSql = "INSERT INTO books (name, author_id) VALUES (@name, @author_id); SELECT LAST_INSERT_ID()";
     public readonly record struct CreateBookArgs(string Name, long AuthorId);
     public async Task<long> CreateBookAsync(CreateBookArgs args)
     {
         if (this.Transaction == null)
         {
-            using (var connection = new MySqlConnection(ConnectionString))
+            using (var connection = await GetDataSource().OpenConnectionAsync())
             {
-                await connection.OpenAsync();
-                using (var command = new MySqlCommand(CreateBookSql, connection))
+                using (var command = connection.CreateCommand())
                 {
+                    command.CommandText = CreateBookSql;
                     command.Parameters.AddWithValue("@name", args.Name);
                     command.Parameters.AddWithValue("@author_id", args.AuthorId);
-                    await command.ExecuteNonQueryAsync();
-                    return command.LastInsertedId;
+                    var result = await command.ExecuteScalarAsync();
+                    return Convert.ToInt64(result);
                 }
             }
         }
 
-        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
             throw new InvalidOperationException("Transaction is provided, but its connection is null.");
         using (var command = this.Transaction.Connection.CreateCommand())
         {
@@ -517,8 +542,8 @@ public class QuerySql
             command.Transaction = this.Transaction;
             command.Parameters.AddWithValue("@name", args.Name);
             command.Parameters.AddWithValue("@author_id", args.AuthorId);
-            await command.ExecuteNonQueryAsync();
-            return command.LastInsertedId;
+            var result = await command.ExecuteScalarAsync();
+            return Convert.ToInt64(result);
         }
     }
 
@@ -530,11 +555,11 @@ public class QuerySql
     {
         if (this.Transaction == null)
         {
-            using (var connection = new MySqlConnection(ConnectionString))
+            using (var connection = await GetDataSource().OpenConnectionAsync())
             {
-                await connection.OpenAsync();
-                using (var command = new MySqlCommand(ListAllAuthorsBooksSql, connection))
+                using (var command = connection.CreateCommand())
                 {
+                    command.CommandText = ListAllAuthorsBooksSql;
                     using (var reader = await command.ExecuteReaderAsync())
                     {
                         var result = new List<ListAllAuthorsBooksRow>();
@@ -546,7 +571,7 @@ public class QuerySql
             }
         }
 
-        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
             throw new InvalidOperationException("Transaction is provided, but its connection is null.");
         using (var command = this.Transaction.Connection.CreateCommand())
         {
@@ -570,11 +595,11 @@ public class QuerySql
     {
         if (this.Transaction == null)
         {
-            using (var connection = new MySqlConnection(ConnectionString))
+            using (var connection = await GetDataSource().OpenConnectionAsync())
             {
-                await connection.OpenAsync();
-                using (var command = new MySqlCommand(GetDuplicateAuthorsSql, connection))
+                using (var command = connection.CreateCommand())
                 {
+                    command.CommandText = GetDuplicateAuthorsSql;
                     using (var reader = await command.ExecuteReaderAsync())
                     {
                         var result = new List<GetDuplicateAuthorsRow>();
@@ -586,7 +611,7 @@ public class QuerySql
             }
         }
 
-        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
             throw new InvalidOperationException("Transaction is provided, but its connection is null.");
         using (var command = this.Transaction.Connection.CreateCommand())
         {
@@ -611,11 +636,11 @@ public class QuerySql
     {
         if (this.Transaction == null)
         {
-            using (var connection = new MySqlConnection(ConnectionString))
+            using (var connection = await GetDataSource().OpenConnectionAsync())
             {
-                await connection.OpenAsync();
-                using (var command = new MySqlCommand(GetAuthorsByBookNameSql, connection))
+                using (var command = connection.CreateCommand())
                 {
+                    command.CommandText = GetAuthorsByBookNameSql;
                     command.Parameters.AddWithValue("@name", args.Name);
                     using (var reader = await command.ExecuteReaderAsync())
                     {
@@ -628,7 +653,7 @@ public class QuerySql
             }
         }
 
-        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
             throw new InvalidOperationException("Transaction is provided, but its connection is null.");
         using (var command = this.Transaction.Connection.CreateCommand())
         {
@@ -651,23 +676,23 @@ public class QuerySql
     {
         if (this.Transaction == null)
         {
-            using (var connection = new MySqlConnection(ConnectionString))
+            using (var connection = await GetDataSource().OpenConnectionAsync())
             {
-                await connection.OpenAsync();
-                using (var command = new MySqlCommand(CreateExtendedBioSql, connection))
+                using (var command = connection.CreateCommand())
                 {
+                    command.CommandText = CreateExtendedBioSql;
                     command.Parameters.AddWithValue("@author_name", args.AuthorName ?? (object)DBNull.Value);
                     command.Parameters.AddWithValue("@name", args.Name ?? (object)DBNull.Value);
                     command.Parameters.AddWithValue("@bio_type", args.BioType ?? (object)DBNull.Value);
                     command.Parameters.AddWithValue("@author_type", args.AuthorType != null ? string.Join(",", args.AuthorType) : (object)DBNull.Value);
                     await command.ExecuteNonQueryAsync();
                 }
-            }
 
-            return;
+                return;
+            }
         }
 
-        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
             throw new InvalidOperationException("Transaction is provided, but its connection is null.");
         using (var command = this.Transaction.Connection.CreateCommand())
         {
@@ -688,11 +713,11 @@ public class QuerySql
     {
         if (this.Transaction == null)
         {
-            using (var connection = new MySqlConnection(ConnectionString))
+            using (var connection = await GetDataSource().OpenConnectionAsync())
             {
-                await connection.OpenAsync();
-                using (var command = new MySqlCommand(GetFirstExtendedBioByTypeSql, connection))
+                using (var command = connection.CreateCommand())
                 {
+                    command.CommandText = GetFirstExtendedBioByTypeSql;
                     command.Parameters.AddWithValue("@bio_type", args.BioType ?? (object)DBNull.Value);
                     using (var reader = await command.ExecuteReaderAsync())
                     {
@@ -708,12 +733,11 @@ public class QuerySql
                         }
                     }
                 }
-            }
-
+            };
             return null;
         }
 
-        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
             throw new InvalidOperationException("Transaction is provided, but its connection is null.");
         using (var command = this.Transaction.Connection.CreateCommand())
         {
@@ -743,19 +767,19 @@ public class QuerySql
     {
         if (this.Transaction == null)
         {
-            using (var connection = new MySqlConnection(ConnectionString))
+            using (var connection = await GetDataSource().OpenConnectionAsync())
             {
-                await connection.OpenAsync();
-                using (var command = new MySqlCommand(TruncateExtendedBiosSql, connection))
+                using (var command = connection.CreateCommand())
                 {
+                    command.CommandText = TruncateExtendedBiosSql;
                     await command.ExecuteNonQueryAsync();
                 }
-            }
 
-            return;
+                return;
+            }
         }
 
-        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
             throw new InvalidOperationException("Transaction is provided, but its connection is null.");
         using (var command = this.Transaction.Connection.CreateCommand())
         {
@@ -790,11 +814,11 @@ public class QuerySql
     {
         if (this.Transaction == null)
         {
-            using (var connection = new MySqlConnection(ConnectionString))
+            using (var connection = await GetDataSource().OpenConnectionAsync())
             {
-                await connection.OpenAsync();
-                using (var command = new MySqlCommand(InsertMysqlNumericTypesSql, connection))
+                using (var command = connection.CreateCommand())
                 {
+                    command.CommandText = InsertMysqlNumericTypesSql;
                     command.Parameters.AddWithValue("@c_bool", args.CBool ?? (object)DBNull.Value);
                     command.Parameters.AddWithValue("@c_boolean", args.CBoolean ?? (object)DBNull.Value);
                     command.Parameters.AddWithValue("@c_tinyint", args.CTinyint ?? (object)DBNull.Value);
@@ -812,12 +836,12 @@ public class QuerySql
                     command.Parameters.AddWithValue("@c_double_precision", args.CDoublePrecision ?? (object)DBNull.Value);
                     await command.ExecuteNonQueryAsync();
                 }
-            }
 
-            return;
+                return;
+            }
         }
 
-        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
             throw new InvalidOperationException("Transaction is provided, but its connection is null.");
         using (var command = this.Transaction.Connection.CreateCommand())
         {
@@ -874,9 +898,8 @@ public class QuerySql
             await csvWriter.WriteRecordsAsync(args);
         }
 
-        using (var connection = new MySqlConnection(ConnectionString))
+        using (var connection = await GetDataSource().OpenConnectionAsync())
         {
-            await connection.OpenAsync();
             var loader = new MySqlBulkLoader(connection)
             {
                 Local = true,
@@ -890,7 +913,6 @@ public class QuerySql
             };
             loader.Columns.AddRange(new List<string> { "c_bool", "c_boolean", "c_tinyint", "c_smallint", "c_mediumint", "c_int", "c_integer", "c_bigint", "c_float", "c_numeric", "c_decimal", "c_dec", "c_fixed", "c_double", "c_double_precision" });
             await loader.LoadAsync();
-            await connection.CloseAsync();
         }
     }
 
@@ -900,11 +922,11 @@ public class QuerySql
     {
         if (this.Transaction == null)
         {
-            using (var connection = new MySqlConnection(ConnectionString))
+            using (var connection = await GetDataSource().OpenConnectionAsync())
             {
-                await connection.OpenAsync();
-                using (var command = new MySqlCommand(GetMysqlNumericTypesSql, connection))
+                using (var command = connection.CreateCommand())
                 {
+                    command.CommandText = GetMysqlNumericTypesSql;
                     using (var reader = await command.ExecuteReaderAsync())
                     {
                         if (await reader.ReadAsync())
@@ -930,12 +952,11 @@ public class QuerySql
                         }
                     }
                 }
-            }
-
+            };
             return null;
         }
 
-        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
             throw new InvalidOperationException("Transaction is provided, but its connection is null.");
         using (var command = this.Transaction.Connection.CreateCommand())
         {
@@ -1010,11 +1031,11 @@ public class QuerySql
     {
         if (this.Transaction == null)
         {
-            using (var connection = new MySqlConnection(ConnectionString))
+            using (var connection = await GetDataSource().OpenConnectionAsync())
             {
-                await connection.OpenAsync();
-                using (var command = new MySqlCommand(GetMysqlNumericTypesCntSql, connection))
+                using (var command = connection.CreateCommand())
                 {
+                    command.CommandText = GetMysqlNumericTypesCntSql;
                     using (var reader = await command.ExecuteReaderAsync())
                     {
                         if (await reader.ReadAsync())
@@ -1041,12 +1062,11 @@ public class QuerySql
                         }
                     }
                 }
-            }
-
+            };
             return null;
         }
 
-        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
             throw new InvalidOperationException("Transaction is provided, but its connection is null.");
         using (var command = this.Transaction.Connection.CreateCommand())
         {
@@ -1087,19 +1107,19 @@ public class QuerySql
     {
         if (this.Transaction == null)
         {
-            using (var connection = new MySqlConnection(ConnectionString))
+            using (var connection = await GetDataSource().OpenConnectionAsync())
             {
-                await connection.OpenAsync();
-                using (var command = new MySqlCommand(TruncateMysqlNumericTypesSql, connection))
+                using (var command = connection.CreateCommand())
                 {
+                    command.CommandText = TruncateMysqlNumericTypesSql;
                     await command.ExecuteNonQueryAsync();
                 }
-            }
 
-            return;
+                return;
+            }
         }
 
-        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
             throw new InvalidOperationException("Transaction is provided, but its connection is null.");
         using (var command = this.Transaction.Connection.CreateCommand())
         {
@@ -1131,11 +1151,11 @@ public class QuerySql
     {
         if (this.Transaction == null)
         {
-            using (var connection = new MySqlConnection(ConnectionString))
+            using (var connection = await GetDataSource().OpenConnectionAsync())
             {
-                await connection.OpenAsync();
-                using (var command = new MySqlCommand(InsertMysqlStringTypesSql, connection))
+                using (var command = connection.CreateCommand())
                 {
+                    command.CommandText = InsertMysqlStringTypesSql;
                     command.Parameters.AddWithValue("@c_char", args.CChar ?? (object)DBNull.Value);
                     command.Parameters.AddWithValue("@c_nchar", args.CNchar ?? (object)DBNull.Value);
                     command.Parameters.AddWithValue("@c_national_char", args.CNationalChar ?? (object)DBNull.Value);
@@ -1150,12 +1170,12 @@ public class QuerySql
                     command.Parameters.AddWithValue("@c_set", args.CSet != null ? string.Join(",", args.CSet) : (object)DBNull.Value);
                     await command.ExecuteNonQueryAsync();
                 }
-            }
 
-            return;
+                return;
+            }
         }
 
-        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
             throw new InvalidOperationException("Transaction is provided, but its connection is null.");
         using (var command = this.Transaction.Connection.CreateCommand())
         {
@@ -1207,9 +1227,8 @@ public class QuerySql
             await csvWriter.WriteRecordsAsync(args);
         }
 
-        using (var connection = new MySqlConnection(ConnectionString))
+        using (var connection = await GetDataSource().OpenConnectionAsync())
         {
-            await connection.OpenAsync();
             var loader = new MySqlBulkLoader(connection)
             {
                 Local = true,
@@ -1223,7 +1242,6 @@ public class QuerySql
             };
             loader.Columns.AddRange(new List<string> { "c_char", "c_nchar", "c_national_char", "c_varchar", "c_tinytext", "c_mediumtext", "c_text", "c_longtext", "c_json", "c_json_string_override", "c_enum", "c_set" });
             await loader.LoadAsync();
-            await connection.CloseAsync();
         }
     }
 
@@ -1233,11 +1251,11 @@ public class QuerySql
     {
         if (this.Transaction == null)
         {
-            using (var connection = new MySqlConnection(ConnectionString))
+            using (var connection = await GetDataSource().OpenConnectionAsync())
             {
-                await connection.OpenAsync();
-                using (var command = new MySqlCommand(GetMysqlStringTypesSql, connection))
+                using (var command = connection.CreateCommand())
                 {
+                    command.CommandText = GetMysqlStringTypesSql;
                     using (var reader = await command.ExecuteReaderAsync())
                     {
                         if (await reader.ReadAsync())
@@ -1260,12 +1278,11 @@ public class QuerySql
                         }
                     }
                 }
-            }
-
+            };
             return null;
         }
 
-        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
             throw new InvalidOperationException("Transaction is provided, but its connection is null.");
         using (var command = this.Transaction.Connection.CreateCommand())
         {
@@ -1331,11 +1348,11 @@ public class QuerySql
     {
         if (this.Transaction == null)
         {
-            using (var connection = new MySqlConnection(ConnectionString))
+            using (var connection = await GetDataSource().OpenConnectionAsync())
             {
-                await connection.OpenAsync();
-                using (var command = new MySqlCommand(GetMysqlStringTypesCntSql, connection))
+                using (var command = connection.CreateCommand())
                 {
+                    command.CommandText = GetMysqlStringTypesCntSql;
                     using (var reader = await command.ExecuteReaderAsync())
                     {
                         if (await reader.ReadAsync())
@@ -1359,12 +1376,11 @@ public class QuerySql
                         }
                     }
                 }
-            }
-
+            };
             return null;
         }
 
-        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
             throw new InvalidOperationException("Transaction is provided, but its connection is null.");
         using (var command = this.Transaction.Connection.CreateCommand())
         {
@@ -1402,19 +1418,19 @@ public class QuerySql
     {
         if (this.Transaction == null)
         {
-            using (var connection = new MySqlConnection(ConnectionString))
+            using (var connection = await GetDataSource().OpenConnectionAsync())
             {
-                await connection.OpenAsync();
-                using (var command = new MySqlCommand(TruncateMysqlStringTypesSql, connection))
+                using (var command = connection.CreateCommand())
                 {
+                    command.CommandText = TruncateMysqlStringTypesSql;
                     await command.ExecuteNonQueryAsync();
                 }
-            }
 
-            return;
+                return;
+            }
         }
 
-        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
             throw new InvalidOperationException("Transaction is provided, but its connection is null.");
         using (var command = this.Transaction.Connection.CreateCommand())
         {
@@ -1440,11 +1456,11 @@ public class QuerySql
     {
         if (this.Transaction == null)
         {
-            using (var connection = new MySqlConnection(ConnectionString))
+            using (var connection = await GetDataSource().OpenConnectionAsync())
             {
-                await connection.OpenAsync();
-                using (var command = new MySqlCommand(InsertMysqlDatetimeTypesSql, connection))
+                using (var command = connection.CreateCommand())
                 {
+                    command.CommandText = InsertMysqlDatetimeTypesSql;
                     command.Parameters.AddWithValue("@c_year", args.CYear ?? (object)DBNull.Value);
                     command.Parameters.AddWithValue("@c_date", args.CDate ?? (object)DBNull.Value);
                     command.Parameters.AddWithValue("@c_datetime", args.CDatetime ?? (object)DBNull.Value);
@@ -1453,12 +1469,12 @@ public class QuerySql
                     command.Parameters.AddWithValue("@c_timestamp_noda_instant_override", args.CTimestampNodaInstantOverride is null ? (object)DBNull.Value : (DateTime? )DateTime.SpecifyKind(args.CTimestampNodaInstantOverride.Value.ToDateTimeUtc(), DateTimeKind.Unspecified));
                     await command.ExecuteNonQueryAsync();
                 }
-            }
 
-            return;
+                return;
+            }
         }
 
-        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
             throw new InvalidOperationException("Transaction is provided, but its connection is null.");
         using (var command = this.Transaction.Connection.CreateCommand())
         {
@@ -1502,9 +1518,8 @@ public class QuerySql
             await csvWriter.WriteRecordsAsync(args);
         }
 
-        using (var connection = new MySqlConnection(ConnectionString))
+        using (var connection = await GetDataSource().OpenConnectionAsync())
         {
-            await connection.OpenAsync();
             var loader = new MySqlBulkLoader(connection)
             {
                 Local = true,
@@ -1518,7 +1533,6 @@ public class QuerySql
             };
             loader.Columns.AddRange(new List<string> { "c_year", "c_date", "c_datetime", "c_timestamp", "c_time" });
             await loader.LoadAsync();
-            await connection.CloseAsync();
         }
     }
 
@@ -1528,11 +1542,11 @@ public class QuerySql
     {
         if (this.Transaction == null)
         {
-            using (var connection = new MySqlConnection(ConnectionString))
+            using (var connection = await GetDataSource().OpenConnectionAsync())
             {
-                await connection.OpenAsync();
-                using (var command = new MySqlCommand(GetMysqlDatetimeTypesSql, connection))
+                using (var command = connection.CreateCommand())
                 {
+                    command.CommandText = GetMysqlDatetimeTypesSql;
                     using (var reader = await command.ExecuteReaderAsync())
                     {
                         if (await reader.ReadAsync())
@@ -1544,7 +1558,7 @@ public class QuerySql
                                 CDatetime = reader.IsDBNull(2) ? null : reader.GetDateTime(2),
                                 CTimestamp = reader.IsDBNull(3) ? null : reader.GetDateTime(3),
                                 CTime = reader.IsDBNull(4) ? null : reader.GetFieldValue<TimeSpan>(4),
-                                CTimestampNodaInstantOverride = reader.IsDBNull(5) ? null : (new Func<MySqlDataReader, int, Instant>((r, o) =>
+                                CTimestampNodaInstantOverride = reader.IsDBNull(5) ? null : (new Func<DbDataReader, int, Instant>((r, o) =>
                                 {
                                     var dt = reader.GetDateTime(o);
                                     if (dt.Kind != DateTimeKind.Utc)
@@ -1555,12 +1569,11 @@ public class QuerySql
                         }
                     }
                 }
-            }
-
+            };
             return null;
         }
 
-        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
             throw new InvalidOperationException("Transaction is provided, but its connection is null.");
         using (var command = this.Transaction.Connection.CreateCommand())
         {
@@ -1577,7 +1590,7 @@ public class QuerySql
                         CDatetime = reader.IsDBNull(2) ? null : reader.GetDateTime(2),
                         CTimestamp = reader.IsDBNull(3) ? null : reader.GetDateTime(3),
                         CTime = reader.IsDBNull(4) ? null : reader.GetFieldValue<TimeSpan>(4),
-                        CTimestampNodaInstantOverride = reader.IsDBNull(5) ? null : (new Func<MySqlDataReader, int, Instant>((r, o) =>
+                        CTimestampNodaInstantOverride = reader.IsDBNull(5) ? null : (new Func<DbDataReader, int, Instant>((r, o) =>
                         {
                             var dt = reader.GetDateTime(o);
                             if (dt.Kind != DateTimeKind.Utc)
@@ -1612,11 +1625,11 @@ public class QuerySql
     {
         if (this.Transaction == null)
         {
-            using (var connection = new MySqlConnection(ConnectionString))
+            using (var connection = await GetDataSource().OpenConnectionAsync())
             {
-                await connection.OpenAsync();
-                using (var command = new MySqlCommand(GetMysqlDatetimeTypesCntSql, connection))
+                using (var command = connection.CreateCommand())
                 {
+                    command.CommandText = GetMysqlDatetimeTypesCntSql;
                     using (var reader = await command.ExecuteReaderAsync())
                     {
                         if (await reader.ReadAsync())
@@ -1633,12 +1646,11 @@ public class QuerySql
                         }
                     }
                 }
-            }
-
+            };
             return null;
         }
 
-        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
             throw new InvalidOperationException("Transaction is provided, but its connection is null.");
         using (var command = this.Transaction.Connection.CreateCommand())
         {
@@ -1669,19 +1681,19 @@ public class QuerySql
     {
         if (this.Transaction == null)
         {
-            using (var connection = new MySqlConnection(ConnectionString))
+            using (var connection = await GetDataSource().OpenConnectionAsync())
             {
-                await connection.OpenAsync();
-                using (var command = new MySqlCommand(TruncateMysqlDatetimeTypesSql, connection))
+                using (var command = connection.CreateCommand())
                 {
+                    command.CommandText = TruncateMysqlDatetimeTypesSql;
                     await command.ExecuteNonQueryAsync();
                 }
-            }
 
-            return;
+                return;
+            }
         }
 
-        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
             throw new InvalidOperationException("Transaction is provided, but its connection is null.");
         using (var command = this.Transaction.Connection.CreateCommand())
         {
@@ -1708,11 +1720,11 @@ public class QuerySql
     {
         if (this.Transaction == null)
         {
-            using (var connection = new MySqlConnection(ConnectionString))
+            using (var connection = await GetDataSource().OpenConnectionAsync())
             {
-                await connection.OpenAsync();
-                using (var command = new MySqlCommand(InsertMysqlBinaryTypesSql, connection))
+                using (var command = connection.CreateCommand())
                 {
+                    command.CommandText = InsertMysqlBinaryTypesSql;
                     command.Parameters.AddWithValue("@c_bit", args.CBit ?? (object)DBNull.Value);
                     command.Parameters.AddWithValue("@c_binary", args.CBinary ?? (object)DBNull.Value);
                     command.Parameters.AddWithValue("@c_varbinary", args.CVarbinary ?? (object)DBNull.Value);
@@ -1722,12 +1734,12 @@ public class QuerySql
                     command.Parameters.AddWithValue("@c_longblob", args.CLongblob ?? (object)DBNull.Value);
                     await command.ExecuteNonQueryAsync();
                 }
-            }
 
-            return;
+                return;
+            }
         }
 
-        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
             throw new InvalidOperationException("Transaction is provided, but its connection is null.");
         using (var command = this.Transaction.Connection.CreateCommand())
         {
@@ -1773,9 +1785,8 @@ public class QuerySql
             await csvWriter.WriteRecordsAsync(args);
         }
 
-        using (var connection = new MySqlConnection(ConnectionString))
+        using (var connection = await GetDataSource().OpenConnectionAsync())
         {
-            await connection.OpenAsync();
             var loader = new MySqlBulkLoader(connection)
             {
                 Local = true,
@@ -1789,7 +1800,6 @@ public class QuerySql
             };
             loader.Columns.AddRange(new List<string> { "c_bit", "c_binary", "c_varbinary", "c_tinyblob", "c_blob", "c_mediumblob", "c_longblob" });
             await loader.LoadAsync();
-            await connection.CloseAsync();
         }
     }
 
@@ -1799,11 +1809,11 @@ public class QuerySql
     {
         if (this.Transaction == null)
         {
-            using (var connection = new MySqlConnection(ConnectionString))
+            using (var connection = await GetDataSource().OpenConnectionAsync())
             {
-                await connection.OpenAsync();
-                using (var command = new MySqlCommand(GetMysqlBinaryTypesSql, connection))
+                using (var command = connection.CreateCommand())
                 {
+                    command.CommandText = GetMysqlBinaryTypesSql;
                     using (var reader = await command.ExecuteReaderAsync())
                     {
                         if (await reader.ReadAsync())
@@ -1821,12 +1831,11 @@ public class QuerySql
                         }
                     }
                 }
-            }
-
+            };
             return null;
         }
 
-        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
             throw new InvalidOperationException("Transaction is provided, but its connection is null.");
         using (var command = this.Transaction.Connection.CreateCommand())
         {
@@ -1877,11 +1886,11 @@ public class QuerySql
     {
         if (this.Transaction == null)
         {
-            using (var connection = new MySqlConnection(ConnectionString))
+            using (var connection = await GetDataSource().OpenConnectionAsync())
             {
-                await connection.OpenAsync();
-                using (var command = new MySqlCommand(GetMysqlBinaryTypesCntSql, connection))
+                using (var command = connection.CreateCommand())
                 {
+                    command.CommandText = GetMysqlBinaryTypesCntSql;
                     using (var reader = await command.ExecuteReaderAsync())
                     {
                         if (await reader.ReadAsync())
@@ -1900,12 +1909,11 @@ public class QuerySql
                         }
                     }
                 }
-            }
-
+            };
             return null;
         }
 
-        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
             throw new InvalidOperationException("Transaction is provided, but its connection is null.");
         using (var command = this.Transaction.Connection.CreateCommand())
         {
@@ -1938,19 +1946,19 @@ public class QuerySql
     {
         if (this.Transaction == null)
         {
-            using (var connection = new MySqlConnection(ConnectionString))
+            using (var connection = await GetDataSource().OpenConnectionAsync())
             {
-                await connection.OpenAsync();
-                using (var command = new MySqlCommand(TruncateMysqlBinaryTypesSql, connection))
+                using (var command = connection.CreateCommand())
                 {
+                    command.CommandText = TruncateMysqlBinaryTypesSql;
                     await command.ExecuteNonQueryAsync();
                 }
-            }
 
-            return;
+                return;
+            }
         }
 
-        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
             throw new InvalidOperationException("Transaction is provided, but its connection is null.");
         using (var command = this.Transaction.Connection.CreateCommand())
         {
@@ -1973,11 +1981,11 @@ public class QuerySql
     {
         if (this.Transaction == null)
         {
-            using (var connection = new MySqlConnection(ConnectionString))
+            using (var connection = await GetDataSource().OpenConnectionAsync())
             {
-                await connection.OpenAsync();
-                using (var command = new MySqlCommand(GetMysqlFunctionsSql, connection))
+                using (var command = connection.CreateCommand())
                 {
+                    command.CommandText = GetMysqlFunctionsSql;
                     using (var reader = await command.ExecuteReaderAsync())
                     {
                         if (await reader.ReadAsync())
@@ -1991,12 +1999,11 @@ public class QuerySql
                         }
                     }
                 }
-            }
-
+            };
             return null;
         }
 
-        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != System.Data.ConnectionState.Open)
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
             throw new InvalidOperationException("Transaction is provided, but its connection is null.");
         using (var command = this.Transaction.Connection.CreateCommand())
         {

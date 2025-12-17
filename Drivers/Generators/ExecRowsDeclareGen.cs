@@ -1,6 +1,5 @@
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Plugin;
-using System.Linq;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace SqlcGenCsharp.Drivers.Generators;
@@ -45,59 +44,59 @@ public class ExecRowsDeclareGen(DbDriver dbDriver)
 
     private string GetDapperNoTxBody(string sqlVar, Query query)
     {
-        var (establishConnection, _) = dbDriver.EstablishConnection(query);
-        var dapperArgs = query.Params.Any() ? $", {Variable.QueryParams.AsVarName()}" : string.Empty;
-        return $$"""
-                    using ({{establishConnection}})
-                        return await {{Variable.Connection.AsVarName()}}.ExecuteAsync({{sqlVar}}{{dapperArgs}});
-                 """;
+        var connectionCommands = dbDriver.EstablishConnection(query);
+        var dapperArgs = CommonGen.GetDapperArgs(query);
+        return connectionCommands.GetConnectionOrDataSource.WrapBlock(
+            $"return await {Variable.Connection.AsVarName()}.ExecuteAsync({sqlVar}{dapperArgs});"
+        );
     }
 
     private string GetDapperWithTxBody(string sqlVar, Query query)
     {
         var transactionProperty = Variable.Transaction.AsPropertyName();
-        var dapperArgs = query.Params.Any() ? $", {Variable.QueryParams.AsVarName()}" : string.Empty;
+        var dapperArgs = CommonGen.GetDapperArgs(query);
         return $$"""
-                    {{dbDriver.TransactionConnectionNullExcetionThrow}}
-                    return await this.{{transactionProperty}}.Connection.ExecuteAsync(
-                            {{sqlVar}}{{dapperArgs}},
-                            transaction: this.{{transactionProperty}});
-                 """;
+            {{dbDriver.TransactionConnectionNullExcetionThrow}}
+            return await this.{{transactionProperty}}.Connection.ExecuteAsync(
+                    {{sqlVar}}{{dapperArgs}},
+                    transaction: this.{{transactionProperty}});
+        """;
     }
 
     private string GetDriverNoTxBody(string sqlVar, Query query)
     {
-        var (establishConnection, connectionOpen) = dbDriver.EstablishConnection(query);
-        var createSqlCommand = dbDriver.CreateSqlCommand(sqlVar);
-        var commandParameters = dbDriver.AddParametersToCommand(query);
-        return $$"""
-                    using ({{establishConnection}})
-                    {
-                        {{connectionOpen.AppendSemicolonUnlessEmpty()}}
-                        using ({{createSqlCommand}})
-                        {
-                            {{commandParameters}}
-                            return await {{Variable.Command.AsVarName()}}.ExecuteNonQueryAsync();
-                        }
-                    }
-                 """;
+        var connectionCommands = dbDriver.EstablishConnection(query);
+        var sqlCommands = dbDriver.CreateSqlCommand(sqlVar);
+        var commandBlock = sqlCommands.CommandCreation.WrapBlock(
+            $"""
+            {sqlCommands.SetCommandText.AppendSemicolonUnlessEmpty()}
+            {dbDriver.AddParametersToCommand(query)}
+            {sqlCommands.PrepareCommand.AppendSemicolonUnlessEmpty()}
+            return await {Variable.Command.AsVarName()}.ExecuteNonQueryAsync();
+            """
+        );
+        return connectionCommands.GetConnectionOrDataSource.WrapBlock(
+            $$"""
+            {{connectionCommands.ConnectionOpen.AppendSemicolonUnlessEmpty()}}
+            {{commandBlock}}
+            """
+        );
     }
 
     private string GetDriverWithTxBody(string sqlVar, Query query)
     {
         var transactionProperty = Variable.Transaction.AsPropertyName();
         var commandVar = Variable.Command.AsVarName();
-        var commandParameters = dbDriver.AddParametersToCommand(query);
 
         return $$"""
-                    {{dbDriver.TransactionConnectionNullExcetionThrow}}
-                    using (var {{commandVar}} = this.{{transactionProperty}}.Connection.CreateCommand())
-                    {
-                        {{commandVar}}.CommandText = {{sqlVar}};
-                        {{commandVar}}.Transaction = this.{{transactionProperty}};
-                        {{commandParameters}}
-                        return await {{commandVar}}.ExecuteNonQueryAsync();
-                    }
-                 """;
+            {{dbDriver.TransactionConnectionNullExcetionThrow}}
+            using (var {{commandVar}} = this.{{transactionProperty}}.Connection.CreateCommand())
+            {
+                {{commandVar}}.CommandText = {{sqlVar}};
+                {{commandVar}}.Transaction = this.{{transactionProperty}};
+                {{dbDriver.AddParametersToCommand(query)}}
+                return await {{commandVar}}.ExecuteNonQueryAsync();
+            }
+        """;
     }
 }

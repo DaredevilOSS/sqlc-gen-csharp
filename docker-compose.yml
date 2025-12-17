@@ -2,7 +2,9 @@ services:
 
   mysqldb:
     container_name: mysqldb
-    build: examples/config/mysql
+    build:
+      context: .
+      dockerfile: mysql.Dockerfile
     restart: always
     ports:
       - "3306:3306"
@@ -18,7 +20,9 @@ services:
       
   postgresdb:
     container_name: postgresdb
-    build: examples/config/postgresql
+    build:
+      context: .
+      dockerfile: postgres.Dockerfile
     restart: always
     ports:
       - "5432:5432"

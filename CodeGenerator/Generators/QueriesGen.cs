@@ -64,12 +64,16 @@ internal partial class QueriesGen(DbDriver dbDriver, string namespaceName)
         var dapperStatements = dbDriver.Options.UseDapper
             ? $$"""
                 Utils.ConfigureSqlMapper();
-                Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
+                DefaultTypeMap.MatchNamesWithUnderscores = true;
               """
             : string.Empty;
+
+        var baseTypes = dbDriver.GetClassBaseTypes();
+        var baseTypesStr = baseTypes.Length > 0 ? $" : {string.Join(", ", baseTypes)}" : string.Empty;
+
         var classDeclaration = (ClassDeclarationSyntax)ParseMemberDeclaration(
                 $$"""
-                  public class {{className}}
+                  public class {{className}}{{baseTypesStr}}
                   {
                       public {{className}}()
                       {
@@ -94,8 +98,12 @@ internal partial class QueriesGen(DbDriver dbDriver, string namespaceName)
                       private {{dbDriver.AddNullableSuffixIfNeeded(dbDriver.TransactionClassName, false)}} {{Variable.Transaction.AsPropertyName()}} { get; }
                       private {{dbDriver.AddNullableSuffixIfNeeded("string", false)}} {{Variable.ConnectionString.AsPropertyName()}} { get; }
                   }
-                  """)!;
-        return classDeclaration.AddMembers(classMembers.ToArray());
+                """)!;
+
+        return classDeclaration.AddMembers(
+            [.. dbDriver.GetAdditionalClassMembers()
+                .AddRangeExcludeNulls(classMembers)]
+        );
     }
 
     private IEnumerable<MemberDeclarationSyntax> GetMembersForSingleQuery(Query query)

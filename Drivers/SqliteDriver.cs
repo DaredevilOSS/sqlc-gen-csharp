@@ -243,7 +243,7 @@ public sealed partial class SqliteDriver(
 
     public override MemberDeclarationSyntax[] GetMemberDeclarationsForUtils()
     {
-        return base
+        return [.. base
             .GetMemberDeclarationsForUtils()
             .AddRangeIf([
                 ParseMemberDeclaration(TransformQueryForSliceArgsImpl)!
@@ -251,21 +251,30 @@ public sealed partial class SqliteDriver(
             .AddRangeIf([
                 ParseMemberDeclaration(ValuesRegex)!,
                 ParseMemberDeclaration(TransformQueryForBatch)!
-            ], CopyFromQueryExists())
-            .ToArray();
+            ], CopyFromQueryExists())];
     }
 
     public override ConnectionGenCommands EstablishConnection(Query query)
     {
         return new(
-            $"var {Variable.Connection.AsVarName()} = new SqliteConnection({Variable.ConnectionString.AsPropertyName()})",
-            $"await {Variable.Connection.AsVarName()}.OpenAsync()"
+            GetConnectionOrDataSource: new(
+                $"var {Variable.Connection.AsVarName()} = new SqliteConnection({Variable.ConnectionString.AsPropertyName()})",
+                true
+            ),
+            ConnectionOpen: $"await {Variable.Connection.AsVarName()}.OpenAsync()"
         );
     }
 
-    public override string CreateSqlCommand(string sqlTextConstant)
+    public override CommandGenCommands CreateSqlCommand(string sqlTextConstant)
     {
-        return $"var {Variable.Command.AsVarName()} = new SqliteCommand({sqlTextConstant}, {Variable.Connection.AsVarName()})";
+        var commandVar = Variable.Command.AsVarName();
+        return new CommandGenCommands(
+            CommandCreation: new(
+                $"var {commandVar} = new SqliteCommand({sqlTextConstant}, {Variable.Connection.AsVarName()})",
+                true),
+            SetCommandText: string.Empty,
+            PrepareCommand: string.Empty
+        );
     }
 
     public override string TransformQueryText(Query query)
@@ -295,24 +304,23 @@ public sealed partial class SqliteDriver(
     public string GetCopyFromImpl(Query query, string queryTextConstant)
     {
         var sqlTextVar = Variable.TransformedSql.AsVarName();
-        var (establishConnection, connectionOpen) = EstablishConnection(query);
-        var sqlTransformation = $"var {sqlTextVar} = Utils.TransformQueryForSqliteBatch({queryTextConstant}, {Variable.Args.AsVarName()}.Count);";
+        var connectionCommands = EstablishConnection(query);
         var commandParameters = AddParametersToCommand();
-        var createSqlCommand = CreateSqlCommand(sqlTextVar);
-        var executeScalar = $"await {Variable.Command.AsVarName()}.ExecuteScalarAsync();";
-
-        return $$"""
-                 using ({{establishConnection}})
-                 {
-                     {{connectionOpen.AppendSemicolonUnlessEmpty()}}
-                     {{sqlTransformation}}
-                     using ({{createSqlCommand}})
-                     {
-                         {{commandParameters}}
-                         {{executeScalar}}
-                     }
-                 }
-                 """;
+        var createSqlCommands = CreateSqlCommand(sqlTextVar);
+        var commandBlock = createSqlCommands.CommandCreation.WrapBlock(
+            $"""
+            {commandParameters}
+            {createSqlCommands.PrepareCommand.AppendSemicolonUnlessEmpty()}
+            await {Variable.Command.AsVarName()}.ExecuteScalarAsync();
+            """
+        );
+        return connectionCommands.GetConnectionOrDataSource.WrapBlock(
+            $$"""
+            var {{sqlTextVar}} = Utils.TransformQueryForSqliteBatch({{queryTextConstant}}, {{Variable.Args.AsVarName()}}.Count);
+            {{connectionCommands.ConnectionOpen.AppendSemicolonUnlessEmpty()}}
+            {{commandBlock}}
+            """
+        );
 
         string AddParametersToCommand()
         {

@@ -45,12 +45,12 @@ public class ExecLastIdDeclareGen(DbDriver dbDriver)
 
     private string GetDapperNoTxBody(string sqlVar, Query query)
     {
-        var (establishConnection, _) = dbDriver.EstablishConnection(query);
-        var dapperArgs = query.Params.Any() ? $", {Variable.QueryParams.AsVarName()}" : string.Empty;
-        return $$"""
-                    using ({{establishConnection}})
-                        return await {{Variable.Connection.AsVarName()}}.QuerySingleAsync<{{dbDriver.GetIdColumnType(query)}}>({{sqlVar}}{{dapperArgs}});
-                 """;
+        var connectionCommands = dbDriver.EstablishConnection(query);
+        var dapperArgs = CommonGen.GetDapperArgs(query);
+        var idColumnType = dbDriver.GetIdColumnType(query);
+        return connectionCommands.GetConnectionOrDataSource.WrapBlock($"""
+            return await {Variable.Connection.AsVarName()}.QuerySingleAsync<{idColumnType}>({sqlVar}{dapperArgs});
+        """);
     }
 
     private string GetDapperWithTxBody(string sqlVar, Query query)
@@ -58,46 +58,46 @@ public class ExecLastIdDeclareGen(DbDriver dbDriver)
         var transactionProperty = Variable.Transaction.AsPropertyName();
         var dapperArgs = query.Params.Any() ? $", {Variable.QueryParams.AsVarName()}" : string.Empty;
         return $$"""
-                    {{dbDriver.TransactionConnectionNullExcetionThrow}}
-                    return await this.{{transactionProperty}}.Connection.QuerySingleAsync<{{dbDriver.GetIdColumnType(query)}}>({{sqlVar}}{{dapperArgs}}, transaction: this.{{transactionProperty}});
-                 """;
+                {{dbDriver.TransactionConnectionNullExcetionThrow}}
+                return await this.{{transactionProperty}}.Connection.QuerySingleAsync<{{dbDriver.GetIdColumnType(query)}}>({{sqlVar}}{{dapperArgs}}, transaction: this.{{transactionProperty}});
+                """;
     }
 
     private string GetDriverNoTxBody(string sqlVar, Query query)
     {
-        var (establishConnection, connectionOpen) = dbDriver.EstablishConnection(query);
-        var createSqlCommand = dbDriver.CreateSqlCommand(sqlVar);
-        var commandParameters = dbDriver.AddParametersToCommand(query);
+        var connectionCommands = dbDriver.EstablishConnection(query);
+        var sqlCommands = dbDriver.CreateSqlCommand(sqlVar);
         var returnLastId = ((IExecLastId)dbDriver).GetLastIdStatement(query).JoinByNewLine();
-        return $$"""
-                    using ({{establishConnection}})
-                    {
-                        {{connectionOpen.AppendSemicolonUnlessEmpty()}}
-                        using ({{createSqlCommand}})
-                        {
-                            {{commandParameters}}
-                            {{returnLastId}}
-                        }
-                    }
-                 """;
+        var commandBlock = sqlCommands.CommandCreation.WrapBlock(
+            $$"""
+            {{sqlCommands.SetCommandText.AppendSemicolonUnlessEmpty()}}
+            {{dbDriver.AddParametersToCommand(query)}}
+            {{sqlCommands.PrepareCommand.AppendSemicolonUnlessEmpty()}}
+            {{returnLastId}}
+            """
+        );
+        return connectionCommands.GetConnectionOrDataSource.WrapBlock(
+            $$"""
+            {{connectionCommands.ConnectionOpen.AppendSemicolonUnlessEmpty()}}
+            {{commandBlock}}
+            """
+        );
     }
 
     private string GetDriverWithTxBody(string sqlVar, Query query)
     {
         var transactionProperty = Variable.Transaction.AsPropertyName();
         var commandVar = Variable.Command.AsVarName();
-        var commandParameters = dbDriver.AddParametersToCommand(query);
-        var returnLastId = ((IExecLastId)dbDriver).GetLastIdStatement(query).JoinByNewLine();
 
         return $$"""
-                    {{dbDriver.TransactionConnectionNullExcetionThrow}}
-                    using (var {{commandVar}} = this.{{transactionProperty}}.Connection.CreateCommand())
-                    {
-                        {{commandVar}}.CommandText = {{sqlVar}};
-                        {{commandVar}}.Transaction = this.{{transactionProperty}};
-                        {{commandParameters}}
-                        {{returnLastId}}
-                    }
-                 """;
+            {{dbDriver.TransactionConnectionNullExcetionThrow}}
+            using (var {{commandVar}} = this.{{transactionProperty}}.Connection.CreateCommand())
+            {
+                {{commandVar}}.CommandText = {{sqlVar}};
+                {{commandVar}}.Transaction = this.{{transactionProperty}};
+                {{dbDriver.AddParametersToCommand(query)}}
+                {{((IExecLastId)dbDriver).GetLastIdStatement(query).JoinByNewLine()}}
+            }
+        """;
     }
 }

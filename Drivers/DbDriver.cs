@@ -7,7 +7,32 @@ using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace SqlcGenCsharp.Drivers;
 
-public record ConnectionGenCommands(string EstablishConnection, string ConnectionOpen);
+public class GenCommand(string commandText, bool wrapInUsing)
+{
+    public string WrapBlock(string blockText)
+    {
+        return wrapInUsing
+            ? $$"""
+            using ({{commandText}})
+            {
+                {{blockText}}
+            }
+            """
+            : $$"""
+            {{commandText}};
+            {{blockText}}
+            """;
+    }
+}
+
+public record ConnectionGenCommands(
+    GenCommand GetConnectionOrDataSource,
+    string ConnectionOpen = "");
+
+public record CommandGenCommands(
+    GenCommand CommandCreation,
+    string SetCommandText,
+    string PrepareCommand);
 
 public abstract class DbDriver
 {
@@ -69,7 +94,7 @@ public abstract class DbDriver
            """;
 
     public readonly string TransactionConnectionNullExcetionThrow = $"""
-         if (this.{Variable.Transaction.AsPropertyName()}?.Connection == null || this.{Variable.Transaction.AsPropertyName()}?.Connection.State != System.Data.ConnectionState.Open)
+         if (this.{Variable.Transaction.AsPropertyName()}?.Connection == null || this.{Variable.Transaction.AsPropertyName()}?.Connection.State != ConnectionState.Open)
              throw new InvalidOperationException("Transaction is provided, but its connection is null.");
          """;
 
@@ -148,6 +173,8 @@ public abstract class DbDriver
             {
                 "System",
                 "System.Collections.Generic",
+                "System.Data",
+                "System.Threading",
                 "System.Threading.Tasks"
             }
             .AddRangeIf([
@@ -191,7 +218,7 @@ public abstract class DbDriver
             .AddRangeExcludeNulls(GetUsingDirectivesForColumnMappings());
     }
 
-    public string[] GetConstructorStatements()
+    public virtual string[] GetConstructorStatements()
     {
         return [$"this.{Variable.ConnectionString.AsPropertyName()} = {Variable.ConnectionString.AsVarName()};"];
     }
@@ -199,6 +226,16 @@ public abstract class DbDriver
     public string[] GetTransactionConstructorStatements()
     {
         return [$"this.{Variable.Transaction.AsPropertyName()} = {Variable.Transaction.AsVarName()};"];
+    }
+
+    public virtual string[] GetClassBaseTypes()
+    {
+        return [];
+    }
+
+    public virtual MemberDeclarationSyntax[] GetAdditionalClassMembers()
+    {
+        return [];
     }
 
     protected virtual ISet<string> GetConfigureSqlMappings()
@@ -220,7 +257,8 @@ public abstract class DbDriver
                  {
                      {{GetConfigureSqlMappings().JoinByNewLine()}}
                  }
-               """)!];
+               """)!
+            ];
     }
 
     private MemberDeclarationSyntax[] GetSqlMapperMemberDeclarations()
@@ -234,7 +272,7 @@ public abstract class DbDriver
 
     public abstract ConnectionGenCommands EstablishConnection(Query query);
 
-    public abstract string CreateSqlCommand(string sqlTextConstant);
+    public abstract CommandGenCommands CreateSqlCommand(string sqlTextConstant);
 
     /* Since there is no indication of the primary key column in SQLC protobuf (assuming it is a single column),
        this method uses a few heuristics to assess the data type of the id column
@@ -385,6 +423,19 @@ public abstract class DbDriver
         if (typeInfo.Length is null)
             return true;
         return typeInfo.Length.Value == column.Length;
+    }
+
+    public string? GetColumnDbTypeOverride(Column column)
+    {
+        if (column.IsArray)
+            return null; // TODO: handle array columns
+        var columnType = column.Type.Name.ToLower();
+        foreach (var columnMapping in ColumnMappings.Values)
+        {
+            if (columnMapping.DbTypes.TryGetValue(columnType, out var dbTypeOverride))
+                return dbTypeOverride.DbTypeOverride;
+        }
+        return null;
     }
 
     public virtual WriterFn? GetWriterFn(Column column, Query query)
