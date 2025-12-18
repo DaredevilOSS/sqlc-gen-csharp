@@ -35,6 +35,7 @@ jobs:
         uses: xom9ikk/dotenv@v2.3.0
         with:
           load-mode: strict
+          path: benchmark/.env
 
       - name: Docker compose
         uses: hoverkraft-tech/compose-action@v1.5.1
@@ -70,6 +71,7 @@ jobs:
         uses: xom9ikk/dotenv@v2.3.0
         with:
           load-mode: strict
+          path: benchmark/.env
 
       - name: Docker compose
         uses: hoverkraft-tech/compose-action@v1.5.1
@@ -105,6 +107,7 @@ jobs:
         uses: xom9ikk/dotenv@v2.3.0
         with:
           load-mode: strict
+          path: benchmark/.env
 
       - name: Docker compose
         uses: hoverkraft-tech/compose-action@v1.5.1
@@ -140,6 +143,7 @@ jobs:
         uses: xom9ikk/dotenv@v2.3.0
         with:
           load-mode: strict
+          path: benchmark/.env
 
       - name: Docker compose
         uses: hoverkraft-tech/compose-action@v1.5.1
@@ -175,6 +179,7 @@ jobs:
         uses: xom9ikk/dotenv@v2.3.0
         with:
           load-mode: strict
+          path: benchmark/.env
 
       - name: Run Benchmark
         run: ./scripts/run_single_benchmark.sh sqlite reads
@@ -205,6 +210,7 @@ jobs:
         uses: xom9ikk/dotenv@v2.3.0
         with:
           load-mode: strict
+          path: benchmark/.env
 
       - name: Run Benchmark
         run: ./scripts/run_single_benchmark.sh sqlite writes
