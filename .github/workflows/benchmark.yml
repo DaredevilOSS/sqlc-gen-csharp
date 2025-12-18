@@ -19,6 +19,9 @@ jobs:
   benchmark-mysql-reads:
     name: MySQL Reads Benchmark
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./benchmark
     
     steps:
       - uses: actions/checkout@v4
@@ -39,18 +42,21 @@ jobs:
           services: mysqldb
 
       - name: Run Benchmark
-        run: ./benchmark/scripts/run_single_benchmark.sh mysql reads
+        run: ./scripts/run_single_benchmark.sh mysql reads
 
       - name: Upload Results
         uses: actions/upload-artifact@v4
         if: success()
         with:
           name: mysql-reads-results
-          path: benchmark/BenchmarkDotNet.Artifacts/mysql/reads
+          path: BenchmarkDotNet.Artifacts/mysql/reads
   
   benchmark-mysql-writes:
     name: MySQL Writes Benchmark
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./benchmark
     
     steps:
       - uses: actions/checkout@v4
@@ -71,18 +77,21 @@ jobs:
           services: mysqldb
 
       - name: Run Benchmark
-        run: ./benchmark/scripts/run_single_benchmark.sh mysql writes
+        run: ./scripts/run_single_benchmark.sh mysql writes
 
       - name: Upload Results
         uses: actions/upload-artifact@v4
         if: success()
         with:
           name: mysql-writes-results
-          path: benchmark/BenchmarkDotNet.Artifacts/mysql/writes
+          path: BenchmarkDotNet.Artifacts/mysql/writes
   
   benchmark-postgresql-reads:
     name: PostgreSQL Reads Benchmark
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./benchmark
     
     steps:
       - uses: actions/checkout@v4
@@ -103,18 +112,21 @@ jobs:
           services: postgresdb
 
       - name: Run Benchmark
-        run: ./benchmark/scripts/run_single_benchmark.sh postgresql reads
+        run: ./scripts/run_single_benchmark.sh postgresql reads
 
       - name: Upload Results
         uses: actions/upload-artifact@v4
         if: success()
         with:
           name: postgresql-reads-results
-          path: benchmark/BenchmarkDotNet.Artifacts/postgresql/reads
+          path: BenchmarkDotNet.Artifacts/postgresql/reads
 
   benchmark-postgresql-writes:
     name: PostgreSQL Writes Benchmark
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./benchmark
     
     steps:
       - uses: actions/checkout@v4
@@ -135,18 +147,21 @@ jobs:
           services: postgresdb
 
       - name: Run Benchmark
-        run: ./benchmark/scripts/run_single_benchmark.sh postgresql writes
+        run: ./scripts/run_single_benchmark.sh postgresql writes
 
       - name: Upload Results
         uses: actions/upload-artifact@v4
         if: success()
         with:
           name: postgresql-writes-results
-          path: benchmark/BenchmarkDotNet.Artifacts/postgresql/writes
+          path: BenchmarkDotNet.Artifacts/postgresql/writes
         
   benchmark-sqlite-reads:
     name: SQLite Reads Benchmark
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./benchmark
     
     steps:
       - uses: actions/checkout@v4
@@ -162,18 +177,21 @@ jobs:
           load-mode: strict
 
       - name: Run Benchmark
-        run: ./benchmark/scripts/run_single_benchmark.sh sqlite reads
+        run: ./scripts/run_single_benchmark.sh sqlite reads
 
       - name: Upload Results
         uses: actions/upload-artifact@v4
         if: success()
         with:
           name: sqlite-reads-results
-          path: benchmark/BenchmarkDotNet.Artifacts/sqlite/reads
+          path: BenchmarkDotNet.Artifacts/sqlite/reads
 
   benchmark-sqlite-writes:
     name: SQLite Writes Benchmark
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./benchmark
     
     steps:
       - uses: actions/checkout@v4
@@ -189,19 +207,22 @@ jobs:
           load-mode: strict
 
       - name: Run Benchmark
-        run: ./benchmark/scripts/run_single_benchmark.sh sqlite writes
+        run: ./scripts/run_single_benchmark.sh sqlite writes
 
       - name: Upload Results
         uses: actions/upload-artifact@v4
         if: success()
         with:
           name: sqlite-writes-results
-          path: benchmark/BenchmarkDotNet.Artifacts/sqlite/writes
+          path: BenchmarkDotNet.Artifacts/sqlite/writes
         
   push-results:
     name: Push Results
     runs-on: ubuntu-latest
-    if: always()
+    defaults:
+      run:
+        working-directory: ./benchmark
+    if: always() && github.event_name == 'release'
     needs: [
       benchmark-mysql-reads, benchmark-mysql-writes, 
       benchmark-postgresql-reads, benchmark-postgresql-writes, 
@@ -215,37 +236,40 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: mysql-reads-results
-          path: benchmark/BenchmarkDotNet.Artifacts/mysql/reads
+          path: BenchmarkDotNet.Artifacts/mysql/reads
 
       - name: Download MySQL Writes Results
         uses: actions/download-artifact@v4
         with:
           name: mysql-writes-results
-          path: benchmark/BenchmarkDotNet.Artifacts/mysql/writes
+          path: BenchmarkDotNet.Artifacts/mysql/writes
 
       - name: Download PostgreSQL Reads Results
         uses: actions/download-artifact@v4
         with:
           name: postgresql-reads-results
-          path: benchmark/BenchmarkDotNet.Artifacts/postgresql/reads
+          path: BenchmarkDotNet.Artifacts/postgresql/reads
 
       - name: Download PostgreSQL Writes Results
         uses: actions/download-artifact@v4
         with:
           name: postgresql-writes-results
-          path: benchmark/BenchmarkDotNet.Artifacts/postgresql/writes
+          path: BenchmarkDotNet.Artifacts/postgresql/writes
 
       - name: Download SQLite Reads Results
         uses: actions/download-artifact@v4
         with:
           name: sqlite-reads-results
-          path: benchmark/BenchmarkDotNet.Artifacts/sqlite/reads
+          path: BenchmarkDotNet.Artifacts/sqlite/reads
 
       - name: Download SQLite Writes Results
         uses: actions/download-artifact@v4
         with:
           name: sqlite-writes-results
-          path: benchmark/BenchmarkDotNet.Artifacts/sqlite/writes
+          path: BenchmarkDotNet.Artifacts/sqlite/writes
+
+      - name: Update Wasm Plugin
+        run: ./scripts/update_wasm_plugin.sh
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v6

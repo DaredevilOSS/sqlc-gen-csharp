@@ -12,30 +12,28 @@ namespace EndToEndTests
         public const string PostgresConnectionStringEnv = "POSTGRES_CONNECTION_STRING";
         public const string MySqlConnectionStringEnv = "MYSQL_CONNECTION_STRING";
         public const string SqliteConnectionStringEnv = "SQLITE_CONNECTION_STRING";
-        public const string SqliteBenchmarkConnectionStringEnv = "SQLITE_BENCHMARK_CONNECTION_STRING";
 
         public static void SetupTestsSqliteDb() => SetupSqliteDb(
-            SqliteConnectionStringEnv,
             new string[] { "authors.sqlite.schema.sql", "types.sqlite.schema.sql" }
         );
         public static void SetupBenchmarkSqliteDb() => SetupSqliteDb(
-            SqliteBenchmarkConnectionStringEnv,
             new string[] { "sqlite.schema.sql" }
         );
-        public static void SetupSqliteDb(string connectionStringEnv, string[] schemaFiles)
+        
+        public static void SetupSqliteDb(string[] schemaFiles)
         {
             if (!File.Exists(EnvFile))
                 throw new FileNotFoundException($"{EnvFile} not found");
 
             DotEnv.Load(options: new DotEnvOptions(envFilePaths: new[] { EnvFile }));
-            RemoveExistingSqliteDb(connectionStringEnv);
-            InitSqliteDb(connectionStringEnv, schemaFiles);
+            RemoveExistingSqliteDb();
+            InitSqliteDb(schemaFiles);
         }
-        public static void RemoveExistingSqliteDb(string connectionStringEnv)
+        public static void RemoveExistingSqliteDb()
         {
-            var connectionString = Environment.GetEnvironmentVariable(connectionStringEnv);
+            var connectionString = Environment.GetEnvironmentVariable(SqliteConnectionStringEnv);
             if (string.IsNullOrWhiteSpace(connectionString))
-                throw new InvalidOperationException($"{connectionStringEnv} environment variable is not set");
+                throw new InvalidOperationException($"{SqliteConnectionStringEnv} environment variable is not set");
 
             var dbFilename = SqliteFilenameRegex.Match(connectionString).Groups[1].Value;
             if (!File.Exists(dbFilename)) return;
@@ -43,11 +41,11 @@ namespace EndToEndTests
             Console.WriteLine($"Removing sqlite db from {dbFilename}");
             File.Delete(dbFilename);
         }
-        private static void InitSqliteDb(string connectionStringEnv, string[] schemaFiles)
+        private static void InitSqliteDb(string[] schemaFiles)
         {
-            var connectionString = Environment.GetEnvironmentVariable(connectionStringEnv);
+            var connectionString = Environment.GetEnvironmentVariable(SqliteConnectionStringEnv);
             if (string.IsNullOrWhiteSpace(connectionString))
-                throw new InvalidOperationException($"{connectionStringEnv} environment variable is not set");
+                throw new InvalidOperationException($"{SqliteConnectionStringEnv} environment variable is not set");
 
             connectionString = connectionString.Replace("Mode=ReadWrite", "Mode=ReadWriteCreate");
             try

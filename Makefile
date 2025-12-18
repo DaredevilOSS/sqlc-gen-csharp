@@ -50,22 +50,25 @@ run-end2end-tests:
 	./end2end/scripts/run_tests.sh
 
 # Benchmarks
-run-benchmark-sqlite-reads: sqlc-generate
+sqlc-generate-benchmark:
+	SQLCCACHE=./; sqlc -f benchmark/sqlc.yaml generate
+
+run-benchmark-sqlite-reads: sqlc-generate-benchmark
 	./benchmark/scripts/run_single_benchmark.sh sqlite reads
 
-run-benchmark-sqlite-writes: sqlc-generate
+run-benchmark-sqlite-writes: sqlc-generate-benchmark
 	./benchmark/scripts/run_single_benchmark.sh sqlite writes
 
-run-benchmark-postgresql-reads: sqlc-generate
+run-benchmark-postgresql-reads: sqlc-generate-benchmark
 	./benchmark/scripts/run_single_benchmark.sh postgresql reads
 
-run-benchmark-postgresql-writes: sqlc-generate
+run-benchmark-postgresql-writes: sqlc-generate-benchmark
 	./benchmark/scripts/run_single_benchmark.sh postgresql writes
 
-run-benchmark-mysql-reads: sqlc-generate
+run-benchmark-mysql-reads: sqlc-generate-benchmark
 	./benchmark/scripts/run_single_benchmark.sh mysql reads
 
-run-benchmark-mysql-writes: sqlc-generate
+run-benchmark-mysql-writes: sqlc-generate-benchmark
 	./benchmark/scripts/run_single_benchmark.sh mysql writes
 
 # Manual
