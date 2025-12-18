@@ -19,7 +19,7 @@ public class RepositoryTests
 
         Assert.That(postgresConnectionString, Is.Not.Null);
         var postgresConnParts = postgresConnectionString.Split(';');
-        
+
         Assert.That(postgresConnParts, Does.Contain($"database={testsDb}"));
         Assert.That(postgresConnParts, Does.Contain($"username={postgresUser}"));
         Assert.That(postgresConnParts, Does.Contain($"password={postgresPassword}"));
