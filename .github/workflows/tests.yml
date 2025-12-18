@@ -36,8 +36,7 @@ jobs:
         run: dotnet publish ../LocalRunner -c release --output dist/
         
       - name: Verify pushed generated code is synced
-        run: |
-          sqlc diff
+        run: sqlc diff
           
       - name: Run Tests
         run: |
