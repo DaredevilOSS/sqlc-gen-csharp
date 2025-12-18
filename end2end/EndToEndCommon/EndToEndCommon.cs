@@ -19,7 +19,7 @@ namespace EndToEndTests
         public static void SetupBenchmarkSqliteDb() => SetupSqliteDb(
             new string[] { "sqlite.schema.sql" }
         );
-        
+
         public static void SetupSqliteDb(string[] schemaFiles)
         {
             if (!File.Exists(EnvFile))
