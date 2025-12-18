@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -e
+set -x
 
 cd $(git rev-parse --show-toplevel)/benchmark
 

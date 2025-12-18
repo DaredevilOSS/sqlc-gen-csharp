@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 
-set -ex
+set -e
 
-cd $(git rev-parse --show-toplevel)/benchmark
+working_directory=$(git rev-parse --show-toplevel)/benchmark
+cd $working_directory
 
 database_to_benchmark=$1
 type_to_benchmark=$2
@@ -15,9 +16,9 @@ function docker_compose_up() {
 # Adjust the SQLite connection string to use absolute path
 function adjust_sqlite_connection_string() {
     if [[ "$OSTYPE" == "darwin"* ]]; then
-        sed -i '' "s|Data Source=\([^;]*\.db\);|Data Source=$(pwd)/\1;|" .env
+        sed -i '' "s|Data Source=\([^;]*\.db\);|Data Source=$working_directory/\1;|" .env
     else
-        sed -i "s|Data Source=\([^;]*\.db\);|Data Source=$(pwd)/\1;|" .env
+        sed -i "s|Data Source=\([^;]*\.db\);|Data Source=$($working_directory)/\1;|" .env
     fi
 }
 

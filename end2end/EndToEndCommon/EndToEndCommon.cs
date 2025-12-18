@@ -20,12 +20,16 @@ namespace EndToEndTests
             new string[] { "sqlite.schema.sql" }
         );
 
-        public static void SetupSqliteDb(string[] schemaFiles)
+        public static void LoadEnvFile() 
         {
             if (!File.Exists(EnvFile))
                 throw new FileNotFoundException($"{EnvFile} not found");
-
             DotEnv.Load(options: new DotEnvOptions(envFilePaths: new[] { EnvFile }));
+        }
+
+        public static void SetupSqliteDb(string[] schemaFiles)
+        {
+            LoadEnvFile();
             RemoveExistingSqliteDb();
             InitSqliteDb(schemaFiles);
         }
