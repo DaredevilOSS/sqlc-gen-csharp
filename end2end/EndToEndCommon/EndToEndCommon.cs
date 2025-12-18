@@ -20,7 +20,7 @@ namespace EndToEndTests
             new string[] { "sqlite.schema.sql" }
         );
 
-        public static void LoadEnvFile() 
+        public static void LoadEnvFile()
         {
             if (!File.Exists(EnvFile))
                 throw new FileNotFoundException($"{EnvFile} not found");
