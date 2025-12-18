@@ -15,10 +15,11 @@ function docker_compose_up() {
 
 # Adjust the SQLite connection string to use absolute path
 function adjust_sqlite_connection_string() {
+    sed_pattern="s|Data Source=\([^;]*\.db\);|Data Source=$(pwd)/\1;|"
     if [[ "$OSTYPE" == "darwin"* ]]; then
-        sed -i '' "s|Data Source=\([^;]*\.db\);|Data Source=$working_directory/\1;|" .env
+        sed -i '' "$sed_pattern" .env
     else
-        sed -i "s|Data Source=\([^;]*\.db\);|Data Source=$($working_directory)/\1;|" .env
+        sed -i "$sed_pattern" .env
     fi
 }
 
