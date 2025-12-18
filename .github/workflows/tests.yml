@@ -21,7 +21,10 @@ jobs:
   unit-tests:
     name: Unit Tests
     runs-on: ubuntu-latest
-      
+    defaults:
+      run:
+        working-directory: ./unit-tests
+
     steps:
       - uses: actions/checkout@v4
 
@@ -34,12 +37,12 @@ jobs:
         
       - name: Verify pushed generated code is synced
         run: |
-          sqlc -f sqlc.unit.test.yaml diff
+          sqlc diff
           
       - name: Run Tests
         run: |
-          dotnet test unit-tests/RepositoryTests
-          dotnet test unit-tests/CodegenTests
+          dotnet test RepositoryTests
+          dotnet test CodegenTests
     
   end2end-tests:
     name: End-to-End Tests
