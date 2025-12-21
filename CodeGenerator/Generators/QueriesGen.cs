@@ -183,15 +183,22 @@ internal partial class QueriesGen(DbDriver dbDriver, string namespaceName)
         var argInterface = ClassMember.Args.Name(query.Name);
         var returnInterface = ClassMember.Row.Name(query.Name);
 
-        return query.Cmd switch
+        try
         {
-            ":exec" => ((IExec)dbDriver).ExecDeclare(queryTextConstant, argInterface, query),
-            ":one" => ((IOne)dbDriver).OneDeclare(queryTextConstant, argInterface, returnInterface, query),
-            ":many" => ((IMany)dbDriver).ManyDeclare(queryTextConstant, argInterface, returnInterface, query),
-            ":execrows" => ((IExecRows)dbDriver).ExecRowsDeclare(queryTextConstant, argInterface, query),
-            ":execlastid" => ((IExecLastId)dbDriver).ExecLastIdDeclare(queryTextConstant, argInterface, query),
-            ":copyfrom" => ((ICopyFrom)dbDriver).CopyFromDeclare(queryTextConstant, argInterface, query),
-            _ => throw new NotSupportedException($"{query.Cmd} is not supported")
-        };
+            return query.Cmd switch
+            {
+                ":exec" => ((IExec)dbDriver).ExecDeclare(queryTextConstant, argInterface, query),
+                ":one" => ((IOne)dbDriver).OneDeclare(queryTextConstant, argInterface, returnInterface, query),
+                ":many" => ((IMany)dbDriver).ManyDeclare(queryTextConstant, argInterface, returnInterface, query),
+                ":execrows" => ((IExecRows)dbDriver).ExecRowsDeclare(queryTextConstant, argInterface, query),
+                ":execlastid" => ((IExecLastId)dbDriver).ExecLastIdDeclare(queryTextConstant, argInterface, query),
+                ":copyfrom" => ((ICopyFrom)dbDriver).CopyFromDeclare(queryTextConstant, argInterface, query),
+                _ => throw new NotSupportedException($"{query.Cmd} is not supported")
+            };
+        }
+        catch (Exception e)
+        {
+            throw new SystemException($"Failed to add method declaration for query: {query.Name}", e);
+        }
     }
 }
