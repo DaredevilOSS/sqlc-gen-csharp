@@ -32,10 +32,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="..\..\examples\config\sqlite\benchmark\schema.sql" TargetPath="sqlite.schema.sql">
+    <Content Include="..\config\sqlite\schema.sql" TargetPath="sqlite.schema.sql">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="..\..\.env">
+    <Content Include="..\.env">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

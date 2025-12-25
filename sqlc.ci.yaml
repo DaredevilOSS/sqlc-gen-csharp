@@ -503,28 +503,3 @@ sql:
             - column: "*:c_integer_noda_instant_override"
               csharp_type:
                 type: "Instant"
-  # Benchmark
-  - schema: "examples/config/postgresql/benchmark/schema.sql"
-    queries: "examples/config/postgresql/benchmark/query.sql"
-    engine: "postgresql"
-    codegen:
-      - plugin: csharp
-        out: benchmark/PostgresqlSqlcImpl
-        options:
-          namespaceName: PostgresSqlcImpl
-  - schema: "examples/config/sqlite/benchmark/schema.sql"
-    queries: "examples/config/sqlite/benchmark/query.sql"
-    engine: "sqlite"
-    codegen:
-      - plugin: csharp
-        out: benchmark/SqliteSqlcImpl
-        options:
-          namespaceName: SqliteSqlcImpl
-  - schema: "examples/config/mysql/benchmark/schema.sql"
-    queries: "examples/config/mysql/benchmark/query.sql"
-    engine: "mysql"
-    codegen:
-      - plugin: csharp
-        out: benchmark/MysqlSqlcImpl
-        options:
-          namespaceName: MysqlSqlcImpl

@@ -6,9 +6,10 @@ dotnet-build:
 
 .PHONY: unit-tests
 unit-tests:
-	dotnet test unit-tests/RepositoryTests
-	sqlc generate -f sqlc.unit.test.yaml
-	dotnet test unit-tests/CodegenTests
+	cd unit-tests && \
+	dotnet test RepositoryTests && \
+	SQLCCACHE=./; sqlc generate && \
+	dotnet test CodegenTests
 
 generate-end2end-tests:
 	./end2end/scripts/generate_tests.sh
@@ -50,22 +51,25 @@ run-end2end-tests:
 	./end2end/scripts/run_tests.sh
 
 # Benchmarks
-run-benchmark-sqlite-reads: sqlc-generate
+sqlc-generate-benchmark:
+	SQLCCACHE=./; sqlc -f benchmark/sqlc.yaml generate
+
+run-benchmark-sqlite-reads: sqlc-generate-benchmark
 	./benchmark/scripts/run_single_benchmark.sh sqlite reads
 
-run-benchmark-sqlite-writes: sqlc-generate
+run-benchmark-sqlite-writes: sqlc-generate-benchmark
 	./benchmark/scripts/run_single_benchmark.sh sqlite writes
 
-run-benchmark-postgresql-reads: sqlc-generate
+run-benchmark-postgresql-reads: sqlc-generate-benchmark
 	./benchmark/scripts/run_single_benchmark.sh postgresql reads
 
-run-benchmark-postgresql-writes: sqlc-generate
+run-benchmark-postgresql-writes: sqlc-generate-benchmark
 	./benchmark/scripts/run_single_benchmark.sh postgresql writes
 
-run-benchmark-mysql-reads: sqlc-generate
+run-benchmark-mysql-reads: sqlc-generate-benchmark
 	./benchmark/scripts/run_single_benchmark.sh mysql reads
 
-run-benchmark-mysql-writes: sqlc-generate
+run-benchmark-mysql-writes: sqlc-generate-benchmark
 	./benchmark/scripts/run_single_benchmark.sh mysql writes
 
 # Manual

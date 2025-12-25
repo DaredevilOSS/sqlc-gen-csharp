@@ -1,137 +1,0 @@
-
-Ö
-2sqlite+examples/config/sqlite/benchmark/schema.sql"*examples/config/sqlite/benchmark/query.sqlbp
-benchmark/SqliteSqlcImplcsharp6{"debugRequest":true,"namespaceName":"SqliteSqlcImpl"}*
-./dist/LocalRunner•	main"Œ	mainŸ
-	customers2
-customer_id0ÿÿÿÿÿÿÿÿÿR	customersb	INTEGER(
-name0ÿÿÿÿÿÿÿÿÿR	customersbTEXT)
-email0ÿÿÿÿÿÿÿÿÿR	customersbTEXT)
-phone0ÿÿÿÿÿÿÿÿÿR	customersbTEXT)
-address0ÿÿÿÿÿÿÿÿÿR	customersbTEXT1
-registered_at0ÿÿÿÿÿÿÿÿÿR	customersbTEXTÔ
-
-products0
-
-product_id0ÿÿÿÿÿÿÿÿÿR
-productsb	INTEGER'
-name0ÿÿÿÿÿÿÿÿÿR
-productsbTEXT+
-category0ÿÿÿÿÿÿÿÿÿR
-productsbTEXT-
-
-unit_price0ÿÿÿÿÿÿÿÿÿR
-productsbREAL4
-stock_quantity0ÿÿÿÿÿÿÿÿÿR
-productsb	INTEGER,
-description0ÿÿÿÿÿÿÿÿÿR
-productsbTEXT+
-added_at0ÿÿÿÿÿÿÿÿÿR
-productsbTEXTó
-orders,
-order_id0ÿÿÿÿÿÿÿÿÿRordersb	INTEGER/
-customer_id0ÿÿÿÿÿÿÿÿÿRordersb	INTEGER+
-
-ordered_at0ÿÿÿÿÿÿÿÿÿRordersbTEXT,
-order_state0ÿÿÿÿÿÿÿÿÿRordersbTEXT-
-total_amount0ÿÿÿÿÿÿÿÿÿRordersbREAL”
-order_items6
-order_item_id0ÿÿÿÿÿÿÿÿÿRorder_itemsb	INTEGER1
-order_id0ÿÿÿÿÿÿÿÿÿRorder_itemsb	INTEGER3
-
-product_id0ÿÿÿÿÿÿÿÿÿRorder_itemsb	INTEGER1
-quantity0ÿÿÿÿÿÿÿÿÿRorder_itemsb	INTEGER0
-
-unit_price0ÿÿÿÿÿÿÿÿÿRorder_itemsbREALç
-ÍSELECT 
-    o.order_id, ordered_at, order_state, total_amount, order_item_id, i.quantity, i.unit_price, 
-    p.product_id, p.name as product_name, p.category as product_category
-FROM orders o
-JOIN order_items i
-USING (order_id)
-JOIN products p
-USING (product_id)
-WHERE o.customer_id = ?1
-ORDER BY o.ordered_at DESC
-LIMIT ?3 OFFSET ?2GetCustomerOrders:many"6
-order_id0ÿÿÿÿÿÿÿÿÿRordersb	INTEGERzorder_id"7
-
-ordered_at0ÿÿÿÿÿÿÿÿÿRordersbTEXTz
-ordered_at"9
-order_state0ÿÿÿÿÿÿÿÿÿRordersbTEXTzorder_state";
-total_amount0ÿÿÿÿÿÿÿÿÿRordersbREALztotal_amount"E
-order_item_id0ÿÿÿÿÿÿÿÿÿRorder_itemsb	INTEGERzorder_item_id";
-quantity0ÿÿÿÿÿÿÿÿÿRorder_itemsb	INTEGERzquantity"<
-
-unit_price0ÿÿÿÿÿÿÿÿÿRorder_itemsbREALz
-unit_price"<
-
-product_id0ÿÿÿÿÿÿÿÿÿR
-productsb	INTEGERz
-product_id"5
-product_name0ÿÿÿÿÿÿÿÿÿR
-productsbTEXTzname"=
-product_category0ÿÿÿÿÿÿÿÿÿR
-productsbTEXTzcategory*B>
-customer_id0ÿÿÿÿÿÿÿÿÿ8Rordersb	INTEGERzcustomer_id*&"
-offset0ÿÿÿÿÿÿÿÿÿ8b	integer*%!
-limit0ÿÿÿÿÿÿÿÿÿ8b	integer:	query.sqlÈ
-YINSERT INTO customers (name, email, phone, address, registered_at) VALUES (?, ?, ?, ?, ?)AddCustomers	:copyfrom*84
-name0ÿÿÿÿÿÿÿÿÿRmain	customersbTEXTzname*:6
-email0ÿÿÿÿÿÿÿÿÿRmain	customersbTEXTzemail*:6
-phone0ÿÿÿÿÿÿÿÿÿRmain	customersbTEXTzphone*<8
-address0ÿÿÿÿÿÿÿÿÿRmain	customersbTEXTzaddress*JF
-registered_at0ÿÿÿÿÿÿÿÿÿRmain	customersbTEXTzregistered_at:	query.sqlB	customersê
-eINSERT INTO products (name, category, unit_price, stock_quantity, description) VALUES (?, ?, ?, ?, ?)AddProducts	:copyfrom*73
-name0ÿÿÿÿÿÿÿÿÿRmainproductsbTEXTzname*?;
-category0ÿÿÿÿÿÿÿÿÿRmainproductsbTEXTzcategory*C?
-
-unit_price0ÿÿÿÿÿÿÿÿÿRmainproductsbREALz
-unit_price*NJ
-stock_quantity0ÿÿÿÿÿÿÿÿÿRmainproductsb	INTEGERzstock_quantity*C?
-description0ÿÿÿÿÿÿÿÿÿRmainproductsbTEXTzdescription:	query.sqlB
-productsÍ
-LINSERT INTO orders (customer_id, order_state, total_amount) VALUES (?, ?, ?)	AddOrders	:copyfrom*FB
-customer_id0ÿÿÿÿÿÿÿÿÿRmainordersb	INTEGERzcustomer_id*C?
-order_state0ÿÿÿÿÿÿÿÿÿRmainordersbTEXTzorder_state*EA
-total_amount0ÿÿÿÿÿÿÿÿÿRmainordersbREALztotal_amount:	query.sqlBorders¯
-XINSERT INTO order_items (order_id, product_id, quantity, unit_price) VALUES (?, ?, ?, ?)AddOrderItems	:copyfrom*EA
-order_id0ÿÿÿÿÿÿÿÿÿRmainorder_itemsb	INTEGERzorder_id*IE
-
-product_id0ÿÿÿÿÿÿÿÿÿRmainorder_itemsb	INTEGERz
-product_id*EA
-quantity0ÿÿÿÿÿÿÿÿÿRmainorder_itemsb	INTEGERzquantity*FB
-
-unit_price0ÿÿÿÿÿÿÿÿÿRmainorder_itemsbREALz
-unit_price:	query.sqlBorder_itemsÈ
->SELECT customer_id FROM customers ORDER BY customer_id LIMIT ?GetCustomerIds:many"?
-customer_id0ÿÿÿÿÿÿÿÿÿR	customersb	INTEGERzcustomer_id*#
-limit0ÿÿÿÿÿÿÿÿÿb	integer:	query.sqlÁ
-;SELECT product_id FROM products ORDER BY product_id LIMIT ?GetProductIds:many"<
-
-product_id0ÿÿÿÿÿÿÿÿÿR
-productsb	INTEGERz
-product_id*#
-limit0ÿÿÿÿÿÿÿÿÿb	integer:	query.sql³
-5SELECT order_id FROM orders ORDER BY order_id LIMIT ?GetOrderIds:many"6
-order_id0ÿÿÿÿÿÿÿÿÿRordersb	INTEGERzorder_id*#
-limit0ÿÿÿÿÿÿÿÿÿb	integer:	query.sqlo
-'SELECT COUNT(*) AS cnt FROM order_itemsGetOrderItemsCount:one"
-cnt0ÿÿÿÿÿÿÿÿÿ@b	integer:	query.sql¨
-RSELECT order_id, total_amount FROM orders WHERE order_id IN (/*SLICE:order_ids*/?)GetOrderAmounts:many"6
-order_id0ÿÿÿÿÿÿÿÿÿRordersb	INTEGERzorder_id";
-total_amount0ÿÿÿÿÿÿÿÿÿRordersbREALztotal_amount*:6
-order_id0ÿÿÿÿÿÿÿÿÿRordersb	INTEGERzorder_id:	query.sql¹
-XSELECT product_id, unit_price FROM products WHERE product_id IN (/*SLICE:product_ids*/?)GetProductPrices:many"<
-
-product_id0ÿÿÿÿÿÿÿÿÿR
-productsb	INTEGERz
-product_id"9
-
-unit_price0ÿÿÿÿÿÿÿÿÿR
-productsbREALz
-unit_price*@<
-
-product_id0ÿÿÿÿÿÿÿÿÿR
-productsb	INTEGERz
-product_id:	query.sql"v1.30.0*ü{"overrideDriverVersion":"","generateCsproj":true,"targetFramework":"net8.0","namespaceName":"SqliteSqlcImpl","useDapper":false,"overrideDapperVersion":"","overrides":null,"debugRequest":false,"useCentralPackageManagement":false,"withAsyncSuffix":true}

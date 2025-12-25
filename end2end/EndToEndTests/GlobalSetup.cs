@@ -14,6 +14,6 @@ public class GlobalSetup
     [OneTimeTearDown]
     public void TearDown()
     {
-        EndToEndCommon.RemoveExistingSqliteDb(EndToEndCommon.SqliteConnectionStringEnv);
+        EndToEndCommon.RemoveExistingSqliteDb();
     }
 }

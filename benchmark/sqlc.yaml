@@ -1,0 +1,31 @@
+version: "2"
+plugins:
+  - name: csharp
+    wasm:
+      url: https://github.com/DaredevilOSS/sqlc-gen-csharp/releases/download/v0.22.1/sqlc-gen-csharp.wasm
+      sha256: 0b07a86555e7adf9aed7f5e4eeb5f89762e182420574edf81cf98173e0d80121
+sql:
+  - schema: "config/postgresql/schema.sql"
+    queries: "config/postgresql/query.sql"
+    engine: "postgresql"
+    codegen:
+      - plugin: csharp
+        out: PostgresqlSqlcImpl
+        options:
+          namespaceName: PostgresSqlcImpl
+  - schema: "config/sqlite/schema.sql"
+    queries: "config/sqlite/query.sql"
+    engine: "sqlite"
+    codegen:
+      - plugin: csharp
+        out: SqliteSqlcImpl
+        options:
+          namespaceName: SqliteSqlcImpl
+  - schema: "config/mysql/schema.sql"
+    queries: "config/mysql/query.sql"
+    engine: "mysql"
+    codegen:
+      - plugin: csharp
+        out: MysqlSqlcImpl
+        options:
+          namespaceName: MysqlSqlcImpl

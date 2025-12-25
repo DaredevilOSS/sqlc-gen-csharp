@@ -64,6 +64,7 @@ public class SqliteWriteBenchmark : BaseWriteBenchmark
         };
     }
 
+
     [GlobalSetup]
     public async Task GlobalSetup()
     {
