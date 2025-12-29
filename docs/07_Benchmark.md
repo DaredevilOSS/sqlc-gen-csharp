@@ -22,3 +22,4 @@
 <br/>
 
 [SQLite - Writes](https://github.com/DaredevilOSS/sqlc-gen-csharp/blob/main/benchmark/BenchmarkDotNet.Artifacts/sqlite/writes/results/BenchmarkRunner.Benchmarks.SqliteWriteBenchmark-report-github.md)
+

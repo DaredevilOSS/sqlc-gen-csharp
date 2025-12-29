@@ -118,4 +118,3 @@ public async Task ExampleTransaction(IDbConnection connection)
 ```
 
 More info can be found in [here](https://docs.sqlc.dev/en/stable/howto/transactions.html).
-
