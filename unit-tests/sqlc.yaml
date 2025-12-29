@@ -1,0 +1,23 @@
+version: "2"
+plugins:
+  - name: csharp
+    process:
+      cmd: ./dist/LocalRunner
+sql:
+  - schema: "CodegenTests/test-requests/DefaultSchemaEnum/schema.sql"
+    queries: "CodegenTests/test-requests/DefaultSchemaEnum/query.sql"
+    engine: "mysql"
+    codegen:
+      - plugin: csharp
+        out: ./CodegenTests/test-requests/DefaultSchemaEnum
+        options:
+          debugRequest: true
+          
+  - schema: "CodegenTests/test-requests/SchemaScopedEnum/schema.sql"
+    queries: "CodegenTests/test-requests/SchemaScopedEnum/query.sql"
+    engine: "mysql"
+    codegen:
+      - plugin: csharp
+        out: ./CodegenTests/test-requests/SchemaScopedEnum
+        options:
+          debugRequest: true
