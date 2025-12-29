@@ -280,11 +280,11 @@ public abstract class DbDriver
     public string GetIdColumnType(Query query)
     {
         var tableColumns = Tables[query.InsertIntoTable.Schema][query.InsertIntoTable.Name].Columns;
-        var idColumn = tableColumns.First(c => c.Name.Equals("id", StringComparison.OrdinalIgnoreCase));
+        var idColumn = tableColumns.FirstOrDefault(c => c.Name.Equals("id", StringComparison.OrdinalIgnoreCase));
         if (idColumn is not null)
             return GetCsharpType(idColumn, query);
 
-        idColumn = tableColumns.First(c => c.Name.Contains("id", StringComparison.CurrentCultureIgnoreCase));
+        idColumn = tableColumns.FirstOrDefault(c => c.Name.Contains("id", StringComparison.CurrentCultureIgnoreCase));
         return GetCsharpType(idColumn ?? tableColumns[0], query);
     }
 
