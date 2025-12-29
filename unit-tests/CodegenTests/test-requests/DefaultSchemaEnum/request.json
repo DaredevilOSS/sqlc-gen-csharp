@@ -3,13 +3,13 @@
     "version": "2",
     "engine": "mysql",
     "schema": [
-      "unit-tests/CodegenTests/test-requests/DefaultSchemaEnum/schema.sql"
+      "CodegenTests/test-requests/DefaultSchemaEnum/schema.sql"
     ],
     "queries": [
-      "unit-tests/CodegenTests/test-requests/DefaultSchemaEnum/query.sql"
+      "CodegenTests/test-requests/DefaultSchemaEnum/query.sql"
     ],
     "codegen": {
-      "out": "./unit-tests/CodegenTests/test-requests/DefaultSchemaEnum",
+      "out": "./CodegenTests/test-requests/DefaultSchemaEnum",
       "plugin": "csharp",
       "options": "eyJkZWJ1Z1JlcXVlc3QiOnRydWV9",
       "process": {

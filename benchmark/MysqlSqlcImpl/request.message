@@ -1,139 +1,0 @@
-
-Ñ
-2mysql*examples/config/mysql/benchmark/schema.sql")examples/config/mysql/benchmark/query.sqlbn
-benchmark/MysqlSqlcImplcsharp5{"debugRequest":true,"namespaceName":"MysqlSqlcImpl"}*
-./dist/LocalRunnerü	public"public"ç	sales±
-sales	customers5
-customer_id0ÿÿÿÿÿÿÿÿÿRsales	customersbint)
-name0dRsales	customersb	varchar+
-email0ÿRsales	customersb	varchar*
-phone02Rsales	customersb	varchar+
-address0ÿRsales	customersb	varchar3
-registered_at0Rsales	customersb
-datetimeî
-salesproducts3
-
-product_id0ÿÿÿÿÿÿÿÿÿRsalesproductsbint)
-name0ÈRsalesproductsb	varchar,
-category0dRsalesproductsb	varchar.
-
-unit_price0
-Rsalesproductsb	decimal7
-stock_quantity0ÿÿÿÿÿÿÿÿÿRsalesproductsbint3
-description0ÿÿÿÿÿÿÿÿÿRsalesproductsbtext-
-added_at0Rsalesproductsb
-datetime‡
-salesorders2
-order_id0ÿÿÿÿÿÿÿÿÿRsalesordersbbigint2
-customer_id0ÿÿÿÿÿÿÿÿÿRsalesordersbint-
-
-ordered_at0Rsalesordersb
-datetime-
-order_state0
-Rsalesordersb	varchar.
-total_amount0
-Rsalesordersb	decimal®
-salesorder_items<
-order_item_id0ÿÿÿÿÿÿÿÿÿRsalesorder_itemsbbigint7
-order_id0ÿÿÿÿÿÿÿÿÿRsalesorder_itemsbbigint6
-
-product_id0ÿÿÿÿÿÿÿÿÿRsalesorder_itemsbint4
-quantity0ÿÿÿÿÿÿÿÿÿRsalesorder_itemsbint1
-
-unit_price0
-Rsalesorder_itemsb	decimal	
-ÜSELECT 
-    o.order_id, ordered_at, order_state, total_amount, order_item_id, i.quantity, i.unit_price, 
-    p.product_id, p.name as product_name, p.category as product_category
-FROM sales.orders o
-JOIN sales.order_items i
-USING (order_id)
-JOIN sales.products p
-USING (product_id)
-WHERE o.customer_id = ?
-ORDER BY o.ordered_at DESC
-LIMIT ? OFFSET ?GetCustomerOrders:many"<
-order_id0ÿÿÿÿÿÿÿÿÿRsalesordersbbigintzorder_id"9
-
-ordered_at0Rsalesordersb
-datetimez
-ordered_at":
-order_state0
-Rsalesordersb	varcharzorder_state"<
-total_amount0
-Rsalesordersb	decimalztotal_amount"K
-order_item_id0ÿÿÿÿÿÿÿÿÿRsalesorder_itemsbbigintzorder_item_id">
-quantity0ÿÿÿÿÿÿÿÿÿRsalesorder_itemsbintzquantity"=
-
-unit_price0
-Rsalesorder_itemsb	decimalz
-unit_price"?
-
-product_id0ÿÿÿÿÿÿÿÿÿRsalesproductsbintz
-product_id"7
-product_name0ÈRsalesproductsb	varcharzname">
-product_category0dRsalesproductsb	varcharzcategory*C?
-customer_id0ÿÿÿÿÿÿÿÿÿRsalesordersbintzcustomer_id*#
-limit0ÿÿÿÿÿÿÿÿÿb	integer*$ 
-offset0ÿÿÿÿÿÿÿÿÿb	integer:	query.sql¿
-_INSERT INTO sales.customers (name, email, phone, address, registered_at) VALUES (?, ?, ?, ?, ?)AddCustomers	:copyfrom*3/
-name0dRsales	customersb	varcharzname*62
-email0ÿRsales	customersb	varcharzemail*51
-phone02Rsales	customersb	varcharzphone*84
-address0ÿRsales	customersb	varcharzaddress*FB
-registered_at0Rsales	customersb
-datetimezregistered_at:	query.sqlBsales	customersç
-kINSERT INTO sales.products (name, category, unit_price, stock_quantity, description) VALUES (?, ?, ?, ?, ?)AddProducts	:copyfrom*3/
-name0ÈRsalesproductsb	varcharzname*:6
-category0dRsalesproductsb	varcharzcategory*>:
-
-unit_price0
-Rsalesproductsb	decimalz
-unit_price*KG
-stock_quantity0ÿÿÿÿÿÿÿÿÿRsalesproductsbintzstock_quantity*D@
-description0ÿÿÿÿÿÿÿÿÿRsalesproductsbtextzdescription:	query.sqlBsalesproductsÍ
-RINSERT INTO sales.orders (customer_id, order_state, total_amount) VALUES (?, ?, ?)	AddOrders	:copyfrom*C?
-customer_id0ÿÿÿÿÿÿÿÿÿRsalesordersbintzcustomer_id*>:
-order_state0
-Rsalesordersb	varcharzorder_state*@<
-total_amount0
-Rsalesordersb	decimalztotal_amount:	query.sqlBsalesorders±
-^INSERT INTO sales.order_items (order_id, product_id, quantity, unit_price) VALUES (?, ?, ?, ?)AddOrderItems	:copyfrom*EA
-order_id0ÿÿÿÿÿÿÿÿÿRsalesorder_itemsbbigintzorder_id*FB
-
-product_id0ÿÿÿÿÿÿÿÿÿRsalesorder_itemsbintz
-product_id*B>
-quantity0ÿÿÿÿÿÿÿÿÿRsalesorder_itemsbintzquantity*A=
-
-unit_price0
-Rsalesorder_itemsb	decimalz
-unit_price:	query.sqlBsalesorder_itemsÑ
-DSELECT customer_id FROM sales.customers ORDER BY customer_id LIMIT ?GetCustomerIds:many"B
-customer_id0ÿÿÿÿÿÿÿÿÿRsales	customersbintzcustomer_id*#
-limit0ÿÿÿÿÿÿÿÿÿb	integer:	query.sqlÊ
-ASELECT product_id FROM sales.products ORDER BY product_id LIMIT ?GetProductIds:many"?
-
-product_id0ÿÿÿÿÿÿÿÿÿRsalesproductsbintz
-product_id*#
-limit0ÿÿÿÿÿÿÿÿÿb	integer:	query.sql¿
-;SELECT order_id FROM sales.orders ORDER BY order_id LIMIT ?GetOrderIds:many"<
-order_id0ÿÿÿÿÿÿÿÿÿRsalesordersbbigintzorder_id*#
-limit0ÿÿÿÿÿÿÿÿÿb	integer:	query.sqlt
--SELECT COUNT(*) AS cnt FROM sales.order_itemsGetOrderItemsCount:one"
-cnt0ÿÿÿÿÿÿÿÿÿ@bbigint:	query.sql»
-XSELECT order_id, total_amount FROM sales.orders WHERE order_id IN (/*SLICE:order_ids*/?)GetOrderAmounts:many"<
-order_id0ÿÿÿÿÿÿÿÿÿRsalesordersbbigintzorder_id"<
-total_amount0
-Rsalesordersb	decimalztotal_amount*@<
-order_id0ÿÿÿÿÿÿÿÿÿRsalesordersbbigintzorder_id:	query.sqlÆ
-^SELECT product_id, unit_price FROM sales.products WHERE product_id IN (/*SLICE:product_ids*/?)GetProductPrices:many"?
-
-product_id0ÿÿÿÿÿÿÿÿÿRsalesproductsbintz
-product_id":
-
-unit_price0
-Rsalesproductsb	decimalz
-unit_price*C?
-
-product_id0ÿÿÿÿÿÿÿÿÿRsalesproductsbintz
-product_id:	query.sql"v1.30.0*û{"overrideDriverVersion":"","generateCsproj":true,"targetFramework":"net8.0","namespaceName":"MysqlSqlcImpl","useDapper":false,"overrideDapperVersion":"","overrides":null,"debugRequest":false,"useCentralPackageManagement":false,"withAsyncSuffix":true}

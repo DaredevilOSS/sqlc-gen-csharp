@@ -1,15 +1,12 @@
 #!/usr/bin/env bash
 
-set -ex
+set -e
+
+working_directory=$(git rev-parse --show-toplevel)/benchmark
+cd $working_directory
 
 database_to_benchmark=$1
 type_to_benchmark=$2
-
-function dotnet_run() {
-    dotnet run -c Release --project ./benchmark/BenchmarkRunner/BenchmarkRunner.csproj -- \
-        --database $database_to_benchmark \
-        --type $type_to_benchmark
-}
 
 function docker_compose_up() {
     service_name=$1
@@ -18,27 +15,18 @@ function docker_compose_up() {
 
 # Adjust the SQLite connection string to use absolute path
 function adjust_sqlite_connection_string() {
+    sed_pattern="s|Data Source=\([^;]*\.db\);|Data Source=$(pwd)/\1;|"
     if [[ "$OSTYPE" == "darwin"* ]]; then
-        sed -i '' "s|Data Source=\([^;]*\.db\);|Data Source=$(pwd)/\1;|" .env
+        sed -i '' "$sed_pattern" .env
     else
-        sed -i "s|Data Source=\([^;]*\.db\);|Data Source=$(pwd)/\1;|" .env
+        sed -i "$sed_pattern" .env
     fi
-}
-
-function delete_current_sqlite_db() {
-    rm -f $(pwd)/.sqlite/*.db
-}
-
-function docker_destroy() { 
-    docker-compose down --volumes
-}
-
-function copy_original_env() { 
-    cp .env.bak .env 
 }
 
 # Github Actions handles the Docker Compose setup, this is only needed when running locally
 if [[ -z "$GITHUB_ACTIONS" ]]; then
+    docker_destroy() { docker-compose down --volumes; }
+
     if [ "$database_to_benchmark" = "mysql" ]; then
         trap docker_destroy EXIT
         docker_compose_up mysqldb
@@ -50,9 +38,13 @@ fi
 
 if [ "$database_to_benchmark" = "sqlite" ]; then
     cp .env .env.bak
+    copy_original_env() { cp .env.bak .env; }
     trap copy_original_env EXIT
+
     adjust_sqlite_connection_string
-    delete_current_sqlite_db
+    rm -f $(pwd)/.sqlite/*.db
 fi
 
-dotnet_run
+dotnet run -c Release --project ./BenchmarkRunner/BenchmarkRunner.csproj -- \
+    --database $database_to_benchmark \
+    --type $type_to_benchmark
