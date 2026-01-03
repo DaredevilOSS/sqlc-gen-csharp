@@ -49,6 +49,7 @@ public static class ExamplesDocGen
                 {optionsStr}```
                 
                 </details>
+                
                 """;
     }
 
