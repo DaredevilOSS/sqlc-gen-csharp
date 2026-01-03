@@ -157,7 +157,6 @@ public async Task ExampleTransaction(IDbConnection connection)
 ```
 
 More info can be found in [here](https://docs.sqlc.dev/en/stable/howto/transactions.html).
-
 # PostgresSQL
 <details>
 <summary>:execlastid - Implementation</summary>
@@ -245,7 +244,6 @@ INSERT INTO tab1 (macaddr8_field) VALUES (sqlc.narg('macaddr8_field')::macaddr8)
 ```
 
 </details>
-
 # MySQL
 <details>
 <summary>:execlastid - Implementation</summary>
@@ -330,7 +328,6 @@ we consider support for the different data types separately for batch inserts an
 | geometrycollection        | ⚠️  | ⚠️         |
 
 </details>
-
 # SQLite3
 <details>
 <summary>:execlastid - Implementation</summary>
@@ -403,6 +400,7 @@ amount of data types that are supported by SQLite. The supported overrides are s
 <br/>
 
 [SQLite - Writes](https://github.com/DaredevilOSS/sqlc-gen-csharp/blob/main/benchmark/BenchmarkDotNet.Artifacts/sqlite/writes/results/BenchmarkRunner.Benchmarks.SqliteWriteBenchmark-report-github.md)
+
 # Contributing
 ## Local plugin development
 ### Prerequisites
@@ -464,6 +462,7 @@ The new created tag will create a draft release with it, in the release there wi
 ```
 
 </details>
+
 <details>
 <summary>QuickStartMySqlDalGen</summary>
 
@@ -474,6 +473,7 @@ The new created tag will create a draft release with it, in the release there wi
 ```
 
 </details>
+
 <details>
 <summary>QuickStartSqliteDalGen</summary>
 
@@ -484,6 +484,7 @@ The new created tag will create a draft release with it, in the release there wi
 ```
 
 </details>
+
 <details>
 <summary>Npgsql</summary>
 
@@ -535,6 +536,7 @@ overrides:
 ```
 
 </details>
+
 <details>
 <summary>NpgsqlDapper</summary>
 
@@ -586,6 +588,7 @@ overrides:
 ```
 
 </details>
+
 <details>
 <summary>NpgsqlLegacy</summary>
 
@@ -637,6 +640,7 @@ overrides:
 ```
 
 </details>
+
 <details>
 <summary>NpgsqlDapperLegacy</summary>
 
@@ -688,6 +692,7 @@ overrides:
 ```
 
 </details>
+
 <details>
 <summary>MySqlConnector</summary>
 
@@ -723,6 +728,7 @@ overrides:
 ```
 
 </details>
+
 <details>
 <summary>MySqlConnectorDapper</summary>
 
@@ -758,6 +764,7 @@ overrides:
 ```
 
 </details>
+
 <details>
 <summary>MySqlConnectorLegacy</summary>
 
@@ -793,6 +800,7 @@ overrides:
 ```
 
 </details>
+
 <details>
 <summary>MySqlConnectorDapperLegacy</summary>
 
@@ -828,6 +836,7 @@ overrides:
 ```
 
 </details>
+
 <details>
 <summary>Sqlite</summary>
 
@@ -870,6 +879,7 @@ overrides:
 ```
 
 </details>
+
 <details>
 <summary>SqliteDapper</summary>
 
@@ -912,6 +922,7 @@ overrides:
 ```
 
 </details>
+
 <details>
 <summary>SqliteLegacy</summary>
 
@@ -954,6 +965,7 @@ overrides:
 ```
 
 </details>
+
 <details>
 <summary>SqliteDapperLegacy</summary>
 
@@ -996,39 +1008,7 @@ overrides:
 ```
 
 </details>
-<details>
-<summary>benchmark/PostgresqlSqlcImpl</summary>
-
-## Engine `postgresql`: [benchmark/PostgresqlSqlcImpl](benchmark/PostgresqlSqlcImpl)
-### [Schema](examples/config/postgresql/benchmark/schema.sql) | [Queries](examples/config/postgresql/benchmark/query.sql) | [End2End Test](end2end/EndToEndTests/benchmark/PostgresqlSqlcImpl.cs)
-### Config
-```yaml
-namespaceName: PostgresSqlcImpl
-```
-
-</details>
-<details>
-<summary>benchmark/SqliteSqlcImpl</summary>
-
-## Engine `sqlite`: [benchmark/SqliteSqlcImpl](benchmark/SqliteSqlcImpl)
-### [Schema](examples/config/sqlite/benchmark/schema.sql) | [Queries](examples/config/sqlite/benchmark/query.sql) | [End2End Test](end2end/EndToEndTests/benchmark/SqliteSqlcImpl.cs)
-### Config
-```yaml
-namespaceName: SqliteSqlcImpl
-```
-
-</details>
-<details>
-<summary>benchmark/MysqlSqlcImpl</summary>
-
-## Engine `mysql`: [benchmark/MysqlSqlcImpl](benchmark/MysqlSqlcImpl)
-### [Schema](examples/config/mysql/benchmark/schema.sql) | [Queries](examples/config/mysql/benchmark/query.sql) | [End2End Test](end2end/EndToEndTests/benchmark/MysqlSqlcImpl.cs)
-### Config
-```yaml
-namespaceName: MysqlSqlcImpl
-```
-
-</details># Examples
+# Examples
 <details>
 <summary>QuickStartPostgresDalGen</summary>
 
