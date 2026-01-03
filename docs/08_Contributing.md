@@ -48,3 +48,4 @@ By default, the release script will bump the patch version. Adding `[release]` t
 
 ### Release structure
 The new created tag will create a draft release with it, in the release there will be the wasm plugin embedded in the release. <br/>
+

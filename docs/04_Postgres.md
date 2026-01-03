@@ -85,3 +85,4 @@ INSERT INTO tab1 (macaddr8_field) VALUES (sqlc.narg('macaddr8_field')::macaddr8)
 ```
 
 </details>
+
