@@ -9,6 +9,7 @@
 ```
 
 </details>
+
 <details>
 <summary>QuickStartMySqlDalGen</summary>
 
@@ -19,6 +20,7 @@
 ```
 
 </details>
+
 <details>
 <summary>QuickStartSqliteDalGen</summary>
 
@@ -29,6 +31,7 @@
 ```
 
 </details>
+
 <details>
 <summary>Npgsql</summary>
 
@@ -80,6 +83,7 @@ overrides:
 ```
 
 </details>
+
 <details>
 <summary>NpgsqlDapper</summary>
 
@@ -131,6 +135,7 @@ overrides:
 ```
 
 </details>
+
 <details>
 <summary>NpgsqlLegacy</summary>
 
@@ -182,6 +187,7 @@ overrides:
 ```
 
 </details>
+
 <details>
 <summary>NpgsqlDapperLegacy</summary>
 
@@ -233,6 +239,7 @@ overrides:
 ```
 
 </details>
+
 <details>
 <summary>MySqlConnector</summary>
 
@@ -268,6 +275,7 @@ overrides:
 ```
 
 </details>
+
 <details>
 <summary>MySqlConnectorDapper</summary>
 
@@ -303,6 +311,7 @@ overrides:
 ```
 
 </details>
+
 <details>
 <summary>MySqlConnectorLegacy</summary>
 
@@ -338,6 +347,7 @@ overrides:
 ```
 
 </details>
+
 <details>
 <summary>MySqlConnectorDapperLegacy</summary>
 
@@ -373,6 +383,7 @@ overrides:
 ```
 
 </details>
+
 <details>
 <summary>Sqlite</summary>
 
@@ -415,6 +426,7 @@ overrides:
 ```
 
 </details>
+
 <details>
 <summary>SqliteDapper</summary>
 
@@ -457,6 +469,7 @@ overrides:
 ```
 
 </details>
+
 <details>
 <summary>SqliteLegacy</summary>
 
@@ -499,6 +512,7 @@ overrides:
 ```
 
 </details>
+
 <details>
 <summary>SqliteDapperLegacy</summary>
 

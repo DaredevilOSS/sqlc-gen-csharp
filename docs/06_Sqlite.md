@@ -46,3 +46,4 @@ amount of data types that are supported by SQLite. The supported overrides are s
 | text    | bool             | ✅         | Converts string to a boolean value using Convert.ToBoolean rules |
 
 </details>
+
