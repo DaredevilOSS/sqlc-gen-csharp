@@ -71,7 +71,7 @@ jobs:
           shell: pwsh
           command: |
             $mysqlJob = Start-Job -ScriptBlock { 
-              choco install mysql --no-progress --version=8.4.9 -y --params "/serviceName:MySQL" 
+              choco install mysql --no-progress -y --params "/serviceName:MySQL" 
               return $LASTEXITCODE
             }
             
