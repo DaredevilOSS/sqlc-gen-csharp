@@ -111,8 +111,7 @@ public class CodegenSchemaTests
         };
 
         var response = CodeGenerator.Generate(request);
-        var generatedModelsFile = response.Result.Files.First(f => f.Name == "Models.cs");
-        Assert.That(generatedModelsFile, Is.Not.Null);
+        Assert.That(response.Result.Files.Any(f => f.Name == "Models.cs"), Is.True);
     }
 
     private static HashSet<string> GetMemberNames(CompilationUnitSyntax compilationUnit)
