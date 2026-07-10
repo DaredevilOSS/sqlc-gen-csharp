@@ -3,7 +3,7 @@
 2
 postgresql-examples/config/postgresql/authors/schema.sql+examples/config/postgresql/types/schema.sql",examples/config/postgresql/authors/query.sql"*examples/config/postgresql/types/query.sqlb
 examples/NpgsqlLegacyExamplecsharpÑ{"debugRequest":true,"generateCsproj":true,"namespaceName":"NpgsqlLegacyExampleGen","overrides":[{"column":"GetPostgresFunctions:max_integer","csharp_type":{"notNull":false,"type":"int"}},{"column":"GetPostgresFunctions:max_varchar","csharp_type":{"notNull":false,"type":"string"}},{"column":"GetPostgresFunctions:max_timestamp","csharp_type":{"notNull":true,"type":"DateTime"}},{"column":"GetPostgresSpecialTypesCnt:c_json","csharp_type":{"notNull":false,"type":"JsonElement"}},{"column":"GetPostgresSpecialTypesCnt:c_jsonb","csharp_type":{"notNull":false,"type":"JsonElement"}},{"column":"*:c_json_string_override","csharp_type":{"notNull":false,"type":"string"}},{"column":"*:c_xml_string_override","csharp_type":{"notNull":false,"type":"string"}},{"column":"*:c_macaddr8","csharp_type":{"notNull":false,"type":"string"}},{"column":"*:c_timestamp_noda_instant_override","csharp_type":{"notNull":false,"type":"Instant"}}],"targetFramework":"netstandard2.0","useDapper":false}*
-./dist/LocalRunner–ïpublic"Øpublicƒ
+./dist/LocalRunnerìîpublic"®publicƒ
 	authors)
 id0ÿÿÿÿÿÿÿÿÿR	authorsb	bigserial&
 name0ÿÿÿÿÿÿÿÿÿR	authorsbtext#
@@ -83,10 +83,11 @@ pg_catalog	timestampˆµ
 c_box0ÿÿÿÿÿÿÿÿÿRpostgres_geometric_typesbbox7
 c_path0ÿÿÿÿÿÿÿÿÿRpostgres_geometric_typesbpath=
 	c_polygon0ÿÿÿÿÿÿÿÿÿRpostgres_geometric_typesb	polygon;
-c_circle0ÿÿÿÿÿÿÿÿÿRpostgres_geometric_typesbcircle’
+c_circle0ÿÿÿÿÿÿÿÿÿRpostgres_geometric_typesbcircleİ
 postgres_special_types5
 c_uuid0ÿÿÿÿÿÿÿÿÿRpostgres_special_typesbuuid7
-c_enum0ÿÿÿÿÿÿÿÿÿRpostgres_special_typesbc_enumA
+c_enum0ÿÿÿÿÿÿÿÿÿRpostgres_special_typesbc_enumI
+c_qualified_enum0ÿÿÿÿÿÿÿÿÿRpostgres_special_typesbpublicc_enumA
 c_json0ÿÿÿÿÿÿÿÿÿRpostgres_special_typesb
 pg_catalogjsonQ
 c_json_string_override0ÿÿÿÿÿÿÿÿÿRpostgres_special_typesb
@@ -98,9 +99,7 @@ c_jsonpath0ÿÿÿÿÿÿÿÿÿRpostgres_special_typesb
 c_xml0ÿÿÿÿÿÿÿÿÿRpostgres_special_typesbxmlC
 c_xml_string_override0ÿÿÿÿÿÿÿÿÿRpostgres_special_typesbxml`
 postgres_not_null_typesC
-c_enum_not_null0ÿÿÿÿÿÿÿÿÿRpostgres_not_null_typesbc_enums
-postgres_qualified_enum_typesP
-c_qualified_enum0ÿÿÿÿÿÿÿÿÿRpostgres_qualified_enum_typesbpublicc_enum"
+c_enum_not_null0ÿÿÿÿÿÿÿÿÿRpostgres_not_null_typesbc_enum"
 c_enumsmallmediumbig"	pg_temp"æ²
 pg_catalog‰
 &
@@ -10682,8 +10681,8 @@ LIMIT 1GetPostgresNetworkTypesCnt:one"=
 ) VALUES ($1, $2, $3)InsertPostgresNetworkTypesBatch	:copyfrom*IE
 c_cidr0ÿÿÿÿÿÿÿÿÿR publicpostgres_network_typesbcidrzc_cidr*IE
 c_inet0ÿÿÿÿÿÿÿÿÿR publicpostgres_network_typesbinetzc_inet*RN
-	c_macaddr0ÿÿÿÿÿÿÿÿÿR publicpostgres_network_typesb	macaddrz	c_macaddr:	query.sqlBpostgres_network_types¿
-—
+	c_macaddr0ÿÿÿÿÿÿÿÿÿR publicpostgres_network_typesb	macaddrz	c_macaddr:	query.sqlBpostgres_network_types’
+½
 INSERT INTO postgres_special_types
 (
     c_json,
@@ -10693,7 +10692,8 @@ INSERT INTO postgres_special_types
     c_xml,
     c_xml_string_override,
     c_uuid,
-    c_enum
+    c_enum,
+    c_qualified_enum
 )
 VALUES (
     $1, 
@@ -10703,7 +10703,8 @@ VALUES (
     $5::xml,
     $6::xml,
     $7,
-    $8::c_enum
+    $8::c_enum,
+    $9::c_enum
 )InsertPostgresSpecialTypes:exec*VR
 c_json0ÿÿÿÿÿÿÿÿÿ8R publicpostgres_special_typesbpg_catalog.jsonzc_json*;7
 c_json_string_override0ÿÿÿÿÿÿÿÿÿb
@@ -10715,7 +10716,8 @@ c_jsonpath0ÿÿÿÿÿÿÿÿÿb
 c_xml0ÿÿÿÿÿÿÿÿÿbxml*-)
 c_xml_string_override0ÿÿÿÿÿÿÿÿÿbxml*KG
 c_uuid0ÿÿÿÿÿÿÿÿÿ8R publicpostgres_special_typesbuuidzc_uuid*!
-c_enum0ÿÿÿÿÿÿÿÿÿbc_enum2 Special types :	query.sqlBpostgres_special_typesÎ
+c_enum0ÿÿÿÿÿÿÿÿÿbc_enum*+	'
+c_qualified_enum0ÿÿÿÿÿÿÿÿÿbc_enum2 Special types :	query.sqlBpostgres_special_typesÎ
 UINSERT INTO postgres_not_null_types
 (
     c_enum_not_null
@@ -10729,8 +10731,8 @@ VALUES (
 FROM postgres_not_null_types 
 LIMIT 1GetPostgresNotNullTypes:one"T
 c_enum_not_null0ÿÿÿÿÿÿÿÿÿRpostgres_not_null_typesbc_enumzc_enum_not_null:	query.sqlX
-&TRUNCATE TABLE postgres_not_null_typesTruncatePostgresNotNullTypes:exec:	query.sqlµ
-­SELECT
+&TRUNCATE TABLE postgres_not_null_typesTruncatePostgresNotNullTypes:exec:	query.sql¨
+ÃSELECT
     c_json,
     c_json_string_override,
     c_jsonb,
@@ -10738,7 +10740,8 @@ LIMIT 1GetPostgresNotNullTypes:one"T
     c_xml,
     c_xml_string_override,
     c_uuid,
-    c_enum
+    c_enum,
+    c_qualified_enum
 FROM postgres_special_types 
 LIMIT 1GetPostgresSpecialTypes:one"I
 c_json0ÿÿÿÿÿÿÿÿÿRpostgres_special_typesb
@@ -10753,7 +10756,8 @@ c_jsonpath":
 c_xml0ÿÿÿÿÿÿÿÿÿRpostgres_special_typesbxmlzc_xml"Z
 c_xml_string_override0ÿÿÿÿÿÿÿÿÿRpostgres_special_typesbxmlzc_xml_string_override"=
 c_uuid0ÿÿÿÿÿÿÿÿÿRpostgres_special_typesbuuidzc_uuid"?
-c_enum0ÿÿÿÿÿÿÿÿÿRpostgres_special_typesbc_enumzc_enum:	query.sqlW
+c_enum0ÿÿÿÿÿÿÿÿÿRpostgres_special_typesbc_enumzc_enum"[
+c_qualified_enum0ÿÿÿÿÿÿÿÿÿRpostgres_special_typesbpublicc_enumzc_qualified_enum:	query.sqlW
 %TRUNCATE TABLE postgres_special_typesTruncatePostgresSpecialTypes:exec:	query.sql®
 lINSERT INTO postgres_special_types
 (
@@ -10919,18 +10923,4 @@ hSELECT c_point, c_line, c_lseg, c_box, c_path, c_polygon, c_circle FROM postgre
 c_path0ÿÿÿÿÿÿÿÿÿRpostgres_geometric_typesbpathzc_path"H
 	c_polygon0ÿÿÿÿÿÿÿÿÿRpostgres_geometric_typesb	polygonz	c_polygon"E
 c_circle0ÿÿÿÿÿÿÿÿÿRpostgres_geometric_typesbcirclezc_circle:	query.sqlU
-'TRUNCATE TABLE postgres_geometric_typesTruncatePostgresGeoTypes:exec:	query.sqlà
-\INSERT INTO postgres_qualified_enum_types
-(
-    c_qualified_enum
-)
-VALUES (
-    $1::c_enum
-) InsertPostgresQualifiedEnumTypes:exec*+'
-c_qualified_enum0ÿÿÿÿÿÿÿÿÿbc_enum:	query.sqlBpostgres_qualified_enum_typesÜ
-FSELECT
-    c_qualified_enum
-FROM postgres_qualified_enum_types
-LIMIT 1GetPostgresQualifiedEnumTypes:one"b
-c_qualified_enum0ÿÿÿÿÿÿÿÿÿRpostgres_qualified_enum_typesbpublicc_enumzc_qualified_enum:	query.sqld
-,TRUNCATE TABLE postgres_qualified_enum_types"TruncatePostgresQualifiedEnumTypes:exec:	query.sql"v1.30.0*Ã{"overrideDriverVersion":"","generateCsproj":true,"targetFramework":"netstandard2.0","namespaceName":"NpgsqlLegacyExampleGen","useDapper":false,"overrideDapperVersion":"","overrides":[{"column":"GetPostgresFunctions:max_integer","csharp_type":{"type":"int","notNull":false}},{"column":"GetPostgresFunctions:max_varchar","csharp_type":{"type":"string","notNull":false}},{"column":"GetPostgresFunctions:max_timestamp","csharp_type":{"type":"DateTime","notNull":true}},{"column":"GetPostgresSpecialTypesCnt:c_json","csharp_type":{"type":"JsonElement","notNull":false}},{"column":"GetPostgresSpecialTypesCnt:c_jsonb","csharp_type":{"type":"JsonElement","notNull":false}},{"column":"*:c_json_string_override","csharp_type":{"type":"string","notNull":false}},{"column":"*:c_xml_string_override","csharp_type":{"type":"string","notNull":false}},{"column":"*:c_macaddr8","csharp_type":{"type":"string","notNull":false}},{"column":"*:c_timestamp_noda_instant_override","csharp_type":{"type":"Instant","notNull":false}}],"debugRequest":false,"useCentralPackageManagement":false,"withAsyncSuffix":true}
+'TRUNCATE TABLE postgres_geometric_typesTruncatePostgresGeoTypes:exec:	query.sql"v1.30.0*Ã{"overrideDriverVersion":"","generateCsproj":true,"targetFramework":"netstandard2.0","namespaceName":"NpgsqlLegacyExampleGen","useDapper":false,"overrideDapperVersion":"","overrides":[{"column":"GetPostgresFunctions:max_integer","csharp_type":{"type":"int","notNull":false}},{"column":"GetPostgresFunctions:max_varchar","csharp_type":{"type":"string","notNull":false}},{"column":"GetPostgresFunctions:max_timestamp","csharp_type":{"type":"DateTime","notNull":true}},{"column":"GetPostgresSpecialTypesCnt:c_json","csharp_type":{"type":"JsonElement","notNull":false}},{"column":"GetPostgresSpecialTypesCnt:c_jsonb","csharp_type":{"type":"JsonElement","notNull":false}},{"column":"*:c_json_string_override","csharp_type":{"type":"string","notNull":false}},{"column":"*:c_xml_string_override","csharp_type":{"type":"string","notNull":false}},{"column":"*:c_macaddr8","csharp_type":{"type":"string","notNull":false}},{"column":"*:c_timestamp_noda_instant_override","csharp_type":{"type":"Instant","notNull":false}}],"debugRequest":false,"useCentralPackageManagement":false,"withAsyncSuffix":true}

@@ -21,6 +21,5 @@ public partial class NpgsqlDapperTester
         await QuerySql.TruncatePostgresNetworkTypesAsync();
         await QuerySql.TruncatePostgresArrayTypesAsync();
         await QuerySql.TruncatePostgresSpecialTypesAsync();
-        await QuerySql.TruncatePostgresQualifiedEnumTypesAsync();
     }
 }

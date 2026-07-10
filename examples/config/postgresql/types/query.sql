@@ -241,7 +241,8 @@ INSERT INTO postgres_special_types
     c_xml,
     c_xml_string_override,
     c_uuid,
-    c_enum
+    c_enum,
+    c_qualified_enum
 )
 VALUES (
     sqlc.narg('c_json'), 
@@ -251,7 +252,8 @@ VALUES (
     sqlc.narg('c_xml')::xml,
     sqlc.narg('c_xml_string_override')::xml,
     sqlc.narg('c_uuid'),
-    sqlc.narg('c_enum')::c_enum
+    sqlc.narg('c_enum')::c_enum,
+    sqlc.narg('c_qualified_enum')::c_enum
 );
 
 -- name: InsertPostgresNotNullTypes :exec
@@ -281,7 +283,8 @@ SELECT
     c_xml,
     c_xml_string_override,
     c_uuid,
-    c_enum
+    c_enum,
+    c_qualified_enum
 FROM postgres_special_types 
 LIMIT 1;
 
@@ -413,20 +416,3 @@ SELECT * FROM postgres_geometric_types LIMIT 1;
 -- name: TruncatePostgresGeoTypes :exec
 TRUNCATE TABLE postgres_geometric_types;
 
--- name: InsertPostgresQualifiedEnumTypes :exec
-INSERT INTO postgres_qualified_enum_types
-(
-    c_qualified_enum
-)
-VALUES (
-    sqlc.narg('c_qualified_enum')::c_enum
-);
-
--- name: GetPostgresQualifiedEnumTypes :one
-SELECT
-    c_qualified_enum
-FROM postgres_qualified_enum_types
-LIMIT 1;
-
--- name: TruncatePostgresQualifiedEnumTypes :exec
-TRUNCATE TABLE postgres_qualified_enum_types;

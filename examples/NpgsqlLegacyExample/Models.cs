@@ -86,6 +86,7 @@ namespace NpgsqlLegacyExampleGen
     {
         public Guid? CUuid { get; set; }
         public CEnum? CEnum { get; set; }
+        public CEnum? CQualifiedEnum { get; set; }
         public JsonElement? CJson { get; set; }
         public JsonElement? CJsonStringOverride { get; set; }
         public JsonElement? CJsonb { get; set; }
@@ -96,10 +97,6 @@ namespace NpgsqlLegacyExampleGen
     public class PostgresNotNullType
     {
         public CEnum CEnumNotNull { get; set; }
-    };
-    public class PostgresQualifiedEnumType
-    {
-        public CEnum? CQualifiedEnum { get; set; }
     };
     public class ExtendedBio
     {

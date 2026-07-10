@@ -85,6 +85,7 @@ public class PostgresSpecialType
 {
     public Guid? CUuid { get; init; }
     public CEnum? CEnum { get; init; }
+    public CEnum? CQualifiedEnum { get; init; }
     public JsonElement? CJson { get; init; }
     public JsonElement? CJsonStringOverride { get; init; }
     public JsonElement? CJsonb { get; init; }
@@ -95,10 +96,6 @@ public class PostgresSpecialType
 public class PostgresNotNullType
 {
     public required CEnum CEnumNotNull { get; init; }
-};
-public class PostgresQualifiedEnumType
-{
-    public CEnum? CQualifiedEnum { get; init; }
 };
 public class ExtendedBio
 {

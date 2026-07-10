@@ -2148,7 +2148,8 @@ namespace NpgsqlLegacyExampleGen
                                                                    c_xml,
                                                                    c_xml_string_override,
                                                                    c_uuid,
-                                                                   c_enum
+                                                                   c_enum,
+                                                                   c_qualified_enum
                                                                )
                                                                VALUES (
                                                                    @c_json, 
@@ -2158,7 +2159,8 @@ namespace NpgsqlLegacyExampleGen
                                                                    @c_xml::xml,
                                                                    @c_xml_string_override::xml,
                                                                    @c_uuid,
-                                                                   @c_enum::c_enum
+                                                                   @c_enum::c_enum,
+                                                                   @c_qualified_enum::c_enum
                                                                )";
         public class InsertPostgresSpecialTypesArgs
         {
@@ -2170,6 +2172,7 @@ namespace NpgsqlLegacyExampleGen
             public string CXmlStringOverride { get; set; }
             public Guid? CUuid { get; set; }
             public CEnum? CEnum { get; set; }
+            public CEnum? CQualifiedEnum { get; set; }
         };
         public async Task InsertPostgresSpecialTypesAsync(InsertPostgresSpecialTypesArgs args)
         {
@@ -2188,6 +2191,7 @@ namespace NpgsqlLegacyExampleGen
                         command.Parameters.AddWithValue("@c_xml_string_override", NpgsqlDbType.Xml, args.CXmlStringOverride ?? (object)DBNull.Value);
                         command.Parameters.AddWithValue("@c_uuid", args.CUuid ?? (object)DBNull.Value);
                         command.Parameters.AddWithValue("@c_enum", args.CEnum != null ? args.CEnum.Value.Stringify() : (object)DBNull.Value);
+                        command.Parameters.AddWithValue("@c_qualified_enum", args.CQualifiedEnum != null ? args.CQualifiedEnum.Value.Stringify() : (object)DBNull.Value);
                         await command.ExecuteNonQueryAsync();
                     }
 
@@ -2209,6 +2213,7 @@ namespace NpgsqlLegacyExampleGen
                 command.Parameters.AddWithValue("@c_xml_string_override", NpgsqlDbType.Xml, args.CXmlStringOverride ?? (object)DBNull.Value);
                 command.Parameters.AddWithValue("@c_uuid", args.CUuid ?? (object)DBNull.Value);
                 command.Parameters.AddWithValue("@c_enum", args.CEnum != null ? args.CEnum.Value.Stringify() : (object)DBNull.Value);
+                command.Parameters.AddWithValue("@c_qualified_enum", args.CQualifiedEnum != null ? args.CQualifiedEnum.Value.Stringify() : (object)DBNull.Value);
                 await command.ExecuteNonQueryAsync();
             }
         }
@@ -2340,7 +2345,8 @@ namespace NpgsqlLegacyExampleGen
                                                                 c_xml,
                                                                 c_xml_string_override,
                                                                 c_uuid,
-                                                                c_enum
+                                                                c_enum,
+                                                                c_qualified_enum
                                                             FROM postgres_special_types 
                                                             LIMIT 1";
         public class GetPostgresSpecialTypesRow
@@ -2353,6 +2359,7 @@ namespace NpgsqlLegacyExampleGen
             public string CXmlStringOverride { get; set; }
             public Guid? CUuid { get; set; }
             public CEnum? CEnum { get; set; }
+            public CEnum? CQualifiedEnum { get; set; }
         };
         public async Task<GetPostgresSpecialTypesRow> GetPostgresSpecialTypesAsync()
         {
@@ -2381,7 +2388,8 @@ namespace NpgsqlLegacyExampleGen
                                     }))(reader, 4),
                                     CXmlStringOverride = reader.IsDBNull(5) ? null : reader.GetString(5),
                                     CUuid = reader.IsDBNull(6) ? (Guid? )null : reader.GetFieldValue<Guid>(6),
-                                    CEnum = reader.IsDBNull(7) ? (CEnum? )null : reader.GetString(7).ToCEnum()
+                                    CEnum = reader.IsDBNull(7) ? (CEnum? )null : reader.GetString(7).ToCEnum(),
+                                    CQualifiedEnum = reader.IsDBNull(8) ? (CEnum? )null : reader.GetString(8).ToCEnum()
                                 };
                             }
                         }
@@ -2414,7 +2422,8 @@ namespace NpgsqlLegacyExampleGen
                             }))(reader, 4),
                             CXmlStringOverride = reader.IsDBNull(5) ? null : reader.GetString(5),
                             CUuid = reader.IsDBNull(6) ? (Guid? )null : reader.GetFieldValue<Guid>(6),
-                            CEnum = reader.IsDBNull(7) ? (CEnum? )null : reader.GetString(7).ToCEnum()
+                            CEnum = reader.IsDBNull(7) ? (CEnum? )null : reader.GetString(7).ToCEnum(),
+                            CQualifiedEnum = reader.IsDBNull(8) ? (CEnum? )null : reader.GetString(8).ToCEnum()
                         };
                     }
                 }
@@ -3012,125 +3021,6 @@ namespace NpgsqlLegacyExampleGen
             using (var command = this.Transaction.Connection.CreateCommand())
             {
                 command.CommandText = TruncatePostgresGeoTypesSql;
-                command.Transaction = this.Transaction;
-                await command.ExecuteNonQueryAsync();
-            }
-        }
-
-        private const string InsertPostgresQualifiedEnumTypesSql = @"INSERT INTO postgres_qualified_enum_types
-                                                                     (
-                                                                         c_qualified_enum
-                                                                     )
-                                                                     VALUES (
-                                                                         @c_qualified_enum::c_enum
-                                                                     )";
-        public class InsertPostgresQualifiedEnumTypesArgs
-        {
-            public CEnum? CQualifiedEnum { get; set; }
-        };
-        public async Task InsertPostgresQualifiedEnumTypesAsync(InsertPostgresQualifiedEnumTypesArgs args)
-        {
-            if (this.Transaction == null)
-            {
-                using (var connection = await GetDataSource().OpenConnectionAsync())
-                {
-                    using (var command = connection.CreateCommand())
-                    {
-                        command.CommandText = InsertPostgresQualifiedEnumTypesSql;
-                        command.Parameters.AddWithValue("@c_qualified_enum", args.CQualifiedEnum != null ? args.CQualifiedEnum.Value.Stringify() : (object)DBNull.Value);
-                        await command.ExecuteNonQueryAsync();
-                    }
-
-                    return;
-                }
-            }
-
-            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
-                throw new InvalidOperationException("Transaction is provided, but its connection is null.");
-            using (var command = this.Transaction.Connection.CreateCommand())
-            {
-                command.CommandText = InsertPostgresQualifiedEnumTypesSql;
-                command.Transaction = this.Transaction;
-                command.Parameters.AddWithValue("@c_qualified_enum", args.CQualifiedEnum != null ? args.CQualifiedEnum.Value.Stringify() : (object)DBNull.Value);
-                await command.ExecuteNonQueryAsync();
-            }
-        }
-
-        private const string GetPostgresQualifiedEnumTypesSql = @"SELECT
-                                                                      c_qualified_enum
-                                                                  FROM postgres_qualified_enum_types
-                                                                  LIMIT 1";
-        public class GetPostgresQualifiedEnumTypesRow
-        {
-            public CEnum? CQualifiedEnum { get; set; }
-        };
-        public async Task<GetPostgresQualifiedEnumTypesRow> GetPostgresQualifiedEnumTypesAsync()
-        {
-            if (this.Transaction == null)
-            {
-                using (var connection = await GetDataSource().OpenConnectionAsync())
-                {
-                    using (var command = connection.CreateCommand())
-                    {
-                        command.CommandText = GetPostgresQualifiedEnumTypesSql;
-                        using (var reader = await command.ExecuteReaderAsync())
-                        {
-                            if (await reader.ReadAsync())
-                            {
-                                return new GetPostgresQualifiedEnumTypesRow
-                                {
-                                    CQualifiedEnum = reader.IsDBNull(0) ? (CEnum? )null : reader.GetString(0).ToCEnum()
-                                };
-                            }
-                        }
-                    }
-                };
-                return null;
-            }
-
-            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
-                throw new InvalidOperationException("Transaction is provided, but its connection is null.");
-            using (var command = this.Transaction.Connection.CreateCommand())
-            {
-                command.CommandText = GetPostgresQualifiedEnumTypesSql;
-                command.Transaction = this.Transaction;
-                using (var reader = await command.ExecuteReaderAsync())
-                {
-                    if (await reader.ReadAsync())
-                    {
-                        return new GetPostgresQualifiedEnumTypesRow
-                        {
-                            CQualifiedEnum = reader.IsDBNull(0) ? (CEnum? )null : reader.GetString(0).ToCEnum()
-                        };
-                    }
-                }
-            }
-
-            return null;
-        }
-
-        private const string TruncatePostgresQualifiedEnumTypesSql = "TRUNCATE TABLE postgres_qualified_enum_types";
-        public async Task TruncatePostgresQualifiedEnumTypesAsync()
-        {
-            if (this.Transaction == null)
-            {
-                using (var connection = await GetDataSource().OpenConnectionAsync())
-                {
-                    using (var command = connection.CreateCommand())
-                    {
-                        command.CommandText = TruncatePostgresQualifiedEnumTypesSql;
-                        await command.ExecuteNonQueryAsync();
-                    }
-
-                    return;
-                }
-            }
-
-            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
-                throw new InvalidOperationException("Transaction is provided, but its connection is null.");
-            using (var command = this.Transaction.Connection.CreateCommand())
-            {
-                command.CommandText = TruncatePostgresQualifiedEnumTypesSql;
                 command.Transaction = this.Transaction;
                 await command.ExecuteNonQueryAsync();
             }

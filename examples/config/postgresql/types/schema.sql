@@ -67,6 +67,7 @@ CREATE TYPE c_enum AS ENUM ('small', 'medium', 'big');
 CREATE TABLE postgres_special_types (
     c_uuid                 UUID,
     c_enum                 c_enum,
+    c_qualified_enum       public.c_enum,
     c_json                 JSON,
     c_json_string_override JSON,
     c_jsonb                JSONB,
@@ -77,8 +78,4 @@ CREATE TABLE postgres_special_types (
 
 CREATE TABLE postgres_not_null_types (
     c_enum_not_null        c_enum NOT NULL DEFAULT 'small'
-);
-
-CREATE TABLE postgres_qualified_enum_types (
-    c_qualified_enum       public.c_enum
 );

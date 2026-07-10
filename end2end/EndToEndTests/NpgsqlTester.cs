@@ -22,6 +22,5 @@ public partial class NpgsqlTester
         await QuerySql.TruncatePostgresArrayTypesAsync();
         await QuerySql.TruncatePostgresSpecialTypesAsync();
         await QuerySql.TruncatePostgresNotNullTypesAsync();
-        await QuerySql.TruncatePostgresQualifiedEnumTypesAsync();
     }
 }
