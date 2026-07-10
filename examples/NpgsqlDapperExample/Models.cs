@@ -96,6 +96,10 @@ public class PostgresNotNullType
 {
     public required CEnum CEnumNotNull { get; init; }
 };
+public class PostgresQualifiedEnumType
+{
+    public CEnum? CQualifiedEnum { get; init; }
+};
 public class ExtendedBio
 {
     public required string AuthorName { get; init; }

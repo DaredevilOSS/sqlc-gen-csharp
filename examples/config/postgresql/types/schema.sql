@@ -78,3 +78,7 @@ CREATE TABLE postgres_special_types (
 CREATE TABLE postgres_not_null_types (
     c_enum_not_null        c_enum NOT NULL DEFAULT 'small'
 );
+
+CREATE TABLE postgres_qualified_enum_types (
+    c_qualified_enum       public.c_enum
+);

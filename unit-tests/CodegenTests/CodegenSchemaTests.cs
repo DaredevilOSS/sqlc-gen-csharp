@@ -1,6 +1,9 @@
+using Google.Protobuf;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using NUnit.Framework;
+using Plugin;
 using SqlcGenCsharp;
+using System.Text;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace CodegenTests;
@@ -53,6 +56,63 @@ public class CodegenSchemaTests
         };
         var actual = GetMemberNames(modelsCode);
         Assert.That(actual.IsSupersetOf(expected));
+    }
+
+    [Test]
+    public void TestDefaultSchemaEnumWithSchemaQualifiedType()
+    {
+        var request = new GenerateRequest
+        {
+            Settings = new Settings
+            {
+                Engine = "postgresql",
+                Codegen = new Codegen { Out = "DummyProject" }
+            },
+            Catalog = new Catalog
+            {
+                DefaultSchema = "public",
+                Schemas =
+                {
+                    new Schema
+                    {
+                        Name = "public",
+                        Enums =
+                        {
+                            new Plugin.Enum
+                            {
+                                Name = "post_block_type",
+                                Vals = { "text", "markdown", "media" }
+                            }
+                        },
+                        Tables =
+                        {
+                            new Table
+                            {
+                                Rel = new Identifier { Name = "post_block" },
+                                Columns =
+                                {
+                                    new Column
+                                    {
+                                        Name = "block_type",
+                                        Type = new Identifier
+                                        {
+                                            Name = "post_block_type",
+                                            Schema = "public"
+                                        },
+                                        NotNull = true
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            PluginOptions = ByteString.CopyFrom("{}", Encoding.UTF8)
+        };
+
+        var response = CodeGenerator.Generate(request);
+        var generatedModelsFile = response.Result.Files.First(f => f.Name == "Models.cs");
+        Assert.That(generatedModelsFile, Is.Not.Null);
     }
 
     private static HashSet<string> GetMemberNames(CompilationUnitSyntax compilationUnit)

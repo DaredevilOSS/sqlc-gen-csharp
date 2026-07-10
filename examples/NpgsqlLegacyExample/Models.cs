@@ -97,6 +97,10 @@ namespace NpgsqlLegacyExampleGen
     {
         public CEnum CEnumNotNull { get; set; }
     };
+    public class PostgresQualifiedEnumType
+    {
+        public CEnum? CQualifiedEnum { get; set; }
+    };
     public class ExtendedBio
     {
         public string AuthorName { get; set; }

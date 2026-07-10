@@ -686,6 +686,24 @@
                 }
               }
             ]
+          },
+          {
+            "rel": {
+              "name": "postgres_qualified_enum_types"
+            },
+            "columns": [
+              {
+                "name": "c_qualified_enum",
+                "length": -1,
+                "table": {
+                  "name": "postgres_qualified_enum_types"
+                },
+                "type": {
+                  "schema": "public",
+                  "name": "c_enum"
+                }
+              }
+            ]
           }
         ],
         "enums": [
@@ -36227,6 +36245,53 @@
     {
       "text": "TRUNCATE TABLE postgres_geometric_types",
       "name": "TruncatePostgresGeoTypes",
+      "cmd": ":exec",
+      "filename": "query.sql"
+    },
+    {
+      "text": "INSERT INTO postgres_qualified_enum_types\n(\n    c_qualified_enum\n)\nVALUES (\n    $1::c_enum\n)",
+      "name": "InsertPostgresQualifiedEnumTypes",
+      "cmd": ":exec",
+      "parameters": [
+        {
+          "number": 1,
+          "column": {
+            "name": "c_qualified_enum",
+            "length": -1,
+            "type": {
+              "name": "c_enum"
+            }
+          }
+        }
+      ],
+      "filename": "query.sql",
+      "insert_into_table": {
+        "name": "postgres_qualified_enum_types"
+      }
+    },
+    {
+      "text": "SELECT\n    c_qualified_enum\nFROM postgres_qualified_enum_types\nLIMIT 1",
+      "name": "GetPostgresQualifiedEnumTypes",
+      "cmd": ":one",
+      "columns": [
+        {
+          "name": "c_qualified_enum",
+          "length": -1,
+          "table": {
+            "name": "postgres_qualified_enum_types"
+          },
+          "type": {
+            "schema": "public",
+            "name": "c_enum"
+          },
+          "originalName": "c_qualified_enum"
+        }
+      ],
+      "filename": "query.sql"
+    },
+    {
+      "text": "TRUNCATE TABLE postgres_qualified_enum_types",
+      "name": "TruncatePostgresQualifiedEnumTypes",
       "cmd": ":exec",
       "filename": "query.sql"
     }

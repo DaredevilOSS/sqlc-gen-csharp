@@ -730,7 +730,7 @@ public sealed class NpgsqlDriver : EnumDbDriver, IOne, IMany, IExec, IExecRows, 
         }).JoinByNewLine();
     }
 
-    private static (string, string) GetEnumSchemaAndName(Column column)
+    private (string, string) GetEnumSchemaAndName(Column column)
     {
         var schemaName = column.Type.Schema;
         var enumName = column.Type.Name;
@@ -740,6 +740,8 @@ public sealed class NpgsqlDriver : EnumDbDriver, IOne, IMany, IExec, IExecRows, 
             schemaName = schemaAndEnum[0];
             enumName = schemaAndEnum[1];
         }
+        if (schemaName == DefaultSchema)
+            schemaName = string.Empty;
         return (schemaName, enumName);
     }
 

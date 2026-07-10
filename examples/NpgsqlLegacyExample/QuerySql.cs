@@ -3016,5 +3016,124 @@ namespace NpgsqlLegacyExampleGen
                 await command.ExecuteNonQueryAsync();
             }
         }
+
+        private const string InsertPostgresQualifiedEnumTypesSql = @"INSERT INTO postgres_qualified_enum_types
+                                                                     (
+                                                                         c_qualified_enum
+                                                                     )
+                                                                     VALUES (
+                                                                         @c_qualified_enum::c_enum
+                                                                     )";
+        public class InsertPostgresQualifiedEnumTypesArgs
+        {
+            public CEnum? CQualifiedEnum { get; set; }
+        };
+        public async Task InsertPostgresQualifiedEnumTypesAsync(InsertPostgresQualifiedEnumTypesArgs args)
+        {
+            if (this.Transaction == null)
+            {
+                using (var connection = await GetDataSource().OpenConnectionAsync())
+                {
+                    using (var command = connection.CreateCommand())
+                    {
+                        command.CommandText = InsertPostgresQualifiedEnumTypesSql;
+                        command.Parameters.AddWithValue("@c_qualified_enum", args.CQualifiedEnum != null ? args.CQualifiedEnum.Value.Stringify() : (object)DBNull.Value);
+                        await command.ExecuteNonQueryAsync();
+                    }
+
+                    return;
+                }
+            }
+
+            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
+                throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+            using (var command = this.Transaction.Connection.CreateCommand())
+            {
+                command.CommandText = InsertPostgresQualifiedEnumTypesSql;
+                command.Transaction = this.Transaction;
+                command.Parameters.AddWithValue("@c_qualified_enum", args.CQualifiedEnum != null ? args.CQualifiedEnum.Value.Stringify() : (object)DBNull.Value);
+                await command.ExecuteNonQueryAsync();
+            }
+        }
+
+        private const string GetPostgresQualifiedEnumTypesSql = @"SELECT
+                                                                      c_qualified_enum
+                                                                  FROM postgres_qualified_enum_types
+                                                                  LIMIT 1";
+        public class GetPostgresQualifiedEnumTypesRow
+        {
+            public CEnum? CQualifiedEnum { get; set; }
+        };
+        public async Task<GetPostgresQualifiedEnumTypesRow> GetPostgresQualifiedEnumTypesAsync()
+        {
+            if (this.Transaction == null)
+            {
+                using (var connection = await GetDataSource().OpenConnectionAsync())
+                {
+                    using (var command = connection.CreateCommand())
+                    {
+                        command.CommandText = GetPostgresQualifiedEnumTypesSql;
+                        using (var reader = await command.ExecuteReaderAsync())
+                        {
+                            if (await reader.ReadAsync())
+                            {
+                                return new GetPostgresQualifiedEnumTypesRow
+                                {
+                                    CQualifiedEnum = reader.IsDBNull(0) ? (CEnum? )null : reader.GetString(0).ToCEnum()
+                                };
+                            }
+                        }
+                    }
+                };
+                return null;
+            }
+
+            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
+                throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+            using (var command = this.Transaction.Connection.CreateCommand())
+            {
+                command.CommandText = GetPostgresQualifiedEnumTypesSql;
+                command.Transaction = this.Transaction;
+                using (var reader = await command.ExecuteReaderAsync())
+                {
+                    if (await reader.ReadAsync())
+                    {
+                        return new GetPostgresQualifiedEnumTypesRow
+                        {
+                            CQualifiedEnum = reader.IsDBNull(0) ? (CEnum? )null : reader.GetString(0).ToCEnum()
+                        };
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        private const string TruncatePostgresQualifiedEnumTypesSql = "TRUNCATE TABLE postgres_qualified_enum_types";
+        public async Task TruncatePostgresQualifiedEnumTypesAsync()
+        {
+            if (this.Transaction == null)
+            {
+                using (var connection = await GetDataSource().OpenConnectionAsync())
+                {
+                    using (var command = connection.CreateCommand())
+                    {
+                        command.CommandText = TruncatePostgresQualifiedEnumTypesSql;
+                        await command.ExecuteNonQueryAsync();
+                    }
+
+                    return;
+                }
+            }
+
+            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
+                throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+            using (var command = this.Transaction.Connection.CreateCommand())
+            {
+                command.CommandText = TruncatePostgresQualifiedEnumTypesSql;
+                command.Transaction = this.Transaction;
+                await command.ExecuteNonQueryAsync();
+            }
+        }
     }
 }
