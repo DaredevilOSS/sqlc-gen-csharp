@@ -37,7 +37,7 @@ jobs:
         run: |
           COMMIT_MSG=$(git log -1 --pretty=%B)
           echo "Commit message: $COMMIT_MSG"
-          if echo "$COMMIT_MSG" | grep -q "chore: prepare release v"; then
+          if echo "$COMMIT_MSG" | grep -q "Release Prep v"; then
             echo "This is a release commit, skipping workflow"
             echo "is-release=true" >> $GITHUB_OUTPUT
           else

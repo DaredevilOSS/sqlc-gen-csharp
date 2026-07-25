@@ -27,7 +27,7 @@ jobs:
         id: check_msg
         run: |
           LATEST_COMMIT_MSG=$(git log -1 --pretty=%B)
-          if echo "$LATEST_COMMIT_MSG" | grep -q "chore: prepare release v"; then
+          if echo "$LATEST_COMMIT_MSG" | grep -q "Release Prep v"; then
             echo "IS_RELEASE=true" >> $GITHUB_OUTPUT
           else
             echo "IS_RELEASE=false" >> $GITHUB_OUTPUT
@@ -54,7 +54,7 @@ jobs:
       - name: Extract version from commit message
         id: extract-version
         run: |
-          VERSION=$(git log -1 --pretty=%B | grep -oP 'chore: prepare release \Kv[0-9]+\.[0-9]+\.[0-9]+')
+          VERSION=$(git log -1 --pretty=%B | grep -oP 'Release Prep \Kv[0-9]+\.[0-9]+\.[0-9]+')
           echo "Extracted version: $VERSION"
           echo "version=$VERSION" >> $GITHUB_OUTPUT
 
@@ -72,7 +72,7 @@ jobs:
           REPO="${{ github.event.repository.name }}"
           VERSION=${{ steps.extract-version.outputs.version }}
 
-          PREVIOUS_TAG=$(git tag --sort=-v:refname | head -2 | tail -1)
+          PREVIOUS_TAG=$(git tag --sort=-v:refname | head -1)
 
           if [ -z "$PREVIOUS_TAG" ]; then
             COMMITS=$(git log --oneline --grep="Merge pull request" --grep="#[0-9]" -E)

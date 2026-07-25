@@ -1,10 +1,14 @@
 name: Docs
+
+concurrency: docs-regeneration
+
 defaults:
   run:
     shell: bash
     
 permissions:
   contents: write
+  pull-requests: write
 
 env:
   DOTNET_VERSION: '8.0.x'
@@ -30,10 +34,14 @@ jobs:
       - name: Regenerate docs
         run: ./docs/scripts/generate_all_docs.sh
 
-      - name: Commit changes
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add -A
-          git diff --quiet || git commit -m "docs: regenerate documentation"
-          git push
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v6
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          base: main
+          title: update auto-generated docs
+          commit-message: update docs
+          branch: update-docs
+          branch-suffix: timestamp
+          delete-branch: true

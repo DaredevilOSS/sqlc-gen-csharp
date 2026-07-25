@@ -39,7 +39,6 @@ jobs:
             "LocalRunner/"
             "\.csproj"
             "global\.json"
-            "Directory\.Build\.props"
             "sqlc\.ci\.yaml"
           )
 
@@ -61,10 +60,15 @@ jobs:
           if echo "$LABELS_JSON" | grep -q "skip-release"; then
             SKIP_RELEASE_LABEL=true
           fi
-          VERSION_LABEL_VALUE=$(echo "$LABELS_JSON" | grep -E "(major|minor|patch)" | head -1 | tr -d '[:space:]')
+          VERSION_LABEL_VALUE=$(echo "$LABELS_JSON" | grep -E "^(major|minor|patch)$" | head -1 | tr -d '[:space:]')
           if [ -n "$VERSION_LABEL_VALUE" ]; then
             HAS_VERSION_LABEL=true
             VERSION_LABEL="$VERSION_LABEL_VALUE"
+          fi
+          VERSION_LABEL_COUNT=$(echo "$LABELS_JSON" | grep -cE "^(major|minor|patch)$" || true)
+          MULTIPLE_VERSION_LABELS=false
+          if [ "$VERSION_LABEL_COUNT" -gt 1 ]; then
+            MULTIPLE_VERSION_LABELS=true
           fi
 
           echo "version-worthy=$VERSION_WORTHY" >> $GITHUB_OUTPUT
@@ -72,6 +76,7 @@ jobs:
           echo "has-version-label=$HAS_VERSION_LABEL" >> $GITHUB_OUTPUT
           echo "version-label=$VERSION_LABEL" >> $GITHUB_OUTPUT
           echo "matched-patterns=$MATCHED_PATTERNS" >> $GITHUB_OUTPUT
+          echo "multiple-version-labels=$MULTIPLE_VERSION_LABELS" >> $GITHUB_OUTPUT
 
       - name: Update PR comment
         uses: actions/github-script@v7
@@ -82,6 +87,7 @@ jobs:
             const skipReleaseLabel = '${{ steps.analysis.outputs.skip-release-label }}' === 'true';
             const versionLabel = '${{ steps.analysis.outputs.version-label }}';
             const matchedPatterns = '${{ steps.analysis.outputs.matched-patterns }}';
+            const multipleVersionLabels = '${{ steps.analysis.outputs.multiple-version-labels }}' === 'true';
 
             const owner = context.repo.owner;
             const repo = context.repo.repo;
@@ -119,6 +125,13 @@ jobs:
                 '',
                 'This PR cannot be merged until a version label is added.',
               ].join('\n');
+            } else if (multipleVersionLabels) {
+              body = [
+                '<!-- release-assistant-bot -->',
+                '## Release Assistant - Action Required',
+                '',
+                'Multiple version labels detected. Please keep only one of: `major`, `minor`, `patch`.',
+              ].join('\n');
             } else {
               body = [
                 '<!-- release-assistant-bot -->',
@@ -154,6 +167,7 @@ jobs:
             const versionWorthy = '${{ steps.analysis.outputs.version-worthy }}' === 'true';
             const hasVersionLabel = '${{ steps.analysis.outputs.has-version-label }}' === 'true';
             const skipReleaseLabel = '${{ steps.analysis.outputs.skip-release-label }}' === 'true';
+            const multipleVersionLabels = '${{ steps.analysis.outputs.multiple-version-labels }}' === 'true';
 
             let state, description;
 
@@ -166,6 +180,9 @@ jobs:
             } else if (!hasVersionLabel) {
               state = 'failure';
               description = 'Version label (major/minor/patch) required';
+            } else if (multipleVersionLabels) {
+              state = 'failure';
+              description = 'Multiple version labels found. Keep only one';
             } else {
               state = 'success';
               description = 'All release requirements satisfied';
