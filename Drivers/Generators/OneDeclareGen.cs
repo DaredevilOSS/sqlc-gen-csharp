@@ -13,7 +13,7 @@ public class OneDeclareGen(DbDriver dbDriver)
     public MemberDeclarationSyntax Generate(string queryTextConstant, string argInterface, string returnInterface, Query query)
     {
         var returnType = $"Task<{dbDriver.AddNullableSuffixIfNeeded(returnInterface, false)}>";
-        var parametersStr = CommonGen.GetMethodParameterList(argInterface, query.Params);
+        var parametersStr = CommonGen.GetMethodParameterList(argInterface, query.Params, dbDriver.Cancellation.MethodParameter());
         return ParseMemberDeclaration($$"""
             public async {{returnType}} {{query.Name.ToMethodName(dbDriver.Options.WithAsyncSuffix)}}({{parametersStr}})
             {
@@ -53,8 +53,9 @@ public class OneDeclareGen(DbDriver dbDriver)
         var returnType = dbDriver.AddNullableSuffixIfNeeded(returnInterface, false);
         var connectionVar = Variable.Connection.AsVarName();
         var resultVar = Variable.Result.AsVarName();
+        var callArgs = dbDriver.Cancellation.WrapDapperArgs($"{sqlVar}{dapperArgs}");
         return connectionCommands.GetConnectionOrDataSource.WrapBlock($$"""
-            var {{resultVar}} = await {{connectionVar}}.QueryFirstOrDefaultAsync<{{returnType}}>({{sqlVar}}{{dapperArgs}});
+            var {{resultVar}} = await {{connectionVar}}.QueryFirstOrDefaultAsync<{{returnType}}>({{callArgs}});
             return {{resultVar}};
         """);
     }
@@ -65,11 +66,10 @@ public class OneDeclareGen(DbDriver dbDriver)
         var dapperArgs = CommonGen.GetDapperArgs(query);
         var returnType = dbDriver.AddNullableSuffixIfNeeded(returnInterface, false);
 
+        var callArgs = dbDriver.Cancellation.WrapDapperArgs($"{sqlVar}{dapperArgs}, transaction: this.{transactionProperty}");
         return $$"""
             {{dbDriver.TransactionConnectionNullExcetionThrow}}
-            return await this.{{transactionProperty}}.Connection.QueryFirstOrDefaultAsync<{{returnType}}>(
-                {{sqlVar}}{{dapperArgs}},
-                transaction: this.{{transactionProperty}});
+            return await this.{{transactionProperty}}.Connection.QueryFirstOrDefaultAsync<{{returnType}}>({{callArgs}});
         """;
     }
 
@@ -83,9 +83,9 @@ public class OneDeclareGen(DbDriver dbDriver)
             {{sqlCommands.SetCommandText.AppendSemicolonUnlessEmpty()}}
             {{dbDriver.AddParametersToCommand(query)}}
             {{sqlCommands.PrepareCommand.AppendSemicolonUnlessEmpty()}}
-            using ({{CommonGen.InitDataReader()}})
+            using ({{CommonGen.InitDataReader(dbDriver.Cancellation.Argument())}})
             {
-                if ({{CommonGen.AwaitReaderRow()}})
+                if ({{CommonGen.AwaitReaderRow(dbDriver.Cancellation.Argument())}})
                 {
                     return {{returnDataclass}};
                 }
@@ -116,9 +116,9 @@ public class OneDeclareGen(DbDriver dbDriver)
                 {{commandVar}}.CommandText = {{sqlVar}};
                 {{commandVar}}.Transaction = this.{{transactionProperty}};
                 {{dbDriver.AddParametersToCommand(query)}}
-                using ({{CommonGen.InitDataReader()}})
+                using ({{CommonGen.InitDataReader(dbDriver.Cancellation.Argument())}})
                 {
-                    if ({{CommonGen.AwaitReaderRow()}})
+                    if ({{CommonGen.AwaitReaderRow(dbDriver.Cancellation.Argument())}})
                     {
                         return {{CommonGen.InstantiateDataclass([.. query.Columns], returnInterface, query)}};
                     }

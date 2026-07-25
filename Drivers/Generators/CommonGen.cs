@@ -6,11 +6,13 @@ namespace SqlcGenCsharp.Drivers.Generators;
 
 public class CommonGen(DbDriver dbDriver)
 {
-    public static string GetMethodParameterList(string argInterface, IEnumerable<Parameter> parameters)
+    public static string GetMethodParameterList(string argInterface, IEnumerable<Parameter> parameters,
+        string cancellationParam = "")
     {
-        return $"{(string.IsNullOrEmpty(argInterface) || !parameters.Any()
+        var argsParam = string.IsNullOrEmpty(argInterface) || !parameters.Any()
             ? string.Empty
-            : $"{argInterface} {Variable.Args.AsVarName()}")}";
+            : $"{argInterface} {Variable.Args.AsVarName()}";
+        return string.Join(", ", new[] { argsParam, cancellationParam }.Where(s => !string.IsNullOrEmpty(s)));
     }
 
     public static string GetDapperArgs(Query query)
@@ -52,14 +54,14 @@ public class CommonGen(DbDriver dbDriver)
                  """;
     }
 
-    public static string AwaitReaderRow()
+    public static string AwaitReaderRow(string cancellationArg)
     {
-        return $"await {Variable.Reader.AsVarName()}.ReadAsync()";
+        return $"await {Variable.Reader.AsVarName()}.ReadAsync({cancellationArg})";
     }
 
-    public static string InitDataReader()
+    public static string InitDataReader(string cancellationArg)
     {
-        return $"var {Variable.Reader.AsVarName()} = await {Variable.Command.AsVarName()}.ExecuteReaderAsync()";
+        return $"var {Variable.Reader.AsVarName()} = await {Variable.Command.AsVarName()}.ExecuteReaderAsync({cancellationArg})";
     }
 
     public static string GetSqlTransformations(Query query, string queryTextConstant)

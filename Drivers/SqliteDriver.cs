@@ -261,7 +261,7 @@ public sealed partial class SqliteDriver(
                 $"var {Variable.Connection.AsVarName()} = new SqliteConnection({Variable.ConnectionString.AsPropertyName()})",
                 true
             ),
-            ConnectionOpen: $"await {Variable.Connection.AsVarName()}.OpenAsync()"
+            ConnectionOpen: $"await {Variable.Connection.AsVarName()}.OpenAsync({Cancellation.Argument()})"
         );
     }
 
@@ -311,7 +311,7 @@ public sealed partial class SqliteDriver(
             $"""
             {commandParameters}
             {createSqlCommands.PrepareCommand.AppendSemicolonUnlessEmpty()}
-            await {Variable.Command.AsVarName()}.ExecuteScalarAsync();
+            await {Variable.Command.AsVarName()}.ExecuteScalarAsync({Cancellation.Argument()});
             """
         );
         return connectionCommands.GetConnectionOrDataSource.WrapBlock(

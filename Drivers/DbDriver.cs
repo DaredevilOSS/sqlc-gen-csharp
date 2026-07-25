@@ -1,5 +1,6 @@
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Plugin;
+using SqlcGenCsharp.Drivers.Generators;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -41,6 +42,8 @@ public abstract class DbDriver
     protected const string DefaultNodaTimeVersion = "3.2.0";
 
     public Options Options { get; }
+
+    public CancellationGen Cancellation => new(Options.WithCancellationToken);
 
     public string DefaultSchema { get; }
 
@@ -296,7 +299,7 @@ public abstract class DbDriver
         var convertFuncCall = convertFunc(Variable.Result.AsVarName());
         return
         [
-            $"var {Variable.Result.AsVarName()} = await {Variable.Command.AsVarName()}.ExecuteScalarAsync();",
+            $"var {Variable.Result.AsVarName()} = await {Variable.Command.AsVarName()}.ExecuteScalarAsync({Cancellation.Argument()});",
             $"return {convertFuncCall};"
         ];
     }

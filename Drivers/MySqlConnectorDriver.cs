@@ -474,7 +474,7 @@ public sealed partial class MySqlConnectorDriver(
     {
         return new(
             GetConnectionOrDataSource: new(
-                $"var {Variable.Connection.AsVarName()} = await GetDataSource().OpenConnectionAsync()",
+                $"var {Variable.Connection.AsVarName()} = await GetDataSource().OpenConnectionAsync({Cancellation.Argument()})",
                 true)
         // ConnectionOpen: string.Empty
         );
@@ -606,7 +606,7 @@ public sealed partial class MySqlConnectorDriver(
                 LineTerminator = "\n"
             };
             {{loaderVar}}.Columns.AddRange(new List<string> { {{loaderColumns}} });
-            await {{loaderVar}}.LoadAsync();
+            await {{loaderVar}}.LoadAsync({{Cancellation.Argument()}});
         """;
 
         return $$"""

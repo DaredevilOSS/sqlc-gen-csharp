@@ -34,6 +34,9 @@ public record RawOptions
 
     [JsonPropertyName("withAsyncSuffix")]
     public bool WithAsyncSuffix { get; init; } = true;
+
+    [JsonPropertyName("withCancellationToken")]
+    public bool WithCancellationToken { get; init; }
 }
 
 public class OverrideOption

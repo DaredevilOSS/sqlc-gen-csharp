@@ -540,7 +540,7 @@ public sealed class NpgsqlDriver : EnumDbDriver, IOne, IMany, IExec, IExecRows, 
     {
         var connectionVar = Variable.Connection.AsVarName();
         return new(
-            GetConnectionOrDataSource: new($"var {connectionVar} = await GetDataSource().OpenConnectionAsync()", true)
+            GetConnectionOrDataSource: new($"var {connectionVar} = await GetDataSource().OpenConnectionAsync({Cancellation.Argument()})", true)
         // ConnectionOpen: string.Empty
         );
     }
@@ -634,14 +634,14 @@ public sealed class NpgsqlDriver : EnumDbDriver, IOne, IMany, IExec, IExecRows, 
     public string GetCopyFromImpl(Query query, string queryTextConstant)
     {
         var connectionCommands = EstablishConnection(query);
-        var beginBinaryImport = $"{Variable.Connection.AsVarName()}.BeginBinaryImportAsync({queryTextConstant}";
+        var beginBinaryImport = $"{Variable.Connection.AsVarName()}.BeginBinaryImportAsync({queryTextConstant}{Cancellation.TrailingArgument()}";
         var connectionVar = Variable.Connection.AsVarName();
         var writerVar = Variable.Writer.AsVarName();
         var commandBlock = $$"""
             using (var {{writerVar}} = await {{beginBinaryImport}}))
             {
                 {{AddRowsToCopyCommand()}}
-                await {{writerVar}}.CompleteAsync();
+                await {{writerVar}}.CompleteAsync({{Cancellation.Argument()}});
             }
         """;
         return connectionCommands.GetConnectionOrDataSource.WrapBlock(
@@ -669,14 +669,14 @@ public sealed class NpgsqlDriver : EnumDbDriver, IOne, IMany, IExec, IExecRows, 
                         var partialStmt = $"await {writerVar}.WriteAsync({paramToWrite}";
                         var typeOverride = GetColumnDbTypeOverride(p.Column);
                         return typeOverride is null
-                            ? $"{partialStmt});"
-                            : $"{partialStmt}, {typeOverride});";
+                            ? $"{partialStmt}{Cancellation.TrailingArgument()});"
+                            : $"{partialStmt}, {typeOverride}{Cancellation.TrailingArgument()});";
                     })
                 .JoinByNewLine();
             return $$"""
                      foreach (var {{rowVar}} in args) 
                      {
-                          await {{writerVar}}.StartRowAsync();
+                          await {{writerVar}}.StartRowAsync({{Cancellation.Argument()}});
                           {{constructRowFields}}
                      }
                      """;

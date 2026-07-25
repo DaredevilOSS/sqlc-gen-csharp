@@ -10,7 +10,7 @@ public class ExecRowsDeclareGen(DbDriver dbDriver)
 
     public MemberDeclarationSyntax Generate(string queryTextConstant, string argInterface, Query query)
     {
-        var parametersStr = CommonGen.GetMethodParameterList(argInterface, query.Params);
+        var parametersStr = CommonGen.GetMethodParameterList(argInterface, query.Params, dbDriver.Cancellation.MethodParameter());
         return ParseMemberDeclaration($$"""
             public async Task<long> {{query.Name.ToMethodName(dbDriver.Options.WithAsyncSuffix)}}({{parametersStr}})
             {
@@ -46,8 +46,9 @@ public class ExecRowsDeclareGen(DbDriver dbDriver)
     {
         var connectionCommands = dbDriver.EstablishConnection(query);
         var dapperArgs = CommonGen.GetDapperArgs(query);
+        var callArgs = dbDriver.Cancellation.WrapDapperArgs($"{sqlVar}{dapperArgs}");
         return connectionCommands.GetConnectionOrDataSource.WrapBlock(
-            $"return await {Variable.Connection.AsVarName()}.ExecuteAsync({sqlVar}{dapperArgs});"
+            $"return await {Variable.Connection.AsVarName()}.ExecuteAsync({callArgs});"
         );
     }
 
@@ -55,11 +56,10 @@ public class ExecRowsDeclareGen(DbDriver dbDriver)
     {
         var transactionProperty = Variable.Transaction.AsPropertyName();
         var dapperArgs = CommonGen.GetDapperArgs(query);
+        var callArgs = dbDriver.Cancellation.WrapDapperArgs($"{sqlVar}{dapperArgs}, transaction: this.{transactionProperty}");
         return $$"""
             {{dbDriver.TransactionConnectionNullExcetionThrow}}
-            return await this.{{transactionProperty}}.Connection.ExecuteAsync(
-                    {{sqlVar}}{{dapperArgs}},
-                    transaction: this.{{transactionProperty}});
+            return await this.{{transactionProperty}}.Connection.ExecuteAsync({{callArgs}});
         """;
     }
 
@@ -72,7 +72,7 @@ public class ExecRowsDeclareGen(DbDriver dbDriver)
             {sqlCommands.SetCommandText.AppendSemicolonUnlessEmpty()}
             {dbDriver.AddParametersToCommand(query)}
             {sqlCommands.PrepareCommand.AppendSemicolonUnlessEmpty()}
-            return await {Variable.Command.AsVarName()}.ExecuteNonQueryAsync();
+            return await {Variable.Command.AsVarName()}.ExecuteNonQueryAsync({dbDriver.Cancellation.Argument()});
             """
         );
         return connectionCommands.GetConnectionOrDataSource.WrapBlock(
@@ -95,7 +95,7 @@ public class ExecRowsDeclareGen(DbDriver dbDriver)
                 {{commandVar}}.CommandText = {{sqlVar}};
                 {{commandVar}}.Transaction = this.{{transactionProperty}};
                 {{dbDriver.AddParametersToCommand(query)}}
-                return await {{commandVar}}.ExecuteNonQueryAsync();
+                return await {{commandVar}}.ExecuteNonQueryAsync({{dbDriver.Cancellation.Argument()}});
             }
         """;
     }

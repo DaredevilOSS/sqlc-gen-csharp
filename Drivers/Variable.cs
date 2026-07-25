@@ -9,6 +9,7 @@ public enum Variable
     DataSource,
     Connection,
     Command,
+    CancellationToken,
 
     Reader,
     Writer,
