@@ -8,6 +8,7 @@ on:
 
 permissions:
   contents: write
+  actions: read
 
 defaults:
   run:
@@ -45,20 +46,33 @@ jobs:
           fetch-depth: 0
           ref: ${{ github.event.workflow_run.head_sha }}
 
-      - name: Extract version from commit message
-        id: extract-version
+      - name: Extract version and find wasm artifact
+        id: find-artifact
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           VERSION=$(git log -1 --pretty=%B | grep -oP 'Release Prep \Kv[0-9]+\.[0-9]+\.[0-9]+')
-          echo "Extracted version: $VERSION"
           echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+          ARTIFACT_NAME="wasm-${VERSION}"
+          RUN_ID=$(gh api "/repos/${{ github.repository }}/actions/artifacts" \
+            --paginate \
+            --jq "[.artifacts[] | select(.name == \"${ARTIFACT_NAME}\") | .workflow_run.id][0]")
+
+          if [ -z "$RUN_ID" ]; then
+            echo "Error: Could not find artifact ${ARTIFACT_NAME} in any workflow run" >&2
+            exit 1
+          fi
+
+          echo "Found ${ARTIFACT_NAME} in workflow run: $RUN_ID"
+          echo "run-id=$RUN_ID" >> $GITHUB_OUTPUT
 
       - name: Download wasm
         uses: dawidd6/action-download-artifact@v6
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          workflow: gen-release-pr.yml
-          workflow_conclusion: success
-          name: wasm-${{ steps.extract-version.outputs.version }}
+          run_id: ${{ steps.find-artifact.outputs.run-id }}
+          name: wasm-${{ steps.find-artifact.outputs.version }}
 
       - name: Calculate sha256
         run: |
@@ -72,7 +86,7 @@ jobs:
           OWNER: ${{ github.repository_owner }}
           REPO: ${{ github.event.repository.name }}
         run: |
-          VERSION=${{ steps.extract-version.outputs.version }}
+          VERSION=${{ steps.find-artifact.outputs.version }}
           PREVIOUS_TAG=$(git tag --sort=-v:refname | head -1)
 
           NOTES_FILE=$(mktemp)
@@ -86,7 +100,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          NEW_TAG=${{ steps.extract-version.outputs.version }}
+          NEW_TAG=${{ steps.find-artifact.outputs.version }}
           mv plugin.wasm sqlc-gen-csharp.wasm
 
           echo "Creating release ${NEW_TAG}..."
