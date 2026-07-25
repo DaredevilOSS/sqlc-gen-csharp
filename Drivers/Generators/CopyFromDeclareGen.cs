@@ -9,7 +9,7 @@ public class CopyFromDeclareGen(DbDriver dbDriver)
     public MemberDeclarationSyntax Generate(string queryTextConstant, string argInterface, Query query)
     {
         return ParseMemberDeclaration($$"""
-            public async Task {{query.Name.ToMethodName(dbDriver.Options.WithAsyncSuffix)}}(List<{{argInterface}}> args)
+            public async Task {{query.Name.ToMethodName(dbDriver.Options.WithAsyncSuffix)}}(List<{{argInterface}}> args{{dbDriver.Cancellation.TrailingMethodParameter()}})
             {
                 {{((ICopyFrom)dbDriver).GetCopyFromImpl(query, queryTextConstant)}}
             }

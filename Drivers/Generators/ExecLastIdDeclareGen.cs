@@ -11,7 +11,7 @@ public class ExecLastIdDeclareGen(DbDriver dbDriver)
 
     public MemberDeclarationSyntax Generate(string queryTextConstant, string argInterface, Query query)
     {
-        var parametersStr = CommonGen.GetMethodParameterList(argInterface, query.Params);
+        var parametersStr = CommonGen.GetMethodParameterList(argInterface, query.Params, dbDriver.Cancellation.MethodParameter());
         return ParseMemberDeclaration($$"""
             public async Task<{{dbDriver.GetIdColumnType(query)}}> {{query.Name.ToMethodName(dbDriver.Options.WithAsyncSuffix)}}({{parametersStr}})
             {
@@ -48,8 +48,9 @@ public class ExecLastIdDeclareGen(DbDriver dbDriver)
         var connectionCommands = dbDriver.EstablishConnection(query);
         var dapperArgs = CommonGen.GetDapperArgs(query);
         var idColumnType = dbDriver.GetIdColumnType(query);
+        var callArgs = dbDriver.Cancellation.WrapDapperArgs($"{sqlVar}{dapperArgs}");
         return connectionCommands.GetConnectionOrDataSource.WrapBlock($"""
-            return await {Variable.Connection.AsVarName()}.QuerySingleAsync<{idColumnType}>({sqlVar}{dapperArgs});
+            return await {Variable.Connection.AsVarName()}.QuerySingleAsync<{idColumnType}>({callArgs});
         """);
     }
 
@@ -57,9 +58,10 @@ public class ExecLastIdDeclareGen(DbDriver dbDriver)
     {
         var transactionProperty = Variable.Transaction.AsPropertyName();
         var dapperArgs = query.Params.Any() ? $", {Variable.QueryParams.AsVarName()}" : string.Empty;
+        var callArgs = dbDriver.Cancellation.WrapDapperArgs($"{sqlVar}{dapperArgs}, transaction: this.{transactionProperty}");
         return $$"""
                 {{dbDriver.TransactionConnectionNullExcetionThrow}}
-                return await this.{{transactionProperty}}.Connection.QuerySingleAsync<{{dbDriver.GetIdColumnType(query)}}>({{sqlVar}}{{dapperArgs}}, transaction: this.{{transactionProperty}});
+                return await this.{{transactionProperty}}.Connection.QuerySingleAsync<{{dbDriver.GetIdColumnType(query)}}>({{callArgs}});
                 """;
     }
 

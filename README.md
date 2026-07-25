@@ -51,6 +51,7 @@ sql:
 | Override                    | values: A nested override value like [this](#override-option).                                                                                                                    | Yes      | Allows you to override the generated C# data types for specific columns in specific queries. This option accepts a `query_name:column_name` mapping and the overriden data type.                                                                                                                                                          |                                                                                     |
 | useCentralPackageManagement | default: `false`<br/>values: `false`,`true`                                                                                                                                       | Yes      | If true, the code is generated to support central package management.                                                                                                                                                                                                                                                                     |
 | withAsyncSuffix             | default: `true`<br/>values: `false`,`true`                                                                                                                                       | Yes      | When true, async methods will have the "Async" suffix appended to their names (e.g., `GetAuthorAsync`). When false, async methods will not have the suffix (e.g., `GetAuthor`).                                                                                                                                                        |
+| withCancellationToken       | default: `false`<br/>values: `false`,`true`                                                                                                      | Yes      | When true, every generated method takes an optional trailing `CancellationToken cancellationToken = default`, threaded into every async DB call so in-flight queries can be cancelled. See [Cancellation](#cancellation). When false (default), generated output is unchanged.                                                          |
 
 ### Override option
 Override for a specific query:
@@ -157,6 +158,34 @@ public async Task ExampleTransaction(IDbConnection connection)
 ```
 
 More info can be found in [here](https://docs.sqlc.dev/en/stable/howto/transactions.html).
+
+### Cancellation
+Set `withCancellationToken: true` to make every generated method accept an optional
+`CancellationToken`. The token is threaded into every async database call, so a cancelled
+token interrupts the in-flight query and releases the locks that statement holds. The
+option is off by default; when off, generated output is identical to before.
+
+```C#
+using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(5));
+try
+{
+    var author = await queries.GetAuthor(authorId, cts.Token);
+}
+catch (OperationCanceledException)
+{
+    // the query was cancelled; its statement-level locks are released
+}
+```
+
+Notes:
+- **PostgreSQL & MySQL** interrupt the running statement server-side (Npgsql sends a cancel
+  request; MySqlConnector issues `KILL QUERY`), releasing that statement's locks immediately.
+- **SQLite** runs synchronously and only honours the token *before* the statement starts;
+  an already-running SQLite statement is not interrupted.
+- **Transactions:** cancelling a query inside a `WithTransaction(...)` flow releases only that
+  statement's locks. Locks held by earlier statements in the transaction (and, on PostgreSQL,
+  the aborted-transaction state) are released when **you** roll back — the generated code never
+  rolls back for you.
 # PostgresSQL
 <details>
 <summary>:execlastid - Implementation</summary>

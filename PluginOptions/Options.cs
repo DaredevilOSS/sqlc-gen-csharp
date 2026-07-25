@@ -24,6 +24,7 @@ public class Options
         DotnetFramework = DotnetFrameworkExtensions.ParseName(rawOptions.TargetFramework);
         Overrides = rawOptions.Overrides ?? [];
         WithAsyncSuffix = rawOptions.WithAsyncSuffix;
+        WithCancellationToken = rawOptions.WithCancellationToken;
         UseCentralPackageManagement = rawOptions.UseCentralPackageManagement;
 
         if (rawOptions.DebugRequest && generateRequest.Settings.Codegen.Wasm is not null)
@@ -56,6 +57,11 @@ public class Options
     public bool UseCentralPackageManagement { get; }
 
     public bool WithAsyncSuffix { get; }
+
+    /// <summary>
+    /// When true, generated methods take an optional CancellationToken threaded into every async DB call.
+    /// </summary>
+    public bool WithCancellationToken { get; }
 
     private static readonly Dictionary<string, DriverName> EngineToDriverMapping = new()
     {

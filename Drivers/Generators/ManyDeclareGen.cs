@@ -12,7 +12,7 @@ public class ManyDeclareGen(DbDriver dbDriver)
 
     public MemberDeclarationSyntax Generate(string queryTextConstant, string argInterface, string returnInterface, Query query)
     {
-        var parametersStr = CommonGen.GetMethodParameterList(argInterface, query.Params);
+        var parametersStr = CommonGen.GetMethodParameterList(argInterface, query.Params, dbDriver.Cancellation.MethodParameter());
         var returnType = $"Task<List<{returnInterface}>>";
         return ParseMemberDeclaration($$"""
             public async {{returnType}} {{query.Name.ToMethodName(dbDriver.Options.WithAsyncSuffix)}}({{parametersStr}})
@@ -52,9 +52,10 @@ public class ManyDeclareGen(DbDriver dbDriver)
         var dapperArgs = CommonGen.GetDapperArgs(query);
         var returnType = dbDriver.AddNullableSuffixIfNeeded(returnInterface, true);
         var resultVar = Variable.Result.AsVarName();
+        var callArgs = dbDriver.Cancellation.WrapDapperArgs($"{sqlVar}{dapperArgs}");
         return connectionCommands.GetConnectionOrDataSource.WrapBlock(
             $"""
-            var {resultVar} = await {Variable.Connection.AsVarName()}.QueryAsync<{returnType}>({sqlVar}{dapperArgs});
+            var {resultVar} = await {Variable.Connection.AsVarName()}.QueryAsync<{returnType}>({callArgs});
             return {resultVar}.AsList();
             """
         );
@@ -66,11 +67,10 @@ public class ManyDeclareGen(DbDriver dbDriver)
         var dapperArgs = CommonGen.GetDapperArgs(query);
         var returnType = dbDriver.AddNullableSuffixIfNeeded(returnInterface, true);
 
+        var callArgs = dbDriver.Cancellation.WrapDapperArgs($"{sqlVar}{dapperArgs}, transaction: this.{transactionProperty}");
         return $$"""
             {{dbDriver.TransactionConnectionNullExcetionThrow}}
-            return (await this.{{transactionProperty}}.Connection.QueryAsync<{{returnType}}>(
-                    {{sqlVar}}{{dapperArgs}},
-                    transaction: this.{{transactionProperty}})).AsList();
+            return (await this.{{transactionProperty}}.Connection.QueryAsync<{{returnType}}>({{callArgs}})).AsList();
         """;
     }
 
@@ -80,7 +80,7 @@ public class ManyDeclareGen(DbDriver dbDriver)
         var dataclassInit = CommonGen.InstantiateDataclass([.. query.Columns], returnInterface, query);
         var resultVar = Variable.Result.AsVarName();
         var readWhileExists = $$"""
-            while ({{CommonGen.AwaitReaderRow()}})
+            while ({{CommonGen.AwaitReaderRow(dbDriver.Cancellation.Argument())}})
                 {{resultVar}}.Add({{dataclassInit}});
         """;
         var sqlCommands = dbDriver.CreateSqlCommand(sqlVar);
@@ -89,7 +89,7 @@ public class ManyDeclareGen(DbDriver dbDriver)
             {{sqlCommands.SetCommandText.AppendSemicolonUnlessEmpty()}}
             {{dbDriver.AddParametersToCommand(query)}}
             {{sqlCommands.PrepareCommand.AppendSemicolonUnlessEmpty()}}
-            using ({{CommonGen.InitDataReader()}})
+            using ({{CommonGen.InitDataReader(dbDriver.Cancellation.Argument())}})
             {
                 var {{resultVar}} = new List<{{returnInterface}}>();
                 {{readWhileExists}}
@@ -118,10 +118,10 @@ public class ManyDeclareGen(DbDriver dbDriver)
                 {{commandVar}}.CommandText = {{sqlVar}};
                 {{commandVar}}.Transaction = this.{{transactionProperty}};
                 {{dbDriver.AddParametersToCommand(query)}}
-                using ({{CommonGen.InitDataReader()}})
+                using ({{CommonGen.InitDataReader(dbDriver.Cancellation.Argument())}})
                 {
                     var {{resultVar}} = new List<{{returnInterface}}>();
-                    while ({{CommonGen.AwaitReaderRow()}})
+                    while ({{CommonGen.AwaitReaderRow(dbDriver.Cancellation.Argument())}})
                         {{resultVar}}.Add({{CommonGen.InstantiateDataclass([.. query.Columns], returnInterface, query)}});
                     return {{resultVar}};
                 }
