@@ -8,7 +8,6 @@ on:
 
 permissions:
   contents: write
-  releases: write
 
 defaults:
   run:
