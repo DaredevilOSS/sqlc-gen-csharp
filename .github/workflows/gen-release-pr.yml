@@ -270,7 +270,7 @@ jobs:
         uses: peter-evans/create-pull-request@v5
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          commit-message: "chore: prepare release ${{ steps.version-update.outputs.new-version }}"
+          commit-message: "Release Prep ${{ steps.version-update.outputs.new-version }}"
           title: "Release Prep ${{ steps.version-update.outputs.new-version }}"
           body-path: /tmp/pr-body.md
           branch: release-prep
