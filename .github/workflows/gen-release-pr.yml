@@ -94,7 +94,7 @@ jobs:
               # Collect data for rich PR body
               PR_AUTHOR=$(gh api repos/$OWNER/$REPO/pulls/$PR_NUM --jq '.user.login' 2>/dev/null || echo "unknown")
               LABELS_JSON=$(echo "$LABELS" | jq -R -s 'split("\n") | map(select(length > 0))')
-              echo "{\"number\":$PR_NUM,\"title\":$(echo "$PR_TITLE" | jq -Rs .),\"author\":\"$PR_AUTHOR\",\"labels\":$LABELS_JSON}" >> pr-data.jsonl
+              echo "{\"number\":$PR_NUM,\"title\":$(echo "$PR_TITLE" | jq -Rs .),\"author\":\"$PR_AUTHOR\",\"labels\":$LABELS_JSON}" >> /tmp/pr-data.jsonl
             fi
           done <<< "$COMMITS"
 
@@ -196,7 +196,7 @@ jobs:
             --file /tmp/release-notes.txt
 
           # Read PR data
-          ALL_PRS=$(jq -s '.' pr-data.jsonl)
+          ALL_PRS=$(jq -s '.' /tmp/pr-data.jsonl)
 
           # Categorize PRs for the body list (just #XYZ, no title)
           MAJOR_PRS=$(echo "$ALL_PRS" | jq -r '.[] | select(.labels | index("major")) | .author |= gsub("^app/"; "") | "- #\(.number) — @\(.author)"')
@@ -207,7 +207,7 @@ jobs:
           CONTRIBUTORS=$(echo "$ALL_PRS" | jq -r '[.[].author] | unique | map(gsub("^app/"; "")) | .[] | "@\(.)"' | paste -sd ', ')
 
           # Build the PR body header
-          cat > pr-body.md <<- BODY
+          cat > /tmp/pr-body.md <<- BODY
           ## Automated Release Prep
 
           **Release Type:** ${{ steps.unreleased.outputs.release-type }}
@@ -222,22 +222,22 @@ jobs:
 
           # Add categorized PRs (just #XYZ format)
           if [ -n "$MAJOR_PRS" ]; then
-            echo -e "\n**🚨 Major Changes**\n$MAJOR_PRS" >> pr-body.md
+            echo -e "\n**🚨 Major Changes**\n$MAJOR_PRS" >> /tmp/pr-body.md
           fi
           if [ -n "$MINOR_PRS" ]; then
-            echo -e "\n**✨ New Features**\n$MINOR_PRS" >> pr-body.md
+            echo -e "\n**✨ New Features**\n$MINOR_PRS" >> /tmp/pr-body.md
           fi
           if [ -n "$PATCH_PRS" ]; then
-            echo -e "\n**🐛 Bug Fixes**\n$PATCH_PRS" >> pr-body.md
+            echo -e "\n**🐛 Bug Fixes**\n$PATCH_PRS" >> /tmp/pr-body.md
           fi
           if [ -n "$UNLABELED_PRS" ]; then
-            echo -e "\n**📝 Other / Infrastructure**\n$UNLABELED_PRS" >> pr-body.md
+            echo -e "\n**📝 Other / Infrastructure**\n$UNLABELED_PRS" >> /tmp/pr-body.md
           fi
 
-          echo -e "\n\n**Contributors:** ${CONTRIBUTORS}" >> pr-body.md
+          echo -e "\n\n**Contributors:** ${CONTRIBUTORS}" >> /tmp/pr-body.md
 
           # Add collapsible release notes preview
-          cat >> pr-body.md <<- PREVIEW
+          cat >> /tmp/pr-body.md <<- PREVIEW
 
           ---
 
@@ -249,9 +249,9 @@ jobs:
           \`\`\`\`
           PREVIEW
 
-          cat /tmp/release-notes.txt >> pr-body.md
+          cat /tmp/release-notes.txt >> /tmp/pr-body.md
 
-          cat >> pr-body.md <<- PREVIEW
+          cat >> /tmp/pr-body.md <<- PREVIEW
           \`\`\`\`
 
           </details>
@@ -263,7 +263,7 @@ jobs:
           PREVIEW
 
           echo "Generated PR body:"
-          cat pr-body.md
+          cat /tmp/pr-body.md
 
       - name: Create release PR
         if: steps.version-update.outputs.new-version != ''
@@ -272,7 +272,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           commit-message: "chore: prepare release ${{ steps.version-update.outputs.new-version }}"
           title: "Release Prep ${{ steps.version-update.outputs.new-version }}"
-          body-path: pr-body.md
+          body-path: /tmp/pr-body.md
           branch: release-prep
           base: ${{ github.ref_name }}
           labels: |
