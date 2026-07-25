@@ -1,0 +1,189 @@
+name: Generate Release PR
+
+concurrency: release-prep-${{ github.ref_name }}
+
+on:
+  workflow_run:
+    workflows: [Build]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      release-type:
+        type: choice
+        description: Override release type
+        options:
+          - auto
+          - major
+          - minor
+          - patch
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  accumulate-changes:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+          ref: ${{ github.event.workflow_run.head_sha || github.ref }}
+
+      - name: Check if this is a release commit
+        id: check-release
+        run: |
+          COMMIT_MSG=$(git log -1 --pretty=%B)
+          echo "Commit message: $COMMIT_MSG"
+          if echo "$COMMIT_MSG" | grep -q "Release Prep v"; then
+            echo "This is a release commit, skipping workflow"
+            echo "is-release=true" >> $GITHUB_OUTPUT
+          else
+            echo "Not a release commit, continuing workflow"
+            echo "is-release=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Get all unreleased merged PRs and determine version
+        if: steps.check-release.outputs.is-release == 'false'
+        id: unreleased
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          OWNER="${{ github.repository_owner }}"
+          REPO="${{ github.event.repository.name }}"
+
+          LATEST_TAG=$(gh api repos/$OWNER/$REPO/releases/latest --jq '.tag_name' 2>/dev/null || echo "")
+          echo "LATEST_TAG: $LATEST_TAG"
+
+          if [ -z "$LATEST_TAG" ]; then
+            COMMITS=$(git log --oneline --grep="Merge pull request" --grep="#[0-9]" -E)
+          else
+            COMMITS=$(git log ${LATEST_TAG}..HEAD --oneline --grep="Merge pull request" --grep="#[0-9]" -E)
+          fi
+
+          PATCH_COUNT=0
+          MINOR_COUNT=0
+          MAJOR_COUNT=0
+          LABELED_PR_LIST=""
+          MAJOR_PRS=""
+          MINOR_PRS=""
+          PATCH_PRS=""
+
+          while IFS= read -r commit; do
+            PR_NUM=$(echo "$commit" | grep -oE '#[0-9]+' | tr -d '#' || echo "")
+            if [ -n "$PR_NUM" ]; then
+              LABELS=$(gh api repos/$OWNER/$REPO/pulls/$PR_NUM --jq '.labels[].name' 2>/dev/null || echo "")
+              PR_TITLE=$(gh api repos/$OWNER/$REPO/pulls/$PR_NUM --jq '.title' 2>/dev/null || echo "PR #$PR_NUM")
+
+              LABELED_PR_LIST="$LABELED_PR_LIST #$PR_NUM"
+
+              if echo "$LABELS" | grep -qx "major"; then
+                MAJOR_COUNT=$((MAJOR_COUNT + 1))
+                MAJOR_PRS="$MAJOR_PRS\n- $PR_TITLE (#$PR_NUM)"
+              elif echo "$LABELS" | grep -qx "minor"; then
+                MINOR_COUNT=$((MINOR_COUNT + 1))
+                MINOR_PRS="$MINOR_PRS\n- $PR_TITLE (#$PR_NUM)"
+              elif echo "$LABELS" | grep -qx "patch"; then
+                PATCH_COUNT=$((PATCH_COUNT + 1))
+                PATCH_PRS="$PATCH_PRS\n- $PR_TITLE (#$PR_NUM)"
+              fi
+            fi
+          done <<< "$COMMITS"
+
+          if [ "$MAJOR_COUNT" -gt 0 ]; then
+            RELEASE_TYPE="major"
+          elif [ "$MINOR_COUNT" -gt 0 ]; then
+            RELEASE_TYPE="minor"
+          elif [ "$PATCH_COUNT" -gt 0 ]; then
+            RELEASE_TYPE="patch"
+          else
+            RELEASE_TYPE="none"
+          fi
+
+          if [ "${{ github.event.inputs.release-type }}" != "" ] && [ "${{ github.event.inputs.release-type }}" != "auto" ]; then
+            RELEASE_TYPE="${{ github.event.inputs.release-type }}"
+            echo "Release type overridden by workflow dispatch: $RELEASE_TYPE"
+          fi
+
+          echo "Final release type: $RELEASE_TYPE"
+          echo "release-type=$RELEASE_TYPE" >> $GITHUB_OUTPUT
+          echo "labeled-pr-list=$LABELED_PR_LIST" >> $GITHUB_OUTPUT
+
+      - name: Compute new version
+        if: steps.unreleased.outputs.release-type != 'none' && steps.unreleased.outputs.release-type != ''
+        id: version-update
+        run: |
+          CURRENT_VERSION=$(git describe --tags $(git rev-list --tags --max-count=1) 2>/dev/null || echo "v0.0.0")
+          echo "Current version: $CURRENT_VERSION"
+
+          BASE_VERSION=$(echo "$CURRENT_VERSION" | grep -o -E '[0-9]+\.[0-9]+\.[0-9]+' || echo "0.0.0")
+          echo "Base version: $BASE_VERSION"
+
+          IFS='.' read -r major minor patch <<< "$BASE_VERSION"
+
+          RELEASE_TYPE="${{ steps.unreleased.outputs.release-type }}"
+          echo "Release type: $RELEASE_TYPE"
+
+          if [ "$RELEASE_TYPE" = "major" ]; then
+            NEW_BASE_VERSION="$((major+1)).0.0"
+          elif [ "$RELEASE_TYPE" = "minor" ]; then
+            NEW_BASE_VERSION="$major.$((minor+1)).0"
+          else
+            NEW_BASE_VERSION="$major.$minor.$((patch+1))"
+          fi
+
+          NEW_VERSION="v${NEW_BASE_VERSION}"
+          echo "New version: $NEW_VERSION"
+          echo "new-version=$NEW_VERSION" >> $GITHUB_OUTPUT
+
+      - name: Download wasm artifact for sha computation
+        if: steps.version-update.outputs.new-version != ''
+        uses: dawidd6/action-download-artifact@v6
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          workflow: build.yml
+          workflow_conclusion: success
+          branch: main
+          name: wasm-file
+
+      - name: Compute sha and regenerate docs
+        if: steps.version-update.outputs.new-version != ''
+        id: doc-gen
+        env:
+          PLUGIN_VERSION: ${{ steps.version-update.outputs.new-version }}
+        run: |
+          SHA256_HASH=$(sha256sum plugin.wasm | awk '{ print $1 }')
+          echo "Computed sha256: $SHA256_HASH"
+          echo "plugin-sha=$SHA256_HASH" >> $GITHUB_OUTPUT
+
+          export PLUGIN_VERSION="${{ steps.version-update.outputs.new-version }}"
+          export PLUGIN_SHA="$SHA256_HASH"
+          ./docs/scripts/generate_all_docs.sh
+
+          echo "Re-generated documentation"
+          git status
+
+      - name: Create release PR
+        if: steps.version-update.outputs.new-version != ''
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "chore: prepare release ${{ steps.version-update.outputs.new-version }}"
+          title: "Release Prep ${{ steps.version-update.outputs.new-version }}"
+          body: |
+            ## Automated Release Prep
+
+            **Release Type:** ${{ steps.unreleased.outputs.release-type }}
+            **New Version:** ${{ steps.version-update.outputs.new-version }}
+
+            This PR was created automatically. It updates documentation with the release version and sha.
+
+            When merged, the Release workflow will create the GitHub release with the accumulated release notes.
+          branch: release-prep
+          base: ${{ github.ref_name }}
+          labels: |
+            release
+            automated

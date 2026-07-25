@@ -1,4 +1,7 @@
 name: Docs
+
+concurrency: docs-regeneration
+
 defaults:
   run:
     shell: bash
@@ -11,12 +14,10 @@ env:
   DOTNET_VERSION: '8.0.x'
 
 on:
-  release:
-    types: [ published ]
   workflow_dispatch:
     
 jobs:
-  generate-and-push-docs:
+  generate-docs:
     runs-on: ubuntu-latest
 
     steps:
@@ -30,7 +31,7 @@ jobs:
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
           
-      - name: Updating docs
+      - name: Regenerate docs
         run: ./docs/scripts/generate_all_docs.sh
 
       - name: Create Pull Request

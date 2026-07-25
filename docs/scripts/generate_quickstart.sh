@@ -2,10 +2,15 @@
 
 set -e
 
-plugin_version=$(git tag | sort --version-sort | tail -n1)
-plugin_url="https://github.com/DaredevilOSS/sqlc-gen-csharp/releases/download/${plugin_version}/sqlc-gen-csharp.wasm"
-curl -sL --output /tmp/plugin.wasm "${plugin_url}"
-release_sha=$(shasum -a 256 /tmp/plugin.wasm | awk '{ print $1 }')
+if [ -n "$PLUGIN_VERSION" ] && [ -n "$PLUGIN_SHA" ]; then
+  plugin_version="$PLUGIN_VERSION"
+  release_sha="$PLUGIN_SHA"
+else
+  plugin_version=$(git tag | sort --version-sort | tail -n1)
+  plugin_url="https://github.com/DaredevilOSS/sqlc-gen-csharp/releases/download/${plugin_version}/sqlc-gen-csharp.wasm"
+  curl -sL --output /tmp/plugin.wasm "${plugin_url}"
+  release_sha=$(shasum -a 256 /tmp/plugin.wasm | awk '{ print $1 }')
+fi
     
 contents="## Quickstart
 \`\`\`yaml
