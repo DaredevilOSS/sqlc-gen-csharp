@@ -70,51 +70,18 @@ jobs:
         id: notes
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          OWNER: ${{ github.repository_owner }}
+          REPO: ${{ github.event.repository.name }}
         run: |
-          OWNER="${{ github.repository_owner }}"
-          REPO="${{ github.event.repository.name }}"
           VERSION=${{ steps.extract-version.outputs.version }}
-
           PREVIOUS_TAG=$(git tag --sort=-v:refname | head -1)
-
-          if [ -z "$PREVIOUS_TAG" ]; then
-            COMMITS=$(git log --oneline --grep="Merge pull request" --grep="#[0-9]" -E)
-          else
-            COMMITS=$(git log ${PREVIOUS_TAG}..HEAD --oneline --grep="Merge pull request" --grep="#[0-9]" -E)
-          fi
 
           NOTES_FILE=$(mktemp)
           echo "notes-file=$NOTES_FILE" >> $GITHUB_OUTPUT
 
-          cat > "$NOTES_FILE" <<- ENDOFNOTE
-          ## Release ${VERSION}
-
-          Release sha256 is \`${SHA256_HASH}\`
-
-          ## Configuration example
-          \`\`\`yaml
-          version: '2'
-          plugins:
-          - name: csharp
-            wasm:
-              url: https://github.com/${{ github.repository }}/releases/download/${VERSION}/sqlc-gen-csharp.wasm
-              sha256: ${SHA256_HASH}
-          \`\`\`
-
-          ## Changelog
-          ENDOFNOTE
-
-          while IFS= read -r commit; do
-            PR_NUM=$(echo "$commit" | grep -oE '#[0-9]+' | tr -d '#' || echo "")
-            if [ -n "$PR_NUM" ]; then
-              PR_TITLE=$(gh api repos/$OWNER/$REPO/pulls/$PR_NUM --jq '.title' 2>/dev/null || echo "PR #$PR_NUM")
-              echo "- $PR_TITLE (#$PR_NUM)" >> "$NOTES_FILE"
-            fi
-          done <<< "$COMMITS"
-
-          echo "" >> "$NOTES_FILE"
-          echo "## Contributors" >> "$NOTES_FILE"
-          echo "* @SockworkOrange" >> "$NOTES_FILE"
+          ./scripts/generate-release-notes.sh \
+            "$PREVIOUS_TAG" "$VERSION" "$SHA256_HASH" \
+            --file "$NOTES_FILE"
 
       - name: Create release and upload asset
         env:
