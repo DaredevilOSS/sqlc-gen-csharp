@@ -5,7 +5,7 @@ plugins:
 - name: csharp
   wasm:
     url: https://github.com/DaredevilOSS/sqlc-gen-csharp/releases/download/v0.23.0/sqlc-gen-csharp.wasm
-    sha256: 908fad28684df51cfc4d60a76f0c870e72a240fb84c1d01f53c39a74ba9bb9ea
+    sha256: 84b7ff57460b3b62a6a49b8593f2b40aeb42b9c6c5c8c0e667ae813a2b6adb99
 sql:
   # For PostgresSQL
   - schema: schema.sql
