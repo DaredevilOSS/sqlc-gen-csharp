@@ -361,7 +361,9 @@ public sealed class NpgsqlDriver : EnumDbDriver, IOne, IMany, IExec, IExecRows, 
             ["object"] = new(
                 new()
                 {
-                    { "anyarray", new() }
+                    { "any", new() },
+                    { "anyarray", new() },
+                    { "hstore", new() }
                 },
                 readerFn: (ordinal, _) => $"{Variable.Reader.AsVarName()}.GetValue({ordinal})"
             )
