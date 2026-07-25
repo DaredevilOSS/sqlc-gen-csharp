@@ -1,17 +1,18 @@
 name: Release
-defaults:
-  run:
-    shell: bash
-
-permissions:
-  contents: write
-  pull-requests: write
 
 on:
-  workflow_run: 
+  workflow_run:
     workflows: [Build]
     types: [completed]
     branches: [main]
+
+permissions:
+  contents: write
+  releases: write
+
+defaults:
+  run:
+    shell: bash
 
 jobs:
   check_commit:
@@ -20,102 +21,71 @@ jobs:
     outputs:
       IS_RELEASE: ${{ steps.check_msg.outputs.IS_RELEASE }}
     steps:
-      - name: Check out Git repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
       - name: Check latest commit message
         id: check_msg
         run: |
-          LATEST_COMMIT_MSG=$(git log -1 --pretty=%B | cat)
-          if [[ ${LATEST_COMMIT_MSG} == *"[release]"* ]]; then
-            echo "release message found - continuing with the release"
-            IS_RELEASE="true"
+          LATEST_COMMIT_MSG=$(git log -1 --pretty=%B)
+          if echo "$LATEST_COMMIT_MSG" | grep -q "chore: prepare release v"; then
+            echo "IS_RELEASE=true" >> $GITHUB_OUTPUT
           else
-            echo "no release message found - skipping..."
-            IS_RELEASE="false"
+            echo "IS_RELEASE=false" >> $GITHUB_OUTPUT
           fi
-          echo "IS_RELEASE=${IS_RELEASE}" >> $GITHUB_OUTPUT
-          
+
   release:
     name: Release
     needs: [check_commit]
-    runs-on: ubuntu-latest
     if: ${{ needs.check_commit.outputs.IS_RELEASE == 'true' }}
-    env:
-      IS_RELEASE: ${{  needs.check_commit.outputs.IS_RELEASE }}
+    runs-on: ubuntu-latest
     steps:
-      - name: Check out Git repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          
+
       - name: Download artifact
-        id: download-artifact
         uses: dawidd6/action-download-artifact@v6
         with:
-          github_token: ${{secrets.GITHUB_TOKEN}}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
           workflow: build.yml
           workflow_conclusion: success
           name: wasm-file
-          
-      - name: Bump version
-        run: |
-          set -e
-          LATEST_COMMIT_MSG=$(git log -1 --pretty=%B | cat)
-          
-          echo "Extract the latest tag version"
-          LATEST_TAG=$(git describe --tags $(git rev-list --tags --max-count=1))
-          
-          BUMP_TYPE="patch" # Initialize the default version bump type to patch
-          if [[ "${LATEST_COMMIT_MSG}" == *"[major]"* ]]; then
-            BUMP_TYPE="major"
-          elif [[ "${LATEST_COMMIT_MSG}" == *"[minor]"* ]]; then
-            BUMP_TYPE="minor"
-          fi
 
-          case ${BUMP_TYPE} in
-            "major")
-              NEW_TAG=$(echo "${LATEST_TAG}" | awk -F. '{OFS="."; $1="v" substr($1,2)+1; $2="0"; $3="0"; print}')
-              ;;
-            "minor")
-              NEW_TAG=$(echo "${LATEST_TAG}" | awk -F. '{OFS="."; $2=$2+1; $3="0"; print}')
-              ;;
-            "patch")
-              NEW_TAG=$(echo "${LATEST_TAG}" | awk -F. '{OFS="."; $3=$3+1; print}')
-              ;;
-          esac
-          
-          echo "LATEST_TAG=${LATEST_TAG}" >> $GITHUB_ENV
-          echo "NEW_TAG=${NEW_TAG}" >> $GITHUB_ENV
-
-      - name: Push tag
+      - name: Extract version from commit message
+        id: extract-version
         run: |
-          NEW_TAG=${{ env.NEW_TAG }}
-          
-          git tag ${NEW_TAG}
-          git push origin ${NEW_TAG}
-          
+          VERSION=$(git log -1 --pretty=%B | grep -oP 'chore: prepare release \Kv[0-9]+\.[0-9]+\.[0-9]+')
+          echo "Extracted version: $VERSION"
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
       - name: Calculate sha256
         run: |
           SHA256_HASH=$(sha256sum plugin.wasm | awk '{ print $1 }')
           echo "SHA256_HASH=${SHA256_HASH}" >> $GITHUB_ENV
-          echo "The calculated sha256 is $SHA256_HASH"
 
-      - name: Create release draft
+      - name: Reconstruct release notes from PRs
+        id: notes
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          set -e
-          
-          LATEST_TAG=${{ env.LATEST_TAG }}
-          NEW_TAG=${{ env.NEW_TAG }}
-          SHA256_HASH=${{ env.SHA256_HASH }}
+          OWNER="${{ github.repository_owner }}"
+          REPO="${{ github.event.repository.name }}"
+          VERSION=${{ steps.extract-version.outputs.version }}
 
-          CHANGE_LOG=$(git --no-pager log ${LATEST_TAG}..HEAD --pretty=format:'%h - %an, %ar : %s')
+          PREVIOUS_TAG=$(git tag --sort=-v:refname | head -2 | tail -1)
 
-          # Define the release notes template
-          RELEASE_NOTES=$(cat <<EOF
-          ## Release version ${NEW_TAG}
+          if [ -z "$PREVIOUS_TAG" ]; then
+            COMMITS=$(git log --oneline --grep="Merge pull request" --grep="#[0-9]" -E)
+          else
+            COMMITS=$(git log ${PREVIOUS_TAG}..HEAD --oneline --grep="Merge pull request" --grep="#[0-9]" -E)
+          fi
+
+          NOTES_FILE=$(mktemp)
+          echo "notes-file=$NOTES_FILE" >> $GITHUB_OUTPUT
+
+          cat > "$NOTES_FILE" <<- ENDOFNOTE
+          ## Release ${VERSION}
+
           Release sha256 is \`${SHA256_HASH}\`
 
           ## Configuration example
@@ -124,22 +94,36 @@ jobs:
           plugins:
           - name: csharp
             wasm:
-              url: https://github.com/DaredevilOSS/sqlc-gen-csharp/releases/download/${NEW_TAG}/sqlc-gen-csharp.wasm
+              url: https://github.com/${{ github.repository }}/releases/download/${VERSION}/sqlc-gen-csharp.wasm
               sha256: ${SHA256_HASH}
           \`\`\`
-          ## Changelog 
-          ${CHANGE_LOG}
 
-          ## Contributors
-          * @SockworkOrange
-          EOF
-          )
+          ## Changelog
+          ENDOFNOTE
 
-          # change file name to convention
+          while IFS= read -r commit; do
+            PR_NUM=$(echo "$commit" | grep -oE '#[0-9]+' | tr -d '#' || echo "")
+            if [ -n "$PR_NUM" ]; then
+              PR_TITLE=$(gh api repos/$OWNER/$REPO/pulls/$PR_NUM --jq '.title' 2>/dev/null || echo "PR #$PR_NUM")
+              echo "- $PR_TITLE (#$PR_NUM)" >> "$NOTES_FILE"
+            fi
+          done <<< "$COMMITS"
+
+          echo "" >> "$NOTES_FILE"
+          echo "## Contributors" >> "$NOTES_FILE"
+          echo "* @SockworkOrange" >> "$NOTES_FILE"
+
+      - name: Create release and upload asset
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          NEW_TAG=${{ steps.extract-version.outputs.version }}
           mv plugin.wasm sqlc-gen-csharp.wasm
 
-          # Create a draft release
-          gh release create ${NEW_TAG} sqlc-gen-csharp.wasm \
-          --draft \
-          --title "${NEW_TAG}" \
-          --notes "${RELEASE_NOTES}"
+          echo "Creating release ${NEW_TAG}..."
+          gh release create ${NEW_TAG} \
+            sqlc-gen-csharp.wasm \
+            --title "${NEW_TAG}" \
+            --notes-file "${{ steps.notes.outputs.notes-file }}"
+
+          echo "Release ${NEW_TAG} published successfully"
