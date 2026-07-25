@@ -1,7 +1,7 @@
 name: Release Assistant
 
 on:
-  pull_request:
+  pull_request_target:
     types: [opened, edited, labeled, unlabeled, synchronize]
     branches: [main]
 
@@ -15,11 +15,8 @@ jobs:
   analyze:
     runs-on: ubuntu-latest
     if: |
-      (github.event_name == 'pull_request' && github.event.pull_request.state == 'open' && github.head_ref != 'release-prep')
+      (github.event_name == 'pull_request_target' && github.event.pull_request.state == 'open' && github.head_ref != 'release-prep')
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
       - name: Analyze PR changes
         id: analysis
         env:
@@ -199,7 +196,7 @@ jobs:
             });
 
   release-prep-bypass:
-    if: github.event_name == 'pull_request' && github.head_ref == 'release-prep'
+    if: github.event_name == 'pull_request_target' && github.head_ref == 'release-prep'
     runs-on: ubuntu-latest
     steps:
       - name: Set passing status for release-prep
