@@ -67,6 +67,8 @@ we consider support for the different data types separately for batch inserts an
 | jsonpath                                | ✅         | ⚠️                  |
 | xml                                     | ✅         | ⚠️                  |
 | enum                                    | ✅         | ⚠️                  |
+| any                                     | ✅         | ❌                   |
+| hstore                                  | ✅         | ❌                   |
 
 *** `time with time zone` is not useful and not recommended to use by Postgres themselves - 
 see [here](https://www.postgresql.org/docs/current/datatype-datetime.html#DATATYPE-DATETIME) -
@@ -83,6 +85,9 @@ An example of this conversion:
 ```sql
 INSERT INTO tab1 (macaddr8_field) VALUES (sqlc.narg('macaddr8_field')::macaddr8);
 ```
+
+*** `any` is a pseudo-type reported by sqlc when it cannot infer a column's type; it maps to `object` in C#.
+*** `hstore` is a key-value store type that maps to `object` in C#; readers use `GetValue()` to retrieve the value.
 
 </details>
 
