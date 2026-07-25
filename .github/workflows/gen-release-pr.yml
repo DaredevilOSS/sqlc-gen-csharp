@@ -31,6 +31,7 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           fetch-depth: 0
+          ref: ${{ github.event.workflow_run.head_sha || github.ref }}
 
       - name: Check if this is a release commit
         id: check-release
@@ -79,13 +80,13 @@ jobs:
 
               LABELED_PR_LIST="$LABELED_PR_LIST #$PR_NUM"
 
-              if echo "$LABELS" | grep -q "major"; then
+              if echo "$LABELS" | grep -qx "major"; then
                 MAJOR_COUNT=$((MAJOR_COUNT + 1))
                 MAJOR_PRS="$MAJOR_PRS\n- $PR_TITLE (#$PR_NUM)"
-              elif echo "$LABELS" | grep -q "minor"; then
+              elif echo "$LABELS" | grep -qx "minor"; then
                 MINOR_COUNT=$((MINOR_COUNT + 1))
                 MINOR_PRS="$MINOR_PRS\n- $PR_TITLE (#$PR_NUM)"
-              elif echo "$LABELS" | grep -q "patch"; then
+              elif echo "$LABELS" | grep -qx "patch"; then
                 PATCH_COUNT=$((PATCH_COUNT + 1))
                 PATCH_PRS="$PATCH_PRS\n- $PR_TITLE (#$PR_NUM)"
               fi
