@@ -55,8 +55,7 @@ jobs:
           echo "version=$VERSION" >> $GITHUB_OUTPUT
 
           ARTIFACT_NAME="wasm-${VERSION}"
-          RUN_ID=$(gh api "/repos/${{ github.repository }}/actions/artifacts" \
-            --paginate \
+          RUN_ID=$(gh api "/repos/${{ github.repository }}/actions/artifacts?per_page=100" \
             --jq "[.artifacts[] | select(.name == \"${ARTIFACT_NAME}\") | .workflow_run.id][0]")
 
           if [ -z "$RUN_ID" ]; then
