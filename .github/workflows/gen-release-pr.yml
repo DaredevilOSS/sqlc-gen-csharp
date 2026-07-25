@@ -172,6 +172,13 @@ jobs:
           echo "Re-generated documentation"
           git status
 
+      - name: Upload wasm as release candidate
+        if: steps.version-update.outputs.new-version != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: wasm-${{ steps.version-update.outputs.new-version }}
+          path: plugin.wasm
+
       - name: Generate PR body
         if: steps.version-update.outputs.new-version != ''
         env:
