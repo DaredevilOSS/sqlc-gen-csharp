@@ -38,14 +38,32 @@ make test-wasm-plugin
 ```
 
 ## Release flow
+
 The release flow in this repo follows the semver conventions, building tag as `v[major].[minor].[patch]`.
-In order to create a release you need to add `[release]` somewhere in your commit message when merging to master.
 
-### Version bumping (built on tags)
-By default, the release script will bump the patch version. Adding `[release]` to your commit message results in a new tag with `v[major].[minor].[patch]+1`. 
-- Bump `minor` version by adding `[minor]` to your commit message resulting in a new tag with `v[major].[minor]+1.0` <br/>
-- Bump `major` version by adding `[major]` to your commit message resulting in a new tag with `v[major]+1.0.0` <br/>
+### PR Gate
 
-### Release structure
-The new created tag will create a draft release with it, in the release there will be the wasm plugin embedded in the release. <br/>
+Every PR that modifies source code, build configuration, or similar must be labeled with one of: `major`, `minor`, `patch`, or `skip-release`.
+
+A bot posts a status check (`release-assistant/requirements`) that blocks merging until a version label is present.
+
+### Generate Release PR
+
+When Build completes on `main`, the `gen-release-pr.yml` workflow runs and:
+
+1. Aggregates all unreleased, labeled PRs since the last release tag.
+2. Determines the release type from the labels (`major` > `minor` > `patch`).
+3. Computes the new version from the latest tag.
+4. Downloads the latest wasm artifact and computes its sha256.
+5. Regenerates documentation (README, quickstart) with the new version and wasm sha.
+6. Opens a `release-prep` PR with the regenerated docs.
+
+### Release
+
+When the `release-prep` PR is merged, `release.yml`:
+
+1. Detects the `chore: prepare release vX` commit.
+2. Downloads the wasm artifact from the triggering Build.
+3. Reconstructs release notes from merged PR titles since the previous tag.
+4. Creates the release (with tag) and uploads the wasm asset.
 

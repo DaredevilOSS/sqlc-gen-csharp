@@ -1,0 +1,216 @@
+name: Release Assistant
+
+on:
+  pull_request:
+    types: [opened, edited, labeled, unlabeled, synchronize]
+    branches: [main]
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+  statuses: write
+
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+    if: |
+      (github.event_name == 'pull_request' && github.event.pull_request.state == 'open' && github.head_ref != 'release-prep')
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Analyze PR changes
+        id: analysis
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          CHANGED_FILES=$(gh pr view ${{ env.PR_NUMBER }} --json files --jq '.files[].path' | tr '\n' ' ')
+          echo "Changed files: $CHANGED_FILES"
+
+          VERSION_WORTHY_PATTERNS=(
+            "SqlcGenCsharp/"
+            "CodeGenerator/"
+            "Drivers/"
+            "Extensions/"
+            "PluginOptions/"
+            "WasmRunner/"
+            "LocalRunner/"
+            "\.csproj"
+            "global\.json"
+            "sqlc\.ci\.yaml"
+          )
+
+          VERSION_WORTHY=false
+          MATCHED_PATTERNS=""
+
+          for pattern in "${VERSION_WORTHY_PATTERNS[@]}"; do
+            if echo "$CHANGED_FILES" | grep -q "$pattern"; then
+              VERSION_WORTHY=true
+              MATCHED_PATTERNS="$MATCHED_PATTERNS $pattern"
+            fi
+          done
+
+          LABELS_JSON=$(gh pr view ${{ env.PR_NUMBER }} --json labels --jq '.labels[].name')
+          HAS_VERSION_LABEL=false
+          VERSION_LABEL=""
+          SKIP_RELEASE_LABEL=false
+
+          if echo "$LABELS_JSON" | grep -q "skip-release"; then
+            SKIP_RELEASE_LABEL=true
+          fi
+          VERSION_LABEL_VALUE=$(echo "$LABELS_JSON" | grep -E "^(major|minor|patch)$" | head -1 | tr -d '[:space:]')
+          if [ -n "$VERSION_LABEL_VALUE" ]; then
+            HAS_VERSION_LABEL=true
+            VERSION_LABEL="$VERSION_LABEL_VALUE"
+          fi
+          VERSION_LABEL_COUNT=$(echo "$LABELS_JSON" | grep -cE "^(major|minor|patch)$" || true)
+          MULTIPLE_VERSION_LABELS=false
+          if [ "$VERSION_LABEL_COUNT" -gt 1 ]; then
+            MULTIPLE_VERSION_LABELS=true
+          fi
+
+          echo "version-worthy=$VERSION_WORTHY" >> $GITHUB_OUTPUT
+          echo "skip-release-label=$SKIP_RELEASE_LABEL" >> $GITHUB_OUTPUT
+          echo "has-version-label=$HAS_VERSION_LABEL" >> $GITHUB_OUTPUT
+          echo "version-label=$VERSION_LABEL" >> $GITHUB_OUTPUT
+          echo "matched-patterns=$MATCHED_PATTERNS" >> $GITHUB_OUTPUT
+          echo "multiple-version-labels=$MULTIPLE_VERSION_LABELS" >> $GITHUB_OUTPUT
+
+      - name: Update PR comment
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const versionWorthy = '${{ steps.analysis.outputs.version-worthy }}' === 'true';
+            const hasVersionLabel = '${{ steps.analysis.outputs.has-version-label }}' === 'true';
+            const skipReleaseLabel = '${{ steps.analysis.outputs.skip-release-label }}' === 'true';
+            const versionLabel = '${{ steps.analysis.outputs.version-label }}';
+            const matchedPatterns = '${{ steps.analysis.outputs.matched-patterns }}';
+            const multipleVersionLabels = '${{ steps.analysis.outputs.multiple-version-labels }}' === 'true';
+
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+
+            let body;
+
+            if (skipReleaseLabel) {
+              body = [
+                '<!-- release-assistant-bot -->',
+                '## Release Assistant - Passed',
+                '',
+                'PR marked as `skip-release`. No release will be triggered.',
+              ].join('\n');
+            } else if (!versionWorthy) {
+              body = [
+                '<!-- release-assistant-bot -->',
+                '## Release Assistant - Passed',
+                '',
+                'No version-worthy changes detected. Only non-functional, doc, or test changes.',
+              ].join('\n');
+            } else if (!hasVersionLabel) {
+              const patterns = matchedPatterns.split(' ').filter(p => p.trim()).map(p => `- \`${p.trim()}\``).join('\n');
+              body = [
+                '<!-- release-assistant-bot -->',
+                '## Release Assistant - Action Required',
+                '',
+                'Version-worthy changes detected in:',
+                patterns,
+                '',
+                'Add one of the following labels to this PR: `major`, `minor`, `patch`.',
+                '',
+                '- `patch` — Bug fixes, documentation updates',
+                '- `minor` — New features, backwards-compatible',
+                '- `major` — Breaking changes, API modifications',
+                '',
+                'This PR cannot be merged until a version label is added.',
+              ].join('\n');
+            } else if (multipleVersionLabels) {
+              body = [
+                '<!-- release-assistant-bot -->',
+                '## Release Assistant - Action Required',
+                '',
+                'Multiple version labels detected. Please keep only one of: `major`, `minor`, `patch`.',
+              ].join('\n');
+            } else {
+              body = [
+                '<!-- release-assistant-bot -->',
+                '## Release Assistant - Passed',
+                '',
+                'All requirements satisfied.',
+                '',
+                '**Release Information:**',
+                `- Type: \`${versionLabel}\``,
+                '',
+                'This PR is ready to merge.',
+              ].join('\n');
+            }
+
+            const { data: comments } = await github.rest.issues.listComments({
+              owner, repo, issue_number: context.issue.number
+            });
+            const botComment = comments.find(c => c.body && c.body.includes('<!-- release-assistant-bot -->'));
+            if (botComment) {
+              await github.rest.issues.updateComment({
+                owner, repo, comment_id: botComment.id, body
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner, repo, issue_number: context.issue.number, body
+              });
+            }
+
+      - name: Set commit status
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const versionWorthy = '${{ steps.analysis.outputs.version-worthy }}' === 'true';
+            const hasVersionLabel = '${{ steps.analysis.outputs.has-version-label }}' === 'true';
+            const skipReleaseLabel = '${{ steps.analysis.outputs.skip-release-label }}' === 'true';
+            const multipleVersionLabels = '${{ steps.analysis.outputs.multiple-version-labels }}' === 'true';
+
+            let state, description;
+
+            if (skipReleaseLabel) {
+              state = 'success';
+              description = 'Skipped by skip-release label';
+            } else if (!versionWorthy) {
+              state = 'success';
+              description = 'No version-worthy changes';
+            } else if (!hasVersionLabel) {
+              state = 'failure';
+              description = 'Version label (major/minor/patch) required';
+            } else if (multipleVersionLabels) {
+              state = 'failure';
+              description = 'Multiple version labels found. Keep only one';
+            } else {
+              state = 'success';
+              description = 'All release requirements satisfied';
+            }
+
+            await github.rest.repos.createCommitStatus({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              sha: context.payload.pull_request.head.sha,
+              state: state,
+              target_url: `${context.payload.repository.html_url}/actions/runs/${context.runId}`,
+              description: description,
+              context: 'release-assistant/requirements'
+            });
+
+  release-prep-bypass:
+    if: github.event_name == 'pull_request' && github.head_ref == 'release-prep'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set passing status for release-prep
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.repos.createCommitStatus({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              sha: context.payload.pull_request.head.sha,
+              state: 'success',
+              context: 'release-assistant/requirements',
+              description: 'Bypassed for release-prep PR'
+            });
