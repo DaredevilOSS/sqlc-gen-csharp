@@ -51,7 +51,7 @@ sql:
 | Override                    | values: A nested override value like [this](#override-option).                                                                                                                    | Yes      | Allows you to override the generated C# data types for specific columns in specific queries. This option accepts a `query_name:column_name` mapping and the overriden data type.                                                                                                                                                          |                                                                                     |
 | useCentralPackageManagement | default: `false`<br/>values: `false`,`true`                                                                                                                                       | Yes      | If true, the code is generated to support central package management.                                                                                                                                                                                                                                                                     |
 | withAsyncSuffix             | default: `true`<br/>values: `false`,`true`                                                                                                                                       | Yes      | When true, async methods will have the "Async" suffix appended to their names (e.g., `GetAuthorAsync`). When false, async methods will not have the suffix (e.g., `GetAuthor`).                                                                                                                                                        |
-| withCancellationToken       | default: `false`<br/>values: `false`,`true`                                                                                                      | Yes      | When true, every generated method takes an optional trailing `CancellationToken cancellationToken = default`, threaded into every async DB call so in-flight queries can be cancelled. See [Cancellation](#cancellation). When false (default), generated output is unchanged.                                                          |
+| withCancellationToken       | default: `false`<br/>values: `false`,`true`                                                                                                                                      | Yes      | When true, every generated method takes an optional trailing `CancellationToken cancellationToken = default`, threaded into every async DB call so in-flight queries can be cancelled. See [Cancellation](#cancellation). When false (default), generated output is unchanged.                                                          |
 
 ### Override option
 Override for a specific query:
@@ -255,6 +255,8 @@ we consider support for the different data types separately for batch inserts an
 | jsonpath                                | ✅         | ⚠️                  |
 | xml                                     | ✅         | ⚠️                  |
 | enum                                    | ✅         | ⚠️                  |
+| any                                     | ✅         | ❌                   |
+| hstore                                  | ✅         | ❌                   |
 
 *** `time with time zone` is not useful and not recommended to use by Postgres themselves - 
 see [here](https://www.postgresql.org/docs/current/datatype-datetime.html#DATATYPE-DATETIME) -
@@ -271,6 +273,9 @@ An example of this conversion:
 ```sql
 INSERT INTO tab1 (macaddr8_field) VALUES (sqlc.narg('macaddr8_field')::macaddr8);
 ```
+
+*** `any` is a pseudo-type reported by sqlc when it cannot infer a column's type; it maps to `object` in C#.
+*** `hstore` is a key-value store type that maps to `object` in C#; readers use `GetValue()` to retrieve the value.
 
 </details>
 
@@ -473,16 +478,34 @@ make test-wasm-plugin
 ```
 
 ## Release flow
+
 The release flow in this repo follows the semver conventions, building tag as `v[major].[minor].[patch]`.
-In order to create a release you need to add `[release]` somewhere in your commit message when merging to master.
 
-### Version bumping (built on tags)
-By default, the release script will bump the patch version. Adding `[release]` to your commit message results in a new tag with `v[major].[minor].[patch]+1`. 
-- Bump `minor` version by adding `[minor]` to your commit message resulting in a new tag with `v[major].[minor]+1.0` <br/>
-- Bump `major` version by adding `[major]` to your commit message resulting in a new tag with `v[major]+1.0.0` <br/>
+### PR Gate
 
-### Release structure
-The new created tag will create a draft release with it, in the release there will be the wasm plugin embedded in the release. <br/>
+Every PR that modifies source code, build configuration, or similar must be labeled with one of: `major`, `minor`, `patch`, or `skip-release`.
+
+A bot posts a status check (`release-assistant/requirements`) that blocks merging until a version label is present.
+
+### Generate Release PR
+
+When Build completes on `main`, the `gen-release-pr.yml` workflow runs and:
+
+1. Aggregates all unreleased, labeled PRs since the last release tag.
+2. Determines the release type from the labels (`major` > `minor` > `patch`).
+3. Computes the new version from the latest tag.
+4. Downloads the latest wasm artifact and computes its sha256.
+5. Regenerates documentation (README, quickstart) with the new version and wasm sha.
+6. Opens a `release-prep` PR with the regenerated docs.
+
+### Release
+
+When the `release-prep` PR is merged, `release.yml`:
+
+1. Detects the `chore: prepare release vX` commit.
+2. Downloads the wasm artifact from the triggering Build.
+3. Reconstructs release notes from merged PR titles since the previous tag.
+4. Creates the release (with tag) and uploads the wasm asset.
 
 # Examples
 <details>
