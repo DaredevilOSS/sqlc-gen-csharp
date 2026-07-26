@@ -45,10 +45,28 @@ public static partial class StringExtensions
         return string.Concat(newValue[0].ToString().ToLower(), newValue.AsSpan(1));
     }
 
-    public static string ToModelName(this string value, string schema, string defaultSchema)
+    public static string ToModelName(this string value, string schema, string defaultSchema,
+        bool properSingularization = false)
     {
         var schemaName = schema == defaultSchema ? string.Empty : schema;
-        return $"{schemaName}_{value.TrimEnd('s')}".ToPascalCase(); // TODO implement better way to turn words to singular
+        var singular = properSingularization ? value.Singularize() : value.TrimEnd('s');
+        return $"{schemaName}_{singular}".ToPascalCase();
+    }
+
+    private static readonly string[] DropEsSuffixes = ["sses", "uses", "xes", "ches", "shes"];
+
+    // Rule-based English singularization for identifiers, e.g. policies -> policy,
+    // statuses -> status, devices -> device, responses -> response. Words not ending
+    // in a plural-looking "s" (address, people) pass through unchanged.
+    private static string Singularize(this string value)
+    {
+        if (!value.EndsWith('s') || value.EndsWith("ss", StringComparison.OrdinalIgnoreCase))
+            return value;
+        if (value.EndsWith("ies", StringComparison.OrdinalIgnoreCase) && value.Length > 3)
+            return $"{value[..^3]}y";
+        if (DropEsSuffixes.Any(suffix => value.EndsWith(suffix, StringComparison.OrdinalIgnoreCase)))
+            return value[..^2];
+        return value[..^1];
     }
 
     public static string ToMethodName(this string value, bool withAsyncSuffix)

@@ -37,6 +37,9 @@ public record RawOptions
 
     [JsonPropertyName("withCancellationToken")]
     public bool WithCancellationToken { get; init; }
+
+    [JsonPropertyName("useProperSingularization")]
+    public bool UseProperSingularization { get; init; }
 }
 
 public class OverrideOption

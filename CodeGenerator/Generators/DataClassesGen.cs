@@ -67,7 +67,8 @@ internal class DataClassesGen(DbDriver dbDriver)
         if (column.EmbedTable is null)
             return column.Name.ToPascalCase();
 
-        var fieldName = column.Name.ToModelName(column.EmbedTable.Schema, dbDriver.DefaultSchema);
+        var fieldName = column.Name.ToModelName(column.EmbedTable.Schema, dbDriver.DefaultSchema,
+            dbDriver.Options.UseProperSingularization);
         fieldName = seenEmbed.TryGetValue(fieldName, out var value)
             ? $"{fieldName}{value}" : fieldName;
         seenEmbed.TryAdd(fieldName, 1);

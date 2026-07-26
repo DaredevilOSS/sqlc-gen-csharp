@@ -26,6 +26,7 @@ public class Options
         WithAsyncSuffix = rawOptions.WithAsyncSuffix;
         WithCancellationToken = rawOptions.WithCancellationToken;
         UseCentralPackageManagement = rawOptions.UseCentralPackageManagement;
+        UseProperSingularization = rawOptions.UseProperSingularization;
 
         if (rawOptions.DebugRequest && generateRequest.Settings.Codegen.Wasm is not null)
             throw new ArgumentException("Debug request mode cannot be used with WASM plugin");
@@ -62,6 +63,14 @@ public class Options
     /// When true, generated methods take an optional CancellationToken threaded into every async DB call.
     /// </summary>
     public bool WithCancellationToken { get; }
+
+    /// <summary>
+    /// When true, model names are singularized with English grammar rules (policies -> Policy,
+    /// statuses -> Status). Defaults to the legacy behavior of trimming trailing 's' characters,
+    /// which mangles some names (policies -> Policie, access -> Acces). Opt-in because enabling
+    /// it renames existing generated classes.
+    /// </summary>
+    public bool UseProperSingularization { get; }
 
     private static readonly Dictionary<string, DriverName> EngineToDriverMapping = new()
     {

@@ -401,7 +401,8 @@ public abstract class DbDriver
     protected virtual string GetCsharpTypeWithoutNullableSuffix(Column column, Query? query)
     {
         if (column.EmbedTable != null)
-            return column.EmbedTable.Name.ToModelName(column.EmbedTable.Schema, DefaultSchema);
+            return column.EmbedTable.Name.ToModelName(column.EmbedTable.Schema, DefaultSchema,
+                Options.UseProperSingularization);
 
         if (string.IsNullOrEmpty(column.Type.Name))
             return "object";
