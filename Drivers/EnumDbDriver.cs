@@ -16,7 +16,7 @@ public abstract class EnumDbDriver : DbDriver
 
         foreach (var schemaEnums in Enums)
             foreach (var e in schemaEnums.Value)
-                NullableTypes.Add(e.Key.ToModelName(schemaEnums.Key, DefaultSchema));
+                NullableTypes.Add(e.Key.ToModelName(schemaEnums.Key, DefaultSchema, options.UseProperSingularization));
     }
 
     public virtual MemberDeclarationSyntax[] GetEnumExtensionsMembers(string name, IList<string> possibleValues)
