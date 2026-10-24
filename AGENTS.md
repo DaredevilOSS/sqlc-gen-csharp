@@ -105,7 +105,7 @@ DbDriver InstantiateDriver()
 
 | Option | Default | Description |
 |--------|---------|-------------|
-| `overrideDriverVersion` | 2.4.0 (MySql), 8.0.6 (Npgsql), 9.0.0 (Sqlite) | Override DB driver version |
+| `overrideDriverVersion` | 2.4.0 (MySql), 8.0.6 (Npgsql), 10.0.13 (Sqlite) | Override DB driver version |
 | `targetFramework` | net8.0 | .NET Standard 2.0/2.1, .NET 8.0, 9.0 or 10.0 (the plugin itself runs on .NET 10, independent of this option) |
 | `generateCsproj` | true | Generate .csproj file |
 | `namespaceName` | Project name | Override generated namespace |

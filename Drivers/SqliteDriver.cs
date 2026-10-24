@@ -14,7 +14,7 @@ public sealed partial class SqliteDriver(
     IList<Query> queries) :
     DbDriver(options, catalog, queries), IOne, IMany, IExec, IExecRows, IExecLastId, ICopyFrom
 {
-    private const string DefaultSqliteVersion = "9.0.0";
+    private const string DefaultSqliteVersion = "10.0.13";
 
     private static readonly HashSet<string> IntegerDbTypes = ["integer", "integernotnulldefaultunixepoch"];
 
