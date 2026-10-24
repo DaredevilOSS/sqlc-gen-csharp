@@ -27,7 +27,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           fetch-depth: 0
@@ -147,7 +147,7 @@ jobs:
 
       - name: Download wasm artifact for sha computation
         if: steps.version-update.outputs.new-version != ''
-        uses: dawidd6/action-download-artifact@v6
+        uses: dawidd6/action-download-artifact@v27
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           run_id: ${{ github.event.workflow_run.id }}
@@ -172,7 +172,7 @@ jobs:
 
       - name: Upload wasm as release candidate
         if: steps.version-update.outputs.new-version != ''
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: wasm-${{ steps.version-update.outputs.new-version }}
           path: plugin.wasm
@@ -265,7 +265,7 @@ jobs:
 
       - name: Create release PR
         if: steps.version-update.outputs.new-version != ''
-        uses: peter-evans/create-pull-request@v5
+        uses: peter-evans/create-pull-request@v8
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           commit-message: "Release Prep ${{ steps.version-update.outputs.new-version }}"
