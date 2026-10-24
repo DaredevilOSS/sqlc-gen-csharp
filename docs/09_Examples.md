@@ -92,7 +92,7 @@ overrides:
 ### Config
 ```yaml
 useDapper: true
-targetFramework: net8.0
+targetFramework: net10.0
 generateCsproj: true
 namespaceName: NpgsqlDapperExampleGen
 overrides:
@@ -248,7 +248,7 @@ overrides:
 ### Config
 ```yaml
 useDapper: false
-targetFramework: net8.0
+targetFramework: net9.0
 generateCsproj: true
 namespaceName: MySqlConnectorExampleGen
 overrides:
@@ -392,7 +392,7 @@ overrides:
 ### Config
 ```yaml
 useDapper: false
-targetFramework: net8.0
+targetFramework: net10.0
 generateCsproj: true
 namespaceName: SqliteExampleGen
 overrides:
@@ -435,7 +435,7 @@ overrides:
 ### Config
 ```yaml
 useDapper: true
-targetFramework: net8.0
+targetFramework: net9.0
 generateCsproj: true
 namespaceName: SqliteDapperExampleGen
 overrides:
