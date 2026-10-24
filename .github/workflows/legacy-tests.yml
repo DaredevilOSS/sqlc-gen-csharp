@@ -58,26 +58,11 @@ jobs:
       - name: Start databases in the background
         shell: pwsh
         run: |
-          $pgBin = "$env:PGROOT\bin"
-          $mysqlBin = 'C:\Program Files\MySQL\MySQL Server 8.0\bin'
-          Set-Content -Path "$env:RUNNER_TEMP\start-dbs.ps1" -Value @"
-          `$ErrorActionPreference = 'Stop'
-          Set-Service postgresql-x64-17 -StartupType Manual
-          Start-Service postgresql-x64-17
-          `$env:PGPASSWORD = 'root'
-          & '$pgBin\psql.exe' -U postgres -c "ALTER USER postgres PASSWORD '$env:POSTGRES_PASSWORD'"
-          & '$pgBin\psql.exe' -U postgres -c "CREATE DATABASE $env:TESTS_DB"
-          `$env:PGPASSWORD = '$env:POSTGRES_PASSWORD'
-          & '$pgBin\psql.exe' -U postgres -d $env:TESTS_DB -f 'examples/config/postgresql/types/schema.sql' -f 'examples/config/postgresql/authors/schema.sql'
-
-          & '$mysqlBin\mysqld.exe' --initialize-insecure --console --datadir=C:\mysql-data
-          Start-Process -FilePath '$mysqlBin\mysqld.exe' -ArgumentList '--console','--datadir=C:\mysql-data','--local-infile=1' -WindowStyle Hidden
-          for (`$i = 0; `$i -lt 60; `$i++) { & '$mysqlBin\mysqladmin.exe' -u root ping 2>`$null; if (`$LASTEXITCODE -eq 0) { break }; Start-Sleep -Seconds 1 }
-          & '$mysqlBin\mysql.exe' -u root -e "SET GLOBAL local_infile=1; CREATE DATABASE $env:TESTS_DB;"
-          & '$mysqlBin\mysql.exe' -u root $env:TESTS_DB --execute="source examples/config/mysql/types/schema.sql; source examples/config/mysql/authors/schema.sql;"
-          "@
-          Start-Process -FilePath pwsh -ArgumentList '-NoProfile','-File',"$env:RUNNER_TEMP\start-dbs.ps1" `
-            -RedirectStandardOutput "$env:RUNNER_TEMP\dbs.log" -RedirectStandardError "$env:RUNNER_TEMP\dbs.err.log" -WindowStyle Hidden
+          foreach ($db in 'postgres', 'mysql') {
+            Start-Process -FilePath pwsh -WindowStyle Hidden `
+              -ArgumentList '-NoProfile', '-File', ".github/scripts/start-$db.ps1" `
+              -RedirectStandardOutput "$env:RUNNER_TEMP\$db.log" -RedirectStandardError "$env:RUNNER_TEMP\$db.err.log"
+          }
 
       - name: Restore and build test projects
         shell: pwsh
@@ -93,16 +78,16 @@ jobs:
       - name: Wait for databases
         shell: pwsh
         run: |
-          $mysqlBin = 'C:\Program Files\MySQL\MySQL Server 8.0\bin'
-          $env:PGPASSWORD = $env:POSTGRES_PASSWORD
-          for ($i = 0; $i -lt 120; $i++) {
-            $pg = & "$env:PGROOT\bin\psql.exe" -U postgres -d $env:TESTS_DB -tAc "select to_regclass('public.authors') is not null" 2>$null
-            $my = & "$mysqlBin\mysql.exe" -u root -N -e "select count(*) from information_schema.tables where table_schema='$env:TESTS_DB'" 2>$null
-            if ($pg -eq 't' -and [int]$my -gt 0) { Write-Host "databases ready"; exit 0 }
-            Start-Sleep -Seconds 2
+          $deadline = (Get-Date).AddMinutes(3)
+          foreach ($db in 'postgres', 'mysql') {
+            while (-not (Select-String -Path "$env:RUNNER_TEMP\$db.log" -Pattern "$db ready" -Quiet -ErrorAction SilentlyContinue)) {
+              if ((Get-Date) -gt $deadline) {
+                Get-ChildItem $env:RUNNER_TEMP -Filter "$db*.log" | ForEach-Object { Write-Host "--- $_"; Get-Content $_ }
+                throw "$db did not become ready"
+              }
+              Start-Sleep -Seconds 1
+            }
           }
-          Get-Content "$env:RUNNER_TEMP\dbs.log", "$env:RUNNER_TEMP\dbs.err.log" -ErrorAction SilentlyContinue
-          exit 1
 
       - name: Run Tests
         shell: powershell
