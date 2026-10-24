@@ -215,13 +215,13 @@ public static class MacroTests
                              new QuerySql.GetAuthorsByBookNameRow
                              {
                                  Id = bojackId,
-                                 Name = {{Consts.BojackBookTitle}},
-                                 Bio = {{Consts.DrSeussBookTitle}},
+                                 Name = {{Consts.BojackAuthor}},
+                                 Bio = {{Consts.BojackTheme}},
                                  Book = new Book 
                                  { 
                                      Id = bojackBookId,
                                      AuthorId = bojackId,
-                                     Name = {{Consts.DrSeussBookTitle}} 
+                                     Name = {{Consts.BojackBookTitle}} 
                                  }
                              }
                          };
@@ -229,7 +229,7 @@ public static class MacroTests
                          { 
                              Name = {{Consts.BojackBookTitle}} 
                          });
-                         AssertSequenceEquals(expected, actual{{Consts.UnknownRecordValuePlaceholder}});
+                         AssertSequenceEquals(expected, actual);
 
                         void AssertSingularEquals(QuerySql.GetAuthorsByBookNameRow x, QuerySql.GetAuthorsByBookNameRow y)
                         {
