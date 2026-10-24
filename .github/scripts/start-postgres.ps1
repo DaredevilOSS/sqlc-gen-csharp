@@ -9,9 +9,6 @@ Start-Service postgresql-x64-17
 # The image sets the superuser password to 'root'; tests expect the one from .env
 $env:PGPASSWORD = 'root'
 Invoke-Psql -U postgres -c "CREATE DATABASE $env:TESTS_DB"
-# tests don't need durability
-Invoke-Psql -U postgres -c "ALTER SYSTEM SET fsync = off" -c "ALTER SYSTEM SET synchronous_commit = off" -c "ALTER SYSTEM SET full_page_writes = off"
-Invoke-Psql -U postgres -c "SELECT pg_reload_conf()"
 Invoke-Psql -U postgres -c "ALTER USER postgres PASSWORD '$env:POSTGRES_PASSWORD'"
 
 $env:PGPASSWORD = $env:POSTGRES_PASSWORD
