@@ -42,28 +42,17 @@ sql:
 
 | Option                      | Possible values                                                                                                                                                                   | Optional | Info                                                                                                                                                                                                                                                                                                                                      |
 |-----------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| overrideDriverVersion       | default:<br/> `2.4.0` for MySqlConnector  (mysql)<br/>`8.0.6` for Npgsql (postgresql)<br/>`9.0.0` for Microsoft.Data.Sqlite (sqlite)<br/><br/>values: The desired driver version | Yes      | Allows you to override the version of DB driver to be used.                                                                                                                                                                                                                                                                               |
-| targetFramework             | default: `net8.0`<br/>values: `netstandard2.0`, `netstandard2.1`, `net8.0`, `net9.0`, `net10.0`                                                                                                        | Yes      | Determines the target framework for your generated code, meaning the generated code will be compiled to the specified runtime.<br/>For more information and help deciding on the right value, refer to the [Microsoft .NET Standard documentation](https://learn.microsoft.com/en-us/dotnet/standard/net-standard?tabs=net-standard-1-0). |
+| overrideDriverVersion       | default:<br/> `2.3.6` for MySqlConnector  (mysql)<br/>`8.0.3` for Npgsql (postgresql)<br/>`8.0.10` for Microsoft.Data.Sqlite (sqlite)<br/><br/>values: The desired driver version | Yes      | Allows you to override the version of DB driver to be used.                                                                                                                                                                                                                                                                               |
+| targetFramework             | default: `net8.0`<br/>values: `netstandard2.0`, `netstandard2.1`, `net8.0`                                                                                                        | Yes      | Determines the target framework for your generated code, meaning the generated code will be compiled to the specified runtime.<br/>For more information and help deciding on the right value, refer to the [Microsoft .NET Standard documentation](https://learn.microsoft.com/en-us/dotnet/standard/net-standard?tabs=net-standard-1-0). |
 | generateCsproj              | default: `true`<br/>values: `false`,`true`                                                                                                                                        | Yes      | Assists you with the integration of SQLC and csharp by generating a `.csproj` file. This converts the generated output to a .dll, a project that you can easily incorporate into your build process.                                                                                                                                      |
 | namespaceName               | default: the generated project name                                                                                                                                               | Yes      | Allows you to override the namespace name to be different than the project name                                                                                                                                                                                                                                                           |
 | useDapper                   | default: `false`<br/>values: `false`,`true`                                                                                                                                       | Yes      | Enables Dapper as a thin wrapper for the generated code. For more information, please refer to the [Dapper documentation](https://github.com/DapperLib/Dapper).                                                                                                                                                                           |
-| overrideDapperVersion       | default:<br/> `2.1.66`<br/>values: The desired Dapper version                                                                                                                     | Yes      | If `useDapper` is set to `true`, this option allows you to override the version of Dapper to be used.                                                                                                                                                                                                                                     |
+| overrideDapperVersion       | default:<br/> `2.1.35`<br/>values: The desired Dapper version                                                                                                                     | Yes      | If `useDapper` is set to `true`, this option allows you to override the version of Dapper to be used.                                                                                                                                                                                                                                     |
 | Override                    | values: A nested override value like [this](#override-option).                                                                                                                    | Yes      | Allows you to override the generated C# data types for specific columns in specific queries. This option accepts a `query_name:column_name` mapping and the overriden data type.                                                                                                                                                          |                                                                                     |
 | useCentralPackageManagement | default: `false`<br/>values: `false`,`true`                                                                                                                                       | Yes      | If true, the code is generated to support central package management.                                                                                                                                                                                                                                                                     |
 | useProperSingularization    | default: `false`<br/>values: `false`,`true`                                                                                                                                       | Yes      | When true, model names are singularized using English grammar rules (`policies` -> `Policy`, `statuses` -> `Status`). Defaults to the legacy behavior of trimming trailing `s` characters, which mangles some names (`policies` -> `Policie`). Opt-in because enabling it renames existing generated classes.                          |
 | withAsyncSuffix             | default: `true`<br/>values: `false`,`true`                                                                                                                                       | Yes      | When true, async methods will have the "Async" suffix appended to their names (e.g., `GetAuthorAsync`). When false, async methods will not have the suffix (e.g., `GetAuthor`).                                                                                                                                                        |
 | withCancellationToken       | default: `false`<br/>values: `false`,`true`                                                                                                                                      | Yes      | When true, every generated method takes an optional trailing `CancellationToken cancellationToken = default`, threaded into every async DB call so in-flight queries can be cancelled. See [Cancellation](#cancellation). When false (default), generated output is unchanged.                                                          |
-
-### Target framework
-`targetFramework` sets the framework of the generated `.csproj`, and is independent of the .NET version the plugin itself runs on.
-
-| Value | Notes |
-|-------|-------|
-| `net8.0` (default) | Nullable reference types enabled, file-scoped namespaces |
-| `net9.0`, `net10.0` | Same generated code as `net8.0`, only the `<TargetFramework>` differs |
-| `netstandard2.1`, `netstandard2.0` | Legacy output - nullable reference types disabled, block-scoped namespaces |
-
-The default stays `net8.0` so that upgrading the plugin never changes the target of existing projects.
 
 ### Override option
 Override for a specific query:
@@ -456,25 +445,9 @@ amount of data types that are supported by SQLite. The supported overrides are s
 Make sure that the following applications are installed and added to your path.
 
 Follow the instructions in each of these:
-- Dotnet CLI - [Dotnet Installation](https://github.com/dotnet/sdk) - the SDK version pinned in `global.json` (`.NET 10`) <br/>
+- Dotnet CLI - [Dotnet Installation](https://github.com/dotnet/sdk) - use version `.NET 8.0 (latest)` <br/>
 - Buf build - [Buf Build](https://buf.build/docs/installation) <br/>
-- sqlc - [sqlc Installation](https://docs.sqlc.dev/en/latest/overview/install.html) <br/>
-- Docker - for running the end-to-end tests against real PostgreSQL / MySQL instances <br/>
-- WASM build tooling (only needed for building the WASM plugin):
-  - the `wasi-experimental` workload - `dotnet workload install wasi-experimental`
-  - [WASI SDK](https://github.com/WebAssembly/wasi-sdk/releases) version `25`, extracted somewhere and exposed through the `WASI_SDK_PATH` environment variable
-
-### Target frameworks
-Two different .NET versions are involved, and they are independent of each other:
-- The **plugin itself** (all projects except `examples`) targets `net10.0`.
-- The **generated code** targets whatever `targetFramework` is configured - `netstandard2.0`, `netstandard2.1`, `net8.0` (default), `net9.0` or `net10.0`.
-  The `examples` cover every supported value (see `sqlc.ci.yaml`) and are built and tested against real databases in CI.
-
-### Why the WASM plugin targets `wasip1`
-sqlc runs WASM plugins with [wazero](https://wazero.io/), which can load core modules (`wasm32-wasip1`) but not WebAssembly components.
-The .NET 10 WASI SDK hardcodes `wasm32-unknown-wasip2` and links a component-model world, which produces a component that sqlc rejects (`invalid version header`).
-`WasmRunner/WasmRunner.csproj` therefore overrides the compile and link steps to produce a `wasip1` core module.
-These overrides rely on private item names of the WASI SDK, so after any .NET SDK or WASI SDK upgrade, verify the plugin with `make setup-wasm-plugin && sqlc -f sqlc.ci.yaml diff`.
+- WASM (follow this guide) - [WASM libs](https://www.strathweb.com/2023/09/dotnet-wasi-applications-in-net-8-0/)
 
 ## Pre-commit Setup
 This repository uses [pre-commit](https://pre-commit.com/). To set up pre-commit hooks, run:
@@ -488,22 +461,21 @@ pre-commit install
 SQLC protobuf are defined in sqlc-dev/sqlc repository.
 Generating C# code from protocol buffer files:
 ```
-make generate-protobuf
+make protobuf-generate
 ```
 
 ### Generating code
 SQLC utilizes our process / WASM plugin to generate code:
 ```
-make sqlc-generate        # process plugin - regenerates the examples and the codegen requests
-make setup-wasm-plugin    # builds the WASM plugin into dist/plugin.wasm
-sqlc -f sqlc.ci.yaml diff # verifies the WASM plugin generates exactly the committed examples
+make sqlc-generate-process
+make sqlc-generate-wasm
 ```
 
 ### Testing generated code
 Testing the SQLC generated code via a predefined flow:
 ```
-make unit-tests   # codegen and repository unit tests
-make test-plugin  # regenerates everything, builds the solution and runs the end-to-end tests (needs Docker)
+make test-process-plugin
+make test-wasm-plugin
 ```
 
 ## Release flow
@@ -630,7 +602,7 @@ overrides:
 ### Config
 ```yaml
 useDapper: true
-targetFramework: net10.0
+targetFramework: net8.0
 generateCsproj: true
 namespaceName: NpgsqlDapperExampleGen
 overrides:
@@ -786,7 +758,7 @@ overrides:
 ### Config
 ```yaml
 useDapper: false
-targetFramework: net9.0
+targetFramework: net8.0
 generateCsproj: true
 namespaceName: MySqlConnectorExampleGen
 overrides:
@@ -930,7 +902,7 @@ overrides:
 ### Config
 ```yaml
 useDapper: false
-targetFramework: net10.0
+targetFramework: net8.0
 generateCsproj: true
 namespaceName: SqliteExampleGen
 overrides:
@@ -973,7 +945,7 @@ overrides:
 ### Config
 ```yaml
 useDapper: true
-targetFramework: net9.0
+targetFramework: net8.0
 generateCsproj: true
 namespaceName: SqliteDapperExampleGen
 overrides:
