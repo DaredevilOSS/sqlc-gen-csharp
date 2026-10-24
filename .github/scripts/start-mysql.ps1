@@ -12,7 +12,7 @@ innodb-flush-log-at-trx-commit=0
 innodb-doublewrite=0
 "@
 
-& "$bin\mysqld.exe" --initialize-insecure --console "--defaults-file=$ini"
+& "$bin\mysqld.exe" "--defaults-file=$ini" --initialize-insecure --console
 if ($LASTEXITCODE -ne 0) { throw 'mysqld --initialize-insecure failed' }
 
 # a service (unlike a child process) survives the end of the workflow step
