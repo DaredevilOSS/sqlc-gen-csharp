@@ -183,6 +183,9 @@ public abstract class DbDriver
             .AddRangeIf([
                 "Dapper"
             ], Options.UseDapper)
+            .AddRangeIf([
+                "System.Runtime.CompilerServices"
+            ], Options.UseAsyncEnumerable && Options.WithCancellationToken)
             .AddRangeExcludeNulls(GetUsingDirectivesForColumnMappings());
     }
 

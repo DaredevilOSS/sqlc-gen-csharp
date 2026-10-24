@@ -27,10 +27,14 @@ public class Options
         WithCancellationToken = rawOptions.WithCancellationToken;
         UseCentralPackageManagement = rawOptions.UseCentralPackageManagement;
         UseProperSingularization = rawOptions.UseProperSingularization;
+        UseAsyncEnumerable = rawOptions.UseAsyncEnumerable;
 
         if (rawOptions.DebugRequest && generateRequest.Settings.Codegen.Wasm is not null)
             throw new ArgumentException("Debug request mode cannot be used with WASM plugin");
         DebugRequest = rawOptions.DebugRequest;
+
+        if (UseAsyncEnumerable && DotnetFramework == DotnetFramework.DotnetStandard20)
+            throw new ArgumentException("useAsyncEnumerable is not supported with targetFramework netstandard2.0");
     }
 
     public DriverName DriverName { get; }
@@ -63,6 +67,11 @@ public class Options
     /// When true, generated methods take an optional CancellationToken threaded into every async DB call.
     /// </summary>
     public bool WithCancellationToken { get; }
+
+    /// <summary>
+    /// When true, :many queries return IAsyncEnumerable&lt;Row&gt; (streamed with yield return) instead of Task&lt;List&lt;Row&gt;&gt;.
+    /// </summary>
+    public bool UseAsyncEnumerable { get; }
 
     /// <summary>
     /// When true, model names are singularized with English grammar rules (policies -> Policy,

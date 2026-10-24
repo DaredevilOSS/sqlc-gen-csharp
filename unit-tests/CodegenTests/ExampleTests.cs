@@ -23,6 +23,12 @@ public class ExampleTests
     [Test]
     public static async Task TestSqliteDapperExample() => await AssertRequestSuccess("SqliteDapperExampleRequest.message");
 
+    [Test]
+    public static async Task TestSqliteAsyncEnumerableExample() => await AssertRequestSuccess("SqliteAsyncEnumerableExampleRequest.message");
+
+    [Test]
+    public static async Task TestNpgsqlDapperAsyncEnumerableExample() => await AssertRequestSuccess("NpgsqlDapperAsyncEnumerableExampleRequest.message");
+
     private static async Task AssertRequestSuccess(string requestFile)
     {
         await Assert.DoesNotThrowAsync(async () =>

@@ -30,6 +30,13 @@ public class CancellationGen(bool enabled)
         return enabled ? $", {TokenName}" : string.Empty;
     }
 
+    // Suffix for an IAsyncEnumerable consumed with await foreach; Dapper's QueryUnbufferedAsync has no
+    // CommandDefinition overload, so the token can only cancel the enumeration, not the in-flight command.
+    public string EnumerationSuffix()
+    {
+        return enabled ? $".WithCancellation({TokenName})" : string.Empty;
+    }
+
     // Wraps flat Dapper call arguments in a CommandDefinition carrying the token; pass-through when disabled.
     public string WrapDapperArgs(string flatArgs)
     {
