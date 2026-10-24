@@ -243,6 +243,48 @@ namespace EndToEndTests
         }
 
         [Test]
+        public async Task TestPartialEmbedAsync()
+        {
+            var bojackId = await this.QuerySql.CreateAuthorReturnIdAsync(new QuerySql.CreateAuthorReturnIdArgs { Name = "Bojack Horseman", Bio = "Back in the 90s he was in a very famous TV show" });
+            var bojackBookId = await QuerySql.CreateBookAsync(new QuerySql.CreateBookArgs { Name = "One Trick Pony", AuthorId = bojackId });
+            var drSeussId = await this.QuerySql.CreateAuthorReturnIdAsync(new QuerySql.CreateAuthorReturnIdArgs { Name = "Dr. Seuss", Bio = "You'll miss the best things if you keep your eyes shut" });
+            var drSeussBookId = await QuerySql.CreateBookAsync(new QuerySql.CreateBookArgs { AuthorId = drSeussId, Name = "How the Grinch Stole Christmas!" });
+            var expected = new List<QuerySql.GetAuthorsByBookNameRow>
+            {
+                new QuerySql.GetAuthorsByBookNameRow
+                {
+                    Id = bojackId,
+                    Name = "Bojack Horseman",
+                    Bio = "Back in the 90s he was in a very famous TV show",
+                    Book = new Book
+                    {
+                        Id = bojackBookId,
+                        AuthorId = bojackId,
+                        Name = "One Trick Pony"
+                    }
+                }
+            };
+            var actual = await QuerySql.GetAuthorsByBookNameAsync(new QuerySql.GetAuthorsByBookNameArgs { Name = "One Trick Pony" });
+            AssertSequenceEquals(expected, actual);
+            void AssertSingularEquals(QuerySql.GetAuthorsByBookNameRow x, QuerySql.GetAuthorsByBookNameRow y)
+            {
+                Assert.That(x.Id, Is.EqualTo(y.Id));
+                Assert.That(x.Name, Is.EqualTo(y.Name));
+                Assert.That(x.Bio, Is.EqualTo(y.Bio));
+                Assert.That(x.Book.Value.Id, Is.EqualTo(y.Book.Value.Id));
+                Assert.That(x.Book.Value.AuthorId, Is.EqualTo(y.Book.Value.AuthorId));
+                Assert.That(x.Book.Value.Name, Is.EqualTo(y.Book.Value.Name));
+            }
+
+            void AssertSequenceEquals(List<QuerySql.GetAuthorsByBookNameRow> x, List<QuerySql.GetAuthorsByBookNameRow> y)
+            {
+                Assert.That(x.Count, Is.EqualTo(y.Count));
+                for (int i = 0; i < x.Count; i++)
+                    AssertSingularEquals(x[i], y[i]);
+            }
+        }
+
+        [Test]
         public async Task TestSliceAsync()
         {
             var id1 = await this.QuerySql.CreateAuthorReturnIdAsync(new QuerySql.CreateAuthorReturnIdArgs { Name = "Albert Einstein", Bio = "Quote that everyone always attribute to Einstein" });
