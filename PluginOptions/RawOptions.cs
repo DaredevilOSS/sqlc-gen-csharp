@@ -38,6 +38,9 @@ public record RawOptions
     [JsonPropertyName("withCancellationToken")]
     public bool WithCancellationToken { get; init; }
 
+    [JsonPropertyName("useAsyncEnumerable")]
+    public bool UseAsyncEnumerable { get; init; }
+
     [JsonPropertyName("useProperSingularization")]
     public bool UseProperSingularization { get; init; }
 }

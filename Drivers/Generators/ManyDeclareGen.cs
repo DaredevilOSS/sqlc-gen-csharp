@@ -12,8 +12,12 @@ public class ManyDeclareGen(DbDriver dbDriver)
 
     public MemberDeclarationSyntax Generate(string queryTextConstant, string argInterface, string returnInterface, Query query)
     {
-        var parametersStr = CommonGen.GetMethodParameterList(argInterface, query.Params, dbDriver.Cancellation.MethodParameter());
-        var returnType = $"Task<List<{returnInterface}>>";
+        var asyncEnumerable = dbDriver.Options.UseAsyncEnumerable;
+        var cancellationParam = dbDriver.Cancellation.MethodParameter();
+        if (asyncEnumerable && cancellationParam != string.Empty)
+            cancellationParam = $"[EnumeratorCancellation] {cancellationParam}";
+        var parametersStr = CommonGen.GetMethodParameterList(argInterface, query.Params, cancellationParam);
+        var returnType = asyncEnumerable ? $"IAsyncEnumerable<{returnInterface}>" : $"Task<List<{returnInterface}>>";
         return ParseMemberDeclaration($$"""
             public async {{returnType}} {{query.Name.ToMethodName(dbDriver.Options.WithAsyncSuffix)}}({{parametersStr}})
             {
@@ -32,6 +36,9 @@ public class ManyDeclareGen(DbDriver dbDriver)
         var sqlVar = sqlTextTransform != string.Empty ? Variable.TransformedSql.AsVarName() : queryTextConstant;
         var transactionProperty = Variable.Transaction.AsPropertyName();
 
+        if (dbDriver.Options.UseAsyncEnumerable)
+            return GetAsyncEnumerableBody(sqlTextTransform, dapperParams, sqlVar, returnInterface, query, useDapper);
+
         var noTxBody = useDapper ? GetDapperNoTxBody(sqlVar, returnInterface, query) : GetDriverNoTxBody(sqlVar, returnInterface, query);
         var withTxBody = useDapper ? GetDapperWithTxBody(sqlVar, returnInterface, query) : GetDriverWithTxBody(sqlVar, returnInterface, query);
 
@@ -43,6 +50,97 @@ public class ManyDeclareGen(DbDriver dbDriver)
                 {{noTxBody}}
             }
             {{withTxBody}}
+        """;
+    }
+
+    // Streaming variant: rows are yielded as they are read, no intermediate List is built.
+    private string GetAsyncEnumerableBody(string sqlTextTransform, string dapperParams, string sqlVar,
+        string returnInterface, Query query, bool useDapper)
+    {
+        var transactionProperty = Variable.Transaction.AsPropertyName();
+        var noTxBody = useDapper ? GetDapperStreamNoTxBody(sqlVar, returnInterface, query) : GetDriverStreamNoTxBody(sqlVar, returnInterface, query);
+        var withTxBody = useDapper ? GetDapperStreamWithTxBody(sqlVar, returnInterface, query) : GetDriverStreamWithTxBody(sqlVar, returnInterface, query);
+        return $$"""
+            {{sqlTextTransform}}
+            {{dapperParams}}
+            if (this.{{transactionProperty}} == null)
+            {
+                {{noTxBody}}
+                yield break;
+            }
+            {{withTxBody}}
+        """;
+    }
+
+    private string GetDapperStreamNoTxBody(string sqlVar, string returnInterface, Query query)
+    {
+        var connectionCommands = dbDriver.EstablishConnection(query);
+        var dapperArgs = CommonGen.GetDapperArgs(query);
+        var returnType = dbDriver.AddNullableSuffixIfNeeded(returnInterface, true);
+        var callArgs = dbDriver.Cancellation.WrapDapperArgs($"{sqlVar}{dapperArgs}");
+        return connectionCommands.GetConnectionOrDataSource.WrapBlock(
+            $"""
+            await foreach (var row in {Variable.Connection.AsVarName()}.QueryUnbufferedAsync<{returnType}>({callArgs}))
+                yield return row;
+            """
+        );
+    }
+
+    private string GetDapperStreamWithTxBody(string sqlVar, string returnInterface, Query query)
+    {
+        var transactionProperty = Variable.Transaction.AsPropertyName();
+        var dapperArgs = CommonGen.GetDapperArgs(query);
+        var returnType = dbDriver.AddNullableSuffixIfNeeded(returnInterface, true);
+        var callArgs = dbDriver.Cancellation.WrapDapperArgs($"{sqlVar}{dapperArgs}, transaction: this.{transactionProperty}");
+        return $$"""
+            {{dbDriver.TransactionConnectionNullExcetionThrow}}
+            await foreach (var row in this.{{transactionProperty}}.Connection.QueryUnbufferedAsync<{{returnType}}>({{callArgs}}))
+                yield return row;
+        """;
+    }
+
+    private string GetDriverStreamNoTxBody(string sqlVar, string returnInterface, Query query)
+    {
+        var connectionCommands = dbDriver.EstablishConnection(query);
+        var dataclassInit = CommonGen.InstantiateDataclass([.. query.Columns], returnInterface, query);
+        var sqlCommands = dbDriver.CreateSqlCommand(sqlVar);
+        var commandBlock = sqlCommands.CommandCreation.WrapBlock(
+            $$"""
+            {{sqlCommands.SetCommandText.AppendSemicolonUnlessEmpty()}}
+            {{dbDriver.AddParametersToCommand(query)}}
+            {{sqlCommands.PrepareCommand.AppendSemicolonUnlessEmpty()}}
+            using ({{CommonGen.InitDataReader(dbDriver.Cancellation.Argument())}})
+            {
+                while ({{CommonGen.AwaitReaderRow(dbDriver.Cancellation.Argument())}})
+                    yield return {{dataclassInit}};
+            }
+            """
+        );
+        return connectionCommands.GetConnectionOrDataSource.WrapBlock(
+            $$"""
+            {{connectionCommands.ConnectionOpen.AppendSemicolonUnlessEmpty()}}
+            {{commandBlock}}
+            """
+        );
+    }
+
+    private string GetDriverStreamWithTxBody(string sqlVar, string returnInterface, Query query)
+    {
+        var transactionProperty = Variable.Transaction.AsPropertyName();
+        var commandVar = Variable.Command.AsVarName();
+        return $$"""
+            {{dbDriver.TransactionConnectionNullExcetionThrow}}
+            using (var {{commandVar}} = this.{{transactionProperty}}.Connection.CreateCommand())
+            {
+                {{commandVar}}.CommandText = {{sqlVar}};
+                {{commandVar}}.Transaction = this.{{transactionProperty}};
+                {{dbDriver.AddParametersToCommand(query)}}
+                using ({{CommonGen.InitDataReader(dbDriver.Cancellation.Argument())}})
+                {
+                    while ({{CommonGen.AwaitReaderRow(dbDriver.Cancellation.Argument())}})
+                        yield return {{CommonGen.InstantiateDataclass([.. query.Columns], returnInterface, query)}};
+                }
+            }
         """;
     }
 

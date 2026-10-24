@@ -34,6 +34,7 @@ public class OptionsTests
         Assert.That(options.WithAsyncSuffix, Is.True);
         Assert.That(options.UseDapper, Is.False);
         Assert.That(options.WithCancellationToken, Is.False);
+        Assert.That(options.UseAsyncEnumerable, Is.False);
         Assert.That(options.UseCentralPackageManagement, Is.False);
         Assert.That(options.UseProperSingularization, Is.False);
         Assert.That(options.DebugRequest, Is.False);
@@ -71,6 +72,7 @@ public class OptionsTests
             "useCentralPackageManagement": true,
             "withAsyncSuffix": false,
             "withCancellationToken": true,
+            "useAsyncEnumerable": true,
             "useProperSingularization": true,
             "overrides": [
                 { "column": "GetAuthor:name", "csharp_type": { "type": "string", "notNull": true } }
@@ -89,6 +91,7 @@ public class OptionsTests
         Assert.That(options.UseCentralPackageManagement, Is.True);
         Assert.That(options.WithAsyncSuffix, Is.False);
         Assert.That(options.WithCancellationToken, Is.True);
+        Assert.That(options.UseAsyncEnumerable, Is.True);
         Assert.That(options.UseProperSingularization, Is.True);
         Assert.That(options.Overrides, Has.Count.EqualTo(1));
         Assert.That(options.Overrides[0].Column, Is.EqualTo("GetAuthor:name"));
