@@ -114,6 +114,7 @@ internal static class Config
         // macros
         KnownTestType.JoinEmbed,
         KnownTestType.SelfJoinEmbed,
+        KnownTestType.PartialEmbed,
         KnownTestType.Slice,
         KnownTestType.MultipleSlices,
         KnownTestType.NargNull,
@@ -156,6 +157,7 @@ internal static class Config
         // macros
         KnownTestType.JoinEmbed,
         KnownTestType.SelfJoinEmbed,
+        KnownTestType.PartialEmbed,
         KnownTestType.NargNull,
         KnownTestType.NargNotNull,
 
@@ -195,6 +197,7 @@ internal static class Config
         KnownTestType.ExecLastId,
         KnownTestType.JoinEmbed,
         KnownTestType.SelfJoinEmbed,
+        KnownTestType.PartialEmbed,
         KnownTestType.Slice,
         KnownTestType.MultipleSlices,
         KnownTestType.NargNull,
