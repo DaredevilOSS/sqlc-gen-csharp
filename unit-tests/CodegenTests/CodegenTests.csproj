@@ -36,6 +36,14 @@
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
             <TargetPath>SqliteDapperExampleRequest.message</TargetPath>
         </Content>
+        <Content Include="../../examples/SqliteAsyncEnumerableExample/request.message">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+            <TargetPath>SqliteAsyncEnumerableExampleRequest.message</TargetPath>
+        </Content>
+        <Content Include="../../examples/NpgsqlDapperAsyncEnumerableExample/request.message">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+            <TargetPath>NpgsqlDapperAsyncEnumerableExampleRequest.message</TargetPath>
+        </Content>
     </ItemGroup>
     
     <ItemGroup>

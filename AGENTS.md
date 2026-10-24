@@ -206,6 +206,7 @@ CI fails if any of the generated artifacts above is stale (`sqlc diff`, `git dif
 | `useCentralPackageManagement` | `false`                                                        | omits `Version=` in the generated csproj |
 | `useAsyncSuffix`              | `true`                                                         | |
 | `useCancellationToken`        | `false`                                                        | must be byte-identical when off |
+| `useAsyncEnumerable`          | `false`                                                        | `:many` returns `IAsyncEnumerable<Row>`; not supported on `netstandard2.0` |
 | `useProperSingularization`    | `false`                                                        | renames models when on |
 | `overrides`                   | -                                                              | `Query:column` / `*:column`, see section 3 |
 | `debugRequest`                | `false`                                                        | internal: dumps the request; not allowed with WASM |

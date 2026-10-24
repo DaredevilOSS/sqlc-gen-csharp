@@ -62,6 +62,9 @@ public record RawOptions
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public bool? WithCancellationToken { get; init; }
 
+    [JsonPropertyName("useAsyncEnumerable")]
+    public bool UseAsyncEnumerable { get; init; }
+
     [JsonPropertyName("useProperSingularization")]
     public bool UseProperSingularization { get; init; }
 }

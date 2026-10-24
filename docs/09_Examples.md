@@ -563,3 +563,37 @@ overrides:
 ```
 
 </details>
+
+<details>
+<summary>SqliteAsyncEnumerable</summary>
+
+## Engine `sqlite`: [SqliteAsyncEnumerableExample](examples/SqliteAsyncEnumerableExample)
+### [Schema](examples/config/sqlite/authors/schema.sql) | [Queries](examples/config/sqlite/authors/query.sql) | [End2End Test](end2end/EndToEndTests/SqliteAsyncEnumerableTester.cs)
+### Config
+```yaml
+useDapper: false
+useAsyncEnumerable: true
+useCancellationToken: true
+targetFramework: net10.0
+generateCsproj: true
+namespaceName: SqliteAsyncEnumerableExampleGen
+```
+
+</details>
+
+<details>
+<summary>NpgsqlDapperAsyncEnumerable</summary>
+
+## Engine `postgresql`: [NpgsqlDapperAsyncEnumerableExample](examples/NpgsqlDapperAsyncEnumerableExample)
+### [Schema](examples/config/postgresql/authors/schema.sql) | [Queries](examples/config/postgresql/authors/query.sql) | [End2End Test](end2end/EndToEndTests/NpgsqlDapperAsyncEnumerableTester.cs)
+### Config
+```yaml
+useDapper: true
+useAsyncEnumerable: true
+useCancellationToken: true
+targetFramework: net10.0
+generateCsproj: true
+namespaceName: NpgsqlDapperAsyncEnumerableExampleGen
+```
+
+</details>

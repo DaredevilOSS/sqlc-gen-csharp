@@ -530,3 +530,32 @@ sql:
               csharp_type:
                 type: "Instant"
           debugRequest: true
+  # Async enumerable (:many returns IAsyncEnumerable)
+  - schema: ["examples/config/sqlite/authors/schema.sql"]
+    queries: ["examples/config/sqlite/authors/query.sql"]
+    engine: "sqlite"
+    codegen:
+      - plugin: csharp
+        out: examples/SqliteAsyncEnumerableExample
+        options:
+          useDapper: false
+          useAsyncEnumerable: true
+          useCancellationToken: true
+          targetFramework: net10.0
+          generateCsproj: true
+          namespaceName: SqliteAsyncEnumerableExampleGen
+          debugRequest: true
+  - schema: ["examples/config/postgresql/authors/schema.sql"]
+    queries: ["examples/config/postgresql/authors/query.sql"]
+    engine: "postgresql"
+    codegen:
+      - plugin: csharp
+        out: examples/NpgsqlDapperAsyncEnumerableExample
+        options:
+          useDapper: true
+          useAsyncEnumerable: true
+          useCancellationToken: true
+          targetFramework: net10.0
+          generateCsproj: true
+          namespaceName: NpgsqlDapperAsyncEnumerableExampleGen
+          debugRequest: true
