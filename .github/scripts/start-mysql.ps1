@@ -7,9 +7,10 @@ $fast = '--skip-log-bin', '--innodb-flush-log-at-trx-commit=0', '--innodb-double
 & "$bin\mysqld.exe" --initialize-insecure --console "--datadir=$dataDir" @fast
 if ($LASTEXITCODE -ne 0) { throw 'mysqld --initialize-insecure failed' }
 
-Start-Process -FilePath "$bin\mysqld.exe" -WindowStyle Hidden `
-  -ArgumentList '--console', "--datadir=$dataDir", '--local-infile=1', @fast `
-  -RedirectStandardOutput "$env:RUNNER_TEMP\mysqld.log" -RedirectStandardError "$env:RUNNER_TEMP\mysqld.err.log"
+# a service (unlike a child process) survives the end of the workflow step
+& "$bin\mysqld.exe" --install MySQL "--datadir=$dataDir" --local-infile=1 @fast
+if ($LASTEXITCODE -ne 0) { throw 'mysqld --install failed' }
+Start-Service MySQL
 
 for ($i = 0; $i -lt 60; $i++) {
   & "$bin\mysqladmin.exe" -u root ping *> $null
