@@ -19,3 +19,4 @@ jobs:
           days-before-stale: 30
           days-before-delete: 45
           pr-check: true
+          ignored-branches: release-prep
