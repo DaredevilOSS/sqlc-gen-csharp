@@ -1,0 +1,17 @@
+name: probe
+on:
+  pull_request:
+    branches: ["*"]
+jobs:
+  probe:
+    runs-on: windows-latest
+    steps:
+      - shell: pwsh
+        run: |
+          Get-Service | Where-Object { $_.Name -match 'postgres|mysql' } | Format-Table Name,Status,StartType
+          Get-ChildItem 'C:\Program Files\PostgreSQL','C:\Program Files\MySQL' -ErrorAction SilentlyContinue | Select FullName
+          Get-ChildItem 'C:\Program Files\MySQL\*\bin\mysqld.exe' -ErrorAction SilentlyContinue
+          $env:PGROOT; $env:PGBIN; $env:PGPASSWORD
+          Get-Content 'C:\Program Files\PostgreSQL\*\pg_hba.conf' -ErrorAction SilentlyContinue | Select-String -NotMatch '^\s*#|^\s*$'
+          Get-ChildItem C:\ProgramData\MySQL -ErrorAction SilentlyContinue
+          nuget help | Select -First 1; Get-Command msbuild -ErrorAction SilentlyContinue
