@@ -1,0 +1,47 @@
+name: Bug report
+description: Generated code is wrong, doesn't compile, or the plugin fails
+labels: [bug]
+body:
+  - type: input
+    id: plugin-version
+    attributes:
+      label: Plugin version
+      placeholder: v0.24.0
+    validations:
+      required: true
+  - type: input
+    id: sqlc-version
+    attributes:
+      label: sqlc version
+      placeholder: 1.30.0
+    validations:
+      required: true
+  - type: dropdown
+    id: engine
+    attributes:
+      label: Engine / driver
+      options: [PostgreSQL (Npgsql), MySQL (MySqlConnector), SQLite (Microsoft.Data.Sqlite)]
+    validations:
+      required: true
+  - type: textarea
+    id: config
+    attributes:
+      label: sqlc.yaml (plugin options)
+      render: yaml
+    validations:
+      required: true
+  - type: textarea
+    id: sql
+    attributes:
+      label: Schema and query
+      description: Minimal schema and query that reproduce the problem.
+      render: sql
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: What happened vs. what you expected
+      description: Include the generated C# or the error output.
+    validations:
+      required: true
