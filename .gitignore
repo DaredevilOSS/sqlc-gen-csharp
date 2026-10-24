@@ -143,3 +143,5 @@ plugin.wasm
 **/.env.bak
 
 **/*.wasm
+# sqlc plugin cache (Makefile sets SQLCCACHE=./)
+/plugins/

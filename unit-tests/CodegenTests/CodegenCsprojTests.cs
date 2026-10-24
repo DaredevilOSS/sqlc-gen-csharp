@@ -58,6 +58,43 @@ public class CodegenCsprojTests
         Assert.That(actual.Result.Files.Any(f => f.Name == $"{request.Settings.Codegen.Out}.csproj"), Is.False);
     }
 
+    [TestCase("net8.0", true)]
+    [TestCase("net9.0", true)]
+    [TestCase("net10.0", true)]
+    [TestCase("netstandard2.1", false)]
+    [TestCase("netstandard2.0", false)]
+    public void TestTargetFramework(string targetFramework, bool isNullableEnabled)
+    {
+        var request = new GenerateRequest
+        {
+            Settings = _mysqlSettings,
+            Catalog = _emptyCatalog,
+            PluginOptions = ByteString.CopyFrom("{\"targetFramework\": \"" + targetFramework + "\"}", Encoding.UTF8)
+        };
+
+        var response = CodeGenerator.Generate(request);
+        var csprojFile = response.Result.Files.First(f => f.Name == $"{request.Settings.Codegen.Out}.csproj");
+        var doc = new XmlDocument();
+        doc.LoadXml(csprojFile.Contents.ToStringUtf8());
+
+        Assert.That(doc.SelectSingleNode("//TargetFramework")!.InnerText, Is.EqualTo(targetFramework));
+        Assert.That(doc.SelectSingleNode("//Nullable") is not null, Is.EqualTo(isNullableEnabled));
+    }
+
+    [Test]
+    public void TestUnsupportedTargetFramework()
+    {
+        var request = new GenerateRequest
+        {
+            Settings = _mysqlSettings,
+            Catalog = _emptyCatalog,
+            PluginOptions = ByteString.CopyFrom("{\"targetFramework\": \"net7.0\"}", Encoding.UTF8)
+        };
+
+        var exception = Assert.Throws<ArgumentException>(() => _ = CodeGenerator.Generate(request));
+        Assert.That(exception.Message, Does.Contain("net7.0").And.Contain("net10.0"));
+    }
+
     [Test]
     public void TestOverrideDriverVersion()
     {

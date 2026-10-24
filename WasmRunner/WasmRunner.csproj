@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <TargetFramework>net8.0</TargetFramework>
+        <TargetFramework>net10.0</TargetFramework>
         <RootNamespace>SqlcGenCsharp</RootNamespace>
         <OutputType>Exe</OutputType>
         <RuntimeIdentifier>wasi-wasm</RuntimeIdentifier>
@@ -17,6 +17,33 @@
 
     <ItemGroup>
         <ProjectReference Include="..\SqlcGenCsharp\SqlcGenCsharp.csproj"/>
+        <!-- keep RawOptions' constructor, which System.Text.Json needs to bind the plugin options and the trimmer would remove -->
+        <TrimmerRootAssembly Include="PluginOptions" />
     </ItemGroup>
     
+
+    <!--
+        The .NET 10 WASI SDK hardcodes the wasm32-unknown-wasip2 target and links the wasi:http component-model world,
+        which produces a WebAssembly component. sqlc runs plugins with wazero, which only loads core modules,
+        so both steps are redirected to wasip1 (core module) instead.
+        These targets rely on private item names of the WASI SDK - when upgrading the SDK, verify with `sqlc diff`.
+    -->
+    <Target Name="UseWasiPreview1ForCompile" AfterTargets="_PrepareForWasiBuildNative">
+        <ItemGroup>
+            <_WasiClangCommonFlags Remove="--target=wasm32-unknown-wasip2" />
+            <_WasiClangLDFlags Remove="--target=wasm32-unknown-wasip2" />
+            <_WasiClangCommonFlags Include="--target=wasm32-wasip1" />
+            <_WasiClangLDFlags Include="--target=wasm32-wasip1" />
+        </ItemGroup>
+    </Target>
+
+    <Target Name="UseWasiPreview1ForLink" AfterTargets="_WasiWriteRspForLinking">
+        <ItemGroup>
+            <_WasmLinkStepArgs Remove="@(_WasmLinkStepArgs)" Condition="$([System.String]::new('%(Identity)').Contains('--component-type'))" />
+            <_WasmLinkStepArgs Remove="@(_WasmLinkStepArgs)" Condition="$([System.String]::new('%(Identity)').Contains('wasm32-wasip2'))" />
+            <_WasmLinkStepArgs Include="&quot;$(WasiSysRoot.Replace('\', '/'))/lib/wasm32-wasip1/libc++.a&quot;" />
+            <_WasmLinkStepArgs Include="&quot;$(WasiSysRoot.Replace('\', '/'))/lib/wasm32-wasip1/libc++abi.a&quot;" />
+        </ItemGroup>
+    </Target>
+
 </Project>

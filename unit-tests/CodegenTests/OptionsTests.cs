@@ -99,7 +99,7 @@ public class OptionsTests
     [Test]
     public void TestUnknownTargetFrameworkThrows()
     {
-        Assert.Throws<KeyNotFoundException>(() =>
+        Assert.Throws<ArgumentException>(() =>
             new Options(CreateRequest("sqlite", """{"targetFramework": "net6.0"}""")));
     }
 

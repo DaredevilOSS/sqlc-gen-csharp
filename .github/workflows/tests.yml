@@ -4,7 +4,6 @@ defaults:
     shell: bash
     
 env:
-  DOTNET_VERSION: '8.0.x'
   SQLC_VERSION: 1.30.0
 
 permissions:
@@ -35,6 +34,11 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
+      - name: Set up .NET from global.json
+        uses: actions/setup-dotnet@v6
+        with:
+          global-json-file: global.json
+
       - uses: sqlc-dev/setup-sqlc@v5
         with:
           sqlc-version: '${{ env.SQLC_VERSION }}'
@@ -60,7 +64,7 @@ jobs:
       - name: Set up .NET
         uses: actions/setup-dotnet@v6
         with:
-          dotnet-version: ${{ env.DOTNET_VERSION }}
+          global-json-file: global.json
 
       - name: Load .env file
         uses: xom9ikk/dotenv@v2.4.0

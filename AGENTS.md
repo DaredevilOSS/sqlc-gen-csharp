@@ -40,6 +40,14 @@
 
 ---
 
+## 🧩 Target Frameworks
+- The **plugin** (all projects but `examples`) targets `net10.0`; the SDK is pinned in `global.json`.
+- The **generated code** targets the `targetFramework` option: `netstandard2.0`, `netstandard2.1`, `net8.0` (default), `net9.0`, `net10.0`. `DotnetFramework.IsDotnetCore()` is true for every `net*` value; `netstandard*` is "legacy" output.
+- The core examples in `sqlc.ci.yaml` are spread over net8.0 / net9.0 / net10.0 so that every framework is built and tested end-to-end.
+- The WASM plugin is built as `wasip1` (core module) via overrides in `WasmRunner/WasmRunner.csproj`, because the .NET 10 WASI SDK emits a wasip2 component that sqlc (wazero) cannot load. Re-verify with `sqlc -f sqlc.ci.yaml diff` after SDK upgrades.
+
+---
+
 ## 🏗️ Code Generation Flow
 
 ```
@@ -97,8 +105,8 @@ DbDriver InstantiateDriver()
 
 | Option | Default | Description |
 |--------|---------|-------------|
-| `overrideDriverVersion` | 2.3.6 (MySql), 8.0.3 (Npgsql), 8.0.10 (Sqlite) | Override DB driver version |
-| `targetFramework` | net8.0 | .NET Standard 2.0/2.1 or .NET 8.0 |
+| `overrideDriverVersion` | 2.4.0 (MySql), 8.0.6 (Npgsql), 10.0.13 (Sqlite) | Override DB driver version |
+| `targetFramework` | net8.0 | .NET Standard 2.0/2.1, .NET 8.0, 9.0 or 10.0 (the plugin itself runs on .NET 10, independent of this option) |
 | `generateCsproj` | true | Generate .csproj file |
 | `namespaceName` | Project name | Override generated namespace |
 | `useDapper` | false | Use Dapper wrapper |
@@ -175,20 +183,21 @@ public partial class Author
 ### Local Development
 ```bash
 # Prerequisites
-dotnet --version # .NET 8.0
+dotnet --version # .NET 10 SDK (pinned in global.json)
 buf --version
-# WASM libs for .NET WASI (see WASM docs)
+# WASM build: `dotnet workload install wasi-experimental` + WASI SDK 25 exposed via WASI_SDK_PATH (see docs/08_Contributing.md)
 
 # Generate protobuf
-make protobuf-generate
+make generate-protobuf
 
 # Generate code
-make sqlc-generate-process
-make sqlc-generate-wasm
+make sqlc-generate      # process plugin
+make setup-wasm-plugin  # WASM plugin -> dist/plugin.wasm
 
 # Test plugins
-make test-process-plugin
-make test-wasm-plugin
+make unit-tests
+make test-plugin
+sqlc -f sqlc.ci.yaml diff  # WASM plugin output must equal the committed examples
 ```
 
 ### Pre-commit Setup
@@ -249,14 +258,14 @@ for (int i = 0; i < paramArray.Length; i++)
 
 ### Generate Code
 ```bash
-make sqlc-generate-process  # Process-based plugin
-make sqlc-generate-wasm     # WASM plugin
+make sqlc-generate      # Process-based plugin
+make setup-wasm-plugin  # WASM plugin
 ```
 
 ### Test
 ```bash
-make test-process-plugin
-make test-wasm-plugin
+make unit-tests
+make test-plugin
 ```
 
 ### Release

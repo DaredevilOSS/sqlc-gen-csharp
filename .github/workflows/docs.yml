@@ -11,7 +11,6 @@ permissions:
   pull-requests: write
 
 env:
-  DOTNET_VERSION: '8.0.x'
 
 on:
   workflow_dispatch:
@@ -29,7 +28,7 @@ jobs:
       - name: Set up .NET
         uses: actions/setup-dotnet@v6
         with:
-          dotnet-version: ${{ env.DOTNET_VERSION }}
+          global-json-file: global.json
           
       - name: Regenerate docs
         run: ./docs/scripts/generate_all_docs.sh
