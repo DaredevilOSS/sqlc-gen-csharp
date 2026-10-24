@@ -1,6 +1,0 @@
-<Project>
-    <PropertyGroup>
-        <!-- Roslyn 5.x analyzers target a newer compiler than the pinned SDK ships; the warning is noise and would otherwise leak into generated stdout -->
-        <NoWarn>$(NoWarn);CS9057</NoWarn>
-    </PropertyGroup>
-</Project>

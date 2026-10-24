@@ -155,7 +155,7 @@ public class PluginOptionNamesTests
     [Test]
     public void TestParseUnknownFrameworkThrows()
     {
-        Assert.Throws<KeyNotFoundException>(() => DotnetFrameworkExtensions.ParseName("net6.0"));
+        Assert.Throws<ArgumentException>(() => DotnetFrameworkExtensions.ParseName("net6.0"));
     }
 
     [TestCase(DotnetFramework.Dotnet80, true)]
