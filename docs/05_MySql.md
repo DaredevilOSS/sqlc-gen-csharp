@@ -2,28 +2,14 @@
 <details>
 <summary>:execlastid - Implementation</summary>
 
-The implementation differs if we're using `Dapper` or not.
-
-### Driver - MySqlConnector
-The driver provides a `LastInsertedId` property to get the latest inserted id in the DB. 
-When accessing the property, it automatically performs the below query: 
-
-```sql
-SELECT LAST_INSERT_ID();
-```
-
-That will work only when the id column is defined as `serial` or `bigserial`, and the generated method will always return
-a `long` value.
-
-### Dapper
-Since the `LastInsertedId` is DB specific and hence not available in Dapper, the `LAST_INSERT_ID` query is simply 
-appended to the original query like this:
+The `LAST_INSERT_ID` query is appended to the original query, both with and without `Dapper`:
 
 ```sql
 INSERT INTO tab1 (field1, field2) VALUES ('a', 1); 
 SELECT LAST_INSERT_ID();
 ```
-The generated method will return `int` & `long` for `serial` & `bigserial` respectively.
+The result is read as a scalar and converted to the C# type of the table's id column
+(`int` for `int`/`integer`/`mediumint`, `long` for `bigint`/`serial`).
 
 </details>
 

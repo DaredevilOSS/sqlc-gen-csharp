@@ -1,290 +1,258 @@
-# AGENTS.md - SQLC Gen C# Codebase Guide
+# AGENTS.md - sqlc-gen-csharp
 
-## 🎯 Project Overview
+**sqlc-gen-csharp** is a [sqlc](https://github.com/sqlc-dev/sqlc) plugin (written in C#) that turns a sqlc
+`GenerateRequest` (protobuf: catalog + queries + options) into C# data access code for
+PostgreSQL (Npgsql), MySQL (MySqlConnector) and SQLite (Microsoft.Data.Sqlite), optionally wrapped with Dapper.
 
-**sqlc-gen-csharp** is a .NET plugin for [sqlc](https://github.com/sqlc-dev/sqlc) that generates type-safe C# data access code from SQL queries.
-
-**Key Purpose:** Generate C# classes (queries, models, utils) from SQL queries using database drivers (Npgsql, MySqlConnector, Microsoft.Data.Sqlite) or optionally Dapper.
-
-**Supported Databases:**
-- PostgreSQL (Npgsql driver)
-- MySQL (MySqlConnector driver)
-- SQLite (Microsoft.Data.Sqlite driver)
+More specific instructions live next to the code - read them before working in those areas:
+- `Drivers/AGENTS.md` - type mappings, driver hooks, annotation generators, enums, per-DB quirks
+- `end2end/AGENTS.md` - end-to-end test scaffolding
+- `docs/AGENTS.md` - documentation and README generation
 
 ---
 
-## 📁 Core Architecture
+## 1. Architecture and module ownership
 
-### Main Entry Point
-| File | Purpose |
-|------|---------|
-| `SqlcGenCsharp/PluginRunner.cs` | Main plugin entry point - handles requests |
-| `CodeGenerator/CodeGenerator.cs` | Orchestrates code generation flow |
-
-### Generator Components
-| File | Purpose |
-|------|---------|
-| `CodeGenerator/Generators/QueriesGen.cs` | Generates query classes with CRUD methods |
-| `CodeGenerator/Generators/ModelsGen.cs` | Generates POCOs for database tables |
-| `CodeGenerator/Generators/UtilsGen.cs` | Generates utility classes |
-| `CodeGenerator/Generators/CsprojGen.cs` | Generates .csproj files |
-
-### Database Drivers
-| File | Purpose |
-|------|---------|
-| `Drivers/DbDriver.cs` | Abstract base driver class |
-| `Drivers/NpgsqlDriver.cs` | PostgreSQL driver implementation |
-| `Drivers/MySqlConnectorDriver.cs` | MySQL driver implementation |
-| `Drivers/SqliteDriver.cs` | SQLite driver implementation |
-| `Drivers/EnumDbDriver.cs` | Generates enum types |
-
----
-
-## 🧩 Target Frameworks
-- The **plugin** (all projects but `examples`) targets `net10.0`; the SDK is pinned in `global.json`.
-- The **generated code** targets the `targetFramework` option: `netstandard2.0`, `netstandard2.1`, `net8.0` (default), `net9.0`, `net10.0`. `DotnetFramework.IsDotnetCore()` is true for every `net*` value; `netstandard*` is "legacy" output.
-- The core examples in `sqlc.ci.yaml` are spread over net8.0 / net9.0 / net10.0 so that every framework is built and tested end-to-end.
-- The WASM plugin is built as `wasip1` (core module) via overrides in `WasmRunner/WasmRunner.csproj`, because the .NET 10 WASI SDK emits a wasip2 component that sqlc (wazero) cannot load. Re-verify with `sqlc -f sqlc.ci.yaml diff` after SDK upgrades.
-
----
-
-## 🏗️ Code Generation Flow
-
+### Project dependency graph (enforced by `unit-tests/RepositoryTests/ArchitectureTests.cs`)
 ```
-1. Generate() method in CodeGenerator.cs
-   ↓
-2. InitGenerators() - Parse options, instantiate drivers
-   ↓
-3. InstantiateDriver() - Select driver based on DriverName
-   ↓
-4. GetFileQueries() - Group queries by table
-   ↓
-5. GenerateFiles() - Call appropriate generators
-   ↓
-6. Return GenerateResponse with generated files
+GeneratedProtobuf   (sqlc protobuf, generated)            refs: -
+Extensions          (generic string/collection/Roslyn helpers) refs: -
+PluginOptions       (RawOptions -> Options, enums)        refs: GeneratedProtobuf
+Drivers             (DB knowledge + method-body emission) refs: Extensions, PluginOptions
+CodeGenerator       (orchestration + file assembly)       refs: PluginOptions, GeneratedProtobuf, Drivers
+SqlcGenCsharp       (PluginRunner: stdin/stdout I/O)      refs: CodeGenerator
+LocalRunner         (process plugin host, 1-liner)        refs: SqlcGenCsharp
+WasmRunner          (WASM plugin host, 1-liner)           refs: SqlcGenCsharp
+```
+Never add a `ProjectReference` that is not in this graph. If a new edge is truly needed, update the
+architecture test in the same change and explain why.
+
+> Naming trap: `Drivers/` is not only "DB drivers". It also owns **all generated method bodies**
+> (`Drivers/Generators/*DeclareGen.cs`). `CodeGenerator/Generators/` only assembles **files**
+> (namespace, usings, header, which members go in which file).
+
+### Where code goes
+| You are changing...                                                    | Put it in                                                                       | Never in                                  |
+|------------------------------------------------------------------------|---------------------------------------------------------------------------------|-------------------------------------------|
+| Reading the request / writing the response                             | `SqlcGenCsharp/PluginRunner.cs`                                                 | the runners, CodeGenerator                |
+| Which files are generated, their names, namespace style, usings order, header | `CodeGenerator/CodeGenerator.cs`, `CodeGenerator/Generators/*Gen.cs`     | Drivers                                   |
+| Shape of Row / Args / Model types (record vs class, `required`/`init`) | `CodeGenerator/Generators/DataClassesGen.cs`                                    | Drivers                                   |
+| Method body flow shared by all DBs (tx / no-tx, Dapper / driver)       | `Drivers/Generators/<Annotation>DeclareGen.cs`, shared bits in `CommonGen.cs`   | a concrete driver, CodeGenerator          |
+| A DB-specific code fragment                                            | an override of a `DbDriver` hook in that driver (see `Drivers/AGENTS.md`)       | `*DeclareGen`, `CodeGenerator`, `DbDriver` |
+| DB type -> C# type mapping                                             | that driver's `ColumnMappings`                                                  | `DbDriver` base                           |
+| Enum generation / reading / writing                                    | `Drivers/EnumDbDriver.cs` (shared) or the driver's override                     | `CommonGen`, CodeGenerator                |
+| `CancellationToken` in generated code                                  | only via `dbDriver.Cancellation` (`Drivers/Generators/CancellationGen.cs`)       | hand-written `cancellationToken` strings  |
+| Names of generated locals/fields/properties                            | the `Variable` enum (`Drivers/Variable.cs`) + `AsVarName/AsPropertyName/AsFieldName` | string literals like `"reader"`       |
+| Row/Args/Sql member naming                                             | `ClassMember` (`CodeGenerator/ClassMember.cs`)                                  | ad-hoc `$"{name}Row"`                     |
+| A new plugin option                                                    | `PluginOptions/RawOptions.cs` + `PluginOptions/Options.cs` (see recipe below)   | code that parses raw JSON                 |
+| Pure helpers (strings, sets, dictionaries, Roslyn trivia)              | `Extensions/` - must stay free of Query/Column/driver knowledge                 | -                                         |
+| Protobuf types                                                         | regenerate `GeneratedProtobuf/` (`make generate-protobuf`)                      | hand edits                                |
+
+### Interfaces between the layers
+- **CodeGenerator -> Drivers**: CodeGenerator may only use the public surface of `DbDriver`, the
+  annotation interfaces in `Drivers/QueryAnnotations.cs` (`IOne`, `IMany`, `IExec`, `IExecRows`, `IExecLastId`,
+  `ICopyFrom`) and `EnumDbDriver`. It must not reference concrete drivers (`NpgsqlDriver`, ...) - the only exception
+  is `CodeGenerator.InstantiateDriver`. The same applies to `Drivers/Generators/`. Enforced by
+  `ArchitectureTests.TestConcreteDriversAreNotReferenced`.
+- **Annotation dispatch** is a hard cast in `QueriesGen.AddMethodDeclaration` (`((IExec)dbDriver).ExecDeclare(...)`).
+  A driver that doesn't implement an interface fails at runtime with a wrapped `SystemException`, not at compile time.
+- **Drivers -> generated code**: drivers return C# source as strings / `MemberDeclarationSyntax`. Hooks return
+  fragments (`ConnectionGenCommands`, `CommandGenCommands`, `GenCommand.WrapBlock`), never whole files.
+- **Opt-in contract**: every option that is off by default (e.g. `withCancellationToken`, `useProperSingularization`)
+  must leave generated output **byte-identical** when off. `sqlc diff` on the examples is the check.
+
+### Code generation flow
+```
+PluginRunner.Run          read GenerateRequest from stdin
+  CodeGenerator.Generate
+    InitGenerators        Options(request); debugRequest -> dump request.json/request.message and stop
+    InstantiateDriver     engine (postgresql|mysql|sqlite) -> NpgsqlDriver | MySqlConnectorDriver | SqliteDriver
+    group queries by query *file name* -> one QueriesGen file per group
+    ModelsGen (Models.cs), UtilsGen (Utils.cs, only if it has members), CsprojGen (if generateCsproj)
+PluginRunner              write GenerateResponse to stdout
 ```
 
-### Driver Instantiation
+### Generated code shape (excerpt of `examples/NpgsqlExample/QuerySql.cs`)
 ```csharp
-DbDriver InstantiateDriver()
+public class QuerySql : IDisposable                    // Npgsql/MySQL: IDisposable (own a DataSource); SQLite: no base type
 {
-    return Options.DriverName switch
-    {
-        DriverName.MySqlConnector => new MySqlConnectorDriver(...),
-        DriverName.Npgsql => new NpgsqlDriver(...),
-        DriverName.Sqlite => new SqliteDriver(...),
-        _ => throw new ArgumentException("unknown driver")
-    }
+    public QuerySql(string connectionString) : this() { ... }
+    public static QuerySql WithTransaction(NpgsqlTransaction transaction) { ... }
+
+    private const string GetAuthorSql = @"SELECT id, name, bio FROM authors WHERE name = @name LIMIT 1";
+    public readonly record struct GetAuthorRow(long Id, string Name, string? Bio);   // nested in the query class
+    public readonly record struct GetAuthorArgs(string Name);
+    public async Task<GetAuthorRow?> GetAuthorAsync(GetAuthorArgs args) { ... }      // :many -> Task<List<Row>>
 }
 ```
+- `net8.0/net9.0/net10.0` without Dapper: Row/Args/Models are `readonly record struct` (so `:one` returns `Row?`).
+- With Dapper, or on `netstandard*`: classes. `net*` -> `{ get; init; }` + `required` on not-null; legacy -> `{ get; set; }`.
+- Every method has a no-transaction branch and a `this.Transaction` branch.
 
 ---
 
-## 🗄️ Database-Specific Implementation Differences
+## 2. Generated / derived artifacts - never hand-edit
 
-### PostgreSQL
-- **`:execlastid`**: Uses `RETURNING` clause
-- **`:copyfrom`**: Uses `COPY FROM` binary command
-- **Supported types**: Boolean, integer types, decimal, date/time, JSON/JSONB, arrays, enums, etc.
+| Artifact                                                              | Source of truth                                          | Regenerate with                                  |
+|-----------------------------------------------------------------------|----------------------------------------------------------|--------------------------------------------------|
+| `examples/**` (code, `.csproj`, `request.json`, `request.message`)    | plugin code + `examples/config/**` + `sqlc.ci.yaml`      | `make sqlc-generate`                             |
+| `sqlc.local.generated.yaml`, `sqlc.request.generated.yaml`            | `sqlc.ci.yaml` (`.sql` section)                          | `make sync-sqlc-options` (needs `yq`; part of `make sqlc-generate`) |
+| `end2end/EndToEndTests*/**/*.generated.cs`                            | `end2end/EndToEndScaffold/` templates + `Config.cs`      | `make generate-end2end-tests`                    |
+| `unit-tests/CodegenTests/test-requests/*/request.*`                   | `unit-tests/sqlc.yaml` + sibling `schema.sql`/`query.sql` | `cd unit-tests && sqlc generate` (part of `make unit-tests`) |
+| `GeneratedProtobuf/Codegen.cs`                                        | sqlc's `plugin/codegen.proto`                            | `make generate-protobuf`                         |
+| `docs/09_Examples.md`                                                 | `sqlc.ci.yaml`                                           | `dotnet run --project docs/ExamplesDocGen/ExampleDocGen.csproj > docs/09_Examples.md` |
+| `README.md`, `docs/02_Quickstart.md`                                  | `docs/0*.md`, latest release                             | **release flow only** - see `docs/AGENTS.md`     |
+| `sqlc.ci.yaml` `wasm.sha256`                                          | `dist/plugin.wasm`                                       | `make setup-wasm-plugin` (CI recomputes it)      |
 
-### MySQL
-- **`:execlastid`** (Driver): Uses `MySqlConnector.LastInsertedId` property
-- **`:execlastid`** (Dapper): Appends `SELECT LAST_INSERT_ID()` to query
-- **`:copyfrom`**: Uses `LOAD DATA` from CSV file
-- **Supported types**: Boolean, integer types, decimal, date/time, JSON, geometry
-
-### SQLite
-- **`:execlastid`**: Uses `RETURNING` clause (integer only)
-- **`:copyfrom`**: Uses multi-VALUES clause
-- **Supported types**: Limited - integer, real, text, blob
-- **Override support**: Can override to DateTime, bool, etc.
+`sqlc.ci.yaml` is the single source of truth for example configurations. Edit it, never the `*.generated.yaml` files.
+CI fails if any of the generated artifacts above is stale (`sqlc diff`, `git diff --quiet`).
 
 ---
 
-## ⚙️ Configuration Options
+## 3. Outliers - things you would not guess from the design
 
-| Option | Default | Description |
-|--------|---------|-------------|
-| `overrideDriverVersion` | 2.4.0 (MySql), 8.0.6 (Npgsql), 10.0.13 (Sqlite) | Override DB driver version |
-| `targetFramework` | net8.0 | .NET Standard 2.0/2.1, .NET 8.0, 9.0 or 10.0 (the plugin itself runs on .NET 10, independent of this option) |
-| `generateCsproj` | true | Generate .csproj file |
-| `namespaceName` | Project name | Override generated namespace |
-| `useDapper` | false | Use Dapper wrapper |
-| `overrideDapperVersion` | 2.1.66 | Override Dapper version |
-| `useCentralPackageManagement` | false | Support central package management |
-| `withAsyncSuffix` | true | Append "Async" to method names |
-| `overrides` | - | Per-column type overrides |
+**Naming**
+- The query class name comes from the query **file name** including the extension: `query.sql` -> `QuerySql`.
+  Query files with the same basename in different directories are **merged into one class** (all examples rely on
+  this: `authors/query.sql` + `types/query.sql` -> one `QuerySql`).
+- Model names: `ToModelName` defaults to `TrimEnd('s')`, which strips **all** trailing `s` (`address` -> `Addre`).
+  `useProperSingularization` fixes it but is opt-in because it renames classes.
+  Tables in a non-default schema get the schema as a prefix (`DummySchemaDummyTable`).
+- The default schema is stored under the key `""` in `DbDriver.Tables` and `EnumDbDriver.Enums`.
 
----
+**Options and overrides**
+- Overrides match `"<QueryName>:<column>"` or `"*:<column>"`; the first matching entry in list order wins, and
+  `csharp_type.notNull` replaces the column's nullability.
+- Overrides apply only where a query is in context: Row/Args types and query method bodies. They **never** affect
+  `Models.cs` (table models are generated with `query == null`).
+- An override `type` must be a key in the driver's `ColumnMappings`, otherwise reader generation throws.
+- `debugRequest: true` makes the plugin dump the request instead of generating code; it is rejected for the WASM plugin.
+- `targetFramework` `net9.0`/`net10.0` generate exactly the same code as `net8.0`; only `<TargetFramework>` differs.
+  `netstandard2.0/2.1` ("legacy") output: block-scoped namespace, no nullable reference types, different multi-line
+  SQL constant indentation (`QueriesGen.GetQueryTextConstant`), `System.Text.Json` package reference for `JsonElement`.
 
-## 🔧 Query Annotations Support
+**Code emission**
+- Generated code is built from interpolated strings, parsed with `ParseMemberDeclaration(...)!` and formatted with
+  `NormalizeWhitespace()`. Template indentation does not matter (except inside SQL string literals).
+  A malformed template **does not throw** - it produces broken C#. The only real check is building the examples
+  (`dotnet build`) and running the end-to-end tests.
+- Generated files mix `\n` (`JoinByNewLine`) and CRLF trivia. Do not normalize line endings in `examples/` -
+  `sqlc diff` will fail. Plugin sources are CRLF (`.editorconfig` `end_of_line = crlf`).
+- The `:one`/`:many` generators silently fall back from Dapper to the raw driver when the query uses `sqlc.embed`.
+- Dapper mode mutates global static state in the generated constructor: `Utils.ConfigureSqlMapper()` and
+  `DefaultTypeMap.MatchNamesWithUnderscores = true`.
 
-| Annotation | PostgreSQL | MySQL | SQLite | Description |
-|------------|-----------|-------|--------|-------------|
-| `:one` | ✅ | ✅ | ✅ | Returns 0...1 records |
-| `:many` | ✅ | ✅ | ✅ | Returns 0...n records |
-| `:exec` | ✅ | ✅ | ✅ | DML/DDDL - no return |
-| `:execrows` | ✅ | ✅ | ✅ | Returns affected rows count |
-| `:execlastid` | ✅ | ✅ | ✅ | INSERT with returned ID |
-| `:copyfrom` | ✅ | ✅ | ✅ | Batch insert |
+**WASM**
+- The WASM build is trimmed; only `PluginOptions` is rooted (System.Text.Json reflection). New reflection-based code
+  can work in the process plugin and break only in WASM.
+- `WasmRunner.csproj` forces a `wasip1` core module because sqlc's wazero cannot load the wasip2 component the .NET 10
+  WASI SDK produces. The override relies on private SDK item names - re-verify after any SDK upgrade.
 
-### Macro Annotations
-| Macro | PostgreSQL | MySQL | SQLite | Description |
-|-------|-----------|-------|--------|-------------|
-| `sqlc.arg` | ✅ | ✅ | ✅ | Named parameters |
-| `sqlc.narg` | ✅ | ✅ | ✅ | Nullable named parameters |
-| `sqlc.slice` | 🚫 | ✅ | ✅ | Dynamic query for arrays |
-| `sqlc.embed` | ✅ | ✅ | ✅ | Embed existing models |
-
----
-
-## 🎨 Code Generation Patterns
-
-### Query Class Structure
-```csharp
-public partial class AuthorsQueries
-{
-    private readonly string _connectionString;
-    private IDbConnection? _connection;
-    private IDbTransaction? _transaction;
-    
-    // Constructor with connection string
-    public AuthorsQueries(string connectionString) 
-    {
-        _connectionString = connectionString;
-    }
-    
-    // Query methods
-    public Task<Author?> GetAuthorAsync(int id) => ...
-    public Task<IEnumerable<Author>> GetAuthorsAsync() => ...
-    public Task<int> CreateAuthorAsync(CreateAuthorParams params) => ...
-}
-```
-
-### Model Structure
-```csharp
-public partial class Author
-{
-    public int AuthorID { get; set; }
-    public string Name { get; set; } = string.Empty;
-    public string? Bio { get; set; }
-}
-```
-
-### Type Mapping
-- **Column types** are mapped to C# types via `ColumnMappings`
-- **Overrides** can be applied per column: `overrideOption.Column == "GetAuthor:Name"`
-- **Nullable types** in .NET Core are inferred from `notNull` column attribute
+**Repository**
+- `.env` is shared by docker-compose, the end-to-end tests and CI; `RepositoryTests` asserts it is consistent with
+  `benchmark/.env`.
+- `make unit-tests` needs the process plugin published to `unit-tests/dist/` (`unit-tests/sqlc.yaml` uses
+  `./dist/LocalRunner`); CI does `dotnet publish ../LocalRunner -c release --output dist/` from `unit-tests/`.
+- `benchmark/` has its own `sqlc.yaml` and committed `*SqlcImpl` generated projects; it is excluded from format/lint.
 
 ---
 
-## 🧪 Testing & Development
+## 4. Recipes (definition of done)
 
-### Local Development
+**Every change**
+1. `make sqlc-generate` (process plugin -> examples + requests) and commit the regenerated files.
+2. `make unit-tests`.
+3. `make test-plugin` (needs Docker) - unit tests, regeneration, `dotnet build`, end-to-end tests.
+4. For changes that can affect the WASM build: `make setup-wasm-plugin && sqlc -f sqlc.ci.yaml diff`.
+5. `make dotnet-format` (CI lints the same scope: everything except `GeneratedProtobuf`, `examples`, `benchmark/*SqlcImpl`).
+6. PR label: `major` / `minor` / `patch`, or `skip-release` for non-release changes.
+
+**Add support for a DB type** - see `Drivers/AGENTS.md` ("Adding a type mapping").
+
+**Add a plugin option**
+1. `RawOptions` property with `[JsonPropertyName("camelCase")]` and a default that preserves current output.
+2. Matching read-only property in `Options` (constructor maps it); validate there.
+3. Consume it via `dbDriver.Options` / `Options` - never re-read the raw JSON.
+4. Unit test in `unit-tests/CodegenTests/OptionsTests.cs` (and a codegen test if it changes output).
+5. Enable it in at least one example in `sqlc.ci.yaml` so it is covered end-to-end, then `make sqlc-generate`.
+6. Document it in the options table in `docs/03_Usage.md` and in section 5 below.
+
+**Add a query annotation**
+1. New `I<Annotation>` interface in `Drivers/QueryAnnotations.cs`.
+2. New `Drivers/Generators/<Annotation>DeclareGen.cs` following the existing ones (tx / no-tx, Dapper / driver).
+3. New case in the `QueriesGen.AddMethodDeclaration` switch.
+4. Implement the interface in every driver (or throw `NotSupportedException` with a clear message).
+5. Queries in `examples/config/<db>/authors/query.sql`, templates in `end2end/EndToEndScaffold/Templates/AnnotationTests.cs`.
+6. Update the annotation tables in `docs/03_Usage.md` and this file.
+
+**Add a database driver**
+1. `Drivers/<Name>Driver.cs` deriving from `DbDriver` (or `EnumDbDriver` if the DB has enums), implementing every `I*` interface.
+2. Enum value in `PluginOptions/DriverName.cs`, engine mapping in `Options.EngineToDriverMapping`, case in `CodeGenerator.InstantiateDriver`.
+3. Examples (normal / Dapper / Legacy / DapperLegacy) in `sqlc.ci.yaml`, `examples/config/<db>/`, e2e testers, docker-compose service, `docs/0X_<Db>.md`.
+
+---
+
+## 5. Reference
+
+### Options (`PluginOptions/RawOptions.cs`)
+| Option                        | Default                                                        | Notes |
+|-------------------------------|----------------------------------------------------------------|-------|
+| `targetFramework`             | `net8.0`                                                       | `netstandard2.0`, `netstandard2.1`, `net8.0`, `net9.0`, `net10.0` |
+| `overrideDriverVersion`       | `2.4.0` MySqlConnector, `8.0.6` Npgsql, `10.0.13` Microsoft.Data.Sqlite | constants in each driver |
+| `generateCsproj`              | `true`                                                         | |
+| `namespaceName`               | output directory name                                          | |
+| `useDapper`                   | `false`                                                        | |
+| `overrideDapperVersion`       | `2.1.66`                                                       | `DbDriver.DefaultDapperVersion` |
+| `useCentralPackageManagement` | `false`                                                        | omits `Version=` in the generated csproj |
+| `withAsyncSuffix`             | `true`                                                         | |
+| `withCancellationToken`       | `false`                                                        | must be byte-identical when off |
+| `useProperSingularization`    | `false`                                                        | renames models when on |
+| `overrides`                   | -                                                              | `Query:column` / `*:column`, see section 3 |
+| `debugRequest`                | `false`                                                        | internal: dumps the request; not allowed with WASM |
+
+### Annotation support
+| Annotation / macro | PostgreSQL | MySQL | SQLite | Implementation |
+|--------------------|-----------|-------|--------|----------------|
+| `:one`, `:many`, `:exec`, `:execrows` | ✅ | ✅ | ✅ | shared `*DeclareGen` |
+| `:execlastid`      | ✅ | ✅ | ✅ | PG/SQLite: user writes `RETURNING`; MySQL: plugin appends `; SELECT LAST_INSERT_ID()` |
+| `:copyfrom`        | ✅ | ✅ | ✅ | PG: binary `COPY`; MySQL: CSV + `MySqlBulkLoader`; SQLite: multi-row `VALUES` |
+| `sqlc.arg`, `sqlc.narg`, `sqlc.embed` | ✅ | ✅ | ✅ | |
+| `sqlc.slice`       | 🚫 (use arrays) | ✅ | ✅ | runtime `Utils.TransformQueryForSliceArgs` |
+
+### Target frameworks
+- The plugin projects (section 1 graph) and the tooling/test projects target `net10.0`; SDK pinned in `global.json`.
+  Exceptions: `end2end/EndToEndCommon` (`netstandard2.0`) and `end2end/EndToEndTestsLegacy` (`net472`).
+- Core examples are spread over net8.0 / net9.0 / net10.0 so every framework is built and tested.
+- Legacy examples (`netstandard2.0`) are tested by `end2end/EndToEndTestsLegacy` (`net472`, Windows, `.github/workflows/legacy-tests.yml`).
+
+### Commands
 ```bash
-# Prerequisites
-dotnet --version # .NET 10 SDK (pinned in global.json)
-buf --version
-# WASM build: `dotnet workload install wasi-experimental` + WASI SDK 25 exposed via WASI_SDK_PATH (see docs/08_Contributing.md)
-
-# Generate protobuf
-make generate-protobuf
-
-# Generate code
-make sqlc-generate      # process plugin
-make setup-wasm-plugin  # WASM plugin -> dist/plugin.wasm
-
-# Test plugins
-make unit-tests
-make test-plugin
-sqlc -f sqlc.ci.yaml diff  # WASM plugin output must equal the committed examples
-```
-
-### Pre-commit Setup
-```bash
-pip install pre-commit
-pre-commit install
-```
-
----
-
-## 📝 Common Patterns
-
-### Type Handler Registration (Dapper)
-```csharp
-public static void ConfigureSqlMapper()
-{
-    SqlMapper.TypeHandler<Instant>.Register(new NodaInstantTypeHandler());
-    // Other type handlers...
-}
-```
-
-### Parameter Binding
-```csharp
-command.Parameters.AddWithValue("@column_name", 
-    param.Value ?? (object)DBNull.Value);
-```
-
-### Slice Arguments (MySQL/SQLite)
-```csharp
-for (int i = 0; i < paramArray.Length; i++)
-    command.Parameters.AddWithValue($"@paramArg{i}", paramArray[i]);
-```
-
----
-
-## 🐛 Known Issues & TODOs
-
-1. **2D arrays** in batch inserts work but may have edge cases
-2. **Time with time zone** not supported (PostgreSQL)
-3. **Array columns** override handling marked as TODO
-4. **Geometry types** (MySQL) marked with ⚠️ - partial support
-5. **macaddr8 conversion** requires explicit cast in INSERT
-
----
-
-## 📚 Key Files to Know
-
-- **`CodeGenerator/CodeGenerator.cs`** - Main orchestration
-- **`Drivers/DbDriver.cs`** - Base driver with shared logic
-- **`Drivers/NpgsqlDriver.cs`** - Most complex driver (33KB)
-- **`Drivers/MySqlConnectorDriver.cs`** - MySQL-specific logic
-- **`Drivers/SqliteDriver.cs`** - Simplest driver
-- **`Extensions/*`** - Helper methods for code generation
-
----
-
-## 🚀 Quick Reference
-
-### Generate Code
-```bash
-make sqlc-generate      # Process-based plugin
-make setup-wasm-plugin  # WASM plugin
-```
-
-### Test
-```bash
-make unit-tests
-make test-plugin
+make unit-tests            # RepositoryTests + CodegenTests
+make sqlc-generate         # sync yaml, publish LocalRunner, regenerate requests + examples
+make generate-end2end-tests
+make test-plugin           # everything above + build + end-to-end tests (Docker)
+make setup-wasm-plugin     # WASM plugin -> dist/plugin.wasm (needs wasi-experimental workload + WASI SDK 25 in WASI_SDK_PATH)
+sqlc -f sqlc.ci.yaml diff  # WASM output must equal the committed examples
+make dotnet-format
 ```
 
 ### Release
-The release flow uses three automated workflows:
-
-1. **Release Assistant** (`release-assistant.yml`) - runs on every PR to `main`. Validates that version-worthy PRs have a `major`/`minor`/`patch` label. Sets `release-assistant/requirements` status check.
-
-2. **Generate Release PR** (`gen-release-pr.yml`) - triggered when Build completes on `main`. Aggregates all labeled, merged PRs since the last release, computes the new version, regenerates docs with the wasm sha, and opens a `release-prep` PR.
-
-3. **Release** (`release.yml`) - triggered when the `release-prep` PR is merged. Creates the release tag, reconstructs release notes from merged PR titles, and uploads the wasm asset.
+1. `release-assistant.yml` - every PR to `main` needs `major`/`minor`/`patch` or `skip-release`.
+2. `gen-release-pr.yml` - after Build on `main`, aggregates labeled PRs, computes the version, regenerates README/quickstart with the wasm sha, opens a `release-prep` PR.
+3. `release.yml` - on merge of `release-prep`, tags, builds release notes from PR titles, uploads the wasm.
 
 ---
 
-## 📖 External References
+## 6. Known issues and existing layering violations
 
-- [SQLC Documentation](https://docs.sqlc.dev/)
-- [Npgsql](https://www.npgsql.org/)
-- [MySqlConnector](https://mysqlconnector.net/)
-- [Dapper](https://github.com/DapperLib/Dapper)
-- [NodaTime](https://nodatime.org/)
-
----
+Do not copy these patterns; fix them only in a dedicated change (they may change generated output).
+- `DbDriver.NullableTypes` hardcodes Npgsql types (`NpgsqlPoint`, `NpgsqlCidr`, ...) - should be added by `NpgsqlDriver`.
+- `NpgsqlDriver.ColumnMappings` `string` / `byte[]` include MySQL type names (`longtext`, `tinyblob`, ...).
+- `JsonElement` / `object` reader lambdas hardcode `reader` instead of `Variable.Reader.AsVarName()`.
+- `EnumDbDriver` is declared in the global namespace.
+- `CommonGen.ConstructDapperParamsDict` enum branch is dead: `Enums` is keyed by schema, not enum name, and the
+  `ToEnumString()` it would emit does not exist.
+- SQLite `:copyfrom` ignores overrides and writer functions (uses `p.Column.NotNull` directly).
+- MySQL `:copyfrom` writes a fixed `input.csv` in the process working directory (not concurrency-safe).
+- `GetIdColumnType` (`:execlastid` return type) is a heuristic: column `id`, else first column containing `id`, else the first column.
+- Not supported: PostgreSQL `time with time zone`; MySQL geometry types; array columns get no `NpgsqlDbType` override (TODO in `DbDriver.GetColumnDbTypeOverride`).
