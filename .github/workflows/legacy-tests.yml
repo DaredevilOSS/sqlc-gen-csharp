@@ -52,74 +52,57 @@ jobs:
       - name: Setup NuGet
         uses: NuGet/setup-nuget@v3.1.0
         
-      - name: Install Chocolatey
-        shell: powershell
+      # PostgreSQL 17 and MySQL 8.0 come preinstalled on the Windows runner image - using them is much faster than
+      # downloading and installing them (setup-postgres ~3.5 min, choco mysql ~2 min).
+      # Both databases are started in the background while the test projects are restored and built.
+      - name: Start databases in the background
+        shell: pwsh
         run: |
-          Set-ExecutionPolicy Bypass -Scope Process -Force
-          [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072
-          iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
+          $pgBin = "$env:PGROOT\bin"
+          $mysqlBin = 'C:\Program Files\MySQL\MySQL Server 8.0\bin'
+          Set-Content -Path "$env:RUNNER_TEMP\start-dbs.ps1" -Value @"
+          `$ErrorActionPreference = 'Stop'
+          Set-Service postgresql-x64-17 -StartupType Manual
+          Start-Service postgresql-x64-17
+          `$env:PGPASSWORD = 'root'
+          & '$pgBin\psql.exe' -U postgres -c "ALTER USER postgres PASSWORD '$env:POSTGRES_PASSWORD'"
+          & '$pgBin\psql.exe' -U postgres -c "CREATE DATABASE $env:TESTS_DB"
+          `$env:PGPASSWORD = '$env:POSTGRES_PASSWORD'
+          & '$pgBin\psql.exe' -U postgres -d $env:TESTS_DB -f 'examples/config/postgresql/types/schema.sql' -f 'examples/config/postgresql/authors/schema.sql'
 
-      - uses: ikalnytskyi/action-setup-postgres@v8
-        with:
-          username: ${{ env.POSTGRES_USER }}
-          password: ${{ env.POSTGRES_PASSWORD }}
-          database: ${{ env.TESTS_DB }}
-          postgres-version: "16"
-        id: postgres
-        
-      - name: Init PostgresSQL Schema
-        shell: powershell
-        run: psql -U $Env:POSTGRES_USER -f 'examples/config/postgresql/types/schema.sql' -f 'examples/config/postgresql/authors/schema.sql'
-        env:
-          PGSERVICE: ${{ steps.postgres.outputs.service-name }}
-          PGPASSWORD: ${{ env.POSTGRES_PASSWORD }}
-          
-      - uses: nick-fields/retry@v4
-        name: Install MySQL and restore test projects in parallel (with retry)
-        with:
-          retry_on: error
-          max_attempts: 2
-          timeout_minutes: 7
-          shell: pwsh
-          command: |
-            $mysqlJob = Start-Job -ScriptBlock { 
-              choco install mysql --no-progress -y --params "/serviceName:MySQL" 
-              return $LASTEXITCODE
-            }
-            
-            $restoreJob = Start-Job -ScriptBlock { 
-              Get-ChildItem -Path examples -Recurse -Filter *.csproj |
-                Where-Object { $_.FullName -like '*Legacy*' } |
-                ForEach-Object { nuget restore $_.FullName }
-              nuget restore ./end2end/EndToEndCommon/EndToEndCommon.csproj
-              nuget restore ./end2end/EndToEndTestsLegacy/EndToEndTestsLegacy.csproj
-              msbuild.exe ./end2end/EndToEndTestsLegacy/EndToEndTestsLegacy.csproj -p:Configuration=Release -p:FrameworkVersion=v4.7.2
-              return $LASTEXITCODE
-            }
-  
-            Wait-Job -Job $mysqlJob, $restoreJob
-            
-            $mysqlOutput = Receive-Job -Job $mysqlJob
-            $mysqlExitCode = @($mysqlOutput)[-1]
-            if ($mysqlExitCode -ne 0) {
-              Write-Error "MySQL install failed with exit code: $mysqlExitCode`n$mysqlOutput"
-              return $mysqlExitCode
-            }
-  
-            $restoreOutput = Receive-Job -Job $restoreJob
-            $restoreExitCode = @($restoreOutput)[-1]
-            if ($restoreExitCode -ne 0) {
-              Write-Error "Restore/build failed with exit code: $restoreExitCode`n$restoreOutput"
-              return $restoreExitCode
-            }
-          
-      - name: Init MySQL Schema
-        shell: powershell
+          & '$mysqlBin\mysqld.exe' --initialize-insecure --console --datadir=C:\mysql-data
+          Start-Process -FilePath '$mysqlBin\mysqld.exe' -ArgumentList '--console','--datadir=C:\mysql-data','--local-infile=1' -WindowStyle Hidden
+          for (`$i = 0; `$i -lt 60; `$i++) { & '$mysqlBin\mysqladmin.exe' -u root ping 2>`$null; if (`$LASTEXITCODE -eq 0) { break }; Start-Sleep -Seconds 1 }
+          & '$mysqlBin\mysql.exe' -u root -e "SET GLOBAL local_infile=1; CREATE DATABASE $env:TESTS_DB;"
+          & '$mysqlBin\mysql.exe' -u root $env:TESTS_DB --execute="source examples/config/mysql/types/schema.sql; source examples/config/mysql/authors/schema.sql;"
+          "@
+          Start-Process -FilePath pwsh -ArgumentList '-NoProfile','-File',"$env:RUNNER_TEMP\start-dbs.ps1" `
+            -RedirectStandardOutput "$env:RUNNER_TEMP\dbs.log" -RedirectStandardError "$env:RUNNER_TEMP\dbs.err.log" -WindowStyle Hidden
+
+      - name: Restore and build test projects
+        shell: pwsh
         run: |
-          $env:Path += ";C:\Program Files\MySQL\MySQL Server 8.0\bin"
-          [Environment]::SetEnvironmentVariable("Path", $env:Path, "Machine")
-          mysql -u root -e "SET GLOBAL local_infile=1; CREATE DATABASE $Env:TESTS_DB;"
-          mysql -u root $Env:TESTS_DB --execute="source examples/config/mysql/types/schema.sql; source examples/config/mysql/authors/schema.sql;"    
+          Get-ChildItem -Path examples -Recurse -Filter *.csproj |
+            Where-Object { $_.FullName -like '*Legacy*' } |
+            ForEach-Object { nuget restore $_.FullName }
+          nuget restore ./end2end/EndToEndCommon/EndToEndCommon.csproj
+          nuget restore ./end2end/EndToEndTestsLegacy/EndToEndTestsLegacy.csproj
+          msbuild.exe ./end2end/EndToEndTestsLegacy/EndToEndTestsLegacy.csproj -p:Configuration=Release -p:FrameworkVersion=v4.7.2 -m
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Wait for databases
+        shell: pwsh
+        run: |
+          $mysqlBin = 'C:\Program Files\MySQL\MySQL Server 8.0\bin'
+          $env:PGPASSWORD = $env:POSTGRES_PASSWORD
+          for ($i = 0; $i -lt 120; $i++) {
+            $pg = & "$env:PGROOT\bin\psql.exe" -U postgres -d $env:TESTS_DB -tAc "select to_regclass('public.authors') is not null" 2>$null
+            $my = & "$mysqlBin\mysql.exe" -u root -N -e "select count(*) from information_schema.tables where table_schema='$env:TESTS_DB'" 2>$null
+            if ($pg -eq 't' -and [int]$my -gt 0) { Write-Host "databases ready"; exit 0 }
+            Start-Sleep -Seconds 2
+          }
+          Get-Content "$env:RUNNER_TEMP\dbs.log", "$env:RUNNER_TEMP\dbs.err.log" -ErrorAction SilentlyContinue
+          exit 1
 
       - name: Run Tests
         shell: powershell
