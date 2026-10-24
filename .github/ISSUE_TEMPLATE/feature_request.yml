@@ -1,0 +1,28 @@
+name: Feature request
+description: Suggest a new option, type mapping, or behavior
+labels: [enhancement]
+body:
+  - type: dropdown
+    id: engine
+    attributes:
+      label: Engine / driver
+      options: [PostgreSQL (Npgsql), MySQL (MySqlConnector), SQLite (Microsoft.Data.Sqlite), All / not specific]
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: What are you trying to do?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: Ideally with an example of the generated C# you'd like to see.
+  - type: checkboxes
+    id: contribute
+    attributes:
+      label: Contribution
+      options:
+        - label: I'm willing to open a PR for this
