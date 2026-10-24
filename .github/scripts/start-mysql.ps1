@@ -2,13 +2,21 @@
 $ErrorActionPreference = 'Stop'
 $bin = 'C:\Program Files\MySQL\MySQL Server 8.0\bin'
 $dataDir = 'C:\mysql-data'
-$fast = '--skip-log-bin', '--innodb-flush-log-at-trx-commit=0', '--innodb-doublewrite=0'
+$ini = "$env:RUNNER_TEMP\my.ini"
+Set-Content -Path $ini -Value @"
+[mysqld]
+datadir=$($dataDir -replace '\\', '/')
+local-infile=1
+skip-log-bin
+innodb-flush-log-at-trx-commit=0
+innodb-doublewrite=0
+"@
 
-& "$bin\mysqld.exe" --initialize-insecure --console "--datadir=$dataDir" @fast
+& "$bin\mysqld.exe" --initialize-insecure --console "--defaults-file=$ini"
 if ($LASTEXITCODE -ne 0) { throw 'mysqld --initialize-insecure failed' }
 
 # a service (unlike a child process) survives the end of the workflow step
-& "$bin\mysqld.exe" --install MySQL "--datadir=$dataDir" --local-infile=1 @fast
+& "$bin\mysqld.exe" --install MySQL "--defaults-file=$ini"
 if ($LASTEXITCODE -ne 0) { throw 'mysqld --install failed' }
 Start-Service MySQL
 
