@@ -6,26 +6,26 @@ namespace CodegenTests;
 public class ExampleTests
 {
     [Test]
-    public static void TestNpgsqlExample() => AssertRequestSuccess("NpgsqlExampleRequest.message");
+    public static async Task TestNpgsqlExample() => await AssertRequestSuccess("NpgsqlExampleRequest.message");
 
     [Test]
-    public static void TestNpgsqlDapperExample() => AssertRequestSuccess("NpgsqlDapperExampleRequest.message");
+    public static async Task TestNpgsqlDapperExample() => await AssertRequestSuccess("NpgsqlDapperExampleRequest.message");
 
     [Test]
-    public static void TestMySqlConnectorExample() => AssertRequestSuccess("MySqlConnectorExampleRequest.message");
+    public static async Task TestMySqlConnectorExample() => await AssertRequestSuccess("MySqlConnectorExampleRequest.message");
 
     [Test]
-    public static void TestMySqlConnectorDapperExample() => AssertRequestSuccess("MySqlConnectorDapperExampleRequest.message");
+    public static async Task TestMySqlConnectorDapperExample() => await AssertRequestSuccess("MySqlConnectorDapperExampleRequest.message");
 
     [Test]
-    public static void TestSqliteExample() => AssertRequestSuccess("SqliteExampleRequest.message");
+    public static async Task TestSqliteExample() => await AssertRequestSuccess("SqliteExampleRequest.message");
 
     [Test]
-    public static void TestSqliteDapperExample() => AssertRequestSuccess("SqliteDapperExampleRequest.message");
+    public static async Task TestSqliteDapperExample() => await AssertRequestSuccess("SqliteDapperExampleRequest.message");
 
-    private static void AssertRequestSuccess(string requestFile)
+    private static async Task AssertRequestSuccess(string requestFile)
     {
-        Assert.DoesNotThrowAsync(async () =>
+        await Assert.DoesNotThrowAsync(async () =>
         {
             var request = Plugin.GenerateRequest.Parser.ParseFrom(File.ReadAllBytes(requestFile));
             var codeGenerator = new CodeGenerator();
