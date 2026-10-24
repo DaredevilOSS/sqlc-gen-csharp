@@ -77,10 +77,9 @@ public class ManyDeclareGen(DbDriver dbDriver)
         var connectionCommands = dbDriver.EstablishConnection(query);
         var dapperArgs = CommonGen.GetDapperArgs(query);
         var returnType = dbDriver.AddNullableSuffixIfNeeded(returnInterface, true);
-        var callArgs = dbDriver.Cancellation.WrapDapperArgs($"{sqlVar}{dapperArgs}");
         return connectionCommands.GetConnectionOrDataSource.WrapBlock(
             $"""
-            await foreach (var row in {Variable.Connection.AsVarName()}.QueryUnbufferedAsync<{returnType}>({callArgs}))
+            await foreach (var row in {Variable.Connection.AsVarName()}.QueryUnbufferedAsync<{returnType}>({sqlVar}{dapperArgs}){dbDriver.Cancellation.EnumerationSuffix()})
                 yield return row;
             """
         );
@@ -89,12 +88,11 @@ public class ManyDeclareGen(DbDriver dbDriver)
     private string GetDapperStreamWithTxBody(string sqlVar, string returnInterface, Query query)
     {
         var transactionProperty = Variable.Transaction.AsPropertyName();
-        var dapperArgs = CommonGen.GetDapperArgs(query);
         var returnType = dbDriver.AddNullableSuffixIfNeeded(returnInterface, true);
-        var callArgs = dbDriver.Cancellation.WrapDapperArgs($"{sqlVar}{dapperArgs}, transaction: this.{transactionProperty}");
+        var queryParams = query.Params.Count == 0 ? "null" : Variable.QueryParams.AsVarName();
         return $$"""
             {{dbDriver.TransactionConnectionNullExcetionThrow}}
-            await foreach (var row in this.{{transactionProperty}}.Connection.QueryUnbufferedAsync<{{returnType}}>({{callArgs}}))
+            await foreach (var row in this.{{transactionProperty}}.Connection.QueryUnbufferedAsync<{{returnType}}>({{sqlVar}}, {{queryParams}}, transaction: this.{{transactionProperty}}){{dbDriver.Cancellation.EnumerationSuffix()}})
                 yield return row;
         """;
     }
