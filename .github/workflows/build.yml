@@ -7,6 +7,13 @@ env:
   SQLC_VERSION: 1.30.0
   WASI_SDK_VERSION: 25
 
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 on:
   push:
     branches: [ "main" ]
@@ -23,15 +30,15 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Load .env file
-        uses: xom9ikk/dotenv@v2.3.0
+        uses: xom9ikk/dotenv@v2.4.0
         with:
           load-mode: strict
 
       - name: Setup Dotnet
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@v6
         with:
           global-json-file: global.json
 
@@ -57,7 +64,7 @@ jobs:
           ./scripts/wasm/copy_plugin_to.sh dist
 
       - name: upload wasm plugin as artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: wasm-file
           path: dist/plugin.wasm
@@ -69,10 +76,10 @@ jobs:
 
     steps:
       - name: Check out Git repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Set up .NET
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@v6
         with:
           global-json-file: global.json
 
@@ -92,19 +99,19 @@ jobs:
      needs: [build-wasm]
 
      steps:
-       - uses: actions/checkout@v4
+       - uses: actions/checkout@v7
 
        - name: Load .env file
-         uses: xom9ikk/dotenv@v2.3.0
+         uses: xom9ikk/dotenv@v2.4.0
          with:
            load-mode: strict
       
        - name: Setup Dotnet
-         uses: actions/setup-dotnet@v4
+         uses: actions/setup-dotnet@v6
          with:
            global-json-file: global.json
 
-       - uses: sqlc-dev/setup-sqlc@v4
+       - uses: sqlc-dev/setup-sqlc@v5
          with:
            sqlc-version: '${{ env.SQLC_VERSION }}'
 
@@ -113,7 +120,7 @@ jobs:
            ./end2end/scripts/generate_tests.sh
            git diff --quiet
 
-       - uses: actions/download-artifact@v4
+       - uses: actions/download-artifact@v8
          with:
            name: wasm-file
            path: dist

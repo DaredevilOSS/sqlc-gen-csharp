@@ -1,0 +1,20 @@
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      actions:
+        patterns: ["*"]
+  - package-ecosystem: nuget
+    # Only hand-written projects: generated csproj files (examples/, end2end/, benchmark/*SqlcImpl)
+    # must match plugin output, or `sqlc diff` fails in CI
+    directories:
+      - /*
+      - /unit-tests/*
+    schedule:
+      interval: weekly
+    groups:
+      nuget:
+        patterns: ["*"]

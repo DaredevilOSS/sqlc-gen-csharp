@@ -21,21 +21,21 @@ jobs:
         working-directory: ./benchmark
     
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Set up .NET
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@v6
         with:
           global-json-file: global.json
 
       - name: Load .env file
-        uses: xom9ikk/dotenv@v2.3.0
+        uses: xom9ikk/dotenv@v2.4.0
         with:
           load-mode: strict
           path: benchmark
 
       - name: Docker compose
-        uses: hoverkraft-tech/compose-action@v1.5.1
+        uses: hoverkraft-tech/compose-action@v3.2.0
         with:
           services: mysqldb
 
@@ -43,7 +43,7 @@ jobs:
         run: ./scripts/run_single_benchmark.sh mysql reads
 
       - name: Upload Results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         if: success()
         with:
           name: mysql-reads-results
@@ -57,21 +57,21 @@ jobs:
         working-directory: ./benchmark
     
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Set up .NET
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@v6
         with:
           global-json-file: global.json
 
       - name: Load .env file
-        uses: xom9ikk/dotenv@v2.3.0
+        uses: xom9ikk/dotenv@v2.4.0
         with:
           load-mode: strict
           path: benchmark
 
       - name: Docker compose
-        uses: hoverkraft-tech/compose-action@v1.5.1
+        uses: hoverkraft-tech/compose-action@v3.2.0
         with:
           services: mysqldb
 
@@ -79,7 +79,7 @@ jobs:
         run: ./scripts/run_single_benchmark.sh mysql writes
 
       - name: Upload Results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         if: success()
         with:
           name: mysql-writes-results
@@ -93,21 +93,21 @@ jobs:
         working-directory: ./benchmark
     
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Set up .NET
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@v6
         with:
           global-json-file: global.json
 
       - name: Load .env file
-        uses: xom9ikk/dotenv@v2.3.0
+        uses: xom9ikk/dotenv@v2.4.0
         with:
           load-mode: strict
           path: benchmark
 
       - name: Docker compose
-        uses: hoverkraft-tech/compose-action@v1.5.1
+        uses: hoverkraft-tech/compose-action@v3.2.0
         with:
           services: postgresdb
 
@@ -115,7 +115,7 @@ jobs:
         run: ./scripts/run_single_benchmark.sh postgresql reads
 
       - name: Upload Results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         if: success()
         with:
           name: postgresql-reads-results
@@ -129,21 +129,21 @@ jobs:
         working-directory: ./benchmark
     
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Set up .NET
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@v6
         with:
           global-json-file: global.json
 
       - name: Load .env file
-        uses: xom9ikk/dotenv@v2.3.0
+        uses: xom9ikk/dotenv@v2.4.0
         with:
           load-mode: strict
           path: benchmark
 
       - name: Docker compose
-        uses: hoverkraft-tech/compose-action@v1.5.1
+        uses: hoverkraft-tech/compose-action@v3.2.0
         with:
           services: postgresdb
 
@@ -151,7 +151,7 @@ jobs:
         run: ./scripts/run_single_benchmark.sh postgresql writes
 
       - name: Upload Results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         if: success()
         with:
           name: postgresql-writes-results
@@ -165,15 +165,15 @@ jobs:
         working-directory: ./benchmark
     
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Set up .NET
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@v6
         with:
           global-json-file: global.json
     
       - name: Load .env file
-        uses: xom9ikk/dotenv@v2.3.0
+        uses: xom9ikk/dotenv@v2.4.0
         with:
           load-mode: strict
           path: benchmark
@@ -182,7 +182,7 @@ jobs:
         run: ./scripts/run_single_benchmark.sh sqlite reads
 
       - name: Upload Results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         if: success()
         with:
           name: sqlite-reads-results
@@ -196,15 +196,15 @@ jobs:
         working-directory: ./benchmark
     
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Set up .NET
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@v6
         with:
           global-json-file: global.json
     
       - name: Load .env file
-        uses: xom9ikk/dotenv@v2.3.0
+        uses: xom9ikk/dotenv@v2.4.0
         with:
           load-mode: strict
           path: benchmark
@@ -213,7 +213,7 @@ jobs:
         run: ./scripts/run_single_benchmark.sh sqlite writes
 
       - name: Upload Results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         if: success()
         with:
           name: sqlite-writes-results
@@ -233,40 +233,40 @@ jobs:
     ]
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Download MySQL Reads Results
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: mysql-reads-results
           path: BenchmarkDotNet.Artifacts/mysql/reads
 
       - name: Download MySQL Writes Results
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: mysql-writes-results
           path: BenchmarkDotNet.Artifacts/mysql/writes
 
       - name: Download PostgreSQL Reads Results
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: postgresql-reads-results
           path: BenchmarkDotNet.Artifacts/postgresql/reads
 
       - name: Download PostgreSQL Writes Results
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: postgresql-writes-results
           path: BenchmarkDotNet.Artifacts/postgresql/writes
 
       - name: Download SQLite Reads Results
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: sqlite-reads-results
           path: BenchmarkDotNet.Artifacts/sqlite/reads
 
       - name: Download SQLite Writes Results
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: sqlite-writes-results
           path: BenchmarkDotNet.Artifacts/sqlite/writes
@@ -275,7 +275,7 @@ jobs:
         run: ./scripts/update_wasm_plugin.sh
 
       - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v6
+        uses: peter-evans/create-pull-request@v8
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:

@@ -6,6 +6,13 @@ defaults:
 env:
   SQLC_VERSION: 1.30.0
 
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 on:
   push:
     branches: [ "main" ]
@@ -25,14 +32,14 @@ jobs:
         working-directory: ./unit-tests
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Set up .NET from global.json
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@v6
         with:
           global-json-file: global.json
 
-      - uses: sqlc-dev/setup-sqlc@v4
+      - uses: sqlc-dev/setup-sqlc@v5
         with:
           sqlc-version: '${{ env.SQLC_VERSION }}'
 
@@ -52,20 +59,20 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Set up .NET
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@v6
         with:
           global-json-file: global.json
 
       - name: Load .env file
-        uses: xom9ikk/dotenv@v2.3.0
+        uses: xom9ikk/dotenv@v2.4.0
         with:
           load-mode: strict
 
       - name: Docker compose
-        uses: hoverkraft-tech/compose-action@v1.5.1
+        uses: hoverkraft-tech/compose-action@v3.2.0
 
       - name: Run Tests
         run: ./end2end/scripts/run_tests.sh
