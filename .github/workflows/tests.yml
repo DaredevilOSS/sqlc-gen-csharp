@@ -7,6 +7,13 @@ env:
   DOTNET_VERSION: '8.0.x'
   SQLC_VERSION: 1.30.0
 
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 on:
   push:
     branches: [ "main" ]
