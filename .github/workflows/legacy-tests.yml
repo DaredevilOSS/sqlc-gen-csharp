@@ -27,25 +27,25 @@ jobs:
     runs-on: windows-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Set up .NET from global.json
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@v6
         with:
           global-json-file: global.json
           
       - name: Load .env file
-        uses: xom9ikk/dotenv@v2.3.0
+        uses: xom9ikk/dotenv@v2.4.0
         with:
           load-mode: strict
 
       - name: Setup Visual Studio for .NET Framework
-        uses: microsoft/setup-msbuild@v1
+        uses: microsoft/setup-msbuild@v3
         with:
           vs-version: 'latest'
 
       - name: Setup NuGet
-        uses: NuGet/setup-nuget@v2.0.1
+        uses: NuGet/setup-nuget@v3.1.0
         
       - name: Install Chocolatey
         shell: powershell
@@ -54,7 +54,7 @@ jobs:
           [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072
           iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
 
-      - uses: ikalnytskyi/action-setup-postgres@v7
+      - uses: ikalnytskyi/action-setup-postgres@v8
         with:
           username: ${{ env.POSTGRES_USER }}
           password: ${{ env.POSTGRES_PASSWORD }}
@@ -69,7 +69,7 @@ jobs:
           PGSERVICE: ${{ steps.postgres.outputs.service-name }}
           PGPASSWORD: ${{ env.POSTGRES_PASSWORD }}
           
-      - uses: nick-fields/retry@v3
+      - uses: nick-fields/retry@v4
         name: Install MySQL and restore test projects in parallel (with retry)
         with:
           retry_on: error

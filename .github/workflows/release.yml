@@ -21,7 +21,7 @@ jobs:
     outputs:
       IS_RELEASE: ${{ steps.check_msg.outputs.IS_RELEASE }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           ref: ${{ github.event.workflow_run.head_sha }}
 
@@ -41,7 +41,7 @@ jobs:
     if: ${{ needs.check_commit.outputs.IS_RELEASE == 'true' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
           ref: ${{ github.event.workflow_run.head_sha }}
@@ -67,7 +67,7 @@ jobs:
           echo "run-id=$RUN_ID" >> $GITHUB_OUTPUT
 
       - name: Download wasm
-        uses: dawidd6/action-download-artifact@v6
+        uses: dawidd6/action-download-artifact@v27
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           run_id: ${{ steps.find-artifact.outputs.run-id }}
