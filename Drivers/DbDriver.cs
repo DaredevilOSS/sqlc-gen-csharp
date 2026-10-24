@@ -43,7 +43,7 @@ public abstract class DbDriver
 
     public Options Options { get; }
 
-    public CancellationGen Cancellation => new(Options.WithCancellationToken);
+    public CancellationGen Cancellation => new(Options.UseCancellationToken);
 
     public string DefaultSchema { get; }
 
@@ -158,7 +158,7 @@ public abstract class DbDriver
     public virtual IDictionary<string, string> GetPackageReferences()
     {
         return new Dictionary<string, string> {
-            { "Dapper", Options.OverrideDapperVersion != string.Empty ? Options.OverrideDapperVersion : DefaultDapperVersion }
+            { "Dapper", Options.DapperVersion != string.Empty ? Options.DapperVersion : DefaultDapperVersion }
          }
         .MergeIf(new Dictionary<string, string>
         {

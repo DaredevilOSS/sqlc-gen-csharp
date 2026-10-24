@@ -5,8 +5,14 @@ namespace SqlcGenCsharp;
 
 public record RawOptions
 {
+    [JsonPropertyName("driverVersion")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public string? DriverVersion { get; init; }
+
+    /// <summary>Deprecated alias of <see cref="DriverVersion"/>.</summary>
     [JsonPropertyName("overrideDriverVersion")]
-    public string OverrideDriverVersion { get; init; } = string.Empty;
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public string? OverrideDriverVersion { get; init; }
 
     [JsonPropertyName("generateCsproj")]
     public bool GenerateCsproj { get; init; } = true;
@@ -20,8 +26,14 @@ public record RawOptions
     [JsonPropertyName("useDapper")]
     public bool UseDapper { get; init; }
 
+    [JsonPropertyName("dapperVersion")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public string? DapperVersion { get; init; }
+
+    /// <summary>Deprecated alias of <see cref="DapperVersion"/>.</summary>
     [JsonPropertyName("overrideDapperVersion")]
-    public string OverrideDapperVersion { get; init; } = string.Empty;
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public string? OverrideDapperVersion { get; init; }
 
     [JsonPropertyName("overrides")]
     public List<OverrideOption>? Overrides { get; init; }
@@ -32,11 +44,23 @@ public record RawOptions
     [JsonPropertyName("useCentralPackageManagement")]
     public bool UseCentralPackageManagement { get; init; }
 
-    [JsonPropertyName("withAsyncSuffix")]
-    public bool WithAsyncSuffix { get; init; } = true;
+    [JsonPropertyName("useAsyncSuffix")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public bool? UseAsyncSuffix { get; init; }
 
+    /// <summary>Deprecated alias of <see cref="UseAsyncSuffix"/>.</summary>
+    [JsonPropertyName("withAsyncSuffix")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public bool? WithAsyncSuffix { get; init; }
+
+    [JsonPropertyName("useCancellationToken")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public bool? UseCancellationToken { get; init; }
+
+    /// <summary>Deprecated alias of <see cref="UseCancellationToken"/>.</summary>
     [JsonPropertyName("withCancellationToken")]
-    public bool WithCancellationToken { get; init; }
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public bool? WithCancellationToken { get; init; }
 
     [JsonPropertyName("useProperSingularization")]
     public bool UseProperSingularization { get; init; }

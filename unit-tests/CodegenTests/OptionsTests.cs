@@ -31,15 +31,15 @@ public class OptionsTests
         Assert.That(options.DriverName, Is.EqualTo(DriverName.Npgsql));
         Assert.That(options.DotnetFramework, Is.EqualTo(DotnetFramework.Dotnet80));
         Assert.That(options.GenerateCsproj, Is.True);
-        Assert.That(options.WithAsyncSuffix, Is.True);
+        Assert.That(options.UseAsyncSuffix, Is.True);
         Assert.That(options.UseDapper, Is.False);
-        Assert.That(options.WithCancellationToken, Is.False);
+        Assert.That(options.UseCancellationToken, Is.False);
         Assert.That(options.UseCentralPackageManagement, Is.False);
         Assert.That(options.UseProperSingularization, Is.False);
         Assert.That(options.DebugRequest, Is.False);
         Assert.That(options.NamespaceName, Is.Empty);
-        Assert.That(options.OverrideDriverVersion, Is.Empty);
-        Assert.That(options.OverrideDapperVersion, Is.Empty);
+        Assert.That(options.DriverVersion, Is.Empty);
+        Assert.That(options.DapperVersion, Is.Empty);
         Assert.That(options.Overrides, Is.Empty);
     }
 
@@ -80,20 +80,56 @@ public class OptionsTests
 
         var options = new Options(CreateRequest("mysql", json));
 
-        Assert.That(options.OverrideDriverVersion, Is.EqualTo("1.2.3"));
+        Assert.That(options.DriverVersion, Is.EqualTo("1.2.3"));
         Assert.That(options.GenerateCsproj, Is.False);
         Assert.That(options.DotnetFramework, Is.EqualTo(DotnetFramework.DotnetStandard21));
         Assert.That(options.NamespaceName, Is.EqualTo("MyNamespace"));
         Assert.That(options.UseDapper, Is.True);
-        Assert.That(options.OverrideDapperVersion, Is.EqualTo("4.5.6"));
+        Assert.That(options.DapperVersion, Is.EqualTo("4.5.6"));
         Assert.That(options.UseCentralPackageManagement, Is.True);
-        Assert.That(options.WithAsyncSuffix, Is.False);
-        Assert.That(options.WithCancellationToken, Is.True);
+        Assert.That(options.UseAsyncSuffix, Is.False);
+        Assert.That(options.UseCancellationToken, Is.True);
         Assert.That(options.UseProperSingularization, Is.True);
         Assert.That(options.Overrides, Has.Count.EqualTo(1));
         Assert.That(options.Overrides[0].Column, Is.EqualTo("GetAuthor:name"));
         Assert.That(options.Overrides[0].CsharpType.Type, Is.EqualTo("string"));
         Assert.That(options.Overrides[0].CsharpType.NotNull, Is.True);
+    }
+
+    [Test]
+    public void TestRenamedOptionsAreParsed()
+    {
+        const string json = """
+        {
+            "driverVersion": "1.2.3",
+            "dapperVersion": "4.5.6",
+            "useAsyncSuffix": false,
+            "useCancellationToken": true
+        }
+        """;
+
+        var options = new Options(CreateRequest("mysql", json));
+
+        Assert.That(options.DriverVersion, Is.EqualTo("1.2.3"));
+        Assert.That(options.DapperVersion, Is.EqualTo("4.5.6"));
+        Assert.That(options.UseAsyncSuffix, Is.False);
+        Assert.That(options.UseCancellationToken, Is.True);
+    }
+
+    [TestCase("""{"driverVersion": "1.0", "overrideDriverVersion": "1.0"}""")]
+    [TestCase("""{"useAsyncSuffix": false, "withAsyncSuffix": false}""")]
+    public void TestRenamedAndDeprecatedOptionsWithSameValueAreAllowed(string json)
+    {
+        Assert.DoesNotThrow(() => new Options(CreateRequest("sqlite", json)));
+    }
+
+    [TestCase("""{"driverVersion": "1.0", "overrideDriverVersion": "2.0"}""")]
+    [TestCase("""{"dapperVersion": "1.0", "overrideDapperVersion": "2.0"}""")]
+    [TestCase("""{"useAsyncSuffix": true, "withAsyncSuffix": false}""")]
+    [TestCase("""{"useCancellationToken": true, "withCancellationToken": false}""")]
+    public void TestRenamedAndDeprecatedOptionsWithDifferentValuesThrow(string json)
+    {
+        Assert.Throws<ArgumentException>(() => new Options(CreateRequest("sqlite", json)));
     }
 
     [Test]

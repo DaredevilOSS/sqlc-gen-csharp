@@ -52,7 +52,7 @@ public class CodegenCancellationTests
     private string GenerateMethod(string engine, bool withCancellationToken, Query query, string methodName, bool useDapper = false)
     {
         var flags = new List<string>();
-        if (withCancellationToken) flags.Add("\"withCancellationToken\":true");
+        if (withCancellationToken) flags.Add("\"useCancellationToken\":true");
         if (useDapper) flags.Add("\"useDapper\":true");
         var options = "{" + string.Join(",", flags) + "}";
         var request = new GenerateRequest
@@ -154,7 +154,7 @@ public class CodegenCancellationTests
         var request = GenerateRequest.Parser.ParseFrom(System.IO.File.ReadAllBytes(path));
         var raw = request.PluginOptions.ToStringUtf8();
         var options = (JsonObject)(JsonNode.Parse(string.IsNullOrWhiteSpace(raw) ? "{}" : raw) ?? new JsonObject());
-        options["withCancellationToken"] = withCancellationToken;
+        options["useCancellationToken"] = withCancellationToken;
         request.PluginOptions = ByteString.CopyFrom(options.ToJsonString(), Encoding.UTF8);
         return request;
     }

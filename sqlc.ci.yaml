@@ -32,6 +32,9 @@ sql:
       - plugin: csharp
         out: examples/NpgsqlExample
         options:
+          driverVersion: 8.0.6
+          useAsyncSuffix: true
+          useCancellationToken: false
           useDapper: false
           targetFramework: net8.0
           generateCsproj: true
@@ -80,6 +83,7 @@ sql:
       - plugin: csharp
         out: examples/NpgsqlDapperExample
         options:
+          dapperVersion: 2.1.66
           useDapper: true
           targetFramework: net10.0
           generateCsproj: true
@@ -289,6 +293,9 @@ sql:
       - plugin: csharp
         out: examples/MySqlConnectorLegacyExample
         options:
+          overrideDriverVersion: 2.4.0
+          withAsyncSuffix: true
+          withCancellationToken: false
           useDapper: false
           targetFramework: netstandard2.0
           generateCsproj: true
@@ -321,6 +328,7 @@ sql:
       - plugin: csharp
         out: examples/MySqlConnectorDapperLegacyExample
         options:
+          overrideDapperVersion: 2.1.66
           useDapper: true
           targetFramework: netstandard2.0
           generateCsproj: true

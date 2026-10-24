@@ -16,15 +16,15 @@ public class Options
         var rawOptions = JsonSerializer.Deserialize<RawOptions>(text) ?? throw new InvalidOperationException();
 
         DriverName = EngineToDriverMapping[generateRequest.Settings.Engine];
-        OverrideDriverVersion = rawOptions.OverrideDriverVersion;
+        DriverVersion = Resolve(rawOptions.DriverVersion, rawOptions.OverrideDriverVersion, "driverVersion", "overrideDriverVersion") ?? string.Empty;
         GenerateCsproj = rawOptions.GenerateCsproj;
         UseDapper = rawOptions.UseDapper;
-        OverrideDapperVersion = rawOptions.OverrideDapperVersion;
+        DapperVersion = Resolve(rawOptions.DapperVersion, rawOptions.OverrideDapperVersion, "dapperVersion", "overrideDapperVersion") ?? string.Empty;
         NamespaceName = rawOptions.NamespaceName;
         DotnetFramework = DotnetFrameworkExtensions.ParseName(rawOptions.TargetFramework);
         Overrides = rawOptions.Overrides ?? [];
-        WithAsyncSuffix = rawOptions.WithAsyncSuffix;
-        WithCancellationToken = rawOptions.WithCancellationToken;
+        UseAsyncSuffix = Resolve(rawOptions.UseAsyncSuffix, rawOptions.WithAsyncSuffix, "useAsyncSuffix", "withAsyncSuffix") ?? true;
+        UseCancellationToken = Resolve(rawOptions.UseCancellationToken, rawOptions.WithCancellationToken, "useCancellationToken", "withCancellationToken") ?? false;
         UseCentralPackageManagement = rawOptions.UseCentralPackageManagement;
         UseProperSingularization = rawOptions.UseProperSingularization;
 
@@ -35,7 +35,7 @@ public class Options
 
     public DriverName DriverName { get; }
 
-    public string OverrideDriverVersion { get; }
+    public string DriverVersion { get; }
 
     public DotnetFramework DotnetFramework { get; }
 
@@ -43,7 +43,7 @@ public class Options
 
     public bool UseDapper { get; }
 
-    public string OverrideDapperVersion { get; }
+    public string DapperVersion { get; }
 
     public string NamespaceName { get; }
 
@@ -57,12 +57,12 @@ public class Options
     /// </summary>
     public bool UseCentralPackageManagement { get; }
 
-    public bool WithAsyncSuffix { get; }
+    public bool UseAsyncSuffix { get; }
 
     /// <summary>
     /// When true, generated methods take an optional CancellationToken threaded into every async DB call.
     /// </summary>
-    public bool WithCancellationToken { get; }
+    public bool UseCancellationToken { get; }
 
     /// <summary>
     /// When true, model names are singularized with English grammar rules (policies -> Policy,
@@ -78,6 +78,17 @@ public class Options
         { "postgresql", DriverName.Npgsql },
         { "sqlite", DriverName.Sqlite }
     };
+
+    /// <summary>
+    /// Resolves an option that was renamed: the new name wins, the deprecated name is still honored,
+    /// and setting both to different values is rejected.
+    /// </summary>
+    private static T? Resolve<T>(T? current, T? deprecated, string currentName, string deprecatedName)
+    {
+        if (current is not null && deprecated is not null && !EqualityComparer<T>.Default.Equals(current, deprecated))
+            throw new ArgumentException($"Options '{currentName}' and '{deprecatedName}' (deprecated) are both set with different values");
+        return current ?? deprecated;
+    }
 
     private static bool NoOptionsProvided(string optionsText)
     {

@@ -236,7 +236,7 @@ public sealed partial class MySqlConnectorDriver(
             .GetPackageReferences()
             .Merge(new Dictionary<string, string>
             {
-                { "MySqlConnector", Options.OverrideDriverVersion != string.Empty ? Options.OverrideDriverVersion : DefaultMysqlConnectorVersion }
+                { "MySqlConnector", Options.DriverVersion != string.Empty ? Options.DriverVersion : DefaultMysqlConnectorVersion }
             })
             .MergeIf(new Dictionary<string, string>
             {
