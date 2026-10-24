@@ -153,6 +153,12 @@ jobs:
           run_id: ${{ github.event.workflow_run.id }}
           name: wasm-file
 
+      - name: Set up .NET
+        if: steps.version-update.outputs.new-version != ''
+        uses: actions/setup-dotnet@v6
+        with:
+          global-json-file: global.json
+
       - name: Compute sha and regenerate docs
         if: steps.version-update.outputs.new-version != ''
         id: doc-gen
