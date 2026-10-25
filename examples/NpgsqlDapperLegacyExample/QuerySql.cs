@@ -853,6 +853,91 @@ namespace NpgsqlDapperLegacyExampleGen
             }
         }
 
+        private const string InsertPostgresSerialTypesSql = @"
+                                                              INSERT INTO postgres_serial_types
+                                                              (
+                                                                  c_smallserial,
+                                                                  c_serial2,
+                                                                  c_serial,
+                                                                  c_serial4,
+                                                                  c_bigserial,
+                                                                  c_serial8
+                                                              ) VALUES (@c_smallserial, @c_serial2, @c_serial, @c_serial4, @c_bigserial, @c_serial8)";
+        public class InsertPostgresSerialTypesArgs
+        {
+            public short? CSmallserial { get; set; }
+            public short? CSerial2 { get; set; }
+            public int? CSerial { get; set; }
+            public int? CSerial4 { get; set; }
+            public long? CBigserial { get; set; }
+            public long? CSerial8 { get; set; }
+        };
+        public async Task InsertPostgresSerialTypesAsync(InsertPostgresSerialTypesArgs args)
+        {
+            var queryParams = new Dictionary<string, object>();
+            queryParams.Add("c_smallserial", args.CSmallserial);
+            queryParams.Add("c_serial2", args.CSerial2);
+            queryParams.Add("c_serial", args.CSerial);
+            queryParams.Add("c_serial4", args.CSerial4);
+            queryParams.Add("c_bigserial", args.CBigserial);
+            queryParams.Add("c_serial8", args.CSerial8);
+            if (this.Transaction == null)
+            {
+                using (var connection = await GetDataSource().OpenConnectionAsync())
+                {
+                    await connection.ExecuteAsync(InsertPostgresSerialTypesSql, queryParams);
+                    return;
+                }
+            }
+
+            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
+                throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+            await this.Transaction.Connection.ExecuteAsync(InsertPostgresSerialTypesSql, queryParams, transaction: this.Transaction);
+        }
+
+        private const string GetPostgresSerialTypesSql = "SELECT c_smallserial, c_serial2, c_serial, c_serial4, c_bigserial, c_serial8 FROM postgres_serial_types LIMIT 1";
+        public class GetPostgresSerialTypesRow
+        {
+            public short? CSmallserial { get; set; }
+            public short? CSerial2 { get; set; }
+            public int? CSerial { get; set; }
+            public int? CSerial4 { get; set; }
+            public long? CBigserial { get; set; }
+            public long? CSerial8 { get; set; }
+        };
+        public async Task<GetPostgresSerialTypesRow> GetPostgresSerialTypesAsync()
+        {
+            if (this.Transaction == null)
+            {
+                using (var connection = await GetDataSource().OpenConnectionAsync())
+                {
+                    var result = await connection.QueryFirstOrDefaultAsync<GetPostgresSerialTypesRow>(GetPostgresSerialTypesSql);
+                    return result;
+                }
+            }
+
+            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
+                throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+            return await this.Transaction.Connection.QueryFirstOrDefaultAsync<GetPostgresSerialTypesRow>(GetPostgresSerialTypesSql, transaction: this.Transaction);
+        }
+
+        private const string TruncatePostgresSerialTypesSql = "TRUNCATE TABLE postgres_serial_types";
+        public async Task TruncatePostgresSerialTypesAsync()
+        {
+            if (this.Transaction == null)
+            {
+                using (var connection = await GetDataSource().OpenConnectionAsync())
+                {
+                    await connection.ExecuteAsync(TruncatePostgresSerialTypesSql);
+                    return;
+                }
+            }
+
+            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
+                throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+            await this.Transaction.Connection.ExecuteAsync(TruncatePostgresSerialTypesSql, transaction: this.Transaction);
+        }
+
         private const string InsertPostgresBitTypesSql = @"
                                                            INSERT INTO postgres_bit_types
                                                            (

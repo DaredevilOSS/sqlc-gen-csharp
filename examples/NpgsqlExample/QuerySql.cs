@@ -1134,6 +1134,139 @@ public class QuerySql : IDisposable
         }
     }
 
+    private const string InsertPostgresSerialTypesSql = @"
+                                                          INSERT INTO postgres_serial_types
+                                                          (
+                                                              c_smallserial,
+                                                              c_serial2,
+                                                              c_serial,
+                                                              c_serial4,
+                                                              c_bigserial,
+                                                              c_serial8
+                                                          ) VALUES (@c_smallserial, @c_serial2, @c_serial, @c_serial4, @c_bigserial, @c_serial8)";
+    public readonly record struct InsertPostgresSerialTypesArgs(short? CSmallserial, short? CSerial2, int? CSerial, int? CSerial4, long? CBigserial, long? CSerial8);
+    public async Task InsertPostgresSerialTypesAsync(InsertPostgresSerialTypesArgs args)
+    {
+        if (this.Transaction == null)
+        {
+            using (var connection = await GetDataSource().OpenConnectionAsync())
+            {
+                using (var command = connection.CreateCommand())
+                {
+                    command.CommandText = InsertPostgresSerialTypesSql;
+                    command.Parameters.AddWithValue("@c_smallserial", args.CSmallserial ?? (object)DBNull.Value);
+                    command.Parameters.AddWithValue("@c_serial2", args.CSerial2 ?? (object)DBNull.Value);
+                    command.Parameters.AddWithValue("@c_serial", args.CSerial ?? (object)DBNull.Value);
+                    command.Parameters.AddWithValue("@c_serial4", args.CSerial4 ?? (object)DBNull.Value);
+                    command.Parameters.AddWithValue("@c_bigserial", args.CBigserial ?? (object)DBNull.Value);
+                    command.Parameters.AddWithValue("@c_serial8", args.CSerial8 ?? (object)DBNull.Value);
+                    await command.ExecuteNonQueryAsync();
+                }
+
+                return;
+            }
+        }
+
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
+            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+        using (var command = this.Transaction.Connection.CreateCommand())
+        {
+            command.CommandText = InsertPostgresSerialTypesSql;
+            command.Transaction = this.Transaction;
+            command.Parameters.AddWithValue("@c_smallserial", args.CSmallserial ?? (object)DBNull.Value);
+            command.Parameters.AddWithValue("@c_serial2", args.CSerial2 ?? (object)DBNull.Value);
+            command.Parameters.AddWithValue("@c_serial", args.CSerial ?? (object)DBNull.Value);
+            command.Parameters.AddWithValue("@c_serial4", args.CSerial4 ?? (object)DBNull.Value);
+            command.Parameters.AddWithValue("@c_bigserial", args.CBigserial ?? (object)DBNull.Value);
+            command.Parameters.AddWithValue("@c_serial8", args.CSerial8 ?? (object)DBNull.Value);
+            await command.ExecuteNonQueryAsync();
+        }
+    }
+
+    private const string GetPostgresSerialTypesSql = "SELECT c_smallserial, c_serial2, c_serial, c_serial4, c_bigserial, c_serial8 FROM postgres_serial_types LIMIT 1";
+    public readonly record struct GetPostgresSerialTypesRow(short? CSmallserial, short? CSerial2, int? CSerial, int? CSerial4, long? CBigserial, long? CSerial8);
+    public async Task<GetPostgresSerialTypesRow?> GetPostgresSerialTypesAsync()
+    {
+        if (this.Transaction == null)
+        {
+            using (var connection = await GetDataSource().OpenConnectionAsync())
+            {
+                using (var command = connection.CreateCommand())
+                {
+                    command.CommandText = GetPostgresSerialTypesSql;
+                    using (var reader = await command.ExecuteReaderAsync())
+                    {
+                        if (await reader.ReadAsync())
+                        {
+                            return new GetPostgresSerialTypesRow
+                            {
+                                CSmallserial = reader.IsDBNull(0) ? null : reader.GetInt16(0),
+                                CSerial2 = reader.IsDBNull(1) ? null : reader.GetInt16(1),
+                                CSerial = reader.IsDBNull(2) ? null : reader.GetInt32(2),
+                                CSerial4 = reader.IsDBNull(3) ? null : reader.GetInt32(3),
+                                CBigserial = reader.IsDBNull(4) ? null : reader.GetInt64(4),
+                                CSerial8 = reader.IsDBNull(5) ? null : reader.GetInt64(5)
+                            };
+                        }
+                    }
+                }
+            };
+            return null;
+        }
+
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
+            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+        using (var command = this.Transaction.Connection.CreateCommand())
+        {
+            command.CommandText = GetPostgresSerialTypesSql;
+            command.Transaction = this.Transaction;
+            using (var reader = await command.ExecuteReaderAsync())
+            {
+                if (await reader.ReadAsync())
+                {
+                    return new GetPostgresSerialTypesRow
+                    {
+                        CSmallserial = reader.IsDBNull(0) ? null : reader.GetInt16(0),
+                        CSerial2 = reader.IsDBNull(1) ? null : reader.GetInt16(1),
+                        CSerial = reader.IsDBNull(2) ? null : reader.GetInt32(2),
+                        CSerial4 = reader.IsDBNull(3) ? null : reader.GetInt32(3),
+                        CBigserial = reader.IsDBNull(4) ? null : reader.GetInt64(4),
+                        CSerial8 = reader.IsDBNull(5) ? null : reader.GetInt64(5)
+                    };
+                }
+            }
+        }
+
+        return null;
+    }
+
+    private const string TruncatePostgresSerialTypesSql = "TRUNCATE TABLE postgres_serial_types";
+    public async Task TruncatePostgresSerialTypesAsync()
+    {
+        if (this.Transaction == null)
+        {
+            using (var connection = await GetDataSource().OpenConnectionAsync())
+            {
+                using (var command = connection.CreateCommand())
+                {
+                    command.CommandText = TruncatePostgresSerialTypesSql;
+                    await command.ExecuteNonQueryAsync();
+                }
+
+                return;
+            }
+        }
+
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
+            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+        using (var command = this.Transaction.Connection.CreateCommand())
+        {
+            command.CommandText = TruncatePostgresSerialTypesSql;
+            command.Transaction = this.Transaction;
+            await command.ExecuteNonQueryAsync();
+        }
+    }
+
     private const string InsertPostgresBitTypesSql = @"
                                                        INSERT INTO postgres_bit_types
                                                        (

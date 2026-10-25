@@ -32,6 +32,7 @@ we consider support for the different data types separately for batch inserts an
 | smallint                                | ✅         | ✅                  |
 | integer                                 | ✅         | ✅                  |
 | bigint                                  | ✅         | ✅                  |
+| smallserial, serial2, serial, serial4, bigserial, serial8 | ✅ | ✅           |
 | real                                    | ✅         | ✅                  |
 | decimal, numeric                        | ✅         | ✅                  |
 | double precision                        | ✅         | ✅                  |

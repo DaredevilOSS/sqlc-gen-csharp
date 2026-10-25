@@ -61,7 +61,9 @@ public sealed class NpgsqlDriver : EnumDbDriver, IOne, IMany, IExec, IExecRows, 
             ["short"] = new(
                 new()
                 {
-                    { "int2", new() }
+                    { "int2", new() },
+                    { "smallserial", new() },
+                    { "serial2", new() }
                 },
                 readerFn: (ordinal, _) => $"{Variable.Reader.AsVarName()}.GetInt16({ordinal})",
                 readerArrayFn: (ordinal, _) => $"{Variable.Reader.AsVarName()}.GetFieldValue<short[]>({ordinal})",
@@ -73,7 +75,8 @@ public sealed class NpgsqlDriver : EnumDbDriver, IOne, IMany, IExec, IExecRows, 
                     { "integer", new() },
                     { "int", new() },
                     { "int4", new() },
-                    { "serial", new() }
+                    { "serial", new() },
+                    { "serial4", new() }
                 },
                 readerFn: (ordinal, _) => $"{Variable.Reader.AsVarName()}.GetInt32({ordinal})",
                 readerArrayFn: (ordinal, _) => $"{Variable.Reader.AsVarName()}.GetFieldValue<int[]>({ordinal})",
@@ -84,7 +87,8 @@ public sealed class NpgsqlDriver : EnumDbDriver, IOne, IMany, IExec, IExecRows, 
                 {
                     { "int8", new() },
                     { "bigint", new() },
-                    { "bigserial", new() }
+                    { "bigserial", new() },
+                    { "serial8", new() }
                 },
                 readerFn: (ordinal, _) => $"{Variable.Reader.AsVarName()}.GetInt64({ordinal})",
                 readerArrayFn: (ordinal, _) => $"{Variable.Reader.AsVarName()}.GetFieldValue<long[]>({ordinal})",

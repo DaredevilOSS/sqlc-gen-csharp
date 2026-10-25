@@ -1027,6 +1027,33 @@ namespace EndToEndTests
         }
 
         [Test]
+        [TestCase(1, 2, 3, 4, 5L, 6L)]
+        public async Task TestPostgresSerialTypesAsync(short cSmallserial, short cSerial2, int cSerial, int cSerial4, long cBigserial, long cSerial8)
+        {
+            await QuerySql.InsertPostgresSerialTypesAsync(new QuerySql.InsertPostgresSerialTypesArgs { CSmallserial = cSmallserial, CSerial2 = cSerial2, CSerial = cSerial, CSerial4 = cSerial4, CBigserial = cBigserial, CSerial8 = cSerial8 });
+            var expected = new QuerySql.GetPostgresSerialTypesRow
+            {
+                CSmallserial = cSmallserial,
+                CSerial2 = cSerial2,
+                CSerial = cSerial,
+                CSerial4 = cSerial4,
+                CBigserial = cBigserial,
+                CSerial8 = cSerial8
+            };
+            var actual = await QuerySql.GetPostgresSerialTypesAsync();
+            AssertSingularEquals(expected, actual.Value);
+            void AssertSingularEquals(QuerySql.GetPostgresSerialTypesRow x, QuerySql.GetPostgresSerialTypesRow y)
+            {
+                Assert.That(x.CSmallserial, Is.EqualTo(y.CSmallserial));
+                Assert.That(x.CSerial2, Is.EqualTo(y.CSerial2));
+                Assert.That(x.CSerial, Is.EqualTo(y.CSerial));
+                Assert.That(x.CSerial4, Is.EqualTo(y.CSerial4));
+                Assert.That(x.CBigserial, Is.EqualTo(y.CBigserial));
+                Assert.That(x.CSerial8, Is.EqualTo(y.CSerial8));
+            }
+        }
+
+        [Test]
         [TestCase(100, "z", "Sex Pistols", "Anarchy in the U.K", "Yoshimi Battles the Pink Robots", "Never Mind the Bollocks...")]
         [TestCase(10, null, null, null, null, null)]
         public async Task TestStringCopyFromAsync(int batchSize, string cChar, string cVarchar, string cCharacterVarying, string cBpchar, string cText)

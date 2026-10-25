@@ -73,6 +73,25 @@ INSERT INTO postgres_numeric_types
     c_money
 ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10);
 
+/* Serial types */
+
+-- name: InsertPostgresSerialTypes :exec
+INSERT INTO postgres_serial_types
+(
+    c_smallserial,
+    c_serial2,
+    c_serial,
+    c_serial4,
+    c_bigserial,
+    c_serial8
+) VALUES ($1, $2, $3, $4, $5, $6);
+
+-- name: GetPostgresSerialTypes :one
+SELECT * FROM postgres_serial_types LIMIT 1;
+
+-- name: TruncatePostgresSerialTypes :exec
+TRUNCATE TABLE postgres_serial_types;
+
 /* Bit types */
 
 -- name: InsertPostgresBitTypes :exec

@@ -48,6 +48,15 @@ namespace NpgsqlDapperLegacyExampleGen
         public BitArray[] CBitArray { get; set; }
         public BitArray[] CVarbitArray { get; set; }
     };
+    public class PostgresSerialType
+    {
+        public short? CSmallserial { get; set; }
+        public short? CSerial2 { get; set; }
+        public int? CSerial { get; set; }
+        public int? CSerial4 { get; set; }
+        public long? CBigserial { get; set; }
+        public long? CSerial8 { get; set; }
+    };
     public class PostgresStringType
     {
         public string CChar { get; set; }

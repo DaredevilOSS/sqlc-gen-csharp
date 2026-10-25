@@ -3,7 +3,7 @@
 2
 postgresql-examples/config/postgresql/authors/schema.sql+examples/config/postgresql/types/schema.sql",examples/config/postgresql/authors/query.sql"*examples/config/postgresql/types/query.sqlbˆ
 examples/NpgsqlDapperExamplecsharpÉ{"debugRequest":true,"generateCsproj":true,"namespaceName":"NpgsqlDapperExampleGen","overrides":[{"column":"GetPostgresFunctions:max_integer","csharp_type":{"notNull":false,"type":"int"}},{"column":"GetPostgresFunctions:max_varchar","csharp_type":{"notNull":false,"type":"string"}},{"column":"GetPostgresFunctions:max_timestamp","csharp_type":{"notNull":true,"type":"DateTime"}},{"column":"GetPostgresSpecialTypesCnt:c_json","csharp_type":{"notNull":false,"type":"JsonElement"}},{"column":"GetPostgresSpecialTypesCnt:c_jsonb","csharp_type":{"notNull":false,"type":"JsonElement"}},{"column":"*:c_json_string_override","csharp_type":{"notNull":false,"type":"string"}},{"column":"*:c_xml_string_override","csharp_type":{"notNull":false,"type":"string"}},{"column":"*:c_macaddr8","csharp_type":{"notNull":false,"type":"string"}},{"column":"*:c_timestamp_noda_instant_override","csharp_type":{"notNull":false,"type":"Instant"}}],"targetFramework":"net10.0","useDapper":true}*
-./dist/LocalRunnerÁ€public"ƒ0publicƒ
+./dist/LocalRunnerÏƒpublic"‘3publicƒ
 	authors)
 id0ÿÿÿÿÿÿÿÿÿR	authorsb	bigserial&
 name0ÿÿÿÿÿÿÿÿÿR	authorsbtext#
@@ -45,7 +45,14 @@ pg_catalogbit5
 pg_catalogvarbitF
 c_bit_array 0ÿÿÿÿÿÿÿÿÿRpostgres_bit_typesb
 pg_catalogbitˆ@
-c_varbit_array 0ÿÿÿÿÿÿÿÿÿRpostgres_bit_typesbvarbitˆç
+c_varbit_array 0ÿÿÿÿÿÿÿÿÿRpostgres_bit_typesbvarbitˆ‹
+postgres_serial_typesB
+c_smallserial0ÿÿÿÿÿÿÿÿÿRpostgres_serial_typesbsmallserial:
+	c_serial20ÿÿÿÿÿÿÿÿÿRpostgres_serial_typesb	serial28
+c_serial0ÿÿÿÿÿÿÿÿÿRpostgres_serial_typesbserial:
+	c_serial40ÿÿÿÿÿÿÿÿÿRpostgres_serial_typesb	serial4>
+c_bigserial0ÿÿÿÿÿÿÿÿÿRpostgres_serial_typesb	bigserial:
+	c_serial80ÿÿÿÿÿÿÿÿÿRpostgres_serial_typesb	serial8ç
 postgres_string_typesB
 c_char0ÿÿÿÿÿÿÿÿÿRpostgres_string_typesb
 pg_catalogbpcharF
@@ -10512,7 +10519,31 @@ c_smallint*ZV
 c_real0ÿÿÿÿÿÿÿÿÿR publicpostgres_numeric_typesbpg_catalog.float4zc_real*n	j
 c_double_precision0ÿÿÿÿÿÿÿÿÿR publicpostgres_numeric_typesbpg_catalog.float8zc_double_precision*L
 H
-c_money0ÿÿÿÿÿÿÿÿÿR publicpostgres_numeric_typesbmoneyzc_money:	query.sqlBpostgres_numeric_typesŽ
+c_money0ÿÿÿÿÿÿÿÿÿR publicpostgres_numeric_typesbmoneyzc_money:	query.sqlBpostgres_numeric_typesþ
+¤
+INSERT INTO postgres_serial_types
+(
+    c_smallserial,
+    c_serial2,
+    c_serial,
+    c_serial4,
+    c_bigserial,
+    c_serial8
+) VALUES ($1, $2, $3, $4, $5, $6)InsertPostgresSerialTypes:exec*]Y
+c_smallserial0ÿÿÿÿÿÿÿÿÿRpublicpostgres_serial_typesbsmallserialzc_smallserial*QM
+	c_serial20ÿÿÿÿÿÿÿÿÿRpublicpostgres_serial_typesb	serial2z	c_serial2*NJ
+c_serial0ÿÿÿÿÿÿÿÿÿRpublicpostgres_serial_typesbserialzc_serial*QM
+	c_serial40ÿÿÿÿÿÿÿÿÿRpublicpostgres_serial_typesb	serial4z	c_serial4*WS
+c_bigserial0ÿÿÿÿÿÿÿÿÿRpublicpostgres_serial_typesb	bigserialzc_bigserial*QM
+	c_serial80ÿÿÿÿÿÿÿÿÿRpublicpostgres_serial_typesb	serial8z	c_serial82 Serial types :	query.sqlBpostgres_serial_typesÓ
+oSELECT c_smallserial, c_serial2, c_serial, c_serial4, c_bigserial, c_serial8 FROM postgres_serial_types LIMIT 1GetPostgresSerialTypes:one"Q
+c_smallserial0ÿÿÿÿÿÿÿÿÿRpostgres_serial_typesbsmallserialzc_smallserial"E
+	c_serial20ÿÿÿÿÿÿÿÿÿRpostgres_serial_typesb	serial2z	c_serial2"B
+c_serial0ÿÿÿÿÿÿÿÿÿRpostgres_serial_typesbserialzc_serial"E
+	c_serial40ÿÿÿÿÿÿÿÿÿRpostgres_serial_typesb	serial4z	c_serial4"K
+c_bigserial0ÿÿÿÿÿÿÿÿÿRpostgres_serial_typesb	bigserialzc_bigserial"E
+	c_serial80ÿÿÿÿÿÿÿÿÿRpostgres_serial_typesb	serial8z	c_serial8:	query.sqlU
+$TRUNCATE TABLE postgres_serial_typesTruncatePostgresSerialTypes:exec:	query.sqlŽ
 ¥
 INSERT INTO postgres_bit_types
 (

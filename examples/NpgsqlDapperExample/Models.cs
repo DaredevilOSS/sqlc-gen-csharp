@@ -47,6 +47,15 @@ public class PostgresBitType
     public BitArray[]? CBitArray { get; init; }
     public BitArray[]? CVarbitArray { get; init; }
 };
+public class PostgresSerialType
+{
+    public short? CSmallserial { get; init; }
+    public short? CSerial2 { get; init; }
+    public int? CSerial { get; init; }
+    public int? CSerial4 { get; init; }
+    public long? CBigserial { get; init; }
+    public long? CSerial8 { get; init; }
+};
 public class PostgresStringType
 {
     public string? CChar { get; init; }

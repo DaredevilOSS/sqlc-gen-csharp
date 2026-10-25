@@ -16,6 +16,7 @@ public readonly record struct Author(long Id, string Name, string? Bio);
 public readonly record struct Book(Guid Id, string Name, long AuthorId, string? Description);
 public readonly record struct PostgresNumericType(bool? CBoolean, BitArray? CBit, short? CSmallint, int? CInteger, long? CBigint, decimal? CDecimal, decimal? CNumeric, float? CReal, double? CDoublePrecision, decimal? CMoney);
 public readonly record struct PostgresBitType(BitArray? CBit, BitArray? CBitSingle, BitArray? CVarbit, BitArray? CBitVarying, BitArray[]? CBitArray, BitArray[]? CVarbitArray);
+public readonly record struct PostgresSerialType(short? CSmallserial, short? CSerial2, int? CSerial, int? CSerial4, long? CBigserial, long? CSerial8);
 public readonly record struct PostgresStringType(string? CChar, string? CVarchar, string? CCharacterVarying, string? CBpchar, string? CText);
 public readonly record struct PostgresHstoreType(Dictionary<string, string?>? CHstore, Dictionary<string, string?>[]? CHstoreArray);
 public readonly record struct PostgresRangeType(NpgsqlRange<int>? CInt4range, NpgsqlRange<long>? CInt8range, NpgsqlRange<decimal>? CNumrange, NpgsqlRange<DateTime>? CDaterange, NpgsqlRange<DateTime>? CTsrange, NpgsqlRange<DateTime>? CTstzrange, NpgsqlRange<int>[]? CInt4rangeArray);

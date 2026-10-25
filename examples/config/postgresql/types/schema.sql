@@ -20,6 +20,15 @@ CREATE TABLE postgres_bit_types (
     c_varbit_array      VARBIT(10) []
 );
 
+CREATE TABLE postgres_serial_types (
+    c_smallserial   SMALLSERIAL,
+    c_serial2       SERIAL2,
+    c_serial        SERIAL,
+    c_serial4       SERIAL4,
+    c_bigserial     BIGSERIAL,
+    c_serial8       SERIAL8
+);
+
 CREATE TABLE postgres_string_types (
     c_char CHAR,
     c_varchar VARCHAR(100),

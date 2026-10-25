@@ -308,6 +308,73 @@
           },
           {
             "rel": {
+              "name": "postgres_serial_types"
+            },
+            "columns": [
+              {
+                "name": "c_smallserial",
+                "length": -1,
+                "table": {
+                  "name": "postgres_serial_types"
+                },
+                "type": {
+                  "name": "smallserial"
+                }
+              },
+              {
+                "name": "c_serial2",
+                "length": -1,
+                "table": {
+                  "name": "postgres_serial_types"
+                },
+                "type": {
+                  "name": "serial2"
+                }
+              },
+              {
+                "name": "c_serial",
+                "length": -1,
+                "table": {
+                  "name": "postgres_serial_types"
+                },
+                "type": {
+                  "name": "serial"
+                }
+              },
+              {
+                "name": "c_serial4",
+                "length": -1,
+                "table": {
+                  "name": "postgres_serial_types"
+                },
+                "type": {
+                  "name": "serial4"
+                }
+              },
+              {
+                "name": "c_bigserial",
+                "length": -1,
+                "table": {
+                  "name": "postgres_serial_types"
+                },
+                "type": {
+                  "name": "bigserial"
+                }
+              },
+              {
+                "name": "c_serial8",
+                "length": -1,
+                "table": {
+                  "name": "postgres_serial_types"
+                },
+                "type": {
+                  "name": "serial8"
+                }
+              }
+            ]
+          },
+          {
+            "rel": {
               "name": "postgres_string_types"
             },
             "columns": [
@@ -34502,6 +34569,190 @@
       "insert_into_table": {
         "name": "postgres_numeric_types"
       }
+    },
+    {
+      "text": "\nINSERT INTO postgres_serial_types\n(\n    c_smallserial,\n    c_serial2,\n    c_serial,\n    c_serial4,\n    c_bigserial,\n    c_serial8\n) VALUES ($1, $2, $3, $4, $5, $6)",
+      "name": "InsertPostgresSerialTypes",
+      "cmd": ":exec",
+      "parameters": [
+        {
+          "number": 1,
+          "column": {
+            "name": "c_smallserial",
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "postgres_serial_types"
+            },
+            "type": {
+              "name": "smallserial"
+            },
+            "originalName": "c_smallserial"
+          }
+        },
+        {
+          "number": 2,
+          "column": {
+            "name": "c_serial2",
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "postgres_serial_types"
+            },
+            "type": {
+              "name": "serial2"
+            },
+            "originalName": "c_serial2"
+          }
+        },
+        {
+          "number": 3,
+          "column": {
+            "name": "c_serial",
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "postgres_serial_types"
+            },
+            "type": {
+              "name": "serial"
+            },
+            "originalName": "c_serial"
+          }
+        },
+        {
+          "number": 4,
+          "column": {
+            "name": "c_serial4",
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "postgres_serial_types"
+            },
+            "type": {
+              "name": "serial4"
+            },
+            "originalName": "c_serial4"
+          }
+        },
+        {
+          "number": 5,
+          "column": {
+            "name": "c_bigserial",
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "postgres_serial_types"
+            },
+            "type": {
+              "name": "bigserial"
+            },
+            "originalName": "c_bigserial"
+          }
+        },
+        {
+          "number": 6,
+          "column": {
+            "name": "c_serial8",
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "postgres_serial_types"
+            },
+            "type": {
+              "name": "serial8"
+            },
+            "originalName": "c_serial8"
+          }
+        }
+      ],
+      "comments": [
+        " Serial types "
+      ],
+      "filename": "query.sql",
+      "insert_into_table": {
+        "name": "postgres_serial_types"
+      }
+    },
+    {
+      "text": "SELECT c_smallserial, c_serial2, c_serial, c_serial4, c_bigserial, c_serial8 FROM postgres_serial_types LIMIT 1",
+      "name": "GetPostgresSerialTypes",
+      "cmd": ":one",
+      "columns": [
+        {
+          "name": "c_smallserial",
+          "length": -1,
+          "table": {
+            "name": "postgres_serial_types"
+          },
+          "type": {
+            "name": "smallserial"
+          },
+          "originalName": "c_smallserial"
+        },
+        {
+          "name": "c_serial2",
+          "length": -1,
+          "table": {
+            "name": "postgres_serial_types"
+          },
+          "type": {
+            "name": "serial2"
+          },
+          "originalName": "c_serial2"
+        },
+        {
+          "name": "c_serial",
+          "length": -1,
+          "table": {
+            "name": "postgres_serial_types"
+          },
+          "type": {
+            "name": "serial"
+          },
+          "originalName": "c_serial"
+        },
+        {
+          "name": "c_serial4",
+          "length": -1,
+          "table": {
+            "name": "postgres_serial_types"
+          },
+          "type": {
+            "name": "serial4"
+          },
+          "originalName": "c_serial4"
+        },
+        {
+          "name": "c_bigserial",
+          "length": -1,
+          "table": {
+            "name": "postgres_serial_types"
+          },
+          "type": {
+            "name": "bigserial"
+          },
+          "originalName": "c_bigserial"
+        },
+        {
+          "name": "c_serial8",
+          "length": -1,
+          "table": {
+            "name": "postgres_serial_types"
+          },
+          "type": {
+            "name": "serial8"
+          },
+          "originalName": "c_serial8"
+        }
+      ],
+      "filename": "query.sql"
+    },
+    {
+      "text": "TRUNCATE TABLE postgres_serial_types",
+      "name": "TruncatePostgresSerialTypes",
+      "cmd": ":exec",
+      "filename": "query.sql"
     },
     {
       "text": "\nINSERT INTO postgres_bit_types\n(\n    c_bit,\n    c_bit_single,\n    c_varbit,\n    c_bit_varying,\n    c_bit_array,\n    c_varbit_array\n)\nVALUES ($1, $2, $3, $4, $5, $6)",

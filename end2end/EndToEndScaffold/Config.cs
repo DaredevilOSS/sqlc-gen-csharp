@@ -63,6 +63,7 @@ public enum KnownTestType
     PostgresMultirangeDataTypes,
     PostgresSystemDataTypes,
     PostgresHstoreDataTypes,
+    PostgresSerialDataTypes,
 
     // :copyfrom (Batch)
     PostgresStringCopyFrom,
@@ -194,6 +195,7 @@ internal static class Config
         KnownTestType.PostgresMultirangeDataTypes,
         KnownTestType.PostgresSystemDataTypes,
         KnownTestType.PostgresHstoreDataTypes,
+        KnownTestType.PostgresSerialDataTypes,
 
         // :copyfrom (Batch)
         KnownTestType.PostgresGeoCopyFrom,
