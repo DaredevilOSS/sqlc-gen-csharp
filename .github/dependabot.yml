@@ -2,6 +2,8 @@ version: 2
 updates:
   - package-ecosystem: github-actions
     directory: /
+    labels:
+      - skip-release
     schedule:
       interval: weekly
     groups:
@@ -13,6 +15,8 @@ updates:
     directories:
       - /*
       - /unit-tests/*
+    labels:
+      - skip-release
     schedule:
       interval: weekly
     groups:
