@@ -52,74 +52,36 @@ jobs:
       - name: Setup NuGet
         uses: NuGet/setup-nuget@v4
         
-      - name: Install Chocolatey
-        shell: powershell
+      # PostgreSQL 17 and MySQL 8.0 come preinstalled on the Windows runner image - using them is much faster than
+      # downloading and installing them (setup-postgres ~3.5 min, choco mysql ~2 min).
+      # Both databases are set up in the background while the test projects are restored and built. This has to be
+      # a single step: child processes do not outlive the step that started them (the database services do).
+      - name: Set up databases and build test projects in parallel
+        shell: pwsh
         run: |
-          Set-ExecutionPolicy Bypass -Scope Process -Force
-          [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072
-          iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
+          $dbJobs = foreach ($db in 'postgres', 'mysql') {
+            Start-Process -FilePath pwsh -PassThru -WindowStyle Hidden `
+              -ArgumentList '-NoProfile', '-File', ".github/scripts/start-$db.ps1" `
+              -RedirectStandardOutput "$env:RUNNER_TEMP\$db.log" -RedirectStandardError "$env:RUNNER_TEMP\$db.err.log"
+          }
 
-      - uses: ikalnytskyi/action-setup-postgres@v8
-        with:
-          username: ${{ env.POSTGRES_USER }}
-          password: ${{ env.POSTGRES_PASSWORD }}
-          database: ${{ env.TESTS_DB }}
-          postgres-version: "16"
-        id: postgres
-        
-      - name: Init PostgresSQL Schema
-        shell: powershell
-        run: psql -U $Env:POSTGRES_USER -f 'examples/config/postgresql/types/schema.sql' -f 'examples/config/postgresql/authors/schema.sql'
-        env:
-          PGSERVICE: ${{ steps.postgres.outputs.service-name }}
-          PGPASSWORD: ${{ env.POSTGRES_PASSWORD }}
-          
-      - uses: nick-fields/retry@v4
-        name: Install MySQL and restore test projects in parallel (with retry)
-        with:
-          retry_on: error
-          max_attempts: 2
-          timeout_minutes: 7
-          shell: pwsh
-          command: |
-            $mysqlJob = Start-Job -ScriptBlock { 
-              choco install mysql --no-progress -y --params "/serviceName:MySQL" 
-              return $LASTEXITCODE
+          Get-ChildItem -Path examples -Recurse -Filter *.csproj |
+            Where-Object { $_.FullName -like '*Legacy*' } |
+            ForEach-Object { nuget restore $_.FullName }
+          nuget restore ./end2end/EndToEndCommon/EndToEndCommon.csproj
+          nuget restore ./end2end/EndToEndTestsLegacy/EndToEndTestsLegacy.csproj
+          msbuild.exe ./end2end/EndToEndTestsLegacy/EndToEndTestsLegacy.csproj -p:Configuration=Release -p:FrameworkVersion=v4.7.2 -m
+          $buildExit = $LASTEXITCODE
+
+          $dbJobs | Wait-Process -Timeout 180
+          $failed = $false
+          foreach ($db in 'postgres', 'mysql') {
+            if (-not (Select-String -Path "$env:RUNNER_TEMP\$db.log" -Pattern "$db ready" -Quiet)) {
+              Get-ChildItem $env:RUNNER_TEMP -Filter "$db*.log" | ForEach-Object { Write-Host "--- $_"; Get-Content $_ }
+              $failed = $true
             }
-            
-            $restoreJob = Start-Job -ScriptBlock { 
-              Get-ChildItem -Path examples -Recurse -Filter *.csproj |
-                Where-Object { $_.FullName -like '*Legacy*' } |
-                ForEach-Object { nuget restore $_.FullName }
-              nuget restore ./end2end/EndToEndCommon/EndToEndCommon.csproj
-              nuget restore ./end2end/EndToEndTestsLegacy/EndToEndTestsLegacy.csproj
-              msbuild.exe ./end2end/EndToEndTestsLegacy/EndToEndTestsLegacy.csproj -p:Configuration=Release -p:FrameworkVersion=v4.7.2
-              return $LASTEXITCODE
-            }
-  
-            Wait-Job -Job $mysqlJob, $restoreJob
-            
-            $mysqlOutput = Receive-Job -Job $mysqlJob
-            $mysqlExitCode = @($mysqlOutput)[-1]
-            if ($mysqlExitCode -ne 0) {
-              Write-Error "MySQL install failed with exit code: $mysqlExitCode`n$mysqlOutput"
-              return $mysqlExitCode
-            }
-  
-            $restoreOutput = Receive-Job -Job $restoreJob
-            $restoreExitCode = @($restoreOutput)[-1]
-            if ($restoreExitCode -ne 0) {
-              Write-Error "Restore/build failed with exit code: $restoreExitCode`n$restoreOutput"
-              return $restoreExitCode
-            }
-          
-      - name: Init MySQL Schema
-        shell: powershell
-        run: |
-          $env:Path += ";C:\Program Files\MySQL\MySQL Server 8.0\bin"
-          [Environment]::SetEnvironmentVariable("Path", $env:Path, "Machine")
-          mysql -u root -e "SET GLOBAL local_infile=1; CREATE DATABASE $Env:TESTS_DB;"
-          mysql -u root $Env:TESTS_DB --execute="source examples/config/mysql/types/schema.sql; source examples/config/mysql/authors/schema.sql;"    
+          }
+          if ($buildExit -ne 0 -or $failed) { exit 1 }
 
       - name: Run Tests
         shell: powershell
