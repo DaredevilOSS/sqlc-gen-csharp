@@ -2,9 +2,11 @@
 using NodaTime;
 using NodaTime.Extensions;
 using NodaTime.Text;
+using System;
 using System.Linq;
+using System.Text.Json;
 
 namespace SqliteExampleGen;
 public readonly record struct Author(int Id, string Name, string? Bio);
 public readonly record struct Book(int Id, string Name, int AuthorId, string? Description);
-public readonly record struct TypesSqlite(int? CInteger, decimal? CReal, string? CText, byte[]? CBlob, string? CTextDatetimeOverride, int? CIntegerDatetimeOverride, string? CTextNodaInstantOverride, int? CIntegerNodaInstantOverride, string? CTextBoolOverride, int? CIntegerBoolOverride);
+public readonly record struct TypesSqlite(int? CInteger, decimal? CReal, string? CText, byte[]? CBlob, string? CTextDatetimeOverride, int? CIntegerDatetimeOverride, string? CTextNodaInstantOverride, int? CIntegerNodaInstantOverride, string? CTextBoolOverride, int? CIntegerBoolOverride, int? CInt, int? CTinyint, int? CSmallint, int? CMediumint, int? CInt2, long? CBigint, long? CUnsignedBigInt, long? CInt8, double? CDouble, double? CDoublePrecision, double? CFloat, decimal? CNumeric, decimal? CDecimal, string? CCharacter, string? CVarchar, string? CVaryingCharacter, string? CNchar, string? CNativeCharacter, string? CNvarchar, string? CClob, bool? CBoolean, bool? CBool, DateTime? CDate, DateTime? CDatetime, DateTime? CTimestamp, JsonElement? CJson, JsonElement? CJsonb);

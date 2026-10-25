@@ -96,6 +96,199 @@ public static class SqliteTests
                      }
                      """
         },
+        [KnownTestType.SqliteNumericDataTypes] = new TestImpl
+        {
+            Impl = $$"""
+                     [Test]
+                     [TestCase(1, -2, 3, 4, 5, 9000000000, 9223372036854775807, -9000000000, 1.5, 2.25, 3.125, 12345.67, -1.25001)]
+                     [TestCase(null, null, null, null, null, null, null, null, null, null, null, null, null)]
+                     public async Task TestSqliteNumericTypesAsync(
+                         int? cInt,
+                         int? cTinyint,
+                         int? cSmallint,
+                         int? cMediumint,
+                         int? cInt2,
+                         long? cBigint,
+                         long? cUnsignedBigInt,
+                         long? cInt8,
+                         double? cDouble,
+                         double? cDoublePrecision,
+                         double? cFloat,
+                         decimal? cNumeric,
+                         decimal? cDecimal)
+                     {
+                         await QuerySql.InsertSqliteNumericTypesAsync(new QuerySql.InsertSqliteNumericTypesArgs
+                         {
+                             CInt = cInt,
+                             CTinyint = cTinyint,
+                             CSmallint = cSmallint,
+                             CMediumint = cMediumint,
+                             CInt2 = cInt2,
+                             CBigint = cBigint,
+                             CUnsignedBigInt = cUnsignedBigInt,
+                             CInt8 = cInt8,
+                             CDouble = cDouble,
+                             CDoublePrecision = cDoublePrecision,
+                             CFloat = cFloat,
+                             CNumeric = cNumeric,
+                             CDecimal = cDecimal
+                         });
+
+                         var expected = new QuerySql.GetSqliteNumericTypesRow
+                         {
+                             CInt = cInt,
+                             CTinyint = cTinyint,
+                             CSmallint = cSmallint,
+                             CMediumint = cMediumint,
+                             CInt2 = cInt2,
+                             CBigint = cBigint,
+                             CUnsignedBigInt = cUnsignedBigInt,
+                             CInt8 = cInt8,
+                             CDouble = cDouble,
+                             CDoublePrecision = cDoublePrecision,
+                             CFloat = cFloat,
+                             CNumeric = cNumeric,
+                             CDecimal = cDecimal
+                         };
+                         var actual = await QuerySql.GetSqliteNumericTypesAsync();
+                         AssertSingularEquals(expected, actual{{Consts.UnknownRecordValuePlaceholder}});
+
+                         void AssertSingularEquals(QuerySql.GetSqliteNumericTypesRow x, QuerySql.GetSqliteNumericTypesRow y)
+                         {
+                             Assert.That(x.CInt, Is.EqualTo(y.CInt));
+                             Assert.That(x.CTinyint, Is.EqualTo(y.CTinyint));
+                             Assert.That(x.CSmallint, Is.EqualTo(y.CSmallint));
+                             Assert.That(x.CMediumint, Is.EqualTo(y.CMediumint));
+                             Assert.That(x.CInt2, Is.EqualTo(y.CInt2));
+                             Assert.That(x.CBigint, Is.EqualTo(y.CBigint));
+                             Assert.That(x.CUnsignedBigInt, Is.EqualTo(y.CUnsignedBigInt));
+                             Assert.That(x.CInt8, Is.EqualTo(y.CInt8));
+                             Assert.That(x.CDouble, Is.EqualTo(y.CDouble));
+                             Assert.That(x.CDoublePrecision, Is.EqualTo(y.CDoublePrecision));
+                             Assert.That(x.CFloat, Is.EqualTo(y.CFloat));
+                             Assert.That(x.CNumeric, Is.EqualTo(y.CNumeric));
+                             Assert.That(x.CDecimal, Is.EqualTo(y.CDecimal));
+                         }
+                     }
+                     """
+        },
+        [KnownTestType.SqliteStringDataTypes] = new TestImpl
+        {
+            Impl = $$"""
+                     [Test]
+                     [TestCase("Rock", "Roll", "Hail", "Hail!", "To the", "Chief", "Yes, Chief")]
+                     [TestCase(null, null, null, null, null, null, null)]
+                     public async Task TestSqliteStringTypesAsync(
+                         string cCharacter,
+                         string cVarchar,
+                         string cVaryingCharacter,
+                         string cNchar,
+                         string cNativeCharacter,
+                         string cNvarchar,
+                         string cClob)
+                     {
+                         await QuerySql.InsertSqliteStringTypesAsync(new QuerySql.InsertSqliteStringTypesArgs
+                         {
+                             CCharacter = cCharacter,
+                             CVarchar = cVarchar,
+                             CVaryingCharacter = cVaryingCharacter,
+                             CNchar = cNchar,
+                             CNativeCharacter = cNativeCharacter,
+                             CNvarchar = cNvarchar,
+                             CClob = cClob
+                         });
+
+                         var expected = new QuerySql.GetSqliteStringTypesRow
+                         {
+                             CCharacter = cCharacter,
+                             CVarchar = cVarchar,
+                             CVaryingCharacter = cVaryingCharacter,
+                             CNchar = cNchar,
+                             CNativeCharacter = cNativeCharacter,
+                             CNvarchar = cNvarchar,
+                             CClob = cClob
+                         };
+                         var actual = await QuerySql.GetSqliteStringTypesAsync();
+                         AssertSingularEquals(expected, actual{{Consts.UnknownRecordValuePlaceholder}});
+
+                         void AssertSingularEquals(QuerySql.GetSqliteStringTypesRow x, QuerySql.GetSqliteStringTypesRow y)
+                         {
+                             Assert.That(x.CCharacter, Is.EqualTo(y.CCharacter));
+                             Assert.That(x.CVarchar, Is.EqualTo(y.CVarchar));
+                             Assert.That(x.CVaryingCharacter, Is.EqualTo(y.CVaryingCharacter));
+                             Assert.That(x.CNchar, Is.EqualTo(y.CNchar));
+                             Assert.That(x.CNativeCharacter, Is.EqualTo(y.CNativeCharacter));
+                             Assert.That(x.CNvarchar, Is.EqualTo(y.CNvarchar));
+                             Assert.That(x.CClob, Is.EqualTo(y.CClob));
+                         }
+                     }
+                     """
+        },
+        [KnownTestType.SqliteMiscDataTypes] = new TestImpl
+        {
+            Impl = $$"""
+                     [Test]
+                     [TestCase(true, false, "2020-01-01", "2025-01-01 17:18:19", "1993-09-27 03:55:02", "{\"a\": 1}", "[1, 2, 3]")]
+                     [TestCase(null, null, null, null, null, null, null)]
+                     public async Task TestSqliteMiscTypesAsync(
+                         bool? cBoolean,
+                         bool? cBool,
+                         string cDateStr,
+                         string cDatetimeStr,
+                         string cTimestampStr,
+                         string cJson,
+                         string cJsonb)
+                     {
+                         DateTime? cDate = cDateStr == null ? (DateTime?)null : DateTime.Parse(cDateStr);
+                         DateTime? cDatetime = cDatetimeStr == null ? (DateTime?)null : DateTime.Parse(cDatetimeStr);
+                         DateTime? cTimestamp = cTimestampStr == null ? (DateTime?)null : DateTime.Parse(cTimestampStr);
+                         JsonElement? cParsedJson = null;
+                         if (cJson != null)
+                             cParsedJson = JsonDocument.Parse(cJson).RootElement;
+                         JsonElement? cParsedJsonb = null;
+                         if (cJsonb != null)
+                             cParsedJsonb = JsonDocument.Parse(cJsonb).RootElement;
+                         await QuerySql.InsertSqliteMiscTypesAsync(new QuerySql.InsertSqliteMiscTypesArgs
+                         {
+                             CBoolean = cBoolean,
+                             CBool = cBool,
+                             CDate = cDate,
+                             CDatetime = cDatetime,
+                             CTimestamp = cTimestamp,
+                             CJson = cParsedJson,
+                             CJsonb = cParsedJsonb
+                         });
+
+                         var expected = new QuerySql.GetSqliteMiscTypesRow
+                         {
+                             CBoolean = cBoolean,
+                             CBool = cBool,
+                             CDate = cDate,
+                             CDatetime = cDatetime,
+                             CTimestamp = cTimestamp,
+                             CJson = cParsedJson,
+                             CJsonb = cParsedJsonb
+                         };
+                         var actual = await QuerySql.GetSqliteMiscTypesAsync();
+                         AssertSingularEquals(expected, actual{{Consts.UnknownRecordValuePlaceholder}});
+
+                         void AssertSingularEquals(QuerySql.GetSqliteMiscTypesRow x, QuerySql.GetSqliteMiscTypesRow y)
+                         {
+                             Assert.That(x.CBoolean, Is.EqualTo(y.CBoolean));
+                             Assert.That(x.CBool, Is.EqualTo(y.CBool));
+                             Assert.That(x.CDate, Is.EqualTo(y.CDate));
+                             Assert.That(x.CDatetime, Is.EqualTo(y.CDatetime));
+                             Assert.That(x.CTimestamp, Is.EqualTo(y.CTimestamp));
+                             Assert.That(x.CJson.HasValue, Is.EqualTo(y.CJson.HasValue));
+                             if (x.CJson.HasValue)
+                                 Assert.That(x.CJson.Value.GetRawText(), Is.EqualTo(y.CJson.Value.GetRawText()));
+                             Assert.That(x.CJsonb.HasValue, Is.EqualTo(y.CJsonb.HasValue));
+                             if (x.CJsonb.HasValue)
+                                 Assert.That(x.CJsonb.Value.GetRawText(), Is.EqualTo(y.CJsonb.Value.GetRawText()));
+                         }
+                     }
+                     """
+        },
         [KnownTestType.SqliteCopyFrom] = new TestImpl
         {
             Impl = $$"""

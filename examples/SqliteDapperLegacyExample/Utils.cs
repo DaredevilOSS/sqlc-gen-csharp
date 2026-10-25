@@ -8,6 +8,7 @@ namespace SqliteDapperLegacyExampleGen
     using System;
     using System.Data;
     using System.Linq;
+    using System.Text.Json;
     using System.Text.RegularExpressions;
 
     public static class Utils
@@ -46,10 +47,26 @@ namespace SqliteDapperLegacyExampleGen
             }
         }
 
+        private class JsonElementTypeHandler : SqlMapper.TypeHandler<JsonElement>
+        {
+            public override JsonElement Parse(object value)
+            {
+                if (value is string s)
+                    return JsonDocument.Parse(s).RootElement;
+                throw new DataException($"Cannot convert {value?.GetType()} to JsonElement");
+            }
+
+            public override void SetValue(IDbDataParameter parameter, JsonElement value)
+            {
+                parameter.Value = value.GetRawText();
+            }
+        }
+
         public static void ConfigureSqlMapper()
         {
             SqlMapper.AddTypeHandler(typeof(DateTime), new DateTimeTypeHandler());
             SqlMapper.AddTypeHandler(typeof(Instant), new NodaInstantTypeHandler());
+            SqlMapper.AddTypeHandler(typeof(JsonElement), new JsonElementTypeHandler());
         }
 
         public static string TransformQueryForSliceArgs(string originalSql, int sliceSize, string paramName)

@@ -2,7 +2,9 @@
 using NodaTime;
 using NodaTime.Extensions;
 using NodaTime.Text;
+using System;
 using System.Linq;
+using System.Text.Json;
 
 namespace SqliteDapperExampleGen;
 public class Author
@@ -30,4 +32,31 @@ public class TypesSqlite
     public int? CIntegerNodaInstantOverride { get; init; }
     public string? CTextBoolOverride { get; init; }
     public int? CIntegerBoolOverride { get; init; }
+    public int? CInt { get; init; }
+    public int? CTinyint { get; init; }
+    public int? CSmallint { get; init; }
+    public int? CMediumint { get; init; }
+    public int? CInt2 { get; init; }
+    public long? CBigint { get; init; }
+    public long? CUnsignedBigInt { get; init; }
+    public long? CInt8 { get; init; }
+    public double? CDouble { get; init; }
+    public double? CDoublePrecision { get; init; }
+    public double? CFloat { get; init; }
+    public decimal? CNumeric { get; init; }
+    public decimal? CDecimal { get; init; }
+    public string? CCharacter { get; init; }
+    public string? CVarchar { get; init; }
+    public string? CVaryingCharacter { get; init; }
+    public string? CNchar { get; init; }
+    public string? CNativeCharacter { get; init; }
+    public string? CNvarchar { get; init; }
+    public string? CClob { get; init; }
+    public bool? CBoolean { get; init; }
+    public bool? CBool { get; init; }
+    public DateTime? CDate { get; init; }
+    public DateTime? CDatetime { get; init; }
+    public DateTime? CTimestamp { get; init; }
+    public JsonElement? CJson { get; init; }
+    public JsonElement? CJsonb { get; init; }
 };

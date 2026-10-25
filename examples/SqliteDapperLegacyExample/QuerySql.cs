@@ -14,6 +14,7 @@ namespace SqliteDapperLegacyExampleGen
     using System;
     using System.Collections.Generic;
     using System.Data;
+    using System.Text.Json;
     using System.Threading;
     using System.Threading.Tasks;
 
@@ -682,6 +683,279 @@ namespace SqliteDapperLegacyExampleGen
             if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
                 throw new InvalidOperationException("Transaction is provided, but its connection is null.");
             return await this.Transaction.Connection.QueryFirstOrDefaultAsync<GetSqliteTypesRow>(GetSqliteTypesSql, transaction: this.Transaction);
+        }
+
+        private const string InsertSqliteNumericTypesSql = @"INSERT INTO types_sqlite
+                                                             (
+                                                                 c_int,
+                                                                 c_tinyint,
+                                                                 c_smallint,
+                                                                 c_mediumint,
+                                                                 c_int2,
+                                                                 c_bigint,
+                                                                 c_unsigned_big_int,
+                                                                 c_int8,
+                                                                 c_double,
+                                                                 c_double_precision,
+                                                                 c_float,
+                                                                 c_numeric,
+                                                                 c_decimal
+                                                             )
+                                                             VALUES (@c_int, @c_tinyint, @c_smallint, @c_mediumint, @c_int2, @c_bigint, @c_unsigned_big_int, @c_int8, @c_double, @c_double_precision, @c_float, @c_numeric, @c_decimal)";
+        public class InsertSqliteNumericTypesArgs
+        {
+            public int? CInt { get; set; }
+            public int? CTinyint { get; set; }
+            public int? CSmallint { get; set; }
+            public int? CMediumint { get; set; }
+            public int? CInt2 { get; set; }
+            public long? CBigint { get; set; }
+            public long? CUnsignedBigInt { get; set; }
+            public long? CInt8 { get; set; }
+            public double? CDouble { get; set; }
+            public double? CDoublePrecision { get; set; }
+            public double? CFloat { get; set; }
+            public decimal? CNumeric { get; set; }
+            public decimal? CDecimal { get; set; }
+        };
+        public async Task InsertSqliteNumericTypesAsync(InsertSqliteNumericTypesArgs args)
+        {
+            var queryParams = new Dictionary<string, object>();
+            queryParams.Add("c_int", args.CInt);
+            queryParams.Add("c_tinyint", args.CTinyint);
+            queryParams.Add("c_smallint", args.CSmallint);
+            queryParams.Add("c_mediumint", args.CMediumint);
+            queryParams.Add("c_int2", args.CInt2);
+            queryParams.Add("c_bigint", args.CBigint);
+            queryParams.Add("c_unsigned_big_int", args.CUnsignedBigInt);
+            queryParams.Add("c_int8", args.CInt8);
+            queryParams.Add("c_double", args.CDouble);
+            queryParams.Add("c_double_precision", args.CDoublePrecision);
+            queryParams.Add("c_float", args.CFloat);
+            queryParams.Add("c_numeric", args.CNumeric);
+            queryParams.Add("c_decimal", args.CDecimal);
+            if (this.Transaction == null)
+            {
+                using (var connection = new SqliteConnection(ConnectionString))
+                {
+                    await connection.ExecuteAsync(InsertSqliteNumericTypesSql, queryParams);
+                    return;
+                }
+            }
+
+            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
+                throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+            await this.Transaction.Connection.ExecuteAsync(InsertSqliteNumericTypesSql, queryParams, transaction: this.Transaction);
+        }
+
+        private const string GetSqliteNumericTypesSql = @"SELECT
+                                                              c_int,
+                                                              c_tinyint,
+                                                              c_smallint,
+                                                              c_mediumint,
+                                                              c_int2,
+                                                              c_bigint,
+                                                              c_unsigned_big_int,
+                                                              c_int8,
+                                                              c_double,
+                                                              c_double_precision,
+                                                              c_float,
+                                                              c_numeric,
+                                                              c_decimal
+                                                          FROM types_sqlite
+                                                          LIMIT 1";
+        public class GetSqliteNumericTypesRow
+        {
+            public int? CInt { get; set; }
+            public int? CTinyint { get; set; }
+            public int? CSmallint { get; set; }
+            public int? CMediumint { get; set; }
+            public int? CInt2 { get; set; }
+            public long? CBigint { get; set; }
+            public long? CUnsignedBigInt { get; set; }
+            public long? CInt8 { get; set; }
+            public double? CDouble { get; set; }
+            public double? CDoublePrecision { get; set; }
+            public double? CFloat { get; set; }
+            public decimal? CNumeric { get; set; }
+            public decimal? CDecimal { get; set; }
+        };
+        public async Task<GetSqliteNumericTypesRow> GetSqliteNumericTypesAsync()
+        {
+            if (this.Transaction == null)
+            {
+                using (var connection = new SqliteConnection(ConnectionString))
+                {
+                    var result = await connection.QueryFirstOrDefaultAsync<GetSqliteNumericTypesRow>(GetSqliteNumericTypesSql);
+                    return result;
+                }
+            }
+
+            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
+                throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+            return await this.Transaction.Connection.QueryFirstOrDefaultAsync<GetSqliteNumericTypesRow>(GetSqliteNumericTypesSql, transaction: this.Transaction);
+        }
+
+        private const string InsertSqliteStringTypesSql = @"INSERT INTO types_sqlite
+                                                            (
+                                                                c_character,
+                                                                c_varchar,
+                                                                c_varying_character,
+                                                                c_nchar,
+                                                                c_native_character,
+                                                                c_nvarchar,
+                                                                c_clob
+                                                            )
+                                                            VALUES (@c_character, @c_varchar, @c_varying_character, @c_nchar, @c_native_character, @c_nvarchar, @c_clob)";
+        public class InsertSqliteStringTypesArgs
+        {
+            public string CCharacter { get; set; }
+            public string CVarchar { get; set; }
+            public string CVaryingCharacter { get; set; }
+            public string CNchar { get; set; }
+            public string CNativeCharacter { get; set; }
+            public string CNvarchar { get; set; }
+            public string CClob { get; set; }
+        };
+        public async Task InsertSqliteStringTypesAsync(InsertSqliteStringTypesArgs args)
+        {
+            var queryParams = new Dictionary<string, object>();
+            queryParams.Add("c_character", args.CCharacter);
+            queryParams.Add("c_varchar", args.CVarchar);
+            queryParams.Add("c_varying_character", args.CVaryingCharacter);
+            queryParams.Add("c_nchar", args.CNchar);
+            queryParams.Add("c_native_character", args.CNativeCharacter);
+            queryParams.Add("c_nvarchar", args.CNvarchar);
+            queryParams.Add("c_clob", args.CClob);
+            if (this.Transaction == null)
+            {
+                using (var connection = new SqliteConnection(ConnectionString))
+                {
+                    await connection.ExecuteAsync(InsertSqliteStringTypesSql, queryParams);
+                    return;
+                }
+            }
+
+            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
+                throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+            await this.Transaction.Connection.ExecuteAsync(InsertSqliteStringTypesSql, queryParams, transaction: this.Transaction);
+        }
+
+        private const string GetSqliteStringTypesSql = @"SELECT
+                                                             c_character,
+                                                             c_varchar,
+                                                             c_varying_character,
+                                                             c_nchar,
+                                                             c_native_character,
+                                                             c_nvarchar,
+                                                             c_clob
+                                                         FROM types_sqlite
+                                                         LIMIT 1";
+        public class GetSqliteStringTypesRow
+        {
+            public string CCharacter { get; set; }
+            public string CVarchar { get; set; }
+            public string CVaryingCharacter { get; set; }
+            public string CNchar { get; set; }
+            public string CNativeCharacter { get; set; }
+            public string CNvarchar { get; set; }
+            public string CClob { get; set; }
+        };
+        public async Task<GetSqliteStringTypesRow> GetSqliteStringTypesAsync()
+        {
+            if (this.Transaction == null)
+            {
+                using (var connection = new SqliteConnection(ConnectionString))
+                {
+                    var result = await connection.QueryFirstOrDefaultAsync<GetSqliteStringTypesRow>(GetSqliteStringTypesSql);
+                    return result;
+                }
+            }
+
+            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
+                throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+            return await this.Transaction.Connection.QueryFirstOrDefaultAsync<GetSqliteStringTypesRow>(GetSqliteStringTypesSql, transaction: this.Transaction);
+        }
+
+        private const string InsertSqliteMiscTypesSql = @"INSERT INTO types_sqlite
+                                                          (
+                                                              c_boolean,
+                                                              c_bool,
+                                                              c_date,
+                                                              c_datetime,
+                                                              c_timestamp,
+                                                              c_json,
+                                                              c_jsonb
+                                                          )
+                                                          VALUES (@c_boolean, @c_bool, @c_date, @c_datetime, @c_timestamp, @c_json, @c_jsonb)";
+        public class InsertSqliteMiscTypesArgs
+        {
+            public bool? CBoolean { get; set; }
+            public bool? CBool { get; set; }
+            public DateTime? CDate { get; set; }
+            public DateTime? CDatetime { get; set; }
+            public DateTime? CTimestamp { get; set; }
+            public JsonElement? CJson { get; set; }
+            public JsonElement? CJsonb { get; set; }
+        };
+        public async Task InsertSqliteMiscTypesAsync(InsertSqliteMiscTypesArgs args)
+        {
+            var queryParams = new Dictionary<string, object>();
+            queryParams.Add("c_boolean", args.CBoolean != null ? (int? )Convert.ToInt32(args.CBoolean) : null);
+            queryParams.Add("c_bool", args.CBool != null ? (int? )Convert.ToInt32(args.CBool) : null);
+            queryParams.Add("c_date", args.CDate != null ? args.CDate.Value.ToString("yyyy-MM-dd HH:mm:ss") : null);
+            queryParams.Add("c_datetime", args.CDatetime != null ? args.CDatetime.Value.ToString("yyyy-MM-dd HH:mm:ss") : null);
+            queryParams.Add("c_timestamp", args.CTimestamp != null ? args.CTimestamp.Value.ToString("yyyy-MM-dd HH:mm:ss") : null);
+            queryParams.Add("c_json", args.CJson?.GetRawText() ?? null);
+            queryParams.Add("c_jsonb", args.CJsonb?.GetRawText() ?? null);
+            if (this.Transaction == null)
+            {
+                using (var connection = new SqliteConnection(ConnectionString))
+                {
+                    await connection.ExecuteAsync(InsertSqliteMiscTypesSql, queryParams);
+                    return;
+                }
+            }
+
+            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
+                throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+            await this.Transaction.Connection.ExecuteAsync(InsertSqliteMiscTypesSql, queryParams, transaction: this.Transaction);
+        }
+
+        private const string GetSqliteMiscTypesSql = @"SELECT
+                                                           c_boolean,
+                                                           c_bool,
+                                                           c_date,
+                                                           c_datetime,
+                                                           c_timestamp,
+                                                           c_json,
+                                                           c_jsonb
+                                                       FROM types_sqlite
+                                                       LIMIT 1";
+        public class GetSqliteMiscTypesRow
+        {
+            public bool? CBoolean { get; set; }
+            public bool? CBool { get; set; }
+            public DateTime? CDate { get; set; }
+            public DateTime? CDatetime { get; set; }
+            public DateTime? CTimestamp { get; set; }
+            public JsonElement? CJson { get; set; }
+            public JsonElement? CJsonb { get; set; }
+        };
+        public async Task<GetSqliteMiscTypesRow> GetSqliteMiscTypesAsync()
+        {
+            if (this.Transaction == null)
+            {
+                using (var connection = new SqliteConnection(ConnectionString))
+                {
+                    var result = await connection.QueryFirstOrDefaultAsync<GetSqliteMiscTypesRow>(GetSqliteMiscTypesSql);
+                    return result;
+                }
+            }
+
+            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
+                throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+            return await this.Transaction.Connection.QueryFirstOrDefaultAsync<GetSqliteMiscTypesRow>(GetSqliteMiscTypesSql, transaction: this.Transaction);
         }
 
         private const string GetSqliteTypesCntSql = @"SELECT

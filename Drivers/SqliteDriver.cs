@@ -18,6 +18,27 @@ public sealed partial class SqliteDriver(
 
     private static readonly HashSet<string> IntegerDbTypes = ["integer", "integernotnulldefaultunixepoch"];
 
+    private static readonly HashSet<string> BooleanDbTypes = ["boolean", "bool"];
+
+    // sqlc matches these declared types by prefix (e.g. `VARCHAR(255)` is reported as `VARCHAR(255)`),
+    // see internal/codegen/golang/sqlite_type.go in sqlc
+    private static readonly string[] PrefixMatchedDbTypes =
+    [
+        "character",
+        "varchar",
+        "varyingcharacter",
+        "nchar",
+        "nativecharacter",
+        "nvarchar",
+        "decimal"
+    ];
+
+    private static bool IsIntegerBoolDbType(string dbType)
+    {
+        var lowered = dbType.ToLower();
+        return IntegerDbTypes.Contains(lowered) || BooleanDbTypes.Contains(lowered);
+    }
+
     private const string DateTimeStringFormat = "yyyy-MM-dd HH:mm:ss"; // Default format for DateTime strings - TODO make configurable via Options
 
     private static readonly SqlMapperImplFunc NodaInstantTypeHandler = _ => $$"""
@@ -52,7 +73,14 @@ public sealed partial class SqliteDriver(
             ["string"] = new(
                 new()
                 {
-                    {"text", new()}
+                    {"text", new()},
+                    {"clob", new()},
+                    {"character", new()},
+                    {"varchar", new()},
+                    {"varyingcharacter", new()},
+                    {"nchar", new()},
+                    {"nativecharacter", new()},
+                    {"nvarchar", new()}
                 },
                 readerFn: (ordinal, _) => $"{Variable.Reader.AsVarName()}.GetString({ordinal})"
             ),
@@ -60,20 +88,51 @@ public sealed partial class SqliteDriver(
                 new()
                 {
                     { "integer", new() },
-                    { "integernotnulldefaultunixepoch", new() }
+                    { "integernotnulldefaultunixepoch", new() },
+                    { "int", new() },
+                    { "tinyint", new() },
+                    { "smallint", new() },
+                    { "mediumint", new() },
+                    { "int2", new() }
                 },
                 readerFn: (ordinal, _) => $"{Variable.Reader.AsVarName()}.GetInt32({ordinal})",
                 convertFunc: x => $"Convert.ToInt32({x})"
             ),
+            ["long"] = new(
+                new()
+                {
+                    { "bigint", new() },
+                    { "unsignedbigint", new() },
+                    { "int8", new() }
+                },
+                readerFn: (ordinal, _) => $"{Variable.Reader.AsVarName()}.GetInt64({ordinal})",
+                convertFunc: x => $"Convert.ToInt64({x})"
+            ),
             ["decimal"] = new(
                 new()
                 {
-                    {"real", new()}
+                    {"real", new()},
+                    {"numeric", new()},
+                    {"decimal", new()}
                 },
                 readerFn: (ordinal, _) => $"{Variable.Reader.AsVarName()}.GetDecimal({ordinal})"
             ),
+            ["double"] = new(
+                new()
+                {
+                    { "double", new() },
+                    { "doubleprecision", new() },
+                    { "float", new() }
+                },
+                readerFn: (ordinal, _) => $"{Variable.Reader.AsVarName()}.GetDouble({ordinal})"
+            ),
             ["DateTime"] = new(
-                [],
+                new()
+                {
+                    { "date", new() },
+                    { "datetime", new() },
+                    { "timestamp", new() }
+                },
                 readerFn: (ordinal, dbType) =>
                 {
                     if (IntegerDbTypes.Contains(dbType.ToLower()))
@@ -111,19 +170,41 @@ public sealed partial class SqliteDriver(
                 sqlMapperImpl: NodaInstantTypeHandler
             ),
             ["bool"] = new(
-                [],
+                new()
+                {
+                    { "boolean", new() },
+                    { "bool", new() }
+                },
                 readerFn: (ordinal, dbType) =>
                 {
-                    var getFunc = IntegerDbTypes.Contains(dbType.ToLower()) ? "GetInt32" : "GetString";
+                    var getFunc = IsIntegerBoolDbType(dbType) ? "GetInt32" : "GetString";
                     return $"Convert.ToBoolean({Variable.Reader.AsVarName()}.{getFunc}({ordinal}))";
                 },
                 writerFn: (el, dbType, notNull, isDapper, isLegacy) =>
                 {
                     var nullValue = isDapper ? "null" : "(object)DBNull.Value";
                     var optionalCast = notNull ? string.Empty : "(int?)";
-                    var convertFunc = IntegerDbTypes.Contains(dbType.ToLower()) ? $"{optionalCast} Convert.ToInt32" : "Convert.ToString";
+                    var convertFunc = IsIntegerBoolDbType(dbType) ? $"{optionalCast} Convert.ToInt32" : "Convert.ToString";
                     return $"{el} != null ? {convertFunc}({el}) : {nullValue}";
                 }
+            ),
+            ["JsonElement"] = new(
+                new()
+                {
+                    { "json", new() },
+                    { "jsonb", new() }
+                },
+                readerFn: (ordinal, _) => $"JsonSerializer.Deserialize<JsonElement>({Variable.Reader.AsVarName()}.GetString({ordinal}))",
+                writerFn: (el, _, notNull, isDapper, isLegacy) =>
+                {
+                    if (notNull)
+                        return $"{el}.GetRawText()";
+                    var nullValue = isDapper ? "null" : "(object)DBNull.Value";
+                    return $"{el}?.GetRawText() ?? {nullValue}";
+                },
+                usingDirectives: ["System.Text.Json"],
+                sqlMapper: "SqlMapper.AddTypeHandler(typeof(JsonElement), new JsonElementTypeHandler());",
+                sqlMapperImpl: JsonElementTypeHandler
             ),
             ["object"] = new(
                 new()
@@ -153,7 +234,35 @@ public sealed partial class SqliteDriver(
         }
         """;
 
+    private static readonly SqlMapperImplFunc JsonElementTypeHandler = _ => $$"""
+        private class JsonElementTypeHandler : SqlMapper.TypeHandler<JsonElement>
+        {
+            public override JsonElement Parse(object value)
+            {
+                if (value is string s)
+                    return JsonDocument.Parse(s).RootElement;
+                throw new DataException($"Cannot convert {value?.GetType()} to JsonElement");
+            }
+
+            public override void SetValue(IDbDataParameter parameter, JsonElement value)
+            {
+                parameter.Value = value.GetRawText();
+            }
+        }
+        """;
+
     public override string TransactionClassName => "SqliteTransaction";
+
+    // sqlc reports the declared type with whitespace removed and arguments kept, e.g. `VARCHAR(255)`,
+    // `UNSIGNEDBIGINT`, `DOUBLEPRECISION`; arguments are irrelevant for the C# type, and some types match by prefix.
+    protected override string NormalizeColumnTypeName(Column column)
+    {
+        var typeName = column.Type.Name.ToLower();
+        var parenthesis = typeName.IndexOf('(');
+        if (parenthesis >= 0)
+            typeName = typeName[..parenthesis];
+        return PrefixMatchedDbTypes.FirstOrDefault(typeName.StartsWith) ?? typeName;
+    }
 
     public override IDictionary<string, string> GetPackageReferences()
     {
@@ -173,6 +282,18 @@ public sealed partial class SqliteDriver(
                 "Microsoft.Data.Sqlite"
             ]
         );
+    }
+
+    public override ISet<string> GetUsingDirectivesForModels()
+    {
+        // `DateTime` columns are mapped natively, so models need `System` only when such a column exists
+        var hasDateTimeColumn = Tables.Values
+            .SelectMany(schemaTables => schemaTables.Values)
+            .SelectMany(table => table.Columns)
+            .Any(column => GetCsharpType(column, null).TrimEnd('?') == "DateTime");
+        return base
+            .GetUsingDirectivesForModels()
+            .AddRangeIf(["System"], hasDateTimeColumn);
     }
 
     public override ISet<string> GetUsingDirectivesForUtils()

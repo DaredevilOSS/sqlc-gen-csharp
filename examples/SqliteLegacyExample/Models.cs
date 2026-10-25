@@ -4,7 +4,9 @@ namespace SqliteLegacyExampleGen
     using NodaTime;
     using NodaTime.Extensions;
     using NodaTime.Text;
+    using System;
     using System.Linq;
+    using System.Text.Json;
 
     public class Author
     {
@@ -31,5 +33,32 @@ namespace SqliteLegacyExampleGen
         public int? CIntegerNodaInstantOverride { get; set; }
         public string CTextBoolOverride { get; set; }
         public int? CIntegerBoolOverride { get; set; }
+        public int? CInt { get; set; }
+        public int? CTinyint { get; set; }
+        public int? CSmallint { get; set; }
+        public int? CMediumint { get; set; }
+        public int? CInt2 { get; set; }
+        public long? CBigint { get; set; }
+        public long? CUnsignedBigInt { get; set; }
+        public long? CInt8 { get; set; }
+        public double? CDouble { get; set; }
+        public double? CDoublePrecision { get; set; }
+        public double? CFloat { get; set; }
+        public decimal? CNumeric { get; set; }
+        public decimal? CDecimal { get; set; }
+        public string CCharacter { get; set; }
+        public string CVarchar { get; set; }
+        public string CVaryingCharacter { get; set; }
+        public string CNchar { get; set; }
+        public string CNativeCharacter { get; set; }
+        public string CNvarchar { get; set; }
+        public string CClob { get; set; }
+        public bool? CBoolean { get; set; }
+        public bool? CBool { get; set; }
+        public DateTime? CDate { get; set; }
+        public DateTime? CDatetime { get; set; }
+        public DateTime? CTimestamp { get; set; }
+        public JsonElement? CJson { get; set; }
+        public JsonElement? CJsonb { get; set; }
     };
 }

@@ -92,7 +92,9 @@ Outliers:
 
 **SQLite (`SqliteDriver`)**
 - Params: numbered `?N` replaced by number, otherwise `?` replaced in order. A new `SqliteConnection` per call; no `IDisposable`.
-- Only `integer`, `real` (-> `decimal`), `text`, `blob` map natively; `DateTime`, `bool`, `Instant` come via overrides.
+- Every type name sqlc recognises maps natively (see `docs/06_Sqlite.md`). sqlc reports the declared type uppercase-as-written,
+  spaces removed, with arguments kept (`VARCHAR(255)`, `UNSIGNEDBIGINT`); `SqliteDriver.NormalizeColumnTypeName` (hook on `DbDriver`)
+  lowercases it, strips `(...)` and collapses sqlc's prefix-matched types. `Instant` still comes only via overrides.
 - `:copyfrom`: `Utils.TransformQueryForSqliteBatch` expands the `VALUES (...)` clause at runtime with suffixed parameters.
   Does not apply writer functions or overrides.
 - `:execlastid`: relies on a user-written `RETURNING`.

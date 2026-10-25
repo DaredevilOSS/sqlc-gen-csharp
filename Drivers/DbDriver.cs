@@ -422,9 +422,18 @@ public abstract class DbDriver
         throw new NotSupportedException($"Column {column.Name} has unsupported column type: {column.Type.Name} in {GetType().Name}");
     }
 
-    private static bool DoesColumnMappingApply(ColumnMapping columnMapping, Column column)
+    /// <summary>
+    /// Maps the raw column type name reported by sqlc to the key used in <see cref="ColumnMapping.DbTypes"/>.
+    /// Drivers override it when the engine accepts type names that need normalization (e.g. SQLite's `VARCHAR(255)`).
+    /// </summary>
+    protected virtual string NormalizeColumnTypeName(Column column)
     {
-        var columnType = column.Type.Name.ToLower();
+        return column.Type.Name.ToLower();
+    }
+
+    private bool DoesColumnMappingApply(ColumnMapping columnMapping, Column column)
+    {
+        var columnType = NormalizeColumnTypeName(column);
         if (!columnMapping.DbTypes.TryGetValue(columnType, out var typeInfo))
             return false;
         if (typeInfo.Length is null)
@@ -436,7 +445,7 @@ public abstract class DbDriver
     {
         if (column.IsArray)
             return null; // TODO: handle array columns
-        var columnType = column.Type.Name.ToLower();
+        var columnType = NormalizeColumnTypeName(column);
         foreach (var columnMapping in ColumnMappings.Values)
         {
             if (columnMapping.DbTypes.TryGetValue(columnType, out var dbTypeOverride))
