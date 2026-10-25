@@ -58,6 +58,7 @@ public enum KnownTestType
     PostgresEnumDataType,
     PostgresNotNullTypes,
     PostgresBitDataTypes,
+    PostgresExtendedStringDataTypes,
 
     // :copyfrom (Batch)
     PostgresStringCopyFrom,
@@ -70,6 +71,7 @@ public enum KnownTestType
     PostgresArrayCopyFrom,
     PostgresGeoCopyFrom,
     PostgresBitCopyFrom,
+    PostgresExtendedStringCopyFrom,
 
     // MySql
     MySqlTransaction,
@@ -179,6 +181,7 @@ internal static class Config
         KnownTestType.PostgresNotNullTypes,
         KnownTestType.PostgresFullTextSearchDataTypes,
         KnownTestType.PostgresBitDataTypes,
+        KnownTestType.PostgresExtendedStringDataTypes,
 
         // :copyfrom (Batch)
         KnownTestType.PostgresGeoCopyFrom,
@@ -190,7 +193,8 @@ internal static class Config
         KnownTestType.PostgresJsonCopyFrom,
         KnownTestType.PostgresArrayCopyFrom,
         KnownTestType.PostgresNetworkCopyFrom,
-        KnownTestType.PostgresBitCopyFrom
+        KnownTestType.PostgresBitCopyFrom,
+        KnownTestType.PostgresExtendedStringCopyFrom
     ];
 
     private static readonly SortedSet<KnownTestType> _sqliteTestTypes = [

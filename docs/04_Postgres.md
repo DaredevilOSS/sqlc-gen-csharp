@@ -45,6 +45,11 @@ we consider support for the different data types separately for batch inserts an
 | bpchar                                  | ✅         | ✅                  |
 | varchar, character varying              | ✅         | ✅                  |
 | text                                    | ✅         | ✅                  |
+| name                                    | ✅         | ✅                  |
+| citext                                  | ✅         | ✅                  |
+| ltree                                   | ✅         | ✅                  |
+| lquery                                  | ✅         | ✅                  |
+| ltxtquery                               | ✅         | ✅                  |
 | bytea                                   | ✅         | ✅                  |
 | bit, bit varying (varbit)               | ✅         | ✅                  |
 | 2-dimensional arrays (e.g text[],int[]) | ✅         | ✅                  |
@@ -90,6 +95,11 @@ INSERT INTO tab1 (macaddr8_field) VALUES (sqlc.narg('macaddr8_field')::macaddr8)
 *** `bit`, `bit(n)`, `varbit` and `bit varying` map to `System.Collections.BitArray` (including `bit(1)`, which Npgsql
 would otherwise return as `bool`). Arrays of bit strings are supported for regular queries; in `:copyfrom` a `bit(n)[]` column is not
 supported since Npgsql writes `BitArray[]` as `varbit[]`, which does not match the column type in the binary `COPY` protocol.
+
+*** `name`, `citext`, `ltree`, `lquery` and `ltxtquery` map to `string`. The last four come from the `citext` / `ltree` extensions, which
+must be created in your schema (`CREATE EXTENSION citext;`) for sqlc to recognize them. When using Dapper, `ltree`, `lquery` and `ltxtquery`
+parameters need an explicit cast in the INSERT statement (e.g. `sqlc.narg('c_ltree')::ltree`), since Dapper sends the value as `text`.
+`lquery` and `ltxtquery` have no equality operator, so they cannot be used in `GROUP BY` / `DISTINCT`.
 
 *** `any` is a pseudo-type reported by sqlc when it cannot infer a column's type; it maps to `object` in C#.
 *** `hstore` is a key-value store type that maps to `object` in C#; readers use `GetValue()` to retrieve the value.

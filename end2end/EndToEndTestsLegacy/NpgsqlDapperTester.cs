@@ -20,6 +20,7 @@ namespace EndToEndTests
             await QuerySql.TruncatePostgresGeoTypesAsync();
             await QuerySql.TruncatePostgresNetworkTypesAsync();
             await QuerySql.TruncatePostgresBitTypesAsync();
+            await QuerySql.TruncatePostgresExtendedStringTypesAsync();
             await QuerySql.TruncatePostgresArrayTypesAsync();
             await QuerySql.TruncatePostgresSpecialTypesAsync();
         }

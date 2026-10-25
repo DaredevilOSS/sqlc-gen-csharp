@@ -56,6 +56,14 @@ namespace NpgsqlDapperLegacyExampleGen
         public string CBpchar { get; set; }
         public string CText { get; set; }
     };
+    public class PostgresExtendedStringType
+    {
+        public string CCitext { get; set; }
+        public string CLtree { get; set; }
+        public string CLquery { get; set; }
+        public string CLtxtquery { get; set; }
+        public string CName { get; set; }
+    };
     public class PostgresDatetimeType
     {
         public DateTime? CDate { get; set; }

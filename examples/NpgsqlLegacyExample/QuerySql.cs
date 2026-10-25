@@ -1880,6 +1880,253 @@ namespace NpgsqlLegacyExampleGen
             return null;
         }
 
+        private const string InsertPostgresExtendedStringTypesSql = @"
+                                                                      INSERT INTO postgres_extended_string_types
+                                                                      (
+                                                                          c_citext,
+                                                                          c_ltree,
+                                                                          c_lquery,
+                                                                          c_ltxtquery,
+                                                                          c_name
+                                                                      ) VALUES (
+                                                                          @c_citext,
+                                                                          @c_ltree::ltree,
+                                                                          @c_lquery::lquery,
+                                                                          @c_ltxtquery::ltxtquery,
+                                                                          @c_name
+                                                                      )";
+        public class InsertPostgresExtendedStringTypesArgs
+        {
+            public string CCitext { get; set; }
+            public string CLtree { get; set; }
+            public string CLquery { get; set; }
+            public string CLtxtquery { get; set; }
+            public string CName { get; set; }
+        };
+        public async Task InsertPostgresExtendedStringTypesAsync(InsertPostgresExtendedStringTypesArgs args)
+        {
+            if (this.Transaction == null)
+            {
+                using (var connection = await GetDataSource().OpenConnectionAsync())
+                {
+                    using (var command = connection.CreateCommand())
+                    {
+                        command.CommandText = InsertPostgresExtendedStringTypesSql;
+                        command.Parameters.AddWithValue("@c_citext", NpgsqlTypes.NpgsqlDbType.Citext, args.CCitext ?? (object)DBNull.Value);
+                        command.Parameters.AddWithValue("@c_ltree", NpgsqlTypes.NpgsqlDbType.LTree, args.CLtree ?? (object)DBNull.Value);
+                        command.Parameters.AddWithValue("@c_lquery", NpgsqlTypes.NpgsqlDbType.LQuery, args.CLquery ?? (object)DBNull.Value);
+                        command.Parameters.AddWithValue("@c_ltxtquery", NpgsqlTypes.NpgsqlDbType.LTxtQuery, args.CLtxtquery ?? (object)DBNull.Value);
+                        command.Parameters.AddWithValue("@c_name", NpgsqlTypes.NpgsqlDbType.Name, args.CName ?? (object)DBNull.Value);
+                        await command.ExecuteNonQueryAsync();
+                    }
+
+                    return;
+                }
+            }
+
+            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
+                throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+            using (var command = this.Transaction.Connection.CreateCommand())
+            {
+                command.CommandText = InsertPostgresExtendedStringTypesSql;
+                command.Transaction = this.Transaction;
+                command.Parameters.AddWithValue("@c_citext", NpgsqlTypes.NpgsqlDbType.Citext, args.CCitext ?? (object)DBNull.Value);
+                command.Parameters.AddWithValue("@c_ltree", NpgsqlTypes.NpgsqlDbType.LTree, args.CLtree ?? (object)DBNull.Value);
+                command.Parameters.AddWithValue("@c_lquery", NpgsqlTypes.NpgsqlDbType.LQuery, args.CLquery ?? (object)DBNull.Value);
+                command.Parameters.AddWithValue("@c_ltxtquery", NpgsqlTypes.NpgsqlDbType.LTxtQuery, args.CLtxtquery ?? (object)DBNull.Value);
+                command.Parameters.AddWithValue("@c_name", NpgsqlTypes.NpgsqlDbType.Name, args.CName ?? (object)DBNull.Value);
+                await command.ExecuteNonQueryAsync();
+            }
+        }
+
+        private const string InsertPostgresExtendedStringTypesBatchSql = "COPY postgres_extended_string_types (c_citext, c_ltree, c_lquery, c_ltxtquery, c_name) FROM STDIN (FORMAT BINARY)";
+        public class InsertPostgresExtendedStringTypesBatchArgs
+        {
+            public string CCitext { get; set; }
+            public string CLtree { get; set; }
+            public string CLquery { get; set; }
+            public string CLtxtquery { get; set; }
+            public string CName { get; set; }
+        };
+        public async Task InsertPostgresExtendedStringTypesBatchAsync(List<InsertPostgresExtendedStringTypesBatchArgs> args)
+        {
+            using (var connection = await GetDataSource().OpenConnectionAsync())
+            {
+                using (var writer = await connection.BeginBinaryImportAsync(InsertPostgresExtendedStringTypesBatchSql))
+                {
+                    foreach (var row in args)
+                    {
+                        await writer.StartRowAsync();
+                        await writer.WriteAsync(row.CCitext ?? (object)DBNull.Value, NpgsqlTypes.NpgsqlDbType.Citext);
+                        await writer.WriteAsync(row.CLtree ?? (object)DBNull.Value, NpgsqlTypes.NpgsqlDbType.LTree);
+                        await writer.WriteAsync(row.CLquery ?? (object)DBNull.Value, NpgsqlTypes.NpgsqlDbType.LQuery);
+                        await writer.WriteAsync(row.CLtxtquery ?? (object)DBNull.Value, NpgsqlTypes.NpgsqlDbType.LTxtQuery);
+                        await writer.WriteAsync(row.CName ?? (object)DBNull.Value, NpgsqlTypes.NpgsqlDbType.Name);
+                    }
+
+                    await writer.CompleteAsync();
+                }
+            }
+        }
+
+        private const string GetPostgresExtendedStringTypesSql = "SELECT c_citext, c_ltree, c_lquery, c_ltxtquery, c_name FROM postgres_extended_string_types LIMIT 1";
+        public class GetPostgresExtendedStringTypesRow
+        {
+            public string CCitext { get; set; }
+            public string CLtree { get; set; }
+            public string CLquery { get; set; }
+            public string CLtxtquery { get; set; }
+            public string CName { get; set; }
+        };
+        public async Task<GetPostgresExtendedStringTypesRow> GetPostgresExtendedStringTypesAsync()
+        {
+            if (this.Transaction == null)
+            {
+                using (var connection = await GetDataSource().OpenConnectionAsync())
+                {
+                    using (var command = connection.CreateCommand())
+                    {
+                        command.CommandText = GetPostgresExtendedStringTypesSql;
+                        using (var reader = await command.ExecuteReaderAsync())
+                        {
+                            if (await reader.ReadAsync())
+                            {
+                                return new GetPostgresExtendedStringTypesRow
+                                {
+                                    CCitext = reader.IsDBNull(0) ? null : reader.GetString(0),
+                                    CLtree = reader.IsDBNull(1) ? null : reader.GetString(1),
+                                    CLquery = reader.IsDBNull(2) ? null : reader.GetString(2),
+                                    CLtxtquery = reader.IsDBNull(3) ? null : reader.GetString(3),
+                                    CName = reader.IsDBNull(4) ? null : reader.GetString(4)
+                                };
+                            }
+                        }
+                    }
+                };
+                return null;
+            }
+
+            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
+                throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+            using (var command = this.Transaction.Connection.CreateCommand())
+            {
+                command.CommandText = GetPostgresExtendedStringTypesSql;
+                command.Transaction = this.Transaction;
+                using (var reader = await command.ExecuteReaderAsync())
+                {
+                    if (await reader.ReadAsync())
+                    {
+                        return new GetPostgresExtendedStringTypesRow
+                        {
+                            CCitext = reader.IsDBNull(0) ? null : reader.GetString(0),
+                            CLtree = reader.IsDBNull(1) ? null : reader.GetString(1),
+                            CLquery = reader.IsDBNull(2) ? null : reader.GetString(2),
+                            CLtxtquery = reader.IsDBNull(3) ? null : reader.GetString(3),
+                            CName = reader.IsDBNull(4) ? null : reader.GetString(4)
+                        };
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        private const string TruncatePostgresExtendedStringTypesSql = "TRUNCATE TABLE postgres_extended_string_types";
+        public async Task TruncatePostgresExtendedStringTypesAsync()
+        {
+            if (this.Transaction == null)
+            {
+                using (var connection = await GetDataSource().OpenConnectionAsync())
+                {
+                    using (var command = connection.CreateCommand())
+                    {
+                        command.CommandText = TruncatePostgresExtendedStringTypesSql;
+                        await command.ExecuteNonQueryAsync();
+                    }
+
+                    return;
+                }
+            }
+
+            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
+                throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+            using (var command = this.Transaction.Connection.CreateCommand())
+            {
+                command.CommandText = TruncatePostgresExtendedStringTypesSql;
+                command.Transaction = this.Transaction;
+                await command.ExecuteNonQueryAsync();
+            }
+        }
+
+        private const string GetPostgresExtendedStringTypesCntSql = @"SELECT
+                                                                          c_citext,
+                                                                          c_ltree,
+                                                                          c_name,
+                                                                          COUNT(*) AS cnt
+                                                                      FROM postgres_extended_string_types
+                                                                      GROUP BY
+                                                                          c_citext,
+                                                                          c_ltree,
+                                                                          c_name
+                                                                      LIMIT 1";
+        public class GetPostgresExtendedStringTypesCntRow
+        {
+            public string CCitext { get; set; }
+            public string CLtree { get; set; }
+            public string CName { get; set; }
+            public long Cnt { get; set; }
+        };
+        public async Task<GetPostgresExtendedStringTypesCntRow> GetPostgresExtendedStringTypesCntAsync()
+        {
+            if (this.Transaction == null)
+            {
+                using (var connection = await GetDataSource().OpenConnectionAsync())
+                {
+                    using (var command = connection.CreateCommand())
+                    {
+                        command.CommandText = GetPostgresExtendedStringTypesCntSql;
+                        using (var reader = await command.ExecuteReaderAsync())
+                        {
+                            if (await reader.ReadAsync())
+                            {
+                                return new GetPostgresExtendedStringTypesCntRow
+                                {
+                                    CCitext = reader.IsDBNull(0) ? null : reader.GetString(0),
+                                    CLtree = reader.IsDBNull(1) ? null : reader.GetString(1),
+                                    CName = reader.IsDBNull(2) ? null : reader.GetString(2),
+                                    Cnt = reader.GetInt64(3)
+                                };
+                            }
+                        }
+                    }
+                };
+                return null;
+            }
+
+            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
+                throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+            using (var command = this.Transaction.Connection.CreateCommand())
+            {
+                command.CommandText = GetPostgresExtendedStringTypesCntSql;
+                command.Transaction = this.Transaction;
+                using (var reader = await command.ExecuteReaderAsync())
+                {
+                    if (await reader.ReadAsync())
+                    {
+                        return new GetPostgresExtendedStringTypesCntRow
+                        {
+                            CCitext = reader.IsDBNull(0) ? null : reader.GetString(0),
+                            CLtree = reader.IsDBNull(1) ? null : reader.GetString(1),
+                            CName = reader.IsDBNull(2) ? null : reader.GetString(2),
+                            Cnt = reader.GetInt64(3)
+                        };
+                    }
+                }
+            }
+
+            return null;
+        }
+
         private const string InsertPostgresDateTimeTypesSql = @"
                                                                 INSERT INTO postgres_datetime_types
                                                                 (

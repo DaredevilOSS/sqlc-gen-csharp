@@ -113,7 +113,13 @@ public sealed class NpgsqlDriver : EnumDbDriver, IOne, IMany, IExec, IExecRows, 
                     { "tinytext", new() },
                     { "varchar", new() },
                     { "jsonpath", new() },
-                    { "macaddr8", new() }
+                    { "macaddr8", new() },
+                    // Fully qualified so that existing generated files do not need an additional `using NpgsqlTypes;`
+                    { "citext", new(DbTypeOverride: "NpgsqlTypes.NpgsqlDbType.Citext") },
+                    { "ltree", new(DbTypeOverride: "NpgsqlTypes.NpgsqlDbType.LTree") },
+                    { "lquery", new(DbTypeOverride: "NpgsqlTypes.NpgsqlDbType.LQuery") },
+                    { "ltxtquery", new(DbTypeOverride: "NpgsqlTypes.NpgsqlDbType.LTxtQuery") },
+                    { "name", new(DbTypeOverride: "NpgsqlTypes.NpgsqlDbType.Name") }
                 },
                 readerFn: (ordinal, _) => $"{Variable.Reader.AsVarName()}.GetString({ordinal})",
                 readerArrayFn: (ordinal, _) => $"{Variable.Reader.AsVarName()}.GetFieldValue<string[]>({ordinal})"

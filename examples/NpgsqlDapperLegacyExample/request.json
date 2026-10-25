@@ -368,6 +368,63 @@
           },
           {
             "rel": {
+              "name": "postgres_extended_string_types"
+            },
+            "columns": [
+              {
+                "name": "c_citext",
+                "length": -1,
+                "table": {
+                  "name": "postgres_extended_string_types"
+                },
+                "type": {
+                  "name": "citext"
+                }
+              },
+              {
+                "name": "c_ltree",
+                "length": -1,
+                "table": {
+                  "name": "postgres_extended_string_types"
+                },
+                "type": {
+                  "name": "ltree"
+                }
+              },
+              {
+                "name": "c_lquery",
+                "length": -1,
+                "table": {
+                  "name": "postgres_extended_string_types"
+                },
+                "type": {
+                  "name": "lquery"
+                }
+              },
+              {
+                "name": "c_ltxtquery",
+                "length": -1,
+                "table": {
+                  "name": "postgres_extended_string_types"
+                },
+                "type": {
+                  "name": "ltxtquery"
+                }
+              },
+              {
+                "name": "c_name",
+                "length": -1,
+                "table": {
+                  "name": "postgres_extended_string_types"
+                },
+                "type": {
+                  "name": "name"
+                }
+              }
+            ]
+          },
+          {
+            "rel": {
               "name": "postgres_datetime_types"
             },
             "columns": [
@@ -34917,6 +34974,287 @@
             "type": {
               "name": "text"
             }
+          }
+        }
+      ],
+      "filename": "query.sql"
+    },
+    {
+      "text": "\nINSERT INTO postgres_extended_string_types\n(\n    c_citext,\n    c_ltree,\n    c_lquery,\n    c_ltxtquery,\n    c_name\n) VALUES (\n    $1,\n    $2::ltree,\n    $3::lquery,\n    $4::ltxtquery,\n    $5\n)",
+      "name": "InsertPostgresExtendedStringTypes",
+      "cmd": ":exec",
+      "parameters": [
+        {
+          "number": 1,
+          "column": {
+            "name": "c_citext",
+            "length": -1,
+            "isNamedParam": true,
+            "table": {
+              "schema": "public",
+              "name": "postgres_extended_string_types"
+            },
+            "type": {
+              "name": "citext"
+            },
+            "originalName": "c_citext"
+          }
+        },
+        {
+          "number": 2,
+          "column": {
+            "name": "c_ltree",
+            "length": -1,
+            "type": {
+              "name": "ltree"
+            }
+          }
+        },
+        {
+          "number": 3,
+          "column": {
+            "name": "c_lquery",
+            "length": -1,
+            "type": {
+              "name": "lquery"
+            }
+          }
+        },
+        {
+          "number": 4,
+          "column": {
+            "name": "c_ltxtquery",
+            "length": -1,
+            "type": {
+              "name": "ltxtquery"
+            }
+          }
+        },
+        {
+          "number": 5,
+          "column": {
+            "name": "c_name",
+            "length": -1,
+            "isNamedParam": true,
+            "table": {
+              "schema": "public",
+              "name": "postgres_extended_string_types"
+            },
+            "type": {
+              "name": "name"
+            },
+            "originalName": "c_name"
+          }
+        }
+      ],
+      "comments": [
+        " Extended string types "
+      ],
+      "filename": "query.sql",
+      "insert_into_table": {
+        "name": "postgres_extended_string_types"
+      }
+    },
+    {
+      "text": "INSERT INTO postgres_extended_string_types\n(\n    c_citext,\n    c_ltree,\n    c_lquery,\n    c_ltxtquery,\n    c_name\n) VALUES ($1, $2, $3, $4, $5)",
+      "name": "InsertPostgresExtendedStringTypesBatch",
+      "cmd": ":copyfrom",
+      "parameters": [
+        {
+          "number": 1,
+          "column": {
+            "name": "c_citext",
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "postgres_extended_string_types"
+            },
+            "type": {
+              "name": "citext"
+            },
+            "originalName": "c_citext"
+          }
+        },
+        {
+          "number": 2,
+          "column": {
+            "name": "c_ltree",
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "postgres_extended_string_types"
+            },
+            "type": {
+              "name": "ltree"
+            },
+            "originalName": "c_ltree"
+          }
+        },
+        {
+          "number": 3,
+          "column": {
+            "name": "c_lquery",
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "postgres_extended_string_types"
+            },
+            "type": {
+              "name": "lquery"
+            },
+            "originalName": "c_lquery"
+          }
+        },
+        {
+          "number": 4,
+          "column": {
+            "name": "c_ltxtquery",
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "postgres_extended_string_types"
+            },
+            "type": {
+              "name": "ltxtquery"
+            },
+            "originalName": "c_ltxtquery"
+          }
+        },
+        {
+          "number": 5,
+          "column": {
+            "name": "c_name",
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "postgres_extended_string_types"
+            },
+            "type": {
+              "name": "name"
+            },
+            "originalName": "c_name"
+          }
+        }
+      ],
+      "filename": "query.sql",
+      "insert_into_table": {
+        "name": "postgres_extended_string_types"
+      }
+    },
+    {
+      "text": "SELECT c_citext, c_ltree, c_lquery, c_ltxtquery, c_name FROM postgres_extended_string_types LIMIT 1",
+      "name": "GetPostgresExtendedStringTypes",
+      "cmd": ":one",
+      "columns": [
+        {
+          "name": "c_citext",
+          "length": -1,
+          "table": {
+            "name": "postgres_extended_string_types"
+          },
+          "type": {
+            "name": "citext"
+          },
+          "originalName": "c_citext"
+        },
+        {
+          "name": "c_ltree",
+          "length": -1,
+          "table": {
+            "name": "postgres_extended_string_types"
+          },
+          "type": {
+            "name": "ltree"
+          },
+          "originalName": "c_ltree"
+        },
+        {
+          "name": "c_lquery",
+          "length": -1,
+          "table": {
+            "name": "postgres_extended_string_types"
+          },
+          "type": {
+            "name": "lquery"
+          },
+          "originalName": "c_lquery"
+        },
+        {
+          "name": "c_ltxtquery",
+          "length": -1,
+          "table": {
+            "name": "postgres_extended_string_types"
+          },
+          "type": {
+            "name": "ltxtquery"
+          },
+          "originalName": "c_ltxtquery"
+        },
+        {
+          "name": "c_name",
+          "length": -1,
+          "table": {
+            "name": "postgres_extended_string_types"
+          },
+          "type": {
+            "name": "name"
+          },
+          "originalName": "c_name"
+        }
+      ],
+      "filename": "query.sql"
+    },
+    {
+      "text": "TRUNCATE TABLE postgres_extended_string_types",
+      "name": "TruncatePostgresExtendedStringTypes",
+      "cmd": ":exec",
+      "filename": "query.sql"
+    },
+    {
+      "text": "SELECT\n    c_citext,\n    c_ltree,\n    c_name,\n    COUNT(*) AS cnt\nFROM postgres_extended_string_types\nGROUP BY\n    c_citext,\n    c_ltree,\n    c_name\nLIMIT 1",
+      "name": "GetPostgresExtendedStringTypesCnt",
+      "cmd": ":one",
+      "columns": [
+        {
+          "name": "c_citext",
+          "length": -1,
+          "table": {
+            "name": "postgres_extended_string_types"
+          },
+          "type": {
+            "name": "citext"
+          },
+          "originalName": "c_citext"
+        },
+        {
+          "name": "c_ltree",
+          "length": -1,
+          "table": {
+            "name": "postgres_extended_string_types"
+          },
+          "type": {
+            "name": "ltree"
+          },
+          "originalName": "c_ltree"
+        },
+        {
+          "name": "c_name",
+          "length": -1,
+          "table": {
+            "name": "postgres_extended_string_types"
+          },
+          "type": {
+            "name": "name"
+          },
+          "originalName": "c_name"
+        },
+        {
+          "name": "cnt",
+          "notNull": true,
+          "length": -1,
+          "isFuncCall": true,
+          "type": {
+            "name": "bigint"
           }
         }
       ],

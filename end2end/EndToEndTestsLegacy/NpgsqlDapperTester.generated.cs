@@ -863,6 +863,32 @@ namespace EndToEndTests
         }
 
         [Test]
+        [TestCase("Hello World", "Top.Science.Astronomy", "Top.Science.*", "Europe & Russia@* & !Transportation", "some_name")]
+        [TestCase(null, null, null, null, null)]
+        public async Task TestPostgresExtendedStringTypesAsync(string cCitext, string cLtree, string cLquery, string cLtxtquery, string cName)
+        {
+            await QuerySql.InsertPostgresExtendedStringTypesAsync(new QuerySql.InsertPostgresExtendedStringTypesArgs { CCitext = cCitext, CLtree = cLtree, CLquery = cLquery, CLtxtquery = cLtxtquery, CName = cName });
+            var expected = new QuerySql.GetPostgresExtendedStringTypesRow
+            {
+                CCitext = cCitext,
+                CLtree = cLtree,
+                CLquery = cLquery,
+                CLtxtquery = cLtxtquery,
+                CName = cName
+            };
+            var actual = await QuerySql.GetPostgresExtendedStringTypesAsync();
+            AssertSingularEquals(expected, actual);
+            void AssertSingularEquals(QuerySql.GetPostgresExtendedStringTypesRow x, QuerySql.GetPostgresExtendedStringTypesRow y)
+            {
+                Assert.That(x.CCitext, Is.EqualTo(y.CCitext));
+                Assert.That(x.CLtree, Is.EqualTo(y.CLtree));
+                Assert.That(x.CLquery, Is.EqualTo(y.CLquery));
+                Assert.That(x.CLtxtquery, Is.EqualTo(y.CLtxtquery));
+                Assert.That(x.CName, Is.EqualTo(y.CName));
+            }
+        }
+
+        [Test]
         [TestCase(100, "z", "Sex Pistols", "Anarchy in the U.K", "Yoshimi Battles the Pink Robots", "Never Mind the Bollocks...")]
         [TestCase(10, null, null, null, null, null)]
         public async Task TestStringCopyFromAsync(int batchSize, string cChar, string cVarchar, string cCharacterVarying, string cBpchar, string cText)
@@ -1190,6 +1216,36 @@ namespace EndToEndTests
                 Assert.That(x.CVarbit, Is.EqualTo(y.CVarbit));
                 Assert.That(x.CBitVarying, Is.EqualTo(y.CBitVarying));
             }
+        }
+
+        [Test]
+        [TestCase(100, "Hello World", "Top.Science.Astronomy", "Top.Science.*", "Europe & Russia@* & !Transportation", "some_name")]
+        [TestCase(10, null, null, null, null, null)]
+        public async Task TestPostgresExtendedStringCopyFromAsync(int batchSize, string cCitext, string cLtree, string cLquery, string cLtxtquery, string cName)
+        {
+            var batchArgs = Enumerable.Range(0, batchSize).Select(_ => new QuerySql.InsertPostgresExtendedStringTypesBatchArgs { CCitext = cCitext, CLtree = cLtree, CLquery = cLquery, CLtxtquery = cLtxtquery, CName = cName }).ToList();
+            await QuerySql.InsertPostgresExtendedStringTypesBatchAsync(batchArgs);
+            var expected = new QuerySql.GetPostgresExtendedStringTypesCntRow
+            {
+                Cnt = batchSize,
+                CCitext = cCitext,
+                CLtree = cLtree,
+                CName = cName
+            };
+            var actual = await QuerySql.GetPostgresExtendedStringTypesCntAsync();
+            AssertSingularEquals(expected, actual);
+            void AssertSingularEquals(QuerySql.GetPostgresExtendedStringTypesCntRow x, QuerySql.GetPostgresExtendedStringTypesCntRow y)
+            {
+                Assert.That(x.Cnt, Is.EqualTo(y.Cnt));
+                Assert.That(x.CCitext, Is.EqualTo(y.CCitext));
+                Assert.That(x.CLtree, Is.EqualTo(y.CLtree));
+                Assert.That(x.CName, Is.EqualTo(y.CName));
+            }
+
+            // lquery and ltxtquery have no equality operator so they cannot be grouped by
+            var actualQueries = await QuerySql.GetPostgresExtendedStringTypesAsync();
+            Assert.That(actualQueries.CLquery, Is.EqualTo(cLquery));
+            Assert.That(actualQueries.CLtxtquery, Is.EqualTo(cLtxtquery));
         }
     }
 }

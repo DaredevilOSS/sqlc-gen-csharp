@@ -3,7 +3,7 @@
 2
 postgresql-examples/config/postgresql/authors/schema.sql+examples/config/postgresql/types/schema.sql",examples/config/postgresql/authors/query.sql"*examples/config/postgresql/types/query.sqlb›
 "examples/NpgsqlDapperLegacyExamplecsharpÖ{"debugRequest":true,"generateCsproj":true,"namespaceName":"NpgsqlDapperLegacyExampleGen","overrides":[{"column":"GetPostgresFunctions:max_integer","csharp_type":{"notNull":false,"type":"int"}},{"column":"GetPostgresFunctions:max_varchar","csharp_type":{"notNull":false,"type":"string"}},{"column":"GetPostgresFunctions:max_timestamp","csharp_type":{"notNull":true,"type":"DateTime"}},{"column":"GetPostgresSpecialTypesCnt:c_json","csharp_type":{"notNull":false,"type":"JsonElement"}},{"column":"GetPostgresSpecialTypesCnt:c_jsonb","csharp_type":{"notNull":false,"type":"JsonElement"}},{"column":"*:c_json_string_override","csharp_type":{"notNull":false,"type":"string"}},{"column":"*:c_xml_string_override","csharp_type":{"notNull":false,"type":"string"}},{"column":"*:c_macaddr8","csharp_type":{"notNull":false,"type":"string"}},{"column":"*:c_timestamp_noda_instant_override","csharp_type":{"notNull":false,"type":"Instant"}}],"targetFramework":"netstandard2.0","useDapper":true}*
-./dist/LocalRunneròpublic"Ñ!publicƒ
+./dist/LocalRunnerƒõpublic"Å$publicƒ
 	authors)
 id0ÿÿÿÿÿÿÿÿÿR	authorsb	bigserial&
 name0ÿÿÿÿÿÿÿÿÿR	authorsbtext#
@@ -54,7 +54,13 @@ pg_catalogvarcharP
 c_character_varying0ÿÿÿÿÿÿÿÿÿRpostgres_string_typesb
 pg_catalogvarchar8
 c_bpchar0ÿÿÿÿÿÿÿÿÿRpostgres_string_typesbbpchar4
-c_text0ÿÿÿÿÿÿÿÿÿRpostgres_string_typesbtextí
+c_text0ÿÿÿÿÿÿÿÿÿRpostgres_string_typesbtextñ
+ postgres_extended_string_typesA
+c_citext0ÿÿÿÿÿÿÿÿÿR postgres_extended_string_typesbcitext?
+c_ltree0ÿÿÿÿÿÿÿÿÿR postgres_extended_string_typesbltreeA
+c_lquery0ÿÿÿÿÿÿÿÿÿR postgres_extended_string_typesblqueryG
+c_ltxtquery0ÿÿÿÿÿÿÿÿÿR postgres_extended_string_typesb	ltxtquery=
+c_name0ÿÿÿÿÿÿÿÿÿR postgres_extended_string_typesbnameí
 postgres_datetime_types6
 c_date0ÿÿÿÿÿÿÿÿÿRpostgres_datetime_typesbdateB
 c_time0ÿÿÿÿÿÿÿÿÿRpostgres_datetime_typesb
@@ -10622,7 +10628,62 @@ LIMIT 1 GetPostgresStringTypesTextSearch:one"0
 tsvectorztsv"
 rnk0ÿÿÿÿÿÿÿÿÿ@breal*%!
 
-to_tsquery0ÿÿÿÿÿÿÿÿÿbtext:	query.sql—
+to_tsquery0ÿÿÿÿÿÿÿÿÿbtext:	query.sqlÖ
+À
+INSERT INTO postgres_extended_string_types
+(
+    c_citext,
+    c_ltree,
+    c_lquery,
+    c_ltxtquery,
+    c_name
+) VALUES (
+    $1,
+    $2::ltree,
+    $3::lquery,
+    $4::ltxtquery,
+    $5
+)!InsertPostgresExtendedStringTypes:exec*YU
+c_citext0ÿÿÿÿÿÿÿÿÿ8R(publicpostgres_extended_string_typesbcitextzc_citext*!
+c_ltree0ÿÿÿÿÿÿÿÿÿbltree*#
+c_lquery0ÿÿÿÿÿÿÿÿÿblquery*)%
+c_ltxtquery0ÿÿÿÿÿÿÿÿÿb	ltxtquery*SO
+c_name0ÿÿÿÿÿÿÿÿÿ8R(publicpostgres_extended_string_typesbnamezc_name2 Extended string types :	query.sqlB postgres_extended_string_types¯
+INSERT INTO postgres_extended_string_types
+(
+    c_citext,
+    c_ltree,
+    c_lquery,
+    c_ltxtquery,
+    c_name
+) VALUES ($1, $2, $3, $4, $5)&InsertPostgresExtendedStringTypesBatch	:copyfrom*WS
+c_citext0ÿÿÿÿÿÿÿÿÿR(publicpostgres_extended_string_typesbcitextzc_citext*TP
+c_ltree0ÿÿÿÿÿÿÿÿÿR(publicpostgres_extended_string_typesbltreezc_ltree*WS
+c_lquery0ÿÿÿÿÿÿÿÿÿR(publicpostgres_extended_string_typesblqueryzc_lquery*`\
+c_ltxtquery0ÿÿÿÿÿÿÿÿÿR(publicpostgres_extended_string_typesb	ltxtqueryzc_ltxtquery*QM
+c_name0ÿÿÿÿÿÿÿÿÿR(publicpostgres_extended_string_typesbnamezc_name:	query.sqlB postgres_extended_string_types—
+cSELECT c_citext, c_ltree, c_lquery, c_ltxtquery, c_name FROM postgres_extended_string_types LIMIT 1GetPostgresExtendedStringTypes:one"K
+c_citext0ÿÿÿÿÿÿÿÿÿR postgres_extended_string_typesbcitextzc_citext"H
+c_ltree0ÿÿÿÿÿÿÿÿÿR postgres_extended_string_typesbltreezc_ltree"K
+c_lquery0ÿÿÿÿÿÿÿÿÿR postgres_extended_string_typesblqueryzc_lquery"T
+c_ltxtquery0ÿÿÿÿÿÿÿÿÿR postgres_extended_string_typesb	ltxtqueryzc_ltxtquery"E
+c_name0ÿÿÿÿÿÿÿÿÿR postgres_extended_string_typesbnamezc_name:	query.sqlf
+-TRUNCATE TABLE postgres_extended_string_types#TruncatePostgresExtendedStringTypes:exec:	query.sqlÑ
+œSELECT
+    c_citext,
+    c_ltree,
+    c_name,
+    COUNT(*) AS cnt
+FROM postgres_extended_string_types
+GROUP BY
+    c_citext,
+    c_ltree,
+    c_name
+LIMIT 1!GetPostgresExtendedStringTypesCnt:one"K
+c_citext0ÿÿÿÿÿÿÿÿÿR postgres_extended_string_typesbcitextzc_citext"H
+c_ltree0ÿÿÿÿÿÿÿÿÿR postgres_extended_string_typesbltreezc_ltree"E
+c_name0ÿÿÿÿÿÿÿÿÿR postgres_extended_string_typesbnamezc_name"
+cnt0ÿÿÿÿÿÿÿÿÿ@bbigint:	query.sql—
 À
 INSERT INTO postgres_datetime_types
 (

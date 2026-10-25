@@ -28,6 +28,17 @@ CREATE TABLE postgres_string_types (
     c_text TEXT
 );
 
+CREATE EXTENSION IF NOT EXISTS "citext";
+CREATE EXTENSION IF NOT EXISTS "ltree";
+
+CREATE TABLE postgres_extended_string_types (
+    c_citext       CITEXT,
+    c_ltree        LTREE,
+    c_lquery       LQUERY,
+    c_ltxtquery    LTXTQUERY,
+    c_name         NAME
+);
+
 CREATE TABLE postgres_datetime_types (
     c_date DATE,
     c_time TIME,

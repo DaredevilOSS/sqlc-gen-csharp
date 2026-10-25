@@ -178,6 +178,53 @@ FROM txt_query
 ORDER BY rnk DESC
 LIMIT 1;
 
+/* Extended string types */
+
+-- name: InsertPostgresExtendedStringTypes :exec
+INSERT INTO postgres_extended_string_types
+(
+    c_citext,
+    c_ltree,
+    c_lquery,
+    c_ltxtquery,
+    c_name
+) VALUES (
+    sqlc.narg('c_citext'),
+    sqlc.narg('c_ltree')::ltree,
+    sqlc.narg('c_lquery')::lquery,
+    sqlc.narg('c_ltxtquery')::ltxtquery,
+    sqlc.narg('c_name')
+);
+
+-- name: InsertPostgresExtendedStringTypesBatch :copyfrom
+INSERT INTO postgres_extended_string_types
+(
+    c_citext,
+    c_ltree,
+    c_lquery,
+    c_ltxtquery,
+    c_name
+) VALUES ($1, $2, $3, $4, $5);
+
+-- name: GetPostgresExtendedStringTypes :one
+SELECT * FROM postgres_extended_string_types LIMIT 1;
+
+-- name: TruncatePostgresExtendedStringTypes :exec
+TRUNCATE TABLE postgres_extended_string_types;
+
+-- name: GetPostgresExtendedStringTypesCnt :one
+SELECT
+    c_citext,
+    c_ltree,
+    c_name,
+    COUNT(*) AS cnt
+FROM postgres_extended_string_types
+GROUP BY
+    c_citext,
+    c_ltree,
+    c_name
+LIMIT 1;
+
 /* DateTime types */
 
 -- name: InsertPostgresDateTimeTypes :exec

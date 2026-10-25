@@ -55,6 +55,14 @@ public class PostgresStringType
     public string? CBpchar { get; init; }
     public string? CText { get; init; }
 };
+public class PostgresExtendedStringType
+{
+    public string? CCitext { get; init; }
+    public string? CLtree { get; init; }
+    public string? CLquery { get; init; }
+    public string? CLtxtquery { get; init; }
+    public string? CName { get; init; }
+};
 public class PostgresDatetimeType
 {
     public DateTime? CDate { get; init; }
