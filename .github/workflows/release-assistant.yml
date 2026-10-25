@@ -15,7 +15,7 @@ jobs:
   analyze:
     runs-on: ubuntu-latest
     if: |
-      (github.event_name == 'pull_request_target' && github.event.pull_request.state == 'open' && github.head_ref != 'release-prep' && github.actor != 'dependabot[bot]')
+      (github.event_name == 'pull_request_target' && github.event.pull_request.state == 'open' && github.head_ref != 'release-prep')
     steps:
       - name: Analyze PR changes
         id: analysis
@@ -197,10 +197,10 @@ jobs:
             });
 
   release-prep-bypass:
-    if: github.event_name == 'pull_request_target' && (github.head_ref == 'release-prep' || github.actor == 'dependabot[bot]')
+    if: github.event_name == 'pull_request_target' && github.head_ref == 'release-prep'
     runs-on: ubuntu-latest
     steps:
-      - name: Set passing status for release-prep and Dependabot
+      - name: Set passing status for release-prep
         uses: actions/github-script@v9
         with:
           script: |
@@ -210,5 +210,5 @@ jobs:
               sha: context.payload.pull_request.head.sha,
               state: 'success',
               context: 'release-assistant/requirements',
-              description: 'Bypassed for release-prep and Dependabot PRs'
+              description: 'Bypassed for release-prep PR'
             });
