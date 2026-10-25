@@ -50,7 +50,7 @@ jobs:
           vs-version: 'latest'
 
       - name: Setup NuGet
-        uses: NuGet/setup-nuget@v3.1.0
+        uses: NuGet/setup-nuget@v4
         
       # PostgreSQL 17 and MySQL 8.0 come preinstalled on the Windows runner image - using them is much faster than
       # downloading and installing them (setup-postgres ~3.5 min, choco mysql ~2 min).
