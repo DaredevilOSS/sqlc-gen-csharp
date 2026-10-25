@@ -30,6 +30,12 @@ CREATE TABLE postgres_string_types (
 
 CREATE EXTENSION IF NOT EXISTS "citext";
 CREATE EXTENSION IF NOT EXISTS "ltree";
+CREATE EXTENSION IF NOT EXISTS "hstore";
+
+CREATE TABLE postgres_hstore_types (
+    c_hstore        HSTORE,
+    c_hstore_array  HSTORE []
+);
 
 CREATE TABLE postgres_range_types (
     c_int4range         INT4RANGE,

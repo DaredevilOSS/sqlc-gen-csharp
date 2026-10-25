@@ -56,6 +56,11 @@ namespace NpgsqlLegacyExampleGen
         public string CBpchar { get; set; }
         public string CText { get; set; }
     };
+    public class PostgresHstoreType
+    {
+        public Dictionary<string, string> CHstore { get; set; }
+        public Dictionary<string, string>[] CHstoreArray { get; set; }
+    };
     public class PostgresRangeType
     {
         public NpgsqlRange<int>? CInt4range { get; set; }

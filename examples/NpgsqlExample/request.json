@@ -368,6 +368,35 @@
           },
           {
             "rel": {
+              "name": "postgres_hstore_types"
+            },
+            "columns": [
+              {
+                "name": "c_hstore",
+                "length": -1,
+                "table": {
+                  "name": "postgres_hstore_types"
+                },
+                "type": {
+                  "name": "hstore"
+                }
+              },
+              {
+                "name": "c_hstore_array",
+                "isArray": true,
+                "length": -1,
+                "table": {
+                  "name": "postgres_hstore_types"
+                },
+                "type": {
+                  "name": "hstore"
+                },
+                "arrayDims": 1
+              }
+            ]
+          },
+          {
+            "rel": {
               "name": "postgres_range_types"
             },
             "columns": [
@@ -35553,6 +35582,170 @@
             "name": "pg_lsn"
           },
           "originalName": "c_pg_lsn"
+        },
+        {
+          "name": "cnt",
+          "notNull": true,
+          "length": -1,
+          "isFuncCall": true,
+          "type": {
+            "name": "bigint"
+          }
+        }
+      ],
+      "filename": "query.sql"
+    },
+    {
+      "text": "\nINSERT INTO postgres_hstore_types\n(\n    c_hstore,\n    c_hstore_array\n) VALUES (\n    $1,\n    $2::hstore[]\n)",
+      "name": "InsertPostgresHstoreTypes",
+      "cmd": ":exec",
+      "parameters": [
+        {
+          "number": 1,
+          "column": {
+            "name": "c_hstore",
+            "length": -1,
+            "isNamedParam": true,
+            "table": {
+              "schema": "public",
+              "name": "postgres_hstore_types"
+            },
+            "type": {
+              "name": "hstore"
+            },
+            "originalName": "c_hstore"
+          }
+        },
+        {
+          "number": 2,
+          "column": {
+            "name": "c_hstore_array",
+            "isArray": true,
+            "length": -1,
+            "type": {
+              "name": "hstore"
+            },
+            "arrayDims": 1
+          }
+        }
+      ],
+      "comments": [
+        " Hstore types "
+      ],
+      "filename": "query.sql",
+      "insert_into_table": {
+        "name": "postgres_hstore_types"
+      }
+    },
+    {
+      "text": "INSERT INTO postgres_hstore_types\n(\n    c_hstore,\n    c_hstore_array\n) VALUES ($1, $2)",
+      "name": "InsertPostgresHstoreTypesBatch",
+      "cmd": ":copyfrom",
+      "parameters": [
+        {
+          "number": 1,
+          "column": {
+            "name": "c_hstore",
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "postgres_hstore_types"
+            },
+            "type": {
+              "name": "hstore"
+            },
+            "originalName": "c_hstore"
+          }
+        },
+        {
+          "number": 2,
+          "column": {
+            "name": "c_hstore_array",
+            "isArray": true,
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "postgres_hstore_types"
+            },
+            "type": {
+              "name": "hstore"
+            },
+            "originalName": "c_hstore_array",
+            "arrayDims": 1
+          }
+        }
+      ],
+      "filename": "query.sql",
+      "insert_into_table": {
+        "name": "postgres_hstore_types"
+      }
+    },
+    {
+      "text": "SELECT c_hstore, c_hstore_array FROM postgres_hstore_types LIMIT 1",
+      "name": "GetPostgresHstoreTypes",
+      "cmd": ":one",
+      "columns": [
+        {
+          "name": "c_hstore",
+          "length": -1,
+          "table": {
+            "name": "postgres_hstore_types"
+          },
+          "type": {
+            "name": "hstore"
+          },
+          "originalName": "c_hstore"
+        },
+        {
+          "name": "c_hstore_array",
+          "isArray": true,
+          "length": -1,
+          "table": {
+            "name": "postgres_hstore_types"
+          },
+          "type": {
+            "name": "hstore"
+          },
+          "originalName": "c_hstore_array",
+          "arrayDims": 1
+        }
+      ],
+      "filename": "query.sql"
+    },
+    {
+      "text": "TRUNCATE TABLE postgres_hstore_types",
+      "name": "TruncatePostgresHstoreTypes",
+      "cmd": ":exec",
+      "filename": "query.sql"
+    },
+    {
+      "text": "SELECT\n    c_hstore,\n    c_hstore_array,\n    COUNT(*) AS cnt\nFROM postgres_hstore_types\nGROUP BY\n    c_hstore,\n    c_hstore_array\nLIMIT 1",
+      "name": "GetPostgresHstoreTypesCnt",
+      "cmd": ":one",
+      "columns": [
+        {
+          "name": "c_hstore",
+          "length": -1,
+          "table": {
+            "name": "postgres_hstore_types"
+          },
+          "type": {
+            "name": "hstore"
+          },
+          "originalName": "c_hstore"
+        },
+        {
+          "name": "c_hstore_array",
+          "isArray": true,
+          "length": -1,
+          "table": {
+            "name": "postgres_hstore_types"
+          },
+          "type": {
+            "name": "hstore"
+          },
+          "originalName": "c_hstore_array",
+          "arrayDims": 1
         },
         {
           "name": "cnt",

@@ -55,6 +55,11 @@ public class PostgresStringType
     public string? CBpchar { get; init; }
     public string? CText { get; init; }
 };
+public class PostgresHstoreType
+{
+    public Dictionary<string, string?>? CHstore { get; init; }
+    public Dictionary<string, string?>[]? CHstoreArray { get; init; }
+};
 public class PostgresRangeType
 {
     public NpgsqlRange<int>? CInt4range { get; init; }

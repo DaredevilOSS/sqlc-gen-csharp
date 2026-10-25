@@ -998,6 +998,34 @@ namespace EndToEndTests
             }
         }
 
+        private static IEnumerable<TestCaseData> PostgresHstoreDataTypesTestCases
+        {
+            get
+            {
+                yield return new TestCaseData(new Dictionary<string, string> { { "a", "1" }, { "key with space", "some value" }, { "empty", null } }, new[] { new Dictionary<string, string> { { "x", "y" } }, new Dictionary<string, string> { { "p", "q" }, { "r", null } } }).SetName("Valid Hstore Data Types");
+                yield return new TestCaseData(null, null).SetName("Null Hstore Data Types");
+            }
+        }
+
+        [Test]
+        [TestCaseSource(nameof(PostgresHstoreDataTypesTestCases))]
+        public async Task TestPostgresHstoreDataTypesAsync(Dictionary<string, string> cHstore, Dictionary<string, string>[] cHstoreArray)
+        {
+            await QuerySql.InsertPostgresHstoreTypesAsync(new QuerySql.InsertPostgresHstoreTypesArgs { CHstore = cHstore, CHstoreArray = cHstoreArray });
+            var expected = new QuerySql.GetPostgresHstoreTypesRow
+            {
+                CHstore = cHstore,
+                CHstoreArray = cHstoreArray
+            };
+            var actual = await QuerySql.GetPostgresHstoreTypesAsync();
+            AssertSingularEquals(expected, actual.Value);
+            void AssertSingularEquals(QuerySql.GetPostgresHstoreTypesRow x, QuerySql.GetPostgresHstoreTypesRow y)
+            {
+                Assert.That(x.CHstore, Is.EqualTo(y.CHstore));
+                Assert.That(x.CHstoreArray, Is.EqualTo(y.CHstoreArray));
+            }
+        }
+
         [Test]
         [TestCase(100, "z", "Sex Pistols", "Anarchy in the U.K", "Yoshimi Battles the Pink Robots", "Never Mind the Bollocks...")]
         [TestCase(10, null, null, null, null, null)]
@@ -1474,6 +1502,37 @@ namespace EndToEndTests
                 Assert.That(x.CXid8, Is.EqualTo(y.CXid8));
                 Assert.That(x.CTid, Is.EqualTo(y.CTid));
                 Assert.That(x.CPgLsn, Is.EqualTo(y.CPgLsn));
+            }
+        }
+
+        private static IEnumerable<TestCaseData> PostgresHstoreCopyFromTestCases
+        {
+            get
+            {
+                yield return new TestCaseData(50, new Dictionary<string, string> { { "a", "1" }, { "key with space", "some value" }, { "empty", null } }, new[] { new Dictionary<string, string> { { "x", "y" } }, new Dictionary<string, string> { { "p", "q" }, { "r", null } } }).SetName("Valid Hstore Copy From");
+                yield return new TestCaseData(10, null, null).SetName("Null Hstore Copy From");
+            }
+        }
+
+        [Test]
+        [TestCaseSource(nameof(PostgresHstoreCopyFromTestCases))]
+        public async Task TestPostgresHstoreCopyFromAsync(int batchSize, Dictionary<string, string> cHstore, Dictionary<string, string>[] cHstoreArray)
+        {
+            var batchArgs = Enumerable.Range(0, batchSize).Select(_ => new QuerySql.InsertPostgresHstoreTypesBatchArgs { CHstore = cHstore, CHstoreArray = cHstoreArray }).ToList();
+            await QuerySql.InsertPostgresHstoreTypesBatchAsync(batchArgs);
+            var expected = new QuerySql.GetPostgresHstoreTypesCntRow
+            {
+                Cnt = batchSize,
+                CHstore = cHstore,
+                CHstoreArray = cHstoreArray
+            };
+            var actual = await QuerySql.GetPostgresHstoreTypesCntAsync();
+            AssertSingularEquals(expected, actual.Value);
+            void AssertSingularEquals(QuerySql.GetPostgresHstoreTypesCntRow x, QuerySql.GetPostgresHstoreTypesCntRow y)
+            {
+                Assert.That(x.Cnt, Is.EqualTo(y.Cnt));
+                Assert.That(x.CHstore, Is.EqualTo(y.CHstore));
+                Assert.That(x.CHstoreArray, Is.EqualTo(y.CHstoreArray));
             }
         }
     }

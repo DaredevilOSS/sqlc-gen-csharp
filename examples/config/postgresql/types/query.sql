@@ -234,6 +234,42 @@ GROUP BY
     c_pg_lsn
 LIMIT 1;
 
+/* Hstore types */
+
+-- name: InsertPostgresHstoreTypes :exec
+INSERT INTO postgres_hstore_types
+(
+    c_hstore,
+    c_hstore_array
+) VALUES (
+    sqlc.narg('c_hstore'),
+    sqlc.narg('c_hstore_array')::hstore[]
+);
+
+-- name: InsertPostgresHstoreTypesBatch :copyfrom
+INSERT INTO postgres_hstore_types
+(
+    c_hstore,
+    c_hstore_array
+) VALUES ($1, $2);
+
+-- name: GetPostgresHstoreTypes :one
+SELECT * FROM postgres_hstore_types LIMIT 1;
+
+-- name: TruncatePostgresHstoreTypes :exec
+TRUNCATE TABLE postgres_hstore_types;
+
+-- name: GetPostgresHstoreTypesCnt :one
+SELECT
+    c_hstore,
+    c_hstore_array,
+    COUNT(*) AS cnt
+FROM postgres_hstore_types
+GROUP BY
+    c_hstore,
+    c_hstore_array
+LIMIT 1;
+
 /* Extended string types */
 
 -- name: InsertPostgresExtendedStringTypes :exec

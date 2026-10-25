@@ -62,6 +62,7 @@ public enum KnownTestType
     PostgresRangeDataTypes,
     PostgresMultirangeDataTypes,
     PostgresSystemDataTypes,
+    PostgresHstoreDataTypes,
 
     // :copyfrom (Batch)
     PostgresStringCopyFrom,
@@ -78,6 +79,7 @@ public enum KnownTestType
     PostgresRangeCopyFrom,
     PostgresMultirangeCopyFrom,
     PostgresSystemCopyFrom,
+    PostgresHstoreCopyFrom,
 
     // MySql
     MySqlTransaction,
@@ -191,6 +193,7 @@ internal static class Config
         KnownTestType.PostgresRangeDataTypes,
         KnownTestType.PostgresMultirangeDataTypes,
         KnownTestType.PostgresSystemDataTypes,
+        KnownTestType.PostgresHstoreDataTypes,
 
         // :copyfrom (Batch)
         KnownTestType.PostgresGeoCopyFrom,
@@ -206,7 +209,8 @@ internal static class Config
         KnownTestType.PostgresExtendedStringCopyFrom,
         KnownTestType.PostgresRangeCopyFrom,
         KnownTestType.PostgresMultirangeCopyFrom,
-        KnownTestType.PostgresSystemCopyFrom
+        KnownTestType.PostgresSystemCopyFrom,
+        KnownTestType.PostgresHstoreCopyFrom
     ];
 
     private static readonly SortedSet<KnownTestType> _sqliteTestTypes = [

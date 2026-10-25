@@ -19,6 +19,10 @@ public sealed class NpgsqlDriver : EnumDbDriver, IOne, IMany, IExec, IExecRows, 
         IList<Query> queries) :
         base(options, catalog, queries)
     {
+        // `string?` as a type argument is only valid with nullable reference types, which legacy targets lack
+        var hstoreValueType = Options.DotnetFramework.IsDotnetCore() ? "string?" : "string";
+        ColumnMappings[$"Dictionary<string, {hstoreValueType}>"] = HstoreMapping(hstoreValueType);
+
         NullableTypes.UnionWith(
         [
             "NpgsqlRange<int>",
@@ -474,12 +478,24 @@ public sealed class NpgsqlDriver : EnumDbDriver, IOne, IMany, IExec, IExecRows, 
                 new()
                 {
                     { "any", new() },
-                    { "anyarray", new() },
-                    { "hstore", new() }
+                    { "anyarray", new() }
                 },
                 readerFn: (ordinal, _) => $"{Variable.Reader.AsVarName()}.GetValue({ordinal})"
             )
         };
+
+    private static ColumnMapping HstoreMapping(string valueType)
+    {
+        var dictionaryType = $"Dictionary<string, {valueType}>";
+        return new(
+            new()
+            {
+                { "hstore", new(DbTypeOverride: "NpgsqlTypes.NpgsqlDbType.Hstore") }
+            },
+            readerFn: (ordinal, _) => $"{Variable.Reader.AsVarName()}.GetFieldValue<{dictionaryType}>({ordinal})",
+            readerArrayFn: (ordinal, _) => $"{Variable.Reader.AsVarName()}.GetFieldValue<{dictionaryType}[]>({ordinal})"
+        );
+    }
 
     private static ColumnMapping RangeMapping(string subtype, Dictionary<string, DbTypeInfo> dbTypes)
     {

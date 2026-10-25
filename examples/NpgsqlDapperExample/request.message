@@ -3,7 +3,7 @@
 2
 postgresql-examples/config/postgresql/authors/schema.sql+examples/config/postgresql/types/schema.sql",examples/config/postgresql/authors/query.sql"*examples/config/postgresql/types/query.sqlbˆ
 examples/NpgsqlDapperExamplecsharpÉ{"debugRequest":true,"generateCsproj":true,"namespaceName":"NpgsqlDapperExampleGen","overrides":[{"column":"GetPostgresFunctions:max_integer","csharp_type":{"notNull":false,"type":"int"}},{"column":"GetPostgresFunctions:max_varchar","csharp_type":{"notNull":false,"type":"string"}},{"column":"GetPostgresFunctions:max_timestamp","csharp_type":{"notNull":true,"type":"DateTime"}},{"column":"GetPostgresSpecialTypesCnt:c_json","csharp_type":{"notNull":false,"type":"JsonElement"}},{"column":"GetPostgresSpecialTypesCnt:c_jsonb","csharp_type":{"notNull":false,"type":"JsonElement"}},{"column":"*:c_json_string_override","csharp_type":{"notNull":false,"type":"string"}},{"column":"*:c_xml_string_override","csharp_type":{"notNull":false,"type":"string"}},{"column":"*:c_macaddr8","csharp_type":{"notNull":false,"type":"string"}},{"column":"*:c_timestamp_noda_instant_override","csharp_type":{"notNull":false,"type":"Instant"}}],"targetFramework":"net10.0","useDapper":true}*
-./dist/LocalRunner¦ÿpublic"è.publicƒ
+./dist/LocalRunnerÁ€public"ƒ0publicƒ
 	authors)
 id0ÿÿÿÿÿÿÿÿÿR	authorsb	bigserial&
 name0ÿÿÿÿÿÿÿÿÿR	authorsbtext#
@@ -54,7 +54,10 @@ pg_catalogvarcharP
 c_character_varying0ÿÿÿÿÿÿÿÿÿRpostgres_string_typesb
 pg_catalogvarchar8
 c_bpchar0ÿÿÿÿÿÿÿÿÿRpostgres_string_typesbbpchar4
-c_text0ÿÿÿÿÿÿÿÿÿRpostgres_string_typesbtextÖ
+c_text0ÿÿÿÿÿÿÿÿÿRpostgres_string_typesbtext˜
+postgres_hstore_types8
+c_hstore0ÿÿÿÿÿÿÿÿÿRpostgres_hstore_typesbhstoreC
+c_hstore_array 0ÿÿÿÿÿÿÿÿÿRpostgres_hstore_typesbhstoreˆÖ
 postgres_range_types=
 c_int4range0ÿÿÿÿÿÿÿÿÿRpostgres_range_typesb	int4range=
 c_int8range0ÿÿÿÿÿÿÿÿÿRpostgres_range_typesb	int8range;
@@ -10722,6 +10725,40 @@ LIMIT 1GetPostgresSystemTypesCnt:one"9
 c_xid80ÿÿÿÿÿÿÿÿÿRpostgres_system_typesbxid8zc_xid8"9
 c_tid0ÿÿÿÿÿÿÿÿÿRpostgres_system_typesbtidzc_tid"B
 c_pg_lsn0ÿÿÿÿÿÿÿÿÿRpostgres_system_typesbpg_lsnzc_pg_lsn"
+cnt0ÿÿÿÿÿÿÿÿÿ@bbigint:	query.sqlÅ
+k
+INSERT INTO postgres_hstore_types
+(
+    c_hstore,
+    c_hstore_array
+) VALUES (
+    $1,
+    $2::hstore[]
+)InsertPostgresHstoreTypes:exec*PL
+c_hstore0ÿÿÿÿÿÿÿÿÿ8Rpublicpostgres_hstore_typesbhstorezc_hstore*.*
+c_hstore_array 0ÿÿÿÿÿÿÿÿÿbhstoreˆ2 Hstore types :	query.sqlBpostgres_hstore_typesØ
+VINSERT INTO postgres_hstore_types
+(
+    c_hstore,
+    c_hstore_array
+) VALUES ($1, $2)InsertPostgresHstoreTypesBatch	:copyfrom*NJ
+c_hstore0ÿÿÿÿÿÿÿÿÿRpublicpostgres_hstore_typesbhstorezc_hstore*_[
+c_hstore_array 0ÿÿÿÿÿÿÿÿÿRpublicpostgres_hstore_typesbhstorezc_hstore_arrayˆ:	query.sqlBpostgres_hstore_types†
+BSELECT c_hstore, c_hstore_array FROM postgres_hstore_types LIMIT 1GetPostgresHstoreTypes:one"B
+c_hstore0ÿÿÿÿÿÿÿÿÿRpostgres_hstore_typesbhstorezc_hstore"S
+c_hstore_array 0ÿÿÿÿÿÿÿÿÿRpostgres_hstore_typesbhstorezc_hstore_arrayˆ:	query.sqlU
+$TRUNCATE TABLE postgres_hstore_typesTruncatePostgresHstoreTypes:exec:	query.sqlñ
+‰SELECT
+    c_hstore,
+    c_hstore_array,
+    COUNT(*) AS cnt
+FROM postgres_hstore_types
+GROUP BY
+    c_hstore,
+    c_hstore_array
+LIMIT 1GetPostgresHstoreTypesCnt:one"B
+c_hstore0ÿÿÿÿÿÿÿÿÿRpostgres_hstore_typesbhstorezc_hstore"S
+c_hstore_array 0ÿÿÿÿÿÿÿÿÿRpostgres_hstore_typesbhstorezc_hstore_arrayˆ"
 cnt0ÿÿÿÿÿÿÿÿÿ@bbigint:	query.sqlÖ
 À
 INSERT INTO postgres_extended_string_types

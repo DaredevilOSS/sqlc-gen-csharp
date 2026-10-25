@@ -17,6 +17,7 @@ public readonly record struct Book(Guid Id, string Name, long AuthorId, string? 
 public readonly record struct PostgresNumericType(bool? CBoolean, BitArray? CBit, short? CSmallint, int? CInteger, long? CBigint, decimal? CDecimal, decimal? CNumeric, float? CReal, double? CDoublePrecision, decimal? CMoney);
 public readonly record struct PostgresBitType(BitArray? CBit, BitArray? CBitSingle, BitArray? CVarbit, BitArray? CBitVarying, BitArray[]? CBitArray, BitArray[]? CVarbitArray);
 public readonly record struct PostgresStringType(string? CChar, string? CVarchar, string? CCharacterVarying, string? CBpchar, string? CText);
+public readonly record struct PostgresHstoreType(Dictionary<string, string?>? CHstore, Dictionary<string, string?>[]? CHstoreArray);
 public readonly record struct PostgresRangeType(NpgsqlRange<int>? CInt4range, NpgsqlRange<long>? CInt8range, NpgsqlRange<decimal>? CNumrange, NpgsqlRange<DateTime>? CDaterange, NpgsqlRange<DateTime>? CTsrange, NpgsqlRange<DateTime>? CTstzrange, NpgsqlRange<int>[]? CInt4rangeArray);
 public readonly record struct PostgresMultirangeType(NpgsqlRange<int>[]? CInt4multirange, NpgsqlRange<long>[]? CInt8multirange, NpgsqlRange<decimal>[]? CNummultirange, NpgsqlRange<DateTime>[]? CDatemultirange, NpgsqlRange<DateTime>[]? CTsmultirange, NpgsqlRange<DateTime>[]? CTstzmultirange);
 public readonly record struct PostgresSystemType(uint? COid, uint? CXid, uint? CCid, ulong? CXid8, NpgsqlTid? CTid, NpgsqlLogSequenceNumber? CPgLsn);

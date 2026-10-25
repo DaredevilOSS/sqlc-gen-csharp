@@ -82,7 +82,7 @@ we consider support for the different data types separately for batch inserts an
 | xml                                     | ✅         | ⚠️                  |
 | enum                                    | ✅         | ⚠️                  |
 | any                                     | ✅         | ❌                   |
-| hstore                                  | ✅         | ❌                   |
+| hstore                                  | ✅         | ✅                  |
 
 *** `time with time zone` is not useful and not recommended to use by Postgres themselves - 
 see [here](https://www.postgresql.org/docs/current/datatype-datetime.html#DATATYPE-DATETIME) -
@@ -119,7 +119,12 @@ Note that PostgreSQL normalizes discrete ranges (e.g. `[1,10]` is read back as `
 When using Dapper, range parameters are sent with an explicit `NpgsqlDbType`, so no cast is needed in the query.
 
 *** `any` is a pseudo-type reported by sqlc when it cannot infer a column's type; it maps to `object` in C#.
-*** `hstore` is a key-value store type that maps to `object` in C#; readers use `GetValue()` to retrieve the value.
+*** `hstore` maps to `Dictionary<string, string?>` (`Dictionary<string, string>` on `netstandard` targets, which have no nullable reference types).
+It requires the `hstore` extension (`CREATE EXTENSION hstore;`) for sqlc to recognize the type.
+
+*** `macaddr8` maps to `string`, but Npgsql can neither read a `macaddr8` column as a string nor write a string to it
+(it only supports `PhysicalAddress`). Always convert it in the query, as the examples do: select `c_macaddr8::TEXT` and insert `sqlc.narg('c_macaddr8')::macaddr8`.
+Selecting a bare `macaddr8` column (including `SELECT *`) throws an `InvalidCastException` at runtime.
 
 </details>
 

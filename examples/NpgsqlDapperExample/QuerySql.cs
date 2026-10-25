@@ -1364,6 +1364,133 @@ public class QuerySql : IDisposable
         return await this.Transaction.Connection.QueryFirstOrDefaultAsync<GetPostgresSystemTypesCntRow?>(GetPostgresSystemTypesCntSql, transaction: this.Transaction);
     }
 
+    private const string InsertPostgresHstoreTypesSql = @"
+                                                          INSERT INTO postgres_hstore_types
+                                                          (
+                                                              c_hstore,
+                                                              c_hstore_array
+                                                          ) VALUES (
+                                                              @c_hstore,
+                                                              @c_hstore_array::hstore[]
+                                                          )";
+    public class InsertPostgresHstoreTypesArgs
+    {
+        public Dictionary<string, string?>? CHstore { get; init; }
+        public Dictionary<string, string?>[]? CHstoreArray { get; init; }
+    };
+    public async Task InsertPostgresHstoreTypesAsync(InsertPostgresHstoreTypesArgs args)
+    {
+        var queryParams = new Dictionary<string, object?>();
+        queryParams.Add("c_hstore", args.CHstore);
+        queryParams.Add("c_hstore_array", args.CHstoreArray);
+        if (this.Transaction == null)
+        {
+            using (var connection = await GetDataSource().OpenConnectionAsync())
+            {
+                await connection.ExecuteAsync(InsertPostgresHstoreTypesSql, queryParams);
+                return;
+            }
+        }
+
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
+            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+        await this.Transaction.Connection.ExecuteAsync(InsertPostgresHstoreTypesSql, queryParams, transaction: this.Transaction);
+    }
+
+    private const string InsertPostgresHstoreTypesBatchSql = "COPY postgres_hstore_types (c_hstore, c_hstore_array) FROM STDIN (FORMAT BINARY)";
+    public class InsertPostgresHstoreTypesBatchArgs
+    {
+        public Dictionary<string, string?>? CHstore { get; init; }
+        public Dictionary<string, string?>[]? CHstoreArray { get; init; }
+    };
+    public async Task InsertPostgresHstoreTypesBatchAsync(List<InsertPostgresHstoreTypesBatchArgs> args)
+    {
+        using (var connection = await GetDataSource().OpenConnectionAsync())
+        {
+            using (var writer = await connection.BeginBinaryImportAsync(InsertPostgresHstoreTypesBatchSql))
+            {
+                foreach (var row in args)
+                {
+                    await writer.StartRowAsync();
+                    await writer.WriteAsync(row.CHstore, NpgsqlTypes.NpgsqlDbType.Hstore);
+                    await writer.WriteAsync(row.CHstoreArray);
+                }
+
+                await writer.CompleteAsync();
+            }
+        }
+    }
+
+    private const string GetPostgresHstoreTypesSql = "SELECT c_hstore, c_hstore_array FROM postgres_hstore_types LIMIT 1";
+    public class GetPostgresHstoreTypesRow
+    {
+        public Dictionary<string, string?>? CHstore { get; init; }
+        public Dictionary<string, string?>[]? CHstoreArray { get; init; }
+    };
+    public async Task<GetPostgresHstoreTypesRow?> GetPostgresHstoreTypesAsync()
+    {
+        if (this.Transaction == null)
+        {
+            using (var connection = await GetDataSource().OpenConnectionAsync())
+            {
+                var result = await connection.QueryFirstOrDefaultAsync<GetPostgresHstoreTypesRow?>(GetPostgresHstoreTypesSql);
+                return result;
+            }
+        }
+
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
+            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+        return await this.Transaction.Connection.QueryFirstOrDefaultAsync<GetPostgresHstoreTypesRow?>(GetPostgresHstoreTypesSql, transaction: this.Transaction);
+    }
+
+    private const string TruncatePostgresHstoreTypesSql = "TRUNCATE TABLE postgres_hstore_types";
+    public async Task TruncatePostgresHstoreTypesAsync()
+    {
+        if (this.Transaction == null)
+        {
+            using (var connection = await GetDataSource().OpenConnectionAsync())
+            {
+                await connection.ExecuteAsync(TruncatePostgresHstoreTypesSql);
+                return;
+            }
+        }
+
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
+            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+        await this.Transaction.Connection.ExecuteAsync(TruncatePostgresHstoreTypesSql, transaction: this.Transaction);
+    }
+
+    private const string GetPostgresHstoreTypesCntSql = @"SELECT
+                                                              c_hstore,
+                                                              c_hstore_array,
+                                                              COUNT(*) AS cnt
+                                                          FROM postgres_hstore_types
+                                                          GROUP BY
+                                                              c_hstore,
+                                                              c_hstore_array
+                                                          LIMIT 1";
+    public class GetPostgresHstoreTypesCntRow
+    {
+        public Dictionary<string, string?>? CHstore { get; init; }
+        public Dictionary<string, string?>[]? CHstoreArray { get; init; }
+        public required long Cnt { get; init; }
+    };
+    public async Task<GetPostgresHstoreTypesCntRow?> GetPostgresHstoreTypesCntAsync()
+    {
+        if (this.Transaction == null)
+        {
+            using (var connection = await GetDataSource().OpenConnectionAsync())
+            {
+                var result = await connection.QueryFirstOrDefaultAsync<GetPostgresHstoreTypesCntRow?>(GetPostgresHstoreTypesCntSql);
+                return result;
+            }
+        }
+
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
+            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+        return await this.Transaction.Connection.QueryFirstOrDefaultAsync<GetPostgresHstoreTypesCntRow?>(GetPostgresHstoreTypesCntSql, transaction: this.Transaction);
+    }
+
     private const string InsertPostgresExtendedStringTypesSql = @"
                                                                   INSERT INTO postgres_extended_string_types
                                                                   (
