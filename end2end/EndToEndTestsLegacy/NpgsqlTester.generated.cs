@@ -1,5 +1,6 @@
 using NpgsqlLegacyExampleGen;
 using NpgsqlTypes;
+using System.Collections;
 using System.Net;
 using System.Net.NetworkInformation;
 using System.Text.Json;
@@ -825,6 +826,42 @@ namespace EndToEndTests
             }
         }
 
+        private static IEnumerable<TestCaseData> PostgresBitDataTypesTestCases
+        {
+            get
+            {
+                yield return new TestCaseData(new BitArray(new[] { true, false, true, true, false, false, true, false, true, true }), new BitArray(new[] { true }), new BitArray(new[] { false, true, true, false, true }), new BitArray(new[] { true, false, false }), new BitArray[] { new BitArray(new[] { true, true, false, false, true, true, false, false, true, true }), new BitArray(new[] { false, false, false, false, false, false, false, false, false, true }) }, new BitArray[] { new BitArray(new[] { true, false, true }), new BitArray(new[] { false, true, true, false, false, true, true }) }).SetName("Valid Bit Data Types");
+                yield return new TestCaseData(null, null, null, null, null, null).SetName("Null Bit Data Types");
+            }
+        }
+
+        [Test]
+        [TestCaseSource(nameof(PostgresBitDataTypesTestCases))]
+        public async Task TestPostgresBitDataTypesAsync(BitArray cBit, BitArray cBitSingle, BitArray cVarbit, BitArray cBitVarying, BitArray[] cBitArray, BitArray[] cVarbitArray)
+        {
+            await QuerySql.InsertPostgresBitTypesAsync(new QuerySql.InsertPostgresBitTypesArgs { CBit = cBit, CBitSingle = cBitSingle, CVarbit = cVarbit, CBitVarying = cBitVarying, CBitArray = cBitArray, CVarbitArray = cVarbitArray });
+            var expected = new QuerySql.GetPostgresBitTypesRow
+            {
+                CBit = cBit,
+                CBitSingle = cBitSingle,
+                CVarbit = cVarbit,
+                CBitVarying = cBitVarying,
+                CBitArray = cBitArray,
+                CVarbitArray = cVarbitArray
+            };
+            var actual = await QuerySql.GetPostgresBitTypesAsync();
+            AssertSingularEquals(expected, actual);
+            void AssertSingularEquals(QuerySql.GetPostgresBitTypesRow x, QuerySql.GetPostgresBitTypesRow y)
+            {
+                Assert.That(x.CBit, Is.EqualTo(y.CBit));
+                Assert.That(x.CBitSingle, Is.EqualTo(y.CBitSingle));
+                Assert.That(x.CVarbit, Is.EqualTo(y.CVarbit));
+                Assert.That(x.CBitVarying, Is.EqualTo(y.CBitVarying));
+                Assert.That(x.CBitArray, Is.EqualTo(y.CBitArray));
+                Assert.That(x.CVarbitArray, Is.EqualTo(y.CVarbitArray));
+            }
+        }
+
         [Test]
         [TestCase(100, "z", "Sex Pistols", "Anarchy in the U.K", "Yoshimi Battles the Pink Robots", "Never Mind the Bollocks...")]
         [TestCase(10, null, null, null, null, null)]
@@ -1117,6 +1154,41 @@ namespace EndToEndTests
                 Assert.That(x.CPath, Is.EqualTo(y.CPath));
                 Assert.That(x.CPolygon, Is.EqualTo(y.CPolygon));
                 Assert.That(x.CCircle, Is.EqualTo(y.CCircle));
+            }
+        }
+
+        private static IEnumerable<TestCaseData> PostgresBitCopyFromTestCases
+        {
+            get
+            {
+                yield return new TestCaseData(100, new BitArray(new[] { true, false, true, true, false, false, true, false, true, true }), new BitArray(new[] { false }), new BitArray(new[] { false, true, true, false, true }), new BitArray(new[] { true, false, false })).SetName("Valid Bit Copy From");
+                yield return new TestCaseData(10, null, null, null, null).SetName("Null Bit Copy From");
+            }
+        }
+
+        [Test]
+        [TestCaseSource(nameof(PostgresBitCopyFromTestCases))]
+        public async Task TestPostgresBitCopyFromAsync(int batchSize, BitArray cBit, BitArray cBitSingle, BitArray cVarbit, BitArray cBitVarying)
+        {
+            var batchArgs = Enumerable.Range(0, batchSize).Select(_ => new QuerySql.InsertPostgresBitTypesBatchArgs { CBit = cBit, CBitSingle = cBitSingle, CVarbit = cVarbit, CBitVarying = cBitVarying }).ToList();
+            await QuerySql.InsertPostgresBitTypesBatchAsync(batchArgs);
+            var expected = new QuerySql.GetPostgresBitTypesCntRow
+            {
+                Cnt = batchSize,
+                CBit = cBit,
+                CBitSingle = cBitSingle,
+                CVarbit = cVarbit,
+                CBitVarying = cBitVarying
+            };
+            var actual = await QuerySql.GetPostgresBitTypesCntAsync();
+            AssertSingularEquals(expected, actual);
+            void AssertSingularEquals(QuerySql.GetPostgresBitTypesCntRow x, QuerySql.GetPostgresBitTypesCntRow y)
+            {
+                Assert.That(x.Cnt, Is.EqualTo(y.Cnt));
+                Assert.That(x.CBit, Is.EqualTo(y.CBit));
+                Assert.That(x.CBitSingle, Is.EqualTo(y.CBitSingle));
+                Assert.That(x.CVarbit, Is.EqualTo(y.CVarbit));
+                Assert.That(x.CBitVarying, Is.EqualTo(y.CBitVarying));
             }
         }
     }

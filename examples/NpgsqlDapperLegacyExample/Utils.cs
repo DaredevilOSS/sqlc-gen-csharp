@@ -6,6 +6,7 @@ namespace NpgsqlDapperLegacyExampleGen
     using NodaTime.Extensions;
     using NpgsqlTypes;
     using System;
+    using System.Collections;
     using System.Data;
     using System.Linq;
     using System.Net;
@@ -30,6 +31,23 @@ namespace NpgsqlDapperLegacyExampleGen
             }
 
             public override void SetValue(IDbDataParameter parameter, Instant value)
+            {
+                parameter.Value = value;
+            }
+        }
+
+        private class BitArrayTypeHandler : SqlMapper.TypeHandler<BitArray>
+        {
+            public override BitArray Parse(object value)
+            {
+                if (value is BitArray bits)
+                    return bits;
+                if (value is bool b)
+                    return new BitArray(new[] { b });
+                throw new DataException($"Cannot convert {value?.GetType()} to BitArray");
+            }
+
+            public override void SetValue(IDbDataParameter parameter, BitArray value)
             {
                 parameter.Value = value;
             }
@@ -75,6 +93,7 @@ namespace NpgsqlDapperLegacyExampleGen
         public static void ConfigureSqlMapper()
         {
             SqlMapper.AddTypeHandler(typeof(Instant), new NodaInstantTypeHandler());
+            SqlMapper.AddTypeHandler(typeof(BitArray), new BitArrayTypeHandler());
             SqlMapper.AddTypeHandler(typeof(JsonElement), new JsonElementTypeHandler());
             SqlMapper.AddTypeHandler(typeof(XmlDocument), new XmlDocumentTypeHandler());
             SqlMapper.AddTypeHandler(typeof(NpgsqlPoint), new NpgsqlTypeHandler<NpgsqlPoint>());

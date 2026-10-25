@@ -3,7 +3,7 @@
 2
 postgresql-examples/config/postgresql/authors/schema.sql+examples/config/postgresql/types/schema.sql",examples/config/postgresql/authors/query.sql"*examples/config/postgresql/types/query.sqlbˆ
 examples/NpgsqlDapperExamplecsharpÉ{"debugRequest":true,"generateCsproj":true,"namespaceName":"NpgsqlDapperExampleGen","overrides":[{"column":"GetPostgresFunctions:max_integer","csharp_type":{"notNull":false,"type":"int"}},{"column":"GetPostgresFunctions:max_varchar","csharp_type":{"notNull":false,"type":"string"}},{"column":"GetPostgresFunctions:max_timestamp","csharp_type":{"notNull":true,"type":"DateTime"}},{"column":"GetPostgresSpecialTypesCnt:c_json","csharp_type":{"notNull":false,"type":"JsonElement"}},{"column":"GetPostgresSpecialTypesCnt:c_jsonb","csharp_type":{"notNull":false,"type":"JsonElement"}},{"column":"*:c_json_string_override","csharp_type":{"notNull":false,"type":"string"}},{"column":"*:c_xml_string_override","csharp_type":{"notNull":false,"type":"string"}},{"column":"*:c_macaddr8","csharp_type":{"notNull":false,"type":"string"}},{"column":"*:c_timestamp_noda_instant_override","csharp_type":{"notNull":false,"type":"Instant"}}],"targetFramework":"net10.0","useDapper":true}*
-./dist/LocalRunnerìîpublic"®publicƒ
+./dist/LocalRunneròpublic"Ñ!publicƒ
 	authors)
 id0ÿÿÿÿÿÿÿÿÿR	authorsb	bigserial&
 name0ÿÿÿÿÿÿÿÿÿR	authorsbtext#
@@ -34,7 +34,18 @@ pg_catalognumericC
 pg_catalogfloat4O
 c_double_precision0ÿÿÿÿÿÿÿÿÿRpostgres_numeric_typesb
 pg_catalogfloat87
-c_money0ÿÿÿÿÿÿÿÿÿRpostgres_numeric_typesbmoneyç
+c_money0ÿÿÿÿÿÿÿÿÿRpostgres_numeric_typesbmoney 
+postgres_bit_types;
+c_bit0ÿÿÿÿÿÿÿÿÿRpostgres_bit_typesb
+pg_catalogbitB
+c_bit_single0ÿÿÿÿÿÿÿÿÿRpostgres_bit_typesb
+pg_catalogbit5
+c_varbit0ÿÿÿÿÿÿÿÿÿRpostgres_bit_typesbvarbitF
+c_bit_varying0ÿÿÿÿÿÿÿÿÿRpostgres_bit_typesb
+pg_catalogvarbitF
+c_bit_array 0ÿÿÿÿÿÿÿÿÿRpostgres_bit_typesb
+pg_catalogbitˆ@
+c_varbit_array 0ÿÿÿÿÿÿÿÿÿRpostgres_bit_typesbvarbitˆç
 postgres_string_typesB
 c_char0ÿÿÿÿÿÿÿÿÿRpostgres_string_typesb
 pg_catalogbpcharF
@@ -10468,7 +10479,68 @@ c_smallint*ZV
 c_real0ÿÿÿÿÿÿÿÿÿR publicpostgres_numeric_typesbpg_catalog.float4zc_real*n	j
 c_double_precision0ÿÿÿÿÿÿÿÿÿR publicpostgres_numeric_typesbpg_catalog.float8zc_double_precision*L
 H
-c_money0ÿÿÿÿÿÿÿÿÿR publicpostgres_numeric_typesbmoneyzc_money:	query.sqlBpostgres_numeric_types©
+c_money0ÿÿÿÿÿÿÿÿÿR publicpostgres_numeric_typesbmoneyzc_money:	query.sqlBpostgres_numeric_types
+¥
+INSERT INTO postgres_bit_types
+(
+    c_bit,
+    c_bit_single,
+    c_varbit,
+    c_bit_varying,
+    c_bit_array,
+    c_varbit_array
+)
+VALUES ($1, $2, $3, $4, $5, $6)InsertPostgresBitTypes:exec*MI
+c_bit0ÿÿÿÿÿÿÿÿÿRpublicpostgres_bit_typesbpg_catalog.bitzc_bit*[W
+c_bit_single0ÿÿÿÿÿÿÿÿÿRpublicpostgres_bit_typesbpg_catalog.bitzc_bit_single*KG
+c_varbit0ÿÿÿÿÿÿÿÿÿRpublicpostgres_bit_typesbvarbitzc_varbit*`\
+c_bit_varying0ÿÿÿÿÿÿÿÿÿRpublicpostgres_bit_typesbpg_catalog.varbitzc_bit_varying*^Z
+c_bit_array 0ÿÿÿÿÿÿÿÿÿRpublicpostgres_bit_typesbpg_catalog.bitzc_bit_arrayˆ*\X
+c_varbit_array 0ÿÿÿÿÿÿÿÿÿRpublicpostgres_bit_typesbvarbitzc_varbit_arrayˆ2 Bit types :	query.sqlBpostgres_bit_typesí
+pSELECT c_bit, c_bit_single, c_varbit, c_bit_varying, c_bit_array, c_varbit_array FROM postgres_bit_types LIMIT 1GetPostgresBitTypes:one"B
+c_bit0ÿÿÿÿÿÿÿÿÿRpostgres_bit_typesb
+pg_catalogbitzc_bit"P
+c_bit_single0ÿÿÿÿÿÿÿÿÿRpostgres_bit_typesb
+pg_catalogbitzc_bit_single"?
+c_varbit0ÿÿÿÿÿÿÿÿÿRpostgres_bit_typesbvarbitzc_varbit"U
+c_bit_varying0ÿÿÿÿÿÿÿÿÿRpostgres_bit_typesb
+pg_catalogvarbitzc_bit_varying"S
+c_bit_array 0ÿÿÿÿÿÿÿÿÿRpostgres_bit_typesb
+pg_catalogbitzc_bit_arrayˆ"P
+c_varbit_array 0ÿÿÿÿÿÿÿÿÿRpostgres_bit_typesbvarbitzc_varbit_arrayˆ:	query.sqlO
+!TRUNCATE TABLE postgres_bit_typesTruncatePostgresBitTypes:exec:	query.sql
+wINSERT INTO postgres_bit_types
+(
+    c_bit,
+    c_bit_single,
+    c_varbit,
+    c_bit_varying
+) VALUES ($1, $2, $3, $4)InsertPostgresBitTypesBatch	:copyfrom*MI
+c_bit0ÿÿÿÿÿÿÿÿÿRpublicpostgres_bit_typesbpg_catalog.bitzc_bit*[W
+c_bit_single0ÿÿÿÿÿÿÿÿÿRpublicpostgres_bit_typesbpg_catalog.bitzc_bit_single*KG
+c_varbit0ÿÿÿÿÿÿÿÿÿRpublicpostgres_bit_typesbvarbitzc_varbit*`\
+c_bit_varying0ÿÿÿÿÿÿÿÿÿRpublicpostgres_bit_typesbpg_catalog.varbitzc_bit_varying:	query.sqlBpostgres_bit_types¸
+¾SELECT
+    c_bit,
+    c_bit_single,
+    c_varbit,
+    c_bit_varying,
+    COUNT(*) AS cnt
+FROM postgres_bit_types
+GROUP BY
+    c_bit,
+    c_bit_single,
+    c_varbit,
+    c_bit_varying
+LIMIT 1GetPostgresBitTypesCnt:one"B
+c_bit0ÿÿÿÿÿÿÿÿÿRpostgres_bit_typesb
+pg_catalogbitzc_bit"P
+c_bit_single0ÿÿÿÿÿÿÿÿÿRpostgres_bit_typesb
+pg_catalogbitzc_bit_single"?
+c_varbit0ÿÿÿÿÿÿÿÿÿRpostgres_bit_typesbvarbitzc_varbit"U
+c_bit_varying0ÿÿÿÿÿÿÿÿÿRpostgres_bit_typesb
+pg_catalogvarbitzc_bit_varying"
+cnt0ÿÿÿÿÿÿÿÿÿ@bbigint:	query.sql©
 
 INSERT INTO postgres_string_types
 (

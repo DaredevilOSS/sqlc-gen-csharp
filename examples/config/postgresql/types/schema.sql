@@ -11,6 +11,15 @@ CREATE TABLE postgres_numeric_types (
     c_money MONEY
 );
 
+CREATE TABLE postgres_bit_types (
+    c_bit               BIT(10),
+    c_bit_single        BIT(1),
+    c_varbit            VARBIT(10),
+    c_bit_varying       BIT VARYING(10),
+    c_bit_array         BIT(10) [],
+    c_varbit_array      VARBIT(10) []
+);
+
 CREATE TABLE postgres_string_types (
     c_char CHAR,
     c_varchar VARCHAR(100),

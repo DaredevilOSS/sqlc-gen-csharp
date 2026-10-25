@@ -9,6 +9,7 @@ using NodaTime.Extensions;
 using Npgsql;
 using NpgsqlTypes;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Net;
@@ -875,7 +876,7 @@ public class QuerySql : IDisposable
                                                                c_money
                                                            )
                                                            VALUES (@c_boolean, @c_bit, @c_smallint, @c_integer, @c_bigint, @c_decimal, @c_numeric, @c_real, @c_double_precision, @c_money)";
-    public readonly record struct InsertPostgresNumericTypesArgs(bool? CBoolean, byte[]? CBit, short? CSmallint, int? CInteger, long? CBigint, decimal? CDecimal, decimal? CNumeric, float? CReal, double? CDoublePrecision, decimal? CMoney);
+    public readonly record struct InsertPostgresNumericTypesArgs(bool? CBoolean, BitArray? CBit, short? CSmallint, int? CInteger, long? CBigint, decimal? CDecimal, decimal? CNumeric, float? CReal, double? CDoublePrecision, decimal? CMoney);
     public async Task InsertPostgresNumericTypesAsync(InsertPostgresNumericTypesArgs args)
     {
         if (this.Transaction == null)
@@ -886,7 +887,7 @@ public class QuerySql : IDisposable
                 {
                     command.CommandText = InsertPostgresNumericTypesSql;
                     command.Parameters.AddWithValue("@c_boolean", args.CBoolean ?? (object)DBNull.Value);
-                    command.Parameters.AddWithValue("@c_bit", args.CBit ?? (object)DBNull.Value);
+                    command.Parameters.AddWithValue("@c_bit", NpgsqlDbType.Bit, args.CBit ?? (object)DBNull.Value);
                     command.Parameters.AddWithValue("@c_smallint", args.CSmallint ?? (object)DBNull.Value);
                     command.Parameters.AddWithValue("@c_integer", args.CInteger ?? (object)DBNull.Value);
                     command.Parameters.AddWithValue("@c_bigint", args.CBigint ?? (object)DBNull.Value);
@@ -909,7 +910,7 @@ public class QuerySql : IDisposable
             command.CommandText = InsertPostgresNumericTypesSql;
             command.Transaction = this.Transaction;
             command.Parameters.AddWithValue("@c_boolean", args.CBoolean ?? (object)DBNull.Value);
-            command.Parameters.AddWithValue("@c_bit", args.CBit ?? (object)DBNull.Value);
+            command.Parameters.AddWithValue("@c_bit", NpgsqlDbType.Bit, args.CBit ?? (object)DBNull.Value);
             command.Parameters.AddWithValue("@c_smallint", args.CSmallint ?? (object)DBNull.Value);
             command.Parameters.AddWithValue("@c_integer", args.CInteger ?? (object)DBNull.Value);
             command.Parameters.AddWithValue("@c_bigint", args.CBigint ?? (object)DBNull.Value);
@@ -923,7 +924,7 @@ public class QuerySql : IDisposable
     }
 
     private const string GetPostgresNumericTypesSql = "SELECT c_boolean, c_bit, c_smallint, c_integer, c_bigint, c_decimal, c_numeric, c_real, c_double_precision, c_money FROM postgres_numeric_types LIMIT 1";
-    public readonly record struct GetPostgresNumericTypesRow(bool? CBoolean, byte[]? CBit, short? CSmallint, int? CInteger, long? CBigint, decimal? CDecimal, decimal? CNumeric, float? CReal, double? CDoublePrecision, decimal? CMoney);
+    public readonly record struct GetPostgresNumericTypesRow(bool? CBoolean, BitArray? CBit, short? CSmallint, int? CInteger, long? CBigint, decimal? CDecimal, decimal? CNumeric, float? CReal, double? CDoublePrecision, decimal? CMoney);
     public async Task<GetPostgresNumericTypesRow?> GetPostgresNumericTypesAsync()
     {
         if (this.Transaction == null)
@@ -940,7 +941,7 @@ public class QuerySql : IDisposable
                             return new GetPostgresNumericTypesRow
                             {
                                 CBoolean = reader.IsDBNull(0) ? null : reader.GetBoolean(0),
-                                CBit = reader.IsDBNull(1) ? null : reader.GetFieldValue<byte[]>(1),
+                                CBit = reader.IsDBNull(1) ? null : reader.GetFieldValue<BitArray>(1),
                                 CSmallint = reader.IsDBNull(2) ? null : reader.GetInt16(2),
                                 CInteger = reader.IsDBNull(3) ? null : reader.GetInt32(3),
                                 CBigint = reader.IsDBNull(4) ? null : reader.GetInt64(4),
@@ -970,7 +971,7 @@ public class QuerySql : IDisposable
                     return new GetPostgresNumericTypesRow
                     {
                         CBoolean = reader.IsDBNull(0) ? null : reader.GetBoolean(0),
-                        CBit = reader.IsDBNull(1) ? null : reader.GetFieldValue<byte[]>(1),
+                        CBit = reader.IsDBNull(1) ? null : reader.GetFieldValue<BitArray>(1),
                         CSmallint = reader.IsDBNull(2) ? null : reader.GetInt16(2),
                         CInteger = reader.IsDBNull(3) ? null : reader.GetInt32(3),
                         CBigint = reader.IsDBNull(4) ? null : reader.GetInt64(4),
@@ -1039,7 +1040,7 @@ public class QuerySql : IDisposable
                                                                c_double_precision,
                                                                c_money
                                                            LIMIT 1";
-    public readonly record struct GetPostgresNumericTypesCntRow(bool? CBoolean, byte[]? CBit, short? CSmallint, int? CInteger, long? CBigint, decimal? CDecimal, decimal? CNumeric, float? CReal, double? CDoublePrecision, decimal? CMoney, long Cnt);
+    public readonly record struct GetPostgresNumericTypesCntRow(bool? CBoolean, BitArray? CBit, short? CSmallint, int? CInteger, long? CBigint, decimal? CDecimal, decimal? CNumeric, float? CReal, double? CDoublePrecision, decimal? CMoney, long Cnt);
     public async Task<GetPostgresNumericTypesCntRow?> GetPostgresNumericTypesCntAsync()
     {
         if (this.Transaction == null)
@@ -1056,7 +1057,7 @@ public class QuerySql : IDisposable
                             return new GetPostgresNumericTypesCntRow
                             {
                                 CBoolean = reader.IsDBNull(0) ? null : reader.GetBoolean(0),
-                                CBit = reader.IsDBNull(1) ? null : reader.GetFieldValue<byte[]>(1),
+                                CBit = reader.IsDBNull(1) ? null : reader.GetFieldValue<BitArray>(1),
                                 CSmallint = reader.IsDBNull(2) ? null : reader.GetInt16(2),
                                 CInteger = reader.IsDBNull(3) ? null : reader.GetInt32(3),
                                 CBigint = reader.IsDBNull(4) ? null : reader.GetInt64(4),
@@ -1087,7 +1088,7 @@ public class QuerySql : IDisposable
                     return new GetPostgresNumericTypesCntRow
                     {
                         CBoolean = reader.IsDBNull(0) ? null : reader.GetBoolean(0),
-                        CBit = reader.IsDBNull(1) ? null : reader.GetFieldValue<byte[]>(1),
+                        CBit = reader.IsDBNull(1) ? null : reader.GetFieldValue<BitArray>(1),
                         CSmallint = reader.IsDBNull(2) ? null : reader.GetInt16(2),
                         CInteger = reader.IsDBNull(3) ? null : reader.GetInt32(3),
                         CBigint = reader.IsDBNull(4) ? null : reader.GetInt64(4),
@@ -1106,7 +1107,7 @@ public class QuerySql : IDisposable
     }
 
     private const string InsertPostgresNumericTypesBatchSql = "COPY postgres_numeric_types (c_boolean, c_bit, c_smallint, c_integer, c_bigint, c_decimal, c_numeric, c_real, c_double_precision, c_money) FROM STDIN (FORMAT BINARY)";
-    public readonly record struct InsertPostgresNumericTypesBatchArgs(bool? CBoolean, byte[]? CBit, short? CSmallint, int? CInteger, long? CBigint, decimal? CDecimal, decimal? CNumeric, float? CReal, double? CDoublePrecision, decimal? CMoney);
+    public readonly record struct InsertPostgresNumericTypesBatchArgs(bool? CBoolean, BitArray? CBit, short? CSmallint, int? CInteger, long? CBigint, decimal? CDecimal, decimal? CNumeric, float? CReal, double? CDoublePrecision, decimal? CMoney);
     public async Task InsertPostgresNumericTypesBatchAsync(List<InsertPostgresNumericTypesBatchArgs> args)
     {
         using (var connection = await GetDataSource().OpenConnectionAsync())
@@ -1117,7 +1118,7 @@ public class QuerySql : IDisposable
                 {
                     await writer.StartRowAsync();
                     await writer.WriteAsync(row.CBoolean ?? (object)DBNull.Value);
-                    await writer.WriteAsync(row.CBit ?? (object)DBNull.Value);
+                    await writer.WriteAsync(row.CBit ?? (object)DBNull.Value, NpgsqlDbType.Bit);
                     await writer.WriteAsync(row.CSmallint ?? (object)DBNull.Value);
                     await writer.WriteAsync(row.CInteger ?? (object)DBNull.Value);
                     await writer.WriteAsync(row.CBigint ?? (object)DBNull.Value);
@@ -1131,6 +1132,229 @@ public class QuerySql : IDisposable
                 await writer.CompleteAsync();
             }
         }
+    }
+
+    private const string InsertPostgresBitTypesSql = @"
+                                                       INSERT INTO postgres_bit_types
+                                                       (
+                                                           c_bit,
+                                                           c_bit_single,
+                                                           c_varbit,
+                                                           c_bit_varying,
+                                                           c_bit_array,
+                                                           c_varbit_array
+                                                       )
+                                                       VALUES (@c_bit, @c_bit_single, @c_varbit, @c_bit_varying, @c_bit_array, @c_varbit_array)";
+    public readonly record struct InsertPostgresBitTypesArgs(BitArray? CBit, BitArray? CBitSingle, BitArray? CVarbit, BitArray? CBitVarying, BitArray[]? CBitArray, BitArray[]? CVarbitArray);
+    public async Task InsertPostgresBitTypesAsync(InsertPostgresBitTypesArgs args)
+    {
+        if (this.Transaction == null)
+        {
+            using (var connection = await GetDataSource().OpenConnectionAsync())
+            {
+                using (var command = connection.CreateCommand())
+                {
+                    command.CommandText = InsertPostgresBitTypesSql;
+                    command.Parameters.AddWithValue("@c_bit", NpgsqlDbType.Bit, args.CBit ?? (object)DBNull.Value);
+                    command.Parameters.AddWithValue("@c_bit_single", NpgsqlDbType.Bit, args.CBitSingle ?? (object)DBNull.Value);
+                    command.Parameters.AddWithValue("@c_varbit", NpgsqlDbType.Varbit, args.CVarbit ?? (object)DBNull.Value);
+                    command.Parameters.AddWithValue("@c_bit_varying", NpgsqlDbType.Varbit, args.CBitVarying ?? (object)DBNull.Value);
+                    command.Parameters.AddWithValue("@c_bit_array", args.CBitArray ?? (object)DBNull.Value);
+                    command.Parameters.AddWithValue("@c_varbit_array", args.CVarbitArray ?? (object)DBNull.Value);
+                    await command.ExecuteNonQueryAsync();
+                }
+
+                return;
+            }
+        }
+
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
+            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+        using (var command = this.Transaction.Connection.CreateCommand())
+        {
+            command.CommandText = InsertPostgresBitTypesSql;
+            command.Transaction = this.Transaction;
+            command.Parameters.AddWithValue("@c_bit", NpgsqlDbType.Bit, args.CBit ?? (object)DBNull.Value);
+            command.Parameters.AddWithValue("@c_bit_single", NpgsqlDbType.Bit, args.CBitSingle ?? (object)DBNull.Value);
+            command.Parameters.AddWithValue("@c_varbit", NpgsqlDbType.Varbit, args.CVarbit ?? (object)DBNull.Value);
+            command.Parameters.AddWithValue("@c_bit_varying", NpgsqlDbType.Varbit, args.CBitVarying ?? (object)DBNull.Value);
+            command.Parameters.AddWithValue("@c_bit_array", args.CBitArray ?? (object)DBNull.Value);
+            command.Parameters.AddWithValue("@c_varbit_array", args.CVarbitArray ?? (object)DBNull.Value);
+            await command.ExecuteNonQueryAsync();
+        }
+    }
+
+    private const string GetPostgresBitTypesSql = "SELECT c_bit, c_bit_single, c_varbit, c_bit_varying, c_bit_array, c_varbit_array FROM postgres_bit_types LIMIT 1";
+    public readonly record struct GetPostgresBitTypesRow(BitArray? CBit, BitArray? CBitSingle, BitArray? CVarbit, BitArray? CBitVarying, BitArray[]? CBitArray, BitArray[]? CVarbitArray);
+    public async Task<GetPostgresBitTypesRow?> GetPostgresBitTypesAsync()
+    {
+        if (this.Transaction == null)
+        {
+            using (var connection = await GetDataSource().OpenConnectionAsync())
+            {
+                using (var command = connection.CreateCommand())
+                {
+                    command.CommandText = GetPostgresBitTypesSql;
+                    using (var reader = await command.ExecuteReaderAsync())
+                    {
+                        if (await reader.ReadAsync())
+                        {
+                            return new GetPostgresBitTypesRow
+                            {
+                                CBit = reader.IsDBNull(0) ? null : reader.GetFieldValue<BitArray>(0),
+                                CBitSingle = reader.IsDBNull(1) ? null : reader.GetFieldValue<BitArray>(1),
+                                CVarbit = reader.IsDBNull(2) ? null : reader.GetFieldValue<BitArray>(2),
+                                CBitVarying = reader.IsDBNull(3) ? null : reader.GetFieldValue<BitArray>(3),
+                                CBitArray = reader.IsDBNull(4) ? null : reader.GetFieldValue<BitArray[]>(4),
+                                CVarbitArray = reader.IsDBNull(5) ? null : reader.GetFieldValue<BitArray[]>(5)
+                            };
+                        }
+                    }
+                }
+            };
+            return null;
+        }
+
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
+            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+        using (var command = this.Transaction.Connection.CreateCommand())
+        {
+            command.CommandText = GetPostgresBitTypesSql;
+            command.Transaction = this.Transaction;
+            using (var reader = await command.ExecuteReaderAsync())
+            {
+                if (await reader.ReadAsync())
+                {
+                    return new GetPostgresBitTypesRow
+                    {
+                        CBit = reader.IsDBNull(0) ? null : reader.GetFieldValue<BitArray>(0),
+                        CBitSingle = reader.IsDBNull(1) ? null : reader.GetFieldValue<BitArray>(1),
+                        CVarbit = reader.IsDBNull(2) ? null : reader.GetFieldValue<BitArray>(2),
+                        CBitVarying = reader.IsDBNull(3) ? null : reader.GetFieldValue<BitArray>(3),
+                        CBitArray = reader.IsDBNull(4) ? null : reader.GetFieldValue<BitArray[]>(4),
+                        CVarbitArray = reader.IsDBNull(5) ? null : reader.GetFieldValue<BitArray[]>(5)
+                    };
+                }
+            }
+        }
+
+        return null;
+    }
+
+    private const string TruncatePostgresBitTypesSql = "TRUNCATE TABLE postgres_bit_types";
+    public async Task TruncatePostgresBitTypesAsync()
+    {
+        if (this.Transaction == null)
+        {
+            using (var connection = await GetDataSource().OpenConnectionAsync())
+            {
+                using (var command = connection.CreateCommand())
+                {
+                    command.CommandText = TruncatePostgresBitTypesSql;
+                    await command.ExecuteNonQueryAsync();
+                }
+
+                return;
+            }
+        }
+
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
+            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+        using (var command = this.Transaction.Connection.CreateCommand())
+        {
+            command.CommandText = TruncatePostgresBitTypesSql;
+            command.Transaction = this.Transaction;
+            await command.ExecuteNonQueryAsync();
+        }
+    }
+
+    private const string InsertPostgresBitTypesBatchSql = "COPY postgres_bit_types (c_bit, c_bit_single, c_varbit, c_bit_varying) FROM STDIN (FORMAT BINARY)";
+    public readonly record struct InsertPostgresBitTypesBatchArgs(BitArray? CBit, BitArray? CBitSingle, BitArray? CVarbit, BitArray? CBitVarying);
+    public async Task InsertPostgresBitTypesBatchAsync(List<InsertPostgresBitTypesBatchArgs> args)
+    {
+        using (var connection = await GetDataSource().OpenConnectionAsync())
+        {
+            using (var writer = await connection.BeginBinaryImportAsync(InsertPostgresBitTypesBatchSql))
+            {
+                foreach (var row in args)
+                {
+                    await writer.StartRowAsync();
+                    await writer.WriteAsync(row.CBit ?? (object)DBNull.Value, NpgsqlDbType.Bit);
+                    await writer.WriteAsync(row.CBitSingle ?? (object)DBNull.Value, NpgsqlDbType.Bit);
+                    await writer.WriteAsync(row.CVarbit ?? (object)DBNull.Value, NpgsqlDbType.Varbit);
+                    await writer.WriteAsync(row.CBitVarying ?? (object)DBNull.Value, NpgsqlDbType.Varbit);
+                }
+
+                await writer.CompleteAsync();
+            }
+        }
+    }
+
+    private const string GetPostgresBitTypesCntSql = @"SELECT
+                                                           c_bit,
+                                                           c_bit_single,
+                                                           c_varbit,
+                                                           c_bit_varying,
+                                                           COUNT(*) AS cnt
+                                                       FROM postgres_bit_types
+                                                       GROUP BY
+                                                           c_bit,
+                                                           c_bit_single,
+                                                           c_varbit,
+                                                           c_bit_varying
+                                                       LIMIT 1";
+    public readonly record struct GetPostgresBitTypesCntRow(BitArray? CBit, BitArray? CBitSingle, BitArray? CVarbit, BitArray? CBitVarying, long Cnt);
+    public async Task<GetPostgresBitTypesCntRow?> GetPostgresBitTypesCntAsync()
+    {
+        if (this.Transaction == null)
+        {
+            using (var connection = await GetDataSource().OpenConnectionAsync())
+            {
+                using (var command = connection.CreateCommand())
+                {
+                    command.CommandText = GetPostgresBitTypesCntSql;
+                    using (var reader = await command.ExecuteReaderAsync())
+                    {
+                        if (await reader.ReadAsync())
+                        {
+                            return new GetPostgresBitTypesCntRow
+                            {
+                                CBit = reader.IsDBNull(0) ? null : reader.GetFieldValue<BitArray>(0),
+                                CBitSingle = reader.IsDBNull(1) ? null : reader.GetFieldValue<BitArray>(1),
+                                CVarbit = reader.IsDBNull(2) ? null : reader.GetFieldValue<BitArray>(2),
+                                CBitVarying = reader.IsDBNull(3) ? null : reader.GetFieldValue<BitArray>(3),
+                                Cnt = reader.GetInt64(4)
+                            };
+                        }
+                    }
+                }
+            };
+            return null;
+        }
+
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
+            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+        using (var command = this.Transaction.Connection.CreateCommand())
+        {
+            command.CommandText = GetPostgresBitTypesCntSql;
+            command.Transaction = this.Transaction;
+            using (var reader = await command.ExecuteReaderAsync())
+            {
+                if (await reader.ReadAsync())
+                {
+                    return new GetPostgresBitTypesCntRow
+                    {
+                        CBit = reader.IsDBNull(0) ? null : reader.GetFieldValue<BitArray>(0),
+                        CBitSingle = reader.IsDBNull(1) ? null : reader.GetFieldValue<BitArray>(1),
+                        CVarbit = reader.IsDBNull(2) ? null : reader.GetFieldValue<BitArray>(2),
+                        CBitVarying = reader.IsDBNull(3) ? null : reader.GetFieldValue<BitArray>(3),
+                        Cnt = reader.GetInt64(4)
+                    };
+                }
+            }
+        }
+
+        return null;
     }
 
     private const string InsertPostgresStringTypesSql = @"

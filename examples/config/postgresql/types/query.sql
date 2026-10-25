@@ -73,6 +73,50 @@ INSERT INTO postgres_numeric_types
     c_money
 ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10);
 
+/* Bit types */
+
+-- name: InsertPostgresBitTypes :exec
+INSERT INTO postgres_bit_types
+(
+    c_bit,
+    c_bit_single,
+    c_varbit,
+    c_bit_varying,
+    c_bit_array,
+    c_varbit_array
+)
+VALUES ($1, $2, $3, $4, $5, $6);
+
+-- name: GetPostgresBitTypes :one
+SELECT * FROM postgres_bit_types LIMIT 1;
+
+-- name: TruncatePostgresBitTypes :exec
+TRUNCATE TABLE postgres_bit_types;
+
+-- name: InsertPostgresBitTypesBatch :copyfrom
+INSERT INTO postgres_bit_types
+(
+    c_bit,
+    c_bit_single,
+    c_varbit,
+    c_bit_varying
+) VALUES ($1, $2, $3, $4);
+
+-- name: GetPostgresBitTypesCnt :one
+SELECT
+    c_bit,
+    c_bit_single,
+    c_varbit,
+    c_bit_varying,
+    COUNT(*) AS cnt
+FROM postgres_bit_types
+GROUP BY
+    c_bit,
+    c_bit_single,
+    c_varbit,
+    c_bit_varying
+LIMIT 1;
+
 /* String types */
 
 -- name: InsertPostgresStringTypes :exec

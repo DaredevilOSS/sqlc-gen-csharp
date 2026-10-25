@@ -3,6 +3,7 @@ using NodaTime;
 using NodaTime.Extensions;
 using NpgsqlTypes;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -27,7 +28,7 @@ public class Book
 public class PostgresNumericType
 {
     public bool? CBoolean { get; init; }
-    public byte[]? CBit { get; init; }
+    public BitArray? CBit { get; init; }
     public short? CSmallint { get; init; }
     public int? CInteger { get; init; }
     public long? CBigint { get; init; }
@@ -36,6 +37,15 @@ public class PostgresNumericType
     public float? CReal { get; init; }
     public double? CDoublePrecision { get; init; }
     public decimal? CMoney { get; init; }
+};
+public class PostgresBitType
+{
+    public BitArray? CBit { get; init; }
+    public BitArray? CBitSingle { get; init; }
+    public BitArray? CVarbit { get; init; }
+    public BitArray? CBitVarying { get; init; }
+    public BitArray[]? CBitArray { get; init; }
+    public BitArray[]? CVarbitArray { get; init; }
 };
 public class PostgresStringType
 {

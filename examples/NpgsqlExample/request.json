@@ -233,6 +233,81 @@
           },
           {
             "rel": {
+              "name": "postgres_bit_types"
+            },
+            "columns": [
+              {
+                "name": "c_bit",
+                "length": -1,
+                "table": {
+                  "name": "postgres_bit_types"
+                },
+                "type": {
+                  "schema": "pg_catalog",
+                  "name": "bit"
+                }
+              },
+              {
+                "name": "c_bit_single",
+                "length": -1,
+                "table": {
+                  "name": "postgres_bit_types"
+                },
+                "type": {
+                  "schema": "pg_catalog",
+                  "name": "bit"
+                }
+              },
+              {
+                "name": "c_varbit",
+                "length": -1,
+                "table": {
+                  "name": "postgres_bit_types"
+                },
+                "type": {
+                  "name": "varbit"
+                }
+              },
+              {
+                "name": "c_bit_varying",
+                "length": -1,
+                "table": {
+                  "name": "postgres_bit_types"
+                },
+                "type": {
+                  "schema": "pg_catalog",
+                  "name": "varbit"
+                }
+              },
+              {
+                "name": "c_bit_array",
+                "isArray": true,
+                "length": -1,
+                "table": {
+                  "name": "postgres_bit_types"
+                },
+                "type": {
+                  "schema": "pg_catalog",
+                  "name": "bit"
+                },
+                "arrayDims": 1
+              },
+              {
+                "name": "c_varbit_array",
+                "isArray": true,
+                "length": -1,
+                "table": {
+                  "name": "postgres_bit_types"
+                },
+                "type": {
+                  "name": "varbit"
+                },
+                "arrayDims": 1
+              }
+            ]
+          },
+          {
+            "rel": {
               "name": "postgres_string_types"
             },
             "columns": [
@@ -34128,6 +34203,337 @@
       "insert_into_table": {
         "name": "postgres_numeric_types"
       }
+    },
+    {
+      "text": "\nINSERT INTO postgres_bit_types\n(\n    c_bit,\n    c_bit_single,\n    c_varbit,\n    c_bit_varying,\n    c_bit_array,\n    c_varbit_array\n)\nVALUES ($1, $2, $3, $4, $5, $6)",
+      "name": "InsertPostgresBitTypes",
+      "cmd": ":exec",
+      "parameters": [
+        {
+          "number": 1,
+          "column": {
+            "name": "c_bit",
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "postgres_bit_types"
+            },
+            "type": {
+              "name": "pg_catalog.bit"
+            },
+            "originalName": "c_bit"
+          }
+        },
+        {
+          "number": 2,
+          "column": {
+            "name": "c_bit_single",
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "postgres_bit_types"
+            },
+            "type": {
+              "name": "pg_catalog.bit"
+            },
+            "originalName": "c_bit_single"
+          }
+        },
+        {
+          "number": 3,
+          "column": {
+            "name": "c_varbit",
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "postgres_bit_types"
+            },
+            "type": {
+              "name": "varbit"
+            },
+            "originalName": "c_varbit"
+          }
+        },
+        {
+          "number": 4,
+          "column": {
+            "name": "c_bit_varying",
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "postgres_bit_types"
+            },
+            "type": {
+              "name": "pg_catalog.varbit"
+            },
+            "originalName": "c_bit_varying"
+          }
+        },
+        {
+          "number": 5,
+          "column": {
+            "name": "c_bit_array",
+            "isArray": true,
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "postgres_bit_types"
+            },
+            "type": {
+              "name": "pg_catalog.bit"
+            },
+            "originalName": "c_bit_array",
+            "arrayDims": 1
+          }
+        },
+        {
+          "number": 6,
+          "column": {
+            "name": "c_varbit_array",
+            "isArray": true,
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "postgres_bit_types"
+            },
+            "type": {
+              "name": "varbit"
+            },
+            "originalName": "c_varbit_array",
+            "arrayDims": 1
+          }
+        }
+      ],
+      "comments": [
+        " Bit types "
+      ],
+      "filename": "query.sql",
+      "insert_into_table": {
+        "name": "postgres_bit_types"
+      }
+    },
+    {
+      "text": "SELECT c_bit, c_bit_single, c_varbit, c_bit_varying, c_bit_array, c_varbit_array FROM postgres_bit_types LIMIT 1",
+      "name": "GetPostgresBitTypes",
+      "cmd": ":one",
+      "columns": [
+        {
+          "name": "c_bit",
+          "length": -1,
+          "table": {
+            "name": "postgres_bit_types"
+          },
+          "type": {
+            "schema": "pg_catalog",
+            "name": "bit"
+          },
+          "originalName": "c_bit"
+        },
+        {
+          "name": "c_bit_single",
+          "length": -1,
+          "table": {
+            "name": "postgres_bit_types"
+          },
+          "type": {
+            "schema": "pg_catalog",
+            "name": "bit"
+          },
+          "originalName": "c_bit_single"
+        },
+        {
+          "name": "c_varbit",
+          "length": -1,
+          "table": {
+            "name": "postgres_bit_types"
+          },
+          "type": {
+            "name": "varbit"
+          },
+          "originalName": "c_varbit"
+        },
+        {
+          "name": "c_bit_varying",
+          "length": -1,
+          "table": {
+            "name": "postgres_bit_types"
+          },
+          "type": {
+            "schema": "pg_catalog",
+            "name": "varbit"
+          },
+          "originalName": "c_bit_varying"
+        },
+        {
+          "name": "c_bit_array",
+          "isArray": true,
+          "length": -1,
+          "table": {
+            "name": "postgres_bit_types"
+          },
+          "type": {
+            "schema": "pg_catalog",
+            "name": "bit"
+          },
+          "originalName": "c_bit_array",
+          "arrayDims": 1
+        },
+        {
+          "name": "c_varbit_array",
+          "isArray": true,
+          "length": -1,
+          "table": {
+            "name": "postgres_bit_types"
+          },
+          "type": {
+            "name": "varbit"
+          },
+          "originalName": "c_varbit_array",
+          "arrayDims": 1
+        }
+      ],
+      "filename": "query.sql"
+    },
+    {
+      "text": "TRUNCATE TABLE postgres_bit_types",
+      "name": "TruncatePostgresBitTypes",
+      "cmd": ":exec",
+      "filename": "query.sql"
+    },
+    {
+      "text": "INSERT INTO postgres_bit_types\n(\n    c_bit,\n    c_bit_single,\n    c_varbit,\n    c_bit_varying\n) VALUES ($1, $2, $3, $4)",
+      "name": "InsertPostgresBitTypesBatch",
+      "cmd": ":copyfrom",
+      "parameters": [
+        {
+          "number": 1,
+          "column": {
+            "name": "c_bit",
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "postgres_bit_types"
+            },
+            "type": {
+              "name": "pg_catalog.bit"
+            },
+            "originalName": "c_bit"
+          }
+        },
+        {
+          "number": 2,
+          "column": {
+            "name": "c_bit_single",
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "postgres_bit_types"
+            },
+            "type": {
+              "name": "pg_catalog.bit"
+            },
+            "originalName": "c_bit_single"
+          }
+        },
+        {
+          "number": 3,
+          "column": {
+            "name": "c_varbit",
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "postgres_bit_types"
+            },
+            "type": {
+              "name": "varbit"
+            },
+            "originalName": "c_varbit"
+          }
+        },
+        {
+          "number": 4,
+          "column": {
+            "name": "c_bit_varying",
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "postgres_bit_types"
+            },
+            "type": {
+              "name": "pg_catalog.varbit"
+            },
+            "originalName": "c_bit_varying"
+          }
+        }
+      ],
+      "filename": "query.sql",
+      "insert_into_table": {
+        "name": "postgres_bit_types"
+      }
+    },
+    {
+      "text": "SELECT\n    c_bit,\n    c_bit_single,\n    c_varbit,\n    c_bit_varying,\n    COUNT(*) AS cnt\nFROM postgres_bit_types\nGROUP BY\n    c_bit,\n    c_bit_single,\n    c_varbit,\n    c_bit_varying\nLIMIT 1",
+      "name": "GetPostgresBitTypesCnt",
+      "cmd": ":one",
+      "columns": [
+        {
+          "name": "c_bit",
+          "length": -1,
+          "table": {
+            "name": "postgres_bit_types"
+          },
+          "type": {
+            "schema": "pg_catalog",
+            "name": "bit"
+          },
+          "originalName": "c_bit"
+        },
+        {
+          "name": "c_bit_single",
+          "length": -1,
+          "table": {
+            "name": "postgres_bit_types"
+          },
+          "type": {
+            "schema": "pg_catalog",
+            "name": "bit"
+          },
+          "originalName": "c_bit_single"
+        },
+        {
+          "name": "c_varbit",
+          "length": -1,
+          "table": {
+            "name": "postgres_bit_types"
+          },
+          "type": {
+            "name": "varbit"
+          },
+          "originalName": "c_varbit"
+        },
+        {
+          "name": "c_bit_varying",
+          "length": -1,
+          "table": {
+            "name": "postgres_bit_types"
+          },
+          "type": {
+            "schema": "pg_catalog",
+            "name": "varbit"
+          },
+          "originalName": "c_bit_varying"
+        },
+        {
+          "name": "cnt",
+          "notNull": true,
+          "length": -1,
+          "isFuncCall": true,
+          "type": {
+            "name": "bigint"
+          }
+        }
+      ],
+      "filename": "query.sql"
     },
     {
       "text": "\nINSERT INTO postgres_string_types\n(\n    c_char,\n    c_varchar,\n    c_character_varying,\n    c_bpchar,\n    c_text\n)\nVALUES ($1, $2, $3, $4, $5)",

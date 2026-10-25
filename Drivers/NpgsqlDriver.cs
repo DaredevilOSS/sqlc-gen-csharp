@@ -163,6 +163,21 @@ public sealed class NpgsqlDriver : EnumDbDriver, IOne, IMany, IExec, IExecRows, 
                 sqlMapperImpl: DateTimeNodaInstantTypeHandler
             ),
 
+            /* Bit string data types */
+            ["BitArray"] = new(
+                new()
+                {
+                    { "bit", new(DbTypeOverride: "NpgsqlDbType.Bit") },
+                    { "varbit", new(DbTypeOverride: "NpgsqlDbType.Varbit") },
+                    { "bit varying", new(DbTypeOverride: "NpgsqlDbType.Varbit") }
+                },
+                readerFn: (ordinal, _) => $"{Variable.Reader.AsVarName()}.GetFieldValue<BitArray>({ordinal})",
+                readerArrayFn: (ordinal, _) => $"{Variable.Reader.AsVarName()}.GetFieldValue<BitArray[]>({ordinal})",
+                usingDirectives: ["System.Collections", "NpgsqlTypes"],
+                sqlMapper: "SqlMapper.AddTypeHandler(typeof(BitArray), new BitArrayTypeHandler());",
+                sqlMapperImpl: BitArrayTypeHandler
+            ),
+
             /* Unstructured data types */
             ["JsonElement"] = new(
                 new()
@@ -347,7 +362,6 @@ public sealed class NpgsqlDriver : EnumDbDriver, IOne, IMany, IExec, IExecRows, 
                 new()
                 {
                     { "binary", new() },
-                    { "bit", new() },
                     { "bytea", new() },
                     { "blob", new() },
                     { "longblob", new() },
@@ -370,6 +384,26 @@ public sealed class NpgsqlDriver : EnumDbDriver, IOne, IMany, IExec, IExecRows, 
         };
 
     public override string TransactionClassName => "NpgsqlTransaction";
+
+    // Npgsql returns bool for bit(1) and BitArray for bit(n > 1) / varbit when read through GetValue (which Dapper uses)
+    private static readonly SqlMapperImplFunc BitArrayTypeHandler = isDotnetCore => $$"""
+        private class BitArrayTypeHandler : SqlMapper.TypeHandler<BitArray>
+        {
+            public override BitArray Parse(object value)
+            {
+                if (value is BitArray bits)
+                    return bits;
+                if (value is bool b)
+                    return new BitArray(new[] { b });
+                throw new DataException($"Cannot convert {value?.GetType()} to BitArray");
+            }
+
+            public override void SetValue(IDbDataParameter parameter, BitArray{{(isDotnetCore ? "?" : string.Empty)}} value)
+            {
+                parameter.Value = value;
+            }
+        }
+        """;
 
     private static readonly SqlMapperImplFunc JsonElementTypeHandler = _ => $$"""
         private class JsonElementTypeHandler : SqlMapper.TypeHandler<JsonElement>

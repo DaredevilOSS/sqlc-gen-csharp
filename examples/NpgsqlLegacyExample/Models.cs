@@ -5,6 +5,7 @@ namespace NpgsqlLegacyExampleGen
     using NodaTime.Extensions;
     using NpgsqlTypes;
     using System;
+    using System.Collections;
     using System.Collections.Generic;
     using System.Linq;
     using System.Net;
@@ -28,7 +29,7 @@ namespace NpgsqlLegacyExampleGen
     public class PostgresNumericType
     {
         public bool? CBoolean { get; set; }
-        public byte[] CBit { get; set; }
+        public BitArray CBit { get; set; }
         public short? CSmallint { get; set; }
         public int? CInteger { get; set; }
         public long? CBigint { get; set; }
@@ -37,6 +38,15 @@ namespace NpgsqlLegacyExampleGen
         public float? CReal { get; set; }
         public double? CDoublePrecision { get; set; }
         public decimal? CMoney { get; set; }
+    };
+    public class PostgresBitType
+    {
+        public BitArray CBit { get; set; }
+        public BitArray CBitSingle { get; set; }
+        public BitArray CVarbit { get; set; }
+        public BitArray CBitVarying { get; set; }
+        public BitArray[] CBitArray { get; set; }
+        public BitArray[] CVarbitArray { get; set; }
     };
     public class PostgresStringType
     {
