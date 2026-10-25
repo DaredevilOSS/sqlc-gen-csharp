@@ -962,6 +962,42 @@ namespace EndToEndTests
             }
         }
 
+        private static IEnumerable<TestCaseData> PostgresSystemDataTypesTestCases
+        {
+            get
+            {
+                yield return new TestCaseData(4000000000u, 4242u, 7u, 9999999999UL, new NpgsqlTid(5, 10), new NpgsqlLogSequenceNumber(0x16B374D848UL)).SetName("Valid System Data Types");
+                yield return new TestCaseData(null, null, null, null, null, null).SetName("Null System Data Types");
+            }
+        }
+
+        [Test]
+        [TestCaseSource(nameof(PostgresSystemDataTypesTestCases))]
+        public async Task TestPostgresSystemDataTypesAsync(uint? cOid, uint? cXid, uint? cCid, ulong? cXid8, NpgsqlTid? cTid, NpgsqlLogSequenceNumber? cPgLsn)
+        {
+            await QuerySql.InsertPostgresSystemTypesAsync(new QuerySql.InsertPostgresSystemTypesArgs { COid = cOid, CXid = cXid, CCid = cCid, CXid8 = cXid8, CTid = cTid, CPgLsn = cPgLsn });
+            var expected = new QuerySql.GetPostgresSystemTypesRow
+            {
+                COid = cOid,
+                CXid = cXid,
+                CCid = cCid,
+                CXid8 = cXid8,
+                CTid = cTid,
+                CPgLsn = cPgLsn
+            };
+            var actual = await QuerySql.GetPostgresSystemTypesAsync();
+            AssertSingularEquals(expected, actual);
+            void AssertSingularEquals(QuerySql.GetPostgresSystemTypesRow x, QuerySql.GetPostgresSystemTypesRow y)
+            {
+                Assert.That(x.COid, Is.EqualTo(y.COid));
+                Assert.That(x.CXid, Is.EqualTo(y.CXid));
+                Assert.That(x.CCid, Is.EqualTo(y.CCid));
+                Assert.That(x.CXid8, Is.EqualTo(y.CXid8));
+                Assert.That(x.CTid, Is.EqualTo(y.CTid));
+                Assert.That(x.CPgLsn, Is.EqualTo(y.CPgLsn));
+            }
+        }
+
         [Test]
         [TestCase(100, "z", "Sex Pistols", "Anarchy in the U.K", "Yoshimi Battles the Pink Robots", "Never Mind the Bollocks...")]
         [TestCase(10, null, null, null, null, null)]
@@ -1399,6 +1435,45 @@ namespace EndToEndTests
                 Assert.That(x.CDatemultirange, Is.EqualTo(y.CDatemultirange));
                 Assert.That(x.CTsmultirange, Is.EqualTo(y.CTsmultirange));
                 Assert.That(x.CTstzmultirange, Is.EqualTo(y.CTstzmultirange));
+            }
+        }
+
+        private static IEnumerable<TestCaseData> PostgresSystemCopyFromTestCases
+        {
+            get
+            {
+                yield return new TestCaseData(50, 4000000000u, 4242u, 7u, 9999999999UL, new NpgsqlTid(5, 10), new NpgsqlLogSequenceNumber(0x16B374D848UL)).SetName("Valid System Copy From");
+                yield return new TestCaseData(10, null, null, null, null, null, null).SetName("Null System Copy From");
+            }
+        }
+
+        [Test]
+        [TestCaseSource(nameof(PostgresSystemCopyFromTestCases))]
+        public async Task TestPostgresSystemCopyFromAsync(int batchSize, uint? cOid, uint? cXid, uint? cCid, ulong? cXid8, NpgsqlTid? cTid, NpgsqlLogSequenceNumber? cPgLsn)
+        {
+            var batchArgs = Enumerable.Range(0, batchSize).Select(_ => new QuerySql.InsertPostgresSystemTypesBatchArgs { COid = cOid, CXid = cXid, CCid = cCid, CXid8 = cXid8, CTid = cTid, CPgLsn = cPgLsn }).ToList();
+            await QuerySql.InsertPostgresSystemTypesBatchAsync(batchArgs);
+            var expected = new QuerySql.GetPostgresSystemTypesCntRow
+            {
+                Cnt = batchSize,
+                COid = cOid,
+                CXid = cXid,
+                CCid = cCid,
+                CXid8 = cXid8,
+                CTid = cTid,
+                CPgLsn = cPgLsn
+            };
+            var actual = await QuerySql.GetPostgresSystemTypesCntAsync();
+            AssertSingularEquals(expected, actual);
+            void AssertSingularEquals(QuerySql.GetPostgresSystemTypesCntRow x, QuerySql.GetPostgresSystemTypesCntRow y)
+            {
+                Assert.That(x.Cnt, Is.EqualTo(y.Cnt));
+                Assert.That(x.COid, Is.EqualTo(y.COid));
+                Assert.That(x.CXid, Is.EqualTo(y.CXid));
+                Assert.That(x.CCid, Is.EqualTo(y.CCid));
+                Assert.That(x.CXid8, Is.EqualTo(y.CXid8));
+                Assert.That(x.CTid, Is.EqualTo(y.CTid));
+                Assert.That(x.CPgLsn, Is.EqualTo(y.CPgLsn));
             }
         }
     }

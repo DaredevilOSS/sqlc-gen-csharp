@@ -514,6 +514,73 @@
           },
           {
             "rel": {
+              "name": "postgres_system_types"
+            },
+            "columns": [
+              {
+                "name": "c_oid",
+                "length": -1,
+                "table": {
+                  "name": "postgres_system_types"
+                },
+                "type": {
+                  "name": "oid"
+                }
+              },
+              {
+                "name": "c_xid",
+                "length": -1,
+                "table": {
+                  "name": "postgres_system_types"
+                },
+                "type": {
+                  "name": "xid"
+                }
+              },
+              {
+                "name": "c_cid",
+                "length": -1,
+                "table": {
+                  "name": "postgres_system_types"
+                },
+                "type": {
+                  "name": "cid"
+                }
+              },
+              {
+                "name": "c_xid8",
+                "length": -1,
+                "table": {
+                  "name": "postgres_system_types"
+                },
+                "type": {
+                  "name": "xid8"
+                }
+              },
+              {
+                "name": "c_tid",
+                "length": -1,
+                "table": {
+                  "name": "postgres_system_types"
+                },
+                "type": {
+                  "name": "tid"
+                }
+              },
+              {
+                "name": "c_pg_lsn",
+                "length": -1,
+                "table": {
+                  "name": "postgres_system_types"
+                },
+                "type": {
+                  "name": "pg_lsn"
+                }
+              }
+            ]
+          },
+          {
+            "rel": {
               "name": "postgres_extended_string_types"
             },
             "columns": [
@@ -35120,6 +35187,380 @@
             "type": {
               "name": "text"
             }
+          }
+        }
+      ],
+      "filename": "query.sql"
+    },
+    {
+      "text": "\nINSERT INTO postgres_system_types\n(\n    c_oid,\n    c_xid,\n    c_cid,\n    c_xid8,\n    c_tid,\n    c_pg_lsn\n) VALUES (\n    $1,\n    $2,\n    $3,\n    $4,\n    $5,\n    $6\n)",
+      "name": "InsertPostgresSystemTypes",
+      "cmd": ":exec",
+      "parameters": [
+        {
+          "number": 1,
+          "column": {
+            "name": "c_oid",
+            "length": -1,
+            "isNamedParam": true,
+            "table": {
+              "schema": "public",
+              "name": "postgres_system_types"
+            },
+            "type": {
+              "name": "oid"
+            },
+            "originalName": "c_oid"
+          }
+        },
+        {
+          "number": 2,
+          "column": {
+            "name": "c_xid",
+            "length": -1,
+            "isNamedParam": true,
+            "table": {
+              "schema": "public",
+              "name": "postgres_system_types"
+            },
+            "type": {
+              "name": "xid"
+            },
+            "originalName": "c_xid"
+          }
+        },
+        {
+          "number": 3,
+          "column": {
+            "name": "c_cid",
+            "length": -1,
+            "isNamedParam": true,
+            "table": {
+              "schema": "public",
+              "name": "postgres_system_types"
+            },
+            "type": {
+              "name": "cid"
+            },
+            "originalName": "c_cid"
+          }
+        },
+        {
+          "number": 4,
+          "column": {
+            "name": "c_xid8",
+            "length": -1,
+            "isNamedParam": true,
+            "table": {
+              "schema": "public",
+              "name": "postgres_system_types"
+            },
+            "type": {
+              "name": "xid8"
+            },
+            "originalName": "c_xid8"
+          }
+        },
+        {
+          "number": 5,
+          "column": {
+            "name": "c_tid",
+            "length": -1,
+            "isNamedParam": true,
+            "table": {
+              "schema": "public",
+              "name": "postgres_system_types"
+            },
+            "type": {
+              "name": "tid"
+            },
+            "originalName": "c_tid"
+          }
+        },
+        {
+          "number": 6,
+          "column": {
+            "name": "c_pg_lsn",
+            "length": -1,
+            "isNamedParam": true,
+            "table": {
+              "schema": "public",
+              "name": "postgres_system_types"
+            },
+            "type": {
+              "name": "pg_lsn"
+            },
+            "originalName": "c_pg_lsn"
+          }
+        }
+      ],
+      "comments": [
+        " System types "
+      ],
+      "filename": "query.sql",
+      "insert_into_table": {
+        "name": "postgres_system_types"
+      }
+    },
+    {
+      "text": "INSERT INTO postgres_system_types\n(\n    c_oid,\n    c_xid,\n    c_cid,\n    c_xid8,\n    c_tid,\n    c_pg_lsn\n) VALUES ($1, $2, $3, $4, $5, $6)",
+      "name": "InsertPostgresSystemTypesBatch",
+      "cmd": ":copyfrom",
+      "parameters": [
+        {
+          "number": 1,
+          "column": {
+            "name": "c_oid",
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "postgres_system_types"
+            },
+            "type": {
+              "name": "oid"
+            },
+            "originalName": "c_oid"
+          }
+        },
+        {
+          "number": 2,
+          "column": {
+            "name": "c_xid",
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "postgres_system_types"
+            },
+            "type": {
+              "name": "xid"
+            },
+            "originalName": "c_xid"
+          }
+        },
+        {
+          "number": 3,
+          "column": {
+            "name": "c_cid",
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "postgres_system_types"
+            },
+            "type": {
+              "name": "cid"
+            },
+            "originalName": "c_cid"
+          }
+        },
+        {
+          "number": 4,
+          "column": {
+            "name": "c_xid8",
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "postgres_system_types"
+            },
+            "type": {
+              "name": "xid8"
+            },
+            "originalName": "c_xid8"
+          }
+        },
+        {
+          "number": 5,
+          "column": {
+            "name": "c_tid",
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "postgres_system_types"
+            },
+            "type": {
+              "name": "tid"
+            },
+            "originalName": "c_tid"
+          }
+        },
+        {
+          "number": 6,
+          "column": {
+            "name": "c_pg_lsn",
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "postgres_system_types"
+            },
+            "type": {
+              "name": "pg_lsn"
+            },
+            "originalName": "c_pg_lsn"
+          }
+        }
+      ],
+      "filename": "query.sql",
+      "insert_into_table": {
+        "name": "postgres_system_types"
+      }
+    },
+    {
+      "text": "SELECT c_oid, c_xid, c_cid, c_xid8, c_tid, c_pg_lsn FROM postgres_system_types LIMIT 1",
+      "name": "GetPostgresSystemTypes",
+      "cmd": ":one",
+      "columns": [
+        {
+          "name": "c_oid",
+          "length": -1,
+          "table": {
+            "name": "postgres_system_types"
+          },
+          "type": {
+            "name": "oid"
+          },
+          "originalName": "c_oid"
+        },
+        {
+          "name": "c_xid",
+          "length": -1,
+          "table": {
+            "name": "postgres_system_types"
+          },
+          "type": {
+            "name": "xid"
+          },
+          "originalName": "c_xid"
+        },
+        {
+          "name": "c_cid",
+          "length": -1,
+          "table": {
+            "name": "postgres_system_types"
+          },
+          "type": {
+            "name": "cid"
+          },
+          "originalName": "c_cid"
+        },
+        {
+          "name": "c_xid8",
+          "length": -1,
+          "table": {
+            "name": "postgres_system_types"
+          },
+          "type": {
+            "name": "xid8"
+          },
+          "originalName": "c_xid8"
+        },
+        {
+          "name": "c_tid",
+          "length": -1,
+          "table": {
+            "name": "postgres_system_types"
+          },
+          "type": {
+            "name": "tid"
+          },
+          "originalName": "c_tid"
+        },
+        {
+          "name": "c_pg_lsn",
+          "length": -1,
+          "table": {
+            "name": "postgres_system_types"
+          },
+          "type": {
+            "name": "pg_lsn"
+          },
+          "originalName": "c_pg_lsn"
+        }
+      ],
+      "filename": "query.sql"
+    },
+    {
+      "text": "TRUNCATE TABLE postgres_system_types",
+      "name": "TruncatePostgresSystemTypes",
+      "cmd": ":exec",
+      "filename": "query.sql"
+    },
+    {
+      "text": "SELECT\n    c_oid,\n    c_xid,\n    c_cid,\n    c_xid8,\n    c_tid,\n    c_pg_lsn,\n    COUNT(*) AS cnt\nFROM postgres_system_types\nGROUP BY\n    c_oid,\n    c_xid,\n    c_cid,\n    c_xid8,\n    c_tid,\n    c_pg_lsn\nLIMIT 1",
+      "name": "GetPostgresSystemTypesCnt",
+      "cmd": ":one",
+      "columns": [
+        {
+          "name": "c_oid",
+          "length": -1,
+          "table": {
+            "name": "postgres_system_types"
+          },
+          "type": {
+            "name": "oid"
+          },
+          "originalName": "c_oid"
+        },
+        {
+          "name": "c_xid",
+          "length": -1,
+          "table": {
+            "name": "postgres_system_types"
+          },
+          "type": {
+            "name": "xid"
+          },
+          "originalName": "c_xid"
+        },
+        {
+          "name": "c_cid",
+          "length": -1,
+          "table": {
+            "name": "postgres_system_types"
+          },
+          "type": {
+            "name": "cid"
+          },
+          "originalName": "c_cid"
+        },
+        {
+          "name": "c_xid8",
+          "length": -1,
+          "table": {
+            "name": "postgres_system_types"
+          },
+          "type": {
+            "name": "xid8"
+          },
+          "originalName": "c_xid8"
+        },
+        {
+          "name": "c_tid",
+          "length": -1,
+          "table": {
+            "name": "postgres_system_types"
+          },
+          "type": {
+            "name": "tid"
+          },
+          "originalName": "c_tid"
+        },
+        {
+          "name": "c_pg_lsn",
+          "length": -1,
+          "table": {
+            "name": "postgres_system_types"
+          },
+          "type": {
+            "name": "pg_lsn"
+          },
+          "originalName": "c_pg_lsn"
+        },
+        {
+          "name": "cnt",
+          "notNull": true,
+          "length": -1,
+          "isFuncCall": true,
+          "type": {
+            "name": "bigint"
           }
         }
       ],

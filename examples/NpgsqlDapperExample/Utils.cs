@@ -94,6 +94,8 @@ public static class Utils
     {
         SqlMapper.AddTypeHandler(typeof(Instant), new NodaInstantTypeHandler());
         SqlMapper.AddTypeHandler(typeof(BitArray), new BitArrayTypeHandler());
+        SqlMapper.AddTypeHandler(typeof(NpgsqlTid), new NpgsqlTypeHandler<NpgsqlTid>());
+        SqlMapper.AddTypeHandler(typeof(NpgsqlLogSequenceNumber), new NpgsqlTypeHandler<NpgsqlLogSequenceNumber>());
         SqlMapper.AddTypeHandler(typeof(NpgsqlRange<int>), new NpgsqlTypeHandler<NpgsqlRange<int>>());
         SqlMapper.AddTypeHandler(typeof(NpgsqlRange<long>), new NpgsqlTypeHandler<NpgsqlRange<long>>());
         SqlMapper.AddTypeHandler(typeof(NpgsqlRange<decimal>), new NpgsqlTypeHandler<NpgsqlRange<decimal>>());

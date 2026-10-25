@@ -1197,6 +1197,173 @@ public class QuerySql : IDisposable
         return await this.Transaction.Connection.QueryFirstOrDefaultAsync<GetPostgresStringTypesTextSearchRow?>(GetPostgresStringTypesTextSearchSql, queryParams, transaction: this.Transaction);
     }
 
+    private const string InsertPostgresSystemTypesSql = @"
+                                                          INSERT INTO postgres_system_types
+                                                          (
+                                                              c_oid,
+                                                              c_xid,
+                                                              c_cid,
+                                                              c_xid8,
+                                                              c_tid,
+                                                              c_pg_lsn
+                                                          ) VALUES (
+                                                              @c_oid,
+                                                              @c_xid,
+                                                              @c_cid,
+                                                              @c_xid8,
+                                                              @c_tid,
+                                                              @c_pg_lsn
+                                                          )";
+    public class InsertPostgresSystemTypesArgs
+    {
+        public uint? COid { get; init; }
+        public uint? CXid { get; init; }
+        public uint? CCid { get; init; }
+        public ulong? CXid8 { get; init; }
+        public NpgsqlTid? CTid { get; init; }
+        public NpgsqlLogSequenceNumber? CPgLsn { get; init; }
+    };
+    public async Task InsertPostgresSystemTypesAsync(InsertPostgresSystemTypesArgs args)
+    {
+        var queryParams = new Dictionary<string, object?>();
+        queryParams.Add("c_oid", new Utils.NpgsqlTypedParameter(args.COid, NpgsqlTypes.NpgsqlDbType.Oid));
+        queryParams.Add("c_xid", new Utils.NpgsqlTypedParameter(args.CXid, NpgsqlTypes.NpgsqlDbType.Xid));
+        queryParams.Add("c_cid", new Utils.NpgsqlTypedParameter(args.CCid, NpgsqlTypes.NpgsqlDbType.Cid));
+        queryParams.Add("c_xid8", new Utils.NpgsqlTypedParameter(args.CXid8, NpgsqlTypes.NpgsqlDbType.Xid8));
+        queryParams.Add("c_tid", new Utils.NpgsqlTypedParameter(args.CTid, NpgsqlTypes.NpgsqlDbType.Tid));
+        queryParams.Add("c_pg_lsn", new Utils.NpgsqlTypedParameter(args.CPgLsn, NpgsqlTypes.NpgsqlDbType.PgLsn));
+        if (this.Transaction == null)
+        {
+            using (var connection = await GetDataSource().OpenConnectionAsync())
+            {
+                await connection.ExecuteAsync(InsertPostgresSystemTypesSql, queryParams);
+                return;
+            }
+        }
+
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
+            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+        await this.Transaction.Connection.ExecuteAsync(InsertPostgresSystemTypesSql, queryParams, transaction: this.Transaction);
+    }
+
+    private const string InsertPostgresSystemTypesBatchSql = "COPY postgres_system_types (c_oid, c_xid, c_cid, c_xid8, c_tid, c_pg_lsn) FROM STDIN (FORMAT BINARY)";
+    public class InsertPostgresSystemTypesBatchArgs
+    {
+        public uint? COid { get; init; }
+        public uint? CXid { get; init; }
+        public uint? CCid { get; init; }
+        public ulong? CXid8 { get; init; }
+        public NpgsqlTid? CTid { get; init; }
+        public NpgsqlLogSequenceNumber? CPgLsn { get; init; }
+    };
+    public async Task InsertPostgresSystemTypesBatchAsync(List<InsertPostgresSystemTypesBatchArgs> args)
+    {
+        using (var connection = await GetDataSource().OpenConnectionAsync())
+        {
+            using (var writer = await connection.BeginBinaryImportAsync(InsertPostgresSystemTypesBatchSql))
+            {
+                foreach (var row in args)
+                {
+                    await writer.StartRowAsync();
+                    await writer.WriteAsync(row.COid, NpgsqlTypes.NpgsqlDbType.Oid);
+                    await writer.WriteAsync(row.CXid, NpgsqlTypes.NpgsqlDbType.Xid);
+                    await writer.WriteAsync(row.CCid, NpgsqlTypes.NpgsqlDbType.Cid);
+                    await writer.WriteAsync(row.CXid8, NpgsqlTypes.NpgsqlDbType.Xid8);
+                    await writer.WriteAsync(row.CTid, NpgsqlTypes.NpgsqlDbType.Tid);
+                    await writer.WriteAsync(row.CPgLsn, NpgsqlTypes.NpgsqlDbType.PgLsn);
+                }
+
+                await writer.CompleteAsync();
+            }
+        }
+    }
+
+    private const string GetPostgresSystemTypesSql = "SELECT c_oid, c_xid, c_cid, c_xid8, c_tid, c_pg_lsn FROM postgres_system_types LIMIT 1";
+    public class GetPostgresSystemTypesRow
+    {
+        public uint? COid { get; init; }
+        public uint? CXid { get; init; }
+        public uint? CCid { get; init; }
+        public ulong? CXid8 { get; init; }
+        public NpgsqlTid? CTid { get; init; }
+        public NpgsqlLogSequenceNumber? CPgLsn { get; init; }
+    };
+    public async Task<GetPostgresSystemTypesRow?> GetPostgresSystemTypesAsync()
+    {
+        if (this.Transaction == null)
+        {
+            using (var connection = await GetDataSource().OpenConnectionAsync())
+            {
+                var result = await connection.QueryFirstOrDefaultAsync<GetPostgresSystemTypesRow?>(GetPostgresSystemTypesSql);
+                return result;
+            }
+        }
+
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
+            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+        return await this.Transaction.Connection.QueryFirstOrDefaultAsync<GetPostgresSystemTypesRow?>(GetPostgresSystemTypesSql, transaction: this.Transaction);
+    }
+
+    private const string TruncatePostgresSystemTypesSql = "TRUNCATE TABLE postgres_system_types";
+    public async Task TruncatePostgresSystemTypesAsync()
+    {
+        if (this.Transaction == null)
+        {
+            using (var connection = await GetDataSource().OpenConnectionAsync())
+            {
+                await connection.ExecuteAsync(TruncatePostgresSystemTypesSql);
+                return;
+            }
+        }
+
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
+            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+        await this.Transaction.Connection.ExecuteAsync(TruncatePostgresSystemTypesSql, transaction: this.Transaction);
+    }
+
+    private const string GetPostgresSystemTypesCntSql = @"SELECT
+                                                              c_oid,
+                                                              c_xid,
+                                                              c_cid,
+                                                              c_xid8,
+                                                              c_tid,
+                                                              c_pg_lsn,
+                                                              COUNT(*) AS cnt
+                                                          FROM postgres_system_types
+                                                          GROUP BY
+                                                              c_oid,
+                                                              c_xid,
+                                                              c_cid,
+                                                              c_xid8,
+                                                              c_tid,
+                                                              c_pg_lsn
+                                                          LIMIT 1";
+    public class GetPostgresSystemTypesCntRow
+    {
+        public uint? COid { get; init; }
+        public uint? CXid { get; init; }
+        public uint? CCid { get; init; }
+        public ulong? CXid8 { get; init; }
+        public NpgsqlTid? CTid { get; init; }
+        public NpgsqlLogSequenceNumber? CPgLsn { get; init; }
+        public required long Cnt { get; init; }
+    };
+    public async Task<GetPostgresSystemTypesCntRow?> GetPostgresSystemTypesCntAsync()
+    {
+        if (this.Transaction == null)
+        {
+            using (var connection = await GetDataSource().OpenConnectionAsync())
+            {
+                var result = await connection.QueryFirstOrDefaultAsync<GetPostgresSystemTypesCntRow?>(GetPostgresSystemTypesCntSql);
+                return result;
+            }
+        }
+
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
+            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+        return await this.Transaction.Connection.QueryFirstOrDefaultAsync<GetPostgresSystemTypesCntRow?>(GetPostgresSystemTypesCntSql, transaction: this.Transaction);
+    }
+
     private const string InsertPostgresExtendedStringTypesSql = @"
                                                                   INSERT INTO postgres_extended_string_types
                                                                   (

@@ -178,6 +178,62 @@ FROM txt_query
 ORDER BY rnk DESC
 LIMIT 1;
 
+/* System types */
+
+-- name: InsertPostgresSystemTypes :exec
+INSERT INTO postgres_system_types
+(
+    c_oid,
+    c_xid,
+    c_cid,
+    c_xid8,
+    c_tid,
+    c_pg_lsn
+) VALUES (
+    sqlc.narg('c_oid'),
+    sqlc.narg('c_xid'),
+    sqlc.narg('c_cid'),
+    sqlc.narg('c_xid8'),
+    sqlc.narg('c_tid'),
+    sqlc.narg('c_pg_lsn')
+);
+
+-- name: InsertPostgresSystemTypesBatch :copyfrom
+INSERT INTO postgres_system_types
+(
+    c_oid,
+    c_xid,
+    c_cid,
+    c_xid8,
+    c_tid,
+    c_pg_lsn
+) VALUES ($1, $2, $3, $4, $5, $6);
+
+-- name: GetPostgresSystemTypes :one
+SELECT * FROM postgres_system_types LIMIT 1;
+
+-- name: TruncatePostgresSystemTypes :exec
+TRUNCATE TABLE postgres_system_types;
+
+-- name: GetPostgresSystemTypesCnt :one
+SELECT
+    c_oid,
+    c_xid,
+    c_cid,
+    c_xid8,
+    c_tid,
+    c_pg_lsn,
+    COUNT(*) AS cnt
+FROM postgres_system_types
+GROUP BY
+    c_oid,
+    c_xid,
+    c_cid,
+    c_xid8,
+    c_tid,
+    c_pg_lsn
+LIMIT 1;
+
 /* Extended string types */
 
 -- name: InsertPostgresExtendedStringTypes :exec

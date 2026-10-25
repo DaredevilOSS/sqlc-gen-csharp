@@ -50,6 +50,10 @@ we consider support for the different data types separately for batch inserts an
 | ltree                                   | ✅         | ✅                  |
 | lquery                                  | ✅         | ✅                  |
 | ltxtquery                               | ✅         | ✅                  |
+| oid, xid, cid                           | ✅         | ✅                  |
+| xid8                                    | ✅         | ✅                  |
+| tid                                     | ✅         | ✅                  |
+| pg_lsn                                  | ✅         | ✅                  |
 | int4range, int8range, numrange          | ✅         | ✅                  |
 | daterange, tsrange, tstzrange           | ✅         | ✅                  |
 | int4multirange, int8multirange, nummultirange | ✅   | ✅                  |
@@ -104,6 +108,9 @@ supported since Npgsql writes `BitArray[]` as `varbit[]`, which does not match t
 must be created in your schema (`CREATE EXTENSION citext;`) for sqlc to recognize them. When using Dapper, `ltree`, `lquery` and `ltxtquery`
 parameters need an explicit cast in the INSERT statement (e.g. `sqlc.narg('c_ltree')::ltree`), since Dapper sends the value as `text`.
 `lquery` and `ltxtquery` have no equality operator, so they cannot be used in `GROUP BY` / `DISTINCT`.
+
+*** System types map to `uint` (`oid`, `xid`, `cid`), `ulong` (`xid8`), `NpgsqlTid` (`tid`) and `NpgsqlLogSequenceNumber` (`pg_lsn`).
+When using Dapper, these parameters are sent with an explicit `NpgsqlDbType`, since it cannot be inferred from the CLR type (`oid`, `xid` and `cid` are all `uint`).
 
 *** Range types map to `NpgsqlRange<T>` (`int4range` - `NpgsqlRange<int>`, `int8range` - `NpgsqlRange<long>`, `numrange` - `NpgsqlRange<decimal>`,
 `daterange` / `tsrange` / `tstzrange` - `NpgsqlRange<DateTime>`) and multirange types (PostgreSQL 14+) to `NpgsqlRange<T>[]`.

@@ -24,7 +24,11 @@ public sealed class NpgsqlDriver : EnumDbDriver, IOne, IMany, IExec, IExecRows, 
             "NpgsqlRange<int>",
             "NpgsqlRange<long>",
             "NpgsqlRange<decimal>",
-            "NpgsqlRange<DateTime>"
+            "NpgsqlRange<DateTime>",
+            "uint",
+            "ulong",
+            "NpgsqlTid",
+            "NpgsqlLogSequenceNumber"
         ]);
 
         foreach (var columnMapping in ColumnMappings.Values)
@@ -190,6 +194,46 @@ public sealed class NpgsqlDriver : EnumDbDriver, IOne, IMany, IExec, IExecRows, 
                 usingDirectives: ["System.Collections", "NpgsqlTypes"],
                 sqlMapper: "SqlMapper.AddTypeHandler(typeof(BitArray), new BitArrayTypeHandler());",
                 sqlMapperImpl: BitArrayTypeHandler
+            ),
+
+            /* System data types */
+            ["uint"] = new(
+                new()
+                {
+                    { "oid", new(DbTypeOverride: "NpgsqlTypes.NpgsqlDbType.Oid") },
+                    { "xid", new(DbTypeOverride: "NpgsqlTypes.NpgsqlDbType.Xid") },
+                    { "cid", new(DbTypeOverride: "NpgsqlTypes.NpgsqlDbType.Cid") }
+                },
+                readerFn: (ordinal, _) => $"{Variable.Reader.AsVarName()}.GetFieldValue<uint>({ordinal})",
+                readerArrayFn: (ordinal, _) => $"{Variable.Reader.AsVarName()}.GetFieldValue<uint[]>({ordinal})"
+            ),
+            ["ulong"] = new(
+                new()
+                {
+                    { "xid8", new(DbTypeOverride: "NpgsqlTypes.NpgsqlDbType.Xid8") }
+                },
+                readerFn: (ordinal, _) => $"{Variable.Reader.AsVarName()}.GetFieldValue<ulong>({ordinal})",
+                readerArrayFn: (ordinal, _) => $"{Variable.Reader.AsVarName()}.GetFieldValue<ulong[]>({ordinal})"
+            ),
+            ["NpgsqlTid"] = new(
+                new()
+                {
+                    { "tid", new(DbTypeOverride: "NpgsqlTypes.NpgsqlDbType.Tid") }
+                },
+                readerFn: (ordinal, _) => $"{Variable.Reader.AsVarName()}.GetFieldValue<NpgsqlTid>({ordinal})",
+                readerArrayFn: (ordinal, _) => $"{Variable.Reader.AsVarName()}.GetFieldValue<NpgsqlTid[]>({ordinal})",
+                usingDirectives: ["NpgsqlTypes"],
+                sqlMapper: "SqlMapper.AddTypeHandler(typeof(NpgsqlTid), new NpgsqlTypeHandler<NpgsqlTid>());"
+            ),
+            ["NpgsqlLogSequenceNumber"] = new(
+                new()
+                {
+                    { "pg_lsn", new(DbTypeOverride: "NpgsqlTypes.NpgsqlDbType.PgLsn") }
+                },
+                readerFn: (ordinal, _) => $"{Variable.Reader.AsVarName()}.GetFieldValue<NpgsqlLogSequenceNumber>({ordinal})",
+                readerArrayFn: (ordinal, _) => $"{Variable.Reader.AsVarName()}.GetFieldValue<NpgsqlLogSequenceNumber[]>({ordinal})",
+                usingDirectives: ["NpgsqlTypes"],
+                sqlMapper: "SqlMapper.AddTypeHandler(typeof(NpgsqlLogSequenceNumber), new NpgsqlTypeHandler<NpgsqlLogSequenceNumber>());"
             ),
 
             /* Range data types */
@@ -590,14 +634,18 @@ public sealed class NpgsqlDriver : EnumDbDriver, IOne, IMany, IExec, IExecRows, 
 
         return usingDirectives
             .AddRangeExcludeNulls(["NpgsqlTypes"])
-            .AddRangeIf(["Npgsql"], RangeParamExistsInQueries());
+            .AddRangeIf(["Npgsql"], TypedParameterExistsInQueries());
     }
 
     private static bool IsRangeCsharpType(string csharpType) => csharpType.StartsWith("NpgsqlRange<");
 
-    private bool RangeParamExistsInQueries()
+    // Types for which Dapper cannot infer the right NpgsqlDbType from the CLR type alone
+    private static bool RequiresTypedDapperParameter(string csharpType) =>
+        IsRangeCsharpType(csharpType) || csharpType is "uint" or "ulong" or "NpgsqlTid" or "NpgsqlLogSequenceNumber";
+
+    private bool TypedParameterExistsInQueries()
     {
-        return Queries.Any(q => q.Params.Any(p => IsRangeCsharpType(GetCsharpTypeWithoutNullableSuffix(p.Column, q))));
+        return Queries.Any(q => q.Params.Any(p => RequiresTypedDapperParameter(GetCsharpTypeWithoutNullableSuffix(p.Column, q))));
     }
 
     public override MemberDeclarationSyntax[] GetMemberDeclarationsForUtils()
@@ -635,10 +683,10 @@ public sealed class NpgsqlDriver : EnumDbDriver, IOne, IMany, IExec, IExecRows, 
     }
 
     // Dapper infers the parameter type from the CLR type, which is ambiguous for ranges (NpgsqlRange<DateTime> could be
-    // daterange, tsrange or tstzrange), so range parameters are sent with an explicit NpgsqlDbType.
+    // daterange, tsrange or tstzrange) and for oid/xid/cid (all uint), or not inferred at all (tid), so these are sent with an explicit NpgsqlDbType.
     private MemberDeclarationSyntax[] GetNpgsqlTypedParameterMembers(string optionalNullable)
     {
-        if (!RangeParamExistsInQueries())
+        if (!TypedParameterExistsInQueries())
             return [];
 
         return
@@ -851,8 +899,8 @@ public sealed class NpgsqlDriver : EnumDbDriver, IOne, IMany, IExec, IExecRows, 
     public override WriterFn? GetWriterFn(Column column, Query query)
     {
         var csharpType = GetCsharpTypeWithoutNullableSuffix(column, query);
-        if (Options.UseDapper && IsRangeCsharpType(csharpType) && GetColumnDbTypeOverride(column) is { } rangeDbType)
-            return (el, _, _, isDapper, _) => isDapper ? $"new Utils.NpgsqlTypedParameter({el}, {rangeDbType})" : el;
+        if (Options.UseDapper && RequiresTypedDapperParameter(csharpType) && GetColumnDbTypeOverride(column) is { } explicitDbType)
+            return (el, _, _, isDapper, _) => isDapper ? $"new Utils.NpgsqlTypedParameter({el}, {explicitDbType})" : el;
 
         var writerFn = ColumnMappings.GetValueOrDefault(csharpType)?.WriterFn;
         if (writerFn is not null)

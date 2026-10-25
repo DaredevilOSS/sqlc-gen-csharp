@@ -50,6 +50,15 @@ CREATE TABLE postgres_multirange_types (
     c_tstzmultirange    TSTZMULTIRANGE
 );
 
+CREATE TABLE postgres_system_types (
+    c_oid       OID,
+    c_xid       XID,
+    c_cid       CID,
+    c_xid8      XID8,
+    c_tid       TID,
+    c_pg_lsn    PG_LSN
+);
+
 CREATE TABLE postgres_extended_string_types (
     c_citext       CITEXT,
     c_ltree        LTREE,

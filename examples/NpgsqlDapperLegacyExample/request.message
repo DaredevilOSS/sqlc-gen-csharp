@@ -3,7 +3,7 @@
 2
 postgresql-examples/config/postgresql/authors/schema.sql+examples/config/postgresql/types/schema.sql",examples/config/postgresql/authors/query.sql"*examples/config/postgresql/types/query.sqlb›
 "examples/NpgsqlDapperLegacyExamplecsharpÖ{"debugRequest":true,"generateCsproj":true,"namespaceName":"NpgsqlDapperLegacyExampleGen","overrides":[{"column":"GetPostgresFunctions:max_integer","csharp_type":{"notNull":false,"type":"int"}},{"column":"GetPostgresFunctions:max_varchar","csharp_type":{"notNull":false,"type":"string"}},{"column":"GetPostgresFunctions:max_timestamp","csharp_type":{"notNull":true,"type":"DateTime"}},{"column":"GetPostgresSpecialTypesCnt:c_json","csharp_type":{"notNull":false,"type":"JsonElement"}},{"column":"GetPostgresSpecialTypesCnt:c_jsonb","csharp_type":{"notNull":false,"type":"JsonElement"}},{"column":"*:c_json_string_override","csharp_type":{"notNull":false,"type":"string"}},{"column":"*:c_xml_string_override","csharp_type":{"notNull":false,"type":"string"}},{"column":"*:c_macaddr8","csharp_type":{"notNull":false,"type":"string"}},{"column":"*:c_timestamp_noda_instant_override","csharp_type":{"notNull":false,"type":"Instant"}}],"targetFramework":"netstandard2.0","useDapper":true}*
-./dist/LocalRunnerÊüpublic"Œ,publicƒ
+./dist/LocalRunner¦ÿpublic"è.publicƒ
 	authors)
 id0ÿÿÿÿÿÿÿÿÿR	authorsb	bigserial&
 name0ÿÿÿÿÿÿÿÿÿR	authorsbtext#
@@ -71,7 +71,14 @@ c_numrange0ÿÿÿÿÿÿÿÿÿRpostgres_range_typesb
 c_nummultirange0ÿÿÿÿÿÿÿÿÿRpostgres_multirange_typesbnummultirangeL
 c_datemultirange0ÿÿÿÿÿÿÿÿÿRpostgres_multirange_typesbdatemultirangeH
 c_tsmultirange0ÿÿÿÿÿÿÿÿÿRpostgres_multirange_typesbtsmultirangeL
-c_tstzmultirange0ÿÿÿÿÿÿÿÿÿRpostgres_multirange_typesbtstzmultirangeñ
+c_tstzmultirange0ÿÿÿÿÿÿÿÿÿRpostgres_multirange_typesbtstzmultirangeÙ
+postgres_system_types2
+c_oid0ÿÿÿÿÿÿÿÿÿRpostgres_system_typesboid2
+c_xid0ÿÿÿÿÿÿÿÿÿRpostgres_system_typesbxid2
+c_cid0ÿÿÿÿÿÿÿÿÿRpostgres_system_typesbcid4
+c_xid80ÿÿÿÿÿÿÿÿÿRpostgres_system_typesbxid82
+c_tid0ÿÿÿÿÿÿÿÿÿRpostgres_system_typesbtid8
+c_pg_lsn0ÿÿÿÿÿÿÿÿÿRpostgres_system_typesbpg_lsnñ
  postgres_extended_string_typesA
 c_citext0ÿÿÿÿÿÿÿÿÿR postgres_extended_string_typesbcitext?
 c_ltree0ÿÿÿÿÿÿÿÿÿR postgres_extended_string_typesbltreeA
@@ -10645,7 +10652,77 @@ LIMIT 1 GetPostgresStringTypesTextSearch:one"0
 tsvectorztsv"
 rnk0ÿÿÿÿÿÿÿÿÿ@breal*%!
 
-to_tsquery0ÿÿÿÿÿÿÿÿÿbtext:	query.sqlÖ
+to_tsquery0ÿÿÿÿÿÿÿÿÿbtext:	query.sqlÀ
+¥
+INSERT INTO postgres_system_types
+(
+    c_oid,
+    c_xid,
+    c_cid,
+    c_xid8,
+    c_tid,
+    c_pg_lsn
+) VALUES (
+    $1,
+    $2,
+    $3,
+    $4,
+    $5,
+    $6
+)InsertPostgresSystemTypes:exec*GC
+c_oid0ÿÿÿÿÿÿÿÿÿ8Rpublicpostgres_system_typesboidzc_oid*GC
+c_xid0ÿÿÿÿÿÿÿÿÿ8Rpublicpostgres_system_typesbxidzc_xid*GC
+c_cid0ÿÿÿÿÿÿÿÿÿ8Rpublicpostgres_system_typesbcidzc_cid*JF
+c_xid80ÿÿÿÿÿÿÿÿÿ8Rpublicpostgres_system_typesbxid8zc_xid8*GC
+c_tid0ÿÿÿÿÿÿÿÿÿ8Rpublicpostgres_system_typesbtidzc_tid*PL
+c_pg_lsn0ÿÿÿÿÿÿÿÿÿ8Rpublicpostgres_system_typesbpg_lsnzc_pg_lsn2 System types :	query.sqlBpostgres_system_types’
+ŠINSERT INTO postgres_system_types
+(
+    c_oid,
+    c_xid,
+    c_cid,
+    c_xid8,
+    c_tid,
+    c_pg_lsn
+) VALUES ($1, $2, $3, $4, $5, $6)InsertPostgresSystemTypesBatch	:copyfrom*EA
+c_oid0ÿÿÿÿÿÿÿÿÿRpublicpostgres_system_typesboidzc_oid*EA
+c_xid0ÿÿÿÿÿÿÿÿÿRpublicpostgres_system_typesbxidzc_xid*EA
+c_cid0ÿÿÿÿÿÿÿÿÿRpublicpostgres_system_typesbcidzc_cid*HD
+c_xid80ÿÿÿÿÿÿÿÿÿRpublicpostgres_system_typesbxid8zc_xid8*EA
+c_tid0ÿÿÿÿÿÿÿÿÿRpublicpostgres_system_typesbtidzc_tid*NJ
+c_pg_lsn0ÿÿÿÿÿÿÿÿÿRpublicpostgres_system_typesbpg_lsnzc_pg_lsn:	query.sqlBpostgres_system_typesï
+VSELECT c_oid, c_xid, c_cid, c_xid8, c_tid, c_pg_lsn FROM postgres_system_types LIMIT 1GetPostgresSystemTypes:one"9
+c_oid0ÿÿÿÿÿÿÿÿÿRpostgres_system_typesboidzc_oid"9
+c_xid0ÿÿÿÿÿÿÿÿÿRpostgres_system_typesbxidzc_xid"9
+c_cid0ÿÿÿÿÿÿÿÿÿRpostgres_system_typesbcidzc_cid"<
+c_xid80ÿÿÿÿÿÿÿÿÿRpostgres_system_typesbxid8zc_xid8"9
+c_tid0ÿÿÿÿÿÿÿÿÿRpostgres_system_typesbtidzc_tid"B
+c_pg_lsn0ÿÿÿÿÿÿÿÿÿRpostgres_system_typesbpg_lsnzc_pg_lsn:	query.sqlU
+$TRUNCATE TABLE postgres_system_typesTruncatePostgresSystemTypes:exec:	query.sqlŽ
+ÑSELECT
+    c_oid,
+    c_xid,
+    c_cid,
+    c_xid8,
+    c_tid,
+    c_pg_lsn,
+    COUNT(*) AS cnt
+FROM postgres_system_types
+GROUP BY
+    c_oid,
+    c_xid,
+    c_cid,
+    c_xid8,
+    c_tid,
+    c_pg_lsn
+LIMIT 1GetPostgresSystemTypesCnt:one"9
+c_oid0ÿÿÿÿÿÿÿÿÿRpostgres_system_typesboidzc_oid"9
+c_xid0ÿÿÿÿÿÿÿÿÿRpostgres_system_typesbxidzc_xid"9
+c_cid0ÿÿÿÿÿÿÿÿÿRpostgres_system_typesbcidzc_cid"<
+c_xid80ÿÿÿÿÿÿÿÿÿRpostgres_system_typesbxid8zc_xid8"9
+c_tid0ÿÿÿÿÿÿÿÿÿRpostgres_system_typesbtidzc_tid"B
+c_pg_lsn0ÿÿÿÿÿÿÿÿÿRpostgres_system_typesbpg_lsnzc_pg_lsn"
+cnt0ÿÿÿÿÿÿÿÿÿ@bbigint:	query.sqlÖ
 À
 INSERT INTO postgres_extended_string_types
 (

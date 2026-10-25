@@ -74,6 +74,15 @@ public class PostgresMultirangeType
     public NpgsqlRange<DateTime>[]? CTsmultirange { get; init; }
     public NpgsqlRange<DateTime>[]? CTstzmultirange { get; init; }
 };
+public class PostgresSystemType
+{
+    public uint? COid { get; init; }
+    public uint? CXid { get; init; }
+    public uint? CCid { get; init; }
+    public ulong? CXid8 { get; init; }
+    public NpgsqlTid? CTid { get; init; }
+    public NpgsqlLogSequenceNumber? CPgLsn { get; init; }
+};
 public class PostgresExtendedStringType
 {
     public string? CCitext { get; init; }

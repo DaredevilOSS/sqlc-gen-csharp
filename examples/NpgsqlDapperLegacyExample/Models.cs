@@ -75,6 +75,15 @@ namespace NpgsqlDapperLegacyExampleGen
         public NpgsqlRange<DateTime>[] CTsmultirange { get; set; }
         public NpgsqlRange<DateTime>[] CTstzmultirange { get; set; }
     };
+    public class PostgresSystemType
+    {
+        public uint? COid { get; set; }
+        public uint? CXid { get; set; }
+        public uint? CCid { get; set; }
+        public ulong? CXid8 { get; set; }
+        public NpgsqlTid? CTid { get; set; }
+        public NpgsqlLogSequenceNumber? CPgLsn { get; set; }
+    };
     public class PostgresExtendedStringType
     {
         public string CCitext { get; set; }

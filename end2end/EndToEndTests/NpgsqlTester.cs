@@ -23,6 +23,7 @@ public partial class NpgsqlTester
         await QuerySql.TruncatePostgresExtendedStringTypesAsync();
         await QuerySql.TruncatePostgresRangeTypesAsync();
         await QuerySql.TruncatePostgresMultirangeTypesAsync();
+        await QuerySql.TruncatePostgresSystemTypesAsync();
         await QuerySql.TruncatePostgresArrayTypesAsync();
         await QuerySql.TruncatePostgresSpecialTypesAsync();
         await QuerySql.TruncatePostgresNotNullTypesAsync();
