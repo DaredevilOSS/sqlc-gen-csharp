@@ -159,6 +159,8 @@ CI fails if any of the generated artifacts above is stale (`sqlc diff`, `git dif
 
 ## 4. Recipes (definition of done)
 
+**Attribution**: the repository is public. Never put Claude session links (`claude.ai/code/session_...`, `Claude-Session:` trailers) in commit messages, PR descriptions or comments. Other attribution lines are fine.
+
 **Every change**
 1. `make sqlc-generate` (process plugin -> examples + requests) and commit the regenerated files.
 2. `make unit-tests`.
