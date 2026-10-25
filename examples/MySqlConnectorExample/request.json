@@ -13,7 +13,7 @@
     "codegen": {
       "out": "examples/MySqlConnectorExample",
       "plugin": "csharp",
-      "options": "eyJkZWJ1Z1JlcXVlc3QiOnRydWUsImdlbmVyYXRlQ3Nwcm9qIjp0cnVlLCJuYW1lc3BhY2VOYW1lIjoiTXlTcWxDb25uZWN0b3JFeGFtcGxlR2VuIiwib3ZlcnJpZGVzIjpbeyJjb2x1bW4iOiJHZXRNeXNxbEZ1bmN0aW9uczptYXhfaW50IiwiY3NoYXJwX3R5cGUiOnsibm90TnVsbCI6ZmFsc2UsInR5cGUiOiJpbnQifX0seyJjb2x1bW4iOiJHZXRNeXNxbEZ1bmN0aW9uczptYXhfdmFyY2hhciIsImNzaGFycF90eXBlIjp7Im5vdE51bGwiOmZhbHNlLCJ0eXBlIjoic3RyaW5nIn19LHsiY29sdW1uIjoiR2V0TXlzcWxGdW5jdGlvbnM6bWF4X3RpbWVzdGFtcCIsImNzaGFycF90eXBlIjp7Im5vdE51bGwiOnRydWUsInR5cGUiOiJEYXRlVGltZSJ9fSx7ImNvbHVtbiI6Iio6Y19qc29uX3N0cmluZ19vdmVycmlkZSIsImNzaGFycF90eXBlIjp7Im5vdE51bGwiOmZhbHNlLCJ0eXBlIjoic3RyaW5nIn19LHsiY29sdW1uIjoiKjpjX3RpbWVzdGFtcF9ub2RhX2luc3RhbnRfb3ZlcnJpZGUiLCJjc2hhcnBfdHlwZSI6eyJub3ROdWxsIjpmYWxzZSwidHlwZSI6Ikluc3RhbnQifX1dLCJ0YXJnZXRGcmFtZXdvcmsiOiJuZXQ5LjAiLCJ1c2VEYXBwZXIiOmZhbHNlfQ==",
+      "options": "eyJkZWJ1Z1JlcXVlc3QiOnRydWUsImdlbmVyYXRlQ3Nwcm9qIjp0cnVlLCJuYW1lc3BhY2VOYW1lIjoiTXlTcWxDb25uZWN0b3JFeGFtcGxlR2VuIiwib3ZlcnJpZGVzIjpbeyJjb2x1bW4iOiJHZXRNeXNxbEZ1bmN0aW9uczptYXhfaW50IiwiY3NoYXJwX3R5cGUiOnsibm90TnVsbCI6ZmFsc2UsInR5cGUiOiJpbnQifX0seyJjb2x1bW4iOiJHZXRNeXNxbEZ1bmN0aW9uczptYXhfdmFyY2hhciIsImNzaGFycF90eXBlIjp7Im5vdE51bGwiOmZhbHNlLCJ0eXBlIjoic3RyaW5nIn19LHsiY29sdW1uIjoiR2V0TXlzcWxGdW5jdGlvbnM6bWF4X3RpbWVzdGFtcCIsImNzaGFycF90eXBlIjp7Im5vdE51bGwiOnRydWUsInR5cGUiOiJEYXRlVGltZSJ9fSx7ImNvbHVtbiI6Iio6Y19qc29uX3N0cmluZ19vdmVycmlkZSIsImNzaGFycF90eXBlIjp7Im5vdE51bGwiOmZhbHNlLCJ0eXBlIjoic3RyaW5nIn19LHsiY29sdW1uIjoiKjpjX3RpbWVzdGFtcF9ub2RhX2luc3RhbnRfb3ZlcnJpZGUiLCJjc2hhcnBfdHlwZSI6eyJub3ROdWxsIjpmYWxzZSwidHlwZSI6Ikluc3RhbnQifX0seyJjb2x1bW4iOiIqOmNfZmxvYXRfc2luZ2xlIiwiY3NoYXJwX3R5cGUiOnsibm90TnVsbCI6ZmFsc2UsInR5cGUiOiJmbG9hdCJ9fV0sInRhcmdldEZyYW1ld29yayI6Im5ldDkuMCIsInVzZURhcHBlciI6ZmFsc2V9",
       "process": {
         "cmd": "./dist/LocalRunner"
       }
@@ -538,6 +538,89 @@
                 },
                 "type": {
                   "name": "longblob"
+                }
+              }
+            ]
+          },
+          {
+            "rel": {
+              "name": "mysql_unsigned_types"
+            },
+            "columns": [
+              {
+                "name": "id",
+                "notNull": true,
+                "length": -1,
+                "table": {
+                  "name": "mysql_unsigned_types"
+                },
+                "type": {
+                  "name": "bigint"
+                },
+                "unsigned": true
+              },
+              {
+                "name": "c_tinyint_unsigned",
+                "length": -1,
+                "table": {
+                  "name": "mysql_unsigned_types"
+                },
+                "type": {
+                  "name": "tinyint"
+                },
+                "unsigned": true
+              },
+              {
+                "name": "c_smallint_unsigned",
+                "length": -1,
+                "table": {
+                  "name": "mysql_unsigned_types"
+                },
+                "type": {
+                  "name": "smallint"
+                },
+                "unsigned": true
+              },
+              {
+                "name": "c_int_unsigned",
+                "length": -1,
+                "table": {
+                  "name": "mysql_unsigned_types"
+                },
+                "type": {
+                  "name": "int"
+                },
+                "unsigned": true
+              },
+              {
+                "name": "c_bigint_unsigned",
+                "length": -1,
+                "table": {
+                  "name": "mysql_unsigned_types"
+                },
+                "type": {
+                  "name": "bigint"
+                },
+                "unsigned": true
+              },
+              {
+                "name": "c_bit_wide",
+                "length": 32,
+                "table": {
+                  "name": "mysql_unsigned_types"
+                },
+                "type": {
+                  "name": "bit"
+                }
+              },
+              {
+                "name": "c_float_single",
+                "length": -1,
+                "table": {
+                  "name": "mysql_unsigned_types"
+                },
+                "type": {
+                  "name": "float"
                 }
               }
             ]
@@ -3768,6 +3851,452 @@
       "filename": "query.sql"
     },
     {
+      "text": "\nINSERT INTO mysql_unsigned_types \n(\n    c_tinyint_unsigned,\n    c_smallint_unsigned,\n    c_int_unsigned,\n    c_bigint_unsigned,\n    c_bit_wide,\n    c_float_single\n) \nVALUES (?, ?, ?, ?, ?, ?)",
+      "name": "InsertMysqlUnsignedTypes",
+      "cmd": ":exec",
+      "parameters": [
+        {
+          "number": 1,
+          "column": {
+            "name": "c_tinyint_unsigned",
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "mysql_unsigned_types"
+            },
+            "type": {
+              "name": "tinyint"
+            },
+            "originalName": "c_tinyint_unsigned",
+            "unsigned": true
+          }
+        },
+        {
+          "number": 2,
+          "column": {
+            "name": "c_smallint_unsigned",
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "mysql_unsigned_types"
+            },
+            "type": {
+              "name": "smallint"
+            },
+            "originalName": "c_smallint_unsigned",
+            "unsigned": true
+          }
+        },
+        {
+          "number": 3,
+          "column": {
+            "name": "c_int_unsigned",
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "mysql_unsigned_types"
+            },
+            "type": {
+              "name": "int"
+            },
+            "originalName": "c_int_unsigned",
+            "unsigned": true
+          }
+        },
+        {
+          "number": 4,
+          "column": {
+            "name": "c_bigint_unsigned",
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "mysql_unsigned_types"
+            },
+            "type": {
+              "name": "bigint"
+            },
+            "originalName": "c_bigint_unsigned",
+            "unsigned": true
+          }
+        },
+        {
+          "number": 5,
+          "column": {
+            "name": "c_bit_wide",
+            "length": 32,
+            "table": {
+              "schema": "public",
+              "name": "mysql_unsigned_types"
+            },
+            "type": {
+              "name": "bit"
+            },
+            "originalName": "c_bit_wide"
+          }
+        },
+        {
+          "number": 6,
+          "column": {
+            "name": "c_float_single",
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "mysql_unsigned_types"
+            },
+            "type": {
+              "name": "float"
+            },
+            "originalName": "c_float_single"
+          }
+        }
+      ],
+      "comments": [
+        " Unsigned integer, wide BIT and single precision FLOAT types "
+      ],
+      "filename": "query.sql",
+      "insert_into_table": {
+        "name": "mysql_unsigned_types"
+      }
+    },
+    {
+      "text": "INSERT INTO mysql_unsigned_types \n(\n    c_tinyint_unsigned,\n    c_smallint_unsigned,\n    c_int_unsigned,\n    c_bigint_unsigned\n) \nVALUES (?, ?, ?, ?)",
+      "name": "InsertMysqlUnsignedTypesLastId",
+      "cmd": ":execlastid",
+      "parameters": [
+        {
+          "number": 1,
+          "column": {
+            "name": "c_tinyint_unsigned",
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "mysql_unsigned_types"
+            },
+            "type": {
+              "name": "tinyint"
+            },
+            "originalName": "c_tinyint_unsigned",
+            "unsigned": true
+          }
+        },
+        {
+          "number": 2,
+          "column": {
+            "name": "c_smallint_unsigned",
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "mysql_unsigned_types"
+            },
+            "type": {
+              "name": "smallint"
+            },
+            "originalName": "c_smallint_unsigned",
+            "unsigned": true
+          }
+        },
+        {
+          "number": 3,
+          "column": {
+            "name": "c_int_unsigned",
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "mysql_unsigned_types"
+            },
+            "type": {
+              "name": "int"
+            },
+            "originalName": "c_int_unsigned",
+            "unsigned": true
+          }
+        },
+        {
+          "number": 4,
+          "column": {
+            "name": "c_bigint_unsigned",
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "mysql_unsigned_types"
+            },
+            "type": {
+              "name": "bigint"
+            },
+            "originalName": "c_bigint_unsigned",
+            "unsigned": true
+          }
+        }
+      ],
+      "filename": "query.sql",
+      "insert_into_table": {
+        "name": "mysql_unsigned_types"
+      }
+    },
+    {
+      "text": "INSERT INTO mysql_unsigned_types \n(\n    c_tinyint_unsigned,\n    c_smallint_unsigned,\n    c_int_unsigned,\n    c_bigint_unsigned,\n    c_float_single\n) \nVALUES (?, ?, ?, ?, ?)",
+      "name": "InsertMysqlUnsignedTypesBatch",
+      "cmd": ":copyfrom",
+      "parameters": [
+        {
+          "number": 1,
+          "column": {
+            "name": "c_tinyint_unsigned",
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "mysql_unsigned_types"
+            },
+            "type": {
+              "name": "tinyint"
+            },
+            "originalName": "c_tinyint_unsigned",
+            "unsigned": true
+          }
+        },
+        {
+          "number": 2,
+          "column": {
+            "name": "c_smallint_unsigned",
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "mysql_unsigned_types"
+            },
+            "type": {
+              "name": "smallint"
+            },
+            "originalName": "c_smallint_unsigned",
+            "unsigned": true
+          }
+        },
+        {
+          "number": 3,
+          "column": {
+            "name": "c_int_unsigned",
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "mysql_unsigned_types"
+            },
+            "type": {
+              "name": "int"
+            },
+            "originalName": "c_int_unsigned",
+            "unsigned": true
+          }
+        },
+        {
+          "number": 4,
+          "column": {
+            "name": "c_bigint_unsigned",
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "mysql_unsigned_types"
+            },
+            "type": {
+              "name": "bigint"
+            },
+            "originalName": "c_bigint_unsigned",
+            "unsigned": true
+          }
+        },
+        {
+          "number": 5,
+          "column": {
+            "name": "c_float_single",
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "mysql_unsigned_types"
+            },
+            "type": {
+              "name": "float"
+            },
+            "originalName": "c_float_single"
+          }
+        }
+      ],
+      "filename": "query.sql",
+      "insert_into_table": {
+        "name": "mysql_unsigned_types"
+      }
+    },
+    {
+      "text": "SELECT id, c_tinyint_unsigned, c_smallint_unsigned, c_int_unsigned, c_bigint_unsigned, c_bit_wide, c_float_single FROM mysql_unsigned_types LIMIT 1",
+      "name": "GetMysqlUnsignedTypes",
+      "cmd": ":one",
+      "columns": [
+        {
+          "name": "id",
+          "notNull": true,
+          "length": -1,
+          "table": {
+            "name": "mysql_unsigned_types"
+          },
+          "type": {
+            "name": "bigint"
+          },
+          "originalName": "id",
+          "unsigned": true
+        },
+        {
+          "name": "c_tinyint_unsigned",
+          "length": -1,
+          "table": {
+            "name": "mysql_unsigned_types"
+          },
+          "type": {
+            "name": "tinyint"
+          },
+          "originalName": "c_tinyint_unsigned",
+          "unsigned": true
+        },
+        {
+          "name": "c_smallint_unsigned",
+          "length": -1,
+          "table": {
+            "name": "mysql_unsigned_types"
+          },
+          "type": {
+            "name": "smallint"
+          },
+          "originalName": "c_smallint_unsigned",
+          "unsigned": true
+        },
+        {
+          "name": "c_int_unsigned",
+          "length": -1,
+          "table": {
+            "name": "mysql_unsigned_types"
+          },
+          "type": {
+            "name": "int"
+          },
+          "originalName": "c_int_unsigned",
+          "unsigned": true
+        },
+        {
+          "name": "c_bigint_unsigned",
+          "length": -1,
+          "table": {
+            "name": "mysql_unsigned_types"
+          },
+          "type": {
+            "name": "bigint"
+          },
+          "originalName": "c_bigint_unsigned",
+          "unsigned": true
+        },
+        {
+          "name": "c_bit_wide",
+          "length": 32,
+          "table": {
+            "name": "mysql_unsigned_types"
+          },
+          "type": {
+            "name": "bit"
+          },
+          "originalName": "c_bit_wide"
+        },
+        {
+          "name": "c_float_single",
+          "length": -1,
+          "table": {
+            "name": "mysql_unsigned_types"
+          },
+          "type": {
+            "name": "float"
+          },
+          "originalName": "c_float_single"
+        }
+      ],
+      "filename": "query.sql"
+    },
+    {
+      "text": "SELECT\n    COUNT(*) AS cnt,\n    c_tinyint_unsigned,\n    c_smallint_unsigned,\n    c_int_unsigned,\n    c_bigint_unsigned,\n    c_float_single\nFROM mysql_unsigned_types\nGROUP BY\n    c_tinyint_unsigned,\n    c_smallint_unsigned,\n    c_int_unsigned,\n    c_bigint_unsigned,\n    c_float_single\nLIMIT 1",
+      "name": "GetMysqlUnsignedTypesCnt",
+      "cmd": ":one",
+      "columns": [
+        {
+          "name": "cnt",
+          "notNull": true,
+          "length": -1,
+          "isFuncCall": true,
+          "type": {
+            "name": "bigint"
+          }
+        },
+        {
+          "name": "c_tinyint_unsigned",
+          "length": -1,
+          "table": {
+            "name": "mysql_unsigned_types"
+          },
+          "type": {
+            "name": "tinyint"
+          },
+          "originalName": "c_tinyint_unsigned",
+          "unsigned": true
+        },
+        {
+          "name": "c_smallint_unsigned",
+          "length": -1,
+          "table": {
+            "name": "mysql_unsigned_types"
+          },
+          "type": {
+            "name": "smallint"
+          },
+          "originalName": "c_smallint_unsigned",
+          "unsigned": true
+        },
+        {
+          "name": "c_int_unsigned",
+          "length": -1,
+          "table": {
+            "name": "mysql_unsigned_types"
+          },
+          "type": {
+            "name": "int"
+          },
+          "originalName": "c_int_unsigned",
+          "unsigned": true
+        },
+        {
+          "name": "c_bigint_unsigned",
+          "length": -1,
+          "table": {
+            "name": "mysql_unsigned_types"
+          },
+          "type": {
+            "name": "bigint"
+          },
+          "originalName": "c_bigint_unsigned",
+          "unsigned": true
+        },
+        {
+          "name": "c_float_single",
+          "length": -1,
+          "table": {
+            "name": "mysql_unsigned_types"
+          },
+          "type": {
+            "name": "float"
+          },
+          "originalName": "c_float_single"
+        }
+      ],
+      "filename": "query.sql"
+    },
+    {
+      "text": "TRUNCATE TABLE mysql_unsigned_types",
+      "name": "TruncateMysqlUnsignedTypes",
+      "cmd": ":exec",
+      "filename": "query.sql"
+    },
+    {
       "text": "\nSELECT\n    MAX(c_int) AS max_int,\n    MAX(c_varchar) AS max_varchar,\n    MAX(c_timestamp) AS max_timestamp\nFROM mysql_numeric_types\nCROSS JOIN mysql_string_types\nCROSS JOIN mysql_datetime_types",
       "name": "GetMysqlFunctions",
       "cmd": ":one",
@@ -3807,5 +4336,5 @@
     }
   ],
   "sqlc_version": "v1.30.0",
-  "plugin_options": "eyJvdmVycmlkZURyaXZlclZlcnNpb24iOiIiLCJnZW5lcmF0ZUNzcHJvaiI6dHJ1ZSwidGFyZ2V0RnJhbWV3b3JrIjoibmV0OS4wIiwibmFtZXNwYWNlTmFtZSI6Ik15U3FsQ29ubmVjdG9yRXhhbXBsZUdlbiIsInVzZURhcHBlciI6ZmFsc2UsIm92ZXJyaWRlRGFwcGVyVmVyc2lvbiI6IiIsIm92ZXJyaWRlcyI6W3siY29sdW1uIjoiR2V0TXlzcWxGdW5jdGlvbnM6bWF4X2ludCIsImNzaGFycF90eXBlIjp7InR5cGUiOiJpbnQiLCJub3ROdWxsIjpmYWxzZX19LHsiY29sdW1uIjoiR2V0TXlzcWxGdW5jdGlvbnM6bWF4X3ZhcmNoYXIiLCJjc2hhcnBfdHlwZSI6eyJ0eXBlIjoic3RyaW5nIiwibm90TnVsbCI6ZmFsc2V9fSx7ImNvbHVtbiI6IkdldE15c3FsRnVuY3Rpb25zOm1heF90aW1lc3RhbXAiLCJjc2hhcnBfdHlwZSI6eyJ0eXBlIjoiRGF0ZVRpbWUiLCJub3ROdWxsIjp0cnVlfX0seyJjb2x1bW4iOiIqOmNfanNvbl9zdHJpbmdfb3ZlcnJpZGUiLCJjc2hhcnBfdHlwZSI6eyJ0eXBlIjoic3RyaW5nIiwibm90TnVsbCI6ZmFsc2V9fSx7ImNvbHVtbiI6Iio6Y190aW1lc3RhbXBfbm9kYV9pbnN0YW50X292ZXJyaWRlIiwiY3NoYXJwX3R5cGUiOnsidHlwZSI6Ikluc3RhbnQiLCJub3ROdWxsIjpmYWxzZX19XSwiZGVidWdSZXF1ZXN0IjpmYWxzZSwidXNlQ2VudHJhbFBhY2thZ2VNYW5hZ2VtZW50IjpmYWxzZSwid2l0aEFzeW5jU3VmZml4Ijp0cnVlLCJ3aXRoQ2FuY2VsbGF0aW9uVG9rZW4iOmZhbHNlLCJ1c2VBc3luY0VudW1lcmFibGUiOmZhbHNlLCJ1c2VQcm9wZXJTaW5ndWxhcml6YXRpb24iOmZhbHNlfQ=="
+  "plugin_options": "eyJvdmVycmlkZURyaXZlclZlcnNpb24iOiIiLCJnZW5lcmF0ZUNzcHJvaiI6dHJ1ZSwidGFyZ2V0RnJhbWV3b3JrIjoibmV0OS4wIiwibmFtZXNwYWNlTmFtZSI6Ik15U3FsQ29ubmVjdG9yRXhhbXBsZUdlbiIsInVzZURhcHBlciI6ZmFsc2UsIm92ZXJyaWRlRGFwcGVyVmVyc2lvbiI6IiIsIm92ZXJyaWRlcyI6W3siY29sdW1uIjoiR2V0TXlzcWxGdW5jdGlvbnM6bWF4X2ludCIsImNzaGFycF90eXBlIjp7InR5cGUiOiJpbnQiLCJub3ROdWxsIjpmYWxzZX19LHsiY29sdW1uIjoiR2V0TXlzcWxGdW5jdGlvbnM6bWF4X3ZhcmNoYXIiLCJjc2hhcnBfdHlwZSI6eyJ0eXBlIjoic3RyaW5nIiwibm90TnVsbCI6ZmFsc2V9fSx7ImNvbHVtbiI6IkdldE15c3FsRnVuY3Rpb25zOm1heF90aW1lc3RhbXAiLCJjc2hhcnBfdHlwZSI6eyJ0eXBlIjoiRGF0ZVRpbWUiLCJub3ROdWxsIjp0cnVlfX0seyJjb2x1bW4iOiIqOmNfanNvbl9zdHJpbmdfb3ZlcnJpZGUiLCJjc2hhcnBfdHlwZSI6eyJ0eXBlIjoic3RyaW5nIiwibm90TnVsbCI6ZmFsc2V9fSx7ImNvbHVtbiI6Iio6Y190aW1lc3RhbXBfbm9kYV9pbnN0YW50X292ZXJyaWRlIiwiY3NoYXJwX3R5cGUiOnsidHlwZSI6Ikluc3RhbnQiLCJub3ROdWxsIjpmYWxzZX19LHsiY29sdW1uIjoiKjpjX2Zsb2F0X3NpbmdsZSIsImNzaGFycF90eXBlIjp7InR5cGUiOiJmbG9hdCIsIm5vdE51bGwiOmZhbHNlfX1dLCJkZWJ1Z1JlcXVlc3QiOmZhbHNlLCJ1c2VDZW50cmFsUGFja2FnZU1hbmFnZW1lbnQiOmZhbHNlLCJ3aXRoQXN5bmNTdWZmaXgiOnRydWUsIndpdGhDYW5jZWxsYXRpb25Ub2tlbiI6ZmFsc2UsInVzZUFzeW5jRW51bWVyYWJsZSI6ZmFsc2UsInVzZVByb3BlclNpbmd1bGFyaXphdGlvbiI6ZmFsc2V9"
 }

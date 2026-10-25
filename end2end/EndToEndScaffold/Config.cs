@@ -84,6 +84,8 @@ public enum KnownTestType
     MySqlBinaryDataTypes,
     MySqlEnumDataType,
     MySqlJsonDataTypes,
+    MySqlUnsignedDataTypes,
+    MySqlUnsignedExecLastId,
 
     // :copyfrom (Batch)
     MySqlStringCopyFrom,
@@ -92,7 +94,8 @@ public enum KnownTestType
     MySqlDateTimeCopyFrom,
     MySqlBinaryCopyFrom,
     MySqlEnumCopyFrom,
-    MySqlJsonCopyFrom
+    MySqlJsonCopyFrom,
+    MySqlUnsignedCopyFrom
 }
 
 internal static class Config
@@ -128,6 +131,8 @@ internal static class Config
         KnownTestType.MySqlBinaryDataTypes,
         KnownTestType.MySqlEnumDataType,
         KnownTestType.MySqlJsonDataTypes,
+        KnownTestType.MySqlUnsignedDataTypes,
+        KnownTestType.MySqlUnsignedExecLastId,
 
         // :copyfrom (Batch)
         KnownTestType.MySqlJsonCopyFrom,
@@ -136,7 +141,8 @@ internal static class Config
         KnownTestType.MySqlFloatingPointCopyFrom,
         KnownTestType.MySqlDateTimeCopyFrom,
         KnownTestType.MySqlBinaryCopyFrom,
-        KnownTestType.MySqlEnumCopyFrom
+        KnownTestType.MySqlEnumCopyFrom,
+        KnownTestType.MySqlUnsignedCopyFrom
     ];
 
     private static readonly SortedSet<KnownTestType> _postgresTestTypes = [

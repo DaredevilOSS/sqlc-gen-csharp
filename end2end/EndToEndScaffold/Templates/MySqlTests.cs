@@ -420,6 +420,106 @@ public static class MySqlTests
                      }
                      """
         },
+        [KnownTestType.MySqlUnsignedDataTypes] = new TestImpl
+        {
+            Impl = $$"""
+                     [Test]
+                     [TestCase(255, 65535, 4294967295U, 18446744073709551615UL, 4294967295UL, 3.4f)]
+                     [TestCase(0, 0, 0U, 0UL, 0UL, 0.0f)]
+                     [TestCase(null, null, null, null, null, null)]
+                     public async Task TestMySqlUnsignedTypes(
+                         byte? cTinyintUnsigned,
+                         ushort? cSmallintUnsigned,
+                         uint? cIntUnsigned,
+                         ulong? cBigintUnsigned,
+                         ulong? cBitWide,
+                         float? cFloatSingle)
+                     {
+                         await QuerySql.InsertMysqlUnsignedTypesAsync(new QuerySql.InsertMysqlUnsignedTypesArgs
+                         {
+                              CTinyintUnsigned = cTinyintUnsigned,
+                              CSmallintUnsigned = cSmallintUnsigned,
+                              CIntUnsigned = cIntUnsigned,
+                              CBigintUnsigned = cBigintUnsigned,
+                              CBitWide = cBitWide,
+                              CFloatSingle = cFloatSingle
+                         });
+
+                         var actual = await QuerySql.GetMysqlUnsignedTypesAsync();
+                         AssertSingularEquals(actual{{Consts.UnknownRecordValuePlaceholder}});
+
+                         void AssertSingularEquals(QuerySql.GetMysqlUnsignedTypesRow y)
+                         {
+                             Assert.That(cTinyintUnsigned, Is.EqualTo(y.CTinyintUnsigned));
+                             Assert.That(cSmallintUnsigned, Is.EqualTo(y.CSmallintUnsigned));
+                             Assert.That(cIntUnsigned, Is.EqualTo(y.CIntUnsigned));
+                             Assert.That(cBigintUnsigned, Is.EqualTo(y.CBigintUnsigned));
+                             Assert.That(cBitWide, Is.EqualTo(y.CBitWide));
+                             Assert.That(cFloatSingle, Is.EqualTo(y.CFloatSingle));
+                         }
+                     }
+                     """
+        },
+        [KnownTestType.MySqlUnsignedExecLastId] = new TestImpl
+        {
+            Impl = $$"""
+                     [Test]
+                     public async Task TestMySqlUnsignedExecLastId()
+                     {
+                         var args = new QuerySql.InsertMysqlUnsignedTypesLastIdArgs
+                         {
+                             CTinyintUnsigned = 255,
+                             CSmallintUnsigned = 65535,
+                             CIntUnsigned = 4294967295U,
+                             CBigintUnsigned = 18446744073709551615UL
+                         };
+                         ulong firstId = await QuerySql.InsertMysqlUnsignedTypesLastIdAsync(args);
+                         ulong secondId = await QuerySql.InsertMysqlUnsignedTypesLastIdAsync(args);
+                         Assert.That(secondId, Is.EqualTo(firstId + 1));
+                     }
+                     """
+        },
+        [KnownTestType.MySqlUnsignedCopyFrom] = new TestImpl
+        {
+            Impl = $$"""
+                     [Test]
+                     [TestCase(100, 255, 65535, 4294967295U, 18446744073709551615UL, 3.4f)]
+                     [TestCase(10, null, null, null, null, null)]
+                     public async Task TestMySqlUnsignedCopyFrom(
+                        int batchSize,
+                        byte? cTinyintUnsigned,
+                        ushort? cSmallintUnsigned,
+                        uint? cIntUnsigned,
+                        ulong? cBigintUnsigned,
+                        float? cFloatSingle)
+                     {
+                         var batchArgs = Enumerable.Range(0, batchSize)
+                             .Select(_ => new QuerySql.InsertMysqlUnsignedTypesBatchArgs
+                             {
+                                 CTinyintUnsigned = cTinyintUnsigned,
+                                 CSmallintUnsigned = cSmallintUnsigned,
+                                 CIntUnsigned = cIntUnsigned,
+                                 CBigintUnsigned = cBigintUnsigned,
+                                 CFloatSingle = cFloatSingle
+                             })
+                             .ToList();
+                         await QuerySql.InsertMysqlUnsignedTypesBatchAsync(batchArgs);
+
+                         var actual = await QuerySql.GetMysqlUnsignedTypesCntAsync();
+                         AssertSingularEquals(actual{{Consts.UnknownRecordValuePlaceholder}});
+
+                         void AssertSingularEquals(QuerySql.GetMysqlUnsignedTypesCntRow y)
+                         {
+                             Assert.That(batchSize, Is.EqualTo(y.Cnt));
+                             Assert.That(cTinyintUnsigned, Is.EqualTo(y.CTinyintUnsigned));
+                             Assert.That(cSmallintUnsigned, Is.EqualTo(y.CSmallintUnsigned));
+                             Assert.That(cIntUnsigned, Is.EqualTo(y.CIntUnsigned));
+                             Assert.That(cBigintUnsigned, Is.EqualTo(y.CBigintUnsigned));
+                             Assert.That(cFloatSingle, Is.EqualTo(y.CFloatSingle));
+                         }
+                     }
+                     """
+        },
         [KnownTestType.MySqlFloatingPointCopyFrom] = new TestImpl
         {
             Impl = $$"""

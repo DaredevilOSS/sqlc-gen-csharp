@@ -263,6 +263,64 @@ LIMIT 1;
 -- name: TruncateMysqlBinaryTypes :exec
 TRUNCATE TABLE mysql_binary_types;
 
+/* Unsigned integer, wide BIT and single precision FLOAT types */
+
+-- name: InsertMysqlUnsignedTypes :exec
+INSERT INTO mysql_unsigned_types 
+(
+    c_tinyint_unsigned,
+    c_smallint_unsigned,
+    c_int_unsigned,
+    c_bigint_unsigned,
+    c_bit_wide,
+    c_float_single
+) 
+VALUES (?, ?, ?, ?, ?, ?);
+
+-- name: InsertMysqlUnsignedTypesLastId :execlastid
+INSERT INTO mysql_unsigned_types 
+(
+    c_tinyint_unsigned,
+    c_smallint_unsigned,
+    c_int_unsigned,
+    c_bigint_unsigned
+) 
+VALUES (?, ?, ?, ?);
+
+-- name: InsertMysqlUnsignedTypesBatch :copyfrom
+INSERT INTO mysql_unsigned_types 
+(
+    c_tinyint_unsigned,
+    c_smallint_unsigned,
+    c_int_unsigned,
+    c_bigint_unsigned,
+    c_float_single
+) 
+VALUES (?, ?, ?, ?, ?);
+
+-- name: GetMysqlUnsignedTypes :one
+SELECT * FROM mysql_unsigned_types LIMIT 1;
+
+-- name: GetMysqlUnsignedTypesCnt :one
+SELECT
+    COUNT(*) AS cnt,
+    c_tinyint_unsigned,
+    c_smallint_unsigned,
+    c_int_unsigned,
+    c_bigint_unsigned,
+    c_float_single
+FROM mysql_unsigned_types
+GROUP BY
+    c_tinyint_unsigned,
+    c_smallint_unsigned,
+    c_int_unsigned,
+    c_bigint_unsigned,
+    c_float_single
+LIMIT 1;
+
+-- name: TruncateMysqlUnsignedTypes :exec
+TRUNCATE TABLE mysql_unsigned_types;
+
 /* Functions */
 
 -- name: GetMysqlFunctions :one

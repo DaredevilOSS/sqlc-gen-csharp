@@ -49,3 +49,13 @@ CREATE TABLE mysql_binary_types (
   c_mediumblob  MEDIUMBLOB,
   c_longblob    LONGBLOB
 );
+
+CREATE TABLE mysql_unsigned_types (
+  id                  BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  c_tinyint_unsigned  TINYINT UNSIGNED,
+  c_smallint_unsigned SMALLINT UNSIGNED,
+  c_int_unsigned      INT UNSIGNED,
+  c_bigint_unsigned   BIGINT UNSIGNED,
+  c_bit_wide          BIT(32),
+  c_float_single      FLOAT
+);

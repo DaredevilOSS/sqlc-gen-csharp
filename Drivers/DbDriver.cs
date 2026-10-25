@@ -66,8 +66,11 @@ public abstract class DbDriver
         "bool",
         "byte",
         "short",
+        "ushort",
         "int",
+        "uint",
         "long",
+        "ulong",
         "float",
         "double",
         "decimal",
@@ -426,6 +429,10 @@ public abstract class DbDriver
     {
         var columnType = column.Type.Name.ToLower();
         if (!columnMapping.DbTypes.TryGetValue(columnType, out var typeInfo))
+            return false;
+        if (typeInfo.Unsigned is not null && typeInfo.Unsigned.Value != column.Unsigned)
+            return false;
+        if (typeInfo.MinLength is not null && column.Length < typeInfo.MinLength.Value)
             return false;
         if (typeInfo.Length is null)
             return true;

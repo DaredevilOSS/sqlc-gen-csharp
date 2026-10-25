@@ -250,6 +250,10 @@ sql:
               csharp_type:
                 type: "Instant"
                 notNull: false
+            - column: "*:c_float_single"
+              csharp_type:
+                type: "float"
+                notNull: false
   - schema: ["examples/config/mysql/authors/schema.sql", "examples/config/mysql/types/schema.sql"]
     queries: ["examples/config/mysql/authors/query.sql", "examples/config/mysql/types/query.sql"]
     engine: "mysql"
@@ -281,6 +285,10 @@ sql:
             - column: "*:c_timestamp_noda_instant_override"
               csharp_type:
                 type: "Instant"
+                notNull: false
+            - column: "*:c_float_single"
+              csharp_type:
+                type: "float"
                 notNull: false
   - schema: ["examples/config/mysql/authors/schema.sql", "examples/config/mysql/types/schema.sql"]
     queries: ["examples/config/mysql/authors/query.sql", "examples/config/mysql/types/query.sql"]
@@ -314,6 +322,10 @@ sql:
               csharp_type:
                 type: "Instant"
                 notNull: false
+            - column: "*:c_float_single"
+              csharp_type:
+                type: "float"
+                notNull: false
   - schema: ["examples/config/mysql/authors/schema.sql", "examples/config/mysql/types/schema.sql"]
     queries: ["examples/config/mysql/authors/query.sql", "examples/config/mysql/types/query.sql"]
     engine: "mysql"
@@ -345,6 +357,10 @@ sql:
             - column: "*:c_timestamp_noda_instant_override"
               csharp_type:
                 type: "Instant"
+                notNull: false
+            - column: "*:c_float_single"
+              csharp_type:
+                type: "float"
                 notNull: false
   # Sqlite
   - schema: ["examples/config/sqlite/authors/schema.sql", "examples/config/sqlite/types/schema.sql"]

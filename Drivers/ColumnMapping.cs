@@ -2,7 +2,11 @@ using System.Collections.Generic;
 
 namespace SqlcGenCsharp.Drivers;
 
-public record DbTypeInfo(int? Length = null, string? DbTypeOverride = null);
+/// <param name="Length">Exact column length required for the match.</param>
+/// <param name="DbTypeOverride">Driver specific db type passed when binding / bulk copying.</param>
+/// <param name="Unsigned">When set, the mapping applies only if the column's unsigned flag equals this value.</param>
+/// <param name="MinLength">Minimum column length (inclusive) required for the match.</param>
+public record DbTypeInfo(int? Length = null, string? DbTypeOverride = null, bool? Unsigned = null, int? MinLength = null);
 
 public delegate string ReaderFn(int ordinal, string dbType);
 

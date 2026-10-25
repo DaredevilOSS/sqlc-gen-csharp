@@ -19,5 +19,6 @@ public partial class MySqlConnectorTester
         await QuerySql.TruncateMysqlStringTypesAsync();
         await QuerySql.TruncateMysqlDatetimeTypesAsync();
         await QuerySql.TruncateMysqlBinaryTypesAsync();
+        await QuerySql.TruncateMysqlUnsignedTypesAsync();
     }
 }

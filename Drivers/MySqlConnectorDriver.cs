@@ -26,36 +26,66 @@ public sealed partial class MySqlConnectorDriver(
             ["bool"] = new(
                 new()
                 {
-                    { "tinyint", new(Length: 1) }
+                    { "tinyint", new(Length: 1) },
+                    { "bool", new() },
+                    { "boolean", new() }
                 },
                 readerFn: (ordinal, _) => $"{Variable.Reader.AsVarName()}.GetBoolean({ordinal})"
             ),
             ["short"] = new(
                 new()
                 {
-                    { "tinyint", new() },
-                    { "smallint", new() },
+                    { "tinyint", new(Unsigned: false) },
+                    { "smallint", new(Unsigned: false) },
                     { "year", new() }
                 },
                 readerFn: (ordinal, _) => $"{Variable.Reader.AsVarName()}.GetInt16({ordinal})"
             ),
+            ["ushort"] = new(
+                new()
+                {
+                    { "smallint", new(Unsigned: true) }
+                },
+                readerFn: (ordinal, _) => $"{Variable.Reader.AsVarName()}.GetUInt16({ordinal})",
+                convertFunc: x => $"Convert.ToUInt16({x})"
+            ),
             ["int"] = new(
                 new()
                 {
-                    { "int", new() },
-                    { "integer", new() },
+                    { "int", new(Unsigned: false) },
+                    { "integer", new(Unsigned: false) },
+                    // MEDIUMINT UNSIGNED (max 16,777,215) fits in a signed int
                     { "mediumint", new() }
                 },
                 readerFn: (ordinal, _) => $"{Variable.Reader.AsVarName()}.GetInt32({ordinal})",
                 convertFunc: x => $"Convert.ToInt32({x})"
             ),
+            ["uint"] = new(
+                new()
+                {
+                    { "int", new(Unsigned: true) },
+                    { "integer", new(Unsigned: true) }
+                },
+                readerFn: (ordinal, _) => $"{Variable.Reader.AsVarName()}.GetUInt32({ordinal})",
+                convertFunc: x => $"Convert.ToUInt32({x})"
+            ),
             ["long"] = new(
                 new()
                 {
-                    { "bigint", new() }
+                    { "bigint", new(Unsigned: false) }
                 },
                 readerFn: (ordinal, _) => $"{Variable.Reader.AsVarName()}.GetInt64({ordinal})",
                 convertFunc: x => $"Convert.ToInt64({x})"
+            ),
+            // BIT(n) with n > 8 does not fit in a byte; MySqlConnector returns BIT columns as UInt64
+            ["ulong"] = new(
+                new()
+                {
+                    { "bigint", new(Unsigned: true) },
+                    { "bit", new(MinLength: 9) }
+                },
+                readerFn: (ordinal, _) => $"{Variable.Reader.AsVarName()}.GetUInt64({ordinal})",
+                convertFunc: x => $"Convert.ToUInt64({x})"
             ),
             ["double"] = new(
                 new()
@@ -64,6 +94,12 @@ public sealed partial class MySqlConnectorDriver(
                     { "float", new() }
                 },
                 readerFn: (ordinal, _) => $"{Variable.Reader.AsVarName()}.GetDouble({ordinal})"
+            ),
+            // FLOAT is mapped to double by default (changing it would alter existing generated code);
+            // use an override with type "float" to opt in to single precision
+            ["float"] = new(
+                [],
+                readerFn: (ordinal, _) => $"{Variable.Reader.AsVarName()}.GetFloat({ordinal})"
             ),
             ["decimal"] = new(
                 new()
@@ -77,9 +113,11 @@ public sealed partial class MySqlConnectorDriver(
             ["byte"] = new(
                 new()
                 {
-                    { "bit", new() }
+                    { "bit", new() },
+                    { "tinyint", new(Unsigned: true) }
                 },
-                readerFn: (ordinal, _) => $"{Variable.Reader.AsVarName()}.GetFieldValue<byte>({ordinal})"
+                readerFn: (ordinal, _) => $"{Variable.Reader.AsVarName()}.GetFieldValue<byte>({ordinal})",
+                convertFunc: x => $"Convert.ToByte({x})"
             ),
             ["byte[]"] = new(
                 new()
@@ -434,7 +472,7 @@ public sealed partial class MySqlConnectorDriver(
                      }
                  }
                  """)!,
-            ], CopyFromQueryExists() && TypeExistsInQueries("byte"))
+            ], BitByteCopyFromExists())
             .AddRangeIf([
                 ParseMemberDeclaration($$"""
                  public class ByteArrayCsvConverter : DefaultTypeConverter
@@ -638,12 +676,45 @@ public sealed partial class MySqlConnectorDriver(
     private readonly ISet<string> _boolAndByteTypes = new HashSet<string>
     {
         "bool",
-        "byte",
         "byte[]"
     };
 
+    private static bool IsBitColumn(Column column)
+    {
+        return column.Type.Name.Equals("bit", System.StringComparison.OrdinalIgnoreCase);
+    }
+
+    private bool IsBitByteParam(Parameter p, Query query)
+    {
+        return IsBitColumn(p.Column) && GetCsharpTypeWithoutNullableSuffix(p.Column, query) == "byte";
+    }
+
+    private bool BitByteCopyFromExists()
+    {
+        return Queries.Any(q => q.Cmd is ":copyfrom" && q.Params.Any(p => IsBitByteParam(p, q)));
+    }
+
+    /* BIT(n <= 8) is a `byte` written as a raw character, which cannot be told apart from a plain `byte`
+       (TINYINT UNSIGNED) by the CSV converter cache, which is keyed by type only. */
+    private void ValidateCopyFromBitParams(Query query)
+    {
+        foreach (var p in query.Params)
+        {
+            var csharpType = GetCsharpTypeWithoutNullableSuffix(p.Column, query);
+            if (IsBitColumn(p.Column) && csharpType == "ulong")
+                throw new System.NotSupportedException(
+                    $"Query {query.Name}: :copyfrom does not support BIT columns wider than 8 bits (column {p.Column.Name})");
+        }
+
+        if (query.Params.Any(p => IsBitByteParam(p, query)) &&
+            query.Params.Any(p => !IsBitColumn(p.Column) && GetCsharpTypeWithoutNullableSuffix(p.Column, query) == "byte"))
+            throw new System.NotSupportedException(
+                $"Query {query.Name}: :copyfrom does not support BIT and TINYINT UNSIGNED columns in the same query");
+    }
+
     private ISet<string> GetCsvConverters(Query query)
     {
+        ValidateCopyFromBitParams(query);
         var csvWriterVar = Variable.CsvWriter.AsVarName();
         return new HashSet<string>()
             .AddRangeIf(
@@ -658,7 +729,7 @@ public sealed partial class MySqlConnectorDriver(
                     $"{csvWriterVar}.Context.TypeConverterCache.AddConverter<{AddNullableSuffixIfNeeded("byte", true)}>(new Utils.{ByteCsvConverter}());",
                     $"{csvWriterVar}.Context.TypeConverterCache.AddConverter<{AddNullableSuffixIfNeeded("byte", false)}>(new Utils.{ByteCsvConverter}());",
                 ],
-                TypeExistsInQuery("byte", query)
+                query.Params.Any(p => IsBitByteParam(p, query))
             )
             .AddRangeIf(
                 [
@@ -680,6 +751,7 @@ public sealed partial class MySqlConnectorDriver(
             var csharpType = GetCsharpTypeWithoutNullableSuffix(p.Column, query);
             if (
                 !_boolAndByteTypes.Contains(csharpType) &&
+                !IsBitByteParam(p, query) &&
                 !IsSetDataType(p.Column) &&
                 TypeExistsInQuery(csharpType, query))
             {

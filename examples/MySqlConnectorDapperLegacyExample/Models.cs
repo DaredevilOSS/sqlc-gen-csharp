@@ -74,6 +74,16 @@ namespace MySqlConnectorDapperLegacyExampleGen
         public byte[] CMediumblob { get; set; }
         public byte[] CLongblob { get; set; }
     };
+    public class MysqlUnsignedType
+    {
+        public ulong Id { get; set; }
+        public byte? CTinyintUnsigned { get; set; }
+        public ushort? CSmallintUnsigned { get; set; }
+        public uint? CIntUnsigned { get; set; }
+        public ulong? CBigintUnsigned { get; set; }
+        public ulong? CBitWide { get; set; }
+        public double? CFloatSingle { get; set; }
+    };
     public class ExtendedBio
     {
         public string AuthorName { get; set; }

@@ -73,6 +73,16 @@ public class MysqlBinaryType
     public byte[]? CMediumblob { get; init; }
     public byte[]? CLongblob { get; init; }
 };
+public class MysqlUnsignedType
+{
+    public required ulong Id { get; init; }
+    public byte? CTinyintUnsigned { get; init; }
+    public ushort? CSmallintUnsigned { get; init; }
+    public uint? CIntUnsigned { get; init; }
+    public ulong? CBigintUnsigned { get; init; }
+    public ulong? CBitWide { get; init; }
+    public double? CFloatSingle { get; init; }
+};
 public class ExtendedBio
 {
     public string? AuthorName { get; init; }

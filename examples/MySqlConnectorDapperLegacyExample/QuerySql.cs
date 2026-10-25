@@ -1481,6 +1481,223 @@ namespace MySqlConnectorDapperLegacyExampleGen
             await this.Transaction.Connection.ExecuteAsync(TruncateMysqlBinaryTypesSql, transaction: this.Transaction);
         }
 
+        private const string InsertMysqlUnsignedTypesSql = @"
+                                                             INSERT INTO mysql_unsigned_types 
+                                                             (
+                                                                 c_tinyint_unsigned,
+                                                                 c_smallint_unsigned,
+                                                                 c_int_unsigned,
+                                                                 c_bigint_unsigned,
+                                                                 c_bit_wide,
+                                                                 c_float_single
+                                                             ) 
+                                                             VALUES (@c_tinyint_unsigned, @c_smallint_unsigned, @c_int_unsigned, @c_bigint_unsigned, @c_bit_wide, @c_float_single)";
+        public class InsertMysqlUnsignedTypesArgs
+        {
+            public byte? CTinyintUnsigned { get; set; }
+            public ushort? CSmallintUnsigned { get; set; }
+            public uint? CIntUnsigned { get; set; }
+            public ulong? CBigintUnsigned { get; set; }
+            public ulong? CBitWide { get; set; }
+            public float? CFloatSingle { get; set; }
+        };
+        public async Task InsertMysqlUnsignedTypesAsync(InsertMysqlUnsignedTypesArgs args)
+        {
+            var queryParams = new Dictionary<string, object>();
+            queryParams.Add("c_tinyint_unsigned", args.CTinyintUnsigned);
+            queryParams.Add("c_smallint_unsigned", args.CSmallintUnsigned);
+            queryParams.Add("c_int_unsigned", args.CIntUnsigned);
+            queryParams.Add("c_bigint_unsigned", args.CBigintUnsigned);
+            queryParams.Add("c_bit_wide", args.CBitWide);
+            queryParams.Add("c_float_single", args.CFloatSingle);
+            if (this.Transaction == null)
+            {
+                using (var connection = await GetDataSource().OpenConnectionAsync())
+                {
+                    await connection.ExecuteAsync(InsertMysqlUnsignedTypesSql, queryParams);
+                    return;
+                }
+            }
+
+            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
+                throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+            await this.Transaction.Connection.ExecuteAsync(InsertMysqlUnsignedTypesSql, queryParams, transaction: this.Transaction);
+        }
+
+        private const string InsertMysqlUnsignedTypesLastIdSql = @"INSERT INTO mysql_unsigned_types 
+                                                                   (
+                                                                       c_tinyint_unsigned,
+                                                                       c_smallint_unsigned,
+                                                                       c_int_unsigned,
+                                                                       c_bigint_unsigned
+                                                                   ) 
+                                                                   VALUES (@c_tinyint_unsigned, @c_smallint_unsigned, @c_int_unsigned, @c_bigint_unsigned); SELECT LAST_INSERT_ID()";
+        public class InsertMysqlUnsignedTypesLastIdArgs
+        {
+            public byte? CTinyintUnsigned { get; set; }
+            public ushort? CSmallintUnsigned { get; set; }
+            public uint? CIntUnsigned { get; set; }
+            public ulong? CBigintUnsigned { get; set; }
+        };
+        public async Task<ulong> InsertMysqlUnsignedTypesLastIdAsync(InsertMysqlUnsignedTypesLastIdArgs args)
+        {
+            var queryParams = new Dictionary<string, object>();
+            queryParams.Add("c_tinyint_unsigned", args.CTinyintUnsigned);
+            queryParams.Add("c_smallint_unsigned", args.CSmallintUnsigned);
+            queryParams.Add("c_int_unsigned", args.CIntUnsigned);
+            queryParams.Add("c_bigint_unsigned", args.CBigintUnsigned);
+            if (this.Transaction == null)
+            {
+                using (var connection = await GetDataSource().OpenConnectionAsync())
+                {
+                    return await connection.QuerySingleAsync<ulong>(InsertMysqlUnsignedTypesLastIdSql, queryParams);
+                }
+            }
+
+            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
+                throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+            return await this.Transaction.Connection.QuerySingleAsync<ulong>(InsertMysqlUnsignedTypesLastIdSql, queryParams, transaction: this.Transaction);
+        }
+
+        public class InsertMysqlUnsignedTypesBatchArgs
+        {
+            public byte? CTinyintUnsigned { get; set; }
+            public ushort? CSmallintUnsigned { get; set; }
+            public uint? CIntUnsigned { get; set; }
+            public ulong? CBigintUnsigned { get; set; }
+            public float? CFloatSingle { get; set; }
+        };
+        public async Task InsertMysqlUnsignedTypesBatchAsync(List<InsertMysqlUnsignedTypesBatchArgs> args)
+        {
+            const string supportedDateTimeFormat = "yyyy-MM-dd H:mm:ss";
+            var config = new CsvConfiguration(CultureInfo.CurrentCulture)
+            {
+                Delimiter = ",",
+                NewLine = "\n"
+            };
+            var nullConverterFn = new Utils.NullToStringCsvConverter();
+            using (var writer = new StreamWriter("input.csv", false, new UTF8Encoding(false)))
+            using (var csvWriter = new CsvWriter(writer, config))
+            {
+                var options = new TypeConverterOptions
+                {
+                    Formats = new[]
+                    {
+                        supportedDateTimeFormat
+                    }
+                };
+                csvWriter.Context.TypeConverterOptionsCache.AddOptions<DateTime>(options);
+                csvWriter.Context.TypeConverterOptionsCache.AddOptions<DateTime?>(options);
+                csvWriter.Context.TypeConverterCache.AddConverter<byte?>(nullConverterFn);
+                csvWriter.Context.TypeConverterCache.AddConverter<ushort?>(nullConverterFn);
+                csvWriter.Context.TypeConverterCache.AddConverter<uint?>(nullConverterFn);
+                csvWriter.Context.TypeConverterCache.AddConverter<ulong?>(nullConverterFn);
+                csvWriter.Context.TypeConverterCache.AddConverter<float?>(nullConverterFn);
+                await csvWriter.WriteRecordsAsync(args);
+            }
+
+            using (var connection = await GetDataSource().OpenConnectionAsync())
+            {
+                var loader = new MySqlBulkLoader(connection)
+                {
+                    Local = true,
+                    TableName = "mysql_unsigned_types",
+                    FileName = "input.csv",
+                    FieldTerminator = ",",
+                    FieldQuotationCharacter = '"',
+                    FieldQuotationOptional = true,
+                    NumberOfLinesToSkip = 1,
+                    LineTerminator = "\n"
+                };
+                loader.Columns.AddRange(new List<string> { "c_tinyint_unsigned", "c_smallint_unsigned", "c_int_unsigned", "c_bigint_unsigned", "c_float_single" });
+                await loader.LoadAsync();
+            }
+        }
+
+        private const string GetMysqlUnsignedTypesSql = "SELECT id, c_tinyint_unsigned, c_smallint_unsigned, c_int_unsigned, c_bigint_unsigned, c_bit_wide, c_float_single FROM mysql_unsigned_types LIMIT 1";
+        public class GetMysqlUnsignedTypesRow
+        {
+            public ulong Id { get; set; }
+            public byte? CTinyintUnsigned { get; set; }
+            public ushort? CSmallintUnsigned { get; set; }
+            public uint? CIntUnsigned { get; set; }
+            public ulong? CBigintUnsigned { get; set; }
+            public ulong? CBitWide { get; set; }
+            public float? CFloatSingle { get; set; }
+        };
+        public async Task<GetMysqlUnsignedTypesRow> GetMysqlUnsignedTypesAsync()
+        {
+            if (this.Transaction == null)
+            {
+                using (var connection = await GetDataSource().OpenConnectionAsync())
+                {
+                    var result = await connection.QueryFirstOrDefaultAsync<GetMysqlUnsignedTypesRow>(GetMysqlUnsignedTypesSql);
+                    return result;
+                }
+            }
+
+            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
+                throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+            return await this.Transaction.Connection.QueryFirstOrDefaultAsync<GetMysqlUnsignedTypesRow>(GetMysqlUnsignedTypesSql, transaction: this.Transaction);
+        }
+
+        private const string GetMysqlUnsignedTypesCntSql = @"SELECT
+                                                                 COUNT(*) AS cnt,
+                                                                 c_tinyint_unsigned,
+                                                                 c_smallint_unsigned,
+                                                                 c_int_unsigned,
+                                                                 c_bigint_unsigned,
+                                                                 c_float_single
+                                                             FROM mysql_unsigned_types
+                                                             GROUP BY
+                                                                 c_tinyint_unsigned,
+                                                                 c_smallint_unsigned,
+                                                                 c_int_unsigned,
+                                                                 c_bigint_unsigned,
+                                                                 c_float_single
+                                                             LIMIT 1";
+        public class GetMysqlUnsignedTypesCntRow
+        {
+            public long Cnt { get; set; }
+            public byte? CTinyintUnsigned { get; set; }
+            public ushort? CSmallintUnsigned { get; set; }
+            public uint? CIntUnsigned { get; set; }
+            public ulong? CBigintUnsigned { get; set; }
+            public float? CFloatSingle { get; set; }
+        };
+        public async Task<GetMysqlUnsignedTypesCntRow> GetMysqlUnsignedTypesCntAsync()
+        {
+            if (this.Transaction == null)
+            {
+                using (var connection = await GetDataSource().OpenConnectionAsync())
+                {
+                    var result = await connection.QueryFirstOrDefaultAsync<GetMysqlUnsignedTypesCntRow>(GetMysqlUnsignedTypesCntSql);
+                    return result;
+                }
+            }
+
+            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
+                throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+            return await this.Transaction.Connection.QueryFirstOrDefaultAsync<GetMysqlUnsignedTypesCntRow>(GetMysqlUnsignedTypesCntSql, transaction: this.Transaction);
+        }
+
+        private const string TruncateMysqlUnsignedTypesSql = "TRUNCATE TABLE mysql_unsigned_types";
+        public async Task TruncateMysqlUnsignedTypesAsync()
+        {
+            if (this.Transaction == null)
+            {
+                using (var connection = await GetDataSource().OpenConnectionAsync())
+                {
+                    await connection.ExecuteAsync(TruncateMysqlUnsignedTypesSql);
+                    return;
+                }
+            }
+
+            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
+                throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+            await this.Transaction.Connection.ExecuteAsync(TruncateMysqlUnsignedTypesSql, transaction: this.Transaction);
+        }
+
         private const string GetMysqlFunctionsSql = @"
                                                       SELECT
                                                           MAX(c_int) AS max_int,

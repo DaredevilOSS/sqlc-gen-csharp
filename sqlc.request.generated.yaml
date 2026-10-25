@@ -260,6 +260,10 @@ sql:
               csharp_type:
                 type: "Instant"
                 notNull: false
+            - column: "*:c_float_single"
+              csharp_type:
+                type: "float"
+                notNull: false
           debugRequest: true
   # Sqlite
   - schema: ["examples/config/mysql/authors/schema.sql", "examples/config/mysql/types/schema.sql"]
@@ -294,6 +298,10 @@ sql:
               csharp_type:
                 type: "Instant"
                 notNull: false
+            - column: "*:c_float_single"
+              csharp_type:
+                type: "float"
+                notNull: false
           debugRequest: true
   - schema: ["examples/config/mysql/authors/schema.sql", "examples/config/mysql/types/schema.sql"]
     queries: ["examples/config/mysql/authors/query.sql", "examples/config/mysql/types/query.sql"]
@@ -327,6 +335,10 @@ sql:
               csharp_type:
                 type: "Instant"
                 notNull: false
+            - column: "*:c_float_single"
+              csharp_type:
+                type: "float"
+                notNull: false
           debugRequest: true
   - schema: ["examples/config/mysql/authors/schema.sql", "examples/config/mysql/types/schema.sql"]
     queries: ["examples/config/mysql/authors/query.sql", "examples/config/mysql/types/query.sql"]
@@ -359,6 +371,10 @@ sql:
             - column: "*:c_timestamp_noda_instant_override"
               csharp_type:
                 type: "Instant"
+                notNull: false
+            - column: "*:c_float_single"
+              csharp_type:
+                type: "float"
                 notNull: false
           debugRequest: true
   # Sqlite

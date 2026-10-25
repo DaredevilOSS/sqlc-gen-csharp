@@ -14,6 +14,7 @@ public readonly record struct MysqlNumericType(bool? CBool, bool? CBoolean, shor
 public readonly record struct MysqlStringType(string? CChar, string? CNchar, string? CNationalChar, string? CVarchar, string? CTinytext, string? CMediumtext, string? CText, string? CLongtext, JsonElement? CJson, JsonElement? CJsonStringOverride, MysqlStringTypesCEnum? CEnum, HashSet<MysqlStringTypesCSet>? CSet);
 public readonly record struct MysqlDatetimeType(short? CYear, DateTime? CDate, DateTime? CDatetime, DateTime? CTimestamp, TimeSpan? CTime, DateTime? CTimestampNodaInstantOverride);
 public readonly record struct MysqlBinaryType(byte? CBit, byte[]? CBinary, byte[]? CVarbinary, byte[]? CTinyblob, byte[]? CBlob, byte[]? CMediumblob, byte[]? CLongblob);
+public readonly record struct MysqlUnsignedType(ulong Id, byte? CTinyintUnsigned, ushort? CSmallintUnsigned, uint? CIntUnsigned, ulong? CBigintUnsigned, ulong? CBitWide, double? CFloatSingle);
 public readonly record struct ExtendedBio(string? AuthorName, string? Name, BiosBioType? BioType, HashSet<BiosAuthorType>? AuthorType);
 public enum BiosBioType
 {

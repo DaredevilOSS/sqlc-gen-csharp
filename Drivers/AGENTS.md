@@ -49,8 +49,10 @@ This project owns **all database knowledge** and **all generated method bodies**
 
 ## Type mappings (`ColumnMappings`)
 `Dictionary<string csharpType, ColumnMapping>`; each `ColumnMapping` has:
-- `DbTypes`: `dbTypeName -> DbTypeInfo(Length?, DbTypeOverride?)`. `Length` restricts the match
-  (MySQL `tinyint` with length 1 -> `bool`). `DbTypeOverride` is the `NpgsqlDbType.X` passed when binding / binary copying.
+- `DbTypes`: `dbTypeName -> DbTypeInfo(Length?, DbTypeOverride?, Unsigned?, MinLength?)`. `Length` restricts the match
+  (MySQL `tinyint` with length 1 -> `bool`). `MinLength` is an inclusive lower bound (MySQL `bit` > 8 bits -> `ulong`).
+  `Unsigned` matches the sqlc column's `unsigned` flag (`false` = signed only, `true` = unsigned only, `null` = either).
+  `DbTypeOverride` is the `NpgsqlDbType.X` passed when binding / binary copying.
 - `ReaderFn(ordinal, dbType)`, `ReaderArrayFn` (arrays, Npgsql), `WriterFn(el, dbType, notNull, isDapper, isLegacy)`.
 - `ConvertFunc` - converts `ExecuteScalarAsync` output; **required** if the type can be an `:execlastid` id.
 - `UsingDirectives`, `SqlMapper` (Dapper registration line), `SqlMapperImpl` (Dapper `TypeHandler` class source).
@@ -89,6 +91,9 @@ Outliers:
 - Enums are all looked up in the default schema by `column.Type.Name`; C# name = PascalCase of that name
   (sqlc names them `<table>_<column>`).
 - `SET` columns are detected heuristically: `column.Length > sum(enum value lengths)` -> `HashSet<Enum>`.
+- Unsigned integers map to `byte`/`ushort`/`uint`/`ulong` (`MEDIUMINT UNSIGNED` stays `int`). `bit` <= 8 bits is `byte`, wider is `ulong`.
+  `byte` is shared by `bit` and `TINYINT UNSIGNED`, so a `:copyfrom` query may not mix them (the `bit` CSV converter writes a raw char);
+  `bit` > 8 bits is rejected in `:copyfrom`. `float` maps to `double`; the `float` mapping is override-only (`type: float`).
 
 **SQLite (`SqliteDriver`)**
 - Params: numbered `?N` replaced by number, otherwise `?` replaced in order. A new `SqliteConnection` per call; no `IDisposable`.

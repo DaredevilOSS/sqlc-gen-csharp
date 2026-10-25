@@ -272,6 +272,10 @@ overrides:
   csharp_type:
     type: "Instant"
     notNull: false
+- column: "*:c_float_single"
+  csharp_type:
+    type: "float"
+    notNull: false
 ```
 
 </details>
@@ -307,6 +311,10 @@ overrides:
 - column: "*:c_timestamp_noda_instant_override"
   csharp_type:
     type: "Instant"
+    notNull: false
+- column: "*:c_float_single"
+  csharp_type:
+    type: "float"
     notNull: false
 ```
 
@@ -344,6 +352,10 @@ overrides:
   csharp_type:
     type: "Instant"
     notNull: false
+- column: "*:c_float_single"
+  csharp_type:
+    type: "float"
+    notNull: false
 ```
 
 </details>
@@ -379,6 +391,10 @@ overrides:
 - column: "*:c_timestamp_noda_instant_override"
   csharp_type:
     type: "Instant"
+    notNull: false
+- column: "*:c_float_single"
+  csharp_type:
+    type: "float"
     notNull: false
 ```
 
