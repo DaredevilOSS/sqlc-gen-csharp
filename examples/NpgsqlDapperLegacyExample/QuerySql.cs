@@ -1349,6 +1349,349 @@ namespace NpgsqlDapperLegacyExampleGen
             return await this.Transaction.Connection.QueryFirstOrDefaultAsync<GetPostgresExtendedStringTypesCntRow>(GetPostgresExtendedStringTypesCntSql, transaction: this.Transaction);
         }
 
+        private const string InsertPostgresRangeTypesSql = @"
+                                                             INSERT INTO postgres_range_types
+                                                             (
+                                                                 c_int4range,
+                                                                 c_int8range,
+                                                                 c_numrange,
+                                                                 c_daterange,
+                                                                 c_tsrange,
+                                                                 c_tstzrange,
+                                                                 c_int4range_array
+                                                             ) VALUES (
+                                                                 @c_int4range::int4range,
+                                                                 @c_int8range::int8range,
+                                                                 @c_numrange::numrange,
+                                                                 @c_daterange::daterange,
+                                                                 @c_tsrange::tsrange,
+                                                                 @c_tstzrange::tstzrange,
+                                                                 @c_int4range_array::int4range[]
+                                                             )";
+        public class InsertPostgresRangeTypesArgs
+        {
+            public NpgsqlRange<int>? CInt4range { get; set; }
+            public NpgsqlRange<long>? CInt8range { get; set; }
+            public NpgsqlRange<decimal>? CNumrange { get; set; }
+            public NpgsqlRange<DateTime>? CDaterange { get; set; }
+            public NpgsqlRange<DateTime>? CTsrange { get; set; }
+            public NpgsqlRange<DateTime>? CTstzrange { get; set; }
+            public NpgsqlRange<int>[] CInt4rangeArray { get; set; }
+        };
+        public async Task InsertPostgresRangeTypesAsync(InsertPostgresRangeTypesArgs args)
+        {
+            var queryParams = new Dictionary<string, object>();
+            queryParams.Add("c_int4range", new Utils.NpgsqlTypedParameter(args.CInt4range, NpgsqlTypes.NpgsqlDbType.IntegerRange));
+            queryParams.Add("c_int8range", new Utils.NpgsqlTypedParameter(args.CInt8range, NpgsqlTypes.NpgsqlDbType.BigIntRange));
+            queryParams.Add("c_numrange", new Utils.NpgsqlTypedParameter(args.CNumrange, NpgsqlTypes.NpgsqlDbType.NumericRange));
+            queryParams.Add("c_daterange", new Utils.NpgsqlTypedParameter(args.CDaterange, NpgsqlTypes.NpgsqlDbType.DateRange));
+            queryParams.Add("c_tsrange", new Utils.NpgsqlTypedParameter(args.CTsrange, NpgsqlTypes.NpgsqlDbType.TimestampRange));
+            queryParams.Add("c_tstzrange", new Utils.NpgsqlTypedParameter(args.CTstzrange, NpgsqlTypes.NpgsqlDbType.TimestampTzRange));
+            queryParams.Add("c_int4range_array", new Utils.NpgsqlTypedParameter(args.CInt4rangeArray, NpgsqlTypes.NpgsqlDbType.Array | NpgsqlTypes.NpgsqlDbType.IntegerRange));
+            if (this.Transaction == null)
+            {
+                using (var connection = await GetDataSource().OpenConnectionAsync())
+                {
+                    await connection.ExecuteAsync(InsertPostgresRangeTypesSql, queryParams);
+                    return;
+                }
+            }
+
+            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
+                throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+            await this.Transaction.Connection.ExecuteAsync(InsertPostgresRangeTypesSql, queryParams, transaction: this.Transaction);
+        }
+
+        private const string InsertPostgresRangeTypesBatchSql = "COPY postgres_range_types (c_int4range, c_int8range, c_numrange, c_daterange, c_tsrange, c_tstzrange, c_int4range_array) FROM STDIN (FORMAT BINARY)";
+        public class InsertPostgresRangeTypesBatchArgs
+        {
+            public NpgsqlRange<int>? CInt4range { get; set; }
+            public NpgsqlRange<long>? CInt8range { get; set; }
+            public NpgsqlRange<decimal>? CNumrange { get; set; }
+            public NpgsqlRange<DateTime>? CDaterange { get; set; }
+            public NpgsqlRange<DateTime>? CTsrange { get; set; }
+            public NpgsqlRange<DateTime>? CTstzrange { get; set; }
+            public NpgsqlRange<int>[] CInt4rangeArray { get; set; }
+        };
+        public async Task InsertPostgresRangeTypesBatchAsync(List<InsertPostgresRangeTypesBatchArgs> args)
+        {
+            using (var connection = await GetDataSource().OpenConnectionAsync())
+            {
+                using (var writer = await connection.BeginBinaryImportAsync(InsertPostgresRangeTypesBatchSql))
+                {
+                    foreach (var row in args)
+                    {
+                        await writer.StartRowAsync();
+                        await writer.WriteAsync(row.CInt4range, NpgsqlTypes.NpgsqlDbType.IntegerRange);
+                        await writer.WriteAsync(row.CInt8range, NpgsqlTypes.NpgsqlDbType.BigIntRange);
+                        await writer.WriteAsync(row.CNumrange, NpgsqlTypes.NpgsqlDbType.NumericRange);
+                        await writer.WriteAsync(row.CDaterange, NpgsqlTypes.NpgsqlDbType.DateRange);
+                        await writer.WriteAsync(row.CTsrange, NpgsqlTypes.NpgsqlDbType.TimestampRange);
+                        await writer.WriteAsync(row.CTstzrange, NpgsqlTypes.NpgsqlDbType.TimestampTzRange);
+                        await writer.WriteAsync(row.CInt4rangeArray, NpgsqlTypes.NpgsqlDbType.Array | NpgsqlTypes.NpgsqlDbType.IntegerRange);
+                    }
+
+                    await writer.CompleteAsync();
+                }
+            }
+        }
+
+        private const string GetPostgresRangeTypesSql = "SELECT c_int4range, c_int8range, c_numrange, c_daterange, c_tsrange, c_tstzrange, c_int4range_array FROM postgres_range_types LIMIT 1";
+        public class GetPostgresRangeTypesRow
+        {
+            public NpgsqlRange<int>? CInt4range { get; set; }
+            public NpgsqlRange<long>? CInt8range { get; set; }
+            public NpgsqlRange<decimal>? CNumrange { get; set; }
+            public NpgsqlRange<DateTime>? CDaterange { get; set; }
+            public NpgsqlRange<DateTime>? CTsrange { get; set; }
+            public NpgsqlRange<DateTime>? CTstzrange { get; set; }
+            public NpgsqlRange<int>[] CInt4rangeArray { get; set; }
+        };
+        public async Task<GetPostgresRangeTypesRow> GetPostgresRangeTypesAsync()
+        {
+            if (this.Transaction == null)
+            {
+                using (var connection = await GetDataSource().OpenConnectionAsync())
+                {
+                    var result = await connection.QueryFirstOrDefaultAsync<GetPostgresRangeTypesRow>(GetPostgresRangeTypesSql);
+                    return result;
+                }
+            }
+
+            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
+                throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+            return await this.Transaction.Connection.QueryFirstOrDefaultAsync<GetPostgresRangeTypesRow>(GetPostgresRangeTypesSql, transaction: this.Transaction);
+        }
+
+        private const string TruncatePostgresRangeTypesSql = "TRUNCATE TABLE postgres_range_types";
+        public async Task TruncatePostgresRangeTypesAsync()
+        {
+            if (this.Transaction == null)
+            {
+                using (var connection = await GetDataSource().OpenConnectionAsync())
+                {
+                    await connection.ExecuteAsync(TruncatePostgresRangeTypesSql);
+                    return;
+                }
+            }
+
+            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
+                throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+            await this.Transaction.Connection.ExecuteAsync(TruncatePostgresRangeTypesSql, transaction: this.Transaction);
+        }
+
+        private const string GetPostgresRangeTypesCntSql = @"SELECT
+                                                                 c_int4range,
+                                                                 c_int8range,
+                                                                 c_numrange,
+                                                                 c_daterange,
+                                                                 c_tsrange,
+                                                                 c_tstzrange,
+                                                                 c_int4range_array,
+                                                                 COUNT(*) AS cnt
+                                                             FROM postgres_range_types
+                                                             GROUP BY
+                                                                 c_int4range,
+                                                                 c_int8range,
+                                                                 c_numrange,
+                                                                 c_daterange,
+                                                                 c_tsrange,
+                                                                 c_tstzrange,
+                                                                 c_int4range_array
+                                                             LIMIT 1";
+        public class GetPostgresRangeTypesCntRow
+        {
+            public NpgsqlRange<int>? CInt4range { get; set; }
+            public NpgsqlRange<long>? CInt8range { get; set; }
+            public NpgsqlRange<decimal>? CNumrange { get; set; }
+            public NpgsqlRange<DateTime>? CDaterange { get; set; }
+            public NpgsqlRange<DateTime>? CTsrange { get; set; }
+            public NpgsqlRange<DateTime>? CTstzrange { get; set; }
+            public NpgsqlRange<int>[] CInt4rangeArray { get; set; }
+            public long Cnt { get; set; }
+        };
+        public async Task<GetPostgresRangeTypesCntRow> GetPostgresRangeTypesCntAsync()
+        {
+            if (this.Transaction == null)
+            {
+                using (var connection = await GetDataSource().OpenConnectionAsync())
+                {
+                    var result = await connection.QueryFirstOrDefaultAsync<GetPostgresRangeTypesCntRow>(GetPostgresRangeTypesCntSql);
+                    return result;
+                }
+            }
+
+            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
+                throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+            return await this.Transaction.Connection.QueryFirstOrDefaultAsync<GetPostgresRangeTypesCntRow>(GetPostgresRangeTypesCntSql, transaction: this.Transaction);
+        }
+
+        private const string InsertPostgresMultirangeTypesSql = @"INSERT INTO postgres_multirange_types
+                                                                  (
+                                                                      c_int4multirange,
+                                                                      c_int8multirange,
+                                                                      c_nummultirange,
+                                                                      c_datemultirange,
+                                                                      c_tsmultirange,
+                                                                      c_tstzmultirange
+                                                                  ) VALUES (
+                                                                      @c_int4multirange::int4multirange,
+                                                                      @c_int8multirange::int8multirange,
+                                                                      @c_nummultirange::nummultirange,
+                                                                      @c_datemultirange::datemultirange,
+                                                                      @c_tsmultirange::tsmultirange,
+                                                                      @c_tstzmultirange::tstzmultirange
+                                                                  )";
+        public class InsertPostgresMultirangeTypesArgs
+        {
+            public NpgsqlRange<int>[] CInt4multirange { get; set; }
+            public NpgsqlRange<long>[] CInt8multirange { get; set; }
+            public NpgsqlRange<decimal>[] CNummultirange { get; set; }
+            public NpgsqlRange<DateTime>[] CDatemultirange { get; set; }
+            public NpgsqlRange<DateTime>[] CTsmultirange { get; set; }
+            public NpgsqlRange<DateTime>[] CTstzmultirange { get; set; }
+        };
+        public async Task InsertPostgresMultirangeTypesAsync(InsertPostgresMultirangeTypesArgs args)
+        {
+            var queryParams = new Dictionary<string, object>();
+            queryParams.Add("c_int4multirange", new Utils.NpgsqlTypedParameter(args.CInt4multirange, NpgsqlTypes.NpgsqlDbType.IntegerMultirange));
+            queryParams.Add("c_int8multirange", new Utils.NpgsqlTypedParameter(args.CInt8multirange, NpgsqlTypes.NpgsqlDbType.BigIntMultirange));
+            queryParams.Add("c_nummultirange", new Utils.NpgsqlTypedParameter(args.CNummultirange, NpgsqlTypes.NpgsqlDbType.NumericMultirange));
+            queryParams.Add("c_datemultirange", new Utils.NpgsqlTypedParameter(args.CDatemultirange, NpgsqlTypes.NpgsqlDbType.DateMultirange));
+            queryParams.Add("c_tsmultirange", new Utils.NpgsqlTypedParameter(args.CTsmultirange, NpgsqlTypes.NpgsqlDbType.TimestampMultirange));
+            queryParams.Add("c_tstzmultirange", new Utils.NpgsqlTypedParameter(args.CTstzmultirange, NpgsqlTypes.NpgsqlDbType.TimestampTzMultirange));
+            if (this.Transaction == null)
+            {
+                using (var connection = await GetDataSource().OpenConnectionAsync())
+                {
+                    await connection.ExecuteAsync(InsertPostgresMultirangeTypesSql, queryParams);
+                    return;
+                }
+            }
+
+            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
+                throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+            await this.Transaction.Connection.ExecuteAsync(InsertPostgresMultirangeTypesSql, queryParams, transaction: this.Transaction);
+        }
+
+        private const string InsertPostgresMultirangeTypesBatchSql = "COPY postgres_multirange_types (c_int4multirange, c_int8multirange, c_nummultirange, c_datemultirange, c_tsmultirange, c_tstzmultirange) FROM STDIN (FORMAT BINARY)";
+        public class InsertPostgresMultirangeTypesBatchArgs
+        {
+            public NpgsqlRange<int>[] CInt4multirange { get; set; }
+            public NpgsqlRange<long>[] CInt8multirange { get; set; }
+            public NpgsqlRange<decimal>[] CNummultirange { get; set; }
+            public NpgsqlRange<DateTime>[] CDatemultirange { get; set; }
+            public NpgsqlRange<DateTime>[] CTsmultirange { get; set; }
+            public NpgsqlRange<DateTime>[] CTstzmultirange { get; set; }
+        };
+        public async Task InsertPostgresMultirangeTypesBatchAsync(List<InsertPostgresMultirangeTypesBatchArgs> args)
+        {
+            using (var connection = await GetDataSource().OpenConnectionAsync())
+            {
+                using (var writer = await connection.BeginBinaryImportAsync(InsertPostgresMultirangeTypesBatchSql))
+                {
+                    foreach (var row in args)
+                    {
+                        await writer.StartRowAsync();
+                        await writer.WriteAsync(row.CInt4multirange, NpgsqlTypes.NpgsqlDbType.IntegerMultirange);
+                        await writer.WriteAsync(row.CInt8multirange, NpgsqlTypes.NpgsqlDbType.BigIntMultirange);
+                        await writer.WriteAsync(row.CNummultirange, NpgsqlTypes.NpgsqlDbType.NumericMultirange);
+                        await writer.WriteAsync(row.CDatemultirange, NpgsqlTypes.NpgsqlDbType.DateMultirange);
+                        await writer.WriteAsync(row.CTsmultirange, NpgsqlTypes.NpgsqlDbType.TimestampMultirange);
+                        await writer.WriteAsync(row.CTstzmultirange, NpgsqlTypes.NpgsqlDbType.TimestampTzMultirange);
+                    }
+
+                    await writer.CompleteAsync();
+                }
+            }
+        }
+
+        private const string GetPostgresMultirangeTypesSql = "SELECT c_int4multirange, c_int8multirange, c_nummultirange, c_datemultirange, c_tsmultirange, c_tstzmultirange FROM postgres_multirange_types LIMIT 1";
+        public class GetPostgresMultirangeTypesRow
+        {
+            public NpgsqlRange<int>[] CInt4multirange { get; set; }
+            public NpgsqlRange<long>[] CInt8multirange { get; set; }
+            public NpgsqlRange<decimal>[] CNummultirange { get; set; }
+            public NpgsqlRange<DateTime>[] CDatemultirange { get; set; }
+            public NpgsqlRange<DateTime>[] CTsmultirange { get; set; }
+            public NpgsqlRange<DateTime>[] CTstzmultirange { get; set; }
+        };
+        public async Task<GetPostgresMultirangeTypesRow> GetPostgresMultirangeTypesAsync()
+        {
+            if (this.Transaction == null)
+            {
+                using (var connection = await GetDataSource().OpenConnectionAsync())
+                {
+                    var result = await connection.QueryFirstOrDefaultAsync<GetPostgresMultirangeTypesRow>(GetPostgresMultirangeTypesSql);
+                    return result;
+                }
+            }
+
+            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
+                throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+            return await this.Transaction.Connection.QueryFirstOrDefaultAsync<GetPostgresMultirangeTypesRow>(GetPostgresMultirangeTypesSql, transaction: this.Transaction);
+        }
+
+        private const string TruncatePostgresMultirangeTypesSql = "TRUNCATE TABLE postgres_multirange_types";
+        public async Task TruncatePostgresMultirangeTypesAsync()
+        {
+            if (this.Transaction == null)
+            {
+                using (var connection = await GetDataSource().OpenConnectionAsync())
+                {
+                    await connection.ExecuteAsync(TruncatePostgresMultirangeTypesSql);
+                    return;
+                }
+            }
+
+            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
+                throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+            await this.Transaction.Connection.ExecuteAsync(TruncatePostgresMultirangeTypesSql, transaction: this.Transaction);
+        }
+
+        private const string GetPostgresMultirangeTypesCntSql = @"SELECT
+                                                                      c_int4multirange,
+                                                                      c_int8multirange,
+                                                                      c_nummultirange,
+                                                                      c_datemultirange,
+                                                                      c_tsmultirange,
+                                                                      c_tstzmultirange,
+                                                                      COUNT(*) AS cnt
+                                                                  FROM postgres_multirange_types
+                                                                  GROUP BY
+                                                                      c_int4multirange,
+                                                                      c_int8multirange,
+                                                                      c_nummultirange,
+                                                                      c_datemultirange,
+                                                                      c_tsmultirange,
+                                                                      c_tstzmultirange
+                                                                  LIMIT 1";
+        public class GetPostgresMultirangeTypesCntRow
+        {
+            public NpgsqlRange<int>[] CInt4multirange { get; set; }
+            public NpgsqlRange<long>[] CInt8multirange { get; set; }
+            public NpgsqlRange<decimal>[] CNummultirange { get; set; }
+            public NpgsqlRange<DateTime>[] CDatemultirange { get; set; }
+            public NpgsqlRange<DateTime>[] CTsmultirange { get; set; }
+            public NpgsqlRange<DateTime>[] CTstzmultirange { get; set; }
+            public long Cnt { get; set; }
+        };
+        public async Task<GetPostgresMultirangeTypesCntRow> GetPostgresMultirangeTypesCntAsync()
+        {
+            if (this.Transaction == null)
+            {
+                using (var connection = await GetDataSource().OpenConnectionAsync())
+                {
+                    var result = await connection.QueryFirstOrDefaultAsync<GetPostgresMultirangeTypesCntRow>(GetPostgresMultirangeTypesCntSql);
+                    return result;
+                }
+            }
+
+            if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
+                throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+            return await this.Transaction.Connection.QueryFirstOrDefaultAsync<GetPostgresMultirangeTypesCntRow>(GetPostgresMultirangeTypesCntSql, transaction: this.Transaction);
+        }
+
         private const string InsertPostgresDateTimeTypesSql = @"
                                                                 INSERT INTO postgres_datetime_types
                                                                 (

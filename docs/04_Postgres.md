@@ -50,6 +50,10 @@ we consider support for the different data types separately for batch inserts an
 | ltree                                   | ✅         | ✅                  |
 | lquery                                  | ✅         | ✅                  |
 | ltxtquery                               | ✅         | ✅                  |
+| int4range, int8range, numrange          | ✅         | ✅                  |
+| daterange, tsrange, tstzrange           | ✅         | ✅                  |
+| int4multirange, int8multirange, nummultirange | ✅   | ✅                  |
+| datemultirange, tsmultirange, tstzmultirange  | ✅   | ✅                  |
 | bytea                                   | ✅         | ✅                  |
 | bit, bit varying (varbit)               | ✅         | ✅                  |
 | 2-dimensional arrays (e.g text[],int[]) | ✅         | ✅                  |
@@ -100,6 +104,12 @@ supported since Npgsql writes `BitArray[]` as `varbit[]`, which does not match t
 must be created in your schema (`CREATE EXTENSION citext;`) for sqlc to recognize them. When using Dapper, `ltree`, `lquery` and `ltxtquery`
 parameters need an explicit cast in the INSERT statement (e.g. `sqlc.narg('c_ltree')::ltree`), since Dapper sends the value as `text`.
 `lquery` and `ltxtquery` have no equality operator, so they cannot be used in `GROUP BY` / `DISTINCT`.
+
+*** Range types map to `NpgsqlRange<T>` (`int4range` - `NpgsqlRange<int>`, `int8range` - `NpgsqlRange<long>`, `numrange` - `NpgsqlRange<decimal>`,
+`daterange` / `tsrange` / `tstzrange` - `NpgsqlRange<DateTime>`) and multirange types (PostgreSQL 14+) to `NpgsqlRange<T>[]`.
+Both are also supported as array elements (`int4range[]` is `NpgsqlRange<int>[]`, the same C# type as `int4multirange`).
+Note that PostgreSQL normalizes discrete ranges (e.g. `[1,10]` is read back as `[1,11)`), and that a `tstzrange` must be written with `DateTimeKind.Utc` bounds.
+When using Dapper, range parameters are sent with an explicit `NpgsqlDbType`, so no cast is needed in the query.
 
 *** `any` is a pseudo-type reported by sqlc when it cannot infer a column's type; it maps to `object` in C#.
 *** `hstore` is a key-value store type that maps to `object` in C#; readers use `GetValue()` to retrieve the value.

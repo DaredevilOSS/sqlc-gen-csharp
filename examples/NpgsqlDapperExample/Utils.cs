@@ -2,6 +2,7 @@
 using Dapper;
 using NodaTime;
 using NodaTime.Extensions;
+using Npgsql;
 using NpgsqlTypes;
 using System;
 using System.Collections;
@@ -93,6 +94,10 @@ public static class Utils
     {
         SqlMapper.AddTypeHandler(typeof(Instant), new NodaInstantTypeHandler());
         SqlMapper.AddTypeHandler(typeof(BitArray), new BitArrayTypeHandler());
+        SqlMapper.AddTypeHandler(typeof(NpgsqlRange<int>), new NpgsqlTypeHandler<NpgsqlRange<int>>());
+        SqlMapper.AddTypeHandler(typeof(NpgsqlRange<long>), new NpgsqlTypeHandler<NpgsqlRange<long>>());
+        SqlMapper.AddTypeHandler(typeof(NpgsqlRange<decimal>), new NpgsqlTypeHandler<NpgsqlRange<decimal>>());
+        SqlMapper.AddTypeHandler(typeof(NpgsqlRange<DateTime>), new NpgsqlTypeHandler<NpgsqlRange<DateTime>>());
         SqlMapper.AddTypeHandler(typeof(JsonElement), new JsonElementTypeHandler());
         SqlMapper.AddTypeHandler(typeof(XmlDocument), new XmlDocumentTypeHandler());
         SqlMapper.AddTypeHandler(typeof(NpgsqlPoint), new NpgsqlTypeHandler<NpgsqlPoint>());
@@ -107,6 +112,22 @@ public static class Utils
         SqlMapper.AddTypeHandler(typeof(PhysicalAddress), new NpgsqlTypeHandler<PhysicalAddress>());
         SqlMapper.AddTypeHandler(typeof(NpgsqlTsQuery), new NpgsqlTypeHandler<NpgsqlTsQuery>());
         SqlMapper.AddTypeHandler(typeof(NpgsqlTsVector), new NpgsqlTypeHandler<NpgsqlTsVector>());
+    }
+
+    internal class NpgsqlTypedParameter : SqlMapper.ICustomQueryParameter
+    {
+        private readonly object? _value;
+        private readonly NpgsqlDbType _dbType;
+        public NpgsqlTypedParameter(object? value, NpgsqlDbType dbType)
+        {
+            _value = value;
+            _dbType = dbType;
+        }
+
+        public void AddParameter(IDbCommand command, string name)
+        {
+            command.Parameters.Add(new NpgsqlParameter(name, _dbType) { Value = _value ?? DBNull.Value });
+        }
     }
 
     private class NpgsqlTypeHandler<T> : SqlMapper.TypeHandler<T> where T : notnull

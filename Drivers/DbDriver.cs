@@ -432,7 +432,7 @@ public abstract class DbDriver
         return typeInfo.Length.Value == column.Length;
     }
 
-    public string? GetColumnDbTypeOverride(Column column)
+    public virtual string? GetColumnDbTypeOverride(Column column)
     {
         if (column.IsArray)
             return null; // TODO: handle array columns

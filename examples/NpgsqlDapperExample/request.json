@@ -368,6 +368,152 @@
           },
           {
             "rel": {
+              "name": "postgres_range_types"
+            },
+            "columns": [
+              {
+                "name": "c_int4range",
+                "length": -1,
+                "table": {
+                  "name": "postgres_range_types"
+                },
+                "type": {
+                  "name": "int4range"
+                }
+              },
+              {
+                "name": "c_int8range",
+                "length": -1,
+                "table": {
+                  "name": "postgres_range_types"
+                },
+                "type": {
+                  "name": "int8range"
+                }
+              },
+              {
+                "name": "c_numrange",
+                "length": -1,
+                "table": {
+                  "name": "postgres_range_types"
+                },
+                "type": {
+                  "name": "numrange"
+                }
+              },
+              {
+                "name": "c_daterange",
+                "length": -1,
+                "table": {
+                  "name": "postgres_range_types"
+                },
+                "type": {
+                  "name": "daterange"
+                }
+              },
+              {
+                "name": "c_tsrange",
+                "length": -1,
+                "table": {
+                  "name": "postgres_range_types"
+                },
+                "type": {
+                  "name": "tsrange"
+                }
+              },
+              {
+                "name": "c_tstzrange",
+                "length": -1,
+                "table": {
+                  "name": "postgres_range_types"
+                },
+                "type": {
+                  "name": "tstzrange"
+                }
+              },
+              {
+                "name": "c_int4range_array",
+                "isArray": true,
+                "length": -1,
+                "table": {
+                  "name": "postgres_range_types"
+                },
+                "type": {
+                  "name": "int4range"
+                },
+                "arrayDims": 1
+              }
+            ]
+          },
+          {
+            "rel": {
+              "name": "postgres_multirange_types"
+            },
+            "columns": [
+              {
+                "name": "c_int4multirange",
+                "length": -1,
+                "table": {
+                  "name": "postgres_multirange_types"
+                },
+                "type": {
+                  "name": "int4multirange"
+                }
+              },
+              {
+                "name": "c_int8multirange",
+                "length": -1,
+                "table": {
+                  "name": "postgres_multirange_types"
+                },
+                "type": {
+                  "name": "int8multirange"
+                }
+              },
+              {
+                "name": "c_nummultirange",
+                "length": -1,
+                "table": {
+                  "name": "postgres_multirange_types"
+                },
+                "type": {
+                  "name": "nummultirange"
+                }
+              },
+              {
+                "name": "c_datemultirange",
+                "length": -1,
+                "table": {
+                  "name": "postgres_multirange_types"
+                },
+                "type": {
+                  "name": "datemultirange"
+                }
+              },
+              {
+                "name": "c_tsmultirange",
+                "length": -1,
+                "table": {
+                  "name": "postgres_multirange_types"
+                },
+                "type": {
+                  "name": "tsmultirange"
+                }
+              },
+              {
+                "name": "c_tstzmultirange",
+                "length": -1,
+                "table": {
+                  "name": "postgres_multirange_types"
+                },
+                "type": {
+                  "name": "tstzmultirange"
+                }
+              }
+            ]
+          },
+          {
+            "rel": {
               "name": "postgres_extended_string_types"
             },
             "columns": [
@@ -35247,6 +35393,734 @@
             "name": "name"
           },
           "originalName": "c_name"
+        },
+        {
+          "name": "cnt",
+          "notNull": true,
+          "length": -1,
+          "isFuncCall": true,
+          "type": {
+            "name": "bigint"
+          }
+        }
+      ],
+      "filename": "query.sql"
+    },
+    {
+      "text": "\nINSERT INTO postgres_range_types\n(\n    c_int4range,\n    c_int8range,\n    c_numrange,\n    c_daterange,\n    c_tsrange,\n    c_tstzrange,\n    c_int4range_array\n) VALUES (\n    $1::int4range,\n    $2::int8range,\n    $3::numrange,\n    $4::daterange,\n    $5::tsrange,\n    $6::tstzrange,\n    $7::int4range[]\n)",
+      "name": "InsertPostgresRangeTypes",
+      "cmd": ":exec",
+      "parameters": [
+        {
+          "number": 1,
+          "column": {
+            "name": "c_int4range",
+            "length": -1,
+            "type": {
+              "name": "int4range"
+            }
+          }
+        },
+        {
+          "number": 2,
+          "column": {
+            "name": "c_int8range",
+            "length": -1,
+            "type": {
+              "name": "int8range"
+            }
+          }
+        },
+        {
+          "number": 3,
+          "column": {
+            "name": "c_numrange",
+            "length": -1,
+            "type": {
+              "name": "numrange"
+            }
+          }
+        },
+        {
+          "number": 4,
+          "column": {
+            "name": "c_daterange",
+            "length": -1,
+            "type": {
+              "name": "daterange"
+            }
+          }
+        },
+        {
+          "number": 5,
+          "column": {
+            "name": "c_tsrange",
+            "length": -1,
+            "type": {
+              "name": "tsrange"
+            }
+          }
+        },
+        {
+          "number": 6,
+          "column": {
+            "name": "c_tstzrange",
+            "length": -1,
+            "type": {
+              "name": "tstzrange"
+            }
+          }
+        },
+        {
+          "number": 7,
+          "column": {
+            "name": "c_int4range_array",
+            "isArray": true,
+            "length": -1,
+            "type": {
+              "name": "int4range"
+            },
+            "arrayDims": 1
+          }
+        }
+      ],
+      "comments": [
+        " Range types "
+      ],
+      "filename": "query.sql",
+      "insert_into_table": {
+        "name": "postgres_range_types"
+      }
+    },
+    {
+      "text": "INSERT INTO postgres_range_types\n(\n    c_int4range,\n    c_int8range,\n    c_numrange,\n    c_daterange,\n    c_tsrange,\n    c_tstzrange,\n    c_int4range_array\n) VALUES ($1, $2, $3, $4, $5, $6, $7)",
+      "name": "InsertPostgresRangeTypesBatch",
+      "cmd": ":copyfrom",
+      "parameters": [
+        {
+          "number": 1,
+          "column": {
+            "name": "c_int4range",
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "postgres_range_types"
+            },
+            "type": {
+              "name": "int4range"
+            },
+            "originalName": "c_int4range"
+          }
+        },
+        {
+          "number": 2,
+          "column": {
+            "name": "c_int8range",
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "postgres_range_types"
+            },
+            "type": {
+              "name": "int8range"
+            },
+            "originalName": "c_int8range"
+          }
+        },
+        {
+          "number": 3,
+          "column": {
+            "name": "c_numrange",
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "postgres_range_types"
+            },
+            "type": {
+              "name": "numrange"
+            },
+            "originalName": "c_numrange"
+          }
+        },
+        {
+          "number": 4,
+          "column": {
+            "name": "c_daterange",
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "postgres_range_types"
+            },
+            "type": {
+              "name": "daterange"
+            },
+            "originalName": "c_daterange"
+          }
+        },
+        {
+          "number": 5,
+          "column": {
+            "name": "c_tsrange",
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "postgres_range_types"
+            },
+            "type": {
+              "name": "tsrange"
+            },
+            "originalName": "c_tsrange"
+          }
+        },
+        {
+          "number": 6,
+          "column": {
+            "name": "c_tstzrange",
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "postgres_range_types"
+            },
+            "type": {
+              "name": "tstzrange"
+            },
+            "originalName": "c_tstzrange"
+          }
+        },
+        {
+          "number": 7,
+          "column": {
+            "name": "c_int4range_array",
+            "isArray": true,
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "postgres_range_types"
+            },
+            "type": {
+              "name": "int4range"
+            },
+            "originalName": "c_int4range_array",
+            "arrayDims": 1
+          }
+        }
+      ],
+      "filename": "query.sql",
+      "insert_into_table": {
+        "name": "postgres_range_types"
+      }
+    },
+    {
+      "text": "SELECT c_int4range, c_int8range, c_numrange, c_daterange, c_tsrange, c_tstzrange, c_int4range_array FROM postgres_range_types LIMIT 1",
+      "name": "GetPostgresRangeTypes",
+      "cmd": ":one",
+      "columns": [
+        {
+          "name": "c_int4range",
+          "length": -1,
+          "table": {
+            "name": "postgres_range_types"
+          },
+          "type": {
+            "name": "int4range"
+          },
+          "originalName": "c_int4range"
+        },
+        {
+          "name": "c_int8range",
+          "length": -1,
+          "table": {
+            "name": "postgres_range_types"
+          },
+          "type": {
+            "name": "int8range"
+          },
+          "originalName": "c_int8range"
+        },
+        {
+          "name": "c_numrange",
+          "length": -1,
+          "table": {
+            "name": "postgres_range_types"
+          },
+          "type": {
+            "name": "numrange"
+          },
+          "originalName": "c_numrange"
+        },
+        {
+          "name": "c_daterange",
+          "length": -1,
+          "table": {
+            "name": "postgres_range_types"
+          },
+          "type": {
+            "name": "daterange"
+          },
+          "originalName": "c_daterange"
+        },
+        {
+          "name": "c_tsrange",
+          "length": -1,
+          "table": {
+            "name": "postgres_range_types"
+          },
+          "type": {
+            "name": "tsrange"
+          },
+          "originalName": "c_tsrange"
+        },
+        {
+          "name": "c_tstzrange",
+          "length": -1,
+          "table": {
+            "name": "postgres_range_types"
+          },
+          "type": {
+            "name": "tstzrange"
+          },
+          "originalName": "c_tstzrange"
+        },
+        {
+          "name": "c_int4range_array",
+          "isArray": true,
+          "length": -1,
+          "table": {
+            "name": "postgres_range_types"
+          },
+          "type": {
+            "name": "int4range"
+          },
+          "originalName": "c_int4range_array",
+          "arrayDims": 1
+        }
+      ],
+      "filename": "query.sql"
+    },
+    {
+      "text": "TRUNCATE TABLE postgres_range_types",
+      "name": "TruncatePostgresRangeTypes",
+      "cmd": ":exec",
+      "filename": "query.sql"
+    },
+    {
+      "text": "SELECT\n    c_int4range,\n    c_int8range,\n    c_numrange,\n    c_daterange,\n    c_tsrange,\n    c_tstzrange,\n    c_int4range_array,\n    COUNT(*) AS cnt\nFROM postgres_range_types\nGROUP BY\n    c_int4range,\n    c_int8range,\n    c_numrange,\n    c_daterange,\n    c_tsrange,\n    c_tstzrange,\n    c_int4range_array\nLIMIT 1",
+      "name": "GetPostgresRangeTypesCnt",
+      "cmd": ":one",
+      "columns": [
+        {
+          "name": "c_int4range",
+          "length": -1,
+          "table": {
+            "name": "postgres_range_types"
+          },
+          "type": {
+            "name": "int4range"
+          },
+          "originalName": "c_int4range"
+        },
+        {
+          "name": "c_int8range",
+          "length": -1,
+          "table": {
+            "name": "postgres_range_types"
+          },
+          "type": {
+            "name": "int8range"
+          },
+          "originalName": "c_int8range"
+        },
+        {
+          "name": "c_numrange",
+          "length": -1,
+          "table": {
+            "name": "postgres_range_types"
+          },
+          "type": {
+            "name": "numrange"
+          },
+          "originalName": "c_numrange"
+        },
+        {
+          "name": "c_daterange",
+          "length": -1,
+          "table": {
+            "name": "postgres_range_types"
+          },
+          "type": {
+            "name": "daterange"
+          },
+          "originalName": "c_daterange"
+        },
+        {
+          "name": "c_tsrange",
+          "length": -1,
+          "table": {
+            "name": "postgres_range_types"
+          },
+          "type": {
+            "name": "tsrange"
+          },
+          "originalName": "c_tsrange"
+        },
+        {
+          "name": "c_tstzrange",
+          "length": -1,
+          "table": {
+            "name": "postgres_range_types"
+          },
+          "type": {
+            "name": "tstzrange"
+          },
+          "originalName": "c_tstzrange"
+        },
+        {
+          "name": "c_int4range_array",
+          "isArray": true,
+          "length": -1,
+          "table": {
+            "name": "postgres_range_types"
+          },
+          "type": {
+            "name": "int4range"
+          },
+          "originalName": "c_int4range_array",
+          "arrayDims": 1
+        },
+        {
+          "name": "cnt",
+          "notNull": true,
+          "length": -1,
+          "isFuncCall": true,
+          "type": {
+            "name": "bigint"
+          }
+        }
+      ],
+      "filename": "query.sql"
+    },
+    {
+      "text": "INSERT INTO postgres_multirange_types\n(\n    c_int4multirange,\n    c_int8multirange,\n    c_nummultirange,\n    c_datemultirange,\n    c_tsmultirange,\n    c_tstzmultirange\n) VALUES (\n    $1::int4multirange,\n    $2::int8multirange,\n    $3::nummultirange,\n    $4::datemultirange,\n    $5::tsmultirange,\n    $6::tstzmultirange\n)",
+      "name": "InsertPostgresMultirangeTypes",
+      "cmd": ":exec",
+      "parameters": [
+        {
+          "number": 1,
+          "column": {
+            "name": "c_int4multirange",
+            "length": -1,
+            "type": {
+              "name": "int4multirange"
+            }
+          }
+        },
+        {
+          "number": 2,
+          "column": {
+            "name": "c_int8multirange",
+            "length": -1,
+            "type": {
+              "name": "int8multirange"
+            }
+          }
+        },
+        {
+          "number": 3,
+          "column": {
+            "name": "c_nummultirange",
+            "length": -1,
+            "type": {
+              "name": "nummultirange"
+            }
+          }
+        },
+        {
+          "number": 4,
+          "column": {
+            "name": "c_datemultirange",
+            "length": -1,
+            "type": {
+              "name": "datemultirange"
+            }
+          }
+        },
+        {
+          "number": 5,
+          "column": {
+            "name": "c_tsmultirange",
+            "length": -1,
+            "type": {
+              "name": "tsmultirange"
+            }
+          }
+        },
+        {
+          "number": 6,
+          "column": {
+            "name": "c_tstzmultirange",
+            "length": -1,
+            "type": {
+              "name": "tstzmultirange"
+            }
+          }
+        }
+      ],
+      "filename": "query.sql",
+      "insert_into_table": {
+        "name": "postgres_multirange_types"
+      }
+    },
+    {
+      "text": "INSERT INTO postgres_multirange_types\n(\n    c_int4multirange,\n    c_int8multirange,\n    c_nummultirange,\n    c_datemultirange,\n    c_tsmultirange,\n    c_tstzmultirange\n) VALUES ($1, $2, $3, $4, $5, $6)",
+      "name": "InsertPostgresMultirangeTypesBatch",
+      "cmd": ":copyfrom",
+      "parameters": [
+        {
+          "number": 1,
+          "column": {
+            "name": "c_int4multirange",
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "postgres_multirange_types"
+            },
+            "type": {
+              "name": "int4multirange"
+            },
+            "originalName": "c_int4multirange"
+          }
+        },
+        {
+          "number": 2,
+          "column": {
+            "name": "c_int8multirange",
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "postgres_multirange_types"
+            },
+            "type": {
+              "name": "int8multirange"
+            },
+            "originalName": "c_int8multirange"
+          }
+        },
+        {
+          "number": 3,
+          "column": {
+            "name": "c_nummultirange",
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "postgres_multirange_types"
+            },
+            "type": {
+              "name": "nummultirange"
+            },
+            "originalName": "c_nummultirange"
+          }
+        },
+        {
+          "number": 4,
+          "column": {
+            "name": "c_datemultirange",
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "postgres_multirange_types"
+            },
+            "type": {
+              "name": "datemultirange"
+            },
+            "originalName": "c_datemultirange"
+          }
+        },
+        {
+          "number": 5,
+          "column": {
+            "name": "c_tsmultirange",
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "postgres_multirange_types"
+            },
+            "type": {
+              "name": "tsmultirange"
+            },
+            "originalName": "c_tsmultirange"
+          }
+        },
+        {
+          "number": 6,
+          "column": {
+            "name": "c_tstzmultirange",
+            "length": -1,
+            "table": {
+              "schema": "public",
+              "name": "postgres_multirange_types"
+            },
+            "type": {
+              "name": "tstzmultirange"
+            },
+            "originalName": "c_tstzmultirange"
+          }
+        }
+      ],
+      "filename": "query.sql",
+      "insert_into_table": {
+        "name": "postgres_multirange_types"
+      }
+    },
+    {
+      "text": "SELECT c_int4multirange, c_int8multirange, c_nummultirange, c_datemultirange, c_tsmultirange, c_tstzmultirange FROM postgres_multirange_types LIMIT 1",
+      "name": "GetPostgresMultirangeTypes",
+      "cmd": ":one",
+      "columns": [
+        {
+          "name": "c_int4multirange",
+          "length": -1,
+          "table": {
+            "name": "postgres_multirange_types"
+          },
+          "type": {
+            "name": "int4multirange"
+          },
+          "originalName": "c_int4multirange"
+        },
+        {
+          "name": "c_int8multirange",
+          "length": -1,
+          "table": {
+            "name": "postgres_multirange_types"
+          },
+          "type": {
+            "name": "int8multirange"
+          },
+          "originalName": "c_int8multirange"
+        },
+        {
+          "name": "c_nummultirange",
+          "length": -1,
+          "table": {
+            "name": "postgres_multirange_types"
+          },
+          "type": {
+            "name": "nummultirange"
+          },
+          "originalName": "c_nummultirange"
+        },
+        {
+          "name": "c_datemultirange",
+          "length": -1,
+          "table": {
+            "name": "postgres_multirange_types"
+          },
+          "type": {
+            "name": "datemultirange"
+          },
+          "originalName": "c_datemultirange"
+        },
+        {
+          "name": "c_tsmultirange",
+          "length": -1,
+          "table": {
+            "name": "postgres_multirange_types"
+          },
+          "type": {
+            "name": "tsmultirange"
+          },
+          "originalName": "c_tsmultirange"
+        },
+        {
+          "name": "c_tstzmultirange",
+          "length": -1,
+          "table": {
+            "name": "postgres_multirange_types"
+          },
+          "type": {
+            "name": "tstzmultirange"
+          },
+          "originalName": "c_tstzmultirange"
+        }
+      ],
+      "filename": "query.sql"
+    },
+    {
+      "text": "TRUNCATE TABLE postgres_multirange_types",
+      "name": "TruncatePostgresMultirangeTypes",
+      "cmd": ":exec",
+      "filename": "query.sql"
+    },
+    {
+      "text": "SELECT\n    c_int4multirange,\n    c_int8multirange,\n    c_nummultirange,\n    c_datemultirange,\n    c_tsmultirange,\n    c_tstzmultirange,\n    COUNT(*) AS cnt\nFROM postgres_multirange_types\nGROUP BY\n    c_int4multirange,\n    c_int8multirange,\n    c_nummultirange,\n    c_datemultirange,\n    c_tsmultirange,\n    c_tstzmultirange\nLIMIT 1",
+      "name": "GetPostgresMultirangeTypesCnt",
+      "cmd": ":one",
+      "columns": [
+        {
+          "name": "c_int4multirange",
+          "length": -1,
+          "table": {
+            "name": "postgres_multirange_types"
+          },
+          "type": {
+            "name": "int4multirange"
+          },
+          "originalName": "c_int4multirange"
+        },
+        {
+          "name": "c_int8multirange",
+          "length": -1,
+          "table": {
+            "name": "postgres_multirange_types"
+          },
+          "type": {
+            "name": "int8multirange"
+          },
+          "originalName": "c_int8multirange"
+        },
+        {
+          "name": "c_nummultirange",
+          "length": -1,
+          "table": {
+            "name": "postgres_multirange_types"
+          },
+          "type": {
+            "name": "nummultirange"
+          },
+          "originalName": "c_nummultirange"
+        },
+        {
+          "name": "c_datemultirange",
+          "length": -1,
+          "table": {
+            "name": "postgres_multirange_types"
+          },
+          "type": {
+            "name": "datemultirange"
+          },
+          "originalName": "c_datemultirange"
+        },
+        {
+          "name": "c_tsmultirange",
+          "length": -1,
+          "table": {
+            "name": "postgres_multirange_types"
+          },
+          "type": {
+            "name": "tsmultirange"
+          },
+          "originalName": "c_tsmultirange"
+        },
+        {
+          "name": "c_tstzmultirange",
+          "length": -1,
+          "table": {
+            "name": "postgres_multirange_types"
+          },
+          "type": {
+            "name": "tstzmultirange"
+          },
+          "originalName": "c_tstzmultirange"
         },
         {
           "name": "cnt",

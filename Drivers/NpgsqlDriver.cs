@@ -19,6 +19,14 @@ public sealed class NpgsqlDriver : EnumDbDriver, IOne, IMany, IExec, IExecRows, 
         IList<Query> queries) :
         base(options, catalog, queries)
     {
+        NullableTypes.UnionWith(
+        [
+            "NpgsqlRange<int>",
+            "NpgsqlRange<long>",
+            "NpgsqlRange<decimal>",
+            "NpgsqlRange<DateTime>"
+        ]);
+
         foreach (var columnMapping in ColumnMappings.Values)
         {
             foreach (var dbType in columnMapping.DbTypes.ToList())
@@ -183,6 +191,46 @@ public sealed class NpgsqlDriver : EnumDbDriver, IOne, IMany, IExec, IExecRows, 
                 sqlMapper: "SqlMapper.AddTypeHandler(typeof(BitArray), new BitArrayTypeHandler());",
                 sqlMapperImpl: BitArrayTypeHandler
             ),
+
+            /* Range data types */
+            ["NpgsqlRange<int>"] = RangeMapping("int", new()
+            {
+                { "int4range", new(DbTypeOverride: "NpgsqlTypes.NpgsqlDbType.IntegerRange") }
+            }),
+            ["NpgsqlRange<long>"] = RangeMapping("long", new()
+            {
+                { "int8range", new(DbTypeOverride: "NpgsqlTypes.NpgsqlDbType.BigIntRange") }
+            }),
+            ["NpgsqlRange<decimal>"] = RangeMapping("decimal", new()
+            {
+                { "numrange", new(DbTypeOverride: "NpgsqlTypes.NpgsqlDbType.NumericRange") }
+            }),
+            ["NpgsqlRange<DateTime>"] = RangeMapping("DateTime", new()
+            {
+                { "daterange", new(DbTypeOverride: "NpgsqlTypes.NpgsqlDbType.DateRange") },
+                { "tsrange", new(DbTypeOverride: "NpgsqlTypes.NpgsqlDbType.TimestampRange") },
+                { "tstzrange", new(DbTypeOverride: "NpgsqlTypes.NpgsqlDbType.TimestampTzRange") }
+            }),
+
+            /* Multirange data types (PostgreSQL 14+) */
+            ["NpgsqlRange<int>[]"] = MultirangeMapping("int", new()
+            {
+                { "int4multirange", new(DbTypeOverride: "NpgsqlTypes.NpgsqlDbType.IntegerMultirange") }
+            }),
+            ["NpgsqlRange<long>[]"] = MultirangeMapping("long", new()
+            {
+                { "int8multirange", new(DbTypeOverride: "NpgsqlTypes.NpgsqlDbType.BigIntMultirange") }
+            }),
+            ["NpgsqlRange<decimal>[]"] = MultirangeMapping("decimal", new()
+            {
+                { "nummultirange", new(DbTypeOverride: "NpgsqlTypes.NpgsqlDbType.NumericMultirange") }
+            }),
+            ["NpgsqlRange<DateTime>[]"] = MultirangeMapping("DateTime", new()
+            {
+                { "datemultirange", new(DbTypeOverride: "NpgsqlTypes.NpgsqlDbType.DateMultirange") },
+                { "tsmultirange", new(DbTypeOverride: "NpgsqlTypes.NpgsqlDbType.TimestampMultirange") },
+                { "tstzmultirange", new(DbTypeOverride: "NpgsqlTypes.NpgsqlDbType.TimestampTzMultirange") }
+            }),
 
             /* Unstructured data types */
             ["JsonElement"] = new(
@@ -389,6 +437,30 @@ public sealed class NpgsqlDriver : EnumDbDriver, IOne, IMany, IExec, IExecRows, 
             )
         };
 
+    private static ColumnMapping RangeMapping(string subtype, Dictionary<string, DbTypeInfo> dbTypes)
+    {
+        var rangeType = $"NpgsqlRange<{subtype}>";
+        return new(
+            dbTypes,
+            readerFn: (ordinal, _) => $"{Variable.Reader.AsVarName()}.GetFieldValue<{rangeType}>({ordinal})",
+            readerArrayFn: (ordinal, _) => $"{Variable.Reader.AsVarName()}.GetFieldValue<{rangeType}[]>({ordinal})",
+            usingDirectives: ["NpgsqlTypes"],
+            sqlMapper: $"SqlMapper.AddTypeHandler(typeof({rangeType}), new NpgsqlTypeHandler<{rangeType}>());"
+        );
+    }
+
+    // A multirange is read and written as an array of ranges
+    private static ColumnMapping MultirangeMapping(string subtype, Dictionary<string, DbTypeInfo> dbTypes)
+    {
+        var rangeType = $"NpgsqlRange<{subtype}>";
+        return new(
+            dbTypes,
+            readerFn: (ordinal, _) => $"{Variable.Reader.AsVarName()}.GetFieldValue<{rangeType}[]>({ordinal})",
+            readerArrayFn: (ordinal, _) => $"{Variable.Reader.AsVarName()}.GetFieldValue<{rangeType}[][]>({ordinal})",
+            usingDirectives: ["NpgsqlTypes"]
+        );
+    }
+
     public override string TransactionClassName => "NpgsqlTransaction";
 
     // Npgsql returns bool for bit(1) and BitArray for bit(n > 1) / varbit when read through GetValue (which Dapper uses)
@@ -516,10 +588,16 @@ public sealed class NpgsqlDriver : EnumDbDriver, IOne, IMany, IExec, IExecRows, 
         if (!Options.UseDapper)
             return usingDirectives;
 
-        return usingDirectives.AddRangeExcludeNulls(
-        [
-            "NpgsqlTypes"
-        ]);
+        return usingDirectives
+            .AddRangeExcludeNulls(["NpgsqlTypes"])
+            .AddRangeIf(["Npgsql"], RangeParamExistsInQueries());
+    }
+
+    private static bool IsRangeCsharpType(string csharpType) => csharpType.StartsWith("NpgsqlRange<");
+
+    private bool RangeParamExistsInQueries()
+    {
+        return Queries.Any(q => q.Params.Any(p => IsRangeCsharpType(GetCsharpTypeWithoutNullableSuffix(p.Column, q))));
     }
 
     public override MemberDeclarationSyntax[] GetMemberDeclarationsForUtils()
@@ -538,6 +616,7 @@ public sealed class NpgsqlDriver : EnumDbDriver, IOne, IMany, IExec, IExecRows, 
         return
         [
             .. memberDeclarations,
+            .. GetNpgsqlTypedParameterMembers(optionalDotnetCoreNullable),
             ParseMemberDeclaration($$"""
                  private class NpgsqlTypeHandler<T> : SqlMapper.TypeHandler<T>{{optionalDotnetCoreSuffix}}
                  {
@@ -549,6 +628,36 @@ public sealed class NpgsqlDriver : EnumDbDriver, IOne, IMany, IExec, IExecRows, 
                      public override void SetValue(IDbDataParameter parameter, T{{optionalDotnetCoreNullable}} value)
                      {
                          parameter.Value = value;
+                     }
+                 }
+                 """)!
+        ];
+    }
+
+    // Dapper infers the parameter type from the CLR type, which is ambiguous for ranges (NpgsqlRange<DateTime> could be
+    // daterange, tsrange or tstzrange), so range parameters are sent with an explicit NpgsqlDbType.
+    private MemberDeclarationSyntax[] GetNpgsqlTypedParameterMembers(string optionalNullable)
+    {
+        if (!RangeParamExistsInQueries())
+            return [];
+
+        return
+        [
+            ParseMemberDeclaration($$"""
+                 internal class NpgsqlTypedParameter : SqlMapper.ICustomQueryParameter
+                 {
+                     private readonly object{{optionalNullable}} _value;
+                     private readonly NpgsqlDbType _dbType;
+
+                     public NpgsqlTypedParameter(object{{optionalNullable}} value, NpgsqlDbType dbType)
+                     {
+                         _value = value;
+                         _dbType = dbType;
+                     }
+
+                     public void AddParameter(IDbCommand command, string name)
+                     {
+                         command.Parameters.Add(new NpgsqlParameter(name, _dbType) { Value = _value ?? DBNull.Value });
                      }
                  }
                  """)!
@@ -725,9 +834,26 @@ public sealed class NpgsqlDriver : EnumDbDriver, IOne, IMany, IExec, IExecRows, 
         }
     }
 
+    // `NpgsqlRange<T>[]` is both an array of ranges and a multirange to Npgsql, which infers the multirange.
+    // Array columns have no override otherwise, so only arrays of ranges are given an explicit one.
+    public override string? GetColumnDbTypeOverride(Column column)
+    {
+        if (!column.IsArray)
+            return base.GetColumnDbTypeOverride(column);
+
+        var elementOverride = ColumnMappings
+            .Where(m => m.Key.StartsWith("NpgsqlRange<"))
+            .Select(m => m.Value.DbTypes.GetValueOrDefault(column.Type.Name.ToLower())?.DbTypeOverride)
+            .FirstOrDefault(o => o is not null);
+        return elementOverride is null ? null : $"NpgsqlTypes.NpgsqlDbType.Array | {elementOverride}";
+    }
+
     public override WriterFn? GetWriterFn(Column column, Query query)
     {
         var csharpType = GetCsharpTypeWithoutNullableSuffix(column, query);
+        if (Options.UseDapper && IsRangeCsharpType(csharpType) && GetColumnDbTypeOverride(column) is { } rangeDbType)
+            return (el, _, _, isDapper, _) => isDapper ? $"new Utils.NpgsqlTypedParameter({el}, {rangeDbType})" : el;
+
         var writerFn = ColumnMappings.GetValueOrDefault(csharpType)?.WriterFn;
         if (writerFn is not null)
             return writerFn;

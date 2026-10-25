@@ -31,6 +31,25 @@ CREATE TABLE postgres_string_types (
 CREATE EXTENSION IF NOT EXISTS "citext";
 CREATE EXTENSION IF NOT EXISTS "ltree";
 
+CREATE TABLE postgres_range_types (
+    c_int4range         INT4RANGE,
+    c_int8range         INT8RANGE,
+    c_numrange          NUMRANGE,
+    c_daterange         DATERANGE,
+    c_tsrange           TSRANGE,
+    c_tstzrange         TSTZRANGE,
+    c_int4range_array   INT4RANGE []
+);
+
+CREATE TABLE postgres_multirange_types (
+    c_int4multirange    INT4MULTIRANGE,
+    c_int8multirange    INT8MULTIRANGE,
+    c_nummultirange     NUMMULTIRANGE,
+    c_datemultirange    DATEMULTIRANGE,
+    c_tsmultirange      TSMULTIRANGE,
+    c_tstzmultirange    TSTZMULTIRANGE
+);
+
 CREATE TABLE postgres_extended_string_types (
     c_citext       CITEXT,
     c_ltree        LTREE,

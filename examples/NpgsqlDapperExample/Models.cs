@@ -55,6 +55,25 @@ public class PostgresStringType
     public string? CBpchar { get; init; }
     public string? CText { get; init; }
 };
+public class PostgresRangeType
+{
+    public NpgsqlRange<int>? CInt4range { get; init; }
+    public NpgsqlRange<long>? CInt8range { get; init; }
+    public NpgsqlRange<decimal>? CNumrange { get; init; }
+    public NpgsqlRange<DateTime>? CDaterange { get; init; }
+    public NpgsqlRange<DateTime>? CTsrange { get; init; }
+    public NpgsqlRange<DateTime>? CTstzrange { get; init; }
+    public NpgsqlRange<int>[]? CInt4rangeArray { get; init; }
+};
+public class PostgresMultirangeType
+{
+    public NpgsqlRange<int>[]? CInt4multirange { get; init; }
+    public NpgsqlRange<long>[]? CInt8multirange { get; init; }
+    public NpgsqlRange<decimal>[]? CNummultirange { get; init; }
+    public NpgsqlRange<DateTime>[]? CDatemultirange { get; init; }
+    public NpgsqlRange<DateTime>[]? CTsmultirange { get; init; }
+    public NpgsqlRange<DateTime>[]? CTstzmultirange { get; init; }
+};
 public class PostgresExtendedStringType
 {
     public string? CCitext { get; init; }

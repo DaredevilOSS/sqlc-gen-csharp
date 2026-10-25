@@ -888,6 +888,80 @@ namespace EndToEndTests
             }
         }
 
+        private static IEnumerable<TestCaseData> PostgresRangeDataTypesTestCases
+        {
+            get
+            {
+                yield return new TestCaseData(new NpgsqlRange<int>(1, true, 11, false), new NpgsqlRange<long>(-5000000000L, true, 5000000000L, false), new NpgsqlRange<decimal>(1.5m, true, 9.25m, true), new NpgsqlRange<DateTime>(new DateTime(2024, 1, 1), true, new DateTime(2024, 2, 1), false), new NpgsqlRange<DateTime>(new DateTime(2024, 1, 1, 10, 30, 0), true, new DateTime(2024, 1, 2, 12, 0, 0), false), new NpgsqlRange<DateTime>(new DateTime(2024, 1, 1, 10, 30, 0, DateTimeKind.Utc), true, new DateTime(2024, 1, 2, 12, 0, 0, DateTimeKind.Utc), false), new NpgsqlRange<int>[] { new NpgsqlRange<int>(1, true, 5, false), new NpgsqlRange<int>(10, true, 20, false) }).SetName("Valid Range Data Types");
+                yield return new TestCaseData(null, null, null, null, null, null, null).SetName("Null Range Data Types");
+            }
+        }
+
+        [Test]
+        [TestCaseSource(nameof(PostgresRangeDataTypesTestCases))]
+        public async Task TestPostgresRangeDataTypesAsync(NpgsqlRange<int>? cInt4range, NpgsqlRange<long>? cInt8range, NpgsqlRange<decimal>? cNumrange, NpgsqlRange<DateTime>? cDaterange, NpgsqlRange<DateTime>? cTsrange, NpgsqlRange<DateTime>? cTstzrange, NpgsqlRange<int>[] cInt4rangeArray)
+        {
+            await QuerySql.InsertPostgresRangeTypesAsync(new QuerySql.InsertPostgresRangeTypesArgs { CInt4range = cInt4range, CInt8range = cInt8range, CNumrange = cNumrange, CDaterange = cDaterange, CTsrange = cTsrange, CTstzrange = cTstzrange, CInt4rangeArray = cInt4rangeArray });
+            var expected = new QuerySql.GetPostgresRangeTypesRow
+            {
+                CInt4range = cInt4range,
+                CInt8range = cInt8range,
+                CNumrange = cNumrange,
+                CDaterange = cDaterange,
+                CTsrange = cTsrange,
+                CTstzrange = cTstzrange,
+                CInt4rangeArray = cInt4rangeArray
+            };
+            var actual = await QuerySql.GetPostgresRangeTypesAsync();
+            AssertSingularEquals(expected, actual);
+            void AssertSingularEquals(QuerySql.GetPostgresRangeTypesRow x, QuerySql.GetPostgresRangeTypesRow y)
+            {
+                Assert.That(x.CInt4range, Is.EqualTo(y.CInt4range));
+                Assert.That(x.CInt8range, Is.EqualTo(y.CInt8range));
+                Assert.That(x.CNumrange, Is.EqualTo(y.CNumrange));
+                Assert.That(x.CDaterange, Is.EqualTo(y.CDaterange));
+                Assert.That(x.CTsrange, Is.EqualTo(y.CTsrange));
+                Assert.That(x.CTstzrange, Is.EqualTo(y.CTstzrange));
+                Assert.That(x.CInt4rangeArray, Is.EqualTo(y.CInt4rangeArray));
+            }
+        }
+
+        private static IEnumerable<TestCaseData> PostgresMultirangeDataTypesTestCases
+        {
+            get
+            {
+                yield return new TestCaseData(new[] { new NpgsqlRange<int>(1, true, 5, false), new NpgsqlRange<int>(10, true, 20, false) }, new[] { new NpgsqlRange<long>(-5000000000L, true, 5L, false), new NpgsqlRange<long>(10L, true, 5000000000L, false) }, new[] { new NpgsqlRange<decimal>(1.5m, true, 2.5m, true), new NpgsqlRange<decimal>(9.25m, true, 10.75m, true) }, new[] { new NpgsqlRange<DateTime>(new DateTime(2024, 1, 1), true, new DateTime(2024, 2, 1), false), new NpgsqlRange<DateTime>(new DateTime(2024, 3, 1), true, new DateTime(2024, 4, 1), false) }, new[] { new NpgsqlRange<DateTime>(new DateTime(2024, 1, 1, 10, 30, 0), true, new DateTime(2024, 1, 2, 12, 0, 0), false), new NpgsqlRange<DateTime>(new DateTime(2024, 3, 1, 8, 0, 0), true, new DateTime(2024, 3, 2, 8, 0, 0), false) }, new[] { new NpgsqlRange<DateTime>(new DateTime(2024, 1, 1, 10, 30, 0, DateTimeKind.Utc), true, new DateTime(2024, 1, 2, 12, 0, 0, DateTimeKind.Utc), false), new NpgsqlRange<DateTime>(new DateTime(2024, 3, 1, 8, 0, 0, DateTimeKind.Utc), true, new DateTime(2024, 3, 2, 8, 0, 0, DateTimeKind.Utc), false) }).SetName("Valid Multirange Data Types");
+                yield return new TestCaseData(null, null, null, null, null, null).SetName("Null Multirange Data Types");
+            }
+        }
+
+        [Test]
+        [TestCaseSource(nameof(PostgresMultirangeDataTypesTestCases))]
+        public async Task TestPostgresMultirangeDataTypesAsync(NpgsqlRange<int>[] cInt4multirange, NpgsqlRange<long>[] cInt8multirange, NpgsqlRange<decimal>[] cNummultirange, NpgsqlRange<DateTime>[] cDatemultirange, NpgsqlRange<DateTime>[] cTsmultirange, NpgsqlRange<DateTime>[] cTstzmultirange)
+        {
+            await QuerySql.InsertPostgresMultirangeTypesAsync(new QuerySql.InsertPostgresMultirangeTypesArgs { CInt4multirange = cInt4multirange, CInt8multirange = cInt8multirange, CNummultirange = cNummultirange, CDatemultirange = cDatemultirange, CTsmultirange = cTsmultirange, CTstzmultirange = cTstzmultirange });
+            var expected = new QuerySql.GetPostgresMultirangeTypesRow
+            {
+                CInt4multirange = cInt4multirange,
+                CInt8multirange = cInt8multirange,
+                CNummultirange = cNummultirange,
+                CDatemultirange = cDatemultirange,
+                CTsmultirange = cTsmultirange,
+                CTstzmultirange = cTstzmultirange
+            };
+            var actual = await QuerySql.GetPostgresMultirangeTypesAsync();
+            AssertSingularEquals(expected, actual);
+            void AssertSingularEquals(QuerySql.GetPostgresMultirangeTypesRow x, QuerySql.GetPostgresMultirangeTypesRow y)
+            {
+                Assert.That(x.CInt4multirange, Is.EqualTo(y.CInt4multirange));
+                Assert.That(x.CInt8multirange, Is.EqualTo(y.CInt8multirange));
+                Assert.That(x.CNummultirange, Is.EqualTo(y.CNummultirange));
+                Assert.That(x.CDatemultirange, Is.EqualTo(y.CDatemultirange));
+                Assert.That(x.CTsmultirange, Is.EqualTo(y.CTsmultirange));
+                Assert.That(x.CTstzmultirange, Is.EqualTo(y.CTstzmultirange));
+            }
+        }
+
         [Test]
         [TestCase(100, "z", "Sex Pistols", "Anarchy in the U.K", "Yoshimi Battles the Pink Robots", "Never Mind the Bollocks...")]
         [TestCase(10, null, null, null, null, null)]
@@ -1246,6 +1320,86 @@ namespace EndToEndTests
             var actualQueries = await QuerySql.GetPostgresExtendedStringTypesAsync();
             Assert.That(actualQueries.CLquery, Is.EqualTo(cLquery));
             Assert.That(actualQueries.CLtxtquery, Is.EqualTo(cLtxtquery));
+        }
+
+        private static IEnumerable<TestCaseData> PostgresRangeCopyFromTestCases
+        {
+            get
+            {
+                yield return new TestCaseData(50, new NpgsqlRange<int>(1, true, 11, false), new NpgsqlRange<long>(-5000000000L, true, 5000000000L, false), new NpgsqlRange<decimal>(1.5m, true, 9.25m, true), new NpgsqlRange<DateTime>(new DateTime(2024, 1, 1), true, new DateTime(2024, 2, 1), false), new NpgsqlRange<DateTime>(new DateTime(2024, 1, 1, 10, 30, 0), true, new DateTime(2024, 1, 2, 12, 0, 0), false), new NpgsqlRange<DateTime>(new DateTime(2024, 1, 1, 10, 30, 0, DateTimeKind.Utc), true, new DateTime(2024, 1, 2, 12, 0, 0, DateTimeKind.Utc), false), new NpgsqlRange<int>[] { new NpgsqlRange<int>(1, true, 5, false), new NpgsqlRange<int>(10, true, 20, false) }).SetName("Valid Range Copy From");
+                yield return new TestCaseData(10, null, null, null, null, null, null, null).SetName("Null Range Copy From");
+            }
+        }
+
+        [Test]
+        [TestCaseSource(nameof(PostgresRangeCopyFromTestCases))]
+        public async Task TestPostgresRangeCopyFromAsync(int batchSize, NpgsqlRange<int>? cInt4range, NpgsqlRange<long>? cInt8range, NpgsqlRange<decimal>? cNumrange, NpgsqlRange<DateTime>? cDaterange, NpgsqlRange<DateTime>? cTsrange, NpgsqlRange<DateTime>? cTstzrange, NpgsqlRange<int>[] cInt4rangeArray)
+        {
+            var batchArgs = Enumerable.Range(0, batchSize).Select(_ => new QuerySql.InsertPostgresRangeTypesBatchArgs { CInt4range = cInt4range, CInt8range = cInt8range, CNumrange = cNumrange, CDaterange = cDaterange, CTsrange = cTsrange, CTstzrange = cTstzrange, CInt4rangeArray = cInt4rangeArray }).ToList();
+            await QuerySql.InsertPostgresRangeTypesBatchAsync(batchArgs);
+            var expected = new QuerySql.GetPostgresRangeTypesCntRow
+            {
+                Cnt = batchSize,
+                CInt4range = cInt4range,
+                CInt8range = cInt8range,
+                CNumrange = cNumrange,
+                CDaterange = cDaterange,
+                CTsrange = cTsrange,
+                CTstzrange = cTstzrange,
+                CInt4rangeArray = cInt4rangeArray
+            };
+            var actual = await QuerySql.GetPostgresRangeTypesCntAsync();
+            AssertSingularEquals(expected, actual);
+            void AssertSingularEquals(QuerySql.GetPostgresRangeTypesCntRow x, QuerySql.GetPostgresRangeTypesCntRow y)
+            {
+                Assert.That(x.Cnt, Is.EqualTo(y.Cnt));
+                Assert.That(x.CInt4range, Is.EqualTo(y.CInt4range));
+                Assert.That(x.CInt8range, Is.EqualTo(y.CInt8range));
+                Assert.That(x.CNumrange, Is.EqualTo(y.CNumrange));
+                Assert.That(x.CDaterange, Is.EqualTo(y.CDaterange));
+                Assert.That(x.CTsrange, Is.EqualTo(y.CTsrange));
+                Assert.That(x.CTstzrange, Is.EqualTo(y.CTstzrange));
+                Assert.That(x.CInt4rangeArray, Is.EqualTo(y.CInt4rangeArray));
+            }
+        }
+
+        private static IEnumerable<TestCaseData> PostgresMultirangeCopyFromTestCases
+        {
+            get
+            {
+                yield return new TestCaseData(50, new[] { new NpgsqlRange<int>(1, true, 5, false), new NpgsqlRange<int>(10, true, 20, false) }, new[] { new NpgsqlRange<long>(-5000000000L, true, 5L, false), new NpgsqlRange<long>(10L, true, 5000000000L, false) }, new[] { new NpgsqlRange<decimal>(1.5m, true, 2.5m, true), new NpgsqlRange<decimal>(9.25m, true, 10.75m, true) }, new[] { new NpgsqlRange<DateTime>(new DateTime(2024, 1, 1), true, new DateTime(2024, 2, 1), false), new NpgsqlRange<DateTime>(new DateTime(2024, 3, 1), true, new DateTime(2024, 4, 1), false) }, new[] { new NpgsqlRange<DateTime>(new DateTime(2024, 1, 1, 10, 30, 0), true, new DateTime(2024, 1, 2, 12, 0, 0), false), new NpgsqlRange<DateTime>(new DateTime(2024, 3, 1, 8, 0, 0), true, new DateTime(2024, 3, 2, 8, 0, 0), false) }, new[] { new NpgsqlRange<DateTime>(new DateTime(2024, 1, 1, 10, 30, 0, DateTimeKind.Utc), true, new DateTime(2024, 1, 2, 12, 0, 0, DateTimeKind.Utc), false), new NpgsqlRange<DateTime>(new DateTime(2024, 3, 1, 8, 0, 0, DateTimeKind.Utc), true, new DateTime(2024, 3, 2, 8, 0, 0, DateTimeKind.Utc), false) }).SetName("Valid Multirange Copy From");
+                yield return new TestCaseData(10, null, null, null, null, null, null).SetName("Null Multirange Copy From");
+            }
+        }
+
+        [Test]
+        [TestCaseSource(nameof(PostgresMultirangeCopyFromTestCases))]
+        public async Task TestPostgresMultirangeCopyFromAsync(int batchSize, NpgsqlRange<int>[] cInt4multirange, NpgsqlRange<long>[] cInt8multirange, NpgsqlRange<decimal>[] cNummultirange, NpgsqlRange<DateTime>[] cDatemultirange, NpgsqlRange<DateTime>[] cTsmultirange, NpgsqlRange<DateTime>[] cTstzmultirange)
+        {
+            var batchArgs = Enumerable.Range(0, batchSize).Select(_ => new QuerySql.InsertPostgresMultirangeTypesBatchArgs { CInt4multirange = cInt4multirange, CInt8multirange = cInt8multirange, CNummultirange = cNummultirange, CDatemultirange = cDatemultirange, CTsmultirange = cTsmultirange, CTstzmultirange = cTstzmultirange }).ToList();
+            await QuerySql.InsertPostgresMultirangeTypesBatchAsync(batchArgs);
+            var expected = new QuerySql.GetPostgresMultirangeTypesCntRow
+            {
+                Cnt = batchSize,
+                CInt4multirange = cInt4multirange,
+                CInt8multirange = cInt8multirange,
+                CNummultirange = cNummultirange,
+                CDatemultirange = cDatemultirange,
+                CTsmultirange = cTsmultirange,
+                CTstzmultirange = cTstzmultirange
+            };
+            var actual = await QuerySql.GetPostgresMultirangeTypesCntAsync();
+            AssertSingularEquals(expected, actual);
+            void AssertSingularEquals(QuerySql.GetPostgresMultirangeTypesCntRow x, QuerySql.GetPostgresMultirangeTypesCntRow y)
+            {
+                Assert.That(x.Cnt, Is.EqualTo(y.Cnt));
+                Assert.That(x.CInt4multirange, Is.EqualTo(y.CInt4multirange));
+                Assert.That(x.CInt8multirange, Is.EqualTo(y.CInt8multirange));
+                Assert.That(x.CNummultirange, Is.EqualTo(y.CNummultirange));
+                Assert.That(x.CDatemultirange, Is.EqualTo(y.CDatemultirange));
+                Assert.That(x.CTsmultirange, Is.EqualTo(y.CTsmultirange));
+                Assert.That(x.CTstzmultirange, Is.EqualTo(y.CTstzmultirange));
+            }
         }
     }
 }

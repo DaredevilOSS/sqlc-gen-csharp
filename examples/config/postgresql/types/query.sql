@@ -225,6 +225,121 @@ GROUP BY
     c_name
 LIMIT 1;
 
+/* Range types */
+
+-- name: InsertPostgresRangeTypes :exec
+INSERT INTO postgres_range_types
+(
+    c_int4range,
+    c_int8range,
+    c_numrange,
+    c_daterange,
+    c_tsrange,
+    c_tstzrange,
+    c_int4range_array
+) VALUES (
+    sqlc.narg('c_int4range')::int4range,
+    sqlc.narg('c_int8range')::int8range,
+    sqlc.narg('c_numrange')::numrange,
+    sqlc.narg('c_daterange')::daterange,
+    sqlc.narg('c_tsrange')::tsrange,
+    sqlc.narg('c_tstzrange')::tstzrange,
+    sqlc.narg('c_int4range_array')::int4range[]
+);
+
+-- name: InsertPostgresRangeTypesBatch :copyfrom
+INSERT INTO postgres_range_types
+(
+    c_int4range,
+    c_int8range,
+    c_numrange,
+    c_daterange,
+    c_tsrange,
+    c_tstzrange,
+    c_int4range_array
+) VALUES ($1, $2, $3, $4, $5, $6, $7);
+
+-- name: GetPostgresRangeTypes :one
+SELECT * FROM postgres_range_types LIMIT 1;
+
+-- name: TruncatePostgresRangeTypes :exec
+TRUNCATE TABLE postgres_range_types;
+
+-- name: GetPostgresRangeTypesCnt :one
+SELECT
+    c_int4range,
+    c_int8range,
+    c_numrange,
+    c_daterange,
+    c_tsrange,
+    c_tstzrange,
+    c_int4range_array,
+    COUNT(*) AS cnt
+FROM postgres_range_types
+GROUP BY
+    c_int4range,
+    c_int8range,
+    c_numrange,
+    c_daterange,
+    c_tsrange,
+    c_tstzrange,
+    c_int4range_array
+LIMIT 1;
+
+-- name: InsertPostgresMultirangeTypes :exec
+INSERT INTO postgres_multirange_types
+(
+    c_int4multirange,
+    c_int8multirange,
+    c_nummultirange,
+    c_datemultirange,
+    c_tsmultirange,
+    c_tstzmultirange
+) VALUES (
+    sqlc.narg('c_int4multirange')::int4multirange,
+    sqlc.narg('c_int8multirange')::int8multirange,
+    sqlc.narg('c_nummultirange')::nummultirange,
+    sqlc.narg('c_datemultirange')::datemultirange,
+    sqlc.narg('c_tsmultirange')::tsmultirange,
+    sqlc.narg('c_tstzmultirange')::tstzmultirange
+);
+
+-- name: InsertPostgresMultirangeTypesBatch :copyfrom
+INSERT INTO postgres_multirange_types
+(
+    c_int4multirange,
+    c_int8multirange,
+    c_nummultirange,
+    c_datemultirange,
+    c_tsmultirange,
+    c_tstzmultirange
+) VALUES ($1, $2, $3, $4, $5, $6);
+
+-- name: GetPostgresMultirangeTypes :one
+SELECT * FROM postgres_multirange_types LIMIT 1;
+
+-- name: TruncatePostgresMultirangeTypes :exec
+TRUNCATE TABLE postgres_multirange_types;
+
+-- name: GetPostgresMultirangeTypesCnt :one
+SELECT
+    c_int4multirange,
+    c_int8multirange,
+    c_nummultirange,
+    c_datemultirange,
+    c_tsmultirange,
+    c_tstzmultirange,
+    COUNT(*) AS cnt
+FROM postgres_multirange_types
+GROUP BY
+    c_int4multirange,
+    c_int8multirange,
+    c_nummultirange,
+    c_datemultirange,
+    c_tsmultirange,
+    c_tstzmultirange
+LIMIT 1;
+
 /* DateTime types */
 
 -- name: InsertPostgresDateTimeTypes :exec

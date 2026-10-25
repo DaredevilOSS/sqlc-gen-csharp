@@ -3,7 +3,7 @@
 2
 postgresql-examples/config/postgresql/authors/schema.sql+examples/config/postgresql/types/schema.sql",examples/config/postgresql/authors/query.sql"*examples/config/postgresql/types/query.sqlb›
 "examples/NpgsqlDapperLegacyExamplecsharpÖ{"debugRequest":true,"generateCsproj":true,"namespaceName":"NpgsqlDapperLegacyExampleGen","overrides":[{"column":"GetPostgresFunctions:max_integer","csharp_type":{"notNull":false,"type":"int"}},{"column":"GetPostgresFunctions:max_varchar","csharp_type":{"notNull":false,"type":"string"}},{"column":"GetPostgresFunctions:max_timestamp","csharp_type":{"notNull":true,"type":"DateTime"}},{"column":"GetPostgresSpecialTypesCnt:c_json","csharp_type":{"notNull":false,"type":"JsonElement"}},{"column":"GetPostgresSpecialTypesCnt:c_jsonb","csharp_type":{"notNull":false,"type":"JsonElement"}},{"column":"*:c_json_string_override","csharp_type":{"notNull":false,"type":"string"}},{"column":"*:c_xml_string_override","csharp_type":{"notNull":false,"type":"string"}},{"column":"*:c_macaddr8","csharp_type":{"notNull":false,"type":"string"}},{"column":"*:c_timestamp_noda_instant_override","csharp_type":{"notNull":false,"type":"Instant"}}],"targetFramework":"netstandard2.0","useDapper":true}*
-./dist/LocalRunnerƒõpublic"Å$publicƒ
+./dist/LocalRunnerÊüpublic"Œ,publicƒ
 	authors)
 id0ÿÿÿÿÿÿÿÿÿR	authorsb	bigserial&
 name0ÿÿÿÿÿÿÿÿÿR	authorsbtext#
@@ -54,7 +54,24 @@ pg_catalogvarcharP
 c_character_varying0ÿÿÿÿÿÿÿÿÿRpostgres_string_typesb
 pg_catalogvarchar8
 c_bpchar0ÿÿÿÿÿÿÿÿÿRpostgres_string_typesbbpchar4
-c_text0ÿÿÿÿÿÿÿÿÿRpostgres_string_typesbtextñ
+c_text0ÿÿÿÿÿÿÿÿÿRpostgres_string_typesbtextÖ
+postgres_range_types=
+c_int4range0ÿÿÿÿÿÿÿÿÿRpostgres_range_typesb	int4range=
+c_int8range0ÿÿÿÿÿÿÿÿÿRpostgres_range_typesb	int8range;
+
+c_numrange0ÿÿÿÿÿÿÿÿÿRpostgres_range_typesb
+numrange=
+c_daterange0ÿÿÿÿÿÿÿÿÿRpostgres_range_typesb	daterange9
+	c_tsrange0ÿÿÿÿÿÿÿÿÿRpostgres_range_typesb	tsrange=
+c_tstzrange0ÿÿÿÿÿÿÿÿÿRpostgres_range_typesb	tstzrangeH
+c_int4range_array 0ÿÿÿÿÿÿÿÿÿRpostgres_range_typesb	int4rangeˆë
+postgres_multirange_typesL
+c_int4multirange0ÿÿÿÿÿÿÿÿÿRpostgres_multirange_typesbint4multirangeL
+c_int8multirange0ÿÿÿÿÿÿÿÿÿRpostgres_multirange_typesbint8multirangeJ
+c_nummultirange0ÿÿÿÿÿÿÿÿÿRpostgres_multirange_typesbnummultirangeL
+c_datemultirange0ÿÿÿÿÿÿÿÿÿRpostgres_multirange_typesbdatemultirangeH
+c_tsmultirange0ÿÿÿÿÿÿÿÿÿRpostgres_multirange_typesbtsmultirangeL
+c_tstzmultirange0ÿÿÿÿÿÿÿÿÿRpostgres_multirange_typesbtstzmultirangeñ
  postgres_extended_string_typesA
 c_citext0ÿÿÿÿÿÿÿÿÿR postgres_extended_string_typesbcitext?
 c_ltree0ÿÿÿÿÿÿÿÿÿR postgres_extended_string_typesbltreeA
@@ -10683,6 +10700,165 @@ LIMIT 1!GetPostgresExtendedStringTypesCnt:one"K
 c_citext0ÿÿÿÿÿÿÿÿÿR postgres_extended_string_typesbcitextzc_citext"H
 c_ltree0ÿÿÿÿÿÿÿÿÿR postgres_extended_string_typesbltreezc_ltree"E
 c_name0ÿÿÿÿÿÿÿÿÿR postgres_extended_string_typesbnamezc_name"
+cnt0ÿÿÿÿÿÿÿÿÿ@bbigint:	query.sql´
+¬
+INSERT INTO postgres_range_types
+(
+    c_int4range,
+    c_int8range,
+    c_numrange,
+    c_daterange,
+    c_tsrange,
+    c_tstzrange,
+    c_int4range_array
+) VALUES (
+    $1::int4range,
+    $2::int8range,
+    $3::numrange,
+    $4::daterange,
+    $5::tsrange,
+    $6::tstzrange,
+    $7::int4range[]
+)InsertPostgresRangeTypes:exec*)%
+c_int4range0ÿÿÿÿÿÿÿÿÿb	int4range*)%
+c_int8range0ÿÿÿÿÿÿÿÿÿb	int8range*'#
+
+c_numrange0ÿÿÿÿÿÿÿÿÿb
+numrange*)%
+c_daterange0ÿÿÿÿÿÿÿÿÿb	daterange*%!
+	c_tsrange0ÿÿÿÿÿÿÿÿÿb	tsrange*)%
+c_tstzrange0ÿÿÿÿÿÿÿÿÿb	tstzrange*40
+c_int4range_array 0ÿÿÿÿÿÿÿÿÿb	int4rangeˆ2 Range types :	query.sqlBpostgres_range_types
+ÁINSERT INTO postgres_range_types
+(
+    c_int4range,
+    c_int8range,
+    c_numrange,
+    c_daterange,
+    c_tsrange,
+    c_tstzrange,
+    c_int4range_array
+) VALUES ($1, $2, $3, $4, $5, $6, $7)InsertPostgresRangeTypesBatch	:copyfrom*VR
+c_int4range0ÿÿÿÿÿÿÿÿÿRpublicpostgres_range_typesb	int4rangezc_int4range*VR
+c_int8range0ÿÿÿÿÿÿÿÿÿRpublicpostgres_range_typesb	int8rangezc_int8range*SO
+
+c_numrange0ÿÿÿÿÿÿÿÿÿRpublicpostgres_range_typesb
+numrangez
+c_numrange*VR
+c_daterange0ÿÿÿÿÿÿÿÿÿRpublicpostgres_range_typesb	daterangezc_daterange*PL
+	c_tsrange0ÿÿÿÿÿÿÿÿÿRpublicpostgres_range_typesb	tsrangez	c_tsrange*VR
+c_tstzrange0ÿÿÿÿÿÿÿÿÿRpublicpostgres_range_typesb	tstzrangezc_tstzrange*gc
+c_int4range_array 0ÿÿÿÿÿÿÿÿÿRpublicpostgres_range_typesb	int4rangezc_int4range_arrayˆ:	query.sqlBpostgres_range_typesÌ
+…SELECT c_int4range, c_int8range, c_numrange, c_daterange, c_tsrange, c_tstzrange, c_int4range_array FROM postgres_range_types LIMIT 1GetPostgresRangeTypes:one"J
+c_int4range0ÿÿÿÿÿÿÿÿÿRpostgres_range_typesb	int4rangezc_int4range"J
+c_int8range0ÿÿÿÿÿÿÿÿÿRpostgres_range_typesb	int8rangezc_int8range"G
+
+c_numrange0ÿÿÿÿÿÿÿÿÿRpostgres_range_typesb
+numrangez
+c_numrange"J
+c_daterange0ÿÿÿÿÿÿÿÿÿRpostgres_range_typesb	daterangezc_daterange"D
+	c_tsrange0ÿÿÿÿÿÿÿÿÿRpostgres_range_typesb	tsrangez	c_tsrange"J
+c_tstzrange0ÿÿÿÿÿÿÿÿÿRpostgres_range_typesb	tstzrangezc_tstzrange"[
+c_int4range_array 0ÿÿÿÿÿÿÿÿÿRpostgres_range_typesb	int4rangezc_int4range_arrayˆ:	query.sqlS
+#TRUNCATE TABLE postgres_range_typesTruncatePostgresRangeTypes:exec:	query.sql¢
+¸SELECT
+    c_int4range,
+    c_int8range,
+    c_numrange,
+    c_daterange,
+    c_tsrange,
+    c_tstzrange,
+    c_int4range_array,
+    COUNT(*) AS cnt
+FROM postgres_range_types
+GROUP BY
+    c_int4range,
+    c_int8range,
+    c_numrange,
+    c_daterange,
+    c_tsrange,
+    c_tstzrange,
+    c_int4range_array
+LIMIT 1GetPostgresRangeTypesCnt:one"J
+c_int4range0ÿÿÿÿÿÿÿÿÿRpostgres_range_typesb	int4rangezc_int4range"J
+c_int8range0ÿÿÿÿÿÿÿÿÿRpostgres_range_typesb	int8rangezc_int8range"G
+
+c_numrange0ÿÿÿÿÿÿÿÿÿRpostgres_range_typesb
+numrangez
+c_numrange"J
+c_daterange0ÿÿÿÿÿÿÿÿÿRpostgres_range_typesb	daterangezc_daterange"D
+	c_tsrange0ÿÿÿÿÿÿÿÿÿRpostgres_range_typesb	tsrangez	c_tsrange"J
+c_tstzrange0ÿÿÿÿÿÿÿÿÿRpostgres_range_typesb	tstzrangezc_tstzrange"[
+c_int4range_array 0ÿÿÿÿÿÿÿÿÿRpostgres_range_typesb	int4rangezc_int4range_arrayˆ"
+cnt0ÿÿÿÿÿÿÿÿÿ@bbigint:	query.sqlÉ
+ÀINSERT INTO postgres_multirange_types
+(
+    c_int4multirange,
+    c_int8multirange,
+    c_nummultirange,
+    c_datemultirange,
+    c_tsmultirange,
+    c_tstzmultirange
+) VALUES (
+    $1::int4multirange,
+    $2::int8multirange,
+    $3::nummultirange,
+    $4::datemultirange,
+    $5::tsmultirange,
+    $6::tstzmultirange
+)InsertPostgresMultirangeTypes:exec*3/
+c_int4multirange0ÿÿÿÿÿÿÿÿÿbint4multirange*3/
+c_int8multirange0ÿÿÿÿÿÿÿÿÿbint8multirange*1-
+c_nummultirange0ÿÿÿÿÿÿÿÿÿbnummultirange*3/
+c_datemultirange0ÿÿÿÿÿÿÿÿÿbdatemultirange*/+
+c_tsmultirange0ÿÿÿÿÿÿÿÿÿbtsmultirange*3/
+c_tstzmultirange0ÿÿÿÿÿÿÿÿÿbtstzmultirange:	query.sqlBpostgres_multirange_types¢
+ÉINSERT INTO postgres_multirange_types
+(
+    c_int4multirange,
+    c_int8multirange,
+    c_nummultirange,
+    c_datemultirange,
+    c_tsmultirange,
+    c_tstzmultirange
+) VALUES ($1, $2, $3, $4, $5, $6)"InsertPostgresMultirangeTypesBatch	:copyfrom*jf
+c_int4multirange0ÿÿÿÿÿÿÿÿÿR#publicpostgres_multirange_typesbint4multirangezc_int4multirange*jf
+c_int8multirange0ÿÿÿÿÿÿÿÿÿR#publicpostgres_multirange_typesbint8multirangezc_int8multirange*gc
+c_nummultirange0ÿÿÿÿÿÿÿÿÿR#publicpostgres_multirange_typesbnummultirangezc_nummultirange*jf
+c_datemultirange0ÿÿÿÿÿÿÿÿÿR#publicpostgres_multirange_typesbdatemultirangezc_datemultirange*d`
+c_tsmultirange0ÿÿÿÿÿÿÿÿÿR#publicpostgres_multirange_typesbtsmultirangezc_tsmultirange*jf
+c_tstzmultirange0ÿÿÿÿÿÿÿÿÿR#publicpostgres_multirange_typesbtstzmultirangezc_tstzmultirange:	query.sqlBpostgres_multirange_typesü
+•SELECT c_int4multirange, c_int8multirange, c_nummultirange, c_datemultirange, c_tsmultirange, c_tstzmultirange FROM postgres_multirange_types LIMIT 1GetPostgresMultirangeTypes:one"^
+c_int4multirange0ÿÿÿÿÿÿÿÿÿRpostgres_multirange_typesbint4multirangezc_int4multirange"^
+c_int8multirange0ÿÿÿÿÿÿÿÿÿRpostgres_multirange_typesbint8multirangezc_int8multirange"[
+c_nummultirange0ÿÿÿÿÿÿÿÿÿRpostgres_multirange_typesbnummultirangezc_nummultirange"^
+c_datemultirange0ÿÿÿÿÿÿÿÿÿRpostgres_multirange_typesbdatemultirangezc_datemultirange"X
+c_tsmultirange0ÿÿÿÿÿÿÿÿÿRpostgres_multirange_typesbtsmultirangezc_tsmultirange"^
+c_tstzmultirange0ÿÿÿÿÿÿÿÿÿRpostgres_multirange_typesbtstzmultirangezc_tstzmultirange:	query.sql]
+(TRUNCATE TABLE postgres_multirange_typesTruncatePostgresMultirangeTypes:exec:	query.sqlÕ
+ËSELECT
+    c_int4multirange,
+    c_int8multirange,
+    c_nummultirange,
+    c_datemultirange,
+    c_tsmultirange,
+    c_tstzmultirange,
+    COUNT(*) AS cnt
+FROM postgres_multirange_types
+GROUP BY
+    c_int4multirange,
+    c_int8multirange,
+    c_nummultirange,
+    c_datemultirange,
+    c_tsmultirange,
+    c_tstzmultirange
+LIMIT 1GetPostgresMultirangeTypesCnt:one"^
+c_int4multirange0ÿÿÿÿÿÿÿÿÿRpostgres_multirange_typesbint4multirangezc_int4multirange"^
+c_int8multirange0ÿÿÿÿÿÿÿÿÿRpostgres_multirange_typesbint8multirangezc_int8multirange"[
+c_nummultirange0ÿÿÿÿÿÿÿÿÿRpostgres_multirange_typesbnummultirangezc_nummultirange"^
+c_datemultirange0ÿÿÿÿÿÿÿÿÿRpostgres_multirange_typesbdatemultirangezc_datemultirange"X
+c_tsmultirange0ÿÿÿÿÿÿÿÿÿRpostgres_multirange_typesbtsmultirangezc_tsmultirange"^
+c_tstzmultirange0ÿÿÿÿÿÿÿÿÿRpostgres_multirange_typesbtstzmultirangezc_tstzmultirange"
 cnt0ÿÿÿÿÿÿÿÿÿ@bbigint:	query.sql—
 À
 INSERT INTO postgres_datetime_types

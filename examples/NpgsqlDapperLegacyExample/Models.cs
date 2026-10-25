@@ -56,6 +56,25 @@ namespace NpgsqlDapperLegacyExampleGen
         public string CBpchar { get; set; }
         public string CText { get; set; }
     };
+    public class PostgresRangeType
+    {
+        public NpgsqlRange<int>? CInt4range { get; set; }
+        public NpgsqlRange<long>? CInt8range { get; set; }
+        public NpgsqlRange<decimal>? CNumrange { get; set; }
+        public NpgsqlRange<DateTime>? CDaterange { get; set; }
+        public NpgsqlRange<DateTime>? CTsrange { get; set; }
+        public NpgsqlRange<DateTime>? CTstzrange { get; set; }
+        public NpgsqlRange<int>[] CInt4rangeArray { get; set; }
+    };
+    public class PostgresMultirangeType
+    {
+        public NpgsqlRange<int>[] CInt4multirange { get; set; }
+        public NpgsqlRange<long>[] CInt8multirange { get; set; }
+        public NpgsqlRange<decimal>[] CNummultirange { get; set; }
+        public NpgsqlRange<DateTime>[] CDatemultirange { get; set; }
+        public NpgsqlRange<DateTime>[] CTsmultirange { get; set; }
+        public NpgsqlRange<DateTime>[] CTstzmultirange { get; set; }
+    };
     public class PostgresExtendedStringType
     {
         public string CCitext { get; set; }
