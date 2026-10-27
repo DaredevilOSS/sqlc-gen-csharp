@@ -589,3 +589,33 @@ namespaceName: NpgsqlDapperAsyncEnumerableExampleGen
 ```
 
 </details>
+
+<details>
+<summary>Mssql</summary>
+
+## Engine `mssql`: [MssqlExample](examples/MssqlExample)
+### [Schema](examples/config/mssql/authors/schema.sql) | [Queries](examples/config/mssql/authors/query.sql) | [End2End Test](end2end/EndToEndTests/MssqlTester.cs)
+### Config
+```yaml
+useDapper: false
+targetFramework: net10.0
+generateCsproj: true
+namespaceName: MssqlExampleGen
+```
+
+</details>
+
+<details>
+<summary>MssqlDapper</summary>
+
+## Engine `mssql`: [MssqlDapperExample](examples/MssqlDapperExample)
+### [Schema](examples/config/mssql/authors/schema.sql) | [Queries](examples/config/mssql/authors/query.sql) | [End2End Test](end2end/EndToEndTests/MssqlDapperTester.cs)
+### Config
+```yaml
+useDapper: true
+targetFramework: net9.0
+generateCsproj: true
+namespaceName: MssqlDapperExampleGen
+```
+
+</details>

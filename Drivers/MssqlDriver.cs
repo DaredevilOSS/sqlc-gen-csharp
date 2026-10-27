@@ -10,7 +10,7 @@ namespace SqlcGenCsharp.Drivers;
 public sealed class MssqlDriver :
     DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId, ICopyFrom
 {
-    private const string DefaultSqlClientVersion = "6.1.1";
+    private const string DefaultSqlClientVersion = "7.1.1";
 
     public MssqlDriver(
         Options options,

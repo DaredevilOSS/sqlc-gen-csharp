@@ -2,7 +2,8 @@
 
 **sqlc-gen-csharp** is a [sqlc](https://github.com/sqlc-dev/sqlc) plugin (written in C#) that turns a sqlc
 `GenerateRequest` (protobuf: catalog + queries + options) into C# data access code for
-PostgreSQL (Npgsql), MySQL (MySqlConnector) and SQLite (Microsoft.Data.Sqlite), optionally wrapped with Dapper.
+PostgreSQL (Npgsql), MySQL (MySqlConnector), SQLite (Microsoft.Data.Sqlite) and, experimentally, SQL Server
+(Microsoft.Data.SqlClient, `engine: mssql`), optionally wrapped with Dapper.
 
 More specific instructions live next to the code - read them before working in those areas:
 - `Drivers/AGENTS.md` - type mappings, driver hooks, annotation generators, enums, per-DB quirks
@@ -220,6 +221,9 @@ CI fails if any of the generated artifacts above is stale (`sqlc diff`, `git dif
 | `:copyfrom`        | ✅ | ✅ | ✅ | PG: binary `COPY`; MySQL: CSV + `MySqlBulkLoader`; SQLite: multi-row `VALUES` |
 | `sqlc.arg`, `sqlc.narg`, `sqlc.embed` | ✅ | ✅ | ✅ | |
 | `sqlc.slice`       | 🚫 (use arrays) | ✅ | ✅ | runtime `Utils.TransformQueryForSliceArgs` |
+
+SQL Server (experimental, `MssqlDriver`) supports every annotation and macro above. `:execlastid` relies on a user-written
+`OUTPUT INSERTED.id`, `:copyfrom` uses `SqlBulkCopy`. It needs a sqlc build with the mssql macro fixes.
 
 ### Target frameworks
 - The plugin projects (section 1 graph) and the tooling/test projects target `net10.0`; SDK pinned in `global.json`.
