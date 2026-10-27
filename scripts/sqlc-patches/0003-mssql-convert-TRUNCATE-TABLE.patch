@@ -1,0 +1,39 @@
+From 286f32e61d4a14e5821d29cbe847e2b5235a12d7 Mon Sep 17 00:00:00 2001
+From: Claude <noreply@anthropic.com>
+Date: Tue, 27 Oct 2026 08:40:09 +0000
+Subject: [PATCH 3/3] mssql: convert TRUNCATE TABLE
+
+---
+ internal/engine/mssql/convert.go | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
+
+diff --git a/internal/engine/mssql/convert.go b/internal/engine/mssql/convert.go
+index 1f387d8b9..03c1ca1bc 100644
+--- a/internal/engine/mssql/convert.go
++++ b/internal/engine/mssql/convert.go
+@@ -65,6 +65,8 @@ func (c *cc) convert(node tsql.Node) ast.Node {
+ 		return c.convertAlterTableDropTableElementStatement(n)
+ 	case *tsql.CreateTypeUddtStatement:
+ 		return c.convertCreateTypeUddtStatement(n)
++	case *tsql.TruncateTableStatement:
++		return c.convertTruncateTableStatement(n)
+ 	default:
+ 		return todo(n)
+ 	}
+@@ -1209,3 +1211,13 @@ func (c *cc) convertAlterTableDropTableElementStatement(n *tsql.AlterTableDropTa
+ 	}
+ 	return stmt
+ }
++
++// convertTruncateTableStatement converts TRUNCATE TABLE name.
++func (c *cc) convertTruncateTableStatement(n *tsql.TruncateTableStatement) ast.Node {
++	if n.TableName == nil {
++		return todo(n)
++	}
++	return &ast.TruncateStmt{
++		Relations: &ast.List{Items: []ast.Node{c.parseRangeVar(n.TableName)}},
++	}
++}
+-- 
+2.43.0
+

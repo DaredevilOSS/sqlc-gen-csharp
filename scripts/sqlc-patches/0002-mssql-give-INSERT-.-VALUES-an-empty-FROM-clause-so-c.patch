@@ -1,0 +1,25 @@
+From f7d038c13fe802489c146466c1ebbae82ca939d3 Mon Sep 17 00:00:00 2001
+From: Claude <noreply@anthropic.com>
+Date: Tue, 27 Oct 2026 08:38:09 +0000
+Subject: [PATCH 2/3] mssql: give INSERT ... VALUES an empty FROM clause so
+ :copyfrom validates
+
+---
+ internal/engine/mssql/convert.go | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/internal/engine/mssql/convert.go b/internal/engine/mssql/convert.go
+index bdef335bc..1f387d8b9 100644
+--- a/internal/engine/mssql/convert.go
++++ b/internal/engine/mssql/convert.go
+@@ -827,6 +827,7 @@ func (c *cc) convertInsertStatement(n *tsql.InsertStatement) ast.Node {
+ 	case *tsql.ValuesInsertSource:
+ 		if !src.IsDefaultValues {
+ 			sel := &ast.SelectStmt{
++				FromClause:  &ast.List{},
+ 				ValuesLists: &ast.List{},
+ 			}
+ 			for _, row := range src.RowValues {
+-- 
+2.43.0
+
