@@ -25,23 +25,25 @@ public sealed class MssqlDriver :
         NullableTypes.Add("SqlHierarchyId");
     }
 
-    // Dapper sends a null byte[] as nvarchar, which SQL Server refuses to convert to a binary type
-    private static string BinaryParameterImpl(bool isDotnetCore)
+    // Dapper picks the parameter type from the value: a null byte[] goes as nvarchar (SQL Server refuses to convert
+    // it to a binary type) and a DateTime as the less precise datetime. Dapper's type maps and handlers are global
+    // to the process (they would leak into other databases), so these values are wrapped per parameter instead.
+    private static string TypedParameterImpl(string className, string valueType, string sqlDbType, bool isDotnetCore)
     {
         var nullable = isDotnetCore ? "?" : "";
         return $$"""
-            public class BinaryParameter : SqlMapper.ICustomQueryParameter
+            public class {{className}} : SqlMapper.ICustomQueryParameter
             {
-                private readonly byte[]{{nullable}} _value;
+                private readonly {{valueType}} _value;
 
-                public BinaryParameter(byte[]{{nullable}} value)
+                public {{className}}({{valueType}} value)
                 {
                     _value = value;
                 }
 
                 public void AddParameter(IDbCommand command, string name)
                 {
-                    var parameter = new SqlParameter(name, SqlDbType.VarBinary) { Value = (object{{nullable}})_value ?? DBNull.Value };
+                    var parameter = new SqlParameter(name, SqlDbType.{{sqlDbType}}) { Value = (object{{nullable}})_value ?? DBNull.Value };
                     command.Parameters.Add(parameter);
                 }
             }
@@ -62,8 +64,7 @@ public sealed class MssqlDriver :
 
             public override void SetValue(IDbDataParameter parameter, Instant value)
             {
-                parameter.Value = value.ToDateTimeUtc();
-                parameter.DbType = DbType.DateTime2;
+                parameter.Value = value;
             }
         }
         """;
@@ -187,8 +188,12 @@ public sealed class MssqlDriver :
                     { "smalldatetime", new(DbTypeOverride: "SqlDbType.SmallDateTime") }
                 },
                 readerFn: (ordinal, _) => $"{Variable.Reader.AsVarName()}.GetDateTime({ordinal})",
-                // Dapper sends DateTime as the less precise datetime unless told otherwise
-                sqlMapper: "SqlMapper.AddTypeMap(typeof(DateTime), DbType.DateTime2);"
+                writerFn: (el, _, notNull, isDapper, _) =>
+                {
+                    if (isDapper)
+                        return $"new Utils.DateTime2Parameter({el})";
+                    return notNull ? el : $"{el} ?? (object)DBNull.Value";
+                }
             ),
             ["DateTimeOffset"] = new(
                 new()
@@ -257,10 +262,10 @@ public sealed class MssqlDriver :
                     var (convert, type) = dbType.ToLower() == "datetimeoffset"
                         ? ("ToDateTimeOffset()", "DateTimeOffset")
                         : ("ToDateTimeUtc()", "DateTime");
-                    if (notNull)
-                        return $"{el}.{convert}";
-                    var nullValue = isDapper ? "null" : "(object)DBNull.Value";
-                    return $"{el} is null ? {nullValue} : ({type}?){el}.Value.{convert}";
+                    var value = notNull ? $"{el}.{convert}" : $"{el} is null ? null : ({type}?){el}.Value.{convert}";
+                    if (isDapper)
+                        return type == "DateTime" ? $"new Utils.DateTime2Parameter({value})" : value;
+                    return notNull ? value : $"{el} is null ? (object)DBNull.Value : ({type}?){el}.Value.{convert}";
                 },
                 usingDirectives: ["System", "NodaTime", "NodaTime.Extensions"],
                 sqlMapper: "SqlMapper.AddTypeHandler(typeof(Instant), new NodaInstantTypeHandler());",
@@ -368,8 +373,11 @@ public sealed class MssqlDriver :
                 ParseMemberDeclaration(TransformQueryForSliceArgsImpl)!
             ], SliceQueryExists())
             .AddRangeIf([
-                ParseMemberDeclaration(BinaryParameterImpl(Options.DotnetFramework.IsDotnetCore()))!
-            ], Options.UseDapper && TypeExistsInQueries("byte[]"))];
+                ParseMemberDeclaration(TypedParameterImpl("BinaryParameter", "byte[]" + (Options.DotnetFramework.IsDotnetCore() ? "?" : ""), "VarBinary", Options.DotnetFramework.IsDotnetCore()))!
+            ], Options.UseDapper && TypeExistsInQueries("byte[]"))
+            .AddRangeIf([
+                ParseMemberDeclaration(TypedParameterImpl("DateTime2Parameter", "DateTime?", "DateTime2", Options.DotnetFramework.IsDotnetCore()))!
+            ], Options.UseDapper && (TypeExistsInQueries("DateTime") || TypeExistsInQueries("Instant")))];
     }
 
     public override ConnectionGenCommands EstablishConnection(Query query)

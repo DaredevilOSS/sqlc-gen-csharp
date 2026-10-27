@@ -51,7 +51,10 @@ public class MssqlDriverTests
     {
         var files = await GenerateFilesFor("MssqlDapperExampleRequest.message");
 
-        Assert.That(files["Utils.cs"], Does.Contain("SqlMapper.AddTypeMap(typeof(DateTime), DbType.DateTime2);"));
+        // Dapper type maps are global to the process and would leak into other databases, so values are wrapped instead
+        Assert.That(files["Utils.cs"], Does.Not.Contain("AddTypeMap"));
+        Assert.That(files["Utils.cs"], Does.Contain("class DateTime2Parameter"));
+        Assert.That(files["QuerySql.cs"], Does.Contain("new Utils.DateTime2Parameter(args.CDatetime2)"));
         Assert.That(files["Utils.cs"], Does.Contain("class BinaryParameter"));
         Assert.That(files["QuerySql.cs"], Does.Contain("new Utils.BinaryParameter(args.CBinary)"));
     }

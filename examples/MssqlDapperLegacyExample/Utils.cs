@@ -25,14 +25,12 @@ namespace MssqlDapperLegacyExampleGen
 
             public override void SetValue(IDbDataParameter parameter, Instant value)
             {
-                parameter.Value = value.ToDateTimeUtc();
-                parameter.DbType = DbType.DateTime2;
+                parameter.Value = value;
             }
         }
 
         public static void ConfigureSqlMapper()
         {
-            SqlMapper.AddTypeMap(typeof(DateTime), DbType.DateTime2);
             SqlMapper.AddTypeHandler(typeof(Instant), new NodaInstantTypeHandler());
         }
 
@@ -53,6 +51,24 @@ namespace MssqlDapperLegacyExampleGen
             public void AddParameter(IDbCommand command, string name)
             {
                 var parameter = new SqlParameter(name, SqlDbType.VarBinary)
+                {
+                    Value = (object)_value ?? DBNull.Value
+                };
+                command.Parameters.Add(parameter);
+            }
+        }
+
+        public class DateTime2Parameter : SqlMapper.ICustomQueryParameter
+        {
+            private readonly DateTime? _value;
+            public DateTime2Parameter(DateTime? value)
+            {
+                _value = value;
+            }
+
+            public void AddParameter(IDbCommand command, string name)
+            {
+                var parameter = new SqlParameter(name, SqlDbType.DateTime2)
                 {
                     Value = (object)_value ?? DBNull.Value
                 };

@@ -1094,10 +1094,10 @@ public class QuerySql
     public async Task InsertMssqlDatetimeTypesAsync(InsertMssqlDatetimeTypesArgs args)
     {
         var queryParams = new Dictionary<string, object?>();
-        queryParams.Add("c_date", args.CDate);
-        queryParams.Add("c_datetime", args.CDatetime);
-        queryParams.Add("c_datetime2", args.CDatetime2);
-        queryParams.Add("c_smalldatetime", args.CSmalldatetime);
+        queryParams.Add("c_date", new Utils.DateTime2Parameter(args.CDate));
+        queryParams.Add("c_datetime", new Utils.DateTime2Parameter(args.CDatetime));
+        queryParams.Add("c_datetime2", new Utils.DateTime2Parameter(args.CDatetime2));
+        queryParams.Add("c_smalldatetime", new Utils.DateTime2Parameter(args.CSmalldatetime));
         queryParams.Add("c_datetimeoffset", args.CDatetimeoffset);
         queryParams.Add("c_time", args.CTime);
         if (this.Transaction == null)
@@ -1146,7 +1146,7 @@ public class QuerySql
             dataTable.Columns.Add("c_datetimeoffset", typeof(object));
             dataTable.Columns.Add("c_time", typeof(object));
             foreach (var row in args)
-                dataTable.Rows.Add(row.CDate, row.CDatetime, row.CDatetime2, row.CSmalldatetime, row.CDatetimeoffset, row.CTime);
+                dataTable.Rows.Add(row.CDate ?? (object)DBNull.Value, row.CDatetime ?? (object)DBNull.Value, row.CDatetime2 ?? (object)DBNull.Value, row.CSmalldatetime ?? (object)DBNull.Value, row.CDatetimeoffset, row.CTime);
             using (var bulkCopy = new SqlBulkCopy(connection))
             {
                 bulkCopy.DestinationTableName = "[mssql_datetime_types]";
@@ -1507,7 +1507,7 @@ public class QuerySql
     public async Task InsertMssqlNodaTypesAsync(InsertMssqlNodaTypesArgs args)
     {
         var queryParams = new Dictionary<string, object?>();
-        queryParams.Add("c_datetime2_instant", args.CDatetime2Instant is null ? null : (DateTime? )args.CDatetime2Instant.Value.ToDateTimeUtc());
+        queryParams.Add("c_datetime2_instant", new Utils.DateTime2Parameter(args.CDatetime2Instant is null ? null : (DateTime? )args.CDatetime2Instant.Value.ToDateTimeUtc()));
         queryParams.Add("c_datetimeoffset_instant", args.CDatetimeoffsetInstant is null ? null : (DateTimeOffset? )args.CDatetimeoffsetInstant.Value.ToDateTimeOffset());
         if (this.Transaction == null)
         {
