@@ -36,6 +36,9 @@ public static partial class StringExtensions
                 sb.Append(word[1..]);
         }
 
+        // a C# identifier cannot start with a digit (e.g. a column named [1st place])
+        if (sb.Length > 0 && char.IsDigit(sb[0]))
+            sb.Insert(0, '_');
         return sb.ToString();
     }
 

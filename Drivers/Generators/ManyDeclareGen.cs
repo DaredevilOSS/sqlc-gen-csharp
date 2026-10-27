@@ -29,8 +29,8 @@ public class ManyDeclareGen(DbDriver dbDriver)
     private string GetMethodBody(string queryTextConstant, string returnInterface, Query query)
     {
         var sqlTextTransform = CommonGen.GetSqlTransformations(query, queryTextConstant);
-        var anyEmbeddedTableExists = query.Columns.Any(c => c.EmbedTable is not null);
-        var useDapper = dbDriver.Options.UseDapper && !anyEmbeddedTableExists;
+        var mustReadByOrdinal = dbDriver.MustReadByOrdinal(query);
+        var useDapper = dbDriver.Options.UseDapper && !mustReadByOrdinal;
 
         var dapperParams = useDapper ? CommonGen.ConstructDapperParamsDict(query) : string.Empty;
         var sqlVar = sqlTextTransform != string.Empty ? Variable.TransformedSql.AsVarName() : queryTextConstant;

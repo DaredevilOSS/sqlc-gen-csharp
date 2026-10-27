@@ -1,0 +1,80 @@
+From 9dd9acff1977691733732dab80b1b22faaf89bd5 Mon Sep 17 00:00:00 2001
+From: Claude <noreply@anthropic.com>
+Date: Tue, 27 Oct 2026 14:09:46 +0000
+Subject: [PATCH 4/4] mssql: parameter names are case-insensitive, as in SQL
+ Server
+
+---
+ internal/sql/preprocess/dialect.go    | 12 +++++++++---
+ internal/sql/preprocess/preprocess.go | 21 +++++++++++++++++++++
+ 2 files changed, 30 insertions(+), 3 deletions(-)
+
+diff --git a/internal/sql/preprocess/dialect.go b/internal/sql/preprocess/dialect.go
+index 8c8e45456..79d1a8af2 100644
+--- a/internal/sql/preprocess/dialect.go
++++ b/internal/sql/preprocess/dialect.go
+@@ -64,6 +64,11 @@ type Dialect struct {
+ 	// identifiers. It decides the case of a parameter named by a bare
+ 	// reference, e.g. sqlc.arg(FooBar).
+ 	FoldIdentifier bool
++
++	// CaseInsensitiveParams reports whether parameter names that differ only
++	// in case are the same parameter, as @Name and @name are in SQL Server.
++	// Every use is written with the spelling of the first one.
++	CaseInsensitiveParams bool
+ }
+ 
+ var dialects = map[config.Engine]Dialect{
+@@ -93,9 +98,10 @@ var dialects = map[config.Engine]Dialect{
+ 	},
+ 	// SQL Server binds by name with @name. Identifiers keep their case.
+ 	config.EngineMSSQL: {
+-		Style:              StyleAtName,
+-		AtSign:             true,
+-		NestedBlockComment: true,
++		Style:                 StyleAtName,
++		AtSign:                true,
++		NestedBlockComment:    true,
++		CaseInsensitiveParams: true,
+ 	},
+ 	// ClickHouse binds with an unnumbered ?, like MySQL, and its identifiers
+ 	// keep their case.
+diff --git a/internal/sql/preprocess/preprocess.go b/internal/sql/preprocess/preprocess.go
+index 1af0f074a..591f157dd 100644
+--- a/internal/sql/preprocess/preprocess.go
++++ b/internal/sql/preprocess/preprocess.go
+@@ -216,6 +216,9 @@ func Dialected(d Dialect, src string) *Result {
+ 		}
+ 
+ 		stmt.Dollar, stmt.ParamErr = validatePlaceholders(occs)
++		if d.CaseInsensitiveParams {
++			canonicalizeNames(occs)
++		}
+ 		stmt.Params = number(d, occs)
+ 		stmt.Numbers = map[int]int{}
+ 
+@@ -401,3 +404,21 @@ func (d Dialect) replacement(occ *occurrence) string {
+ 		return "?"
+ 	}
+ }
++
++// canonicalizeNames gives every parameter the spelling of its first use when
++// names that differ only in case refer to the same parameter.
++func canonicalizeNames(occs []occurrence) {
++	first := map[string]string{}
++	for i := range occs {
++		occ := &occs[i]
++		if occ.kind == kindEmbed || occ.kind == kindNative {
++			continue
++		}
++		key := strings.ToLower(occ.name)
++		if name, ok := first[key]; ok {
++			occ.name = name
++			continue
++		}
++		first[key] = occ.name
++	}
++}
+-- 
+2.43.0
+

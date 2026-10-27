@@ -1,7 +1,7 @@
 From f7d038c13fe802489c146466c1ebbae82ca939d3 Mon Sep 17 00:00:00 2001
 From: Claude <noreply@anthropic.com>
 Date: Tue, 27 Oct 2026 08:38:09 +0000
-Subject: [PATCH 2/3] mssql: give INSERT ... VALUES an empty FROM clause so
+Subject: [PATCH 2/4] mssql: give INSERT ... VALUES an empty FROM clause so
  :copyfrom validates
 
 ---

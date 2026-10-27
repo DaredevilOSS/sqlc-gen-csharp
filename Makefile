@@ -47,6 +47,15 @@ $(WASM_PLUGIN_OUTPUT): $(WASM_SOURCES)
 	./scripts/wasm/copy_plugin_to.sh dist
 	./scripts/wasm/update_sha.sh sqlc.ci.yaml
 
+# SQL Server syntax matrix (needs SQL Server running and the process plugin published)
+SQLC_UPSTREAM ?= sqlc
+SQLC_PATCHED ?= sqlc
+mssql-syntax-matrix: dotnet-publish-process
+	dotnet run --project end2end/MssqlSyntaxMatrix -- \
+		--sqlc "upstream=$(SQLC_UPSTREAM)@sqlc main" \
+		--sqlc "patched=$(SQLC_PATCHED)@sqlc main + scripts/sqlc-patches" \
+		--compile
+
 run-end2end-tests:
 	./end2end/scripts/run_tests.sh
 

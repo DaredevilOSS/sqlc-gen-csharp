@@ -1,7 +1,7 @@
 From 286f32e61d4a14e5821d29cbe847e2b5235a12d7 Mon Sep 17 00:00:00 2001
 From: Claude <noreply@anthropic.com>
 Date: Tue, 27 Oct 2026 08:40:09 +0000
-Subject: [PATCH 3/3] mssql: convert TRUNCATE TABLE
+Subject: [PATCH 3/4] mssql: convert TRUNCATE TABLE
 
 ---
  internal/engine/mssql/convert.go | 12 ++++++++++++

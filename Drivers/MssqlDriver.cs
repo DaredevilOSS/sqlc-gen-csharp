@@ -11,6 +11,10 @@ public sealed class MssqlDriver :
     DbDriver, IOne, IMany, IExec, IExecRows, IExecLastId, ICopyFrom
 {
     private const string DefaultSqlClientVersion = "7.1.1";
+    private const string DefaultSqlServerTypesVersion = "160.1000.6";
+
+    // CLR types of the spatial and hierarchyid columns, from Microsoft.SqlServer.Types
+    private static readonly HashSet<string> SqlServerTypes = ["SqlGeography", "SqlGeometry", "SqlHierarchyId"];
 
     public MssqlDriver(
         Options options,
@@ -18,6 +22,7 @@ public sealed class MssqlDriver :
         IList<Query> queries) : base(options, catalog, queries)
     {
         NullableTypes.Add("DateTimeOffset");
+        NullableTypes.Add("SqlHierarchyId");
     }
 
     // Dapper sends a null byte[] as nvarchar, which SQL Server refuses to convert to a binary type
@@ -35,6 +40,26 @@ public sealed class MssqlDriver :
             {
                 var parameter = new SqlParameter(name, SqlDbType.VarBinary) { Value = (object?)_value ?? DBNull.Value };
                 command.Parameters.Add(parameter);
+            }
+        }
+        """;
+
+    private static readonly SqlMapperImplFunc NodaInstantTypeHandler = _ => """
+        private class NodaInstantTypeHandler : SqlMapper.TypeHandler<Instant>
+        {
+            public override Instant Parse(object value)
+            {
+                if (value is DateTime dt)
+                    return DateTime.SpecifyKind(dt, DateTimeKind.Utc).ToInstant();
+                if (value is DateTimeOffset dto)
+                    return dto.ToInstant();
+                throw new DataException($"Cannot convert {value?.GetType()} to Instant");
+            }
+
+            public override void SetValue(IDbDataParameter parameter, Instant value)
+            {
+                parameter.Value = value.ToDateTimeUtc();
+                parameter.DbType = DbType.DateTime2;
             }
         }
         """;
@@ -185,11 +210,64 @@ public sealed class MssqlDriver :
                 readerFn: (ordinal, _) => $"{Variable.Reader.AsVarName()}.GetGuid({ordinal})",
                 convertFunc: x => $"Guid.Parse({x}.ToString())"
             ),
+            ["SqlGeography"] = new(
+                new()
+                {
+                    { "geography", new(DbTypeOverride: "SqlDbType.Udt") }
+                },
+                readerFn: (ordinal, _) => $"SqlGeography.Deserialize({Variable.Reader.AsVarName()}.GetSqlBytes({ordinal}))",
+                usingDirectives: ["Microsoft.SqlServer.Types"]
+            ),
+            ["SqlGeometry"] = new(
+                new()
+                {
+                    { "geometry", new(DbTypeOverride: "SqlDbType.Udt") }
+                },
+                readerFn: (ordinal, _) => $"SqlGeometry.Deserialize({Variable.Reader.AsVarName()}.GetSqlBytes({ordinal}))",
+                usingDirectives: ["Microsoft.SqlServer.Types"]
+            ),
+            ["SqlHierarchyId"] = new(
+                new()
+                {
+                    { "hierarchyid", new(DbTypeOverride: "SqlDbType.Udt") }
+                },
+                readerFn: (ordinal, _) => $$"""
+                    (new Func<System.Data.SqlTypes.SqlBytes, SqlHierarchyId>(b =>
+                    {
+                        var id = new SqlHierarchyId();
+                        id.Read(new System.IO.BinaryReader(b.Stream));
+                        return id;
+                    }))({{Variable.Reader.AsVarName()}}.GetSqlBytes({{ordinal}}))
+                    """,
+                usingDirectives: ["Microsoft.SqlServer.Types"]
+            ),
+
+            /* Reachable only through overrides (datetime, datetime2, datetimeoffset columns) */
+            ["Instant"] = new(
+                [],
+                readerFn: (ordinal, dbType) => dbType.ToLower() == "datetimeoffset"
+                    ? $"{Variable.Reader.AsVarName()}.GetFieldValue<DateTimeOffset>({ordinal}).ToInstant()"
+                    : $"DateTime.SpecifyKind({Variable.Reader.AsVarName()}.GetDateTime({ordinal}), DateTimeKind.Utc).ToInstant()",
+                writerFn: (el, dbType, notNull, isDapper, _) =>
+                {
+                    var convert = dbType.ToLower() == "datetimeoffset" ? "ToDateTimeOffset()" : "ToDateTimeUtc()";
+                    if (notNull)
+                        return $"{el}.{convert}";
+                    var nullValue = isDapper ? "null" : "(object)DBNull.Value";
+                    return $"{el} is null ? {nullValue} : {el}.Value.{convert}";
+                },
+                usingDirectives: ["System", "NodaTime", "NodaTime.Extensions"],
+                sqlMapper: "SqlMapper.AddTypeHandler(typeof(Instant), new NodaInstantTypeHandler());",
+                sqlMapperImpl: NodaInstantTypeHandler
+            ),
+
             ["object"] = new(
                 new()
                 {
                     { "sql_variant", new(DbTypeOverride: "SqlDbType.Variant") },
-                    { "any", new() }
+                    { "any", new() },
+                    // sqlc leaves the type of many expressions empty; they are read as object rather than failing
+                    { "", new() }
                 },
                 readerFn: (ordinal, _) => $"{Variable.Reader.AsVarName()}.GetValue({ordinal})"
             )
@@ -204,7 +282,11 @@ public sealed class MssqlDriver :
             .Merge(new Dictionary<string, string>
             {
                 { "Microsoft.Data.SqlClient", Options.OverrideDriverVersion != string.Empty ? Options.OverrideDriverVersion : DefaultSqlClientVersion }
-            });
+            })
+            .MergeIf(new Dictionary<string, string>
+            {
+                { "Microsoft.SqlServer.Types", DefaultSqlServerTypesVersion }
+            }, SqlServerTypesInUse());
     }
 
     // Parameters get an explicit SqlDbType, otherwise a null is sent as nvarchar and
@@ -231,6 +313,8 @@ public sealed class MssqlDriver :
                 Options.DotnetFramework.IsDotnetLegacy());
 
             var dbType = GetColumnDbTypeOverride(p.Column);
+            if (dbType == "SqlDbType.Udt")
+                return $$"""{{commandVar}}.Parameters.Add(new SqlParameter("@{{p.Column.Name}}", SqlDbType.Udt) { UdtTypeName = "{{p.Column.Type.Name.ToLower()}}", Value = {{paramToWrite}} });""";
             return dbType is null
                 ? $"""{commandVar}.Parameters.AddWithValue("@{p.Column.Name}", {paramToWrite});"""
                 : $"""{commandVar}.Parameters.Add("@{p.Column.Name}", {dbType}).Value = {paramToWrite};""";
@@ -241,14 +325,25 @@ public sealed class MssqlDriver :
     {
         return base
             .GetUsingDirectivesForQueries()
-            .AddRangeExcludeNulls(["Microsoft.Data.SqlClient"]);
+            .AddRangeExcludeNulls(["Microsoft.Data.SqlClient"])
+            .AddRangeIf(["Microsoft.SqlServer.Types"], SqlServerTypes.Any(TypeExistsInQueries));
     }
 
     public override ISet<string> GetUsingDirectivesForModels()
     {
         return base
             .GetUsingDirectivesForModels()
-            .AddRangeExcludeNulls(["System"]);
+            .AddRangeExcludeNulls(["System"])
+            .AddRangeIf(["Microsoft.SqlServer.Types"], SqlServerTypesInUse());
+    }
+
+    // table models are generated for every table, so the spatial types count when any table column uses them
+    private bool SqlServerTypesInUse()
+    {
+        return SqlServerTypes.Any(TypeExistsInQueries) || Tables.Values
+            .SelectMany(t => t.Values)
+            .SelectMany(t => t.Columns)
+            .Any(c => SqlServerTypes.Contains(GetCsharpTypeWithoutNullableSuffix(c, null)));
     }
 
     public override ISet<string> GetUsingDirectivesForUtils()

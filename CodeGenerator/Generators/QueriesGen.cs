@@ -167,7 +167,10 @@ internal partial class QueriesGen(DbDriver dbDriver, string namespaceName)
                 $"{memberIndentPrefix}{declaration}{fullQueryString}\";")!;
         }
 
-        var singleLineQueryText = LongWhitespaceRegex().Replace(transformedQueryText, " ");
+        // a regular string literal: backslashes and double quotes (quoted identifiers) must be escaped
+        var singleLineQueryText = LongWhitespaceRegex().Replace(transformedQueryText, " ")
+            .Replace("\\", "\\\\")
+            .Replace("\"", "\\\"");
         return ParseMemberDeclaration(
                 $"""private const string {memberName} = "{singleLineQueryText}";""")!
             .AppendNewLine();
