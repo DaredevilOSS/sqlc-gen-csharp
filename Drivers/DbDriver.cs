@@ -147,11 +147,15 @@ public abstract class DbDriver
 
     private static Dictionary<string, Dictionary<string, Table>> ConstructTablesLookup(Catalog catalog)
     {
+        // The same schema can be listed more than once (e.g. SQL Server's default schema), so tables are merged per schema
         return catalog.Schemas
             .Where(s => !_excludedSchemas.Contains(s.Name))
+            .GroupBy(s => s.Name == catalog.DefaultSchema ? string.Empty : s.Name)
             .ToDictionary(
-                s => s.Name == catalog.DefaultSchema ? string.Empty : s.Name,
-                s => s.Tables.ToDictionary(t => t.Rel.Name, t => t)
+                g => g.Key,
+                g => g.SelectMany(s => s.Tables)
+                    .GroupBy(t => t.Rel.Name)
+                    .ToDictionary(t => t.Key, t => t.First())
             );
     }
 

@@ -11,6 +11,7 @@ namespace EndToEndTests
         private const string EnvFile = ".env";
         public const string PostgresConnectionStringEnv = "POSTGRES_CONNECTION_STRING";
         public const string MySqlConnectionStringEnv = "MYSQL_CONNECTION_STRING";
+        public const string MssqlConnectionStringEnv = "MSSQL_CONNECTION_STRING";
         public const string SqliteConnectionStringEnv = "SQLITE_CONNECTION_STRING";
 
         public static void SetupTestsSqliteDb() => SetupSqliteDb(

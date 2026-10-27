@@ -1,0 +1,18 @@
+using MssqlDapperExampleGen;
+using NUnit.Framework;
+using System;
+using System.Threading.Tasks;
+
+namespace EndToEndTests;
+
+public partial class MssqlDapperTester
+{
+    private QuerySql QuerySql { get; } = new(
+        Environment.GetEnvironmentVariable(EndToEndCommon.MssqlConnectionStringEnv)!);
+
+    [TearDown]
+    public async Task EmptyTestsTables()
+    {
+        await QuerySql.DeleteAllAuthorsAsync();
+    }
+}

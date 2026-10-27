@@ -189,6 +189,21 @@ internal static class Config
         KnownTestType.PostgresNetworkCopyFrom
     ];
 
+    private static readonly SortedSet<KnownTestType> _mssqlTestTypes = [
+        KnownTestType.One,
+        KnownTestType.Many,
+        KnownTestType.Exec,
+        KnownTestType.ExecRows,
+        KnownTestType.ExecLastId,
+        KnownTestType.JoinEmbed,
+        KnownTestType.SelfJoinEmbed,
+        KnownTestType.PartialEmbed,
+        KnownTestType.Slice,
+        KnownTestType.MultipleSlices,
+        KnownTestType.NargNull,
+        KnownTestType.NargNotNull
+    ];
+
     private static readonly SortedSet<KnownTestType> _sqliteTestTypes = [
         KnownTestType.One,
         KnownTestType.Many,
@@ -259,6 +274,22 @@ internal static class Config
                 TestNamespace = "SqliteDapperExampleGen",
                 LegacyTestNamespace = "SqliteDapperLegacyExampleGen",
                 TestTypes = _sqliteTestTypes
+            }
+        },
+        {
+            "MssqlTester", new ClassGenConfig
+            {
+                TestNamespace = "MssqlExampleGen",
+                LegacyTestNamespace = "MssqlLegacyExampleGen",
+                TestTypes = _mssqlTestTypes
+            }
+        },
+        {
+            "MssqlDapperTester", new ClassGenConfig
+            {
+                TestNamespace = "MssqlDapperExampleGen",
+                LegacyTestNamespace = "MssqlDapperLegacyExampleGen",
+                TestTypes = _mssqlTestTypes
             }
         },
     };
