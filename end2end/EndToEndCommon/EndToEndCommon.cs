@@ -87,6 +87,8 @@ namespace EndToEndTests
             if (!File.Exists(dbFilename)) return;
 
             Console.WriteLine($"Removing sqlite db from {dbFilename}");
+            // pooled connections keep the file open, which makes the delete fail on Windows
+            SqliteConnection.ClearAllPools();
             File.Delete(dbFilename);
         }
         private static void InitSqliteDb(string[] schemaFiles)
