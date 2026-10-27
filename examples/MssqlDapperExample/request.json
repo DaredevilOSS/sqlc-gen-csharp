@@ -3,10 +3,12 @@
     "version": "2",
     "engine": "mssql",
     "schema": [
-      "examples/config/mssql/authors/schema.sql"
+      "examples/config/mssql/authors/schema.sql",
+      "examples/config/mssql/types/schema.sql"
     ],
     "queries": [
-      "examples/config/mssql/authors/query.sql"
+      "examples/config/mssql/authors/query.sql",
+      "examples/config/mssql/types/query.sql"
     ],
     "codegen": {
       "out": "examples/MssqlDapperExample",
@@ -120,6 +122,335 @@
                 },
                 "type": {
                   "name": "nvarchar"
+                }
+              }
+            ]
+          },
+          {
+            "rel": {
+              "schema": "public",
+              "name": "mssql_numeric_types"
+            },
+            "columns": [
+              {
+                "name": "c_bit",
+                "length": -1,
+                "table": {
+                  "schema": "public",
+                  "name": "mssql_numeric_types"
+                },
+                "type": {
+                  "name": "bit"
+                }
+              },
+              {
+                "name": "c_tinyint",
+                "length": -1,
+                "table": {
+                  "schema": "public",
+                  "name": "mssql_numeric_types"
+                },
+                "type": {
+                  "name": "tinyint"
+                }
+              },
+              {
+                "name": "c_smallint",
+                "length": -1,
+                "table": {
+                  "schema": "public",
+                  "name": "mssql_numeric_types"
+                },
+                "type": {
+                  "name": "smallint"
+                }
+              },
+              {
+                "name": "c_int",
+                "length": -1,
+                "table": {
+                  "schema": "public",
+                  "name": "mssql_numeric_types"
+                },
+                "type": {
+                  "name": "int"
+                }
+              },
+              {
+                "name": "c_bigint",
+                "length": -1,
+                "table": {
+                  "schema": "public",
+                  "name": "mssql_numeric_types"
+                },
+                "type": {
+                  "name": "bigint"
+                }
+              },
+              {
+                "name": "c_real",
+                "length": -1,
+                "table": {
+                  "schema": "public",
+                  "name": "mssql_numeric_types"
+                },
+                "type": {
+                  "name": "real"
+                }
+              },
+              {
+                "name": "c_float",
+                "length": -1,
+                "table": {
+                  "schema": "public",
+                  "name": "mssql_numeric_types"
+                },
+                "type": {
+                  "name": "float"
+                }
+              },
+              {
+                "name": "c_decimal",
+                "length": 18,
+                "table": {
+                  "schema": "public",
+                  "name": "mssql_numeric_types"
+                },
+                "type": {
+                  "name": "decimal"
+                }
+              },
+              {
+                "name": "c_numeric",
+                "length": 18,
+                "table": {
+                  "schema": "public",
+                  "name": "mssql_numeric_types"
+                },
+                "type": {
+                  "name": "decimal"
+                }
+              },
+              {
+                "name": "c_money",
+                "length": -1,
+                "table": {
+                  "schema": "public",
+                  "name": "mssql_numeric_types"
+                },
+                "type": {
+                  "name": "money"
+                }
+              },
+              {
+                "name": "c_smallmoney",
+                "length": -1,
+                "table": {
+                  "schema": "public",
+                  "name": "mssql_numeric_types"
+                },
+                "type": {
+                  "name": "smallmoney"
+                }
+              }
+            ]
+          },
+          {
+            "rel": {
+              "schema": "public",
+              "name": "mssql_string_types"
+            },
+            "columns": [
+              {
+                "name": "c_char",
+                "length": 10,
+                "table": {
+                  "schema": "public",
+                  "name": "mssql_string_types"
+                },
+                "type": {
+                  "name": "char"
+                }
+              },
+              {
+                "name": "c_nchar",
+                "length": 10,
+                "table": {
+                  "schema": "public",
+                  "name": "mssql_string_types"
+                },
+                "type": {
+                  "name": "nchar"
+                }
+              },
+              {
+                "name": "c_varchar",
+                "length": 100,
+                "table": {
+                  "schema": "public",
+                  "name": "mssql_string_types"
+                },
+                "type": {
+                  "name": "varchar"
+                }
+              },
+              {
+                "name": "c_nvarchar",
+                "length": 100,
+                "table": {
+                  "schema": "public",
+                  "name": "mssql_string_types"
+                },
+                "type": {
+                  "name": "nvarchar"
+                }
+              },
+              {
+                "name": "c_varchar_max",
+                "length": -1,
+                "table": {
+                  "schema": "public",
+                  "name": "mssql_string_types"
+                },
+                "type": {
+                  "name": "varchar"
+                }
+              },
+              {
+                "name": "c_nvarchar_max",
+                "length": -1,
+                "table": {
+                  "schema": "public",
+                  "name": "mssql_string_types"
+                },
+                "type": {
+                  "name": "nvarchar"
+                }
+              }
+            ]
+          },
+          {
+            "rel": {
+              "schema": "public",
+              "name": "mssql_datetime_types"
+            },
+            "columns": [
+              {
+                "name": "c_date",
+                "length": -1,
+                "table": {
+                  "schema": "public",
+                  "name": "mssql_datetime_types"
+                },
+                "type": {
+                  "name": "date"
+                }
+              },
+              {
+                "name": "c_datetime",
+                "length": -1,
+                "table": {
+                  "schema": "public",
+                  "name": "mssql_datetime_types"
+                },
+                "type": {
+                  "name": "datetime"
+                }
+              },
+              {
+                "name": "c_datetime2",
+                "length": 7,
+                "table": {
+                  "schema": "public",
+                  "name": "mssql_datetime_types"
+                },
+                "type": {
+                  "name": "datetime2"
+                }
+              },
+              {
+                "name": "c_smalldatetime",
+                "length": -1,
+                "table": {
+                  "schema": "public",
+                  "name": "mssql_datetime_types"
+                },
+                "type": {
+                  "name": "smalldatetime"
+                }
+              },
+              {
+                "name": "c_datetimeoffset",
+                "length": 7,
+                "table": {
+                  "schema": "public",
+                  "name": "mssql_datetime_types"
+                },
+                "type": {
+                  "name": "datetimeoffset"
+                }
+              },
+              {
+                "name": "c_time",
+                "length": 7,
+                "table": {
+                  "schema": "public",
+                  "name": "mssql_datetime_types"
+                },
+                "type": {
+                  "name": "time"
+                }
+              }
+            ]
+          },
+          {
+            "rel": {
+              "schema": "public",
+              "name": "mssql_binary_types"
+            },
+            "columns": [
+              {
+                "name": "c_binary",
+                "length": 3,
+                "table": {
+                  "schema": "public",
+                  "name": "mssql_binary_types"
+                },
+                "type": {
+                  "name": "binary"
+                }
+              },
+              {
+                "name": "c_varbinary",
+                "length": 10,
+                "table": {
+                  "schema": "public",
+                  "name": "mssql_binary_types"
+                },
+                "type": {
+                  "name": "varbinary"
+                }
+              },
+              {
+                "name": "c_varbinary_max",
+                "length": -1,
+                "table": {
+                  "schema": "public",
+                  "name": "mssql_binary_types"
+                },
+                "type": {
+                  "name": "varbinary"
+                }
+              },
+              {
+                "name": "c_uniqueidentifier",
+                "length": -1,
+                "table": {
+                  "schema": "public",
+                  "name": "mssql_binary_types"
+                },
+                "type": {
+                  "name": "uniqueidentifier"
                 }
               }
             ]
@@ -902,6 +1233,1770 @@
             "originalName": "name"
           }
         }
+      ],
+      "filename": "query.sql"
+    },
+    {
+      "text": "\nINSERT INTO mssql_numeric_types\n(\n    c_bit,\n    c_tinyint,\n    c_smallint,\n    c_int,\n    c_bigint,\n    c_real,\n    c_float,\n    c_decimal,\n    c_numeric,\n    c_money,\n    c_smallmoney\n)\nVALUES (@c_bit, @c_tinyint, @c_smallint, @c_int, @c_bigint, @c_real, @c_float, @c_decimal, @c_numeric, @c_money, @c_smallmoney);",
+      "name": "InsertMssqlNumericTypes",
+      "cmd": ":exec",
+      "parameters": [
+        {
+          "number": 1,
+          "column": {
+            "name": "c_bit",
+            "length": -1,
+            "isNamedParam": true,
+            "table": {
+              "schema": "public",
+              "name": "mssql_numeric_types"
+            },
+            "type": {
+              "name": "bit"
+            },
+            "originalName": "c_bit"
+          }
+        },
+        {
+          "number": 2,
+          "column": {
+            "name": "c_tinyint",
+            "length": -1,
+            "isNamedParam": true,
+            "table": {
+              "schema": "public",
+              "name": "mssql_numeric_types"
+            },
+            "type": {
+              "name": "tinyint"
+            },
+            "originalName": "c_tinyint"
+          }
+        },
+        {
+          "number": 3,
+          "column": {
+            "name": "c_smallint",
+            "length": -1,
+            "isNamedParam": true,
+            "table": {
+              "schema": "public",
+              "name": "mssql_numeric_types"
+            },
+            "type": {
+              "name": "smallint"
+            },
+            "originalName": "c_smallint"
+          }
+        },
+        {
+          "number": 4,
+          "column": {
+            "name": "c_int",
+            "length": -1,
+            "isNamedParam": true,
+            "table": {
+              "schema": "public",
+              "name": "mssql_numeric_types"
+            },
+            "type": {
+              "name": "int"
+            },
+            "originalName": "c_int"
+          }
+        },
+        {
+          "number": 5,
+          "column": {
+            "name": "c_bigint",
+            "length": -1,
+            "isNamedParam": true,
+            "table": {
+              "schema": "public",
+              "name": "mssql_numeric_types"
+            },
+            "type": {
+              "name": "bigint"
+            },
+            "originalName": "c_bigint"
+          }
+        },
+        {
+          "number": 6,
+          "column": {
+            "name": "c_real",
+            "length": -1,
+            "isNamedParam": true,
+            "table": {
+              "schema": "public",
+              "name": "mssql_numeric_types"
+            },
+            "type": {
+              "name": "real"
+            },
+            "originalName": "c_real"
+          }
+        },
+        {
+          "number": 7,
+          "column": {
+            "name": "c_float",
+            "length": -1,
+            "isNamedParam": true,
+            "table": {
+              "schema": "public",
+              "name": "mssql_numeric_types"
+            },
+            "type": {
+              "name": "float"
+            },
+            "originalName": "c_float"
+          }
+        },
+        {
+          "number": 8,
+          "column": {
+            "name": "c_decimal",
+            "length": 18,
+            "isNamedParam": true,
+            "table": {
+              "schema": "public",
+              "name": "mssql_numeric_types"
+            },
+            "type": {
+              "name": "decimal"
+            },
+            "originalName": "c_decimal"
+          }
+        },
+        {
+          "number": 9,
+          "column": {
+            "name": "c_numeric",
+            "length": 18,
+            "isNamedParam": true,
+            "table": {
+              "schema": "public",
+              "name": "mssql_numeric_types"
+            },
+            "type": {
+              "name": "decimal"
+            },
+            "originalName": "c_numeric"
+          }
+        },
+        {
+          "number": 10,
+          "column": {
+            "name": "c_money",
+            "length": -1,
+            "isNamedParam": true,
+            "table": {
+              "schema": "public",
+              "name": "mssql_numeric_types"
+            },
+            "type": {
+              "name": "money"
+            },
+            "originalName": "c_money"
+          }
+        },
+        {
+          "number": 11,
+          "column": {
+            "name": "c_smallmoney",
+            "length": -1,
+            "isNamedParam": true,
+            "table": {
+              "schema": "public",
+              "name": "mssql_numeric_types"
+            },
+            "type": {
+              "name": "smallmoney"
+            },
+            "originalName": "c_smallmoney"
+          }
+        }
+      ],
+      "comments": [
+        " Numeric types "
+      ],
+      "filename": "query.sql",
+      "insert_into_table": {
+        "name": "mssql_numeric_types"
+      }
+    },
+    {
+      "text": "INSERT INTO mssql_numeric_types\n(\n    c_bit,\n    c_tinyint,\n    c_smallint,\n    c_int,\n    c_bigint,\n    c_real,\n    c_float,\n    c_decimal,\n    c_numeric,\n    c_money,\n    c_smallmoney\n)\nVALUES (@c_bit, @c_tinyint, @c_smallint, @c_int, @c_bigint, @c_real, @c_float, @c_decimal, @c_numeric, @c_money, @c_smallmoney);",
+      "name": "InsertMssqlNumericTypesBatch",
+      "cmd": ":copyfrom",
+      "parameters": [
+        {
+          "number": 1,
+          "column": {
+            "name": "c_bit",
+            "length": -1,
+            "isNamedParam": true,
+            "table": {
+              "schema": "public",
+              "name": "mssql_numeric_types"
+            },
+            "type": {
+              "name": "bit"
+            },
+            "originalName": "c_bit"
+          }
+        },
+        {
+          "number": 2,
+          "column": {
+            "name": "c_tinyint",
+            "length": -1,
+            "isNamedParam": true,
+            "table": {
+              "schema": "public",
+              "name": "mssql_numeric_types"
+            },
+            "type": {
+              "name": "tinyint"
+            },
+            "originalName": "c_tinyint"
+          }
+        },
+        {
+          "number": 3,
+          "column": {
+            "name": "c_smallint",
+            "length": -1,
+            "isNamedParam": true,
+            "table": {
+              "schema": "public",
+              "name": "mssql_numeric_types"
+            },
+            "type": {
+              "name": "smallint"
+            },
+            "originalName": "c_smallint"
+          }
+        },
+        {
+          "number": 4,
+          "column": {
+            "name": "c_int",
+            "length": -1,
+            "isNamedParam": true,
+            "table": {
+              "schema": "public",
+              "name": "mssql_numeric_types"
+            },
+            "type": {
+              "name": "int"
+            },
+            "originalName": "c_int"
+          }
+        },
+        {
+          "number": 5,
+          "column": {
+            "name": "c_bigint",
+            "length": -1,
+            "isNamedParam": true,
+            "table": {
+              "schema": "public",
+              "name": "mssql_numeric_types"
+            },
+            "type": {
+              "name": "bigint"
+            },
+            "originalName": "c_bigint"
+          }
+        },
+        {
+          "number": 6,
+          "column": {
+            "name": "c_real",
+            "length": -1,
+            "isNamedParam": true,
+            "table": {
+              "schema": "public",
+              "name": "mssql_numeric_types"
+            },
+            "type": {
+              "name": "real"
+            },
+            "originalName": "c_real"
+          }
+        },
+        {
+          "number": 7,
+          "column": {
+            "name": "c_float",
+            "length": -1,
+            "isNamedParam": true,
+            "table": {
+              "schema": "public",
+              "name": "mssql_numeric_types"
+            },
+            "type": {
+              "name": "float"
+            },
+            "originalName": "c_float"
+          }
+        },
+        {
+          "number": 8,
+          "column": {
+            "name": "c_decimal",
+            "length": 18,
+            "isNamedParam": true,
+            "table": {
+              "schema": "public",
+              "name": "mssql_numeric_types"
+            },
+            "type": {
+              "name": "decimal"
+            },
+            "originalName": "c_decimal"
+          }
+        },
+        {
+          "number": 9,
+          "column": {
+            "name": "c_numeric",
+            "length": 18,
+            "isNamedParam": true,
+            "table": {
+              "schema": "public",
+              "name": "mssql_numeric_types"
+            },
+            "type": {
+              "name": "decimal"
+            },
+            "originalName": "c_numeric"
+          }
+        },
+        {
+          "number": 10,
+          "column": {
+            "name": "c_money",
+            "length": -1,
+            "isNamedParam": true,
+            "table": {
+              "schema": "public",
+              "name": "mssql_numeric_types"
+            },
+            "type": {
+              "name": "money"
+            },
+            "originalName": "c_money"
+          }
+        },
+        {
+          "number": 11,
+          "column": {
+            "name": "c_smallmoney",
+            "length": -1,
+            "isNamedParam": true,
+            "table": {
+              "schema": "public",
+              "name": "mssql_numeric_types"
+            },
+            "type": {
+              "name": "smallmoney"
+            },
+            "originalName": "c_smallmoney"
+          }
+        }
+      ],
+      "filename": "query.sql",
+      "insert_into_table": {
+        "name": "mssql_numeric_types"
+      }
+    },
+    {
+      "text": "SELECT TOP 1 c_bit, c_tinyint, c_smallint, c_int, c_bigint, c_real, c_float, c_decimal, c_numeric, c_money, c_smallmoney FROM mssql_numeric_types;",
+      "name": "GetMssqlNumericTypes",
+      "cmd": ":one",
+      "columns": [
+        {
+          "name": "c_bit",
+          "length": -1,
+          "table": {
+            "schema": "public",
+            "name": "mssql_numeric_types"
+          },
+          "type": {
+            "name": "bit"
+          },
+          "originalName": "c_bit"
+        },
+        {
+          "name": "c_tinyint",
+          "length": -1,
+          "table": {
+            "schema": "public",
+            "name": "mssql_numeric_types"
+          },
+          "type": {
+            "name": "tinyint"
+          },
+          "originalName": "c_tinyint"
+        },
+        {
+          "name": "c_smallint",
+          "length": -1,
+          "table": {
+            "schema": "public",
+            "name": "mssql_numeric_types"
+          },
+          "type": {
+            "name": "smallint"
+          },
+          "originalName": "c_smallint"
+        },
+        {
+          "name": "c_int",
+          "length": -1,
+          "table": {
+            "schema": "public",
+            "name": "mssql_numeric_types"
+          },
+          "type": {
+            "name": "int"
+          },
+          "originalName": "c_int"
+        },
+        {
+          "name": "c_bigint",
+          "length": -1,
+          "table": {
+            "schema": "public",
+            "name": "mssql_numeric_types"
+          },
+          "type": {
+            "name": "bigint"
+          },
+          "originalName": "c_bigint"
+        },
+        {
+          "name": "c_real",
+          "length": -1,
+          "table": {
+            "schema": "public",
+            "name": "mssql_numeric_types"
+          },
+          "type": {
+            "name": "real"
+          },
+          "originalName": "c_real"
+        },
+        {
+          "name": "c_float",
+          "length": -1,
+          "table": {
+            "schema": "public",
+            "name": "mssql_numeric_types"
+          },
+          "type": {
+            "name": "float"
+          },
+          "originalName": "c_float"
+        },
+        {
+          "name": "c_decimal",
+          "length": 18,
+          "table": {
+            "schema": "public",
+            "name": "mssql_numeric_types"
+          },
+          "type": {
+            "name": "decimal"
+          },
+          "originalName": "c_decimal"
+        },
+        {
+          "name": "c_numeric",
+          "length": 18,
+          "table": {
+            "schema": "public",
+            "name": "mssql_numeric_types"
+          },
+          "type": {
+            "name": "decimal"
+          },
+          "originalName": "c_numeric"
+        },
+        {
+          "name": "c_money",
+          "length": -1,
+          "table": {
+            "schema": "public",
+            "name": "mssql_numeric_types"
+          },
+          "type": {
+            "name": "money"
+          },
+          "originalName": "c_money"
+        },
+        {
+          "name": "c_smallmoney",
+          "length": -1,
+          "table": {
+            "schema": "public",
+            "name": "mssql_numeric_types"
+          },
+          "type": {
+            "name": "smallmoney"
+          },
+          "originalName": "c_smallmoney"
+        }
+      ],
+      "filename": "query.sql"
+    },
+    {
+      "text": "SELECT TOP 1\n    COUNT(*) AS cnt,\n    c_bit,\n    c_tinyint,\n    c_smallint,\n    c_int,\n    c_bigint,\n    c_real,\n    c_float,\n    c_decimal,\n    c_numeric,\n    c_money,\n    c_smallmoney\nFROM mssql_numeric_types\nGROUP BY\n    c_bit,\n    c_tinyint,\n    c_smallint,\n    c_int,\n    c_bigint,\n    c_real,\n    c_float,\n    c_decimal,\n    c_numeric,\n    c_money,\n    c_smallmoney;",
+      "name": "GetMssqlNumericTypesCnt",
+      "cmd": ":one",
+      "columns": [
+        {
+          "name": "cnt",
+          "notNull": true,
+          "length": -1,
+          "type": {
+            "name": "int"
+          }
+        },
+        {
+          "name": "c_bit",
+          "length": -1,
+          "table": {
+            "schema": "public",
+            "name": "mssql_numeric_types"
+          },
+          "type": {
+            "name": "bit"
+          },
+          "originalName": "c_bit"
+        },
+        {
+          "name": "c_tinyint",
+          "length": -1,
+          "table": {
+            "schema": "public",
+            "name": "mssql_numeric_types"
+          },
+          "type": {
+            "name": "tinyint"
+          },
+          "originalName": "c_tinyint"
+        },
+        {
+          "name": "c_smallint",
+          "length": -1,
+          "table": {
+            "schema": "public",
+            "name": "mssql_numeric_types"
+          },
+          "type": {
+            "name": "smallint"
+          },
+          "originalName": "c_smallint"
+        },
+        {
+          "name": "c_int",
+          "length": -1,
+          "table": {
+            "schema": "public",
+            "name": "mssql_numeric_types"
+          },
+          "type": {
+            "name": "int"
+          },
+          "originalName": "c_int"
+        },
+        {
+          "name": "c_bigint",
+          "length": -1,
+          "table": {
+            "schema": "public",
+            "name": "mssql_numeric_types"
+          },
+          "type": {
+            "name": "bigint"
+          },
+          "originalName": "c_bigint"
+        },
+        {
+          "name": "c_real",
+          "length": -1,
+          "table": {
+            "schema": "public",
+            "name": "mssql_numeric_types"
+          },
+          "type": {
+            "name": "real"
+          },
+          "originalName": "c_real"
+        },
+        {
+          "name": "c_float",
+          "length": -1,
+          "table": {
+            "schema": "public",
+            "name": "mssql_numeric_types"
+          },
+          "type": {
+            "name": "float"
+          },
+          "originalName": "c_float"
+        },
+        {
+          "name": "c_decimal",
+          "length": 18,
+          "table": {
+            "schema": "public",
+            "name": "mssql_numeric_types"
+          },
+          "type": {
+            "name": "decimal"
+          },
+          "originalName": "c_decimal"
+        },
+        {
+          "name": "c_numeric",
+          "length": 18,
+          "table": {
+            "schema": "public",
+            "name": "mssql_numeric_types"
+          },
+          "type": {
+            "name": "decimal"
+          },
+          "originalName": "c_numeric"
+        },
+        {
+          "name": "c_money",
+          "length": -1,
+          "table": {
+            "schema": "public",
+            "name": "mssql_numeric_types"
+          },
+          "type": {
+            "name": "money"
+          },
+          "originalName": "c_money"
+        },
+        {
+          "name": "c_smallmoney",
+          "length": -1,
+          "table": {
+            "schema": "public",
+            "name": "mssql_numeric_types"
+          },
+          "type": {
+            "name": "smallmoney"
+          },
+          "originalName": "c_smallmoney"
+        }
+      ],
+      "filename": "query.sql"
+    },
+    {
+      "text": "TRUNCATE TABLE mssql_numeric_types;",
+      "name": "TruncateMssqlNumericTypes",
+      "cmd": ":exec",
+      "filename": "query.sql"
+    },
+    {
+      "text": "\nINSERT INTO mssql_string_types\n(\n    c_char,\n    c_nchar,\n    c_varchar,\n    c_nvarchar,\n    c_varchar_max,\n    c_nvarchar_max\n)\nVALUES (@c_char, @c_nchar, @c_varchar, @c_nvarchar, @c_varchar_max, @c_nvarchar_max);",
+      "name": "InsertMssqlStringTypes",
+      "cmd": ":exec",
+      "parameters": [
+        {
+          "number": 1,
+          "column": {
+            "name": "c_char",
+            "length": 10,
+            "isNamedParam": true,
+            "table": {
+              "schema": "public",
+              "name": "mssql_string_types"
+            },
+            "type": {
+              "name": "char"
+            },
+            "originalName": "c_char"
+          }
+        },
+        {
+          "number": 2,
+          "column": {
+            "name": "c_nchar",
+            "length": 10,
+            "isNamedParam": true,
+            "table": {
+              "schema": "public",
+              "name": "mssql_string_types"
+            },
+            "type": {
+              "name": "nchar"
+            },
+            "originalName": "c_nchar"
+          }
+        },
+        {
+          "number": 3,
+          "column": {
+            "name": "c_varchar",
+            "length": 100,
+            "isNamedParam": true,
+            "table": {
+              "schema": "public",
+              "name": "mssql_string_types"
+            },
+            "type": {
+              "name": "varchar"
+            },
+            "originalName": "c_varchar"
+          }
+        },
+        {
+          "number": 4,
+          "column": {
+            "name": "c_nvarchar",
+            "length": 100,
+            "isNamedParam": true,
+            "table": {
+              "schema": "public",
+              "name": "mssql_string_types"
+            },
+            "type": {
+              "name": "nvarchar"
+            },
+            "originalName": "c_nvarchar"
+          }
+        },
+        {
+          "number": 5,
+          "column": {
+            "name": "c_varchar_max",
+            "length": -1,
+            "isNamedParam": true,
+            "table": {
+              "schema": "public",
+              "name": "mssql_string_types"
+            },
+            "type": {
+              "name": "varchar"
+            },
+            "originalName": "c_varchar_max"
+          }
+        },
+        {
+          "number": 6,
+          "column": {
+            "name": "c_nvarchar_max",
+            "length": -1,
+            "isNamedParam": true,
+            "table": {
+              "schema": "public",
+              "name": "mssql_string_types"
+            },
+            "type": {
+              "name": "nvarchar"
+            },
+            "originalName": "c_nvarchar_max"
+          }
+        }
+      ],
+      "comments": [
+        " String types "
+      ],
+      "filename": "query.sql",
+      "insert_into_table": {
+        "name": "mssql_string_types"
+      }
+    },
+    {
+      "text": "INSERT INTO mssql_string_types\n(\n    c_char,\n    c_nchar,\n    c_varchar,\n    c_nvarchar,\n    c_varchar_max,\n    c_nvarchar_max\n)\nVALUES (@c_char, @c_nchar, @c_varchar, @c_nvarchar, @c_varchar_max, @c_nvarchar_max);",
+      "name": "InsertMssqlStringTypesBatch",
+      "cmd": ":copyfrom",
+      "parameters": [
+        {
+          "number": 1,
+          "column": {
+            "name": "c_char",
+            "length": 10,
+            "isNamedParam": true,
+            "table": {
+              "schema": "public",
+              "name": "mssql_string_types"
+            },
+            "type": {
+              "name": "char"
+            },
+            "originalName": "c_char"
+          }
+        },
+        {
+          "number": 2,
+          "column": {
+            "name": "c_nchar",
+            "length": 10,
+            "isNamedParam": true,
+            "table": {
+              "schema": "public",
+              "name": "mssql_string_types"
+            },
+            "type": {
+              "name": "nchar"
+            },
+            "originalName": "c_nchar"
+          }
+        },
+        {
+          "number": 3,
+          "column": {
+            "name": "c_varchar",
+            "length": 100,
+            "isNamedParam": true,
+            "table": {
+              "schema": "public",
+              "name": "mssql_string_types"
+            },
+            "type": {
+              "name": "varchar"
+            },
+            "originalName": "c_varchar"
+          }
+        },
+        {
+          "number": 4,
+          "column": {
+            "name": "c_nvarchar",
+            "length": 100,
+            "isNamedParam": true,
+            "table": {
+              "schema": "public",
+              "name": "mssql_string_types"
+            },
+            "type": {
+              "name": "nvarchar"
+            },
+            "originalName": "c_nvarchar"
+          }
+        },
+        {
+          "number": 5,
+          "column": {
+            "name": "c_varchar_max",
+            "length": -1,
+            "isNamedParam": true,
+            "table": {
+              "schema": "public",
+              "name": "mssql_string_types"
+            },
+            "type": {
+              "name": "varchar"
+            },
+            "originalName": "c_varchar_max"
+          }
+        },
+        {
+          "number": 6,
+          "column": {
+            "name": "c_nvarchar_max",
+            "length": -1,
+            "isNamedParam": true,
+            "table": {
+              "schema": "public",
+              "name": "mssql_string_types"
+            },
+            "type": {
+              "name": "nvarchar"
+            },
+            "originalName": "c_nvarchar_max"
+          }
+        }
+      ],
+      "filename": "query.sql",
+      "insert_into_table": {
+        "name": "mssql_string_types"
+      }
+    },
+    {
+      "text": "SELECT TOP 1 c_char, c_nchar, c_varchar, c_nvarchar, c_varchar_max, c_nvarchar_max FROM mssql_string_types;",
+      "name": "GetMssqlStringTypes",
+      "cmd": ":one",
+      "columns": [
+        {
+          "name": "c_char",
+          "length": 10,
+          "table": {
+            "schema": "public",
+            "name": "mssql_string_types"
+          },
+          "type": {
+            "name": "char"
+          },
+          "originalName": "c_char"
+        },
+        {
+          "name": "c_nchar",
+          "length": 10,
+          "table": {
+            "schema": "public",
+            "name": "mssql_string_types"
+          },
+          "type": {
+            "name": "nchar"
+          },
+          "originalName": "c_nchar"
+        },
+        {
+          "name": "c_varchar",
+          "length": 100,
+          "table": {
+            "schema": "public",
+            "name": "mssql_string_types"
+          },
+          "type": {
+            "name": "varchar"
+          },
+          "originalName": "c_varchar"
+        },
+        {
+          "name": "c_nvarchar",
+          "length": 100,
+          "table": {
+            "schema": "public",
+            "name": "mssql_string_types"
+          },
+          "type": {
+            "name": "nvarchar"
+          },
+          "originalName": "c_nvarchar"
+        },
+        {
+          "name": "c_varchar_max",
+          "length": -1,
+          "table": {
+            "schema": "public",
+            "name": "mssql_string_types"
+          },
+          "type": {
+            "name": "varchar"
+          },
+          "originalName": "c_varchar_max"
+        },
+        {
+          "name": "c_nvarchar_max",
+          "length": -1,
+          "table": {
+            "schema": "public",
+            "name": "mssql_string_types"
+          },
+          "type": {
+            "name": "nvarchar"
+          },
+          "originalName": "c_nvarchar_max"
+        }
+      ],
+      "filename": "query.sql"
+    },
+    {
+      "text": "SELECT TOP 1\n    COUNT(*) AS cnt,\n    c_char,\n    c_nchar,\n    c_varchar,\n    c_nvarchar,\n    c_varchar_max,\n    c_nvarchar_max\nFROM mssql_string_types\nGROUP BY\n    c_char,\n    c_nchar,\n    c_varchar,\n    c_nvarchar,\n    c_varchar_max,\n    c_nvarchar_max;",
+      "name": "GetMssqlStringTypesCnt",
+      "cmd": ":one",
+      "columns": [
+        {
+          "name": "cnt",
+          "notNull": true,
+          "length": -1,
+          "type": {
+            "name": "int"
+          }
+        },
+        {
+          "name": "c_char",
+          "length": 10,
+          "table": {
+            "schema": "public",
+            "name": "mssql_string_types"
+          },
+          "type": {
+            "name": "char"
+          },
+          "originalName": "c_char"
+        },
+        {
+          "name": "c_nchar",
+          "length": 10,
+          "table": {
+            "schema": "public",
+            "name": "mssql_string_types"
+          },
+          "type": {
+            "name": "nchar"
+          },
+          "originalName": "c_nchar"
+        },
+        {
+          "name": "c_varchar",
+          "length": 100,
+          "table": {
+            "schema": "public",
+            "name": "mssql_string_types"
+          },
+          "type": {
+            "name": "varchar"
+          },
+          "originalName": "c_varchar"
+        },
+        {
+          "name": "c_nvarchar",
+          "length": 100,
+          "table": {
+            "schema": "public",
+            "name": "mssql_string_types"
+          },
+          "type": {
+            "name": "nvarchar"
+          },
+          "originalName": "c_nvarchar"
+        },
+        {
+          "name": "c_varchar_max",
+          "length": -1,
+          "table": {
+            "schema": "public",
+            "name": "mssql_string_types"
+          },
+          "type": {
+            "name": "varchar"
+          },
+          "originalName": "c_varchar_max"
+        },
+        {
+          "name": "c_nvarchar_max",
+          "length": -1,
+          "table": {
+            "schema": "public",
+            "name": "mssql_string_types"
+          },
+          "type": {
+            "name": "nvarchar"
+          },
+          "originalName": "c_nvarchar_max"
+        }
+      ],
+      "filename": "query.sql"
+    },
+    {
+      "text": "TRUNCATE TABLE mssql_string_types;",
+      "name": "TruncateMssqlStringTypes",
+      "cmd": ":exec",
+      "filename": "query.sql"
+    },
+    {
+      "text": "\nINSERT INTO mssql_datetime_types\n(\n    c_date,\n    c_datetime,\n    c_datetime2,\n    c_smalldatetime,\n    c_datetimeoffset,\n    c_time\n)\nVALUES (@c_date, @c_datetime, @c_datetime2, @c_smalldatetime, @c_datetimeoffset, @c_time);",
+      "name": "InsertMssqlDatetimeTypes",
+      "cmd": ":exec",
+      "parameters": [
+        {
+          "number": 1,
+          "column": {
+            "name": "c_date",
+            "length": -1,
+            "isNamedParam": true,
+            "table": {
+              "schema": "public",
+              "name": "mssql_datetime_types"
+            },
+            "type": {
+              "name": "date"
+            },
+            "originalName": "c_date"
+          }
+        },
+        {
+          "number": 2,
+          "column": {
+            "name": "c_datetime",
+            "length": -1,
+            "isNamedParam": true,
+            "table": {
+              "schema": "public",
+              "name": "mssql_datetime_types"
+            },
+            "type": {
+              "name": "datetime"
+            },
+            "originalName": "c_datetime"
+          }
+        },
+        {
+          "number": 3,
+          "column": {
+            "name": "c_datetime2",
+            "length": 7,
+            "isNamedParam": true,
+            "table": {
+              "schema": "public",
+              "name": "mssql_datetime_types"
+            },
+            "type": {
+              "name": "datetime2"
+            },
+            "originalName": "c_datetime2"
+          }
+        },
+        {
+          "number": 4,
+          "column": {
+            "name": "c_smalldatetime",
+            "length": -1,
+            "isNamedParam": true,
+            "table": {
+              "schema": "public",
+              "name": "mssql_datetime_types"
+            },
+            "type": {
+              "name": "smalldatetime"
+            },
+            "originalName": "c_smalldatetime"
+          }
+        },
+        {
+          "number": 5,
+          "column": {
+            "name": "c_datetimeoffset",
+            "length": 7,
+            "isNamedParam": true,
+            "table": {
+              "schema": "public",
+              "name": "mssql_datetime_types"
+            },
+            "type": {
+              "name": "datetimeoffset"
+            },
+            "originalName": "c_datetimeoffset"
+          }
+        },
+        {
+          "number": 6,
+          "column": {
+            "name": "c_time",
+            "length": 7,
+            "isNamedParam": true,
+            "table": {
+              "schema": "public",
+              "name": "mssql_datetime_types"
+            },
+            "type": {
+              "name": "time"
+            },
+            "originalName": "c_time"
+          }
+        }
+      ],
+      "comments": [
+        " Datetime types "
+      ],
+      "filename": "query.sql",
+      "insert_into_table": {
+        "name": "mssql_datetime_types"
+      }
+    },
+    {
+      "text": "INSERT INTO mssql_datetime_types\n(\n    c_date,\n    c_datetime,\n    c_datetime2,\n    c_smalldatetime,\n    c_datetimeoffset,\n    c_time\n)\nVALUES (@c_date, @c_datetime, @c_datetime2, @c_smalldatetime, @c_datetimeoffset, @c_time);",
+      "name": "InsertMssqlDatetimeTypesBatch",
+      "cmd": ":copyfrom",
+      "parameters": [
+        {
+          "number": 1,
+          "column": {
+            "name": "c_date",
+            "length": -1,
+            "isNamedParam": true,
+            "table": {
+              "schema": "public",
+              "name": "mssql_datetime_types"
+            },
+            "type": {
+              "name": "date"
+            },
+            "originalName": "c_date"
+          }
+        },
+        {
+          "number": 2,
+          "column": {
+            "name": "c_datetime",
+            "length": -1,
+            "isNamedParam": true,
+            "table": {
+              "schema": "public",
+              "name": "mssql_datetime_types"
+            },
+            "type": {
+              "name": "datetime"
+            },
+            "originalName": "c_datetime"
+          }
+        },
+        {
+          "number": 3,
+          "column": {
+            "name": "c_datetime2",
+            "length": 7,
+            "isNamedParam": true,
+            "table": {
+              "schema": "public",
+              "name": "mssql_datetime_types"
+            },
+            "type": {
+              "name": "datetime2"
+            },
+            "originalName": "c_datetime2"
+          }
+        },
+        {
+          "number": 4,
+          "column": {
+            "name": "c_smalldatetime",
+            "length": -1,
+            "isNamedParam": true,
+            "table": {
+              "schema": "public",
+              "name": "mssql_datetime_types"
+            },
+            "type": {
+              "name": "smalldatetime"
+            },
+            "originalName": "c_smalldatetime"
+          }
+        },
+        {
+          "number": 5,
+          "column": {
+            "name": "c_datetimeoffset",
+            "length": 7,
+            "isNamedParam": true,
+            "table": {
+              "schema": "public",
+              "name": "mssql_datetime_types"
+            },
+            "type": {
+              "name": "datetimeoffset"
+            },
+            "originalName": "c_datetimeoffset"
+          }
+        },
+        {
+          "number": 6,
+          "column": {
+            "name": "c_time",
+            "length": 7,
+            "isNamedParam": true,
+            "table": {
+              "schema": "public",
+              "name": "mssql_datetime_types"
+            },
+            "type": {
+              "name": "time"
+            },
+            "originalName": "c_time"
+          }
+        }
+      ],
+      "filename": "query.sql",
+      "insert_into_table": {
+        "name": "mssql_datetime_types"
+      }
+    },
+    {
+      "text": "SELECT TOP 1 c_date, c_datetime, c_datetime2, c_smalldatetime, c_datetimeoffset, c_time FROM mssql_datetime_types;",
+      "name": "GetMssqlDatetimeTypes",
+      "cmd": ":one",
+      "columns": [
+        {
+          "name": "c_date",
+          "length": -1,
+          "table": {
+            "schema": "public",
+            "name": "mssql_datetime_types"
+          },
+          "type": {
+            "name": "date"
+          },
+          "originalName": "c_date"
+        },
+        {
+          "name": "c_datetime",
+          "length": -1,
+          "table": {
+            "schema": "public",
+            "name": "mssql_datetime_types"
+          },
+          "type": {
+            "name": "datetime"
+          },
+          "originalName": "c_datetime"
+        },
+        {
+          "name": "c_datetime2",
+          "length": 7,
+          "table": {
+            "schema": "public",
+            "name": "mssql_datetime_types"
+          },
+          "type": {
+            "name": "datetime2"
+          },
+          "originalName": "c_datetime2"
+        },
+        {
+          "name": "c_smalldatetime",
+          "length": -1,
+          "table": {
+            "schema": "public",
+            "name": "mssql_datetime_types"
+          },
+          "type": {
+            "name": "smalldatetime"
+          },
+          "originalName": "c_smalldatetime"
+        },
+        {
+          "name": "c_datetimeoffset",
+          "length": 7,
+          "table": {
+            "schema": "public",
+            "name": "mssql_datetime_types"
+          },
+          "type": {
+            "name": "datetimeoffset"
+          },
+          "originalName": "c_datetimeoffset"
+        },
+        {
+          "name": "c_time",
+          "length": 7,
+          "table": {
+            "schema": "public",
+            "name": "mssql_datetime_types"
+          },
+          "type": {
+            "name": "time"
+          },
+          "originalName": "c_time"
+        }
+      ],
+      "filename": "query.sql"
+    },
+    {
+      "text": "SELECT TOP 1\n    COUNT(*) AS cnt,\n    c_date,\n    c_datetime,\n    c_datetime2,\n    c_smalldatetime,\n    c_datetimeoffset,\n    c_time\nFROM mssql_datetime_types\nGROUP BY\n    c_date,\n    c_datetime,\n    c_datetime2,\n    c_smalldatetime,\n    c_datetimeoffset,\n    c_time;",
+      "name": "GetMssqlDatetimeTypesCnt",
+      "cmd": ":one",
+      "columns": [
+        {
+          "name": "cnt",
+          "notNull": true,
+          "length": -1,
+          "type": {
+            "name": "int"
+          }
+        },
+        {
+          "name": "c_date",
+          "length": -1,
+          "table": {
+            "schema": "public",
+            "name": "mssql_datetime_types"
+          },
+          "type": {
+            "name": "date"
+          },
+          "originalName": "c_date"
+        },
+        {
+          "name": "c_datetime",
+          "length": -1,
+          "table": {
+            "schema": "public",
+            "name": "mssql_datetime_types"
+          },
+          "type": {
+            "name": "datetime"
+          },
+          "originalName": "c_datetime"
+        },
+        {
+          "name": "c_datetime2",
+          "length": 7,
+          "table": {
+            "schema": "public",
+            "name": "mssql_datetime_types"
+          },
+          "type": {
+            "name": "datetime2"
+          },
+          "originalName": "c_datetime2"
+        },
+        {
+          "name": "c_smalldatetime",
+          "length": -1,
+          "table": {
+            "schema": "public",
+            "name": "mssql_datetime_types"
+          },
+          "type": {
+            "name": "smalldatetime"
+          },
+          "originalName": "c_smalldatetime"
+        },
+        {
+          "name": "c_datetimeoffset",
+          "length": 7,
+          "table": {
+            "schema": "public",
+            "name": "mssql_datetime_types"
+          },
+          "type": {
+            "name": "datetimeoffset"
+          },
+          "originalName": "c_datetimeoffset"
+        },
+        {
+          "name": "c_time",
+          "length": 7,
+          "table": {
+            "schema": "public",
+            "name": "mssql_datetime_types"
+          },
+          "type": {
+            "name": "time"
+          },
+          "originalName": "c_time"
+        }
+      ],
+      "filename": "query.sql"
+    },
+    {
+      "text": "TRUNCATE TABLE mssql_datetime_types;",
+      "name": "TruncateMssqlDatetimeTypes",
+      "cmd": ":exec",
+      "filename": "query.sql"
+    },
+    {
+      "text": "\nINSERT INTO mssql_binary_types\n(\n    c_binary,\n    c_varbinary,\n    c_varbinary_max,\n    c_uniqueidentifier\n)\nVALUES (@c_binary, @c_varbinary, @c_varbinary_max, @c_uniqueidentifier);",
+      "name": "InsertMssqlBinaryTypes",
+      "cmd": ":exec",
+      "parameters": [
+        {
+          "number": 1,
+          "column": {
+            "name": "c_binary",
+            "length": 3,
+            "isNamedParam": true,
+            "table": {
+              "schema": "public",
+              "name": "mssql_binary_types"
+            },
+            "type": {
+              "name": "binary"
+            },
+            "originalName": "c_binary"
+          }
+        },
+        {
+          "number": 2,
+          "column": {
+            "name": "c_varbinary",
+            "length": 10,
+            "isNamedParam": true,
+            "table": {
+              "schema": "public",
+              "name": "mssql_binary_types"
+            },
+            "type": {
+              "name": "varbinary"
+            },
+            "originalName": "c_varbinary"
+          }
+        },
+        {
+          "number": 3,
+          "column": {
+            "name": "c_varbinary_max",
+            "length": -1,
+            "isNamedParam": true,
+            "table": {
+              "schema": "public",
+              "name": "mssql_binary_types"
+            },
+            "type": {
+              "name": "varbinary"
+            },
+            "originalName": "c_varbinary_max"
+          }
+        },
+        {
+          "number": 4,
+          "column": {
+            "name": "c_uniqueidentifier",
+            "length": -1,
+            "isNamedParam": true,
+            "table": {
+              "schema": "public",
+              "name": "mssql_binary_types"
+            },
+            "type": {
+              "name": "uniqueidentifier"
+            },
+            "originalName": "c_uniqueidentifier"
+          }
+        }
+      ],
+      "comments": [
+        " Binary types "
+      ],
+      "filename": "query.sql",
+      "insert_into_table": {
+        "name": "mssql_binary_types"
+      }
+    },
+    {
+      "text": "INSERT INTO mssql_binary_types\n(\n    c_binary,\n    c_varbinary,\n    c_varbinary_max,\n    c_uniqueidentifier\n)\nVALUES (@c_binary, @c_varbinary, @c_varbinary_max, @c_uniqueidentifier);",
+      "name": "InsertMssqlBinaryTypesBatch",
+      "cmd": ":copyfrom",
+      "parameters": [
+        {
+          "number": 1,
+          "column": {
+            "name": "c_binary",
+            "length": 3,
+            "isNamedParam": true,
+            "table": {
+              "schema": "public",
+              "name": "mssql_binary_types"
+            },
+            "type": {
+              "name": "binary"
+            },
+            "originalName": "c_binary"
+          }
+        },
+        {
+          "number": 2,
+          "column": {
+            "name": "c_varbinary",
+            "length": 10,
+            "isNamedParam": true,
+            "table": {
+              "schema": "public",
+              "name": "mssql_binary_types"
+            },
+            "type": {
+              "name": "varbinary"
+            },
+            "originalName": "c_varbinary"
+          }
+        },
+        {
+          "number": 3,
+          "column": {
+            "name": "c_varbinary_max",
+            "length": -1,
+            "isNamedParam": true,
+            "table": {
+              "schema": "public",
+              "name": "mssql_binary_types"
+            },
+            "type": {
+              "name": "varbinary"
+            },
+            "originalName": "c_varbinary_max"
+          }
+        },
+        {
+          "number": 4,
+          "column": {
+            "name": "c_uniqueidentifier",
+            "length": -1,
+            "isNamedParam": true,
+            "table": {
+              "schema": "public",
+              "name": "mssql_binary_types"
+            },
+            "type": {
+              "name": "uniqueidentifier"
+            },
+            "originalName": "c_uniqueidentifier"
+          }
+        }
+      ],
+      "filename": "query.sql",
+      "insert_into_table": {
+        "name": "mssql_binary_types"
+      }
+    },
+    {
+      "text": "SELECT TOP 1 c_binary, c_varbinary, c_varbinary_max, c_uniqueidentifier FROM mssql_binary_types;",
+      "name": "GetMssqlBinaryTypes",
+      "cmd": ":one",
+      "columns": [
+        {
+          "name": "c_binary",
+          "length": 3,
+          "table": {
+            "schema": "public",
+            "name": "mssql_binary_types"
+          },
+          "type": {
+            "name": "binary"
+          },
+          "originalName": "c_binary"
+        },
+        {
+          "name": "c_varbinary",
+          "length": 10,
+          "table": {
+            "schema": "public",
+            "name": "mssql_binary_types"
+          },
+          "type": {
+            "name": "varbinary"
+          },
+          "originalName": "c_varbinary"
+        },
+        {
+          "name": "c_varbinary_max",
+          "length": -1,
+          "table": {
+            "schema": "public",
+            "name": "mssql_binary_types"
+          },
+          "type": {
+            "name": "varbinary"
+          },
+          "originalName": "c_varbinary_max"
+        },
+        {
+          "name": "c_uniqueidentifier",
+          "length": -1,
+          "table": {
+            "schema": "public",
+            "name": "mssql_binary_types"
+          },
+          "type": {
+            "name": "uniqueidentifier"
+          },
+          "originalName": "c_uniqueidentifier"
+        }
+      ],
+      "filename": "query.sql"
+    },
+    {
+      "text": "SELECT TOP 1\n    COUNT(*) AS cnt,\n    c_binary,\n    c_varbinary,\n    c_varbinary_max,\n    c_uniqueidentifier\nFROM mssql_binary_types\nGROUP BY\n    c_binary,\n    c_varbinary,\n    c_varbinary_max,\n    c_uniqueidentifier;",
+      "name": "GetMssqlBinaryTypesCnt",
+      "cmd": ":one",
+      "columns": [
+        {
+          "name": "cnt",
+          "notNull": true,
+          "length": -1,
+          "type": {
+            "name": "int"
+          }
+        },
+        {
+          "name": "c_binary",
+          "length": 3,
+          "table": {
+            "schema": "public",
+            "name": "mssql_binary_types"
+          },
+          "type": {
+            "name": "binary"
+          },
+          "originalName": "c_binary"
+        },
+        {
+          "name": "c_varbinary",
+          "length": 10,
+          "table": {
+            "schema": "public",
+            "name": "mssql_binary_types"
+          },
+          "type": {
+            "name": "varbinary"
+          },
+          "originalName": "c_varbinary"
+        },
+        {
+          "name": "c_varbinary_max",
+          "length": -1,
+          "table": {
+            "schema": "public",
+            "name": "mssql_binary_types"
+          },
+          "type": {
+            "name": "varbinary"
+          },
+          "originalName": "c_varbinary_max"
+        },
+        {
+          "name": "c_uniqueidentifier",
+          "length": -1,
+          "table": {
+            "schema": "public",
+            "name": "mssql_binary_types"
+          },
+          "type": {
+            "name": "uniqueidentifier"
+          },
+          "originalName": "c_uniqueidentifier"
+        }
+      ],
+      "filename": "query.sql"
+    },
+    {
+      "text": "TRUNCATE TABLE mssql_binary_types;",
+      "name": "TruncateMssqlBinaryTypes",
+      "cmd": ":exec",
+      "filename": "query.sql"
+    },
+    {
+      "text": "\nSELECT\n    MAX(c_int) AS max_int,\n    MAX(c_varchar) AS max_varchar,\n    MAX(c_datetime2) AS max_datetime2\nFROM mssql_numeric_types\nCROSS JOIN mssql_string_types\nCROSS JOIN mssql_datetime_types;",
+      "name": "GetMssqlFunctions",
+      "cmd": ":one",
+      "columns": [
+        {
+          "name": "max_int",
+          "length": -1,
+          "type": {
+            "name": "int"
+          }
+        },
+        {
+          "name": "max_varchar",
+          "length": -1,
+          "type": {
+            "name": "varchar"
+          }
+        },
+        {
+          "name": "max_datetime2",
+          "length": -1,
+          "type": {
+            "name": "datetime2"
+          }
+        }
+      ],
+      "comments": [
+        " Functions "
       ],
       "filename": "query.sql"
     }

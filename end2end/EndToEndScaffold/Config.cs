@@ -26,6 +26,18 @@ public enum KnownTestType
     NargNull,
     NargNotNull,
 
+    // Mssql
+    MssqlIntegerDataTypes,
+    MssqlIntegerCopyFrom,
+    MssqlStringDataTypes,
+    MssqlStringCopyFrom,
+    MssqlDateTimeDataTypes,
+    MssqlDateTimeCopyFrom,
+    MssqlBinaryDataTypes,
+    MssqlBinaryCopyFrom,
+    MssqlTransaction,
+    MssqlTransactionRollback,
+
     // Sqlite
     SqliteDataTypes,
     SqliteMultipleNamedParam,
@@ -201,7 +213,17 @@ internal static class Config
         KnownTestType.Slice,
         KnownTestType.MultipleSlices,
         KnownTestType.NargNull,
-        KnownTestType.NargNotNull
+        KnownTestType.NargNotNull,
+        KnownTestType.MssqlIntegerDataTypes,
+        KnownTestType.MssqlIntegerCopyFrom,
+        KnownTestType.MssqlStringDataTypes,
+        KnownTestType.MssqlStringCopyFrom,
+        KnownTestType.MssqlDateTimeDataTypes,
+        KnownTestType.MssqlDateTimeCopyFrom,
+        KnownTestType.MssqlBinaryDataTypes,
+        KnownTestType.MssqlBinaryCopyFrom,
+        KnownTestType.MssqlTransaction,
+        KnownTestType.MssqlTransactionRollback
     ];
 
     private static readonly SortedSet<KnownTestType> _sqliteTestTypes = [

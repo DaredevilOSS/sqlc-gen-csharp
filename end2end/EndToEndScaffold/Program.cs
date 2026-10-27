@@ -14,6 +14,7 @@ public static class Program
         {
             AnnotationTests.TestImplementations,
             MacroTests.TestImplementations,
+            MssqlTests.TestImplementations,
             MySqlTests.TestImplementations,
             PostgresTests.TestImplementations,
             SqliteTests.TestImplementations

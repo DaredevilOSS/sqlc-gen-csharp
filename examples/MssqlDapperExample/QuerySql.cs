@@ -490,7 +490,7 @@ public class QuerySql
                 await connection.OpenAsync();
                 using (var command = new SqlCommand(GetAuthorsByBookNameSql, connection))
                 {
-                    command.Parameters.AddWithValue("@name", args.Name);
+                    command.Parameters.Add("@name", SqlDbType.NVarChar).Value = args.Name;
                     using (var reader = await command.ExecuteReaderAsync())
                     {
                         var result = new List<GetAuthorsByBookNameRow>();
@@ -508,7 +508,7 @@ public class QuerySql
         {
             command.CommandText = GetAuthorsByBookNameSql;
             command.Transaction = this.Transaction;
-            command.Parameters.AddWithValue("@name", args.Name);
+            command.Parameters.Add("@name", SqlDbType.NVarChar).Value = args.Name;
             using (var reader = await command.ExecuteReaderAsync())
             {
                 var result = new List<GetAuthorsByBookNameRow>();
@@ -517,5 +517,768 @@ public class QuerySql
                 return result;
             }
         }
+    }
+
+    private const string InsertMssqlNumericTypesSql = @"
+                                                        INSERT INTO mssql_numeric_types
+                                                        (
+                                                            c_bit,
+                                                            c_tinyint,
+                                                            c_smallint,
+                                                            c_int,
+                                                            c_bigint,
+                                                            c_real,
+                                                            c_float,
+                                                            c_decimal,
+                                                            c_numeric,
+                                                            c_money,
+                                                            c_smallmoney
+                                                        )
+                                                        VALUES (@c_bit, @c_tinyint, @c_smallint, @c_int, @c_bigint, @c_real, @c_float, @c_decimal, @c_numeric, @c_money, @c_smallmoney);";
+    public class InsertMssqlNumericTypesArgs
+    {
+        public bool? CBit { get; init; }
+        public byte? CTinyint { get; init; }
+        public short? CSmallint { get; init; }
+        public int? CInt { get; init; }
+        public long? CBigint { get; init; }
+        public float? CReal { get; init; }
+        public double? CFloat { get; init; }
+        public decimal? CDecimal { get; init; }
+        public decimal? CNumeric { get; init; }
+        public decimal? CMoney { get; init; }
+        public decimal? CSmallmoney { get; init; }
+    };
+    public async Task InsertMssqlNumericTypesAsync(InsertMssqlNumericTypesArgs args)
+    {
+        var queryParams = new Dictionary<string, object?>();
+        queryParams.Add("c_bit", args.CBit);
+        queryParams.Add("c_tinyint", args.CTinyint);
+        queryParams.Add("c_smallint", args.CSmallint);
+        queryParams.Add("c_int", args.CInt);
+        queryParams.Add("c_bigint", args.CBigint);
+        queryParams.Add("c_real", args.CReal);
+        queryParams.Add("c_float", args.CFloat);
+        queryParams.Add("c_decimal", args.CDecimal);
+        queryParams.Add("c_numeric", args.CNumeric);
+        queryParams.Add("c_money", args.CMoney);
+        queryParams.Add("c_smallmoney", args.CSmallmoney);
+        if (this.Transaction == null)
+        {
+            using (var connection = new SqlConnection(ConnectionString))
+            {
+                await connection.ExecuteAsync(InsertMssqlNumericTypesSql, queryParams);
+                return;
+            }
+        }
+
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
+            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+        await this.Transaction.Connection.ExecuteAsync(InsertMssqlNumericTypesSql, queryParams, transaction: this.Transaction);
+    }
+
+    private const string InsertMssqlNumericTypesBatchSql = @"INSERT INTO mssql_numeric_types
+                                                             (
+                                                                 c_bit,
+                                                                 c_tinyint,
+                                                                 c_smallint,
+                                                                 c_int,
+                                                                 c_bigint,
+                                                                 c_real,
+                                                                 c_float,
+                                                                 c_decimal,
+                                                                 c_numeric,
+                                                                 c_money,
+                                                                 c_smallmoney
+                                                             )
+                                                             VALUES (@c_bit, @c_tinyint, @c_smallint, @c_int, @c_bigint, @c_real, @c_float, @c_decimal, @c_numeric, @c_money, @c_smallmoney);";
+    public class InsertMssqlNumericTypesBatchArgs
+    {
+        public bool? CBit { get; init; }
+        public byte? CTinyint { get; init; }
+        public short? CSmallint { get; init; }
+        public int? CInt { get; init; }
+        public long? CBigint { get; init; }
+        public float? CReal { get; init; }
+        public double? CFloat { get; init; }
+        public decimal? CDecimal { get; init; }
+        public decimal? CNumeric { get; init; }
+        public decimal? CMoney { get; init; }
+        public decimal? CSmallmoney { get; init; }
+    };
+    public async Task InsertMssqlNumericTypesBatchAsync(List<InsertMssqlNumericTypesBatchArgs> args)
+    {
+        using (var connection = new SqlConnection(ConnectionString))
+        {
+            await connection.OpenAsync();
+            var dataTable = new DataTable();
+            dataTable.Columns.Add("c_bit", typeof(bool));
+            dataTable.Columns.Add("c_tinyint", typeof(byte));
+            dataTable.Columns.Add("c_smallint", typeof(short));
+            dataTable.Columns.Add("c_int", typeof(int));
+            dataTable.Columns.Add("c_bigint", typeof(long));
+            dataTable.Columns.Add("c_real", typeof(float));
+            dataTable.Columns.Add("c_float", typeof(double));
+            dataTable.Columns.Add("c_decimal", typeof(decimal));
+            dataTable.Columns.Add("c_numeric", typeof(decimal));
+            dataTable.Columns.Add("c_money", typeof(decimal));
+            dataTable.Columns.Add("c_smallmoney", typeof(decimal));
+            foreach (var row in args)
+                dataTable.Rows.Add(row.CBit, row.CTinyint, row.CSmallint, row.CInt, row.CBigint, row.CReal, row.CFloat, row.CDecimal, row.CNumeric, row.CMoney, row.CSmallmoney);
+            using (var bulkCopy = new SqlBulkCopy(connection))
+            {
+                bulkCopy.DestinationTableName = "[mssql_numeric_types]";
+                bulkCopy.ColumnMappings.Add("c_bit", "c_bit");
+                bulkCopy.ColumnMappings.Add("c_tinyint", "c_tinyint");
+                bulkCopy.ColumnMappings.Add("c_smallint", "c_smallint");
+                bulkCopy.ColumnMappings.Add("c_int", "c_int");
+                bulkCopy.ColumnMappings.Add("c_bigint", "c_bigint");
+                bulkCopy.ColumnMappings.Add("c_real", "c_real");
+                bulkCopy.ColumnMappings.Add("c_float", "c_float");
+                bulkCopy.ColumnMappings.Add("c_decimal", "c_decimal");
+                bulkCopy.ColumnMappings.Add("c_numeric", "c_numeric");
+                bulkCopy.ColumnMappings.Add("c_money", "c_money");
+                bulkCopy.ColumnMappings.Add("c_smallmoney", "c_smallmoney");
+                await bulkCopy.WriteToServerAsync(dataTable);
+            }
+        }
+    }
+
+    private const string GetMssqlNumericTypesSql = "SELECT TOP 1 c_bit, c_tinyint, c_smallint, c_int, c_bigint, c_real, c_float, c_decimal, c_numeric, c_money, c_smallmoney FROM mssql_numeric_types;";
+    public class GetMssqlNumericTypesRow
+    {
+        public bool? CBit { get; init; }
+        public byte? CTinyint { get; init; }
+        public short? CSmallint { get; init; }
+        public int? CInt { get; init; }
+        public long? CBigint { get; init; }
+        public float? CReal { get; init; }
+        public double? CFloat { get; init; }
+        public decimal? CDecimal { get; init; }
+        public decimal? CNumeric { get; init; }
+        public decimal? CMoney { get; init; }
+        public decimal? CSmallmoney { get; init; }
+    };
+    public async Task<GetMssqlNumericTypesRow?> GetMssqlNumericTypesAsync()
+    {
+        if (this.Transaction == null)
+        {
+            using (var connection = new SqlConnection(ConnectionString))
+            {
+                var result = await connection.QueryFirstOrDefaultAsync<GetMssqlNumericTypesRow?>(GetMssqlNumericTypesSql);
+                return result;
+            }
+        }
+
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
+            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+        return await this.Transaction.Connection.QueryFirstOrDefaultAsync<GetMssqlNumericTypesRow?>(GetMssqlNumericTypesSql, transaction: this.Transaction);
+    }
+
+    private const string GetMssqlNumericTypesCntSql = @"SELECT TOP 1
+                                                            COUNT(*) AS cnt,
+                                                            c_bit,
+                                                            c_tinyint,
+                                                            c_smallint,
+                                                            c_int,
+                                                            c_bigint,
+                                                            c_real,
+                                                            c_float,
+                                                            c_decimal,
+                                                            c_numeric,
+                                                            c_money,
+                                                            c_smallmoney
+                                                        FROM mssql_numeric_types
+                                                        GROUP BY
+                                                            c_bit,
+                                                            c_tinyint,
+                                                            c_smallint,
+                                                            c_int,
+                                                            c_bigint,
+                                                            c_real,
+                                                            c_float,
+                                                            c_decimal,
+                                                            c_numeric,
+                                                            c_money,
+                                                            c_smallmoney;";
+    public class GetMssqlNumericTypesCntRow
+    {
+        public required int Cnt { get; init; }
+        public bool? CBit { get; init; }
+        public byte? CTinyint { get; init; }
+        public short? CSmallint { get; init; }
+        public int? CInt { get; init; }
+        public long? CBigint { get; init; }
+        public float? CReal { get; init; }
+        public double? CFloat { get; init; }
+        public decimal? CDecimal { get; init; }
+        public decimal? CNumeric { get; init; }
+        public decimal? CMoney { get; init; }
+        public decimal? CSmallmoney { get; init; }
+    };
+    public async Task<GetMssqlNumericTypesCntRow?> GetMssqlNumericTypesCntAsync()
+    {
+        if (this.Transaction == null)
+        {
+            using (var connection = new SqlConnection(ConnectionString))
+            {
+                var result = await connection.QueryFirstOrDefaultAsync<GetMssqlNumericTypesCntRow?>(GetMssqlNumericTypesCntSql);
+                return result;
+            }
+        }
+
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
+            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+        return await this.Transaction.Connection.QueryFirstOrDefaultAsync<GetMssqlNumericTypesCntRow?>(GetMssqlNumericTypesCntSql, transaction: this.Transaction);
+    }
+
+    private const string TruncateMssqlNumericTypesSql = "TRUNCATE TABLE mssql_numeric_types;";
+    public async Task TruncateMssqlNumericTypesAsync()
+    {
+        if (this.Transaction == null)
+        {
+            using (var connection = new SqlConnection(ConnectionString))
+            {
+                await connection.ExecuteAsync(TruncateMssqlNumericTypesSql);
+                return;
+            }
+        }
+
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
+            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+        await this.Transaction.Connection.ExecuteAsync(TruncateMssqlNumericTypesSql, transaction: this.Transaction);
+    }
+
+    private const string InsertMssqlStringTypesSql = @"
+                                                       INSERT INTO mssql_string_types
+                                                       (
+                                                           c_char,
+                                                           c_nchar,
+                                                           c_varchar,
+                                                           c_nvarchar,
+                                                           c_varchar_max,
+                                                           c_nvarchar_max
+                                                       )
+                                                       VALUES (@c_char, @c_nchar, @c_varchar, @c_nvarchar, @c_varchar_max, @c_nvarchar_max);";
+    public class InsertMssqlStringTypesArgs
+    {
+        public string? CChar { get; init; }
+        public string? CNchar { get; init; }
+        public string? CVarchar { get; init; }
+        public string? CNvarchar { get; init; }
+        public string? CVarcharMax { get; init; }
+        public string? CNvarcharMax { get; init; }
+    };
+    public async Task InsertMssqlStringTypesAsync(InsertMssqlStringTypesArgs args)
+    {
+        var queryParams = new Dictionary<string, object?>();
+        queryParams.Add("c_char", args.CChar);
+        queryParams.Add("c_nchar", args.CNchar);
+        queryParams.Add("c_varchar", args.CVarchar);
+        queryParams.Add("c_nvarchar", args.CNvarchar);
+        queryParams.Add("c_varchar_max", args.CVarcharMax);
+        queryParams.Add("c_nvarchar_max", args.CNvarcharMax);
+        if (this.Transaction == null)
+        {
+            using (var connection = new SqlConnection(ConnectionString))
+            {
+                await connection.ExecuteAsync(InsertMssqlStringTypesSql, queryParams);
+                return;
+            }
+        }
+
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
+            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+        await this.Transaction.Connection.ExecuteAsync(InsertMssqlStringTypesSql, queryParams, transaction: this.Transaction);
+    }
+
+    private const string InsertMssqlStringTypesBatchSql = @"INSERT INTO mssql_string_types
+                                                            (
+                                                                c_char,
+                                                                c_nchar,
+                                                                c_varchar,
+                                                                c_nvarchar,
+                                                                c_varchar_max,
+                                                                c_nvarchar_max
+                                                            )
+                                                            VALUES (@c_char, @c_nchar, @c_varchar, @c_nvarchar, @c_varchar_max, @c_nvarchar_max);";
+    public class InsertMssqlStringTypesBatchArgs
+    {
+        public string? CChar { get; init; }
+        public string? CNchar { get; init; }
+        public string? CVarchar { get; init; }
+        public string? CNvarchar { get; init; }
+        public string? CVarcharMax { get; init; }
+        public string? CNvarcharMax { get; init; }
+    };
+    public async Task InsertMssqlStringTypesBatchAsync(List<InsertMssqlStringTypesBatchArgs> args)
+    {
+        using (var connection = new SqlConnection(ConnectionString))
+        {
+            await connection.OpenAsync();
+            var dataTable = new DataTable();
+            dataTable.Columns.Add("c_char", typeof(string));
+            dataTable.Columns.Add("c_nchar", typeof(string));
+            dataTable.Columns.Add("c_varchar", typeof(string));
+            dataTable.Columns.Add("c_nvarchar", typeof(string));
+            dataTable.Columns.Add("c_varchar_max", typeof(string));
+            dataTable.Columns.Add("c_nvarchar_max", typeof(string));
+            foreach (var row in args)
+                dataTable.Rows.Add(row.CChar, row.CNchar, row.CVarchar, row.CNvarchar, row.CVarcharMax, row.CNvarcharMax);
+            using (var bulkCopy = new SqlBulkCopy(connection))
+            {
+                bulkCopy.DestinationTableName = "[mssql_string_types]";
+                bulkCopy.ColumnMappings.Add("c_char", "c_char");
+                bulkCopy.ColumnMappings.Add("c_nchar", "c_nchar");
+                bulkCopy.ColumnMappings.Add("c_varchar", "c_varchar");
+                bulkCopy.ColumnMappings.Add("c_nvarchar", "c_nvarchar");
+                bulkCopy.ColumnMappings.Add("c_varchar_max", "c_varchar_max");
+                bulkCopy.ColumnMappings.Add("c_nvarchar_max", "c_nvarchar_max");
+                await bulkCopy.WriteToServerAsync(dataTable);
+            }
+        }
+    }
+
+    private const string GetMssqlStringTypesSql = "SELECT TOP 1 c_char, c_nchar, c_varchar, c_nvarchar, c_varchar_max, c_nvarchar_max FROM mssql_string_types;";
+    public class GetMssqlStringTypesRow
+    {
+        public string? CChar { get; init; }
+        public string? CNchar { get; init; }
+        public string? CVarchar { get; init; }
+        public string? CNvarchar { get; init; }
+        public string? CVarcharMax { get; init; }
+        public string? CNvarcharMax { get; init; }
+    };
+    public async Task<GetMssqlStringTypesRow?> GetMssqlStringTypesAsync()
+    {
+        if (this.Transaction == null)
+        {
+            using (var connection = new SqlConnection(ConnectionString))
+            {
+                var result = await connection.QueryFirstOrDefaultAsync<GetMssqlStringTypesRow?>(GetMssqlStringTypesSql);
+                return result;
+            }
+        }
+
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
+            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+        return await this.Transaction.Connection.QueryFirstOrDefaultAsync<GetMssqlStringTypesRow?>(GetMssqlStringTypesSql, transaction: this.Transaction);
+    }
+
+    private const string GetMssqlStringTypesCntSql = @"SELECT TOP 1
+                                                           COUNT(*) AS cnt,
+                                                           c_char,
+                                                           c_nchar,
+                                                           c_varchar,
+                                                           c_nvarchar,
+                                                           c_varchar_max,
+                                                           c_nvarchar_max
+                                                       FROM mssql_string_types
+                                                       GROUP BY
+                                                           c_char,
+                                                           c_nchar,
+                                                           c_varchar,
+                                                           c_nvarchar,
+                                                           c_varchar_max,
+                                                           c_nvarchar_max;";
+    public class GetMssqlStringTypesCntRow
+    {
+        public required int Cnt { get; init; }
+        public string? CChar { get; init; }
+        public string? CNchar { get; init; }
+        public string? CVarchar { get; init; }
+        public string? CNvarchar { get; init; }
+        public string? CVarcharMax { get; init; }
+        public string? CNvarcharMax { get; init; }
+    };
+    public async Task<GetMssqlStringTypesCntRow?> GetMssqlStringTypesCntAsync()
+    {
+        if (this.Transaction == null)
+        {
+            using (var connection = new SqlConnection(ConnectionString))
+            {
+                var result = await connection.QueryFirstOrDefaultAsync<GetMssqlStringTypesCntRow?>(GetMssqlStringTypesCntSql);
+                return result;
+            }
+        }
+
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
+            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+        return await this.Transaction.Connection.QueryFirstOrDefaultAsync<GetMssqlStringTypesCntRow?>(GetMssqlStringTypesCntSql, transaction: this.Transaction);
+    }
+
+    private const string TruncateMssqlStringTypesSql = "TRUNCATE TABLE mssql_string_types;";
+    public async Task TruncateMssqlStringTypesAsync()
+    {
+        if (this.Transaction == null)
+        {
+            using (var connection = new SqlConnection(ConnectionString))
+            {
+                await connection.ExecuteAsync(TruncateMssqlStringTypesSql);
+                return;
+            }
+        }
+
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
+            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+        await this.Transaction.Connection.ExecuteAsync(TruncateMssqlStringTypesSql, transaction: this.Transaction);
+    }
+
+    private const string InsertMssqlDatetimeTypesSql = @"
+                                                         INSERT INTO mssql_datetime_types
+                                                         (
+                                                             c_date,
+                                                             c_datetime,
+                                                             c_datetime2,
+                                                             c_smalldatetime,
+                                                             c_datetimeoffset,
+                                                             c_time
+                                                         )
+                                                         VALUES (@c_date, @c_datetime, @c_datetime2, @c_smalldatetime, @c_datetimeoffset, @c_time);";
+    public class InsertMssqlDatetimeTypesArgs
+    {
+        public DateTime? CDate { get; init; }
+        public DateTime? CDatetime { get; init; }
+        public DateTime? CDatetime2 { get; init; }
+        public DateTime? CSmalldatetime { get; init; }
+        public DateTimeOffset? CDatetimeoffset { get; init; }
+        public TimeSpan? CTime { get; init; }
+    };
+    public async Task InsertMssqlDatetimeTypesAsync(InsertMssqlDatetimeTypesArgs args)
+    {
+        var queryParams = new Dictionary<string, object?>();
+        queryParams.Add("c_date", args.CDate);
+        queryParams.Add("c_datetime", args.CDatetime);
+        queryParams.Add("c_datetime2", args.CDatetime2);
+        queryParams.Add("c_smalldatetime", args.CSmalldatetime);
+        queryParams.Add("c_datetimeoffset", args.CDatetimeoffset);
+        queryParams.Add("c_time", args.CTime);
+        if (this.Transaction == null)
+        {
+            using (var connection = new SqlConnection(ConnectionString))
+            {
+                await connection.ExecuteAsync(InsertMssqlDatetimeTypesSql, queryParams);
+                return;
+            }
+        }
+
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
+            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+        await this.Transaction.Connection.ExecuteAsync(InsertMssqlDatetimeTypesSql, queryParams, transaction: this.Transaction);
+    }
+
+    private const string InsertMssqlDatetimeTypesBatchSql = @"INSERT INTO mssql_datetime_types
+                                                              (
+                                                                  c_date,
+                                                                  c_datetime,
+                                                                  c_datetime2,
+                                                                  c_smalldatetime,
+                                                                  c_datetimeoffset,
+                                                                  c_time
+                                                              )
+                                                              VALUES (@c_date, @c_datetime, @c_datetime2, @c_smalldatetime, @c_datetimeoffset, @c_time);";
+    public class InsertMssqlDatetimeTypesBatchArgs
+    {
+        public DateTime? CDate { get; init; }
+        public DateTime? CDatetime { get; init; }
+        public DateTime? CDatetime2 { get; init; }
+        public DateTime? CSmalldatetime { get; init; }
+        public DateTimeOffset? CDatetimeoffset { get; init; }
+        public TimeSpan? CTime { get; init; }
+    };
+    public async Task InsertMssqlDatetimeTypesBatchAsync(List<InsertMssqlDatetimeTypesBatchArgs> args)
+    {
+        using (var connection = new SqlConnection(ConnectionString))
+        {
+            await connection.OpenAsync();
+            var dataTable = new DataTable();
+            dataTable.Columns.Add("c_date", typeof(DateTime));
+            dataTable.Columns.Add("c_datetime", typeof(DateTime));
+            dataTable.Columns.Add("c_datetime2", typeof(DateTime));
+            dataTable.Columns.Add("c_smalldatetime", typeof(DateTime));
+            dataTable.Columns.Add("c_datetimeoffset", typeof(DateTimeOffset));
+            dataTable.Columns.Add("c_time", typeof(TimeSpan));
+            foreach (var row in args)
+                dataTable.Rows.Add(row.CDate, row.CDatetime, row.CDatetime2, row.CSmalldatetime, row.CDatetimeoffset, row.CTime);
+            using (var bulkCopy = new SqlBulkCopy(connection))
+            {
+                bulkCopy.DestinationTableName = "[mssql_datetime_types]";
+                bulkCopy.ColumnMappings.Add("c_date", "c_date");
+                bulkCopy.ColumnMappings.Add("c_datetime", "c_datetime");
+                bulkCopy.ColumnMappings.Add("c_datetime2", "c_datetime2");
+                bulkCopy.ColumnMappings.Add("c_smalldatetime", "c_smalldatetime");
+                bulkCopy.ColumnMappings.Add("c_datetimeoffset", "c_datetimeoffset");
+                bulkCopy.ColumnMappings.Add("c_time", "c_time");
+                await bulkCopy.WriteToServerAsync(dataTable);
+            }
+        }
+    }
+
+    private const string GetMssqlDatetimeTypesSql = "SELECT TOP 1 c_date, c_datetime, c_datetime2, c_smalldatetime, c_datetimeoffset, c_time FROM mssql_datetime_types;";
+    public class GetMssqlDatetimeTypesRow
+    {
+        public DateTime? CDate { get; init; }
+        public DateTime? CDatetime { get; init; }
+        public DateTime? CDatetime2 { get; init; }
+        public DateTime? CSmalldatetime { get; init; }
+        public DateTimeOffset? CDatetimeoffset { get; init; }
+        public TimeSpan? CTime { get; init; }
+    };
+    public async Task<GetMssqlDatetimeTypesRow?> GetMssqlDatetimeTypesAsync()
+    {
+        if (this.Transaction == null)
+        {
+            using (var connection = new SqlConnection(ConnectionString))
+            {
+                var result = await connection.QueryFirstOrDefaultAsync<GetMssqlDatetimeTypesRow?>(GetMssqlDatetimeTypesSql);
+                return result;
+            }
+        }
+
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
+            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+        return await this.Transaction.Connection.QueryFirstOrDefaultAsync<GetMssqlDatetimeTypesRow?>(GetMssqlDatetimeTypesSql, transaction: this.Transaction);
+    }
+
+    private const string GetMssqlDatetimeTypesCntSql = @"SELECT TOP 1
+                                                             COUNT(*) AS cnt,
+                                                             c_date,
+                                                             c_datetime,
+                                                             c_datetime2,
+                                                             c_smalldatetime,
+                                                             c_datetimeoffset,
+                                                             c_time
+                                                         FROM mssql_datetime_types
+                                                         GROUP BY
+                                                             c_date,
+                                                             c_datetime,
+                                                             c_datetime2,
+                                                             c_smalldatetime,
+                                                             c_datetimeoffset,
+                                                             c_time;";
+    public class GetMssqlDatetimeTypesCntRow
+    {
+        public required int Cnt { get; init; }
+        public DateTime? CDate { get; init; }
+        public DateTime? CDatetime { get; init; }
+        public DateTime? CDatetime2 { get; init; }
+        public DateTime? CSmalldatetime { get; init; }
+        public DateTimeOffset? CDatetimeoffset { get; init; }
+        public TimeSpan? CTime { get; init; }
+    };
+    public async Task<GetMssqlDatetimeTypesCntRow?> GetMssqlDatetimeTypesCntAsync()
+    {
+        if (this.Transaction == null)
+        {
+            using (var connection = new SqlConnection(ConnectionString))
+            {
+                var result = await connection.QueryFirstOrDefaultAsync<GetMssqlDatetimeTypesCntRow?>(GetMssqlDatetimeTypesCntSql);
+                return result;
+            }
+        }
+
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
+            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+        return await this.Transaction.Connection.QueryFirstOrDefaultAsync<GetMssqlDatetimeTypesCntRow?>(GetMssqlDatetimeTypesCntSql, transaction: this.Transaction);
+    }
+
+    private const string TruncateMssqlDatetimeTypesSql = "TRUNCATE TABLE mssql_datetime_types;";
+    public async Task TruncateMssqlDatetimeTypesAsync()
+    {
+        if (this.Transaction == null)
+        {
+            using (var connection = new SqlConnection(ConnectionString))
+            {
+                await connection.ExecuteAsync(TruncateMssqlDatetimeTypesSql);
+                return;
+            }
+        }
+
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
+            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+        await this.Transaction.Connection.ExecuteAsync(TruncateMssqlDatetimeTypesSql, transaction: this.Transaction);
+    }
+
+    private const string InsertMssqlBinaryTypesSql = @"
+                                                       INSERT INTO mssql_binary_types
+                                                       (
+                                                           c_binary,
+                                                           c_varbinary,
+                                                           c_varbinary_max,
+                                                           c_uniqueidentifier
+                                                       )
+                                                       VALUES (@c_binary, @c_varbinary, @c_varbinary_max, @c_uniqueidentifier);";
+    public class InsertMssqlBinaryTypesArgs
+    {
+        public byte[]? CBinary { get; init; }
+        public byte[]? CVarbinary { get; init; }
+        public byte[]? CVarbinaryMax { get; init; }
+        public Guid? CUniqueidentifier { get; init; }
+    };
+    public async Task InsertMssqlBinaryTypesAsync(InsertMssqlBinaryTypesArgs args)
+    {
+        var queryParams = new Dictionary<string, object?>();
+        queryParams.Add("c_binary", new Utils.BinaryParameter(args.CBinary));
+        queryParams.Add("c_varbinary", new Utils.BinaryParameter(args.CVarbinary));
+        queryParams.Add("c_varbinary_max", new Utils.BinaryParameter(args.CVarbinaryMax));
+        queryParams.Add("c_uniqueidentifier", args.CUniqueidentifier);
+        if (this.Transaction == null)
+        {
+            using (var connection = new SqlConnection(ConnectionString))
+            {
+                await connection.ExecuteAsync(InsertMssqlBinaryTypesSql, queryParams);
+                return;
+            }
+        }
+
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
+            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+        await this.Transaction.Connection.ExecuteAsync(InsertMssqlBinaryTypesSql, queryParams, transaction: this.Transaction);
+    }
+
+    private const string InsertMssqlBinaryTypesBatchSql = @"INSERT INTO mssql_binary_types
+                                                            (
+                                                                c_binary,
+                                                                c_varbinary,
+                                                                c_varbinary_max,
+                                                                c_uniqueidentifier
+                                                            )
+                                                            VALUES (@c_binary, @c_varbinary, @c_varbinary_max, @c_uniqueidentifier);";
+    public class InsertMssqlBinaryTypesBatchArgs
+    {
+        public byte[]? CBinary { get; init; }
+        public byte[]? CVarbinary { get; init; }
+        public byte[]? CVarbinaryMax { get; init; }
+        public Guid? CUniqueidentifier { get; init; }
+    };
+    public async Task InsertMssqlBinaryTypesBatchAsync(List<InsertMssqlBinaryTypesBatchArgs> args)
+    {
+        using (var connection = new SqlConnection(ConnectionString))
+        {
+            await connection.OpenAsync();
+            var dataTable = new DataTable();
+            dataTable.Columns.Add("c_binary", typeof(byte[]));
+            dataTable.Columns.Add("c_varbinary", typeof(byte[]));
+            dataTable.Columns.Add("c_varbinary_max", typeof(byte[]));
+            dataTable.Columns.Add("c_uniqueidentifier", typeof(Guid));
+            foreach (var row in args)
+                dataTable.Rows.Add(row.CBinary ?? (object)DBNull.Value, row.CVarbinary ?? (object)DBNull.Value, row.CVarbinaryMax ?? (object)DBNull.Value, row.CUniqueidentifier);
+            using (var bulkCopy = new SqlBulkCopy(connection))
+            {
+                bulkCopy.DestinationTableName = "[mssql_binary_types]";
+                bulkCopy.ColumnMappings.Add("c_binary", "c_binary");
+                bulkCopy.ColumnMappings.Add("c_varbinary", "c_varbinary");
+                bulkCopy.ColumnMappings.Add("c_varbinary_max", "c_varbinary_max");
+                bulkCopy.ColumnMappings.Add("c_uniqueidentifier", "c_uniqueidentifier");
+                await bulkCopy.WriteToServerAsync(dataTable);
+            }
+        }
+    }
+
+    private const string GetMssqlBinaryTypesSql = "SELECT TOP 1 c_binary, c_varbinary, c_varbinary_max, c_uniqueidentifier FROM mssql_binary_types;";
+    public class GetMssqlBinaryTypesRow
+    {
+        public byte[]? CBinary { get; init; }
+        public byte[]? CVarbinary { get; init; }
+        public byte[]? CVarbinaryMax { get; init; }
+        public Guid? CUniqueidentifier { get; init; }
+    };
+    public async Task<GetMssqlBinaryTypesRow?> GetMssqlBinaryTypesAsync()
+    {
+        if (this.Transaction == null)
+        {
+            using (var connection = new SqlConnection(ConnectionString))
+            {
+                var result = await connection.QueryFirstOrDefaultAsync<GetMssqlBinaryTypesRow?>(GetMssqlBinaryTypesSql);
+                return result;
+            }
+        }
+
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
+            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+        return await this.Transaction.Connection.QueryFirstOrDefaultAsync<GetMssqlBinaryTypesRow?>(GetMssqlBinaryTypesSql, transaction: this.Transaction);
+    }
+
+    private const string GetMssqlBinaryTypesCntSql = @"SELECT TOP 1
+                                                           COUNT(*) AS cnt,
+                                                           c_binary,
+                                                           c_varbinary,
+                                                           c_varbinary_max,
+                                                           c_uniqueidentifier
+                                                       FROM mssql_binary_types
+                                                       GROUP BY
+                                                           c_binary,
+                                                           c_varbinary,
+                                                           c_varbinary_max,
+                                                           c_uniqueidentifier;";
+    public class GetMssqlBinaryTypesCntRow
+    {
+        public required int Cnt { get; init; }
+        public byte[]? CBinary { get; init; }
+        public byte[]? CVarbinary { get; init; }
+        public byte[]? CVarbinaryMax { get; init; }
+        public Guid? CUniqueidentifier { get; init; }
+    };
+    public async Task<GetMssqlBinaryTypesCntRow?> GetMssqlBinaryTypesCntAsync()
+    {
+        if (this.Transaction == null)
+        {
+            using (var connection = new SqlConnection(ConnectionString))
+            {
+                var result = await connection.QueryFirstOrDefaultAsync<GetMssqlBinaryTypesCntRow?>(GetMssqlBinaryTypesCntSql);
+                return result;
+            }
+        }
+
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
+            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+        return await this.Transaction.Connection.QueryFirstOrDefaultAsync<GetMssqlBinaryTypesCntRow?>(GetMssqlBinaryTypesCntSql, transaction: this.Transaction);
+    }
+
+    private const string TruncateMssqlBinaryTypesSql = "TRUNCATE TABLE mssql_binary_types;";
+    public async Task TruncateMssqlBinaryTypesAsync()
+    {
+        if (this.Transaction == null)
+        {
+            using (var connection = new SqlConnection(ConnectionString))
+            {
+                await connection.ExecuteAsync(TruncateMssqlBinaryTypesSql);
+                return;
+            }
+        }
+
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
+            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+        await this.Transaction.Connection.ExecuteAsync(TruncateMssqlBinaryTypesSql, transaction: this.Transaction);
+    }
+
+    private const string GetMssqlFunctionsSql = @"
+                                                  SELECT
+                                                      MAX(c_int) AS max_int,
+                                                      MAX(c_varchar) AS max_varchar,
+                                                      MAX(c_datetime2) AS max_datetime2
+                                                  FROM mssql_numeric_types
+                                                  CROSS JOIN mssql_string_types
+                                                  CROSS JOIN mssql_datetime_types;";
+    public class GetMssqlFunctionsRow
+    {
+        public int? MaxInt { get; init; }
+        public string? MaxVarchar { get; init; }
+        public DateTime? MaxDatetime2 { get; init; }
+    };
+    public async Task<GetMssqlFunctionsRow?> GetMssqlFunctionsAsync()
+    {
+        if (this.Transaction == null)
+        {
+            using (var connection = new SqlConnection(ConnectionString))
+            {
+                var result = await connection.QueryFirstOrDefaultAsync<GetMssqlFunctionsRow?>(GetMssqlFunctionsSql);
+                return result;
+            }
+        }
+
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
+            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+        return await this.Transaction.Connection.QueryFirstOrDefaultAsync<GetMssqlFunctionsRow?>(GetMssqlFunctionsSql, transaction: this.Transaction);
     }
 }

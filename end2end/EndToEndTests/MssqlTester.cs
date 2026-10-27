@@ -14,5 +14,9 @@ public partial class MssqlTester
     public async Task EmptyTestsTables()
     {
         await QuerySql.DeleteAllAuthorsAsync();
+        await QuerySql.TruncateMssqlNumericTypesAsync();
+        await QuerySql.TruncateMssqlStringTypesAsync();
+        await QuerySql.TruncateMssqlDatetimeTypesAsync();
+        await QuerySql.TruncateMssqlBinaryTypesAsync();
     }
 }

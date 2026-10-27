@@ -532,8 +532,8 @@ sql:
           generateCsproj: true
           namespaceName: NpgsqlDapperAsyncEnumerableExampleGen
   # SQL Server
-  - schema: ["examples/config/mssql/authors/schema.sql"]
-    queries: ["examples/config/mssql/authors/query.sql"]
+  - schema: ["examples/config/mssql/authors/schema.sql", "examples/config/mssql/types/schema.sql"]
+    queries: ["examples/config/mssql/authors/query.sql", "examples/config/mssql/types/query.sql"]
     engine: "mssql"
     codegen:
       - plugin: csharp
@@ -543,8 +543,8 @@ sql:
           targetFramework: net10.0
           generateCsproj: true
           namespaceName: MssqlExampleGen
-  - schema: ["examples/config/mssql/authors/schema.sql"]
-    queries: ["examples/config/mssql/authors/query.sql"]
+  - schema: ["examples/config/mssql/authors/schema.sql", "examples/config/mssql/types/schema.sql"]
+    queries: ["examples/config/mssql/authors/query.sql", "examples/config/mssql/types/query.sql"]
     engine: "mssql"
     codegen:
       - plugin: csharp

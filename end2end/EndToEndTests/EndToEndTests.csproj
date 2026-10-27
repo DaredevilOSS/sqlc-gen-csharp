@@ -14,6 +14,10 @@
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
             <TargetPath>authors.mssql.schema.sql</TargetPath>
         </Content>
+        <Content Include="../../examples/config/mssql/types/schema.sql">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+            <TargetPath>types.mssql.schema.sql</TargetPath>
+        </Content>
         <Content Include="../../examples/config/sqlite/authors/schema.sql">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
             <TargetPath>authors.sqlite.schema.sql</TargetPath>

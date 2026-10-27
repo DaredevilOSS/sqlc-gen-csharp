@@ -37,7 +37,8 @@ public class GlobalSetup
             Execute(connection, $"DROP DATABASE IF EXISTS [{database}]");
             Execute(connection, $"CREATE DATABASE [{database}]");
             connection.ChangeDatabase(database);
-            Execute(connection, File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "authors.mssql.schema.sql")));
+            foreach (var schemaFile in new[] { "authors.mssql.schema.sql", "types.mssql.schema.sql" })
+                Execute(connection, File.ReadAllText(Path.Combine(AppContext.BaseDirectory, schemaFile)));
         }
     }
 
