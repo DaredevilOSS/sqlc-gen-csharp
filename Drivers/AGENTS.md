@@ -97,6 +97,18 @@ Outliers:
   Does not apply writer functions or overrides.
 - `:execlastid`: relies on a user-written `RETURNING`.
 
+**SQL Server (`MssqlDriver`, experimental)**
+- Params: sqlc already writes `@name`, so `TransformQueryText` returns the text as is. A new `SqlConnection` per call; no `IDisposable`.
+- Every parameter gets an explicit `SqlDbType` (`DbTypeOverride` of the mapping, `AddParametersToCommand` override):
+  an untyped `NULL` is sent as nvarchar, which SQL Server refuses for binary columns, and `AddWithValue(DateTime)` is
+  `datetime` (3.33 ms). `decimal`s stay untyped so precision and scale come from the value. Spatial/hierarchyid use
+  `SqlDbType.Udt` + `UdtTypeName`.
+- Dapper: `SqlMapper.AddTypeMap(typeof(DateTime), DbType.DateTime2)` (a type handler for a built-in type is ignored by
+  Dapper), and `Utils.BinaryParameter` (an `ICustomQueryParameter`) for `byte[]`.
+- `:copyfrom`: `SqlBulkCopy` from a `DataTable` whose columns are `object` (writer functions may change the CLR type).
+- `:execlastid`: relies on a user-written `OUTPUT INSERTED.id`.
+- An empty sqlc type name (expressions sqlc cannot type yet) maps to `object`.
+
 ## Adding a type mapping
 1. Add/extend the `ColumnMappings` entry in the right driver (reader, array reader, writer, `ConvertFunc`, usings, Dapper handler as needed).
 2. Value type? Add it to `NullableTypes` (for a DB-specific type, add it from the driver, not the base list).

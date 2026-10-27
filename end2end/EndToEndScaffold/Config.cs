@@ -37,6 +37,11 @@ public enum KnownTestType
     MssqlBinaryCopyFrom,
     MssqlTransaction,
     MssqlTransactionRollback,
+    MssqlIdentityExecLastId,
+    MssqlSchemaScopedTable,
+    MssqlSpatialDataTypes,
+    MssqlNodaTimeOverride,
+    MssqlNodaTimeCopyFrom,
 
     // Sqlite
     SqliteDataTypes,
@@ -109,6 +114,9 @@ public enum KnownTestType
 
 internal static class Config
 {
+    // tests that cannot run on .NET Framework: Microsoft.SqlServer.Types needs its native library there
+    public static readonly HashSet<KnownTestType> NotForLegacy = [KnownTestType.MssqlSpatialDataTypes];
+
     private static readonly SortedSet<KnownTestType> _mysqlTestTypes = [
         KnownTestType.MySqlTransaction,
         KnownTestType.MySqlTransactionRollback,
@@ -223,7 +231,12 @@ internal static class Config
         KnownTestType.MssqlBinaryDataTypes,
         KnownTestType.MssqlBinaryCopyFrom,
         KnownTestType.MssqlTransaction,
-        KnownTestType.MssqlTransactionRollback
+        KnownTestType.MssqlTransactionRollback,
+        KnownTestType.MssqlIdentityExecLastId,
+        KnownTestType.MssqlSchemaScopedTable,
+        KnownTestType.MssqlSpatialDataTypes,
+        KnownTestType.MssqlNodaTimeOverride,
+        KnownTestType.MssqlNodaTimeCopyFrom
     ];
 
     private static readonly SortedSet<KnownTestType> _sqliteTestTypes = [

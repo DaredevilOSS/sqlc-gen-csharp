@@ -142,21 +142,21 @@ public static class MssqlTests
                          {
                              await QuerySql.InsertMssqlStringTypesAsync(new QuerySql.InsertMssqlStringTypesArgs
                              {
-                                 CChar = withValues ? (string?)"abcdefghij" : null,
-                                 CNchar = withValues ? (string?)"\u1857\u2649abcdefgh" : null,
-                                 CVarchar = withValues ? (string?)"Holiday in Cambodia" : null,
-                                 CNvarchar = withValues ? (string?)"Sheena \u2649 is a Punk Rocker" : null,
-                                 CVarcharMax = withValues ? (string?)"London's Calling" : null,
-                                 CNvarcharMax = withValues ? (string?)"Police & Thieves \u1857" : null
+                                 CChar = withValues ? (string{{Consts.UnknownNullableIndicatorPlaceholder}})"abcdefghij" : null,
+                                 CNchar = withValues ? (string{{Consts.UnknownNullableIndicatorPlaceholder}})"\u1857\u2649abcdefgh" : null,
+                                 CVarchar = withValues ? (string{{Consts.UnknownNullableIndicatorPlaceholder}})"Holiday in Cambodia" : null,
+                                 CNvarchar = withValues ? (string{{Consts.UnknownNullableIndicatorPlaceholder}})"Sheena \u2649 is a Punk Rocker" : null,
+                                 CVarcharMax = withValues ? (string{{Consts.UnknownNullableIndicatorPlaceholder}})"London's Calling" : null,
+                                 CNvarcharMax = withValues ? (string{{Consts.UnknownNullableIndicatorPlaceholder}})"Police & Thieves \u1857" : null
                              });
                              var expected = new QuerySql.GetMssqlStringTypesRow
                              {
-                                 CChar = withValues ? (string?)"abcdefghij" : null,
-                                 CNchar = withValues ? (string?)"\u1857\u2649abcdefgh" : null,
-                                 CVarchar = withValues ? (string?)"Holiday in Cambodia" : null,
-                                 CNvarchar = withValues ? (string?)"Sheena \u2649 is a Punk Rocker" : null,
-                                 CVarcharMax = withValues ? (string?)"London's Calling" : null,
-                                 CNvarcharMax = withValues ? (string?)"Police & Thieves \u1857" : null
+                                 CChar = withValues ? (string{{Consts.UnknownNullableIndicatorPlaceholder}})"abcdefghij" : null,
+                                 CNchar = withValues ? (string{{Consts.UnknownNullableIndicatorPlaceholder}})"\u1857\u2649abcdefgh" : null,
+                                 CVarchar = withValues ? (string{{Consts.UnknownNullableIndicatorPlaceholder}})"Holiday in Cambodia" : null,
+                                 CNvarchar = withValues ? (string{{Consts.UnknownNullableIndicatorPlaceholder}})"Sheena \u2649 is a Punk Rocker" : null,
+                                 CVarcharMax = withValues ? (string{{Consts.UnknownNullableIndicatorPlaceholder}})"London's Calling" : null,
+                                 CNvarcharMax = withValues ? (string{{Consts.UnknownNullableIndicatorPlaceholder}})"Police & Thieves \u1857" : null
                              };
                              var actual = await QuerySql.GetMssqlStringTypesAsync();
                              AssertSingularEquals(expected, actual{{Consts.UnknownRecordValuePlaceholder}});
@@ -185,24 +185,24 @@ public static class MssqlTests
                          var batchArgs = Enumerable.Range(0, batchSize)
                              .Select(_ => new QuerySql.InsertMssqlStringTypesBatchArgs
                              {
-                                 CChar = withValues ? (string?)"abcdefghij" : null,
-                                 CNchar = withValues ? (string?)"\u1857\u2649abcdefgh" : null,
-                                 CVarchar = withValues ? (string?)"Holiday in Cambodia" : null,
-                                 CNvarchar = withValues ? (string?)"Sheena \u2649 is a Punk Rocker" : null,
-                                 CVarcharMax = withValues ? (string?)"London's Calling" : null,
-                                 CNvarcharMax = withValues ? (string?)"Police & Thieves \u1857" : null
+                                 CChar = withValues ? (string{{Consts.UnknownNullableIndicatorPlaceholder}})"abcdefghij" : null,
+                                 CNchar = withValues ? (string{{Consts.UnknownNullableIndicatorPlaceholder}})"\u1857\u2649abcdefgh" : null,
+                                 CVarchar = withValues ? (string{{Consts.UnknownNullableIndicatorPlaceholder}})"Holiday in Cambodia" : null,
+                                 CNvarchar = withValues ? (string{{Consts.UnknownNullableIndicatorPlaceholder}})"Sheena \u2649 is a Punk Rocker" : null,
+                                 CVarcharMax = withValues ? (string{{Consts.UnknownNullableIndicatorPlaceholder}})"London's Calling" : null,
+                                 CNvarcharMax = withValues ? (string{{Consts.UnknownNullableIndicatorPlaceholder}})"Police & Thieves \u1857" : null
                              })
                              .ToList();
                          await QuerySql.InsertMssqlStringTypesBatchAsync(batchArgs);
                          var expected = new QuerySql.GetMssqlStringTypesCntRow
                          {
                              Cnt = batchSize,
-                             CChar = withValues ? (string?)"abcdefghij" : null,
-                             CNchar = withValues ? (string?)"\u1857\u2649abcdefgh" : null,
-                             CVarchar = withValues ? (string?)"Holiday in Cambodia" : null,
-                             CNvarchar = withValues ? (string?)"Sheena \u2649 is a Punk Rocker" : null,
-                             CVarcharMax = withValues ? (string?)"London's Calling" : null,
-                             CNvarcharMax = withValues ? (string?)"Police & Thieves \u1857" : null
+                             CChar = withValues ? (string{{Consts.UnknownNullableIndicatorPlaceholder}})"abcdefghij" : null,
+                             CNchar = withValues ? (string{{Consts.UnknownNullableIndicatorPlaceholder}})"\u1857\u2649abcdefgh" : null,
+                             CVarchar = withValues ? (string{{Consts.UnknownNullableIndicatorPlaceholder}})"Holiday in Cambodia" : null,
+                             CNvarchar = withValues ? (string{{Consts.UnknownNullableIndicatorPlaceholder}})"Sheena \u2649 is a Punk Rocker" : null,
+                             CVarcharMax = withValues ? (string{{Consts.UnknownNullableIndicatorPlaceholder}})"London's Calling" : null,
+                             CNvarcharMax = withValues ? (string{{Consts.UnknownNullableIndicatorPlaceholder}})"Police & Thieves \u1857" : null
                          };
                          var actual = await QuerySql.GetMssqlStringTypesCntAsync();
                          AssertSingularEquals(expected, actual{{Consts.UnknownRecordValuePlaceholder}});
@@ -326,16 +326,16 @@ public static class MssqlTests
                          {
                              await QuerySql.InsertMssqlBinaryTypesAsync(new QuerySql.InsertMssqlBinaryTypesArgs
                              {
-                                 CBinary = withValues ? (byte[]?)new byte[] { 1, 2, 3 } : null,
-                                 CVarbinary = withValues ? (byte[]?)new byte[] { 4, 5, 6, 7 } : null,
-                                 CVarbinaryMax = withValues ? (byte[]?)new byte[] { 8, 9, 10, 11, 12 } : null,
+                                 CBinary = withValues ? (byte[]{{Consts.UnknownNullableIndicatorPlaceholder}})new byte[] { 1, 2, 3 } : null,
+                                 CVarbinary = withValues ? (byte[]{{Consts.UnknownNullableIndicatorPlaceholder}})new byte[] { 4, 5, 6, 7 } : null,
+                                 CVarbinaryMax = withValues ? (byte[]{{Consts.UnknownNullableIndicatorPlaceholder}})new byte[] { 8, 9, 10, 11, 12 } : null,
                                  CUniqueidentifier = withValues ? (Guid?)Guid.Parse("a3b1c5d7-1234-4abc-9def-0123456789ab") : null
                              });
                              var expected = new QuerySql.GetMssqlBinaryTypesRow
                              {
-                                 CBinary = withValues ? (byte[]?)new byte[] { 1, 2, 3 } : null,
-                                 CVarbinary = withValues ? (byte[]?)new byte[] { 4, 5, 6, 7 } : null,
-                                 CVarbinaryMax = withValues ? (byte[]?)new byte[] { 8, 9, 10, 11, 12 } : null,
+                                 CBinary = withValues ? (byte[]{{Consts.UnknownNullableIndicatorPlaceholder}})new byte[] { 1, 2, 3 } : null,
+                                 CVarbinary = withValues ? (byte[]{{Consts.UnknownNullableIndicatorPlaceholder}})new byte[] { 4, 5, 6, 7 } : null,
+                                 CVarbinaryMax = withValues ? (byte[]{{Consts.UnknownNullableIndicatorPlaceholder}})new byte[] { 8, 9, 10, 11, 12 } : null,
                                  CUniqueidentifier = withValues ? (Guid?)Guid.Parse("a3b1c5d7-1234-4abc-9def-0123456789ab") : null
                              };
                              var actual = await QuerySql.GetMssqlBinaryTypesAsync();
@@ -363,9 +363,9 @@ public static class MssqlTests
                          var batchArgs = Enumerable.Range(0, batchSize)
                              .Select(_ => new QuerySql.InsertMssqlBinaryTypesBatchArgs
                              {
-                                 CBinary = withValues ? (byte[]?)new byte[] { 1, 2, 3 } : null,
-                                 CVarbinary = withValues ? (byte[]?)new byte[] { 4, 5, 6, 7 } : null,
-                                 CVarbinaryMax = withValues ? (byte[]?)new byte[] { 8, 9, 10, 11, 12 } : null,
+                                 CBinary = withValues ? (byte[]{{Consts.UnknownNullableIndicatorPlaceholder}})new byte[] { 1, 2, 3 } : null,
+                                 CVarbinary = withValues ? (byte[]{{Consts.UnknownNullableIndicatorPlaceholder}})new byte[] { 4, 5, 6, 7 } : null,
+                                 CVarbinaryMax = withValues ? (byte[]{{Consts.UnknownNullableIndicatorPlaceholder}})new byte[] { 8, 9, 10, 11, 12 } : null,
                                  CUniqueidentifier = withValues ? (Guid?)Guid.Parse("a3b1c5d7-1234-4abc-9def-0123456789ab") : null
                              })
                              .ToList();
@@ -373,9 +373,9 @@ public static class MssqlTests
                          var expected = new QuerySql.GetMssqlBinaryTypesCntRow
                          {
                              Cnt = batchSize,
-                             CBinary = withValues ? (byte[]?)new byte[] { 1, 2, 3 } : null,
-                             CVarbinary = withValues ? (byte[]?)new byte[] { 4, 5, 6, 7 } : null,
-                             CVarbinaryMax = withValues ? (byte[]?)new byte[] { 8, 9, 10, 11, 12 } : null,
+                             CBinary = withValues ? (byte[]{{Consts.UnknownNullableIndicatorPlaceholder}})new byte[] { 1, 2, 3 } : null,
+                             CVarbinary = withValues ? (byte[]{{Consts.UnknownNullableIndicatorPlaceholder}})new byte[] { 4, 5, 6, 7 } : null,
+                             CVarbinaryMax = withValues ? (byte[]{{Consts.UnknownNullableIndicatorPlaceholder}})new byte[] { 8, 9, 10, 11, 12 } : null,
                              CUniqueidentifier = withValues ? (Guid?)Guid.Parse("a3b1c5d7-1234-4abc-9def-0123456789ab") : null
                          };
                          var actual = await QuerySql.GetMssqlBinaryTypesCntAsync();
@@ -409,7 +409,7 @@ public static class MssqlTests
                          var actual = await querySqlWithTx.GetAuthorAsync(new QuerySql.GetAuthorArgs { Name = {{Consts.BojackAuthor}} });
                          ClassicAssert.IsNotNull(actual);
 
-                         await transaction.CommitAsync();
+                         transaction.Commit();
 
                          var expected = new QuerySql.GetAuthorRow
                          {
@@ -442,10 +442,125 @@ public static class MssqlTests
                          var querySqlWithTx = QuerySql.WithTransaction(transaction);
                          await querySqlWithTx.CreateAuthorAsync(new QuerySql.CreateAuthorArgs { Id = {{Consts.BojackId}}, Name = {{Consts.BojackAuthor}}, Bio = {{Consts.BojackTheme}} });
 
-                         await transaction.RollbackAsync();
+                         transaction.Rollback();
 
                          var actual = await QuerySql.GetAuthorAsync(new QuerySql.GetAuthorArgs { Name = {{Consts.BojackAuthor}} });
                          ClassicAssert.IsNull(actual);
+                     }
+                     """
+        },
+        [KnownTestType.MssqlIdentityExecLastId] = new TestImpl
+        {
+            Impl = $$"""
+                     [Test]
+                     public async Task TestMssqlIdentityExecLastId()
+                     {
+                         var firstId = await QuerySql.CreateNoteReturnIdAsync(new QuerySql.CreateNoteReturnIdArgs { Body = "first" });
+                         var secondId = await QuerySql.CreateNoteReturnIdAsync(new QuerySql.CreateNoteReturnIdArgs { Body = "second" });
+                         Assert.That(secondId, Is.EqualTo(firstId + 1));
+
+                         var actual = await QuerySql.GetNoteAsync(new QuerySql.GetNoteArgs { Id = secondId });
+                         Assert.That(actual{{Consts.UnknownRecordValuePlaceholder}}.Id, Is.EqualTo(secondId));
+                         Assert.That(actual{{Consts.UnknownRecordValuePlaceholder}}.Body, Is.EqualTo("second"));
+                     }
+                     """
+        },
+        [KnownTestType.MssqlSchemaScopedTable] = new TestImpl
+        {
+            Impl = $$"""
+                     [Test]
+                     public async Task TestMssqlSchemaScopedTable()
+                     {
+                         await QuerySql.CreateExtendedBioAsync(new QuerySql.CreateExtendedBioArgs
+                         {
+                             AuthorName = {{Consts.BojackAuthor}},
+                             Name = {{Consts.BojackBookTitle}},
+                             BioType = "Memoir"
+                         });
+                         var expected = new QuerySql.GetFirstExtendedBioByTypeRow
+                         {
+                             AuthorName = {{Consts.BojackAuthor}},
+                             Name = {{Consts.BojackBookTitle}},
+                             BioType = "Memoir"
+                         };
+                         var actual = await QuerySql.GetFirstExtendedBioByTypeAsync(new QuerySql.GetFirstExtendedBioByTypeArgs { BioType = "Memoir" });
+                         Assert.That(actual{{Consts.UnknownRecordValuePlaceholder}}.AuthorName, Is.EqualTo(expected.AuthorName));
+                         Assert.That(actual{{Consts.UnknownRecordValuePlaceholder}}.Name, Is.EqualTo(expected.Name));
+                         Assert.That(actual{{Consts.UnknownRecordValuePlaceholder}}.BioType, Is.EqualTo(expected.BioType));
+                     }
+                     """
+        },
+        [KnownTestType.MssqlSpatialDataTypes] = new TestImpl
+        {
+            Impl = $$"""
+                     [Test]
+                     public async Task TestMssqlSpatialTypes()
+                     {
+                         await QuerySql.InsertMssqlSpatialTypesAsync(new QuerySql.InsertMssqlSpatialTypesArgs
+                         {
+                             CGeography = SqlGeography.Point(32.1, 34.8, 4326),
+                             CGeometry = SqlGeometry.Point(1, 2, 0),
+                             CHierarchyid = SqlHierarchyId.Parse("/1/2/")
+                         });
+                         var actual = await QuerySql.GetMssqlSpatialTypesAsync();
+                         Assert.That(actual{{Consts.UnknownRecordValuePlaceholder}}.CGeography.ToString(), Is.EqualTo("POINT (34.8 32.1)"));
+                         Assert.That(actual{{Consts.UnknownRecordValuePlaceholder}}.CGeometry.ToString(), Is.EqualTo("POINT (1 2)"));
+                         Assert.That(actual{{Consts.UnknownRecordValuePlaceholder}}.CHierarchyid.ToString(), Is.EqualTo("/1/2/"));
+
+                         await QuerySql.TruncateMssqlSpatialTypesAsync();
+                         await QuerySql.InsertMssqlSpatialTypesAsync(new QuerySql.InsertMssqlSpatialTypesArgs());
+                         actual = await QuerySql.GetMssqlSpatialTypesAsync();
+                         Assert.That(actual{{Consts.UnknownRecordValuePlaceholder}}.CGeography, Is.Null);
+                         Assert.That(actual{{Consts.UnknownRecordValuePlaceholder}}.CGeometry, Is.Null);
+                         Assert.That(actual{{Consts.UnknownRecordValuePlaceholder}}.CHierarchyid, Is.Null);
+                     }
+                     """
+        },
+        [KnownTestType.MssqlNodaTimeOverride] = new TestImpl
+        {
+            Impl = $$"""
+                     [Test]
+                     public async Task TestMssqlNodaTimeOverride()
+                     {
+                         var instant = Instant.FromUtc(2020, 5, 6, 7, 8, 9).PlusTicks(1234567);
+                         await QuerySql.InsertMssqlNodaTypesAsync(new QuerySql.InsertMssqlNodaTypesArgs
+                         {
+                             CDatetime2Instant = instant,
+                             CDatetimeoffsetInstant = instant
+                         });
+                         var actual = await QuerySql.GetMssqlNodaTypesAsync();
+                         Assert.That(actual{{Consts.UnknownRecordValuePlaceholder}}.CDatetime2Instant, Is.EqualTo(instant));
+                         Assert.That(actual{{Consts.UnknownRecordValuePlaceholder}}.CDatetimeoffsetInstant, Is.EqualTo(instant));
+
+                         await QuerySql.TruncateMssqlNodaTypesAsync();
+                         await QuerySql.InsertMssqlNodaTypesAsync(new QuerySql.InsertMssqlNodaTypesArgs());
+                         actual = await QuerySql.GetMssqlNodaTypesAsync();
+                         Assert.That(actual{{Consts.UnknownRecordValuePlaceholder}}.CDatetime2Instant, Is.Null);
+                         Assert.That(actual{{Consts.UnknownRecordValuePlaceholder}}.CDatetimeoffsetInstant, Is.Null);
+                     }
+                     """
+        },
+        [KnownTestType.MssqlNodaTimeCopyFrom] = new TestImpl
+        {
+            Impl = $$"""
+                     [Test]
+                     [TestCase(100, true)]
+                     [TestCase(10, false)]
+                     public async Task TestMssqlNodaTimeCopyFrom(int batchSize, bool withValues)
+                     {
+                         var instant = Instant.FromUtc(2021, 1, 2, 3, 4, 5);
+                         var batchArgs = Enumerable.Range(0, batchSize)
+                             .Select(_ => new QuerySql.InsertMssqlNodaTypesBatchArgs
+                             {
+                                 CDatetime2Instant = withValues ? (Instant?)instant : null,
+                                 CDatetimeoffsetInstant = withValues ? (Instant?)instant : null
+                             })
+                             .ToList();
+                         await QuerySql.InsertMssqlNodaTypesBatchAsync(batchArgs);
+                         var actual = await QuerySql.GetMssqlNodaTypesCntAsync();
+                         Assert.That(actual{{Consts.UnknownRecordValuePlaceholder}}.Cnt, Is.EqualTo(batchSize));
+                         Assert.That(actual{{Consts.UnknownRecordValuePlaceholder}}.CDatetime2Instant, Is.EqualTo(withValues ? (Instant?)instant : null));
+                         Assert.That(actual{{Consts.UnknownRecordValuePlaceholder}}.CDatetimeoffsetInstant, Is.EqualTo(withValues ? (Instant?)instant : null));
                      }
                      """
         },

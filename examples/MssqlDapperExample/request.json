@@ -13,7 +13,7 @@
     "codegen": {
       "out": "examples/MssqlDapperExample",
       "plugin": "csharp",
-      "options": "eyJkZWJ1Z1JlcXVlc3QiOnRydWUsImdlbmVyYXRlQ3Nwcm9qIjp0cnVlLCJuYW1lc3BhY2VOYW1lIjoiTXNzcWxEYXBwZXJFeGFtcGxlR2VuIiwidGFyZ2V0RnJhbWV3b3JrIjoibmV0OS4wIiwidXNlRGFwcGVyIjp0cnVlfQ==",
+      "options": "eyJkZWJ1Z1JlcXVlc3QiOnRydWUsImdlbmVyYXRlQ3Nwcm9qIjp0cnVlLCJuYW1lc3BhY2VOYW1lIjoiTXNzcWxEYXBwZXJFeGFtcGxlR2VuIiwib3ZlcnJpZGVzIjpbeyJjb2x1bW4iOiJHZXRNc3NxbEZ1bmN0aW9uczptYXhfaW50IiwiY3NoYXJwX3R5cGUiOnsibm90TnVsbCI6ZmFsc2UsInR5cGUiOiJpbnQifX0seyJjb2x1bW4iOiJHZXRNc3NxbEZ1bmN0aW9uczptYXhfdmFyY2hhciIsImNzaGFycF90eXBlIjp7Im5vdE51bGwiOmZhbHNlLCJ0eXBlIjoic3RyaW5nIn19LHsiY29sdW1uIjoiR2V0TXNzcWxGdW5jdGlvbnM6bWF4X2RhdGV0aW1lMiIsImNzaGFycF90eXBlIjp7Im5vdE51bGwiOnRydWUsInR5cGUiOiJEYXRlVGltZSJ9fSx7ImNvbHVtbiI6Iio6Y19kYXRldGltZTJfaW5zdGFudCIsImNzaGFycF90eXBlIjp7Im5vdE51bGwiOmZhbHNlLCJ0eXBlIjoiSW5zdGFudCJ9fSx7ImNvbHVtbiI6Iio6Y19kYXRldGltZW9mZnNldF9pbnN0YW50IiwiY3NoYXJwX3R5cGUiOnsibm90TnVsbCI6ZmFsc2UsInR5cGUiOiJJbnN0YW50In19XSwidGFyZ2V0RnJhbWV3b3JrIjoibmV0OS4wIiwidXNlRGFwcGVyIjp0cnVlfQ==",
       "process": {
         "cmd": "./dist/LocalRunner"
       }
@@ -119,6 +119,38 @@
                 "table": {
                   "schema": "public",
                   "name": "books"
+                },
+                "type": {
+                  "name": "nvarchar"
+                }
+              }
+            ]
+          },
+          {
+            "rel": {
+              "schema": "public",
+              "name": "notes"
+            },
+            "columns": [
+              {
+                "name": "id",
+                "notNull": true,
+                "length": -1,
+                "table": {
+                  "schema": "public",
+                  "name": "notes"
+                },
+                "type": {
+                  "name": "int"
+                }
+              },
+              {
+                "name": "body",
+                "notNull": true,
+                "length": 200,
+                "table": {
+                  "schema": "public",
+                  "name": "notes"
                 },
                 "type": {
                   "name": "nvarchar"
@@ -454,6 +486,77 @@
                 }
               }
             ]
+          },
+          {
+            "rel": {
+              "schema": "public",
+              "name": "mssql_spatial_types"
+            },
+            "columns": [
+              {
+                "name": "c_geography",
+                "length": -1,
+                "table": {
+                  "schema": "public",
+                  "name": "mssql_spatial_types"
+                },
+                "type": {
+                  "name": "geography"
+                }
+              },
+              {
+                "name": "c_geometry",
+                "length": -1,
+                "table": {
+                  "schema": "public",
+                  "name": "mssql_spatial_types"
+                },
+                "type": {
+                  "name": "geometry"
+                }
+              },
+              {
+                "name": "c_hierarchyid",
+                "length": -1,
+                "table": {
+                  "schema": "public",
+                  "name": "mssql_spatial_types"
+                },
+                "type": {
+                  "name": "hierarchyid"
+                }
+              }
+            ]
+          },
+          {
+            "rel": {
+              "schema": "public",
+              "name": "mssql_noda_types"
+            },
+            "columns": [
+              {
+                "name": "c_datetime2_instant",
+                "length": 7,
+                "table": {
+                  "schema": "public",
+                  "name": "mssql_noda_types"
+                },
+                "type": {
+                  "name": "datetime2"
+                }
+              },
+              {
+                "name": "c_datetimeoffset_instant",
+                "length": 7,
+                "table": {
+                  "schema": "public",
+                  "name": "mssql_noda_types"
+                },
+                "type": {
+                  "name": "datetimeoffset"
+                }
+              }
+            ]
           }
         ]
       },
@@ -462,6 +565,54 @@
       },
       {
         "name": "information_schema"
+      },
+      {
+        "name": "extended",
+        "tables": [
+          {
+            "rel": {
+              "schema": "extended",
+              "name": "bios"
+            },
+            "columns": [
+              {
+                "name": "author_name",
+                "notNull": true,
+                "length": 100,
+                "table": {
+                  "schema": "extended",
+                  "name": "bios"
+                },
+                "type": {
+                  "name": "nvarchar"
+                }
+              },
+              {
+                "name": "name",
+                "notNull": true,
+                "length": 100,
+                "table": {
+                  "schema": "extended",
+                  "name": "bios"
+                },
+                "type": {
+                  "name": "nvarchar"
+                }
+              },
+              {
+                "name": "bio_type",
+                "length": 20,
+                "table": {
+                  "schema": "extended",
+                  "name": "bios"
+                },
+                "type": {
+                  "name": "nvarchar"
+                }
+              }
+            ]
+          }
+        ]
       }
     ]
   },
@@ -1234,6 +1385,240 @@
           }
         }
       ],
+      "filename": "query.sql"
+    },
+    {
+      "text": "INSERT INTO notes (body) OUTPUT INSERTED.id VALUES (@body);",
+      "name": "CreateNoteReturnId",
+      "cmd": ":execlastid",
+      "columns": [
+        {
+          "name": "id",
+          "notNull": true,
+          "length": -1,
+          "table": {
+            "schema": "public",
+            "name": "notes"
+          },
+          "type": {
+            "name": "int"
+          },
+          "originalName": "id"
+        }
+      ],
+      "parameters": [
+        {
+          "number": 1,
+          "column": {
+            "name": "body",
+            "notNull": true,
+            "length": 200,
+            "isNamedParam": true,
+            "table": {
+              "schema": "public",
+              "name": "notes"
+            },
+            "type": {
+              "name": "nvarchar"
+            },
+            "originalName": "body"
+          }
+        }
+      ],
+      "filename": "query.sql",
+      "insert_into_table": {
+        "name": "notes"
+      }
+    },
+    {
+      "text": "SELECT id, body FROM notes WHERE id = @id;",
+      "name": "GetNote",
+      "cmd": ":one",
+      "columns": [
+        {
+          "name": "id",
+          "notNull": true,
+          "length": -1,
+          "table": {
+            "schema": "public",
+            "name": "notes"
+          },
+          "type": {
+            "name": "int"
+          },
+          "originalName": "id"
+        },
+        {
+          "name": "body",
+          "notNull": true,
+          "length": 200,
+          "table": {
+            "schema": "public",
+            "name": "notes"
+          },
+          "type": {
+            "name": "nvarchar"
+          },
+          "originalName": "body"
+        }
+      ],
+      "parameters": [
+        {
+          "number": 1,
+          "column": {
+            "name": "id",
+            "notNull": true,
+            "length": -1,
+            "isNamedParam": true,
+            "table": {
+              "schema": "public",
+              "name": "notes"
+            },
+            "type": {
+              "name": "int"
+            },
+            "originalName": "id"
+          }
+        }
+      ],
+      "filename": "query.sql"
+    },
+    {
+      "text": "TRUNCATE TABLE notes;",
+      "name": "TruncateNotes",
+      "cmd": ":exec",
+      "filename": "query.sql"
+    },
+    {
+      "text": "INSERT INTO extended.bios (author_name, name, bio_type) VALUES (@author_name, @name, @bio_type);",
+      "name": "CreateExtendedBio",
+      "cmd": ":exec",
+      "parameters": [
+        {
+          "number": 1,
+          "column": {
+            "name": "author_name",
+            "notNull": true,
+            "length": 100,
+            "isNamedParam": true,
+            "table": {
+              "schema": "extended",
+              "name": "bios"
+            },
+            "type": {
+              "name": "nvarchar"
+            },
+            "originalName": "author_name"
+          }
+        },
+        {
+          "number": 2,
+          "column": {
+            "name": "name",
+            "notNull": true,
+            "length": 100,
+            "isNamedParam": true,
+            "table": {
+              "schema": "extended",
+              "name": "bios"
+            },
+            "type": {
+              "name": "nvarchar"
+            },
+            "originalName": "name"
+          }
+        },
+        {
+          "number": 3,
+          "column": {
+            "name": "bio_type",
+            "length": 20,
+            "isNamedParam": true,
+            "table": {
+              "schema": "extended",
+              "name": "bios"
+            },
+            "type": {
+              "name": "nvarchar"
+            },
+            "originalName": "bio_type"
+          }
+        }
+      ],
+      "filename": "query.sql",
+      "insert_into_table": {
+        "schema": "extended",
+        "name": "bios"
+      }
+    },
+    {
+      "text": "SELECT TOP 1 author_name, name, bio_type FROM extended.bios WHERE bio_type = @bio_type;",
+      "name": "GetFirstExtendedBioByType",
+      "cmd": ":one",
+      "columns": [
+        {
+          "name": "author_name",
+          "notNull": true,
+          "length": 100,
+          "table": {
+            "schema": "extended",
+            "name": "bios"
+          },
+          "type": {
+            "name": "nvarchar"
+          },
+          "originalName": "author_name"
+        },
+        {
+          "name": "name",
+          "notNull": true,
+          "length": 100,
+          "table": {
+            "schema": "extended",
+            "name": "bios"
+          },
+          "type": {
+            "name": "nvarchar"
+          },
+          "originalName": "name"
+        },
+        {
+          "name": "bio_type",
+          "length": 20,
+          "table": {
+            "schema": "extended",
+            "name": "bios"
+          },
+          "type": {
+            "name": "nvarchar"
+          },
+          "originalName": "bio_type"
+        }
+      ],
+      "parameters": [
+        {
+          "number": 1,
+          "column": {
+            "name": "bio_type",
+            "length": 20,
+            "isNamedParam": true,
+            "table": {
+              "schema": "extended",
+              "name": "bios"
+            },
+            "type": {
+              "name": "nvarchar"
+            },
+            "originalName": "bio_type"
+          }
+        }
+      ],
+      "filename": "query.sql"
+    },
+    {
+      "text": "TRUNCATE TABLE extended.bios;",
+      "name": "TruncateExtendedBios",
+      "cmd": ":exec",
       "filename": "query.sql"
     },
     {
@@ -2999,8 +3384,287 @@
         " Functions "
       ],
       "filename": "query.sql"
+    },
+    {
+      "text": "\nINSERT INTO mssql_spatial_types (c_geography, c_geometry, c_hierarchyid) VALUES (@c_geography, @c_geometry, @c_hierarchyid);",
+      "name": "InsertMssqlSpatialTypes",
+      "cmd": ":exec",
+      "parameters": [
+        {
+          "number": 1,
+          "column": {
+            "name": "c_geography",
+            "length": -1,
+            "isNamedParam": true,
+            "table": {
+              "schema": "public",
+              "name": "mssql_spatial_types"
+            },
+            "type": {
+              "name": "geography"
+            },
+            "originalName": "c_geography"
+          }
+        },
+        {
+          "number": 2,
+          "column": {
+            "name": "c_geometry",
+            "length": -1,
+            "isNamedParam": true,
+            "table": {
+              "schema": "public",
+              "name": "mssql_spatial_types"
+            },
+            "type": {
+              "name": "geometry"
+            },
+            "originalName": "c_geometry"
+          }
+        },
+        {
+          "number": 3,
+          "column": {
+            "name": "c_hierarchyid",
+            "length": -1,
+            "isNamedParam": true,
+            "table": {
+              "schema": "public",
+              "name": "mssql_spatial_types"
+            },
+            "type": {
+              "name": "hierarchyid"
+            },
+            "originalName": "c_hierarchyid"
+          }
+        }
+      ],
+      "comments": [
+        " Spatial and hierarchyid types "
+      ],
+      "filename": "query.sql",
+      "insert_into_table": {
+        "name": "mssql_spatial_types"
+      }
+    },
+    {
+      "text": "SELECT TOP 1 c_geography, c_geometry, c_hierarchyid FROM mssql_spatial_types;",
+      "name": "GetMssqlSpatialTypes",
+      "cmd": ":one",
+      "columns": [
+        {
+          "name": "c_geography",
+          "length": -1,
+          "table": {
+            "schema": "public",
+            "name": "mssql_spatial_types"
+          },
+          "type": {
+            "name": "geography"
+          },
+          "originalName": "c_geography"
+        },
+        {
+          "name": "c_geometry",
+          "length": -1,
+          "table": {
+            "schema": "public",
+            "name": "mssql_spatial_types"
+          },
+          "type": {
+            "name": "geometry"
+          },
+          "originalName": "c_geometry"
+        },
+        {
+          "name": "c_hierarchyid",
+          "length": -1,
+          "table": {
+            "schema": "public",
+            "name": "mssql_spatial_types"
+          },
+          "type": {
+            "name": "hierarchyid"
+          },
+          "originalName": "c_hierarchyid"
+        }
+      ],
+      "filename": "query.sql"
+    },
+    {
+      "text": "TRUNCATE TABLE mssql_spatial_types;",
+      "name": "TruncateMssqlSpatialTypes",
+      "cmd": ":exec",
+      "filename": "query.sql"
+    },
+    {
+      "text": "\nINSERT INTO mssql_noda_types (c_datetime2_instant, c_datetimeoffset_instant) VALUES (@c_datetime2_instant, @c_datetimeoffset_instant);",
+      "name": "InsertMssqlNodaTypes",
+      "cmd": ":exec",
+      "parameters": [
+        {
+          "number": 1,
+          "column": {
+            "name": "c_datetime2_instant",
+            "length": 7,
+            "isNamedParam": true,
+            "table": {
+              "schema": "public",
+              "name": "mssql_noda_types"
+            },
+            "type": {
+              "name": "datetime2"
+            },
+            "originalName": "c_datetime2_instant"
+          }
+        },
+        {
+          "number": 2,
+          "column": {
+            "name": "c_datetimeoffset_instant",
+            "length": 7,
+            "isNamedParam": true,
+            "table": {
+              "schema": "public",
+              "name": "mssql_noda_types"
+            },
+            "type": {
+              "name": "datetimeoffset"
+            },
+            "originalName": "c_datetimeoffset_instant"
+          }
+        }
+      ],
+      "comments": [
+        " NodaTime Instant overrides "
+      ],
+      "filename": "query.sql",
+      "insert_into_table": {
+        "name": "mssql_noda_types"
+      }
+    },
+    {
+      "text": "INSERT INTO mssql_noda_types (c_datetime2_instant, c_datetimeoffset_instant) VALUES (@c_datetime2_instant, @c_datetimeoffset_instant);",
+      "name": "InsertMssqlNodaTypesBatch",
+      "cmd": ":copyfrom",
+      "parameters": [
+        {
+          "number": 1,
+          "column": {
+            "name": "c_datetime2_instant",
+            "length": 7,
+            "isNamedParam": true,
+            "table": {
+              "schema": "public",
+              "name": "mssql_noda_types"
+            },
+            "type": {
+              "name": "datetime2"
+            },
+            "originalName": "c_datetime2_instant"
+          }
+        },
+        {
+          "number": 2,
+          "column": {
+            "name": "c_datetimeoffset_instant",
+            "length": 7,
+            "isNamedParam": true,
+            "table": {
+              "schema": "public",
+              "name": "mssql_noda_types"
+            },
+            "type": {
+              "name": "datetimeoffset"
+            },
+            "originalName": "c_datetimeoffset_instant"
+          }
+        }
+      ],
+      "filename": "query.sql",
+      "insert_into_table": {
+        "name": "mssql_noda_types"
+      }
+    },
+    {
+      "text": "SELECT TOP 1 c_datetime2_instant, c_datetimeoffset_instant FROM mssql_noda_types;",
+      "name": "GetMssqlNodaTypes",
+      "cmd": ":one",
+      "columns": [
+        {
+          "name": "c_datetime2_instant",
+          "length": 7,
+          "table": {
+            "schema": "public",
+            "name": "mssql_noda_types"
+          },
+          "type": {
+            "name": "datetime2"
+          },
+          "originalName": "c_datetime2_instant"
+        },
+        {
+          "name": "c_datetimeoffset_instant",
+          "length": 7,
+          "table": {
+            "schema": "public",
+            "name": "mssql_noda_types"
+          },
+          "type": {
+            "name": "datetimeoffset"
+          },
+          "originalName": "c_datetimeoffset_instant"
+        }
+      ],
+      "filename": "query.sql"
+    },
+    {
+      "text": "SELECT TOP 1 COUNT(*) AS cnt, c_datetime2_instant, c_datetimeoffset_instant\nFROM mssql_noda_types\nGROUP BY c_datetime2_instant, c_datetimeoffset_instant;",
+      "name": "GetMssqlNodaTypesCnt",
+      "cmd": ":one",
+      "columns": [
+        {
+          "name": "cnt",
+          "notNull": true,
+          "length": -1,
+          "type": {
+            "name": "int"
+          }
+        },
+        {
+          "name": "c_datetime2_instant",
+          "length": 7,
+          "table": {
+            "schema": "public",
+            "name": "mssql_noda_types"
+          },
+          "type": {
+            "name": "datetime2"
+          },
+          "originalName": "c_datetime2_instant"
+        },
+        {
+          "name": "c_datetimeoffset_instant",
+          "length": 7,
+          "table": {
+            "schema": "public",
+            "name": "mssql_noda_types"
+          },
+          "type": {
+            "name": "datetimeoffset"
+          },
+          "originalName": "c_datetimeoffset_instant"
+        }
+      ],
+      "filename": "query.sql"
+    },
+    {
+      "text": "TRUNCATE TABLE mssql_noda_types;",
+      "name": "TruncateMssqlNodaTypes",
+      "cmd": ":exec",
+      "filename": "query.sql"
     }
   ],
   "sqlc_version": "v1.31.1",
-  "plugin_options": "eyJvdmVycmlkZURyaXZlclZlcnNpb24iOiIiLCJnZW5lcmF0ZUNzcHJvaiI6dHJ1ZSwidGFyZ2V0RnJhbWV3b3JrIjoibmV0OS4wIiwibmFtZXNwYWNlTmFtZSI6Ik1zc3FsRGFwcGVyRXhhbXBsZUdlbiIsInVzZURhcHBlciI6dHJ1ZSwib3ZlcnJpZGVEYXBwZXJWZXJzaW9uIjoiIiwib3ZlcnJpZGVzIjpudWxsLCJkZWJ1Z1JlcXVlc3QiOmZhbHNlLCJ1c2VDZW50cmFsUGFja2FnZU1hbmFnZW1lbnQiOmZhbHNlLCJ3aXRoQXN5bmNTdWZmaXgiOnRydWUsIndpdGhDYW5jZWxsYXRpb25Ub2tlbiI6ZmFsc2UsInVzZUFzeW5jRW51bWVyYWJsZSI6ZmFsc2UsInVzZVByb3BlclNpbmd1bGFyaXphdGlvbiI6ZmFsc2V9"
+  "plugin_options": "eyJvdmVycmlkZURyaXZlclZlcnNpb24iOiIiLCJnZW5lcmF0ZUNzcHJvaiI6dHJ1ZSwidGFyZ2V0RnJhbWV3b3JrIjoibmV0OS4wIiwibmFtZXNwYWNlTmFtZSI6Ik1zc3FsRGFwcGVyRXhhbXBsZUdlbiIsInVzZURhcHBlciI6dHJ1ZSwib3ZlcnJpZGVEYXBwZXJWZXJzaW9uIjoiIiwib3ZlcnJpZGVzIjpbeyJjb2x1bW4iOiJHZXRNc3NxbEZ1bmN0aW9uczptYXhfaW50IiwiY3NoYXJwX3R5cGUiOnsidHlwZSI6ImludCIsIm5vdE51bGwiOmZhbHNlfX0seyJjb2x1bW4iOiJHZXRNc3NxbEZ1bmN0aW9uczptYXhfdmFyY2hhciIsImNzaGFycF90eXBlIjp7InR5cGUiOiJzdHJpbmciLCJub3ROdWxsIjpmYWxzZX19LHsiY29sdW1uIjoiR2V0TXNzcWxGdW5jdGlvbnM6bWF4X2RhdGV0aW1lMiIsImNzaGFycF90eXBlIjp7InR5cGUiOiJEYXRlVGltZSIsIm5vdE51bGwiOnRydWV9fSx7ImNvbHVtbiI6Iio6Y19kYXRldGltZTJfaW5zdGFudCIsImNzaGFycF90eXBlIjp7InR5cGUiOiJJbnN0YW50Iiwibm90TnVsbCI6ZmFsc2V9fSx7ImNvbHVtbiI6Iio6Y19kYXRldGltZW9mZnNldF9pbnN0YW50IiwiY3NoYXJwX3R5cGUiOnsidHlwZSI6Ikluc3RhbnQiLCJub3ROdWxsIjpmYWxzZX19XSwiZGVidWdSZXF1ZXN0IjpmYWxzZSwidXNlQ2VudHJhbFBhY2thZ2VNYW5hZ2VtZW50IjpmYWxzZSwid2l0aEFzeW5jU3VmZml4Ijp0cnVlLCJ3aXRoQ2FuY2VsbGF0aW9uVG9rZW4iOmZhbHNlLCJ1c2VBc3luY0VudW1lcmFibGUiOmZhbHNlLCJ1c2VQcm9wZXJTaW5ndWxhcml6YXRpb24iOmZhbHNlfQ=="
 }

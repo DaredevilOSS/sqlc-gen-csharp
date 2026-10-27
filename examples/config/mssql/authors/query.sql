@@ -57,3 +57,21 @@ WHERE authors1.id < authors2.id;
 SELECT authors.*, sqlc.embed(books)
 FROM authors JOIN books ON authors.id = books.author_id
 WHERE books.name = @name;
+
+-- name: CreateNoteReturnId :execlastid
+INSERT INTO notes (body) OUTPUT INSERTED.id VALUES (@body);
+
+-- name: GetNote :one
+SELECT id, body FROM notes WHERE id = @id;
+
+-- name: TruncateNotes :exec
+TRUNCATE TABLE notes;
+
+-- name: CreateExtendedBio :exec
+INSERT INTO extended.bios (author_name, name, bio_type) VALUES (@author_name, @name, @bio_type);
+
+-- name: GetFirstExtendedBioByType :one
+SELECT TOP 1 * FROM extended.bios WHERE bio_type = @bio_type;
+
+-- name: TruncateExtendedBios :exec
+TRUNCATE TABLE extended.bios;

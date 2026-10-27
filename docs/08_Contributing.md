@@ -47,6 +47,16 @@ make setup-wasm-plugin    # builds the WASM plugin into dist/plugin.wasm
 sqlc -f sqlc.ci.yaml diff # verifies the WASM plugin generates exactly the committed examples
 ```
 
+### SQL Server (experimental)
+The `mssql` engine is only on sqlc `main` and needs the patches in `scripts/sqlc-patches`, so its examples live in
+`sqlc.mssql.ci.yaml` (not `sqlc.ci.yaml`, which CI runs with the pinned sqlc release):
+```
+scripts/sqlc-patches/build_sqlc.sh bin   # bin/sqlc-upstream (sqlc main) and bin/sqlc (main + patches)
+make sqlc-generate-mssql                 # regenerates the SQL Server examples and requests with bin/sqlc
+docker compose up -d mssqldb
+make mssql-syntax-matrix                 # T-SQL support matrix, see end2end/MssqlSyntaxMatrix/README.md
+```
+
 ### Testing generated code
 Testing the SQLC generated code via a predefined flow:
 ```

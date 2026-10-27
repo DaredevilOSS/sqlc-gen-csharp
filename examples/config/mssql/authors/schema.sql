@@ -14,3 +14,18 @@ CREATE TABLE books (
     description NVARCHAR(MAX),
     FOREIGN KEY (author_id) REFERENCES authors (id) ON DELETE CASCADE
 );
+
+CREATE TABLE notes (
+    id INT IDENTITY(1, 1) NOT NULL PRIMARY KEY,
+    body NVARCHAR(200) NOT NULL
+);
+GO
+
+CREATE SCHEMA extended;
+GO
+
+CREATE TABLE extended.bios (
+    author_name NVARCHAR(100) NOT NULL,
+    name NVARCHAR(100) NOT NULL,
+    bio_type NVARCHAR(20) NULL
+);

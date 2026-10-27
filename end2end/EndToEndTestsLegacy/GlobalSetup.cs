@@ -9,6 +9,7 @@ namespace EndToEndTests
         public void SetUp()
         {
             EndToEndCommon.SetupTestsSqliteDb();
+            EndToEndCommon.SetupTestsMssqlDb();
         }
 
         [OneTimeTearDown]

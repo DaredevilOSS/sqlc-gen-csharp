@@ -26,23 +26,27 @@ public sealed class MssqlDriver :
     }
 
     // Dapper sends a null byte[] as nvarchar, which SQL Server refuses to convert to a binary type
-    private const string BinaryParameterImpl = """
-        public class BinaryParameter : SqlMapper.ICustomQueryParameter
-        {
-            private readonly byte[]? _value;
-
-            public BinaryParameter(byte[]? value)
+    private static string BinaryParameterImpl(bool isDotnetCore)
+    {
+        var nullable = isDotnetCore ? "?" : "";
+        return $$"""
+            public class BinaryParameter : SqlMapper.ICustomQueryParameter
             {
-                _value = value;
-            }
+                private readonly byte[]{{nullable}} _value;
 
-            public void AddParameter(IDbCommand command, string name)
-            {
-                var parameter = new SqlParameter(name, SqlDbType.VarBinary) { Value = (object?)_value ?? DBNull.Value };
-                command.Parameters.Add(parameter);
+                public BinaryParameter(byte[]{{nullable}} value)
+                {
+                    _value = value;
+                }
+
+                public void AddParameter(IDbCommand command, string name)
+                {
+                    var parameter = new SqlParameter(name, SqlDbType.VarBinary) { Value = (object{{nullable}})_value ?? DBNull.Value };
+                    command.Parameters.Add(parameter);
+                }
             }
-        }
-        """;
+            """;
+    }
 
     private static readonly SqlMapperImplFunc NodaInstantTypeHandler = _ => """
         private class NodaInstantTypeHandler : SqlMapper.TypeHandler<Instant>
@@ -250,11 +254,13 @@ public sealed class MssqlDriver :
                     : $"DateTime.SpecifyKind({Variable.Reader.AsVarName()}.GetDateTime({ordinal}), DateTimeKind.Utc).ToInstant()",
                 writerFn: (el, dbType, notNull, isDapper, _) =>
                 {
-                    var convert = dbType.ToLower() == "datetimeoffset" ? "ToDateTimeOffset()" : "ToDateTimeUtc()";
+                    var (convert, type) = dbType.ToLower() == "datetimeoffset"
+                        ? ("ToDateTimeOffset()", "DateTimeOffset")
+                        : ("ToDateTimeUtc()", "DateTime");
                     if (notNull)
                         return $"{el}.{convert}";
                     var nullValue = isDapper ? "null" : "(object)DBNull.Value";
-                    return $"{el} is null ? {nullValue} : {el}.Value.{convert}";
+                    return $"{el} is null ? {nullValue} : ({type}?){el}.Value.{convert}";
                 },
                 usingDirectives: ["System", "NodaTime", "NodaTime.Extensions"],
                 sqlMapper: "SqlMapper.AddTypeHandler(typeof(Instant), new NodaInstantTypeHandler());",
@@ -362,7 +368,7 @@ public sealed class MssqlDriver :
                 ParseMemberDeclaration(TransformQueryForSliceArgsImpl)!
             ], SliceQueryExists())
             .AddRangeIf([
-                ParseMemberDeclaration(BinaryParameterImpl)!
+                ParseMemberDeclaration(BinaryParameterImpl(Options.DotnetFramework.IsDotnetCore()))!
             ], Options.UseDapper && TypeExistsInQueries("byte[]"))];
     }
 
@@ -440,11 +446,10 @@ public sealed class MssqlDriver :
             ? $"[{query.InsertIntoTable.Schema}].[{query.InsertIntoTable.Name}]"
             : $"[{query.InsertIntoTable.Name}]";
 
-        var addColumns = query.Params.Select(p =>
-        {
-            var csharpType = GetCsharpTypeWithoutNullableSuffix(p.Column, query);
-            return $"""{tableVar}.Columns.Add("{p.Column.Name}", typeof({csharpType}));""";
-        }).JoinByNewLine();
+        // the columns hold whatever a writer function produces (e.g. a DateTime for an Instant), SqlBulkCopy converts it
+        var addColumns = query.Params
+            .Select(p => $"""{tableVar}.Columns.Add("{p.Column.Name}", typeof(object));""")
+            .JoinByNewLine();
 
         var mapColumns = query.Params.Select(p =>
             $"""{bulkCopyVar}.ColumnMappings.Add("{p.Column.Name}", "{p.Column.Name}");""").JoinByNewLine();

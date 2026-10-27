@@ -1,4 +1,5 @@
 using MssqlDapperExampleGen;
+using Microsoft.SqlServer.Types;
 using NodaTime;
 using NUnit.Framework;
 using NUnit.Framework.Legacy;
@@ -697,7 +698,7 @@ namespace EndToEndTests
             // the uncommitted row is locked by the transaction, so it is read from within it
             var actual = await querySqlWithTx.GetAuthorAsync(new QuerySql.GetAuthorArgs { Name = "Bojack Horseman" });
             ClassicAssert.IsNotNull(actual);
-            await transaction.CommitAsync();
+            transaction.Commit();
             var expected = new QuerySql.GetAuthorRow
             {
                 Id = 1111,
@@ -722,9 +723,81 @@ namespace EndToEndTests
             var transaction = connection.BeginTransaction();
             var querySqlWithTx = QuerySql.WithTransaction(transaction);
             await querySqlWithTx.CreateAuthorAsync(new QuerySql.CreateAuthorArgs { Id = 1111, Name = "Bojack Horseman", Bio = "Back in the 90s he was in a very famous TV show" });
-            await transaction.RollbackAsync();
+            transaction.Rollback();
             var actual = await QuerySql.GetAuthorAsync(new QuerySql.GetAuthorArgs { Name = "Bojack Horseman" });
             ClassicAssert.IsNull(actual);
+        }
+
+        [Test]
+        public async Task TestMssqlIdentityExecLastId()
+        {
+            var firstId = await QuerySql.CreateNoteReturnIdAsync(new QuerySql.CreateNoteReturnIdArgs { Body = "first" });
+            var secondId = await QuerySql.CreateNoteReturnIdAsync(new QuerySql.CreateNoteReturnIdArgs { Body = "second" });
+            Assert.That(secondId, Is.EqualTo(firstId + 1));
+            var actual = await QuerySql.GetNoteAsync(new QuerySql.GetNoteArgs { Id = secondId });
+            Assert.That(actual.Id, Is.EqualTo(secondId));
+            Assert.That(actual.Body, Is.EqualTo("second"));
+        }
+
+        [Test]
+        public async Task TestMssqlSchemaScopedTable()
+        {
+            await QuerySql.CreateExtendedBioAsync(new QuerySql.CreateExtendedBioArgs { AuthorName = "Bojack Horseman", Name = "One Trick Pony", BioType = "Memoir" });
+            var expected = new QuerySql.GetFirstExtendedBioByTypeRow
+            {
+                AuthorName = "Bojack Horseman",
+                Name = "One Trick Pony",
+                BioType = "Memoir"
+            };
+            var actual = await QuerySql.GetFirstExtendedBioByTypeAsync(new QuerySql.GetFirstExtendedBioByTypeArgs { BioType = "Memoir" });
+            Assert.That(actual.AuthorName, Is.EqualTo(expected.AuthorName));
+            Assert.That(actual.Name, Is.EqualTo(expected.Name));
+            Assert.That(actual.BioType, Is.EqualTo(expected.BioType));
+        }
+
+        [Test]
+        public async Task TestMssqlSpatialTypes()
+        {
+            await QuerySql.InsertMssqlSpatialTypesAsync(new QuerySql.InsertMssqlSpatialTypesArgs { CGeography = SqlGeography.Point(32.1, 34.8, 4326), CGeometry = SqlGeometry.Point(1, 2, 0), CHierarchyid = SqlHierarchyId.Parse("/1/2/") });
+            var actual = await QuerySql.GetMssqlSpatialTypesAsync();
+            Assert.That(actual.CGeography.ToString(), Is.EqualTo("POINT (34.8 32.1)"));
+            Assert.That(actual.CGeometry.ToString(), Is.EqualTo("POINT (1 2)"));
+            Assert.That(actual.CHierarchyid.ToString(), Is.EqualTo("/1/2/"));
+            await QuerySql.TruncateMssqlSpatialTypesAsync();
+            await QuerySql.InsertMssqlSpatialTypesAsync(new QuerySql.InsertMssqlSpatialTypesArgs());
+            actual = await QuerySql.GetMssqlSpatialTypesAsync();
+            Assert.That(actual.CGeography, Is.Null);
+            Assert.That(actual.CGeometry, Is.Null);
+            Assert.That(actual.CHierarchyid, Is.Null);
+        }
+
+        [Test]
+        public async Task TestMssqlNodaTimeOverride()
+        {
+            var instant = Instant.FromUtc(2020, 5, 6, 7, 8, 9).PlusTicks(1234567);
+            await QuerySql.InsertMssqlNodaTypesAsync(new QuerySql.InsertMssqlNodaTypesArgs { CDatetime2Instant = instant, CDatetimeoffsetInstant = instant });
+            var actual = await QuerySql.GetMssqlNodaTypesAsync();
+            Assert.That(actual.CDatetime2Instant, Is.EqualTo(instant));
+            Assert.That(actual.CDatetimeoffsetInstant, Is.EqualTo(instant));
+            await QuerySql.TruncateMssqlNodaTypesAsync();
+            await QuerySql.InsertMssqlNodaTypesAsync(new QuerySql.InsertMssqlNodaTypesArgs());
+            actual = await QuerySql.GetMssqlNodaTypesAsync();
+            Assert.That(actual.CDatetime2Instant, Is.Null);
+            Assert.That(actual.CDatetimeoffsetInstant, Is.Null);
+        }
+
+        [Test]
+        [TestCase(100, true)]
+        [TestCase(10, false)]
+        public async Task TestMssqlNodaTimeCopyFrom(int batchSize, bool withValues)
+        {
+            var instant = Instant.FromUtc(2021, 1, 2, 3, 4, 5);
+            var batchArgs = Enumerable.Range(0, batchSize).Select(_ => new QuerySql.InsertMssqlNodaTypesBatchArgs { CDatetime2Instant = withValues ? (Instant? )instant : null, CDatetimeoffsetInstant = withValues ? (Instant? )instant : null }).ToList();
+            await QuerySql.InsertMssqlNodaTypesBatchAsync(batchArgs);
+            var actual = await QuerySql.GetMssqlNodaTypesCntAsync();
+            Assert.That(actual.Cnt, Is.EqualTo(batchSize));
+            Assert.That(actual.CDatetime2Instant, Is.EqualTo(withValues ? (Instant? )instant : null));
+            Assert.That(actual.CDatetimeoffsetInstant, Is.EqualTo(withValues ? (Instant? )instant : null));
         }
     }
 }

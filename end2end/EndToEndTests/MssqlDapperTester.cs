@@ -18,5 +18,9 @@ public partial class MssqlDapperTester
         await QuerySql.TruncateMssqlStringTypesAsync();
         await QuerySql.TruncateMssqlDatetimeTypesAsync();
         await QuerySql.TruncateMssqlBinaryTypesAsync();
+        await QuerySql.TruncateMssqlSpatialTypesAsync();
+        await QuerySql.TruncateMssqlNodaTypesAsync();
+        await QuerySql.TruncateNotesAsync();
+        await QuerySql.TruncateExtendedBiosAsync();
     }
 }

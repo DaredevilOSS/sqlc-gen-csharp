@@ -37,6 +37,7 @@ public static class Program
             throw new ArgumentException($"No code to generate for input {testClassName}");
 
         var testsImplementation = string.Join("\n", config.TestTypes
+            .Where(t => !isLegacyDotnet || !Config.NotForLegacy.Contains(t))
             .Select(t => GetTestImplementation(testClassName, isLegacyDotnet, t))
             .ToList());
 
@@ -44,6 +45,7 @@ public static class Program
         var optionalUsingSystemNet = config.TestNamespace.Contains("Npgsql") ? "using System.Net;" : string.Empty;
         var optionalUsingSystemNetNetworkInformation = config.TestNamespace.Contains("Npgsql") ? "using System.Net.NetworkInformation;" : string.Empty;
         var optionalUsingSystemTextJson = config.TestNamespace.Contains("MySqlConnector") || config.TestNamespace.Contains("Npgsql") ? "using System.Text.Json;" : string.Empty;
+        var optionalUsingSqlServerTypes = config.TestNamespace.Contains("Mssql") && !isLegacyDotnet ? "using Microsoft.SqlServer.Types;" : string.Empty;
         var optionalUsingSystemXml = config.TestNamespace.Contains("Npgsql") ? "using System.Xml;" : string.Empty;
         var namespaceToTest = isLegacyDotnet ? config.LegacyTestNamespace : config.TestNamespace;
 
@@ -55,6 +57,7 @@ public static class Program
                  {{optionalUsingSystemNetNetworkInformation}}
                  {{optionalUsingSystemTextJson}}
                  {{optionalUsingSystemXml}}
+                 {{optionalUsingSqlServerTypes}}
                  using NodaTime;
                  using NUnit.Framework;
                  using NUnit.Framework.Legacy;

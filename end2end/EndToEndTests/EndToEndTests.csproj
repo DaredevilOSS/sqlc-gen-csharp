@@ -39,6 +39,7 @@
     
     <ItemGroup>
       <ProjectReference Include="..\EndToEndCommon\EndToEndCommon.csproj" />
+      <ProjectReference Include="..\..\examples\MssqlAsyncEnumerableExample\MssqlAsyncEnumerableExample.csproj" />
       <ProjectReference Include="..\..\examples\MssqlDapperExample\MssqlDapperExample.csproj" />
       <ProjectReference Include="..\..\examples\MssqlExample\MssqlExample.csproj" />
       <ProjectReference Include="..\..\examples\MySqlConnectorDapperExample\MySqlConnectorDapperExample.csproj" />

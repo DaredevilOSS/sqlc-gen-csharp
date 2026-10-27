@@ -7,20 +7,25 @@ public static class ExamplesDocGen
 {
     public static void Main()
     {
-        var yamlContent = File.ReadAllText("sqlc.ci.yaml");
-        var yaml = new YamlStream();
-        yaml.Load(new StringReader(yamlContent));
-
-        var root = (YamlMappingNode)yaml.Documents[0].RootNode;
-        var sqlArray = (YamlSequenceNode)root.Children[new YamlScalarNode("sql")];
-
-        var exampleNodes = sqlArray.Children.Select(ParseConfigNode).ToList();
+        // sqlc.mssql.ci.yaml holds the (experimental) SQL Server examples
+        var exampleNodes = new[] { "sqlc.ci.yaml", "sqlc.mssql.ci.yaml" }
+            .SelectMany(ReadSqlNodes)
+            .Select(ParseConfigNode)
+            .ToList();
         var contents = $"""
                         # Examples
                         {exampleNodes.JoinByNewLine()}
                         """;
         using var stdout = Console.OpenStandardOutput();
         Console.Write(contents);
+    }
+
+    private static IEnumerable<YamlNode> ReadSqlNodes(string file)
+    {
+        var yaml = new YamlStream();
+        yaml.Load(new StringReader(File.ReadAllText(file)));
+        var root = (YamlMappingNode)yaml.Documents[0].RootNode;
+        return ((YamlSequenceNode)root.Children[new YamlScalarNode("sql")]).Children;
     }
 
     private static string ParseConfigNode(YamlNode node)

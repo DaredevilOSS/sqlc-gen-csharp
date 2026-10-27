@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 
 namespace MssqlSyntaxMatrix;
 
@@ -19,7 +20,7 @@ public class SqlcResult
     public string? PluginOutputDir { get; set; }
 }
 
-public static class SqlcRunner
+public static partial class SqlcRunner
 {
     public static async Task<SqlcResult> Run(SqlcBuild build, TestCase testCase, string dir, MatrixOptions options)
     {
@@ -130,8 +131,12 @@ public static class SqlcRunner
             .Where(l => l.Length > 0 && !l.StartsWith('\t') && !l.StartsWith("   at ") && !l.StartsWith("goroutine ")
                         && !l.StartsWith("# package") && !l.StartsWith("[signal"))
             .Take(6);
-        return string.Join("\n", lines);
+        // goroutine traces carry addresses that change on every run
+        return HexRegex().Replace(string.Join("\n", lines), "0x?");
     }
+
+    [GeneratedRegex(@"0x[0-9a-fA-F]+\??")]
+    private static partial Regex HexRegex();
 
     public static async Task<(int ExitCode, string Output)> Exec(string file, string arguments, string workingDir)
     {

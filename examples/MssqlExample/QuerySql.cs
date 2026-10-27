@@ -5,6 +5,9 @@
 // ReSharper disable NotAccessedPositionalProperty.Global
 // ReSharper disable UnusedAutoPropertyAccessor.Global
 using Microsoft.Data.SqlClient;
+using Microsoft.SqlServer.Types;
+using NodaTime;
+using NodaTime.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -640,6 +643,231 @@ public class QuerySql
         }
     }
 
+    private const string CreateNoteReturnIdSql = "INSERT INTO notes (body) OUTPUT INSERTED.id VALUES (@body);";
+    public readonly record struct CreateNoteReturnIdRow(int Id);
+    public readonly record struct CreateNoteReturnIdArgs(string Body);
+    public async Task<int> CreateNoteReturnIdAsync(CreateNoteReturnIdArgs args)
+    {
+        if (this.Transaction == null)
+        {
+            using (var connection = new SqlConnection(ConnectionString))
+            {
+                await connection.OpenAsync();
+                using (var command = new SqlCommand(CreateNoteReturnIdSql, connection))
+                {
+                    command.Parameters.Add("@body", SqlDbType.NVarChar).Value = args.Body;
+                    var result = await command.ExecuteScalarAsync();
+                    return Convert.ToInt32(result);
+                }
+            }
+        }
+
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
+            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+        using (var command = this.Transaction.Connection.CreateCommand())
+        {
+            command.CommandText = CreateNoteReturnIdSql;
+            command.Transaction = this.Transaction;
+            command.Parameters.Add("@body", SqlDbType.NVarChar).Value = args.Body;
+            var result = await command.ExecuteScalarAsync();
+            return Convert.ToInt32(result);
+        }
+    }
+
+    private const string GetNoteSql = "SELECT id, body FROM notes WHERE id = @id;";
+    public readonly record struct GetNoteRow(int Id, string Body);
+    public readonly record struct GetNoteArgs(int Id);
+    public async Task<GetNoteRow?> GetNoteAsync(GetNoteArgs args)
+    {
+        if (this.Transaction == null)
+        {
+            using (var connection = new SqlConnection(ConnectionString))
+            {
+                await connection.OpenAsync();
+                using (var command = new SqlCommand(GetNoteSql, connection))
+                {
+                    command.Parameters.Add("@id", SqlDbType.Int).Value = args.Id;
+                    using (var reader = await command.ExecuteReaderAsync())
+                    {
+                        if (await reader.ReadAsync())
+                        {
+                            return new GetNoteRow
+                            {
+                                Id = reader.GetInt32(0),
+                                Body = reader.GetString(1)
+                            };
+                        }
+                    }
+                }
+            };
+            return null;
+        }
+
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
+            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+        using (var command = this.Transaction.Connection.CreateCommand())
+        {
+            command.CommandText = GetNoteSql;
+            command.Transaction = this.Transaction;
+            command.Parameters.Add("@id", SqlDbType.Int).Value = args.Id;
+            using (var reader = await command.ExecuteReaderAsync())
+            {
+                if (await reader.ReadAsync())
+                {
+                    return new GetNoteRow
+                    {
+                        Id = reader.GetInt32(0),
+                        Body = reader.GetString(1)
+                    };
+                }
+            }
+        }
+
+        return null;
+    }
+
+    private const string TruncateNotesSql = "TRUNCATE TABLE notes;";
+    public async Task TruncateNotesAsync()
+    {
+        if (this.Transaction == null)
+        {
+            using (var connection = new SqlConnection(ConnectionString))
+            {
+                await connection.OpenAsync();
+                using (var command = new SqlCommand(TruncateNotesSql, connection))
+                {
+                    await command.ExecuteNonQueryAsync();
+                }
+
+                return;
+            }
+        }
+
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
+            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+        using (var command = this.Transaction.Connection.CreateCommand())
+        {
+            command.CommandText = TruncateNotesSql;
+            command.Transaction = this.Transaction;
+            await command.ExecuteNonQueryAsync();
+        }
+    }
+
+    private const string CreateExtendedBioSql = "INSERT INTO extended.bios (author_name, name, bio_type) VALUES (@author_name, @name, @bio_type);";
+    public readonly record struct CreateExtendedBioArgs(string AuthorName, string Name, string? BioType);
+    public async Task CreateExtendedBioAsync(CreateExtendedBioArgs args)
+    {
+        if (this.Transaction == null)
+        {
+            using (var connection = new SqlConnection(ConnectionString))
+            {
+                await connection.OpenAsync();
+                using (var command = new SqlCommand(CreateExtendedBioSql, connection))
+                {
+                    command.Parameters.Add("@author_name", SqlDbType.NVarChar).Value = args.AuthorName;
+                    command.Parameters.Add("@name", SqlDbType.NVarChar).Value = args.Name;
+                    command.Parameters.Add("@bio_type", SqlDbType.NVarChar).Value = args.BioType ?? (object)DBNull.Value;
+                    await command.ExecuteNonQueryAsync();
+                }
+
+                return;
+            }
+        }
+
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
+            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+        using (var command = this.Transaction.Connection.CreateCommand())
+        {
+            command.CommandText = CreateExtendedBioSql;
+            command.Transaction = this.Transaction;
+            command.Parameters.Add("@author_name", SqlDbType.NVarChar).Value = args.AuthorName;
+            command.Parameters.Add("@name", SqlDbType.NVarChar).Value = args.Name;
+            command.Parameters.Add("@bio_type", SqlDbType.NVarChar).Value = args.BioType ?? (object)DBNull.Value;
+            await command.ExecuteNonQueryAsync();
+        }
+    }
+
+    private const string GetFirstExtendedBioByTypeSql = "SELECT TOP 1 author_name, name, bio_type FROM extended.bios WHERE bio_type = @bio_type;";
+    public readonly record struct GetFirstExtendedBioByTypeRow(string AuthorName, string Name, string? BioType);
+    public readonly record struct GetFirstExtendedBioByTypeArgs(string? BioType);
+    public async Task<GetFirstExtendedBioByTypeRow?> GetFirstExtendedBioByTypeAsync(GetFirstExtendedBioByTypeArgs args)
+    {
+        if (this.Transaction == null)
+        {
+            using (var connection = new SqlConnection(ConnectionString))
+            {
+                await connection.OpenAsync();
+                using (var command = new SqlCommand(GetFirstExtendedBioByTypeSql, connection))
+                {
+                    command.Parameters.Add("@bio_type", SqlDbType.NVarChar).Value = args.BioType ?? (object)DBNull.Value;
+                    using (var reader = await command.ExecuteReaderAsync())
+                    {
+                        if (await reader.ReadAsync())
+                        {
+                            return new GetFirstExtendedBioByTypeRow
+                            {
+                                AuthorName = reader.GetString(0),
+                                Name = reader.GetString(1),
+                                BioType = reader.IsDBNull(2) ? null : reader.GetString(2)
+                            };
+                        }
+                    }
+                }
+            };
+            return null;
+        }
+
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
+            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+        using (var command = this.Transaction.Connection.CreateCommand())
+        {
+            command.CommandText = GetFirstExtendedBioByTypeSql;
+            command.Transaction = this.Transaction;
+            command.Parameters.Add("@bio_type", SqlDbType.NVarChar).Value = args.BioType ?? (object)DBNull.Value;
+            using (var reader = await command.ExecuteReaderAsync())
+            {
+                if (await reader.ReadAsync())
+                {
+                    return new GetFirstExtendedBioByTypeRow
+                    {
+                        AuthorName = reader.GetString(0),
+                        Name = reader.GetString(1),
+                        BioType = reader.IsDBNull(2) ? null : reader.GetString(2)
+                    };
+                }
+            }
+        }
+
+        return null;
+    }
+
+    private const string TruncateExtendedBiosSql = "TRUNCATE TABLE extended.bios;";
+    public async Task TruncateExtendedBiosAsync()
+    {
+        if (this.Transaction == null)
+        {
+            using (var connection = new SqlConnection(ConnectionString))
+            {
+                await connection.OpenAsync();
+                using (var command = new SqlCommand(TruncateExtendedBiosSql, connection))
+                {
+                    await command.ExecuteNonQueryAsync();
+                }
+
+                return;
+            }
+        }
+
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
+            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+        using (var command = this.Transaction.Connection.CreateCommand())
+        {
+            command.CommandText = TruncateExtendedBiosSql;
+            command.Transaction = this.Transaction;
+            await command.ExecuteNonQueryAsync();
+        }
+    }
+
     private const string InsertMssqlNumericTypesSql = @"
                                                         INSERT INTO mssql_numeric_types
                                                         (
@@ -727,17 +955,17 @@ public class QuerySql
         {
             await connection.OpenAsync();
             var dataTable = new DataTable();
-            dataTable.Columns.Add("c_bit", typeof(bool));
-            dataTable.Columns.Add("c_tinyint", typeof(byte));
-            dataTable.Columns.Add("c_smallint", typeof(short));
-            dataTable.Columns.Add("c_int", typeof(int));
-            dataTable.Columns.Add("c_bigint", typeof(long));
-            dataTable.Columns.Add("c_real", typeof(float));
-            dataTable.Columns.Add("c_float", typeof(double));
-            dataTable.Columns.Add("c_decimal", typeof(decimal));
-            dataTable.Columns.Add("c_numeric", typeof(decimal));
-            dataTable.Columns.Add("c_money", typeof(decimal));
-            dataTable.Columns.Add("c_smallmoney", typeof(decimal));
+            dataTable.Columns.Add("c_bit", typeof(object));
+            dataTable.Columns.Add("c_tinyint", typeof(object));
+            dataTable.Columns.Add("c_smallint", typeof(object));
+            dataTable.Columns.Add("c_int", typeof(object));
+            dataTable.Columns.Add("c_bigint", typeof(object));
+            dataTable.Columns.Add("c_real", typeof(object));
+            dataTable.Columns.Add("c_float", typeof(object));
+            dataTable.Columns.Add("c_decimal", typeof(object));
+            dataTable.Columns.Add("c_numeric", typeof(object));
+            dataTable.Columns.Add("c_money", typeof(object));
+            dataTable.Columns.Add("c_smallmoney", typeof(object));
             foreach (var row in args)
                 dataTable.Rows.Add(row.CBit ?? (object)DBNull.Value, row.CTinyint ?? (object)DBNull.Value, row.CSmallint ?? (object)DBNull.Value, row.CInt ?? (object)DBNull.Value, row.CBigint ?? (object)DBNull.Value, row.CReal ?? (object)DBNull.Value, row.CFloat ?? (object)DBNull.Value, row.CDecimal ?? (object)DBNull.Value, row.CNumeric ?? (object)DBNull.Value, row.CMoney ?? (object)DBNull.Value, row.CSmallmoney ?? (object)DBNull.Value);
             using (var bulkCopy = new SqlBulkCopy(connection))
@@ -1014,12 +1242,12 @@ public class QuerySql
         {
             await connection.OpenAsync();
             var dataTable = new DataTable();
-            dataTable.Columns.Add("c_char", typeof(string));
-            dataTable.Columns.Add("c_nchar", typeof(string));
-            dataTable.Columns.Add("c_varchar", typeof(string));
-            dataTable.Columns.Add("c_nvarchar", typeof(string));
-            dataTable.Columns.Add("c_varchar_max", typeof(string));
-            dataTable.Columns.Add("c_nvarchar_max", typeof(string));
+            dataTable.Columns.Add("c_char", typeof(object));
+            dataTable.Columns.Add("c_nchar", typeof(object));
+            dataTable.Columns.Add("c_varchar", typeof(object));
+            dataTable.Columns.Add("c_nvarchar", typeof(object));
+            dataTable.Columns.Add("c_varchar_max", typeof(object));
+            dataTable.Columns.Add("c_nvarchar_max", typeof(object));
             foreach (var row in args)
                 dataTable.Rows.Add(row.CChar ?? (object)DBNull.Value, row.CNchar ?? (object)DBNull.Value, row.CVarchar ?? (object)DBNull.Value, row.CNvarchar ?? (object)DBNull.Value, row.CVarcharMax ?? (object)DBNull.Value, row.CNvarcharMax ?? (object)DBNull.Value);
             using (var bulkCopy = new SqlBulkCopy(connection))
@@ -1261,12 +1489,12 @@ public class QuerySql
         {
             await connection.OpenAsync();
             var dataTable = new DataTable();
-            dataTable.Columns.Add("c_date", typeof(DateTime));
-            dataTable.Columns.Add("c_datetime", typeof(DateTime));
-            dataTable.Columns.Add("c_datetime2", typeof(DateTime));
-            dataTable.Columns.Add("c_smalldatetime", typeof(DateTime));
-            dataTable.Columns.Add("c_datetimeoffset", typeof(DateTimeOffset));
-            dataTable.Columns.Add("c_time", typeof(TimeSpan));
+            dataTable.Columns.Add("c_date", typeof(object));
+            dataTable.Columns.Add("c_datetime", typeof(object));
+            dataTable.Columns.Add("c_datetime2", typeof(object));
+            dataTable.Columns.Add("c_smalldatetime", typeof(object));
+            dataTable.Columns.Add("c_datetimeoffset", typeof(object));
+            dataTable.Columns.Add("c_time", typeof(object));
             foreach (var row in args)
                 dataTable.Rows.Add(row.CDate ?? (object)DBNull.Value, row.CDatetime ?? (object)DBNull.Value, row.CDatetime2 ?? (object)DBNull.Value, row.CSmalldatetime ?? (object)DBNull.Value, row.CDatetimeoffset ?? (object)DBNull.Value, row.CTime ?? (object)DBNull.Value);
             using (var bulkCopy = new SqlBulkCopy(connection))
@@ -1500,10 +1728,10 @@ public class QuerySql
         {
             await connection.OpenAsync();
             var dataTable = new DataTable();
-            dataTable.Columns.Add("c_binary", typeof(byte[]));
-            dataTable.Columns.Add("c_varbinary", typeof(byte[]));
-            dataTable.Columns.Add("c_varbinary_max", typeof(byte[]));
-            dataTable.Columns.Add("c_uniqueidentifier", typeof(Guid));
+            dataTable.Columns.Add("c_binary", typeof(object));
+            dataTable.Columns.Add("c_varbinary", typeof(object));
+            dataTable.Columns.Add("c_varbinary_max", typeof(object));
+            dataTable.Columns.Add("c_uniqueidentifier", typeof(object));
             foreach (var row in args)
                 dataTable.Rows.Add(row.CBinary ?? (object)DBNull.Value, row.CVarbinary ?? (object)DBNull.Value, row.CVarbinaryMax ?? (object)DBNull.Value, row.CUniqueidentifier ?? (object)DBNull.Value);
             using (var bulkCopy = new SqlBulkCopy(connection))
@@ -1672,7 +1900,7 @@ public class QuerySql
                                                   FROM mssql_numeric_types
                                                   CROSS JOIN mssql_string_types
                                                   CROSS JOIN mssql_datetime_types;";
-    public readonly record struct GetMssqlFunctionsRow(int? MaxInt, string? MaxVarchar, DateTime? MaxDatetime2);
+    public readonly record struct GetMssqlFunctionsRow(int? MaxInt, string? MaxVarchar, DateTime MaxDatetime2);
     public async Task<GetMssqlFunctionsRow?> GetMssqlFunctionsAsync()
     {
         if (this.Transaction == null)
@@ -1690,7 +1918,7 @@ public class QuerySql
                             {
                                 MaxInt = reader.IsDBNull(0) ? null : reader.GetInt32(0),
                                 MaxVarchar = reader.IsDBNull(1) ? null : reader.GetString(1),
-                                MaxDatetime2 = reader.IsDBNull(2) ? null : reader.GetDateTime(2)
+                                MaxDatetime2 = reader.GetDateTime(2)
                             };
                         }
                     }
@@ -1713,12 +1941,319 @@ public class QuerySql
                     {
                         MaxInt = reader.IsDBNull(0) ? null : reader.GetInt32(0),
                         MaxVarchar = reader.IsDBNull(1) ? null : reader.GetString(1),
-                        MaxDatetime2 = reader.IsDBNull(2) ? null : reader.GetDateTime(2)
+                        MaxDatetime2 = reader.GetDateTime(2)
                     };
                 }
             }
         }
 
         return null;
+    }
+
+    private const string InsertMssqlSpatialTypesSql = @"
+                                                        INSERT INTO mssql_spatial_types (c_geography, c_geometry, c_hierarchyid) VALUES (@c_geography, @c_geometry, @c_hierarchyid);";
+    public readonly record struct InsertMssqlSpatialTypesArgs(SqlGeography? CGeography, SqlGeometry? CGeometry, SqlHierarchyId? CHierarchyid);
+    public async Task InsertMssqlSpatialTypesAsync(InsertMssqlSpatialTypesArgs args)
+    {
+        if (this.Transaction == null)
+        {
+            using (var connection = new SqlConnection(ConnectionString))
+            {
+                await connection.OpenAsync();
+                using (var command = new SqlCommand(InsertMssqlSpatialTypesSql, connection))
+                {
+                    command.Parameters.Add(new SqlParameter("@c_geography", SqlDbType.Udt) { UdtTypeName = "geography", Value = args.CGeography ?? (object)DBNull.Value });
+                    command.Parameters.Add(new SqlParameter("@c_geometry", SqlDbType.Udt) { UdtTypeName = "geometry", Value = args.CGeometry ?? (object)DBNull.Value });
+                    command.Parameters.Add(new SqlParameter("@c_hierarchyid", SqlDbType.Udt) { UdtTypeName = "hierarchyid", Value = args.CHierarchyid ?? (object)DBNull.Value });
+                    await command.ExecuteNonQueryAsync();
+                }
+
+                return;
+            }
+        }
+
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
+            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+        using (var command = this.Transaction.Connection.CreateCommand())
+        {
+            command.CommandText = InsertMssqlSpatialTypesSql;
+            command.Transaction = this.Transaction;
+            command.Parameters.Add(new SqlParameter("@c_geography", SqlDbType.Udt) { UdtTypeName = "geography", Value = args.CGeography ?? (object)DBNull.Value });
+            command.Parameters.Add(new SqlParameter("@c_geometry", SqlDbType.Udt) { UdtTypeName = "geometry", Value = args.CGeometry ?? (object)DBNull.Value });
+            command.Parameters.Add(new SqlParameter("@c_hierarchyid", SqlDbType.Udt) { UdtTypeName = "hierarchyid", Value = args.CHierarchyid ?? (object)DBNull.Value });
+            await command.ExecuteNonQueryAsync();
+        }
+    }
+
+    private const string GetMssqlSpatialTypesSql = "SELECT TOP 1 c_geography, c_geometry, c_hierarchyid FROM mssql_spatial_types;";
+    public readonly record struct GetMssqlSpatialTypesRow(SqlGeography? CGeography, SqlGeometry? CGeometry, SqlHierarchyId? CHierarchyid);
+    public async Task<GetMssqlSpatialTypesRow?> GetMssqlSpatialTypesAsync()
+    {
+        if (this.Transaction == null)
+        {
+            using (var connection = new SqlConnection(ConnectionString))
+            {
+                await connection.OpenAsync();
+                using (var command = new SqlCommand(GetMssqlSpatialTypesSql, connection))
+                {
+                    using (var reader = await command.ExecuteReaderAsync())
+                    {
+                        if (await reader.ReadAsync())
+                        {
+                            return new GetMssqlSpatialTypesRow
+                            {
+                                CGeography = reader.IsDBNull(0) ? null : SqlGeography.Deserialize(reader.GetSqlBytes(0)),
+                                CGeometry = reader.IsDBNull(1) ? null : SqlGeometry.Deserialize(reader.GetSqlBytes(1)),
+                                CHierarchyid = reader.IsDBNull(2) ? null : (new Func<System.Data.SqlTypes.SqlBytes, SqlHierarchyId>(b =>
+                                {
+                                    var id = new SqlHierarchyId();
+                                    id.Read(new System.IO.BinaryReader(b.Stream));
+                                    return id;
+                                }))(reader.GetSqlBytes(2))
+                            };
+                        }
+                    }
+                }
+            };
+            return null;
+        }
+
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
+            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+        using (var command = this.Transaction.Connection.CreateCommand())
+        {
+            command.CommandText = GetMssqlSpatialTypesSql;
+            command.Transaction = this.Transaction;
+            using (var reader = await command.ExecuteReaderAsync())
+            {
+                if (await reader.ReadAsync())
+                {
+                    return new GetMssqlSpatialTypesRow
+                    {
+                        CGeography = reader.IsDBNull(0) ? null : SqlGeography.Deserialize(reader.GetSqlBytes(0)),
+                        CGeometry = reader.IsDBNull(1) ? null : SqlGeometry.Deserialize(reader.GetSqlBytes(1)),
+                        CHierarchyid = reader.IsDBNull(2) ? null : (new Func<System.Data.SqlTypes.SqlBytes, SqlHierarchyId>(b =>
+                        {
+                            var id = new SqlHierarchyId();
+                            id.Read(new System.IO.BinaryReader(b.Stream));
+                            return id;
+                        }))(reader.GetSqlBytes(2))
+                    };
+                }
+            }
+        }
+
+        return null;
+    }
+
+    private const string TruncateMssqlSpatialTypesSql = "TRUNCATE TABLE mssql_spatial_types;";
+    public async Task TruncateMssqlSpatialTypesAsync()
+    {
+        if (this.Transaction == null)
+        {
+            using (var connection = new SqlConnection(ConnectionString))
+            {
+                await connection.OpenAsync();
+                using (var command = new SqlCommand(TruncateMssqlSpatialTypesSql, connection))
+                {
+                    await command.ExecuteNonQueryAsync();
+                }
+
+                return;
+            }
+        }
+
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
+            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+        using (var command = this.Transaction.Connection.CreateCommand())
+        {
+            command.CommandText = TruncateMssqlSpatialTypesSql;
+            command.Transaction = this.Transaction;
+            await command.ExecuteNonQueryAsync();
+        }
+    }
+
+    private const string InsertMssqlNodaTypesSql = @"
+                                                     INSERT INTO mssql_noda_types (c_datetime2_instant, c_datetimeoffset_instant) VALUES (@c_datetime2_instant, @c_datetimeoffset_instant);";
+    public readonly record struct InsertMssqlNodaTypesArgs(Instant? CDatetime2Instant, Instant? CDatetimeoffsetInstant);
+    public async Task InsertMssqlNodaTypesAsync(InsertMssqlNodaTypesArgs args)
+    {
+        if (this.Transaction == null)
+        {
+            using (var connection = new SqlConnection(ConnectionString))
+            {
+                await connection.OpenAsync();
+                using (var command = new SqlCommand(InsertMssqlNodaTypesSql, connection))
+                {
+                    command.Parameters.Add("@c_datetime2_instant", SqlDbType.DateTime2).Value = args.CDatetime2Instant is null ? (object)DBNull.Value : (DateTime? )args.CDatetime2Instant.Value.ToDateTimeUtc();
+                    command.Parameters.Add("@c_datetimeoffset_instant", SqlDbType.DateTimeOffset).Value = args.CDatetimeoffsetInstant is null ? (object)DBNull.Value : (DateTimeOffset? )args.CDatetimeoffsetInstant.Value.ToDateTimeOffset();
+                    await command.ExecuteNonQueryAsync();
+                }
+
+                return;
+            }
+        }
+
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
+            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+        using (var command = this.Transaction.Connection.CreateCommand())
+        {
+            command.CommandText = InsertMssqlNodaTypesSql;
+            command.Transaction = this.Transaction;
+            command.Parameters.Add("@c_datetime2_instant", SqlDbType.DateTime2).Value = args.CDatetime2Instant is null ? (object)DBNull.Value : (DateTime? )args.CDatetime2Instant.Value.ToDateTimeUtc();
+            command.Parameters.Add("@c_datetimeoffset_instant", SqlDbType.DateTimeOffset).Value = args.CDatetimeoffsetInstant is null ? (object)DBNull.Value : (DateTimeOffset? )args.CDatetimeoffsetInstant.Value.ToDateTimeOffset();
+            await command.ExecuteNonQueryAsync();
+        }
+    }
+
+    private const string InsertMssqlNodaTypesBatchSql = "INSERT INTO mssql_noda_types (c_datetime2_instant, c_datetimeoffset_instant) VALUES (@c_datetime2_instant, @c_datetimeoffset_instant);";
+    public readonly record struct InsertMssqlNodaTypesBatchArgs(Instant? CDatetime2Instant, Instant? CDatetimeoffsetInstant);
+    public async Task InsertMssqlNodaTypesBatchAsync(List<InsertMssqlNodaTypesBatchArgs> args)
+    {
+        using (var connection = new SqlConnection(ConnectionString))
+        {
+            await connection.OpenAsync();
+            var dataTable = new DataTable();
+            dataTable.Columns.Add("c_datetime2_instant", typeof(object));
+            dataTable.Columns.Add("c_datetimeoffset_instant", typeof(object));
+            foreach (var row in args)
+                dataTable.Rows.Add(row.CDatetime2Instant is null ? (object)DBNull.Value : (DateTime? )row.CDatetime2Instant.Value.ToDateTimeUtc(), row.CDatetimeoffsetInstant is null ? (object)DBNull.Value : (DateTimeOffset? )row.CDatetimeoffsetInstant.Value.ToDateTimeOffset());
+            using (var bulkCopy = new SqlBulkCopy(connection))
+            {
+                bulkCopy.DestinationTableName = "[mssql_noda_types]";
+                bulkCopy.ColumnMappings.Add("c_datetime2_instant", "c_datetime2_instant");
+                bulkCopy.ColumnMappings.Add("c_datetimeoffset_instant", "c_datetimeoffset_instant");
+                await bulkCopy.WriteToServerAsync(dataTable);
+            }
+        }
+    }
+
+    private const string GetMssqlNodaTypesSql = "SELECT TOP 1 c_datetime2_instant, c_datetimeoffset_instant FROM mssql_noda_types;";
+    public readonly record struct GetMssqlNodaTypesRow(Instant? CDatetime2Instant, Instant? CDatetimeoffsetInstant);
+    public async Task<GetMssqlNodaTypesRow?> GetMssqlNodaTypesAsync()
+    {
+        if (this.Transaction == null)
+        {
+            using (var connection = new SqlConnection(ConnectionString))
+            {
+                await connection.OpenAsync();
+                using (var command = new SqlCommand(GetMssqlNodaTypesSql, connection))
+                {
+                    using (var reader = await command.ExecuteReaderAsync())
+                    {
+                        if (await reader.ReadAsync())
+                        {
+                            return new GetMssqlNodaTypesRow
+                            {
+                                CDatetime2Instant = reader.IsDBNull(0) ? null : DateTime.SpecifyKind(reader.GetDateTime(0), DateTimeKind.Utc).ToInstant(),
+                                CDatetimeoffsetInstant = reader.IsDBNull(1) ? null : reader.GetFieldValue<DateTimeOffset>(1).ToInstant()
+                            };
+                        }
+                    }
+                }
+            };
+            return null;
+        }
+
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
+            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+        using (var command = this.Transaction.Connection.CreateCommand())
+        {
+            command.CommandText = GetMssqlNodaTypesSql;
+            command.Transaction = this.Transaction;
+            using (var reader = await command.ExecuteReaderAsync())
+            {
+                if (await reader.ReadAsync())
+                {
+                    return new GetMssqlNodaTypesRow
+                    {
+                        CDatetime2Instant = reader.IsDBNull(0) ? null : DateTime.SpecifyKind(reader.GetDateTime(0), DateTimeKind.Utc).ToInstant(),
+                        CDatetimeoffsetInstant = reader.IsDBNull(1) ? null : reader.GetFieldValue<DateTimeOffset>(1).ToInstant()
+                    };
+                }
+            }
+        }
+
+        return null;
+    }
+
+    private const string GetMssqlNodaTypesCntSql = @"SELECT TOP 1 COUNT(*) AS cnt, c_datetime2_instant, c_datetimeoffset_instant
+                                                     FROM mssql_noda_types
+                                                     GROUP BY c_datetime2_instant, c_datetimeoffset_instant;";
+    public readonly record struct GetMssqlNodaTypesCntRow(int Cnt, Instant? CDatetime2Instant, Instant? CDatetimeoffsetInstant);
+    public async Task<GetMssqlNodaTypesCntRow?> GetMssqlNodaTypesCntAsync()
+    {
+        if (this.Transaction == null)
+        {
+            using (var connection = new SqlConnection(ConnectionString))
+            {
+                await connection.OpenAsync();
+                using (var command = new SqlCommand(GetMssqlNodaTypesCntSql, connection))
+                {
+                    using (var reader = await command.ExecuteReaderAsync())
+                    {
+                        if (await reader.ReadAsync())
+                        {
+                            return new GetMssqlNodaTypesCntRow
+                            {
+                                Cnt = reader.GetInt32(0),
+                                CDatetime2Instant = reader.IsDBNull(1) ? null : DateTime.SpecifyKind(reader.GetDateTime(1), DateTimeKind.Utc).ToInstant(),
+                                CDatetimeoffsetInstant = reader.IsDBNull(2) ? null : reader.GetFieldValue<DateTimeOffset>(2).ToInstant()
+                            };
+                        }
+                    }
+                }
+            };
+            return null;
+        }
+
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
+            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+        using (var command = this.Transaction.Connection.CreateCommand())
+        {
+            command.CommandText = GetMssqlNodaTypesCntSql;
+            command.Transaction = this.Transaction;
+            using (var reader = await command.ExecuteReaderAsync())
+            {
+                if (await reader.ReadAsync())
+                {
+                    return new GetMssqlNodaTypesCntRow
+                    {
+                        Cnt = reader.GetInt32(0),
+                        CDatetime2Instant = reader.IsDBNull(1) ? null : DateTime.SpecifyKind(reader.GetDateTime(1), DateTimeKind.Utc).ToInstant(),
+                        CDatetimeoffsetInstant = reader.IsDBNull(2) ? null : reader.GetFieldValue<DateTimeOffset>(2).ToInstant()
+                    };
+                }
+            }
+        }
+
+        return null;
+    }
+
+    private const string TruncateMssqlNodaTypesSql = "TRUNCATE TABLE mssql_noda_types;";
+    public async Task TruncateMssqlNodaTypesAsync()
+    {
+        if (this.Transaction == null)
+        {
+            using (var connection = new SqlConnection(ConnectionString))
+            {
+                await connection.OpenAsync();
+                using (var command = new SqlCommand(TruncateMssqlNodaTypesSql, connection))
+                {
+                    await command.ExecuteNonQueryAsync();
+                }
+
+                return;
+            }
+        }
+
+        if (this.Transaction?.Connection == null || this.Transaction?.Connection.State != ConnectionState.Open)
+            throw new InvalidOperationException("Transaction is provided, but its connection is null.");
+        using (var command = this.Transaction.Connection.CreateCommand())
+        {
+            command.CommandText = TruncateMssqlNodaTypesSql;
+            command.Transaction = this.Transaction;
+            await command.ExecuteNonQueryAsync();
+        }
     }
 }

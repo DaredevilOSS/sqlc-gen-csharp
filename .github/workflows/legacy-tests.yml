@@ -54,12 +54,13 @@ jobs:
         
       # PostgreSQL 17 and MySQL 8.0 come preinstalled on the Windows runner image - using them is much faster than
       # downloading and installing them (setup-postgres ~3.5 min, choco mysql ~2 min).
-      # Both databases are set up in the background while the test projects are restored and built. This has to be
+      # SQL Server (experimental) runs as LocalDB, installed with choco when the image does not have it.
+      # The databases are set up in the background while the test projects are restored and built. This has to be
       # a single step: child processes do not outlive the step that started them (the database services do).
       - name: Set up databases and build test projects in parallel
         shell: pwsh
         run: |
-          $dbJobs = foreach ($db in 'postgres', 'mysql') {
+          $dbJobs = foreach ($db in 'postgres', 'mysql', 'mssql') {
             Start-Process -FilePath pwsh -PassThru -WindowStyle Hidden `
               -ArgumentList '-NoProfile', '-File', ".github/scripts/start-$db.ps1" `
               -RedirectStandardOutput "$env:RUNNER_TEMP\$db.log" -RedirectStandardError "$env:RUNNER_TEMP\$db.err.log"
@@ -73,9 +74,9 @@ jobs:
           msbuild.exe ./end2end/EndToEndTestsLegacy/EndToEndTestsLegacy.csproj -p:Configuration=Release -p:FrameworkVersion=v4.7.2 -m
           $buildExit = $LASTEXITCODE
 
-          $dbJobs | Wait-Process -Timeout 180
+          $dbJobs | Wait-Process -Timeout 300
           $failed = $false
-          foreach ($db in 'postgres', 'mysql') {
+          foreach ($db in 'postgres', 'mysql', 'mssql') {
             if (-not (Select-String -Path "$env:RUNNER_TEMP\$db.log" -Pattern "$db ready" -Quiet)) {
               Get-ChildItem $env:RUNNER_TEMP -Filter "$db*.log" | ForEach-Object { Write-Host "--- $_"; Get-Content $_ }
               $failed = $true

@@ -36,3 +36,14 @@ CREATE TABLE mssql_binary_types (
     c_varbinary_max VARBINARY(MAX),
     c_uniqueidentifier UNIQUEIDENTIFIER
 );
+
+CREATE TABLE mssql_spatial_types (
+    c_geography GEOGRAPHY NULL,
+    c_geometry GEOMETRY NULL,
+    c_hierarchyid HIERARCHYID NULL
+);
+
+CREATE TABLE mssql_noda_types (
+    c_datetime2_instant DATETIME2 NULL,
+    c_datetimeoffset_instant DATETIMEOFFSET NULL
+);

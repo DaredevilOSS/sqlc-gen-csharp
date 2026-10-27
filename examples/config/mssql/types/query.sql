@@ -220,3 +220,33 @@ SELECT
 FROM mssql_numeric_types
 CROSS JOIN mssql_string_types
 CROSS JOIN mssql_datetime_types;
+
+/* Spatial and hierarchyid types */
+
+-- name: InsertMssqlSpatialTypes :exec
+INSERT INTO mssql_spatial_types (c_geography, c_geometry, c_hierarchyid) VALUES (@c_geography, @c_geometry, @c_hierarchyid);
+
+-- name: GetMssqlSpatialTypes :one
+SELECT TOP 1 * FROM mssql_spatial_types;
+
+-- name: TruncateMssqlSpatialTypes :exec
+TRUNCATE TABLE mssql_spatial_types;
+
+/* NodaTime Instant overrides */
+
+-- name: InsertMssqlNodaTypes :exec
+INSERT INTO mssql_noda_types (c_datetime2_instant, c_datetimeoffset_instant) VALUES (@c_datetime2_instant, @c_datetimeoffset_instant);
+
+-- name: InsertMssqlNodaTypesBatch :copyfrom
+INSERT INTO mssql_noda_types (c_datetime2_instant, c_datetimeoffset_instant) VALUES (@c_datetime2_instant, @c_datetimeoffset_instant);
+
+-- name: GetMssqlNodaTypes :one
+SELECT TOP 1 * FROM mssql_noda_types;
+
+-- name: GetMssqlNodaTypesCnt :one
+SELECT TOP 1 COUNT(*) AS cnt, c_datetime2_instant, c_datetimeoffset_instant
+FROM mssql_noda_types
+GROUP BY c_datetime2_instant, c_datetimeoffset_instant;
+
+-- name: TruncateMssqlNodaTypes :exec
+TRUNCATE TABLE mssql_noda_types;

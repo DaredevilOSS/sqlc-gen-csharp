@@ -1,4 +1,5 @@
 using dotenv.net;
+using Microsoft.Data.SqlClient;
 using Microsoft.Data.Sqlite;
 using System;
 using System.IO;
@@ -14,6 +15,47 @@ namespace EndToEndTests
         public const string MssqlConnectionStringEnv = "MSSQL_CONNECTION_STRING";
         public const string SqliteConnectionStringEnv = "SQLITE_CONNECTION_STRING";
 
+        public static void SetupTestsMssqlDb() => SetupMssqlDb(
+            new string[] { "authors.mssql.schema.sql", "types.mssql.schema.sql" }
+        );
+
+        // SQL Server has no init hook in its docker image, so the database is (re)created here. The schema files are
+        // split on GO, since CREATE SCHEMA / VIEW / PROCEDURE must start a batch.
+        public static void SetupMssqlDb(string[] schemaFiles)
+        {
+            LoadEnvFile();
+            var connectionString = Environment.GetEnvironmentVariable(MssqlConnectionStringEnv);
+            if (string.IsNullOrWhiteSpace(connectionString))
+                throw new InvalidOperationException($"{MssqlConnectionStringEnv} environment variable is not set");
+
+            var builder = new SqlConnectionStringBuilder(connectionString);
+            var database = builder.InitialCatalog;
+            builder.InitialCatalog = "master";
+            using (var connection = new SqlConnection(builder.ConnectionString))
+            {
+                connection.Open();
+                ExecuteMssql(connection, $"IF DB_ID('{database}') IS NOT NULL BEGIN ALTER DATABASE [{database}] SET SINGLE_USER WITH ROLLBACK IMMEDIATE; DROP DATABASE [{database}]; END");
+                ExecuteMssql(connection, $"CREATE DATABASE [{database}]");
+                connection.ChangeDatabase(database);
+                foreach (var schemaFile in schemaFiles)
+                {
+                    var schemaSql = File.ReadAllText(Path.Combine(AppContext.BaseDirectory, schemaFile));
+                    foreach (var batch in MssqlBatchSeparatorRegex.Split(schemaSql))
+                        if (batch.Trim().Length > 0)
+                            ExecuteMssql(connection, batch);
+                }
+            }
+            Console.WriteLine($"Initialized SQL Server database {database}");
+        }
+
+        private static readonly Regex MssqlBatchSeparatorRegex = new Regex(@"^\s*GO\s*$", RegexOptions.Multiline | RegexOptions.IgnoreCase);
+
+        private static void ExecuteMssql(SqlConnection connection, string sql)
+        {
+            using (var command = new SqlCommand(sql, connection))
+                command.ExecuteNonQuery();
+        }
+
         public static void SetupTestsSqliteDb() => SetupSqliteDb(
             new string[] { "authors.sqlite.schema.sql", "types.sqlite.schema.sql" }
         );
@@ -25,7 +67,8 @@ namespace EndToEndTests
         {
             if (!File.Exists(EnvFile))
                 throw new FileNotFoundException($"{EnvFile} not found");
-            DotEnv.Load(options: new DotEnvOptions(envFilePaths: new[] { EnvFile }));
+            // variables already set (e.g. by CI, pointing at another server) win over the file
+            DotEnv.Load(options: new DotEnvOptions(envFilePaths: new[] { EnvFile }, overwriteExistingVars: false));
         }
 
         public static void SetupSqliteDb(string[] schemaFiles)

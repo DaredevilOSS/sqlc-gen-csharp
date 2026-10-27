@@ -591,6 +591,17 @@ namespaceName: NpgsqlDapperAsyncEnumerableExampleGen
 </details>
 
 <details>
+<summary>QuickStartMssqlDalGen</summary>
+
+## Engine `mssql`: [QuickStartMssqlDalGen](examples/QuickStartMssqlDalGen)
+### [Schema](examples/config/mssql/authors/schema.sql) | [Queries](examples/config/mssql/authors/query.sql) | [End2End Test](end2end/EndToEndTests/QuickStartMssqlDalGen.cs)
+### Config
+```yaml
+```
+
+</details>
+
+<details>
 <summary>Mssql</summary>
 
 ## Engine `mssql`: [MssqlExample](examples/MssqlExample)
@@ -601,6 +612,27 @@ useDapper: false
 targetFramework: net10.0
 generateCsproj: true
 namespaceName: MssqlExampleGen
+overrides:
+- column: "GetMssqlFunctions:max_int"
+  csharp_type:
+    type: "int"
+    notNull: false
+- column: "GetMssqlFunctions:max_varchar"
+  csharp_type:
+    type: "string"
+    notNull: false
+- column: "GetMssqlFunctions:max_datetime2"
+  csharp_type:
+    type: "DateTime"
+    notNull: true
+- column: "*:c_datetime2_instant"
+  csharp_type:
+    type: "Instant"
+    notNull: false
+- column: "*:c_datetimeoffset_instant"
+  csharp_type:
+    type: "Instant"
+    notNull: false
 ```
 
 </details>
@@ -616,6 +648,116 @@ useDapper: true
 targetFramework: net9.0
 generateCsproj: true
 namespaceName: MssqlDapperExampleGen
+overrides:
+- column: "GetMssqlFunctions:max_int"
+  csharp_type:
+    type: "int"
+    notNull: false
+- column: "GetMssqlFunctions:max_varchar"
+  csharp_type:
+    type: "string"
+    notNull: false
+- column: "GetMssqlFunctions:max_datetime2"
+  csharp_type:
+    type: "DateTime"
+    notNull: true
+- column: "*:c_datetime2_instant"
+  csharp_type:
+    type: "Instant"
+    notNull: false
+- column: "*:c_datetimeoffset_instant"
+  csharp_type:
+    type: "Instant"
+    notNull: false
+```
+
+</details>
+
+<details>
+<summary>MssqlLegacy</summary>
+
+## Engine `mssql`: [MssqlLegacyExample](examples/MssqlLegacyExample)
+### [Schema](examples/config/mssql/authors/schema.sql) | [Queries](examples/config/mssql/authors/query.sql) | [End2End Test](end2end/EndToEndTestsLegacy/MssqlTester.cs)
+### Config
+```yaml
+useDapper: false
+targetFramework: netstandard2.0
+generateCsproj: true
+namespaceName: MssqlLegacyExampleGen
+overrides:
+- column: "GetMssqlFunctions:max_int"
+  csharp_type:
+    type: "int"
+    notNull: false
+- column: "GetMssqlFunctions:max_varchar"
+  csharp_type:
+    type: "string"
+    notNull: false
+- column: "GetMssqlFunctions:max_datetime2"
+  csharp_type:
+    type: "DateTime"
+    notNull: true
+- column: "*:c_datetime2_instant"
+  csharp_type:
+    type: "Instant"
+    notNull: false
+- column: "*:c_datetimeoffset_instant"
+  csharp_type:
+    type: "Instant"
+    notNull: false
+```
+
+</details>
+
+<details>
+<summary>MssqlDapperLegacy</summary>
+
+## Engine `mssql`: [MssqlDapperLegacyExample](examples/MssqlDapperLegacyExample)
+### [Schema](examples/config/mssql/authors/schema.sql) | [Queries](examples/config/mssql/authors/query.sql) | [End2End Test](end2end/EndToEndTestsLegacy/MssqlDapperTester.cs)
+### Config
+```yaml
+useDapper: true
+targetFramework: netstandard2.0
+generateCsproj: true
+namespaceName: MssqlDapperLegacyExampleGen
+overrides:
+- column: "GetMssqlFunctions:max_int"
+  csharp_type:
+    type: "int"
+    notNull: false
+- column: "GetMssqlFunctions:max_varchar"
+  csharp_type:
+    type: "string"
+    notNull: false
+- column: "GetMssqlFunctions:max_datetime2"
+  csharp_type:
+    type: "DateTime"
+    notNull: true
+- column: "*:c_datetime2_instant"
+  csharp_type:
+    type: "Instant"
+    notNull: false
+- column: "*:c_datetimeoffset_instant"
+  csharp_type:
+    type: "Instant"
+    notNull: false
+```
+
+</details>
+
+<details>
+<summary>MssqlAsyncEnumerable</summary>
+
+## Engine `mssql`: [MssqlAsyncEnumerableExample](examples/MssqlAsyncEnumerableExample)
+### [Schema](examples/config/mssql/authors/schema.sql) | [Queries](examples/config/mssql/authors/query.sql) | [End2End Test](end2end/EndToEndTests/MssqlAsyncEnumerableTester.cs)
+### Config
+```yaml
+useDapper: false
+useAsyncEnumerable: true
+withCancellationToken: true
+targetFramework: net8.0
+generateCsproj: true
+namespaceName: MssqlAsyncEnumerableExampleGen
 ```
 
 </details>

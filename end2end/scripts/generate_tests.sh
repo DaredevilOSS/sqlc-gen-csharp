@@ -9,10 +9,6 @@ TARGETS=(
   "NpgsqlDapperTester"
   "SqliteTester"
   "SqliteDapperTester"
-)
-
-# SQL Server has no legacy (netstandard) examples yet
-NON_LEGACY_TARGETS=(
   "MssqlTester"
   "MssqlDapperTester"
 )
@@ -36,8 +32,4 @@ generate_legacy() {
 for target in "${TARGETS[@]}"; do
     generate "$target"
     generate_legacy "$target"
-done
-
-for target in "${NON_LEGACY_TARGETS[@]}"; do
-    generate "$target"
 done

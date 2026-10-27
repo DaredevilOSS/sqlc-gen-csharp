@@ -12,6 +12,9 @@
         <Content Include="../../sqlc.ci.yaml">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </Content>
+        <Content Include="../../sqlc.mssql.ci.yaml">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
     </ItemGroup>
 
     <ItemGroup>

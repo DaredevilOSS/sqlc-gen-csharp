@@ -67,7 +67,7 @@ architecture test in the same change and explain why.
 PluginRunner.Run          read GenerateRequest from stdin
   CodeGenerator.Generate
     InitGenerators        Options(request); debugRequest -> dump request.json/request.message and stop
-    InstantiateDriver     engine (postgresql|mysql|sqlite) -> NpgsqlDriver | MySqlConnectorDriver | SqliteDriver
+    InstantiateDriver     engine (postgresql|mysql|sqlite|mssql) -> NpgsqlDriver | MySqlConnectorDriver | SqliteDriver | MssqlDriver
     group queries by query *file name* -> one QueriesGen file per group
     ModelsGen (Models.cs), UtilsGen (Utils.cs, only if it has members), CsprojGen (if generateCsproj)
 PluginRunner              write GenerateResponse to stdout
@@ -98,6 +98,9 @@ public class QuerySql : IDisposable                    // Npgsql/MySQL: IDisposa
 |-----------------------------------------------------------------------|----------------------------------------------------------|--------------------------------------------------|
 | `examples/**` (code, `.csproj`, `request.json`, `request.message`)    | plugin code + `examples/config/**` + `sqlc.ci.yaml`      | `make sqlc-generate`                             |
 | `sqlc.local.generated.yaml`, `sqlc.request.generated.yaml`            | `sqlc.ci.yaml` (`.sql` section)                          | `make sync-sqlc-options` (needs `yq`; part of `make sqlc-generate`) |
+| `sqlc.mssql.local.generated.yaml`, `sqlc.mssql.request.generated.yaml` | `sqlc.mssql.ci.yaml`                                    | `make sync-sqlc-options` |
+| `examples/*Mssql*/**`                                                 | plugin code + `examples/config/mssql/**` + `sqlc.mssql.ci.yaml` | `make sqlc-generate-mssql` (needs `bin/sqlc`, see section 3) |
+| `end2end/MssqlSyntaxMatrix/REPORT.md`, `results.json`                 | `end2end/MssqlSyntaxMatrix/cases/**` + the sqlc builds    | `make mssql-syntax-matrix` (SQL Server running; deterministic, CI diffs it) |
 | `end2end/EndToEndTests*/**/*.generated.cs`                            | `end2end/EndToEndScaffold/` templates + `Config.cs`      | `make generate-end2end-tests`                    |
 | `unit-tests/CodegenTests/test-requests/*/request.*`                   | `unit-tests/sqlc.yaml` + sibling `schema.sql`/`query.sql` | `cd unit-tests && sqlc generate` (part of `make unit-tests`) |
 | `GeneratedProtobuf/Codegen.cs`                                        | sqlc's `plugin/codegen.proto`                            | `make generate-protobuf`                         |
@@ -148,6 +151,16 @@ CI fails if any of the generated artifacts above is stale (`sqlc diff`, `git dif
   can work in the process plugin and break only in WASM.
 - `WasmRunner.csproj` forces a `wasip1` core module because sqlc's wazero cannot load the wasip2 component the .NET 10
   WASI SDK produces. The override relies on private SDK item names - re-verify after any SDK upgrade.
+
+**SQL Server (experimental)**
+- sqlc releases have no `mssql` engine; it is on sqlc `main` and this plugin needs it with the patches in
+  `scripts/sqlc-patches` (`SQLC_REF` pins the commit; `build_sqlc.sh bin` builds `bin/sqlc-upstream` and `bin/sqlc`).
+  That is why the SQL Server examples live in `sqlc.mssql.ci.yaml` and are checked by `.github/workflows/mssql.yml`,
+  while `sqlc.ci.yaml` stays on the pinned sqlc release. The mssql e2e tests still run in the normal e2e jobs.
+- sqlc's mssql catalog calls the default schema `public` (and lists it twice); `dbo.x` and `x` are the same table.
+- Anything sqlc cannot type comes through with an empty type name; `MssqlDriver` maps it to `object` instead of failing.
+- `end2end/MssqlSyntaxMatrix` is the evidence for what sqlc must support: add a case there for any T-SQL construct
+  before reporting it upstream.
 
 **Repository**
 - `.env` is shared by docker-compose, the end-to-end tests and CI; `RepositoryTests` asserts it is consistent with
@@ -201,7 +214,7 @@ CI fails if any of the generated artifacts above is stale (`sqlc diff`, `git dif
 | Option                        | Default                                                        | Notes |
 |-------------------------------|----------------------------------------------------------------|-------|
 | `targetFramework`             | `net8.0`                                                       | `netstandard2.0`, `netstandard2.1`, `net8.0`, `net9.0`, `net10.0` |
-| `overrideDriverVersion`       | `2.4.0` MySqlConnector, `8.0.6` Npgsql, `10.0.13` Microsoft.Data.Sqlite | constants in each driver |
+| `overrideDriverVersion`       | `2.4.0` MySqlConnector, `8.0.6` Npgsql, `10.0.13` Microsoft.Data.Sqlite, `7.1.1` Microsoft.Data.SqlClient | constants in each driver |
 | `generateCsproj`              | `true`                                                         | |
 | `namespaceName`               | output directory name                                          | |
 | `useDapper`                   | `false`                                                        | |
@@ -223,7 +236,7 @@ CI fails if any of the generated artifacts above is stale (`sqlc diff`, `git dif
 | `sqlc.slice`       | 🚫 (use arrays) | ✅ | ✅ | runtime `Utils.TransformQueryForSliceArgs` |
 
 SQL Server (experimental, `MssqlDriver`) supports every annotation and macro above. `:execlastid` relies on a user-written
-`OUTPUT INSERTED.id`, `:copyfrom` uses `SqlBulkCopy`. It needs a sqlc build with the mssql macro fixes.
+`OUTPUT INSERTED.id`, `:copyfrom` uses `SqlBulkCopy`. It needs sqlc `main` with `scripts/sqlc-patches` (section 3).
 
 ### Target frameworks
 - The plugin projects (section 1 graph) and the tooling/test projects target `net10.0`; SDK pinned in `global.json`.
@@ -239,6 +252,9 @@ make generate-end2end-tests
 make test-plugin           # everything above + build + end-to-end tests (Docker)
 make setup-wasm-plugin     # WASM plugin -> dist/plugin.wasm (needs wasi-experimental workload + WASI SDK 25 in WASI_SDK_PATH)
 sqlc -f sqlc.ci.yaml diff  # WASM output must equal the committed examples
+scripts/sqlc-patches/build_sqlc.sh bin   # sqlc main (+ patches) for SQL Server
+make sqlc-generate-mssql   # regenerate the SQL Server examples with bin/sqlc
+make mssql-syntax-matrix   # T-SQL syntax matrix (SQL Server running)
 make dotnet-format
 ```
 

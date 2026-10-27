@@ -391,10 +391,10 @@ STRING_AGG with WITHIN GROUP
 - **upstream** 💥
   ```
   panic: runtime error: invalid memory address or nil pointer dereference
-  github.com/sqlc-dev/sqlc/internal/sql/validate.validateCopyfrom({0x23937e0?, 0x18a3e1537420?})
-  github.com/sqlc-dev/sqlc/internal/sql/validate.Cmd({0x23937e0?, 0x18a3e1537420?}, {0x18a3e124c429?, 0x488e7d?}, {0x18a3e124c433?, 0x15000000488e7d?})
-  github.com/sqlc-dev/sqlc/internal/compiler.(*Compiler).parseQueryCore(0x18a3e152e108, 0x18a3e1130b80, {0x18a3e124c420?, 0x18a3e112a5a0?}, 0x18a3e112a728)
-  github.com/sqlc-dev/sqlc/internal/compiler.(*Compiler).parseQuery(0x18a3e152e108, {0x2392a60, 0x18a3e1130b80}, 0x18a3e1102a80, {{0xe0?}})
+  github.com/sqlc-dev/sqlc/internal/sql/validate.validateCopyfrom({0x?, 0x?})
+  github.com/sqlc-dev/sqlc/internal/sql/validate.Cmd({0x?, 0x?}, {0x?, 0x?}, {0x?, 0x?})
+  github.com/sqlc-dev/sqlc/internal/compiler.(*Compiler).parseQueryCore(0x?, 0x?, {0x?, 0x?}, 0x?)
+  github.com/sqlc-dev/sqlc/internal/compiler.(*Compiler).parseQuery(0x?, {0x?, 0x?}, 0x?, {{0x?}})
   github.com/sqlc-dev/sqlc/internal/compiler.(*Compiler).analyzeStatements.func1(...)
   ```
 
