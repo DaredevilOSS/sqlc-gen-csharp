@@ -13,7 +13,8 @@ feature, and every case is run through:
 3. **this plugin** (driver and Dapper flavours) on the output of the last sqlc build;
 4. optionally, **the C# compiler** on all the generated code (`--compile`).
 
-The result is [REPORT.md](REPORT.md) (and [results.json](results.json) for tooling).
+The result is [REPORT.md](REPORT.md) (and [results.json](results.json) for tooling). [ISSUES.md](ISSUES.md) groups
+what is missing into upstream issue drafts (sqlc vs. the teesql parser).
 
 | Level | Meaning |
 |-------|---------|
