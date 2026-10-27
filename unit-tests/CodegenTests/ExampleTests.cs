@@ -18,6 +18,12 @@ public class ExampleTests
     public static async Task TestMySqlConnectorDapperExample() => await AssertRequestSuccess("MySqlConnectorDapperExampleRequest.message");
 
     [Test]
+    public static async Task TestMssqlExample() => await AssertRequestSuccess("MssqlExampleRequest.message");
+
+    [Test]
+    public static async Task TestMssqlDapperExample() => await AssertRequestSuccess("MssqlDapperExampleRequest.message");
+
+    [Test]
     public static async Task TestSqliteExample() => await AssertRequestSuccess("SqliteExampleRequest.message");
 
     [Test]

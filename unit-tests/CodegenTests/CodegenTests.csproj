@@ -12,6 +12,14 @@
         <Content Include="test-requests/**">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </Content>
+        <Content Include="../../examples/MssqlExample/request.message">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+            <TargetPath>MssqlExampleRequest.message</TargetPath>
+        </Content>
+        <Content Include="../../examples/MssqlDapperExample/request.message">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+            <TargetPath>MssqlDapperExampleRequest.message</TargetPath>
+        </Content>
         <Content Include="../../examples/NpgsqlExample/request.message">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
             <TargetPath>NpgsqlExampleRequest.message</TargetPath>
