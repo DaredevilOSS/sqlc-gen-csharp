@@ -3,9 +3,6 @@ defaults:
   run:
     shell: bash
     
-env:
-  SQLC_VERSION: 1.30.0
-
 permissions:
   contents: read
 
@@ -33,6 +30,9 @@ jobs:
 
     steps:
       - uses: actions/checkout@v7
+
+      - name: Load tool versions
+        run: cat scripts/tool-versions.env >> "$GITHUB_ENV"
 
       - name: Set up .NET from global.json
         uses: actions/setup-dotnet@v6

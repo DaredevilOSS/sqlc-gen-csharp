@@ -151,6 +151,10 @@ CI fails if any of the generated artifacts above is stale (`sqlc diff`, `git dif
 **Repository**
 - `.env` is shared by docker-compose, the end-to-end tests and CI; `RepositoryTests` asserts it is consistent with
   `benchmark/.env`.
+- Cloud sessions: `.claude/hooks/session-start.sh` (only when `CLAUDE_CODE_REMOTE=true`) installs dotnet (version from
+  `global.json`), `sqlc` and mikefarah `yq`, and installs the WASI SDK + `wasi-experimental` workload in the background
+  (`.claude/hooks/ensure-wasm-toolchain.sh` waits for / finishes it; run it before `make setup-wasm-plugin`).
+  Tool versions live in `scripts/tool-versions.env`, shared with the CI workflows.
 - `make unit-tests` needs the process plugin published to `unit-tests/dist/` (`unit-tests/sqlc.yaml` uses
   `./dist/LocalRunner`); CI does `dotnet publish ../LocalRunner -c release --output dist/` from `unit-tests/`.
 - `benchmark/` has its own `sqlc.yaml` and committed `*SqlcImpl` generated projects; it is excluded from format/lint.
