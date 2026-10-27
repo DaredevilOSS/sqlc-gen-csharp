@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # SessionStart hook for Claude Code cloud sessions: installs dotnet, sqlc and yq (blocking, ~30s)
-# and the WASM toolchain (WASI SDK + wasi-experimental workload) in the background.
+# and, in the background, the WASM toolchain (WASI SDK + wasi-experimental workload) plus the
+# PostgreSQL/MySQL servers needed by the end-to-end tests.
 # Versions: dotnet <- global.json, everything else <- scripts/tool-versions.env.
 set -euo pipefail
 
@@ -59,5 +60,12 @@ fi
 setsid nohup "$ROOT/.claude/hooks/ensure-wasm-toolchain.sh" \
   > "$LOG_DIR/wasm-toolchain.log" 2>&1 < /dev/null &
 
+# --- PostgreSQL + MySQL for the end-to-end tests (background; no Docker daemon in cloud sessions) --
+# Idempotent: installs the servers once (cached) and starts them on every session.
+if [ "$(id -u)" = "0" ]; then
+  setsid nohup "$ROOT/.claude/hooks/setup-test-databases.sh" \
+    > "$LOG_DIR/test-databases.log" 2>&1 < /dev/null &
+fi
+
 echo "dotnet $("$DOTNET_ROOT/dotnet" --version), sqlc $("$BIN_DIR/sqlc" version), $("$BIN_DIR/yq" --version)"
-echo "WASM toolchain installing in background (log: $LOG_DIR/wasm-toolchain.log)"
+echo "WASM toolchain and test databases installing in background (logs: $LOG_DIR/*.log)"

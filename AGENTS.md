@@ -154,6 +154,8 @@ CI fails if any of the generated artifacts above is stale (`sqlc diff`, `git dif
 - Cloud sessions: `.claude/hooks/session-start.sh` (only when `CLAUDE_CODE_REMOTE=true`) installs dotnet (version from
   `global.json`), `sqlc` and mikefarah `yq`, and installs the WASI SDK + `wasi-experimental` workload in the background
   (`.claude/hooks/ensure-wasm-toolchain.sh` waits for / finishes it; run it before `make setup-wasm-plugin`).
+  It also starts PostgreSQL + MySQL natively (`.claude/hooks/setup-test-databases.sh`, no Docker daemon in cloud sessions),
+  so `dotnet test ./end2end/EndToEndTests/EndToEndTests.csproj` works without docker-compose.
   Tool versions live in `scripts/tool-versions.env`, shared with the CI workflows.
 - `make unit-tests` needs the process plugin published to `unit-tests/dist/` (`unit-tests/sqlc.yaml` uses
   `./dist/LocalRunner`); CI does `dotnet publish ../LocalRunner -c release --output dist/` from `unit-tests/`.
