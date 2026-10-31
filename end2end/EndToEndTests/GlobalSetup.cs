@@ -9,6 +9,7 @@ public class GlobalSetup
     public void SetUp()
     {
         EndToEndCommon.SetupTestsSqliteDb();
+        EndToEndCommon.SetupTestsMssqlDb();
     }
 
     [OneTimeTearDown]

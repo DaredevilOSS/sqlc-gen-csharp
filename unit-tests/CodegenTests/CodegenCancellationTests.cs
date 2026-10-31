@@ -145,7 +145,9 @@ public class CodegenCancellationTests
         "MySqlConnectorExampleRequest.message",
         "MySqlConnectorDapperExampleRequest.message",
         "SqliteExampleRequest.message",
-        "SqliteDapperExampleRequest.message"
+        "SqliteDapperExampleRequest.message",
+        "MssqlExampleRequest.message",
+        "MssqlDapperExampleRequest.message"
     ];
 
     private static GenerateRequest ExampleRequestWith(string requestFile, bool withCancellationToken)

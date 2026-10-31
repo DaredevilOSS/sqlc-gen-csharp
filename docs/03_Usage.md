@@ -3,7 +3,7 @@
 
 | Option                      | Possible values                                                                                                                                                                   | Optional | Info                                                                                                                                                                                                                                                                                                                                      |
 |-----------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| overrideDriverVersion       | default:<br/> `2.4.0` for MySqlConnector  (mysql)<br/>`8.0.6` for Npgsql (postgresql)<br/>`10.0.13` for Microsoft.Data.Sqlite (sqlite)<br/><br/>values: The desired driver version | Yes      | Allows you to override the version of DB driver to be used.                                                                                                                                                                                                                                                                               |
+| overrideDriverVersion       | default:<br/> `2.4.0` for MySqlConnector  (mysql)<br/>`8.0.6` for Npgsql (postgresql)<br/>`10.0.13` for Microsoft.Data.Sqlite (sqlite)<br/>`7.1.1` for Microsoft.Data.SqlClient (mssql)<br/><br/>values: The desired driver version | Yes      | Allows you to override the version of DB driver to be used.                                                                                                                                                                                                                                                                               |
 | targetFramework             | default: `net8.0`<br/>values: `netstandard2.0`, `netstandard2.1`, `net8.0`, `net9.0`, `net10.0`                                                                                                        | Yes      | Determines the target framework for your generated code, meaning the generated code will be compiled to the specified runtime.<br/>For more information and help deciding on the right value, refer to the [Microsoft .NET Standard documentation](https://learn.microsoft.com/en-us/dotnet/standard/net-standard?tabs=net-standard-1-0). |
 | generateCsproj              | default: `true`<br/>values: `false`,`true`                                                                                                                                        | Yes      | Assists you with the integration of SQLC and csharp by generating a `.csproj` file. This converts the generated output to a .dll, a project that you can easily incorporate into your build process.                                                                                                                                      |
 | namespaceName               | default: the generated project name                                                                                                                                               | Yes      | Allows you to override the namespace name to be different than the project name                                                                                                                                                                                                                                                           |
@@ -64,14 +64,14 @@ Advanced functionality - varies between databases:
 - `:copyfrom`     - batch insert, implementation varies greatly
 <br/>
 
-| Annotation  | PostgresSQL | MySQL | SQLite  |
-|-------------|-------------|-------|---------|
-| :one        | ✅          | ✅    | ✅      |
-| :many       | ✅          | ✅    | ✅      |
-| :exec       | ✅          | ✅    | ✅      |
-| :execrows   | ✅          | ✅    | ✅      |
-| :execlastid | ✅          | ✅    | ✅      |
-| :copyfrom   | ✅          | ✅    | ✅      |
+| Annotation  | PostgresSQL | MySQL | SQLite  | SQL Server (experimental) |
+|-------------|-------------|-------|---------|---------------------------|
+| :one        | ✅          | ✅    | ✅      | ✅                        |
+| :many       | ✅          | ✅    | ✅      | ✅                        |
+| :exec       | ✅          | ✅    | ✅      | ✅                        |
+| :execrows   | ✅          | ✅    | ✅      | ✅                        |
+| :execlastid | ✅          | ✅    | ✅      | ✅                        |
+| :copyfrom   | ✅          | ✅    | ✅      | ✅                        |
 
 More info can be found in [here](https://docs.sqlc.dev/en/stable/reference/query-annotations.html).
 
@@ -82,12 +82,12 @@ More info can be found in [here](https://docs.sqlc.dev/en/stable/reference/query
 - `sqlc.embed`     - Embedding allows you to reuse existing model structs in more queries
 <br/>
 
-| Annotation  | PostgresSQL | MySQL | SQLite  |
-|-------------|-------------|-------|---------|
-| sqlc.arg    | ✅          | ✅    | ✅       |
-| sqlc.narg   | ✅          | ✅    | ✅       |
-| sqlc.slice  | 🚫          | ✅    | ✅       |
-| sqlc.embed  | ✅          | ✅    | ✅       |
+| Annotation  | PostgresSQL | MySQL | SQLite  | SQL Server (experimental) |
+|-------------|-------------|-------|---------|---------------------------|
+| sqlc.arg    | ✅          | ✅    | ✅       | ✅                        |
+| sqlc.narg   | ✅          | ✅    | ✅       | ✅                        |
+| sqlc.slice  | 🚫          | ✅    | ✅       | ✅                        |
+| sqlc.embed  | ✅          | ✅    | ✅       | ✅                        |
 
 More info can be found in [here](https://docs.sqlc.dev/en/stable/reference/macros.html#macros).
 

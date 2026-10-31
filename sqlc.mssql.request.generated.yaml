@@ -1,0 +1,160 @@
+version: "2"
+plugins:
+  - name: csharp
+    process:
+      cmd: ./dist/LocalRunner
+sql:
+  - schema: examples/config/mssql/authors/schema.sql
+    queries: examples/config/mssql/authors/query.sql
+    engine: mssql
+    codegen:
+      - plugin: csharp
+        out: examples/QuickStartMssqlDalGen
+        options:
+          debugRequest: true
+  - schema: ["examples/config/mssql/authors/schema.sql", "examples/config/mssql/types/schema.sql"]
+    queries: ["examples/config/mssql/authors/query.sql", "examples/config/mssql/types/query.sql"]
+    engine: "mssql"
+    codegen:
+      - plugin: csharp
+        out: examples/MssqlExample
+        options:
+          useDapper: false
+          targetFramework: net10.0
+          generateCsproj: true
+          namespaceName: MssqlExampleGen
+          overrides:
+            - column: "GetMssqlFunctions:max_int"
+              csharp_type:
+                type: "int"
+                notNull: false
+            - column: "GetMssqlFunctions:max_varchar"
+              csharp_type:
+                type: "string"
+                notNull: false
+            - column: "GetMssqlFunctions:max_datetime2"
+              csharp_type:
+                type: "DateTime"
+                notNull: true
+            - column: "*:c_datetime2_instant"
+              csharp_type:
+                type: "Instant"
+                notNull: false
+            - column: "*:c_datetimeoffset_instant"
+              csharp_type:
+                type: "Instant"
+                notNull: false
+          debugRequest: true
+  - schema: ["examples/config/mssql/authors/schema.sql", "examples/config/mssql/types/schema.sql"]
+    queries: ["examples/config/mssql/authors/query.sql", "examples/config/mssql/types/query.sql"]
+    engine: "mssql"
+    codegen:
+      - plugin: csharp
+        out: examples/MssqlDapperExample
+        options:
+          useDapper: true
+          targetFramework: net9.0
+          generateCsproj: true
+          namespaceName: MssqlDapperExampleGen
+          overrides:
+            - column: "GetMssqlFunctions:max_int"
+              csharp_type:
+                type: "int"
+                notNull: false
+            - column: "GetMssqlFunctions:max_varchar"
+              csharp_type:
+                type: "string"
+                notNull: false
+            - column: "GetMssqlFunctions:max_datetime2"
+              csharp_type:
+                type: "DateTime"
+                notNull: true
+            - column: "*:c_datetime2_instant"
+              csharp_type:
+                type: "Instant"
+                notNull: false
+            - column: "*:c_datetimeoffset_instant"
+              csharp_type:
+                type: "Instant"
+                notNull: false
+          debugRequest: true
+  - schema: ["examples/config/mssql/authors/schema.sql", "examples/config/mssql/types/schema.sql"]
+    queries: ["examples/config/mssql/authors/query.sql", "examples/config/mssql/types/query.sql"]
+    engine: "mssql"
+    codegen:
+      - plugin: csharp
+        out: examples/MssqlLegacyExample
+        options:
+          useDapper: false
+          targetFramework: netstandard2.0
+          generateCsproj: true
+          namespaceName: MssqlLegacyExampleGen
+          overrides:
+            - column: "GetMssqlFunctions:max_int"
+              csharp_type:
+                type: "int"
+                notNull: false
+            - column: "GetMssqlFunctions:max_varchar"
+              csharp_type:
+                type: "string"
+                notNull: false
+            - column: "GetMssqlFunctions:max_datetime2"
+              csharp_type:
+                type: "DateTime"
+                notNull: true
+            - column: "*:c_datetime2_instant"
+              csharp_type:
+                type: "Instant"
+                notNull: false
+            - column: "*:c_datetimeoffset_instant"
+              csharp_type:
+                type: "Instant"
+                notNull: false
+          debugRequest: true
+  - schema: ["examples/config/mssql/authors/schema.sql", "examples/config/mssql/types/schema.sql"]
+    queries: ["examples/config/mssql/authors/query.sql", "examples/config/mssql/types/query.sql"]
+    engine: "mssql"
+    codegen:
+      - plugin: csharp
+        out: examples/MssqlDapperLegacyExample
+        options:
+          useDapper: true
+          targetFramework: netstandard2.0
+          generateCsproj: true
+          namespaceName: MssqlDapperLegacyExampleGen
+          overrides:
+            - column: "GetMssqlFunctions:max_int"
+              csharp_type:
+                type: "int"
+                notNull: false
+            - column: "GetMssqlFunctions:max_varchar"
+              csharp_type:
+                type: "string"
+                notNull: false
+            - column: "GetMssqlFunctions:max_datetime2"
+              csharp_type:
+                type: "DateTime"
+                notNull: true
+            - column: "*:c_datetime2_instant"
+              csharp_type:
+                type: "Instant"
+                notNull: false
+            - column: "*:c_datetimeoffset_instant"
+              csharp_type:
+                type: "Instant"
+                notNull: false
+          debugRequest: true
+  - schema: ["examples/config/mssql/authors/schema.sql"]
+    queries: ["examples/config/mssql/authors/query.sql"]
+    engine: "mssql"
+    codegen:
+      - plugin: csharp
+        out: examples/MssqlAsyncEnumerableExample
+        options:
+          useDapper: false
+          useAsyncEnumerable: true
+          withCancellationToken: true
+          targetFramework: net8.0
+          generateCsproj: true
+          namespaceName: MssqlAsyncEnumerableExampleGen
+          debugRequest: true

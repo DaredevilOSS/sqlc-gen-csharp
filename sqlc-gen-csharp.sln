@@ -81,6 +81,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SqliteAsyncEnumerableExampl
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NpgsqlDapperAsyncEnumerableExample", "examples\NpgsqlDapperAsyncEnumerableExample\NpgsqlDapperAsyncEnumerableExample.csproj", "{76289575-7D22-443C-9842-EC6E9D5FFE97}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "end2end", "end2end", "{6A58D200-3E82-7CA9-E450-4BE772E74186}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MssqlSyntaxMatrix", "end2end\MssqlSyntaxMatrix\MssqlSyntaxMatrix.csproj", "{FE15A125-3902-4F04-BF58-78674055C8AD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -522,6 +526,18 @@ Global
 		{76289575-7D22-443C-9842-EC6E9D5FFE97}.Release|x64.Build.0 = Release|Any CPU
 		{76289575-7D22-443C-9842-EC6E9D5FFE97}.Release|x86.ActiveCfg = Release|Any CPU
 		{76289575-7D22-443C-9842-EC6E9D5FFE97}.Release|x86.Build.0 = Release|Any CPU
+		{FE15A125-3902-4F04-BF58-78674055C8AD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FE15A125-3902-4F04-BF58-78674055C8AD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FE15A125-3902-4F04-BF58-78674055C8AD}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{FE15A125-3902-4F04-BF58-78674055C8AD}.Debug|x64.Build.0 = Debug|Any CPU
+		{FE15A125-3902-4F04-BF58-78674055C8AD}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{FE15A125-3902-4F04-BF58-78674055C8AD}.Debug|x86.Build.0 = Debug|Any CPU
+		{FE15A125-3902-4F04-BF58-78674055C8AD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FE15A125-3902-4F04-BF58-78674055C8AD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FE15A125-3902-4F04-BF58-78674055C8AD}.Release|x64.ActiveCfg = Release|Any CPU
+		{FE15A125-3902-4F04-BF58-78674055C8AD}.Release|x64.Build.0 = Release|Any CPU
+		{FE15A125-3902-4F04-BF58-78674055C8AD}.Release|x86.ActiveCfg = Release|Any CPU
+		{FE15A125-3902-4F04-BF58-78674055C8AD}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -536,5 +552,6 @@ Global
 		{C024456A-CBDB-4688-A58F-4C4A36F17836} = {A796C405-F147-4A0B-A99C-D6419C1AC1EC}
 		{F139C86C-55AE-4E0D-B369-A0D58C07C857} = {9404C766-3491-4959-A575-D6015FFB7AE6}
 		{76289575-7D22-443C-9842-EC6E9D5FFE97} = {9404C766-3491-4959-A575-D6015FFB7AE6}
+		{FE15A125-3902-4F04-BF58-78674055C8AD} = {6A58D200-3E82-7CA9-E450-4BE772E74186}
 	EndGlobalSection
 EndGlobal

@@ -131,12 +131,41 @@ public abstract class DbDriver
         DefaultSchema = catalog.DefaultSchema;
         Tables = ConstructTablesLookup(catalog);
         Queries = queries;
+        foreach (var query in Queries)
+            DisambiguateColumnNames(query);
 
         if (!Options.DotnetFramework.IsDotnetCore())
             return;
 
         foreach (var t in NullableTypesInDotnetCore)
             NullableTypes.Add(t);
+    }
+
+    private readonly HashSet<string> _queriesWithRenamedColumns = [];
+
+    // Two result columns with the same name (SELECT a.id, b.id) would become two properties with the same name,
+    // so the later ones get a numeric suffix: id, id_2, id_3
+    private void DisambiguateColumnNames(Query query)
+    {
+        var seen = new Dictionary<string, int>();
+        foreach (var column in query.Columns.Where(c => c.EmbedTable is null))
+        {
+            var key = column.Name.ToPascalCase();
+            if (!seen.TryGetValue(key, out var count))
+            {
+                seen[key] = 1;
+                continue;
+            }
+            seen[key] = ++count;
+            column.Name = $"{column.Name}_{count}";
+            _queriesWithRenamedColumns.Add(query.Name);
+        }
+    }
+
+    // Dapper maps result columns to properties by name, which cannot work for embedded tables or renamed duplicates
+    public bool MustReadByOrdinal(Query query)
+    {
+        return query.Columns.Any(c => c.EmbedTable is not null) || _queriesWithRenamedColumns.Contains(query.Name);
     }
 
     private static readonly HashSet<string> _excludedSchemas =
@@ -147,11 +176,15 @@ public abstract class DbDriver
 
     private static Dictionary<string, Dictionary<string, Table>> ConstructTablesLookup(Catalog catalog)
     {
+        // The same schema can be listed more than once (e.g. SQL Server's default schema), so tables are merged per schema
         return catalog.Schemas
             .Where(s => !_excludedSchemas.Contains(s.Name))
+            .GroupBy(s => s.Name == catalog.DefaultSchema ? string.Empty : s.Name)
             .ToDictionary(
-                s => s.Name == catalog.DefaultSchema ? string.Empty : s.Name,
-                s => s.Tables.ToDictionary(t => t.Rel.Name, t => t)
+                g => g.Key,
+                g => g.SelectMany(s => s.Tables)
+                    .GroupBy(t => t.Rel.Name)
+                    .ToDictionary(t => t.Key, t => t.First())
             );
     }
 

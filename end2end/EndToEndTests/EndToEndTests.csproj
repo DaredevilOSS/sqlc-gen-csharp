@@ -10,6 +10,14 @@
         <Content Include="../../.env">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </Content>
+        <Content Include="../../examples/config/mssql/authors/schema.sql">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+            <TargetPath>authors.mssql.schema.sql</TargetPath>
+        </Content>
+        <Content Include="../../examples/config/mssql/types/schema.sql">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+            <TargetPath>types.mssql.schema.sql</TargetPath>
+        </Content>
         <Content Include="../../examples/config/sqlite/authors/schema.sql">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
             <TargetPath>authors.sqlite.schema.sql</TargetPath>
@@ -22,6 +30,7 @@
     
     <ItemGroup>
         <PackageReference Include="dotenv.net" Version="3.2.1" />
+        <PackageReference Include="Microsoft.Data.SqlClient" Version="7.1.1" />
         <PackageReference Include="Microsoft.Data.Sqlite" Version="10.0.13"/>
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.9.0" />
         <PackageReference Include="NUnit" Version="4.1.0" />
@@ -30,6 +39,9 @@
     
     <ItemGroup>
       <ProjectReference Include="..\EndToEndCommon\EndToEndCommon.csproj" />
+      <ProjectReference Include="..\..\examples\MssqlAsyncEnumerableExample\MssqlAsyncEnumerableExample.csproj" />
+      <ProjectReference Include="..\..\examples\MssqlDapperExample\MssqlDapperExample.csproj" />
+      <ProjectReference Include="..\..\examples\MssqlExample\MssqlExample.csproj" />
       <ProjectReference Include="..\..\examples\MySqlConnectorDapperExample\MySqlConnectorDapperExample.csproj" />
       <ProjectReference Include="..\..\examples\MySqlConnectorExample\MySqlConnectorExample.csproj" />
       <ProjectReference Include="..\..\examples\NpgsqlDapperAsyncEnumerableExample\NpgsqlDapperAsyncEnumerableExample.csproj" />

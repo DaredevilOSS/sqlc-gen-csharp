@@ -85,7 +85,8 @@ public class Options
     {
         { "mysql", DriverName.MySqlConnector },
         { "postgresql", DriverName.Npgsql },
-        { "sqlite", DriverName.Sqlite }
+        { "sqlite", DriverName.Sqlite },
+        { "mssql", DriverName.Mssql }
     };
 
     private static bool NoOptionsProvided(string optionsText)

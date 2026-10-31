@@ -9,6 +9,8 @@ TARGETS=(
   "NpgsqlDapperTester"
   "SqliteTester"
   "SqliteDapperTester"
+  "MssqlTester"
+  "MssqlDapperTester"
 )
   
 generate() {

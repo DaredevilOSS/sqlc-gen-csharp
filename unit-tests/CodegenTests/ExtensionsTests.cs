@@ -30,6 +30,8 @@ public class StringExtensionsTests
     [TestCase("   ", ExpectedResult = "")]
     [TestCase("__", ExpectedResult = "")]
     [TestCase("already Pascal", ExpectedResult = "AlreadyPascal")]
+    [TestCase("1st place", ExpectedResult = "_1stPlace")]
+    [TestCase("e-mail", ExpectedResult = "EMail")]
     public static string TestToPascalCase(string value)
     {
         return value.ToPascalCase();
@@ -138,6 +140,7 @@ public class PluginOptionNamesTests
     [TestCase(DriverName.MySqlConnector, ExpectedResult = "MySqlConnector")]
     [TestCase(DriverName.Npgsql, ExpectedResult = "Npgsql")]
     [TestCase(DriverName.Sqlite, ExpectedResult = "Microsoft.Data.Sqlite")]
+    [TestCase(DriverName.Mssql, ExpectedResult = "Microsoft.Data.SqlClient")]
     public static string TestDriverNameToName(DriverName driverName)
     {
         return driverName.ToName();

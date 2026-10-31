@@ -6,7 +6,8 @@ public enum DriverName
 {
     MySqlConnector,
     Npgsql,
-    Sqlite
+    Sqlite,
+    Mssql
 }
 
 
@@ -16,7 +17,8 @@ public static class DriverNameExtensions
     {
         { DriverName.MySqlConnector, "MySqlConnector" },
         { DriverName.Npgsql, "Npgsql" },
-        { DriverName.Sqlite, "Microsoft.Data.Sqlite" }
+        { DriverName.Sqlite, "Microsoft.Data.Sqlite" },
+        { DriverName.Mssql, "Microsoft.Data.SqlClient" }
     };
 
     public static string ToName(this DriverName me)

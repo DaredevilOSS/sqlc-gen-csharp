@@ -47,6 +47,7 @@ public class OptionsTests
     [TestCase("mysql", ExpectedResult = DriverName.MySqlConnector)]
     [TestCase("postgresql", ExpectedResult = DriverName.Npgsql)]
     [TestCase("sqlite", ExpectedResult = DriverName.Sqlite)]
+    [TestCase("mssql", ExpectedResult = DriverName.Mssql)]
     public static DriverName TestEngineMapsToDriver(string engine)
     {
         return new Options(CreateRequest(engine, "{}")).DriverName;

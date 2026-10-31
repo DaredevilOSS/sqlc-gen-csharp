@@ -12,7 +12,7 @@ Read the root `AGENTS.md` first.
 | `EndToEndCommon`      | `netstandard2.0`| Shared helpers: env loading, SQLite DB setup. Also used by `benchmark/`. |
 
 ## How a tester class is built
-Each tester (`NpgsqlTester`, `NpgsqlDapperTester`, `MySqlConnectorTester`, ... - 6 in total) is a `partial` class in two files:
+Each tester (`NpgsqlTester`, `NpgsqlDapperTester`, `MySqlConnectorTester`, ... - 8 in total) is a `partial` class in two files:
 - `<Tester>.cs` - **hand-written**: the `QuerySql` instance and the `[TearDown]` that empties every table.
 - `<Tester>.generated.cs` - **generated, do not edit**: produced by `EndToEndScaffold` via `end2end/scripts/generate_tests.sh`
   (`make generate-end2end-tests`). CI regenerates and fails on `git diff`.
@@ -42,6 +42,14 @@ C# 7.3 / `net472` compatible (block-scoped namespaces, no target-typed `new`, no
   containers yourself after a schema change, use `docker-compose up --build`.
 - SQLite is a file DB created by `GlobalSetup` from the schemas copied into the test output
   (`authors.sqlite.schema.sql`, `types.sqlite.schema.sql`) and deleted afterwards.
+- SQL Server (experimental) runs in docker-compose (`mssqldb`, plain image); its image has no init hook, so
+  `EndToEndCommon.SetupTestsMssqlDb` (called from both `GlobalSetup`s) drops and recreates the database from
+  `authors.mssql.schema.sql` / `types.mssql.schema.sql`, split on `GO`. The Windows legacy job uses LocalDB
+  (`.github/scripts/start-mssql.ps1` sets `MSSQL_CONNECTION_STRING`).
 - Connection strings come from the root `.env` (`POSTGRES_CONNECTION_STRING`, `MYSQL_CONNECTION_STRING`,
-  `SQLITE_CONNECTION_STRING`). The MySQL one needs `AllowLoadLocalInfile=true` for `:copyfrom`.
+  `SQLITE_CONNECTION_STRING`, `MSSQL_CONNECTION_STRING`); a variable already set in the environment wins over the
+  file. The MySQL one needs `AllowLoadLocalInfile=true` for `:copyfrom`.
+- `Config.NotForLegacy` lists test types left out of the legacy testers (spatial types need a native library on
+  .NET Framework).
+- `end2end/MssqlSyntaxMatrix` is not a test project: it is the T-SQL support matrix (see its README).
 - The legacy workflow (Windows) loads the PostgreSQL schemas itself with `psql`; keep it in mind when adding schema files.

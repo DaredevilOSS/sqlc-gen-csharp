@@ -27,6 +27,12 @@ sqlc-generate-requests: dotnet-publish-process
 sqlc-generate: sync-sqlc-options dotnet-publish-process sqlc-generate-requests
 	SQLCCACHE=./; sqlc -f sqlc.local.generated.yaml generate
 
+# SQL Server (experimental): needs sqlc main with scripts/sqlc-patches applied, see scripts/sqlc-patches/README.md
+SQLC_MSSQL ?= bin/sqlc
+sqlc-generate-mssql: sync-sqlc-options dotnet-publish-process
+	$(SQLC_MSSQL) -f sqlc.mssql.request.generated.yaml generate
+	$(SQLC_MSSQL) -f sqlc.mssql.local.generated.yaml generate
+
 test-plugin: unit-tests sqlc-generate generate-end2end-tests dotnet-build run-end2end-tests
 
 # WASM type plugin
@@ -46,6 +52,16 @@ $(WASM_PLUGIN_OUTPUT): $(WASM_SOURCES)
 	dotnet publish WasmRunner -c release --output dist/
 	./scripts/wasm/copy_plugin_to.sh dist
 	./scripts/wasm/update_sha.sh sqlc.ci.yaml
+
+# SQL Server syntax matrix (needs SQL Server running); builds come from scripts/sqlc-patches/build_sqlc.sh
+SQLC_UPSTREAM ?= bin/sqlc-upstream
+SQLC_PATCHED ?= bin/sqlc
+SQLC_REF := $(shell cut -c1-7 scripts/sqlc-patches/SQLC_REF)
+mssql-syntax-matrix: dotnet-publish-process
+	dotnet run --project end2end/MssqlSyntaxMatrix -- \
+		--sqlc "upstream=$(SQLC_UPSTREAM)@sqlc main ($(SQLC_REF))" \
+		--sqlc "patched=$(SQLC_PATCHED)@sqlc main ($(SQLC_REF)) + scripts/sqlc-patches" \
+		--compile
 
 run-end2end-tests:
 	./end2end/scripts/run_tests.sh

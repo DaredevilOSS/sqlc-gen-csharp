@@ -26,6 +26,23 @@ public enum KnownTestType
     NargNull,
     NargNotNull,
 
+    // Mssql
+    MssqlIntegerDataTypes,
+    MssqlIntegerCopyFrom,
+    MssqlStringDataTypes,
+    MssqlStringCopyFrom,
+    MssqlDateTimeDataTypes,
+    MssqlDateTimeCopyFrom,
+    MssqlBinaryDataTypes,
+    MssqlBinaryCopyFrom,
+    MssqlTransaction,
+    MssqlTransactionRollback,
+    MssqlIdentityExecLastId,
+    MssqlSchemaScopedTable,
+    MssqlSpatialDataTypes,
+    MssqlNodaTimeOverride,
+    MssqlNodaTimeCopyFrom,
+
     // Sqlite
     SqliteDataTypes,
     SqliteMultipleNamedParam,
@@ -97,6 +114,9 @@ public enum KnownTestType
 
 internal static class Config
 {
+    // tests that cannot run on .NET Framework: Microsoft.SqlServer.Types needs its native library there
+    public static readonly HashSet<KnownTestType> NotForLegacy = [KnownTestType.MssqlSpatialDataTypes];
+
     private static readonly SortedSet<KnownTestType> _mysqlTestTypes = [
         KnownTestType.MySqlTransaction,
         KnownTestType.MySqlTransactionRollback,
@@ -189,6 +209,36 @@ internal static class Config
         KnownTestType.PostgresNetworkCopyFrom
     ];
 
+    private static readonly SortedSet<KnownTestType> _mssqlTestTypes = [
+        KnownTestType.One,
+        KnownTestType.Many,
+        KnownTestType.Exec,
+        KnownTestType.ExecRows,
+        KnownTestType.ExecLastId,
+        KnownTestType.JoinEmbed,
+        KnownTestType.SelfJoinEmbed,
+        KnownTestType.PartialEmbed,
+        KnownTestType.Slice,
+        KnownTestType.MultipleSlices,
+        KnownTestType.NargNull,
+        KnownTestType.NargNotNull,
+        KnownTestType.MssqlIntegerDataTypes,
+        KnownTestType.MssqlIntegerCopyFrom,
+        KnownTestType.MssqlStringDataTypes,
+        KnownTestType.MssqlStringCopyFrom,
+        KnownTestType.MssqlDateTimeDataTypes,
+        KnownTestType.MssqlDateTimeCopyFrom,
+        KnownTestType.MssqlBinaryDataTypes,
+        KnownTestType.MssqlBinaryCopyFrom,
+        KnownTestType.MssqlTransaction,
+        KnownTestType.MssqlTransactionRollback,
+        KnownTestType.MssqlIdentityExecLastId,
+        KnownTestType.MssqlSchemaScopedTable,
+        KnownTestType.MssqlSpatialDataTypes,
+        KnownTestType.MssqlNodaTimeOverride,
+        KnownTestType.MssqlNodaTimeCopyFrom
+    ];
+
     private static readonly SortedSet<KnownTestType> _sqliteTestTypes = [
         KnownTestType.One,
         KnownTestType.Many,
@@ -259,6 +309,22 @@ internal static class Config
                 TestNamespace = "SqliteDapperExampleGen",
                 LegacyTestNamespace = "SqliteDapperLegacyExampleGen",
                 TestTypes = _sqliteTestTypes
+            }
+        },
+        {
+            "MssqlTester", new ClassGenConfig
+            {
+                TestNamespace = "MssqlExampleGen",
+                LegacyTestNamespace = "MssqlLegacyExampleGen",
+                TestTypes = _mssqlTestTypes
+            }
+        },
+        {
+            "MssqlDapperTester", new ClassGenConfig
+            {
+                TestNamespace = "MssqlDapperExampleGen",
+                LegacyTestNamespace = "MssqlDapperLegacyExampleGen",
+                TestTypes = _mssqlTestTypes
             }
         },
     };

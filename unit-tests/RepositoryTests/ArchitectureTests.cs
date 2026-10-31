@@ -37,7 +37,7 @@ public class ArchitectureTests
             $"{csprojPath} references {string.Join(", ", actual)} - update AGENTS.md and this test if the layering should change");
     }
 
-    private static readonly string[] ConcreteDrivers = ["NpgsqlDriver", "MySqlConnectorDriver", "SqliteDriver"];
+    private static readonly string[] ConcreteDrivers = ["NpgsqlDriver", "MySqlConnectorDriver", "SqliteDriver", "MssqlDriver"];
 
     // Only CodeGenerator.InstantiateDriver may know the concrete drivers; everything else goes through DbDriver.
     [Test]
