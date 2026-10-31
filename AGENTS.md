@@ -58,7 +58,7 @@ architecture test in the same change and explain why.
   A driver that doesn't implement an interface fails at runtime with a wrapped `SystemException`, not at compile time.
 - **Drivers -> generated code**: drivers return C# source as strings / `MemberDeclarationSyntax`. Hooks return
   fragments (`ConnectionGenCommands`, `CommandGenCommands`, `GenCommand.WrapBlock`), never whole files.
-- **Opt-in contract**: every option that is off by default (e.g. `withCancellationToken`, `useProperSingularization`)
+- **Opt-in contract**: every option that is off by default (e.g. `useCancellationToken`, `useProperSingularization`)
   must leave generated output **byte-identical** when off. `sqlc diff` on the examples is the check.
 
 ### Code generation flow
@@ -206,17 +206,20 @@ CI fails if any of the generated artifacts above is stale (`sqlc diff`, `git dif
 | Option                        | Default                                                        | Notes |
 |-------------------------------|----------------------------------------------------------------|-------|
 | `targetFramework`             | `net8.0`                                                       | `netstandard2.0`, `netstandard2.1`, `net8.0`, `net9.0`, `net10.0` |
-| `overrideDriverVersion`       | `2.4.0` MySqlConnector, `8.0.6` Npgsql, `10.0.13` Microsoft.Data.Sqlite | constants in each driver |
+| `driverVersion`               | `2.4.0` MySqlConnector, `8.0.6` Npgsql, `10.0.13` Microsoft.Data.Sqlite | constants in each driver |
 | `generateCsproj`              | `true`                                                         | |
 | `namespaceName`               | output directory name                                          | |
 | `useDapper`                   | `false`                                                        | |
-| `overrideDapperVersion`       | `2.1.66`                                                       | `DbDriver.DefaultDapperVersion` |
+| `dapperVersion`               | `2.1.66`                                                       | `DbDriver.DefaultDapperVersion` |
 | `useCentralPackageManagement` | `false`                                                        | omits `Version=` in the generated csproj |
-| `withAsyncSuffix`             | `true`                                                         | |
-| `withCancellationToken`       | `false`                                                        | must be byte-identical when off |
+| `useAsyncSuffix`              | `true`                                                         | |
+| `useCancellationToken`        | `false`                                                        | must be byte-identical when off |
+| `useAsyncEnumerable`          | `false`                                                        | `:many` returns `IAsyncEnumerable<Row>`; not supported on `netstandard2.0` |
 | `useProperSingularization`    | `false`                                                        | renames models when on |
 | `overrides`                   | -                                                              | `Query:column` / `*:column`, see section 3 |
 | `debugRequest`                | `false`                                                        | internal: dumps the request; not allowed with WASM |
+
+**Renamed options:** `overrideDriverVersion` -> `driverVersion`, `overrideDapperVersion` -> `dapperVersion`, `withAsyncSuffix` -> `useAsyncSuffix`, `withCancellationToken` -> `useCancellationToken`. The old names are deprecated but still accepted; setting both spellings to different values is an error.
 
 ### Annotation support
 | Annotation / macro | PostgreSQL | MySQL | SQLite | Implementation |

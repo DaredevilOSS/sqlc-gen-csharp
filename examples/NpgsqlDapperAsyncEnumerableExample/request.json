@@ -11,7 +11,7 @@
     "codegen": {
       "out": "examples/NpgsqlDapperAsyncEnumerableExample",
       "plugin": "csharp",
-      "options": "eyJkZWJ1Z1JlcXVlc3QiOnRydWUsImdlbmVyYXRlQ3Nwcm9qIjp0cnVlLCJuYW1lc3BhY2VOYW1lIjoiTnBnc3FsRGFwcGVyQXN5bmNFbnVtZXJhYmxlRXhhbXBsZUdlbiIsInRhcmdldEZyYW1ld29yayI6Im5ldDEwLjAiLCJ1c2VBc3luY0VudW1lcmFibGUiOnRydWUsInVzZURhcHBlciI6dHJ1ZSwid2l0aENhbmNlbGxhdGlvblRva2VuIjp0cnVlfQ==",
+      "options": "eyJkZWJ1Z1JlcXVlc3QiOnRydWUsImdlbmVyYXRlQ3Nwcm9qIjp0cnVlLCJuYW1lc3BhY2VOYW1lIjoiTnBnc3FsRGFwcGVyQXN5bmNFbnVtZXJhYmxlRXhhbXBsZUdlbiIsInRhcmdldEZyYW1ld29yayI6Im5ldDEwLjAiLCJ1c2VBc3luY0VudW1lcmFibGUiOnRydWUsInVzZUNhbmNlbGxhdGlvblRva2VuIjp0cnVlLCJ1c2VEYXBwZXIiOnRydWV9",
       "process": {
         "cmd": "./dist/LocalRunner"
       }
@@ -32907,5 +32907,5 @@
     }
   ],
   "sqlc_version": "v1.30.0",
-  "plugin_options": "eyJvdmVycmlkZURyaXZlclZlcnNpb24iOiIiLCJnZW5lcmF0ZUNzcHJvaiI6dHJ1ZSwidGFyZ2V0RnJhbWV3b3JrIjoibmV0MTAuMCIsIm5hbWVzcGFjZU5hbWUiOiJOcGdzcWxEYXBwZXJBc3luY0VudW1lcmFibGVFeGFtcGxlR2VuIiwidXNlRGFwcGVyIjp0cnVlLCJvdmVycmlkZURhcHBlclZlcnNpb24iOiIiLCJvdmVycmlkZXMiOm51bGwsImRlYnVnUmVxdWVzdCI6ZmFsc2UsInVzZUNlbnRyYWxQYWNrYWdlTWFuYWdlbWVudCI6ZmFsc2UsIndpdGhBc3luY1N1ZmZpeCI6dHJ1ZSwid2l0aENhbmNlbGxhdGlvblRva2VuIjp0cnVlLCJ1c2VBc3luY0VudW1lcmFibGUiOnRydWUsInVzZVByb3BlclNpbmd1bGFyaXphdGlvbiI6ZmFsc2V9"
+  "plugin_options": "eyJnZW5lcmF0ZUNzcHJvaiI6dHJ1ZSwidGFyZ2V0RnJhbWV3b3JrIjoibmV0MTAuMCIsIm5hbWVzcGFjZU5hbWUiOiJOcGdzcWxEYXBwZXJBc3luY0VudW1lcmFibGVFeGFtcGxlR2VuIiwidXNlRGFwcGVyIjp0cnVlLCJvdmVycmlkZXMiOm51bGwsImRlYnVnUmVxdWVzdCI6ZmFsc2UsInVzZUNlbnRyYWxQYWNrYWdlTWFuYWdlbWVudCI6ZmFsc2UsInVzZUNhbmNlbGxhdGlvblRva2VuIjp0cnVlLCJ1c2VBc3luY0VudW1lcmFibGUiOnRydWUsInVzZVByb3BlclNpbmd1bGFyaXphdGlvbiI6ZmFsc2V9"
 }

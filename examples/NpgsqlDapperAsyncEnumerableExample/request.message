@@ -1,8 +1,8 @@
 
-„
+ƒ
 2
-postgresql-examples/config/postgresql/authors/schema.sql",examples/config/postgresql/authors/query.sqlb•
-+examples/NpgsqlDapperAsyncEnumerableExamplecsharpÇ{"debugRequest":true,"generateCsproj":true,"namespaceName":"NpgsqlDapperAsyncEnumerableExampleGen","targetFramework":"net10.0","useAsyncEnumerable":true,"useDapper":true,"withCancellationToken":true}*
+postgresql-examples/config/postgresql/authors/schema.sql",examples/config/postgresql/authors/query.sqlb”
++examples/NpgsqlDapperAsyncEnumerableExamplecsharpÆ{"debugRequest":true,"generateCsproj":true,"namespaceName":"NpgsqlDapperAsyncEnumerableExampleGen","targetFramework":"net10.0","useAsyncEnumerable":true,"useCancellationToken":true,"useDapper":true}*
 ./dist/LocalRunner„Ópublic"Æpublicƒ
 	authors)
 id0ÿÿÿÿÿÿÿÿÿR	authorsb	bigserial&
@@ -10244,4 +10244,4 @@ pg_catalogvarcharzauthor_name"B
 pg_catalogvarcharzname"G
 bio_type0ÿÿÿÿÿÿÿÿÿRextendedbiosbextendedbio_typezbio_type*JF
 bio_type0ÿÿÿÿÿÿÿÿÿRextendedbiosbextended.bio_typezbio_type:	query.sqlF
-TRUNCATE TABLE extended.biosTruncateExtendedBios:exec:	query.sql"v1.30.0*ë{"overrideDriverVersion":"","generateCsproj":true,"targetFramework":"net10.0","namespaceName":"NpgsqlDapperAsyncEnumerableExampleGen","useDapper":true,"overrideDapperVersion":"","overrides":null,"debugRequest":false,"useCentralPackageManagement":false,"withAsyncSuffix":true,"withCancellationToken":true,"useAsyncEnumerable":true,"useProperSingularization":false}
+TRUNCATE TABLE extended.biosTruncateExtendedBios:exec:	query.sql"v1.30.0*{"generateCsproj":true,"targetFramework":"net10.0","namespaceName":"NpgsqlDapperAsyncEnumerableExampleGen","useDapper":true,"overrides":null,"debugRequest":false,"useCentralPackageManagement":false,"useCancellationToken":true,"useAsyncEnumerable":true,"useProperSingularization":false}

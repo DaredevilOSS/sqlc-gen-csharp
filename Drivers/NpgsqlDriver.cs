@@ -449,7 +449,7 @@ public sealed class NpgsqlDriver : EnumDbDriver, IOne, IMany, IExec, IExecRows, 
             .GetPackageReferences()
             .Merge(new Dictionary<string, string>
             {
-                { "Npgsql", Options.OverrideDriverVersion != string.Empty ? Options.OverrideDriverVersion : DefaultNpgsqlVersion }
+                { "Npgsql", Options.DriverVersion != string.Empty ? Options.DriverVersion : DefaultNpgsqlVersion }
             });
     }
 

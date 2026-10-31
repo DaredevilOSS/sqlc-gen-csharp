@@ -161,7 +161,7 @@ public sealed partial class SqliteDriver(
             .GetPackageReferences()
             .Merge(new Dictionary<string, string>
             {
-                { "Microsoft.Data.Sqlite", Options.OverrideDriverVersion != string.Empty ? Options.OverrideDriverVersion : DefaultSqliteVersion }
+                { "Microsoft.Data.Sqlite", Options.DriverVersion != string.Empty ? Options.DriverVersion : DefaultSqliteVersion }
             });
     }
 

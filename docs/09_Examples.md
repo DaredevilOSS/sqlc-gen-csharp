@@ -39,6 +39,9 @@
 ### [Schema](examples/config/postgresql/authors/schema.sql) | [Queries](examples/config/postgresql/authors/query.sql) | [End2End Test](end2end/EndToEndTests/NpgsqlTester.cs)
 ### Config
 ```yaml
+driverVersion: 8.0.6
+useAsyncSuffix: true
+useCancellationToken: false
 useDapper: false
 targetFramework: net8.0
 generateCsproj: true
@@ -91,6 +94,7 @@ overrides:
 ### [Schema](examples/config/postgresql/authors/schema.sql) | [Queries](examples/config/postgresql/authors/query.sql) | [End2End Test](end2end/EndToEndTests/NpgsqlDapperTester.cs)
 ### Config
 ```yaml
+dapperVersion: 2.1.66
 useDapper: true
 targetFramework: net10.0
 generateCsproj: true
@@ -319,6 +323,9 @@ overrides:
 ### [Schema](examples/config/mysql/authors/schema.sql) | [Queries](examples/config/mysql/authors/query.sql) | [End2End Test](end2end/EndToEndTestsLegacy/MySqlConnectorTester.cs)
 ### Config
 ```yaml
+overrideDriverVersion: 2.4.0
+withAsyncSuffix: true
+withCancellationToken: false
 useDapper: false
 targetFramework: netstandard2.0
 generateCsproj: true
@@ -355,6 +362,7 @@ overrides:
 ### [Schema](examples/config/mysql/authors/schema.sql) | [Queries](examples/config/mysql/authors/query.sql) | [End2End Test](end2end/EndToEndTestsLegacy/MySqlConnectorDapperTester.cs)
 ### Config
 ```yaml
+overrideDapperVersion: 2.1.66
 useDapper: true
 targetFramework: netstandard2.0
 generateCsproj: true
@@ -565,7 +573,7 @@ overrides:
 ```yaml
 useDapper: false
 useAsyncEnumerable: true
-withCancellationToken: true
+useCancellationToken: true
 targetFramework: net10.0
 generateCsproj: true
 namespaceName: SqliteAsyncEnumerableExampleGen
@@ -582,7 +590,7 @@ namespaceName: SqliteAsyncEnumerableExampleGen
 ```yaml
 useDapper: true
 useAsyncEnumerable: true
-withCancellationToken: true
+useCancellationToken: true
 targetFramework: net10.0
 generateCsproj: true
 namespaceName: NpgsqlDapperAsyncEnumerableExampleGen

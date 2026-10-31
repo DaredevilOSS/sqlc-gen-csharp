@@ -19,7 +19,7 @@ public class ManyDeclareGen(DbDriver dbDriver)
         var parametersStr = CommonGen.GetMethodParameterList(argInterface, query.Params, cancellationParam);
         var returnType = asyncEnumerable ? $"IAsyncEnumerable<{returnInterface}>" : $"Task<List<{returnInterface}>>";
         return ParseMemberDeclaration($$"""
-            public async {{returnType}} {{query.Name.ToMethodName(dbDriver.Options.WithAsyncSuffix)}}({{parametersStr}})
+            public async {{returnType}} {{query.Name.ToMethodName(dbDriver.Options.UseAsyncSuffix)}}({{parametersStr}})
             {
                 {{GetMethodBody(queryTextConstant, returnInterface, query)}}
             }
