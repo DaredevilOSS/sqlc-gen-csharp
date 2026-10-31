@@ -3,10 +3,6 @@ defaults:
   run:
     shell: bash
 
-env:
-  SQLC_VERSION: 1.30.0
-  WASI_SDK_VERSION: 25
-
 permissions:
   contents: read
 
@@ -31,6 +27,9 @@ jobs:
 
     steps:
       - uses: actions/checkout@v7
+
+      - name: Load tool versions
+        run: cat scripts/tool-versions.env >> "$GITHUB_ENV"
 
       - name: Load .env file
         uses: xom9ikk/dotenv@v2.4.0
@@ -100,6 +99,9 @@ jobs:
 
      steps:
        - uses: actions/checkout@v7
+
+       - name: Load tool versions
+         run: cat scripts/tool-versions.env >> "$GITHUB_ENV"
 
        - name: Load .env file
          uses: xom9ikk/dotenv@v2.4.0
