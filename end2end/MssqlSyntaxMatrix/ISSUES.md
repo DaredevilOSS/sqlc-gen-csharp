@@ -122,6 +122,8 @@ matter to clients that map by name). Case: [select/quoted_aliases](cases/select/
 `WITH numbers (n) AS (SELECT 1 UNION ALL SELECT n + 1 FROM numbers ...)` fails: the CTE is looked up as a table.
 Case: [cte/recursive_cte](cases/cte/recursive_cte.sql)
 
+The teesql tickets below are written out in full, ready to open, in [TEESQL_ISSUES.md](TEESQL_ISSUES.md).
+
 ## T1. `MERGE ... USING (VALUES ...) AS source (cols)` (teesql)
 `expected identifier for schema object name`; `USING table AS source` parses.
 Case: [merge/merge_upsert](cases/merge/merge_upsert.sql)
