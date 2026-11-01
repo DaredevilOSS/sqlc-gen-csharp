@@ -80,13 +80,13 @@ jobs:
 
               LABELED_PR_LIST="$LABELED_PR_LIST #$PR_NUM"
 
-              if echo "$LABELS" | grep -qx "major"; then
+              if echo "$LABELS" | grep -qx "release:major"; then
                 MAJOR_COUNT=$((MAJOR_COUNT + 1))
                 MAJOR_PRS="$MAJOR_PRS\n- $PR_TITLE (#$PR_NUM)"
-              elif echo "$LABELS" | grep -qx "minor"; then
+              elif echo "$LABELS" | grep -qx "release:minor"; then
                 MINOR_COUNT=$((MINOR_COUNT + 1))
                 MINOR_PRS="$MINOR_PRS\n- $PR_TITLE (#$PR_NUM)"
-              elif echo "$LABELS" | grep -qx "patch"; then
+              elif echo "$LABELS" | grep -qx "release:patch"; then
                 PATCH_COUNT=$((PATCH_COUNT + 1))
                 PATCH_PRS="$PATCH_PRS\n- $PR_TITLE (#$PR_NUM)"
               fi
@@ -219,10 +219,10 @@ jobs:
           ALL_PRS=$(jq -s '.' /tmp/pr-data.jsonl)
 
           # Categorize PRs for the body list (just #XYZ, no title)
-          MAJOR_PRS=$(echo "$ALL_PRS" | jq -r '.[] | select(.labels | index("major")) | .author |= gsub("^app/"; "") | "- #\(.number) — @\(.author)"')
-          MINOR_PRS=$(echo "$ALL_PRS" | jq -r '.[] | select(.labels | index("minor")) | .author |= gsub("^app/"; "") | "- #\(.number) — @\(.author)"')
-          PATCH_PRS=$(echo "$ALL_PRS" | jq -r '.[] | select(.labels | index("patch")) | .author |= gsub("^app/"; "") | "- #\(.number) — @\(.author)"')
-          UNLABELED_PRS=$(echo "$ALL_PRS" | jq -r '.[] | select((.labels | index("major") | not) and (.labels | index("minor") | not) and (.labels | index("patch") | not) and (.labels | index("release") | not)) | .author |= gsub("^app/"; "") | "- #\(.number) — @\(.author)"')
+          MAJOR_PRS=$(echo "$ALL_PRS" | jq -r '.[] | select(.labels | index("release:major")) | .author |= gsub("^app/"; "") | "- #\(.number) — @\(.author)"')
+          MINOR_PRS=$(echo "$ALL_PRS" | jq -r '.[] | select(.labels | index("release:minor")) | .author |= gsub("^app/"; "") | "- #\(.number) — @\(.author)"')
+          PATCH_PRS=$(echo "$ALL_PRS" | jq -r '.[] | select(.labels | index("release:patch")) | .author |= gsub("^app/"; "") | "- #\(.number) — @\(.author)"')
+          UNLABELED_PRS=$(echo "$ALL_PRS" | jq -r '.[] | select((.labels | index("release:major") | not) and (.labels | index("release:minor") | not) and (.labels | index("release:patch") | not) and (.labels | index("release") | not)) | .author |= gsub("^app/"; "") | "- #\(.number) — @\(.author)"')
 
           CONTRIBUTORS=$(echo "$ALL_PRS" | jq -r '[.[].author] | unique | map(gsub("^app/"; "")) | .[] | "@\(.)"' | paste -sd ', ')
 

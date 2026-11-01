@@ -173,7 +173,7 @@ CI fails if any of the generated artifacts above is stale (`sqlc diff`, `git dif
 3. `make test-plugin` (needs Docker) - unit tests, regeneration, `dotnet build`, end-to-end tests.
 4. For changes that can affect the WASM build: `make setup-wasm-plugin && sqlc -f sqlc.ci.yaml diff`.
 5. `make dotnet-format` (CI lints the same scope: everything except `GeneratedProtobuf`, `examples`, `benchmark/*SqlcImpl`).
-6. PR label: `major` / `minor` / `patch`, or `skip-release` for non-release changes.
+6. PR label: `release:major` / `release:minor` / `release:patch`, or `skip-release` for non-release changes.
 
 **Add support for a DB type** - see `Drivers/AGENTS.md` ("Adding a type mapping").
 
@@ -248,7 +248,7 @@ make dotnet-format
 ```
 
 ### Release
-1. `release-assistant.yml` - every PR to `main` needs `major`/`minor`/`patch` or `skip-release`.
+1. `release-assistant.yml` - every PR to `main` needs `release:major`/`release:minor`/`release:patch` or `skip-release`.
 2. `gen-release-pr.yml` - after Build on `main`, aggregates labeled PRs, computes the version, regenerates README/quickstart with the wasm sha, opens a `release-prep` PR.
 3. `release.yml` - on merge of `release-prep`, tags, builds release notes from PR titles, uploads the wasm.
 

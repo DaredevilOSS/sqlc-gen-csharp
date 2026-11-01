@@ -4,4 +4,4 @@
 ## Checklist
 - [ ] Generated code is regenerated (`make sqlc-generate`) and committed
 - [ ] Tests added or updated
-- [ ] A `major` / `minor` / `patch` label is set (or `skip-release` for non-release changes)
+- [ ] A `release:major` / `release:minor` / `release:patch` label is set (or `skip-release` for non-release changes)
