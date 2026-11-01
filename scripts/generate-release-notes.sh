@@ -2,7 +2,7 @@
 # generate-release-notes.sh
 #
 # Shared release notes generator for sqlc-gen-csharp.
-# Only includes PRs with major/minor/patch labels (excludes skip-release).
+# Only includes PRs with release:major/minor/patch labels (excludes skip-release).
 #
 # Usage:
 #   OWNER=... REPO=... GH_TOKEN=... ./scripts/generate-release-notes.sh \
@@ -51,7 +51,7 @@ while IFS= read -r commit; do
   while IFS= read -r label; do
     [ -z "$label" ] && continue
     case "$label" in
-      major|minor|patch) HAS_LABEL=true ;;
+      release:major|release:minor|release:patch) HAS_LABEL=true ;;
       skip-release) SKIP_RELEASE=true ;;
     esac
   done <<< "$(echo "$PR_JSON" | jq -r '.labels[] // empty')"

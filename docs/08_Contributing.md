@@ -60,7 +60,7 @@ The release flow in this repo follows the semver conventions, building tag as `v
 
 ### PR Gate
 
-Every PR that modifies source code, build configuration, or similar must be labeled with one of: `major`, `minor`, `patch`, or `skip-release`.
+Every PR that modifies source code, build configuration, or similar must be labeled with one of: `release:major`, `release:minor`, `release:patch`, or `skip-release`.
 
 A bot posts a status check (`release-assistant/requirements`) that blocks merging until a version label is present.
 
@@ -69,7 +69,7 @@ A bot posts a status check (`release-assistant/requirements`) that blocks mergin
 When Build completes on `main`, the `gen-release-pr.yml` workflow runs and:
 
 1. Aggregates all unreleased, labeled PRs since the last release tag.
-2. Determines the release type from the labels (`major` > `minor` > `patch`).
+2. Determines the release type from the labels (`release:major` > `release:minor` > `release:patch`).
 3. Computes the new version from the latest tag.
 4. Downloads the latest wasm artifact and computes its sha256.
 5. Regenerates documentation (README, quickstart) with the new version and wasm sha.

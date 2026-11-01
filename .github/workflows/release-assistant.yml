@@ -58,12 +58,12 @@ jobs:
           if echo "$LABELS_JSON" | grep -q "skip-release"; then
             SKIP_RELEASE_LABEL=true
           fi
-          VERSION_LABEL_VALUE=$(echo "$LABELS_JSON" | grep -E "^(major|minor|patch)$" | head -1 | tr -d '[:space:]')
+          VERSION_LABEL_VALUE=$(echo "$LABELS_JSON" | grep -E "^release:(major|minor|patch)$" | head -1 | tr -d '[:space:]')
           if [ -n "$VERSION_LABEL_VALUE" ]; then
             HAS_VERSION_LABEL=true
             VERSION_LABEL="$VERSION_LABEL_VALUE"
           fi
-          VERSION_LABEL_COUNT=$(echo "$LABELS_JSON" | grep -cE "^(major|minor|patch)$" || true)
+          VERSION_LABEL_COUNT=$(echo "$LABELS_JSON" | grep -cE "^release:(major|minor|patch)$" || true)
           MULTIPLE_VERSION_LABELS=false
           if [ "$VERSION_LABEL_COUNT" -gt 1 ]; then
             MULTIPLE_VERSION_LABELS=true
@@ -115,11 +115,11 @@ jobs:
                 'Version-worthy changes detected in:',
                 patterns,
                 '',
-                'Add one of the following labels to this PR: `major`, `minor`, `patch`.',
+                'Add one of the following labels to this PR: `release:major`, `release:minor`, `release:patch`.',
                 '',
-                '- `patch` — Bug fixes, documentation updates',
-                '- `minor` — New features, backwards-compatible',
-                '- `major` — Breaking changes, API modifications',
+                '- `release:patch` — Bug fixes, documentation updates',
+                '- `release:minor` — New features, backwards-compatible',
+                '- `release:major` — Breaking changes, API modifications',
                 '',
                 'This PR cannot be merged until a version label is added.',
               ].join('\n');
@@ -128,7 +128,7 @@ jobs:
                 '<!-- release-assistant-bot -->',
                 '## Release Assistant - Action Required',
                 '',
-                'Multiple version labels detected. Please keep only one of: `major`, `minor`, `patch`.',
+                'Multiple version labels detected. Please keep only one of: `release:major`, `release:minor`, `release:patch`.',
               ].join('\n');
             } else {
               body = [
@@ -177,7 +177,7 @@ jobs:
               description = 'No version-worthy changes';
             } else if (!hasVersionLabel) {
               state = 'failure';
-              description = 'Version label (major/minor/patch) required';
+              description = 'Version label (release:major/minor/patch) required';
             } else if (multipleVersionLabels) {
               state = 'failure';
               description = 'Multiple version labels found. Keep only one';
