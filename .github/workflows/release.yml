@@ -67,7 +67,7 @@ jobs:
           echo "run-id=$RUN_ID" >> $GITHUB_OUTPUT
 
       - name: Download wasm
-        uses: dawidd6/action-download-artifact@v27
+        uses: dawidd6/action-download-artifact@v28
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           run_id: ${{ steps.find-artifact.outputs.run-id }}
