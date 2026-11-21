@@ -35,7 +35,7 @@ jobs:
           path: benchmark
 
       - name: Docker compose
-        uses: hoverkraft-tech/compose-action@v3.2.0
+        uses: hoverkraft-tech/compose-action@v3.2.1
         with:
           services: mysqldb
 
@@ -71,7 +71,7 @@ jobs:
           path: benchmark
 
       - name: Docker compose
-        uses: hoverkraft-tech/compose-action@v3.2.0
+        uses: hoverkraft-tech/compose-action@v3.2.1
         with:
           services: mysqldb
 
@@ -107,7 +107,7 @@ jobs:
           path: benchmark
 
       - name: Docker compose
-        uses: hoverkraft-tech/compose-action@v3.2.0
+        uses: hoverkraft-tech/compose-action@v3.2.1
         with:
           services: postgresdb
 
@@ -143,7 +143,7 @@ jobs:
           path: benchmark
 
       - name: Docker compose
-        uses: hoverkraft-tech/compose-action@v3.2.0
+        uses: hoverkraft-tech/compose-action@v3.2.1
         with:
           services: postgresdb
 

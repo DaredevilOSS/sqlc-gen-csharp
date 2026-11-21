@@ -73,7 +73,7 @@ jobs:
           load-mode: strict
 
       - name: Docker compose
-        uses: hoverkraft-tech/compose-action@v3.2.0
+        uses: hoverkraft-tech/compose-action@v3.2.1
 
       - name: Run Tests
         run: ./end2end/scripts/run_tests.sh
